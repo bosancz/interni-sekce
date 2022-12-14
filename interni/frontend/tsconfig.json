@@ -18,7 +18,6 @@
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "skipLibCheck": true,
