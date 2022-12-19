@@ -1,4 +1,4 @@
-import { Event } from "../events/entities/event.entity";
+import { Event } from "../database/entities/event.entity";
 import { AccessControlGroup } from "./schema/access-control-list";
 
 const events: AccessControlGroup<Event> = {

@@ -3,14 +3,14 @@ import { Reflector } from "@nestjs/core";
 import { Request } from "express";
 import { map, Observable } from "rxjs";
 import { Config } from "src/config";
+import { UserToken } from "src/models/auth/schema/user-token";
 import { AuthService } from "../../auth/services/auth.service";
-import { ContainingEntity } from "../schema/containing-entities";
+import { ChildEntity } from "../schema/child-entities";
 import { Document } from "../schema/document";
-import { EntitiesStore, EntitiesStoreRoute } from "../schema/entities-store";
-import { UserToken } from "../schema/user-token";
+import { EntityStore, EntityStoreItem } from "../schema/entity-store";
 import { AccessControlService } from "../services/access-control.service";
 
-type DocumentResponse<T> = T & Document<string, string>;
+type DocumentResponse<T> = T & Document;
 
 type Response<T> = DocumentResponse<T> | DocumentResponse<T>[];
 
@@ -23,43 +23,40 @@ export class AcEntityInterceptor<T = any> implements NestInterceptor<T, Response
   intercept(context: ExecutionContext, next: CallHandler<T>): Observable<Response<T>> {
     return next.handle().pipe(
       map((res) => {
-        const entity = <string>this.reflector.get("entity", context.getHandler());
-        const containingEntities = <ContainingEntity>this.reflector.get("containing-entities", context.getHandler());
+        const entity = <EntityStoreItem>this.reflector.get("entity", context.getHandler());
         const token = this.authService.getToken(context.switchToHttp().getRequest<Request>());
 
-        this.addLinksToResponse(res, entity, token);
+        if (!Array.isArray(res)) this.addLinksToEntity(res, entity.name, token);
 
-        if (containingEntities) this.addLinksToResponse(res, containingEntities, token);
+        if (entity.children) this.addLinksToChildren(res, entity.children, token);
 
         return res;
       }),
     );
   }
 
-  private addLinksToResponse(res: any, entities: ContainingEntity, token: UserToken) {
-    if (typeof entities === "string" && !Array.isArray(res)) {
-      this.addLinksToEntity(res, entities, token);
+  private addLinksToChildren(res: any, child: ChildEntity, token: UserToken) {
+    if (child.entity) {
+      if (child.isArray && Array.isArray(res)) {
+        res.forEach((item, i) => {
+          this.addLinksToEntity(res[i], child.entity, token);
+        });
+      } else {
+        this.addLinksToEntity(res, child.entity, token);
+      }
     }
 
-    if (Array.isArray(entities) && Array.isArray(res)) {
-      res.forEach((item, i) => {
-        this.addLinksToResponse(res[i], entities[i] ?? entities[0], token);
+    if (child.properties) {
+      Object.keys(child.properties).forEach((key) => {
+        if (res[key]) this.addLinksToChildren(res[key], child[key], token);
       });
     }
-
-    if (typeof entities === "object" && typeof res === "object") {
-      Object.keys(entities).forEach((key) => {
-        if (res[key]) this.addLinksToResponse(res[key], entities[key], token);
-      });
-    }
-
-    return res;
   }
 
-  private addLinksToEntity<D>(doc: D & Partial<Document<string, string>>, entity: string, token: UserToken): void {
+  private addLinksToEntity<D>(doc: D & Partial<Document>, entityName: string, token: UserToken): void {
     doc._links = {};
 
-    for (let route of this.findRoutes(entity)) {
+    for (let route of this.findRoutes(entityName)) {
       if (route.filter && !route.filter(doc)) continue;
 
       let method = this.getHttpMethod(route);
@@ -67,29 +64,29 @@ export class AcEntityInterceptor<T = any> implements NestInterceptor<T, Response
       doc._links[route.method] = {
         method,
         href: this.getPath(route, doc),
-        allowed: this.acService.can(route.entity, doc, token),
+        allowed: this.acService.can(entityName, doc, token),
       };
     }
   }
 
   private findRoutes(entity: string) {
     const re = new RegExp(`^${entity}(\\:|$)`);
-    return EntitiesStore.filter((e) => re.test(e.entity));
+    return EntityStore.filter((e) => re.test(e.name));
   }
 
-  private getHttpMethod(route: EntitiesStoreRoute) {
-    return <"GET" | "POST" | "PUT" | "PATCH" | "DELETE">RequestMethod[Reflect.getMetadata("method", route.handler)];
+  private getHttpMethod(entity: EntityStoreItem) {
+    return <"GET" | "POST" | "PUT" | "PATCH" | "DELETE">RequestMethod[Reflect.getMetadata("method", entity.handler)];
   }
 
-  private getPath(route: EntitiesStoreRoute, doc: any) {
-    const controllerTarget = Reflect.getMetadata("controller", route.controller);
+  private getPath(entity: EntityStoreItem, doc: any) {
+    const controllerTarget = Reflect.getMetadata("controller", entity.controller);
     const controllerPath = <string>Reflect.getMetadata("path", controllerTarget) || "";
 
     const pathItems = [Config.app.baseUrl, "api", controllerPath];
 
-    if (typeof route.path === "function") pathItems.push(route.path(doc));
-    else if (typeof route.path === "string") pathItems.push(route.path);
-    else pathItems.push(<string>Reflect.getMetadata("path", route.handler));
+    if (typeof entity.path === "function") pathItems.push(entity.path(doc));
+    else if (typeof entity.path === "string") pathItems.push(entity.path);
+    else pathItems.push(<string>Reflect.getMetadata("path", entity.handler));
 
     const path = pathItems
       .map((item) => String(item).replace(/^\//, "").replace(/\/$/, ""))

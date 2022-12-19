@@ -1,14 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Document, DocumentLink } from "src/models/access-control/schema/document";
+import { DocumentLink } from "src/models/access-control/schema/document";
 
 class EventResponseLinks {
-  @ApiProperty()
-  self: DocumentLink;
-  @ApiProperty()
-  attendees!: DocumentLink;
+  @ApiPropertyOptional()
+  getEventAttendees: DocumentLink;
 }
 
-export class EventResponseDto implements Document<"attendees", string> {
+export class EventResponseDto {
   @ApiProperty()
   id!: number;
 

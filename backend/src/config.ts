@@ -49,6 +49,10 @@ try {
   logger.error(err);
 }
 
+const jwt = {
+  secret: process.env["JWT_SECRET"] ?? "secret",
+};
+
 export const Config = {
   server,
   app,
@@ -56,4 +60,5 @@ export const Config = {
   production,
   logging,
   cors,
+  jwt,
 };

@@ -5,4 +5,4 @@ import { EventsService } from "./services/events.service";
   // imports: [TypeOrmModule.forFeature([Event])],
   providers: [EventsService],
 })
-export class EventsModelModule {}
+export class DatabaseModule {}

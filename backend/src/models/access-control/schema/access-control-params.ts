@@ -1,4 +1,4 @@
-import { UserToken } from "./user-token";
+import { UserToken } from "src/models/auth/schema/user-token";
 
 export interface AccessControlPermissionParams<D = any> {
   doc: D;

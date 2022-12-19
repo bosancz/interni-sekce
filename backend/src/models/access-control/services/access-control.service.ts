@@ -1,9 +1,9 @@
 import { ForbiddenException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { UserToken } from "src/models/auth/schema/user-token";
 import { FindOptionsWhere } from "typeorm";
 import { ACL } from "../access-control-list";
 import { AccessControlRole } from "../schema/access-control-list";
 import { Roles } from "../schema/roles";
-import { UserToken } from "../schema/user-token";
 
 @Injectable()
 export class AccessControlService {
