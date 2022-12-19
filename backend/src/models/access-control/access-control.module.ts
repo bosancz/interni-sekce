@@ -1,7 +1,9 @@
-import { Module } from '@nestjs/common';
-import { AccessControlService } from './services/access-control.service';
+import { Global, Module } from "@nestjs/common";
+import { AccessControlService } from "./services/access-control.service";
 
+@Global()
 @Module({
-  providers: [AccessControlService]
+  providers: [AccessControlService],
+  exports: [AccessControlService],
 })
 export class AccessControlModule {}

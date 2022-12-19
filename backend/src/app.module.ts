@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
 import { ServeStaticModule } from "@nestjs/serve-static";
-import { EventsModule } from './api/events/events.module';
-import { AccessControlModule } from './models/access-control/access-control.module';
-import { DatabaseModule } from './models/database/database.module';
 import * as path from "path";
+import { EventsModule } from "./api/events/events.module";
+import { PublicModule } from "./api/public/public.module";
+import { AccessControlModule } from "./models/access-control/access-control.module";
 
 @Module({
   imports: [
@@ -12,7 +12,8 @@ import * as path from "path";
     }),
     EventsModule,
     AccessControlModule,
-    DatabaseModule,
+    EventsModule,
+    PublicModule,
   ],
   controllers: [],
   providers: [],

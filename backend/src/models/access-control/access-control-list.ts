@@ -1,12 +1,27 @@
-import { AccessControlDefinition } from "./schema/access-control-definition";
-import { Roles } from "./schema/roles";
+import { Event } from "../events/entities/event.entity";
+import { AccessControlEntity } from "./schema/access-control-list";
 
-export const AccessControlList: Record<string, Record<Roles, AccessControlDefinition>> = {
-  events: {
-    [Roles.vedouci]: {
-      permission: true,
-      filter,
-    },
-    [Roles.clen]: {},
+const event: AccessControlEntity<Event> = {
+  vedouci: {
+    route: true,
   },
+  clen: {
+    route: true,
+    docs: (params) => params.doc.id === 5,
+  },
+};
+
+const eventAttendees: AccessControlEntity<{ test: string }> = {
+  vedouci: {
+    route: true,
+  },
+  clen: {
+    route: true,
+    docs: (params) => params.doc.test === "a",
+  },
+};
+
+export const ACL = {
+  event: event,
+  "event:attendees": eventAttendees,
 };
