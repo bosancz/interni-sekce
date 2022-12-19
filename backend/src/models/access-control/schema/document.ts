@@ -10,8 +10,9 @@ export class DocumentLinkAllowed {
 
 export class DocumentLink {
   @ApiProperty() href: string;
-  @ApiProperty() allowed: DocumentLinkAllowed;
+  @ApiProperty() allowed: boolean;
   @ApiProperty() templated?: boolean;
+  @ApiProperty() method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 }
 
 export interface DocumentAction {

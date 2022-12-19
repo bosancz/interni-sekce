@@ -1,10 +1,10 @@
 import { UserToken } from "./user-token";
 
-export interface AccessControlRouteParams<D = any> {
+export interface AccessControlPermissionParams<D = any> {
+  doc: D;
   token: UserToken;
 }
 
-export interface AccessControlDocsParams<D = any> {
-  doc: D;
+export interface AccessControlFilterParams<D = any> {
   token: UserToken;
 }

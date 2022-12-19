@@ -4,6 +4,8 @@ import * as path from "path";
 import { EventsModule } from "./api/events/events.module";
 import { PublicModule } from "./api/public/public.module";
 import { AccessControlModule } from "./models/access-control/access-control.module";
+import { MembersModule } from './api/members/members.module';
+import { AuthModule } from './models/auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { AccessControlModule } from "./models/access-control/access-control.modu
     AccessControlModule,
     EventsModule,
     PublicModule,
+    MembersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

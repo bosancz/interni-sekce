@@ -1,62 +1,61 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import { ForbiddenException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { FindOptionsWhere } from "typeorm";
 import { ACL } from "../access-control-list";
 import { AccessControlRole } from "../schema/access-control-list";
-import { AccessControlDocsParams, AccessControlRouteParams } from "../schema/access-control-params";
 import { Roles } from "../schema/roles";
+import { UserToken } from "../schema/user-token";
 
 @Injectable()
 export class AccessControlService {
-  canRoute(entity: keyof typeof ACL, role: Roles, params: AccessControlRouteParams) {
-    const acRole = this.getAcRole(entity, role);
+  logger = new Logger(AccessControlService.name);
+
+  canOrThrow<D = any>(entity: string, doc: D, token: UserToken) {
+    if (!this.can(entity, doc, token)) throw new ForbiddenException();
+  }
+
+  can<D = any>(entity: string, doc: D, token: UserToken) {
+    const acRole = this.getAcRole(entity, token);
 
     try {
+      if (acRole === null) return false;
+
       if (typeof acRole === "boolean") return acRole;
-      else if (typeof acRole.route === "boolean") return acRole.route;
-      else if (typeof acRole.route === "function") return acRole.route(params);
+
+      if (typeof acRole.permission === "boolean") return acRole.permission;
+
+      if (typeof acRole.permission === "function") return acRole.permission({ doc, token });
     } catch (err) {
-      if (err instanceof ForbiddenException) throw err;
-      else if (err instanceof TypeError) throw new ForbiddenException(`Invalid document provided for validation. ${err.message}`);
-      else throw new ForbiddenException("Permission validation error.");
+      this.logger.error(err);
+      if (err instanceof TypeError) throw new InternalServerErrorException(`Invalid document provided for validation. ${err.message}`);
+      else throw new InternalServerErrorException("Permission validation error.");
     }
   }
 
-  canDoc(entity: keyof typeof ACL, role: Roles, params: AccessControlDocsParams) {
-    const acRole = this.getAcRole(entity, role);
+  filter<D = any>(entity: string, token: UserToken): FindOptionsWhere<D> | false {
+    const acRole = this.getAcRole(entity, token);
 
     try {
-      if (!this.canRoute(entity, role, params)) return false;
-
-      if (typeof acRole === "boolean") return acRole;
-      else if (typeof acRole.route === "boolean") return acRole.route;
-      else if (typeof acRole.route === "function") return acRole.route(params);
-    } catch (err) {
-      if (err instanceof ForbiddenException) throw err;
-      else if (err instanceof TypeError) throw new ForbiddenException(`Invalid document provided for validation. ${err.message}`);
-      else throw new ForbiddenException("Permission validation error.");
-    }
-  }
-
-  getFilter<D = any>(entity: keyof typeof ACL, role: Roles, params: AccessControlDocsParams<D>): FindOptionsWhere<D> {
-    const acRole = this.getAcRole(entity, role);
-
-    try {
-      if (!this.canDoc(entity, role, params)) throw new ForbiddenException();
-      if (acRole === false) throw new ForbiddenException();
+      if (acRole === false || acRole === null) return false;
 
       if (acRole === true) return {};
-      else if (typeof acRole.filter === "function") return acRole.filter(params);
+
+      if (typeof acRole.filter === "function") return acRole.filter({ token });
+
+      if (typeof acRole.filter === "object") return acRole.filter;
     } catch (err) {
-      if (err instanceof ForbiddenException) throw err;
-      else if (err instanceof TypeError) new ForbiddenException("Invalid document provided for validation.");
-      else throw new ForbiddenException("Permission validation error.");
+      this.logger.error(err);
+      throw new InternalServerErrorException("Permission validation error.");
     }
   }
 
-  private getAcRole(entity: string, role: Roles) {
-    if (!ACL[entity]) throw new ForbiddenException("Access control not defined for this entity.");
-    if (!ACL[entity][role]) throw new ForbiddenException("Access control not defined for this role.");
+  private getAcRole(entity: string, token?: UserToken): AccessControlRole<any> | null {
+    const role = this.getUserRole(token);
+    if (!role || !ACL[entity]?.[role]) return null;
 
     return <AccessControlRole<any>>ACL[entity][role];
+  }
+
+  private getUserRole(token?: UserToken): Roles | null {
+    return token?.role ?? Roles.verejnost;
   }
 }

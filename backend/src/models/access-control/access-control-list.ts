@@ -1,27 +1,26 @@
 import { Event } from "../events/entities/event.entity";
-import { AccessControlEntity } from "./schema/access-control-list";
+import { AccessControlGroup } from "./schema/access-control-list";
 
-const event: AccessControlEntity<Event> = {
-  vedouci: {
-    route: true,
+const events: AccessControlGroup<Event> = {
+  events: {
+    vedouci: true,
+    clen: true,
+    verejnost: true,
   },
-  clen: {
-    route: true,
-    docs: (params) => params.doc.id === 5,
+  event: {
+    vedouci: true,
+    clen: true,
   },
-};
 
-const eventAttendees: AccessControlEntity<{ test: string }> = {
-  vedouci: {
-    route: true,
-  },
-  clen: {
-    route: true,
-    docs: (params) => params.doc.test === "a",
+  "event:attendees": {
+    vedouci: true,
+    clen: {
+      permission: (params) => params.doc.id === 5,
+      filter: { id: 5 },
+    },
   },
 };
 
 export const ACL = {
-  event: event,
-  "event:attendees": eventAttendees,
+  ...events,
 };
