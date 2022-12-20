@@ -15,11 +15,11 @@ export class MemberAchievement {
   @Column()
   memberId!: number;
 
-  @ManyToOne(() => Member, { onDelete: "CASCADE", onUpdate: "CASCADE" })
+  @ManyToOne(() => Member, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
   @JoinColumn({ name: "member_id" })
   member?: Member;
 
-  @Column({ nullable: false, enum: MemberAchievementType }) type!: MemberAchievementType;
-  @Column({ nullable: true, type: "date" }) dateFrom!: string;
-  @Column({ nullable: true, type: "date" }) dateTill!: string;
+  @Column({ type: "enum", enum: MemberAchievementType, nullable: false }) type!: MemberAchievementType;
+  @Column({ type: "date", nullable: true }) dateFrom!: string;
+  @Column({ type: "date", nullable: true }) dateTill!: string;
 }

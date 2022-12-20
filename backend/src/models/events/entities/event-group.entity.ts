@@ -1,3 +1,4 @@
+import { Group } from "src/models/members/entities/group.entity";
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { Event } from "./event.entity";
 
@@ -9,11 +10,11 @@ export class EventGroup {
   @PrimaryColumn()
   groupId!: string;
 
-  @ManyToOne(() => Event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
+  @ManyToOne(() => Event, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
   @JoinColumn({ name: "event_id" })
   event?: Event;
 
-  @ManyToOne(() => EventGroup, { onDelete: "CASCADE", onUpdate: "CASCADE" })
+  @ManyToOne(() => Group, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
   @JoinColumn({ name: "group_id" })
-  group?: EventGroup;
+  group?: Group;
 }

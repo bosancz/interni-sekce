@@ -1,4 +1,3 @@
-
 services:
   devcontainer:
     container_name: ${COMPOSE_PROJECT_NAME:-bosandev}-devcontainer
@@ -22,6 +21,9 @@ services:
     image: postgres:15
     environment:
       POSTGRES_PASSWORD: password
+
+  adminer:
+    image: adminer
 
   mongo:
     container_name: ${COMPOSE_PROJECT_NAME:-bosandev}-mongo

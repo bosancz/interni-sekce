@@ -19,7 +19,7 @@ export class Member {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({ nullable: false })
   groupId!: number;
 
   @ManyToOne(() => Group, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
@@ -35,8 +35,8 @@ export class Member {
   @Column({ type: "boolean", nullable: false, default: false }) inactive!: boolean | null;
   @Column({ type: "boolean", nullable: false, default: true }) membership!: boolean | null;
 
-  @Column({ type: "varchar", nullable: true }) role!: string | null;
-  @Column({ type: "varchar", nullable: true }) rank!: string | null;
+  @Column({ type: "enum", enum: MemberRole, nullable: true }) role!: MemberRole | null;
+  @Column({ type: "enum", enum: MemberRank, nullable: true }) rank!: MemberRank | null;
   @Column({ type: "varchar", nullable: true }) nickname!: string | null;
   @Column({ type: "varchar", nullable: true }) function!: string | null;
   @Column({ type: "varchar", nullable: true }) firstName!: string | null;

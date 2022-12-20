@@ -12,14 +12,14 @@ export class MemberContact {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({ nullable: false })
   memberId!: number;
 
-  @ManyToOne(() => Member, { onDelete: "CASCADE", onUpdate: "CASCADE" })
+  @ManyToOne(() => Member, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
   @JoinColumn({ name: "member_id" })
   member?: Member;
 
   @Column({ nullable: false }) title!: string;
-  @Column({ nullable: false }) type!: MemberContactType;
+  @Column({ type: "enum", enum: MemberContactType, nullable: false }) type!: MemberContactType;
   @Column({ nullable: false }) contact!: string;
 }

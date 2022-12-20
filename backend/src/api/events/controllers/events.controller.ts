@@ -1,42 +1,50 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, Req } from "@nestjs/common";
 import { ApiResponse } from "@nestjs/swagger";
-import { AcController } from "src/models/access-control/decorators/ac-controller.decorator";
-import { AcEntity } from "src/models/access-control/decorators/ac-entity.decorator";
-import { AccessControlService } from "src/models/access-control/services/access-control.service";
-import { User } from "src/models/auth/decorators/user.decorator";
-import { UserToken } from "src/models/auth/schema/user-token";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Request } from "express";
+import { AcController } from "src/access-control/decorators/ac-controller.decorator";
+import { AcLinks } from "src/access-control/decorators/ac-links.decorator";
+import { AccessControlService } from "src/access-control/services/access-control.service";
+import { MemberACL } from "src/api/members/acl/members.acl";
 import { Event } from "src/models/events/entities/event.entity";
-import { EventResponseDto } from "../dto/event-response.dto";
+import { acWhere } from "src/shared/util/ac-where";
+import { Repository } from "typeorm";
+import { EventACL, EventAttendeesACL, EventsACL } from "../acl/events.acl";
+import { EventResponse } from "../dto/event-response.dto";
 
 @Controller("events")
 @AcController()
 export class EventsController {
-  constructor(private acl: AccessControlService) {}
+  constructor(private acl: AccessControlService, @InjectRepository(Event) private eventsRepository: Repository<Event>) {}
 
   @Get()
-  @AcEntity<Event>("events", { children: { entity: "event", isArray: true } })
-  @ApiResponse({ type: EventResponseDto, isArray: true })
-  async listEvents(@User() user: UserToken): Promise<EventResponseDto[]> {
-    this.acl.canOrThrow("events", [], user);
+  @AcLinks(EventsACL, { contains: { array: { entity: EventACL } } })
+  @ApiResponse({ type: EventResponse, isArray: true })
+  async listEvents(@Req() req: Request): Promise<EventResponse[]> {
+    this.acl.canOrThrow(EventsACL, undefined, req);
 
-    return [{ id: 2 }, { id: 5 }];
+    const events = this.eventsRepository.createQueryBuilder().where(acWhere(this.acl, EventACL, req));
+
+    return events.getMany();
   }
 
   @Get(":id")
-  @AcEntity<Event>("event", { path: (doc) => `${doc.id}`, children: { properties: { attendees: { entity: "member", isArray: true } } } })
-  @ApiResponse({ type: EventResponseDto })
-  async getEvent(@User() user: UserToken): Promise<EventResponseDto> {
-    const doc: EventResponseDto = { id: 5, attendees: [{ id: 1 }] };
-    const where = this.acl.filter("event", user);
+  @AcLinks(EventACL, {
+    path: (doc) => `${doc.id}`,
+  })
+  @ApiResponse({ type: EventResponse })
+  async getEvent(@Req() req: Request): Promise<EventResponse> {
+    const doc: Event = { id: 5 } as Event;
+    // const where = this.acl.filter("event", user);
 
-    this.acl.canOrThrow("event", doc, user);
+    this.acl.canOrThrow(EventACL, doc, req);
 
-    return doc;
+    return <any>doc;
   }
 
-  @Get("attendees")
-  @AcEntity("event:attendees")
-  async getEventAttendees(): Promise<EventResponseDto[]> {
+  @Get(":id/attendees")
+  @AcLinks(EventAttendeesACL, { path: (e) => `${e.id}/attendees`, contains: { array: { entity: MemberACL } } })
+  async getEventAttendees() {
     return [];
   }
 }
