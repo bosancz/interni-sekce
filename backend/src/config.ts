@@ -1,7 +1,12 @@
 import { Logger, LogLevel } from "@nestjs/common";
 import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
+import { config } from "dotenv";
 import { readFileSync } from "fs";
 import * as path from "path";
+import { DataSourceOptions } from "typeorm";
+import { SnakeNamingStrategy } from "typeorm-naming-strategies";
+
+config();
 
 const logger = new Logger("CONFIG");
 
@@ -53,7 +58,21 @@ const jwt = {
   secret: process.env["JWT_SECRET"] ?? "secret",
 };
 
+const db: DataSourceOptions = {
+  type: "postgres",
+  host: process.env["DB_HOST"] ?? "localhost",
+  port: process.env["DB_HOST"] ? parseInt(process.env["DB_HOST"]) : 5432,
+  username: process.env["DB_USER"] ?? "postgres",
+  password: process.env["DB_PASSWORD"],
+  schema: process.env["DB_SCHEMA"] ?? "public",
+  entities: ["dist/**/*.entity.js"],
+  migrationsRun: production ? true : false,
+  migrations: ["dist/migrations/*.js"],
+  namingStrategy: new SnakeNamingStrategy(),
+};
+
 export const Config = {
+  db,
   server,
   app,
   environment,
