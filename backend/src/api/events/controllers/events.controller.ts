@@ -5,7 +5,7 @@ import { AcEntity } from "src/models/access-control/decorators/ac-entity.decorat
 import { AccessControlService } from "src/models/access-control/services/access-control.service";
 import { User } from "src/models/auth/decorators/user.decorator";
 import { UserToken } from "src/models/auth/schema/user-token";
-import { Event } from "src/models/database/entities/event.entity";
+import { Event } from "src/models/events/entities/event.entity";
 import { EventResponseDto } from "../dto/event-response.dto";
 
 @Controller("events")

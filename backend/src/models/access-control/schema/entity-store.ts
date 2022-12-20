@@ -2,7 +2,7 @@ import { ChildEntity } from "./child-entities";
 
 export type EntityStoreItem = {
   name: string;
-  method: string;
+  method: string | symbol;
   controller: any;
   handler: any;
   path?: string | ((doc: any) => string);

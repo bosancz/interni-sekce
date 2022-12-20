@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
-import { DatabaseModule } from "src/models/database/database.module";
+import { EventsModelModule } from "src/models/events/events-model.module";
 import { PublicController } from "./controllers/public.controller";
 
 @Module({
   controllers: [PublicController],
-  imports: [DatabaseModule],
+  imports: [EventsModelModule],
 })
 export class PublicModule {}

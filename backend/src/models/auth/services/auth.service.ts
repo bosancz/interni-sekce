@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { validateSync } from "class-validator";
-import { Request } from "express";
 import { ReqWithUser } from "../schema/req-with-user";
 import { UserToken } from "../schema/user-token";
 
@@ -11,6 +10,8 @@ export class AuthService {
 
   async parseToken(req: ReqWithUser) {
     const token = req.header("authorization")?.match("/^Bearer (.+)$")?.[1];
+
+    if (!token) return;
 
     try {
       const tokenData = await this.jwtService.verifyAsync<object>(token, {});
@@ -22,7 +23,7 @@ export class AuthService {
     } catch (err) {}
   }
 
-  getToken(req: Request) {
+  getToken(req: ReqWithUser) {
     return req["user"];
   }
 

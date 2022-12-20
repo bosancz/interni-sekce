@@ -1,7 +1,7 @@
 import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor, RequestMethod } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Request } from "express";
-import { map, Observable } from "rxjs";
+import { map } from "rxjs";
 import { Config } from "src/config";
 import { UserToken } from "src/models/auth/schema/user-token";
 import { AuthService } from "../../auth/services/auth.service";
@@ -15,54 +15,55 @@ type DocumentResponse<T> = T & Document;
 type Response<T> = DocumentResponse<T> | DocumentResponse<T>[];
 
 @Injectable()
-export class AcEntityInterceptor<T = any> implements NestInterceptor<T, Response<T>> {
+export class AcEntityInterceptor implements NestInterceptor {
   private logger = new Logger(AcEntityInterceptor.name);
 
   constructor(private reflector: Reflector, private acService: AccessControlService, private authService: AuthService) {}
 
-  intercept(context: ExecutionContext, next: CallHandler<T>): Observable<Response<T>> {
+  intercept(context: ExecutionContext, next: CallHandler) {
     return next.handle().pipe(
       map((res) => {
         const entity = <EntityStoreItem>this.reflector.get("entity", context.getHandler());
-        const token = this.authService.getToken(context.switchToHttp().getRequest<Request>());
+        const user = this.authService.getToken(context.switchToHttp().getRequest<Request>());
 
-        if (!Array.isArray(res)) this.addLinksToEntity(res, entity.name, token);
+        if (!Array.isArray(res)) this.addLinksToEntity(res, entity.name, user);
 
-        if (entity.children) this.addLinksToChildren(res, entity.children, token);
+        if (entity.children) this.addLinksToChildren(res, entity.children, user);
 
         return res;
       }),
     );
   }
 
-  private addLinksToChildren(res: any, child: ChildEntity, token: UserToken) {
+  private addLinksToChildren(res: any, child: ChildEntity, user?: UserToken) {
     if (child.entity) {
       if (child.isArray && Array.isArray(res)) {
         res.forEach((item, i) => {
-          this.addLinksToEntity(res[i], child.entity, token);
+          this.addLinksToEntity(res[i], child.entity!, user);
         });
       } else {
-        this.addLinksToEntity(res, child.entity, token);
+        this.addLinksToEntity(res, child.entity, user);
       }
     }
 
     if (child.properties) {
       Object.keys(child.properties).forEach((key) => {
-        if (res[key]) this.addLinksToChildren(res[key], child[key], token);
+        if (res[key]) this.addLinksToChildren(res[key], child.properties![key], user);
       });
     }
   }
 
-  private addLinksToEntity<D>(doc: D & Partial<Document>, entityName: string, token: UserToken): void {
+  private addLinksToEntity<D>(doc: D & Partial<Document>, entityName: string, token?: UserToken): void {
     doc._links = {};
 
     for (let route of this.findRoutes(entityName)) {
       if (route.filter && !route.filter(doc)) continue;
 
-      let method = this.getHttpMethod(route);
+      let httpMethod = this.getHttpMethod(route);
+      const method = String(route.method);
 
-      doc._links[route.method] = {
-        method,
+      doc._links[method] = {
+        method: httpMethod,
         href: this.getPath(route, doc),
         allowed: this.acService.can(entityName, doc, token),
       };

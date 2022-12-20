@@ -9,7 +9,12 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "start": "nest start",
-    "dev": "nest start --watch"
+    "dev": "nest start --watch",
+    "premigrations": "npm run build",
+    "migrations:run": "npm run premigrations && typeorm migration:run -d dist/data-source.js",
+    "migrations:generate": "npm run premigrations && typeorm migration:generate -d dist/data-source.js",
+    "migrations:revert": "npm run premigrations && typeorm migration:revert -d dist/data-source.js",
+    "migrations:create": "npm run premigrations && typeorm migration:create"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -20,12 +25,14 @@
     "@nestjs/swagger": "^6.1.4",
     "@nestjs/typeorm": "^9.0.1",
     "class-validator": "^0.14.0",
+    "dotenv": "^16.0.3",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.3.11"
+    "typeorm": "^0.3.11",
+    "typeorm-naming-strategies": "^4.1.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

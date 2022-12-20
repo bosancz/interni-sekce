@@ -10,7 +10,7 @@ export interface AcEntityOptions<T> {
 }
 
 export function AcEntity<T = any>(name: string, options: AcEntityOptions<T> = {}): MethodDecorator {
-  return (target: any, method: string, descriptor: PropertyDescriptor) => {
+  return (target: any, method: string | symbol, descriptor: PropertyDescriptor) => {
     const entity: EntityStoreItem = {
       name,
       method,

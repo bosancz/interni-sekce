@@ -3,7 +3,7 @@ import { DocumentLink } from "src/models/access-control/schema/document";
 
 class EventResponseLinks {
   @ApiPropertyOptional()
-  getEventAttendees: DocumentLink;
+  getEventAttendees?: DocumentLink;
 }
 
 export class EventResponseDto {
