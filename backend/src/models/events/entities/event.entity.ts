@@ -1,5 +1,5 @@
 import { Album } from "src/models/albums/entities/album.entity";
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { EventAttendee } from "./event-attendee.entity";
 import { EventExpense } from "./event-expense.entity";
 import { EventGroup } from "./event-group.entity";
@@ -17,7 +17,7 @@ export class Event {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: "integer" })
+  @Column({ type: "integer", nullable: true })
   albumId!: number | null;
 
   @OneToOne(() => Album)
@@ -35,16 +35,19 @@ export class Event {
 
   @Column({ type: "text", nullable: false }) name!: string;
   @Column({ type: "enum", nullable: false, enum: EventStatus, default: EventStatus.draft }) status!: EventStatus;
-  @Column({ type: "text" }) statusNote!: string | null;
-  @Column({ type: "text" }) place!: string | null;
-  @Column({ type: "text" }) description!: string | null;
+  @Column({ type: "text", nullable: true }) statusNote!: string | null;
+  @Column({ type: "text", nullable: true }) place!: string | null;
+  @Column({ type: "text", nullable: true }) description!: string | null;
   @Column({ type: "date", nullable: false }) dateFrom!: string;
   @Column({ type: "date", nullable: false }) dateTill!: string;
-  @Column({ type: "varchar" }) timeFrom!: string | null;
-  @Column({ type: "varchar" }) timeTill!: string | null;
-  @Column({ type: "varchar" }) meetingPlaceStart!: string | null;
-  @Column({ type: "varchar" }) meetingPlaceEnd!: string | null;
-  @Column({ type: "varchar" }) type!: string | null;
-  @Column({ type: "numeric" }) water_km!: number | null;
-  @Column({ type: "varchar" }) river!: string | null;
+  @Column({ type: "varchar", nullable: true }) timeFrom!: string | null;
+  @Column({ type: "varchar", nullable: true }) timeTill!: string | null;
+  @Column({ type: "varchar", nullable: true }) meetingPlaceStart!: string | null;
+  @Column({ type: "varchar", nullable: true }) meetingPlaceEnd!: string | null;
+  @Column({ type: "varchar", nullable: true }) type!: string | null;
+  @Column({ type: "numeric", nullable: true }) water_km!: number | null;
+  @Column({ type: "varchar", nullable: true }) river!: string | null;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

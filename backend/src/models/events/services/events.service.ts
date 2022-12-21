@@ -62,6 +62,10 @@ export class EventsService {
   }
 
   async createEvent(data: Partial<Event>) {
-    return this.eventsRepository.create(data);
+    return this.eventsRepository.save(data);
+  }
+
+  async deleteEvent(id: number) {
+    this.eventsRepository.softRemove({ id });
   }
 }

@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional, OmitType } from "@nestjs/swagger";
 import { IsOptional, IsString } from "class-validator";
 import { AcLink } from "src/access-control/schema/ac-link";
 import { Event } from "src/models/events/entities/event.entity";
@@ -14,10 +14,13 @@ export class EventResponse {
   @ApiPropertyOptional() _links?: EventResponseLinks;
 }
 
-export class EventCreateBody implements Partial<Event> {
-  @IsOptional() @IsString() name?: string | undefined;
+export class EventCreateResponse extends OmitType(EventResponse, ["leaders"]) {}
+
+export class EventCreateBody implements Pick<Event, "name" | "description" | "dateFrom" | "dateTill"> {
+  @ApiProperty() @IsString() name!: string;
+  @ApiProperty() @IsString() dateFrom!: string;
+  @ApiProperty() @IsString() dateTill!: string;
+  @ApiProperty() @IsOptional() @IsString() description!: string;
 }
 
-export class EventUpdateBody implements Partial<Event> {
-  @IsOptional() @IsString() name?: string | undefined;
-}
+export class EventUpdateBody extends EventCreateBody {}

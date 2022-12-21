@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
@@ -19,7 +19,7 @@ import {
   EventUpdateACL,
 } from "../acl/events.acl";
 import { EventAttendeeResponse } from "../dto/event-attendee.dto";
-import { EventCreateBody, EventResponse, EventUpdateBody } from "../dto/event.dto";
+import { EventCreateBody, EventCreateResponse, EventResponse, EventUpdateBody } from "../dto/event.dto";
 
 @Controller("events")
 @AcController()
@@ -47,16 +47,19 @@ export class EventsController {
   }
 
   @Post("")
+  @HttpCode(201)
   @AcLinks(EventCreateACL)
-  @ApiResponse({ status: 201 })
-  async createEvent(@Req() req: Request, @Body() body: EventCreateBody) {
+  @ApiResponse({ status: 201, type: EventCreateResponse })
+  async createEvent(@Req() req: Request, @Body() body: EventCreateBody): Promise<EventCreateResponse> {
     this.ac.canOrThrow(EventCreateACL, undefined, req);
 
-    this.events.createEvent(body);
+    return this.events.createEvent(body);
   }
 
   @Patch(":id")
+  @HttpCode(204)
   @AcLinks(EventUpdateACL, { path: (e) => e.id })
+  @ApiResponse({ status: 204 })
   async updateEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventUpdateBody): Promise<void> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
@@ -67,12 +70,16 @@ export class EventsController {
   }
 
   @Delete(":id")
+  @HttpCode(204)
   @AcLinks(EventDeleteACL, { path: (e) => e.id })
+  @ApiResponse({ status: 204 })
   async deleteEvent(@Req() req: Request, @Param("id") id: number): Promise<void> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
     this.ac.canOrThrow(EventDeleteACL, event, req);
+
+    return this.events.deleteEvent(id);
   }
 
   @Get(":id")
