@@ -22,20 +22,28 @@ export class AccessControlService {
   getPermissions<D, F>(entity: AcEntity<string, D, F>, req: Request): AcPermission<D, F>[] {
     const userRoles = this.options.userRoles(req);
 
+    const inheritedPermissions = this.getInheritedPermissions(entity);
+
     const roles = userRoles
-      .map((role) => entity.permissions[role])
+      .map((role) => inheritedPermissions[role])
       .filter(<T>(role: T): role is Exclude<T, undefined> => role !== undefined);
 
     return roles;
+  }
+
+  getInheritedPermissions<D, F>(entity: AcEntity<string, D, F>): Partial<Record<string, AcPermission<D, F>>> {
+    return Object.assign({}, entity.inherits ? this.getInheritedPermissions(entity.inherits) : {}, entity.permissions ?? {});
   }
 
   private checkPermission<D>(permission: AcPermission<D>, doc: D, req: Request) {
     try {
       // permission specified globally
       if (typeof permission === "boolean") return permission;
+      if (typeof permission === "object" && typeof permission.permission === "boolean") return permission.permission;
 
       // permission specified per document
-      if (typeof permission === "object") return permission.filter(doc, req);
+      if (typeof permission === "function") return permission({ doc, req });
+      if (typeof permission === "object" && typeof permission.permission === "function") return permission.permission({ doc, req });
     } catch (err) {
       if (err instanceof TypeError) throw new InternalServerErrorException(`Invalid document provided for validation. ${err.message}`);
       else {

@@ -1,6 +1,6 @@
 import { AcEntity } from "src/access-control/schema/ac-entity";
-import { Roles } from "src/api/events/acl/events.acl";
 import { Member } from "src/models/members/entities/member.entity";
+import { Roles } from "src/shared/schema/roles";
 
 export const MembersACL: AcEntity<Roles, Member> = {
   permissions: {

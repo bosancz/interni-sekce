@@ -20,7 +20,7 @@ export interface AcLinksOptions<T = any> {
   /** Entities contained within main response entity */
   contains?: ChildEntity;
   /** Function to generate path, used if path needs params. */
-  path?: string | ((doc: T) => string);
+  path?: string | ((doc: T) => any);
   /** Show this path in _links only for documents matching filter */
   filter?: (doc: T) => boolean;
 }

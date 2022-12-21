@@ -5,7 +5,6 @@ import { Request } from "express";
 import * as path from "path";
 import { AccessControlModule, AccessControlModuleOptions } from "./access-control/access-control.module";
 import { AlbumsModule } from "./api/albums/albums.module";
-import { Roles } from "./api/events/acl/events.acl";
 import { EventsModule } from "./api/events/events.module";
 import { MembersModule } from "./api/members/members.module";
 import { PublicModule } from "./api/public/public.module";
@@ -14,6 +13,7 @@ import { Config } from "./config";
 import { AlbumsModelModule } from "./models/albums/albums-model.module";
 import { MembersModelModule } from "./models/members/members-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
+import { Roles } from "./shared/schema/roles";
 
 const typeOrmOptions: TypeOrmModuleOptions = {
   ...Config.db,

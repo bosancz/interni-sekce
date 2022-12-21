@@ -2,10 +2,13 @@ import { ForbiddenException, InternalServerErrorException } from "@nestjs/common
 import { Request } from "express";
 import { AcEntity } from "src/access-control/schema/ac-entity";
 import { AccessControlService } from "src/access-control/services/access-control.service";
-import { Brackets, ObjectLiteral } from "typeorm";
-import { QueryFilter } from "../schema/query-filter";
+import { Brackets, ObjectLiteral, WhereExpressionBuilder } from "typeorm";
 
-export function acWhere<D extends ObjectLiteral>(acl: AccessControlService, entity: AcEntity<string, D, QueryFilter>, req: Request) {
+export type AcWhereData = {
+  where: (qb: WhereExpressionBuilder, req: Request) => WhereExpressionBuilder;
+};
+
+export function acWhere<D extends ObjectLiteral>(acl: AccessControlService, entity: AcEntity<string, D, AcWhereData>, req: Request) {
   const permissions = acl.getPermissions(entity, req);
 
   if (permissions.some((p) => p === true)) return {};

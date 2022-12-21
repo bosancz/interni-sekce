@@ -17,7 +17,6 @@ export class AcLinksInterceptor implements NestInterceptor {
   constructor(private reflector: Reflector, private acService: AccessControlService) {}
 
   intercept(context: ExecutionContext, next: CallHandler) {
-    console.log(RouteStore);
     return next.handle().pipe(
       map((res) => {
         const entity = <AcEntity>this.reflector.get(MetadataConstant.entity, context.getHandler());
@@ -93,7 +92,7 @@ export class AcLinksInterceptor implements NestInterceptor {
   private getPath(route: RouteStoreItem, options: AcLinksOptions, doc: any) {
     const pathItems = [Config.app.baseUrl, "api", this.getControllerPath(route)];
 
-    if (typeof options.path === "function") pathItems.push(options.path(doc));
+    if (typeof options.path === "function") pathItems.push(String(options.path(doc)));
     else if (typeof options.path === "string") pathItems.push(options.path);
     else pathItems.push(<string>Reflect.getMetadata("path", route.handler));
 

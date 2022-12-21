@@ -9,5 +9,6 @@ import { EventsService } from "./services/events.service";
 @Module({
   imports: [TypeOrmModule.forFeature([Event, EventGroup, EventExpense, EventAttendee])],
   providers: [EventsService],
+  exports: [EventsService],
 })
 export class EventsModelModule {}

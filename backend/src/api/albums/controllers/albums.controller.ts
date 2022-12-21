@@ -1,10 +1,12 @@
 import { Controller, Get } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { AcController } from "src/access-control/decorators/ac-controller.decorator";
 import { AccessControlService } from "src/access-control/services/access-control.service";
 import { AlbumsService } from "src/models/albums/services/albums.service";
 
 @Controller("albums")
 @AcController()
+@ApiTags("Photo gallery")
 export class AlbumsController {
   constructor(private albumsService: AlbumsService, private acService: AccessControlService) {}
 
