@@ -17,10 +17,12 @@ export type ChildEntity = ChildEntityArray | ChildEntityObject;
  * Options for _links generation
  */
 export interface AcLinksOptions<T = any> {
+  /** Name for the current route. When not provided method name is used. */
+  name?: string;
   /** Entities contained within main response entity */
   contains?: ChildEntity;
   /** Function to generate path, used if path needs params. */
-  path?: string | ((doc: T) => any);
+  path?: (doc: T) => any;
   /** Show this path in _links only for documents matching filter */
   filter?: (doc: T) => boolean;
 }

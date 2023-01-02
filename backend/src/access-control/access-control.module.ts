@@ -4,6 +4,7 @@ import { AccessControlService } from "./services/access-control.service";
 
 export interface AccessControlModuleOptions {
   userRoles: (req: Request) => string[];
+  routeNameConvention?: (methodName: string) => string;
 }
 
 @Module({})

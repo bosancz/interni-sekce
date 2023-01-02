@@ -7,7 +7,7 @@ import { AcEntity, AcPermission } from "../schema/ac-entity";
 export class AccessControlService {
   logger = new Logger(AccessControlService.name);
 
-  constructor(@Inject("AC_OPTIONS") private options: AccessControlModuleOptions) {}
+  constructor(@Inject("AC_OPTIONS") public options: AccessControlModuleOptions) {}
 
   canOrThrow<D = any>(entity: AcEntity<string, D>, doc: D, req: Request) {
     if (!this.can(entity, doc, req)) throw new ForbiddenException();
@@ -32,7 +32,11 @@ export class AccessControlService {
   }
 
   getInheritedPermissions<D, F>(entity: AcEntity<string, D, F>): Partial<Record<string, AcPermission<D, F>>> {
-    return Object.assign({}, entity.inherits ? this.getInheritedPermissions(entity.inherits) : {}, entity.permissions ?? {});
+    return Object.assign(
+      {},
+      entity.inherits ? this.getInheritedPermissions(entity.inherits) : {},
+      entity.permissions ?? {},
+    );
   }
 
   private checkPermission<D>(permission: AcPermission<D>, doc: D, req: Request) {
@@ -43,9 +47,11 @@ export class AccessControlService {
 
       // permission specified per document
       if (typeof permission === "function") return permission({ doc, req });
-      if (typeof permission === "object" && typeof permission.permission === "function") return permission.permission({ doc, req });
+      if (typeof permission === "object" && typeof permission.permission === "function")
+        return permission.permission({ doc, req });
     } catch (err) {
-      if (err instanceof TypeError) throw new InternalServerErrorException(`Invalid document provided for validation. ${err.message}`);
+      if (err instanceof TypeError)
+        throw new InternalServerErrorException(`Invalid document provided for validation. ${err.message}`);
       else {
         this.logger.error(err);
         throw new InternalServerErrorException("Permission validation error.");

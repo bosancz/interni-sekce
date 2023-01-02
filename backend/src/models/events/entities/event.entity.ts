@@ -1,4 +1,5 @@
 import { Album } from "src/models/albums/entities/album.entity";
+import { Member } from "src/models/members/entities/member.entity";
 import { Column, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { EventAttendee } from "./event-attendee.entity";
 import { EventExpense } from "./event-expense.entity";
@@ -50,4 +51,7 @@ export class Event {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  leaders?: Member[];
+  leadersAttendees?: EventAttendee[];
 }

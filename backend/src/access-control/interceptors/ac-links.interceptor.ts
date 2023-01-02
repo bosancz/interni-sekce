@@ -1,4 +1,12 @@
-import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor, RequestMethod } from "@nestjs/common";
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NestInterceptor,
+  RequestMethod,
+} from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Request } from "express";
 import { map } from "rxjs";
@@ -61,10 +69,10 @@ export class AcLinksInterceptor implements NestInterceptor {
       const entity = <AcEntity>this.reflector.get(MetadataConstant.entity, route.handler);
       const options = <AcLinksOptions>this.reflector.get(MetadataConstant.linksOptions, route.handler);
 
-      let httpMethod = this.getHttpMethod(route);
-      const method = String(route.method);
+      const httpMethod = this.getHttpMethod(route);
+      const routeName = this.getRouteName(route, options);
 
-      doc._links[method] = {
+      doc._links[routeName] = {
         method: httpMethod,
         href: this.getPath(route, options, doc),
         allowed: this.acService.can(entity, doc, req),
@@ -89,23 +97,31 @@ export class AcLinksInterceptor implements NestInterceptor {
     return <"GET" | "POST" | "PUT" | "PATCH" | "DELETE">RequestMethod[methodId];
   }
 
+  private getRouteName(route: RouteStoreItem, options: AcLinksOptions) {
+    if (options.name) return options.name;
+    if (this.acService.options.routeNameConvention)
+      return this.acService.options.routeNameConvention(String(route.method));
+    else return String(route.method);
+  }
+
   private getPath(route: RouteStoreItem, options: AcLinksOptions, doc: any) {
     const pathItems = [Config.app.baseUrl, "api", this.getControllerPath(route)];
 
     if (typeof options.path === "function") pathItems.push(String(options.path(doc)));
-    else if (typeof options.path === "string") pathItems.push(options.path);
     else pathItems.push(<string>Reflect.getMetadata("path", route.handler));
 
     const path = pathItems
       .map((item) => String(item).replace(/^\//, "").replace(/\/$/, ""))
       .filter((item) => !!item)
-      .join("/");
+      .join("/")
+      .replace(/\:([a-zA-Z]+)/g, (match, param) => (param in doc ? doc[param] : param));
 
     return path;
   }
 
   private getControllerPath(route: RouteStoreItem) {
     const controllerTarget = Reflect.getMetadata("controller", route.controller);
+    if (!controllerTarget) throw new InternalServerErrorException("Missing AcController decorator.");
     return <string>Reflect.getMetadata("path", controllerTarget) || "";
   }
 }

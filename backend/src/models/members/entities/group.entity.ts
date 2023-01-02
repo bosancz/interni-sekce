@@ -1,7 +1,10 @@
-import { Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity("groups")
 export class Group {
-  @PrimaryGeneratedColumn()
-  id!: string;
+  @PrimaryColumn() id!: string;
+
+  @Column({ type: "boolean", nullable: false, default: true }) active!: boolean;
+
+  @Column({ type: "text", nullable: true }) name!: string | null;
 }

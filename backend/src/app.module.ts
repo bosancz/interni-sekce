@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { snakeCase } from "change-case";
 import { Request } from "express";
 import * as path from "path";
 import { AccessControlModule, AccessControlModuleOptions } from "./access-control/access-control.module";
@@ -22,6 +23,7 @@ const typeOrmOptions: TypeOrmModuleOptions = {
 
 const acOptions: AccessControlModuleOptions = {
   userRoles: (req: Request) => [Roles.verejnost, ...(req.user?.roles || [])],
+  routeNameConvention: (methodName) => snakeCase(methodName).replace(/_/g, ":"),
 };
 
 @Module({
