@@ -35,7 +35,7 @@ export class Photo {
   @Column({ type: "text" }) caption!: string | null;
   @Column({ type: "integer" }) width!: number | null;
   @Column({ type: "integer" }) height!: number | null;
-  @Column({ type: "timestamp with time zone" }) date!: Date | null;
+  @Column({ type: "timestamp with time zone" }) timestamp!: Date | null;
   @Column({ type: "varchar", array: true }) tags!: string[] | null;
   @Column({ type: "varchar" }) bg!: string | null;
 }

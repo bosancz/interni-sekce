@@ -8,7 +8,7 @@ import { Photo } from "../entities/photo.entity";
 export class PhotosService {
   constructor(@InjectRepository(Photo) private photosRepository: Repository<Photo>) {}
 
-  async getPhotosByMember(memberId: Member["id"], options: { limit?: number } = {}) {
+  async getPhotosByMemberFace(memberId: Member["id"], options: { limit?: number } = {}) {
     const query = this.photosRepository
       .createQueryBuilder("photos")
       .innerJoin("photos.faces", "faces")
