@@ -1,39 +1,47 @@
+volumes:
+  root-node-modules-volume:
+  backend-node-modules-volume:
+  frontend-node-modules-volume:
+
 services:
   devcontainer:
-    container_name: ${COMPOSE_PROJECT_NAME:-bosandev}-devcontainer
+    container_name: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-devcontainer
     build: "."
     command: /bin/sh -c "while sleep 1000; do :; done"
-    user: node
     volumes:
       - ..:/workspace:cached
+      - root-node-modules-volume:/workspace/node_modules
+      - backend-node-modules-volume:/workspace/backend/node_modules
+      - frontend-node-modules-volume:/workspace/frontend/node_modules
     environment:
-      DB_HOST: ${COMPOSE_PROJECT_NAME:-bosandev}-postgres
+      DB_HOST: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-postgres
       DB_USER: postgres
       DB_PASSWORD: password
       DB_DATABASE: postgres
       DB_SCHEMA: public
-      DATABASE_URI: mongodb://${COMPOSE_PROJECT_NAME:-bosandev}-mongo/bosan
+      DATABASE_URI: mongodb://${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-mongo/bosan
       CORS_ENABLE: "true"
       CORS_ORIGINS: "http://localhost:4200,http://localhost:4300"
 
   postgres:
-    container_name: ${COMPOSE_PROJECT_NAME:-bosandev}-postgres
+    container_name: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-postgres
     image: postgres:15
     environment:
       POSTGRES_PASSWORD: password
 
   adminer:
+    container_name: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-adminer
     image: adminer
 
   mongo:
-    container_name: ${COMPOSE_PROJECT_NAME:-bosandev}-mongo
+    container_name: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-mongo
     image: mongo:4.2
     environment:
       MONGO_INITDB_DATABASE: bosan
 
   mongoexpress:
-    container_name: ${COMPOSE_PROJECT_NAME:-bosandev}-mongoexpress
+    container_name: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-mongoexpress
     image: mongo-express
     environment:
-      ME_CONFIG_MONGODB_SERVER: ${COMPOSE_PROJECT_NAME:-bosandev}-mongo
+      ME_CONFIG_MONGODB_SERVER: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-mongo
       ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
