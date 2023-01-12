@@ -24,7 +24,7 @@ const production = ["production", "staging"].includes(environment);
  * @property baseDir - Server base directory
  */
 const server = {
-  host: process.env.HOST || "0.0.0.0",
+  host: process.env.HOST || "127.0.0.1",
   port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
   baseDir: process.env.BASE_DIR || "",
 };
