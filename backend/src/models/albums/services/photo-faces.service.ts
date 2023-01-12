@@ -22,6 +22,4 @@ export class PhotoFacesService {
 
     return query.getMany();
   }
-
-  async findFacesInPhoto(file: string) {}
 }
