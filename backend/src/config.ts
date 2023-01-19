@@ -71,6 +71,10 @@ const db: DataSourceOptions = {
   namingStrategy: new SnakeNamingStrategy(),
 };
 
+const mongoDb = {
+  uri: process.env["MONGODB_URI"] ?? "",
+};
+
 export const Config = {
   db,
   server,
@@ -80,4 +84,5 @@ export const Config = {
   logging,
   cors,
   jwt,
+  mongoDb,
 };

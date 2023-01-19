@@ -22,7 +22,6 @@ export class Album {
   status!: AlbumStatus;
 
   @Column({ nullable: false }) name!: string;
-  @Column({ nullable: false }) year!: number;
 
   @Column({ type: "text" }) description!: string | null;
   @Column({ type: "timestamp with time zone" }) datePublished!: Date | null;

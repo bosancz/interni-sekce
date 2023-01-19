@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { MongooseModule } from "@nestjs/mongoose";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { snakeCase } from "change-case";
@@ -14,6 +15,7 @@ import { Config } from "./config";
 import { AlbumsModelModule } from "./models/albums/albums-model.module";
 import { MembersModelModule } from "./models/members/members-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
+import { MongoMigrationModule } from "./mongo-migration/mongo-migration.module";
 import { Roles } from "./shared/schema/roles";
 
 const typeOrmOptions: TypeOrmModuleOptions = {
@@ -32,6 +34,7 @@ const acOptions: AccessControlModuleOptions = {
       rootPath: path.join(__dirname, "../../frontend/dist"),
     }),
     TypeOrmModule.forRoot(typeOrmOptions),
+    MongooseModule.forRoot(Config.mongoDb.uri),
     EventsModule,
     AccessControlModule.register(acOptions),
     EventsModule,
@@ -42,6 +45,7 @@ const acOptions: AccessControlModuleOptions = {
     AlbumsModelModule,
     UsersModelModule,
     AlbumsModule,
+    MongoMigrationModule,
   ],
   controllers: [],
   providers: [],
