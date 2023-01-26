@@ -1,5 +1,5 @@
 import { Event } from "src/models/events/entities/event.entity";
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Photo } from "./photo.entity";
 
 export enum AlbumStatus {
@@ -12,7 +12,11 @@ export class Album {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @OneToOne(() => Event)
+  @Column({ type: "integer", nullable: true })
+  eventId!: number | null;
+
+  @OneToOne(() => Event, { onDelete: "SET NULL", onUpdate: "CASCADE" })
+  @JoinColumn({ name: "event_id" })
   event?: Event;
 
   @OneToMany(() => Photo, (p) => p.album)

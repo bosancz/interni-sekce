@@ -28,7 +28,6 @@ export class EventResponse {
   @ApiPropertyOptional({ type: "string" }) type!: string | null;
   @ApiPropertyOptional({ type: "number" }) water_km!: number | null;
   @ApiPropertyOptional({ type: "string" }) river!: string | null;
-  @ApiPropertyOptional({ type: "number" }) albumId!: number | null;
   @ApiPropertyOptional({ type: "string" }) deletedAt?: Date | undefined;
 
   @ApiPropertyOptional() album?: Album | undefined;

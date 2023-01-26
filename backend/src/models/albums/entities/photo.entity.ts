@@ -17,10 +17,10 @@ export class Photo {
   albumId!: number;
 
   @ManyToOne(() => Album, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
-  @JoinColumn({ name: "albumId" })
+  @JoinColumn({ name: "album_id" })
   album?: Album;
 
-  @Column()
+  @Column({ nullable: true })
   uploadedById!: number | null;
 
   @ManyToOne(() => User, { onDelete: "SET NULL", onUpdate: "CASCADE" })
@@ -30,12 +30,12 @@ export class Photo {
   @OneToMany(() => PhotoFace, (pf) => pf.photo)
   faces?: PhotoFace[];
 
-  @Column({ type: "text" }) title!: string | null;
-  @Column({ type: "text" }) name!: string | null;
-  @Column({ type: "text" }) caption!: string | null;
-  @Column({ type: "integer" }) width!: number | null;
-  @Column({ type: "integer" }) height!: number | null;
-  @Column({ type: "timestamp with time zone" }) timestamp!: Date | null;
-  @Column({ type: "varchar", array: true }) tags!: string[] | null;
-  @Column({ type: "varchar" }) bg!: string | null;
+  @Column({ type: "text", nullable: true }) title!: string | null;
+  @Column({ type: "text", nullable: true }) name!: string | null;
+  @Column({ type: "text", nullable: true }) caption!: string | null;
+  @Column({ type: "integer", nullable: true }) width!: number | null;
+  @Column({ type: "integer", nullable: true }) height!: number | null;
+  @Column({ type: "timestamp with time zone", nullable: true }) timestamp!: Date | null;
+  @Column({ type: "varchar", array: true, nullable: true }) tags!: string[] | null;
+  @Column({ type: "varchar", nullable: true }) bg!: string | null;
 }

@@ -15,11 +15,11 @@ export class EventAttendee {
   @PrimaryColumn()
   memberId!: number;
 
-  @ManyToOne(() => Event, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
+  @ManyToOne(() => Event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
   @JoinColumn({ name: "event_id" })
   event?: Event;
 
-  @ManyToOne(() => Member, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
+  @ManyToOne(() => Member, { onDelete: "CASCADE", onUpdate: "CASCADE" })
   @JoinColumn({ name: "member_id" })
   member?: Member;
 

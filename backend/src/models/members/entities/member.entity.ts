@@ -14,13 +14,19 @@ export enum MemberRank {
   "vedouci" = "vedouci",
 }
 
+export enum MembershipStatus {
+  "clen" = "clen",
+  "neclen" = "neclen",
+  "pozastaveno" = "pozastaveno",
+}
+
 @Entity("members")
 export class Member {
   @PrimaryGeneratedColumn()
   id!: number;
 
   @Column({ nullable: false })
-  groupId!: number;
+  groupId!: Group["id"];
 
   @ManyToOne(() => Group, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
   @JoinColumn({ name: "group_id" })
@@ -32,8 +38,9 @@ export class Member {
   @OneToMany(() => MemberAchievement, (mb) => mb.member)
   achievements?: MemberAchievement[];
 
-  @Column({ type: "boolean", nullable: false, default: false }) inactive!: boolean | null;
-  @Column({ type: "boolean", nullable: false, default: true }) membership!: boolean | null;
+  @Column({ type: "boolean", nullable: false, default: true }) active!: boolean;
+  @Column({ type: "enum", enum: MembershipStatus, nullable: false, default: MembershipStatus.clen })
+  membership!: MembershipStatus;
 
   @Column({ type: "enum", enum: MemberRole, nullable: true }) role!: MemberRole | null;
   @Column({ type: "enum", enum: MemberRank, nullable: true }) rank!: MemberRank | null;

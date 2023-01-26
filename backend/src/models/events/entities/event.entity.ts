@@ -1,6 +1,6 @@
 import { Album } from "src/models/albums/entities/album.entity";
 import { Member } from "src/models/members/entities/member.entity";
-import { Column, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, DeleteDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { EventAttendee } from "./event-attendee.entity";
 import { EventExpense } from "./event-expense.entity";
 import { EventGroup } from "./event-group.entity";
@@ -18,11 +18,7 @@ export class Event {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: "integer", nullable: true })
-  albumId!: number | null;
-
   @OneToOne(() => Album)
-  @JoinColumn({ name: "album_id" })
   album?: Album;
 
   @OneToMany(() => EventGroup, (group) => group.event)

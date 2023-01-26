@@ -2,14 +2,14 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contacts.entity";
-import { Member, MemberRank, MemberRole } from "src/models/members/entities/member.entity";
+import { Member, MemberRank, MemberRole, MembershipStatus } from "src/models/members/entities/member.entity";
 
 export class MemberResponse implements Member {
   @ApiProperty() id!: number;
-  @ApiProperty() groupId!: number;
+  @ApiProperty() groupId!: Group["id"];
 
-  @ApiPropertyOptional({ type: "boolean" }) inactive!: boolean | null;
-  @ApiPropertyOptional({ type: "boolean" }) membership!: boolean | null;
+  @ApiPropertyOptional({ type: "boolean" }) active!: boolean;
+  @ApiPropertyOptional({ type: "string", enum: MembershipStatus }) membership!: MembershipStatus;
   @ApiPropertyOptional({ type: "string" }) nickname!: string | null;
   @ApiPropertyOptional({ type: "string" }) function!: string | null;
   @ApiPropertyOptional({ type: "string" }) firstName!: string | null;
