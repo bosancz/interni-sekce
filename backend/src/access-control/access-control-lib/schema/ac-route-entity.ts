@@ -1,9 +1,14 @@
 import { Request } from "express";
 
-export interface AcEntity<ROLES extends string = string, DOC = unknown, DATA = {}> {
+export interface AcRouteEntity<ROLES extends string = string, DOC = unknown, DATA = {}> {
+  /** Permissions for the current route */
   permissions?: Partial<Record<ROLES, AcPermission<DOC, DATA>>>;
-  parent?: AcEntity<ROLES, any>;
-  inherits?: AcEntity<ROLES, DOC>;
+
+  /** Inherit permissions of the specified entity */
+  inherits?: AcRouteEntity<ROLES, DOC>;
+
+  /** Add link for this route to the specified parent entity */
+  linkTo?: AcRouteEntity<ROLES, any>;
 }
 
 export type AcPermission<DOC, DATA = {}> = boolean | AcPermissionFunction<DOC> | AcPermissionObject<DOC, DATA>;

@@ -1,7 +1,7 @@
 import { ForbiddenException, Inject, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { Request } from "express";
 import { AccessControlLibOptions } from "../access-control-lib.module";
-import { AcEntity, AcPermission } from "../schema/ac-entity";
+import { AcPermission, AcRouteEntity } from "../schema/ac-route-entity";
 
 @Injectable()
 export class AccessControlService {
@@ -9,17 +9,17 @@ export class AccessControlService {
 
   constructor(@Inject("AC_OPTIONS") public options: AccessControlLibOptions) {}
 
-  canOrThrow<D = any>(entity: AcEntity<string, D>, doc: D, req: Request) {
+  canOrThrow<D = any>(entity: AcRouteEntity<string, D>, doc: D, req: Request) {
     if (!this.can(entity, doc, req)) throw new ForbiddenException();
   }
 
-  can<D>(entity: AcEntity<string, D>, doc: D, req: Request) {
+  can<D>(entity: AcRouteEntity<string, D>, doc: D, req: Request) {
     const permissions = this.getPermissions(entity, req);
 
     return permissions.some((permission) => this.checkPermission(permission, doc, req));
   }
 
-  getPermissions<D, F>(entity: AcEntity<string, D, F>, req: Request): AcPermission<D, F>[] {
+  getPermissions<D, F>(entity: AcRouteEntity<string, D, F>, req: Request): AcPermission<D, F>[] {
     const userRoles = this.options.userRoles(req);
 
     const inheritedPermissions = this.getInheritedPermissions(entity);
@@ -31,7 +31,7 @@ export class AccessControlService {
     return roles;
   }
 
-  getInheritedPermissions<D, F>(entity: AcEntity<string, D, F>): Partial<Record<string, AcPermission<D, F>>> {
+  getInheritedPermissions<D, F>(entity: AcRouteEntity<string, D, F>): Partial<Record<string, AcPermission<D, F>>> {
     return Object.assign(
       {},
       entity.inherits ? this.getInheritedPermissions(entity.inherits) : {},

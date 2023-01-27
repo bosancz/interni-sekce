@@ -1,4 +1,4 @@
-import { AcPermission } from "src/access-control/access-control-lib/schema/ac-entity";
+import { AcPermission } from "src/access-control/access-control-lib/schema/ac-route-entity";
 import { RouteEntity } from "src/access-control/schema/route-entity";
 import { CanWhereData } from "src/access-control/util/can-where";
 import { Group } from "src/models/members/entities/group.entity";
@@ -22,10 +22,10 @@ export const GroupReadACL: RouteEntity<Group> = {
 
 export const GroupEditACL: RouteEntity<Group> = {
   permissions: { admin: true },
-  parent: GroupReadACL,
+  linkTo: GroupReadACL,
 };
 
 export const GroupDeleteACL: RouteEntity<Group> = {
   permissions: { admin: true },
-  parent: GroupReadACL,
+  linkTo: GroupReadACL,
 };

@@ -11,9 +11,9 @@ import { Reflector } from "@nestjs/core";
 import { Request } from "express";
 import { map } from "rxjs";
 import { Config } from "src/config";
-import { AcEntity } from "../schema/ac-entity";
 import { WithAcLinks } from "../schema/ac-link";
 import { AcLinksOptions, ChildEntity } from "../schema/ac-link-options";
+import { AcRouteEntity } from "../schema/ac-route-entity";
 import { MetadataConstant } from "../schema/metadata-constant";
 import { RouteStore, RouteStoreItem } from "../schema/route-store";
 import { AccessControlService } from "../services/access-control.service";
@@ -27,7 +27,7 @@ export class AcLinksInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler) {
     return next.handle().pipe(
       map((res) => {
-        const entity = <AcEntity>this.reflector.get(MetadataConstant.entity, context.getHandler());
+        const entity = <AcRouteEntity>this.reflector.get(MetadataConstant.entity, context.getHandler());
         const options = <AcLinksOptions>this.reflector.get(MetadataConstant.linksOptions, context.getHandler());
 
         const req = context.switchToHttp().getRequest<Request>();
@@ -60,13 +60,13 @@ export class AcLinksInterceptor implements NestInterceptor {
     }
   }
 
-  private addLinksToDoc<D>(doc: WithAcLinks<D>, entity: AcEntity, req: Request): void {
+  private addLinksToDoc<D>(doc: WithAcLinks<D>, entity: AcRouteEntity, req: Request): void {
     doc._links = {};
 
     const routes = this.findRoutes(entity);
 
     for (let route of routes) {
-      const entity = <AcEntity>this.reflector.get(MetadataConstant.entity, route.handler);
+      const entity = <AcRouteEntity>this.reflector.get(MetadataConstant.entity, route.handler);
       const options = <AcLinksOptions>this.reflector.get(MetadataConstant.linksOptions, route.handler);
 
       const httpMethod = this.getHttpMethod(route);
@@ -80,13 +80,13 @@ export class AcLinksInterceptor implements NestInterceptor {
     }
   }
 
-  private findRoutes(entity: AcEntity) {
+  private findRoutes(entity: AcRouteEntity) {
     const routes: RouteStoreItem[] = [];
 
     const entityRoute = RouteStore.find((item) => item.entity === entity);
     if (entityRoute) routes.push(entityRoute);
 
-    const childRoutes = RouteStore.filter((item) => item.entity.parent === entity);
+    const childRoutes = RouteStore.filter((item) => item.entity.linkTo === entity);
     routes.push(...childRoutes);
 
     return routes;

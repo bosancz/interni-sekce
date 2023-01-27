@@ -12,10 +12,10 @@ export const EventAttendeesEditACL: RouteEntity<EventAttendee> = {
   permissions: {
     vedouci: ({ doc, req }) => isMyEvent(doc.event, req),
   },
-  parent: EventAttendeeACL,
+  linkTo: EventAttendeeACL,
 };
 
 export const EventAttendeesDeleteACL: RouteEntity<EventAttendee> = {
   inherits: EventAttendeesEditACL,
-  parent: EventAttendeeACL,
+  linkTo: EventAttendeeACL,
 };

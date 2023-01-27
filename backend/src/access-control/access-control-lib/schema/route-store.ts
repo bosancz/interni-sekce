@@ -1,7 +1,7 @@
-import { AcEntity } from "./ac-entity";
+import { AcRouteEntity } from "./ac-route-entity";
 
 export type RouteStoreItem = {
-  entity: AcEntity<any, any>;
+  entity: AcRouteEntity<any, any>;
   method: string | symbol;
   controller: any;
   handler: any;

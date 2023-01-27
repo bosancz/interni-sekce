@@ -1,4 +1,4 @@
-import { AcEntity } from "./ac-entity";
+import { AcRouteEntity } from "./ac-route-entity";
 
 export interface ChildEntityArray {
   /** This hierarchy level is array of documents of ChildEntity type */
@@ -6,7 +6,7 @@ export interface ChildEntityArray {
 }
 export interface ChildEntityObject {
   /** ACL Entity of the current hiearchy level */
-  entity?: AcEntity<any, any>;
+  entity?: AcRouteEntity<any, any>;
   /** ChildEntity types of documents in properties of the current hiearchy level */
   properties?: { [property: string]: ChildEntity };
 }

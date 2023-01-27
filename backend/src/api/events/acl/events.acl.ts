@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { AcPermission } from "src/access-control/access-control-lib/schema/ac-entity";
+import { AcPermission } from "src/access-control/access-control-lib/schema/ac-route-entity";
 import { RouteEntity } from "src/access-control/schema/route-entity";
 import { CanWhereData } from "src/access-control/util/can-where";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
@@ -36,15 +36,15 @@ export const EventEditACL: RouteEntity<Event> = {
   permissions: {
     vedouci: ({ doc, req }) => isMyEvent(doc, req),
   },
-  parent: EventACL,
+  linkTo: EventACL,
 };
-export const EventUpdateACL: RouteEntity<Event> = { inherits: EventEditACL, parent: EventACL };
-export const EventDeleteACL: RouteEntity<Event> = { inherits: EventEditACL, parent: EventACL };
+export const EventUpdateACL: RouteEntity<Event> = { inherits: EventEditACL, linkTo: EventACL };
+export const EventDeleteACL: RouteEntity<Event> = { inherits: EventEditACL, linkTo: EventACL };
 
 export const EventAttendeesACL: RouteEntity<Event> = {
   permissions: {
     vedouci: ({ doc, req }) => isMyEvent(doc, req),
     verejnost: publicEvents,
   },
-  parent: EventACL,
+  linkTo: EventACL,
 };

@@ -1,4 +1,4 @@
-import { AcEntity } from "src/access-control/access-control-lib/schema/ac-entity";
+import { AcRouteEntity } from "../access-control-lib/schema/ac-route-entity";
 import { Roles } from "./roles";
 
-export type RouteEntity<DOC = unknown, DATA = {}> = AcEntity<Roles, DOC, DATA>;
+export type RouteEntity<DOC = unknown, DATA = {}> = AcRouteEntity<Roles, DOC, DATA>;
