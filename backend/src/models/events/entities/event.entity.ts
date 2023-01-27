@@ -44,6 +44,7 @@ export class Event {
   @Column({ type: "varchar", nullable: true }) type!: string | null;
   @Column({ type: "numeric", nullable: true }) water_km!: number | null;
   @Column({ type: "varchar", nullable: true }) river!: string | null;
+  @Column({ type: "boolean", nullable: false, default: false }) leadersEvent!: boolean;
 
   @DeleteDateColumn()
   deletedAt?: Date;

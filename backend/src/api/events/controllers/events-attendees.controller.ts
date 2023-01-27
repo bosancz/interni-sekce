@@ -1,18 +1,14 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Put, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
-import { AcController } from "src/access-control/decorators/ac-controller.decorator";
-import { AcLinks } from "src/access-control/decorators/ac-links.decorator";
-import { AccessControlService } from "src/access-control/services/access-control.service";
+import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
+import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
+import { AccessControlService } from "src/access-control/access-control-lib/services/access-control.service";
 import { MemberACL } from "src/api/members/acl/members.acl";
 import { EventsService } from "src/models/events/services/events.service";
-import {
-  EventACL,
-  EventAttendeeACL,
-  EventAttendeesACL,
-  EventAttendeesDeleteACL,
-  EventAttendeesEditACL,
-} from "../acl/events.acl";
+import { EventAttendeeACL, EventAttendeesDeleteACL, EventAttendeesEditACL } from "../acl/event-attendee.acl";
+import { EventACL, EventAttendeesACL } from "../acl/events.acl";
+
 import { EventAttendeeResponse, EventAttendeeUpdateBody } from "../dto/event-attendee.dto";
 
 @Controller("events")

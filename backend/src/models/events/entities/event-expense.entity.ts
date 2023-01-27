@@ -9,11 +9,10 @@ export class EventExpense {
   @Column()
   eventId!: number;
 
-  @ManyToOne(() => Event, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
+  @ManyToOne(() => Event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
   @JoinColumn({ name: "event_id" })
   event?: Event;
 
-  @Column({ type: "varchar" }) label!: string | null;
   @Column({ type: "numeric" }) amount!: number | null;
   @Column({ type: "varchar" }) type!: string | null;
   @Column({ type: "text" }) description!: string | null;

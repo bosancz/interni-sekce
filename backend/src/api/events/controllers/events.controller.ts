@@ -1,11 +1,15 @@
 import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
-import { AcController } from "src/access-control/decorators/ac-controller.decorator";
-import { AcLinks } from "src/access-control/decorators/ac-links.decorator";
-import { AccessControlService } from "src/access-control/services/access-control.service";
+import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
+import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
+import { AccessControlService } from "src/access-control/access-control-lib/services/access-control.service";
+import { canWhere } from "src/access-control/util/can-where";
 import { MemberACL } from "src/api/members/acl/members.acl";
+import { Event } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
+import { Repository } from "typeorm";
 import { EventACL, EventCreateACL, EventDeleteACL, EventsACL, EventUpdateACL } from "../acl/events.acl";
 import { EventCreateBody, EventResponse, EventUpdateBody } from "../dto/event.dto";
 
@@ -13,15 +17,17 @@ import { EventCreateBody, EventResponse, EventUpdateBody } from "../dto/event.dt
 @AcController()
 @ApiTags("Events")
 export class EventsController {
-  constructor(private ac: AccessControlService, private events: EventsService) {}
+  constructor(
+    private ac: AccessControlService,
+    private events: EventsService,
+    @InjectRepository(Event) private eventsRepository: Repository<Event>,
+  ) {}
 
   @Get()
   @AcLinks(EventsACL, { contains: { array: { entity: EventACL } } })
   @ApiResponse({ type: EventResponse, isArray: true })
   async eventsList(@Req() req: Request): Promise<EventResponse[]> {
-    this.ac.canOrThrow(EventsACL, undefined, req);
-
-    return this.events.getEvents({ leaders: true });
+    return this.eventsRepository.createQueryBuilder().where(canWhere(this.ac, EventsACL, req)).getMany();
   }
 
   @Post("")

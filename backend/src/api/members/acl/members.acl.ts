@@ -1,20 +1,17 @@
-import { AcEntity } from "src/access-control/schema/ac-entity";
+import { RouteEntity } from "src/access-control/schema/route-entity";
+import { CanWhereData } from "src/access-control/util/can-where";
 import { Member } from "src/models/members/entities/member.entity";
-import { Roles } from "src/shared/schema/roles";
-import { AcWhereData } from "src/shared/util/ac-where";
 
-export const MembersACL: AcEntity<Roles, any, AcWhereData> = {
+export const MembersACL: RouteEntity<Member, CanWhereData> = {
   permissions: {
     vedouci: true,
-    clen: true,
     verejnost: true,
   },
 };
 
-export const MemberACL: AcEntity<Roles, Member> = {
+export const MemberACL: RouteEntity<Member> = {
   permissions: {
     vedouci: true,
-    clen: true,
     verejnost: true,
   },
 };

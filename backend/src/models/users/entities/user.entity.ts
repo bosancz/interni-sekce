@@ -2,16 +2,17 @@ import { Member } from "src/models/members/entities/member.entity";
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export enum UserRoles {
-  "vedouci" = "vedouci",
-  "clen" = "clen",
+  "admin" = "admin",
+  "revizor" = "revizor",
+  "program" = "program",
 }
 
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn()
-  id!: string;
+  id!: number;
 
-  @Column()
+  @Column({ nullable: true })
   memberId!: number | null;
 
   @OneToOne(() => Member, { onDelete: "SET NULL", onUpdate: "CASCADE" })
@@ -19,9 +20,9 @@ export class User {
   member?: Member | null;
 
   @Column({ type: "varchar", unique: true }) login!: string;
-  @Column({ type: "varchar" }) password!: string | null;
-  @Column({ type: "varchar", nullable: false, unique: true }) email!: string;
+  @Column({ type: "varchar", nullable: true }) password!: string | null;
+  @Column({ type: "varchar", unique: true }) email!: string | null;
   @Column({ type: "enum", enum: UserRoles, array: true }) roles!: UserRoles[] | null;
-  @Column({ type: "varchar", unique: true }) loginCode!: string | null;
-  @Column({ type: "timestamp with time zone" }) loginCodeExp!: Date | null;
+  @Column({ type: "varchar", unique: true, nullable: true }) loginCode!: string | null;
+  @Column({ type: "timestamp with time zone", nullable: true }) loginCodeExp!: Date | null;
 }

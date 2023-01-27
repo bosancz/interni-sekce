@@ -4,14 +4,20 @@ import { DateTime } from "luxon";
 import { Model } from "mongoose";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
+import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
+import { EventExpense } from "src/models/events/entities/event-expense.entity";
+import { EventGroup } from "src/models/events/entities/event-group.entity";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
+import { MemberContact, MemberContactType } from "src/models/members/entities/member-contacts.entity";
 import { Member, MemberRank, MemberRole, MembershipStatus } from "src/models/members/entities/member.entity";
+import { User, UserRoles } from "src/models/users/entities/user.entity";
 import { EntityManager } from "typeorm";
 import { MongoAlbum } from "../models/album";
 import { MongoEvent } from "../models/event";
 import { MongoMember } from "../models/member";
 import { MongoPhoto } from "../models/photo";
+import { MongoUser } from "../models/user";
 
 @Injectable()
 export class MongoImportService {
@@ -22,6 +28,7 @@ export class MongoImportService {
     @InjectModel(MongoPhoto.name) private photosModel: Model<MongoPhoto>,
     @InjectModel(MongoEvent.name) private eventsModel: Model<MongoEvent>,
     @InjectModel(MongoMember.name) private membersModel: Model<MongoMember>,
+    @InjectModel(MongoUser.name) private usersModel: Model<MongoUser>,
     private entityManager: EntityManager,
   ) {}
 
@@ -31,13 +38,55 @@ export class MongoImportService {
     await this.entityManager.transaction(async (t) => {
       const memberIds = await this.importMembers(t);
 
+      const userIds = await this.importUsers(t, memberIds);
+
       const eventIds = await this.importEvents(t, memberIds);
 
-      await this.importAlbums(t, memberIds, eventIds);
+      await this.importAlbums(t, userIds, eventIds);
     });
   }
 
+  async importUsers(t: EntityManager, memberIds: Record<string, number>) {
+    console.debug("Importing users...");
+
+    const userIds: Record<string, number> = {};
+
+    const deleteCount = await t.delete(User, {}).then((res) => res.affected);
+    console.debug(` - Removed ${deleteCount} users in postgres.`);
+
+    const mongoUsers = await this.usersModel.find({}).lean();
+    console.debug(` - Found ${mongoUsers.length} users in mongo.`);
+
+    let c = 0;
+    const groups: string[] = [];
+
+    for (let mongoUser of mongoUsers) {
+      if (!mongoUser.login) continue;
+
+      const userData: Omit<User, "id"> = {
+        memberId: mongoUser.member ? memberIds[mongoUser.member.toString()] : null,
+        login: mongoUser.login,
+        password: mongoUser.password ?? null,
+        email: mongoUser.email ?? null,
+        roles: this.getUserRoles(mongoUser),
+        loginCode: null,
+        loginCodeExp: null,
+      };
+
+      const user = await t.save(User, userData);
+
+      userIds[mongoUser._id.toString()] = user.id;
+
+      c++;
+    }
+
+    console.debug(` - Imported ${c} users.`);
+
+    return userIds;
+  }
   async importMembers(t: EntityManager) {
+    console.debug("Importing members...");
+
     const memberIds: Record<string, number> = {};
 
     const deleteCount = await t.delete(Member, {}).then((res) => res.affected);
@@ -78,6 +127,30 @@ export class MongoImportService {
 
       const member = await t.save(Member, memberData);
 
+      memberIds[mongoMember._id.toString()] = member.id;
+
+      if (mongoMember.contacts?.father) {
+        const contactData: Omit<MemberContact, "id"> = {
+          memberId: member.id,
+          title: "Otec",
+          type: MemberContactType.mobile,
+          contact: mongoMember.contacts?.father,
+        };
+
+        await t.save(MemberContact, contactData);
+      }
+
+      if (mongoMember.contacts?.mother) {
+        const contactData: Omit<MemberContact, "id"> = {
+          memberId: member.id,
+          title: "Matka",
+          type: MemberContactType.mobile,
+          contact: mongoMember.contacts?.mother,
+        };
+
+        await t.save(MemberContact, contactData);
+      }
+
       c++;
     }
 
@@ -116,11 +189,54 @@ export class MongoImportService {
         type: mongoEvent.subtype ?? null,
         water_km: null,
         river: null,
+        leadersEvent: mongoEvent.groups?.includes("V") || false,
       };
 
       const event = await t.save(Event, eventData);
 
       eventIds[mongoEvent._id.toString()] = event.id;
+
+      if (mongoEvent.expenses) {
+        for (let mongoExpense of mongoEvent.expenses) {
+          const expenseData: Omit<EventExpense, "id"> = {
+            eventId: event.id,
+            description: mongoExpense.description ?? "",
+            amount: mongoExpense.amount ?? 0,
+            type: mongoExpense.type ?? "Ostatní",
+          };
+
+          await t.save(EventExpense, expenseData);
+        }
+      }
+
+      if (mongoEvent.attendees) {
+        for (let mongoAttendee of mongoEvent.attendees) {
+          const memberId = mongoAttendee ? memberIds[mongoAttendee.toString()] : null;
+
+          if (!memberId) continue;
+
+          const attendeeData: EventAttendee = {
+            eventId: event.id,
+            memberId,
+            type: EventAttendeeType.attendee,
+          };
+
+          await t.save(EventAttendee, attendeeData);
+        }
+      }
+
+      if (mongoEvent.groups) {
+        for (let mongoEventGroup of mongoEvent.groups) {
+          if (mongoEventGroup === "V") continue;
+
+          const eventGroupData: EventGroup = {
+            eventId: event.id,
+            groupId: mongoEventGroup,
+          };
+
+          await t.save(EventGroup, eventGroupData);
+        }
+      }
 
       c++;
     }
@@ -130,7 +246,7 @@ export class MongoImportService {
     return eventIds;
   }
 
-  async importAlbums(t: EntityManager, memberIds: Record<string, number>, eventIds: Record<string, number>) {
+  async importAlbums(t: EntityManager, userIds: Record<string, number>, eventIds: Record<string, number>) {
     console.debug("Importing albums...");
 
     const albumIds: Record<string, number> = {};
@@ -141,7 +257,7 @@ export class MongoImportService {
     const deleteCount = await t.delete(Album, {}).then((res) => res.affected);
     console.debug(` - Removed ${deleteCount} albums in postgres.`);
 
-    const mongoAlbums = await this.albumsModel.find({}).populate("event").lean();
+    const mongoAlbums = await this.albumsModel.find({}).lean();
     console.debug(` - Found ${mongoAlbums.length} albums in mongo.`);
 
     let c = 0;
@@ -153,7 +269,7 @@ export class MongoImportService {
         description: mongoAlbum.description ?? "",
         name: mongoAlbum.name,
         status: <any>mongoAlbum.status,
-        eventId: mongoAlbum.event ? eventIds[mongoAlbum.event._id.toString()] : null,
+        eventId: mongoAlbum.event ? eventIds[mongoAlbum.event.toString()] : null,
       };
 
       const album = await t.save(Album, albumData);
@@ -184,7 +300,7 @@ export class MongoImportService {
         tags: mongoPhoto.tags ?? null,
         timestamp: mongoPhoto.date ?? null,
         title: mongoPhoto.title ?? null,
-        uploadedById: mongoPhoto.uploadedBy ? memberIds[mongoPhoto.uploadedBy.toString()] : null,
+        uploadedById: mongoPhoto.uploadedBy ? userIds[mongoPhoto.uploadedBy.toString()] : null,
         width: mongoPhoto.sizes?.original.width ?? null,
         height: mongoPhoto.sizes?.original.height ?? null,
       };
@@ -195,5 +311,13 @@ export class MongoImportService {
     }
 
     console.debug(` - Imported ${c} photos.`);
+  }
+
+  private getUserRoles(mongoUser: MongoUser): UserRoles[] {
+    const roles: UserRoles[] = [];
+    if (mongoUser.roles?.includes("admin")) roles.push(UserRoles.admin);
+    if (mongoUser.roles?.includes("spravce")) roles.push(UserRoles.program);
+    if (mongoUser.roles?.includes("revizor")) roles.push(UserRoles.revizor);
+    return roles;
   }
 }

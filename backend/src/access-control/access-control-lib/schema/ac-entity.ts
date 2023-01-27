@@ -1,8 +1,8 @@
 import { Request } from "express";
 
-export interface AcEntity<ROLES extends string = string, DOC = any, DATA = {}> {
+export interface AcEntity<ROLES extends string = string, DOC = unknown, DATA = {}> {
   permissions?: Partial<Record<ROLES, AcPermission<DOC, DATA>>>;
-  parent?: AcEntity<ROLES>;
+  parent?: AcEntity<ROLES, any>;
   inherits?: AcEntity<ROLES, DOC>;
 }
 

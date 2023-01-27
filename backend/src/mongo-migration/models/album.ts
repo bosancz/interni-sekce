@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { SchemaTypes, Types } from "mongoose";
-import { MongoEvent } from "./event";
 
 enum MongoAlbumStatus {
   "public" = "public",
@@ -23,7 +22,7 @@ export class MongoAlbum {
   @Prop() datePublished!: Date;
   @Prop({ type: Date }) dateFrom!: Date;
   @Prop({ type: Date }) dateTill!: Date;
-  @Prop({ type: SchemaTypes.ObjectId, ref: "MongoEvent" }) event!: MongoEvent;
+  @Prop({ type: SchemaTypes.ObjectId, ref: "MongoEvent" }) event!: Types.ObjectId;
   @Prop({ type: SchemaTypes.ObjectId, ref: "MongoPhoto" }) titlePhoto!: string;
   @Prop({ type: [{ type: SchemaTypes.ObjectId, ref: "MongoPhoto" }] }) titlePhotos!: string;
   @Prop([{ type: SchemaTypes.ObjectId, ref: "MongoPhoto" }]) photos!: [];

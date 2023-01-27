@@ -10,11 +10,11 @@ export class EventGroup {
   @PrimaryColumn()
   groupId!: string;
 
-  @ManyToOne(() => Event, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
+  @ManyToOne(() => Event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
   @JoinColumn({ name: "event_id" })
   event?: Event;
 
-  @ManyToOne(() => Group, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
+  @ManyToOne(() => Group, { onDelete: "CASCADE", onUpdate: "CASCADE" })
   @JoinColumn({ name: "group_id" })
   group?: Group;
 }

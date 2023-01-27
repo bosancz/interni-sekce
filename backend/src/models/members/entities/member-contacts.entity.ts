@@ -15,7 +15,7 @@ export class MemberContact {
   @Column({ nullable: false })
   memberId!: number;
 
-  @ManyToOne(() => Member, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
+  @ManyToOne(() => Member, { onDelete: "CASCADE", onUpdate: "CASCADE" })
   @JoinColumn({ name: "member_id" })
   member?: Member;
 

@@ -1,35 +1,31 @@
-import { AcEntity, AcPermission } from "src/access-control/schema/ac-entity";
+import { AcPermission } from "src/access-control/access-control-lib/schema/ac-entity";
+import { RouteEntity } from "src/access-control/schema/route-entity";
+import { CanWhereData } from "src/access-control/util/can-where";
 import { Group } from "src/models/members/entities/group.entity";
-import { Roles } from "src/shared/schema/roles";
-import { AcWhereData } from "src/shared/util/ac-where";
 
-const onlyActiveGroups: AcPermission<Group, AcWhereData> = {
+const onlyActiveGroups: AcPermission<Group, CanWhereData> = {
   permission: ({ doc }) => doc.active,
   where: (qb) => qb.where("active = TRUE"),
 };
 
-export const GroupListACL: AcEntity<Roles, Group, AcWhereData> = {
+export const GroupListACL: RouteEntity<Group, CanWhereData> = {
   permissions: {
-    clen: true,
     vedouci: true,
-    verejnost: onlyActiveGroups,
   },
 };
 
-export const GroupReadACL: AcEntity<Roles, Group> = {
+export const GroupReadACL: RouteEntity<Group> = {
   permissions: {
-    clen: true,
     vedouci: true,
-    verejnost: onlyActiveGroups,
   },
 };
 
-export const GroupEditACL: AcEntity<Roles, Group> = {
+export const GroupEditACL: RouteEntity<Group> = {
   permissions: { admin: true },
   parent: GroupReadACL,
 };
 
-export const GroupDeleteACL: AcEntity<Roles, Group> = {
+export const GroupDeleteACL: RouteEntity<Group> = {
   permissions: { admin: true },
   parent: GroupReadACL,
 };

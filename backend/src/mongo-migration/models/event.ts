@@ -71,12 +71,12 @@ export class MongoEvent {
     raw([
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Member",
+        ref: "MongoMember",
         autopopulate: { select: "_id nickname name group role" },
       },
     ]),
   )
-  attendees?: unknown[];
+  attendees?: Types.ObjectId[];
 
   @Prop(
     raw([
@@ -89,10 +89,10 @@ export class MongoEvent {
     ]),
   )
   expenses?: {
-    id: string;
-    amount: number;
-    type: string;
-    description: string;
+    id?: string;
+    amount?: number;
+    type?: string;
+    description?: string;
   }[];
 
   @Prop(

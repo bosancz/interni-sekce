@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional, OmitType, PickType } from "@nestjs/swagger";
-import { AcLink } from "src/access-control/schema/ac-link";
+import { AcLink } from "src/access-control/access-control-lib/schema/ac-link";
 import { Album } from "src/models/albums/entities/album.entity";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";

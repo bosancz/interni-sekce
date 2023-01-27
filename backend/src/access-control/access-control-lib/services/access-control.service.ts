@@ -1,13 +1,13 @@
 import { ForbiddenException, Inject, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { Request } from "express";
-import { AccessControlModuleOptions } from "../access-control.module";
+import { AccessControlLibOptions } from "../access-control-lib.module";
 import { AcEntity, AcPermission } from "../schema/ac-entity";
 
 @Injectable()
 export class AccessControlService {
   logger = new Logger(AccessControlService.name);
 
-  constructor(@Inject("AC_OPTIONS") public options: AccessControlModuleOptions) {}
+  constructor(@Inject("AC_OPTIONS") public options: AccessControlLibOptions) {}
 
   canOrThrow<D = any>(entity: AcEntity<string, D>, doc: D, req: Request) {
     if (!this.can(entity, doc, req)) throw new ForbiddenException();

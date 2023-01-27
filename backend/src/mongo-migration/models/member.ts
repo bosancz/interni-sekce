@@ -1,9 +1,12 @@
 import { Prop, raw, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Types } from "mongoose";
 
 @Schema({
   collection: "members",
 })
 export class MongoMember {
+  _id!: Types.ObjectId;
+
   @Prop() srcId?: number;
   @Prop() nickname?: string;
   @Prop() group!: string;
