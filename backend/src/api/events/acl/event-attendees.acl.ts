@@ -2,14 +2,12 @@ import { RouteACL } from "src/access-control/schema/route-acl";
 import { MemberResponse } from "src/api/members/dto/member.dto";
 import { EventAttendeeResponse } from "../dto/event-attendee.dto";
 import { EventResponse } from "../dto/event.dto";
-import { isMyEvent } from "./events.acl";
+import { EventReadRoute, isMyEvent } from "./events.acl";
 
-export const EventAttendeesRoute = new RouteACL<EventResponse, EventAttendeeResponse[]>({
+export const EventAttendeesListRoute = new RouteACL<EventResponse, EventAttendeeResponse[]>({
   entity: EventResponse,
 
-  permissions: {
-    vedouci: true,
-  },
+  inheritPermissions: EventReadRoute,
 
   path: (e) => `${e.id}/attendees`,
   contains: {
@@ -20,7 +18,7 @@ export const EventAttendeesRoute = new RouteACL<EventResponse, EventAttendeeResp
   },
 });
 
-export const EventAttendeeRoute = new RouteACL<EventAttendeeResponse>({
+export const EventAttendeeReadRoute = new RouteACL<EventAttendeeResponse>({
   entity: EventAttendeeResponse,
   permissions: {
     vedouci: true,

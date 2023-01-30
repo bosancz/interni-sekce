@@ -4,7 +4,7 @@ import { Request } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
 import { EventsService } from "src/models/events/services/events.service";
-import { EventAttendeeDeleteRoute, EventAttendeeEditRoute, EventAttendeesRoute } from "../acl/event-attendees.acl";
+import { EventAttendeeDeleteRoute, EventAttendeeEditRoute, EventAttendeesListRoute } from "../acl/event-attendees.acl";
 
 import { EventAttendeeResponse, EventAttendeeUpdateBody } from "../dto/event-attendee.dto";
 
@@ -15,13 +15,13 @@ export class EventsAttendeesController {
   constructor(private events: EventsService) {}
 
   @Get(":id/attendees")
-  @AcLinks(EventAttendeesRoute)
+  @AcLinks(EventAttendeesListRoute)
   @ApiResponse({ type: EventAttendeeResponse })
   async eventAttendeesList(@Req() req: Request, @Param("id") id: number): Promise<EventAttendeeResponse[]> {
     const event = await this.events.getEvent(id);
     if (!event) throw new NotFoundException();
 
-    EventAttendeesRoute.canOrThrow(req, event);
+    EventAttendeesListRoute.canOrThrow(req, event);
 
     return this.events.getEventAttendees(id);
   }

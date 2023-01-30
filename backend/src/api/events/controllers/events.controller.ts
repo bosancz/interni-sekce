@@ -19,7 +19,7 @@ import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-lin
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
 import { Repository } from "typeorm";
-import { EventCreateRoute, EventDeleteRoute, EventEditRoute, EventRoute, EventsRoute } from "../acl/events.acl";
+import { EventCreateRoute, EventDeleteRoute, EventEditRoute, EventReadRoute, EventsListRoute } from "../acl/events.acl";
 import { EventCreateBody, EventResponse, EventUpdateBody } from "../dto/event.dto";
 
 @Controller("events")
@@ -29,13 +29,13 @@ export class EventsController {
   constructor(private events: EventsService, @InjectRepository(Event) private eventsRepository: Repository<Event>) {}
 
   @Get()
-  @AcLinks(EventsRoute)
+  @AcLinks(EventsListRoute)
   @ApiResponse({ type: EventResponse, isArray: true })
   async eventsList(@Req() req: Request): Promise<EventResponse[]> {
     const q = this.eventsRepository
       .createQueryBuilder("events")
       .select(["events.id", "events.name", "events.status"])
-      .where(EventsRoute.canWhere(req))
+      .where(EventsListRoute.canWhere(req))
       .limit(25);
 
     return q.getMany();
@@ -56,13 +56,13 @@ export class EventsController {
   }
 
   @Get(":id")
-  @AcLinks(EventRoute)
+  @AcLinks(EventReadRoute)
   @ApiResponse({ type: EventResponse })
   async eventRead(@Req() req: Request, @Param("id") id: number): Promise<EventResponse> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
-    EventRoute.canOrThrow(req, event);
+    EventReadRoute.canOrThrow(req, event);
 
     return event;
   }
