@@ -10,14 +10,14 @@ export class PhotoFace {
   @Column({ type: "integer", nullable: false })
   photoId!: number;
 
-  @ManyToOne(() => Photo, { onDelete: "CASCADE", onUpdate: "CASCADE" })
+  @ManyToOne(() => Photo, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
   @JoinColumn({ name: "photo_id" })
   photo?: Photo;
 
   @Column({ type: "integer", nullable: true })
   memberId!: number | null;
 
-  @ManyToOne(() => Member, { onDelete: "CASCADE", onUpdate: "CASCADE" })
+  @ManyToOne(() => Member, { onDelete: "SET NULL", onUpdate: "CASCADE" })
   @JoinColumn({ name: "member_id" })
   member?: Member;
 

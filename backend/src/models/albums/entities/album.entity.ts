@@ -28,7 +28,7 @@ export class Album {
   @Column({ nullable: false }) name!: string;
 
   @Column({ type: "text" }) description!: string | null;
-  @Column({ type: "timestamp with time zone" }) datePublished!: Date | null;
+  @Column({ type: "timestamp with time zone" }) datePublished!: Date | string | null;
   @Column({ type: "date" }) dateFrom!: string | null;
   @Column({ type: "date" }) dateTill!: string | null;
 }

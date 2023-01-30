@@ -1,3 +1,8 @@
 import { UserRoles } from "src/models/users/entities/user.entity";
 
-export type Roles = keyof typeof UserRoles | "verejnost" | "vedouci";
+export enum DefaultRoles {
+  "verejnost" = "verejnost",
+  "vedouci" = "vedouci",
+}
+
+export type Roles = UserRoles | DefaultRoles;

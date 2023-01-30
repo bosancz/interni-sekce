@@ -7,11 +7,11 @@ import { Photo } from "./entities/photo.entity";
 import { AlbumsMetadataService } from "./services/albums-metadata.service";
 import { AlbumsService } from "./services/albums.service";
 import { PhotoFacesService } from "./services/photo-faces.service";
-import { PhotosService } from './services/photos.service';
+import { PhotosService } from "./services/photos.service";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Album, Photo, PhotoFace])],
   providers: [AlbumsService, AlbumsMetadataService, WriteAlbumsMetadataCommand, PhotoFacesService, PhotosService],
-  exports: [AlbumsService, WriteAlbumsMetadataCommand],
+  exports: [AlbumsService, PhotosService, WriteAlbumsMetadataCommand],
 })
 export class AlbumsModelModule {}

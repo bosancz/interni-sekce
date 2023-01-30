@@ -1,11 +1,12 @@
 import { DynamicModule, Module } from "@nestjs/common";
 import { Request } from "express";
-import { AccessControlService } from "./services/access-control.service";
 
 export interface AccessControlLibOptions {
   userRoles: (req: Request) => string[];
   routeNameConvention?: (methodName: string) => string;
 }
+
+export const AcOptions = Symbol("AC_OPTIONS");
 
 @Module({})
 export class AccessControlLibModule {
@@ -15,12 +16,11 @@ export class AccessControlLibModule {
       global: true,
       providers: [
         {
-          provide: "AC_OPTIONS",
+          provide: AcOptions,
           useValue: options,
         },
-        AccessControlService,
       ],
-      exports: [AccessControlService],
+      exports: [AcOptions],
     };
   }
 }

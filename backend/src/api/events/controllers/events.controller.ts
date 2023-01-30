@@ -1,83 +1,96 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Req } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Req,
+  Res,
+} from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Request } from "express";
+import { Request, Response } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
-import { AccessControlService } from "src/access-control/access-control-lib/services/access-control.service";
-import { canWhere } from "src/access-control/util/can-where";
-import { MemberACL } from "src/api/members/acl/members.acl";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
 import { Repository } from "typeorm";
-import { EventACL, EventCreateACL, EventDeleteACL, EventsACL, EventUpdateACL } from "../acl/events.acl";
+import { EventCreateRoute, EventDeleteRoute, EventEditRoute, EventRoute } from "../acl/event.acl";
+import { EventsRoute } from "../acl/events.acl";
 import { EventCreateBody, EventResponse, EventUpdateBody } from "../dto/event.dto";
 
 @Controller("events")
 @AcController()
 @ApiTags("Events")
 export class EventsController {
-  constructor(
-    private ac: AccessControlService,
-    private events: EventsService,
-    @InjectRepository(Event) private eventsRepository: Repository<Event>,
-  ) {}
+  constructor(private events: EventsService, @InjectRepository(Event) private eventsRepository: Repository<Event>) {}
 
   @Get()
-  @AcLinks(EventsACL, { contains: { array: { entity: EventACL } } })
+  @AcLinks(EventsRoute)
   @ApiResponse({ type: EventResponse, isArray: true })
   async eventsList(@Req() req: Request): Promise<EventResponse[]> {
-    return this.eventsRepository.createQueryBuilder().where(canWhere(this.ac, EventsACL, req)).getMany();
+    const q = this.eventsRepository
+      .createQueryBuilder("events")
+      .select(["events.id", "events.name", "events.status"])
+      .where(EventsRoute.canWhere(req))
+      .limit(25);
+
+    return q.getMany();
   }
 
-  @Post("")
-  @HttpCode(201)
-  @AcLinks(EventCreateACL)
+  @Post()
+  @AcLinks(EventCreateRoute)
   @ApiResponse({ status: 201, type: EventResponse })
-  async eventCreate(@Req() req: Request, @Body() body: EventCreateBody): Promise<EventResponse> {
-    this.ac.canOrThrow(EventCreateACL, undefined, req);
+  async eventCreate(
+    @Req() req: Request,
+    @Body() body: EventCreateBody,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<EventResponse> {
+    EventCreateRoute.canOrThrow(req, body);
 
+    res.status(201);
     return this.events.createEvent(body);
+  }
+
+  @Get(":id")
+  @AcLinks(EventRoute)
+  @ApiResponse({ type: EventResponse })
+  async eventRead(@Req() req: Request, @Param("id") id: number): Promise<EventResponse> {
+    const event = await this.events.getEvent(id, { leaders: true });
+    if (!event) throw new NotFoundException();
+
+    EventRoute.canOrThrow(req, event);
+
+    return event;
   }
 
   @Patch(":id")
   @HttpCode(204)
-  @AcLinks(EventUpdateACL, { path: (e) => e.id })
+  @AcLinks(EventEditRoute)
   @ApiResponse({ status: 204 })
   async eventEdit(@Req() req: Request, @Param("id") id: number, @Body() body: EventUpdateBody): Promise<void> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
-    this.ac.canOrThrow(EventUpdateACL, event, req);
+    EventEditRoute.canOrThrow(req, event);
 
     this.events.updateEvent(id, body);
   }
 
   @Delete(":id")
   @HttpCode(204)
-  @AcLinks(EventDeleteACL, { path: (e) => e.id })
+  @AcLinks(EventDeleteRoute)
   @ApiResponse({ status: 204 })
   async eventDelete(@Req() req: Request, @Param("id") id: number): Promise<void> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
-    this.ac.canOrThrow(EventDeleteACL, event, req);
+    EventDeleteRoute.canOrThrow(req, event);
 
     return this.events.deleteEvent(id);
-  }
-
-  @Get(":id")
-  @AcLinks(EventACL, {
-    path: (doc) => `${doc.id}`,
-    contains: { properties: { leaders: { array: { entity: MemberACL } } } },
-  })
-  @ApiResponse({ type: EventResponse })
-  async eventRead(@Req() req: Request, @Param("id") id: number): Promise<EventResponse> {
-    const event = await this.events.getEvent(id, { leaders: true });
-    if (!event) throw new NotFoundException();
-
-    this.ac.canOrThrow(EventACL, event, req);
-
-    return event;
   }
 }

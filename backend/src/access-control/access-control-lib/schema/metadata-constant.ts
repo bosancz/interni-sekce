@@ -1,4 +1,6 @@
 export enum MetadataConstant {
   entity = "ac-entity",
-  linksOptions = "as-links-options",
+  controller = "controller",
+  controllerPath = "path",
+  routePath = "path",
 }

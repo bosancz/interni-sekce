@@ -1,6 +1,7 @@
 import {
   CallHandler,
   ExecutionContext,
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -11,37 +12,44 @@ import { Reflector } from "@nestjs/core";
 import { Request } from "express";
 import { map } from "rxjs";
 import { Config } from "src/config";
+import { AccessControlLibOptions, AcOptions } from "../access-control-lib.module";
 import { WithAcLinks } from "../schema/ac-link";
-import { AcLinksOptions, ChildEntity } from "../schema/ac-link-options";
 import { AcRouteEntity } from "../schema/ac-route-entity";
+import { ChildEntity, ChildEntityObject } from "../schema/child-entity";
 import { MetadataConstant } from "../schema/metadata-constant";
 import { RouteStore, RouteStoreItem } from "../schema/route-store";
-import { AccessControlService } from "../services/access-control.service";
 
 @Injectable()
 export class AcLinksInterceptor implements NestInterceptor {
   private logger = new Logger(AcLinksInterceptor.name);
 
-  constructor(private reflector: Reflector, private acService: AccessControlService) {}
+  constructor(private reflector: Reflector, @Inject(AcOptions) public options: AccessControlLibOptions) {}
 
   intercept(context: ExecutionContext, next: CallHandler) {
     return next.handle().pipe(
       map((res) => {
-        const entity = <AcRouteEntity>this.reflector.get(MetadataConstant.entity, context.getHandler());
-        const options = <AcLinksOptions>this.reflector.get(MetadataConstant.linksOptions, context.getHandler());
+        const entity = <AcRouteEntity<any>>this.reflector.get(MetadataConstant.entity, context.getHandler());
 
         const req = context.switchToHttp().getRequest<Request>();
 
-        if (!Array.isArray(res)) this.addLinksToDoc(res, entity, req);
-
-        if (options.contains) this.addLinksToChildren(res, options.contains, req);
+        this.addLinksToOutput(res, entity, req);
 
         return res;
       }),
     );
   }
 
-  private addLinksToChildren(res: any, child: ChildEntity, req: Request) {
+  private addLinksToOutput<D>(res: any, entity: AcRouteEntity<D>, req: Request) {
+    const outputEntities: ChildEntity<any> = entity.options.contains || {};
+
+    // add top level entity to list if not present and result or contains is not an array
+    if (!Array.isArray(res) && !Array.isArray(outputEntities) && !("entity" in outputEntities))
+      (<ChildEntityObject<D>>outputEntities).entity = entity;
+
+    this.addLinksToChildren(res, outputEntities, req);
+  }
+
+  private addLinksToChildren<D>(res: any, child: ChildEntity<D>, req: Request) {
     if ("array" in child && Array.isArray(res)) {
       res.forEach((item, i) => {
         this.addLinksToChildren(res[i], child.array, req);
@@ -55,38 +63,39 @@ export class AcLinksInterceptor implements NestInterceptor {
 
     if ("properties" in child && child.properties) {
       Object.keys(child.properties).forEach((key) => {
-        if (res[key]) this.addLinksToChildren(res[key], child.properties![key], req);
+        if (res[key]) this.addLinksToChildren(res[<keyof D>key], child.properties![<keyof D>key]!, req);
       });
     }
   }
 
-  private addLinksToDoc<D>(doc: WithAcLinks<D>, entity: AcRouteEntity, req: Request): void {
+  private addLinksToDoc<D>(doc: WithAcLinks<D>, entity: AcRouteEntity<D>, req: Request): void {
     doc._links = {};
 
     const routes = this.findRoutes(entity);
 
     for (let route of routes) {
-      const entity = <AcRouteEntity>this.reflector.get(MetadataConstant.entity, route.handler);
-      const options = <AcLinksOptions>this.reflector.get(MetadataConstant.linksOptions, route.handler);
+      const entity = <AcRouteEntity<D>>this.reflector.get(MetadataConstant.entity, route.handler);
+
+      if (typeof entity.options.condition === "function" && !entity.options.condition(doc)) continue;
 
       const httpMethod = this.getHttpMethod(route);
-      const routeName = this.getRouteName(route, options);
+      const routeName = this.getRouteName(route, entity);
 
       doc._links[routeName] = {
         method: httpMethod,
-        href: this.getPath(route, options, doc),
-        allowed: this.acService.can(entity, doc, req),
+        href: this.getPath(route, entity, doc),
+        allowed: entity.can(req, doc),
       };
     }
   }
 
-  private findRoutes(entity: AcRouteEntity) {
+  private findRoutes(entity: AcRouteEntity<any>) {
     const routes: RouteStoreItem[] = [];
 
     const entityRoute = RouteStore.find((item) => item.entity === entity);
     if (entityRoute) routes.push(entityRoute);
 
-    const childRoutes = RouteStore.filter((item) => item.entity.linkTo === entity);
+    const childRoutes = RouteStore.filter((item) => item.entity.options.linkTo === entity);
     routes.push(...childRoutes);
 
     return routes;
@@ -97,18 +106,17 @@ export class AcLinksInterceptor implements NestInterceptor {
     return <"GET" | "POST" | "PUT" | "PATCH" | "DELETE">RequestMethod[methodId];
   }
 
-  private getRouteName(route: RouteStoreItem, options: AcLinksOptions) {
-    if (options.name) return options.name;
-    if (this.acService.options.routeNameConvention)
-      return this.acService.options.routeNameConvention(String(route.method));
+  private getRouteName(route: RouteStoreItem, entity: AcRouteEntity<any>) {
+    if (entity.options.name) return entity.options.name;
+    if (this.options.routeNameConvention) return this.options.routeNameConvention(String(route.method));
     else return String(route.method);
   }
 
-  private getPath(route: RouteStoreItem, options: AcLinksOptions, doc: any) {
+  private getPath(route: RouteStoreItem, entity: AcRouteEntity<any>, doc: any) {
     const pathItems = [Config.app.baseUrl, "api", this.getControllerPath(route)];
 
-    if (typeof options.path === "function") pathItems.push(String(options.path(doc)));
-    else pathItems.push(<string>Reflect.getMetadata("path", route.handler));
+    if (typeof entity.options.path === "function") pathItems.push(String(entity.options.path(doc)));
+    else pathItems.push(<string>Reflect.getMetadata(MetadataConstant.routePath, route.handler));
 
     const path = pathItems
       .map((item) => String(item).replace(/^\//, "").replace(/\/$/, ""))
@@ -120,8 +128,8 @@ export class AcLinksInterceptor implements NestInterceptor {
   }
 
   private getControllerPath(route: RouteStoreItem) {
-    const controllerTarget = Reflect.getMetadata("controller", route.controller);
+    const controllerTarget = Reflect.getMetadata(MetadataConstant.controller, route.controller);
     if (!controllerTarget) throw new InternalServerErrorException("Missing AcController decorator.");
-    return <string>Reflect.getMetadata("path", controllerTarget) || "";
+    return <string>Reflect.getMetadata(MetadataConstant.controllerPath, controllerTarget) || "";
   }
 }
