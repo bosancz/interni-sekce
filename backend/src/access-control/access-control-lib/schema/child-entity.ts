@@ -1,4 +1,4 @@
-import { AcRouteEntity } from "./ac-route-entity";
+import { AcEntity } from "./ac-entity";
 
 export interface ChildEntityArray<T extends any[]> {
   /** This hierarchy level is array of documents of ChildEntity type */
@@ -6,7 +6,7 @@ export interface ChildEntityArray<T extends any[]> {
 }
 export interface ChildEntityObject<T> {
   /** ACL Entity of the current hiearchy level */
-  entity?: AcRouteEntity<any>;
+  entity?: AcEntity<T>;
   /** ChildEntity types of documents in properties of the current hiearchy level */
   properties?: { [property in keyof T]?: ChildEntity<any> }; // TODO: is there a way to say if property is A, then value is T[A]?
 }

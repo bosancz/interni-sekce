@@ -1,15 +1,17 @@
-import { RouteEntity } from "src/access-control/schema/route-entity";
+import { RouteACL } from "src/access-control/schema/route-acl";
 import { Member } from "src/models/members/entities/member.entity";
+import { MemberResponse } from "../dto/member.dto";
 
-export const MemberRoute = new RouteEntity<Member>({
+export const MembersRoute = new RouteACL<Member, Member[]>({
   permissions: {
     vedouci: true,
   },
+  contains: { array: { entity: MemberResponse } },
 });
 
-export const MembersRoute = new RouteEntity<Member, Member[]>({
+export const MemberRoute = new RouteACL<Member>({
+  entity: MemberResponse,
   permissions: {
     vedouci: true,
   },
-  contains: { array: { entity: MemberRoute } },
 });

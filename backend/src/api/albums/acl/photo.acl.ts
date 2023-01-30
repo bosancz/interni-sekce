@@ -1,27 +1,39 @@
-import { RouteEntity } from "src/access-control/schema/route-entity";
+import { RouteACL } from "src/access-control/schema/route-acl";
 import { Photo } from "src/models/albums/entities/photo.entity";
+import { PhotoResponse } from "../dto/photo.dto";
 
-export const PhotoReadRoute = new RouteEntity<Photo>({
+export const PhotosListRoute = new RouteACL<undefined, PhotoResponse[]>({
+  permissions: {
+    vedouci: true,
+    verejnost: true,
+  },
+  contains: {
+    array: { entity: PhotoResponse },
+  },
+});
+
+export const PhotoReadRoute = new RouteACL({
+  entity: PhotoResponse,
   permissions: {
     vedouci: true,
     verejnost: true,
   },
 });
 
-export const PhotoCreateRoute = new RouteEntity<undefined, Photo>({
+export const PhotoCreateRoute = new RouteACL<undefined, PhotoResponse>({
   permissions: {
     vedouci: true,
   },
 });
 
-export const PhotoEditRoute = new RouteEntity<Photo>({
+export const PhotoEditRoute = new RouteACL<Photo>({
+  entity: PhotoResponse,
   permissions: {
     vedouci: true,
   },
-  linkTo: PhotoReadRoute,
 });
 
-export const PhotoDeleteRoute = new RouteEntity<Photo>({
+export const PhotoDeleteRoute = new RouteACL<Photo>({
+  entity: PhotoResponse,
   inheritPermissions: PhotoEditRoute,
-  linkTo: PhotoReadRoute,
 });

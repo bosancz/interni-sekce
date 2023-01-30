@@ -4,8 +4,7 @@ import { Request } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
 import { EventsService } from "src/models/events/services/events.service";
-import { EventAttendeeDeleteRoute, EventAttendeeEditRoute } from "../acl/event-attendee.acl";
-import { EventAttendeesRoute } from "../acl/event-attendees.acl";
+import { EventAttendeeDeleteRoute, EventAttendeeEditRoute, EventAttendeesRoute } from "../acl/event-attendees.acl";
 
 import { EventAttendeeResponse, EventAttendeeUpdateBody } from "../dto/event-attendee.dto";
 

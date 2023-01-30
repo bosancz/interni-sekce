@@ -7,8 +7,7 @@ import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-lin
 import { Group } from "src/models/members/entities/group.entity";
 import { GroupsService } from "src/models/members/services/groups.service";
 import { Repository } from "typeorm";
-import { GroupDeleteRoute, GroupEditRoute, GroupReadRoute } from "../acl/group.acl";
-import { GroupListRoute } from "../acl/groups.acl";
+import { GroupDeleteRoute, GroupEditRoute, GroupListRoute, GroupReadRoute } from "../acl/groups.acl";
 import { GroupResponse } from "../dto/group.dto";
 
 @Controller("groups")

@@ -17,8 +17,7 @@ import { Request } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
 import { PhotosService } from "src/models/albums/services/photos.service";
-import { PhotoCreateRoute, PhotoDeleteRoute, PhotoEditRoute, PhotoReadRoute } from "../acl/photo.acl";
-import { PhotosListRoute } from "../acl/photos.acl";
+import { PhotoCreateRoute, PhotoDeleteRoute, PhotoEditRoute, PhotoReadRoute, PhotosListRoute } from "../acl/photo.acl";
 import { PhotoEditBody, PhotoResponse, PhotosListResponse } from "../dto/photo.dto";
 
 @Controller("photos")

@@ -1,6 +1,6 @@
 import { applyDecorators, SetMetadata, UseInterceptors } from "@nestjs/common";
 import { AcLinksInterceptor } from "../interceptors/ac-links.interceptor";
-import { AcRouteEntity } from "../schema/ac-route-entity";
+import { AcRouteACL } from "../schema/ac-route-acl";
 import { MetadataConstant } from "../schema/metadata-constant";
 import { RouteStore, RouteStoreItem } from "../schema/route-store";
 
@@ -10,10 +10,10 @@ import { RouteStore, RouteStoreItem } from "../schema/route-store";
  * @param options Options for _links generation
  * @returns
  */
-export function AcLinks<D, C>(entity: AcRouteEntity<D, C>): MethodDecorator {
+export function AcLinks<D, C>(acl: AcRouteACL<D, C>): MethodDecorator {
   return (target: any, method: string | symbol, descriptor: PropertyDescriptor) => {
     const routeStoreItem: RouteStoreItem = {
-      entity,
+      acl,
       method,
       controller: target,
       handler: descriptor.value,
@@ -21,7 +21,7 @@ export function AcLinks<D, C>(entity: AcRouteEntity<D, C>): MethodDecorator {
 
     RouteStore.push(routeStoreItem);
 
-    return applyDecorators(SetMetadata(MetadataConstant.entity, entity), UseInterceptors(AcLinksInterceptor))(
+    return applyDecorators(SetMetadata(MetadataConstant.route, routeStoreItem), UseInterceptors(AcLinksInterceptor))(
       target,
       method,
       descriptor,

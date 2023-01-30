@@ -4,8 +4,7 @@ import { Request } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
 import { AlbumsService } from "src/models/albums/services/albums.service";
-import { AlbumDeleteRoute, AlbumEditRoute, AlbumReadRoute } from "../acl/album.acl";
-import { AlbumsListRoute } from "../acl/albums.acl";
+import { AlbumDeleteRoute, AlbumEditRoute, AlbumReadRoute, AlbumsListRoute } from "../acl/albums.acl";
 import { AlbumEditBody, AlbumResponse, AlbumsListResponse } from "../dto/album.dto";
 
 @Controller("albums")

@@ -1,19 +1,20 @@
 import { ForbiddenException, InternalServerErrorException } from "@nestjs/common";
 import { Request } from "express";
+import { AcEntity } from "./ac-entity";
 import { ChildEntity } from "./child-entity";
 
-export interface AcRouteEntityOptions<DOC, CONTAINS = DOC, ROLES extends string = string, PDATA extends Object = {}> {
+export interface AcRouteOptions<DOC, CONTAINS = DOC, ROLES extends string = string, PDATA extends Object = {}> {
+  /** Add link for this route to the specified parent entity. This creates links to all routes of the same entity */
+  entity?: AcEntity<DOC>;
+
   /** Permissions for the current route */
   permissions?: Partial<Record<ROLES, AcPermission<DOC, PDATA>>>;
 
   /** Inherit permissions of the specified entity */
-  inheritPermissions?: AcRouteEntity<DOC, any, ROLES>;
+  inheritPermissions?: AcRouteACL<DOC, any, ROLES>;
 
   /** Global condition whether this route is accessible (i.e. is document in the state to perform this operation) */
   condition?: (d: DOC) => boolean;
-
-  /** Add link for this route to the specified parent entity */
-  linkTo?: AcRouteEntity<DOC>;
 
   path?: (d: DOC) => string;
 
@@ -31,8 +32,8 @@ export type AcPermissionObject<DOC, PDATA> = {
   permission: boolean | AcPermissionFunction<DOC>;
 } & PDATA;
 
-export abstract class AcRouteEntity<DOC, CONTAINS = DOC, ROLES extends string = string, PDATA extends Object = {}> {
-  constructor(public options: AcRouteEntityOptions<DOC, CONTAINS, ROLES, PDATA>) {}
+export abstract class AcRouteACL<DOC, CONTAINS = DOC, ROLES extends string = string, PDATA extends Object = {}> {
+  constructor(public options: AcRouteOptions<DOC, CONTAINS, ROLES, PDATA>) {}
 
   canOrThrow(req: Request, doc: DOC) {
     if (!this.can(req, doc)) throw new ForbiddenException();

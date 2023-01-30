@@ -19,8 +19,7 @@ import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-lin
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
 import { Repository } from "typeorm";
-import { EventCreateRoute, EventDeleteRoute, EventEditRoute, EventRoute } from "../acl/event.acl";
-import { EventsRoute } from "../acl/events.acl";
+import { EventCreateRoute, EventDeleteRoute, EventEditRoute, EventRoute, EventsRoute } from "../acl/events.acl";
 import { EventCreateBody, EventResponse, EventUpdateBody } from "../dto/event.dto";
 
 @Controller("events")

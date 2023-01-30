@@ -1,5 +1,5 @@
 export enum MetadataConstant {
-  entity = "ac-entity",
+  route = "ac-route",
   controller = "controller",
   controllerPath = "path",
   routePath = "path",

@@ -1,12 +1,12 @@
 import { ForbiddenException } from "@nestjs/common";
 import { Request } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
-import { AcRouteEntity } from "../access-control-lib/schema/ac-route-entity";
+import { AcRouteACL } from "../access-control-lib/schema/ac-route-acl";
 import { DefaultRoles, Roles } from "./roles";
 
 export type WhereData = { where?: (qb: WhereExpressionBuilder, req: Request) => WhereExpressionBuilder };
 
-export class RouteEntity<DOC, CONTAINS = DOC> extends AcRouteEntity<DOC, CONTAINS, Roles, WhereData> {
+export class RouteACL<DOC, CONTAINS = DOC> extends AcRouteACL<DOC, CONTAINS, Roles, WhereData> {
   getUserRoles(req: Request) {
     // roles from the database
     const roles: Roles[] = req.user?.roles ?? [];
