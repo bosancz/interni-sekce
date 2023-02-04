@@ -1,0 +1,14 @@
+name: bo-machine-learning
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.10
+  - pandas
+  - ipykernel
+  - pip
+  - pip:
+      - gpt-2-simple
+      - tensorflow
+      - tensorflowjs
