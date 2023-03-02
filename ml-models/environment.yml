@@ -8,3 +8,11 @@ dependencies:
   - pandas
   - ipykernel
   - transformers
+  - datasets
+  - evaluate
+  - pip
+  - pip:
+      - gpt_2_simple
+      - sklearn
+      - tensorflow
+      - tensorflowjs
