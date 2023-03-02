@@ -2,13 +2,9 @@ name: bo-machine-learning
 
 channels:
   - conda-forge
-
+  - huggingface
 dependencies:
   - python=3.10
   - pandas
   - ipykernel
-  - pip
-  - pip:
-      - gpt-2-simple
-      - tensorflow
-      - tensorflowjs
+  - transformers
