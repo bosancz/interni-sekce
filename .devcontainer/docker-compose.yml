@@ -3,10 +3,6 @@ volumes:
   backend-node-modules-volume:
   frontend-node-modules-volume:
 
-networks:
-  bosan_db:
-    external: true
-
 services:
   devcontainer:
     container_name: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-devcontainer
@@ -19,7 +15,6 @@ services:
       - frontend-node-modules-volume:/workspace/frontend/node_modules
     networks:
       - default
-      - bosan_db
     environment:
       DB_HOST: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-postgres
       DB_USER: postgres
