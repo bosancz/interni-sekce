@@ -15,7 +15,9 @@
     "migrations:generate": "npm run premigrations && typeorm migration:generate -d dist/data-source.js",
     "migrations:revert": "npm run premigrations && typeorm migration:revert -d dist/data-source.js",
     "migrations:create": "npm run premigrations && typeorm migration:create",
-    "cli": "node dist/main-cli"
+    "cli": "node dist/main-cli",
+    "deploy:production": "docker build -t docker.bosan.cz/interni-sekce-backend:latest . && docker push docker.bosan.cz/interni-sekce-backend:latest",
+    "deploy:test": "docker build -t docker.bosan.cz/interni-sekce-backend:test . && docker push docker.bosan.cz/interni-sekce-backend:test"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",

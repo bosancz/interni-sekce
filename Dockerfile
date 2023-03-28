@@ -1,6 +1,6 @@
 FROM node:18-alpine as build-frontend
 
-ARG NG_CONFIGURATION
+ARG NG_CONFIGURATION=production
 
 WORKDIR /app
 
