@@ -12,6 +12,8 @@ var deleteEvent = require("./events/delete-event");
 var Event = require("../models/event");
 var Payment = require("../models/payment");
 
+var mailings = require("../mailings");
+
 var getEventSchema = {
   type: "object",
   properties: {
@@ -82,7 +84,7 @@ routes
 
     res.sendStatus(200);
 
-    await mailings("event-prepared", event);
+    await mailings("event-prepared", {event});
 
     sendNotifications({ all: ["eventSubmitted"], except: req.user._id });
   });
