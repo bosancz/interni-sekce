@@ -19,6 +19,9 @@ services:
     ports:
       - 4200:4200
 
+  ml-runner:
+    build: ./ml-runner
+
   postgres:
     image: postgres:15
     environment:
