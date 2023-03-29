@@ -7,6 +7,7 @@ on:
     paths:
       - frontend/**
       - backend/**
+      - ml-runner/**
       - ".github/workflows/deploy-production.yml"
 
 jobs:
@@ -60,5 +61,31 @@ jobs:
           push: true
           context: ./backend
           tags: "docker.bosan.cz/interni-sekce-backend:latest"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-docker-ml-runner:
+    name: Build and Push ML Runner Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the updated source code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to docker.bosan.cz registry
+        uses: docker/login-action@v2
+        with:
+          registry: docker.bosan.cz
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build image and push it to the docker.bosan.cz repository
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          context: ./ml-runner
+          tags: "docker.bosan.cz/interni-sekce-ml-runner:latest"
           cache-from: type=gha
           cache-to: type=gha,mode=max
