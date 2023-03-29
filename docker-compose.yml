@@ -1,36 +1,30 @@
 version: "3"
 
 services:
-  server:
+  backend:
     build: ./server
     ports:
       - 3000:3000
     environment:
-      DATABASE_URI: mongodb://db/bosan
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_DATABASE: postgres
+      DB_SCHEMA: public
       CORS_ENABLE: "true"
-      CORS_ORIGINS: "http://localhost:4200,http://localhost:4300"
+      CORS_ORIGINS: "http://localhost:4200"
 
-  client:
+  frontend:
     build: ./client
     ports:
-      - 4200:80
+      - 4200:4200
 
-  client-admin:
-    build: ./client-admin
-    ports:
-      - 4300:80
-
-  db:
-    image: mongo:4.2
-    ports:
-      - 27017:27017
+  postgres:
+    image: postgres:15
     environment:
-      MONGO_INITDB_DATABASE: bosan
+      POSTGRES_PASSWORD: password
 
-  mongo-express:
-    image: mongo-express
-    ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_SERVER: db
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+  adminer:    
+    image: adminer
+    ports: 
+      - 8080:8080
