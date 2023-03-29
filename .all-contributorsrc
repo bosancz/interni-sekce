@@ -19,17 +19,8 @@
       "contributions": [
         "code",
         "maintenance",
-        "bug"
-      ]
-    },
-    {
-      "login": "Goliash2",
-      "name": "Petr Hnyk",
-      "avatar_url": "https://avatars.githubusercontent.com/u/38349508?v=4",
-      "profile": "https://github.com/Goliash2",
-      "contributions": [
-        "code",
-        "bug"
+        "bug",
+        "doc"
       ]
     },
     {
@@ -38,8 +29,7 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/5928448?v=4",
       "profile": "https://github.com/jhavelik",
       "contributions": [
-        "code",
-        "design"
+        "bug"
       ]
     },
     {
@@ -48,7 +38,6 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/1541727?v=4",
       "profile": "https://github.com/elenfant",
       "contributions": [
-        "code",
         "bug"
       ]
     },
@@ -62,50 +51,14 @@
       ]
     },
     {
-      "login": "Cita22",
-      "name": "Cita22",
-      "avatar_url": "https://avatars.githubusercontent.com/u/83779206?v=4",
-      "profile": "https://github.com/Cita22",
-      "contributions": [
-        "code",
-        "design"
-      ]
-    },
-    {
-      "login": "Exogitaris",
-      "name": "Exogitaris",
-      "avatar_url": "https://avatars.githubusercontent.com/u/58743433?v=4",
-      "profile": "https://github.com/Exogitaris",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
-      "login": "MichalPham",
-      "name": "MichalPham",
-      "avatar_url": "https://avatars.githubusercontent.com/u/55764996?v=4",
-      "profile": "https://github.com/MichalPham",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
-      "login": "JakubRejzek",
-      "name": "JakubRejzek",
-      "avatar_url": "https://avatars.githubusercontent.com/u/84807333?v=4",
-      "profile": "https://github.com/JakubRejzek",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
       "login": "Grejdy",
       "name": "Grejdy",
       "avatar_url": "https://avatars.githubusercontent.com/u/82664677?v=4",
       "profile": "https://github.com/Grejdy",
       "contributions": [
         "bug",
-        "userTesting"
+        "userTesting",
+        "doc"
       ]
     },
     {
@@ -144,33 +97,6 @@
       "profile": "https://github.com/Kobtul",
       "contributions": [
         "bug"
-      ]
-    },
-    {
-      "login": "sv-ignac",
-      "name": "sv-ignac",
-      "avatar_url": "https://avatars.githubusercontent.com/u/82539505?v=4",
-      "profile": "https://github.com/sv-ignac",
-      "contributions": [
-        "userTesting"
-      ]
-    },
-    {
-      "login": "Tweety6",
-      "name": "Tweety6",
-      "avatar_url": "https://avatars.githubusercontent.com/u/82444329?v=4",
-      "profile": "https://github.com/Tweety6",
-      "contributions": [
-        "userTesting"
-      ]
-    },
-    {
-      "login": "annadanielova",
-      "name": "annadanielova",
-      "avatar_url": "https://avatars.githubusercontent.com/u/82390704?v=4",
-      "profile": "https://github.com/annadanielova",
-      "contributions": [
-        "userTesting"
       ]
     }
   ],
