@@ -1,27 +1,23 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { SwUpdate } from '@angular/service-worker';
-import { NavController, Platform } from '@ionic/angular';
+import { Component, OnInit } from "@angular/core";
+import { SwUpdate } from "@angular/service-worker";
+import { NavController, Platform } from "@ionic/angular";
 
-import { LoginService } from 'app/core/services/login.service';
-import { MenuService } from 'app/core/services/menu.service';
-import { OnlineService } from 'app/core/services/online.service';
-import { TitleService } from 'app/core/services/title.service';
-import { UserService } from 'app/core/services/user.service';
+import { LoginService } from "src/app/services/login.service";
+import { MenuService } from "src/app/services/menu.service";
+import { OnlineService } from "src/app/services/online.service";
+import { TitleService } from "src/app/services/title.service";
+import { UserService } from "src/app/services/user.service";
 
 @Component({
-  selector: 'admin-menu',
-  templateUrl: './admin-menu.component.html',
-  styleUrls: ['./admin-menu.component.scss']
+  selector: "admin-menu",
+  templateUrl: "./admin-menu.component.html",
+  styleUrls: ["./admin-menu.component.scss"],
 })
 export class AdminMenuComponent implements OnInit {
-
   submenu?: string;
 
-
-
   dropdownsCollapsed = {
-    program: true
+    program: true,
   };
 
   constructor(
@@ -33,18 +29,15 @@ export class AdminMenuComponent implements OnInit {
     public onlineService: OnlineService,
     public swUpdate: SwUpdate,
     public platform: Platform,
-  ) { }
+  ) {}
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 
   async logout() {
     await this.loginService.logout();
     if (this.userService.userSnapshot?._id) {
       this.navController.navigateRoot("/");
-    }
-    else {
+    } else {
       this.navController.navigateRoot("/login");
     }
   }
@@ -52,5 +45,4 @@ export class AdminMenuComponent implements OnInit {
   reload() {
     window.location.reload();
   }
-
 }

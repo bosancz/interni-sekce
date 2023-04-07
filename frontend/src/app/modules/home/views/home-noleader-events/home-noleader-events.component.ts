@@ -1,16 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { Event } from 'app/schema/event';
+import { Component, OnInit } from "@angular/core";
 
 @Component({
-  selector: 'bo-home-noleader-events',
-  templateUrl: './home-noleader-events.component.html',
-  styleUrls: ['./home-noleader-events.component.scss']
+  selector: "bo-home-noleader-events",
+  templateUrl: "./home-noleader-events.component.html",
+  styleUrls: ["./home-noleader-events.component.scss"],
 })
 export class HomeNoleaderEventsComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

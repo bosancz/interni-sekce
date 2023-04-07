@@ -1,27 +1,28 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { UserRoles } from 'app/config/user-roles';
-import { ApiService } from 'app/core/services/api.service';
-import { ToastService } from "app/core/services/toast.service";
-import { Member } from "app/schema/member";
-import { User } from "app/schema/user";
-import { Action } from 'app/shared/components/action-buttons/action-buttons.component';
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UserRoles } from "src/app/config/user-roles";
+import { Member } from "src/app/schema/member";
+import { User } from "src/app/schema/user";
+import { ApiService } from "src/app/services/api.service";
+import { ToastService } from "src/app/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 @UntilDestroy()
 @Component({
-  selector: 'bo-users-edit',
-  templateUrl: './users-edit.component.html',
-  styleUrls: ['./users-edit.component.scss']
+  selector: "bo-users-edit",
+  templateUrl: "./users-edit.component.html",
+  styleUrls: ["./users-edit.component.scss"],
 })
 export class UsersEditComponent implements OnInit {
-
   user?: User;
 
-  roles = UserRoles
-    .filter(item => item.assignable)
-    .map(role => ({ name: role.id, title: role.title, active: false }));
+  roles = UserRoles.filter((item) => item.assignable).map((role) => ({
+    name: role.id,
+    title: role.title,
+    active: false,
+  }));
 
   members: Member[] = [];
 
@@ -30,8 +31,8 @@ export class UsersEditComponent implements OnInit {
   actions: Action[] = [
     {
       text: "Uložit",
-      handler: () => this.saveUser()
-    }
+      handler: () => this.saveUser(),
+    },
   ];
 
   @ViewChild("editUserForm") form!: NgForm;
@@ -40,20 +41,15 @@ export class UsersEditComponent implements OnInit {
     private api: ApiService,
     private toastService: ToastService,
     private route: ActivatedRoute,
-    private router: Router
-  ) { }
+    private router: Router,
+  ) {}
 
   ngOnInit() {
+    this.route.params.pipe(untilDestroyed(this)).subscribe((params: Params) => {
+      if (params.user && (!this.user || this.user._id !== params.user)) this.loadUser(params.user);
 
-    this.route.params
-      .pipe(untilDestroyed(this))
-      .subscribe((params: Params) => {
-
-        if (params.user && (!this.user || this.user._id !== params.user)) this.loadUser(params.user);
-
-        this.category = params.cat;
-
-      });
+      this.category = params.cat;
+    });
 
     this.loadMembers();
   }
@@ -65,7 +61,7 @@ export class UsersEditComponent implements OnInit {
   }
 
   updateRoles(user: User): void {
-    this.roles.forEach(role => role.active = (user.roles.indexOf(role.name) !== -1));
+    this.roles.forEach((role) => (role.active = user.roles.indexOf(role.name) !== -1));
   }
 
   async loadMembers() {
@@ -75,7 +71,6 @@ export class UsersEditComponent implements OnInit {
   }
 
   async saveUser() {
-
     if (!this.user) return;
 
     const userData = this.form.value;
@@ -88,7 +83,6 @@ export class UsersEditComponent implements OnInit {
   }
 
   hasRole(name: string) {
-    return this.roles.some(role => role.name === name && role.active === true);
+    return this.roles.some((role) => role.name === name && role.active === true);
   }
-
-};
+}

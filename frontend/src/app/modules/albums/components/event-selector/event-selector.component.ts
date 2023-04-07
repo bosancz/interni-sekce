@@ -1,32 +1,39 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, forwardRef, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { ModalController } from '@ionic/angular';
-import { StyleEventDetail } from "@ionic/core";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  forwardRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from "@angular/core";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { ModalController } from "@ionic/angular";
 
-import { ApiService } from 'app/core/services/api.service';
-import { Event } from 'app/schema/event';
-import { EventSelectorModalComponent } from '../event-selector-modal/event-selector-modal.component';
+import { Event } from "src/app/schema/event";
+import { ApiService } from "src/app/services/api.service";
+import { EventSelectorModalComponent } from "../event-selector-modal/event-selector-modal.component";
 
 @Component({
-  selector: 'bo-event-selector',
-  templateUrl: './event-selector.component.html',
-  styleUrls: ['./event-selector.component.scss'],
+  selector: "bo-event-selector",
+  templateUrl: "./event-selector.component.html",
+  styleUrls: ["./event-selector.component.scss"],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
       useExisting: forwardRef(() => EventSelectorComponent),
-    }
+    },
   ],
 })
 export class EventSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {
-
   value?: Event["_id"] | null;
   event?: Event;
 
   @Input() placeholder?: string;
   @Output("event") eventOutput = new EventEmitter<Event>();
-
 
   modal?: HTMLIonModalElement;
 
@@ -40,15 +47,12 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
   constructor(
     private modalController: ModalController,
     private api: ApiService,
-    private elRef: ElementRef<HTMLElement>
-  ) { }
+    private elRef: ElementRef<HTMLElement>,
+  ) {}
 
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit() {
-
     this.emitIonStyle();
   }
 
@@ -57,19 +61,21 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
   }
 
   private emitIonStyle() {
-    this.elRef.nativeElement.dispatchEvent(new CustomEvent("ionStyle", {
-      bubbles: true,
-      composed: true,
-      cancelable: true,
-      detail: {
-        'interactive': true,
-        'input': true,
-        'has-placeholder': true,
-        'has-value': !!this.value,
-        'has-focus': this.focused,
-        'interactive-disabled': this.disabled,
-      }
-    }));
+    this.elRef.nativeElement.dispatchEvent(
+      new CustomEvent("ionStyle", {
+        bubbles: true,
+        composed: true,
+        cancelable: true,
+        detail: {
+          interactive: true,
+          input: true,
+          "has-placeholder": true,
+          "has-value": !!this.value,
+          "has-focus": this.focused,
+          "interactive-disabled": this.disabled,
+        },
+      }),
+    );
   }
 
   inputValueChanged(value: string) {
@@ -78,10 +84,10 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 
   async openModal() {
     this.modal = await this.modalController.create({
-      component: EventSelectorModalComponent
+      component: EventSelectorModalComponent,
     });
 
-    this.modal.onDidDismiss().then(result => {
+    this.modal.onDidDismiss().then((result) => {
       if (result.data?.event !== undefined) this.updateValue(result.data?.event);
     });
 
@@ -89,7 +95,6 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
   }
 
   private async updateValue(value: Event["_id"] | null) {
-
     if (value === this.value) return;
 
     this.value = value;
@@ -107,11 +112,11 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
   /* ControlValueAccessor */
   writeValue(obj?: Event["_id"] | null): void {
     this.updateValue(obj || null);
-  };
+  }
 
   registerOnChange(fn: (value: Event["_id"] | null) => void): void {
     this.onChange = fn;
-  };
+  }
 
   registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
@@ -120,6 +125,4 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
   }
-
-
 }

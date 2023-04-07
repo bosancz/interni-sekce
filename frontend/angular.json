@@ -109,6 +109,9 @@
             "port": 4200
           },
           "configurations": {
+            "development": {
+              "browserTarget": "bosancz:build:development"
+            },
             "test-server": {
               "browserTarget": "bosancz:build:test-server"
             }

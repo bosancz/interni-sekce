@@ -1,9 +1,17 @@
 import { HttpClient, HttpEvent, HttpEventType } from "@angular/common/http";
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ModalController, Platform } from '@ionic/angular';
-import { ApiService } from 'app/core/services/api.service';
-import { Album } from "app/schema/album";
-
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
+import { ModalController, Platform } from "@ionic/angular";
+import { Album } from "src/app/schema/album";
+import { ApiService } from "src/app/services/api.service";
 
 interface PhotoUploadItem {
   file: File;
@@ -13,12 +21,11 @@ interface PhotoUploadItem {
 }
 
 @Component({
-  selector: 'photos-upload',
-  templateUrl: './photos-upload.component.html',
-  styleUrls: ['./photos-upload.component.scss']
+  selector: "photos-upload",
+  templateUrl: "./photos-upload.component.html",
+  styleUrls: ["./photos-upload.component.scss"],
 })
 export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
-
   @Input() album!: Album;
 
   tags: string[] = [];
@@ -45,14 +52,11 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
     private http: HttpClient,
     private modalController: ModalController,
     private platform: Platform,
-    private cdRef: ChangeDetectorRef
-  ) {
-
-  }
+    private cdRef: ChangeDetectorRef,
+  ) {}
 
   ngOnInit() {
     this.updateTags();
-
   }
   ngOnDestroy() {
     this.uploading = false;
@@ -66,26 +70,23 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-
   updateTags() {
     this.tags = [];
-    this.album.photos.forEach(photo => {
-      photo.tags?.filter(tag => this.tags.indexOf(tag) === -1).forEach(tag => this.tags.push(tag));
+    this.album.photos.forEach((photo) => {
+      photo.tags?.filter((tag) => this.tags.indexOf(tag) === -1).forEach((tag) => this.tags.push(tag));
     });
   }
 
   addPhotosByInput(photoInput: HTMLInputElement) {
-
     if (!photoInput.files?.length) return;
 
     for (let i = 0; i < photoInput.files.length; i++) {
       this.photoUploadQueue.push({
         file: photoInput.files[i],
         progress: 0,
-        status: "pending"
+        status: "pending",
       });
     }
-
   }
 
   addPhotosByDropzone(event: DragEvent, dropZone: HTMLDivElement) {
@@ -97,10 +98,9 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
       this.photoUploadQueue.push({
         file: event.dataTransfer.files[i],
         progress: 0,
-        status: "pending"
+        status: "pending",
       });
     }
-
   }
 
   onDragOver(event: DragEvent) {
@@ -118,13 +118,11 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async uploadPhotos(album: Album<any, any>) {
-
     this.uploading = true;
     this.preventExit();
 
     let uploadItem: PhotoUploadItem;
     for (uploadItem of this.photoUploadQueue) {
-
       if (!this.uploading) break;
 
       if (uploadItem.status === "finished") continue;
@@ -133,8 +131,7 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
         uploadItem.status = "uploading";
         await this.uploadPhoto(album, uploadItem);
         uploadItem.status = "finished";
-      }
-      catch (err: any) {
+      } catch (err: any) {
         uploadItem.status = "error";
         uploadItem.error = err;
       }
@@ -144,11 +141,9 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
     this.allowExit();
 
     this.modalController.dismiss(true);
-
   }
 
   async uploadPhoto(album: Album, uploadItem: PhotoUploadItem): Promise<void> {
-
     if (!this.allowedFiles_re.test(uploadItem.file.name)) {
       throw new Error("Unsupported file type.");
     }
@@ -158,35 +153,41 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
     formData.set("album", album._id);
     formData.set("tags", this.selectedTags.join(","));
     formData.set("photo", uploadItem.file, uploadItem.file.name);
-    if (uploadItem.file.lastModified) formData.set("lastModified", new Date(uploadItem.file.lastModified).toISOString());
+    if (uploadItem.file.lastModified)
+      formData.set("lastModified", new Date(uploadItem.file.lastModified).toISOString());
 
     const uploadPath = await this.api.path2href("photos");
 
     return new Promise<void>((resolve, reject) => {
+      this.http
+        .post(uploadPath, formData, {
+          withCredentials: true,
+          observe: "events",
+          reportProgress: true,
+          responseType: "text",
+        })
+        .subscribe(
+          (event: HttpEvent<any>) => {
+            switch (event.type) {
+              case HttpEventType.Sent:
+                break;
 
-      this.http.post(uploadPath, formData, { withCredentials: true, observe: 'events', reportProgress: true, responseType: "text" }).subscribe(
-        (event: HttpEvent<any>) => {
-          switch (event.type) {
+              case HttpEventType.UploadProgress:
+                uploadItem.progress = event.total ? Math.round((event.loaded / event.total) * 100) : 0;
+                this.cdRef.markForCheck();
+                if (event.loaded === event.total) uploadItem.status = "processing";
+                break;
 
-            case HttpEventType.Sent:
-              break;
-
-            case HttpEventType.UploadProgress:
-              uploadItem.progress = event.total ? Math.round(event.loaded / event.total * 100) : 0;
-              this.cdRef.markForCheck();
-              if (event.loaded === event.total) uploadItem.status = "processing";
-              break;
-
-            case HttpEventType.Response:
-              uploadItem.progress = 100;
-              resolve();
-              break;
-          }
-        }, err => reject(err));
-
+              case HttpEventType.Response:
+                uploadItem.progress = 100;
+                resolve();
+                break;
+            }
+          },
+          (err) => reject(err),
+        );
     });
   }
-
 
   private preventExit() {
     window.addEventListener("beforeunload", this.preventExitListener);
@@ -195,6 +196,4 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
   private allowExit() {
     window.removeEventListener("beforeunload", this.preventExitListener);
   }
-
 }
-

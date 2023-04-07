@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ModalController, ViewWillEnter } from "@ionic/angular";
-import { EventsService } from "app/modules/events/services/events.service";
-import { Event } from "app/schema/event";
-import { Action } from "app/shared/components/action-buttons/action-buttons.component";
+import { EventsService } from "src/app/modules/events/services/events.service";
+import { Event } from "src/app/schema/event";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { TrimesterDateRange } from "../../components/trimester-selector/trimester-selector.component";
 
 @Component({
@@ -31,7 +31,7 @@ export class ProgramCalendarComponent implements OnInit, OnDestroy, ViewWillEnte
     private modalController: ModalController,
     private eventsService: EventsService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {

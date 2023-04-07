@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { ApiService } from "app/core/services/api.service";
-import { Event } from "app/schema/event";
+import { Event } from "src/app/schema/event";
+import { ApiService } from "src/app/services/api.service";
 
 @Component({
   selector: "bo-home-card-my-events",

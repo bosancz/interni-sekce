@@ -1,14 +1,14 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter } from "@ionic/angular";
-import { EventStatuses } from "app/config/event-statuses";
-import { ApiService } from "app/core/services/api.service";
-import { Event } from "app/schema/event";
-import { Action } from "app/shared/components/action-buttons/action-buttons.component";
 import { DateTime } from "luxon";
-import { BehaviorSubject, combineLatest, Observable, Subject } from "rxjs";
+import { BehaviorSubject, Observable, Subject, combineLatest } from "rxjs";
 import { debounceTime, map } from "rxjs/operators";
+import { EventStatuses } from "src/app/config/event-statuses";
+import { Event } from "src/app/schema/event";
+import { ApiService } from "src/app/services/api.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 type EventWithSearchString = Event & { searchString: string };
 
@@ -43,7 +43,7 @@ export class EventsListComponent implements ViewWillEnter {
 
     // TODO: rewrite to easier non rxjs filtering
     this.filteredEvents$ = combineLatest([this.events$, this.search$.pipe(debounceTime(250))]).pipe(
-      map(([events, search]) => this.filterEvents(events, search))
+      map(([events, search]) => this.filterEvents(events, search)),
     );
   }
 

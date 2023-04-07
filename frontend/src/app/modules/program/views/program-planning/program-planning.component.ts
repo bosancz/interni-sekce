@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { AlertController, ViewWillEnter } from "@ionic/angular";
-import { EventStatuses } from "app/config/event-statuses";
-import { ApiService } from "app/core/services/api.service";
-import { ToastService } from "app/core/services/toast.service";
-import { Event } from "app/schema/event";
 import { DateTime } from "luxon";
 import { Subscription } from "rxjs";
+import { EventStatuses } from "src/app/config/event-statuses";
+import { Event } from "src/app/schema/event";
+import { ApiService } from "src/app/services/api.service";
+import { ToastService } from "src/app/services/toast.service";
 
 @Component({
   selector: "program-planning",
@@ -28,7 +28,7 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
     private router: Router,
     private route: ActivatedRoute,
     private toastService: ToastService,
-    private alertController: AlertController
+    private alertController: AlertController,
   ) {}
 
   ngOnInit() {

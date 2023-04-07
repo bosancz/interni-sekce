@@ -1,26 +1,21 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ModalController, Platform } from '@ionic/angular';
-import { EventExpenseTypes } from 'app/config/event-expense-types';
-import { EventExpense } from 'app/schema/event';
+import { Component, Input, OnInit } from "@angular/core";
+import { ModalController, Platform } from "@ionic/angular";
+import { EventExpenseTypes } from "src/app/config/event-expense-types";
+import { EventExpense } from "src/app/schema/event";
 
 @Component({
-  selector: 'bo-event-expense-modal',
-  templateUrl: './event-expense-modal.component.html',
-  styleUrls: ['./event-expense-modal.component.scss']
+  selector: "bo-event-expense-modal",
+  templateUrl: "./event-expense-modal.component.html",
+  styleUrls: ["./event-expense-modal.component.scss"],
 })
 export class EventExpenseModalComponent implements OnInit {
-
   @Input() expense!: EventExpense;
 
   types = EventExpenseTypes;
 
-  constructor(
-    private modalController: ModalController,
-    public platform: Platform
-  ) { }
+  constructor(private modalController: ModalController, public platform: Platform) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   async save(expense: EventExpense) {
     await this.modalController.dismiss({ expense });

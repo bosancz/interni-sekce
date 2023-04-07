@@ -1,10 +1,10 @@
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, NavController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { ToastService } from "app/core/services/toast.service";
-import { Album, Photo } from "app/schema/album";
-import { Action } from "app/shared/components/action-buttons/action-buttons.component";
+import { Album, Photo } from "src/app/schema/album";
+import { ToastService } from "src/app/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AlbumsService } from "../../services/albums.service";
 
 @UntilDestroy()
@@ -26,7 +26,7 @@ export class AlbumsViewInfoComponent implements OnInit {
     private albumsService: AlbumsService,
     private toastService: ToastService,
     private alertController: AlertController,
-    private navController: NavController
+    private navController: NavController,
   ) {}
 
   ngOnInit(): void {

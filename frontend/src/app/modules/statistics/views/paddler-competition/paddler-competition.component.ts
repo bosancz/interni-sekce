@@ -1,16 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, Params } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map, filter, debounceTime } from 'rxjs/operators';
+import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, Params, Router } from "@angular/router";
+import { debounceTime, filter, map } from "rxjs/operators";
 
-import { ApiService } from 'app/core/services/api.service';
+import { ApiService } from "src/app/services/api.service";
 
-import { Member } from "app/schema/member";
-import { Event } from "app/schema/event";
-import { MemberGroupID } from 'app/config/member-groups';
+import { MemberGroupID } from "src/app/config/member-groups";
+import { Event } from "src/app/schema/event";
+import { Member } from "src/app/schema/member";
 
 export interface PaddlerCompetitionRanking {
-
   rank?: number;
   rankTo?: number;
 
@@ -19,11 +17,9 @@ export interface PaddlerCompetitionRanking {
   member?: Member;
   group?: MemberGroupID;
   events?: Event[];
-
 }
 
 export interface PaddlerCompetitionGroupRanking {
-
   rank?: number;
   rankTo?: number;
 
@@ -31,16 +27,14 @@ export interface PaddlerCompetitionGroupRanking {
 
   group?: MemberGroupID;
   events?: Event[];
-
 }
 
 @Component({
-  selector: 'paddler-competition',
-  templateUrl: './paddler-competition.component.html',
-  styleUrls: ['./paddler-competition.component.scss']
+  selector: "paddler-competition",
+  templateUrl: "./paddler-competition.component.html",
+  styleUrls: ["./paddler-competition.component.scss"],
 })
 export class PaddlerCompetitionComponent implements OnInit {
-
   years: number[] = [];
   year = this.route.params.pipe(map((params: Params) => Number(params.year) || null));
   currentYear?: number;
@@ -52,7 +46,7 @@ export class PaddlerCompetitionComponent implements OnInit {
     this.year
       .pipe(filter((year): year is Exclude<typeof year, null> => !!year))
       .pipe(debounceTime(500))
-      .subscribe(year => {
+      .subscribe((year) => {
         this.loadRanking(year);
         this.currentYear = Number(year);
       });
@@ -73,9 +67,9 @@ export class PaddlerCompetitionComponent implements OnInit {
 
     this.rankings = this.setRanks(rankings);
 
-    const groups: { [key: string]: PaddlerCompetitionRanking; } = {};
+    const groups: { [key: string]: PaddlerCompetitionRanking } = {};
 
-    this.rankings.forEach(item => {
+    this.rankings.forEach((item) => {
       if (!item.member?.group) return;
 
       if (!groups[item.member.group]) groups[item.member.group] = { group: item.member.group, water_km: 0 };
@@ -96,20 +90,17 @@ export class PaddlerCompetitionComponent implements OnInit {
     let ranked = [];
 
     for (let i = 0; i < ranking.length; i++) {
-
       ranked.push(ranking[i]);
 
       if (!ranking[i + 1] || ranking[i + 1].water_km !== ranking[i].water_km) {
-        ranked.forEach(rankedItem => {
-          rankedItem.rank = (i + 1) - (ranked.length - 1);
-          rankedItem.rankTo = (i + 1);
+        ranked.forEach((rankedItem) => {
+          rankedItem.rank = i + 1 - (ranked.length - 1);
+          rankedItem.rankTo = i + 1;
         });
         ranked = [];
       }
-
     }
 
     return ranking;
   }
-
 }

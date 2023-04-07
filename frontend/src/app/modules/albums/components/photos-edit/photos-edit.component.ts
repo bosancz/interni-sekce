@@ -1,17 +1,16 @@
-import { Component, HostListener, Input, NgZone, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, IonInput, ModalController, Platform, ViewWillLeave } from '@ionic/angular';
-import { Photo } from 'app/schema/photo';
-import Swiper, { SwiperOptions } from 'swiper';
-import { AlbumsService } from '../../services/albums.service';
+import { Component, HostListener, Input, NgZone, ViewChild } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { AlertController, IonInput, ModalController, Platform, ViewWillLeave } from "@ionic/angular";
+import { Photo } from "src/app/schema/photo";
+import Swiper, { SwiperOptions } from "swiper";
+import { AlbumsService } from "../../services/albums.service";
 
 @Component({
-  selector: 'bo-photos-edit',
-  templateUrl: './photos-edit.component.html',
-  styleUrls: ['./photos-edit.component.scss']
+  selector: "bo-photos-edit",
+  templateUrl: "./photos-edit.component.html",
+  styleUrls: ["./photos-edit.component.scss"],
 })
 export class PhotosEditComponent implements ViewWillLeave {
-
   photo?: Photo;
   @Input() photos!: Photo[];
 
@@ -36,8 +35,8 @@ export class PhotosEditComponent implements ViewWillLeave {
     private route: ActivatedRoute,
     private router: Router,
     private platform: Platform,
-    private ngZone: NgZone
-  ) { }
+    private ngZone: NgZone,
+  ) {}
 
   ionViewWillLeave(): void {
     this.router.navigate([], { queryParams: { photo: undefined }, replaceUrl: true });
@@ -46,7 +45,7 @@ export class PhotosEditComponent implements ViewWillLeave {
   onSwiper(swiper: Swiper) {
     this.swiper = swiper;
     const photoId = this.route.snapshot.queryParams["photo"];
-    const index = this.photos.findIndex(item => item._id === photoId);
+    const index = this.photos.findIndex((item) => item._id === photoId);
 
     if (!this.photo || this.photo._id !== photoId) {
       this.swiper?.slideTo(index, 0);
@@ -65,25 +64,29 @@ export class PhotosEditComponent implements ViewWillLeave {
 
       this.router.navigate([], { queryParams: { photo: this.photo._id }, replaceUrl: true });
     });
-
   }
 
-  @HostListener('document:keyup', ['$event'])
+  @HostListener("document:keyup", ["$event"])
   onKeyUp(event: KeyboardEvent) {
-
     if (!this.editingCaption && !this.infoOpen) {
       switch (event.code) {
-        case "ArrowLeft": return this.previousPhoto();
-        case "ArrowRight": return this.nextPhoto();
-        case "Escape": return this.close();
-        case "Home": return this.openPhoto(0);
-        case "End": return this.openPhoto(this.photos.length - 1);
-        case "Enter": return this.editCaption();
+        case "ArrowLeft":
+          return this.previousPhoto();
+        case "ArrowRight":
+          return this.nextPhoto();
+        case "Escape":
+          return this.close();
+        case "Home":
+          return this.openPhoto(0);
+        case "End":
+          return this.openPhoto(this.photos.length - 1);
+        case "Enter":
+          return this.editCaption();
       }
-    }
-    else {
+    } else {
       switch (event.code) {
-        case "Escape": return this.cancelEditingCaption();
+        case "Escape":
+          return this.cancelEditingCaption();
       }
     }
   }
@@ -107,7 +110,7 @@ export class PhotosEditComponent implements ViewWillLeave {
 
   editCaption() {
     this.editingCaption = true;
-    this.captionInput.getInputElement().then(el => el.focus());
+    this.captionInput.getInputElement().then((el) => el.focus());
   }
 
   cancelEditingCaption() {
@@ -131,8 +134,8 @@ export class PhotosEditComponent implements ViewWillLeave {
       message: "Chcete opravdu smazat tuto fotku?",
       buttons: [
         { text: "Zrušit", role: "cancel" },
-        { text: "Smazat", role: "submit", handler: () => this.deleteConfirmed(photo) }
-      ]
+        { text: "Smazat", role: "submit", handler: () => this.deleteConfirmed(photo) },
+      ],
     });
 
     alert.present();
@@ -141,7 +144,7 @@ export class PhotosEditComponent implements ViewWillLeave {
   async deleteConfirmed(photo: Photo) {
     await this.albumsService.deletePhoto(photo._id);
 
-    const i = this.photos.findIndex(item => item._id === photo._id);
+    const i = this.photos.findIndex((item) => item._id === photo._id);
     this.photos.splice(i, 1);
 
     if (!this.photos.length) this.modalController.dismiss({ refresh: true });
@@ -154,11 +157,9 @@ export class PhotosEditComponent implements ViewWillLeave {
 
       this.openPhoto(newI);
     }
-
   }
 
   getMpix(width: number, height: number) {
-    return Math.round(width * height / 1000000);
+    return Math.round((width * height) / 1000000);
   }
-
 }

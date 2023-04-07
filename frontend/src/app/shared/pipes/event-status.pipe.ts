@@ -1,19 +1,17 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { EventStatus, EventStatuses, EventStatusID } from 'app/config/event-statuses';
+import { Pipe, PipeTransform } from "@angular/core";
+import { EventStatus, EventStatusID, EventStatuses } from "src/app/config/event-statuses";
 
 @Pipe({
-  name: 'eventStatus'
+  name: "eventStatus",
 })
 export class EventStatusPipe implements PipeTransform {
-
   statuses = EventStatuses;
 
-  defaultValues: { [key: string]: any; } = {
-    "color": "#ccc"
+  defaultValues: { [key: string]: any } = {
+    color: "#ccc",
   };
 
   transform(status: EventStatusID | undefined, property: keyof EventStatus): string | undefined {
-
     // if group properties not loaded yet or not present for group, return default values
     if (!status) return this.defaultValues[property];
 
@@ -24,5 +22,4 @@ export class EventStatusPipe implements PipeTransform {
         return this.statuses?.[status]?.[property];
     }
   }
-
 }

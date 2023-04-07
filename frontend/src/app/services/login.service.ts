@@ -1,10 +1,10 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 
-import { ApiService } from "app/core/services/api.service";
-import { GoogleService } from "app/core/services/google.service";
-import { ToastService } from './toast.service';
-import { UserService } from './user.service';
+import { ApiService } from "src/app/services/api.service";
+import { GoogleService } from "src/app/services/google.service";
+import { ToastService } from "./toast.service";
+import { UserService } from "./user.service";
 
 export interface LoginResult {
   success: boolean;
@@ -12,10 +12,9 @@ export interface LoginResult {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class LoginService {
-
   onLogin: EventEmitter<void> = new EventEmitter();
   onLogout: EventEmitter<void> = new EventEmitter();
 
@@ -27,21 +26,17 @@ export class LoginService {
     private router: Router,
     private googleService: GoogleService,
     private userService: UserService,
-    private toastService: ToastService
-  ) {
-  }
+    private toastService: ToastService,
+  ) {}
 
-  async loginCredentials(credentials: { login: string, password: string; }): Promise<LoginResult> {
-
+  async loginCredentials(credentials: { login: string; password: string }): Promise<LoginResult> {
     const result: LoginResult = { success: true };
 
     try {
-
       await this.api.post("login", credentials);
 
       await this.userService.loadUser();
-    }
-    catch (err: any) {
+    } catch (err: any) {
       result.success = false;
 
       if (err.status === 401) result.error = "invalidCredentials";
@@ -50,11 +45,9 @@ export class LoginService {
     }
 
     return result;
-
   }
 
   async loginGoogle(): Promise<LoginResult> {
-
     try {
       // get google token
       const googleToken = await this.googleService.signIn();
@@ -65,11 +58,9 @@ export class LoginService {
       await this.userService.loadUser();
 
       return { success: true };
-    }
-    catch (err) {
+    } catch (err) {
       return { success: false };
     }
-
   }
 
   async loginImpersonate(userId: string) {
@@ -79,8 +70,7 @@ export class LoginService {
       await this.userService.loadUser();
 
       return { success: true };
-    }
-    catch (err: any) {
+    } catch (err: any) {
       return { success: false, error: err.message };
     }
   }
@@ -90,8 +80,7 @@ export class LoginService {
 
     try {
       await this.api.post("login:sendlink", { login });
-    }
-    catch (err: any) {
+    } catch (err: any) {
       result.success = false;
       if (err.status === 404) result.error = "userNotFound";
       else result.error = "error";
@@ -106,5 +95,4 @@ export class LoginService {
 
     if (user) this.toastService.toast("Přihlášen zpět jako " + user.login);
   }
-
 }

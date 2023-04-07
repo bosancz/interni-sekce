@@ -1,24 +1,21 @@
-import { Injectable } from '@angular/core';
-import { environment } from "environments/environment";
+import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
+import { environment } from "src/environments/environment";
 
 declare const gapi: any;
 
 declare const window: any;
 
 export class GoogleError extends Error {
-
   name: string = "GoogleError"; // when transpiled to ES5 cant test if instanceof GoogleError
 
   description?: string;
 }
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class GoogleService {
-
   gapi: any;
 
   loaded = new BehaviorSubject<boolean>(false);
@@ -32,21 +29,21 @@ export class GoogleService {
     const gapi: any = await new Promise((resolve, reject) => {
       if (window.gapi) {
         resolve(window.gapi);
-      }
-      else {
-        window.gapi_loaded = function () { resolve(window.gapi); };
+      } else {
+        window.gapi_loaded = function () {
+          resolve(window.gapi);
+        };
       }
     });
 
     // https://github.com/google/google-api-javascript-client/blob/master/samples/loadedDiscovery.html
     await new Promise((resolve, reject) => {
-      gapi.load('client:auth2', resolve);
+      gapi.load("client:auth2", resolve);
     });
 
     try {
       await gapi.client.init(environment.gapi);
-    }
-    catch (googleErr: any) {
+    } catch (googleErr: any) {
       const err = new GoogleError(googleErr.error);
       err.description = googleErr.details;
       throw err;
@@ -63,7 +60,6 @@ export class GoogleService {
   }
 
   async signIn(): Promise<string> {
-
     try {
       const auth2 = this.getAuthInstance();
 
@@ -72,13 +68,11 @@ export class GoogleService {
       const token = auth2.currentUser.get().getAuthResponse(true).id_token;
 
       return token;
-    }
-    catch (googleErr: any) {
+    } catch (googleErr: any) {
       const err = new GoogleError(googleErr.error);
       err.description = googleErr.details;
       throw err;
     }
-
   }
 
   async signOut(): Promise<void> {
@@ -92,8 +86,7 @@ export class GoogleService {
   }
 
   async getCurrentUser() {
-
-    if (!await this.isSignedIn()) return null;
+    if (!(await this.isSignedIn())) return null;
 
     const auth2 = this.getAuthInstance();
 
@@ -101,7 +94,7 @@ export class GoogleService {
 
     return {
       email: profile.getEmail(),
-      token: auth2.currentUser.get().getAuthResponse(true).id_token
+      token: auth2.currentUser.get().getAuthResponse(true).id_token,
     };
   }
 }

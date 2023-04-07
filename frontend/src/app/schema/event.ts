@@ -1,6 +1,6 @@
-import { EventExpenseTypeId } from "app/config/event-expense-types";
-import { EventStatusID } from "app/config/event-statuses";
-import { EventTypeID } from "app/config/event-types";
+import { EventExpenseTypeId } from "src/app/config/event-expense-types";
+import { EventStatusID } from "src/app/config/event-statuses";
+import { EventTypeID } from "src/app/config/event-types";
 import { Document } from "./api-document";
 import { Member } from "./member";
 
@@ -12,11 +12,15 @@ export interface EventExpense {
   photo?: string;
 }
 
-export type EventLinks = "registration" | "announcement" | "announcement-template" | "accounting" | "accounting-template";
+export type EventLinks =
+  | "registration"
+  | "announcement"
+  | "announcement-template"
+  | "accounting"
+  | "accounting-template";
 export type EventActions = "publish" | "unpublish" | "uncancel" | "cancel" | "reject" | "submit" | "lead";
 
 export interface Event extends Document<EventLinks, EventActions> {
-
   _id: string;
   status: EventStatusID;
   statusNote: string;
@@ -35,7 +39,7 @@ export interface Event extends Document<EventLinks, EventActions> {
   order?: number;
 
   meeting?: {
-    start?: string,
+    start?: string;
     end?: string;
   };
 
@@ -47,7 +51,7 @@ export interface Event extends Document<EventLinks, EventActions> {
   groups?: string[];
   leadersEvent?: boolean;
 
-  competition: { river: string, water_km: number; };
+  competition: { river: string; water_km: number };
 
   expenses: EventExpense[];
 

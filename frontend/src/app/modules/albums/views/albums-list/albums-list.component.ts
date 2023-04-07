@@ -1,26 +1,21 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, NavController, ViewWillEnter } from '@ionic/angular';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { ApiService } from 'app/core/services/api.service';
-import { ToastService } from 'app/core/services/toast.service';
-import { Album } from "app/schema/album";
-import { Action } from 'app/shared/components/action-buttons/action-buttons.component';
-import { ThematicBreak } from 'docx';
-import { transliterate } from 'inflected';
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { AlertController, NavController, ViewWillEnter } from "@ionic/angular";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { transliterate } from "inflected";
 import { BehaviorSubject } from "rxjs";
-import { debounceTime } from 'rxjs/operators';
-
-
+import { debounceTime } from "rxjs/operators";
+import { Album } from "src/app/schema/album";
+import { ApiService } from "src/app/services/api.service";
+import { ToastService } from "src/app/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 @UntilDestroy()
 @Component({
-  selector: 'albums-list',
-  templateUrl: './albums-list.component.html',
-  styleUrls: ['./albums-list.component.scss']
+  selector: "albums-list",
+  templateUrl: "./albums-list.component.html",
+  styleUrls: ["./albums-list.component.scss"],
 })
 export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
-
   albums: Album[] = [];
   filteredAlbums: Album[] = [];
 
@@ -31,15 +26,15 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
     { id: "draft", name: "v přípravě" },
   ];
 
-  statusesIndex = this.statuses.reduce((acc, cur) => (acc[cur.id] = cur.name, acc), {} as { [id: string]: string; });
+  statusesIndex = this.statuses.reduce((acc, cur) => ((acc[cur.id] = cur.name), acc), {} as { [id: string]: string });
 
   loadingArray = Array(5).fill(null);
 
   actions: Action[] = [
     {
       text: "Nové",
-      handler: () => this.createAlbumModal()
-    }
+      handler: () => this.createAlbumModal(),
+    },
   ];
 
   alert?: HTMLIonAlertElement;
@@ -50,16 +45,14 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
     private api: ApiService,
     private alertController: AlertController,
     private toastService: ToastService,
-    private navController: NavController
-  ) {
-
-  }
+    private navController: NavController,
+  ) {}
 
   ngOnInit() {
     this.searchString
       .pipe(untilDestroyed(this))
       .pipe(debounceTime(250))
-      .subscribe(searchString => {
+      .subscribe((searchString) => {
         this.filteredAlbums = this.filterAlbums(this.albums, searchString);
       });
   }
@@ -73,21 +66,16 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
   }
 
   private async loadAlbums() {
-
     this.albums = [];
 
     const albums = await this.api.get<Album[]>("albums");
 
     albums.sort((a, b) => {
-      return a?.status.localeCompare(b.status)
-        || b.dateFrom?.localeCompare(a.dateFrom)
-        || 0;
+      return a?.status.localeCompare(b.status) || b.dateFrom?.localeCompare(a.dateFrom) || 0;
     });
 
-    this.searchIndex = albums.map(album => {
-      return [
-        transliterate(album.name)
-      ].filter(item => !!item).join(" ");
+    this.searchIndex = albums.map((album) => {
+      return [transliterate(album.name)].filter((item) => !!item).join(" ");
     });
 
     this.albums = albums;
@@ -95,7 +83,6 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
   }
 
   private filterAlbums(albums: Album[], searchString: string) {
-
     if (!searchString) return albums;
 
     const search_re = new RegExp("(^| )" + transliterate(searchString).replace(/[^a-zA-Z0-9]/g, ""), "i");
@@ -113,15 +100,17 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
       ],
       buttons: [
         { role: "cancel", text: "Zrušit" },
-        { text: "Vytvořit", handler: (data: Partial<Pick<Album, "name" | "dateFrom" | "dateTill">>) => this.onCreateAlbum(data) },
-      ]
+        {
+          text: "Vytvořit",
+          handler: (data: Partial<Pick<Album, "name" | "dateFrom" | "dateTill">>) => this.onCreateAlbum(data),
+        },
+      ],
     });
 
     await this.alert.present();
   }
 
   private onCreateAlbum(albumData: Partial<Pick<Album, "name" | "dateFrom" | "dateTill">>) {
-
     // prevent switched date order
     if (albumData.dateFrom && albumData.dateTill) {
       const dates = [albumData.dateFrom, albumData.dateTill];
@@ -139,7 +128,6 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
   }
 
   private async createAlbum(albumData: Pick<Album, "name" | "dateFrom" | "dateTill">) {
-
     if (!albumData.name || !albumData.dateFrom || !albumData.dateTill) {
       this.toastService.toast("Musíš vyplnit jméno i datumy");
       return false;
@@ -157,5 +145,4 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
 
     await this.navController.navigateForward("/galerie/" + album._id);
   }
-
 }

@@ -1,18 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { EventStatuses } from 'app/config/event-statuses';
+import { Component, OnInit } from "@angular/core";
+import { EventStatuses } from "src/app/config/event-statuses";
 
 @Component({
-  selector: 'bo-event-status-legend',
-  templateUrl: './event-status-legend.component.html',
-  styleUrls: ['./event-status-legend.component.scss']
+  selector: "bo-event-status-legend",
+  templateUrl: "./event-status-legend.component.html",
+  styleUrls: ["./event-status-legend.component.scss"],
 })
 export class EventStatusLegendComponent implements OnInit {
-
   statuses = EventStatuses;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

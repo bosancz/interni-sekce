@@ -1,8 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Platform } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { ApiService } from "app/core/services/api.service";
-import { Event } from "app/schema/event";
+import { ApiService } from "src/app/services/api.service";
 
 @UntilDestroy()
 @Component({

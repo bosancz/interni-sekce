@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { MemberGroupID, MemberGroups } from "app/config/member-groups";
+import { MemberGroupID, MemberGroups } from "src/app/config/member-groups";
 
 export type GroupPipeProperty = "name" | "color";
 

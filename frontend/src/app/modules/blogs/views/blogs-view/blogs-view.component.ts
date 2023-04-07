@@ -1,18 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
-import { ToastService } from 'app/core/services/toast.service';
-import { Blog } from 'app/schema/blog';
-import { Action } from 'app/shared/components/action-buttons/action-buttons.component';
-import { BlogsService } from '../../services/blogs.service';
+import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { AlertController, ToastController } from "@ionic/angular";
+import { Blog } from "src/app/schema/blog";
+import { ToastService } from "src/app/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { BlogsService } from "../../services/blogs.service";
 
 @Component({
-  selector: 'bo-blogs-view',
-  templateUrl: './blogs-view.component.html',
-  styleUrls: ['./blogs-view.component.scss']
+  selector: "bo-blogs-view",
+  templateUrl: "./blogs-view.component.html",
+  styleUrls: ["./blogs-view.component.scss"],
 })
 export class BlogsViewComponent implements OnInit {
-
   blog?: Blog;
 
   actions: Action[] = [];
@@ -23,14 +22,14 @@ export class BlogsViewComponent implements OnInit {
     private blogs: BlogsService,
     private toasts: ToastService,
     private alertController: AlertController,
-    private toastController: ToastController
-  ) { }
+    private toastController: ToastController,
+  ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       if (params["id"]) this.load(params["id"]);
     });
-  };
+  }
 
   async load(id: string) {
     this.blog = await this.blogs.load(id);
@@ -41,19 +40,15 @@ export class BlogsViewComponent implements OnInit {
     if (!this.blog) return;
 
     const alert = await this.alertController.create({
-      header: 'Smazat příspěvek?',
+      header: "Smazat příspěvek?",
       message: `Opravdu chcete smazat příspěvek „<strong>${this.blog.title}</strong>“?`,
-      buttons: [
-        { text: 'Zrušit' },
-        { text: 'Smazat', handler: () => this.deleteConfirmed() }
-      ]
+      buttons: [{ text: "Zrušit" }, { text: "Smazat", handler: () => this.deleteConfirmed() }],
     });
 
     await alert.present();
   }
 
   private async deleteConfirmed() {
-
     if (!this.blog) return;
 
     const oldData = this.blog;
@@ -90,18 +85,18 @@ export class BlogsViewComponent implements OnInit {
         text: "Upravit",
         icon: "create-outline",
         pinned: true,
-        handler: () => this.router.navigate(["upravit"], { relativeTo: this.route })
+        handler: () => this.router.navigate(["upravit"], { relativeTo: this.route }),
       },
       {
         text: "Publikovat",
         hidden: blog.status !== "draft",
-        handler: () => this.publish()
+        handler: () => this.publish(),
       },
       {
         text: "Zrušit publikaci",
         icon: "eye-off-outline",
         hidden: blog.status !== "public",
-        handler: () => this.unpublish()
+        handler: () => this.unpublish(),
       },
       {
         text: "Otevřít na webu",
@@ -119,5 +114,4 @@ export class BlogsViewComponent implements OnInit {
       },
     ];
   }
-
 }

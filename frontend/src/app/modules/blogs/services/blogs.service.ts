@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { ApiService } from 'app/core/services/api.service';
-import { Blog } from 'app/schema/blog';
+import { Injectable } from "@angular/core";
+import { Blog } from "src/app/schema/blog";
+import { ApiService } from "src/app/services/api.service";
 
 export interface BlogsFilter {
   year: number;
@@ -9,17 +9,13 @@ export interface BlogsFilter {
 
 @Injectable()
 export class BlogsService {
-
-  constructor(
-    private api: ApiService
-  ) { }
+  constructor(private api: ApiService) {}
 
   async list(filter?: BlogsFilter) {
-
     const options: any = {
       filter: {
-        dateFrom: filter?.year ? { $gte: filter.year + "-01-01", $lte: filter.year + "-12-31" } : undefined
-      }
+        dateFrom: filter?.year ? { $gte: filter.year + "-01-01", $lte: filter.year + "-12-31" } : undefined,
+      },
     };
 
     if (filter?.status) options.filter.status = filter.status;

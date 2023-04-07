@@ -1,6 +1,6 @@
-import { MemberGroupID } from "app/config/member-groups";
-import { MemberRoleID } from "app/config/member-roles";
-import { MembershipTypeID } from "app/config/membership-types";
+import { MemberGroupID } from "src/app/config/member-groups";
+import { MemberRoleID } from "src/app/config/member-roles";
+import { MembershipTypeID } from "src/app/config/membership-types";
 import { Document } from "./api-document";
 
 export interface Member extends Document {
@@ -18,32 +18,34 @@ export interface Member extends Document {
   nickname?: string;
 
   name?: {
-    first: string,
+    first: string;
     last: string;
   };
 
   birthday?: string;
 
   address: {
-    street: string,
-    streetNo: string,
-    city: string,
-    postalCode: string,
+    street: string;
+    streetNo: string;
+    city: string;
+    postalCode: string;
     country: string;
   };
 
   contacts?: {
-    mobile: string,
-    email: string,
-    mother: string,
+    mobile: string;
+    email: string;
+    mother: string;
     father: string;
   };
 
-  achievements: [{
-    id: string,
-    dateFrom: Date,
-    dateTill: Date;
-  }];
+  achievements: [
+    {
+      id: string;
+      dateFrom: Date;
+      dateTill: Date;
+    },
+  ];
 
   allergies?: string[];
   allergiesDate: string | Date;

@@ -2,13 +2,13 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { EventStatuses } from "app/config/event-statuses";
-import { ApiService } from "app/core/services/api.service";
-import { ToastService } from "app/core/services/toast.service";
-import { Album, Photo } from "app/schema/album";
-import { Event, EventActions } from "app/schema/event";
-import { Action } from "app/shared/components/action-buttons/action-buttons.component";
 import { filter } from "rxjs/operators";
+import { EventStatuses } from "src/app/config/event-statuses";
+import { Album, Photo } from "src/app/schema/album";
+import { Event, EventActions } from "src/app/schema/event";
+import { ApiService } from "src/app/services/api.service";
+import { ToastService } from "src/app/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { EventsService } from "../../../services/events.service";
 
 @UntilDestroy()
@@ -34,7 +34,7 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private toastService: ToastService,
     private eventsService: EventsService,
-    private alertConctroller: AlertController
+    private alertConctroller: AlertController,
   ) {}
 
   ngOnInit() {

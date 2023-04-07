@@ -1,30 +1,28 @@
-import { Component, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { ToastService } from 'app/core/services/toast.service';
-import { Album, Photo } from 'app/schema/album';
-import { Event } from 'app/schema/event';
-import { Action } from 'app/shared/components/action-buttons/action-buttons.component';
-import { AlbumsService } from '../../services/albums.service';
-
+import { Component, ViewChild } from "@angular/core";
+import { NgForm } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
+import { NavController } from "@ionic/angular";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { Album, Photo } from "src/app/schema/album";
+import { Event } from "src/app/schema/event";
+import { ToastService } from "src/app/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { AlbumsService } from "../../services/albums.service";
 
 @UntilDestroy()
 @Component({
-  selector: 'albums-edit',
-  templateUrl: './albums-edit.component.html',
-  styleUrls: ['./albums-edit.component.scss']
+  selector: "albums-edit",
+  templateUrl: "./albums-edit.component.html",
+  styleUrls: ["./albums-edit.component.scss"],
 })
 export class AlbumsEditComponent {
-
   album?: Album<Photo, string>;
 
   actions: Action[] = [
     {
       text: "Uložit",
-      handler: () => this.saveAlbum()
-    }
+      handler: () => this.saveAlbum(),
+    },
   ];
 
   @ViewChild("albumForm") albumForm!: NgForm;
@@ -34,14 +32,11 @@ export class AlbumsEditComponent {
     private route: ActivatedRoute,
     private router: Router,
     private toastService: ToastService,
-    private navController: NavController
-  ) { }
+    private navController: NavController,
+  ) {}
 
   ngOnInit() {
-    this.route.params
-      .pipe(untilDestroyed(this))
-      .subscribe(params => this.loadAlbum(params.album));
-
+    this.route.params.pipe(untilDestroyed(this)).subscribe((params) => this.loadAlbum(params.album));
   }
 
   private async loadAlbum(albumId: string) {
@@ -56,7 +51,6 @@ export class AlbumsEditComponent {
   }
 
   private async saveAlbum() {
-
     if (!this.album) return;
 
     if (this.albumForm.invalid) {
@@ -80,5 +74,4 @@ export class AlbumsEditComponent {
 
     this.navController.navigateBack(["/galerie", this.album._id]);
   }
-
 }

@@ -1,28 +1,27 @@
-import { Component, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
-import { MemberGroups } from 'app/config/member-groups';
-import { MemberRoles } from 'app/config/member-roles';
-import { MembershipTypes } from 'app/config/membership-types';
-import { ApiService } from 'app/core/services/api.service';
-import { ToastService } from 'app/core/services/toast.service';
-import { Member } from 'app/schema/member';
-import { Action } from 'app/shared/components/action-buttons/action-buttons.component';
-import { Subscription } from 'rxjs';
+import { Component, ViewChild } from "@angular/core";
+import { NgForm } from "@angular/forms";
+import { ActivatedRoute, Params, Router } from "@angular/router";
+import { NavController } from "@ionic/angular";
+import { Subscription } from "rxjs";
+import { MemberGroups } from "src/app/config/member-groups";
+import { MemberRoles } from "src/app/config/member-roles";
+import { MembershipTypes } from "src/app/config/membership-types";
+import { Member } from "src/app/schema/member";
+import { ApiService } from "src/app/services/api.service";
+import { ToastService } from "src/app/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 @Component({
-  selector: 'members-edit',
-  templateUrl: './members-edit.component.html',
-  styleUrls: ['./members-edit.component.scss']
+  selector: "members-edit",
+  templateUrl: "./members-edit.component.html",
+  styleUrls: ["./members-edit.component.scss"],
 })
 export class MembersEditComponent {
-
   member?: Member;
 
   groups = Object.entries(MemberGroups)
-    .map(entry => ({ key: entry[0], value: entry[1] }))
-    .filter(entry => entry.value.real);
+    .map((entry) => ({ key: entry[0], value: entry[1] }))
+    .filter((entry) => entry.value.real);
 
   roles = MemberRoles;
   membershipTypes = MembershipTypes;
@@ -35,8 +34,8 @@ export class MembersEditComponent {
     {
       text: "Uložit",
       pinned: true,
-      handler: () => this.saveMember()
-    }
+      handler: () => this.saveMember(),
+    },
   ];
 
   constructor(
@@ -44,9 +43,8 @@ export class MembersEditComponent {
     private toastService: ToastService,
     private route: ActivatedRoute,
     private router: Router,
-    private navController: NavController
-  ) {
-  }
+    private navController: NavController,
+  ) {}
 
   ngOnInit() {
     this.paramsSubscription = this.route.params.subscribe((params: Params) => {
@@ -62,9 +60,7 @@ export class MembersEditComponent {
     this.member = await this.api.get<Member>(["member", memberId]);
   }
 
-
   async saveMember() {
-
     if (!this.member) return;
 
     const memberData = this.form.value;
@@ -77,5 +73,4 @@ export class MembersEditComponent {
 
     this.navController.navigateBack(["/databaze", this.member._id]);
   }
-
 }

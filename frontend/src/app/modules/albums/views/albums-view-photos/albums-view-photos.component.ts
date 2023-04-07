@@ -1,13 +1,12 @@
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ModalController, Platform, ViewWillLeave } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { ToastService } from "app/core/services/toast.service";
-import { PhotosEditComponent } from "app/modules/albums/components/photos-edit/photos-edit.component";
-import { PhotosUploadComponent } from "app/modules/albums/components/photos-upload/photos-upload.component";
-import { Album, Photo } from "app/schema/album";
-import { Action } from "app/shared/components/action-buttons/action-buttons.component";
-import { BehaviorSubject } from "rxjs";
+import { PhotosEditComponent } from "src/app/modules/albums/components/photos-edit/photos-edit.component";
+import { PhotosUploadComponent } from "src/app/modules/albums/components/photos-upload/photos-upload.component";
+import { Album, Photo } from "src/app/schema/album";
+import { ToastService } from "src/app/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AlbumsService } from "../../services/albums.service";
 
 @UntilDestroy()
@@ -42,7 +41,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
     public modalController: ModalController,
     private toastService: ToastService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {

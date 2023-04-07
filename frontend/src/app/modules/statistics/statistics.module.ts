@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
-import { SharedModule } from "app/shared/shared.module";
 import { NgChartsModule } from "ng2-charts";
+import { SharedModule } from "src/app/shared/shared.module";
 import { ListSliderComponent } from "./components/list-slider/list-slider.component";
 import { StatisticsRoutingModule } from "./statistics-routing.module";
 import { StatisticsComponent } from "./statistics.component";

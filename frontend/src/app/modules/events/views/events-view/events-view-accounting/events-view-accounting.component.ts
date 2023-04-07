@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { AlertController, ModalController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { EventExpenseTypes } from "app/config/event-expense-types";
-import { ToastService } from "app/core/services/toast.service";
-import { EventExpenseModalComponent } from "app/modules/events/components/event-expense-modal/event-expense-modal.component";
-import { EventsService } from "app/modules/events/services/events.service";
-import { Event, EventExpense } from "app/schema/event";
-import { Action } from "app/shared/components/action-buttons/action-buttons.component";
-import { environment } from "environments/environment";
+import { EventExpenseTypes } from "src/app/config/event-expense-types";
+import { EventExpenseModalComponent } from "src/app/modules/events/components/event-expense-modal/event-expense-modal.component";
+import { EventsService } from "src/app/modules/events/services/events.service";
+import { Event, EventExpense } from "src/app/schema/event";
+import { ToastService } from "src/app/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { environment } from "src/environments/environment";
 
 @UntilDestroy()
 @Component({
@@ -29,7 +29,7 @@ export class EventsViewAccountingComponent implements OnInit, OnDestroy {
     private eventsService: EventsService,
     private modalController: ModalController,
     private alertController: AlertController,
-    private toastService: ToastService
+    private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {

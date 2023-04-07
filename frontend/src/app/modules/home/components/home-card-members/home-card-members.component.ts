@@ -1,9 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { ApiService } from "app/core/services/api.service";
-import { Member } from "app/schema/member";
 import { Subject } from "rxjs";
 import { debounceTime, tap } from "rxjs/operators";
+import { Member } from "src/app/schema/member";
+import { ApiService } from "src/app/services/api.service";
 
 @UntilDestroy()
 @Component({

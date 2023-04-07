@@ -1,36 +1,30 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
-import { ApiService } from 'app/core/services/api.service';
-import { ToastService } from 'app/core/services/toast.service';
-import { User } from 'app/schema/user';
-import { Action } from 'app/shared/components/action-buttons/action-buttons.component';
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { NgForm } from "@angular/forms";
+import { Router } from "@angular/router";
+import { User } from "src/app/schema/user";
+import { ApiService } from "src/app/services/api.service";
+import { ToastService } from "src/app/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 @Component({
-  selector: 'users-create',
-  templateUrl: './users-create.component.html',
-  styleUrls: ['./users-create.component.scss']
+  selector: "users-create",
+  templateUrl: "./users-create.component.html",
+  styleUrls: ["./users-create.component.scss"],
 })
 export class UsersCreateComponent implements OnInit {
-
   actions: Action[] = [
     {
       text: "Vytvořit",
       icon: "add-outline",
-      handler: () => this.createUser()
-    }
+      handler: () => this.createUser(),
+    },
   ];
 
   @ViewChild("createUserForm") form!: NgForm;
 
-  constructor(
-    private api: ApiService,
-    private toastService: ToastService,
-    private router: Router,
-  ) { }
+  constructor(private api: ApiService, private toastService: ToastService, private router: Router) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   async createUser() {
     // get data from form
@@ -54,7 +48,5 @@ export class UsersCreateComponent implements OnInit {
 
     // open the user
     this.router.navigate(["/uzivatele", user._id], { replaceUrl: true });
-
   }
-
 }

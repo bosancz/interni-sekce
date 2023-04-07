@@ -1,17 +1,16 @@
-import { Injectable } from '@angular/core';
-import { Event } from 'app/schema/event';
-import { BehaviorSubject } from 'rxjs';
-import { DateTime } from 'luxon';
-import { ApiService } from 'app/core/services/api.service';
+import { Injectable } from "@angular/core";
+import { DateTime } from "luxon";
+import { BehaviorSubject } from "rxjs";
+import { Event } from "src/app/schema/event";
+import { ApiService } from "src/app/services/api.service";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class EventsService {
-
   event$ = new BehaviorSubject<Event | undefined>(undefined);
 
-  constructor(private api: ApiService) { }
+  constructor(private api: ApiService) {}
 
   async loadEvent(eventId: string): Promise<Event> {
     const event = await this.api.get<Event>(["event", eventId], { populate: ["leaders"] });
@@ -24,7 +23,6 @@ export class EventsService {
     this.event$.next(event);
 
     return event;
-
   }
 
   async deleteEvent(eventId: string) {
@@ -37,5 +35,5 @@ export class EventsService {
 
   async updateEvent(eventId: string, data: Partial<Event>) {
     return this.api.patch<Event>(["event", eventId], data);
-  };
+  }
 }

@@ -1,14 +1,14 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ModalController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { ApiService } from "app/core/services/api.service";
-import { ToastService } from "app/core/services/toast.service";
-import { MemberSelectorModalComponent } from "app/modules/events/components/member-selector-modal/member-selector-modal.component";
-import { EventsService } from "app/modules/events/services/events.service";
-import { Event } from "app/schema/event";
-import { Member } from "app/schema/member";
-import { Action } from "app/shared/components/action-buttons/action-buttons.component";
-import { environment } from "environments/environment";
+import { MemberSelectorModalComponent } from "src/app/modules/events/components/member-selector-modal/member-selector-modal.component";
+import { EventsService } from "src/app/modules/events/services/events.service";
+import { Event } from "src/app/schema/event";
+import { Member } from "src/app/schema/member";
+import { ApiService } from "src/app/services/api.service";
+import { ToastService } from "src/app/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { environment } from "src/environments/environment";
 
 @UntilDestroy()
 @Component({
@@ -30,7 +30,7 @@ export class EventsViewAttendeesComponent implements OnInit, OnDestroy {
     private eventsService: EventsService,
     private api: ApiService,
     public modalController: ModalController,
-    private toastService: ToastService
+    private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {

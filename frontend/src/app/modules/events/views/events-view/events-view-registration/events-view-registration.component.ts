@@ -1,22 +1,20 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { ApiService } from 'app/core/services/api.service';
-import { ToastService } from 'app/core/services/toast.service';
-import { Event } from "app/schema/event";
-import { Action } from 'app/shared/components/action-buttons/action-buttons.component';
-import { filter } from 'rxjs/operators';
-import { EventsService } from '../../../services/events.service';
-
+import { Component, ElementRef, ViewChild } from "@angular/core";
+import { DomSanitizer } from "@angular/platform-browser";
+import { UntilDestroy } from "@ngneat/until-destroy";
+import { filter } from "rxjs/operators";
+import { Event } from "src/app/schema/event";
+import { ApiService } from "src/app/services/api.service";
+import { ToastService } from "src/app/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { EventsService } from "../../../services/events.service";
 
 @UntilDestroy()
 @Component({
-  selector: 'events-view-registration',
-  templateUrl: './events-view-registration.component.html',
-  styleUrls: ['./events-view-registration.component.scss']
+  selector: "events-view-registration",
+  templateUrl: "./events-view-registration.component.html",
+  styleUrls: ["./events-view-registration.component.scss"],
 })
 export class EventsViewRegistrationComponent {
-
   event?: Event;
 
   uploadingRegistration: boolean = false;
@@ -29,11 +27,9 @@ export class EventsViewRegistrationComponent {
     private api: ApiService,
     private toastService: ToastService,
     private eventService: EventsService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
   ) {
-    this.eventService.event$
-      .pipe(filter(event => !!event))
-      .subscribe(event => this.updateEvent(event!));
+    this.eventService.event$.pipe(filter((event) => !!event)).subscribe((event) => this.updateEvent(event!));
   }
 
   private updateEvent(event: Event) {
@@ -46,7 +42,6 @@ export class EventsViewRegistrationComponent {
   }
 
   async uploadRegistration(input: HTMLInputElement) {
-
     if (!this.event) return;
 
     if (!this.event._links?.registration) return;
@@ -67,8 +62,7 @@ export class EventsViewRegistrationComponent {
 
     try {
       await this.api.put(this.event._links.registration, formData);
-    }
-    catch (err: any) {
+    } catch (err: any) {
       this.toastService.toast("Nastala chyba při nahrávání: " + err.message);
     }
 
@@ -76,7 +70,6 @@ export class EventsViewRegistrationComponent {
     this.toastService.toast("Přihláška nahrána.");
 
     this.eventService.loadEvent(this.event._id);
-
   }
 
   async deleteRegistration() {
@@ -107,21 +100,20 @@ export class EventsViewRegistrationComponent {
       {
         text: "Stáhnout",
         hidden: !event._links?.registration?.allowed.GET,
-        handler: () => this.downloadRegistration()
+        handler: () => this.downloadRegistration(),
       },
       {
         text: "Nahrát",
         hidden: !event._links?.registration?.allowed.PUT,
-        handler: () => this.uploadRegistrationSelect()
+        handler: () => this.uploadRegistrationSelect(),
       },
       {
         text: "Smazat",
         role: "destructive",
         color: "danger",
         hidden: !event?.registration || !event._links?.registration?.allowed.DELETE,
-        handler: () => this.deleteRegistration()
-      }
+        handler: () => this.deleteRegistration(),
+      },
     ];
   }
-
 }

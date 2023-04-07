@@ -1,14 +1,13 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { IonSearchbar, ModalController, ViewDidEnter } from '@ionic/angular';
-import { Member } from 'app/schema/member';
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { IonSearchbar, ModalController, ViewDidEnter } from "@ionic/angular";
+import { Member } from "src/app/schema/member";
 
 @Component({
-  selector: 'bo-member-selector-modal',
-  templateUrl: './member-selector-modal.component.html',
-  styleUrls: ['./member-selector-modal.component.scss']
+  selector: "bo-member-selector-modal",
+  templateUrl: "./member-selector-modal.component.html",
+  styleUrls: ["./member-selector-modal.component.scss"],
 })
 export class MemberSelectorModalComponent implements OnInit, ViewDidEnter {
-
   @Input() members: Member[] = [];
 
   membersIndex: string[] = [];
@@ -17,9 +16,7 @@ export class MemberSelectorModalComponent implements OnInit, ViewDidEnter {
 
   @ViewChild("searchBar") searchBar!: IonSearchbar;
 
-  constructor(
-    private modalController: ModalController
-  ) { }
+  constructor(private modalController: ModalController) {}
 
   ngOnInit(): void {
     this.sortMembers();
@@ -45,14 +42,11 @@ export class MemberSelectorModalComponent implements OnInit, ViewDidEnter {
     const re = new RegExp("(^| )" + searchString, "i");
 
     this.filteredMembers = this.members.filter((member, i) => re.test(this.membersIndex[i]));
-
   }
 
   private createIndex() {
-    this.membersIndex = this.members.map(member => {
-      return [member.nickname, member.name?.first, member.name?.last]
-        .filter(value => !!value)
-        .join(" ");
+    this.membersIndex = this.members.map((member) => {
+      return [member.nickname, member.name?.first, member.name?.last].filter((value) => !!value).join(" ");
     });
   }
 

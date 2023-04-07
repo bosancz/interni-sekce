@@ -1,22 +1,21 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Event } from 'app/schema/event';
-import { ApiService } from 'app/core/services/api.service';
-import { ToastService } from 'app/core/services/toast.service';
-import { DocumentAction } from 'app/schema/api-document';
-import { Platform } from '@ionic/angular';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Platform } from "@ionic/angular";
+import { EventResponse } from "src/app/api";
+import { DocumentAction } from "src/app/schema/api-document";
+import { Event } from "src/app/schema/event";
+import { ApiService } from "src/app/services/api.service";
 
 @Component({
-  selector: 'event-card',
-  templateUrl: './event-card.component.html',
-  styleUrls: ['./event-card.component.scss']
+  selector: "event-card",
+  templateUrl: "./event-card.component.html",
+  styleUrls: ["./event-card.component.scss"],
 })
 export class EventCardComponent implements OnInit {
+  @Input()
+  event?: EventResponse;
 
   @Input()
-  event?: Event;
-
-  @Input()
-  set eventId(eventId: string) {
+  set eventId(eventId: number) {
     this.loadEvent(eventId);
   }
 
@@ -26,16 +25,12 @@ export class EventCardComponent implements OnInit {
   @Output()
   change = new EventEmitter<Event>();
 
-  constructor(
-    private api: ApiService,
-    public platform: Platform
-  ) { }
+  constructor(private api: ApiService, public platform: Platform) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
-  async loadEvent(eventId: string) {
-    this.event = await this.api.get<Event>(["event", eventId]);
+  async loadEvent(eventId: number) {
+    this.event = await this.api.events.getEvent(eventId).then((res) => res.data);
   }
 
   async reload() {
@@ -43,7 +38,6 @@ export class EventCardComponent implements OnInit {
   }
 
   async eventAction(action: DocumentAction, takeNote: boolean = false) {
-
     let note: string = "";
 
     if (takeNote) {
@@ -53,14 +47,11 @@ export class EventCardComponent implements OnInit {
       if (promptResult === null) return;
 
       note = promptResult;
-
     }
 
     await this.api.post(action, { note: note || undefined });
 
     await this.reload();
     this.change.emit(this.event);
-
   }
-
 }

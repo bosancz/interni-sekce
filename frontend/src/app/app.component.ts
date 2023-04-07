@@ -1,11 +1,11 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { MenuController, Platform } from "@ionic/angular";
-import { LoginService } from "app/core/services/login.service";
-import { UserService } from "app/core/services/user.service";
 import { filter, map, mergeMap } from "rxjs/operators";
-import { ApiService } from "./core/services/api.service";
+import { LoginService } from "src/app/services/login.service";
+import { UserService } from "src/app/services/user.service";
 import { Environment } from "./schema/environment";
+import { ApiService } from "./services/api.service";
 
 @Component({
   selector: "bo-app",

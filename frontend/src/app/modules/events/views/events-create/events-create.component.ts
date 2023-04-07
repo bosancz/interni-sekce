@@ -1,40 +1,33 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { Router } from "@angular/router";
 
-import { ApiService } from 'app/core/services/api.service';
-import { ToastService } from 'app/core/services/toast.service';
+import { ApiService } from "src/app/services/api.service";
+import { ToastService } from "src/app/services/toast.service";
 
-import { Event } from 'app/schema/event';
-import { NgForm } from '@angular/forms';
-import { Action } from 'app/shared/components/action-buttons/action-buttons.component';
+import { NgForm } from "@angular/forms";
+import { Event } from "src/app/schema/event";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 @Component({
-  selector: 'events-create',
-  templateUrl: './events-create.component.html',
-  styleUrls: ['./events-create.component.scss']
+  selector: "events-create",
+  templateUrl: "./events-create.component.html",
+  styleUrls: ["./events-create.component.scss"],
 })
 export class EventsCreateComponent implements OnInit {
-
   actions: Action[] = [
     {
       text: "Vytvořit",
-      handler: () => this.createEvent()
-    }
+      handler: () => this.createEvent(),
+    },
   ];
 
   @ViewChild("createEventForm") form!: NgForm;
 
-  constructor(
-    private api: ApiService,
-    private toastService: ToastService,
-    private router: Router
-  ) { }
+  constructor(private api: ApiService, private toastService: ToastService, private router: Router) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   async createEvent() {
-
     if (!this.form.valid) {
       this.toastService.toast("Akci nelze vytvořit, ve formuláři jsou chyby.");
       return;
@@ -67,5 +60,4 @@ export class EventsCreateComponent implements OnInit {
     // open the event
     this.router.navigate(["/akce/" + event._id + "/upravit"]);
   }
-
 }

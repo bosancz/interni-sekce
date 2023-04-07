@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { NavController } from "@ionic/angular";
-import { Album } from "app/schema/album";
+import { Album } from "src/app/schema/album";
 
 @Component({
   selector: "bo-albums-tabs",

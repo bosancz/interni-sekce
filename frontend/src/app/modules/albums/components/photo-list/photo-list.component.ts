@@ -1,14 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ItemReorderEventDetail } from '@ionic/core';
-import { Photo } from 'app/schema/photo';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { ItemReorderEventDetail } from "@ionic/core";
+import { Photo } from "src/app/schema/photo";
 
 @Component({
-  selector: 'bo-photo-list',
-  templateUrl: './photo-list.component.html',
-  styleUrls: ['./photo-list.component.scss']
+  selector: "bo-photo-list",
+  templateUrl: "./photo-list.component.html",
+  styleUrls: ["./photo-list.component.scss"],
 })
 export class PhotoListComponent implements OnInit {
-
   @Input() photos?: Photo[];
   @Input() view: "list" | "grid" = "grid";
 
@@ -22,10 +21,9 @@ export class PhotoListComponent implements OnInit {
 
   loadingPhotos?: any[] = Array(5).fill(true);
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   onReorder(ev: CustomEvent<ItemReorderEventDetail>) {
     this.photos?.splice(ev.detail.to, 0, this.photos?.splice(ev.detail.from, 1)[0]);
@@ -33,22 +31,18 @@ export class PhotoListComponent implements OnInit {
   }
 
   getMpix(width: number, height: number) {
-    return Math.round(width * height / 1000000);
+    return Math.round((width * height) / 1000000);
   }
 
-
   onPhotoClick(photo: Photo, event: MouseEvent) {
-
     event.preventDefault();
     event.stopPropagation();
 
     if (this.selectable) {
       this.onPhotoCheck(photo, !this.isPhotoChecked(photo));
-    }
-    else if (this.sortable) {
+    } else if (this.sortable) {
       return;
-    }
-    else {
+    } else {
       this.click.emit(new CustomEvent("click", { detail: photo }));
     }
   }
@@ -61,11 +55,9 @@ export class PhotoListComponent implements OnInit {
     console.log("onPhotoCheck", isChecked);
     const i = this.selected.indexOf(photo);
 
-    // if checked, but not in list, add photo 
+    // if checked, but not in list, add photo
     if (isChecked && i === -1) this.selected.push(photo);
-
     // if not checked, but in list, remove photo
     else if (!isChecked && i !== -1) this.selected.splice(i, 1);
   }
-
 }
