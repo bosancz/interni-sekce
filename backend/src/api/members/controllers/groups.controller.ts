@@ -22,14 +22,14 @@ export class GroupsController {
   @Get()
   @AcLinks(GroupListRoute)
   @ApiResponse({ type: GroupResponse, isArray: true })
-  async groupsList(@Req() req: Request) {
+  async listGroups(@Req() req: Request) {
     return this.groupsRepository.createQueryBuilder().where(GroupListRoute.canWhere(req)).getMany();
   }
 
   @Get(":id")
   @AcLinks(GroupReadRoute)
   @ApiResponse({ type: GroupResponse })
-  async groupRead(@Param("id") id: string, @Req() req: Request) {
+  async getGroup(@Param("id") id: string, @Req() req: Request) {
     const group = await this.groupsService.getGroup(id);
     if (!group) throw new NotFoundException();
 
@@ -40,7 +40,7 @@ export class GroupsController {
 
   @Put(":id")
   @AcLinks(GroupEditRoute)
-  async groupEdit(@Param("id") id: string, @Req() req: Request) {
+  async updateGroup(@Param("id") id: string, @Req() req: Request) {
     const group = await this.groupsService.getGroup(id);
     if (!group) throw new NotFoundException();
 
@@ -51,7 +51,7 @@ export class GroupsController {
 
   @Delete(":id")
   @AcLinks(GroupDeleteRoute)
-  async groupDelete(@Param("id") id: string, @Req() req: Request) {
+  async deleteGroup(@Param("id") id: string, @Req() req: Request) {
     const group = await this.groupsService.getGroup(id);
     if (!group) throw new NotFoundException();
 

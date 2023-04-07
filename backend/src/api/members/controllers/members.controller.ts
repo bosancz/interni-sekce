@@ -22,14 +22,14 @@ export class MembersController {
   @Get()
   @AcLinks(MembersRoute)
   @ApiResponse({ type: MemberResponse, isArray: true })
-  async membersList(@Req() req: Request) {
+  async listMembers(@Req() req: Request) {
     return this.membersRepository.createQueryBuilder().where(MembersRoute.canWhere(req)).getMany();
   }
 
   @Get(":id")
   @AcLinks(MemberRoute)
   @ApiResponse({ type: MemberResponse })
-  async memberRead(@Param("id") id: number, @Req() req: Request): Promise<MemberResponse> {
+  async getMember(@Param("id") id: number, @Req() req: Request): Promise<MemberResponse> {
     const member = await this.membersService.getMember(id);
     if (!member) throw new NotFoundException();
 

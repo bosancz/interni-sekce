@@ -31,7 +31,7 @@ export class EventsController {
   @Get()
   @AcLinks(EventsListRoute)
   @ApiResponse({ type: EventResponse, isArray: true })
-  async eventsList(@Req() req: Request): Promise<EventResponse[]> {
+  async listEvents(@Req() req: Request): Promise<EventResponse[]> {
     const q = this.eventsRepository
       .createQueryBuilder("events")
       .select(["events.id", "events.name", "events.status"])
@@ -44,7 +44,7 @@ export class EventsController {
   @Post()
   @AcLinks(EventCreateRoute)
   @ApiResponse({ status: 201, type: EventResponse })
-  async eventCreate(
+  async createEvent(
     @Req() req: Request,
     @Body() body: EventCreateBody,
     @Res({ passthrough: true }) res: Response,
@@ -58,7 +58,7 @@ export class EventsController {
   @Get(":id")
   @AcLinks(EventReadRoute)
   @ApiResponse({ type: EventResponse })
-  async eventRead(@Req() req: Request, @Param("id") id: number): Promise<EventResponse> {
+  async getEvent(@Req() req: Request, @Param("id") id: number): Promise<EventResponse> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
@@ -71,7 +71,7 @@ export class EventsController {
   @HttpCode(204)
   @AcLinks(EventEditRoute)
   @ApiResponse({ status: 204 })
-  async eventEdit(@Req() req: Request, @Param("id") id: number, @Body() body: EventUpdateBody): Promise<void> {
+  async updateEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventUpdateBody): Promise<void> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
@@ -84,7 +84,7 @@ export class EventsController {
   @HttpCode(204)
   @AcLinks(EventDeleteRoute)
   @ApiResponse({ status: 204 })
-  async eventDelete(@Req() req: Request, @Param("id") id: number): Promise<void> {
+  async deleteEvent(@Req() req: Request, @Param("id") id: number): Promise<void> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 

@@ -16,7 +16,7 @@ export class AlbumsController {
   @Get()
   @AcLinks(AlbumsListRoute)
   @ApiResponse({ type: AlbumsListResponse, isArray: true })
-  async albumsList(@Req() req: Request) {
+  async listAlbums(@Req() req: Request) {
     return await this.albumsService.repository
       .createQueryBuilder("albums")
       .select(["albums.id", "albums.name", "albums.status"])
@@ -27,7 +27,7 @@ export class AlbumsController {
   @Get(":id")
   @AcLinks(AlbumReadRoute)
   @ApiResponse({ type: AlbumResponse })
-  async albumRead(@Param("id") id: number, @Req() req: Request) {
+  async getAlbum(@Param("id") id: number, @Req() req: Request) {
     const album = await this.albumsService.repository.findOneBy({ id });
 
     if (!album) throw new NotFoundException();
@@ -40,7 +40,7 @@ export class AlbumsController {
   @Patch(":id")
   @AcLinks(AlbumEditRoute)
   @ApiResponse({ status: 204 })
-  async albumEdit(@Param("id") id: number, @Req() req: Request, @Body() body: AlbumEditBody): Promise<void> {
+  async updateAlbum(@Param("id") id: number, @Req() req: Request, @Body() body: AlbumEditBody): Promise<void> {
     const album = await this.albumsService.repository.findOneBy({ id });
 
     if (!album) throw new NotFoundException();
@@ -53,7 +53,7 @@ export class AlbumsController {
   @Delete(":id")
   @AcLinks(AlbumDeleteRoute)
   @ApiResponse({ status: 204 })
-  async albumDelete(@Param("id") id: number, @Req() req: Request): Promise<void> {
+  async deleteAlbum(@Param("id") id: number, @Req() req: Request): Promise<void> {
     const album = await this.albumsService.repository.findOneBy({ id });
     if (!album) throw new NotFoundException();
 

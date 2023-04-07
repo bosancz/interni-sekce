@@ -29,7 +29,7 @@ export class PhotosController {
   @Get()
   @AcLinks(PhotosListRoute)
   @ApiResponse({ type: PhotosListResponse, isArray: true })
-  async albumsList(@Req() req: Request) {
+  async listPhotos(@Req() req: Request) {
     return await this.photosService.repository
       .createQueryBuilder("photos")
       .select(["photos.id", "photos.name", "photos.status"])
@@ -47,7 +47,7 @@ export class PhotosController {
   @Get(":id")
   @AcLinks(PhotoReadRoute)
   @ApiResponse({ type: PhotoResponse })
-  async albumRead(@Param("id") id: number, @Req() req: Request) {
+  async getPhoto(@Param("id") id: number, @Req() req: Request) {
     const photo = await this.photosService.repository.findOneBy({ id });
 
     if (!photo) throw new NotFoundException();
@@ -60,7 +60,7 @@ export class PhotosController {
   @Patch(":id")
   @AcLinks(PhotoEditRoute)
   @ApiResponse({ status: 204 })
-  async albumEdit(@Param("id") id: number, @Req() req: Request, @Body() body: PhotoEditBody): Promise<void> {
+  async updatePhoto(@Param("id") id: number, @Req() req: Request, @Body() body: PhotoEditBody): Promise<void> {
     const photo = await this.photosService.repository.findOneBy({ id });
 
     if (!photo) throw new NotFoundException();
@@ -73,7 +73,7 @@ export class PhotosController {
   @Delete(":id")
   @AcLinks(PhotoDeleteRoute)
   @ApiResponse({ status: 204 })
-  async albumDelete(@Param("id") id: number, @Req() req: Request): Promise<void> {
+  async deletePhoto(@Param("id") id: number, @Req() req: Request): Promise<void> {
     const photo = await this.photosService.repository.findOneBy({ id });
 
     if (!photo) throw new NotFoundException();

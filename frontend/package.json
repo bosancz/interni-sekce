@@ -7,7 +7,8 @@
     "dev": "ng serve",
     "dev:test-server": "ng serve --configuration=test-server",
     "deploy:production": "docker build -t docker.bosan.cz/interni-sekce-frontend:latest . && docker push docker.bosan.cz/interni-sekce-frontend:latest",
-    "deploy:test": "docker build --build-arg=\"NG_CONFIGURATION=test\" -t docker.bosan.cz/interni-sekce-frontend:test . && docker push docker.bosan.cz/interni-sekce-frontend:test"
+    "deploy:test": "docker build --build-arg=\"NG_CONFIGURATION=test\" -t docker.bosan.cz/interni-sekce-frontend:test . && docker push docker.bosan.cz/interni-sekce-frontend:test",
+    "api:generate": "openapi-generator-cli generate -g typescript-axios -o src/app/api -i http://localhost:3000/api-json"
   },
   "dependencies": {
     "@angular/animations": "^15.0.3",
@@ -44,6 +45,7 @@
     "@angular/cli": "^15.0.3",
     "@angular/compiler-cli": "^15.0.3",
     "@angular/language-service": "^15.0.3",
+    "@openapitools/openapi-generator-cli": "^2.5.2",
     "@types/file-saver": "^2.0.5",
     "@types/inflected": "^1.1.29",
     "@types/luxon": "^3.1.0",

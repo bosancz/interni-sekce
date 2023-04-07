@@ -17,7 +17,7 @@ export class EventsAttendeesController {
   @Get(":id/attendees")
   @AcLinks(EventAttendeesListRoute)
   @ApiResponse({ type: EventAttendeeResponse })
-  async eventAttendeesList(@Req() req: Request, @Param("id") id: number): Promise<EventAttendeeResponse[]> {
+  async listEventAttendees(@Req() req: Request, @Param("id") id: number): Promise<EventAttendeeResponse[]> {
     const event = await this.events.getEvent(id);
     if (!event) throw new NotFoundException();
 
@@ -29,7 +29,7 @@ export class EventsAttendeesController {
   @Put(":id/attendees/:memberId")
   @AcLinks(EventAttendeeEditRoute)
   @ApiResponse({ status: 204 })
-  async eventAttendeeEdit(
+  async updateEventAttendee(
     @Req() req: Request,
     @Param("id") eventId: number,
     @Param("memberId") memberId: number,
@@ -48,7 +48,7 @@ export class EventsAttendeesController {
   @Delete(":id/attendees/:memberId")
   @AcLinks(EventAttendeeDeleteRoute)
   @ApiResponse({ status: 204 })
-  async eventAttendeeDelete(@Req() req: Request, @Param("id") eventId: number, @Param("memberId") memberId: number) {
+  async deleteEventAttendee(@Req() req: Request, @Param("id") eventId: number, @Param("memberId") memberId: number) {
     const eventAttendee = await this.events.getEventAttendee(eventId, memberId);
     if (!eventAttendee) throw new NotFoundException();
 
