@@ -6,5 +6,3 @@ export type RouteStoreItem = {
   controller: any;
   handler: any;
 };
-
-export const RouteStore: RouteStoreItem[] = [];

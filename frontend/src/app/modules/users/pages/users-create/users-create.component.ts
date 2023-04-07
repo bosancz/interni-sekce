@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { Router } from "@angular/router";
-import { User } from "src/app/schema/user";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -31,22 +30,12 @@ export class UsersCreateComponent implements OnInit {
     const userData = this.form.value;
 
     // create the user and wait for confirmation
-    const response = await this.api.post("users", userData);
+    const user = await this.api.users.createUser(userData).then((res) => res.data);
 
     // show the confrmation
     this.toastService.toast("Uživatel vytvořen.");
 
-    // get the new user
-    const location = response.headers.get("location");
-
-    if (!location) {
-      this.toastService.toast("Chyba při otevírání nového uživatele.");
-      return;
-    }
-
-    const user = await this.api.get<User>({ href: location });
-
     // open the user
-    this.router.navigate(["/uzivatele", user._id], { replaceUrl: true });
+    this.router.navigate(["/uzivatele", user.id], { replaceUrl: true });
   }
 }

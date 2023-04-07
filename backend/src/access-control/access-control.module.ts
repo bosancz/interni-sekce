@@ -1,11 +1,22 @@
 import { Module } from "@nestjs/common";
-import { snakeCase } from "change-case";
 import { Request } from "express";
 import { AccessControlLibModule, AccessControlLibOptions } from "./access-control-lib/access-control-lib.module";
+import { Roles, StaticRoles } from "./schema/roles";
 
 const acOptions: AccessControlLibOptions = {
-  userRoles: (req: Request) => req.user?.roles || [],
-  routeNameConvention: (methodName) => snakeCase(methodName).replace(/_/g, ":"),
+  getUserRoles: (req: Request) => {
+    // roles from the database
+    const roles: Roles[] = req.user?.roles ?? [];
+
+    // default role for all users
+    roles.push(StaticRoles.verejnost);
+
+    // default role for registered users
+    if (req.user) roles.push(StaticRoles.vedouci, StaticRoles.uzivatel);
+
+    return roles;
+  },
+  routeNameConvention: (methodName) => methodName,
 };
 
 @Module({

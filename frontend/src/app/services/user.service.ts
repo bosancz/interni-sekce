@@ -3,7 +3,7 @@ import { ReplaySubject } from "rxjs";
 
 import { ApiService } from "src/app/services/api.service";
 
-import { User } from "src/app/schema/user";
+import { UserResponse } from "../api";
 /**
  * Service to save user information and commnicate user data with server
  */
@@ -11,9 +11,9 @@ import { User } from "src/app/schema/user";
   providedIn: "root",
 })
 export class UserService {
-  userSnapshot: User | null = null;
+  userSnapshot: UserResponse | null = null;
 
-  user: ReplaySubject<User | null> = new ReplaySubject(1);
+  user: ReplaySubject<UserResponse | null> = new ReplaySubject(1);
 
   constructor(private api: ApiService) {
     this.user.subscribe((user) => (this.userSnapshot = user));
@@ -21,7 +21,7 @@ export class UserService {
 
   async loadUser() {
     try {
-      const user = await this.api.get<User>("me:user");
+      const user = await this.api.account.getMe().then((res) => res.data);
       this.user.next(user);
       return user;
     } catch (err: any) {

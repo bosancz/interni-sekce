@@ -15,6 +15,8 @@ import { AlbumsModelModule } from "./models/albums/albums-model.module";
 import { MembersModelModule } from "./models/members/members-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
 import { MongoMigrationModule } from "./mongo-migration/mongo-migration.module";
+import { AccountModule } from './api/account/account.module';
+import { UsersController } from './api/users/controllers/users.controller';
 
 const typeOrmOptions: TypeOrmModuleOptions = {
   ...Config.db,
@@ -45,8 +47,9 @@ const typeOrmOptions: TypeOrmModuleOptions = {
     AlbumsModule,
     MongoMigrationModule,
     AccessControlModule,
+    AccountModule,
   ],
-  controllers: [],
+  controllers: [UsersController],
   providers: [],
 })
 export class AppModule {}

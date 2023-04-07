@@ -114,8 +114,8 @@ export class EventsViewAttendeesComponent implements OnInit, OnDestroy {
 
   private async exportExcel(event: Event) {
     console.log(event._links);
-    if (event._links?.["announcement-template"]) {
-      const url = environment.apiRoot + event._links?.["announcement-template"].href;
+    if (event._links.["announcement-template"]) {
+      const url = environment.apiRoot + event._links.["announcement-template"].href;
       window.open(url);
     }
   }
@@ -126,13 +126,13 @@ export class EventsViewAttendeesComponent implements OnInit, OnDestroy {
         text: "Přidat",
         icon: "add-outline",
         pinned: true,
-        hidden: !event?._links?.self.allowed.PATCH,
+        hidden: !event?._links.self.allowed.PATCH,
         handler: () => this.addAttendeeModal(),
       },
       {
         text: "Stáhnout ohlášku",
         icon: "download-outline",
-        hidden: !event?._links?.self.allowed.GET,
+        hidden: !event?._links.self.allowed.GET,
         handler: () => this.exportExcel(event!),
       },
     ];

@@ -1,19 +1,19 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button [defaultHref]="'/uzivatele/' + user?._id"></ion-back-button>
+      <ion-back-button [defaultHref]="'/uzivatele/' + user?.id"></ion-back-button>
     </ion-buttons>
     <ion-title pageTitle>
       <ng-container *ngIf="user && user.login">
         Upravit uživatele
         {{ user.login }}
         <ng-container *ngIf="user.member">
-          &nbsp;({{ user.member.nickname }}, {{ user.member.group | group: "name" }})
+          &nbsp;({{ user.member.nickname }}, {{ user.member.group?.name }})
         </ng-container>
         <ng-container *ngIf="!user.member && user.email">&nbsp;({{ user.email }})</ng-container>
       </ng-container>
       <ng-container *ngIf="user && !user.login && user.email">{{ user.email }}</ng-container>
-      <ng-container *ngIf="user && !user.login && !user.email">{{ user._id }}</ng-container>
+      <ng-container *ngIf="user && !user.login && !user.email">{{ user.id }}</ng-container>
     </ion-title>
     <ion-buttons slot="end">
       <bo-action-buttons [actions]="actions" header="Členská databáze"></bo-action-buttons>
@@ -25,7 +25,7 @@
   <form #editUserForm="ngForm">
     <ion-item>
       <ion-label position="stacked">ID</ion-label>
-      <ion-input type="text" [ngModel]="user?._id" [ngModelOptions]="{ standalone: true }" readonly></ion-input>
+      <ion-input type="text" [ngModel]="user?.id" [ngModelOptions]="{ standalone: true }" readonly></ion-input>
     </ion-item>
 
     <ion-item>
@@ -40,10 +40,10 @@
 
     <ion-item>
       <ion-label position="stacked">Člen</ion-label>
-      <ion-select name="member" [ngModel]="user?.member?._id" placeholder="žádný">
-        <ion-select-option *ngFor="let member of members" [value]="member._id">
-          {{ member.nickname || member.name?.first }}
-          ({{ member.group | group: "name" }}, {{ member.name?.first }} {{ member.name?.last }})
+      <ion-select name="member" [ngModel]="user?.member?.id" placeholder="žádný">
+        <ion-select-option *ngFor="let member of members" [value]="member.id">
+          {{ member.nickname || member.firstName }}
+          ({{ member.group?.name }}, {{ member.firstName }} {{ member.firstName }})
         </ion-select-option>
       </ion-select>
     </ion-item>

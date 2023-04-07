@@ -49,5 +49,4 @@ export class Event {
   deletedAt?: Date;
 
   leaders?: Member[];
-  leadersAttendees?: EventAttendee[];
 }

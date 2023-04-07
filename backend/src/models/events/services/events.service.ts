@@ -4,26 +4,6 @@ import { FindOptionsSelect, Repository } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "../entities/event-attendee.entity";
 import { Event } from "../entities/event.entity";
 
-const eventFields = [
-  "id",
-  "albumId",
-  "name",
-  "status",
-  "statusNote",
-  "place",
-  "description",
-  "dateFrom",
-  "dateTill",
-  "timeFrom",
-  "timeTill",
-  "meetingPlaceStart",
-  "meetingPlaceEnd",
-  "type",
-  "water_km",
-  "river",
-  "deletedAt",
-];
-
 @Injectable()
 export class EventsService {
   constructor(
@@ -44,7 +24,7 @@ export class EventsService {
         .leftJoinAndMapOne("attendees.member", "attendees.member", "leaders");
     }
 
-    const events = await query.getMany();
+    const events = await (<Promise<(Event & { leadersAttendees?: EventAttendee[] })[]>>query.getMany());
 
     if (options.leaders) {
       events.forEach((e) => {
@@ -52,7 +32,7 @@ export class EventsService {
         delete e.leadersAttendees;
       });
     }
-    return events;
+    return <Event[]>events;
   }
 
   async getEvent(id: number, options: { select?: FindOptionsSelect<Event>; leaders?: boolean } = {}) {

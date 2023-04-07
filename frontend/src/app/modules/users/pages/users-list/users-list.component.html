@@ -38,12 +38,12 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let user of filteredUsers" [routerLink]="user._id">
+      <tr *ngFor="let user of filteredUsers" [routerLink]="'' + user.id">
         <td>{{ user.login }}</td>
         <td>{{ user.email || "-" }}</td>
         <td>
           <ng-container *ngIf="user.member">
-            {{ user.member.nickname }} ({{ user.member.name?.first }} {{ user.member.name?.last }})
+            {{ user.member.nickname }} ({{ user.member.firstName }} {{ user.member.lastName }})
           </ng-container>
           <ng-container *ngIf="!user.member">-</ng-container>
         </td>

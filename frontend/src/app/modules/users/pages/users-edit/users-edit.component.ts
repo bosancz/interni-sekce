@@ -2,9 +2,7 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { UserRoles } from "src/app/config/user-roles";
-import { Member } from "src/app/schema/member";
-import { User } from "src/app/schema/user";
+import { MemberResponse, UserResponse, UserResponseRolesEnum } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -16,15 +14,15 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./users-edit.component.scss"],
 })
 export class UsersEditComponent implements OnInit {
-  user?: User;
+  user?: UserResponse;
 
-  roles = UserRoles.filter((item) => item.assignable).map((role) => ({
-    name: role.id,
-    title: role.title,
+  roles = Object.entries(UserResponseRolesEnum).map(([title, name]) => ({
+    name,
+    title,
     active: false,
   }));
 
-  members: Member[] = [];
+  members: MemberResponse[] = [];
 
   category: string = "ucet";
 
@@ -46,7 +44,7 @@ export class UsersEditComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.pipe(untilDestroyed(this)).subscribe((params: Params) => {
-      if (params.user && (!this.user || this.user._id !== params.user)) this.loadUser(params.user);
+      if (params.user && (!this.user || this.user.id !== params.user)) this.loadUser(params.user);
 
       this.category = params.cat;
     });
@@ -55,17 +53,17 @@ export class UsersEditComponent implements OnInit {
   }
 
   // DB interaction
-  async loadUser(userId: string) {
-    this.user = await this.api.get<User>(["user", userId]);
+  async loadUser(userId: number) {
+    this.user = await this.api.users.getUser(userId).then((res) => res.data);
     this.updateRoles(this.user);
   }
 
-  updateRoles(user: User): void {
-    this.roles.forEach((role) => (role.active = user.roles.indexOf(role.name) !== -1));
+  updateRoles(user: UserResponse): void {
+    this.roles.forEach((role) => (role.active = user.roles?.includes(role.name) ?? false));
   }
 
   async loadMembers() {
-    let members = await this.api.get<Member[]>("members");
+    let members = await this.api.members.listMembers().then((res) => res.data);
     members.sort((a, b) => (a.nickname || "").localeCompare(b.nickname || ""));
     this.members = members;
   }
@@ -75,7 +73,7 @@ export class UsersEditComponent implements OnInit {
 
     const userData = this.form.value;
 
-    await this.api.patch(["user", this.user._id], userData);
+    await this.api.users.updateUser(this.user.id, userData);
 
     this.toastService.toast("Uloženo.");
 

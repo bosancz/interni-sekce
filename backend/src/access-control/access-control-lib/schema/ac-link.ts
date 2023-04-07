@@ -3,6 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 export class AcLink {
   @ApiProperty() href!: string;
   @ApiProperty() allowed!: boolean;
+  @ApiProperty() applicable!: boolean;
   @ApiProperty() method!: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 }
 

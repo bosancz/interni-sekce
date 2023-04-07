@@ -73,7 +73,7 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
   }
 
   async eventAction(event: Event, action: EventActions) {
-    if (!event._actions?.[action].allowed) {
+    if (!event._links.[action].allowed) {
       this.toastService.toast("K této akci nemáš oprávnění.");
       return;
     }
@@ -98,55 +98,55 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
         text: "Vést akci",
         color: "success",
         icon: "hand-left-outline",
-        hidden: !event._actions?.lead,
+        hidden: !event._links.lead,
         handler: () => this.eventAction(event, "lead"),
       },
       {
         text: "Upravit",
         pinned: true,
         icon: "create-outline",
-        hidden: !event._links?.self.allowed.PATCH,
+        hidden: !event._links.self.allowed.PATCH,
         handler: () => this.router.navigate(["../upravit"], { relativeTo: this.route }),
       },
       {
         text: "Ke schválení",
         icon: "arrow-forward-outline",
         color: "primary",
-        hidden: !event?._actions?.submit?.allowed,
+        hidden: !event?._links.submit?.allowed,
         handler: () => this.eventAction(event, "submit"),
       },
       {
         text: "Do programu",
         icon: "arrow-forward-outline",
         color: "primary",
-        hidden: !event?._actions?.publish?.allowed,
+        hidden: !event?._links.publish?.allowed,
         handler: () => this.eventAction(event, "publish"),
       },
       {
         text: "Vrátit k úpravám",
         icon: "arrow-back-outline",
         color: "danger",
-        hidden: !event?._actions?.reject?.allowed,
+        hidden: !event?._links.reject?.allowed,
         handler: () => this.eventAction(event, "reject"),
       },
       {
         text: "Odebrat z programu",
         icon: "arrow-back-outline",
         color: "danger",
-        hidden: !event?._actions?.unpublish?.allowed,
+        hidden: !event?._links.unpublish?.allowed,
         handler: () => this.eventAction(event, "unpublish"),
       },
       {
         text: "Označit jako zrušenou",
         color: "danger",
         icon: "arrow-back-outline",
-        hidden: !event?._actions?.cancel?.allowed,
+        hidden: !event?._links.cancel?.allowed,
         handler: () => this.eventAction(event, "cancel"),
       },
       {
         text: "Odzrušit",
         icon: "arrow-forward-outline",
-        hidden: !event?._actions?.uncancel?.allowed,
+        hidden: !event?._links.uncancel?.allowed,
         handler: () => this.eventAction(event, "uncancel"),
       },
       {
@@ -154,7 +154,7 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
         role: "destructive",
         color: "danger",
         icon: "trash-outline",
-        hidden: !event._links?.self?.allowed?.DELETE,
+        hidden: !event._links.self?.allowed?.DELETE,
         handler: () => this.deleteEvent(event),
       },
     ];

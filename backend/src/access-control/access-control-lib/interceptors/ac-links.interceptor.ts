@@ -1,7 +1,6 @@
 import {
   CallHandler,
   ExecutionContext,
-  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -12,19 +11,20 @@ import { Reflector } from "@nestjs/core";
 import { Request } from "express";
 import { map } from "rxjs";
 import { Config } from "src/config";
-import { AccessControlLibOptions, AcOptions } from "../access-control-lib.module";
+import { OptionsStore } from "../options-store";
+import { RouteStore } from "../route-store";
 import { AcEntity } from "../schema/ac-entity";
 import { WithAcLinks } from "../schema/ac-link";
 import { AcRouteACL } from "../schema/ac-route-acl";
 import { ChildEntity, ChildEntityObject } from "../schema/child-entity";
 import { MetadataConstant } from "../schema/metadata-constant";
-import { RouteStore, RouteStoreItem } from "../schema/route-store";
+import { RouteStoreItem } from "../schema/route-store-item";
 
 @Injectable()
 export class AcLinksInterceptor implements NestInterceptor {
   private logger = new Logger(AcLinksInterceptor.name);
 
-  constructor(private reflector: Reflector, @Inject(AcOptions) public options: AccessControlLibOptions) {}
+  constructor(private reflector: Reflector) {}
 
   intercept(context: ExecutionContext, next: CallHandler) {
     return next.handle().pipe(
@@ -77,8 +77,6 @@ export class AcLinksInterceptor implements NestInterceptor {
     for (let route of routes) {
       const routeAcl = <RouteStoreItem>this.reflector.get(MetadataConstant.route, route.handler);
 
-      if (typeof route.acl.options.condition === "function" && !route.acl.options.condition(doc)) continue;
-
       const httpMethod = this.getHttpMethod(route);
       const routeName = this.getRouteName(route);
 
@@ -86,6 +84,7 @@ export class AcLinksInterceptor implements NestInterceptor {
         method: httpMethod,
         href: this.getPath(route, doc),
         allowed: route.acl.can(req, doc),
+        applicable: typeof route.acl.options.condition === "function" && !route.acl.options.condition(doc),
       };
     }
   }
@@ -101,7 +100,7 @@ export class AcLinksInterceptor implements NestInterceptor {
 
   private getRouteName(route: RouteStoreItem) {
     if (route.acl.options.name) return route.acl.options.name;
-    if (this.options.routeNameConvention) return this.options.routeNameConvention(String(route.method));
+    if (OptionsStore.routeNameConvention) return OptionsStore.routeNameConvention(String(route.method));
     else return String(route.method);
   }
 

@@ -1,27 +1,57 @@
 import { ApiProperty, ApiPropertyOptional, OmitType, PickType } from "@nestjs/swagger";
 import { IsOptional, IsString } from "class-validator";
 import { AcLink } from "src/access-control/access-control-lib/schema/ac-link";
+import { AcLinkProperties } from "src/access-control/access-control-lib/schema/ac-link-properties";
+import { AcResponse } from "src/access-control/access-control-lib/schema/ac-response";
 import { AlbumResponse } from "src/api/albums/dto/album.dto";
 import { MemberResponse } from "src/api/members/dto/member.dto";
 import { Album } from "src/models/albums/entities/album.entity";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";
 import { EventGroup } from "src/models/events/entities/event-group.entity";
-import { EventStatus } from "src/models/events/entities/event.entity";
+import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
+import { EventsAttendeesController } from "../controllers/events-attendees.controller";
+import { EventsController } from "../controllers/events.controller";
 import { EventAttendeeResponse } from "./event-attendee.dto";
 
-class EventResponseLinks {
-  @ApiPropertyOptional() "event:attendees:list"?: AcLink;
+type LinkNames =
+  | ExtractExisting<
+      keyof EventsController,
+      | "deleteEvent"
+      | "rejectEvent"
+      | "submitEvent"
+      | "getEvent"
+      | "updateEvent"
+      | "publishEvent"
+      | "unpublishEvent"
+      | "cancelEvent"
+      | "uncancelEvent"
+    >
+  | ExtractExisting<keyof EventsAttendeesController, "listEventAttendees">;
+
+class EventResponseLinks implements AcLinkProperties<LinkNames> {
+  @ApiProperty() publishEvent!: AcLink;
+  @ApiProperty() unpublishEvent!: AcLink;
+  @ApiProperty() cancelEvent!: AcLink;
+  @ApiProperty() uncancelEvent!: AcLink;
+  @ApiProperty() listEventAttendees!: AcLink;
+  @ApiProperty() updateEvent!: AcLink;
+  @ApiProperty() getEvent!: AcLink;
+  @ApiProperty() deleteEvent!: AcLink;
+  @ApiProperty() rejectEvent!: AcLink;
+  @ApiProperty() submitEvent!: AcLink;
 }
 
-export class EventResponse {
+export class EventResponse implements AcResponse<Event, keyof EventResponseLinks> {
   @ApiProperty() id!: number;
   @ApiProperty() name!: string;
-  @ApiProperty() status!: EventStatus;
+  @ApiProperty({ enum: EventStatus }) status!: EventStatus;
   @ApiProperty() dateFrom!: string;
   @ApiProperty() dateTill!: string;
+  @ApiProperty() leadersEvent!: boolean;
 
+  @ApiPropertyOptional({ type: "string" }) type!: string | null;
   @ApiPropertyOptional({ type: "string" }) statusNote!: string | null;
   @ApiPropertyOptional({ type: "string" }) place!: string | null;
   @ApiPropertyOptional({ type: "string" }) description!: string | null;
@@ -29,18 +59,17 @@ export class EventResponse {
   @ApiPropertyOptional({ type: "string" }) timeTill!: string | null;
   @ApiPropertyOptional({ type: "string" }) meetingPlaceStart!: string | null;
   @ApiPropertyOptional({ type: "string" }) meetingPlaceEnd!: string | null;
-  @ApiPropertyOptional({ type: "string" }) type!: string | null;
   @ApiPropertyOptional({ type: "number" }) water_km!: number | null;
   @ApiPropertyOptional({ type: "string" }) river!: string | null;
   @ApiPropertyOptional({ type: "string" }) deletedAt?: Date | undefined;
 
   @ApiPropertyOptional({ type: AlbumResponse }) album?: Album | undefined;
   @ApiPropertyOptional() groups?: EventGroup[] | undefined;
-  @ApiPropertyOptional({ type: EventAttendeeResponse }) attendees?: EventAttendee[] | undefined;
+  @ApiPropertyOptional({ type: EventAttendeeResponse, isArray: true }) attendees?: EventAttendee[] | undefined;
   @ApiPropertyOptional() expenses?: EventExpense[] | undefined;
-  @ApiPropertyOptional({ type: MemberResponse }) leaders?: Member[] | undefined;
+  @ApiPropertyOptional({ type: MemberResponse, isArray: true }) leaders?: Member[] | undefined;
 
-  @ApiPropertyOptional() _links?: EventResponseLinks;
+  @ApiProperty() _links!: EventResponseLinks;
 }
 
 export class EventCreateBody extends PickType(EventResponse, ["name", "description", "dateFrom", "dateTill"]) {}

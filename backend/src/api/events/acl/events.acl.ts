@@ -2,12 +2,12 @@ import { Request } from "express";
 import { RouteACL } from "src/access-control/schema/route-acl";
 import { MemberResponse } from "src/api/members/dto/member.dto";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
-import { EventResponse } from "../dto/event.dto";
+import { EventCreateBody, EventResponse } from "../dto/event.dto";
 
 export const isMyEvent = (doc: Pick<Event, "leaders"> | undefined, req: Request) =>
   doc?.leaders?.some((l) => l.id === req.user?.userId) ?? false;
 
-export const EventsListRoute = new RouteACL<EventResponse, EventResponse[]>({
+export const EventsListRoute = new RouteACL<undefined, EventResponse[]>({
   permissions: {
     vedouci: true,
     verejnost: true,
@@ -15,7 +15,7 @@ export const EventsListRoute = new RouteACL<EventResponse, EventResponse[]>({
   contains: { array: { entity: EventResponse } },
 });
 
-export const EventReadRoute = new RouteACL({
+export const EventReadRoute = new RouteACL<Event, EventResponse>({
   entity: EventResponse,
 
   permissions: {
@@ -24,14 +24,14 @@ export const EventReadRoute = new RouteACL({
   contains: { properties: { leaders: { array: { entity: MemberResponse } } } },
 });
 
-export const EventCreateRoute = new RouteACL<any>({
+export const EventCreateRoute = new RouteACL<EventCreateBody, EventResponse>({
   permissions: {
     vedouci: true,
   },
   contains: { entity: EventResponse },
 });
 
-export const EventEditRoute = new RouteACL({
+export const EventEditRoute = new RouteACL<Event, EventResponse>({
   entity: EventResponse,
 
   permissions: {
@@ -41,7 +41,7 @@ export const EventEditRoute = new RouteACL({
   },
 });
 
-export const EventDeleteRoute = new RouteACL({
+export const EventDeleteRoute = new RouteACL<Event, EventResponse>({
   entity: EventResponse,
   permissions: {
     program: true,
@@ -50,7 +50,7 @@ export const EventDeleteRoute = new RouteACL({
   condition: (doc) => doc.status !== EventStatus.public,
 });
 
-export const EventSubmitRoute = new RouteACL({
+export const EventSubmitRoute = new RouteACL<Event, EventResponse>({
   entity: EventResponse,
   permissions: {
     program: true,
@@ -60,11 +60,47 @@ export const EventSubmitRoute = new RouteACL({
   condition: (doc) => doc.status === EventStatus.draft,
 });
 
-export const EventRejectRoute = new RouteACL({
+export const EventPublishRoute = new RouteACL<Event, EventResponse>({
   entity: EventResponse,
   permissions: {
     program: true,
     admin: true,
   },
   condition: (doc) => doc.status === EventStatus.pending,
+});
+
+export const EventRejectRoute = new RouteACL<Event, EventResponse>({
+  entity: EventResponse,
+  permissions: {
+    program: true,
+    admin: true,
+  },
+  condition: (doc) => doc.status === EventStatus.pending,
+});
+
+export const EventUnpublishRoute = new RouteACL<Event, EventResponse>({
+  entity: EventResponse,
+  permissions: {
+    program: true,
+    admin: true,
+  },
+  condition: (doc) => doc.status === EventStatus.public,
+});
+
+export const EventCancelRoute = new RouteACL<Event, EventResponse>({
+  entity: EventResponse,
+  permissions: {
+    program: true,
+    admin: true,
+  },
+  condition: (doc) => doc.status !== EventStatus.public,
+});
+
+export const EventUncancelRoute = new RouteACL<Event, EventResponse>({
+  entity: EventResponse,
+  permissions: {
+    program: true,
+    admin: true,
+  },
+  condition: (doc) => doc.status === EventStatus.cancelled,
 });

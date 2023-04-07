@@ -35,11 +35,14 @@ export class EventCardComponent implements OnInit {
     if (this.event && this.event.id) return this.loadEvent(this.event.id);
   }
 
-  async submitEvent(event: EventResponse) {
+  async eventAction(
+    event: EventResponse,
+    action: "submitEvent" | "rejectEvent" | "publishEvent" | "unpublishEvent" | "cancelEvent" | "uncancelEvent",
+  ) {
     const statusNote = window.prompt("Poznámka pro správce programu (můžeš nechat prázdné):");
     if (statusNote === null) return;
 
-    await this.api.events.submitEvent(event.id, { statusNote });
+    await this.api.events[action](event.id, { statusNote });
 
     await this.reload();
     this.change.emit(this.event);

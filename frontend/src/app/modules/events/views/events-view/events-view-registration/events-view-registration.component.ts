@@ -44,7 +44,7 @@ export class EventsViewRegistrationComponent {
   async uploadRegistration(input: HTMLInputElement) {
     if (!this.event) return;
 
-    if (!this.event._links?.registration) return;
+    if (!this.event._links.registration) return;
     if (!input.files?.length) return;
 
     let file = input.files![0];
@@ -74,7 +74,7 @@ export class EventsViewRegistrationComponent {
 
   async deleteRegistration() {
     if (!this.event) return;
-    if (!this.event._links?.registration) return;
+    if (!this.event._links.registration) return;
 
     await this.api.delete(this.event._links.registration);
     this.toastService.toast("Přihláška smazána.");
@@ -88,7 +88,7 @@ export class EventsViewRegistrationComponent {
   }
 
   getRegistrationUrl(event: Event) {
-    return this.api.link2href(event._links?.registration!);
+    return this.api.link2href(event._links.registration!);
   }
 
   getSafeRegistrationUrl(event: Event) {
@@ -99,19 +99,19 @@ export class EventsViewRegistrationComponent {
     this.actions = [
       {
         text: "Stáhnout",
-        hidden: !event._links?.registration?.allowed.GET,
+        hidden: !event._links.registration?.allowed.GET,
         handler: () => this.downloadRegistration(),
       },
       {
         text: "Nahrát",
-        hidden: !event._links?.registration?.allowed.PUT,
+        hidden: !event._links.registration?.allowed.PUT,
         handler: () => this.uploadRegistrationSelect(),
       },
       {
         text: "Smazat",
         role: "destructive",
         color: "danger",
-        hidden: !event?.registration || !event._links?.registration?.allowed.DELETE,
+        hidden: !event?.registration || !event._links.registration?.allowed.DELETE,
         handler: () => this.deleteRegistration(),
       },
     ];

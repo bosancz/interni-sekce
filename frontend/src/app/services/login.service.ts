@@ -33,7 +33,7 @@ export class LoginService {
     const result: LoginResult = { success: true };
 
     try {
-      await this.api.post("login", credentials);
+      await this.api.account.loginUsingCredentials(credentials);
 
       await this.userService.loadUser();
     } catch (err: any) {
@@ -53,7 +53,7 @@ export class LoginService {
       const googleToken = await this.googleService.signIn();
 
       // validate token with the server
-      await this.api.post("login:google", { token: googleToken });
+      await this.api.account.loginUsingGoogle({ token: googleToken });
 
       await this.userService.loadUser();
 
@@ -63,9 +63,9 @@ export class LoginService {
     }
   }
 
-  async loginImpersonate(userId: string) {
+  async loginImpersonate(userId: number) {
     try {
-      await this.api.post("login:impersonate", { id: userId });
+      await this.api.users.impersonateUser(userId);
 
       await this.userService.loadUser();
 
@@ -79,7 +79,7 @@ export class LoginService {
     const result: LoginResult = { success: true };
 
     try {
-      await this.api.post("login:sendlink", { login });
+      await this.api.account.sendLoginLink({ login });
     } catch (err: any) {
       result.success = false;
       if (err.status === 404) result.error = "userNotFound";
@@ -90,7 +90,7 @@ export class LoginService {
   }
 
   async logout() {
-    await this.api.post("logout");
+    await this.api.account.logout();
     const user = await this.userService.loadUser();
 
     if (user) this.toastService.toast("Přihlášen zpět jako " + user.login);

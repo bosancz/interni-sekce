@@ -32,7 +32,7 @@ export class AlbumsService {
 
   /* PHOTOS */
   async getPhotos(album: Album<any, any> | Album["_id"]): Promise<Photo[]> {
-    if (typeof album === "object" && album._links?.["photos"]) {
+    if (typeof album === "object" && album._links.["photos"]) {
       return this.api.get<Photo[]>(album._links["photos"]);
     } else {
       const albumId = typeof album === "string" ? album : album._id;

@@ -4,14 +4,14 @@ import { ActivatedRoute, Params, Router } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
+import { UserResponse, UserResponseRolesEnum } from "src/app/api";
 import { UserRoles } from "src/app/config/user-roles";
-import { User } from "src/app/schema/user";
 import { ApiService } from "src/app/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 type UsersFilter = {
   search: string;
-  role: string[];
+  role: UserResponseRolesEnum[];
 };
 
 @UntilDestroy()
@@ -21,8 +21,8 @@ type UsersFilter = {
   styleUrls: ["./users-list.component.scss"],
 })
 export class UsersListComponent implements OnInit, AfterViewInit {
-  users: User[] = [];
-  filteredUsers: User[] = [];
+  users: UserResponse[] = [];
+  filteredUsers: UserResponse[] = [];
 
   searchIndex: string[] = [];
   searchString = new BehaviorSubject<string>("");
@@ -56,17 +56,12 @@ export class UsersListComponent implements OnInit, AfterViewInit {
   }
 
   async loadUsers() {
-    this.users = await this.api.get<User[]>("users", { members: 1 });
+    this.users = await this.api.users.listUsers().then((res) => res.data);
 
     this.users.sort((a, b) => a.login?.localeCompare(b.login) || 0);
 
     this.searchIndex = this.users.map((user) => {
-      return [
-        user.login,
-        user.member && user.member.nickname,
-        user.member && user.member.name && user.member.name.first,
-        user.member && user.member.name && user.member.name.last,
-      ]
+      return [user.login, user.member?.nickname, user.member?.firstName, user.member?.lastName]
         .filter((item) => !!item)
         .join(" ");
     });
@@ -81,7 +76,7 @@ export class UsersListComponent implements OnInit, AfterViewInit {
 
     this.filteredUsers = this.users.filter((user, i) => {
       if (search_re && !search_re.test(this.searchIndex[i])) return false;
-      if (filter.role && filter.role.length && !filter.role.some((filterRole) => user.roles.indexOf(filterRole) !== -1))
+      if (filter.role && filter.role.length && !filter.role.some((filterRole) => user.roles?.includes(filterRole)))
         return false;
 
       return true;

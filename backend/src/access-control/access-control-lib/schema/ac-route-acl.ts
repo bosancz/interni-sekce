@@ -1,5 +1,6 @@
 import { ForbiddenException, InternalServerErrorException } from "@nestjs/common";
 import { Request } from "express";
+import { OptionsStore } from "../options-store";
 import { AcEntity } from "./ac-entity";
 import { ChildEntity } from "./child-entity";
 
@@ -8,7 +9,7 @@ export interface AcRouteOptions<DOC, CONTAINS = DOC, ROLES extends string = stri
   entity?: AcEntity<DOC>;
 
   /** Permissions for the current route */
-  permissions?: Partial<Record<ROLES, AcPermission<DOC, PDATA>>>;
+  permissions?: AcPermissions<DOC, ROLES, PDATA>;
 
   /** Inherit permissions of the specified entity */
   inheritPermissions?: AcRouteACL<DOC, any, ROLES>;
@@ -22,6 +23,10 @@ export interface AcRouteOptions<DOC, CONTAINS = DOC, ROLES extends string = stri
 
   name?: string;
 }
+
+export type AcPermissions<DOC, ROLES extends string = string, PDATA extends Object = {}> = Partial<
+  Record<ROLES, AcPermission<DOC, PDATA>>
+>;
 
 export type AcPermission<DOC, PDATA extends Object = {}> =
   | boolean
@@ -47,10 +52,8 @@ export abstract class AcRouteACL<DOC, CONTAINS = DOC, ROLES extends string = str
     return permissions.some((permission) => this.checkPermission(permission, doc, req));
   }
 
-  abstract getUserRoles(req: Request): ROLES[];
-
   getPermissions(req: Request): AcPermission<DOC, PDATA>[] {
-    const userRoles = this.getUserRoles(req);
+    const userRoles = <ROLES[]>OptionsStore.getUserRoles(req);
 
     const permissions: AcPermission<DOC, PDATA>[] = [];
 

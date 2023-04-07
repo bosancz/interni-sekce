@@ -6,7 +6,7 @@
     </p>
   </ion-card-content>
 
-  <ion-item *ngIf="open" lines="none" [detail]="true" [routerLink]="'/akce/' + event._id" class="mt-3 event-heading">
+  <ion-item *ngIf="open" lines="none" [detail]="true" [routerLink]="'/akce/' + event.id" class="mt-3 event-heading">
     <ng-container *ngTemplateOutlet="itemContent"></ng-container>
   </ion-item>
 
@@ -46,51 +46,55 @@
     </p>
   </ion-card-content>
 
-  <ion-card-content *ngIf="actions && event?._actions" class="text-right buttons">
+  <ion-card-content *ngIf="actions" class="text-right buttons">
     <ion-buttons class="d-block">
       <ion-button
-        *ngIf="event._actions?.submit"
+        *ngIf="event._links.submitEvent?.applicable"
         color="primary"
-        [disabled]="!event._actions?.submit?.allowed"
-        (click)="submitEvent(event)"
+        [disabled]="!event._links.submitEvent.allowed"
+        (click)="eventAction(event, 'submitEvent')"
       >
         Ke schválení
       </ion-button>
 
-      <ion-button *ngIf="event._actions?.reject" [disabled]="!event._actions!.reject.allowed" (click)="rejectEvent()">
+      <ion-button
+        *ngIf="event._links.rejectEvent?.applicable"
+        [disabled]="!event._links!.rejectEvent.allowed"
+        (click)="eventAction(event, 'rejectEvent')"
+      >
         K úpravám
       </ion-button>
 
       <ion-button
-        *ngIf="event._actions?.publish"
+        *ngIf="event._links.publishEvent"
         color="primary"
-        [disabled]="!event._actions!.publish.allowed"
-        (click)="eventAction(event._actions?.publish!)"
+        [disabled]="!event._links!.publishEvent.allowed"
+        (click)="eventAction(event, 'publishEvent')"
       >
         Do programu
       </ion-button>
 
       <ion-button
-        *ngIf="event._actions?.unpublish"
-        [disabled]="!event._actions!.unpublish.allowed"
-        (click)="eventAction(event._actions?.unpublish!)"
+        *ngIf="event._links.unpublishEvent"
+        [disabled]="!event._links!.unpublishEvent.allowed"
+        (click)="eventAction(event, 'unpublishEvent')"
       >
         Z programu
       </ion-button>
 
       <ion-button
-        *ngIf="event._actions?.cancel"
+        *ngIf="event._links.cancelEvent"
         color="danger"
-        [disabled]="!event._actions!.cancel.allowed"
-        (click)="eventAction(event._actions?.cancel!)"
+        [disabled]="!event._links!.cancelEvent.allowed"
+        (click)="eventAction(event, 'cancelEvent')"
       >
         Zrušit akci
       </ion-button>
 
       <ion-button
-        *ngIf="event._actions?.uncancel"
-        [disabled]="!event._actions!.uncancel.allowed"
-        (click)="eventAction(event._actions?.uncancel!)"
+        *ngIf="event._links.uncancelEvent"
+        [disabled]="!event._links!.uncancelEvent.allowed"
+        (click)="eventAction(event, 'uncancelEvent')"
       >
         Vrátit zrušení
       </ion-button>

@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from "@angular/core";
+import { EventResponse } from "src/app/api";
 import { EventTypes } from "src/app/config/event-types";
-import { Event } from "src/app/schema/event";
 
 type EventPipeProperty = "image" | "color" | "class";
 
@@ -15,13 +15,15 @@ export class EventPipe implements PipeTransform {
 
   constructor() {}
 
-  transform(event: Event | undefined, property: EventPipeProperty): string {
+  transform(event: EventResponse | undefined, property: EventPipeProperty): string {
     if (!event) return this.defaultProperties[property];
 
     switch (property) {
       case "color":
       case "image":
-        return this.eventTypes?.[event.subtype]?.[property] || "";
+        return event.type && event.type in this.eventTypes
+          ? this.eventTypes[<keyof typeof this.eventTypes>event.type][property] ?? ""
+          : "";
 
       default:
         return "?";

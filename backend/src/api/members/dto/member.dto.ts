@@ -3,6 +3,7 @@ import { Group } from "src/models/members/entities/group.entity";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contacts.entity";
 import { Member, MemberRank, MemberRole, MembershipStatus } from "src/models/members/entities/member.entity";
+import { GroupResponse } from "./group.dto";
 
 export class MemberResponse implements Member {
   @ApiProperty() id!: number;
@@ -25,7 +26,7 @@ export class MemberResponse implements Member {
   @ApiPropertyOptional({ type: "enum", enum: MemberRole }) role!: MemberRole | null;
   @ApiPropertyOptional({ type: "enum", enum: MemberRank }) rank!: MemberRank | null;
 
-  @ApiPropertyOptional() group?: Group | undefined;
+  @ApiPropertyOptional({ type: GroupResponse }) group?: Group | undefined;
   @ApiPropertyOptional() contacts?: MemberContact[] | undefined;
   @ApiPropertyOptional() achievements?: MemberAchievement[] | undefined;
 }

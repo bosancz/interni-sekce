@@ -1,10 +1,12 @@
 import { RouteACL } from "src/access-control/schema/route-acl";
 import { MemberResponse } from "src/api/members/dto/member.dto";
+import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
+import { Event } from "src/models/events/entities/event.entity";
 import { EventAttendeeResponse } from "../dto/event-attendee.dto";
 import { EventResponse } from "../dto/event.dto";
 import { EventReadRoute, isMyEvent } from "./events.acl";
 
-export const EventAttendeesListRoute = new RouteACL<EventResponse, EventAttendeeResponse[]>({
+export const EventAttendeesListRoute = new RouteACL<Event, EventAttendeeResponse[]>({
   entity: EventResponse,
 
   inheritPermissions: EventReadRoute,
@@ -18,14 +20,14 @@ export const EventAttendeesListRoute = new RouteACL<EventResponse, EventAttendee
   },
 });
 
-export const EventAttendeeReadRoute = new RouteACL<EventAttendeeResponse>({
+export const EventAttendeeReadRoute = new RouteACL<EventAttendee>({
   entity: EventAttendeeResponse,
   permissions: {
     vedouci: true,
   },
 });
 
-export const EventAttendeeEditRoute = new RouteACL<EventAttendeeResponse>({
+export const EventAttendeeEditRoute = new RouteACL<EventAttendee>({
   entity: EventAttendeeResponse,
 
   permissions: {
@@ -36,7 +38,7 @@ export const EventAttendeeEditRoute = new RouteACL<EventAttendeeResponse>({
   contains: { properties: { member: { entity: MemberResponse } } },
 });
 
-export const EventAttendeeDeleteRoute = new RouteACL<EventAttendeeResponse>({
+export const EventAttendeeDeleteRoute = new RouteACL<EventAttendee>({
   entity: EventAttendeeResponse,
   path: (e) => `${e.eventId}/attendees/${e.memberId}`,
   inheritPermissions: EventAttendeeEditRoute,

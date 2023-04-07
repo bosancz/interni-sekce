@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  Logger,
   NotFoundException,
   Param,
   Patch,
@@ -16,16 +17,21 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
+import { AcContent } from "src/access-control/access-control-lib/schema/ac-content";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
 import { Repository } from "typeorm";
 import {
+  EventCancelRoute,
   EventCreateRoute,
   EventDeleteRoute,
   EventEditRoute,
+  EventPublishRoute,
   EventReadRoute,
   EventRejectRoute,
   EventSubmitRoute,
+  EventUncancelRoute,
+  EventUnpublishRoute,
   EventsListRoute,
 } from "../acl/events.acl";
 import { EventCreateBody, EventResponse, EventStatusChangeBody, EventUpdateBody } from "../dto/event.dto";
@@ -34,12 +40,14 @@ import { EventCreateBody, EventResponse, EventStatusChangeBody, EventUpdateBody 
 @AcController()
 @ApiTags("Events")
 export class EventsController {
+  private logger = new Logger(EventsController.name);
+
   constructor(private events: EventsService, @InjectRepository(Event) private eventsRepository: Repository<Event>) {}
 
   @Get()
   @AcLinks(EventsListRoute)
   @ApiResponse({ type: EventResponse, isArray: true })
-  async listEvents(@Req() req: Request): Promise<EventResponse[]> {
+  async listEvents(@Req() req: Request): Promise<AcContent<EventResponse>[]> {
     const q = this.eventsRepository
       .createQueryBuilder("events")
       .select(["events.id", "events.name", "events.status"])
@@ -56,7 +64,7 @@ export class EventsController {
     @Req() req: Request,
     @Body() body: EventCreateBody,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<EventResponse> {
+  ): Promise<AcContent<EventResponse>> {
     EventCreateRoute.canOrThrow(req, body);
 
     res.status(201);
@@ -66,7 +74,7 @@ export class EventsController {
   @Get(":id")
   @AcLinks(EventReadRoute)
   @ApiResponse({ type: EventResponse })
-  async getEvent(@Req() req: Request, @Param("id") id: number): Promise<EventResponse> {
+  async getEvent(@Req() req: Request, @Param("id") id: number): Promise<AcContent<EventResponse>> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
@@ -85,7 +93,7 @@ export class EventsController {
 
     EventEditRoute.canOrThrow(req, event);
 
-    this.events.updateEvent(id, body);
+    await this.events.updateEvent(id, body);
   }
 
   @Delete(":id")
@@ -105,25 +113,85 @@ export class EventsController {
   @HttpCode(204)
   @AcLinks(EventSubmitRoute)
   @ApiResponse({ status: 204 })
-  async submitEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventStatusChangeBody) {
+  async submitEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventStatusChangeBody): Promise<void> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
     EventSubmitRoute.canOrThrow(req, event);
 
-    return this.events.updateEvent(id, { status: EventStatus.pending, statusNote: body.statusNote });
+    await this.events.updateEvent(id, { status: EventStatus.pending, statusNote: body.statusNote });
   }
 
   @Post(":id/reject")
   @HttpCode(204)
   @AcLinks(EventRejectRoute)
   @ApiResponse({ status: 204 })
-  async rejectEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventStatusChangeBody) {
+  async rejectEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventStatusChangeBody): Promise<void> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
     EventRejectRoute.canOrThrow(req, event);
 
-    return this.events.updateEvent(id, { status: EventStatus.draft, statusNote: body.statusNote });
+    await this.events.updateEvent(id, { status: EventStatus.draft, statusNote: body.statusNote });
+  }
+
+  @Post(":id/publish")
+  @HttpCode(204)
+  @AcLinks(EventPublishRoute)
+  @ApiResponse({ status: 204 })
+  async publishEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventStatusChangeBody): Promise<void> {
+    const event = await this.events.getEvent(id, { leaders: true });
+    if (!event) throw new NotFoundException();
+
+    EventRejectRoute.canOrThrow(req, event);
+
+    await this.events.updateEvent(id, { status: EventStatus.draft, statusNote: body.statusNote });
+  }
+
+  @Post(":id/unpublish")
+  @HttpCode(204)
+  @AcLinks(EventUnpublishRoute)
+  @ApiResponse({ status: 204 })
+  async unpublishEvent(
+    @Req() req: Request,
+    @Param("id") id: number,
+    @Body() body: EventStatusChangeBody,
+  ): Promise<void> {
+    const event = await this.events.getEvent(id, { leaders: true });
+    if (!event) throw new NotFoundException();
+
+    EventRejectRoute.canOrThrow(req, event);
+
+    await this.events.updateEvent(id, { status: EventStatus.draft, statusNote: body.statusNote });
+  }
+
+  @Post(":id/cancel")
+  @HttpCode(204)
+  @AcLinks(EventCancelRoute)
+  @ApiResponse({ status: 204 })
+  async cancelEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventStatusChangeBody): Promise<void> {
+    const event = await this.events.getEvent(id, { leaders: true });
+    if (!event) throw new NotFoundException();
+
+    EventRejectRoute.canOrThrow(req, event);
+
+    await this.events.updateEvent(id, { status: EventStatus.draft, statusNote: body.statusNote });
+  }
+
+  @Post(":id/uncancel")
+  @HttpCode(204)
+  @AcLinks(EventUncancelRoute)
+  @ApiResponse({ status: 204 })
+  async uncancelEvent(
+    @Req() req: Request,
+    @Param("id") id: number,
+    @Body() body: EventStatusChangeBody,
+  ): Promise<void> {
+    const event = await this.events.getEvent(id, { leaders: true });
+    if (!event) throw new NotFoundException();
+
+    EventRejectRoute.canOrThrow(req, event);
+
+    await this.events.updateEvent(id, { status: EventStatus.draft, statusNote: body.statusNote });
   }
 }

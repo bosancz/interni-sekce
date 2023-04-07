@@ -1,6 +1,7 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
 import { CzechHolidays } from "czech-holidays";
 import { DateTime } from "luxon";
+import { CPVEventResponse } from "src/app/api";
 import { CPVEvent } from "src/app/schema/cpv-event";
 import { Event } from "src/app/schema/event";
 import { ApiService } from "src/app/services/api.service";
@@ -91,7 +92,7 @@ export class EventCalendarComponent implements OnInit, OnChanges {
   dateFrom!: DateTime;
   dateTill!: DateTime;
 
-  eventsCPV: CPVEvent[] = [];
+  eventsCPV: CPVEventResponse[] = [];
 
   eventHeight = 22;
 
@@ -156,10 +157,13 @@ export class EventCalendarComponent implements OnInit, OnChanges {
   async loadEventsCPV() {
     this.eventsCPV = [];
 
-    this.api.get<CPVEvent[]>("cpv").then((events) => {
-      this.eventsCPV.push(...events);
-      this.assignEvents(this.eventsCPV, "cpv");
-    });
+    this.api.events
+      .getCPVEvents()
+      .then((res) => res.data)
+      .then((events) => {
+        this.eventsCPV.push(...events);
+        this.assignEvents(this.eventsCPV, "cpv");
+      });
   }
 
   assignEvents(events: Array<Event>, type: "own"): void;
