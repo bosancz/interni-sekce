@@ -1,10 +1,10 @@
 # packages
-/node_modules
+node_modules
 
 # data storage
-data
-db
-keys
+/data
+/db
+/keys
 
-# IDE
-.idea/
+# local enviornment settings
+.env
