@@ -1363,7 +1363,7 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
         loginUsingCredentials: async (loginCredentialsBody: LoginCredentialsBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginCredentialsBody' is not null or undefined
             assertParamExists('loginUsingCredentials', 'loginCredentialsBody', loginCredentialsBody)
-            const localVarPath = `/account/login/credentials`;
+            const localVarPath = `/login/credentials`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1398,7 +1398,7 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
         loginUsingGoogle: async (loginGoogleBody: LoginGoogleBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginGoogleBody' is not null or undefined
             assertParamExists('loginUsingGoogle', 'loginGoogleBody', loginGoogleBody)
-            const localVarPath = `/account/login/google`;
+            const localVarPath = `/login/google`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1433,7 +1433,7 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
         loginUsingLink: async (loginLinkBody: LoginLinkBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginLinkBody' is not null or undefined
             assertParamExists('loginUsingLink', 'loginLinkBody', loginLinkBody)
-            const localVarPath = `/account/login/link`;
+            const localVarPath = `/login/link`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1465,7 +1465,7 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
          * @throws {RequiredError}
          */
         logout: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/account/login/logout`;
+            const localVarPath = `/login/logout`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1497,7 +1497,7 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
         sendLoginLink: async (loginSendLinkBody: LoginSendLinkBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginSendLinkBody' is not null or undefined
             assertParamExists('sendLoginLink', 'loginSendLinkBody', loginSendLinkBody)
-            const localVarPath = `/account/login/sendLink`;
+            const localVarPath = `/login/sendLink`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

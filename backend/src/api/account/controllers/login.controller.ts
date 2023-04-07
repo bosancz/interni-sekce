@@ -5,7 +5,7 @@ import { AcController } from "src/access-control/access-control-lib/decorators/a
 import { LoginCredentialsRoute, LoginGoogleRoute, LoginLinkRoute, LoginSendLinkRoute } from "../acl/login.acl";
 import { LoginCredentialsBody, LoginGoogleBody, LoginLinkBody, LoginSendLinkBody } from "../dto/login-body.dto";
 
-@Controller("account/login")
+@Controller("login")
 @ApiTags("Account")
 @AcController()
 export class LoginController {
