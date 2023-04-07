@@ -1,8 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Platform } from "@ionic/angular";
 import { EventResponse } from "src/app/api";
-import { DocumentAction } from "src/app/schema/api-document";
-import { Event } from "src/app/schema/event";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -23,7 +21,7 @@ export class EventCardComponent implements OnInit {
   @Input() open: boolean = false;
 
   @Output()
-  change = new EventEmitter<Event>();
+  change = new EventEmitter<EventResponse>();
 
   constructor(private api: ApiService, public platform: Platform) {}
 
@@ -34,22 +32,24 @@ export class EventCardComponent implements OnInit {
   }
 
   async reload() {
-    if (this.event && this.event._id) return this.loadEvent(this.event._id);
+    if (this.event && this.event.id) return this.loadEvent(this.event.id);
   }
 
-  async eventAction(action: DocumentAction, takeNote: boolean = false) {
-    let note: string = "";
+  async submitEvent(event: EventResponse) {
+    const statusNote = window.prompt("Poznámka pro správce programu (můžeš nechat prázdné):");
+    if (statusNote === null) return;
 
-    if (takeNote) {
-      const promptResult = window.prompt("Poznámka k vrácení akce:");
+    await this.api.events.submitEvent(event.id, { statusNote });
 
-      // hit cancel in the prompt cancels the action
-      if (promptResult === null) return;
+    await this.reload();
+    this.change.emit(this.event);
+  }
 
-      note = promptResult;
-    }
+  async rejectEvent(event: EventResponse) {
+    const statusNote = window.prompt("Poznámka k vrácení akce:");
+    if (statusNote === null) return;
 
-    await this.api.post(action, { note: note || undefined });
+    await this.api.events.rejectEvent(event.id, { statusNote });
 
     await this.reload();
     this.change.emit(this.event);

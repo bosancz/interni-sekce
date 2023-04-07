@@ -64,12 +64,12 @@ export class EventsService {
     return event;
   }
 
-  async updateEvent(id: number, data: Partial<Event>) {
-    return this.eventsRepository.save({ ...data, id });
-  }
-
   async createEvent(data: Partial<Event>) {
     return this.eventsRepository.save(data);
+  }
+
+  async updateEvent(id: number, data: Partial<Event>) {
+    return this.eventsRepository.update(id, data);
   }
 
   async deleteEvent(id: number) {

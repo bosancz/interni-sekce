@@ -31,7 +31,7 @@ export const EventCreateRoute = new RouteACL<any>({
   contains: { entity: EventResponse },
 });
 
-export const EventEditRoute = new RouteACL<EventResponse>({
+export const EventEditRoute = new RouteACL({
   entity: EventResponse,
 
   permissions: {
@@ -48,4 +48,23 @@ export const EventDeleteRoute = new RouteACL({
     admin: true,
   },
   condition: (doc) => doc.status !== EventStatus.public,
+});
+
+export const EventSubmitRoute = new RouteACL({
+  entity: EventResponse,
+  permissions: {
+    program: true,
+    admin: true,
+    vedouci: ({ doc, req }) => isMyEvent(doc, req),
+  },
+  condition: (doc) => doc.status === EventStatus.draft,
+});
+
+export const EventRejectRoute = new RouteACL({
+  entity: EventResponse,
+  permissions: {
+    program: true,
+    admin: true,
+  },
+  condition: (doc) => doc.status === EventStatus.pending,
 });

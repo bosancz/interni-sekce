@@ -9,13 +9,16 @@ services:
       - ..:/workspace:cached
     networks:
       - default
+    ports:
+      - 3000:3000
+      - 4200:4200
     environment:
       DB_HOST: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-postgres
       DB_USER: postgres
       DB_PASSWORD: password
       DB_DATABASE: postgres
       DB_SCHEMA: public
-      DATABASE_URI: mongodb://${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-mongo/bosan
+      MONGODB_URI: mongodb://${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-mongo/bosan
       CORS_ENABLE: "true"
       CORS_ORIGINS: "http://localhost:4200,http://localhost:4300"
 

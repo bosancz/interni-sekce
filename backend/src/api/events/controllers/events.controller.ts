@@ -16,11 +16,19 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
-import { Event } from "src/models/events/entities/event.entity";
+import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
 import { Repository } from "typeorm";
-import { EventCreateRoute, EventDeleteRoute, EventEditRoute, EventReadRoute, EventsListRoute } from "../acl/events.acl";
-import { EventCreateBody, EventResponse, EventUpdateBody } from "../dto/event.dto";
+import {
+  EventCreateRoute,
+  EventDeleteRoute,
+  EventEditRoute,
+  EventReadRoute,
+  EventRejectRoute,
+  EventSubmitRoute,
+  EventsListRoute,
+} from "../acl/events.acl";
+import { EventCreateBody, EventResponse, EventStatusChangeBody, EventUpdateBody } from "../dto/event.dto";
 
 @Controller("events")
 @AcController()
@@ -91,5 +99,31 @@ export class EventsController {
     EventDeleteRoute.canOrThrow(req, event);
 
     return this.events.deleteEvent(id);
+  }
+
+  @Post(":id/submit")
+  @HttpCode(204)
+  @AcLinks(EventSubmitRoute)
+  @ApiResponse({ status: 204 })
+  async submitEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventStatusChangeBody) {
+    const event = await this.events.getEvent(id, { leaders: true });
+    if (!event) throw new NotFoundException();
+
+    EventSubmitRoute.canOrThrow(req, event);
+
+    return this.events.updateEvent(id, { status: EventStatus.pending, statusNote: body.statusNote });
+  }
+
+  @Post(":id/reject")
+  @HttpCode(204)
+  @AcLinks(EventRejectRoute)
+  @ApiResponse({ status: 204 })
+  async rejectEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventStatusChangeBody) {
+    const event = await this.events.getEvent(id, { leaders: true });
+    if (!event) throw new NotFoundException();
+
+    EventRejectRoute.canOrThrow(req, event);
+
+    return this.events.updateEvent(id, { status: EventStatus.draft, statusNote: body.statusNote });
   }
 }

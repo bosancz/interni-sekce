@@ -10,7 +10,6 @@ export enum EventStatus {
   "pending" = "pending",
   "public" = "public",
   "cancelled" = "cancelled",
-  "rejected" = "rejected",
 }
 
 @Entity("events")

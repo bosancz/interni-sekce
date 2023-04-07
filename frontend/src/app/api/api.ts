@@ -228,10 +228,10 @@ export interface EventAttendeeResponse {
     'type': string;
     /**
      * 
-     * @type {EventResponse}
+     * @type {object}
      * @memberof EventAttendeeResponse
      */
-    'event'?: EventResponse;
+    'event'?: object;
     /**
      * 
      * @type {object}
@@ -386,10 +386,10 @@ export interface EventResponse {
     'groups'?: object;
     /**
      * 
-     * @type {object}
+     * @type {EventAttendeeResponse}
      * @memberof EventResponse
      */
-    'attendees'?: object;
+    'attendees'?: EventAttendeeResponse;
     /**
      * 
      * @type {object}
@@ -398,10 +398,10 @@ export interface EventResponse {
     'expenses'?: object;
     /**
      * 
-     * @type {object}
+     * @type {MemberResponse}
      * @memberof EventResponse
      */
-    'leaders'?: object;
+    'leaders'?: MemberResponse;
     /**
      * 
      * @type {EventResponseLinks}
@@ -421,6 +421,19 @@ export interface EventResponseLinks {
      * @memberof EventResponseLinks
      */
     'event:attendees:list'?: AcLink;
+}
+/**
+ * 
+ * @export
+ * @interface EventStatusChangeBody
+ */
+export interface EventStatusChangeBody {
+    /**
+     * 
+     * @type {string}
+     * @memberof EventStatusChangeBody
+     */
+    'statusNote'?: string;
 }
 /**
  * 
@@ -1122,6 +1135,84 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
         /**
          * 
          * @param {number} id 
+         * @param {EventStatusChangeBody} eventStatusChangeBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        rejectEvent: async (id: number, eventStatusChangeBody: EventStatusChangeBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('rejectEvent', 'id', id)
+            // verify required parameter 'eventStatusChangeBody' is not null or undefined
+            assertParamExists('rejectEvent', 'eventStatusChangeBody', eventStatusChangeBody)
+            const localVarPath = `/events/{id}/reject`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(eventStatusChangeBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {EventStatusChangeBody} eventStatusChangeBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        submitEvent: async (id: number, eventStatusChangeBody: EventStatusChangeBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('submitEvent', 'id', id)
+            // verify required parameter 'eventStatusChangeBody' is not null or undefined
+            assertParamExists('submitEvent', 'eventStatusChangeBody', eventStatusChangeBody)
+            const localVarPath = `/events/{id}/submit`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(eventStatusChangeBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
          * @param {EventUpdateBody} eventUpdateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1274,6 +1365,28 @@ export const EventsApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {number} id 
+         * @param {EventStatusChangeBody} eventStatusChangeBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async rejectEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.rejectEvent(id, eventStatusChangeBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {EventStatusChangeBody} eventStatusChangeBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async submitEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.submitEvent(id, eventStatusChangeBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} id 
          * @param {EventUpdateBody} eventUpdateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1357,6 +1470,26 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          */
         listEvents(options?: any): AxiosPromise<Array<EventResponse>> {
             return localVarFp.listEvents(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {EventStatusChangeBody} eventStatusChangeBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        rejectEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: any): AxiosPromise<void> {
+            return localVarFp.rejectEvent(id, eventStatusChangeBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {EventStatusChangeBody} eventStatusChangeBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        submitEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: any): AxiosPromise<void> {
+            return localVarFp.submitEvent(id, eventStatusChangeBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1453,6 +1586,30 @@ export class EventsApi extends BaseAPI {
      */
     public listEvents(options?: AxiosRequestConfig) {
         return EventsApiFp(this.configuration).listEvents(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {EventStatusChangeBody} eventStatusChangeBody 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public rejectEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).rejectEvent(id, eventStatusChangeBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {EventStatusChangeBody} eventStatusChangeBody 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public submitEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).submitEvent(id, eventStatusChangeBody, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

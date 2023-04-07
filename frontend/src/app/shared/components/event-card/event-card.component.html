@@ -36,10 +36,10 @@
   <ion-card-content>
     <p *ngIf="event?.description" class="description mb-3">{{ event.description }}</p>
 
-    <p *ngIf="event.meeting?.start || event.meeting?.end" class="mb-3">
-      <ng-container *ngIf="event.meeting?.start"><strong>Sraz: </strong>{{ event.meeting?.start }}</ng-container>
-      <ng-container *ngIf="event.meeting?.start && event.meeting?.end">, </ng-container>
-      <ng-container *ngIf="event.meeting?.end"><strong>Konec: </strong>{{ event.meeting?.end }}</ng-container>
+    <p *ngIf="event.meetingPlaceStart || event.meetingPlaceEnd" class="mb-3">
+      <ng-container *ngIf="event.meetingPlaceStart"><strong>Sraz: </strong>{{ event.meetingPlaceStart }}</ng-container>
+      <ng-container *ngIf="event.meetingPlaceStart && event.meetingPlaceEnd">, </ng-container>
+      <ng-container *ngIf="event.meetingPlaceEnd"><strong>Konec: </strong>{{ event.meetingPlaceEnd }}</ng-container>
     </p>
     <p class="mb-0">
       Vede <strong [innerHTML]="event.leaders?.length ? (event.leaders! | joinLeaders) : 'pan NIKDO'"></strong>
@@ -52,16 +52,12 @@
         *ngIf="event._actions?.submit"
         color="primary"
         [disabled]="!event._actions?.submit?.allowed"
-        (click)="eventAction(event._actions?.submit!)"
+        (click)="submitEvent(event)"
       >
         Ke schválení
       </ion-button>
 
-      <ion-button
-        *ngIf="event._actions?.reject"
-        [disabled]="!event._actions!.reject.allowed"
-        (click)="eventAction(event._actions?.reject!, true)"
-      >
+      <ion-button *ngIf="event._actions?.reject" [disabled]="!event._actions!.reject.allowed" (click)="rejectEvent()">
         K úpravám
       </ion-button>
 
