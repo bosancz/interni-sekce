@@ -1,11 +1,4 @@
-volumes:
-  root-node-modules-volume:
-  backend-node-modules-volume:
-  frontend-node-modules-volume:
-
-networks:
-  bosan_db:
-    external: true
+name: bosan_interni_sekce_development
 
 services:
   devcontainer:
@@ -14,12 +7,8 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
     volumes:
       - ..:/workspace:cached
-      - root-node-modules-volume:/workspace/node_modules
-      - backend-node-modules-volume:/workspace/backend/node_modules
-      - frontend-node-modules-volume:/workspace/frontend/node_modules
     networks:
       - default
-      - bosan_db
     environment:
       DB_HOST: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-postgres
       DB_USER: postgres
