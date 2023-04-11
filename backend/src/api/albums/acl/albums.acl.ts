@@ -1,13 +1,15 @@
 import { RouteACL } from "src/access-control/schema/route-acl";
+import { RootResponse } from "src/api/root/dto/root-response";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
 import { AlbumResponse } from "../dto/album.dto";
 import { PhotoResponse } from "../dto/photo.dto";
 
 export const AlbumsListRoute = new RouteACL<undefined, Album[]>({
+  entity: RootResponse,
+
   permissions: {
     vedouci: true,
-    verejnost: true,
   },
   contains: {
     array: { entity: AlbumResponse },

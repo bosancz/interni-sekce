@@ -1,7 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { AcLink } from "src/access-control/access-control-lib/schema/ac-link";
-import { AcLinkProperties } from "src/access-control/access-control-lib/schema/ac-link-properties";
-import { AcResponse } from "src/access-control/access-control-lib/schema/ac-response";
+import { AcLink, AcLinksObject } from "src/access-control/access-control-lib/schema/ac-link";
 import { MemberResponse } from "src/api/members/dto/member.dto";
 import { Member } from "src/models/members/entities/member.entity";
 import { User, UserRoles } from "src/models/users/entities/user.entity";
@@ -12,7 +10,7 @@ type LinkNames = ExtractExisting<
   "deleteUser" | "getUser" | "updateUser" | "impersonateUser" | "setUserPassword"
 >;
 
-export class UserResponseLinks implements AcLinkProperties<LinkNames> {
+export class UserResponseLinks implements AcLinksObject<LinkNames> {
   @ApiProperty() deleteUser!: AcLink;
   @ApiProperty() getUser!: AcLink;
   @ApiProperty() updateUser!: AcLink;
@@ -20,7 +18,7 @@ export class UserResponseLinks implements AcLinkProperties<LinkNames> {
   @ApiProperty() setUserPassword!: AcLink;
 }
 
-export class UserResponse implements AcResponse<User, LinkNames> {
+export class UserResponse implements User {
   @ApiProperty() id!: number;
   @ApiProperty() login!: string;
 

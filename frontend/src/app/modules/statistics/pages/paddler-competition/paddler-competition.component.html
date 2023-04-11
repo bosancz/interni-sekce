@@ -26,15 +26,8 @@
                 {{ ranking.rank }}.
                 <ng-container *ngIf="ranking.rankTo !== ranking.rank"> - {{ ranking.rankTo }}.</ng-container>
               </td>
-              <td>{{ ranking.member?.nickname }} ({{ ranking.member?.group | group: "name" }})</td>
-              <td>{{ ranking.water_km }}&nbsp;km</td>
-              <td class="events">
-                <ul>
-                  <li *ngFor="let event of ranking.events">
-                    {{ event.name }} ({{ event.competition.water_km }}&nbsp;km)
-                  </li>
-                </ul>
-              </td>
+              <td>{{ ranking.nickname }} ({{ ranking.groupId | group : "name" }})</td>
+              <td>{{ ranking.waterKm }}&nbsp;km</td>
             </tr>
           </tbody>
         </table>
@@ -56,8 +49,8 @@
               {{ ranking.rank }}.
               <ng-container *ngIf="ranking.rankTo !== ranking.rank"> - {{ ranking.rankTo }}.</ng-container>
             </td>
-            <td>{{ ranking.group | group: "name" }}</td>
-            <td>{{ ranking.water_km }}&nbsp;km</td>
+            <td>{{ ranking.groupId | group : "name" }}</td>
+            <td>{{ ranking.waterKm }}&nbsp;km</td>
           </tr>
         </tbody>
       </table>

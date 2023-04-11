@@ -34,9 +34,10 @@ async function bootstrap() {
     .setTitle(Config.app.name)
     .setVersion(`v${Config.app.version}`)
     // .addSecurity("AuthToken", { type: "apiKey", name: "token", in: "query" })
+
     .build();
   const document = SwaggerModule.createDocument(app, config, {
-    ignoreGlobalPrefix: true,
+    // ignoreGlobalPrefix: true,
     operationIdFactory: (controllerKey, methodKey) => methodKey,
   });
   SwaggerModule.setup("/api", app, document, { customSiteTitle: `${Config.app.name} API` });

@@ -1,3 +1,4 @@
+import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Group } from "./group.entity";
 import { MemberAchievement } from "./member-achievements.entity";
@@ -41,6 +42,9 @@ export class Member {
   @Column({ type: "boolean", nullable: false, default: true }) active!: boolean;
   @Column({ type: "enum", enum: MembershipStatus, nullable: false, default: MembershipStatus.clen })
   membership!: MembershipStatus;
+
+  @OneToMany(() => EventAttendee, (ea) => ea.member)
+  eventAttendees?: EventAttendee[];
 
   @Column({ type: "enum", enum: MemberRole, nullable: true }) role!: MemberRole | null;
   @Column({ type: "enum", enum: MemberRank, nullable: true }) rank!: MemberRank | null;

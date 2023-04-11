@@ -1,34 +1,30 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
 
 import { StatisticsComponent } from "./statistics.component";
 
-import { EventsDashboardComponent } from './views/events-dashboard/events-dashboard.component';
-import { MembersDashboardComponent } from './views/members-dashboard/members-dashboard.component';
-import { PaddlerCompetitionComponent } from './views/paddler-competition/paddler-competition.component';
+import { EventsDashboardComponent } from "./pages/events-dashboard/events-dashboard.component";
+import { MembersDashboardComponent } from "./pages/members-dashboard/members-dashboard.component";
+import { PaddlerCompetitionComponent } from "./pages/paddler-competition/paddler-competition.component";
 
 const routes: Routes = [
-
   {
-    path: '',
+    path: "",
     component: StatisticsComponent,
     children: [
+      { path: "akce", component: EventsDashboardComponent },
 
-      { path: 'akce', component: EventsDashboardComponent },
+      { path: "clenove", component: MembersDashboardComponent },
 
-      { path: 'clenove', component: MembersDashboardComponent },
+      { path: "kilometry", component: PaddlerCompetitionComponent },
 
-      { path: 'kilometry', component: PaddlerCompetitionComponent },
-
-      { path: '', redirectTo: "akce", pathMatch: "full" }
-
-    ]
-  }
-
+      { path: "", redirectTo: "akce", pathMatch: "full" },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class StatisticsRoutingModule { }
+export class StatisticsRoutingModule {}

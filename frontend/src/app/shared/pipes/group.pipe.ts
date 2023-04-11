@@ -1,29 +1,30 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { MemberGroupID, MemberGroups } from "src/app/config/member-groups";
 
 export type GroupPipeProperty = "name" | "color";
+
+type GroupPipeData = { color: string; name: string };
 
 @Pipe({
   name: "group",
 })
 export class GroupPipe implements PipeTransform {
-  groups = MemberGroups;
+  groups = new Map<string, GroupPipeData>();
 
-  defaultValues: { [key: string]: any } = {
+  defaultValues: GroupPipeData = {
     color: "#000",
+    name: "???",
   };
 
   constructor() {}
 
-  transform(groupId: MemberGroupID | undefined, property: GroupPipeProperty): string | undefined {
-    // if group properties not loaded yet or not present for group, return default values
+  transform(groupId: string | undefined, property: GroupPipeProperty): string | undefined {
     if (!groupId) return this.defaultValues[property];
 
     switch (property) {
       case "name":
-        return this.groups?.[groupId]?.[property] || groupId;
+        return this.groups.get(groupId)?.[property] || groupId;
       default:
-        return this.groups?.[groupId]?.[property];
+        return this.groups.get(groupId)?.[property];
     }
   }
 }

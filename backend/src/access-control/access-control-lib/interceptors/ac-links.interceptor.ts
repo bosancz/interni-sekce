@@ -14,7 +14,6 @@ import { Config } from "src/config";
 import { OptionsStore } from "../options-store";
 import { RouteStore } from "../route-store";
 import { AcEntity } from "../schema/ac-entity";
-import { WithAcLinks } from "../schema/ac-link";
 import { AcRouteACL } from "../schema/ac-route-acl";
 import { ChildEntity, ChildEntityObject } from "../schema/child-entity";
 import { MetadataConstant } from "../schema/metadata-constant";
@@ -64,23 +63,21 @@ export class AcLinksInterceptor implements NestInterceptor {
 
     if ("properties" in child && child.properties) {
       Object.keys(child.properties).forEach((key) => {
-        if (res[key]) this.addLinksToChildren(res[<keyof D>key], child.properties![<keyof D>key]!, req);
+        if (res[key]) this.addLinksToChildren(res[<keyof D>key], <any>child.properties![<keyof D>key]!, req);
       });
     }
   }
 
-  private addLinksToDoc<D>(doc: WithAcLinks<D>, entity: AcEntity<D>, req: Request): void {
-    doc._links = {};
+  private addLinksToDoc<D>(doc: D & any, entity: AcEntity<D>, req: Request): void {
+    doc[OptionsStore.linksProperty] = {};
 
     const routes = this.findRoutes(entity);
 
     for (let route of routes) {
-      const routeAcl = <RouteStoreItem>this.reflector.get(MetadataConstant.route, route.handler);
-
       const httpMethod = this.getHttpMethod(route);
       const routeName = this.getRouteName(route);
 
-      doc._links[routeName] = {
+      doc[OptionsStore.linksProperty][routeName] = {
         method: httpMethod,
         href: this.getPath(route, doc),
         allowed: route.acl.can(req, doc),

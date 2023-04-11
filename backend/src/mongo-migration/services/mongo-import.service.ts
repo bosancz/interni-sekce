@@ -187,7 +187,7 @@ export class MongoImportService {
         meetingPlaceStart: mongoEvent.meeting?.start ?? null,
         meetingPlaceEnd: mongoEvent.meeting?.end ?? null,
         type: mongoEvent.subtype ?? null,
-        water_km: null,
+        waterKm: null,
         river: null,
         leadersEvent: mongoEvent.groups?.includes("V") || false,
       };

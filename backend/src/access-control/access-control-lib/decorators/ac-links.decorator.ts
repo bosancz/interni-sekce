@@ -6,9 +6,9 @@ import { MetadataConstant } from "../schema/metadata-constant";
 import { RouteStoreItem } from "../schema/route-store-item";
 
 /**
- * Adds _links field to response documents based on Access Control permissions
+ * Adds field (default: `_links`) to response documents based on Access Control permissions
  * @param entity Access Control List entity
- * @param options Options for _links generation
+ * @param options Options for field generation
  * @returns
  */
 export function AcLinks<D, C>(acl: AcRouteACL<D, C>): MethodDecorator {

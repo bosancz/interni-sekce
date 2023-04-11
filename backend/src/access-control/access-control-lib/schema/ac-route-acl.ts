@@ -5,15 +5,18 @@ import { AcEntity } from "./ac-entity";
 import { ChildEntity } from "./child-entity";
 
 export interface AcRouteOptions<DOC, CONTAINS = DOC, ROLES extends string = string, PDATA extends Object = {}> {
-  /** Add link for this route to the specified parent entity. This creates links to all routes of the same entity */
+  // TODO: maybe rename to `linkTo`
+  /** Add link for this route to the specified parent entity. This adds a links object as a property (default `_links`) to all routes of the same entity */
   entity?: AcEntity<DOC>;
 
+  // TODO: maybe rename to `allowed` like the resulting property
   /** Permissions for the current route */
   permissions?: AcPermissions<DOC, ROLES, PDATA>;
 
   /** Inherit permissions of the specified entity */
   inheritPermissions?: AcRouteACL<DOC, any, ROLES>;
 
+  // TODO: maybe rename to `applicable` like the resulting property
   /** Global condition whether this route is accessible (i.e. is document in the state to perform this operation) */
   condition?: (d: DOC) => boolean;
 

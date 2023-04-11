@@ -1,8 +1,6 @@
 import { ApiProperty, ApiPropertyOptional, OmitType, PickType } from "@nestjs/swagger";
 import { IsOptional, IsString } from "class-validator";
-import { AcLink } from "src/access-control/access-control-lib/schema/ac-link";
-import { AcLinkProperties } from "src/access-control/access-control-lib/schema/ac-link-properties";
-import { AcResponse } from "src/access-control/access-control-lib/schema/ac-response";
+import { AcLink, AcLinksObject } from "src/access-control/access-control-lib/schema/ac-link";
 import { AlbumResponse } from "src/api/albums/dto/album.dto";
 import { MemberResponse } from "src/api/members/dto/member.dto";
 import { Album } from "src/models/albums/entities/album.entity";
@@ -30,7 +28,7 @@ type LinkNames =
     >
   | ExtractExisting<keyof EventsAttendeesController, "listEventAttendees">;
 
-class EventResponseLinks implements AcLinkProperties<LinkNames> {
+class EventResponseLinks implements AcLinksObject<LinkNames> {
   @ApiProperty() publishEvent!: AcLink;
   @ApiProperty() unpublishEvent!: AcLink;
   @ApiProperty() cancelEvent!: AcLink;
@@ -43,7 +41,7 @@ class EventResponseLinks implements AcLinkProperties<LinkNames> {
   @ApiProperty() submitEvent!: AcLink;
 }
 
-export class EventResponse implements AcResponse<Event, keyof EventResponseLinks> {
+export class EventResponse implements Event {
   @ApiProperty() id!: number;
   @ApiProperty() name!: string;
   @ApiProperty({ enum: EventStatus }) status!: EventStatus;
@@ -59,7 +57,7 @@ export class EventResponse implements AcResponse<Event, keyof EventResponseLinks
   @ApiPropertyOptional({ type: "string" }) timeTill!: string | null;
   @ApiPropertyOptional({ type: "string" }) meetingPlaceStart!: string | null;
   @ApiPropertyOptional({ type: "string" }) meetingPlaceEnd!: string | null;
-  @ApiPropertyOptional({ type: "number" }) water_km!: number | null;
+  @ApiPropertyOptional({ type: "number" }) waterKm!: number | null;
   @ApiPropertyOptional({ type: "string" }) river!: string | null;
   @ApiPropertyOptional({ type: "string" }) deletedAt?: Date | undefined;
 

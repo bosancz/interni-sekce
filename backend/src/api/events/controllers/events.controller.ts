@@ -17,7 +17,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
-import { AcContent } from "src/access-control/access-control-lib/schema/ac-content";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
 import { Repository } from "typeorm";
@@ -47,7 +46,7 @@ export class EventsController {
   @Get()
   @AcLinks(EventsListRoute)
   @ApiResponse({ type: EventResponse, isArray: true })
-  async listEvents(@Req() req: Request): Promise<AcContent<EventResponse>[]> {
+  async listEvents(@Req() req: Request): Promise<Omit<EventResponse, "_links">[]> {
     const q = this.eventsRepository
       .createQueryBuilder("events")
       .select(["events.id", "events.name", "events.status"])
@@ -64,7 +63,7 @@ export class EventsController {
     @Req() req: Request,
     @Body() body: EventCreateBody,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<AcContent<EventResponse>> {
+  ): Promise<Omit<EventResponse, "_links">> {
     EventCreateRoute.canOrThrow(req, body);
 
     res.status(201);
@@ -74,7 +73,7 @@ export class EventsController {
   @Get(":id")
   @AcLinks(EventReadRoute)
   @ApiResponse({ type: EventResponse })
-  async getEvent(@Req() req: Request, @Param("id") id: number): Promise<AcContent<EventResponse>> {
+  async getEvent(@Req() req: Request, @Param("id") id: number): Promise<Omit<EventResponse, "_links">> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 

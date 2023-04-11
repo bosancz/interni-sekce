@@ -3,11 +3,11 @@ import { NgModule } from "@angular/core";
 import { NgChartsModule } from "ng2-charts";
 import { SharedModule } from "src/app/shared/shared.module";
 import { ListSliderComponent } from "./components/list-slider/list-slider.component";
+import { EventsDashboardComponent } from "./pages/events-dashboard/events-dashboard.component";
+import { MembersDashboardComponent } from "./pages/members-dashboard/members-dashboard.component";
+import { PaddlerCompetitionComponent } from "./pages/paddler-competition/paddler-competition.component";
 import { StatisticsRoutingModule } from "./statistics-routing.module";
 import { StatisticsComponent } from "./statistics.component";
-import { EventsDashboardComponent } from "./views/events-dashboard/events-dashboard.component";
-import { MembersDashboardComponent } from "./views/members-dashboard/members-dashboard.component";
-import { PaddlerCompetitionComponent } from "./views/paddler-competition/paddler-competition.component";
 
 @NgModule({
   declarations: [

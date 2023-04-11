@@ -3,7 +3,6 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
-import { AcContent } from "src/access-control/access-control-lib/schema/ac-content";
 import { UsersService } from "src/models/users/services/users.service";
 import {
   UserCreateRoute,
@@ -28,7 +27,7 @@ export class UsersController {
   @Get()
   @AcLinks(UsersListRoute)
   @ApiResponse({ type: UserResponse, isArray: true })
-  async listUsers(@Req() req: Request): Promise<AcContent<UserResponse>[]> {
+  async listUsers(@Req() req: Request): Promise<Omit<UserResponse, "_links">[]> {
     UsersListRoute.canOrThrow(req, undefined);
 
     return this.userService.listUsers();
@@ -37,7 +36,7 @@ export class UsersController {
   @Post()
   @AcLinks(UserCreateRoute)
   @ApiResponse({ type: UserResponse })
-  async createUser(@Req() req: Request, @Body() body: UserCreateBody): Promise<AcContent<UserResponse>> {
+  async createUser(@Req() req: Request, @Body() body: UserCreateBody): Promise<Omit<UserResponse, "_links">> {
     UserCreateRoute.canOrThrow(req, undefined);
 
     return this.userService.createUser(body);
@@ -46,7 +45,7 @@ export class UsersController {
   @Get(":id")
   @AcLinks(UserReadRoute)
   @ApiResponse({ type: UserResponse })
-  async getUser(@Req() req: Request, @Param("id") id: number): Promise<AcContent<UserResponse>> {
+  async getUser(@Req() req: Request, @Param("id") id: number): Promise<Omit<UserResponse, "_links">> {
     const user = await this.userService.getUser(id);
     if (!user) throw new NotFoundException();
 

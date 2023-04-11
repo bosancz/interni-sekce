@@ -4,29 +4,19 @@ import { debounceTime, filter, map } from "rxjs/operators";
 
 import { ApiService } from "src/app/services/api.service";
 
-import { MemberGroupID } from "src/app/config/member-groups";
-import { Event } from "src/app/schema/event";
-import { Member } from "src/app/schema/member";
+export type Ranked<T> = T & { rank?: number; rankTo?: number };
 
-export interface PaddlerCompetitionRanking {
-  rank?: number;
-  rankTo?: number;
-
-  water_km: number;
-
-  member?: Member;
-  group?: MemberGroupID;
-  events?: Event[];
+export interface PaddlerCompetitionMember {
+  nickname: string;
+  firstName: string;
+  lastName: string;
+  groupId?: string;
+  waterKm: number;
 }
 
-export interface PaddlerCompetitionGroupRanking {
-  rank?: number;
-  rankTo?: number;
-
-  water_km: number;
-
-  group?: MemberGroupID;
-  events?: Event[];
+export interface PaddlerCompetitionGroup {
+  groupId: string;
+  waterKm: number;
 }
 
 @Component({
@@ -39,8 +29,8 @@ export class PaddlerCompetitionComponent implements OnInit {
   year = this.route.params.pipe(map((params: Params) => Number(params.year) || null));
   currentYear?: number;
 
-  rankings: PaddlerCompetitionRanking[] = [];
-  groups: PaddlerCompetitionGroupRanking[] = [];
+  rankings: Ranked<PaddlerCompetitionMember>[] = [];
+  groups: Ranked<PaddlerCompetitionGroup>[] = [];
 
   constructor(private api: ApiService, private router: Router, private route: ActivatedRoute) {
     this.year
@@ -57,24 +47,25 @@ export class PaddlerCompetitionComponent implements OnInit {
   }
 
   async loadYears() {
-    this.years = await this.api.get<number[]>("competition:years");
+    const totals = await this.api.statistics.getPaddlersTotals().then((res) => res.data);
+    this.years = totals.years;
     this.years.sort();
     if (!this.currentYear) this.setYear(this.years[this.years.length - 1]);
   }
 
   async loadRanking(year: number) {
-    const rankings = await this.api.get<PaddlerCompetitionRanking[]>("competition:ranking", { year: year });
+    const rankings = await this.api.statistics.getPaddlersRanking(year).then((res) => res.data);
 
     this.rankings = this.setRanks(rankings);
 
-    const groups: { [key: string]: PaddlerCompetitionRanking } = {};
+    const groups: { [key: string]: PaddlerCompetitionGroup } = {};
 
-    this.rankings.forEach((item) => {
-      if (!item.member?.group) return;
+    rankings.forEach((item) => {
+      if (!item.groupId) return;
 
-      if (!groups[item.member.group]) groups[item.member.group] = { group: item.member.group, water_km: 0 };
+      if (!(item.groupId in groups)) groups[item.groupId] = { groupId: item.groupId, waterKm: 0 };
 
-      groups[item.member.group].water_km += item.water_km;
+      groups[item.groupId].waterKm += item.waterKm;
     });
 
     this.groups = this.setRanks(Object.values(groups));
@@ -84,15 +75,15 @@ export class PaddlerCompetitionComponent implements OnInit {
     this.router.navigate(["./", { year: year }], { relativeTo: this.route });
   }
 
-  setRanks(ranking: PaddlerCompetitionRanking[]): PaddlerCompetitionRanking[] {
-    ranking.sort((a, b) => b.water_km - a.water_km);
+  setRanks<T extends { waterKm: number }>(ranking: T[]): Ranked<T>[] {
+    ranking.sort((a, b) => b.waterKm - a.waterKm);
 
-    let ranked = [];
+    let ranked: Ranked<T>[] = [];
 
     for (let i = 0; i < ranking.length; i++) {
       ranked.push(ranking[i]);
 
-      if (!ranking[i + 1] || ranking[i + 1].water_km !== ranking[i].water_km) {
+      if (!ranking[i + 1] || ranking[i + 1].waterKm !== ranking[i].waterKm) {
         ranked.forEach((rankedItem) => {
           rankedItem.rank = i + 1 - (ranked.length - 1);
           rankedItem.rankTo = i + 1;

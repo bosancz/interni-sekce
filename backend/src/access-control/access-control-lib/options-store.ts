@@ -1,3 +1,7 @@
-import { AccessControlLibOptions } from "./access-control-lib.module";
+import { AccessControlLibOptions } from "./schema/options";
 
-export var OptionsStore = {} as AccessControlLibOptions;
+export var OptionsStore: Required<AccessControlLibOptions> = {
+  linksProperty: "_links",
+  getUserRoles: () => [],
+  routeNameConvention: (methodKey: string) => methodKey,
+};

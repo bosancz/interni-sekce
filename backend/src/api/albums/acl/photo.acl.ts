@@ -1,11 +1,13 @@
 import { RouteACL } from "src/access-control/schema/route-acl";
+import { RootResponse } from "src/api/root/dto/root-response";
 import { Photo } from "src/models/albums/entities/photo.entity";
 import { PhotoResponse } from "../dto/photo.dto";
 
 export const PhotosListRoute = new RouteACL<undefined, PhotoResponse[]>({
+  entity: RootResponse,
+
   permissions: {
     vedouci: true,
-    verejnost: true,
   },
   contains: {
     array: { entity: PhotoResponse },
@@ -16,7 +18,6 @@ export const PhotoReadRoute = new RouteACL({
   entity: PhotoResponse,
   permissions: {
     vedouci: true,
-    verejnost: true,
   },
 });
 

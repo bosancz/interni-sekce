@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import axios from "axios";
 import { environment } from "src/environments/environment";
-import { AccountApi, EventsApi, MembersApi, PhotoGalleryApi, UsersApi } from "../api";
+import { AccountApi, EventsApi, MembersApi, PhotoGalleryApi, StatisticsApi, UsersApi } from "../api";
 
 @Injectable({
   providedIn: "root",
@@ -16,6 +16,7 @@ export class ApiService {
   readonly members = new MembersApi(undefined, environment.apiRoot, this.http);
   readonly account = new AccountApi(undefined, environment.apiRoot, this.http);
   readonly users = new UsersApi(undefined, environment.apiRoot, this.http);
+  readonly statistics = new StatisticsApi(undefined, environment.apiRoot, this.http);
 
   constructor() {}
 }
