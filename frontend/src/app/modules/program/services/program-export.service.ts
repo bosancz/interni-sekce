@@ -15,14 +15,14 @@ import { saveAs } from "file-saver";
 import { DateTime } from "luxon";
 import { from } from "rxjs";
 import { groupBy, mergeMap, toArray } from "rxjs/operators";
-import { Event } from "src/app/schema/event";
+import { EventResponse } from "src/app/api";
 
 @Injectable({
   providedIn: "root",
 })
 export class ProgramExportService {
-  export(events: Event[]) {
-    const groupedEvents: Event[][] = [];
+  export(events: EventResponse[]) {
+    const groupedEvents: EventResponse[][] = [];
     from(events)
       .pipe(
         groupBy((event) => `${event.dateFrom},${event.dateTill}`),
@@ -126,7 +126,7 @@ export class ProgramExportService {
                   new Paragraph({
                     text:
                       event.leaders && (event.leaders?.length || 0) > 0
-                        ? `Vede: ${event.leaders.map((l) => `${l.nickname}(${l.contacts?.mobile || "?"})`).join(", ")}`
+                        ? `Vede: ${event.leaders.map((l) => `${l.nickname}(${l.mobile || "?"})`).join(", ")}`
                         : "",
                     style: "normal",
                   }),

@@ -10,12 +10,12 @@
     ></ion-searchbar>
 
     <ion-list *ngIf="members?.length">
-      <ion-item *ngFor="let member of members" [routerLink]="['/databaze', member._id]" [detail]="true">
+      <ion-item *ngFor="let member of members" [routerLink]="['/databaze', member.id]" [detail]="true">
         <ion-label>
-          <h3>{{ member.nickname || member.name?.first || "?" }}</h3>
+          <h3>{{ member.nickname || member.firstName || "?" }}</h3>
           <p>
-            {{ member.name?.first }} {{ member.name?.last }},
-            <span [style.color]="member.group | group: 'color'">{{ member.group | group: "name" }}</span
+            {{ member.firstName }} {{ member.lastName }},
+            <span [style.color]="member.groupId | group : 'color'">{{ member.groupId | group : "name" }}</span
             >, {{ (member.birthday | age) || "?" }}&nbsp;let
           </p>
         </ion-label>

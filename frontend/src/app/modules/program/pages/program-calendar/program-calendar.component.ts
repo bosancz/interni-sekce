@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ModalController, ViewWillEnter } from "@ionic/angular";
+import { EventResponse } from "src/app/api";
 import { EventsService } from "src/app/modules/events/services/events.service";
-import { Event } from "src/app/schema/event";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { TrimesterDateRange } from "../../components/trimester-selector/trimester-selector.component";
 
@@ -15,7 +15,7 @@ export class ProgramCalendarComponent implements OnInit, OnDestroy, ViewWillEnte
   dateFrom?: string;
   dateTill?: string;
 
-  calendarEvents: Event[] = [];
+  calendarEvents: EventResponse[] = [];
 
   showFilter: boolean = true;
 

@@ -10,7 +10,7 @@ import { CPVEventResponse } from "../dto/cpv-event.dto";
 @AcController()
 @ApiTags("Events")
 export class CPVEventsController {
-  @Get()
+  @Get("cpv")
   @AcLinks(CPVEventsListRoute)
   @ApiResponse({ type: CPVEventResponse, isArray: true })
   async getCPVEvents(@Req() req: Request): Promise<Omit<CPVEventResponse, "_links">[]> {

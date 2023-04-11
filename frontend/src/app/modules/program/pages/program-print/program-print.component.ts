@@ -1,5 +1,4 @@
 import { Component, Injector, OnInit } from "@angular/core";
-import { Event } from "src/app/schema/event";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -34,7 +33,8 @@ export class ProgramPrintComponent implements OnInit {
       select: "_id name description dateFrom dateTill leaders",
     };
 
-    const events = await this.api.get<Event[]>("events", requestOptions);
+    //TODO: use options above
+    const events = await this.api.events.listEvents().then((res) => res.data);
 
     if (!events.length) {
       this.toasts.toast("Nelze vygenerovat program, ve vybraném rozmezí nejsou žádné akce.");

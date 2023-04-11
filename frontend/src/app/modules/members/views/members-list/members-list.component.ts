@@ -6,14 +6,14 @@ import { Platform, ViewWillEnter } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
 import { debounceTime } from "rxjs/operators";
+import { MemberResponse } from "src/app/api";
 import { MemberGroups } from "src/app/config/member-groups";
 import { MemberRoles } from "src/app/config/member-roles";
-import { Member } from "src/app/schema/member";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
-type MemberWithSearchString = Member & { searchString: string };
+type MemberWithSearchString = MemberResponse & { searchString: string };
 
 interface TableFilter {
   search?: string;
@@ -45,7 +45,7 @@ interface FieldData {
 }
 
 interface TableRow {
-  member: Member;
+  member: MemberResponse;
   cells: string[];
 }
 
@@ -132,15 +132,15 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
   }
 
   private async loadMembers() {
-    const members = (await this.api.get<Member[]>("members")).map((member) => {
+    const members = (await this.api.members.listMembers().then((res) => res.data)).map((member) => {
       const searchString = [
         member.nickname,
-        member.name && member.name.first,
-        member.name && member.name.last,
+        member.firstName,
+        member.lastName,
         member.birthday ? DateTime.fromISO(member.birthday).year : undefined,
-        member.contacts && member.contacts.email,
-        member.contacts && member.contacts.mobile && member.contacts.mobile.replace(/[^0-9]/g, "").replace("+420", ""),
-        member.address && member.address.city,
+        member.email,
+        member.mobile && member.mobile.replace(/[^0-9]/g, "").replace("+420", ""),
+        member.addressCity,
       ]
         .filter((item) => !!item)
         .join(" ");
@@ -166,12 +166,13 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 
       const filteredMembers = this.members.filter((member) => {
         if (search_re && !search_re.test(member.searchString)) return false;
-        if (filter.roles && filter.roles.length && filter.roles.indexOf(member.role) === -1) return false;
-        if (filter.groups && filter.groups.length && filter.groups.indexOf(member.group) === -1) return false;
+        if (filter.roles && filter.roles.length && (!member.role || filter.roles.indexOf(member.role) === -1))
+          return false;
+        if (filter.groups && filter.groups.length && filter.groups.indexOf(member.groupId) === -1) return false;
         if (
           filter.activity &&
           filter.activity.length &&
-          filter.activity.indexOf(member.inactive ? "inactive" : "active") === -1
+          filter.activity.indexOf(member.active ? "active" : "inactive") === -1
         )
           return false;
 
@@ -189,14 +190,14 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     this.tableColumns = filter.fields.map((field) => this.fields.find((item) => item.id === field)!);
   }
 
-  private sortMembers(members: Member[]): void {
+  private sortMembers(members: MemberResponse[]): void {
     const groupIndex = Object.keys(this.groups);
     const roleIndex = Object.keys(this.roles);
 
     members.sort(
       (a, b) =>
-        Number(a.inactive) - Number(b.inactive) ||
-        (a.group && b.group && groupIndex.indexOf(a.group) - groupIndex.indexOf(b.group)) ||
+        Number(b.active) - Number(a.active) ||
+        (a.group && b.group && groupIndex.indexOf(a.groupId) - groupIndex.indexOf(b.groupId)) ||
         (a.role && b.role && roleIndex.indexOf(a.role) - roleIndex.indexOf(b.role)) ||
         (a.nickname && b.nickname && a.nickname.localeCompare(b.nickname)) ||
         0,
@@ -207,12 +208,12 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     return Math.floor(-1 * DateTime.fromISO(birthday).diffNow("years").years).toFixed(0);
   }
 
-  getFieldValue(member: Member, field: Fields) {
+  getFieldValue(member: MemberResponse, field: Fields) {
     switch (field) {
       case "nickname":
-        return member.nickname || member.name?.first;
+        return member.nickname || member.firstName;
       case "name":
-        return `${member.name?.first} ${member.name?.last}`;
+        return `${member.firstName} ${member.lastName}`;
       case "birthday":
         return this.datePipe.transform(member.birthday, "d. M. y") || undefined;
       case "age":

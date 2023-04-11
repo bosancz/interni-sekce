@@ -5,7 +5,7 @@ import { filter, map } from "rxjs/operators";
 import { DateTime } from "luxon";
 
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { Event } from "src/app/schema/event";
+import { EventResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ProgramService } from "../../services/program.service";
 
@@ -18,7 +18,7 @@ import { ProgramService } from "../../services/program.service";
 export class ProgramWorkflowComponent implements OnInit {
   selectedColumn = "pending";
 
-  events = new BehaviorSubject<undefined | Event[]>([]);
+  events = new BehaviorSubject<undefined | EventResponse[]>([]);
 
   noLeaderEvents = this.events.pipe(
     map((events) =>
@@ -63,16 +63,17 @@ export class ProgramWorkflowComponent implements OnInit {
       select: "_id status statusNote name description dateFrom dateTill leaders subtype",
     };
 
-    const events = await this.api.get<Event[]>("events", options);
+    // TODO: use options above
+    const events = await this.api.events.listEvents().then((res) => res.data);
 
     this.events.next(events);
 
     this.loading = false;
   }
 
-  eventChanged(newEvent: Event) {
+  eventChanged(newEvent: EventResponse) {
     const events = this.events.value || [];
-    const i = events.findIndex((event) => event._id === newEvent._id);
+    const i = events.findIndex((event) => event.id === newEvent.id);
     if (i >= 0) {
       events.splice(i, 1, newEvent);
     } else {

@@ -3,12 +3,12 @@
   <bo-home-card-content>
     <div class="list-container">
       <ion-list *ngIf="events.length">
-        <ion-item *ngFor="let event of events" [detail]="true" [routerLink]="'/akce/' + event._id">
+        <ion-item *ngFor="let event of events" [detail]="true" [routerLink]="'/akce/' + event.id">
           <ion-label>
             <h3>
               <strong>{{ event.name }}</strong>
             </h3>
-            <p>{{ event.dateFrom | date: "d. M. Y" }} ~ {{ event.dateTill | date: "d. M. Y" }}</p>
+            <p>{{ event.dateFrom | date : "d. M. Y" }} ~ {{ event.dateTill | date : "d. M. Y" }}</p>
             <p>{{ event.description }}</p>
           </ion-label>
         </ion-item>

@@ -1,15 +1,15 @@
 import { Controller, Get, Param, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
-import { StatisticsService } from "src/models/statistics/services/statistics.service";
+import { PaddlersStatisticsService } from "src/models/statistics/services/paddlers-statistics.service";
 import { PadlersRankingRoute, PadlersTotalsRoute } from "../acl/paddlers.acl";
 import { PaddlersRankingResponse } from "../dto/paddlers-ranking.dto";
 import { PadlersTotalsResponse } from "../dto/paddlers-totals.dto";
 
 @Controller("statistics/paddlers")
 @ApiTags("Statistics")
-export class PaddlersController {
-  constructor(private statistics: StatisticsService) {}
+export class PaddlersStatisticsController {
+  constructor(private statistics: PaddlersStatisticsService) {}
 
   @Get("")
   @ApiResponse({ type: PadlersTotalsResponse })

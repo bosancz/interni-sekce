@@ -3,10 +3,10 @@ import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { NavController } from "@ionic/angular";
 import { Subscription } from "rxjs";
+import { MemberResponse } from "src/app/api";
 import { MemberGroups } from "src/app/config/member-groups";
 import { MemberRoles } from "src/app/config/member-roles";
 import { MembershipTypes } from "src/app/config/membership-types";
-import { Member } from "src/app/schema/member";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -17,7 +17,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./members-edit.component.scss"],
 })
 export class MembersEditComponent {
-  member?: Member;
+  member?: MemberResponse;
 
   groups = Object.entries(MemberGroups)
     .map((entry) => ({ key: entry[0], value: entry[1] }))
@@ -56,8 +56,8 @@ export class MembersEditComponent {
     this.paramsSubscription?.unsubscribe();
   }
 
-  async loadMember(memberId: string) {
-    this.member = await this.api.get<Member>(["member", memberId]);
+  async loadMember(memberId: number) {
+    this.member = await this.api.members.getMember(memberId).then((res) => res.data);
   }
 
   async saveMember() {
@@ -65,12 +65,12 @@ export class MembersEditComponent {
 
     const memberData = this.form.value;
 
-    await this.api.patch(["member", this.member._id], memberData);
+    await this.api.members.updateMember(this.member.id, memberData);
 
-    await this.loadMember(this.member._id);
+    await this.loadMember(this.member.id);
 
     this.toastService.toast("Uloženo.");
 
-    this.navController.navigateBack(["/databaze", this.member._id]);
+    this.navController.navigateBack(["/databaze", this.member.id]);
   }
 }

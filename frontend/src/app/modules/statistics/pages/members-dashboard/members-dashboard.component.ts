@@ -1,14 +1,7 @@
 import { Component, OnInit } from "@angular/core";
+import { MembersReportResponse } from "src/app/api";
 import { MemberRoles } from "src/app/config/member-roles";
 import { ApiService } from "src/app/services/api.service";
-
-export interface MembersReport {
-  count: number;
-
-  roles: { [role: string]: number };
-  ages: { [role: string]: { [age: string]: number } };
-  cities: { [city: string]: number };
-}
 
 interface ChartData {
   labels: string[];
@@ -21,7 +14,7 @@ interface ChartData {
   styleUrls: ["./members-dashboard.component.scss"],
 })
 export class MembersDashboardComponent implements OnInit {
-  report?: MembersReport;
+  report?: MembersReportResponse;
 
   cities?: string[];
 
@@ -51,9 +44,7 @@ export class MembersDashboardComponent implements OnInit {
   }
 
   async loadReport() {
-    this.report = await this.api.get<MembersReport>("reports:members");
-
-    this.cities = Object.keys(this.report.cities);
+    this.report = await this.api.statistics.getMembersReport().then((res) => res.data);
 
     this.updateAgesData();
   }
@@ -98,6 +89,6 @@ export class MembersDashboardComponent implements OnInit {
   }
 
   getRoleValue(id: string) {
-    return this.report?.roles?.[id] || "-";
+    return this.report?.rolesCount?.[id] || "-";
   }
 }

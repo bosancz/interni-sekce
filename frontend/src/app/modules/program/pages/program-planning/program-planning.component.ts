@@ -3,8 +3,8 @@ import { ActivatedRoute, Params, Router } from "@angular/router";
 import { AlertController, ViewWillEnter } from "@ionic/angular";
 import { DateTime } from "luxon";
 import { Subscription } from "rxjs";
+import { EventCreateBody, EventResponse } from "src/app/api";
 import { EventStatuses } from "src/app/config/event-statuses";
-import { Event } from "src/app/schema/event";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 
@@ -17,7 +17,7 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
   dateFrom?: DateTime;
   dateTill?: DateTime;
 
-  events: Event[] = [];
+  events: EventResponse[] = [];
 
   statuses = EventStatuses;
 
@@ -61,7 +61,8 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
       select: "_id name status type dateFrom dateTill timeFrom timeTill",
     };
 
-    this.events = await this.api.get<Event[]>("events", requestOptions);
+    // TODO: use options above
+    this.events = await this.api.events.listEvents().then((res) => res.data);
   }
 
   setPeriod(period: [string, string]) {
@@ -104,8 +105,13 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
         { text: "Zrušit", role: "cancel" },
         {
           text: "Vytvořit",
-          handler: (data) => {
-            this.createEvent(data);
+          handler: (data: any) => {
+            if (!data.name || !data.dateFrom || !data.dateTill) {
+              this.toastService.toast("Název i datum musí být vyplněno.");
+              return;
+            }
+
+            return this.createEvent(data);
           },
         },
       ],
@@ -114,13 +120,8 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
     alert.present();
   }
 
-  async createEvent(eventData: Partial<Event>) {
-    if (!eventData.name || !eventData.dateFrom || !eventData.dateTill) {
-      this.toastService.toast("Název i datum musí být vyplněno.");
-      return;
-    }
-
-    await this.api.post("events", eventData);
+  async createEvent(eventData: EventCreateBody) {
+    await this.api.events.createEvent(eventData);
 
     await this.loadEvents();
 

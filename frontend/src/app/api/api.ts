@@ -248,6 +248,137 @@ export interface CPVEventResponse {
 /**
  * 
  * @export
+ * @interface CreateMemberBody
+ */
+export interface CreateMemberBody {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'groupId': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof CreateMemberBody
+     */
+    'active'?: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'membership'?: CreateMemberBodyMembershipEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'nickname'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'function'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'firstName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'lastName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'birthday'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'addressStreet'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'addressStreetNo'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'addressCity'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'addressPostalCode'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'addressCountry'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'mobile'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'email'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'role'?: CreateMemberBodyRoleEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateMemberBody
+     */
+    'rank'?: CreateMemberBodyRankEnum;
+}
+
+export const CreateMemberBodyMembershipEnum = {
+    Clen: 'clen',
+    Neclen: 'neclen',
+    Pozastaveno: 'pozastaveno'
+} as const;
+
+export type CreateMemberBodyMembershipEnum = typeof CreateMemberBodyMembershipEnum[keyof typeof CreateMemberBodyMembershipEnum];
+export const CreateMemberBodyRoleEnum = {
+    Clen: 'clen',
+    Vedouci: 'vedouci'
+} as const;
+
+export type CreateMemberBodyRoleEnum = typeof CreateMemberBodyRoleEnum[keyof typeof CreateMemberBodyRoleEnum];
+export const CreateMemberBodyRankEnum = {
+    Dite: 'dite',
+    Instruktor: 'instruktor',
+    Vedouci: 'vedouci'
+} as const;
+
+export type CreateMemberBodyRankEnum = typeof CreateMemberBodyRankEnum[keyof typeof CreateMemberBodyRankEnum];
+
+/**
+ * 
+ * @export
  * @interface EventAttendeeResponse
  */
 export interface EventAttendeeResponse {
@@ -664,6 +795,174 @@ export type EventUpdateBodyStatusEnum = typeof EventUpdateBodyStatusEnum[keyof t
 /**
  * 
  * @export
+ * @interface EventsAttendeesReportResponse
+ */
+export interface EventsAttendeesReportResponse {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsAttendeesReportResponse
+     */
+    'count': number;
+    /**
+     * 
+     * @type {{ [key: string]: number; }}
+     * @memberof EventsAttendeesReportResponse
+     */
+    'groups': { [key: string]: number; };
+    /**
+     * 
+     * @type {{ [key: string]: number; }}
+     * @memberof EventsAttendeesReportResponse
+     */
+    'age': { [key: string]: number; };
+}
+/**
+ * 
+ * @export
+ * @interface EventsLeadersReportResponse
+ */
+export interface EventsLeadersReportResponse {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsLeadersReportResponse
+     */
+    'count': number;
+    /**
+     * 
+     * @type {{ [key: string]: number; }}
+     * @memberof EventsLeadersReportResponse
+     */
+    'groups': { [key: string]: number; };
+    /**
+     * 
+     * @type {{ [key: string]: number; }}
+     * @memberof EventsLeadersReportResponse
+     */
+    'age': { [key: string]: number; };
+    /**
+     * 
+     * @type {Array<EventsLeadersReportResponseLeaders>}
+     * @memberof EventsLeadersReportResponse
+     */
+    'top': Array<EventsLeadersReportResponseLeaders>;
+}
+/**
+ * 
+ * @export
+ * @interface EventsLeadersReportResponseLeaders
+ */
+export interface EventsLeadersReportResponseLeaders {
+    /**
+     * 
+     * @type {EventsLeadersReportResponseLeadersMember}
+     * @memberof EventsLeadersReportResponseLeaders
+     */
+    'member': EventsLeadersReportResponseLeadersMember;
+    /**
+     * 
+     * @type {Array<EventResponse>}
+     * @memberof EventsLeadersReportResponseLeaders
+     */
+    'events': Array<EventResponse>;
+}
+/**
+ * 
+ * @export
+ * @interface EventsLeadersReportResponseLeadersMember
+ */
+export interface EventsLeadersReportResponseLeadersMember {
+    /**
+     * 
+     * @type {string}
+     * @memberof EventsLeadersReportResponseLeadersMember
+     */
+    'nickname'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface EventsReportResponse
+ */
+export interface EventsReportResponse {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsReportResponse
+     */
+    'count': number;
+    /**
+     * 
+     * @type {{ [key: string]: number; }}
+     * @memberof EventsReportResponse
+     */
+    'groups': { [key: string]: number; };
+    /**
+     * 
+     * @type {{ [key: string]: number; }}
+     * @memberof EventsReportResponse
+     */
+    'age': { [key: string]: number; };
+    /**
+     * 
+     * @type {Array<EventsReportResponseEvents>}
+     * @memberof EventsReportResponse
+     */
+    'top': Array<EventsReportResponseEvents>;
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsReportResponse
+     */
+    'days': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsReportResponse
+     */
+    'mandays': number;
+}
+/**
+ * 
+ * @export
+ * @interface EventsReportResponseEvents
+ */
+export interface EventsReportResponseEvents {
+    /**
+     * 
+     * @type {string}
+     * @memberof EventsReportResponseEvents
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventsReportResponseEvents
+     */
+    'dateFrom': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventsReportResponseEvents
+     */
+    'dateTill': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsReportResponseEvents
+     */
+    'count': number;
+    /**
+     * 
+     * @type {Array<MemberResponse>}
+     * @memberof EventsReportResponseEvents
+     */
+    'leaders': Array<MemberResponse>;
+}
+/**
+ * 
+ * @export
  * @interface GroupResponse
  */
 export interface GroupResponse {
@@ -758,10 +1057,10 @@ export interface MemberResponse {
     'id': number;
     /**
      * 
-     * @type {object}
+     * @type {string}
      * @memberof MemberResponse
      */
-    'groupId': object;
+    'groupId': string;
     /**
      * 
      * @type {boolean}
@@ -899,6 +1198,31 @@ export const MemberResponseRankEnum = {
 
 export type MemberResponseRankEnum = typeof MemberResponseRankEnum[keyof typeof MemberResponseRankEnum];
 
+/**
+ * 
+ * @export
+ * @interface MembersReportResponse
+ */
+export interface MembersReportResponse {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersReportResponse
+     */
+    'count': number;
+    /**
+     * 
+     * @type {{ [key: string]: number; }}
+     * @memberof MembersReportResponse
+     */
+    'rolesCount': { [key: string]: number; };
+    /**
+     * 
+     * @type {{ [key: string]: { [key: string]: number; }; }}
+     * @memberof MembersReportResponse
+     */
+    'ages': { [key: string]: { [key: string]: number; }; };
+}
 /**
  * 
  * @export
@@ -1212,6 +1536,137 @@ export interface RootResponseLinks {
      */
     'listEvents': AcLink;
 }
+/**
+ * 
+ * @export
+ * @interface UpdateMemberBody
+ */
+export interface UpdateMemberBody {
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'groupId'?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof UpdateMemberBody
+     */
+    'active'?: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'membership'?: UpdateMemberBodyMembershipEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'nickname'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'function'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'firstName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'lastName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'birthday'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'addressStreet'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'addressStreetNo'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'addressCity'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'addressPostalCode'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'addressCountry'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'mobile'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'email'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'role'?: UpdateMemberBodyRoleEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'rank'?: UpdateMemberBodyRankEnum;
+}
+
+export const UpdateMemberBodyMembershipEnum = {
+    Clen: 'clen',
+    Neclen: 'neclen',
+    Pozastaveno: 'pozastaveno'
+} as const;
+
+export type UpdateMemberBodyMembershipEnum = typeof UpdateMemberBodyMembershipEnum[keyof typeof UpdateMemberBodyMembershipEnum];
+export const UpdateMemberBodyRoleEnum = {
+    Clen: 'clen',
+    Vedouci: 'vedouci'
+} as const;
+
+export type UpdateMemberBodyRoleEnum = typeof UpdateMemberBodyRoleEnum[keyof typeof UpdateMemberBodyRoleEnum];
+export const UpdateMemberBodyRankEnum = {
+    Dite: 'dite',
+    Instruktor: 'instruktor',
+    Vedouci: 'vedouci'
+} as const;
+
+export type UpdateMemberBodyRankEnum = typeof UpdateMemberBodyRankEnum[keyof typeof UpdateMemberBodyRankEnum];
+
 /**
  * 
  * @export
@@ -2079,7 +2534,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
          * @throws {RequiredError}
          */
         getCPVEvents: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/events`;
+            const localVarPath = `/api/events/cpv`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2146,6 +2601,35 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             assertParamExists('listEventAttendees', 'id', id)
             const localVarPath = `/api/events/{id}/attendees`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listEvents: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/events`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2528,6 +3012,15 @@ export const EventsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listEvents(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listEvents(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @param {number} id 
          * @param {EventStatusChangeBody} eventStatusChangeBody 
          * @param {*} [options] Override http request option.
@@ -2677,6 +3170,14 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          */
         listEventAttendees(id: number, options?: any): AxiosPromise<EventAttendeeResponse> {
             return localVarFp.listEventAttendees(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listEvents(options?: any): AxiosPromise<Array<EventResponse>> {
+            return localVarFp.listEvents(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2839,6 +3340,16 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public listEvents(options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).listEvents(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @param {number} id 
      * @param {EventStatusChangeBody} eventStatusChangeBody 
      * @param {*} [options] Override http request option.
@@ -2932,6 +3443,41 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
     return {
         /**
          * 
+         * @param {CreateMemberBody} createMemberBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createMember: async (createMemberBody: CreateMemberBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createMemberBody' is not null or undefined
+            assertParamExists('createMember', 'createMemberBody', createMemberBody)
+            const localVarPath = `/api/members`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createMemberBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2940,6 +3486,39 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteGroup', 'id', id)
             const localVarPath = `/api/groups/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteMember: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteMember', 'id', id)
+            const localVarPath = `/api/members/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3120,6 +3699,45 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @param {number} id 
+         * @param {UpdateMemberBody} updateMemberBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateMember: async (id: number, updateMemberBody: UpdateMemberBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateMember', 'id', id)
+            // verify required parameter 'updateMemberBody' is not null or undefined
+            assertParamExists('updateMember', 'updateMemberBody', updateMemberBody)
+            const localVarPath = `/api/members/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updateMemberBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -3132,12 +3750,32 @@ export const MembersApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {CreateMemberBody} createMemberBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createMember(createMemberBody: CreateMemberBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MemberResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createMember(createMemberBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         async deleteGroup(id: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteGroup(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteMember(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteMember(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3188,6 +3826,17 @@ export const MembersApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateGroup(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 
+         * @param {number} id 
+         * @param {UpdateMemberBody} updateMemberBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateMember(id: number, updateMemberBody: UpdateMemberBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateMember(id, updateMemberBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -3200,12 +3849,30 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * 
+         * @param {CreateMemberBody} createMemberBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createMember(createMemberBody: CreateMemberBody, options?: any): AxiosPromise<MemberResponse> {
+            return localVarFp.createMember(createMemberBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         deleteGroup(id: string, options?: any): AxiosPromise<void> {
             return localVarFp.deleteGroup(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteMember(id: number, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteMember(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3250,6 +3917,16 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
         updateGroup(id: string, options?: any): AxiosPromise<void> {
             return localVarFp.updateGroup(id, options).then((request) => request(axios, basePath));
         },
+        /**
+         * 
+         * @param {number} id 
+         * @param {UpdateMemberBody} updateMemberBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateMember(id: number, updateMemberBody: UpdateMemberBody, options?: any): AxiosPromise<void> {
+            return localVarFp.updateMember(id, updateMemberBody, options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -3262,6 +3939,17 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
 export class MembersApi extends BaseAPI {
     /**
      * 
+     * @param {CreateMemberBody} createMemberBody 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MembersApi
+     */
+    public createMember(createMemberBody: CreateMemberBody, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).createMember(createMemberBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @param {string} id 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3269,6 +3957,17 @@ export class MembersApi extends BaseAPI {
      */
     public deleteGroup(id: string, options?: AxiosRequestConfig) {
         return MembersApiFp(this.configuration).deleteGroup(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MembersApi
+     */
+    public deleteMember(id: number, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).deleteMember(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3322,6 +4021,18 @@ export class MembersApi extends BaseAPI {
      */
     public updateGroup(id: string, options?: AxiosRequestConfig) {
         return MembersApiFp(this.configuration).updateGroup(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {UpdateMemberBody} updateMemberBody 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MembersApi
+     */
+    public updateMember(id: number, updateMemberBody: UpdateMemberBody, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).updateMember(id, updateMemberBody, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -4030,6 +4741,151 @@ export const StatisticsApiAxiosParamCreator = function (configuration?: Configur
     return {
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventsAttendeesReport: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/statistics/events/attendees`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventsLeadersReport: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/statistics/events/leaders`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventsReport: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/statistics/events/events`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventsYears: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/statistics/events/years`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMembersReport: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/statistics/members`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {number} year 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4102,6 +4958,51 @@ export const StatisticsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getEventsAttendeesReport(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventsAttendeesReportResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getEventsAttendeesReport(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getEventsLeadersReport(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventsLeadersReportResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getEventsLeadersReport(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getEventsReport(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventsReportResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getEventsReport(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getEventsYears(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<number>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getEventsYears(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getMembersReport(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MembersReportResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getMembersReport(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @param {number} year 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4131,6 +5032,46 @@ export const StatisticsApiFactory = function (configuration?: Configuration, bas
     return {
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventsAttendeesReport(options?: any): AxiosPromise<EventsAttendeesReportResponse> {
+            return localVarFp.getEventsAttendeesReport(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventsLeadersReport(options?: any): AxiosPromise<EventsLeadersReportResponse> {
+            return localVarFp.getEventsLeadersReport(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventsReport(options?: any): AxiosPromise<EventsReportResponse> {
+            return localVarFp.getEventsReport(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventsYears(options?: any): AxiosPromise<Array<number>> {
+            return localVarFp.getEventsYears(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMembersReport(options?: any): AxiosPromise<MembersReportResponse> {
+            return localVarFp.getMembersReport(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {number} year 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4156,6 +5097,56 @@ export const StatisticsApiFactory = function (configuration?: Configuration, bas
  * @extends {BaseAPI}
  */
 export class StatisticsApi extends BaseAPI {
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof StatisticsApi
+     */
+    public getEventsAttendeesReport(options?: AxiosRequestConfig) {
+        return StatisticsApiFp(this.configuration).getEventsAttendeesReport(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof StatisticsApi
+     */
+    public getEventsLeadersReport(options?: AxiosRequestConfig) {
+        return StatisticsApiFp(this.configuration).getEventsLeadersReport(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof StatisticsApi
+     */
+    public getEventsReport(options?: AxiosRequestConfig) {
+        return StatisticsApiFp(this.configuration).getEventsReport(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof StatisticsApi
+     */
+    public getEventsYears(options?: AxiosRequestConfig) {
+        return StatisticsApiFp(this.configuration).getEventsYears(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof StatisticsApi
+     */
+    public getMembersReport(options?: AxiosRequestConfig) {
+        return StatisticsApiFp(this.configuration).getMembersReport(options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @param {number} year 

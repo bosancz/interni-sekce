@@ -2,11 +2,11 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Event } from "../events/entities/event.entity";
 import { Member } from "../members/entities/member.entity";
-import { StatisticsService } from "./services/statistics.service";
+import { PaddlersStatisticsService } from "./services/paddlers-statistics.service";
 
 @Module({
-  providers: [StatisticsService],
+  providers: [PaddlersStatisticsService],
   imports: [TypeOrmModule.forFeature([Member, Event])],
-  exports: [StatisticsService],
+  exports: [PaddlersStatisticsService],
 })
 export class StatisticsModelModule {}

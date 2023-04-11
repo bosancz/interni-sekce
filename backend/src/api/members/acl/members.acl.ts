@@ -12,7 +12,28 @@ export const MembersRoute = new RouteACL<Member, Member[]>({
   contains: { array: { entity: MemberResponse } },
 });
 
+export const MemberCreateRoute = new RouteACL<undefined>({
+  entity: MemberResponse,
+  permissions: {
+    vedouci: true,
+  },
+});
+
 export const MemberRoute = new RouteACL<Member>({
+  entity: MemberResponse,
+  permissions: {
+    vedouci: true,
+  },
+});
+
+export const MemberUpdateRoute = new RouteACL<Member>({
+  entity: MemberResponse,
+  permissions: {
+    vedouci: true,
+  },
+});
+
+export const MemberDeleteRoute = new RouteACL<Member>({
   entity: MemberResponse,
   permissions: {
     vedouci: true,

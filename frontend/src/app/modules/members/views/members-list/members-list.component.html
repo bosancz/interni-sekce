@@ -77,14 +77,14 @@
     <tbody>
       <tr
         *ngFor="let row of tableRows"
-        [routerLink]="row.member._id"
+        [routerLink]="'' + row.member.id"
         class="member"
-        [class.inactive]="row.member.inactive"
+        [class.inactive]="!row.member.active"
       >
         <ng-container *ngFor="let field of tableColumns; let i = index" [ngSwitch]="field.id">
           <th *ngSwitchCase="'nickname'">{{ row.cells[i] }}</th>
-          <td *ngSwitchCase="'group'" [style.color]="row.member.group | group: 'color'">
-            {{ row.member.group | group: "name" }}
+          <td *ngSwitchCase="'group'" [style.color]="row.member.groupId | group : 'color'">
+            {{ row.member.groupId | group : "name" }}
           </td>
           <td *ngSwitchCase="'age'" class="ion-text-right">
             <ng-container *ngIf="row.cells[i]">{{ row.cells[i] }} let</ng-container>
@@ -102,9 +102,9 @@
   </admin-table>
 
   <ion-list *ngIf="style === 'list'">
-    <ion-item *ngFor="let row of tableRows" [routerLink]="row.member._id" [detail]="true">
+    <ion-item *ngFor="let row of tableRows" [routerLink]="'' + row.member.id" [detail]="true">
       <ion-label>
-        <h2>{{ row.member.nickname || row.member.name?.first || row.member.name?.last }}</h2>
+        <h2>{{ row.member.nickname || row.member.firstName || row.member.lastName }}</h2>
         <p>
           <ng-container
             *ngFor="let field of tableColumns; let i = index; let isLast = last"
@@ -113,7 +113,7 @@
           >
             <span *ngSwitchCase="'nickname'"></span>
             <span *ngSwitchCase="'group'">
-              <span [style.color]="row.member.group | group: 'color'">{{ row.member.group | group: "name" }}</span
+              <span [style.color]="row.member.groupId | group : 'color'">{{ row.member.groupId | group : "name" }}</span
               ><ng-container *ngIf="!isLast">, </ng-container>
             </span>
             <span *ngSwitchCase="'age'"

@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from "@nestjs/swagger";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contacts.entity";
@@ -7,7 +7,7 @@ import { GroupResponse } from "./group.dto";
 
 export class MemberResponse implements Member {
   @ApiProperty() id!: number;
-  @ApiProperty() groupId!: Group["id"];
+  @ApiProperty() groupId!: string;
 
   @ApiPropertyOptional({ type: "boolean" }) active!: boolean;
   @ApiPropertyOptional({ type: "string", enum: MembershipStatus }) membership!: MembershipStatus;
@@ -30,3 +30,9 @@ export class MemberResponse implements Member {
   @ApiPropertyOptional() contacts?: MemberContact[] | undefined;
   @ApiPropertyOptional() achievements?: MemberAchievement[] | undefined;
 }
+
+export class CreateMemberBody extends OmitType(MemberResponse, ["group", "contacts", "achievements", "id"]) {}
+
+export class UpdateMemberBody extends PartialType(
+  OmitType(MemberResponse, ["group", "contacts", "achievements", "id"]),
+) {}

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { DateTime } from "luxon";
-import { Event } from "src/app/schema/event";
+import { EventResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -12,7 +12,7 @@ export class HomeCalendarComponent implements OnInit {
   dateFrom = DateTime.local();
   dateTill = DateTime.local().plus({ months: 1 });
 
-  events: Event[] = [];
+  events: EventResponse[] = [];
 
   @Input() months: number = 1;
 
@@ -34,6 +34,7 @@ export class HomeCalendarComponent implements OnInit {
       dateFrom: { $lte: this.dateTill.toISODate() },
     };
 
-    this.events = await this.api.get<Event[]>("events", options);
+    // TODO: use options above
+    this.events = await this.api.events.listEvents().then((res) => res.data);
   }
 }

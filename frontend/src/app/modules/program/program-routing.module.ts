@@ -1,28 +1,28 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
 
-import { ProgramWorkflowComponent } from './views/program-workflow/program-workflow.component';
-import { ProgramPlanningComponent } from './views/program-planning/program-planning.component';
-import { ProgramPrintComponent } from './views/program-print/program-print.component';
-import { ProgramCalendarComponent } from './views/program-calendar/program-calendar.component';
-import { ProgramComponent } from './program.component';
+import { ProgramCalendarComponent } from "./pages/program-calendar/program-calendar.component";
+import { ProgramPlanningComponent } from "./pages/program-planning/program-planning.component";
+import { ProgramPrintComponent } from "./pages/program-print/program-print.component";
+import { ProgramWorkflowComponent } from "./pages/program-workflow/program-workflow.component";
+import { ProgramComponent } from "./program.component";
 
 const routes: Routes = [
-
   {
-    path: '', component: ProgramComponent,
+    path: "",
+    component: ProgramComponent,
     children: [
-      { path: 'planovani', component: ProgramPlanningComponent },
-      { path: 'tisk', component: ProgramPrintComponent },
-      { path: 'kalendar', component: ProgramCalendarComponent },
-      { path: 'schvalovani', component: ProgramWorkflowComponent },
-      { path: '', pathMatch: "full", redirectTo: "kalendar" }
-    ]
+      { path: "planovani", component: ProgramPlanningComponent },
+      { path: "tisk", component: ProgramPrintComponent },
+      { path: "kalendar", component: ProgramCalendarComponent },
+      { path: "schvalovani", component: ProgramWorkflowComponent },
+      { path: "", pathMatch: "full", redirectTo: "kalendar" },
+    ],
   },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class ProgramRoutingModule { }
+export class ProgramRoutingModule {}

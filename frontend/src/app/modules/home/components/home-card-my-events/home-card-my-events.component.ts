@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Event } from "src/app/schema/event";
+import { EventResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -8,8 +8,7 @@ import { ApiService } from "src/app/services/api.service";
   styleUrls: ["./home-card-my-events.component.scss"],
 })
 export class HomeCardMyEventsComponent implements OnInit {
-  myEvents: Event[] = [];
-  noLeaderEvents: Event[] = [];
+  myEvents: EventResponse[] = [];
 
   constructor(private api: ApiService) {}
 
@@ -18,7 +17,8 @@ export class HomeCardMyEventsComponent implements OnInit {
   }
 
   async loadMyEvents() {
-    this.myEvents = await this.api.get<Event[]>("me:events");
+    // TODO: list only my events
+    this.myEvents = await this.api.events.listEvents().then((res) => res.data);
     this.myEvents.sort((a, b) => b.dateFrom.localeCompare(a.dateFrom));
   }
 }

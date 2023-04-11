@@ -6,7 +6,7 @@ import { Member } from "src/models/members/entities/member.entity";
 import { Repository } from "typeorm";
 
 @Injectable()
-export class StatisticsService {
+export class PaddlersStatisticsService {
   constructor(
     @InjectRepository(Member) private membersRepository: Repository<Member>,
     @InjectRepository(Event) private eventsRepository: Repository<Event>,

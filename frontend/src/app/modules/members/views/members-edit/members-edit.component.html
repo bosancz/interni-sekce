@@ -21,31 +21,29 @@
           <ion-input type="text" name="nickname" [ngModel]="member?.nickname" placeholder="Nositel Prstenu"></ion-input>
         </ion-item>
       </div>
-      <ng-container ngModelGroup="name">
-        <div class="col-lg-3 col-md-6">
-          <ion-item>
-            <ion-label position="floating">Jméno</ion-label>
-            <ion-input
-              type="text"
-              name="first"
-              [ngModel]="member?.name?.first"
-              required
-              placeholder="Bilbo"
-            ></ion-input>
-          </ion-item>
-        </div>
-        <div class="col-lg-3 col-md-6">
-          <ion-item>
-            <ion-label position="floating">Příjmení</ion-label>
-            <ion-input type="text" name="last" [ngModel]="member?.name?.last" required placeholder="Pytlík"></ion-input>
-          </ion-item>
-        </div>
-      </ng-container>
+      <div class="col-lg-3 col-md-6">
+        <ion-item>
+          <ion-label position="floating">Jméno</ion-label>
+          <ion-input type="text" name="first" [ngModel]="member?.firstName" required placeholder="Bilbo"></ion-input>
+        </ion-item>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <ion-item>
+          <ion-label position="floating">Příjmení</ion-label>
+          <ion-input type="text" name="last" [ngModel]="member?.lastName" required placeholder="Pytlík"></ion-input>
+        </ion-item>
+      </div>
 
       <div class="col-lg-3 col-md-6">
         <ion-item>
           <ion-label position="stacked">Datum narození</ion-label>
-          <ion-input type="date" name="birthday" [ngModel]="member?.birthday | date: 'yyyy-MM-dd'" required></ion-input>
+          <ion-input
+            type="date"
+            name="birthday"
+            [ngModel]="member?.birthday | date : 'yyyy-MM-dd'"
+            required
+          ></ion-input>
         </ion-item>
       </div>
     </div>
@@ -84,108 +82,90 @@
       </div>
       <div class="col-lg-3 col-md-6">
         <ion-item lines="none">
-          <ion-label>neaktivní</ion-label>
-          <ion-checkbox name="inactive" [ngModel]="member?.inactive" [value]="true"></ion-checkbox>
+          <ion-label>aktivní</ion-label>
+          <ion-checkbox name="inactive" [ngModel]="member?.active" [value]="true"></ion-checkbox>
         </ion-item>
       </div>
     </div>
 
     <h4 class="mt-4">Adresa</h4>
-    <div ngModelGroup="address">
-      <div class="row">
-        <div class="col-lg-8">
-          <ion-item>
-            <ion-label position="floating">Ulice</ion-label>
-            <ion-input
-              type="text"
-              name="street"
-              [ngModel]="member?.address?.street"
-              placeholder="Pytlová ulice (Dno pytle)"
-              required
-            ></ion-input>
-          </ion-item>
-        </div>
-        <div class="col-lg-4">
-          <ion-item>
-            <ion-label position="floating">Číslo</ion-label>
-            <ion-input
-              type="text"
-              name="streetNo"
-              [ngModel]="member?.address?.streetNo"
-              placeholder="123/1a"
-              required
-            ></ion-input>
-          </ion-item>
-        </div>
+    <div class="row">
+      <div class="col-lg-8">
+        <ion-item>
+          <ion-label position="floating">Ulice</ion-label>
+          <ion-input
+            type="text"
+            name="street"
+            [ngModel]="member?.addressStreet"
+            placeholder="Pytlová ulice (Dno pytle)"
+            required
+          ></ion-input>
+        </ion-item>
       </div>
+      <div class="col-lg-4">
+        <ion-item>
+          <ion-label position="floating">Číslo</ion-label>
+          <ion-input
+            type="text"
+            name="streetNo"
+            [ngModel]="member?.addressStreetNo"
+            placeholder="123/1a"
+            required
+          ></ion-input>
+        </ion-item>
+      </div>
+    </div>
 
-      <div class="row">
-        <div class="col-lg-2">
-          <ion-item>
-            <ion-label position="floating">PSČ</ion-label>
-            <ion-input
-              type="text"
-              name="postalCode"
-              [ngModel]="member?.address?.postalCode"
-              pattern="\d{3} ?\d{2}"
-              placeholder="123 45"
-              required
-            ></ion-input>
-          </ion-item>
-        </div>
-        <div class="col-lg-6">
-          <ion-item>
-            <ion-label position="floating">Město</ion-label>
-            <ion-input
-              type="text"
-              name="city"
-              [ngModel]="member?.address?.city"
-              placeholder="Hobitín, Kraj - Západní čtvrtka"
-              required
-            ></ion-input>
-          </ion-item>
-        </div>
-        <div class="col-lg-4">
-          <ion-item>
-            <ion-label position="floating">Země</ion-label>
-            <ion-input
-              type="text"
-              name="country"
-              [ngModel]="member?.address?.country"
-              placeholder="Středozemě"
-            ></ion-input>
-          </ion-item>
-        </div>
+    <div class="row">
+      <div class="col-lg-2">
+        <ion-item>
+          <ion-label position="floating">PSČ</ion-label>
+          <ion-input
+            type="text"
+            name="postalCode"
+            [ngModel]="member?.addressPostalCode"
+            pattern="\d{3} ?\d{2}"
+            placeholder="123 45"
+            required
+          ></ion-input>
+        </ion-item>
+      </div>
+      <div class="col-lg-6">
+        <ion-item>
+          <ion-label position="floating">Město</ion-label>
+          <ion-input
+            type="text"
+            name="city"
+            [ngModel]="member?.addressCity"
+            placeholder="Hobitín, Kraj - Západní čtvrtka"
+            required
+          ></ion-input>
+        </ion-item>
+      </div>
+      <div class="col-lg-4">
+        <ion-item>
+          <ion-label position="floating">Země</ion-label>
+          <ion-input type="text" name="country" [ngModel]="member?.addressCountry" placeholder="Středozemě"></ion-input>
+        </ion-item>
       </div>
     </div>
 
     <h4 class="mt-4">Kontakt</h4>
-    <ng-container ngModelGroup="contacts">
-      <div class="row">
-        <div class="col-lg-6">
-          <ion-item>
-            <ion-label position="floating">Mobil</ion-label>
-            <ion-input
-              type="text"
-              name="mobile"
-              [ngModel]="member?.contacts?.mobile"
-              placeholder="+420 777123456"
-            ></ion-input>
-          </ion-item>
-        </div>
-        <div class="col-lg-6">
-          <ion-item>
-            <ion-label position="floating">E-mail</ion-label>
-            <ion-input
-              type="text"
-              name="email"
-              [ngModel]="member?.contacts?.email"
-              placeholder="bilbo@valinor.ea"
-            ></ion-input>
-          </ion-item>
-        </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <ion-item>
+          <ion-label position="floating">Mobil</ion-label>
+          <ion-input type="text" name="mobile" [ngModel]="member?.mobile" placeholder="+420 777123456"></ion-input>
+        </ion-item>
       </div>
-
+      <div class="col-lg-6">
+        <ion-item>
+          <ion-label position="floating">E-mail</ion-label>
+          <ion-input type="text" name="email" [ngModel]="member?.email" placeholder="bilbo@valinor.ea"></ion-input>
+        </ion-item>
+      </div>
+    </div>
+    <!-- 
       <div class="row">
         <div class="col-lg-6">
           <ion-item>
@@ -209,7 +189,6 @@
             ></ion-input>
           </ion-item>
         </div>
-      </div>
-    </ng-container>
+      </div> -->
   </form>
 </ion-content>

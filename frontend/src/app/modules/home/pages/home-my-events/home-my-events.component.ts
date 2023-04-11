@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ApiService } from "src/app/services/api.service";
 
 import { DateTime } from "luxon";
-import { Event } from "src/app/schema/event";
+import { EventResponse } from "src/app/api";
 
 type DashboardMyEventsStats = {
   count: number;
@@ -22,7 +22,7 @@ export class HomeMyEventsComponent implements OnInit {
 
   title = "Moje akce";
 
-  events: Event[] = [];
+  events: EventResponse[] = [];
 
   stats: DashboardMyEventsStats = {
     count: 0,
@@ -37,7 +37,8 @@ export class HomeMyEventsComponent implements OnInit {
   }
 
   async loadMyEvents() {
-    this.events = await this.api.get<Event[]>("me:events");
+    // TODO: list only my events
+    this.events = await this.api.events.listEvents().then((res) => res.data);
 
     this.events.sort((a, b) => b.dateFrom.localeCompare(a.dateFrom));
 

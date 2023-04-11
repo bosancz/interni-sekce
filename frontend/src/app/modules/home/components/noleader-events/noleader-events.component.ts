@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Event } from "src/app/schema/event";
+import { EventResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -8,7 +8,7 @@ import { ApiService } from "src/app/services/api.service";
   styleUrls: ["./noleader-events.component.scss"],
 })
 export class NoleaderEventsComponent implements OnInit {
-  events: Event[] = [];
+  events: EventResponse[] = [];
 
   constructor(private api: ApiService) {}
 
@@ -17,6 +17,7 @@ export class NoleaderEventsComponent implements OnInit {
   }
 
   async loadNoLeaderEvents() {
-    this.events = await this.api.get<Event[]>("events:noleader", { sort: "dateFrom" });
+    // TODO: list only noleader events
+    this.events = await this.api.events.listEvents().then((res) => res.data);
   }
 }

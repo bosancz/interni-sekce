@@ -1,7 +1,7 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
 import { CzechHolidays } from "czech-holidays";
 import { DateTime } from "luxon";
-import { CPVEventResponse } from "src/app/api";
+import { CPVEventResponse, EventResponse } from "src/app/api";
 import { CPVEvent } from "src/app/schema/cpv-event";
 import { Event } from "src/app/schema/event";
 import { ApiService } from "src/app/services/api.service";
@@ -76,7 +76,7 @@ export class EventCalendarComponent implements OnInit, OnChanges {
     this.dateTill.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
   }
 
-  @Input() events: Event[] = [];
+  @Input() events: EventResponse[] = [];
 
   @Input() cpv: boolean = false;
   @Input() selection: boolean = false;
@@ -166,9 +166,9 @@ export class EventCalendarComponent implements OnInit, OnChanges {
       });
   }
 
-  assignEvents(events: Array<Event>, type: "own"): void;
+  assignEvents(events: Array<EventResponse>, type: "own"): void;
   assignEvents(events: Array<CPVEvent>, type: "cpv"): void;
-  assignEvents(events: Array<CPVEvent | Event>, type: "own" | "cpv"): void {
+  assignEvents(events: Array<CPVEvent | EventResponse>, type: "own" | "cpv"): void {
     if (!this.calendar) return;
     if (!events) return;
 

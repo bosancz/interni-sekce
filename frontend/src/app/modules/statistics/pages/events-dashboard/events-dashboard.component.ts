@@ -2,28 +2,13 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { DateTime } from "luxon";
 import { debounceTime } from "rxjs/operators";
-import { Event } from "src/app/schema/event";
-import { Member } from "src/app/schema/member";
+import {
+  EventsAttendeesReportResponse,
+  EventsLeadersReportResponse,
+  EventsReportResponse,
+  MemberResponse,
+} from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
-
-interface EventsReport {
-  attendees: { count: number; groups: { [group: string]: number }; age: { [age: string]: number } };
-
-  leaders: {
-    count: number;
-    groups: { [group: string]: number };
-    age: { [age: string]: number };
-    top: [{ member: { nickname: string }; events: Event[] }];
-  };
-
-  events: {
-    count: number;
-    groups: { [group: string]: number };
-    top: [{ name: string; dateFrom: string; dateTill: string; count: number; leaders: Member[] }];
-    days: number;
-    mandays: number;
-  };
-}
 
 class ChartData {
   data: { data: number[]; label?: string }[] = [];
@@ -37,7 +22,9 @@ class ChartData {
   styleUrls: ["./events-dashboard.component.scss"],
 })
 export class EventsDashboardComponent implements OnInit {
-  report?: EventsReport;
+  eventsReport?: EventsReportResponse;
+  leadersReport?: EventsLeadersReportResponse;
+  attendeesReport?: EventsAttendeesReportResponse;
 
   minYear?: number;
   maxYear?: number;
@@ -64,32 +51,31 @@ export class EventsDashboardComponent implements OnInit {
   }
 
   async loadEventYears() {
-    this.years = await this.api.get<number[]>("events:years");
+    this.years = await this.api.statistics.getEventsYears().then((res) => res.data);
     this.years.sort();
   }
 
   async loadData(year: number) {
-    this.report = await this.api.get<EventsReport>(["reports:events", year]);
-    this.updateChartData(this.report);
+    this.eventsReport = await this.api.statistics.getEventsReport().then((res) => res.data);
+
+    this.leadersReport = await this.api.statistics.getEventsLeadersReport().then((res) => res.data);
+    this.attendeesReport = await this.api.statistics.getEventsAttendeesReport().then((res) => res.data);
+
+    this.chartData.leaders = {
+      data: [{ data: Object.values(this.leadersReport.age) }],
+      labels: Object.keys(this.leadersReport.age),
+    };
+    this.chartData.attendees = {
+      data: [{ data: Object.values(this.attendeesReport.age) }],
+      labels: Object.keys(this.attendeesReport.age),
+    };
   }
 
   setYear(year: number) {
     this.router.navigate(["./", { year: year }], { relativeTo: this.route });
   }
 
-  updateChartData(report: EventsReport): void {
-    if (!report) return;
-    this.chartData.leaders = {
-      data: [{ data: Object.values(report.leaders.age) }],
-      labels: Object.keys(report.leaders.age),
-    };
-    this.chartData.attendees = {
-      data: [{ data: Object.values(report.attendees.age) }],
-      labels: Object.keys(report.attendees.age),
-    };
-  }
-
-  joinMembers(members: Member[]): string {
+  joinMembers(members: MemberResponse[]): string {
     if (!members || !members.length) return "";
     return (
       members

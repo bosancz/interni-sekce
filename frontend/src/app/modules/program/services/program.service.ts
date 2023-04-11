@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { DateTime } from "luxon";
 import { Subject } from "rxjs";
-import { Event } from "src/app/schema/event";
 import { ApiService } from "src/app/services/api.service";
 
 @Injectable({
@@ -22,7 +21,8 @@ export class ProgramService {
       select: "_id",
     };
 
-    const events = await this.api.get<Event[]>("events", options);
+    // TODO: list events above
+    const events = await this.api.events.listEvents().then((res) => res.data);
 
     this.pendingEventsCount.next(events.length);
   }
