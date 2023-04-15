@@ -81,7 +81,7 @@ export class ProgramCalendarComponent implements OnInit, OnDestroy, ViewWillEnte
       },
     };
 
-    this.calendarEvents = await this.eventsService.listEvents(options);
+    this.calendarEvents = await this.eventsService.listEvents(options).then((res) => res.data);
   }
 
   // setView(view: "list" | "calendar") {

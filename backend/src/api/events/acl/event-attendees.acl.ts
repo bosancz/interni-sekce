@@ -27,6 +27,19 @@ export const EventAttendeeReadRoute = new RouteACL<EventAttendee>({
   },
 });
 
+export const EventAttendeeCreateRoute = new RouteACL<Event, EventAttendee>({
+  entity: EventResponse,
+
+  permissions: {
+    vedouci: ({ doc, req }) => isMyEvent(doc, req),
+  },
+
+  contains: {
+    entity: EventAttendeeResponse,
+    properties: { member: { entity: MemberResponse }, event: { entity: EventResponse } },
+  },
+});
+
 export const EventAttendeeEditRoute = new RouteACL<EventAttendee>({
   entity: EventAttendeeResponse,
 

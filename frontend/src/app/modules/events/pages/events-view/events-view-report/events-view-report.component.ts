@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { EventResponse } from "src/app/api";
 import { EventsService } from "src/app/modules/events/services/events.service";
-import { Event } from "src/app/schema/event";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 @UntilDestroy()
@@ -11,7 +11,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./events-view-report.component.scss"],
 })
 export class EventsViewReportComponent implements OnInit {
-  event?: Event;
+  event?: EventResponse;
 
   actions: Action[] = [];
 

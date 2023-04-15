@@ -1,10 +1,15 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Put, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
 import { EventsService } from "src/models/events/services/events.service";
-import { EventAttendeeDeleteRoute, EventAttendeeEditRoute, EventAttendeesListRoute } from "../acl/event-attendees.acl";
+import {
+  EventAttendeeCreateRoute,
+  EventAttendeeDeleteRoute,
+  EventAttendeeEditRoute,
+  EventAttendeesListRoute,
+} from "../acl/event-attendees.acl";
 
 import { EventAttendeeResponse, EventAttendeeUpdateBody } from "../dto/event-attendee.dto";
 
@@ -26,7 +31,24 @@ export class EventsAttendeesController {
     return this.events.getEventAttendees(id);
   }
 
-  @Put(":id/attendees/:memberId")
+  @Post(":id/attendees")
+  @AcLinks(EventAttendeeCreateRoute)
+  @ApiResponse({ status: 204 })
+  async addEventAttendee(
+    @Req() req: Request,
+    @Param("id") eventId: number,
+    @Param("memberId") memberId: number,
+    @Body() body: EventAttendeeUpdateBody,
+  ) {
+    const event = await this.events.getEvent(eventId);
+    if (!event) throw new NotFoundException();
+
+    EventAttendeeCreateRoute.canOrThrow(req, event);
+
+    await this.events.updateEventAttendee(eventAttendee);
+  }
+
+  @Patch(":id/attendees/:memberId")
   @AcLinks(EventAttendeeEditRoute)
   @ApiResponse({ status: 204 })
   async updateEventAttendee(

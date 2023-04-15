@@ -3,7 +3,7 @@ import { ActivatedRoute, Params } from "@angular/router";
 import { NavController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter } from "rxjs/operators";
-import { Event } from "src/app/schema/event";
+import { EventResponse } from "src/app/api";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { EventsService } from "../../services/events.service";
@@ -15,7 +15,7 @@ import { EventsService } from "../../services/events.service";
   styleUrls: ["./events-view.component.scss"],
 })
 export class EventsViewComponent implements OnInit {
-  event?: Event;
+  event?: EventResponse;
 
   actions: Action[] = [];
 
@@ -32,7 +32,7 @@ export class EventsViewComponent implements OnInit {
     this.eventsService.event$.pipe(filter((event) => !!event)).subscribe((event) => (this.event = event));
   }
 
-  async loadEvent(eventId: string) {
+  async loadEvent(eventId: number) {
     try {
       await this.eventsService.loadEvent(eventId);
     } catch (err) {

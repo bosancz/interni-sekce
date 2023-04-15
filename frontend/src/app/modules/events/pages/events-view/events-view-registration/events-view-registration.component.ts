@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { filter } from "rxjs/operators";
-import { Event } from "src/app/schema/event";
+import { EventResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -15,7 +15,7 @@ import { EventsService } from "../../../services/events.service";
   styleUrls: ["./events-view-registration.component.scss"],
 })
 export class EventsViewRegistrationComponent {
-  event?: Event;
+  event?: EventResponse;
 
   uploadingRegistration: boolean = false;
 
@@ -32,7 +32,7 @@ export class EventsViewRegistrationComponent {
     this.eventService.event$.pipe(filter((event) => !!event)).subscribe((event) => this.updateEvent(event!));
   }
 
-  private updateEvent(event: Event) {
+  private updateEvent(event: EventResponse) {
     this.event = event;
     this.setActions(event);
   }
@@ -44,7 +44,6 @@ export class EventsViewRegistrationComponent {
   async uploadRegistration(input: HTMLInputElement) {
     if (!this.event) return;
 
-    if (!this.event._links.registration) return;
     if (!input.files?.length) return;
 
     let file = input.files![0];
@@ -54,14 +53,10 @@ export class EventsViewRegistrationComponent {
       return;
     }
 
-    let formData: FormData = new FormData();
-
-    formData.set("file", file, file.name);
-
     this.uploadingRegistration = true;
 
     try {
-      await this.api.put(this.event._links.registration, formData);
+      await this.api.events.saveEventRegistration(this.event.id, { registration: file });
     } catch (err: any) {
       this.toastService.toast("Nastala chyba při nahrávání: " + err.message);
     }
@@ -69,17 +64,16 @@ export class EventsViewRegistrationComponent {
     this.uploadingRegistration = false;
     this.toastService.toast("Přihláška nahrána.");
 
-    this.eventService.loadEvent(this.event._id);
+    this.eventService.loadEvent(this.event.id);
   }
 
   async deleteRegistration() {
     if (!this.event) return;
-    if (!this.event._links.registration) return;
 
-    await this.api.delete(this.event._links.registration);
+    await this.api.events.deleteEventRegistration(this.event.id);
     this.toastService.toast("Přihláška smazána.");
 
-    this.eventService.loadEvent(this.event._id);
+    this.eventService.loadEvent(this.event.id);
   }
 
   private downloadRegistration() {
@@ -87,31 +81,31 @@ export class EventsViewRegistrationComponent {
     window.open(this.getRegistrationUrl(this.event));
   }
 
-  getRegistrationUrl(event: Event) {
-    return this.api.link2href(event._links.registration!);
+  getRegistrationUrl(event: EventResponse) {
+    return event._links.getEventRegistration.href;
   }
 
-  getSafeRegistrationUrl(event: Event) {
+  getSafeRegistrationUrl(event: EventResponse) {
     return this.sanitizer.bypassSecurityTrustResourceUrl(this.getRegistrationUrl(event));
   }
 
-  setActions(event: Event) {
+  setActions(event: EventResponse) {
     this.actions = [
       {
         text: "Stáhnout",
-        hidden: !event._links.registration?.allowed.GET,
+        hidden: !event._links.getEventRegistration.allowed,
         handler: () => this.downloadRegistration(),
       },
       {
         text: "Nahrát",
-        hidden: !event._links.registration?.allowed.PUT,
+        hidden: !event._links.getEventRegistration.allowed,
         handler: () => this.uploadRegistrationSelect(),
       },
       {
         text: "Smazat",
         role: "destructive",
         color: "danger",
-        hidden: !event?.registration || !event._links.registration?.allowed.DELETE,
+        hidden: !event?._links.getEventRegistration.allowed,
         handler: () => this.deleteRegistration(),
       },
     ];

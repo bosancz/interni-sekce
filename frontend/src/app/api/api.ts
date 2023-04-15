@@ -408,10 +408,10 @@ export interface EventAttendeeResponse {
     'event'?: object;
     /**
      * 
-     * @type {object}
+     * @type {MemberResponse}
      * @memberof EventAttendeeResponse
      */
-    'member'?: object;
+    'member'?: MemberResponse;
 }
 /**
  * 
@@ -443,6 +443,49 @@ export interface EventCreateBody {
      * @memberof EventCreateBody
      */
     'description'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface EventExpenseResponse
+ */
+export interface EventExpenseResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof EventExpenseResponse
+     */
+    'id': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof EventExpenseResponse
+     */
+    'eventId': number;
+    /**
+     * 
+     * @type {object}
+     * @memberof EventExpenseResponse
+     */
+    'amount'?: object;
+    /**
+     * 
+     * @type {object}
+     * @memberof EventExpenseResponse
+     */
+    'type'?: object;
+    /**
+     * 
+     * @type {object}
+     * @memberof EventExpenseResponse
+     */
+    'description'?: object;
+    /**
+     * 
+     * @type {object}
+     * @memberof EventExpenseResponse
+     */
+    'event'?: object;
 }
 /**
  * 
@@ -560,10 +603,10 @@ export interface EventResponse {
     'album'?: object;
     /**
      * 
-     * @type {object}
+     * @type {Array<GroupResponse>}
      * @memberof EventResponse
      */
-    'groups'?: object;
+    'groups'?: Array<GroupResponse>;
     /**
      * 
      * @type {Array<EventAttendeeResponse>}
@@ -572,10 +615,10 @@ export interface EventResponse {
     'attendees'?: Array<EventAttendeeResponse>;
     /**
      * 
-     * @type {object}
+     * @type {Array<EventExpenseResponse>}
      * @memberof EventResponse
      */
-    'expenses'?: object;
+    'expenses'?: Array<EventExpenseResponse>;
     /**
      * 
      * @type {Array<MemberResponse>}
@@ -610,43 +653,7 @@ export interface EventResponseLinks {
      * @type {AcLink}
      * @memberof EventResponseLinks
      */
-    'publishEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'unpublishEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
     'cancelEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'uncancelEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'listEventAttendees': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'updateEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'getEvent': AcLink;
     /**
      * 
      * @type {AcLink}
@@ -658,13 +665,67 @@ export interface EventResponseLinks {
      * @type {AcLink}
      * @memberof EventResponseLinks
      */
+    'getEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'getEventRegistration': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'getEventReport': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'listEventAttendees': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'publishEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
     'rejectEvent': AcLink;
     /**
      * 
      * @type {AcLink}
      * @memberof EventResponseLinks
      */
+    'saveEventRegistration': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
     'submitEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'uncancelEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'unpublishEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'updateEvent': AcLink;
 }
 /**
  * 
@@ -690,31 +751,31 @@ export interface EventUpdateBody {
      * @type {string}
      * @memberof EventUpdateBody
      */
-    'name': string;
+    'name'?: string;
     /**
      * 
      * @type {string}
      * @memberof EventUpdateBody
      */
-    'status': EventUpdateBodyStatusEnum;
+    'status'?: EventUpdateBodyStatusEnum;
     /**
      * 
      * @type {string}
      * @memberof EventUpdateBody
      */
-    'dateFrom': string;
+    'dateFrom'?: string;
     /**
      * 
      * @type {string}
      * @memberof EventUpdateBody
      */
-    'dateTill': string;
+    'dateTill'?: string;
     /**
      * 
      * @type {boolean}
      * @memberof EventUpdateBody
      */
-    'leadersEvent': boolean;
+    'leadersEvent'?: boolean;
     /**
      * 
      * @type {string}
@@ -1535,6 +1596,19 @@ export interface RootResponseLinks {
      * @memberof RootResponseLinks
      */
     'listEvents': AcLink;
+}
+/**
+ * 
+ * @export
+ * @interface SaveEventRegistrationRequest
+ */
+export interface SaveEventRegistrationRequest {
+    /**
+     * 
+     * @type {File}
+     * @memberof SaveEventRegistrationRequest
+     */
+    'registration'?: File;
 }
 /**
  * 
@@ -2530,6 +2604,39 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteEventRegistration: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteEventRegistration', 'id', id)
+            const localVarPath = `/api/events/{id}/registration`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2567,6 +2674,72 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getEvent', 'id', id)
             const localVarPath = `/api/events/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventRegistration: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getEventRegistration', 'id', id)
+            const localVarPath = `/api/events/{id}/registration`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventReport: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getEventReport', 'id', id)
+            const localVarPath = `/api/events/{id}/report`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2724,6 +2897,45 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(eventStatusChangeBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {SaveEventRegistrationRequest} saveEventRegistrationRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        saveEventRegistration: async (id: number, saveEventRegistrationRequest: SaveEventRegistrationRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('saveEventRegistration', 'id', id)
+            // verify required parameter 'saveEventRegistrationRequest' is not null or undefined
+            assertParamExists('saveEventRegistration', 'saveEventRegistrationRequest', saveEventRegistrationRequest)
+            const localVarPath = `/api/events/{id}/registration`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(saveEventRegistrationRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2983,6 +3195,16 @@ export const EventsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteEventRegistration(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteEventRegistration(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2998,6 +3220,26 @@ export const EventsApiFp = function(configuration?: Configuration) {
          */
         async getEvent(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getEvent(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getEventRegistration(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getEventRegistration(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getEventReport(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getEventReport(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3039,6 +3281,17 @@ export const EventsApiFp = function(configuration?: Configuration) {
          */
         async rejectEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.rejectEvent(id, eventStatusChangeBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {SaveEventRegistrationRequest} saveEventRegistrationRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async saveEventRegistration(id: number, saveEventRegistrationRequest: SaveEventRegistrationRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.saveEventRegistration(id, saveEventRegistrationRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3147,6 +3400,15 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteEventRegistration(id: number, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteEventRegistration(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -3161,6 +3423,24 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          */
         getEvent(id: number, options?: any): AxiosPromise<EventResponse> {
             return localVarFp.getEvent(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventRegistration(id: number, options?: any): AxiosPromise<void> {
+            return localVarFp.getEventRegistration(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEventReport(id: number, options?: any): AxiosPromise<void> {
+            return localVarFp.getEventReport(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3198,6 +3478,16 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          */
         rejectEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: any): AxiosPromise<void> {
             return localVarFp.rejectEvent(id, eventStatusChangeBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {SaveEventRegistrationRequest} saveEventRegistrationRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        saveEventRegistration(id: number, saveEventRegistrationRequest: SaveEventRegistrationRequest, options?: any): AxiosPromise<void> {
+            return localVarFp.saveEventRegistration(id, saveEventRegistrationRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3308,6 +3598,17 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
+     * @param {number} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public deleteEventRegistration(id: number, options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).deleteEventRegistration(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -3325,6 +3626,28 @@ export class EventsApi extends BaseAPI {
      */
     public getEvent(id: number, options?: AxiosRequestConfig) {
         return EventsApiFp(this.configuration).getEvent(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public getEventRegistration(id: number, options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).getEventRegistration(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public getEventReport(id: number, options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).getEventReport(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3370,6 +3693,18 @@ export class EventsApi extends BaseAPI {
      */
     public rejectEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: AxiosRequestConfig) {
         return EventsApiFp(this.configuration).rejectEvent(id, eventStatusChangeBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {SaveEventRegistrationRequest} saveEventRegistrationRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public saveEventRegistration(id: number, saveEventRegistrationRequest: SaveEventRegistrationRequest, options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).saveEventRegistration(id, saveEventRegistrationRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

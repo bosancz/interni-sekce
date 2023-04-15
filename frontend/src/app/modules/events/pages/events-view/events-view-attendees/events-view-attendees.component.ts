@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ModalController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { EventResponse, MemberResponse } from "src/app/api";
 import { MemberSelectorModalComponent } from "src/app/modules/events/components/member-selector-modal/member-selector-modal.component";
 import { EventsService } from "src/app/modules/events/services/events.service";
 import { Event } from "src/app/schema/event";
@@ -17,10 +18,9 @@ import { environment } from "src/environments/environment";
   styleUrls: ["./events-view-attendees.component.scss"],
 })
 export class EventsViewAttendeesComponent implements OnInit, OnDestroy {
-  event?: Event;
+  event?: EventResponse;
 
-  leaders: Member[] = [];
-  attendees: Member[] = [];
+  attendees: EventAttendeResponse[] = [];
 
   actions: Action[] = [];
 
@@ -72,22 +72,28 @@ export class EventsViewAttendeesComponent implements OnInit, OnDestroy {
     return await this.modal.present();
   }
 
-  private async addAttendee(member: Member) {
+  private async addAttendee(member: MemberResponse) {
     if (!this.event) return;
 
     const attendees = this.event.attendees || [];
 
-    if (attendees.findIndex((item) => item._id === member._id) !== -1) {
+    if (attendees.findIndex((item) => item.id === member._id) !== -1) {
       this.toastService.toast("Účastník už v seznamu je.");
       return;
     }
 
-    attendees.push(member);
+     // optimistic update
+    attendees.push({
+      memberId: member.id,
+      member,
+      eventId: this.event.id,
+      type: ""// TODO:
+    });
 
-    this.attendees = attendees; // optimistic update
+    this.attendees = attendees;
     this.sortAttendees();
 
-    await this.api.patch(["event", this.event._id], { attendees: attendees.map((item) => item._id) });
+    await this.api.events.add(["event", this.event._id], { attendees: attendees.map((item) => item._id) });
 
     await this.eventsService.loadEvent(this.event._id);
   }

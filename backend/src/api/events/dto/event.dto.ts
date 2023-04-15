@@ -1,7 +1,8 @@
-import { ApiProperty, ApiPropertyOptional, OmitType, PickType } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional, OmitType, PartialType, PickType } from "@nestjs/swagger";
 import { IsOptional, IsString } from "class-validator";
 import { AcLink, AcLinksObject } from "src/access-control/access-control-lib/schema/ac-link";
 import { AlbumResponse } from "src/api/albums/dto/album.dto";
+import { GroupResponse } from "src/api/members/dto/group.dto";
 import { MemberResponse } from "src/api/members/dto/member.dto";
 import { Album } from "src/models/albums/entities/album.entity";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
@@ -10,8 +11,11 @@ import { EventGroup } from "src/models/events/entities/event-group.entity";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { EventsAttendeesController } from "../controllers/events-attendees.controller";
+import { EventsRegistrationsController } from "../controllers/events-registrations.controller";
+import { EventsReportsController } from "../controllers/events-reports.controller";
 import { EventsController } from "../controllers/events.controller";
 import { EventAttendeeResponse } from "./event-attendee.dto";
+import { EventExpenseResponse } from "./event-expense.dto";
 
 type LinkNames =
   | ExtractExisting<
@@ -26,19 +30,25 @@ type LinkNames =
       | "cancelEvent"
       | "uncancelEvent"
     >
-  | ExtractExisting<keyof EventsAttendeesController, "listEventAttendees">;
+  | ExtractExisting<keyof EventsAttendeesController, "listEventAttendees">
+  | keyof EventsRegistrationsController
+  | keyof EventsReportsController;
 
 class EventResponseLinks implements AcLinksObject<LinkNames> {
-  @ApiProperty() publishEvent!: AcLink;
-  @ApiProperty() unpublishEvent!: AcLink;
+  @ApiProperty() deleteEventRegistration!: AcLink;
   @ApiProperty() cancelEvent!: AcLink;
-  @ApiProperty() uncancelEvent!: AcLink;
-  @ApiProperty() listEventAttendees!: AcLink;
-  @ApiProperty() updateEvent!: AcLink;
-  @ApiProperty() getEvent!: AcLink;
   @ApiProperty() deleteEvent!: AcLink;
+  @ApiProperty() getEvent!: AcLink;
+  @ApiProperty() getEventRegistration!: AcLink;
+  @ApiProperty() getEventReport!: AcLink;
+  @ApiProperty() listEventAttendees!: AcLink;
+  @ApiProperty() publishEvent!: AcLink;
   @ApiProperty() rejectEvent!: AcLink;
+  @ApiProperty() saveEventRegistration!: AcLink;
   @ApiProperty() submitEvent!: AcLink;
+  @ApiProperty() uncancelEvent!: AcLink;
+  @ApiProperty() unpublishEvent!: AcLink;
+  @ApiProperty() updateEvent!: AcLink;
 }
 
 export class EventResponse implements Event {
@@ -62,9 +72,9 @@ export class EventResponse implements Event {
   @ApiPropertyOptional({ type: "string" }) deletedAt?: Date | undefined;
 
   @ApiPropertyOptional({ type: AlbumResponse }) album?: Album | undefined;
-  @ApiPropertyOptional() groups?: EventGroup[] | undefined;
+  @ApiPropertyOptional({ type: GroupResponse, isArray: true }) groups?: EventGroup[] | undefined;
   @ApiPropertyOptional({ type: EventAttendeeResponse, isArray: true }) attendees?: EventAttendee[] | undefined;
-  @ApiPropertyOptional() expenses?: EventExpense[] | undefined;
+  @ApiPropertyOptional({ type: EventExpenseResponse, isArray: true }) expenses?: EventExpense[] | undefined;
   @ApiPropertyOptional({ type: MemberResponse, isArray: true }) leaders?: Member[] | undefined;
 
   @ApiProperty() _links!: EventResponseLinks;
@@ -72,15 +82,9 @@ export class EventResponse implements Event {
 
 export class EventCreateBody extends PickType(EventResponse, ["name", "description", "dateFrom", "dateTill"]) {}
 
-export class EventUpdateBody extends OmitType(EventResponse, [
-  "id",
-  "_links",
-  "album",
-  "groups",
-  "attendees",
-  "expenses",
-  "leaders",
-]) {}
+export class EventUpdateBody extends PartialType(
+  OmitType(EventResponse, ["id", "_links", "album", "groups", "attendees", "expenses", "leaders"]),
+) {}
 
 export class EventStatusChangeBody {
   @ApiPropertyOptional() @IsString() @IsOptional() statusNote?: string;

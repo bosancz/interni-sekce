@@ -6,6 +6,7 @@ import { MemberResponse } from "src/api/members/dto/member.dto";
 import { RootResponse } from "src/api/root/dto/root-response";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
+import { EventExpenseResponse } from "../dto/event-expense.dto";
 import { EventCreateBody, EventResponse } from "../dto/event.dto";
 
 export const isMyEvent = (doc: Pick<Event, "leaders"> | undefined, req: Request) =>
@@ -17,7 +18,12 @@ export const EventsListRoute = new RouteACL<undefined, EventResponse[]>({
   permissions: {
     vedouci: true,
   },
-  contains: { array: { entity: EventResponse } },
+  contains: {
+    array: {
+      entity: EventResponse,
+      properties: { leaders: { array: { entity: MemberResponse } } },
+    },
+  },
 });
 
 export const EventReadRoute = new RouteACL<Event, EventResponse>({
@@ -32,6 +38,7 @@ export const EventReadRoute = new RouteACL<Event, EventResponse>({
       album: { entity: AlbumResponse },
       attendees: { array: { entity: EventAttendee } },
       groups: { array: { entity: GroupResponse } },
+      expenses: { array: { entity: EventExpenseResponse } },
     },
   },
 });
@@ -117,4 +124,28 @@ export const EventUncancelRoute = new RouteACL<Event, EventResponse>({
     admin: true,
   },
   condition: (doc) => doc.status === EventStatus.cancelled,
+});
+
+export const EventRegistrationReadRoute = new RouteACL<Event>({
+  entity: EventResponse,
+
+  inheritPermissions: EventReadRoute,
+});
+
+export const EventRegistrationEditRoute = new RouteACL<Event>({
+  entity: EventResponse,
+
+  inheritPermissions: EventEditRoute,
+});
+
+export const EventReportReadRoute = new RouteACL<Event>({
+  entity: EventResponse,
+
+  inheritPermissions: EventReadRoute,
+});
+
+export const EventReportEditRoute = new RouteACL<Event>({
+  entity: EventResponse,
+
+  inheritPermissions: EventEditRoute,
 });

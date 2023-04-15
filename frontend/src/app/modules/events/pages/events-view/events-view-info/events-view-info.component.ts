@@ -3,9 +3,10 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter } from "rxjs/operators";
+import { EventResponse } from "src/app/api";
 import { EventStatuses } from "src/app/config/event-statuses";
 import { Album, Photo } from "src/app/schema/album";
-import { Event, EventActions } from "src/app/schema/event";
+import { EventActions } from "src/app/schema/event";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -18,7 +19,7 @@ import { EventsService } from "../../../services/events.service";
   styleUrls: ["./events-view-info.component.scss"],
 })
 export class EventsViewInfoComponent implements OnInit, OnDestroy {
-  event?: Event;
+  event?: EventResponse;
 
   eventAlbum?: Album<Photo>;
 
@@ -46,13 +47,13 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {}
 
-  async updateEvent(event: Event) {
+  async updateEvent(event: EventResponse) {
     this.event = event;
 
     this.actions = this.getActions(this.event);
   }
 
-  async deleteEvent(event: Event) {
+  async deleteEvent(event: EventResponse) {
     const alert = await this.alertConctroller.create({
       header: "Smazat akci?",
       message: `Opravdu chcete smazat akci ${event.name}?`,
@@ -65,14 +66,14 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
     await alert.present();
   }
 
-  async deleteEventConfirmed(event: Event) {
-    await this.eventsService.deleteEvent(event._id);
+  async deleteEventConfirmed(event: EventResponse) {
+    await this.eventsService.deleteEvent(event.id);
 
     this.router.navigate(["/akce"], { relativeTo: this.route, replaceUrl: true });
     this.toastService.toast("Akce smazána");
   }
 
-  async eventAction(event: Event, action: EventActions) {
+  async eventAction(event: EventResponse, action: EventActions) {
     if (!event._links.[action].allowed) {
       this.toastService.toast("K této akci nemáš oprávnění.");
       return;
@@ -87,12 +88,12 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
 
     await this.api.post(event._actions[action], { note: note || undefined });
 
-    await this.eventsService.loadEvent(event._id);
+    await this.eventsService.loadEvent(event.id);
 
     this.toastService.toast("Uloženo");
   }
 
-  private getActions(event: Event): Action[] {
+  private getActions(event: EventResponse): Action[] {
     return [
       {
         text: "Vést akci",
@@ -105,48 +106,48 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
         text: "Upravit",
         pinned: true,
         icon: "create-outline",
-        hidden: !event._links.self.allowed.PATCH,
+        hidden: !event._links.updateEvent.allowed,
         handler: () => this.router.navigate(["../upravit"], { relativeTo: this.route }),
       },
       {
         text: "Ke schválení",
         icon: "arrow-forward-outline",
         color: "primary",
-        hidden: !event?._links.submit?.allowed,
+        hidden: !event?._links.submitEvent.allowed,
         handler: () => this.eventAction(event, "submit"),
       },
       {
         text: "Do programu",
         icon: "arrow-forward-outline",
         color: "primary",
-        hidden: !event?._links.publish?.allowed,
+        hidden: !event?._links.publishEvent.allowed,
         handler: () => this.eventAction(event, "publish"),
       },
       {
         text: "Vrátit k úpravám",
         icon: "arrow-back-outline",
         color: "danger",
-        hidden: !event?._links.reject?.allowed,
+        hidden: !event?._links.rejectEvent.allowed,
         handler: () => this.eventAction(event, "reject"),
       },
       {
         text: "Odebrat z programu",
         icon: "arrow-back-outline",
         color: "danger",
-        hidden: !event?._links.unpublish?.allowed,
+        hidden: !event?._links.unpublishEvent.allowed,
         handler: () => this.eventAction(event, "unpublish"),
       },
       {
         text: "Označit jako zrušenou",
         color: "danger",
         icon: "arrow-back-outline",
-        hidden: !event?._links.cancel?.allowed,
+        hidden: !event?._links.cancelEvent.allowed,
         handler: () => this.eventAction(event, "cancel"),
       },
       {
         text: "Odzrušit",
         icon: "arrow-forward-outline",
-        hidden: !event?._links.uncancel?.allowed,
+        hidden: !event?._links.uncancelEvent.allowed,
         handler: () => this.eventAction(event, "uncancel"),
       },
       {
@@ -154,7 +155,7 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
         role: "destructive",
         color: "danger",
         icon: "trash-outline",
-        hidden: !event._links.self?.allowed?.DELETE,
+        hidden: !event._links.deleteEvent.allowed,
         handler: () => this.deleteEvent(event),
       },
     ];

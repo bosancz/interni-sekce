@@ -6,9 +6,11 @@ import { EventsModelModule } from "src/models/events/events-model.module";
 import { CPVEventsController } from "./controllers/cpv-events.controller";
 import { EventsAttendeesController } from "./controllers/events-attendees.controller";
 import { EventsController } from "./controllers/events.controller";
+import { EventsReportsController } from './controllers/events-reports.controller';
+import { EventsRegistrationsController } from './controllers/events-registrations.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Event, EventAttendee]), EventsModelModule],
-  controllers: [EventsController, EventsAttendeesController, CPVEventsController],
+  controllers: [EventsController, EventsAttendeesController, CPVEventsController, EventsReportsController, EventsRegistrationsController],
 })
 export class EventsModule {}

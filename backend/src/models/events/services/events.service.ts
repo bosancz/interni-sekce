@@ -76,8 +76,12 @@ export class EventsService {
     });
   }
 
-  async updateEventAttendee(data: EventAttendee) {
+  async createEventAttendee(data: EventAttendee) {
     this.eventAttendeesRepository.save(data);
+  }
+
+  async updateEventAttendee(eventId: number, data: EventAttendee) {
+    this.eventAttendeesRepository.update(eventId, data);
   }
 
   async deleteEventAttendee(eventId: number, memberId: number) {

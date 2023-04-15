@@ -8,8 +8,8 @@
     <ion-tab-button tab="prihlaska">
       <ion-icon name="document-outline"></ion-icon>
       <ion-label>Přihláška</ion-label>
-      <ion-badge *ngIf="event?.registration" color="success">&nbsp;&nbsp;</ion-badge>
-      <ion-badge *ngIf="!event?.registration" color="danger">&nbsp;&nbsp;</ion-badge>
+      <ion-badge *ngIf="event?._links?.getEventRegistration?.applicable" color="success">&nbsp;&nbsp;</ion-badge>
+      <ion-badge *ngIf="!event?._links?.getEventRegistration?.applicable" color="danger">&nbsp;&nbsp;</ion-badge>
     </ion-tab-button>
     <ion-tab-button tab="ucastnici">
       <ion-icon name="people-outline"></ion-icon>
@@ -26,8 +26,8 @@
     <ion-tab-button tab="report">
       <ion-icon name="document-outline"></ion-icon>
       <ion-label>Report</ion-label>
-      <ion-badge *ngIf="event?.report" color="success">&nbsp;&nbsp;</ion-badge>
-      <ion-badge *ngIf="!event?.report" color="danger">&nbsp;&nbsp;</ion-badge>
+      <ion-badge *ngIf="event?._links?.getEventReport?.applicable" color="success">&nbsp;&nbsp;</ion-badge>
+      <ion-badge *ngIf="!event?._links?.getEventReport?.applicable" color="danger">&nbsp;&nbsp;</ion-badge>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>
