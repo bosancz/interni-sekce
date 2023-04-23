@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { FindOptionsSelect, Repository } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "../entities/event-attendee.entity";
+import { EventExpense } from "../entities/event-expense.entity";
 import { Event } from "../entities/event.entity";
 
 @Injectable()
@@ -9,6 +10,7 @@ export class EventsService {
   constructor(
     @InjectRepository(Event) private eventsRepository: Repository<Event>,
     @InjectRepository(EventAttendee) private eventAttendeesRepository: Repository<EventAttendee>,
+    @InjectRepository(EventExpense) private eventExpensesRepository: Repository<EventExpense>,
   ) {}
 
   async getEvents(options: { select?: (keyof Event)[]; leaders?: boolean } = {}) {
@@ -56,6 +58,15 @@ export class EventsService {
     this.eventsRepository.softRemove({ id });
   }
 
+  async getEventsYears() {
+    return this.eventsRepository
+      .createQueryBuilder("events")
+      .distinct(true)
+      .select("YEAR(events.dateFrom) AS year")
+      .getRawMany<{ year: number }>()
+      .then((res) => res.map((r) => r.year));
+  }
+
   async getEventLeaders(id: number) {
     return this.eventAttendeesRepository
       .find({
@@ -76,15 +87,38 @@ export class EventsService {
     });
   }
 
-  async createEventAttendee(data: EventAttendee) {
-    this.eventAttendeesRepository.save(data);
+  async createEventAttendee(eventId: number, memberId: number, data: Omit<EventAttendee, "eventId" | "memberId">) {
+    this.eventAttendeesRepository.save({ ...data, eventId, memberId });
   }
 
-  async updateEventAttendee(eventId: number, data: EventAttendee) {
-    this.eventAttendeesRepository.update(eventId, data);
+  async updateEventAttendee(eventId: number, memberId: number, data: Partial<EventAttendee>) {
+    this.eventAttendeesRepository.update({ eventId, memberId }, data);
   }
 
   async deleteEventAttendee(eventId: number, memberId: number) {
     await this.eventAttendeesRepository.delete({ eventId, memberId });
+  }
+
+  //
+  async getEventExpenses(id: number) {
+    return this.eventExpensesRepository.find({ where: { eventId: id } });
+  }
+
+  async getEventExpense(eventId: number, id: string) {
+    return this.eventExpensesRepository.findOne({
+      where: { eventId, id },
+    });
+  }
+
+  async createEventExpense(eventId: number, expenseId: string, data: Partial<EventExpense>) {
+    this.eventExpensesRepository.save({ ...data, eventId, id: expenseId });
+  }
+
+  async updateEventExpense(eventId: number, expenseId: string, data: Partial<EventExpense>) {
+    this.eventExpensesRepository.update({ eventId, id: expenseId }, data);
+  }
+
+  async deleteEventExpense(eventId: number, expenseId: string) {
+    await this.eventExpensesRepository.delete({ eventId, id: expenseId });
   }
 }

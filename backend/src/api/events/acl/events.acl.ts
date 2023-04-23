@@ -26,6 +26,11 @@ export const EventsListRoute = new RouteACL<undefined, EventResponse[]>({
   },
 });
 
+export const EventsYearsRoute = new RouteACL<undefined>({
+  entity: EventResponse,
+  inheritPermissions: EventsListRoute,
+});
+
 export const EventReadRoute = new RouteACL<Event, EventResponse>({
   entity: EventResponse,
 
@@ -44,6 +49,7 @@ export const EventReadRoute = new RouteACL<Event, EventResponse>({
 });
 
 export const EventCreateRoute = new RouteACL<EventCreateBody, EventResponse>({
+  entity: RootResponse,
   permissions: {
     vedouci: true,
   },
@@ -67,6 +73,17 @@ export const EventDeleteRoute = new RouteACL<Event, EventResponse>({
     admin: true,
   },
   condition: (doc) => doc.status !== EventStatus.public,
+});
+
+export const EventLeadRoute = new RouteACL<Event, EventResponse>({
+  entity: EventResponse,
+
+  permissions: {
+    admin: true,
+    vedouci: true,
+  },
+
+  condition: (doc) => !doc.leaders || !doc.leaders.length,
 });
 
 export const EventSubmitRoute = new RouteACL<Event, EventResponse>({

@@ -9,15 +9,13 @@ import { EventResponse } from "./event.dto";
 export class EventAttendeeResponse {
   @ApiProperty() eventId!: number;
   @ApiProperty() memberId!: number;
-  @ApiProperty({ type: EventAttendeeType }) type!: EventAttendeeType;
+  @ApiProperty({ enum: EventAttendeeType }) type!: EventAttendeeType;
   @ApiPropertyOptional({ type: EventResponse }) event?: Event | undefined;
   @ApiPropertyOptional({ type: MemberResponse }) member?: Member | undefined;
-}
-
-export class EventAttendeeUpdateBody {
-  @IsEnum(EventAttendeeType) type!: EventAttendeeType;
 }
 
 export class EventAttendeeCreateBody {
   @IsEnum(EventAttendeeType) type!: EventAttendeeType;
 }
+
+export class EventAttendeeUpdateBody extends EventAttendeeCreateBody {}

@@ -2,8 +2,6 @@ import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output
 import { CzechHolidays } from "czech-holidays";
 import { DateTime } from "luxon";
 import { CPVEventResponse, EventResponse } from "src/app/api";
-import { CPVEvent } from "src/app/schema/cpv-event";
-import { Event } from "src/app/schema/event";
 import { ApiService } from "src/app/services/api.service";
 
 const months = [
@@ -25,14 +23,14 @@ class CalendarRow {
   days: CalendarDay[] = [];
 
   blocks = {
-    own: new CalendarRowBlock<Event>(),
-    cpv: new CalendarRowBlock<CPVEvent>(),
+    own: new CalendarRowBlock<EventResponse>(),
+    cpv: new CalendarRowBlock<CPVEventResponse>(),
   };
 
   constructor(public from: DateTime, public to: DateTime) {}
 }
 
-class CalendarRowBlock<T extends CPVEvent | Event> {
+class CalendarRowBlock<T extends CPVEventResponse | EventResponse> {
   events: CalendarEvent<T>[] = [];
   levels: number = 1;
 }
@@ -49,7 +47,7 @@ class CalendarDay {
   constructor(public date: DateTime, public properties: CalendarDayProperties) {}
 }
 
-class CalendarEvent<T extends CPVEvent | Event> {
+class CalendarEvent<T extends CPVEventResponse | EventResponse> {
   level: number = 0;
 
   dateFrom: DateTime;
@@ -167,8 +165,8 @@ export class EventCalendarComponent implements OnInit, OnChanges {
   }
 
   assignEvents(events: Array<EventResponse>, type: "own"): void;
-  assignEvents(events: Array<CPVEvent>, type: "cpv"): void;
-  assignEvents(events: Array<CPVEvent | EventResponse>, type: "own" | "cpv"): void {
+  assignEvents(events: Array<CPVEventResponse>, type: "cpv"): void;
+  assignEvents(events: Array<CPVEventResponse | EventResponse>, type: "own" | "cpv"): void {
     if (!this.calendar) return;
     if (!events) return;
 
@@ -242,15 +240,15 @@ export class EventCalendarComponent implements OnInit, OnChanges {
     if (!this.selection) return;
   }
 
-  getEventLeft(event: CalendarEvent<CPVEvent | Event>, row: CalendarRow) {
+  getEventLeft(event: CalendarEvent<CPVEventResponse | EventResponse>, row: CalendarRow) {
     return event.dateFrom.diff(row.days[0].date, "days").days / row.days.length;
   }
 
-  getEventWidth(event: CalendarEvent<CPVEvent | Event>, month: CalendarRow) {
+  getEventWidth(event: CalendarEvent<CPVEventResponse | EventResponse>, month: CalendarRow) {
     return (event.dateTill.diff(event.dateFrom, "days").days + 1) / month.days.length;
   }
 
-  getEventTooltip(event: Event): string {
+  getEventTooltip(event: EventResponse): string {
     return event.name;
   }
 }

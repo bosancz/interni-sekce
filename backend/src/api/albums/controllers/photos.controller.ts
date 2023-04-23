@@ -17,8 +17,15 @@ import { Request } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
 import { PhotosService } from "src/models/albums/services/photos.service";
-import { PhotoCreateRoute, PhotoDeleteRoute, PhotoEditRoute, PhotoReadRoute, PhotosListRoute } from "../acl/photo.acl";
-import { PhotoEditBody, PhotoResponse, PhotosListResponse } from "../dto/photo.dto";
+import {
+  PhotoCreateRoute,
+  PhotoDeleteRoute,
+  PhotoEditRoute,
+  PhotoReadFileRoute,
+  PhotoReadRoute,
+  PhotosListRoute,
+} from "../acl/photo.acl";
+import { PhotoEditBody, PhotoResponse, PhotoSizes, PhotosListResponse } from "../dto/photo.dto";
 
 @Controller("photos")
 @AcController()
@@ -81,5 +88,17 @@ export class PhotosController {
     PhotoEditRoute.canOrThrow(req, photo);
 
     await this.photosService.deletePhoto(photo.id);
+  }
+
+  @Get(":id/image/:size")
+  @AcLinks(PhotoReadFileRoute)
+  async getPhotoImage(@Param("id") id: number, @Param("size") size: PhotoSizes, @Req() req: Request): Promise<void> {
+    const photo = await this.photosService.repository.findOneBy({ id });
+
+    if (!photo) throw new NotFoundException();
+
+    PhotoReadFileRoute.canOrThrow(req, photo);
+
+    //TODO: return photo file
   }
 }

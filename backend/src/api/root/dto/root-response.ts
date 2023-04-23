@@ -6,18 +6,20 @@ import { EventsController } from "src/api/events/controllers/events.controller";
 import { MembersController } from "src/api/members/controllers/members.controller";
 
 type LinkNames =
-  | ExtractExisting<keyof EventsController, "listEvents">
+  | ExtractExisting<keyof EventsController, "listEvents" | "createEvent">
   | ExtractExisting<keyof MembersController, "listMembers">
   | ExtractExisting<keyof AlbumsController, "listAlbums">
   | ExtractExisting<keyof PhotosController, "listPhotos">;
 
 class RootResponseLinks implements AcLinksObject<LinkNames> {
-  @ApiProperty({ type: AcLink }) listAlbums!: AcLink;
-  @ApiProperty({ type: AcLink }) listPhotos!: AcLink;
-  @ApiProperty({ type: AcLink }) listMembers!: AcLink;
-  @ApiProperty({ type: AcLink }) listEvents!: AcLink;
+  @ApiProperty() createEvent!: AcLink;
+  @ApiProperty() listAlbums!: AcLink;
+  @ApiProperty() listPhotos!: AcLink;
+  @ApiProperty() listMembers!: AcLink;
+  @ApiProperty() listEvents!: AcLink;
 }
 
 export class RootResponse {
+  @ApiProperty() version!: string;
   @ApiProperty({ type: RootResponseLinks }) _links!: RootResponseLinks;
 }

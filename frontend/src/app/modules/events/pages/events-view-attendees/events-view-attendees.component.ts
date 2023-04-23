@@ -1,15 +1,12 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ModalController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { EventResponse, MemberResponse } from "src/app/api";
+import { EventAttendeeResponse, EventResponse, MemberResponse } from "src/app/api";
 import { MemberSelectorModalComponent } from "src/app/modules/events/components/member-selector-modal/member-selector-modal.component";
 import { EventsService } from "src/app/modules/events/services/events.service";
-import { Event } from "src/app/schema/event";
-import { Member } from "src/app/schema/member";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { environment } from "src/environments/environment";
 
 @UntilDestroy()
 @Component({
@@ -20,7 +17,7 @@ import { environment } from "src/environments/environment";
 export class EventsViewAttendeesComponent implements OnInit, OnDestroy {
   event?: EventResponse;
 
-  attendees: EventAttendeResponse[] = [];
+  attendees: EventAttendeeResponse[] = [];
 
   actions: Action[] = [];
 
@@ -37,7 +34,6 @@ export class EventsViewAttendeesComponent implements OnInit, OnDestroy {
     this.eventsService.event$.pipe(untilDestroyed(this)).subscribe((event) => {
       this.event = event || undefined;
       this.attendees = event?.attendees || [];
-      this.leaders = event?.leaders || [];
 
       this.sortAttendees();
 
@@ -51,18 +47,15 @@ export class EventsViewAttendeesComponent implements OnInit, OnDestroy {
 
   private sortAttendees() {
     this.attendees.sort((a, b) => {
-      const aString = a.nickname || a.name?.first || a.name?.last || "";
-      const bString = b.nickname || b.name?.first || b.name?.last || "";
+      const aString = a.member?.nickname || a.member?.firstName || a.member?.lastName || "";
+      const bString = b.member?.nickname || b.member?.firstName || b.member?.lastName || "";
       return aString.localeCompare(bString);
     });
   }
 
   async addAttendeeModal() {
-    const members = await this.api.get("members");
-
     this.modal = await this.modalController.create({
       component: MemberSelectorModalComponent,
-      componentProps: { members },
     });
 
     this.modal.onWillDismiss().then((ev) => {
@@ -77,38 +70,38 @@ export class EventsViewAttendeesComponent implements OnInit, OnDestroy {
 
     const attendees = this.event.attendees || [];
 
-    if (attendees.findIndex((item) => item.id === member._id) !== -1) {
+    if (attendees.some((item) => item.member && item.member.id === member.id)) {
       this.toastService.toast("Účastník už v seznamu je.");
       return;
     }
 
-     // optimistic update
+    // optimistic update
     attendees.push({
       memberId: member.id,
       member,
       eventId: this.event.id,
-      type: ""// TODO:
+      type: "attendee",
     });
 
     this.attendees = attendees;
     this.sortAttendees();
 
-    await this.api.events.add(["event", this.event._id], { attendees: attendees.map((item) => item._id) });
+    await this.api.events.addEventAttendee(this.event.id, member.id, {});
 
-    await this.eventsService.loadEvent(this.event._id);
+    await this.eventsService.loadEvent(this.event.id);
   }
 
-  async removeAttendee(member: Member) {
+  async removeAttendee(attendee: EventAttendeeResponse) {
     if (!this.event) return;
 
     let attendees = this.event.attendees || [];
-    attendees = attendees.filter((item) => item._id !== member._id);
+    attendees = attendees.filter((item) => item.memberId !== attendee.memberId);
 
     this.attendees = attendees; // optimistic update
 
-    await this.api.patch(["event", this.event._id], { attendees: attendees.map((item) => item._id) });
+    await this.api.events.deleteEventAttendee(this.event.id, attendee.memberId);
 
-    await this.eventsService.loadEvent(this.event._id);
+    await this.eventsService.loadEvent(this.event.id);
   }
 
   toggleSliding(sliding: any) {
@@ -118,27 +111,27 @@ export class EventsViewAttendeesComponent implements OnInit, OnDestroy {
     });
   }
 
-  private async exportExcel(event: Event) {
-    console.log(event._links);
-    if (event._links.["announcement-template"]) {
-      const url = environment.apiRoot + event._links.["announcement-template"].href;
-      window.open(url);
-    }
+  private async exportExcel(event: EventResponse) {
+    // TODO:
+    // if (event._links.["announcement-template"]) {
+    //   const url = environment.apiRoot + event._links.["announcement-template"].href;
+    //   window.open(url);
+    // }
   }
 
-  private setActions(event?: Event) {
+  private setActions(event?: EventResponse) {
     this.actions = [
       {
         text: "Přidat",
         icon: "add-outline",
         pinned: true,
-        hidden: !event?._links.self.allowed.PATCH,
+        hidden: !event?._links.addEventAttendee.allowed,
         handler: () => this.addAttendeeModal(),
       },
       {
         text: "Stáhnout ohlášku",
         icon: "download-outline",
-        hidden: !event?._links.self.allowed.GET,
+        // hidden: !event?._links.self.allowed.GET, // TODO:
         handler: () => this.exportExcel(event!),
       },
     ];

@@ -1,13 +1,12 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { AlertController, ModalController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { EventExpenseResponse, EventResponse } from "src/app/api";
 import { EventExpenseTypes } from "src/app/config/event-expense-types";
 import { EventExpenseModalComponent } from "src/app/modules/events/components/event-expense-modal/event-expense-modal.component";
 import { EventsService } from "src/app/modules/events/services/events.service";
-import { Event, EventExpense } from "src/app/schema/event";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { environment } from "src/environments/environment";
 
 @UntilDestroy()
 @Component({
@@ -16,9 +15,9 @@ import { environment } from "src/environments/environment";
   styleUrls: ["./events-view-accounting.component.scss"],
 })
 export class EventsViewAccountingComponent implements OnInit, OnDestroy {
-  event?: Event;
+  event?: EventResponse;
 
-  expenses: EventExpense[] = [];
+  expenses: EventExpenseResponse[] = [];
 
   actions: Action[] = [];
 
@@ -51,7 +50,7 @@ export class EventsViewAccountingComponent implements OnInit, OnDestroy {
     this.expenses.sort((a, b) => a.id.localeCompare(b.id, "cs", { numeric: true }));
   }
 
-  async editExpenseModal(expense?: EventExpense) {
+  async editExpenseModal(expense?: EventExpenseResponse) {
     const i = expense ? this.expenses.indexOf(expense) : -1;
 
     this.modal = await this.modalController.create({
@@ -68,7 +67,7 @@ export class EventsViewAccountingComponent implements OnInit, OnDestroy {
     await this.modal.present();
   }
 
-  async saveExpense(i: number, expense: EventExpense) {
+  async saveExpense(i: number, expense: EventExpenseResponse) {
     if (!this.event) return;
 
     const expenses = this.expenses.slice();
@@ -78,11 +77,11 @@ export class EventsViewAccountingComponent implements OnInit, OnDestroy {
 
     this.expenses = expenses; // optimistic update
 
-    await this.eventsService.updateEvent(this.event._id, { expenses });
-    await this.eventsService.loadEvent(this.event._id);
+    await this.eventsService.updateEvent(this.event.id, { expenses });
+    await this.eventsService.loadEvent(this.event.id);
   }
 
-  async removeExpense(expense: EventExpense) {
+  async removeExpense(expense: EventExpenseResponse) {
     this.alert = await this.alertController.create({
       header: "Smazat účtenku",
       message: `Opravdu chceš smazat účtenku ${expense.id}?`,
@@ -95,15 +94,15 @@ export class EventsViewAccountingComponent implements OnInit, OnDestroy {
     await this.alert.present();
   }
 
-  async removeExpenseConfirmed(expense: EventExpense) {
+  async removeExpenseConfirmed(expense: EventExpenseResponse) {
     if (!this.event) return;
 
     const expenses = this.expenses.filter((item) => item !== expense);
 
     this.expenses = expenses; // optimistic update
 
-    await this.eventsService.updateEvent(this.event._id, { expenses });
-    await this.eventsService.loadEvent(this.event._id);
+    await this.eventsService.updateEvent(this.event.id, { expenses });
+    await this.eventsService.loadEvent(this.event.id);
   }
 
   toggleSliding(sliding: any) {
@@ -113,8 +112,8 @@ export class EventsViewAccountingComponent implements OnInit, OnDestroy {
     });
   }
 
-  getExpenseColor(expense: EventExpense) {
-    return EventExpenseTypes[expense.type]?.color || "primary";
+  getExpenseColor(expense: EventExpenseResponse) {
+    return expense.type ? EventExpenseTypes[expense.type].color : "primary";
   }
 
   private getNextExpenseId() {
@@ -128,27 +127,27 @@ export class EventsViewAccountingComponent implements OnInit, OnDestroy {
     return "V" + String(maxId + 1);
   }
 
-  private async exportExcel(event: Event) {
-    console.log(event._links);
-    if (event._links.["accounting-template"]) {
-      const url = environment.apiRoot + event._links.["accounting-template"].href;
-      window.open(url);
-    }
+  private async exportExcel(event: EventResponse) {
+    // TODO:
+    // if (event._links.["accounting-template"]) {
+    //   const url = environment.apiRoot + event._links.["accounting-template"].href;
+    //   window.open(url);
+    // }
   }
 
-  private setActions(event?: Event) {
+  private setActions(event?: EventResponse) {
     this.actions = [
       {
         text: "Přidat",
         icon: "add-outline",
         pinned: true,
-        hidden: !event?._links.self.allowed.PATCH,
+        hidden: !event?._links.addEventExpense.allowed,
         handler: () => this.editExpenseModal(),
       },
       {
         text: "Stáhnout účtování",
         icon: "download-outline",
-        hidden: !event?._links.self.allowed.GET,
+        // hidden: !event?._links..allowed.GET, // TODO:
         handler: () => this.exportExcel(event!),
       },
     ];

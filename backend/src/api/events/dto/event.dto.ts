@@ -11,6 +11,7 @@ import { EventGroup } from "src/models/events/entities/event-group.entity";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { EventsAttendeesController } from "../controllers/events-attendees.controller";
+import { EventsExpensesController } from "../controllers/events-expenses.controller";
 import { EventsRegistrationsController } from "../controllers/events-registrations.controller";
 import { EventsReportsController } from "../controllers/events-reports.controller";
 import { EventsController } from "../controllers/events.controller";
@@ -22,6 +23,7 @@ type LinkNames =
       keyof EventsController,
       | "deleteEvent"
       | "rejectEvent"
+      | "leadEvent"
       | "submitEvent"
       | "getEvent"
       | "updateEvent"
@@ -30,18 +32,23 @@ type LinkNames =
       | "cancelEvent"
       | "uncancelEvent"
     >
-  | ExtractExisting<keyof EventsAttendeesController, "listEventAttendees">
+  | ExtractExisting<keyof EventsAttendeesController, "listEventAttendees" | "addEventAttendee">
+  | ExtractExisting<keyof EventsExpensesController, "listEventExpenses" | "addEventExpense">
   | keyof EventsRegistrationsController
   | keyof EventsReportsController;
 
 class EventResponseLinks implements AcLinksObject<LinkNames> {
-  @ApiProperty() deleteEventRegistration!: AcLink;
+  @ApiProperty() addEventAttendee!: AcLink;
+  @ApiProperty() addEventExpense!: AcLink;
   @ApiProperty() cancelEvent!: AcLink;
   @ApiProperty() deleteEvent!: AcLink;
+  @ApiProperty() deleteEventRegistration!: AcLink;
   @ApiProperty() getEvent!: AcLink;
   @ApiProperty() getEventRegistration!: AcLink;
   @ApiProperty() getEventReport!: AcLink;
+  @ApiProperty() leadEvent!: AcLink;
   @ApiProperty() listEventAttendees!: AcLink;
+  @ApiProperty() listEventExpenses!: AcLink;
   @ApiProperty() publishEvent!: AcLink;
   @ApiProperty() rejectEvent!: AcLink;
   @ApiProperty() saveEventRegistration!: AcLink;

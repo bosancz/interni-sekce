@@ -2,31 +2,30 @@ import { Component, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter } from "@ionic/angular";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
-import { BehaviorSubject, Observable, Subject, combineLatest } from "rxjs";
-import { debounceTime, map } from "rxjs/operators";
+import { BehaviorSubject } from "rxjs";
+import { EventResponse } from "src/app/api";
 import { EventStatuses } from "src/app/config/event-statuses";
-import { Event } from "src/app/schema/event";
-import { ApiService } from "src/app/services/api.service";
+import { ApiEndpoints, ApiService } from "src/app/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
-type EventWithSearchString = Event & { searchString: string };
+type EventWithSearchString = EventResponse & { searchString: string };
 
+@UntilDestroy()
 @Component({
   selector: "bo-events-list",
   templateUrl: "./events-list.component.html",
   styleUrls: ["./events-list.component.scss"],
 })
 export class EventsListComponent implements ViewWillEnter {
-  events$ = new Subject<EventWithSearchString[]>();
-  filteredEvents$: Observable<EventWithSearchString[]>;
+  events?: EventWithSearchString[];
+  filteredEvents?: EventResponse[];
 
   years: number[] = [];
   currentYear?: number;
 
   statuses = EventStatuses;
-
-  canCreate?: boolean;
 
   @ViewChild("filterForm", { static: true }) filterForm!: NgForm;
 
@@ -38,19 +37,13 @@ export class EventsListComponent implements ViewWillEnter {
 
   loadingArray = Array(5).fill(null);
 
-  constructor(private api: ApiService, private router: Router, private route: ActivatedRoute) {
-    api.resources.then((resources) => resources.events.allowed.POST).then((canCreate) => (this.canCreate = canCreate));
-
-    // TODO: rewrite to easier non rxjs filtering
-    this.filteredEvents$ = combineLatest([this.events$, this.search$.pipe(debounceTime(250))]).pipe(
-      map(([events, search]) => this.filterEvents(events, search)),
-    );
-  }
+  constructor(private api: ApiService, private router: Router, private route: ActivatedRoute) {}
 
   ionViewWillEnter(): void {
     this.loadYears();
 
-    this.setActions();
+    // TODO: use ionWillLeave?
+    this.api.endpoints.pipe(untilDestroyed(this)).subscribe((endpoints) => this.setActions(endpoints));
 
     if (this.filterForm) this.loadEvents(this.filterForm.value);
   }
@@ -62,7 +55,7 @@ export class EventsListComponent implements ViewWillEnter {
   }
 
   async loadYears() {
-    this.years = await this.api.get<number[]>("events:years");
+    this.years = await this.api.events.getEventsYears().then((res) => res.data);
     this.years.sort((a, b) => b - a);
 
     const thisYear = DateTime.local().year;
@@ -84,7 +77,8 @@ export class EventsListComponent implements ViewWillEnter {
 
     if (filter.status) options.filter.status = filter.status;
 
-    const events = await this.api.get<Event[]>("events", options);
+    // TODO: implements options above
+    const events = await this.api.events.listEvents().then((res) => res.data);
 
     const eventsWithSearchString = events.map((event) => {
       const searchString = [event.name, event.place, event.leaders?.map((member) => member.nickname).join(" ")]
@@ -93,7 +87,7 @@ export class EventsListComponent implements ViewWillEnter {
       return { ...event, searchString };
     });
 
-    this.events$.next(eventsWithSearchString);
+    this.events = eventsWithSearchString;
   }
 
   createEvent() {
@@ -108,13 +102,11 @@ export class EventsListComponent implements ViewWillEnter {
     return events.filter((event) => search_re.test(event.searchString));
   }
 
-  getLeadersString(event: Event) {
+  getLeadersString(event: EventResponse) {
     return event.leaders?.map((item) => item.nickname).join(", ");
   }
 
-  private async setActions() {
-    const resources = await this.api.resources;
-
+  private setActions(endpoints: ApiEndpoints | null) {
     this.actions = [
       {
         icon: "filter-outline",
@@ -124,7 +116,7 @@ export class EventsListComponent implements ViewWillEnter {
       {
         icon: "add-outline",
         pinned: true,
-        hidden: !resources["events"].allowed["POST"],
+        hidden: endpoints?.createEvent.allowed,
         handler: () => this.createEvent(),
       },
     ];

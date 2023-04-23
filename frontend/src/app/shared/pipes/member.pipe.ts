@@ -1,14 +1,16 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { Member } from "src/app/schema/member";
+import { MemberResponse } from "src/app/api";
 
 @Pipe({
   name: "member",
 })
 export class MemberPipe implements PipeTransform {
-  transform(member: Member, property: "nickname") {
+  transform(member: MemberResponse | undefined, property: "nickname") {
+    if (!member) return "";
+
     switch (property) {
       case "nickname":
-        return member.nickname || member.name?.first || member.name?.last || "?";
+        return member.nickname || member.firstName || member.lastName || "?";
     }
   }
 }

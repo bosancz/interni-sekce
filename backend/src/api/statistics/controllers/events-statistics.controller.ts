@@ -9,7 +9,7 @@ import { EventsReportResponse } from "../dto/events-report.dto";
 export class EventsStatisticsController {
   @Get("years")
   @ApiResponse({ schema: { type: "array", items: { type: "number" } } })
-  getEventsYears() {
+  getEventsReportYears() {
     // TODO:
     return {};
   }

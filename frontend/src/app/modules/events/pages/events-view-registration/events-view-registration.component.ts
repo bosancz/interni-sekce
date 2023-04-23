@@ -6,7 +6,7 @@ import { EventResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { EventsService } from "../../../services/events.service";
+import { EventsService } from "../../services/events.service";
 
 @UntilDestroy()
 @Component({

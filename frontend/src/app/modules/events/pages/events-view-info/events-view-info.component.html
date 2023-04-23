@@ -25,17 +25,17 @@
         <div class="attendees">
           <ion-chip
             *ngFor="let attendee of event.attendees"
-            [style.background-color]="attendee.group | group : 'color'"
-            [routerLink]="['/databaze', attendee._id]"
+            [style.background-color]="attendee.member?.groupId | group : 'color'"
+            [routerLink]="['/databaze', attendee.memberId]"
           >
-            {{ attendee | member : "nickname" }}
+            {{ attendee.member | member : "nickname" }}
           </ion-chip>
           <p *ngIf="!event.attendees?.length">Účastníci zatím chybí</p>
         </div>
 
-        <h3 class="mt-4">Report</h3>
+        <!-- <h3 class="mt-4">Report</h3>
         <div *ngIf="event.report" [innerHTML]="event.report"></div>
-        <p *ngIf="!event.report">Report zatím chybí</p>
+        <p *ngIf="!event.report">Report zatím chybí</p> -->
 
         <h3 class="mt-4">Účtování</h3>
         <bo-event-expenses-chart *ngIf="event.expenses?.length" [event]="event"></bo-event-expenses-chart>

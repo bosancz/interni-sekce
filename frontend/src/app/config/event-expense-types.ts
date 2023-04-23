@@ -1,16 +1,14 @@
-export enum EventExpenseTypeId {
-  "Potraviny" = "Potraviny",
-  "Doprava" = "Doprava",
-  "Materiál" = "Materiál",
-}
+import { EventExpenseResponseTypeEnum } from "../api";
 
 export interface EventExpenseType {
   title: string;
   color: string;
 }
 
-export const EventExpenseTypes: { [id in EventExpenseTypeId]: EventExpenseType } = {
-  "Potraviny": { title: "Potraviny", color: "primary" },
-  "Doprava": { title: "Doprava", color: "secondary" },
-  "Materiál": { title: "Materiál", color: "dark" },
+export const EventExpenseTypes: { [id in EventExpenseResponseTypeEnum]: EventExpenseType } = {
+  food: { title: "Potraviny", color: "primary" },
+  transport: { title: "Doprava", color: "secondary" },
+  material: { title: "Materiál", color: "dark" },
+  accommodation: { title: "Ubytování", color: "dark" },
+  other: { title: "Ostatní", color: "dark" },
 };

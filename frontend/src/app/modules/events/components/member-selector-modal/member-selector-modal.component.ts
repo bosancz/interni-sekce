@@ -1,6 +1,8 @@
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { IonSearchbar, ModalController, ViewDidEnter } from "@ionic/angular";
+import { MemberResponse } from "src/app/api";
 import { Member } from "src/app/schema/member";
+import { ApiService } from "src/app/services/api.service";
 
 @Component({
   selector: "bo-member-selector-modal",
@@ -8,17 +10,22 @@ import { Member } from "src/app/schema/member";
   styleUrls: ["./member-selector-modal.component.scss"],
 })
 export class MemberSelectorModalComponent implements OnInit, ViewDidEnter {
-  @Input() members: Member[] = [];
+  @Input() members: MemberResponse[] = [];
 
   membersIndex: string[] = [];
 
-  filteredMembers: Member[] = [];
+  filteredMembers: MemberResponse[] = [];
 
   @ViewChild("searchBar") searchBar!: IonSearchbar;
 
-  constructor(private modalController: ModalController) {}
+  constructor(private modalController: ModalController, private api: ApiService) {}
 
   ngOnInit(): void {
+    this.loadMembers();
+  }
+  private async loadMembers() {
+    if (this.members) this.members = await this.api.members.listMembers().then((res) => res.data);
+
     this.sortMembers();
 
     this.createIndex();
@@ -46,14 +53,14 @@ export class MemberSelectorModalComponent implements OnInit, ViewDidEnter {
 
   private createIndex() {
     this.membersIndex = this.members.map((member) => {
-      return [member.nickname, member.name?.first, member.name?.last].filter((value) => !!value).join(" ");
+      return [member.nickname, member.firstName, member.lastName].filter((value) => !!value).join(" ");
     });
   }
 
   private sortMembers() {
     this.members.sort((a, b) => {
-      const aString = a.nickname || a.name?.first || a.name?.last || "";
-      const bString = b.nickname || b.name?.first || b.name?.last || "";
+      const aString = a.nickname || a.firstName || a.lastName || "";
+      const bString = b.nickname || b.firstName || b.lastName || "";
       return aString.localeCompare(bString);
     });
   }

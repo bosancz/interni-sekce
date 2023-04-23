@@ -51,7 +51,7 @@ export class EventsDashboardComponent implements OnInit {
   }
 
   async loadEventYears() {
-    this.years = await this.api.statistics.getEventsYears().then((res) => res.data);
+    this.years = await this.api.statistics.getEventsReportYears().then((res) => res.data);
     this.years.sort();
   }
 

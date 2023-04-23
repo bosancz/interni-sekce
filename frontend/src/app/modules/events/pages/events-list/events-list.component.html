@@ -56,15 +56,15 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let event of filteredEvents$ | async" [routerLink]="event._id">
+      <tr *ngFor="let event of filteredEvents" [routerLink]="'' + event.id">
         <td>{{ event.name }}</td>
         <td class="date">
-          {{ event.dateFrom | date: "EEEEEE d. M." }} - {{ event.dateTill | date: "EEEEEE d. M. y" }}
+          {{ event.dateFrom | date : "EEEEEE d. M." }} - {{ event.dateTill | date : "EEEEEE d. M. y" }}
         </td>
         <td>
           <ng-container *ngFor="let leader of event.leaders; let isFirst = first">
             <ng-container *ngIf="!isFirst">, </ng-container>
-            <span [style.color]="leader.group | group: 'color'">{{ leader.nickname || leader.name?.first }}</span>
+            <span [style.color]="leader.groupId | group : 'color'">{{ leader | member : "nickname" }}</span>
           </ng-container>
           <strong *ngIf="!event.leaders?.length" class="text-danger">Pan NIKDO</strong>
         </td>
@@ -73,7 +73,7 @@
         </td>
       </tr>
 
-      <ng-container *ngIf="!(events$ | async)?.length">
+      <ng-container *ngIf="!events?.length">
         <tr *ngFor="let item of loadingArray">
           <td><ion-skeleton-text animated></ion-skeleton-text></td>
           <td><ion-skeleton-text animated></ion-skeleton-text></td>

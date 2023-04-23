@@ -3,14 +3,13 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter } from "rxjs/operators";
-import { EventResponse } from "src/app/api";
+import { AlbumResponse, EventResponse } from "src/app/api";
 import { EventStatuses } from "src/app/config/event-statuses";
-import { Album, Photo } from "src/app/schema/album";
-import { EventActions } from "src/app/schema/event";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { EventsService } from "../../../services/events.service";
+import { EventActions } from "../../schema/event-actions";
+import { EventsService } from "../../services/events.service";
 
 @UntilDestroy()
 @Component({
@@ -21,7 +20,7 @@ import { EventsService } from "../../../services/events.service";
 export class EventsViewInfoComponent implements OnInit, OnDestroy {
   event?: EventResponse;
 
-  eventAlbum?: Album<Photo>;
+  eventAlbum?: AlbumResponse;
 
   actions: Action[] = [];
 
@@ -73,20 +72,24 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
     this.toastService.toast("Akce smazána");
   }
 
+  async leadEvent(event: EventResponse) {
+    await this.api.events.leadEvent(event.id);
+
+    await this.eventsService.loadEvent(event.id);
+
+    this.toastService.toast("Uloženo");
+  }
+
   async eventAction(event: EventResponse, action: EventActions) {
-    if (!event._links.[action].allowed) {
+    if (!event._links[action].allowed) {
       this.toastService.toast("K této akci nemáš oprávnění.");
       return;
     }
 
-    let note: string | null = null;
+    const statusNote = window.prompt("Poznámka ke změně stavu (můžeš nechat prázdné):");
+    if (statusNote === null) return; // user clicked on cancel
 
-    if (action !== "lead") {
-      note = window.prompt("Poznámka ke změně stavu (můžeš nechat prázdné):");
-      if (note === null) return; // user clicked on cancel
-    }
-
-    await this.api.post(event._actions[action], { note: note || undefined });
+    await this.api.events[action](event.id, { statusNote });
 
     await this.eventsService.loadEvent(event.id);
 
@@ -99,8 +102,8 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
         text: "Vést akci",
         color: "success",
         icon: "hand-left-outline",
-        hidden: !event._links.lead,
-        handler: () => this.eventAction(event, "lead"),
+        hidden: !event._links.leadEvent.allowed,
+        handler: () => this.leadEvent(event),
       },
       {
         text: "Upravit",
@@ -114,41 +117,41 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
         icon: "arrow-forward-outline",
         color: "primary",
         hidden: !event?._links.submitEvent.allowed,
-        handler: () => this.eventAction(event, "submit"),
+        handler: () => this.eventAction(event, "submitEvent"),
       },
       {
         text: "Do programu",
         icon: "arrow-forward-outline",
         color: "primary",
         hidden: !event?._links.publishEvent.allowed,
-        handler: () => this.eventAction(event, "publish"),
+        handler: () => this.eventAction(event, "publishEvent"),
       },
       {
         text: "Vrátit k úpravám",
         icon: "arrow-back-outline",
         color: "danger",
         hidden: !event?._links.rejectEvent.allowed,
-        handler: () => this.eventAction(event, "reject"),
+        handler: () => this.eventAction(event, "rejectEvent"),
       },
       {
         text: "Odebrat z programu",
         icon: "arrow-back-outline",
         color: "danger",
         hidden: !event?._links.unpublishEvent.allowed,
-        handler: () => this.eventAction(event, "unpublish"),
+        handler: () => this.eventAction(event, "unpublishEvent"),
       },
       {
         text: "Označit jako zrušenou",
         color: "danger",
         icon: "arrow-back-outline",
         hidden: !event?._links.cancelEvent.allowed,
-        handler: () => this.eventAction(event, "cancel"),
+        handler: () => this.eventAction(event, "cancelEvent"),
       },
       {
         text: "Odzrušit",
         icon: "arrow-forward-outline",
         hidden: !event?._links.uncancelEvent.allowed,
-        handler: () => this.eventAction(event, "uncancel"),
+        handler: () => this.eventAction(event, "uncancelEvent"),
       },
       {
         text: "Smazat",

@@ -1,15 +1,14 @@
-FROM node:18-alpine
+FROM node:18
 
 WORKDIR /workspace
 
-# system utilities
-RUN apk add --no-cache git nano lsof openjdk8-jre
+# alpine linux utilities
+# RUN apk add --no-cache git nano lsof openjdk8-jre
+# RUN apk add --no-cache alpine-sdk python3  
 
-# build tools (gcc)
-RUN apk add --no-cache alpine-sdk python3  
+# debian install java runtime
+RUN apt-get update && apt-get install -y default-jre
+
 
 # development tools
 RUN npm i -g @angular/cli @nestjs/cli
-
-# set up git
-RUN git config --global --add safe.directory /workspace && git config --global core.autocrlf true

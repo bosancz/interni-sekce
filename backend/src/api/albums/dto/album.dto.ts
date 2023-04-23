@@ -2,8 +2,8 @@ import { ApiProperty, ApiPropertyOptional, PickType } from "@nestjs/swagger";
 import { AcLink } from "src/access-control/access-control-lib/schema/ac-link";
 import { EventResponse } from "src/api/events/dto/event.dto";
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
-import { Photo } from "src/models/albums/entities/photo.entity";
 import { Event } from "src/models/events/entities/event.entity";
+import { PhotoResponse } from "./photo.dto";
 
 export class AlbumLinks {
   @ApiPropertyOptional() "album:read": AcLink;
@@ -19,8 +19,10 @@ export class AlbumResponse {
   @ApiPropertyOptional({ type: "string" }) dateTill!: string | null;
   @ApiPropertyOptional({ type: "number" }) eventId!: number | null;
   @ApiPropertyOptional({ type: EventResponse }) event?: Event | undefined;
-  @ApiPropertyOptional() photos?: Photo[] | undefined;
-  @ApiPropertyOptional() _links?: AlbumLinks;
+
+  @ApiPropertyOptional({ type: PhotoResponse, isArray: true }) photos?: PhotoResponse[] | undefined;
+
+  @ApiProperty() _links!: AlbumLinks;
 }
 
 export class AlbumsListResponse extends PickType(AlbumResponse, ["id", "name", "status"]) {}

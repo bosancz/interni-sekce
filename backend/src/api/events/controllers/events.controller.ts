@@ -17,6 +17,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
+import { UserToken } from "src/auth/decorators/user-token.decorator";
+import { UserTokenData } from "src/auth/schema/user-token-data";
+import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
 import { Repository } from "typeorm";
@@ -25,6 +28,7 @@ import {
   EventCreateRoute,
   EventDeleteRoute,
   EventEditRoute,
+  EventLeadRoute,
   EventPublishRoute,
   EventReadRoute,
   EventRejectRoute,
@@ -32,6 +36,7 @@ import {
   EventUncancelRoute,
   EventUnpublishRoute,
   EventsListRoute,
+  EventsYearsRoute,
 } from "../acl/events.acl";
 import { EventCreateBody, EventResponse, EventStatusChangeBody, EventUpdateBody } from "../dto/event.dto";
 
@@ -70,6 +75,15 @@ export class EventsController {
     return this.events.createEvent(body);
   }
 
+  @Get("years")
+  @AcLinks(EventsYearsRoute)
+  @ApiResponse({ schema: { type: "array", items: { type: "number" } } })
+  async getEventsYears(@Req() req: Request): Promise<number[]> {
+    EventsYearsRoute.canOrThrow(req, undefined);
+
+    return this.events.getEventsYears();
+  }
+
   @Get(":id")
   @AcLinks(EventReadRoute)
   @ApiResponse({ type: EventResponse })
@@ -106,6 +120,19 @@ export class EventsController {
     EventDeleteRoute.canOrThrow(req, event);
 
     return this.events.deleteEvent(id);
+  }
+
+  @Post(":id/lead")
+  @HttpCode(204)
+  @AcLinks(EventLeadRoute)
+  @ApiResponse({ status: 204 })
+  async leadEvent(@Req() req: Request, @Param("id") id: number, @UserToken() token: UserTokenData): Promise<void> {
+    const event = await this.events.getEvent(id, { leaders: true });
+    if (!event) throw new NotFoundException();
+
+    EventLeadRoute.canOrThrow(req, event);
+
+    await this.events.createEventAttendee(id, token.userId, { type: EventAttendeeType.leader });
   }
 
   @Post(":id/submit")

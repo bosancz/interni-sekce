@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { Member } from "src/app/schema/member";
+import { MemberResponse } from "src/app/api";
 
 @Component({
   selector: "bo-member-item-detail",
@@ -7,7 +7,7 @@ import { Member } from "src/app/schema/member";
   styleUrls: ["./member-item-detail.component.scss"],
 })
 export class MemberItemDetailComponent implements OnInit {
-  @Input() member!: Member;
+  @Input() member!: MemberResponse;
 
   constructor() {}
 

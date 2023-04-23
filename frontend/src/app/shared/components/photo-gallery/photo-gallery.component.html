@@ -6,9 +6,9 @@
     [class.clickable]="clickable"
   >
     <img
-      [src]="photo.sizes.small.url"
+      [src]="photo._links.getPhotoImage.href"
       [style.height]="row.height + 'px'"
-      [style.width]="(row.height / photo.sizes.small.height) * photo.sizes.small.width + 'px'"
+      [style.width]="row.height * (photo.width / photo.height) + 'px'"
       [style.background-color]="photo.bg"
     />
     <span *ngIf="photo.caption" class="caption">{{ photo.caption }}</span>

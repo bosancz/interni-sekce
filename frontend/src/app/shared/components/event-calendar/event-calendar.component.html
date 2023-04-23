@@ -18,8 +18,12 @@
           [class.selectedRange]="isSelectedRange(day)"
           [class.empty]="day.properties.empty"
         >
-          <ng-template [ngIf]="!day.properties.today" [ngIfElse]="todayBadge">{{ day.date.day }}. {{ day.date.month }}.</ng-template>
-          <ng-template #todayBadge><ion-badge>{{ day.date.day }}. {{ day.date.month }}.</ion-badge></ng-template>
+          <ng-template [ngIf]="!day.properties.today" [ngIfElse]="todayBadge"
+            >{{ day.date.day }}. {{ day.date.month }}.</ng-template
+          >
+          <ng-template #todayBadge
+            ><ion-badge>{{ day.date.day }}. {{ day.date.month }}.</ion-badge></ng-template
+          >
           <span *ngIf="day.properties.holiday" class="float-right" title="Svátek">🎉</span>
         </div>
       </div>
@@ -29,12 +33,12 @@
       <div
         *ngFor="let calEvent of row.blocks.own.events"
         class="event"
-        [style.background-color]="calEvent.event.status | eventStatus: 'color'"
+        [style.background-color]="calEvent.event.status | eventStatus : 'color'"
         [style.left]="getEventLeft(calEvent, row) * 100 + '%'"
         [style.width]="getEventWidth(calEvent, row) * 100 + '%'"
         [style.top]="eventHeight * (calEvent.level - 1) + 'px'"
         placement="bottom"
-        [routerLink]="['/akce', calEvent.event._id]"
+        [routerLink]="['/akce', calEvent.event.id]"
       >
         {{ calEvent.event.name }}
       </div>

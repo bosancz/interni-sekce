@@ -9,11 +9,11 @@ import {
   Output,
   SimpleChanges,
 } from "@angular/core";
-import { Photo } from "src/app/schema/photo";
+import { PhotoResponse } from "src/app/api";
 
 class PhotoRow {
   height: number = 0;
-  photos: Photo[] = [];
+  photos: PhotoResponse[] = [];
 }
 
 @Component({
@@ -22,13 +22,13 @@ class PhotoRow {
   styleUrls: ["./photo-gallery.component.scss"],
 })
 export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChanges {
-  @Input() photos: Photo[] = [];
+  @Input() photos: PhotoResponse[] = [];
   @Input() maxHeight: number = 200;
   @Input() clickable: boolean = false;
 
   margin: number = 5;
 
-  @Output() click = new EventEmitter<CustomEvent<Photo>>();
+  @Output() click = new EventEmitter<PhotoResponse>();
 
   rows: PhotoRow[] = [];
 
@@ -63,19 +63,16 @@ export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChange
     while (photos.length) {
       let rowWidth = 0;
       let row = new PhotoRow();
-      let photo: Photo | undefined;
+      let photo: PhotoResponse | undefined;
 
       // add photos to row, stop when first photo over limit
       while (rowWidth <= this.width && (photo = photos.shift())) {
-        rowWidth += (this.maxHeight / photo.sizes.small.height) * photo.sizes.small.width;
+        rowWidth += this.maxHeight * (photo.width / photo.height);
         if (row.photos.length) rowWidth += this.margin;
         row.photos.push(photo);
       }
 
-      const totalMaxWidth = row.photos.reduce(
-        (acc, cur) => acc + (this.maxHeight / cur.sizes.small.height) * cur.sizes.small.width,
-        0,
-      );
+      const totalMaxWidth = row.photos.reduce((acc, cur) => acc + this.maxHeight * (cur.width / cur.height), 0);
 
       const availableWidth = this.width - (row.photos.length - 1) * this.margin;
 
@@ -94,13 +91,11 @@ export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChange
     this.rows = rows;
   }
 
-  onPhotoClick(event: MouseEvent, photo: Photo) {
+  onPhotoClick(event: MouseEvent, photo: PhotoResponse) {
     if (!this.clickable) return;
 
     event.preventDefault();
     event.stopPropagation();
-    const customEvent = new CustomEvent<Photo>("photoclick", { detail: photo });
-    this.click.emit(customEvent);
-    event.detail;
+    this.click.emit(photo);
   }
 }

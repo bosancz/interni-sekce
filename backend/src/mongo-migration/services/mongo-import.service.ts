@@ -5,7 +5,7 @@ import { Model } from "mongoose";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
-import { EventExpense } from "src/models/events/entities/event-expense.entity";
+import { EventExpense, EventExpenseType } from "src/models/events/entities/event-expense.entity";
 import { EventGroup } from "src/models/events/entities/event-group.entity";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
@@ -196,13 +196,20 @@ export class MongoImportService {
 
       eventIds[mongoEvent._id.toString()] = event.id;
 
+      const mongoTypeToPostgresType: { [mongoType: string]: EventExpenseType } = {
+        Potraviny: EventExpenseType.food,
+        Doprava: EventExpenseType.transport,
+        Materiál: EventExpenseType.material,
+      };
+
       if (mongoEvent.expenses) {
         for (let mongoExpense of mongoEvent.expenses) {
           const expenseData: Omit<EventExpense, "id"> = {
             eventId: event.id,
             description: mongoExpense.description ?? "",
             amount: mongoExpense.amount ?? 0,
-            type: mongoExpense.type ?? "Ostatní",
+            type:
+              (mongoExpense.type ? mongoTypeToPostgresType[mongoExpense.type] : undefined) ?? EventExpenseType.other,
           };
 
           await t.save(EventExpense, expenseData);

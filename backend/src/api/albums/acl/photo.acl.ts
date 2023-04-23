@@ -38,3 +38,8 @@ export const PhotoDeleteRoute = new RouteACL<Photo>({
   entity: PhotoResponse,
   inheritPermissions: PhotoEditRoute,
 });
+
+export const PhotoReadFileRoute = new RouteACL({
+  entity: PhotoResponse,
+  inheritPermissions: PhotoReadRoute,
+});
