@@ -12,6 +12,7 @@ import { Member } from "app/schema/member";
 import { Action } from 'app/shared/components/action-buttons/action-buttons.component';
 import { DateTime } from 'luxon';
 import { debounceTime } from 'rxjs/operators';
+import writeXlsxFile, { Schema } from "write-excel-file";
 
 
 type MemberWithSearchString = Member & { searchString: string; };
@@ -59,7 +60,7 @@ interface TableRow {
 export class MembersListComponent implements OnInit, ViewWillEnter {
 
   members?: MemberWithSearchString[];
-
+  filteredMembers?: MemberWithSearchString[];
 
   filter: TableFilter = {
     activity: "active",
@@ -94,13 +95,16 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     { id: Fields.city, title: "Město" },
   ];
 
-  filteredFields: FieldData[] = [];
-
   actions: Action[] = [
     {
       icon: "add-outline",
       pinned: true,
       handler: () => this.create()
+    },
+    {
+      icon: "download-outline",
+      pinned: true,
+      handler: () => this.export()
     }
   ];
 
@@ -170,12 +174,100 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     this.router.navigate(["pridat"], { relativeTo: this.route });
   }
 
+  private async export() {
+    const schema: Schema<Member> = [
+      {
+        column: 'Oddíl',
+        type: String,
+        value: member => MemberGroups[member.group]?.name || undefined
+      },
+      {
+        column: 'Přezdívka',
+        type: String,
+        value: member => member.nickname,
+        fontWeight: "bold"
+      },
+      {
+        column: 'Jméno',
+        type: String,
+        value: member => member.name?.first
+      },
+      {
+        column: 'Příjmení',
+        type: String,
+        value: member => member.name?.last
+      },
+      {
+        column: 'Datum narození',
+        type: String,
+        width: 15,
+        align: "right",
+        value: member => this.datePipe.transform(member.birthday, "d. M. yyyy") || undefined
+      },
+      {
+        column: 'Ulice a č. domu',
+        type: String,
+        width: 20,
+        value: member => [member.address?.street, member.address?.streetNo].filter(element => element).join(' ')
+      },
+      {
+        column: 'Obec',
+        type: String,
+        width: 20,
+        value: member => member.address?.city
+      },
+      {
+        column: 'PSČ',
+        type: String,
+        value: member => member.address?.postalCode
+      },
+      {
+        column: 'Mobil otec',
+        type: String,
+        width: 15,
+        value: member => member.contacts?.father
+      },
+      {
+        column: 'Mobil matka',
+        type: String,
+        width: 15,
+        value: member => member.contacts?.mother
+      },
+      {
+        column: 'E-mail',
+        type: String,
+        width: 15,
+        value: member => member.contacts?.email
+      },
+      {
+        column: 'Mobil',
+        type: String,
+        width: 15,
+        value: member => member.contacts?.mobile
+      }
+    ]
+
+    await writeXlsxFile<Member>(
+      this.filteredMembers!,
+      {
+        schema,
+        headerStyle: {
+          fontWeight: "bold",
+          align: "center"
+        },
+        sheet: "Členská databáze",
+        stickyRowsCount: 1,
+        stickyColumnsCount: 2,
+        fileName: "export.xlsx"
+      });
+  }
+
   private filterData(filter: TableFilter) {
 
     if (this.members) {
       const search_re = filter.search ? new RegExp("(^| )" + filter.search.replace(/ /g, "").replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), "i") : undefined;
 
-      const filteredMembers = this.members
+      this.filteredMembers = this.members
         .filter(member => {
           if (search_re && !search_re.test(member.searchString)) return false;
           if (filter.roles && filter.roles.length && filter.roles.indexOf(member.role) === -1) return false;
@@ -185,7 +277,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
           return true;
         });
 
-      this.tableRows = filteredMembers.map(member => ({
+      this.tableRows = this.filteredMembers.map(member => ({
         member,
         cells: filter.fields?.map(field => this.getFieldValue(member, field) || "")
       }));
