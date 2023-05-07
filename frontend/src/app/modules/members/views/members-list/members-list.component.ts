@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Injector, OnInit, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
 import { Platform, ViewWillEnter } from '@ionic/angular';
@@ -59,7 +59,7 @@ interface TableRow {
 export class MembersListComponent implements OnInit, ViewWillEnter {
 
   members?: MemberWithSearchString[];
-
+  filteredMembers?: MemberWithSearchString[];
 
   filter: TableFilter = {
     activity: "active",
@@ -94,13 +94,16 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     { id: Fields.city, title: "Město" },
   ];
 
-  filteredFields: FieldData[] = [];
-
   actions: Action[] = [
     {
       icon: "add-outline",
       pinned: true,
       handler: () => this.create()
+    },
+    {
+      icon: "download-outline",
+      pinned: true,
+      handler: () => this.export()
     }
   ];
 
@@ -115,7 +118,8 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     private router: Router,
     private datePipe: DatePipe,
     private toasts: ToastService,
-    private platform: Platform
+    private platform: Platform,
+    private injector: Injector
   ) { }
 
   ngOnInit() {
@@ -170,12 +174,19 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     this.router.navigate(["pridat"], { relativeTo: this.route });
   }
 
+  private async export() {
+    const MembersExportService = await import("../../services/members-export.service").then(f => f.MembersExportService);
+    const membersExport = this.injector.get(MembersExportService);
+
+    await membersExport.export(this.filteredMembers);
+  }
+
   private filterData(filter: TableFilter) {
 
     if (this.members) {
       const search_re = filter.search ? new RegExp("(^| )" + filter.search.replace(/ /g, "").replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), "i") : undefined;
 
-      const filteredMembers = this.members
+      this.filteredMembers = this.members
         .filter(member => {
           if (search_re && !search_re.test(member.searchString)) return false;
           if (filter.roles && filter.roles.length && filter.roles.indexOf(member.role) === -1) return false;
@@ -185,7 +196,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
           return true;
         });
 
-      this.tableRows = filteredMembers.map(member => ({
+      this.tableRows = this.filteredMembers.map(member => ({
         member,
         cells: filter.fields?.map(field => this.getFieldValue(member, field) || "")
       }));
