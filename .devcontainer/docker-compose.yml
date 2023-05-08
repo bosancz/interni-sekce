@@ -9,9 +9,6 @@ services:
       - ..:/workspace:cached
     networks:
       - default
-    ports:
-      - 3000:3000
-      - 4200:4200
     environment:
       DB_HOST: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-postgres
       DB_USER: postgres
