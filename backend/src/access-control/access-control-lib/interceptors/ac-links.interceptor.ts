@@ -43,8 +43,8 @@ export class AcLinksInterceptor implements NestInterceptor {
     const outputEntities: ChildEntity<any> = routeAcl.options.contains || {};
 
     // add top level entity to list if not present and result or contains is not an array
-    if (routeAcl.options.entity && !Array.isArray(outputEntities))
-      (<ChildEntityObject<D>>outputEntities).entity = routeAcl.options.entity;
+    if (routeAcl.options.linkEntity && !Array.isArray(outputEntities))
+      (<ChildEntityObject<D>>outputEntities).entity = routeAcl.options.linkEntity;
 
     this.addLinksToChildren(res, outputEntities, req);
   }
@@ -87,7 +87,7 @@ export class AcLinksInterceptor implements NestInterceptor {
   }
 
   private findRoutes(entity: AcEntity<any>) {
-    return RouteStore.filter((route) => route.acl.options.entity === entity);
+    return RouteStore.filter((route) => route.acl.options.linkEntity === entity);
   }
 
   private getHttpMethod(route: RouteStoreItem) {

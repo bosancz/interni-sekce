@@ -7,7 +7,7 @@ import { ChildEntity } from "./child-entity";
 export interface AcRouteOptions<DOC, CONTAINS = DOC, ROLES extends string = string, PDATA extends Object = {}> {
   // TODO: maybe rename to `linkTo`
   /** Add link for this route to the specified parent entity. This adds a links object as a property (default `_links`) to all routes of the same entity */
-  entity?: AcEntity<DOC>;
+  linkEntity?: AcEntity<DOC>;
 
   // TODO: maybe rename to `allowed` like the resulting property
   /** Permissions for the current route */
