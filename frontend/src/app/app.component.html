@@ -17,7 +17,10 @@
         <admin-menu (click)="this.closeMenu()"></admin-menu>
       </ion-content>
 
-      <div class="version text-center text-muted small pb-1">Verze {{ version }}</div>
+      <div class="text-center text-muted small pb-1">
+        <bo-dark-mode-toggle></bo-dark-mode-toggle>
+        <p class="version">Verze {{ version }}</p>
+      </div>
     </ion-menu>
 
     <ion-router-outlet id="content"></ion-router-outlet>

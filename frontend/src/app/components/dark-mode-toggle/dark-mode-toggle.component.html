@@ -1,0 +1,5 @@
+<div class="toggle">
+  <ion-icon name="sunny" [color]="!status ? 'warning' : ''"></ion-icon>
+  <ion-toggle id="themeToggle" [checked]="status" (ionChange)="setDarkMode($any($event))"></ion-toggle>
+  <ion-icon name="moon" [color]="status ? 'primary' : ''"></ion-icon>
+</div>

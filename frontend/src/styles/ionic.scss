@@ -41,3 +41,11 @@ ion-split-pane {
     --height: 80%;
   }
 }
+
+ion-menu {
+  --ion-background-color: #eee;
+}
+
+body.dark ion-menu {
+  --ion-background-color: #1e1e1e;
+}

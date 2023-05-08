@@ -11,9 +11,10 @@ import { LoginComponent } from "./components/login/login.component";
 import { MainErrorHandler } from "./error-handlers/main.error-handler";
 import { NotFoundComponent } from "./pages/not-found/not-found.component";
 import { SharedModule } from "./shared/shared.module";
+import { DarkModeToggleComponent } from './components/dark-mode-toggle/dark-mode-toggle.component';
 
 @NgModule({
-  declarations: [AppComponent, AdminMenuComponent, LoginComponent, NotFoundComponent],
+  declarations: [AppComponent, AdminMenuComponent, LoginComponent, NotFoundComponent, DarkModeToggleComponent],
   imports: [
     SharedModule,
     AppRoutingModule,
