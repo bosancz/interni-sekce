@@ -19,6 +19,10 @@ export class UsersService {
     return this.userRepository.findOneBy({ id });
   }
 
+  async getUserByLogin(login: string) {
+    return this.userRepository.findOneBy({ login });
+  }
+
   async updateUser(id: number, data: Partial<User>) {
     return this.userRepository.update(id, data);
   }

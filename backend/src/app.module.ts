@@ -17,9 +17,9 @@ import { AuthModule } from "./auth/auth.module";
 import { Config } from "./config";
 import { AlbumsModelModule } from "./models/albums/albums-model.module";
 import { MembersModelModule } from "./models/members/members-model.module";
+import { StatisticsModelModule } from "./models/statistics/statistics-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
 import { MongoMigrationModule } from "./mongo-migration/mongo-migration.module";
-import { StatisticsModelModule } from './models/statistics/statistics-model.module';
 
 const typeOrmOptions: TypeOrmModuleOptions = {
   ...Config.db,

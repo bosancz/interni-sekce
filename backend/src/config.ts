@@ -72,7 +72,6 @@ const db: DataSourceOptions = {
   namingStrategy: new SnakeNamingStrategy(),
 };
 
-console.log("uri", process.env["MONGODB_URI"]);
 const mongoDb = {
   uri: process.env["MONGODB_URI"] ?? "",
 };

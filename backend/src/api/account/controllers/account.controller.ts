@@ -1,16 +1,18 @@
-import { Controller, Get, NotFoundException, Req } from "@nestjs/common";
+import { Controller, Get, NotFoundException, Req, UseGuards } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
 import { UserResponse } from "src/api/users/dto/user.dto";
 import { UserToken } from "src/auth/decorators/user-token.decorator";
+import { UserGuard } from "src/auth/guards/user.guard";
 import { UserTokenData } from "src/auth/schema/user-token-data";
 import { User } from "src/models/users/entities/user.entity";
 import { UsersService } from "src/models/users/services/users.service";
 import { AccountReadRoute } from "../acl/account.acl";
 
 @Controller("account")
+@UseGuards(UserGuard)
 @ApiTags("Account")
 @AcController()
 export class AccountController {
