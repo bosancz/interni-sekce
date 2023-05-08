@@ -16,6 +16,10 @@ export class AlbumsService {
     return this.repository.find(options);
   }
 
+  async createAlbum(album: Partial<Album>) {
+    return this.repository.save(album);
+  }
+
   async updateAlbum(id: Album["id"], album: Partial<Album>) {
     return this.repository.save({ ...album, id });
   }

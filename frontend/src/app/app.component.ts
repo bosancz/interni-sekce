@@ -4,7 +4,6 @@ import { MenuController, Platform } from "@ionic/angular";
 import { filter, map, mergeMap } from "rxjs/operators";
 import { LoginService } from "src/app/services/login.service";
 import { UserService } from "src/app/services/user.service";
-import { Environment } from "./schema/environment";
 import { ApiService } from "./services/api.service";
 
 @Component({
@@ -13,7 +12,7 @@ import { ApiService } from "./services/api.service";
   styleUrls: ["./app.component.scss"],
 })
 export class AppComponent implements OnInit {
-  environment?: Environment;
+  environment?: string;
 
   version = "X.X.X"; // packageJson.version;
 
@@ -72,7 +71,7 @@ export class AppComponent implements OnInit {
   }
 
   private async loadEnvironment() {
-    this.environment = await this.api.get<Environment>("environment");
+    this.environment = await this.api.api.getApiInfo().then((res) => res.data.environmentTitle);
   }
 
   closeMenu() {

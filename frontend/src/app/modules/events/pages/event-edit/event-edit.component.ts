@@ -2,8 +2,7 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { NavController } from "@ionic/angular";
-import { Event } from "src/app/schema/event";
-import { Member } from "src/app/schema/member";
+import { EventResponse, MemberResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -15,9 +14,9 @@ import { EventsService } from "../../services/events.service";
   styleUrls: ["./event-edit.component.scss"],
 })
 export class EventEditComponent implements OnInit {
-  event?: Event;
+  event?: EventResponse;
 
-  members: Member[] = [];
+  members: MemberResponse[] = [];
 
   actions: Action[] = [
     {
@@ -39,7 +38,6 @@ export class EventEditComponent implements OnInit {
   ngOnInit() {
     this.eventsService.event$.subscribe((event) => {
       this.event = event;
-      if (this.event && !this.event.meeting) this.event.meeting = {};
     });
 
     this.route.params.subscribe((params) => {
@@ -54,13 +52,15 @@ export class EventEditComponent implements OnInit {
       select: "_id nickname name group",
     };
 
-    this.members = await this.api.get<Member[]>("members", options);
+    // TODO: use options to list members
+
+    this.members = await this.api.members.listMembers().then((res) => res.data);
   }
 
   async saveEvent() {
     if (!this.event) return;
 
-    const eventData: Partial<Event> = this.form.value;
+    const eventData: Partial<EventResponse> = this.form.value;
 
     // prevent switched date order
     if (eventData.dateFrom && eventData.dateTill) {
@@ -72,10 +72,10 @@ export class EventEditComponent implements OnInit {
 
     // eventData.leaders = eventData.leaders?.map(member => member._id) || [];
 
-    await this.api.patch<Event>(["event", this.event._id], eventData);
+    await this.api.events.updateEvent(this.event.id, eventData);
     this.toastService.toast("Uloženo.");
 
     // this.router.navigate(["../info"], { relativeTo: this.route, replaceUrl: true });
-    this.navController.navigateBack(["/akce", this.event._id]);
+    this.navController.navigateBack(["/akce", this.event.id]);
   }
 }

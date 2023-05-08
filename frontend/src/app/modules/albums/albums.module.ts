@@ -8,14 +8,12 @@ import { EventSelectorComponent } from "./components/event-selector/event-select
 import { PhotoListComponent } from "./components/photo-list/photo-list.component";
 import { PhotosEditComponent } from "./components/photos-edit/photos-edit.component";
 import { PhotosUploadComponent } from "./components/photos-upload/photos-upload.component";
-/* SERVICES */
-import { AlbumsService } from "./services/albums.service";
 /* VIEWS */
 import { AlbumsTabsComponent } from "./components/albums-tabs/albums-tabs.component";
-import { AlbumsEditComponent } from "./views/albums-edit/albums-edit.component";
-import { AlbumsListComponent } from "./views/albums-list/albums-list.component";
-import { AlbumsViewInfoComponent } from "./views/albums-view-info/albums-view-info.component";
-import { AlbumsViewPhotosComponent } from "./views/albums-view-photos/albums-view-photos.component";
+import { AlbumsEditComponent } from "./pages/albums-edit/albums-edit.component";
+import { AlbumsListComponent } from "./pages/albums-list/albums-list.component";
+import { AlbumsViewInfoComponent } from "./pages/albums-view-info/albums-view-info.component";
+import { AlbumsViewPhotosComponent } from "./pages/albums-view-photos/albums-view-photos.component";
 
 @NgModule({
   declarations: [
@@ -31,6 +29,6 @@ import { AlbumsViewPhotosComponent } from "./views/albums-view-photos/albums-vie
     AlbumsTabsComponent,
   ],
   imports: [CommonModule, AlbumsRoutingModule, SharedModule],
-  providers: [AlbumsService],
+  providers: [],
 })
 export class AlbumsModule {}

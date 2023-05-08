@@ -2,10 +2,10 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, NavController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { Album, Photo } from "src/app/schema/album";
+import { AlbumResponse, PhotoResponse } from "src/app/api";
+import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { AlbumsService } from "../../services/albums.service";
 
 @UntilDestroy()
 @Component({
@@ -14,7 +14,7 @@ import { AlbumsService } from "../../services/albums.service";
   styleUrls: ["./albums-view-info.component.scss"],
 })
 export class AlbumsViewInfoComponent implements OnInit {
-  album?: Album<Photo, string>;
+  album?: AlbumResponse;
 
   actions: Action[] = [];
 
@@ -23,7 +23,7 @@ export class AlbumsViewInfoComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private albumsService: AlbumsService,
+    private api: ApiService,
     private toastService: ToastService,
     private alertController: AlertController,
     private navController: NavController,
@@ -37,25 +37,23 @@ export class AlbumsViewInfoComponent implements OnInit {
     this.alert?.dismiss();
   }
 
-  async loadAlbum(albumId: string) {
-    this.album = await this.albumsService.loadAlbum(albumId);
+  async loadAlbum(albumId: number) {
+    this.album = await this.api.albums.getAlbum(albumId).then((res) => res.data);
     this.updateActions(this.album);
   }
 
   private async publish() {
-    if (!this.album?._links.publish) return;
-    await this.albumsService.albumAction(this.album?._links.publish);
-    this.album = await this.albumsService.loadAlbum(this.album._id);
+    if (!this.album?._links.unpublishAlbum.allowed) return;
+    await this.api.albums.unpublishAlbum(this.album.id);
+    await this.loadAlbum(this.album.id);
     this.toastService.toast("Publikováno.");
-    this.updateActions(this.album);
   }
 
   private async unpublish() {
-    if (!this.album?._links.unpublish) return;
-    await this.albumsService.albumAction(this.album?._links.unpublish);
-    this.album = await this.albumsService.loadAlbum(this.album._id);
-    this.toastService.toast("Skryto.");
-    this.updateActions(this.album);
+    if (!this.album?._links.publishAlbum.allowed) return;
+    await this.api.albums.publishAlbum(this.album.id);
+    await this.loadAlbum(this.album.id);
+    this.toastService.toast("Publikováno.");
   }
 
   private async delete() {
@@ -73,7 +71,7 @@ export class AlbumsViewInfoComponent implements OnInit {
   private async deleteConfirmed() {
     if (!this.album) return;
 
-    await this.albumsService.deleteAlbum(this.album._id);
+    await this.api.albums.deleteAlbum(this.album.id);
 
     this.toastService.toast("Smazáno.");
     this.router.navigate(["/galerie"], { relativeTo: this.route, replaceUrl: true });
@@ -81,18 +79,18 @@ export class AlbumsViewInfoComponent implements OnInit {
 
   private open() {
     if (!this.album) return;
-    window.open("https://bosan.cz/fotogalerie/" + this.album._id);
+    window.open("https://bosan.cz/fotogalerie/" + this.album.id);
   }
 
-  onPhotoClick(event: CustomEvent<Photo>) {
-    if (event.detail && this.album) {
-      this.navController.navigateForward(`/galerie/${this.album._id}/fotky`, {
-        queryParams: { photo: event.detail._id },
+  onPhotoClick(event: PhotoResponse) {
+    if (this.album) {
+      this.navController.navigateForward(`/galerie/${this.album.id}/fotky`, {
+        queryParams: { photo: event.id },
       });
     }
   }
 
-  private updateActions(album: Album<Photo, string>) {
+  private updateActions(album: AlbumResponse) {
     this.actions = [
       {
         text: "Upravit",

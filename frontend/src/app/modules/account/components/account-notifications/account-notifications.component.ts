@@ -1,10 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { SwPush } from "@angular/service-worker";
+import { UserResponse } from "src/app/api";
 
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
-
-import { User, UserNotification } from "src/app/schema/user";
 
 declare const Notification: any;
 
@@ -14,7 +13,7 @@ declare const Notification: any;
   styleUrls: ["./account-notifications.component.scss"],
 })
 export class AccountNotificationsComponent implements OnInit {
-  user?: User;
+  user?: UserResponse;
 
   notifications = [
     { id: "new-event", name: "Nová událost" },
@@ -23,7 +22,7 @@ export class AccountNotificationsComponent implements OnInit {
     { id: "received-payment", name: "Přijatá platba" },
   ];
 
-  userNotifications: { [id: string]: UserNotification } = {};
+  userNotifications: { [id: string]: any } = {};
 
   systemNotificationStatus: string = "default";
 
@@ -35,24 +34,22 @@ export class AccountNotificationsComponent implements OnInit {
   }
 
   async loadUser() {
-    this.user = await this.api.get<User>("me:user");
+    this.user = await this.api.account.getMe().then((res) => res.data);
     this.updateNotifications();
   }
 
   async subscribe() {
-    const vapidPublicKey = await this.api.getAsText("notifications:key");
-
-    try {
-      const subscription = await this.swPush.requestSubscription({
-        serverPublicKey: vapidPublicKey,
-      });
-
-      await this.api.post("user:subscriptions", subscription);
-
-      this.toastService.toast("Notifikace byly zapnuty.");
-    } catch (err) {
-      this.toastService.toast("Nepodařilo se nastavit notifikace.");
-    }
+    // TODO: notifications
+    // const vapidPublicKey = await this.api.getAsText("notifications:key");
+    // try {
+    //   const subscription = await this.swPush.requestSubscription({
+    //     serverPublicKey: vapidPublicKey,
+    //   });
+    //   await this.api.post("user:subscriptions", subscription);
+    //   this.toastService.toast("Notifikace byly zapnuty.");
+    // } catch (err) {
+    //   this.toastService.toast("Nepodařilo se nastavit notifikace.");
+    // }
   }
 
   async unsubscribe() {

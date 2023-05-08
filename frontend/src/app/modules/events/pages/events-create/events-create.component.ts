@@ -5,7 +5,6 @@ import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 
 import { NgForm } from "@angular/forms";
-import { Event } from "src/app/schema/event";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 @Component({
@@ -34,7 +33,8 @@ export class EventsCreateComponent implements OnInit {
     }
 
     // get data from form
-    let eventData = <Partial<Event>>this.form.value;
+    // TODO: create a typed form
+    let eventData = this.form.value;
 
     // prevent switched date order
     if (eventData.dateFrom && eventData.dateTill) {
@@ -45,19 +45,10 @@ export class EventsCreateComponent implements OnInit {
     }
 
     // create the event and wait for confirmation
-    let response = await this.api.post("events", eventData);
-
-    const location = response.headers.get("location");
-    if (!location) {
-      this.toastService.toast("Chyba při otevírání nové akce.");
-      return;
-    }
-
-    // get the event id
-    let event = await this.api.get<Event>({ href: location }, { select: "_id" });
+    let event = await this.api.events.createEvent(eventData).then((res) => res.data);
     // show the confrmation
     this.toastService.toast("Akce vytvořena a uložena.");
     // open the event
-    this.router.navigate(["/akce/" + event._id + "/upravit"]);
+    this.router.navigate(["/akce/" + event.id + "/upravit"]);
   }
 }

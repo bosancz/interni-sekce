@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { User } from "src/app/schema/user";
+import { UserResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -8,7 +8,7 @@ import { ApiService } from "src/app/services/api.service";
   styleUrls: ["./account.component.scss"],
 })
 export class AccountComponent {
-  user?: User;
+  user?: UserResponse;
 
   modal?: HTMLIonModalElement;
 
@@ -19,6 +19,6 @@ export class AccountComponent {
   }
 
   async loadUser() {
-    this.user = await this.api.get<User>("me:user");
+    this.user = await this.api.account.getMe().then((res) => res.data);
   }
 }

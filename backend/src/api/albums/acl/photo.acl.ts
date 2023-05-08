@@ -4,7 +4,7 @@ import { Photo } from "src/models/albums/entities/photo.entity";
 import { PhotoResponse } from "../dto/photo.dto";
 
 export const PhotosListRoute = new RouteACL<undefined, PhotoResponse[]>({
-  entity: RootResponse,
+  linkEntity: RootResponse,
 
   permissions: {
     vedouci: true,
@@ -15,7 +15,7 @@ export const PhotosListRoute = new RouteACL<undefined, PhotoResponse[]>({
 });
 
 export const PhotoReadRoute = new RouteACL({
-  entity: PhotoResponse,
+  linkEntity: PhotoResponse,
   permissions: {
     vedouci: true,
   },
@@ -28,18 +28,18 @@ export const PhotoCreateRoute = new RouteACL<undefined, PhotoResponse>({
 });
 
 export const PhotoEditRoute = new RouteACL<Photo>({
-  entity: PhotoResponse,
+  linkEntity: PhotoResponse,
   permissions: {
     vedouci: true,
   },
 });
 
 export const PhotoDeleteRoute = new RouteACL<Photo>({
-  entity: PhotoResponse,
+  linkEntity: PhotoResponse,
   inheritPermissions: PhotoEditRoute,
 });
 
 export const PhotoReadFileRoute = new RouteACL({
-  entity: PhotoResponse,
+  linkEntity: PhotoResponse,
   inheritPermissions: PhotoReadRoute,
 });

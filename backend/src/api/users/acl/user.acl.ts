@@ -1,8 +1,11 @@
 import { RouteACL } from "src/access-control/schema/route-acl";
+import { RootResponse } from "src/api/root/dto/root-response";
 import { User } from "src/models/users/entities/user.entity";
 import { UserResponse } from "../dto/user.dto";
 
 export const UsersListRoute = new RouteACL<undefined, UserResponse[]>({
+  linkEntity: RootResponse,
+
   permissions: {
     vedouci: true,
     admin: true,
@@ -18,7 +21,7 @@ export const UserCreateRoute = new RouteACL<undefined, UserResponse>({
 });
 
 export const UserReadRoute = new RouteACL<User>({
-  entity: UserResponse,
+  linkEntity: UserResponse,
 
   permissions: {
     vedouci: true,
@@ -26,7 +29,7 @@ export const UserReadRoute = new RouteACL<User>({
 });
 
 export const UserEditRoute = new RouteACL<User>({
-  entity: UserResponse,
+  linkEntity: UserResponse,
 
   permissions: {
     admin: true,
@@ -34,7 +37,7 @@ export const UserEditRoute = new RouteACL<User>({
 });
 
 export const UserDeleteRoute = new RouteACL<User>({
-  entity: UserResponse,
+  linkEntity: UserResponse,
 
   permissions: {
     admin: true,
@@ -42,7 +45,7 @@ export const UserDeleteRoute = new RouteACL<User>({
 });
 
 export const UserSetPassword = new RouteACL<User>({
-  entity: UserResponse,
+  linkEntity: UserResponse,
 
   permissions: {
     admin: true,
@@ -51,7 +54,7 @@ export const UserSetPassword = new RouteACL<User>({
 });
 
 export const UserImpersonateRoute = new RouteACL<User>({
-  entity: UserResponse,
+  linkEntity: UserResponse,
 
   permissions: {
     admin: true,

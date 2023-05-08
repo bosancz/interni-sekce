@@ -6,7 +6,7 @@ import { EventResponse } from "../dto/event.dto";
 import { EventReadRoute, isMyEvent } from "./events.acl";
 
 export const EventExpensesListRoute = new RouteACL<Event, EventExpenseResponse[]>({
-  entity: EventResponse,
+  linkEntity: EventResponse,
 
   inheritPermissions: EventReadRoute,
 
@@ -19,14 +19,14 @@ export const EventExpensesListRoute = new RouteACL<Event, EventExpenseResponse[]
 });
 
 export const EventExpenseReadRoute = new RouteACL<EventExpense>({
-  entity: EventExpenseResponse,
+  linkEntity: EventExpenseResponse,
   permissions: {
     vedouci: true,
   },
 });
 
 export const EventExpenseCreateRoute = new RouteACL<Event, EventExpense>({
-  entity: EventResponse,
+  linkEntity: EventResponse,
 
   permissions: {
     vedouci: ({ doc, req }) => isMyEvent(doc, req),
@@ -38,7 +38,7 @@ export const EventExpenseCreateRoute = new RouteACL<Event, EventExpense>({
 });
 
 export const EventExpenseEditRoute = new RouteACL<EventExpense>({
-  entity: EventExpenseResponse,
+  linkEntity: EventExpenseResponse,
 
   permissions: {
     vedouci: ({ doc, req }) => isMyEvent(doc.event, req),
@@ -48,7 +48,7 @@ export const EventExpenseEditRoute = new RouteACL<EventExpense>({
 });
 
 export const EventExpenseDeleteRoute = new RouteACL<EventExpense>({
-  entity: EventExpenseResponse,
+  linkEntity: EventExpenseResponse,
   path: (d) => `${d.eventId}/expenses/${d.id}`,
   inheritPermissions: EventExpenseEditRoute,
 });

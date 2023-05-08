@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { DateTime } from "luxon";
+import { EventResponse } from "src/app/api";
 import { EventExpenseType, EventExpenseTypes } from "src/app/config/event-expense-types";
-import { Event } from "src/app/schema/event";
 
 @Component({
   selector: "bo-event-expenses-chart",
@@ -16,7 +16,7 @@ export class EventExpensesChartComponent implements OnInit {
 
   totalByType: { [type: string]: { total: number; type?: EventExpenseType } } = {};
 
-  @Input() set event(event: Event) {
+  @Input() set event(event: EventResponse) {
     const dateFrom = DateTime.fromISO(event.dateFrom).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
     const dateTill = DateTime.fromISO(event.dateTill)
       .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
@@ -33,14 +33,16 @@ export class EventExpensesChartComponent implements OnInit {
       const amount = expense.amount || 0;
       this.total += amount;
 
-      if (!this.totalByType[expense.type]) {
-        this.totalByType[expense.type] = {
-          total: 0,
-          type: EventExpenseTypes[expense.type],
-        };
-      }
+      if (expense.type) {
+        if (!this.totalByType[expense.type]) {
+          this.totalByType[expense.type] = {
+            total: 0,
+            type: EventExpenseTypes[expense.type],
+          };
+        }
 
-      this.totalByType[expense.type]!.total += amount;
+        this.totalByType[expense.type]!.total += amount;
+      }
     });
   }
 

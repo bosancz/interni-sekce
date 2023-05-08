@@ -2,17 +2,16 @@
   <ion-item *ngFor="let photo of photos" [button]="true" [detail]="false" (click)="onPhotoClick(photo, $event)">
     <ion-checkbox *ngIf="selectable" slot="start" [ngModel]="isPhotoChecked(photo)"> </ion-checkbox>
     <ion-avatar slot="start">
-      <img [src]="photo.sizes.small.url" [style.background-color]="photo.bg" />
+      <!-- TODO: correct photo size -->
+      <img [src]="photo._links.getPhotoImage.href" [style.background-color]="photo.bg" />
     </ion-avatar>
 
     <ion-label>
       <h2 [class.nocaption]="!photo.caption">{{ photo.caption || "Bez popisku" }}</h2>
       <p class="row no-gutters info">
-        <span class="col-12 col-lg-4 col-xl-3">Datum: {{ photo.date | date: "d. M. y H:mm:ss" }}</span>
-        <span class="col-12 col-lg-4 col-xl-3 d-none d-lg-block">
-          Velikost: {{ photo.sizes.original.width }}×{{ photo.sizes.original.height }} ({{
-            getMpix(photo.sizes.original.width, photo.sizes.original.height)
-          }}
+        <span class="col-12 col-lg-4 col-xl-3">Datum: {{ photo.timestamp | date : "d. M. y H:mm:ss" }}</span>
+        <span *ngIf="photo.width && photo.height" class="col-12 col-lg-4 col-xl-3 d-none d-lg-block">
+          Velikost: {{ photo.width }}×{{ photo.height }} ({{ getMpix(photo.width, photo.height) }}
           MP)
         </span>
         <span class="col-12 col-lg" [title]="photo.name">Název: {{ photo.name }}</span>
@@ -42,7 +41,8 @@
 <div *ngIf="view === 'grid'" class="grid" [class.selectable]="selectable">
   <div class="square" *ngFor="let photo of photos" [class.checked]="isPhotoChecked(photo)">
     <div class="photo ion-activatable ripple-parent" (click)="onPhotoClick(photo, $event)">
-      <img [src]="photo.sizes.small.url" [style.background-color]="photo.bg" />
+      <!-- TODO: correct photo size -->
+      <img [src]="photo._links.getPhotoImage.href" [style.background-color]="photo.bg" />
       <ion-ripple-effect></ion-ripple-effect>
     </div>
     <ion-checkbox [ngModel]="isPhotoChecked(photo)" (ngModelChange)="onPhotoCheck(photo, $event)"></ion-checkbox>

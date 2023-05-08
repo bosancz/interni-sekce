@@ -1,8 +1,8 @@
 import { Logger, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { Config } from "./config";
+import { registerOpenApi } from "./openapi";
 
 async function bootstrap() {
   const logger = new Logger("MAIN");
@@ -29,18 +29,7 @@ async function bootstrap() {
     app.enableCors(Config.cors.options);
   }
 
-  // OpenAPI
-  const config = new DocumentBuilder()
-    .setTitle(Config.app.name)
-    .setVersion(`v${Config.app.version}`)
-    // .addSecurity("AuthToken", { type: "apiKey", name: "token", in: "query" })
-
-    .build();
-  const document = SwaggerModule.createDocument(app, config, {
-    // ignoreGlobalPrefix: true,
-    operationIdFactory: (controllerKey, methodKey) => methodKey,
-  });
-  SwaggerModule.setup("/api", app, document, { customSiteTitle: `${Config.app.name} API` });
+  registerOpenApi(app);
 
   const port = Config.server.port;
   const host = Config.server.host;

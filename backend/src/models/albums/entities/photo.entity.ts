@@ -3,11 +3,6 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
 import { Album } from "./album.entity";
 import { PhotoFace } from "./photo-face.entity";
 
-export enum AlbumStatus {
-  "public" = "public",
-  "draft" = "draft",
-}
-
 @Entity("photos")
 export class Photo {
   @PrimaryGeneratedColumn()
@@ -30,12 +25,12 @@ export class Photo {
   @OneToMany(() => PhotoFace, (pf) => pf.photo)
   faces?: PhotoFace[];
 
-  @Column({ type: "text", nullable: true }) title!: string | null;
-  @Column({ type: "text", nullable: true }) name!: string | null;
-  @Column({ type: "text", nullable: true }) caption!: string | null;
+  @Column({ type: "text", nullable: false }) name!: string;
+  @Column({ type: "timestamp with time zone", nullable: false }) timestamp!: Date;
   @Column({ type: "integer", nullable: true }) width!: number | null;
   @Column({ type: "integer", nullable: true }) height!: number | null;
-  @Column({ type: "timestamp with time zone", nullable: true }) timestamp!: Date | null;
+  @Column({ type: "text", nullable: true }) title!: string | null;
+  @Column({ type: "text", nullable: true }) caption!: string | null;
   @Column({ type: "varchar", array: true, nullable: true }) tags!: string[] | null;
   @Column({ type: "varchar", nullable: true }) bg!: string | null;
 }

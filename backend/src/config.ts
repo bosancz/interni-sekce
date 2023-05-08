@@ -45,6 +45,7 @@ const app = {
   name: "Bošán - Interní sekce",
   baseUrl: process.env["BASE_URL"] || `http://${server.host}${server.port ? ":" + server.port : ""}${server.baseDir}`,
   version: "0.0.0",
+  environmentTitle: process.env["ENV_TITLE"] ?? environment === "production" ? "" : environment.toUpperCase(),
 };
 
 try {
@@ -71,6 +72,7 @@ const db: DataSourceOptions = {
   namingStrategy: new SnakeNamingStrategy(),
 };
 
+console.log("uri", process.env["MONGODB_URI"]);
 const mongoDb = {
   uri: process.env["MONGODB_URI"] ?? "",
 };

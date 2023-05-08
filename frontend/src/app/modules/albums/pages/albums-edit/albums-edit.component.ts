@@ -3,11 +3,10 @@ import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { NavController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { Album, Photo } from "src/app/schema/album";
-import { Event } from "src/app/schema/event";
+import { AlbumResponse, AlbumUpdateBody, EventResponse } from "src/app/api";
+import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { AlbumsService } from "../../services/albums.service";
 
 @UntilDestroy()
 @Component({
@@ -16,7 +15,7 @@ import { AlbumsService } from "../../services/albums.service";
   styleUrls: ["./albums-edit.component.scss"],
 })
 export class AlbumsEditComponent {
-  album?: Album<Photo, string>;
+  album?: AlbumResponse;
 
   actions: Action[] = [
     {
@@ -28,7 +27,7 @@ export class AlbumsEditComponent {
   @ViewChild("albumForm") albumForm!: NgForm;
 
   constructor(
-    public albumsService: AlbumsService,
+    public api: ApiService,
     private route: ActivatedRoute,
     private router: Router,
     private toastService: ToastService,
@@ -39,11 +38,11 @@ export class AlbumsEditComponent {
     this.route.params.pipe(untilDestroyed(this)).subscribe((params) => this.loadAlbum(params.album));
   }
 
-  private async loadAlbum(albumId: string) {
-    this.album = await this.albumsService.loadAlbum(albumId);
+  private async loadAlbum(albumId: number) {
+    this.album = await this.api.albums.getAlbum(albumId).then((res) => res.data);
   }
 
-  eventUpdated(event: Event) {
+  eventUpdated(event: EventResponse) {
     if (!this.album || !event) return;
 
     this.album.dateFrom = event.dateFrom;
@@ -58,7 +57,7 @@ export class AlbumsEditComponent {
       return;
     }
 
-    let albumData: Partial<Album<string>> = this.albumForm.value;
+    let albumData: AlbumUpdateBody = this.albumForm.value;
 
     // prevent switched date order
     if (albumData.dateFrom && albumData.dateTill) {
@@ -68,10 +67,10 @@ export class AlbumsEditComponent {
       albumData.dateTill = dates[1];
     }
 
-    await this.albumsService.updateAlbum(this.album._id, albumData);
+    await this.api.albums.updateAlbum(this.album.id, albumData);
 
     this.toastService.toast("Uloženo.");
 
-    this.navController.navigateBack(["/galerie", this.album._id]);
+    this.navController.navigateBack(["/galerie", this.album.id]);
   }
 }

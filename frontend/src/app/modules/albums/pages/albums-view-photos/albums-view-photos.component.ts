@@ -2,12 +2,12 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ModalController, Platform, ViewWillLeave } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { AlbumResponse, PhotoResponse } from "src/app/api";
 import { PhotosEditComponent } from "src/app/modules/albums/components/photos-edit/photos-edit.component";
 import { PhotosUploadComponent } from "src/app/modules/albums/components/photos-upload/photos-upload.component";
-import { Album, Photo } from "src/app/schema/album";
+import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { AlbumsService } from "../../services/albums.service";
 
 @UntilDestroy()
 @Component({
@@ -16,9 +16,9 @@ import { AlbumsService } from "../../services/albums.service";
   styleUrls: ["./albums-view-photos.component.scss"],
 })
 export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
-  album?: Album<Photo, string>;
+  album?: AlbumResponse;
 
-  photos?: Photo[];
+  photos?: PhotoResponse[];
 
   actions: Action[] = [];
 
@@ -27,16 +27,16 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
   enableOrdering = false;
   enableDeleting = false;
 
-  oldOrder?: Photo[];
+  oldOrder?: PhotoResponse[];
 
   showCheckboxes = false;
-  selectedPhotos: Photo[] = [];
+  selectedPhotos: PhotoResponse[] = [];
 
   photosModal?: HTMLIonModalElement;
   uploadModal?: HTMLIonModalElement;
 
   constructor(
-    private albumsService: AlbumsService,
+    private api: ApiService,
     public platform: Platform,
     public modalController: ModalController,
     private toastService: ToastService,
@@ -46,12 +46,12 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
 
   ngOnInit(): void {
     this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {
-      if (this.album?._id !== params["album"]) this.loadPhotos(params["album"]);
+      if (this.album?.id !== params["album"]) this.loadPhotos(params["album"]);
     });
 
     this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => {
       if (params.photo && !this.photosModal) {
-        const photo = this.photos?.find((item) => item._id);
+        const photo = this.photos?.find((item) => item.id);
         if (photo) this.openPhoto(photo);
       }
       if (!params.photo && this.photosModal) {
@@ -65,29 +65,29 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
     this.uploadModal?.dismiss();
   }
 
-  async loadPhotos(albumId: string) {
-    this.album = await this.albumsService.loadAlbum(albumId);
+  async loadPhotos(albumId: number) {
+    this.album = await this.api.albums.getAlbum(albumId).then((res) => res.data);
     this.actions = this.getActions(this.album);
 
-    this.photos = await this.albumsService.getPhotos(albumId);
+    this.photos = await this.api.albums.getAlbumPhotos(albumId).then((res) => res.data);
 
     if (this.route.snapshot.queryParams["photo"] && !this.photosModal) {
-      const photo = this.photos?.find((item) => item._id);
+      const photo = this.photos?.find((item) => item.id);
       if (photo) this.openPhoto(photo);
     }
   }
 
   private async saveAlbum() {}
 
-  onPhotoClick(event: CustomEvent<Photo | undefined>) {
+  onPhotoClick(event: CustomEvent<PhotoResponse | undefined>) {
     if (this.enableDeleting || this.enableOrdering) return;
 
     if (!event.detail) return;
 
-    this.router.navigate([], { queryParams: { photo: event.detail._id } });
+    this.router.navigate([], { queryParams: { photo: event.detail.id } });
   }
 
-  async openPhoto(photo: Photo) {
+  async openPhoto(photo: PhotoResponse) {
     if (this.photosModal) this.photosModal.dismiss();
 
     const originalCount = this.photos?.length;
@@ -104,14 +104,14 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
     this.photosModal.onWillDismiss().then(() => {
       this.photosModal = undefined;
 
-      if (this.photos?.length !== originalCount) this.loadPhotos(this.album!._id); // album must be present when closing modal
+      if (this.photos?.length !== originalCount) this.loadPhotos(this.album!.id); // album must be present when closing modal
     });
 
     this.photosModal.present();
   }
 
   orderByDate() {
-    this.photos?.sort((a, b) => a.date.localeCompare(b.date));
+    this.photos?.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
   }
 
   orderByName() {
@@ -187,10 +187,10 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
     const toast = await this.toastService.toast("Mažu fotky...");
 
     for (let photo of this.selectedPhotos) {
-      await this.albumsService.deletePhoto(photo._id);
+      await this.api.albums.deletePhoto(photo.id);
     }
 
-    await this.loadPhotos(this.album!._id); // wouldnt be able to delete photos if no album was present
+    await this.loadPhotos(this.album!.id); // wouldnt be able to delete photos if no album was present
 
     toast.dismiss();
     this.toastService.toast("Fotky smazány");
@@ -208,7 +208,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
     });
 
     this.uploadModal.onDidDismiss().then((event) => {
-      if (event.data) this.loadPhotos(this.album!._id);
+      if (event.data) this.loadPhotos(this.album!.id);
     });
 
     this.uploadModal.present();
@@ -217,20 +217,22 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
   private async saveOrdering() {
     if (!this.album || !this.photos) return;
 
-    const data: Pick<Album<string>, "photos"> = {
-      photos: this.photos.map((photo) => photo._id),
-    };
+    // TODO: vymyslet jak se bude ukládat řazení fotek!!!
 
-    await this.albumsService.updateAlbum(this.album._id, data);
+    // const data: Pick<AlbumResponse, "photos"> = {
+    //   photos: this.photos.map((photo) => photo.id),
+    // };
 
-    await this.loadPhotos(this.album._id);
+    // await this.albumsService.updateAlbum(this.album.id, data);
 
-    this.oldOrder = undefined;
+    // await this.loadPhotos(this.album.id);
 
-    this.toastService.toast("Uloženo.");
+    // this.oldOrder = undefined;
+
+    // this.toastService.toast("Uloženo.");
   }
 
-  private getActions(album: Album<Photo, string>): Action[] {
+  private getActions(album: AlbumResponse): Action[] {
     return [
       {
         text: "Seřadit",

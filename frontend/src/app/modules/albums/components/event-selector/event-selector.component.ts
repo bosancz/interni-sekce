@@ -11,8 +11,7 @@ import {
 } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { ModalController } from "@ionic/angular";
-
-import { Event } from "src/app/schema/event";
+import { EventResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { EventSelectorModalComponent } from "../event-selector-modal/event-selector-modal.component";
 
@@ -29,16 +28,16 @@ import { EventSelectorModalComponent } from "../event-selector-modal/event-selec
   ],
 })
 export class EventSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {
-  value?: Event["_id"] | null;
-  event?: Event;
+  value?: EventResponse["id"] | null;
+  event?: EventResponse;
 
   @Input() placeholder?: string;
-  @Output("event") eventOutput = new EventEmitter<Event>();
+  @Output("event") eventOutput = new EventEmitter<EventResponse>();
 
   modal?: HTMLIonModalElement;
 
   /* ControlValueAccessor */
-  onChange?: (value: Event["_id"] | null) => void;
+  onChange?: (value: EventResponse["id"] | null) => void;
   onTouched?: () => void;
 
   focused = false;
@@ -94,7 +93,7 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
     this.modal.present();
   }
 
-  private async updateValue(value: Event["_id"] | null) {
+  private async updateValue(value: EventResponse["id"] | null) {
     if (value === this.value) return;
 
     this.value = value;
@@ -105,16 +104,16 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
     this.emitIonStyle();
   }
 
-  private async loadEvent(eventId: Event["_id"]) {
-    return this.api.get<Event>(["event", eventId]);
+  private async loadEvent(eventId: EventResponse["id"]) {
+    return this.api.events.getEvent(eventId).then((res) => res.data);
   }
 
   /* ControlValueAccessor */
-  writeValue(obj?: Event["_id"] | null): void {
+  writeValue(obj?: EventResponse["id"] | null): void {
     this.updateValue(obj || null);
   }
 
-  registerOnChange(fn: (value: Event["_id"] | null) => void): void {
+  registerOnChange(fn: (value: EventResponse["id"] | null) => void): void {
     this.onChange = fn;
   }
 

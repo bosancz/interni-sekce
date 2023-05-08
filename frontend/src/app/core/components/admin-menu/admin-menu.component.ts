@@ -35,7 +35,7 @@ export class AdminMenuComponent implements OnInit {
 
   async logout() {
     await this.loginService.logout();
-    if (this.userService.userSnapshot?._id) {
+    if (this.userService.userSnapshot?.id) {
       this.navController.navigateRoot("/");
     } else {
       this.navController.navigateRoot("/login");

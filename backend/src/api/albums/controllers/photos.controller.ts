@@ -12,7 +12,7 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
@@ -25,7 +25,7 @@ import {
   PhotoReadRoute,
   PhotosListRoute,
 } from "../acl/photo.acl";
-import { PhotoEditBody, PhotoResponse, PhotoSizes, PhotosListResponse } from "../dto/photo.dto";
+import { PhotoCreateBody, PhotoResponse, PhotoSizes, PhotoUpdateBody, PhotosListResponse } from "../dto/photo.dto";
 
 @Controller("photos")
 @AcController()
@@ -47,8 +47,10 @@ export class PhotosController {
   @Post()
   @AcLinks(PhotoCreateRoute)
   @UseInterceptors(FileInterceptor("file"))
-  createPhoto(@UploadedFile() file: Express.Multer.File) {
-    console.log(file);
+  @ApiBody({ type: PhotoCreateBody })
+  createPhoto(@UploadedFile() file: Express.Multer.File, @Body() body: PhotoCreateBody) {
+    //TODO:
+    console.log(body, file);
   }
 
   @Get(":id")
@@ -67,7 +69,7 @@ export class PhotosController {
   @Patch(":id")
   @AcLinks(PhotoEditRoute)
   @ApiResponse({ status: 204 })
-  async updatePhoto(@Param("id") id: number, @Req() req: Request, @Body() body: PhotoEditBody): Promise<void> {
+  async updatePhoto(@Param("id") id: number, @Req() req: Request, @Body() body: PhotoUpdateBody): Promise<void> {
     const photo = await this.photosService.repository.findOneBy({ id });
 
     if (!photo) throw new NotFoundException();

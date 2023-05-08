@@ -11,9 +11,14 @@ import {
 } from "@angular/core";
 import { PhotoResponse } from "src/app/api";
 
+interface PhotoRowItem {
+  photo: PhotoResponse;
+  ratio: number;
+}
+
 class PhotoRow {
   height: number = 0;
-  photos: PhotoResponse[] = [];
+  photos: PhotoRowItem[] = [];
 }
 
 @Component({
@@ -67,12 +72,15 @@ export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChange
 
       // add photos to row, stop when first photo over limit
       while (rowWidth <= this.width && (photo = photos.shift())) {
-        rowWidth += this.maxHeight * (photo.width / photo.height);
+        const ratio = photo.width && photo.height ? photo.width / photo.height : 3 / 2;
+        rowWidth += this.maxHeight * ratio;
         if (row.photos.length) rowWidth += this.margin;
-        row.photos.push(photo);
+        row.photos.push({ photo, ratio });
       }
 
-      const totalMaxWidth = row.photos.reduce((acc, cur) => acc + this.maxHeight * (cur.width / cur.height), 0);
+      const totalMaxWidth = row.photos.reduce((acc, cur) => {
+        return acc + this.maxHeight * cur.ratio;
+      }, 0);
 
       const availableWidth = this.width - (row.photos.length - 1) * this.margin;
 

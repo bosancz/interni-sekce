@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button [defaultHref]="'/akce/' + event?._id"></ion-back-button>
+      <ion-back-button [defaultHref]="'/akce/' + event?.id"></ion-back-button>
     </ion-buttons>
     <ion-title pageTitle>Upravit: {{ event?.name }}</ion-title>
     <ion-buttons slot="end">
@@ -46,20 +46,22 @@
         </ion-item>
       </div>
 
-      <ng-container ngModelGroup="meeting">
-        <div class="col-12 col-lg-4">
-          <ion-item class="w-100">
-            <ion-label position="floating">Sraz</ion-label>
-            <ion-input name="start" [ngModel]="event.meeting!.start" placeholder="17:00, u Bilba doma"></ion-input>
-          </ion-item>
-        </div>
-        <div class="col-12 col-lg-4">
-          <ion-item class="w-100">
-            <ion-label position="floating">Konec</ion-label>
-            <ion-input name="end" [ngModel]="event.meeting!.end" placeholder="3:00, tamtéž"></ion-input>
-          </ion-item>
-        </div>
-      </ng-container>
+      <div class="col-12 col-lg-4">
+        <ion-item class="w-100">
+          <ion-label position="floating">Sraz</ion-label>
+          <ion-input
+            name="meetingPlaceStart"
+            [ngModel]="event.meetingPlaceStart"
+            placeholder="17:00, u Bilba doma"
+          ></ion-input>
+        </ion-item>
+      </div>
+      <div class="col-12 col-lg-4">
+        <ion-item class="w-100">
+          <ion-label position="floating">Konec</ion-label>
+          <ion-input name="meetingPlaceEnd" [ngModel]="event.meetingPlaceEnd" placeholder="3:00, tamtéž"></ion-input>
+        </ion-item>
+      </div>
     </div>
 
     <ion-item>
@@ -69,7 +71,7 @@
 
     <ion-item>
       <ion-label position="floating" class="w-100">Charakter akce</ion-label>
-      <event-subtype-selector [ngModel]="event.subtype" name="subtype"></event-subtype-selector>
+      <event-subtype-selector [ngModel]="event.type" name="type"></event-subtype-selector>
     </ion-item>
 
     <ion-item class="w-100">

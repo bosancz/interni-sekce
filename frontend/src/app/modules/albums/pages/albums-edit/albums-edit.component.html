@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button [defaultHref]="album ? '/galerie/' + album._id : undefined"></ion-back-button>
+      <ion-back-button [defaultHref]="album ? '/galerie/' + album.id : undefined"></ion-back-button>
     </ion-buttons>
     <ion-title pageTitle>Upravit: {{ album?.name }}</ion-title>
     <ion-buttons slot="end">
@@ -43,7 +43,7 @@
           <ion-label position="stacked">Datum od</ion-label>
           <ion-input
             type="date"
-            [ngModel]="album?.dateFrom | date: 'yyyy-MM-dd'"
+            [ngModel]="album?.dateFrom | date : 'yyyy-MM-dd'"
             name="dateFrom"
             placeholder="Začátek"
             required
@@ -56,7 +56,7 @@
           <ion-label position="stacked">Datum do</ion-label>
           <ion-input
             type="date"
-            [ngModel]="album?.dateTill | date: 'yyyy-MM-dd'"
+            [ngModel]="album?.dateTill | date : 'yyyy-MM-dd'"
             name="dateTill"
             placeholder="Konec"
             required
@@ -69,7 +69,7 @@
           <ion-label position="stacked">Publikováno</ion-label>
           <ion-input
             type="date"
-            [ngModel]="album?.datePublished | date: 'yyyy-MM-dd'"
+            [ngModel]="album?.datePublished | date : 'yyyy-MM-dd'"
             name="datePublished"
             placeholder="Pubikováno"
             required

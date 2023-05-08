@@ -4,7 +4,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { transliterate } from "inflected";
 import { BehaviorSubject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
-import { Album } from "src/app/schema/album";
+import { AlbumCreateBody, AlbumResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -16,8 +16,8 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./albums-list.component.scss"],
 })
 export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
-  albums: Album[] = [];
-  filteredAlbums: Album[] = [];
+  albums: AlbumResponse[] = [];
+  filteredAlbums: AlbumResponse[] = [];
 
   searchIndex: string[] = [];
 
@@ -68,10 +68,12 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
   private async loadAlbums() {
     this.albums = [];
 
-    const albums = await this.api.get<Album[]>("albums");
+    const albums = await this.api.albums.listAlbums().then((res) => res.data);
 
     albums.sort((a, b) => {
-      return a?.status.localeCompare(b.status) || b.dateFrom?.localeCompare(a.dateFrom) || 0;
+      return (
+        a.status.localeCompare(b.status) || (a.dateFrom && b.dateFrom && b.dateFrom?.localeCompare(a.dateFrom)) || 0
+      );
     });
 
     this.searchIndex = albums.map((album) => {
@@ -82,7 +84,7 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
     this.filteredAlbums = this.filterAlbums(this.albums, this.searchString.value);
   }
 
-  private filterAlbums(albums: Album[], searchString: string) {
+  private filterAlbums(albums: AlbumResponse[], searchString: string) {
     if (!searchString) return albums;
 
     const search_re = new RegExp("(^| )" + transliterate(searchString).replace(/[^a-zA-Z0-9]/g, ""), "i");
@@ -102,7 +104,7 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
         { role: "cancel", text: "Zrušit" },
         {
           text: "Vytvořit",
-          handler: (data: Partial<Pick<Album, "name" | "dateFrom" | "dateTill">>) => this.onCreateAlbum(data),
+          handler: (data: AlbumCreateBody) => this.onCreateAlbum(data),
         },
       ],
     });
@@ -110,7 +112,7 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
     await this.alert.present();
   }
 
-  private onCreateAlbum(albumData: Partial<Pick<Album, "name" | "dateFrom" | "dateTill">>) {
+  private onCreateAlbum(albumData: AlbumCreateBody) {
     // prevent switched date order
     if (albumData.dateFrom && albumData.dateTill) {
       const dates = [albumData.dateFrom, albumData.dateTill];
@@ -124,25 +126,17 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
       return false;
     }
 
-    this.createAlbum(<Pick<Album, "name" | "dateFrom" | "dateTill">>albumData);
+    this.createAlbum(albumData);
   }
 
-  private async createAlbum(albumData: Pick<Album, "name" | "dateFrom" | "dateTill">) {
+  private async createAlbum(albumData: AlbumCreateBody) {
     if (!albumData.name || !albumData.dateFrom || !albumData.dateTill) {
       this.toastService.toast("Musíš vyplnit jméno i datumy");
       return false;
     }
 
-    const response = await this.api.post("albums", albumData);
+    const album = await this.api.albums.createAlbum(albumData).then((res) => res.data);
 
-    const location = response.headers.get("location");
-    if (!location) {
-      this.toastService.toast("Chyba při otevírání nového alba.");
-      return;
-    }
-
-    const album = await this.api.get<Album>({ href: location });
-
-    await this.navController.navigateForward("/galerie/" + album._id);
+    await this.navController.navigateForward("/galerie/" + album.id);
   }
 }

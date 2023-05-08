@@ -4,7 +4,7 @@ import { Member } from "src/models/members/entities/member.entity";
 import { MemberResponse } from "../dto/member.dto";
 
 export const MembersRoute = new RouteACL<Member, Member[]>({
-  entity: RootResponse,
+  linkEntity: RootResponse,
 
   permissions: {
     vedouci: true,
@@ -13,28 +13,28 @@ export const MembersRoute = new RouteACL<Member, Member[]>({
 });
 
 export const MemberCreateRoute = new RouteACL<undefined>({
-  entity: MemberResponse,
+  linkEntity: MemberResponse,
   permissions: {
     vedouci: true,
   },
 });
 
 export const MemberRoute = new RouteACL<Member>({
-  entity: MemberResponse,
+  linkEntity: MemberResponse,
   permissions: {
     vedouci: true,
   },
 });
 
 export const MemberUpdateRoute = new RouteACL<Member>({
-  entity: MemberResponse,
+  linkEntity: MemberResponse,
   permissions: {
     vedouci: true,
   },
 });
 
 export const MemberDeleteRoute = new RouteACL<Member>({
-  entity: MemberResponse,
+  linkEntity: MemberResponse,
   permissions: {
     vedouci: true,
   },

@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { AlertController } from "@ionic/angular";
-import { User } from "src/app/schema/user";
+import { UserResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 
@@ -10,7 +10,7 @@ import { ToastService } from "src/app/services/toast.service";
   styleUrls: ["./account-credentials.component.scss"],
 })
 export class AccountCredentialsComponent implements OnInit {
-  user?: User;
+  user?: UserResponse;
 
   constructor(private api: ApiService, private toastService: ToastService, private alertController: AlertController) {}
 
@@ -19,13 +19,13 @@ export class AccountCredentialsComponent implements OnInit {
   }
 
   async loadUser() {
-    this.user = await this.api.get<User>("me:user");
+    this.user = await this.api.account.getMe().then((res) => res.data);
   }
 
   async updateCredentials(credentials: { login: string; password: string }) {
     if (!this.user) return;
 
-    await this.api.put(this.user._links.credentials, credentials);
+    await this.api.users.setUserPassword(this.user.id, credentials);
 
     this.toastService.toast("Uloženo.");
   }

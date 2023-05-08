@@ -1,9 +1,9 @@
 import { Component, HostListener, Input, NgZone, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, IonInput, ModalController, Platform, ViewWillLeave } from "@ionic/angular";
-import { Photo } from "src/app/schema/photo";
+import { PhotoResponse } from "src/app/api";
+import { ApiService } from "src/app/services/api.service";
 import Swiper, { SwiperOptions } from "swiper";
-import { AlbumsService } from "../../services/albums.service";
 
 @Component({
   selector: "bo-photos-edit",
@@ -11,8 +11,8 @@ import { AlbumsService } from "../../services/albums.service";
   styleUrls: ["./photos-edit.component.scss"],
 })
 export class PhotosEditComponent implements ViewWillLeave {
-  photo?: Photo;
-  @Input() photos!: Photo[];
+  photo?: PhotoResponse;
+  @Input() photos!: PhotoResponse[];
 
   editingCaption = false;
 
@@ -30,7 +30,7 @@ export class PhotosEditComponent implements ViewWillLeave {
 
   constructor(
     private modalController: ModalController,
-    private albumsService: AlbumsService,
+    private api: ApiService,
     private alertController: AlertController,
     private route: ActivatedRoute,
     private router: Router,
@@ -45,9 +45,9 @@ export class PhotosEditComponent implements ViewWillLeave {
   onSwiper(swiper: Swiper) {
     this.swiper = swiper;
     const photoId = this.route.snapshot.queryParams["photo"];
-    const index = this.photos.findIndex((item) => item._id === photoId);
+    const index = this.photos.findIndex((item) => item.id === photoId);
 
-    if (!this.photo || this.photo._id !== photoId) {
+    if (!this.photo || this.photo.id !== photoId) {
       this.swiper?.slideTo(index, 0);
     }
     console.log();
@@ -62,7 +62,7 @@ export class PhotosEditComponent implements ViewWillLeave {
       this.currentIndex = swiper.activeIndex;
       this.photo = this.photos[this.currentIndex];
 
-      this.router.navigate([], { queryParams: { photo: this.photo._id }, replaceUrl: true });
+      this.router.navigate([], { queryParams: { photo: this.photo.id }, replaceUrl: true });
     });
   }
 
@@ -121,14 +121,14 @@ export class PhotosEditComponent implements ViewWillLeave {
     value = String(value);
     this.photo!.caption = value;
     this.editingCaption = false;
-    await this.albumsService.savePhoto(this.photo!._id, { caption: value });
+    await this.api.albums.updatePhoto(this.photo!.id, { caption: value });
   }
 
   async close() {
     await this.modalController.dismiss();
   }
 
-  async delete(photo: Photo) {
+  async delete(photo: PhotoResponse) {
     const alert = await this.alertController.create({
       header: "Smazat fotku",
       message: "Chcete opravdu smazat tuto fotku?",
@@ -141,10 +141,10 @@ export class PhotosEditComponent implements ViewWillLeave {
     alert.present();
   }
 
-  async deleteConfirmed(photo: Photo) {
-    await this.albumsService.deletePhoto(photo._id);
+  async deleteConfirmed(photo: PhotoResponse) {
+    await this.api.albums.deletePhoto(photo.id);
 
-    const i = this.photos.findIndex((item) => item._id === photo._id);
+    const i = this.photos.findIndex((item) => item.id === photo.id);
     this.photos.splice(i, 1);
 
     if (!this.photos.length) this.modalController.dismiss({ refresh: true });
@@ -153,7 +153,7 @@ export class PhotosEditComponent implements ViewWillLeave {
 
       this.photo = this.photos[newI];
 
-      this.router.navigate([], { queryParams: { photo: this.photo._id }, replaceUrl: true });
+      this.router.navigate([], { queryParams: { photo: this.photo.id }, replaceUrl: true });
 
       this.openPhoto(newI);
     }

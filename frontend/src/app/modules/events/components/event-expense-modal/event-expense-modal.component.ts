@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { ModalController, Platform } from "@ionic/angular";
+import { EventExpenseResponse } from "src/app/api";
 import { EventExpenseTypes } from "src/app/config/event-expense-types";
-import { EventExpense } from "src/app/schema/event";
 
 @Component({
   selector: "bo-event-expense-modal",
@@ -9,7 +9,7 @@ import { EventExpense } from "src/app/schema/event";
   styleUrls: ["./event-expense-modal.component.scss"],
 })
 export class EventExpenseModalComponent implements OnInit {
-  @Input() expense!: EventExpense;
+  @Input() expense!: EventExpenseResponse;
 
   types = EventExpenseTypes;
 
@@ -17,7 +17,7 @@ export class EventExpenseModalComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  async save(expense: EventExpense) {
+  async save(expense: EventExpenseResponse) {
     await this.modalController.dismiss({ expense });
   }
 

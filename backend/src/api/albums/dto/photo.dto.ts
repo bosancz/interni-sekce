@@ -22,16 +22,16 @@ export class PhotoResponse {
   @ApiProperty() id!: number;
 
   @ApiProperty() albumId!: number;
-  @ApiProperty() width!: number;
-  @ApiProperty() height!: number;
+  @ApiProperty({ type: "string" }) timestamp!: string | Date;
+  @ApiProperty() name!: string;
 
-  @ApiPropertyOptional() uploadedById!: number | null;
-  @ApiPropertyOptional() title!: string | null;
-  @ApiPropertyOptional() name!: string | null;
-  @ApiPropertyOptional() caption!: string | null;
-  @ApiPropertyOptional() timestamp!: Date | null;
-  @ApiPropertyOptional() tags!: string[] | null;
-  @ApiPropertyOptional() bg!: string | null;
+  @ApiPropertyOptional({ type: "number" }) width!: number | null;
+  @ApiPropertyOptional({ type: "number" }) height!: number | null;
+  @ApiPropertyOptional({ type: "number" }) uploadedById!: number | null;
+  @ApiPropertyOptional({ type: "string" }) title!: string | null;
+  @ApiPropertyOptional({ type: "string" }) caption!: string | null;
+  @ApiPropertyOptional({ type: "string", isArray: true }) tags!: string[] | null;
+  @ApiPropertyOptional({ type: "string" }) bg!: string | null;
 
   // @ApiPropertyOptional() faces?: PhotoFace[] | null;
   @ApiPropertyOptional({ type: AlbumResponse }) album?: Album | undefined;
@@ -42,4 +42,8 @@ export class PhotoResponse {
 
 export class PhotosListResponse extends PickType(PhotoResponse, ["id", "name", "title", "albumId"]) {}
 
-export class PhotoEditBody extends PickType(PhotoResponse, ["caption", "tags", "title"]) {}
+export class PhotoCreateBody extends PickType(PhotoResponse, ["albumId"]) {
+  @ApiProperty({ type: "string", format: "binary" }) file!: any;
+}
+
+export class PhotoUpdateBody extends PickType(PhotoResponse, ["caption", "tags", "title"]) {}

@@ -21,5 +21,7 @@ class RootResponseLinks implements AcLinksObject<LinkNames> {
 
 export class RootResponse {
   @ApiProperty() version!: string;
+  @ApiProperty() environmentTitle!: string;
+
   @ApiProperty({ type: RootResponseLinks }) _links!: RootResponseLinks;
 }

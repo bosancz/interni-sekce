@@ -3,7 +3,7 @@ import { User } from "src/models/users/entities/user.entity";
 import { AccountResponse } from "../dto/account.dto";
 
 export const AccountReadRoute = new RouteACL<User>({
-  entity: AccountResponse,
+  linkEntity: AccountResponse,
 
   permissions: {
     uzivatel: true,

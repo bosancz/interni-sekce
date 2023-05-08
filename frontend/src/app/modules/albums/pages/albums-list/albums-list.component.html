@@ -31,11 +31,11 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let album of filteredAlbums" [routerLink]="album._id">
+      <tr *ngFor="let album of filteredAlbums" [routerLink]="'' + album.id">
         <td>{{ album.name }}</td>
-        <td class="date">{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }}</td>
+        <td class="date">{{ album.dateFrom | date : "d. M. y" }} - {{ album.dateTill | date : "d. M. y" }}</td>
         <td>{{ statusesIndex[album.status] || "N/A" }}</td>
-        <td>{{ album.datePublished | date: "d. M. y" }}</td>
+        <td>{{ album.datePublished | date : "d. M. y" }}</td>
       </tr>
 
       <ng-container *ngIf="!albums?.length">

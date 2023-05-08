@@ -57,58 +57,39 @@ export interface AcLink {
 /**
  * 
  * @export
- * @interface AlbumEditBody
+ * @interface AlbumCreateBody
  */
-export interface AlbumEditBody {
+export interface AlbumCreateBody {
     /**
      * 
      * @type {string}
-     * @memberof AlbumEditBody
+     * @memberof AlbumCreateBody
      */
     'name'?: string;
     /**
      * 
      * @type {object}
-     * @memberof AlbumEditBody
+     * @memberof AlbumCreateBody
      */
     'description'?: object;
     /**
      * 
      * @type {object}
-     * @memberof AlbumEditBody
+     * @memberof AlbumCreateBody
      */
     'datePublished'?: object;
     /**
      * 
      * @type {object}
-     * @memberof AlbumEditBody
+     * @memberof AlbumCreateBody
      */
     'dateFrom'?: object;
     /**
      * 
      * @type {object}
-     * @memberof AlbumEditBody
+     * @memberof AlbumCreateBody
      */
     'dateTill'?: object;
-    /**
-     * 
-     * @type {object}
-     * @memberof AlbumEditBody
-     */
-    'eventId'?: object;
-}
-/**
- * 
- * @export
- * @interface AlbumLinks
- */
-export interface AlbumLinks {
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof AlbumLinks
-     */
-    'album:read'?: AcLink;
 }
 /**
  * 
@@ -178,10 +159,96 @@ export interface AlbumResponse {
     'photos'?: Array<PhotoResponse>;
     /**
      * 
-     * @type {AlbumLinks}
+     * @type {AlbumResponseLinks}
      * @memberof AlbumResponse
      */
-    '_links': AlbumLinks;
+    '_links': AlbumResponseLinks;
+}
+/**
+ * 
+ * @export
+ * @interface AlbumResponseLinks
+ */
+export interface AlbumResponseLinks {
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof AlbumResponseLinks
+     */
+    'deleteAlbum': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof AlbumResponseLinks
+     */
+    'getAlbum': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof AlbumResponseLinks
+     */
+    'getAlbumPhotos': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof AlbumResponseLinks
+     */
+    'publishAlbum': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof AlbumResponseLinks
+     */
+    'unpublishAlbum': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof AlbumResponseLinks
+     */
+    'updateAlbum': AcLink;
+}
+/**
+ * 
+ * @export
+ * @interface AlbumUpdateBody
+ */
+export interface AlbumUpdateBody {
+    /**
+     * 
+     * @type {string}
+     * @memberof AlbumUpdateBody
+     */
+    'name'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof AlbumUpdateBody
+     */
+    'description'?: object;
+    /**
+     * 
+     * @type {object}
+     * @memberof AlbumUpdateBody
+     */
+    'datePublished'?: object;
+    /**
+     * 
+     * @type {object}
+     * @memberof AlbumUpdateBody
+     */
+    'dateFrom'?: object;
+    /**
+     * 
+     * @type {object}
+     * @memberof AlbumUpdateBody
+     */
+    'dateTill'?: object;
+    /**
+     * 
+     * @type {object}
+     * @memberof AlbumUpdateBody
+     */
+    'eventId'?: object;
 }
 /**
  * 
@@ -207,6 +274,24 @@ export interface AlbumsListResponse {
      * @memberof AlbumsListResponse
      */
     'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AlbumsListResponse
+     */
+    'dateFrom'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AlbumsListResponse
+     */
+    'dateTill'?: string;
+    /**
+     * 
+     * @type {AlbumResponseLinks}
+     * @memberof AlbumsListResponse
+     */
+    '_links': AlbumResponseLinks;
 }
 /**
  * 
@@ -1392,27 +1477,21 @@ export interface PadlersTotalsResponse {
 /**
  * 
  * @export
- * @interface PhotoEditBody
+ * @interface PhotoCreateBody
  */
-export interface PhotoEditBody {
+export interface PhotoCreateBody {
     /**
      * 
-     * @type {object}
-     * @memberof PhotoEditBody
+     * @type {number}
+     * @memberof PhotoCreateBody
      */
-    'title'?: object;
+    'albumId': number;
     /**
      * 
-     * @type {object}
-     * @memberof PhotoEditBody
+     * @type {File}
+     * @memberof PhotoCreateBody
      */
-    'caption'?: object;
-    /**
-     * 
-     * @type {object}
-     * @memberof PhotoEditBody
-     */
-    'tags'?: object;
+    'file': File;
 }
 /**
  * 
@@ -1434,58 +1513,58 @@ export interface PhotoResponse {
     'albumId': number;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof PhotoResponse
      */
-    'width': number;
+    'timestamp': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PhotoResponse
+     */
+    'name': string;
     /**
      * 
      * @type {number}
      * @memberof PhotoResponse
      */
-    'height': number;
+    'width'?: number;
     /**
      * 
-     * @type {object}
+     * @type {number}
      * @memberof PhotoResponse
      */
-    'uploadedById'?: object;
+    'height'?: number;
     /**
      * 
-     * @type {object}
+     * @type {number}
      * @memberof PhotoResponse
      */
-    'title'?: object;
+    'uploadedById'?: number;
     /**
      * 
-     * @type {object}
+     * @type {string}
      * @memberof PhotoResponse
      */
-    'name'?: object;
+    'title'?: string;
     /**
      * 
-     * @type {object}
+     * @type {string}
      * @memberof PhotoResponse
      */
-    'caption'?: object;
+    'caption'?: string;
     /**
      * 
-     * @type {object}
+     * @type {Array<string>}
      * @memberof PhotoResponse
      */
-    'timestamp'?: object;
+    'tags'?: Array<string>;
     /**
      * 
-     * @type {object}
+     * @type {string}
      * @memberof PhotoResponse
      */
-    'tags'?: object;
-    /**
-     * 
-     * @type {object}
-     * @memberof PhotoResponse
-     */
-    'bg'?: object;
+    'bg'?: string;
     /**
      * 
      * @type {object}
@@ -1521,6 +1600,31 @@ export interface PhotoResponseLinks {
 /**
  * 
  * @export
+ * @interface PhotoUpdateBody
+ */
+export interface PhotoUpdateBody {
+    /**
+     * 
+     * @type {string}
+     * @memberof PhotoUpdateBody
+     */
+    'title'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PhotoUpdateBody
+     */
+    'caption'?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof PhotoUpdateBody
+     */
+    'tags'?: Array<string>;
+}
+/**
+ * 
+ * @export
  * @interface PhotosListResponse
  */
 export interface PhotosListResponse {
@@ -1538,16 +1642,16 @@ export interface PhotosListResponse {
     'albumId': number;
     /**
      * 
-     * @type {object}
+     * @type {string}
      * @memberof PhotosListResponse
      */
-    'title'?: object;
+    'name': string;
     /**
      * 
-     * @type {object}
+     * @type {string}
      * @memberof PhotosListResponse
      */
-    'name'?: object;
+    'title'?: string;
 }
 /**
  * 
@@ -1561,6 +1665,12 @@ export interface RootResponse {
      * @memberof RootResponse
      */
     'version': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RootResponse
+     */
+    'environmentTitle': string;
     /**
      * 
      * @type {RootResponseLinks}
@@ -1833,10 +1943,10 @@ export interface UserResponse {
     'loginCode'?: string;
     /**
      * 
-     * @type {ModelDate}
+     * @type {string}
      * @memberof UserResponse
      */
-    'loginCodeExp'?: ModelDate;
+    'loginCodeExp'?: string;
     /**
      * 
      * @type {Array<string>}
@@ -4586,10 +4696,48 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
     return {
         /**
          * 
+         * @param {AlbumCreateBody} albumCreateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPhoto: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createAlbum: async (albumCreateBody: AlbumCreateBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'albumCreateBody' is not null or undefined
+            assertParamExists('createAlbum', 'albumCreateBody', albumCreateBody)
+            const localVarPath = `/api/albums`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(albumCreateBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {PhotoCreateBody} photoCreateBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPhoto: async (photoCreateBody: PhotoCreateBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'photoCreateBody' is not null or undefined
+            assertParamExists('createPhoto', 'photoCreateBody', photoCreateBody)
             const localVarPath = `/api/photos`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4604,9 +4752,12 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
 
 
     
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(photoCreateBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4689,6 +4840,39 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getAlbum', 'id', id)
             const localVarPath = `/api/albums/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAlbumPhotos: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getAlbumPhotos', 'id', id)
+            const localVarPath = `/api/albums/{id}/photos`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4843,15 +5027,81 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
         /**
          * 
          * @param {number} id 
-         * @param {AlbumEditBody} albumEditBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateAlbum: async (id: number, albumEditBody: AlbumEditBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        publishAlbum: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('publishAlbum', 'id', id)
+            const localVarPath = `/api/albums/{id}/publish`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        unpublishAlbum: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('unpublishAlbum', 'id', id)
+            const localVarPath = `/api/albums/{id}/unpublish`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {AlbumUpdateBody} albumUpdateBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateAlbum: async (id: number, albumUpdateBody: AlbumUpdateBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateAlbum', 'id', id)
-            // verify required parameter 'albumEditBody' is not null or undefined
-            assertParamExists('updateAlbum', 'albumEditBody', albumEditBody)
+            // verify required parameter 'albumUpdateBody' is not null or undefined
+            assertParamExists('updateAlbum', 'albumUpdateBody', albumUpdateBody)
             const localVarPath = `/api/albums/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -4872,7 +5122,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(albumEditBody, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(albumUpdateBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4882,15 +5132,15 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
         /**
          * 
          * @param {number} id 
-         * @param {PhotoEditBody} photoEditBody 
+         * @param {PhotoUpdateBody} photoUpdateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePhoto: async (id: number, photoEditBody: PhotoEditBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updatePhoto: async (id: number, photoUpdateBody: PhotoUpdateBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updatePhoto', 'id', id)
-            // verify required parameter 'photoEditBody' is not null or undefined
-            assertParamExists('updatePhoto', 'photoEditBody', photoEditBody)
+            // verify required parameter 'photoUpdateBody' is not null or undefined
+            assertParamExists('updatePhoto', 'photoUpdateBody', photoUpdateBody)
             const localVarPath = `/api/photos/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -4911,7 +5161,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(photoEditBody, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(photoUpdateBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -4930,11 +5180,22 @@ export const PhotoGalleryApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {AlbumCreateBody} albumCreateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPhoto(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPhoto(options);
+        async createAlbum(albumCreateBody: AlbumCreateBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AlbumResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createAlbum(albumCreateBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {PhotoCreateBody} photoCreateBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createPhoto(photoCreateBody: PhotoCreateBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPhoto(photoCreateBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -4965,6 +5226,16 @@ export const PhotoGalleryApiFp = function(configuration?: Configuration) {
          */
         async getAlbum(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AlbumResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAlbum(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAlbumPhotos(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PhotoResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAlbumPhotos(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5009,23 +5280,43 @@ export const PhotoGalleryApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {number} id 
-         * @param {AlbumEditBody} albumEditBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateAlbum(id: number, albumEditBody: AlbumEditBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateAlbum(id, albumEditBody, options);
+        async publishAlbum(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.publishAlbum(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * 
          * @param {number} id 
-         * @param {PhotoEditBody} photoEditBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updatePhoto(id: number, photoEditBody: PhotoEditBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePhoto(id, photoEditBody, options);
+        async unpublishAlbum(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.unpublishAlbum(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {AlbumUpdateBody} albumUpdateBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateAlbum(id: number, albumUpdateBody: AlbumUpdateBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateAlbum(id, albumUpdateBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {PhotoUpdateBody} photoUpdateBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updatePhoto(id: number, photoUpdateBody: PhotoUpdateBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePhoto(id, photoUpdateBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -5040,11 +5331,21 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
     return {
         /**
          * 
+         * @param {AlbumCreateBody} albumCreateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPhoto(options?: any): AxiosPromise<void> {
-            return localVarFp.createPhoto(options).then((request) => request(axios, basePath));
+        createAlbum(albumCreateBody: AlbumCreateBody, options?: any): AxiosPromise<AlbumResponse> {
+            return localVarFp.createAlbum(albumCreateBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {PhotoCreateBody} photoCreateBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPhoto(photoCreateBody: PhotoCreateBody, options?: any): AxiosPromise<void> {
+            return localVarFp.createPhoto(photoCreateBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -5072,6 +5373,15 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
          */
         getAlbum(id: number, options?: any): AxiosPromise<AlbumResponse> {
             return localVarFp.getAlbum(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAlbumPhotos(id: number, options?: any): AxiosPromise<Array<PhotoResponse>> {
+            return localVarFp.getAlbumPhotos(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -5111,22 +5421,40 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
         /**
          * 
          * @param {number} id 
-         * @param {AlbumEditBody} albumEditBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateAlbum(id: number, albumEditBody: AlbumEditBody, options?: any): AxiosPromise<void> {
-            return localVarFp.updateAlbum(id, albumEditBody, options).then((request) => request(axios, basePath));
+        publishAlbum(id: number, options?: any): AxiosPromise<void> {
+            return localVarFp.publishAlbum(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @param {number} id 
-         * @param {PhotoEditBody} photoEditBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePhoto(id: number, photoEditBody: PhotoEditBody, options?: any): AxiosPromise<void> {
-            return localVarFp.updatePhoto(id, photoEditBody, options).then((request) => request(axios, basePath));
+        unpublishAlbum(id: number, options?: any): AxiosPromise<void> {
+            return localVarFp.unpublishAlbum(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {AlbumUpdateBody} albumUpdateBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateAlbum(id: number, albumUpdateBody: AlbumUpdateBody, options?: any): AxiosPromise<void> {
+            return localVarFp.updateAlbum(id, albumUpdateBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {PhotoUpdateBody} photoUpdateBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePhoto(id: number, photoUpdateBody: PhotoUpdateBody, options?: any): AxiosPromise<void> {
+            return localVarFp.updatePhoto(id, photoUpdateBody, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -5140,12 +5468,24 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
 export class PhotoGalleryApi extends BaseAPI {
     /**
      * 
+     * @param {AlbumCreateBody} albumCreateBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
      */
-    public createPhoto(options?: AxiosRequestConfig) {
-        return PhotoGalleryApiFp(this.configuration).createPhoto(options).then((request) => request(this.axios, this.basePath));
+    public createAlbum(albumCreateBody: AlbumCreateBody, options?: AxiosRequestConfig) {
+        return PhotoGalleryApiFp(this.configuration).createAlbum(albumCreateBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {PhotoCreateBody} photoCreateBody 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PhotoGalleryApi
+     */
+    public createPhoto(photoCreateBody: PhotoCreateBody, options?: AxiosRequestConfig) {
+        return PhotoGalleryApiFp(this.configuration).createPhoto(photoCreateBody, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -5179,6 +5519,17 @@ export class PhotoGalleryApi extends BaseAPI {
      */
     public getAlbum(id: number, options?: AxiosRequestConfig) {
         return PhotoGalleryApiFp(this.configuration).getAlbum(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PhotoGalleryApi
+     */
+    public getAlbumPhotos(id: number, options?: AxiosRequestConfig) {
+        return PhotoGalleryApiFp(this.configuration).getAlbumPhotos(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -5227,25 +5578,47 @@ export class PhotoGalleryApi extends BaseAPI {
     /**
      * 
      * @param {number} id 
-     * @param {AlbumEditBody} albumEditBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
      */
-    public updateAlbum(id: number, albumEditBody: AlbumEditBody, options?: AxiosRequestConfig) {
-        return PhotoGalleryApiFp(this.configuration).updateAlbum(id, albumEditBody, options).then((request) => request(this.axios, this.basePath));
+    public publishAlbum(id: number, options?: AxiosRequestConfig) {
+        return PhotoGalleryApiFp(this.configuration).publishAlbum(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @param {number} id 
-     * @param {PhotoEditBody} photoEditBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
      */
-    public updatePhoto(id: number, photoEditBody: PhotoEditBody, options?: AxiosRequestConfig) {
-        return PhotoGalleryApiFp(this.configuration).updatePhoto(id, photoEditBody, options).then((request) => request(this.axios, this.basePath));
+    public unpublishAlbum(id: number, options?: AxiosRequestConfig) {
+        return PhotoGalleryApiFp(this.configuration).unpublishAlbum(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {AlbumUpdateBody} albumUpdateBody 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PhotoGalleryApi
+     */
+    public updateAlbum(id: number, albumUpdateBody: AlbumUpdateBody, options?: AxiosRequestConfig) {
+        return PhotoGalleryApiFp(this.configuration).updateAlbum(id, albumUpdateBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {PhotoUpdateBody} photoUpdateBody 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PhotoGalleryApi
+     */
+    public updatePhoto(id: number, photoUpdateBody: PhotoUpdateBody, options?: AxiosRequestConfig) {
+        return PhotoGalleryApiFp(this.configuration).updatePhoto(id, photoUpdateBody, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

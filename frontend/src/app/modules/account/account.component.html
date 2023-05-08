@@ -33,8 +33,8 @@
       <ion-label>Člen skupiny:</ion-label>
       <ion-label *ngIf="user?.member">
         <strong>Přezdívka:</strong>&nbsp;{{ user?.member?.nickname }}<br />
-        <strong>Jméno:</strong>&nbsp;{{ user?.member?.name?.first }} {{ user?.member?.name?.last }}<br />
-        <strong>Oddíl:</strong>&nbsp;{{ user?.member?.group | group: "name" }}
+        <strong>Jméno:</strong>&nbsp;{{ user?.member?.firstName }} {{ user?.member?.lastName }}<br />
+        <strong>Oddíl:</strong>&nbsp;{{ user?.member?.groupId | group : "name" }}
       </ion-label>
       <ion-label *ngIf="!user?.member"><i>Nespárováno s členským účtem</i></ion-label>
     </ion-item>

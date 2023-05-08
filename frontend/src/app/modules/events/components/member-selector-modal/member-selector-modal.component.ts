@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { IonSearchbar, ModalController, ViewDidEnter } from "@ionic/angular";
 import { MemberResponse } from "src/app/api";
-import { Member } from "src/app/schema/member";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -65,7 +64,7 @@ export class MemberSelectorModalComponent implements OnInit, ViewDidEnter {
     });
   }
 
-  close(member?: Member) {
+  close(member?: MemberResponse) {
     this.modalController.dismiss({ member: member });
   }
 }

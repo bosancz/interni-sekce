@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ModalController } from "@ionic/angular";
-import { Event } from "src/app/schema/event";
+import { EventResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -9,7 +9,7 @@ import { ApiService } from "src/app/services/api.service";
   styleUrls: ["./event-selector-modal.component.scss"],
 })
 export class EventSelectorModalComponent implements OnInit {
-  events: Event[] = [];
+  events: EventResponse[] = [];
 
   constructor(private api: ApiService, private modalController: ModalController) {}
 
@@ -24,10 +24,11 @@ export class EventSelectorModalComponent implements OnInit {
       limit: 20,
     };
 
-    this.events = await this.api.get<Event[]>("events", params);
+    // TODO: use params
+    this.events = await this.api.events.listEvents().then((res) => res.data);
   }
 
-  close(eventId?: Event["_id"]) {
+  close(eventId?: EventResponse["id"]) {
     this.modalController.dismiss({ event: eventId });
   }
 }

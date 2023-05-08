@@ -12,6 +12,7 @@ registerLocaleData(localeCs, "cs");
 @NgModule({
   declarations: [NotFoundComponent, LoginComponent, AdminMenuComponent],
   imports: [CommonModule, SharedModule],
+  exports: [AdminMenuComponent],
   providers: [],
 })
 export class CoreModule {}

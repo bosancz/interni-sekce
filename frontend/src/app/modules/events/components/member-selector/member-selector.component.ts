@@ -1,11 +1,11 @@
 import { AfterViewInit, Component, ElementRef, forwardRef, Input, OnDestroy, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { ModalController } from "@ionic/angular";
-import { Member } from "src/app/schema/member";
+import { MemberResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { MemberSelectorModalComponent } from "../member-selector-modal/member-selector-modal.component";
 
-export type MemberSelectorType = Member | Member[] | null;
+export type MemberSelectorType = MemberResponse | MemberResponse[] | null;
 
 @Component({
   selector: "bo-member-selector",
@@ -23,9 +23,9 @@ export type MemberSelectorType = Member | Member[] | null;
   },
 })
 export class MemberSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {
-  value: Member[] = [];
+  value: MemberResponse[] = [];
 
-  @Input() members!: Member[];
+  @Input() members!: MemberResponse[];
 
   @Input() placeholder?: string;
   @Input() multiple: boolean | string = false;
@@ -99,14 +99,14 @@ export class MemberSelectorComponent implements OnInit, ControlValueAccessor, Af
     this.modal.present();
   }
 
-  addMember(member: Member) {
-    const i = this.value.findIndex((item) => item._id === member._id);
+  addMember(member: MemberResponse) {
+    const i = this.value.findIndex((item) => item.id === member.id);
     if (i !== -1) return;
     return this.updateValue([...this.value, member]);
   }
 
-  removeMember(member: Member) {
-    const i = this.value.findIndex((item) => item._id === member._id);
+  removeMember(member: MemberResponse) {
+    const i = this.value.findIndex((item) => item.id === member.id);
     if (i === -1) return;
 
     const members = this.value.slice();

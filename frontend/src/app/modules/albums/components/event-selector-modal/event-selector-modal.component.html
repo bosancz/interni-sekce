@@ -7,7 +7,7 @@
 
 <ion-content>
   <ion-list>
-    <ion-item *ngFor="let event of events" [button]="true" (click)="close(event._id)">
+    <ion-item *ngFor="let event of events" [button]="true" (click)="close(event.id)">
       <ion-label>
         <h3>{{ event.name }}</h3>
         <p>{{ [event.dateFrom, event.dateTill] | dateRange }}</p>

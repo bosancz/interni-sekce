@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { ItemReorderEventDetail } from "@ionic/core";
-import { Photo } from "src/app/schema/photo";
+import { PhotoResponse } from "src/app/api";
 
 @Component({
   selector: "bo-photo-list",
@@ -8,16 +8,16 @@ import { Photo } from "src/app/schema/photo";
   styleUrls: ["./photo-list.component.scss"],
 })
 export class PhotoListComponent implements OnInit {
-  @Input() photos?: Photo[];
+  @Input() photos?: PhotoResponse[];
   @Input() view: "list" | "grid" = "grid";
 
   @Input() selectable: boolean = false;
   @Input() sortable: boolean = false;
 
-  @Input() selected: Photo[] = [];
-  @Output() selectedChange = new EventEmitter<Photo[]>();
+  @Input() selected: PhotoResponse[] = [];
+  @Output() selectedChange = new EventEmitter<PhotoResponse[]>();
 
-  @Output() click = new EventEmitter<CustomEvent<Photo | undefined>>();
+  @Output() click = new EventEmitter<CustomEvent<PhotoResponse | undefined>>();
 
   loadingPhotos?: any[] = Array(5).fill(true);
 
@@ -34,7 +34,7 @@ export class PhotoListComponent implements OnInit {
     return Math.round((width * height) / 1000000);
   }
 
-  onPhotoClick(photo: Photo, event: MouseEvent) {
+  onPhotoClick(photo: PhotoResponse, event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -47,11 +47,11 @@ export class PhotoListComponent implements OnInit {
     }
   }
 
-  isPhotoChecked(photo: Photo) {
+  isPhotoChecked(photo: PhotoResponse) {
     return this.selected.indexOf(photo) !== -1;
   }
 
-  onPhotoCheck(photo: Photo, isChecked: boolean) {
+  onPhotoCheck(photo: PhotoResponse, isChecked: boolean) {
     console.log("onPhotoCheck", isChecked);
     const i = this.selected.indexOf(photo);
 

@@ -7,6 +7,7 @@ import { HomeCardMembersComponent } from "./components/home-card-members/home-ca
 import { HomeCardMyEventsComponent } from "./components/home-card-my-events/home-card-my-events.component";
 import { HomeCardTitleComponent } from "./components/home-card-title/home-card-title.component";
 import { HomeCardComponent } from "./components/home-card/home-card.component";
+import { HomeMemberSearchComponent } from "./components/home-member-search/home-member-search.component";
 import { HomeMenuComponent } from "./components/home-menu/home-menu.component";
 import { NoleaderEventsComponent } from "./components/noleader-events/noleader-events.component";
 import { HomeRoutingModule } from "./home-routing.module";
@@ -25,6 +26,7 @@ import { HomeMyEventsComponent } from "./pages/home-my-events/home-my-events.com
     HomeCardComponent,
     HomeCardTitleComponent,
     HomeCardContentComponent,
+    HomeMemberSearchComponent,
   ],
   imports: [CommonModule, HomeRoutingModule, SharedModule],
 })
