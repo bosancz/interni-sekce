@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import axios from "axios";
 import { BehaviorSubject } from "rxjs";
-import { mergeMap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import {
   APIApi,
@@ -13,7 +12,6 @@ import {
   StatisticsApi,
   UsersApi,
 } from "../api";
-import { UserService } from "./user.service";
 
 export type ApiEndpoints = RootResponseLinks;
 
@@ -33,9 +31,11 @@ export class ApiService {
 
   endpoints = new BehaviorSubject<ApiEndpoints | null>(null);
 
-  constructor(private userService: UserService) {
-    this.userService.user
-      .pipe(mergeMap(() => this.api.getApiInfo().then((res) => res.data._links)))
-      .subscribe(this.endpoints);
+  constructor() {
+  }
+
+  async reloadEndpoints() {
+    const endpoints = await this.api.getApiInfo().then((res) => res.data._links);
+    this.endpoints.next(endpoints);
   }
 }

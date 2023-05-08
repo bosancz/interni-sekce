@@ -1,5 +1,5 @@
 <ion-app>
-  <ion-split-pane contentId="content" [when]="splitPaneWhen">
+  <ion-split-pane *ngIf="user | async" contentId="content" [when]="splitPaneWhen">
     <ion-menu contentId="content">
       <ion-header>
         <ion-toolbar>
@@ -22,4 +22,10 @@
 
     <ion-router-outlet id="content"></ion-router-outlet>
   </ion-split-pane>
+
+  <ion-content *ngIf="(user | async) === null">
+    <bo-login></bo-login>
+
+    <div class="version text-center text-muted small mt-5">Verze {{ version }}</div>
+  </ion-content>
 </ion-app>

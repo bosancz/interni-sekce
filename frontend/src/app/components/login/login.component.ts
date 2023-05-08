@@ -6,7 +6,7 @@ import { map } from "rxjs/operators";
 import { LoginService } from "src/app/services/login.service";
 
 @Component({
-  selector: "login",
+  selector: "bo-login",
   templateUrl: "./login.component.html",
   styleUrls: ["./login.component.scss"],
 })

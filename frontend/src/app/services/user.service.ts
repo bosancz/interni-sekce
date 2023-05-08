@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
-import { ReplaySubject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 
 import { ApiService } from "src/app/services/api.service";
 
+import axios from "axios";
 import { UserResponse } from "../api";
 /**
  * Service to save user information and commnicate user data with server
@@ -11,12 +12,10 @@ import { UserResponse } from "../api";
   providedIn: "root",
 })
 export class UserService {
-  userSnapshot: UserResponse | null = null;
-
-  user: ReplaySubject<UserResponse | null> = new ReplaySubject(1);
+  user = new BehaviorSubject<UserResponse | null | undefined>(undefined);
 
   constructor(private api: ApiService) {
-    this.user.subscribe((user) => (this.userSnapshot = user));
+    this.loadUser();
   }
 
   async loadUser() {
@@ -24,8 +23,8 @@ export class UserService {
       const user = await this.api.account.getMe().then((res) => res.data);
       this.user.next(user);
       return user;
-    } catch (err: any) {
-      if (err.status === 404 || err.status === 401) this.user.next(null);
+    } catch (err) {
+      if (axios.isAxiosError(err) && [404, 401, 403].includes(err.response?.status!)) this.user.next(null);
       else throw err;
     }
   }

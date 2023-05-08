@@ -6,14 +6,15 @@ import { IonicModule, IonicRouteStrategy, isPlatform } from "@ionic/angular";
 import { environment } from "src/environments/environment";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
-import { CoreModule } from "./core/core.module";
+import { AdminMenuComponent } from "./components/admin-menu/admin-menu.component";
+import { LoginComponent } from "./components/login/login.component";
 import { MainErrorHandler } from "./error-handlers/main.error-handler";
+import { NotFoundComponent } from "./pages/not-found/not-found.component";
 import { SharedModule } from "./shared/shared.module";
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, AdminMenuComponent, LoginComponent, NotFoundComponent],
   imports: [
-    CoreModule,
     SharedModule,
     AppRoutingModule,
     BrowserAnimationsModule,

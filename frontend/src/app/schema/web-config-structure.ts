@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { WebConfig } from "src/app/schema/web-config";
-import { Codelist } from "../core/components/codelist-editor/codelist-editor.component";
+import { Codelist } from "../components/codelist-editor/codelist-editor.component";
 
 export interface WebConfigStructureItemDef<U> {
   name: U;
