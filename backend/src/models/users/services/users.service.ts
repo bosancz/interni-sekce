@@ -8,7 +8,7 @@ export class UsersService {
   constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
 
   async listUsers() {
-    return this.userRepository.find({ relations: ["member", "group"] });
+    return this.userRepository.find({ relations: ["member", "member.group"] });
   }
 
   async createUser(data: Partial<User>) {

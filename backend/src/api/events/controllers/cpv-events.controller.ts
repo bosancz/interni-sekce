@@ -6,11 +6,11 @@ import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-lin
 import { CPVEventsListRoute } from "../acl/cpv-events.acl";
 import { CPVEventResponse } from "../dto/cpv-event.dto";
 
-@Controller("events")
+@Controller("cpv-events")
 @AcController()
 @ApiTags("Events")
 export class CPVEventsController {
-  @Get("cpv")
+  @Get("")
   @AcLinks(CPVEventsListRoute)
   @ApiResponse({ type: CPVEventResponse, isArray: true })
   async getCPVEvents(@Req() req: Request): Promise<Omit<CPVEventResponse, "_links">[]> {

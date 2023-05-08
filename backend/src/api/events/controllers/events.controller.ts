@@ -17,8 +17,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
-import { UserToken } from "src/auth/decorators/user-token.decorator";
-import { UserTokenData } from "src/auth/schema/user-token-data";
+import { Token } from "src/auth/decorators/token.decorator";
+import { UserToken } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
@@ -126,7 +126,7 @@ export class EventsController {
   @HttpCode(204)
   @AcLinks(EventLeadRoute)
   @ApiResponse({ status: 204 })
-  async leadEvent(@Req() req: Request, @Param("id") id: number, @UserToken() token: UserTokenData): Promise<void> {
+  async leadEvent(@Req() req: Request, @Param("id") id: number, @Token() token: UserToken): Promise<void> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 

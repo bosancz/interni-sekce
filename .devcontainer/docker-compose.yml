@@ -10,6 +10,7 @@ services:
     networks:
       - default
     environment:
+      ENV_TITLE: "DEV"
       DB_HOST: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-postgres
       DB_USER: postgres
       DB_PASSWORD: password

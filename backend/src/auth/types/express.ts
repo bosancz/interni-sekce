@@ -1,4 +1,4 @@
-import { UserTokenData } from "../schema/user-token-data";
+import { UserToken } from "../schema/user-token";
 
 // to make the file a module and avoid the TypeScript error
 export {};
@@ -6,7 +6,8 @@ export {};
 declare global {
   namespace Express {
     export interface Request {
-      user?: UserTokenData;
+      user?: UserToken;
+      token?: string;
     }
   }
 }

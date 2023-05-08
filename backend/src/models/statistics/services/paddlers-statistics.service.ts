@@ -22,7 +22,7 @@ export class PaddlersStatisticsService {
             .select("ea.member_id,SUM(events.water_km) as water_km")
             .from(EventAttendee, "ea")
             .leftJoin("ea.event", "e")
-            .where("YEAR(e.dateFrom) = :year", { year })
+            .where("EXTRACT(YEAR FROM e.dateFrom) = :year", { year })
             .groupBy("member_id"),
         "km",
         "m.id = km.member_id",
@@ -42,7 +42,7 @@ export class PaddlersStatisticsService {
   async getPaddlersTotals() {
     const years = await this.eventsRepository
       .createQueryBuilder("e")
-      .select("DISTINCT YEAR(e.dateFrom) as year")
+      .select("DISTINCT EXTRACT(YEAR FROM e.dateFrom) as year")
       .getRawMany<{ year: number }>()
       .then((rows) => rows.map((r) => r.year));
 

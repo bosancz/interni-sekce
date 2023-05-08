@@ -33,7 +33,7 @@ export class MongoImportService {
   ) {}
 
   async importData() {
-    console.log("Mongo import started.");
+    this.logger.log("Mongo import started.");
 
     await this.entityManager.transaction(async (t) => {
       const memberIds = await this.importMembers(t);

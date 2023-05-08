@@ -1,13 +1,13 @@
 import { Injectable, NestMiddleware } from "@nestjs/common";
 import { Request, Response } from "express";
-import { AuthService } from "../services/auth.service";
+import { TokenService } from "../services/token.service";
 
 @Injectable()
 export class TokenMiddleware implements NestMiddleware {
-  constructor(private authService: AuthService) {}
+  constructor(private tokenService: TokenService) {}
 
-  use(req: Request, res: Response, next: () => void) {
-    this.authService.parseToken(req);
+  async use(req: Request, res: Response, next: () => void) {
+    await this.tokenService.parseToken(req);
     next();
   }
 }

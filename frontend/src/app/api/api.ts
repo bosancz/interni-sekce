@@ -2802,7 +2802,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
          * @throws {RequiredError}
          */
         getCPVEvents: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/events/cpv`;
+            const localVarPath = `/api/cpv-events`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

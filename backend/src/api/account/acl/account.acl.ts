@@ -7,5 +7,7 @@ export const AccountReadRoute = new RouteACL<User>({
 
   permissions: {
     uzivatel: true,
+    admin: true,
+    verejnost: true,
   },
 });

@@ -59,12 +59,12 @@ export class EventsService {
   }
 
   async getEventsYears() {
-    return this.eventsRepository
+    const q = this.eventsRepository
       .createQueryBuilder("events")
       .distinct(true)
-      .select("YEAR(events.dateFrom) AS year")
-      .getRawMany<{ year: number }>()
-      .then((res) => res.map((r) => r.year));
+      .select("EXTRACT('YEAR' FROM events.dateFrom) AS year");
+
+    return q.getRawMany<{ year: number }>().then((res) => res.map((r) => r.year));
   }
 
   async getEventLeaders(id: number) {

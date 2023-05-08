@@ -32,7 +32,7 @@ export class AlbumsController {
   async listAlbums(@Req() req: Request): Promise<ResponseData<AlbumsListResponse>[]> {
     return await this.albumsService.repository
       .createQueryBuilder("albums")
-      .select(["albums.id", "albums.name", "albums.status", "album.dateFrom", "album.dateTill"])
+      .select(["albums.id", "albums.name", "albums.status", "albums.dateFrom", "albums.dateTill"])
       .where(AlbumsListRoute.canWhere(req))
       .getRawMany<AlbumsListResponse>();
   }
