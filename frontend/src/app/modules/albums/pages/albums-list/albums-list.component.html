@@ -38,7 +38,7 @@
         <td>{{ album.datePublished | date : "d. M. y" }}</td>
       </tr>
 
-      <ng-container *ngIf="!albums?.length">
+      <ng-container *ngIf="albums === undefined">
         <tr *ngFor="let item of loadingArray">
           <td><ion-skeleton-text animated></ion-skeleton-text></td>
           <td><ion-skeleton-text animated style="width: 40%"></ion-skeleton-text></td>

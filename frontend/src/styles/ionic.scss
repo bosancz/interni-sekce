@@ -44,8 +44,13 @@ ion-split-pane {
 
 ion-menu {
   --ion-background-color: #eee;
+  --ion-item-background: #eee;
 }
 
-body.dark ion-menu {
-  --ion-background-color: #1e1e1e;
+body.dark {
+  --ion-backdrop-color: #fff;
+  ion-menu {
+    --ion-item-background: #1e1e1e;
+    --ion-background-color: #1e1e1e;
+  }
 }

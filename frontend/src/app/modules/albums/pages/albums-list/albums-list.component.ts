@@ -16,7 +16,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./albums-list.component.scss"],
 })
 export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
-  albums: AlbumResponse[] = [];
+  albums?: AlbumResponse[];
   filteredAlbums: AlbumResponse[] = [];
 
   searchIndex: string[] = [];
@@ -53,7 +53,7 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
       .pipe(untilDestroyed(this))
       .pipe(debounceTime(250))
       .subscribe((searchString) => {
-        this.filteredAlbums = this.filterAlbums(this.albums, searchString);
+        this.filteredAlbums = this.filterAlbums(this.albums ?? [], searchString);
       });
   }
 
@@ -66,7 +66,7 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
   }
 
   private async loadAlbums() {
-    this.albums = [];
+    this.albums = undefined;
 
     const albums = await this.api.albums.listAlbums().then((res) => res.data);
 

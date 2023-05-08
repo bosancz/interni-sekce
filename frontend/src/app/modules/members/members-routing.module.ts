@@ -1,23 +1,22 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { MembersViewComponent } from './views/members-view/members-view.component';
-import { MembersListComponent } from './views/members-list/members-list.component';
-import { MembersEditComponent } from './views/members-edit/members-edit.component';
-import { MembersCreateComponent } from './views/members-create/members-create.component';
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
+import { MembersCreateComponent } from "./pages/members-create/members-create.component";
+import { MembersEditComponent } from "./pages/members-edit/members-edit.component";
+import { MembersListComponent } from "./pages/members-list/members-list.component";
+import { MembersViewComponent } from "./pages/members-view/members-view.component";
 
 const routes: Routes = [
+  { path: "pridat", component: MembersCreateComponent },
 
-  { path: 'pridat', component: MembersCreateComponent },
+  { path: ":member/upravit", component: MembersEditComponent },
 
-  { path: ':member/upravit', component: MembersEditComponent },
+  { path: ":member", component: MembersViewComponent },
 
-  { path: ':member', component: MembersViewComponent },
-
-  { path: '', component: MembersListComponent },
+  { path: "", component: MembersListComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class MembersRoutingModule { }
+export class MembersRoutingModule {}

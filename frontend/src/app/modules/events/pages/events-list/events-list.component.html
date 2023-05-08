@@ -73,7 +73,7 @@
         </td>
       </tr>
 
-      <ng-container *ngIf="!events?.length">
+      <ng-container *ngIf="events === undefined">
         <tr *ngFor="let item of loadingArray">
           <td><ion-skeleton-text animated></ion-skeleton-text></td>
           <td><ion-skeleton-text animated></ion-skeleton-text></td>

@@ -64,7 +64,12 @@ export class EventsListComponent implements ViewWillEnter {
   }
 
   async loadEvents(filter: any) {
-    if (!filter.year) return;
+    if (!filter.year) {
+      this.events = [];
+      return;
+    }
+
+    this.events = undefined;
 
     const options: any = {
       sort: "dateFrom",

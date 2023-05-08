@@ -3,8 +3,6 @@
 
 @import "node_modules/bootstrap/scss/bootstrap.scss";
 
-@media (prefers-color-scheme: dark) {
-  .table {
-    color: #fff;
-  }
+.table {
+  color: var(--colorDark);
 }
