@@ -4,11 +4,11 @@ import { TitleService } from "src/app/services/title.service";
 import { Action } from "../action-buttons/action-buttons.component";
 
 @Component({
-  selector: "bo-page-title",
-  templateUrl: "./page-title.component.html",
-  styleUrls: ["./page-title.component.scss"],
+  selector: "bo-page-header",
+  templateUrl: "./page-header.component.html",
+  styleUrls: ["./page-header.component.scss"],
 })
-export class PageTitleComponent implements OnChanges, ViewDidEnter, ViewWillLeave {
+export class PageHeaderComponent implements OnChanges, ViewDidEnter, ViewWillLeave {
   @Input() actions?: Action[];
 
   @Input() title?: string;
