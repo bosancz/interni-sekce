@@ -1,16 +1,6 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/akce"></ion-back-button>
-    </ion-buttons>
-    <ion-title pageTitle>{{ event?.name }}</ion-title>
-    <ion-buttons slot="end">
-      <bo-action-buttons [actions]="actions" [header]="event?.name || 'Akce'"></bo-action-buttons>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<bo-page-header [title]="event?.name" [actions]="actions" backUrl="/akce"></bo-page-header>
 
-<ion-content class="ion-padding" [ngSwitch]="view">
+<bo-page-content [padding]="true" [ngSwitch]="view">
   <ng-container *ngIf="!event">
     <h1><ion-skeleton-text></ion-skeleton-text></h1>
     <p><ion-skeleton-text></ion-skeleton-text></p>
@@ -19,8 +9,6 @@
   <ng-container *ngIf="event">
     <div class="row">
       <div class="order-last order-lg-first col-12 col-lg-8">
-        <h1>{{ event.name }}</h1>
-
         <h3 class="mt-4">Účastníci</h3>
         <div class="attendees">
           <ion-chip
@@ -51,4 +39,4 @@
       </div>
     </div>
   </ng-container>
-</ion-content>
+</bo-page-content>

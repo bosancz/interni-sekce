@@ -93,7 +93,8 @@ export class EventsViewRegistrationComponent {
     this.actions = [
       {
         text: "Stáhnout",
-        hidden: !event._links.getEventRegistration.allowed,
+        hidden: !event._links.getEventRegistration.applicable,
+        disabled: !event._links.getEventRegistration.allowed,
         handler: () => this.downloadRegistration(),
       },
       {
