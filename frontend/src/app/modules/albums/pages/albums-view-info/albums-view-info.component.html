@@ -1,16 +1,6 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/galerie"></ion-back-button>
-    </ion-buttons>
-    <ion-title pageTitle>{{ album?.name }}</ion-title>
-    <ion-buttons slot="end">
-      <bo-action-buttons [actions]="actions" header="Album"></bo-action-buttons>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<bo-page-title [title]="album?.name" [actions]="actions" actionsHeader="Album" backUrl="/galerie"></bo-page-title>
 
-<ion-content class="ion-padding">
+<bo-page-content [padding]="true">
   <h2>{{ album?.name }}</h2>
 
   <p *ngIf="album?.dateFrom && album?.dateTill">
@@ -29,6 +19,6 @@
       (click)="onPhotoClick($event)"
     ></bo-photo-gallery>
   </div>
-</ion-content>
+</bo-page-content>
 
 <bo-albums-tabs [album]="album" selected="info"></bo-albums-tabs>

@@ -4,21 +4,20 @@ import { NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { IonicModule } from "@ionic/angular";
+import SwiperCore, { Navigation } from "swiper";
 import { SwiperModule } from "swiper/angular";
-/* COMPONENTS */
 import { ActionButtonsComponent } from "./components/action-buttons/action-buttons.component";
 import { AdminTableComponent } from "./components/admin-table/admin-table.component";
+import { DotComponent } from "./components/dot/dot.component";
 import { EventCalendarComponent } from "./components/event-calendar/event-calendar.component";
 import { EventCardComponent } from "./components/event-card/event-card.component";
 import { EventStatusBadgeComponent } from "./components/event-status-badge/event-status-badge.component";
 import { GroupsSelectComponent } from "./components/groups-select/groups-select.component";
 import { MemberItemDetailComponent } from "./components/member-item-detail/member-item-detail.component";
+import { PageContentComponent } from "./components/page-content/page-content.component";
+import { PageTitleComponent } from "./components/page-title/page-title.component";
 import { PhotoFaceComponent } from "./components/photo-face/photo-face.component";
 import { PhotoGalleryComponent } from "./components/photo-gallery/photo-gallery.component";
-/* DIRECTIVES */
-/* PIPES */
-import SwiperCore, { Navigation } from "swiper";
-import { DotComponent } from "./components/dot/dot.component";
 import { AgePipe } from "./pipes/age.pipe";
 import { DateRangePipe } from "./pipes/date-range.pipe";
 import { EventStatusPipe } from "./pipes/event-status.pipe";
@@ -34,58 +33,50 @@ SwiperCore.use([Navigation]);
 @NgModule({
   imports: [CommonModule, FormsModule, RouterModule, HttpClientModule, IonicModule, SwiperModule],
   declarations: [
-    AdminTableComponent,
-    GroupsSelectComponent,
-    EventStatusBadgeComponent,
     ActionButtonsComponent,
-
-    EventCardComponent,
-    PhotoFaceComponent,
-    EventCalendarComponent,
-    PhotoGalleryComponent,
-    MemberItemDetailComponent,
-
-    /* PIPES */
-    JoinLeadersPipe,
-    GroupPipe,
-    DateRangePipe,
-    EventPipe,
-    FormatPhonePipe,
-    PrettyBytesPipe,
+    AdminTableComponent,
     AgePipe,
-    EventStatusPipe,
-    MemberPipe,
+    DateRangePipe,
     DotComponent,
+    EventCalendarComponent,
+    EventCardComponent,
+    EventPipe,
+    EventStatusBadgeComponent,
+    EventStatusPipe,
+    FormatPhonePipe,
+    GroupPipe,
+    GroupsSelectComponent,
+    JoinLeadersPipe,
+    MemberItemDetailComponent,
+    MemberPipe,
+    PageContentComponent,
+    PageTitleComponent,
+    PhotoFaceComponent,
+    PhotoGalleryComponent,
+    PrettyBytesPipe,
   ],
   exports: [
-    FormsModule,
-    IonicModule,
-    SwiperModule,
-
-    /* COMPONENTS */
-    AdminTableComponent,
-    GroupsSelectComponent,
-    PhotoGalleryComponent,
     ActionButtonsComponent,
-
-    EventCardComponent,
-    PhotoFaceComponent,
-
-    EventStatusBadgeComponent,
-    EventCalendarComponent,
-    DotComponent,
-    MemberItemDetailComponent,
-
-    /* PIPES */
-    JoinLeadersPipe,
-    GroupPipe,
-    DateRangePipe,
-    EventPipe,
-    FormatPhonePipe,
-    PrettyBytesPipe,
+    AdminTableComponent,
     AgePipe,
+    DateRangePipe,
+    DotComponent,
+    EventCalendarComponent,
+    EventCardComponent,
+    EventPipe,
+    EventStatusBadgeComponent,
     EventStatusPipe,
+    FormatPhonePipe,
+    GroupPipe,
+    GroupsSelectComponent,
+    JoinLeadersPipe,
+    MemberItemDetailComponent,
     MemberPipe,
+    PageContentComponent,
+    PageTitleComponent,
+    PhotoFaceComponent,
+    PhotoGalleryComponent,
+    PrettyBytesPipe,
   ],
   providers: [DatePipe],
 })
