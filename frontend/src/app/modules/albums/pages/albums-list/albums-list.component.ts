@@ -32,7 +32,7 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
 
   actions: Action[] = [
     {
-      text: "Nové",
+      text: "Přidat",
       handler: () => this.createAlbumModal(),
     },
   ];

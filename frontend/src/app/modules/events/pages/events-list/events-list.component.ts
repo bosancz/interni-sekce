@@ -121,6 +121,7 @@ export class EventsListComponent implements ViewWillEnter {
       {
         icon: "add-outline",
         pinned: true,
+        text: "Přidat",
         hidden: endpoints?.createEvent.allowed,
         handler: () => this.createEvent(),
       },

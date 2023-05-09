@@ -91,6 +91,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     {
       icon: "add-outline",
       pinned: true,
+      text: "Přidat",
       handler: () => this.create(),
     },
   ];
