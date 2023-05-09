@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { BehaviorSubject } from "rxjs";
 import { environment } from "src/environments/environment";
 import {
@@ -14,6 +14,8 @@ import {
 } from "../api";
 
 export type ApiEndpoints = RootResponseLinks;
+
+export type ApiError = AxiosError;
 
 @Injectable({
   providedIn: "root",
@@ -31,11 +33,14 @@ export class ApiService {
 
   endpoints = new BehaviorSubject<ApiEndpoints | null>(null);
 
-  constructor() {
-  }
+  constructor() {}
 
   async reloadEndpoints() {
     const endpoints = await this.api.getApiInfo().then((res) => res.data._links);
     this.endpoints.next(endpoints);
+  }
+
+  isApiError(err: unknown): err is ApiError {
+    return axios.isAxiosError(err);
   }
 }

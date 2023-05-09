@@ -39,9 +39,23 @@ export class LoginService {
     } catch (err: any) {
       result.success = false;
 
-      if (err.status === 401) result.error = "invalidCredentials";
-      else if (err.status === 503) result.error = "credentialsLoginNotAvalible";
-      else throw err;
+      if (this.api.isApiError(err)) {
+        switch (err.response?.status) {
+          case 401:
+            result.error = "invalidCredentials";
+            break;
+          case 404:
+            result.error = "userNotFound";
+            break;
+          case 503:
+            result.error = "credentialsLoginNotAvalible";
+            break;
+          default:
+            throw err;
+        }
+      } else {
+        throw err;
+      }
     }
 
     return result;
