@@ -1,16 +1,10 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button [defaultHref]="'/akce/' + event?.id"></ion-back-button>
-    </ion-buttons>
-    <ion-title pageTitle>Upravit: {{ event?.name }}</ion-title>
-    <ion-buttons slot="end">
-      <bo-action-buttons [actions]="actions" header="Členská databáze"></bo-action-buttons>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<bo-page-header
+  [title]="'Upravit: ' + event?.name"
+  [backUrl]="'/akce/' + event?.id"
+  [actions]="actions"
+></bo-page-header>
 
-<ion-content *ngIf="event">
+<bo-page-content *ngIf="event">
   <form #eventForm="ngForm">
     <!-- <h2 class="mb-0 ion-padding">Základní info</h2> -->
     <ion-item class="w-100">
@@ -107,4 +101,4 @@
 
     <!-- <h2 class="mt-4 mb-0 ion-padding">Report</h2> -->
   </form>
-</ion-content>
+</bo-page-content>

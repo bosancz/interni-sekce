@@ -29,8 +29,6 @@ export class EventsListComponent implements ViewWillEnter {
 
   @ViewChild("filterForm", { static: true }) filterForm!: NgForm;
 
-  showFilter: boolean = false;
-
   search$ = new BehaviorSubject<string>("");
 
   actions: Action[] = [];
@@ -114,15 +112,10 @@ export class EventsListComponent implements ViewWillEnter {
   private setActions(endpoints: ApiEndpoints | null) {
     this.actions = [
       {
-        icon: "filter-outline",
-        pinned: true,
-        handler: () => (this.showFilter = !this.showFilter),
-      },
-      {
         icon: "add-outline",
         pinned: true,
         text: "Přidat",
-        hidden: endpoints?.createEvent.allowed,
+        hidden: !endpoints?.createEvent.allowed,
         handler: () => this.createEvent(),
       },
     ];

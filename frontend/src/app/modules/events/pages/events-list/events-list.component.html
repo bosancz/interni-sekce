@@ -1,51 +1,41 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
-    </ion-buttons>
-    <ion-title pageTitle>Přehled akcí</ion-title>
-    <ion-buttons slot="end">
-      <bo-action-buttons [actions]="actions" header="Členská databáze"></bo-action-buttons>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions"></bo-page-header>
 
-<form #filterForm="ngForm" class="filter px-lg-3 py-1" [class.d-none]="!showFilter">
-  <div class="row">
-    <div class="col-12 col-lg">
-      <ion-searchbar
-        type="text"
-        [ngModel]="search$ | async"
-        (ngModelChange)="search$.next($event)"
-        [ngModelOptions]="{ standalone: true }"
-        (keydown.enter)="$event.preventDefault()"
-      ></ion-searchbar>
+<bo-page-content>
+  <form #filterForm="ngForm" class="filter px-lg-3 py-1">
+    <div class="row">
+      <div class="col-12 col-lg">
+        <ion-searchbar
+          type="text"
+          [ngModel]="search$ | async"
+          (ngModelChange)="search$.next($event)"
+          [ngModelOptions]="{ standalone: true }"
+          (keydown.enter)="$event.preventDefault()"
+        ></ion-searchbar>
+      </div>
+
+      <div class="col-12 col-md-12 col-lg-4 col-xl-3">
+        <ion-item>
+          <ion-label>Rok</ion-label>
+          <ion-select name="year" [ngModel]="currentYear">
+            <ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+
+      <div class="col-12 col-md-12 col-lg-3 col-xl-2">
+        <ion-item>
+          <ion-label>Stav</ion-label>
+          <ion-select name="status" ngModel>
+            <ion-select-option>Všechny</ion-select-option>
+            <ion-select-option *ngFor="let status of statuses | keyvalue" [value]="status.key">
+              {{ status.value.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
     </div>
+  </form>
 
-    <div class="col-12 col-md-12 col-lg-4 col-xl-3">
-      <ion-item>
-        <ion-label>Rok</ion-label>
-        <ion-select name="year" [ngModel]="currentYear">
-          <ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
-        </ion-select>
-      </ion-item>
-    </div>
-
-    <div class="col-12 col-md-12 col-lg-3 col-xl-2">
-      <ion-item>
-        <ion-label>Stav</ion-label>
-        <ion-select name="status" ngModel>
-          <ion-select-option>Všechny</ion-select-option>
-          <ion-select-option *ngFor="let status of statuses | keyvalue" [value]="status.key">
-            {{ status.value.name }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-    </div>
-  </div>
-</form>
-
-<ion-content>
   <admin-table>
     <thead>
       <tr>
@@ -84,4 +74,4 @@
       </ng-container>
     </tbody>
   </admin-table>
-</ion-content>
+</bo-page-content>

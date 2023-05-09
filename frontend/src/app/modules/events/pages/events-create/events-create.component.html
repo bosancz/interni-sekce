@@ -1,16 +1,6 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/akce"></ion-back-button>
-    </ion-buttons>
-    <ion-title pageTitle>Vytvořit akci</ion-title>
-    <ion-buttons slot="end">
-      <bo-action-buttons [actions]="actions" header="Členská databáze"></bo-action-buttons>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<bo-page-header title="Vytvořit akci" backUrl="/akce" [actions]="actions"></bo-page-header>
 
-<ion-content class="ion-padding">
+<bo-page-content [padding]="true">
   <form #createEventForm="ngForm">
     <div class="row">
       <div class="col-lg-8">
@@ -50,4 +40,4 @@
       </div>
     </div>
   </form>
-</ion-content>
+</bo-page-content>
