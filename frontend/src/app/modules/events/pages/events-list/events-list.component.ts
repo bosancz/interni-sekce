@@ -20,7 +20,6 @@ type EventWithSearchString = EventResponse & { searchString: string };
 })
 export class EventsListComponent implements ViewWillEnter {
   events?: EventWithSearchString[];
-  filteredEvents?: EventResponse[];
 
   years: number[] = [];
   currentYear?: number;

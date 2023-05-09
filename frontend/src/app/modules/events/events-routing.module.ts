@@ -2,8 +2,8 @@ import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 
 import { EventsListComponent } from "./pages/events-list/events-list.component";
-import { EventsViewComponent } from "./pages/events-view/events-view.component";
 
+import { EventsComponent } from "./events.component";
 import { EventEditComponent } from "./pages/event-edit/event-edit.component";
 import { EventsCreateComponent } from "./pages/events-create/events-create.component";
 import { EventsViewAccountingComponent } from "./pages/events-view-accounting/events-view-accounting.component";
@@ -15,11 +15,11 @@ import { EventsViewReportComponent } from "./pages/events-view-report/events-vie
 const routes: Routes = [
   { path: "", component: EventsListComponent },
   { path: "vytvorit", component: EventsCreateComponent },
-  { path: ":event/upravit", component: EventEditComponent },
   {
     path: ":event",
-    component: EventsViewComponent,
+    component: EventsComponent,
     children: [
+      { path: "upravit", component: EventEditComponent },
       { path: "info", component: EventsViewInfoComponent },
       { path: "ucastnici", component: EventsViewAttendeesComponent },
       { path: "prihlaska", component: EventsViewRegistrationComponent },

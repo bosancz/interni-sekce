@@ -1,3 +1,5 @@
+import { registerLocaleData } from "@angular/common";
+import localeCs from "@angular/common/locales/cs";
 import { ErrorHandler, LOCALE_ID, NgModule } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouteReuseStrategy } from "@angular/router";
@@ -11,15 +13,24 @@ import { AppComponent } from "./app.component";
 import { AdminMenuComponent } from "./components/admin-menu/admin-menu.component";
 import { DarkModeToggleComponent } from "./components/dark-mode-toggle/dark-mode-toggle.component";
 import { LoginComponent } from "./components/login/login.component";
+import { SidebarComponent } from "./components/sidebar/sidebar.component";
 import { MainErrorHandler } from "./error-handlers/main.error-handler";
 import { NotFoundComponent } from "./pages/not-found/not-found.component";
 import { SharedModule } from "./shared/shared.module";
-import { SidebarComponent } from './components/sidebar/sidebar.component';
+
+registerLocaleData(localeCs);
 
 SwiperCore.use([Navigation]);
 
 @NgModule({
-  declarations: [AppComponent, AdminMenuComponent, LoginComponent, NotFoundComponent, DarkModeToggleComponent, SidebarComponent],
+  declarations: [
+    AppComponent,
+    AdminMenuComponent,
+    LoginComponent,
+    NotFoundComponent,
+    DarkModeToggleComponent,
+    SidebarComponent,
+  ],
   imports: [
     SharedModule,
     AppRoutingModule,

@@ -46,7 +46,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let event of filteredEvents" [routerLink]="'' + event.id">
+      <tr *ngFor="let event of events" [routerLink]="'' + event.id">
         <td>{{ event.name }}</td>
         <td class="date">
           {{ event.dateFrom | date : "EEEEEE d. M." }} - {{ event.dateTill | date : "EEEEEE d. M. y" }}

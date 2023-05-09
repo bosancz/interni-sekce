@@ -6,15 +6,15 @@ import { filter } from "rxjs/operators";
 import { EventResponse } from "src/app/api";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { EventsService } from "../../services/events.service";
+import { EventsService } from "./services/events.service";
 
 @UntilDestroy()
 @Component({
-  selector: "bo-events-view",
-  templateUrl: "./events-view.component.html",
-  styleUrls: ["./events-view.component.scss"],
+  selector: "bo-events",
+  templateUrl: "./events.component.html",
+  styleUrls: ["./events.component.scss"],
 })
-export class EventsViewComponent implements OnInit {
+export class EventsComponent implements OnInit {
   event?: EventResponse;
 
   actions: Action[] = [];

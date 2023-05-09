@@ -22,6 +22,7 @@ import { UserToken } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
+import { ResponseData } from "src/openapi";
 import { Repository } from "typeorm";
 import {
   EventCancelRoute,
@@ -51,7 +52,7 @@ export class EventsController {
   @Get()
   @AcLinks(EventsListRoute)
   @ApiResponse({ type: EventResponse, isArray: true })
-  async listEvents(@Req() req: Request): Promise<Omit<EventResponse, "_links">[]> {
+  async listEvents(@Req() req: Request): Promise<ResponseData<EventResponse>[]> {
     const q = this.eventsRepository
       .createQueryBuilder("events")
       .select(["events.id", "events.name", "events.status"])
@@ -70,6 +71,8 @@ export class EventsController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<Omit<EventResponse, "_links">> {
     EventCreateRoute.canOrThrow(req, body);
+
+    console.log(body.name);
 
     res.status(201);
     return this.events.createEvent(body);

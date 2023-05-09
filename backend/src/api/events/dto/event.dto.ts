@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional, OmitType, PartialType, PickType } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsBoolean, IsEnum, IsOptional, IsString } from "class-validator";
 import { AcLink, AcLinksObject } from "src/access-control/access-control-lib/schema/ac-link";
 import { AlbumResponse } from "src/api/albums/dto/album.dto";
 import { GroupResponse } from "src/api/members/dto/group.dto";
@@ -76,7 +76,7 @@ export class EventResponse implements Event {
   @ApiPropertyOptional({ type: "string" }) meetingPlaceEnd!: string | null;
   @ApiPropertyOptional({ type: "number" }) waterKm!: number | null;
   @ApiPropertyOptional({ type: "string" }) river!: string | null;
-  @ApiPropertyOptional({ type: "string" }) deletedAt?: Date | undefined;
+  @ApiPropertyOptional({ type: "string" }) deletedAt?: Date | string | null;
 
   @ApiPropertyOptional({ type: AlbumResponse }) album?: Album | undefined;
   @ApiPropertyOptional({ type: GroupResponse, isArray: true }) groups?: EventGroup[] | undefined;
@@ -87,11 +87,30 @@ export class EventResponse implements Event {
   @ApiProperty() _links!: EventResponseLinks;
 }
 
-export class EventCreateBody extends PickType(EventResponse, ["name", "description", "dateFrom", "dateTill"]) {}
+export class EventCreateBody implements Pick<Event, "name" | "description" | "dateFrom" | "dateTill"> {
+  @ApiProperty() @IsString() name!: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() description!: string | null;
+  @ApiProperty() @IsString() dateFrom!: string;
+  @ApiProperty() @IsString() dateTill!: string;
+}
 
-export class EventUpdateBody extends PartialType(
-  OmitType(EventResponse, ["id", "_links", "album", "groups", "attendees", "expenses", "leaders"]),
-) {}
+export class EventUpdateBody {
+  @ApiProperty() @IsString() name!: string;
+  @ApiProperty() @IsEnum(EventStatus) status!: EventStatus;
+  @ApiProperty() @IsString() dateFrom!: string;
+  @ApiProperty() @IsString() dateTill!: string;
+  @ApiProperty() @IsBoolean() leadersEvent!: boolean;
+  @ApiPropertyOptional() @IsOptional() @IsString() type!: string | null;
+  @ApiPropertyOptional() @IsOptional() @IsString() description!: string | null;
+  @ApiPropertyOptional() @IsOptional() @IsString() statusNote!: string | null;
+  @ApiPropertyOptional() @IsOptional() @IsString() place!: string | null;
+  @ApiPropertyOptional() @IsOptional() @IsString() timeFrom!: string | null;
+  @ApiPropertyOptional() @IsOptional() @IsString() timeTill!: string | null;
+  @ApiPropertyOptional() @IsOptional() @IsString() meetingPlaceStart!: string | null;
+  @ApiPropertyOptional() @IsOptional() @IsString() meetingPlaceEnd!: string | null;
+  @ApiPropertyOptional() @IsOptional() @IsString() waterKm!: number | null;
+  @ApiPropertyOptional() @IsOptional() @IsString() river!: string | null;
+}
 
 export class EventStatusChangeBody {
   @ApiPropertyOptional() @IsString() @IsOptional() statusNote?: string;

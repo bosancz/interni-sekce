@@ -1,7 +1,7 @@
-<bo-page-header title="Vytvořit akci" backUrl="/akce" [actions]="actions"></bo-page-header>
+<bo-page-header title="Vytvořit akci" backUrl="/akce"></bo-page-header>
 
 <bo-page-content [padding]="true">
-  <form #createEventForm="ngForm">
+  <form #createEventForm="ngForm" (ngSubmit)="createEvent(createEventForm)">
     <div class="row">
       <div class="col-lg-8">
         <ion-item class="w-100">
@@ -38,6 +38,10 @@
           <event-subtype-selector ngModel name="subtype"></event-subtype-selector>
         </div>
       </div>
+    </div>
+
+    <div class="mt-5 offset-lg-6 col-lg-2">
+      <button type="submit" class="btn btn-primary w-100">Vytvořit</button>
     </div>
   </form>
 </bo-page-content>

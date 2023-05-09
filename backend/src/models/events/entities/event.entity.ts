@@ -46,7 +46,7 @@ export class Event {
   @Column({ type: "boolean", nullable: false, default: false }) leadersEvent!: boolean;
 
   @DeleteDateColumn()
-  deletedAt?: Date;
+  deletedAt?: Date | string | null;
 
   leaders?: Member[];
 }
