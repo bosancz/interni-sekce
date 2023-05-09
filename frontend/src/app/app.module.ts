@@ -14,11 +14,12 @@ import { LoginComponent } from "./components/login/login.component";
 import { MainErrorHandler } from "./error-handlers/main.error-handler";
 import { NotFoundComponent } from "./pages/not-found/not-found.component";
 import { SharedModule } from "./shared/shared.module";
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 
 SwiperCore.use([Navigation]);
 
 @NgModule({
-  declarations: [AppComponent, AdminMenuComponent, LoginComponent, NotFoundComponent, DarkModeToggleComponent],
+  declarations: [AppComponent, AdminMenuComponent, LoginComponent, NotFoundComponent, DarkModeToggleComponent, SidebarComponent],
   imports: [
     SharedModule,
     AppRoutingModule,

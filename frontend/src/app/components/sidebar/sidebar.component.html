@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      <a routerLink="/" routerDirection="root">
+        <img src="assets/img/san_logo_barva.png" class="d-inline logo-small mr-3" />
+      </a>
+      Interní sekce
+      <span *ngIf="environment" class="environment">&nbsp;{{ environment }}</span>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div class="sidebar-container">
+  <admin-menu (click)="this.close.emit()"></admin-menu>
+
+  <div class="spacer"></div>
+
+  <div class="bottom text-center text-muted small pb-1">
+    <bo-dark-mode-toggle></bo-dark-mode-toggle>
+    <p class="version m-0">Verze {{ version }}</p>
+  </div>
+</div>

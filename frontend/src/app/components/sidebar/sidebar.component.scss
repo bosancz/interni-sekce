@@ -1,0 +1,13 @@
+:host {
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .spacer {
+    flex-grow: 1;
+  }
+}

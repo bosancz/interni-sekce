@@ -1,26 +1,7 @@
 <ion-app>
   <ion-split-pane *ngIf="user | async" contentId="content" when="lg">
     <ion-menu contentId="content">
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>
-            <a routerLink="/" routerDirection="root">
-              <img src="assets/img/san_logo_barva.png" class="d-inline logo-small mr-3" />
-            </a>
-            Interní sekce
-            <span *ngIf="environment" class="environment">&nbsp;{{ environment }}</span>
-          </ion-title>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-content>
-        <admin-menu (click)="this.closeMenu()"></admin-menu>
-      </ion-content>
-
-      <div class="text-center text-muted small pb-1">
-        <bo-dark-mode-toggle></bo-dark-mode-toggle>
-        <p class="version">Verze {{ version }}</p>
-      </div>
+      <bo-sidebar></bo-sidebar>
     </ion-menu>
 
     <ion-router-outlet id="content"></ion-router-outlet>
@@ -28,7 +9,5 @@
 
   <ion-content *ngIf="(user | async) === null">
     <bo-login></bo-login>
-
-    <div class="version text-center text-muted small mt-5">Verze {{ version }}</div>
   </ion-content>
 </ion-app>
