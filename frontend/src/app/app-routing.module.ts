@@ -37,13 +37,6 @@ const routes: Routes = [
     loadChildren: () => import("./modules/program/program.module").then((m) => m.ProgramModule),
   },
 
-  // {
-  //   path: "blog",
-  //   canLoad: [AclGuard],
-  //   data: { permission: "blogs" },
-  //   loadChildren: () => import("./modules/blogs/blogs.module").then((m) => m.BlogsModule),
-  // },
-
   {
     path: "statistiky",
     data: { permission: "statistics" },
@@ -60,12 +53,6 @@ const routes: Routes = [
     path: "uzivatele",
     data: { permission: "users" },
     loadChildren: () => import("./modules/users/users.module").then((m) => m.UsersModule),
-  },
-
-  {
-    path: "web",
-    data: { permission: "web" },
-    loadChildren: () => import("./modules/web/web.module").then((m) => m.WebModule),
   },
 
   // { path: '', redirectTo: "prehled", pathMatch: "full" },

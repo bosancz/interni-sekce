@@ -1,10 +1,8 @@
 import { CommonModule, DatePipe } from "@angular/common";
-import { HttpClientModule } from "@angular/common/http";
 import { NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { IonicModule } from "@ionic/angular";
-import SwiperCore, { Navigation } from "swiper";
 import { SwiperModule } from "swiper/angular";
 import { ActionButtonsComponent } from "./components/action-buttons/action-buttons.component";
 import { AdminTableComponent } from "./components/admin-table/admin-table.component";
@@ -28,10 +26,8 @@ import { JoinLeadersPipe } from "./pipes/join-leaders.pipe";
 import { MemberPipe } from "./pipes/member.pipe";
 import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
 
-SwiperCore.use([Navigation]);
-
 @NgModule({
-  imports: [CommonModule, FormsModule, RouterModule, HttpClientModule, IonicModule, SwiperModule],
+  imports: [CommonModule, FormsModule, RouterModule, IonicModule, SwiperModule],
   declarations: [
     ActionButtonsComponent,
     AdminTableComponent,
@@ -56,6 +52,10 @@ SwiperCore.use([Navigation]);
     PrettyBytesPipe,
   ],
   exports: [
+    FormsModule,
+    IonicModule,
+    SwiperModule,
+
     ActionButtonsComponent,
     AdminTableComponent,
     AgePipe,
