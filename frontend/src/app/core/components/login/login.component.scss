@@ -6,7 +6,14 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   max-width: 400px;
+}
+
+.logo {
+  width: 30%;
+  display: inline-block;
+  margin-bottom: 3rem;
 }
 
 .buttons {
@@ -14,4 +21,8 @@
   ion-button {
     display: block;
   }
+}
+
+form {
+  width: 100%;
 }

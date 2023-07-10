@@ -40,6 +40,11 @@ export class TokenService {
     res.sendStatus(204);
   }
 
+  clearToken(res: Response) {
+    res.clearCookie(this.cookieName);
+    res.sendStatus(204);
+  }
+
   private validateToken(tokenData: JwtPayload): tokenData is UserTokenData & JwtPayload {
     let validateData = Object.assign(new UserTokenData(), tokenData);
 

@@ -33,6 +33,8 @@
     "class-validator": "^0.13.2",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
+    "googleapis": "^120.0.0",
+    "handlebars": "^4.7.7",
     "jsonwebtoken": "^8.5.1",
     "luxon": "^3.2.1",
     "mongoose": "^6.8.4",

@@ -3,7 +3,7 @@ import { NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { NavController } from "@ionic/angular";
 import { map } from "rxjs/operators";
-import { LoginService } from "src/app/services/login.service";
+import { LoginError, LoginErrorCode, LoginService } from "src/app/services/login.service";
 
 @Component({
   selector: "bo-login",
@@ -13,15 +13,12 @@ import { LoginService } from "src/app/services/login.service";
 export class LoginComponent implements OnInit {
   expired = this.route.params.pipe(map((params) => params.expired));
 
-  status?: string;
+  status?: "linkSending" | "linkSent" | "userNotFound";
+  error?: LoginErrorCode | "linkSendFailed" | "unknownError";
 
   view: string = "login";
 
   loginValue: string = "";
-
-  googleLoginAvailable = this.loginService.googleLoginAvailable;
-
-  version = "X.X.X";
 
   constructor(
     private navController: NavController,
@@ -32,33 +29,34 @@ export class LoginComponent implements OnInit {
   ngOnInit() {}
 
   async login(loginForm: NgForm) {
-    const result = await this.loginService.loginCredentials(loginForm.value);
-
-    if (result.success) {
-      return this.loginSuccess();
-    } else {
-      this.status = result.error;
+    try {
+      await this.loginService.loginCredentials(loginForm.value);
+      this.loginSuccess();
+    } catch (err: any) {
+      this.error = err instanceof LoginError ? err.code : "unknownError";
     }
   }
 
   async loginGoogle() {
-    const result = await this.loginService.loginGoogle();
+    try {
+      await this.loginService.loginGoogle();
 
-    if (result) {
-      return this.loginSuccess();
-    } else {
-      this.status = "googleFailed";
+      this.loginSuccess();
+    } catch (err: any) {
+      this.error = err instanceof LoginError ? err.code : "unknownError";
     }
   }
 
   async sendLoginLink(linkForm: NgForm) {
-    this.status = "linkSending";
+    try {
+      this.status = "linkSending";
 
-    const formData = linkForm.value;
-    const result = await this.loginService.sendLoginLink(formData.login);
-
-    if (result.success) this.status = "linkSent";
-    else this.status = result.error;
+      const formData = linkForm.value;
+      await this.loginService.sendLoginLink(formData.login);
+    } catch (err: any) {
+      this.status = undefined;
+      this.error = "linkSendFailed";
+    }
   }
 
   async loginSuccess() {

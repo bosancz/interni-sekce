@@ -8,6 +8,7 @@ import {
   EventsApi,
   MembersApi,
   PhotoGalleryApi,
+  RootResponse,
   RootResponseLinks,
   StatisticsApi,
   UsersApi,
@@ -33,11 +34,13 @@ export class ApiService {
 
   endpoints = new BehaviorSubject<ApiEndpoints | null>(null);
 
+  info?: RootResponse;
+
   constructor() {}
 
-  async reloadEndpoints() {
-    const endpoints = await this.api.getApiInfo().then((res) => res.data._links);
-    this.endpoints.next(endpoints);
+  async reloadApi() {
+    this.info = await this.api.getApiInfo().then((res) => res.data);
+    this.endpoints.next(this.info._links);
   }
 
   isApiError(err: unknown): err is ApiError {

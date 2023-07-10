@@ -1,14 +1,23 @@
 import { EventEmitter, Injectable } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
 
 import { ApiService } from "src/app/services/api.service";
 import { GoogleService } from "src/app/services/google.service";
 import { ToastService } from "./toast.service";
 import { UserService } from "./user.service";
 
-export interface LoginResult {
-  success: boolean;
-  error?: string;
+export type LoginErrorCode =
+  | "invalidCredentials"
+  | "userNotFound"
+  | "googleFailed"
+  | "unknownError"
+  | "credentialsLoginNotAvalible";
+
+export class LoginError extends Error {
+  constructor(public code: LoginErrorCode, err: unknown) {
+    const message =
+      err && typeof err === "object" && "message" in err && typeof err.message === "string" ? err.message : undefined;
+    super(message);
+  }
 }
 
 @Injectable({
@@ -18,50 +27,40 @@ export class LoginService {
   onLogin: EventEmitter<void> = new EventEmitter();
   onLogout: EventEmitter<void> = new EventEmitter();
 
-  googleLoginAvailable = this.googleService.loaded;
-
   constructor(
     private api: ApiService,
-    private route: ActivatedRoute,
-    private router: Router,
     private googleService: GoogleService,
     private userService: UserService,
     private toastService: ToastService,
   ) {}
 
-  async loginCredentials(credentials: { login: string; password: string }): Promise<LoginResult> {
-    const result: LoginResult = { success: true };
-
+  async loginCredentials(credentials: { login: string; password: string }) {
     try {
       await this.api.account.loginUsingCredentials(credentials);
 
       await this.userService.loadUser();
     } catch (err: any) {
-      result.success = false;
-
       if (this.api.isApiError(err)) {
         switch (err.response?.status) {
           case 401:
-            result.error = "invalidCredentials";
+            throw new LoginError("invalidCredentials", err);
             break;
           case 404:
-            result.error = "userNotFound";
+            throw new LoginError("userNotFound", err);
             break;
           case 503:
-            result.error = "credentialsLoginNotAvalible";
+            throw new LoginError("credentialsLoginNotAvalible", err);
             break;
           default:
             throw err;
         }
       } else {
-        throw err;
+        throw new LoginError("unknownError", err);
       }
     }
-
-    return result;
   }
 
-  async loginGoogle(): Promise<LoginResult> {
+  async loginGoogle() {
     try {
       // get google token
       const googleToken = await this.googleService.signIn();
@@ -69,11 +68,10 @@ export class LoginService {
       // validate token with the server
       await this.api.account.loginUsingGoogle({ token: googleToken });
 
+      // load user
       await this.userService.loadUser();
-
-      return { success: true };
     } catch (err) {
-      return { success: false };
+      throw new LoginError("googleFailed", err);
     }
   }
 
@@ -89,18 +87,8 @@ export class LoginService {
     }
   }
 
-  async sendLoginLink(login: string): Promise<LoginResult> {
-    const result: LoginResult = { success: true };
-
-    try {
-      await this.api.account.sendLoginLink({ login });
-    } catch (err: any) {
-      result.success = false;
-      if (err.status === 404) result.error = "userNotFound";
-      else result.error = "error";
-    }
-
-    return result;
+  async sendLoginLink(login: string) {
+    return this.api.account.sendLoginLink({ login });
   }
 
   async logout() {

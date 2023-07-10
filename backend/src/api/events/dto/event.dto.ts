@@ -95,21 +95,21 @@ export class EventCreateBody implements Pick<Event, "name" | "description" | "da
 }
 
 export class EventUpdateBody {
-  @ApiProperty() @IsString() name!: string;
-  @ApiProperty() @IsEnum(EventStatus) status!: EventStatus;
-  @ApiProperty() @IsString() dateFrom!: string;
-  @ApiProperty() @IsString() dateTill!: string;
-  @ApiProperty() @IsBoolean() leadersEvent!: boolean;
-  @ApiPropertyOptional() @IsOptional() @IsString() type!: string | null;
-  @ApiPropertyOptional() @IsOptional() @IsString() description!: string | null;
-  @ApiPropertyOptional() @IsOptional() @IsString() statusNote!: string | null;
-  @ApiPropertyOptional() @IsOptional() @IsString() place!: string | null;
-  @ApiPropertyOptional() @IsOptional() @IsString() timeFrom!: string | null;
-  @ApiPropertyOptional() @IsOptional() @IsString() timeTill!: string | null;
-  @ApiPropertyOptional() @IsOptional() @IsString() meetingPlaceStart!: string | null;
-  @ApiPropertyOptional() @IsOptional() @IsString() meetingPlaceEnd!: string | null;
-  @ApiPropertyOptional() @IsOptional() @IsString() waterKm!: number | null;
-  @ApiPropertyOptional() @IsOptional() @IsString() river!: string | null;
+  @ApiPropertyOptional() @IsOptional() @IsString() name?: string;
+  @ApiPropertyOptional() @IsOptional() @IsEnum(EventStatus) status?: EventStatus;
+  @ApiPropertyOptional() @IsOptional() @IsString() dateFrom?: string;
+  @ApiPropertyOptional() @IsOptional() @IsString() dateTill?: string;
+  @ApiPropertyOptional() @IsOptional() @IsBoolean() leadersEvent?: boolean;
+  @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() type?: string | null;
+  @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() description?: string | null;
+  @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() statusNote?: string | null;
+  @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() place?: string | null;
+  @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() timeFrom?: string | null;
+  @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() timeTill?: string | null;
+  @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() meetingPlaceStart?: string | null;
+  @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() meetingPlaceEnd?: string | null;
+  @ApiPropertyOptional({ type: "number" }) @IsOptional() @IsString() waterKm?: number | null;
+  @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() river?: string | null;
 }
 
 export class EventStatusChangeBody {

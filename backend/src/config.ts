@@ -76,14 +76,24 @@ const mongoDb = {
   uri: process.env["MONGODB_URI"] ?? "",
 };
 
+const keysDir = process.env["KEYS_DIR"] ?? "../keys";
+
+const google = {
+  keyFile: path.join(keysDir, process.env["GOOGLE_KEY_FILE"] ?? "google.json"),
+  impersonate: process.env["GOOGLE_IMPERSONATE"],
+  clientId: process.env["GOOGLE_CLIENT_ID"],
+  clientSecret: process.env["GOOGLE_CLIENT_SECRET"],
+};
+
 export const Config = {
-  db,
-  server,
   app,
-  environment,
-  production,
-  logging,
   cors,
+  db,
+  environment,
+  google,
   jwt,
+  logging,
   mongoDb,
+  production,
+  server,
 };

@@ -24,5 +24,5 @@ export class User {
   @Column({ type: "varchar", unique: true }) email!: string | null;
   @Column({ type: "enum", enum: UserRoles, array: true }) roles!: UserRoles[] | null;
   @Column({ type: "varchar", unique: true, nullable: true }) loginCode!: string | null;
-  @Column({ type: "timestamp with time zone", nullable: true }) loginCodeExp!: Date | null;
+  @Column({ type: "timestamp with time zone", nullable: true }) loginCodeExp!: string | null;
 }

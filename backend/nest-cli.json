@@ -5,5 +5,12 @@
   "generateOptions": {
     "flat": true,
     "spec": false
+  },
+  "compilerOptions": {
+    "assets": [
+      "**/*.html",
+      "**/*.hbs"
+    ],
+    "watchAssets": true
   }
 }

@@ -16,6 +16,8 @@ import { UsersController } from "./api/users/controllers/users.controller";
 import { AuthModule } from "./auth/auth.module";
 import { Config } from "./config";
 import { AlbumsModelModule } from "./models/albums/albums-model.module";
+import { GoogleModelModule } from "./models/google/google-model.module";
+import { MailService } from "./models/mail/services/mail.service";
 import { MembersModelModule } from "./models/members/members-model.module";
 import { StatisticsModelModule } from "./models/statistics/statistics-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
@@ -54,8 +56,9 @@ const typeOrmOptions: TypeOrmModuleOptions = {
     StatisticsModule,
     RootModule,
     StatisticsModelModule,
+    GoogleModelModule,
   ],
   controllers: [UsersController],
-  providers: [],
+  providers: [MailService],
 })
 export class AppModule {}

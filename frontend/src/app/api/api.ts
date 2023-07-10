@@ -520,6 +520,12 @@ export interface EventCreateBody {
     'name': string;
     /**
      * 
+     * @type {object}
+     * @memberof EventCreateBody
+     */
+    'description'?: object;
+    /**
+     * 
      * @type {string}
      * @memberof EventCreateBody
      */
@@ -530,12 +536,6 @@ export interface EventCreateBody {
      * @memberof EventCreateBody
      */
     'dateTill': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EventCreateBody
-     */
-    'description'?: string;
 }
 /**
  * 
@@ -891,7 +891,7 @@ export interface EventUpdateBody {
      * @type {string}
      * @memberof EventUpdateBody
      */
-    'status'?: EventUpdateBodyStatusEnum;
+    'status'?: string;
     /**
      * 
      * @type {string}
@@ -921,6 +921,12 @@ export interface EventUpdateBody {
      * @type {string}
      * @memberof EventUpdateBody
      */
+    'description'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventUpdateBody
+     */
     'statusNote'?: string;
     /**
      * 
@@ -928,12 +934,6 @@ export interface EventUpdateBody {
      * @memberof EventUpdateBody
      */
     'place'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EventUpdateBody
-     */
-    'description'?: string;
     /**
      * 
      * @type {string}
@@ -970,23 +970,7 @@ export interface EventUpdateBody {
      * @memberof EventUpdateBody
      */
     'river'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EventUpdateBody
-     */
-    'deletedAt'?: string;
 }
-
-export const EventUpdateBodyStatusEnum = {
-    Draft: 'draft',
-    Pending: 'pending',
-    Public: 'public',
-    Cancelled: 'cancelled'
-} as const;
-
-export type EventUpdateBodyStatusEnum = typeof EventUpdateBodyStatusEnum[keyof typeof EventUpdateBodyStatusEnum];
-
 /**
  * 
  * @export
@@ -1223,7 +1207,7 @@ export interface LoginLinkBody {
      * @type {string}
      * @memberof LoginLinkBody
      */
-    'token': string;
+    'code': string;
 }
 /**
  * 
@@ -1671,6 +1655,12 @@ export interface RootResponse {
      * @memberof RootResponse
      */
     'environmentTitle': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RootResponse
+     */
+    'googleClientId'?: string;
     /**
      * 
      * @type {RootResponseLinks}

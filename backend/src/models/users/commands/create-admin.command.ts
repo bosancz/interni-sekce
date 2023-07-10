@@ -14,7 +14,7 @@ export class CreateAdminCommand extends CommandRunner {
   }
 
   async run(inputs: string[], options: Record<string, any>): Promise<void> {
-    const user = await this.usersService.getUserByLogin("admin");
+    const user = await this.usersService.findUser({ login: "admin" });
     if (user) {
       await this.usersService.deleteUser(user.id);
     }

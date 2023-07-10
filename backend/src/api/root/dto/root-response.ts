@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { AcLink, AcLinksObject } from "src/access-control/access-control-lib/schema/ac-link";
 import { AlbumsController } from "src/api/albums/controllers/albums.controller";
 import { PhotosController } from "src/api/albums/controllers/photos.controller";
@@ -22,6 +22,7 @@ class RootResponseLinks implements AcLinksObject<LinkNames> {
 export class RootResponse {
   @ApiProperty() version!: string;
   @ApiProperty() environmentTitle!: string;
+  @ApiPropertyOptional() googleClientId?: string;
 
   @ApiProperty({ type: RootResponseLinks }) _links!: RootResponseLinks;
 }

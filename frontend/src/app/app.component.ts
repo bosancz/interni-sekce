@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.userService.user.subscribe((user) => this.api.reloadEndpoints());
+    this.userService.user.subscribe((user) => this.api.reloadApi());
 
     this.loginService.onLogin.subscribe(() => {
       this.userService.loadUser();

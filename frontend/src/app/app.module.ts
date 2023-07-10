@@ -10,12 +10,8 @@ import SwiperCore, { Navigation } from "swiper";
 import { SwiperModule } from "swiper/angular";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
-import { AdminMenuComponent } from "./components/admin-menu/admin-menu.component";
-import { DarkModeToggleComponent } from "./components/dark-mode-toggle/dark-mode-toggle.component";
-import { LoginComponent } from "./components/login/login.component";
-import { SidebarComponent } from "./components/sidebar/sidebar.component";
+import { CoreModule } from "./core/core.module";
 import { MainErrorHandler } from "./error-handlers/main.error-handler";
-import { NotFoundComponent } from "./pages/not-found/not-found.component";
 import { SharedModule } from "./shared/shared.module";
 
 registerLocaleData(localeCs);
@@ -25,14 +21,10 @@ SwiperCore.use([Navigation]);
 @NgModule({
   declarations: [
     AppComponent,
-    AdminMenuComponent,
-    LoginComponent,
-    NotFoundComponent,
-    DarkModeToggleComponent,
-    SidebarComponent,
   ],
   imports: [
     SharedModule,
+    CoreModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     IonicModule.forRoot({

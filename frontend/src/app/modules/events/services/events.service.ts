@@ -17,8 +17,8 @@ export class EventsService {
 
     event.attendees?.sort((a, b) => (a.member!.nickname || "").localeCompare(b.member!.nickname || ""));
 
-    event.dateFrom = DateTime.fromISO(event.dateFrom).toISODate();
-    event.dateTill = DateTime.fromISO(event.dateTill).toISODate();
+    event.dateFrom = DateTime.fromISO(event.dateFrom).toISODate()!;
+    event.dateTill = DateTime.fromISO(event.dateTill).toISODate()!;
 
     this.event$.next(event);
 

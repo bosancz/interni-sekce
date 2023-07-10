@@ -18,6 +18,7 @@ export class RootController {
     return {
       version: Config.app.version,
       environmentTitle: Config.app.environmentTitle,
+      googleClientId: Config.google.clientId,
     };
   }
 }

@@ -1,13 +1,5 @@
 <ion-app>
-  <ion-split-pane *ngIf="user | async" contentId="content" when="lg">
-    <ion-menu contentId="content">
-      <bo-sidebar></bo-sidebar>
-    </ion-menu>
+  <bo-app-layout *ngIf="user | async"></bo-app-layout>
 
-    <ion-router-outlet id="content"></ion-router-outlet>
-  </ion-split-pane>
-
-  <ion-content *ngIf="(user | async) === null">
-    <bo-login></bo-login>
-  </ion-content>
+  <bo-login *ngIf="(user | async) === null"></bo-login>
 </ion-app>

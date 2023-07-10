@@ -1,5 +1,7 @@
 <ion-content class="ion-padding">
   <div class="login-container">
+    <img src="assets/img/san_logo_barva.png" alt="Logo" class="logo" />
+
     <h1 class="text-center mb-5">Bošán interní</h1>
     <p *ngIf="expired | async" class="text-danger">Přihlášení vypršelo, přihlas se znovu.</p>
 
@@ -31,13 +33,17 @@
         </ion-item>
 
         <div class="buttons text-center">
-          <ion-button type="submit" color="primary" [disabled]="!loginForm.valid" class="my-3">Přihlásit se</ion-button>
+          <ion-button type="submit" color="primary" [disabled]="!loginForm.valid" class="my-3">
+            Přihlásit se heslem
+          </ion-button>
 
-          <ion-button *ngIf="googleLoginAvailable | async" type="button" color="secondary" (click)="loginGoogle()">
+          <ion-button type="button" color="secondary" (click)="loginGoogle()" class="my-3">
             <i class="fab fa-google"></i>&nbsp;&nbsp;Přihlásit přes Bošánovský mail
           </ion-button>
 
-          <ion-button type="button" color="secondary" (click)="view = 'link'">Poslat přihlašovací odkaz</ion-button>
+          <ion-button type="button" color="secondary" (click)="view = 'link'" class="my-3"
+            >Poslat přihlašovací odkaz</ion-button
+          >
         </div>
 
         <button type="submit" class="d-none"></button>
@@ -49,13 +55,12 @@
           <ion-input type="text" name="login" [(ngModel)]="loginValue" required></ion-input>
         </ion-item>
 
-        <div class="buttons row">
-          <div class="col-4 text-left">
-            <ion-button type="submit" color="secondary" (click)="view = 'login'">Zpět</ion-button>
-          </div>
-          <div class="col-8 text-right">
-            <ion-button type="submit" color="primary" [disabled]="!loginLinkForm.valid"> Odeslat </ion-button>
-          </div>
+        <div class="buttons text-center">
+          <ion-button type="submit" color="primary" [disabled]="!loginLinkForm.valid" class="my-3">
+            Odeslat
+          </ion-button>
+
+          <ion-button type="submit" color="secondary" (click)="view = 'login'" class="my-3">Zpět</ion-button>
         </div>
       </form>
     </ng-container>

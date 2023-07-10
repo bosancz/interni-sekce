@@ -8,7 +8,8 @@
       "dom"
     ],
     "typeRoots": [
-      "node_modules/@types"
+      "node_modules/@types",
+      "node_modules/@types/google.account/index.d.ts"
     ],
     "module": "es2020",
     "target": "ES2022",

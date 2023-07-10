@@ -3,14 +3,13 @@ import { JwtModule } from "@nestjs/jwt";
 import { Config } from "src/config";
 import { TokenMiddleware } from "./middlewares/token.middleware";
 import { HashService } from "./services/hash.service";
-import { LoginService } from "./services/login.service";
 import { TokenService } from "./services/token.service";
 
 @Global()
 @Module({
   imports: [JwtModule.register({ secret: Config.jwt.secret })],
-  providers: [TokenService, HashService, LoginService],
-  exports: [HashService, LoginService, TokenService],
+  providers: [TokenService, HashService],
+  exports: [HashService, TokenService],
 })
 export class AuthModule {
   configure(consumer: MiddlewareConsumer) {

@@ -1,10 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
-import { environment } from "src/environments/environment";
-
-declare const gapi: any;
-
-declare const window: any;
+import { ApiService } from "./api.service";
 
 export class GoogleError extends Error {
   name: string = "GoogleError"; // when transpiled to ES5 cant test if instanceof GoogleError
@@ -16,85 +11,33 @@ export class GoogleError extends Error {
   providedIn: "root",
 })
 export class GoogleService {
-  gapi: any;
+  constructor(private api: ApiService) {}
 
-  loaded = new BehaviorSubject<boolean>(false);
-
-  constructor() {
-    this.load_gapi();
-  }
-
-  async load_gapi() {
-    // wait for the GAPI <script> to be loaded
-    const gapi: any = await new Promise((resolve, reject) => {
-      if (window.gapi) {
-        resolve(window.gapi);
-      } else {
-        window.gapi_loaded = function () {
-          resolve(window.gapi);
-        };
-      }
+  async signIn() {
+    await new Promise<void>((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.onload = () => resolve();
+      script.onerror = (err) => reject(err);
+      document.body.appendChild(script);
     });
 
-    // https://github.com/google/google-api-javascript-client/blob/master/samples/loadedDiscovery.html
-    await new Promise((resolve, reject) => {
-      gapi.load("client:auth2", resolve);
+    const client_id = this.api.info?.googleClientId;
+    if (!client_id) throw new Error("Client ID not provided by API");
+
+    const response = await new Promise<google.accounts.oauth2.CodeResponse>((resolve, reject) => {
+      const client = google.accounts.oauth2.initCodeClient({
+        client_id,
+        scope: "email",
+        ux_mode: "popup",
+        callback: resolve,
+      });
+
+      client.requestCode();
     });
 
-    try {
-      await gapi.client.init(environment.gapi);
-    } catch (googleErr: any) {
-      const err = new GoogleError(googleErr.error);
-      err.description = googleErr.details;
-      throw err;
-    }
+    console.log(response);
 
-    this.gapi = gapi;
-
-    this.loaded.next(true);
-  }
-
-  getAuthInstance() {
-    if (!this.gapi) return undefined;
-    return this.gapi.auth2.getAuthInstance();
-  }
-
-  async signIn(): Promise<string> {
-    try {
-      const auth2 = this.getAuthInstance();
-
-      await auth2.signIn();
-
-      const token = auth2.currentUser.get().getAuthResponse(true).id_token;
-
-      return token;
-    } catch (googleErr: any) {
-      const err = new GoogleError(googleErr.error);
-      err.description = googleErr.details;
-      throw err;
-    }
-  }
-
-  async signOut(): Promise<void> {
-    const auth2 = this.getAuthInstance();
-    if (auth2) await auth2.signOut();
-  }
-
-  async isSignedIn(): Promise<boolean> {
-    const auth2 = this.getAuthInstance();
-    return auth2 ? await auth2.isSignedIn.get() : false;
-  }
-
-  async getCurrentUser() {
-    if (!(await this.isSignedIn())) return null;
-
-    const auth2 = this.getAuthInstance();
-
-    let profile = auth2.currentUser.get().getBasicProfile();
-
-    return {
-      email: profile.getEmail(),
-      token: auth2.currentUser.get().getAuthResponse(true).id_token,
-    };
+    return response.code;
   }
 }

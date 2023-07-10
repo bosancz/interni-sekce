@@ -11,7 +11,7 @@ export class LoginGoogleBody {
 }
 
 export class LoginLinkBody {
-  @ApiProperty() @IsString() token!: string;
+  @ApiProperty() @IsString() code!: string;
 }
 
 export class LoginSendLinkBody {

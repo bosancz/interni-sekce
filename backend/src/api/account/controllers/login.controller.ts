@@ -1,14 +1,29 @@
-import { Body, Controller, ForbiddenException, NotFoundException, Post, Req, Res } from "@nestjs/common";
+import {
+  Body,
+  ConflictException,
+  Controller,
+  ForbiddenException,
+  NotFoundException,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
+import { DateTime } from "luxon";
 import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
 import { UserTokenData } from "src/auth/schema/user-token";
 import { HashService } from "src/auth/services/hash.service";
-import { LoginService } from "src/auth/services/login.service";
 import { TokenService } from "src/auth/services/token.service";
+import { Config } from "src/config";
+import { GoogleService } from "src/models/google/services/google.service";
+import { MailService } from "src/models/mail/services/mail.service";
+import { User } from "src/models/users/entities/user.entity";
 import { UsersService } from "src/models/users/services/users.service";
 import { LoginCredentialsRoute, LoginGoogleRoute, LoginLinkRoute, LoginSendLinkRoute } from "../acl/login.acl";
 import { LoginCredentialsBody, LoginGoogleBody, LoginLinkBody, LoginSendLinkBody } from "../dto/login-body.dto";
+import { SendLoginLinkMailTemplate } from "../mail-templates/send-login-link/send-login-link.mail-template";
 
 @Controller("login")
 @ApiTags("Account")
@@ -16,48 +31,100 @@ import { LoginCredentialsBody, LoginGoogleBody, LoginLinkBody, LoginSendLinkBody
 export class LoginController {
   constructor(
     private userService: UsersService,
-    private loginService: LoginService,
     private hashService: HashService,
     private tokenService: TokenService,
+    private mailService: MailService,
+    private googleService: GoogleService,
   ) {}
   @Post("credentials")
-  async loginUsingCredentials(@Req() req: Request, @Res() res: Response, @Body() body: LoginCredentialsBody) {
-    LoginCredentialsRoute.canOrThrow(req, undefined);
-
-    const user = await this.userService.getUserByLogin(body.login);
+  async loginUsingCredentials(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @Body() body: LoginCredentialsBody,
+  ) {
+    const user = await this.userService.findUser({ login: body.login });
     if (!user) throw new NotFoundException();
 
-    if (!user.password) throw new ForbiddenException();
+    LoginCredentialsRoute.canOrThrow(req, user);
+
+    if (!user.password) throw new ConflictException();
 
     const passwordOK = await this.hashService.compareHash(body.password, user.password);
 
-    if (passwordOK) {
-      const tokenData: UserTokenData = {
-        roles: user.roles ?? [],
-        userId: user.id,
-      };
-
-      await this.tokenService.setToken(res, tokenData);
-    } else {
-      throw new ForbiddenException();
-    }
+    if (passwordOK) this.setLoginToken(res, user);
+    else throw new ForbiddenException();
   }
 
   @Post("google")
-  loginUsingGoogle(@Req() req: Request, @Body() body: LoginGoogleBody) {
-    LoginGoogleRoute.canOrThrow(req, undefined);
+  async loginUsingGoogle(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @Body() body: LoginGoogleBody,
+  ) {
+    const tokenInfo = await this.googleService.validateOauthToken(body.token);
+    if (!tokenInfo?.email) throw new UnauthorizedException("Email missing in Google user account.");
+
+    const user = await this.userService.findUser({ email: tokenInfo.email });
+    if (!user) throw new NotFoundException(`User with email ${tokenInfo.email} not found.`);
+
+    LoginGoogleRoute.canOrThrow(req, user);
+
+    await this.setLoginToken(res, user);
   }
 
   @Post("sendLink")
-  sendLoginLink(@Req() req: Request, @Body() body: LoginSendLinkBody) {
-    LoginSendLinkRoute.canOrThrow(req, undefined);
+  async sendLoginLink(@Req() req: Request, @Body() body: LoginSendLinkBody) {
+    const user = await this.userService.findUser([{ login: body.login }, { email: body.login }]);
+    if (!user) throw new NotFoundException();
+    if (!user.email) throw new ConflictException();
+
+    LoginSendLinkRoute.canOrThrow(req, user);
+
+    const loginCode = this.hashService.generateRandomString();
+
+    this.userService.updateUser(user.id, {
+      loginCode: loginCode,
+      loginCodeExp: DateTime.local().toISO(),
+    });
+
+    const mail = SendLoginLinkMailTemplate(user.email, {
+      link: `${Config.app.baseUrl}/api/login/link?code=${loginCode}`,
+    });
+
+    await this.mailService.sendMail(mail);
   }
 
   @Post("link")
-  loginUsingLink(@Req() req: Request, @Body() body: LoginLinkBody) {
-    LoginLinkRoute.canOrThrow(req, undefined);
+  async loginUsingLink(@Req() req: Request, @Res({ passthrough: true }) res: Response, @Body() body: LoginLinkBody) {
+    const user = await this.userService.findUser({ loginCode: body.code });
+    if (!user || !user.loginCodeExp) throw new NotFoundException();
+
+    LoginLinkRoute.canOrThrow(req, user);
+
+    if (DateTime.fromISO(user.loginCodeExp).diffNow().milliseconds < 0) {
+      throw new ForbiddenException("Login code expired");
+    }
+
+    this.userService.updateUser(user.id, {
+      loginCode: null,
+      loginCodeExp: null,
+    });
+
+    await this.setLoginToken(res, user);
   }
 
   @Post("logout")
-  logout() {}
+  logout(@Res({ passthrough: true }) res: Response) {
+    this.tokenService.clearToken(res);
+  }
+
+  private async setLoginToken(res: Response, user: User, data?: UserTokenData) {
+    const tokenData: UserTokenData = {
+      roles: user.roles ?? [],
+      userId: user.id,
+      ...data,
+    };
+
+    await this.tokenService.setToken(res, tokenData);
+  }
 }

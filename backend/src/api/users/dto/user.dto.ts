@@ -26,7 +26,7 @@ export class UserResponse implements User {
   @ApiPropertyOptional({ type: "string" }) password!: string | null;
   @ApiPropertyOptional({ type: "string" }) email!: string | null;
   @ApiPropertyOptional({ type: "string" }) loginCode!: string | null;
-  @ApiPropertyOptional({ type: "string" }) loginCodeExp!: Date | null;
+  @ApiPropertyOptional({ type: "string" }) loginCodeExp!: string | null;
   @ApiPropertyOptional({ enum: UserRoles, isArray: true }) roles!: UserRoles[] | null;
 
   @ApiPropertyOptional({ type: MemberResponse }) member?: Member | null;
