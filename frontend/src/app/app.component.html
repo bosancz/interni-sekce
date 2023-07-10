@@ -2,4 +2,6 @@
   <bo-app-layout *ngIf="user | async"></bo-app-layout>
 
   <bo-login *ngIf="(user | async) === null"></bo-login>
+
+  <bo-app-loading *ngIf="(user | async) === undefined"></bo-app-loading>
 </ion-app>
