@@ -34,7 +34,7 @@ export class PaddlersStatisticsService {
         nickname: string;
         firstName: string;
         lastName: string;
-        groupId: string;
+        groupId: number;
         waterKm: number;
       }>();
   }

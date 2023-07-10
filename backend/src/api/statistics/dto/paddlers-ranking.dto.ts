@@ -5,6 +5,6 @@ export class PaddlersRankingResponse {
   @ApiProperty() nickname!: string;
   @ApiProperty() firstName!: string;
   @ApiProperty() lastName!: string;
-  @ApiProperty() groupId!: string;
+  @ApiProperty() groupId!: number;
   @ApiProperty() waterKm!: number;
 }

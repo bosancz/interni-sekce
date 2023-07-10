@@ -6,26 +6,27 @@ import { NotFoundComponent } from "./core/pages/not-found/not-found.component";
 const routes: Routes = [
   {
     path: "",
-    data: { permission: "dashboard" },
     loadChildren: () => import("./modules/home/home.module").then((m) => m.DashboardModule),
   },
 
   {
     path: "akce",
-    data: { permission: "events" },
     loadChildren: () => import("./modules/events/events.module").then((m) => m.EventsModule),
   },
 
   {
     path: "galerie",
-    data: { permission: "albums" },
     loadChildren: () => import("./modules/albums/albums.module").then((m) => m.AlbumsModule),
   },
 
   {
     path: "databaze",
-    data: { permission: "members" },
     loadChildren: () => import("./modules/members/members.module").then((m) => m.MembersModule),
+  },
+
+  {
+    path: "oddily",
+    loadChildren: () => import("./modules/groups/groups.module").then((m) => m.GroupsModule),
   },
 
   {

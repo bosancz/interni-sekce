@@ -55,7 +55,7 @@ export class EventsService {
   }
 
   async deleteEvent(id: number) {
-    this.eventsRepository.softRemove({ id });
+    await this.eventsRepository.softRemove({ id });
   }
 
   async getEventsYears() {

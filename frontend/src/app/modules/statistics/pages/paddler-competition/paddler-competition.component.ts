@@ -10,12 +10,12 @@ export interface PaddlerCompetitionMember {
   nickname: string;
   firstName: string;
   lastName: string;
-  groupId?: string;
+  groupId?: number;
   waterKm: number;
 }
 
 export interface PaddlerCompetitionGroup {
-  groupId: string;
+  groupId: number;
   waterKm: number;
 }
 

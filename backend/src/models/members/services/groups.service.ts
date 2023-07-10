@@ -7,11 +7,19 @@ import { Group } from "../entities/group.entity";
 export class GroupsService {
   constructor(@InjectRepository(Group) private groupsRepository: Repository<Group>) {}
 
-  getGroups(options?: FindManyOptions) {
+  async getGroups(options?: FindManyOptions) {
     return this.groupsRepository.find(options);
   }
 
-  getGroup(id: string, options?: FindOneOptions<Group>) {
+  async getGroup(id: number, options?: FindOneOptions<Group>) {
     return this.groupsRepository.findOne({ where: { id }, ...options });
+  }
+
+  async createGroup(groupData: Pick<Group, "shortName" | "name">) {
+    return this.groupsRepository.save({ ...groupData, active: true });
+  }
+
+  async deleteGroup(id: number) {
+    await this.groupsRepository.softDelete({ id });
   }
 }

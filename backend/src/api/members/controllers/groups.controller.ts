@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, NotFoundException, Param, Put, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
@@ -7,8 +7,8 @@ import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-lin
 import { Group } from "src/models/members/entities/group.entity";
 import { GroupsService } from "src/models/members/services/groups.service";
 import { Repository } from "typeorm";
-import { GroupDeleteRoute, GroupEditRoute, GroupListRoute, GroupReadRoute } from "../acl/groups.acl";
-import { GroupResponse } from "../dto/group.dto";
+import { GroupCreateRoute, GroupDeleteRoute, GroupEditRoute, GroupListRoute, GroupReadRoute } from "../acl/groups.acl";
+import { CreateGroupBody, GroupResponse } from "../dto/group.dto";
 
 @Controller("groups")
 @AcController()
@@ -26,10 +26,18 @@ export class GroupsController {
     return this.groupsRepository.createQueryBuilder().where(GroupListRoute.canWhere(req)).getMany();
   }
 
+  @Post()
+  @AcLinks(GroupCreateRoute)
+  @ApiResponse({ status: 201, type: GroupResponse })
+  async createGroup(@Req() req: Request, @Body() groupData: CreateGroupBody) {
+    GroupCreateRoute.canOrThrow(req, undefined);
+    return this.groupsService.createGroup(groupData);
+  }
+
   @Get(":id")
   @AcLinks(GroupReadRoute)
   @ApiResponse({ type: GroupResponse })
-  async getGroup(@Param("id") id: string, @Req() req: Request) {
+  async getGroup(@Param("id") id: number, @Req() req: Request) {
     const group = await this.groupsService.getGroup(id);
     if (!group) throw new NotFoundException();
 
@@ -40,7 +48,7 @@ export class GroupsController {
 
   @Put(":id")
   @AcLinks(GroupEditRoute)
-  async updateGroup(@Param("id") id: string, @Req() req: Request) {
+  async updateGroup(@Param("id") id: number, @Req() req: Request) {
     const group = await this.groupsService.getGroup(id);
     if (!group) throw new NotFoundException();
 
@@ -51,12 +59,12 @@ export class GroupsController {
 
   @Delete(":id")
   @AcLinks(GroupDeleteRoute)
-  async deleteGroup(@Param("id") id: string, @Req() req: Request) {
+  async deleteGroup(@Param("id") id: number, @Req() req: Request): Promise<void> {
     const group = await this.groupsService.getGroup(id);
     if (!group) throw new NotFoundException();
 
     GroupDeleteRoute.canOrThrow(req, group);
 
-    // TODO:
+    await this.groupsService.deleteGroup(id);
   }
 }

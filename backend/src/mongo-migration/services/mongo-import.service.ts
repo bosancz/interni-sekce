@@ -96,16 +96,17 @@ export class MongoImportService {
     console.debug(` - Found ${mongoMembers.length} members in mongo.`);
 
     let c = 0;
-    const groups: string[] = [];
+    const groupsIndex: { [name: string]: number } = {};
 
     for (let mongoMember of mongoMembers) {
-      if (!groups.includes(mongoMember.group)) {
-        await t.save(Group, { id: mongoMember.group, active: true, name: mongoMember.group });
+      if (mongoMember.group && !(mongoMember.group in groupsIndex)) {
+        const group = await t.save(Group, { shortName: mongoMember.group, active: true, name: mongoMember.group });
+        groupsIndex[mongoMember.group] = group.id;
       }
 
       const memberData: Omit<Member, "id"> = {
         function: mongoMember.function ?? null,
-        groupId: mongoMember.group ?? null,
+        groupId: groupsIndex[mongoMember.group],
         active: mongoMember.inactive === false ? true : false,
         membership: Object.values(MembershipStatus).includes(<any>mongoMember.membership)
           ? <MembershipStatus>mongoMember.membership

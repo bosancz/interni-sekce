@@ -11,6 +11,14 @@ export const GroupListRoute = new RouteACL<undefined, Group[]>({
   contains: { array: { entity: GroupResponse } },
 });
 
+export const GroupCreateRoute = new RouteACL<undefined>({
+  linkEntity: RootResponse,
+  permissions: {
+    admin: true,
+  },
+  contains: { entity: GroupResponse },
+});
+
 export const GroupReadRoute = new RouteACL<Group>({
   linkEntity: GroupResponse,
   permissions: {

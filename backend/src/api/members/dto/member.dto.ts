@@ -7,7 +7,7 @@ import { GroupResponse } from "./group.dto";
 
 export class MemberResponse implements Member {
   @ApiProperty() id!: number;
-  @ApiProperty() groupId!: string;
+  @ApiProperty() groupId!: number;
 
   @ApiPropertyOptional({ type: "boolean" }) active!: boolean;
   @ApiPropertyOptional({ type: "string", enum: MembershipStatus }) membership!: MembershipStatus;

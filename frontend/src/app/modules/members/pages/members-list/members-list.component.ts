@@ -7,8 +7,6 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
 import { debounceTime } from "rxjs/operators";
 import { MemberResponse } from "src/app/api";
-import { MemberGroups } from "src/app/config/member-groups";
-import { MemberRoles } from "src/app/config/member-roles";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -17,7 +15,7 @@ type MemberWithSearchString = MemberResponse & { searchString: string };
 
 interface TableFilter {
   search?: string;
-  groups?: string[];
+  groups?: number[];
   roles?: string[];
   activity?: "active" | "inactive";
   fields: Fields[];
@@ -95,9 +93,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
       handler: () => this.create(),
     },
   ];
-
-  groups = MemberGroups;
-  roles = MemberRoles;
 
   @ViewChild("filterForm", { static: true }) filterForm?: NgForm;
 
@@ -192,14 +187,15 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
   }
 
   private sortMembers(members: MemberResponse[]): void {
-    const groupIndex = Object.keys(this.groups);
-    const roleIndex = Object.keys(this.roles);
+    // const groupIndex = Object.keys(this.groups);
+    // const roleIndex = Object.keys(this.roles);
+    // FIXME: sort by group and role
 
     members.sort(
       (a, b) =>
         Number(b.active) - Number(a.active) ||
-        (a.group && b.group && groupIndex.indexOf(a.groupId) - groupIndex.indexOf(b.groupId)) ||
-        (a.role && b.role && roleIndex.indexOf(a.role) - roleIndex.indexOf(b.role)) ||
+        // (a.group && b.group && groupIndex.indexOf(a.groupId) - groupIndex.indexOf(b.groupId)) ||
+        // (a.role && b.role && roleIndex.indexOf(a.role) - roleIndex.indexOf(b.role)) ||
         (a.nickname && b.nickname && a.nickname.localeCompare(b.nickname)) ||
         0,
     );
