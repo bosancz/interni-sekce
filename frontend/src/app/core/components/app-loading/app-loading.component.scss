@@ -14,20 +14,44 @@ img {
   width: 30%;
 
   scale: 1;
+  rotate: 0deg;
   animation: pulse 2s infinite ease-in-out;
   translate: -50% -50%;
+  transform-origin: 50% 45%;
 }
 
 @keyframes pulse {
   0% {
     scale: 0.95;
+    rotate: 0deg;
   }
 
-  50% {
+  15% {
     scale: 1;
+    rotate: 0deg;
+  }
+
+  30% {
+    scale: 0.95;
+    rotate: 0deg;
+  }
+
+  45% {
+    scale: 1;
+    rotate: 0deg;
+  }
+
+  60% {
+    scale: 0.95;
+    rotate: 0deg;
+  }
+  75% {
+    scale: 1;
+    rotate: 0deg;
   }
 
   100% {
     scale: 0.95;
+    rotate: 360deg;
   }
 }
