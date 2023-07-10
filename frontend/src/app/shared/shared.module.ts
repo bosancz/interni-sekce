@@ -55,6 +55,7 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
     FormsModule,
     IonicModule,
     SwiperModule,
+    RouterModule,
 
     ActionButtonsComponent,
     AdminTableComponent,

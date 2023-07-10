@@ -6,5 +6,9 @@ export class UserUpdateBody implements Partial<User> {
   @ApiPropertyOptional() @IsString() @IsOptional() memberId?: number;
   @ApiPropertyOptional() @IsString() @IsOptional() login?: string;
   @ApiPropertyOptional() @IsString() @IsOptional() email?: string;
-  @ApiPropertyOptional({ enum: UserRoles, isArray: true }) @IsEnum(UserRoles) @IsOptional() roles?: UserRoles[];
+
+  @ApiPropertyOptional({ enum: UserRoles, isArray: true })
+  @IsEnum(UserRoles, { each: true })
+  @IsOptional()
+  roles?: UserRoles[];
 }

@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
+import { ActionSheetController, Platform } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
@@ -40,7 +41,13 @@ export class UsersListComponent implements OnInit, AfterViewInit {
     },
   ];
 
-  constructor(private api: ApiService, private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private api: ApiService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private actionSheetController: ActionSheetController,
+    private platform: Platform,
+  ) {}
 
   ngOnInit() {
     this.route.params.pipe(untilDestroyed(this)).subscribe((params: Params) => {
@@ -86,4 +93,15 @@ export class UsersListComponent implements OnInit, AfterViewInit {
   getRoleName(roleId: string) {
     return this.roles.find((item) => item.id === roleId)?.title || roleId;
   }
+
+  async openUserMenu(user: UserResponse) {
+    const sheet = await this.actionSheetController.create({
+      header: user.login ?? user.email ?? `User #${user.id}`,
+      buttons: [{ text: "Smazat", icon: "trash-outline", handler: () => this.deleteUser(user) }],
+    });
+
+    sheet.present();
+  }
+
+  async deleteUser(user: UserResponse) {}
 }

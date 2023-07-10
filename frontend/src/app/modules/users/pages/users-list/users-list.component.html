@@ -28,20 +28,28 @@
 </form>
 
 <ion-content>
-  <admin-table>
-    <thead>
-      <tr>
-        <th>Login</th>
-        <th>Bošánovský mail</th>
-        <th>Propojený člen</th>
-        <th>Role</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let user of filteredUsers" [routerLink]="'' + user.id">
-        <td>{{ user.login }}</td>
-        <td>{{ user.email || "-" }}</td>
-        <td>
+  <ion-list>
+    <ion-item *ngFor="let user of filteredUsers">
+      <ion-label>
+        <h3>{{ user.login }}</h3>
+        <p *ngIf="user.email">{{ user.email }}</p>
+        <p *ngIf="user.member" class="d-lg-none">
+          {{ user.member.nickname || "-" }} ({{ user.member.firstName }} {{ user.member.lastName }})
+        </p>
+        <p class="d-lg-none">
+          <ion-badge *ngFor="let role of user.roles">{{ getRoleName(role) }}</ion-badge>
+        </p>
+      </ion-label>
+      <ion-label class="d-none d-lg-block">
+        <ion-badge *ngFor="let role of user.roles">{{ getRoleName(role) }}</ion-badge>
+      </ion-label>
+      <ion-label class="d-none d-lg-block">
+        <h3 *ngIf="user.member">{{ user.member.nickname || "-" }}</h3>
+        <p *ngIf="user.member">{{ user.member.firstName }} {{ user.member.lastName }}</p>
+        <p *ngIf="!user.member"><i>bez člena</i></p>
+      </ion-label>
+      <!-- <td>{{ user.email || "-" }}</td> -->
+      <!-- <td>
           <ng-container *ngIf="user.member">
             {{ user.member.nickname }} ({{ user.member.firstName }} {{ user.member.lastName }})
           </ng-container>
@@ -50,7 +58,19 @@
         <td>
           <span *ngFor="let role of user.roles" class="role badge badge-dark">{{ getRoleName(role) }}</span>
         </td>
-      </tr>
-    </tbody>
-  </admin-table>
+        <td> -->
+      <ion-buttons>
+        <ion-button
+          [routerLink]="['/uzivatele', user.id]"
+          *ngIf="user._links.updateUser.applicable"
+          [disabled]="!user._links.updateUser.allowed"
+        >
+          <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-button (click)="openUserMenu(user)">
+          <ion-icon name="menu-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
 </ion-content>

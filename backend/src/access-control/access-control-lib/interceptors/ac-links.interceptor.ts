@@ -15,7 +15,7 @@ import { OptionsStore } from "../options-store";
 import { RouteStore } from "../route-store";
 import { AcEntity } from "../schema/ac-entity";
 import { AcRouteACL } from "../schema/ac-route-acl";
-import { ChildEntity, ChildEntityObject } from "../schema/child-entity";
+import { ChildEntity } from "../schema/child-entity";
 import { MetadataConstant } from "../schema/metadata-constant";
 import { RouteStoreItem } from "../schema/route-store-item";
 
@@ -41,10 +41,6 @@ export class AcLinksInterceptor implements NestInterceptor {
 
   private addLinksToOutput<D>(res: any, routeAcl: AcRouteACL<D>, req: Request) {
     const outputEntities: ChildEntity<any> = routeAcl.options.contains || {};
-
-    // add top level entity to list if not present and result or contains is not an array
-    if (routeAcl.options.linkEntity && !Array.isArray(outputEntities))
-      (<ChildEntityObject<D>>outputEntities).entity = routeAcl.options.linkEntity;
 
     this.addLinksToChildren(res, outputEntities, req);
   }
@@ -77,11 +73,14 @@ export class AcLinksInterceptor implements NestInterceptor {
       const httpMethod = this.getHttpMethod(route);
       const routeName = this.getRouteName(route);
 
+      const allowed = route.acl.can(req, doc);
+      const applicable = typeof route.acl.options.condition === "function" ? route.acl.options.condition(doc) : true;
+
       doc[OptionsStore.linksProperty][routeName] = {
         method: httpMethod,
         href: this.getPath(route, doc),
-        allowed: route.acl.can(req, doc),
-        applicable: typeof route.acl.options.condition === "function" && !route.acl.options.condition(doc),
+        allowed,
+        applicable,
       };
     }
   }

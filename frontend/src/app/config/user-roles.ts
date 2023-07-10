@@ -8,4 +8,5 @@ export const UserRoles = [
   { id: "vedeni", assignable: true, title: "Člen vedení" },
   { id: "program", assignable: true, title: "Správce programu" },
   { id: "revizor", assignable: true, title: "Revizor" },
+  { id: "admin", assignable: true, title: "Administrátor" },
 ];
