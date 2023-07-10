@@ -19,8 +19,22 @@ export class UsersService {
     return this.userRepository.findOneBy({ id });
   }
 
-  async findUser(where: FindOptionsWhere<User> | FindOptionsWhere<User>[]) {
-    return this.userRepository.findOneBy(where);
+  async findUser(where: FindOptionsWhere<User> | FindOptionsWhere<User>[], options: { credentials?: boolean } = {}) {
+    return this.userRepository.findOne({
+      select: options.credentials
+        ? {
+            id: true,
+            login: true,
+            password: true,
+            roles: true,
+            loginCode: true,
+            loginCodeExp: true,
+            email: true,
+            memberId: true,
+          }
+        : undefined,
+      where,
+    });
   }
 
   async updateUser(id: number, data: Partial<User>) {

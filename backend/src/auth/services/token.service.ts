@@ -37,12 +37,10 @@ export class TokenService {
     const token = await this.createToken(tokenData);
 
     res.cookie(this.cookieName, token);
-    res.sendStatus(204);
   }
 
   clearToken(res: Response) {
     res.clearCookie(this.cookieName);
-    res.sendStatus(204);
   }
 
   private validateToken(tokenData: JwtPayload): tokenData is UserTokenData & JwtPayload {

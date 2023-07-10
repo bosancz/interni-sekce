@@ -5,14 +5,12 @@ import { RootResponse } from "src/api/root/dto/root-response";
 import { User } from "src/models/users/entities/user.entity";
 
 export const loginPermissions: AcPermissions<User, Roles> = {
-  uzivatel: true,
+  verejnost: true,
 };
 
 export const LoginCredentialsRoute = new RouteACL<User>({
   linkEntity: RootResponse,
-  permissions: {
-    uzivatel: true,
-  },
+  permissions: loginPermissions,
 });
 
 export const LoginGoogleRoute = new RouteACL<User>({
@@ -22,9 +20,7 @@ export const LoginGoogleRoute = new RouteACL<User>({
 
 export const LoginLinkRoute = new RouteACL<User>({
   linkEntity: RootResponse,
-  permissions: {
-    uzivatel: true,
-  },
+  permissions: loginPermissions,
 });
 
 export const LoginSendLinkRoute = new RouteACL({

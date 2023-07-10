@@ -20,9 +20,9 @@ export class User {
   member?: Member | null;
 
   @Column({ type: "varchar", unique: true }) login!: string;
-  @Column({ type: "varchar", nullable: true }) password!: string | null;
+  @Column({ type: "varchar", nullable: true, select: false }) password!: string | null;
   @Column({ type: "varchar", unique: true }) email!: string | null;
   @Column({ type: "enum", enum: UserRoles, array: true }) roles!: UserRoles[] | null;
-  @Column({ type: "varchar", unique: true, nullable: true }) loginCode!: string | null;
-  @Column({ type: "timestamp with time zone", nullable: true }) loginCodeExp!: string | null;
+  @Column({ type: "varchar", unique: true, nullable: true, select: false }) loginCode!: string | null;
+  @Column({ type: "timestamp with time zone", nullable: true, select: false }) loginCodeExp!: string | null;
 }

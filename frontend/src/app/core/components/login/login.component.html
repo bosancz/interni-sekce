@@ -17,7 +17,7 @@
     </div>
 
     <ng-container [ngSwitch]="view">
-      <form *ngSwitchCase="'login'" #loginFormEl #loginForm="ngForm" (ngSubmit)="login(loginForm)">
+      <form *ngSwitchCase="'login'" #loginFormEl #loginForm="ngForm" (ngSubmit)="loginCredentials(loginForm)">
         <ion-item>
           <ion-input
             type="text"

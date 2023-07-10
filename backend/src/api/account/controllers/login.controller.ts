@@ -42,7 +42,7 @@ export class LoginController {
     @Res({ passthrough: true }) res: Response,
     @Body() body: LoginCredentialsBody,
   ) {
-    const user = await this.userService.findUser({ login: body.login });
+    const user = await this.userService.findUser({ login: body.login }, { credentials: true });
     if (!user) throw new NotFoundException();
 
     LoginCredentialsRoute.canOrThrow(req, user);
@@ -51,7 +51,7 @@ export class LoginController {
 
     const passwordOK = await this.hashService.compareHash(body.password, user.password);
 
-    if (passwordOK) this.setLoginToken(res, user);
+    if (passwordOK) await this.setLoginToken(res, user);
     else throw new ForbiddenException();
   }
 
@@ -96,7 +96,7 @@ export class LoginController {
 
   @Post("link")
   async loginUsingLink(@Req() req: Request, @Res({ passthrough: true }) res: Response, @Body() body: LoginLinkBody) {
-    const user = await this.userService.findUser({ loginCode: body.code });
+    const user = await this.userService.findUser({ loginCode: body.code }, { credentials: true });
     if (!user || !user.loginCodeExp) throw new NotFoundException();
 
     LoginLinkRoute.canOrThrow(req, user);
