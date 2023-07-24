@@ -40,7 +40,7 @@ export type AcPermissionObject<DOC, PDATA> = {
   permission: boolean | AcPermissionFunction<DOC>;
 } & PDATA;
 
-export abstract class AcRouteACL<DOC, CONTAINS = DOC, ROLES extends string = string, PDATA extends Object = {}> {
+export class AcRouteACL<DOC, CONTAINS = DOC, ROLES extends string = string, PDATA extends Object = {}> {
   constructor(public options: AcRouteOptions<DOC, CONTAINS, ROLES, PDATA>) {}
 
   canOrThrow(req: Request, doc: DOC) {
