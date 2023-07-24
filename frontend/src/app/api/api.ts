@@ -3073,10 +3073,13 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @param {number} [year] 
+         * @param {string} [status] 
+         * @param {string} [search] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listEvents: async (year?: number, status?: string, search?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/events`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3088,6 +3091,18 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (year !== undefined) {
+                localVarQueryParameter['year'] = year;
+            }
+
+            if (status !== undefined) {
+                localVarQueryParameter['status'] = status;
+            }
+
+            if (search !== undefined) {
+                localVarQueryParameter['search'] = search;
+            }
 
 
     
@@ -3560,11 +3575,14 @@ export const EventsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {number} [year] 
+         * @param {string} [status] 
+         * @param {string} [search] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listEvents(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listEvents(options);
+        async listEvents(year?: number, status?: string, search?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listEvents(year, status, search, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3787,11 +3805,14 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
+         * @param {number} [year] 
+         * @param {string} [status] 
+         * @param {string} [search] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(options?: any): AxiosPromise<Array<EventResponse>> {
-            return localVarFp.listEvents(options).then((request) => request(axios, basePath));
+        listEvents(year?: number, status?: string, search?: string, options?: any): AxiosPromise<Array<EventResponse>> {
+            return localVarFp.listEvents(year, status, search, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -4031,12 +4052,15 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
+     * @param {number} [year] 
+     * @param {string} [status] 
+     * @param {string} [search] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
      */
-    public listEvents(options?: AxiosRequestConfig) {
-        return EventsApiFp(this.configuration).listEvents(options).then((request) => request(this.axios, this.basePath));
+    public listEvents(year?: number, status?: string, search?: string, options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).listEvents(year, status, search, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -8,7 +8,7 @@
     "dev:test-server": "ng serve --configuration=test-server",
     "deploy:production": "docker build -t docker.bosan.cz/interni-sekce-frontend:latest . && docker push docker.bosan.cz/interni-sekce-frontend:latest",
     "deploy:test": "docker build --build-arg=\"NG_CONFIGURATION=test\" -t docker.bosan.cz/interni-sekce-frontend:test . && docker push docker.bosan.cz/interni-sekce-frontend:test",
-    "api:generate": "openapi-generator-cli generate -g typescript-axios -o src/app/api -i http://localhost:3000/api-json"
+    "api:generate": "openapi-generator-cli generate"
   },
   "dependencies": {
     "@angular/animations": "^16.1.4",

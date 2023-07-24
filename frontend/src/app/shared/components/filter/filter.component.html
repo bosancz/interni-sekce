@@ -1,0 +1,14 @@
+<form #filterForm="ngForm">
+  <ion-toolbar>
+    <ion-searchbar type="text" name="search" ngModel (keydown.enter)="$event.preventDefault()"></ion-searchbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="showFilter = !showFilter" [color]="showFilter ? 'primary' : 'default'">
+        <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <div [hidden]="!showFilter">
+    <ng-content></ng-content>
+  </div>
+</form>

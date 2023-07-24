@@ -38,6 +38,7 @@ export const EventReadRoute = new RouteACL<Event, EventResponse>({
     vedouci: true,
   },
   contains: {
+    entity: EventResponse,
     properties: {
       leaders: { array: { entity: MemberResponse } },
       album: { entity: AlbumResponse },

@@ -7,4 +7,6 @@ export const RootRoute = new RouteACL({
   permissions: {
     verejnost: true,
   },
+
+  contains: { entity: RootResponse },
 });

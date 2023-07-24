@@ -1,11 +1,9 @@
 import { DatePipe } from "@angular/common";
-import { Component, OnInit, ViewChild } from "@angular/core";
-import { NgForm } from "@angular/forms";
+import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Platform, ViewWillEnter } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
-import { debounceTime } from "rxjs/operators";
 import { MemberResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
@@ -66,8 +64,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 
   style: "list" | "table" = this.platform.isPortrait() ? "list" : "table";
 
-  showFilter: boolean = false;
-
   fields: FieldData[] = [
     { id: Fields.nickname, title: "Přezdívka", header: true },
     { id: Fields.group, title: "Oddíl" },
@@ -94,8 +90,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     },
   ];
 
-  @ViewChild("filterForm", { static: true }) filterForm?: NgForm;
-
   constructor(
     private api: ApiService,
     private route: ActivatedRoute,
@@ -113,10 +107,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 
   ionViewWillEnter() {
     this.loadMembers();
-  }
-
-  ngAfterViewInit() {
-    this.filterForm!.valueChanges!.pipe(debounceTime(250)).subscribe((filter) => this.filterData(filter));
   }
 
   copyRow(cells: string[]) {
@@ -146,15 +136,13 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     this.sortMembers(members);
 
     this.members = members;
-
-    this.filterData(this.filterForm?.value);
   }
 
   private create() {
     this.router.navigate(["pridat"], { relativeTo: this.route });
   }
 
-  private filterData(filter: TableFilter) {
+  public filterData(filter: TableFilter) {
     if (this.members) {
       const search_re = filter.search
         ? new RegExp("(^| )" + filter.search.replace(/ /g, "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i")

@@ -9,6 +9,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   Res,
 } from "@nestjs/common";
@@ -40,6 +41,7 @@ import {
   EventsYearsRoute,
 } from "../acl/events.acl";
 import { EventCreateBody, EventResponse, EventStatusChangeBody, EventUpdateBody } from "../dto/event.dto";
+import { GetEventsQuery } from "../dto/events.dto";
 
 @Controller("events")
 @AcController()
@@ -52,12 +54,29 @@ export class EventsController {
   @Get()
   @AcLinks(EventsListRoute)
   @ApiResponse({ type: EventResponse, isArray: true })
-  async listEvents(@Req() req: Request): Promise<ResponseData<EventResponse>[]> {
+  async listEvents(@Req() req: Request, @Query() query: GetEventsQuery): Promise<ResponseData<EventResponse>[]> {
     const q = this.eventsRepository
       .createQueryBuilder("events")
-      .select(["events.id", "events.name", "events.status"])
+      .select(["events.id", "events.name", "events.status", "events.dateFrom", "events.dateTill"])
+      .leftJoin("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
+      .leftJoinAndSelect("attendees.member", "leaders")
       .where(EventsListRoute.canWhere(req))
       .limit(25);
+
+    if (query?.year) {
+      q.andWhere("date_till >= :yearStart AND date_from <= :yearEnd", {
+        yearStart: `${query.year}-01-01`,
+        yearEnd: `${query.year}-12-31`,
+      });
+    }
+
+    if (query?.status) {
+      q.andWhere("status = :status", { status: query.status });
+    }
+
+    if (query?.search) {
+      q.andWhere("name LIKE :search", { search: `%${query.search}%` });
+    }
 
     return q.getMany();
   }

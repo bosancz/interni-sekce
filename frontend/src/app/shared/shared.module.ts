@@ -10,10 +10,13 @@ import { DotComponent } from "./components/dot/dot.component";
 import { EventCalendarComponent } from "./components/event-calendar/event-calendar.component";
 import { EventCardComponent } from "./components/event-card/event-card.component";
 import { EventStatusBadgeComponent } from "./components/event-status-badge/event-status-badge.component";
+import { FilterComponent } from "./components/filter/filter.component";
 import { GroupsSelectComponent } from "./components/groups-select/groups-select.component";
 import { MemberItemDetailComponent } from "./components/member-item-detail/member-item-detail.component";
 import { PageContentComponent } from "./components/page-content/page-content.component";
+import { PageFooterComponent } from "./components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "./components/page-header/page-header.component";
+import { PaginationComponent } from "./components/pagination/pagination.component";
 import { PhotoFaceComponent } from "./components/photo-face/photo-face.component";
 import { PhotoGalleryComponent } from "./components/photo-gallery/photo-gallery.component";
 import { AgePipe } from "./pipes/age.pipe";
@@ -46,10 +49,13 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
     MemberItemDetailComponent,
     MemberPipe,
     PageContentComponent,
+    PageFooterComponent,
     PageHeaderComponent,
     PhotoFaceComponent,
     PhotoGalleryComponent,
     PrettyBytesPipe,
+    PaginationComponent,
+    FilterComponent,
   ],
   exports: [
     FormsModule,
@@ -74,10 +80,13 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
     MemberItemDetailComponent,
     MemberPipe,
     PageContentComponent,
+    PageFooterComponent,
     PageHeaderComponent,
     PhotoFaceComponent,
     PhotoGalleryComponent,
     PrettyBytesPipe,
+    PaginationComponent,
+    FilterComponent,
   ],
   providers: [DatePipe],
 })

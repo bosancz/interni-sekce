@@ -10,17 +10,8 @@
   </ion-toolbar>
 </ion-header>
 
-<form #filterForm="ngForm" class="py-1">
-  <ion-toolbar>
-    <ion-searchbar type="text" name="search" ngModel (keydown.enter)="$event.preventDefault()"></ion-searchbar>
-    <ion-buttons slot="end">
-      <ion-button (click)="showFilter = !showFilter" [color]="showFilter ? 'primary' : 'default'">
-        <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-
-  <div class="row" [hidden]="!showFilter">
+<bo-filter (change)="filterData($event)">
+  <div class="row">
     <!-- <div class="col-12 col-md-3">
       <ion-item lines="none">
         <ion-label position="stacked">Oddíl</ion-label>
@@ -41,7 +32,8 @@
           </ion-select-option>
         </ion-select>
       </ion-item>
-    </div> -->
+    </div>
+    -->
 
     <div class="col-12 col-md-3">
       <ion-item lines="none">
@@ -64,7 +56,7 @@
       </ion-item>
     </div>
   </div>
-</form>
+</bo-filter>
 
 <ion-content>
   <admin-table *ngIf="style === 'table'">

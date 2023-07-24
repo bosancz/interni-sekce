@@ -1,77 +1,58 @@
 <bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions"></bo-page-header>
 
 <bo-page-content>
-  <form #filterForm="ngForm" class="filter px-lg-3 py-1">
-    <div class="row">
-      <div class="col-12 col-lg">
-        <ion-searchbar
-          type="text"
-          [ngModel]="search$ | async"
-          (ngModelChange)="search$.next($event)"
-          [ngModelOptions]="{ standalone: true }"
-          (keydown.enter)="$event.preventDefault()"
-        ></ion-searchbar>
-      </div>
+  <bo-filter (change)="loadEvents($event)">
+    <ion-item>
+      <ion-label>Rok</ion-label>
+      <ion-select name="year" ngModel>
+        <ion-select-option [value]="null">všechny</ion-select-option>
+        <ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
+      </ion-select>
+    </ion-item>
 
-      <div class="col-12 col-md-12 col-lg-4 col-xl-3">
-        <ion-item>
-          <ion-label>Rok</ion-label>
-          <ion-select name="year" [ngModel]="currentYear">
-            <ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-      </div>
+    <ion-item>
+      <ion-label>Stav</ion-label>
+      <ion-select name="status" ngModel>
+        <ion-select-option [value]="null">všechny</ion-select-option>
+        <ion-select-option *ngFor="let status of statuses | keyvalue" [value]="status.key">
+          {{ status.value.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+  </bo-filter>
 
-      <div class="col-12 col-md-12 col-lg-3 col-xl-2">
-        <ion-item>
-          <ion-label>Stav</ion-label>
-          <ion-select name="status" ngModel>
-            <ion-select-option>Všechny</ion-select-option>
-            <ion-select-option *ngFor="let status of statuses | keyvalue" [value]="status.key">
-              {{ status.value.name }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-      </div>
-    </div>
-  </form>
+  <ion-list>
+    <ng-container *ngIf="events === undefined">
+      <ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
+      <ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
+      <ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
+      <ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
+      <ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
+    </ng-container>
 
-  <admin-table>
-    <thead>
-      <tr>
-        <th>Název akce</th>
-        <th>Datum</th>
-        <th>Vede</th>
-        <th>Stav</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let event of events" [routerLink]="'' + event.id">
-        <td>{{ event.name }}</td>
-        <td class="date">
+    <ion-item *ngFor="let event of events" [routerLink]="'' + event.id">
+      <ion-label>
+        <h3>{{ event.name }}</h3>
+        <p>
           {{ event.dateFrom | date : "EEEEEE d. M." }} - {{ event.dateTill | date : "EEEEEE d. M. y" }}
-        </td>
-        <td>
+          <br />
           <ng-container *ngFor="let leader of event.leaders; let isFirst = first">
             <ng-container *ngIf="!isFirst">, </ng-container>
             <span [style.color]="leader.groupId | group : 'color'">{{ leader | member : "nickname" }}</span>
           </ng-container>
           <strong *ngIf="!event.leaders?.length" class="text-danger">Pan NIKDO</strong>
+        </p>
+      </ion-label>
+
+      <bo-event-status-badge [event]="event"></bo-event-status-badge>
+    </ion-item>
+  </ion-list>
+
+  <!-- <td>
+          
         </td>
         <td>
-          <bo-event-status-badge [event]="event"></bo-event-status-badge>
+          
         </td>
-      </tr>
-
-      <ng-container *ngIf="events === undefined">
-        <tr *ngFor="let item of loadingArray">
-          <td><ion-skeleton-text animated></ion-skeleton-text></td>
-          <td><ion-skeleton-text animated></ion-skeleton-text></td>
-          <td><ion-skeleton-text animated></ion-skeleton-text></td>
-          <td><ion-skeleton-text animated></ion-skeleton-text></td>
-          <td><ion-skeleton-text animated></ion-skeleton-text></td>
-        </tr>
-      </ng-container>
-    </tbody>
-  </admin-table>
+      </tr> -->
 </bo-page-content>
