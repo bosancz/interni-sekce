@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsBoolean, IsEnum, IsOptional, IsString } from "class-validator";
-import { AcLink, AcLinksObject } from "src/access-control/access-control-lib/schema/ac-link";
 import { AlbumResponse } from "src/api/albums/dto/album.dto";
 import { GroupResponse } from "src/api/members/dto/group.dto";
 import { MemberResponse } from "src/api/members/dto/member.dto";
@@ -10,53 +9,8 @@ import { EventExpense } from "src/models/events/entities/event-expense.entity";
 import { EventGroup } from "src/models/events/entities/event-group.entity";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
-import { EventsAttendeesController } from "../controllers/events-attendees.controller";
-import { EventsExpensesController } from "../controllers/events-expenses.controller";
-import { EventsRegistrationsController } from "../controllers/events-registrations.controller";
-import { EventsReportsController } from "../controllers/events-reports.controller";
-import { EventsController } from "../controllers/events.controller";
 import { EventAttendeeResponse } from "./event-attendee.dto";
 import { EventExpenseResponse } from "./event-expense.dto";
-
-type LinkNames =
-  | ExtractExisting<
-      keyof EventsController,
-      | "deleteEvent"
-      | "rejectEvent"
-      | "leadEvent"
-      | "submitEvent"
-      | "getEvent"
-      | "updateEvent"
-      | "publishEvent"
-      | "unpublishEvent"
-      | "cancelEvent"
-      | "uncancelEvent"
-    >
-  | ExtractExisting<keyof EventsAttendeesController, "listEventAttendees" | "addEventAttendee">
-  | ExtractExisting<keyof EventsExpensesController, "listEventExpenses" | "addEventExpense">
-  | keyof EventsRegistrationsController
-  | keyof EventsReportsController;
-
-class EventResponseLinks implements AcLinksObject<LinkNames> {
-  @ApiProperty() addEventAttendee!: AcLink;
-  @ApiProperty() addEventExpense!: AcLink;
-  @ApiProperty() cancelEvent!: AcLink;
-  @ApiProperty() deleteEvent!: AcLink;
-  @ApiProperty() deleteEventRegistration!: AcLink;
-  @ApiProperty() getEvent!: AcLink;
-  @ApiProperty() getEventRegistration!: AcLink;
-  @ApiProperty() getEventReport!: AcLink;
-  @ApiProperty() leadEvent!: AcLink;
-  @ApiProperty() listEventAttendees!: AcLink;
-  @ApiProperty() listEventExpenses!: AcLink;
-  @ApiProperty() publishEvent!: AcLink;
-  @ApiProperty() rejectEvent!: AcLink;
-  @ApiProperty() saveEventRegistration!: AcLink;
-  @ApiProperty() submitEvent!: AcLink;
-  @ApiProperty() uncancelEvent!: AcLink;
-  @ApiProperty() unpublishEvent!: AcLink;
-  @ApiProperty() updateEvent!: AcLink;
-}
 
 export class EventResponse implements Event {
   @ApiProperty() id!: number;
@@ -83,8 +37,6 @@ export class EventResponse implements Event {
   @ApiPropertyOptional({ type: EventAttendeeResponse, isArray: true }) attendees?: EventAttendee[] | undefined;
   @ApiPropertyOptional({ type: EventExpenseResponse, isArray: true }) expenses?: EventExpense[] | undefined;
   @ApiPropertyOptional({ type: MemberResponse, isArray: true }) leaders?: Member[] | undefined;
-
-  @ApiProperty() _links!: EventResponseLinks;
 }
 
 export class EventCreateBody implements Pick<Event, "name" | "description" | "dateFrom" | "dateTill"> {

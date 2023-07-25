@@ -5,4 +5,6 @@ export type RouteStoreItem = {
   method: string | symbol;
   controller: any;
   handler: any;
+  httpMethod: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  name: string;
 };

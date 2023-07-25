@@ -2,8 +2,7 @@ import { Controller, Get, HttpCode, NotFoundException, Param, Req } from "@nestj
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
-import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
-import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
+import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
 import { Repository } from "typeorm";

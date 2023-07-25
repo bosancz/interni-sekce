@@ -1,21 +1,13 @@
 import { ApiProperty, ApiPropertyOptional, PickType } from "@nestjs/swagger";
-import { AcLink, AcLinksObject } from "src/access-control/access-control-lib/schema/ac-link";
 import { UserResponse } from "src/api/users/dto/user.dto";
 import { Album } from "src/models/albums/entities/album.entity";
 import { User } from "src/models/users/entities/user.entity";
-import { PhotosController } from "../controllers/photos.controller";
 import { AlbumResponse } from "./album.dto";
 
 export enum PhotoSizes {
   "big" = "big",
   "small" = "small",
   "original" = "original",
-}
-
-type LinkNames = ExtractExisting<keyof PhotosController, "getPhotoImage">;
-
-class PhotoResponseLinks implements AcLinksObject<LinkNames> {
-  @ApiProperty() getPhotoImage!: AcLink;
 }
 
 export class PhotoResponse {
@@ -36,8 +28,6 @@ export class PhotoResponse {
   // @ApiPropertyOptional() faces?: PhotoFace[] | null;
   @ApiPropertyOptional({ type: AlbumResponse }) album?: Album | undefined;
   @ApiPropertyOptional({ type: UserResponse }) uploadedBy?: User | null;
-
-  @ApiProperty() _links!: PhotoResponseLinks;
 }
 
 export class PhotosListResponse extends PickType(PhotoResponse, ["id", "name", "title", "albumId"]) {}

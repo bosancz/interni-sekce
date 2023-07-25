@@ -4,37 +4,38 @@ import { Member } from "src/models/members/entities/member.entity";
 import { MemberResponse } from "../dto/member.dto";
 
 export const MembersRoute = new RouteACL<Member, Member[]>({
-  linkEntity: RootResponse,
+  linkTo: RootResponse,
+  contains: MemberResponse,
 
   permissions: {
     vedouci: true,
   },
-  contains: { array: { entity: MemberResponse } },
 });
 
 export const MemberCreateRoute = new RouteACL<undefined>({
-  linkEntity: MemberResponse,
+  linkTo: MemberResponse,
   permissions: {
     vedouci: true,
   },
 });
 
 export const MemberRoute = new RouteACL<Member>({
-  linkEntity: MemberResponse,
+  contains: MemberResponse,
+
   permissions: {
     vedouci: true,
   },
 });
 
 export const MemberUpdateRoute = new RouteACL<Member>({
-  linkEntity: MemberResponse,
+  linkTo: MemberResponse,
   permissions: {
     vedouci: true,
   },
 });
 
 export const MemberDeleteRoute = new RouteACL<Member>({
-  linkEntity: MemberResponse,
+  linkTo: MemberResponse,
   permissions: {
     vedouci: true,
   },

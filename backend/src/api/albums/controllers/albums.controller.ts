@@ -1,12 +1,10 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
-import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
-import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
+import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
 import { AlbumsService } from "src/models/albums/services/albums.service";
 import { PhotosService } from "src/models/albums/services/photos.service";
-import { ResponseData } from "src/openapi";
 import {
   AlbumCreateRoute,
   AlbumDeleteRoute,
@@ -28,8 +26,8 @@ export class AlbumsController {
 
   @Get()
   @AcLinks(AlbumsListRoute)
-  @ApiResponse({ type: AlbumsListResponse, isArray: true })
-  async listAlbums(@Req() req: Request): Promise<ResponseData<AlbumsListResponse>[]> {
+  @ApiResponse({ type: WithLinks(AlbumsListResponse), isArray: true })
+  async listAlbums(@Req() req: Request): Promise<AlbumsListResponse[]> {
     return await this.albumsService.repository
       .createQueryBuilder("albums")
       .select(["albums.id", "albums.name", "albums.status", "albums.dateFrom", "albums.dateTill"])
@@ -40,7 +38,7 @@ export class AlbumsController {
   @Post()
   @AcLinks(AlbumCreateRoute)
   @ApiResponse({ type: AlbumResponse })
-  async createAlbum(@Req() req: Request, @Body() body: AlbumCreateBody): Promise<ResponseData<AlbumResponse>> {
+  async createAlbum(@Req() req: Request, @Body() body: AlbumCreateBody): Promise<AlbumResponse> {
     AlbumCreateRoute.canOrThrow(req, undefined);
 
     return this.albumsService.createAlbum(body);
@@ -49,7 +47,7 @@ export class AlbumsController {
   @Get(":id")
   @AcLinks(AlbumReadRoute)
   @ApiResponse({ type: AlbumResponse })
-  async getAlbum(@Param("id") id: number, @Req() req: Request): Promise<ResponseData<AlbumResponse>> {
+  async getAlbum(@Param("id") id: number, @Req() req: Request): Promise<AlbumResponse> {
     const album = await this.albumsService.repository.findOneBy({ id });
 
     if (!album) throw new NotFoundException();
@@ -110,8 +108,8 @@ export class AlbumsController {
 
   @Get(":id/photos")
   @AcLinks(AlbumPhotosRoute)
-  @ApiResponse({ type: PhotoResponse, isArray: true })
-  async getAlbumPhotos(@Param("id") id: number, @Req() req: Request): Promise<ResponseData<PhotoResponse>[]> {
+  @ApiResponse({ type: WithLinks(PhotoResponse), isArray: true })
+  async getAlbumPhotos(@Param("id") id: number, @Req() req: Request): Promise<PhotoResponse[]> {
     const photos = this.photosService.repository
       .createQueryBuilder("photos")
       .where("photos.albumId = :albumId", { albumId: id })

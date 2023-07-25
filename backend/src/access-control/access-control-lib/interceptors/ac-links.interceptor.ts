@@ -5,17 +5,15 @@ import {
   InternalServerErrorException,
   Logger,
   NestInterceptor,
-  RequestMethod,
+  Type,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Request } from "express";
 import { map } from "rxjs";
 import { Config } from "src/config";
+import { EntityStore } from "../entity-store";
 import { OptionsStore } from "../options-store";
 import { RouteStore } from "../route-store";
-import { AcEntity } from "../schema/ac-entity";
-import { AcRouteACL } from "../schema/ac-route-acl";
-import { ChildEntity } from "../schema/child-entity";
 import { MetadataConstant } from "../schema/metadata-constant";
 import { RouteStoreItem } from "../schema/route-store-item";
 
@@ -30,54 +28,45 @@ export class AcLinksInterceptor implements NestInterceptor {
       map((res) => {
         const route = <RouteStoreItem>this.reflector.get(MetadataConstant.route, context.getHandler());
 
-        const req = context.switchToHttp().getRequest<Request>();
-
-        this.addLinksToOutput(res, route.acl, req);
+        if (route.acl.options.contains) {
+          const req = context.switchToHttp().getRequest<Request>();
+          this.addLinksToEntity(req, route.acl.options.contains, Array.isArray(res) ? res : [res]);
+        }
 
         return res;
       }),
     );
   }
 
-  private addLinksToOutput<D>(res: any, routeAcl: AcRouteACL<D>, req: Request) {
-    const outputEntities: ChildEntity<any> = routeAcl.options.contains || {};
-
-    this.addLinksToChildren(res, outputEntities, req);
-  }
-
-  private addLinksToChildren<D>(res: any, child: ChildEntity<D>, req: Request) {
-    if ("array" in child && Array.isArray(res)) {
-      res.forEach((item, i) => {
-        this.addLinksToChildren(res[i], child.array, req);
-      });
-      return;
-    }
-
-    if ("entity" in child && child.entity) {
-      this.addLinksToDoc(res, child.entity, req);
-    }
-
-    if ("properties" in child && child.properties) {
-      Object.keys(child.properties).forEach((key) => {
-        if (res[key]) this.addLinksToChildren(res[<keyof D>key], <any>child.properties![<keyof D>key]!, req);
-      });
-    }
-  }
-
-  private addLinksToDoc<D>(doc: D & any, entity: AcEntity<D>, req: Request): void {
-    doc[OptionsStore.linksProperty] = {};
-
+  private addLinksToEntity(req: Request, entity: Type<any>, docs: any[]) {
     const routes = this.findRoutes(entity);
 
-    for (let route of routes) {
-      const httpMethod = this.getHttpMethod(route);
-      const routeName = this.getRouteName(route);
+    for (let doc of docs) {
+      this.addLinksToDoc(req, doc, routes);
+    }
 
+    const entityStoreItem = EntityStore.find((e) => e.entity === entity);
+    if (entityStoreItem) {
+      for (let [property, propertyOptions] of Object.entries(entityStoreItem.properties)) {
+        const childDocs = docs
+          .filter((doc) => property in doc && !!doc[property] && typeof doc[property] === "object")
+          .map((doc) => (Array.isArray(doc[property]) ? doc[property] : [doc[property]]))
+          .flat();
+
+        this.addLinksToEntity(req, propertyOptions.entity, childDocs);
+      }
+    }
+  }
+
+  private addLinksToDoc(req: Request, doc: any, routes: RouteStoreItem[]): void {
+    doc[OptionsStore.linksProperty] = {};
+
+    for (let route of routes) {
       const allowed = route.acl.can(req, doc);
       const applicable = typeof route.acl.options.condition === "function" ? route.acl.options.condition(doc) : true;
 
-      doc[OptionsStore.linksProperty][routeName] = {
-        method: httpMethod,
+      doc[OptionsStore.linksProperty][route.name] = {
+        method: route.httpMethod,
         href: this.getPath(route, doc),
         allowed,
         applicable,
@@ -85,19 +74,8 @@ export class AcLinksInterceptor implements NestInterceptor {
     }
   }
 
-  private findRoutes(entity: AcEntity<any>) {
-    return RouteStore.filter((route) => route.acl.options.linkEntity === entity);
-  }
-
-  private getHttpMethod(route: RouteStoreItem) {
-    const methodId = Reflect.getMetadata("method", route.handler);
-    return <"GET" | "POST" | "PUT" | "PATCH" | "DELETE">RequestMethod[methodId];
-  }
-
-  private getRouteName(route: RouteStoreItem) {
-    if (route.acl.options.name) return route.acl.options.name;
-    if (OptionsStore.routeNameConvention) return OptionsStore.routeNameConvention(String(route.method));
-    else return String(route.method);
+  private findRoutes(entity: Type<any>) {
+    return RouteStore.filter((route) => route.acl.options.linkTo === entity);
   }
 
   private getPath(route: RouteStoreItem, doc: any) {

@@ -12,7 +12,7 @@ import {
 import { ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { DateTime } from "luxon";
-import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
+import { AcController } from "src/access-control/access-control-lib";
 import { UserTokenData } from "src/auth/schema/user-token";
 import { HashService } from "src/auth/services/hash.service";
 import { TokenService } from "src/auth/services/token.service";

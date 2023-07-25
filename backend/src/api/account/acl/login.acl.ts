@@ -1,29 +1,29 @@
-import { AcPermissions } from "src/access-control/access-control-lib/schema/ac-route-acl";
+import { AcPermissions } from "src/access-control/access-control-lib";
 import { Roles } from "src/access-control/schema/roles";
 import { RouteACL } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
 import { User } from "src/models/users/entities/user.entity";
 
-export const loginPermissions: AcPermissions<User, Roles> = {
+export const permissions: AcPermissions<User, Roles> = {
   verejnost: true,
 };
 
 export const LoginCredentialsRoute = new RouteACL<User>({
-  linkEntity: RootResponse,
-  permissions: loginPermissions,
+  linkTo: RootResponse,
+  permissions,
 });
 
 export const LoginGoogleRoute = new RouteACL<User>({
-  linkEntity: RootResponse,
-  permissions: loginPermissions,
+  linkTo: RootResponse,
+  permissions,
 });
 
 export const LoginLinkRoute = new RouteACL<User>({
-  linkEntity: RootResponse,
-  permissions: loginPermissions,
+  linkTo: RootResponse,
+  permissions,
 });
 
 export const LoginSendLinkRoute = new RouteACL({
-  linkEntity: RootResponse,
+  linkTo: RootResponse,
   inheritPermissions: LoginLinkRoute,
 });

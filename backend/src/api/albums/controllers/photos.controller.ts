@@ -14,8 +14,7 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
-import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
-import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
+import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { PhotosService } from "src/models/albums/services/photos.service";
 import {
   PhotoCreateRoute,

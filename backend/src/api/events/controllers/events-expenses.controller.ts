@@ -1,8 +1,7 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
-import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
-import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
+import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { EventsService } from "src/models/events/services/events.service";
 import {
   EventExpenseCreateRoute,

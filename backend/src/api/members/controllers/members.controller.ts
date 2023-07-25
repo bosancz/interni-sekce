@@ -2,8 +2,7 @@ import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, R
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
-import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
-import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
+import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Member } from "src/models/members/entities/member.entity";
 import { MembersService } from "src/models/members/services/members.service";
 import { Repository } from "typeorm";

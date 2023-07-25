@@ -1,64 +1,45 @@
 import { Request } from "express";
 import { RouteACL } from "src/access-control/schema/route-acl";
-import { AlbumResponse } from "src/api/albums/dto/album.dto";
-import { GroupResponse } from "src/api/members/dto/group.dto";
-import { MemberResponse } from "src/api/members/dto/member.dto";
 import { RootResponse } from "src/api/root/dto/root-response";
-import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
-import { EventExpenseResponse } from "../dto/event-expense.dto";
 import { EventCreateBody, EventResponse } from "../dto/event.dto";
 
 export const isMyEvent = (doc: Pick<Event, "leaders"> | undefined, req: Request) =>
   doc?.leaders?.some((l) => l.id === req.user?.userId) ?? false;
 
 export const EventsListRoute = new RouteACL<undefined, EventResponse[]>({
-  linkEntity: RootResponse,
+  linkTo: RootResponse,
+  contains: EventResponse,
 
   permissions: {
     vedouci: true,
-  },
-  contains: {
-    array: {
-      entity: EventResponse,
-      properties: { leaders: { array: { entity: MemberResponse } } },
-    },
   },
 });
 
 export const EventsYearsRoute = new RouteACL<undefined>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
   inheritPermissions: EventsListRoute,
 });
 
 export const EventReadRoute = new RouteACL<Event, EventResponse>({
-  linkEntity: EventResponse,
+  contains: EventResponse,
 
   permissions: {
     vedouci: true,
-  },
-  contains: {
-    entity: EventResponse,
-    properties: {
-      leaders: { array: { entity: MemberResponse } },
-      album: { entity: AlbumResponse },
-      attendees: { array: { entity: EventAttendee } },
-      groups: { array: { entity: GroupResponse } },
-      expenses: { array: { entity: EventExpenseResponse } },
-    },
   },
 });
 
 export const EventCreateRoute = new RouteACL<EventCreateBody, EventResponse>({
-  linkEntity: RootResponse,
+  linkTo: RootResponse,
+  contains: EventResponse,
+
   permissions: {
     vedouci: true,
   },
-  contains: { entity: EventResponse },
 });
 
 export const EventEditRoute = new RouteACL<Event, EventResponse>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
 
   permissions: {
     admin: true,
@@ -68,7 +49,7 @@ export const EventEditRoute = new RouteACL<Event, EventResponse>({
 });
 
 export const EventDeleteRoute = new RouteACL<Event, EventResponse>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
   permissions: {
     program: true,
     admin: true,
@@ -77,7 +58,7 @@ export const EventDeleteRoute = new RouteACL<Event, EventResponse>({
 });
 
 export const EventLeadRoute = new RouteACL<Event, EventResponse>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
 
   permissions: {
     admin: true,
@@ -88,7 +69,7 @@ export const EventLeadRoute = new RouteACL<Event, EventResponse>({
 });
 
 export const EventSubmitRoute = new RouteACL<Event, EventResponse>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
 
   permissions: {
     program: true,
@@ -100,7 +81,7 @@ export const EventSubmitRoute = new RouteACL<Event, EventResponse>({
 });
 
 export const EventPublishRoute = new RouteACL<Event, EventResponse>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
   permissions: {
     program: true,
     admin: true,
@@ -109,7 +90,7 @@ export const EventPublishRoute = new RouteACL<Event, EventResponse>({
 });
 
 export const EventRejectRoute = new RouteACL<Event, EventResponse>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
   permissions: {
     program: true,
     admin: true,
@@ -118,7 +99,7 @@ export const EventRejectRoute = new RouteACL<Event, EventResponse>({
 });
 
 export const EventUnpublishRoute = new RouteACL<Event, EventResponse>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
   permissions: {
     program: true,
     admin: true,
@@ -127,7 +108,7 @@ export const EventUnpublishRoute = new RouteACL<Event, EventResponse>({
 });
 
 export const EventCancelRoute = new RouteACL<Event, EventResponse>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
   permissions: {
     program: true,
     admin: true,
@@ -136,7 +117,7 @@ export const EventCancelRoute = new RouteACL<Event, EventResponse>({
 });
 
 export const EventUncancelRoute = new RouteACL<Event, EventResponse>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
   permissions: {
     program: true,
     admin: true,
@@ -145,25 +126,25 @@ export const EventUncancelRoute = new RouteACL<Event, EventResponse>({
 });
 
 export const EventRegistrationReadRoute = new RouteACL<Event>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
 
   inheritPermissions: EventReadRoute,
 });
 
 export const EventRegistrationEditRoute = new RouteACL<Event>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
 
   inheritPermissions: EventEditRoute,
 });
 
 export const EventReportReadRoute = new RouteACL<Event>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
 
   inheritPermissions: EventReadRoute,
 });
 
 export const EventReportEditRoute = new RouteACL<Event>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
 
   inheritPermissions: EventEditRoute,
 });

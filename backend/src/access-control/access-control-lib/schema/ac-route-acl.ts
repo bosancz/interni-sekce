@@ -1,13 +1,14 @@
-import { ForbiddenException, InternalServerErrorException } from "@nestjs/common";
+import { ForbiddenException, InternalServerErrorException, Type } from "@nestjs/common";
 import { Request } from "express";
 import { OptionsStore } from "../options-store";
-import { AcEntity } from "./ac-entity";
-import { ChildEntity } from "./child-entity";
 
 export interface AcRouteOptions<DOC, CONTAINS = DOC, ROLES extends string = string, PDATA extends Object = {}> {
   // TODO: maybe rename to `linkTo`
   /** Add link for this route to the specified parent entity. This adds a links object as a property (default `_links`) to all routes of the same entity */
-  linkEntity?: AcEntity<DOC>;
+  linkTo?: Type<any>;
+
+  /** Add links from child routes linked to this entity. This adds a links object as a property (default `_links`) to the response */
+  contains?: Type<any>;
 
   // TODO: maybe rename to `allowed` like the resulting property
   /** Permissions for the current route */
@@ -21,8 +22,6 @@ export interface AcRouteOptions<DOC, CONTAINS = DOC, ROLES extends string = stri
   condition?: (d: DOC) => boolean;
 
   path?: (d: DOC) => string;
-
-  contains?: ChildEntity<CONTAINS>;
 
   name?: string;
 }

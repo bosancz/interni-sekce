@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 import { Request } from "express";
-import { AccessControlLibModule } from "./access-control-lib/access-control-lib.module";
-import { AccessControlLibOptions } from "./access-control-lib/schema/options";
+import { AccessControlLibModule, AccessControlLibOptions } from "./access-control-lib";
 import { Roles, StaticRoles } from "./schema/roles";
 
 const acOptions: AccessControlLibOptions = {

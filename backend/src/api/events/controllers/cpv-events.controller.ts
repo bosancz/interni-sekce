@@ -1,8 +1,7 @@
 import { Controller, Get, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
-import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
-import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
+import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { CPVEventsListRoute } from "../acl/cpv-events.acl";
 import { CPVEventResponse } from "../dto/cpv-event.dto";
 

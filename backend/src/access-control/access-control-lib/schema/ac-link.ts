@@ -6,5 +6,3 @@ export class AcLink {
   @ApiProperty() href!: string;
   @ApiProperty() method!: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 }
-
-export type AcLinksObject<P extends string> = { [key in P]: AcLink };

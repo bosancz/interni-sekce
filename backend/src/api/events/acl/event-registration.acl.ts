@@ -4,19 +4,19 @@ import { EventResponse } from "../dto/event.dto";
 import { EventEditRoute, EventReadRoute } from "./events.acl";
 
 export const EventRegistrationReadRoute = new RouteACL<Event>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
 
   inheritPermissions: EventReadRoute,
 });
 
 export const EventRegistrationEditRoute = new RouteACL<Event>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
 
   inheritPermissions: EventEditRoute,
 });
 
 export const EventRegistrationDeleteRoute = new RouteACL<Event>({
-  linkEntity: EventResponse,
+  linkTo: EventResponse,
 
   inheritPermissions: EventEditRoute,
 });

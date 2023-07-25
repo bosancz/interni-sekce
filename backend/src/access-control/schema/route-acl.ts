@@ -1,7 +1,7 @@
 import { ForbiddenException } from "@nestjs/common";
 import { Request } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
-import { AcRouteACL } from "../access-control-lib/schema/ac-route-acl";
+import { AcRouteACL } from "../access-control-lib";
 import { Roles } from "./roles";
 
 export type WhereData = { where?: (qb: WhereExpressionBuilder, req: Request) => WhereExpressionBuilder };

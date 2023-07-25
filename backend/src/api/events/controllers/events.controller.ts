@@ -16,14 +16,12 @@ import {
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
-import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
-import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
+import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Token } from "src/auth/decorators/token.decorator";
 import { UserToken } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
-import { ResponseData } from "src/openapi";
 import { Repository } from "typeorm";
 import {
   EventCancelRoute,
@@ -54,7 +52,7 @@ export class EventsController {
   @Get()
   @AcLinks(EventsListRoute)
   @ApiResponse({ type: EventResponse, isArray: true })
-  async listEvents(@Req() req: Request, @Query() query: GetEventsQuery): Promise<ResponseData<EventResponse>[]> {
+  async listEvents(@Req() req: Request, @Query() query: GetEventsQuery): Promise<EventResponse[]> {
     const q = this.eventsRepository
       .createQueryBuilder("events")
       .select(["events.id", "events.name", "events.status", "events.dateFrom", "events.dateTill"])

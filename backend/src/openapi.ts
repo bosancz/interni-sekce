@@ -2,8 +2,6 @@ import { INestApplication } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { Config } from "./config";
 
-export type ResponseData<T> = Omit<T, "_links">;
-
 export function registerOpenApi(app: INestApplication) {
   // OpenAPI
   const config = new DocumentBuilder()

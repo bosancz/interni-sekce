@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from "@nestjs/swagger";
+import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contacts.entity";
@@ -26,9 +27,15 @@ export class MemberResponse implements Member {
   @ApiPropertyOptional({ type: "enum", enum: MemberRole }) role!: MemberRole | null;
   @ApiPropertyOptional({ type: "enum", enum: MemberRank }) rank!: MemberRank | null;
 
-  @ApiPropertyOptional({ type: GroupResponse }) group?: Group | undefined;
-  @ApiPropertyOptional() contacts?: MemberContact[] | undefined;
-  @ApiPropertyOptional() achievements?: MemberAchievement[] | undefined;
+  @AcEntity(GroupResponse)
+  @ApiPropertyOptional({ type: WithLinks(GroupResponse) })
+  group?: Group | undefined;
+
+  @ApiPropertyOptional()
+  contacts?: MemberContact[] | undefined;
+
+  @ApiPropertyOptional()
+  achievements?: MemberAchievement[] | undefined;
 }
 
 export class CreateMemberBody extends OmitType(MemberResponse, ["group", "contacts", "achievements", "id"]) {}

@@ -6,63 +6,61 @@ import { AlbumResponse } from "../dto/album.dto";
 import { PhotoResponse } from "../dto/photo.dto";
 
 export const AlbumsListRoute = new RouteACL<undefined, Album[]>({
-  linkEntity: RootResponse,
+  linkTo: RootResponse,
+  contains: AlbumResponse,
 
   permissions: {
     vedouci: true,
   },
-  contains: {
-    array: { entity: AlbumResponse },
-  },
 });
 
 export const AlbumReadRoute = new RouteACL<Album>({
-  linkEntity: AlbumResponse,
+  linkTo: AlbumResponse,
   permissions: {
     vedouci: true,
   },
 });
 
 export const AlbumCreateRoute = new RouteACL<undefined, Album>({
-  linkEntity: RootResponse,
+  linkTo: RootResponse,
 
   permissions: {
     vedouci: true,
   },
-  contains: { entity: AlbumResponse },
+  contains: AlbumResponse,
 });
 
 export const AlbumEditRoute = new RouteACL<Album>({
-  linkEntity: AlbumResponse,
+  linkTo: AlbumResponse,
   permissions: {
     vedouci: true,
   },
 });
 
 export const AlbumDeleteRoute = new RouteACL<Album>({
-  linkEntity: AlbumResponse,
+  linkTo: AlbumResponse,
   inheritPermissions: AlbumEditRoute,
 });
 
 export const AlbumPublishRoute = new RouteACL<Album>({
-  linkEntity: AlbumResponse,
+  linkTo: AlbumResponse,
   inheritPermissions: AlbumEditRoute,
   condition: (album) => album.status === "draft",
 });
 
 export const AlbumUnpublishRoute = new RouteACL<Album>({
-  linkEntity: AlbumResponse,
+  linkTo: AlbumResponse,
+
   inheritPermissions: AlbumEditRoute,
+
   condition: (album) => album.status === "public",
 });
 
 export const AlbumPhotosRoute = new RouteACL<Album, Photo[]>({
-  linkEntity: AlbumResponse,
+  linkTo: AlbumResponse,
+  contains: PhotoResponse,
 
   permissions: {
     vedouci: true,
-  },
-  contains: {
-    array: { entity: PhotoResponse },
   },
 });

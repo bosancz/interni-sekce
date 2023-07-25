@@ -1,8 +1,7 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
-import { AcController } from "src/access-control/access-control-lib/decorators/ac-controller.decorator";
-import { AcLinks } from "src/access-control/access-control-lib/decorators/ac-links.decorator";
+import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { UsersService } from "src/models/users/services/users.service";
 import {
   UserCreateRoute,
@@ -26,7 +25,7 @@ export class UsersController {
 
   @Get()
   @AcLinks(UsersListRoute)
-  @ApiResponse({ type: UserResponse, isArray: true })
+  @ApiResponse({ type: WithLinks(UserResponse), isArray: true })
   async listUsers(@Req() req: Request): Promise<Omit<UserResponse, "_links">[]> {
     UsersListRoute.canOrThrow(req, undefined);
 
