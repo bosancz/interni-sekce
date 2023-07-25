@@ -7,7 +7,7 @@ import { GroupsListComponent } from "./pages/groups-list/groups-list.component";
 const routes: Routes = [
   { path: "", component: GroupsListComponent },
   { path: "vytvorit", component: GroupsCreateComponent },
-  { path: ":id", component: GroupsEditComponent },
+  { path: ":id/upravit", component: GroupsEditComponent },
 ];
 
 @NgModule({

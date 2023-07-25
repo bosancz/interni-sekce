@@ -1,12 +1,11 @@
-import { Type } from "@nestjs/common";
 import { ApiProperty, IntersectionType } from "@nestjs/swagger";
 // @ts-ignore
+import { Type } from "@nestjs/common";
 import { RouteStore } from "../route-store";
 import { AcLink } from "../schema/ac-link";
 
 export function WithLinks(entity: Type<any>) {
   function type() {
-    console.log(entity, RouteStore.length);
     class ResponseLinksObject {
       constructor() {}
     }

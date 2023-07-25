@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { MemberGroups } from "src/app/config/member-groups";
-import { MemberRoles } from "src/app/config/member-roles";
+import { ViewWillEnter } from "@ionic/angular";
+import { GroupResponse, MemberResponseRoleEnum } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -12,9 +12,9 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   templateUrl: "./members-create.component.html",
   styleUrls: ["./members-create.component.scss"],
 })
-export class MembersCreateComponent implements OnInit {
-  groups = MemberGroups;
-  roles = MemberRoles;
+export class MembersCreateComponent implements ViewWillEnter {
+  groups?: GroupResponse[];
+  roles = MemberResponseRoleEnum;
 
   actions: Action[] = [
     {
@@ -32,7 +32,13 @@ export class MembersCreateComponent implements OnInit {
     private route: ActivatedRoute,
   ) {}
 
-  ngOnInit() {}
+  ionViewWillEnter() {
+    this.loadGroups();
+  }
+
+  private async loadGroups() {
+    this.groups = await this.api.members.listGroups().then((res) => res.data);
+  }
 
   async create() {
     const formData = this.form.value;

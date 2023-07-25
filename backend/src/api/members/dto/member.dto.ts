@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional, OmitType, PartialType, PickType } from "@nestjs/swagger";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
@@ -9,10 +9,10 @@ import { GroupResponse } from "./group.dto";
 export class MemberResponse implements Member {
   @ApiProperty() id!: number;
   @ApiProperty() groupId!: number;
+  @ApiProperty({ type: "string" }) nickname!: string;
 
   @ApiPropertyOptional({ type: "boolean" }) active!: boolean;
   @ApiPropertyOptional({ type: "string", enum: MembershipStatus }) membership!: MembershipStatus;
-  @ApiPropertyOptional({ type: "string" }) nickname!: string | null;
   @ApiPropertyOptional({ type: "string" }) function!: string | null;
   @ApiPropertyOptional({ type: "string" }) firstName!: string | null;
   @ApiPropertyOptional({ type: "string" }) lastName!: string | null;
@@ -38,7 +38,13 @@ export class MemberResponse implements Member {
   achievements?: MemberAchievement[] | undefined;
 }
 
-export class CreateMemberBody extends OmitType(MemberResponse, ["group", "contacts", "achievements", "id"]) {}
+export class CreateMemberBody extends PickType(MemberResponse, [
+  "nickname",
+  "firstName",
+  "lastName",
+  "groupId",
+  "role",
+]) {}
 
 export class UpdateMemberBody extends PartialType(
   OmitType(MemberResponse, ["group", "contacts", "achievements", "id"]),

@@ -49,7 +49,6 @@ export class PhotosController {
   @ApiBody({ type: PhotoCreateBody })
   createPhoto(@UploadedFile() file: Express.Multer.File, @Body() body: PhotoCreateBody) {
     //TODO:
-    console.log(body, file);
   }
 
   @Get(":id")

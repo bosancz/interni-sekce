@@ -1,10 +1,10 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Platform, ViewWillEnter } from "@ionic/angular";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { ViewWillEnter } from "@ionic/angular";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
-import { MemberResponse } from "src/app/api";
+import { GroupResponse, MemberResponse, MemberResponseRankEnum } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -14,35 +14,8 @@ type MemberWithSearchString = MemberResponse & { searchString: string };
 interface TableFilter {
   search?: string;
   groups?: number[];
-  roles?: string[];
-  activity?: "active" | "inactive";
-  fields: Fields[];
-}
-
-enum Fields {
-  "nickname" = "nickname",
-  "group" = "group",
-  "role" = "role",
-  "post" = "post",
-  "rank" = "rank",
-  "stars" = "stars",
-  "name" = "name",
-  "birthday" = "birthday",
-  "age" = "age",
-  "email" = "email",
-  "mobile" = "mobile",
-  "city" = "city",
-}
-
-interface FieldData {
-  id: Fields;
-  title: string;
-  header?: boolean;
-}
-
-interface TableRow {
-  member: MemberResponse;
-  cells: string[];
+  ranks?: MemberResponseRankEnum[];
+  status?: ("active" | "inactive")[];
 }
 
 @UntilDestroy()
@@ -53,33 +26,16 @@ interface TableRow {
 })
 export class MembersListComponent implements OnInit, ViewWillEnter {
   members?: MemberWithSearchString[];
+  groups?: GroupResponse[];
+  ranks = MemberResponseRankEnum;
+
+  filteredMembers?: MemberWithSearchString[];
+
+  loadingRows = new Array(10).fill(null);
 
   filter: TableFilter = {
-    activity: "active",
-    fields: [Fields.nickname, Fields.group, Fields.role, Fields.name, Fields.age],
+    status: ["active"],
   };
-
-  tableRows: TableRow[] = [];
-  tableColumns: FieldData[] = [];
-
-  style: "list" | "table" = this.platform.isPortrait() ? "list" : "table";
-
-  fields: FieldData[] = [
-    { id: Fields.nickname, title: "Přezdívka", header: true },
-    { id: Fields.group, title: "Oddíl" },
-    { id: Fields.role, title: "Role" },
-    { id: Fields.post, title: "Funkce" },
-    { id: Fields.name, title: "Jméno" },
-    { id: Fields.rank, title: "Hodnost" },
-    { id: Fields.stars, title: "Hvězdy" },
-    { id: Fields.birthday, title: "Datum narození" },
-    { id: Fields.age, title: "Věk" },
-    { id: Fields.email, title: "Email" },
-    { id: Fields.mobile, title: "Mobil" },
-    { id: Fields.city, title: "Město" },
-  ];
-
-  filteredFields: FieldData[] = [];
 
   actions: Action[] = [
     {
@@ -96,17 +52,13 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     private router: Router,
     private datePipe: DatePipe,
     private toasts: ToastService,
-    private platform: Platform,
   ) {}
 
-  ngOnInit() {
-    this.platform.resize.pipe(untilDestroyed(this)).subscribe(() => {
-      this.style = this.platform.isPortrait() ? "list" : "table";
-    });
-  }
+  ngOnInit() {}
 
   ionViewWillEnter() {
     this.loadMembers();
+    this.loadGroups();
   }
 
   copyRow(cells: string[]) {
@@ -138,40 +90,34 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     this.members = members;
   }
 
+  private async loadGroups() {
+    this.groups = await this.api.members.listGroups().then((res) => res.data);
+  }
+
   private create() {
     this.router.navigate(["pridat"], { relativeTo: this.route });
   }
 
   public filterData(filter: TableFilter) {
-    if (this.members) {
-      const search_re = filter.search
-        ? new RegExp("(^| )" + filter.search.replace(/ /g, "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i")
-        : undefined;
-
-      const filteredMembers = this.members.filter((member) => {
-        if (search_re && !search_re.test(member.searchString)) return false;
-        if (filter.roles && filter.roles.length && (!member.role || filter.roles.indexOf(member.role) === -1))
-          return false;
-        if (filter.groups && filter.groups.length && filter.groups.indexOf(member.groupId) === -1) return false;
-        if (
-          filter.activity &&
-          filter.activity.length &&
-          filter.activity.indexOf(member.active ? "active" : "inactive") === -1
-        )
-          return false;
-
-        return true;
-      });
-
-      this.tableRows = filteredMembers.map((member) => ({
-        member,
-        cells: filter.fields?.map((field) => this.getFieldValue(member, field) || ""),
-      }));
-    } else {
-      this.tableRows = [];
+    if (!this.members) {
+      this.filteredMembers = [];
+      return;
     }
 
-    this.tableColumns = filter.fields.map((field) => this.fields.find((item) => item.id === field)!);
+    const search_re = filter.search
+      ? new RegExp("(^| )" + filter.search.replace(/ /g, "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i")
+      : undefined;
+
+    this.filteredMembers = this.members.filter((member) => {
+      if (search_re && !search_re.test(member.searchString)) return false;
+      if (filter.ranks && filter.ranks.length && (!member.rank || filter.ranks.indexOf(member.rank) === -1))
+        return false;
+      if (filter.groups && filter.groups.length && filter.groups.indexOf(member.groupId) === -1) return false;
+      if (filter.status && filter.status.length && filter.status.indexOf(member.active ? "active" : "inactive") === -1)
+        return false;
+
+      return true;
+    });
   }
 
   private sortMembers(members: MemberResponse[]): void {
@@ -179,11 +125,13 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     // const roleIndex = Object.keys(this.roles);
     // FIXME: sort by group and role
 
+    const roleOrder: MemberResponseRankEnum[] = ["vedouci", "instruktor", "dite"];
+
     members.sort(
       (a, b) =>
         Number(b.active) - Number(a.active) ||
-        // (a.group && b.group && groupIndex.indexOf(a.groupId) - groupIndex.indexOf(b.groupId)) ||
-        // (a.role && b.role && roleIndex.indexOf(a.role) - roleIndex.indexOf(b.role)) ||
+        (a.group && b.group && a.group.shortName.localeCompare(b.group.shortName)) ||
+        (a.rank && b.rank && roleOrder.indexOf(a.rank) - roleOrder.indexOf(b.rank)) ||
         (a.nickname && b.nickname && a.nickname.localeCompare(b.nickname)) ||
         0,
     );
@@ -191,21 +139,5 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 
   getAge(birthday: string) {
     return Math.floor(-1 * DateTime.fromISO(birthday).diffNow("years").years).toFixed(0);
-  }
-
-  getFieldValue(member: MemberResponse, field: Fields) {
-    switch (field) {
-      case "nickname":
-        return member.nickname || member.firstName;
-      case "name":
-        return `${member.firstName} ${member.lastName}`;
-      case "birthday":
-        return this.datePipe.transform(member.birthday, "d. M. y") || undefined;
-      case "age":
-        return member.birthday ? this.getAge(member.birthday) : undefined;
-
-      default:
-        return (<any>member)[field];
-    }
   }
 }

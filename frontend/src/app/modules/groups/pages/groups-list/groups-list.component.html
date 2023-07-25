@@ -11,20 +11,20 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item *ngFor="let group of groups">
-      <ion-avatar slot="start">
-        {{ group.shortName }}
-      </ion-avatar>
-      <ion-label>{{ group.name }}</ion-label>
-      <ion-buttons>
-        <ion-button fill="clear" [routerLink]="['/oddily', group.id]">
-          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear" (click)="openGroupMenu(group)">
-          <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-item>
-  </ion-list>
+  <div class="row">
+    <div *ngFor="let group of groups" class="col-12 col-lg-6">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>{{ group.name }}</ion-card-title>
+          <ion-card-subtitle>{{ group.shortName }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p>{{ group.name }}</p>
+        </ion-card-content>
+        <ion-buttons>
+          <ion-button fill="clear" [routerLink]="['/oddily', group.id, 'upravit']"> Upravit </ion-button>
+        </ion-buttons>
+      </ion-card>
+    </div>
+  </div>
 </ion-content>

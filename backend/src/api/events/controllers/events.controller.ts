@@ -89,8 +89,6 @@ export class EventsController {
   ): Promise<Omit<EventResponse, "_links">> {
     EventCreateRoute.canOrThrow(req, body);
 
-    console.log(body.name);
-
     res.status(201);
     return this.events.createEvent(body);
   }

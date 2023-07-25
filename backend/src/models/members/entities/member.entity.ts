@@ -1,14 +1,16 @@
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Group } from "./group.entity";
 import { MemberAchievement } from "./member-achievements.entity";
 import { MemberContact } from "./member-contacts.entity";
 
 export enum MemberRole {
-  "clen" = "clen",
+  "dite" = "dite",
+  "instruktor" = "instruktor",
   "vedouci" = "vedouci",
 }
 
+// FIXME:
 export enum MemberRank {
   "dite" = "dite",
   "instruktor" = "instruktor",
@@ -26,8 +28,24 @@ export class Member {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ nullable: false })
-  groupId!: Group["id"];
+  @Column({ nullable: false }) groupId!: Group["id"];
+  @Column({ type: "varchar", nullable: false }) nickname!: string;
+
+  @Column({ type: "enum", enum: MemberRole, nullable: true }) role!: MemberRole | null;
+  @Column({ type: "enum", enum: MemberRank, nullable: true }) rank!: MemberRank | null;
+  @Column({ type: "varchar", nullable: true }) function!: string | null;
+  @Column({ type: "varchar", nullable: true }) firstName!: string | null;
+  @Column({ type: "varchar", nullable: true }) lastName!: string | null;
+  @Column({ type: "date", nullable: true }) birthday!: string | null;
+  @Column({ type: "varchar", nullable: true }) addressStreet!: string | null;
+  @Column({ type: "varchar", nullable: true }) addressStreetNo!: string | null;
+  @Column({ type: "varchar", nullable: true }) addressCity!: string | null;
+  @Column({ type: "varchar", nullable: true }) addressPostalCode!: string | null;
+  @Column({ type: "varchar", nullable: true }) addressCountry!: string | null;
+  @Column({ type: "varchar", nullable: true }) mobile!: string | null;
+  @Column({ type: "varchar", nullable: true }) email!: string | null;
+
+  @DeleteDateColumn() deletedAt?: Date;
 
   @ManyToOne(() => Group, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
   @JoinColumn({ name: "group_id" })
@@ -45,19 +63,4 @@ export class Member {
 
   @OneToMany(() => EventAttendee, (ea) => ea.member)
   eventAttendees?: EventAttendee[];
-
-  @Column({ type: "enum", enum: MemberRole, nullable: true }) role!: MemberRole | null;
-  @Column({ type: "enum", enum: MemberRank, nullable: true }) rank!: MemberRank | null;
-  @Column({ type: "varchar", nullable: true }) nickname!: string | null;
-  @Column({ type: "varchar", nullable: true }) function!: string | null;
-  @Column({ type: "varchar", nullable: true }) firstName!: string | null;
-  @Column({ type: "varchar", nullable: true }) lastName!: string | null;
-  @Column({ type: "date", nullable: true }) birthday!: string | null;
-  @Column({ type: "varchar", nullable: true }) addressStreet!: string | null;
-  @Column({ type: "varchar", nullable: true }) addressStreetNo!: string | null;
-  @Column({ type: "varchar", nullable: true }) addressCity!: string | null;
-  @Column({ type: "varchar", nullable: true }) addressPostalCode!: string | null;
-  @Column({ type: "varchar", nullable: true }) addressCountry!: string | null;
-  @Column({ type: "varchar", nullable: true }) mobile!: string | null;
-  @Column({ type: "varchar", nullable: true }) email!: string | null;
 }

@@ -113,7 +113,7 @@ export class MongoImportService {
           : MembershipStatus.clen,
         role: Object.values(MemberRole).includes(<any>mongoMember.role) ? <MemberRole>mongoMember.role : null,
         rank: Object.values(MemberRank).includes(<any>mongoMember.rank) ? <MemberRank>mongoMember.rank : null,
-        nickname: mongoMember.nickname ?? null,
+        nickname: mongoMember.nickname ?? mongoMember.name?.first ?? "???",
         firstName: mongoMember.name?.first ?? null,
         lastName: mongoMember.name?.last ?? null,
         birthday: mongoMember.birthday ? DateTime.fromJSDate(mongoMember.birthday).toISODate() : null,
