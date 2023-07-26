@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, R
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
-import { AcController, AcLinks } from "src/access-control/access-control-lib";
+import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Member } from "src/models/members/entities/member.entity";
 import { MembersService } from "src/models/members/services/members.service";
 import { Repository } from "typeorm";
@@ -26,15 +26,16 @@ export class MembersController {
 
   @Get()
   @AcLinks(MembersListRoute)
-  @ApiResponse({ type: MemberResponse, isArray: true })
+  @ApiResponse({ type: WithLinks(MemberResponse), isArray: true })
   async listMembers(@Req() req: Request) {
     return this.membersRepository.createQueryBuilder().where(MembersListRoute.canWhere(req)).getMany();
   }
 
   @Post()
   @AcLinks(MemberCreateRoute)
-  @ApiResponse({ type: MemberResponse })
+  @ApiResponse({ type: WithLinks(MemberResponse) })
   async createMember(@Req() req: Request, @Body() body: CreateMemberBody): Promise<MemberResponse> {
+    console.log(body);
     MemberCreateRoute.canOrThrow(req, undefined);
 
     return this.membersService.createMember(body);
@@ -42,7 +43,7 @@ export class MembersController {
 
   @Get(":id")
   @AcLinks(MemberReadRoute)
-  @ApiResponse({ type: MemberResponse })
+  @ApiResponse({ type: WithLinks(MemberResponse) })
   async getMember(@Param("id") id: number, @Req() req: Request): Promise<MemberResponse> {
     const member = await this.membersService.getMember(id);
     if (!member) throw new NotFoundException();

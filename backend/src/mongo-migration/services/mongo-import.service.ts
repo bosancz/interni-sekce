@@ -111,7 +111,9 @@ export class MongoImportService {
         membership: Object.values(MembershipStatus).includes(<any>mongoMember.membership)
           ? <MembershipStatus>mongoMember.membership
           : MembershipStatus.clen,
-        role: Object.values(MemberRole).includes(<any>mongoMember.role) ? <MemberRole>mongoMember.role : null,
+        role: Object.values(MemberRole).includes(<any>mongoMember.role)
+          ? <MemberRole>mongoMember.role
+          : MemberRole.vedouci,
         rank: Object.values(MemberRank).includes(<any>mongoMember.rank) ? <MemberRank>mongoMember.rank : null,
         nickname: mongoMember.nickname ?? mongoMember.name?.first ?? "???",
         firstName: mongoMember.name?.first ?? null,

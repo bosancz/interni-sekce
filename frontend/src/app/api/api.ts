@@ -335,29 +335,20 @@ export interface CreateMemberBody {
      * @type {string}
      * @memberof CreateMemberBody
      */
-    'firstName'?: string;
+    'role': string;
     /**
      * 
-     * @type {string}
+     * @type {object}
      * @memberof CreateMemberBody
      */
-    'lastName'?: string;
+    'firstName': object;
     /**
      * 
-     * @type {string}
+     * @type {object}
      * @memberof CreateMemberBody
      */
-    'role'?: CreateMemberBodyRoleEnum;
+    'lastName': object;
 }
-
-export const CreateMemberBodyRoleEnum = {
-    Dite: 'dite',
-    Instruktor: 'instruktor',
-    Vedouci: 'vedouci'
-} as const;
-
-export type CreateMemberBodyRoleEnum = typeof CreateMemberBodyRoleEnum[keyof typeof CreateMemberBodyRoleEnum];
-
 /**
  * 
  * @export
@@ -1523,6 +1514,12 @@ export interface MemberResponse {
     'nickname': string;
     /**
      * 
+     * @type {string}
+     * @memberof MemberResponse
+     */
+    'role': MemberResponseRoleEnum;
+    /**
+     * 
      * @type {boolean}
      * @memberof MemberResponse
      */
@@ -1604,12 +1601,6 @@ export interface MemberResponse {
      * @type {string}
      * @memberof MemberResponse
      */
-    'role'?: MemberResponseRoleEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof MemberResponse
-     */
     'rank'?: MemberResponseRankEnum;
     /**
      * 
@@ -1631,13 +1622,6 @@ export interface MemberResponse {
     'achievements'?: object;
 }
 
-export const MemberResponseMembershipEnum = {
-    Clen: 'clen',
-    Neclen: 'neclen',
-    Pozastaveno: 'pozastaveno'
-} as const;
-
-export type MemberResponseMembershipEnum = typeof MemberResponseMembershipEnum[keyof typeof MemberResponseMembershipEnum];
 export const MemberResponseRoleEnum = {
     Dite: 'dite',
     Instruktor: 'instruktor',
@@ -1645,6 +1629,13 @@ export const MemberResponseRoleEnum = {
 } as const;
 
 export type MemberResponseRoleEnum = typeof MemberResponseRoleEnum[keyof typeof MemberResponseRoleEnum];
+export const MemberResponseMembershipEnum = {
+    Clen: 'clen',
+    Neclen: 'neclen',
+    Pozastaveno: 'pozastaveno'
+} as const;
+
+export type MemberResponseMembershipEnum = typeof MemberResponseMembershipEnum[keyof typeof MemberResponseMembershipEnum];
 export const MemberResponseRankEnum = {
     Dite: 'dite',
     Instruktor: 'instruktor',
@@ -1702,6 +1693,12 @@ export interface MemberResponseWithLinks {
      * @memberof MemberResponseWithLinks
      */
     'nickname': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'role': MemberResponseWithLinksRoleEnum;
     /**
      * 
      * @type {boolean}
@@ -1785,12 +1782,6 @@ export interface MemberResponseWithLinks {
      * @type {string}
      * @memberof MemberResponseWithLinks
      */
-    'role'?: MemberResponseWithLinksRoleEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof MemberResponseWithLinks
-     */
     'rank'?: MemberResponseWithLinksRankEnum;
     /**
      * 
@@ -1818,13 +1809,6 @@ export interface MemberResponseWithLinks {
     '_links': MemberResponseLinks;
 }
 
-export const MemberResponseWithLinksMembershipEnum = {
-    Clen: 'clen',
-    Neclen: 'neclen',
-    Pozastaveno: 'pozastaveno'
-} as const;
-
-export type MemberResponseWithLinksMembershipEnum = typeof MemberResponseWithLinksMembershipEnum[keyof typeof MemberResponseWithLinksMembershipEnum];
 export const MemberResponseWithLinksRoleEnum = {
     Dite: 'dite',
     Instruktor: 'instruktor',
@@ -1832,6 +1816,13 @@ export const MemberResponseWithLinksRoleEnum = {
 } as const;
 
 export type MemberResponseWithLinksRoleEnum = typeof MemberResponseWithLinksRoleEnum[keyof typeof MemberResponseWithLinksRoleEnum];
+export const MemberResponseWithLinksMembershipEnum = {
+    Clen: 'clen',
+    Neclen: 'neclen',
+    Pozastaveno: 'pozastaveno'
+} as const;
+
+export type MemberResponseWithLinksMembershipEnum = typeof MemberResponseWithLinksMembershipEnum[keyof typeof MemberResponseWithLinksMembershipEnum];
 export const MemberResponseWithLinksRankEnum = {
     Dite: 'dite',
     Instruktor: 'instruktor',
@@ -2230,6 +2221,12 @@ export interface UpdateMemberBody {
     'nickname'?: string;
     /**
      * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'role'?: UpdateMemberBodyRoleEnum;
+    /**
+     * 
      * @type {boolean}
      * @memberof UpdateMemberBody
      */
@@ -2311,22 +2308,9 @@ export interface UpdateMemberBody {
      * @type {string}
      * @memberof UpdateMemberBody
      */
-    'role'?: UpdateMemberBodyRoleEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
     'rank'?: UpdateMemberBodyRankEnum;
 }
 
-export const UpdateMemberBodyMembershipEnum = {
-    Clen: 'clen',
-    Neclen: 'neclen',
-    Pozastaveno: 'pozastaveno'
-} as const;
-
-export type UpdateMemberBodyMembershipEnum = typeof UpdateMemberBodyMembershipEnum[keyof typeof UpdateMemberBodyMembershipEnum];
 export const UpdateMemberBodyRoleEnum = {
     Dite: 'dite',
     Instruktor: 'instruktor',
@@ -2334,6 +2318,13 @@ export const UpdateMemberBodyRoleEnum = {
 } as const;
 
 export type UpdateMemberBodyRoleEnum = typeof UpdateMemberBodyRoleEnum[keyof typeof UpdateMemberBodyRoleEnum];
+export const UpdateMemberBodyMembershipEnum = {
+    Clen: 'clen',
+    Neclen: 'neclen',
+    Pozastaveno: 'pozastaveno'
+} as const;
+
+export type UpdateMemberBodyMembershipEnum = typeof UpdateMemberBodyMembershipEnum[keyof typeof UpdateMemberBodyMembershipEnum];
 export const UpdateMemberBodyRankEnum = {
     Dite: 'dite',
     Instruktor: 'instruktor',
@@ -5264,7 +5255,7 @@ export const MembersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createMember(createMemberBody: CreateMemberBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MemberResponse>> {
+        async createMember(createMemberBody: CreateMemberBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MemberResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createMember(createMemberBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5304,7 +5295,7 @@ export const MembersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getMember(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MemberResponse>> {
+        async getMember(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MemberResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getMember(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5322,7 +5313,7 @@ export const MembersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listMembers(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MemberResponse>>> {
+        async listMembers(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MemberResponseWithLinks>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listMembers(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5372,7 +5363,7 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createMember(createMemberBody: CreateMemberBody, options?: any): AxiosPromise<MemberResponse> {
+        createMember(createMemberBody: CreateMemberBody, options?: any): AxiosPromise<MemberResponseWithLinks> {
             return localVarFp.createMember(createMemberBody, options).then((request) => request(axios, basePath));
         },
         /**
@@ -5408,7 +5399,7 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMember(id: number, options?: any): AxiosPromise<MemberResponse> {
+        getMember(id: number, options?: any): AxiosPromise<MemberResponseWithLinks> {
             return localVarFp.getMember(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -5424,7 +5415,7 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMembers(options?: any): AxiosPromise<Array<MemberResponse>> {
+        listMembers(options?: any): AxiosPromise<Array<MemberResponseWithLinks>> {
             return localVarFp.listMembers(options).then((request) => request(axios, basePath));
         },
         /**

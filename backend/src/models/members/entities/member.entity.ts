@@ -30,8 +30,8 @@ export class Member {
 
   @Column({ nullable: false }) groupId!: Group["id"];
   @Column({ type: "varchar", nullable: false }) nickname!: string;
+  @Column({ type: "enum", enum: MemberRole, nullable: false }) role!: MemberRole;
 
-  @Column({ type: "enum", enum: MemberRole, nullable: true }) role!: MemberRole | null;
   @Column({ type: "enum", enum: MemberRank, nullable: true }) rank!: MemberRank | null;
   @Column({ type: "varchar", nullable: true }) function!: string | null;
   @Column({ type: "varchar", nullable: true }) firstName!: string | null;

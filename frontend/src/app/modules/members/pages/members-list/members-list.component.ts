@@ -4,12 +4,12 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
-import { GroupResponseWithLinks, MemberResponse, MemberResponseRankEnum } from "src/app/api";
+import { GroupResponseWithLinks, MemberResponse, MemberResponseRankEnum, MemberResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
-type MemberWithSearchString = MemberResponse & { searchString: string };
+type MemberWithSearchString = MemberResponseWithLinks & { searchString: string };
 
 interface TableFilter {
   search?: string;
@@ -88,6 +88,8 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     this.sortMembers(members);
 
     this.members = members;
+
+    this.filterData(this.filter);
   }
 
   private async loadGroups() {

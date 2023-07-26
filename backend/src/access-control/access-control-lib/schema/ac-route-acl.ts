@@ -19,7 +19,7 @@ export interface AcRouteOptions<DOC, ROLES extends string = string, PDATA extend
   inheritPermissions?: AcRouteACL<DOC, ROLES>;
 
   // TODO: maybe rename to `applicable` like the resulting property
-  /** Global condition whether this route is accessible (i.e. is document in the state to perform this operation) */
+  /** Global condition whether this route is accessible (e.g. is document in the state to perform this operation) */
   condition?: (d: DOC) => boolean;
 
   path?: (d: DOC) => string;

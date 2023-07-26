@@ -1,4 +1,6 @@
-import { ApiProperty, ApiPropertyOptional, OmitType, PartialType, PickType } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
@@ -10,6 +12,7 @@ export class MemberResponse implements Member {
   @ApiProperty() id!: number;
   @ApiProperty() groupId!: number;
   @ApiProperty({ type: "string" }) nickname!: string;
+  @ApiProperty({ type: "enum", enum: MemberRole }) role!: MemberRole;
 
   @ApiPropertyOptional({ type: "boolean" }) active!: boolean;
   @ApiPropertyOptional({ type: "string", enum: MembershipStatus }) membership!: MembershipStatus;
@@ -24,7 +27,6 @@ export class MemberResponse implements Member {
   @ApiPropertyOptional({ type: "string" }) addressCountry!: string | null;
   @ApiPropertyOptional({ type: "string" }) mobile!: string | null;
   @ApiPropertyOptional({ type: "string" }) email!: string | null;
-  @ApiPropertyOptional({ type: "enum", enum: MemberRole }) role!: MemberRole | null;
   @ApiPropertyOptional({ type: "enum", enum: MemberRank }) rank!: MemberRank | null;
 
   @AcEntity(GroupResponse)
@@ -38,13 +40,15 @@ export class MemberResponse implements Member {
   achievements?: MemberAchievement[] | undefined;
 }
 
-export class CreateMemberBody extends PickType(MemberResponse, [
-  "nickname",
-  "firstName",
-  "lastName",
-  "groupId",
-  "role",
-]) {}
+export class CreateMemberBody
+  implements Pick<MemberResponse, "nickname" | "firstName" | "lastName" | "groupId" | "role">
+{
+  @ApiProperty() @Type(() => Number) @IsNumber() groupId!: number;
+  @ApiProperty() @IsString() nickname!: string;
+  @ApiProperty() @IsString() role!: MemberRole;
+  @ApiProperty() @IsString() @IsOptional() firstName!: string | null;
+  @ApiProperty() @IsString() @IsOptional() lastName!: string | null;
+}
 
 export class UpdateMemberBody extends PartialType(
   OmitType(MemberResponse, ["group", "contacts", "achievements", "id"]),

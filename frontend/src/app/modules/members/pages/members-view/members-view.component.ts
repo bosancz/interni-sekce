@@ -2,11 +2,12 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, ViewWillEnter } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { MemberResponse } from "src/app/api";
+import { MemberResponseWithLinks } from "src/app/api";
 import { MembershipTypes } from "src/app/config/membership-types";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { MembersService } from "../../services/members.service";
 
 @UntilDestroy()
 @Component({
@@ -15,7 +16,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./members-view.component.scss"],
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter {
-  member?: MemberResponse;
+  member?: MemberResponseWithLinks | null;
 
   membershipTypes = MembershipTypes;
 
@@ -40,18 +41,18 @@ export class MembersViewComponent implements OnInit, ViewWillEnter {
     private route: ActivatedRoute,
     private router: Router,
     private alertController: AlertController,
+    private membersService: MembersService,
   ) {}
 
   ngOnInit() {
-    this.route.params.pipe(untilDestroyed(this)).subscribe((params) => this.loadMember(params.member));
+    this.route.params
+      .pipe(untilDestroyed(this))
+      .subscribe((params) => this.membersService.loadMember(parseInt(params.member)));
+
+    this.membersService.currentMember.pipe(untilDestroyed(this)).subscribe((member) => (this.member = member));
   }
 
   ionViewWillEnter() {}
-
-  // DB interaction
-  async loadMember(memberId: number) {
-    this.member = await this.api.members.getMember(memberId).then((res) => res.data);
-  }
 
   async delete() {
     if (!this.member) return;
@@ -68,19 +69,19 @@ export class MembersViewComponent implements OnInit, ViewWillEnter {
   async deleteConfirmed() {
     if (!this.member) return;
 
-    await this.api.members.deleteMember(this.member.id);
+    await this.api.members.deleteMember(this.member?.id);
 
     this.toastService.toast(`Člen ${this.member?.nickname} smazán.`);
 
     this.router.navigate(["../"], { relativeTo: this.route, replaceUrl: true });
   }
 
-  getFullName(member?: MemberResponse) {
+  getFullName(member?: MemberResponseWithLinks | null) {
     if (!member) return "";
     return (
       member.nickname + (member?.firstName || member.lastName ? ` (${member?.firstName} ${member?.lastName})` : "")
     );
   }
 
-  getAge(member?: MemberResponse) {}
+  getAge(member?: MemberResponseWithLinks) {}
 }
