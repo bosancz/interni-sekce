@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Platform } from "@ionic/angular";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -10,7 +10,7 @@ import { ApiService } from "src/app/services/api.service";
 })
 export class EventCardComponent implements OnInit {
   @Input()
-  event?: EventResponse;
+  event?: EventResponseWithLinks;
 
   @Input()
   set eventId(eventId: number) {
@@ -21,7 +21,7 @@ export class EventCardComponent implements OnInit {
   @Input() open: boolean = false;
 
   @Output()
-  change = new EventEmitter<EventResponse>();
+  change = new EventEmitter<EventResponseWithLinks>();
 
   constructor(private api: ApiService, public platform: Platform) {}
 
@@ -36,7 +36,7 @@ export class EventCardComponent implements OnInit {
   }
 
   async eventAction(
-    event: EventResponse,
+    event: EventResponseWithLinks,
     action: "submitEvent" | "rejectEvent" | "publishEvent" | "unpublishEvent" | "cancelEvent" | "uncancelEvent",
   ) {
     const statusNote = window.prompt("Poznámka pro správce programu (můžeš nechat prázdné):");
@@ -48,7 +48,7 @@ export class EventCardComponent implements OnInit {
     this.change.emit(this.event);
   }
 
-  async rejectEvent(event: EventResponse) {
+  async rejectEvent(event: EventResponseWithLinks) {
     const statusNote = window.prompt("Poznámka k vrácení akce:");
     if (statusNote === null) return;
 

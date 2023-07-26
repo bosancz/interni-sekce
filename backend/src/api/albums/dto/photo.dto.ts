@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional, PickType } from "@nestjs/swagger";
+import { WithLinks } from "src/access-control/access-control-lib";
 import { UserResponse } from "src/api/users/dto/user.dto";
 import { Album } from "src/models/albums/entities/album.entity";
 import { User } from "src/models/users/entities/user.entity";
@@ -26,11 +27,9 @@ export class PhotoResponse {
   @ApiPropertyOptional({ type: "string" }) bg!: string | null;
 
   // @ApiPropertyOptional() faces?: PhotoFace[] | null;
-  @ApiPropertyOptional({ type: AlbumResponse }) album?: Album | undefined;
-  @ApiPropertyOptional({ type: UserResponse }) uploadedBy?: User | null;
+  @ApiPropertyOptional({ type: WithLinks(() => AlbumResponse) }) album?: Album | undefined;
+  @ApiPropertyOptional({ type: WithLinks(UserResponse) }) uploadedBy?: User | null;
 }
-
-export class PhotosListResponse extends PickType(PhotoResponse, ["id", "name", "title", "albumId"]) {}
 
 export class PhotoCreateBody extends PickType(PhotoResponse, ["albumId"]) {
   @ApiProperty({ type: "string", format: "binary" }) file!: any;

@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
-import { GroupResponse, MemberResponse, MemberResponseRankEnum } from "src/app/api";
+import { GroupResponseWithLinks, MemberResponse, MemberResponseRankEnum } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -26,7 +26,7 @@ interface TableFilter {
 })
 export class MembersListComponent implements OnInit, ViewWillEnter {
   members?: MemberWithSearchString[];
-  groups?: GroupResponse[];
+  groups?: GroupResponseWithLinks[];
   ranks = MemberResponseRankEnum;
 
   filteredMembers?: MemberWithSearchString[];

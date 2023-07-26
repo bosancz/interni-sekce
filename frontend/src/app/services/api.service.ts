@@ -8,8 +8,8 @@ import {
   EventsApi,
   MembersApi,
   PhotoGalleryApi,
-  RootResponse,
   RootResponseLinks,
+  RootResponseWithLinks,
   StatisticsApi,
   UsersApi,
 } from "../api";
@@ -34,7 +34,7 @@ export class ApiService {
 
   endpoints = new BehaviorSubject<ApiEndpoints | null>(null);
 
-  info?: RootResponse;
+  info?: RootResponseWithLinks;
 
   constructor() {}
 

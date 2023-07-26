@@ -3,8 +3,12 @@ import { ApiProperty, IntersectionType } from "@nestjs/swagger";
 import { Type } from "@nestjs/common";
 import { RouteStore } from "../route-store";
 import { AcLink } from "../schema/ac-link";
+import { EntityType } from "../schema/entity-type";
+import { resolveEntity } from "./resolve-entity";
 
-export function WithLinks(entity: Type<any>) {
+export type TypeWithLinks<T extends Type<any>> = Type<InstanceType<T> & { _links: { [key: string]: AcLink } }>;
+
+export function WithLinks<T extends EntityType>(entity: T | (() => T)): () => TypeWithLinks<T> {
   function type() {
     class ResponseLinksObject {
       constructor() {}
@@ -15,7 +19,14 @@ export function WithLinks(entity: Type<any>) {
       @ApiProperty({ type: ResponseLinksObject }) _links!: ResponseLinksObject;
     }
 
-    const linkedRoutes = RouteStore.filter((r) => r.acl.options.linkTo === entity);
+    const resolvedEntity = resolveEntity(entity);
+
+    if (!entity)
+      throw new Error(
+        `Entity not found, possible problem might be circular depenency. In this case use () => Enitity instead of Entity in the WithLinks helper.`,
+      );
+
+    const linkedRoutes = RouteStore.filter((r) => r.acl.options.linkTo === resolvedEntity);
 
     const decoratorFactory = ApiProperty({ type: AcLink });
 
@@ -25,13 +36,13 @@ export function WithLinks(entity: Type<any>) {
     }
 
     Object.defineProperty(ResponseLinksObject, "name", {
-      value: `${entity.name}Links`,
+      value: `${resolvedEntity.name}Links`,
     });
 
-    const EntityWithLinks = IntersectionType(entity, ResponseLinksProperty);
+    const EntityWithLinks = IntersectionType(resolvedEntity, ResponseLinksProperty);
 
     Object.defineProperty(EntityWithLinks, "name", {
-      value: `${entity.name}WithLinks`,
+      value: `${resolvedEntity.name}WithLinks`,
     });
 
     return EntityWithLinks;

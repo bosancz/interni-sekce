@@ -5,7 +5,7 @@ import { filter, map } from "rxjs/operators";
 import { DateTime } from "luxon";
 
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ProgramService } from "../../services/program.service";
 
@@ -18,7 +18,7 @@ import { ProgramService } from "../../services/program.service";
 export class ProgramWorkflowComponent implements OnInit {
   selectedColumn = "pending";
 
-  events = new BehaviorSubject<undefined | EventResponse[]>([]);
+  events = new BehaviorSubject<undefined | EventResponseWithLinks[]>([]);
 
   noLeaderEvents = this.events.pipe(
     map((events) =>
@@ -71,7 +71,7 @@ export class ProgramWorkflowComponent implements OnInit {
     this.loading = false;
   }
 
-  eventChanged(newEvent: EventResponse) {
+  eventChanged(newEvent: EventResponseWithLinks) {
     const events = this.events.value || [];
     const i = events.findIndex((event) => event.id === newEvent.id);
     if (i >= 0) {

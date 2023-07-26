@@ -3,7 +3,7 @@ import { ActivatedRoute, Params, Router } from "@angular/router";
 import { AlertController, ViewWillEnter } from "@ionic/angular";
 import { DateTime } from "luxon";
 import { Subscription } from "rxjs";
-import { EventCreateBody, EventResponse } from "src/app/api";
+import { EventCreateBody, EventResponseWithLinks } from "src/app/api";
 import { EventStatuses } from "src/app/config/event-statuses";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
@@ -17,7 +17,7 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
   dateFrom?: DateTime;
   dateTill?: DateTime;
 
-  events: EventResponse[] = [];
+  events: EventResponseWithLinks[] = [];
 
   statuses = EventStatuses;
 

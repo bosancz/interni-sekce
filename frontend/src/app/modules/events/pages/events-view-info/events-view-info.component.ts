@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter } from "rxjs/operators";
-import { AlbumResponse, EventResponse } from "src/app/api";
+import { AlbumResponseWithLinks, EventResponseWithLinks } from "src/app/api";
 import { EventStatuses } from "src/app/config/event-statuses";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
@@ -18,9 +18,9 @@ import { EventsService } from "../../services/events.service";
   styleUrls: ["./events-view-info.component.scss"],
 })
 export class EventsViewInfoComponent implements OnInit, OnDestroy {
-  event?: EventResponse;
+  event?: EventResponseWithLinks;
 
-  eventAlbum?: AlbumResponse;
+  eventAlbum?: AlbumResponseWithLinks;
 
   actions: Action[] = [];
 
@@ -46,13 +46,13 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {}
 
-  async updateEvent(event: EventResponse) {
+  async updateEvent(event: EventResponseWithLinks) {
     this.event = event;
 
     this.actions = this.getActions(this.event);
   }
 
-  async deleteEvent(event: EventResponse) {
+  async deleteEvent(event: EventResponseWithLinks) {
     const alert = await this.alertConctroller.create({
       header: "Smazat akci?",
       message: `Opravdu chcete smazat akci ${event.name}?`,
@@ -65,14 +65,14 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
     await alert.present();
   }
 
-  async deleteEventConfirmed(event: EventResponse) {
+  async deleteEventConfirmed(event: EventResponseWithLinks) {
     await this.eventsService.deleteEvent(event.id);
 
     this.router.navigate(["/akce"], { relativeTo: this.route, replaceUrl: true });
     this.toastService.toast("Akce smazána");
   }
 
-  async leadEvent(event: EventResponse) {
+  async leadEvent(event: EventResponseWithLinks) {
     await this.api.events.leadEvent(event.id);
 
     await this.eventsService.loadEvent(event.id);
@@ -80,7 +80,7 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
     this.toastService.toast("Uloženo");
   }
 
-  async eventAction(event: EventResponse, action: EventActions) {
+  async eventAction(event: EventResponseWithLinks, action: EventActions) {
     if (!event._links[action].allowed) {
       this.toastService.toast("K této akci nemáš oprávnění.");
       return;
@@ -96,7 +96,7 @@ export class EventsViewInfoComponent implements OnInit, OnDestroy {
     this.toastService.toast("Uloženo");
   }
 
-  private getActions(event: EventResponse): Action[] {
+  private getActions(event: EventResponseWithLinks): Action[] {
     return [
       {
         text: "Vést akci",

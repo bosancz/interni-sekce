@@ -5,14 +5,14 @@ import { ActionSheetController, Platform } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
-import { UserResponse, UserResponseRolesEnum } from "src/app/api";
+import { UserResponseWithLinks, UserResponseWithLinksRolesEnum } from "src/app/api";
 import { UserRoles } from "src/app/config/user-roles";
 import { ApiService } from "src/app/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 type UsersFilter = {
   search: string;
-  role: UserResponseRolesEnum[];
+  role: UserResponseWithLinksRolesEnum[];
 };
 
 @UntilDestroy()
@@ -22,8 +22,8 @@ type UsersFilter = {
   styleUrls: ["./users-list.component.scss"],
 })
 export class UsersListComponent implements OnInit, AfterViewInit {
-  users: UserResponse[] = [];
-  filteredUsers: UserResponse[] = [];
+  users: UserResponseWithLinks[] = [];
+  filteredUsers: UserResponseWithLinks[] = [];
 
   searchIndex: string[] = [];
   searchString = new BehaviorSubject<string>("");
@@ -94,7 +94,7 @@ export class UsersListComponent implements OnInit, AfterViewInit {
     return this.roles.find((item) => item.id === roleId)?.title || roleId;
   }
 
-  async openUserMenu(user: UserResponse) {
+  async openUserMenu(user: UserResponseWithLinks) {
     const sheet = await this.actionSheetController.create({
       header: user.login ?? user.email ?? `User #${user.id}`,
       buttons: [{ text: "Smazat", icon: "trash-outline", handler: () => this.deleteUser(user) }],
@@ -103,5 +103,5 @@ export class UsersListComponent implements OnInit, AfterViewInit {
     sheet.present();
   }
 
-  async deleteUser(user: UserResponse) {}
+  async deleteUser(user: UserResponseWithLinks) {}
 }

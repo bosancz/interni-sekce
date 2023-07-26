@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { AlertController } from "@ionic/angular";
-import { UserResponse } from "src/app/api";
+import { UserResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 
@@ -10,7 +10,7 @@ import { ToastService } from "src/app/services/toast.service";
   styleUrls: ["./account-credentials.component.scss"],
 })
 export class AccountCredentialsComponent implements OnInit {
-  user?: UserResponse;
+  user?: UserResponseWithLinks;
 
   constructor(private api: ApiService, private toastService: ToastService, private alertController: AlertController) {}
 

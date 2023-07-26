@@ -46,7 +46,7 @@ export class PhotosController {
   @Post()
   @AcLinks(PhotoCreateRoute)
   @UseInterceptors(FileInterceptor("file"))
-  @ApiBody({ type: WithLinks(PhotoCreateBody) })
+  @ApiBody({ type: PhotoCreateBody })
   createPhoto(@UploadedFile() file: Express.Multer.File, @Body() body: PhotoCreateBody) {
     //TODO:
   }

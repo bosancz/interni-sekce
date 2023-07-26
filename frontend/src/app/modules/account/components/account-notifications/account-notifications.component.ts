@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { SwPush } from "@angular/service-worker";
-import { UserResponse } from "src/app/api";
+import { UserResponseWithLinks } from "src/app/api";
 
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
@@ -13,7 +13,7 @@ declare const Notification: any;
   styleUrls: ["./account-notifications.component.scss"],
 })
 export class AccountNotificationsComponent implements OnInit {
-  user?: UserResponse;
+  user?: UserResponseWithLinks;
 
   notifications = [
     { id: "new-event", name: "Nová událost" },

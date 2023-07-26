@@ -94,69 +94,118 @@ export interface AlbumCreateBody {
 /**
  * 
  * @export
- * @interface AlbumResponse
+ * @interface AlbumResponseLinks
  */
-export interface AlbumResponse {
+export interface AlbumResponseLinks {
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof AlbumResponseLinks
+     */
+    'getAlbum': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof AlbumResponseLinks
+     */
+    'updateAlbum': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof AlbumResponseLinks
+     */
+    'deleteAlbum': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof AlbumResponseLinks
+     */
+    'publishAlbum': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof AlbumResponseLinks
+     */
+    'unpublishAlbum': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof AlbumResponseLinks
+     */
+    'getAlbumPhotos': AcLink;
+}
+/**
+ * 
+ * @export
+ * @interface AlbumResponseWithLinks
+ */
+export interface AlbumResponseWithLinks {
     /**
      * 
      * @type {number}
-     * @memberof AlbumResponse
+     * @memberof AlbumResponseWithLinks
      */
     'id': number;
     /**
      * 
      * @type {string}
-     * @memberof AlbumResponse
+     * @memberof AlbumResponseWithLinks
      */
     'status': string;
     /**
      * 
      * @type {string}
-     * @memberof AlbumResponse
+     * @memberof AlbumResponseWithLinks
      */
     'name': string;
     /**
      * 
      * @type {string}
-     * @memberof AlbumResponse
+     * @memberof AlbumResponseWithLinks
      */
     'description'?: string;
     /**
      * 
      * @type {string}
-     * @memberof AlbumResponse
+     * @memberof AlbumResponseWithLinks
      */
     'datePublished'?: string;
     /**
      * 
      * @type {string}
-     * @memberof AlbumResponse
+     * @memberof AlbumResponseWithLinks
      */
     'dateFrom'?: string;
     /**
      * 
      * @type {string}
-     * @memberof AlbumResponse
+     * @memberof AlbumResponseWithLinks
      */
     'dateTill'?: string;
     /**
      * 
      * @type {number}
-     * @memberof AlbumResponse
+     * @memberof AlbumResponseWithLinks
      */
     'eventId'?: number;
     /**
      * 
-     * @type {EventResponse}
-     * @memberof AlbumResponse
+     * @type {EventResponseWithLinks}
+     * @memberof AlbumResponseWithLinks
      */
-    'event'?: EventResponse;
+    'event'?: EventResponseWithLinks;
     /**
      * 
-     * @type {Array<PhotoResponse>}
-     * @memberof AlbumResponse
+     * @type {Array<PhotoResponseWithLinks>}
+     * @memberof AlbumResponseWithLinks
      */
-    'photos'?: Array<PhotoResponse>;
+    'photos'?: Array<PhotoResponseWithLinks>;
+    /**
+     * 
+     * @type {AlbumResponseLinks}
+     * @memberof AlbumResponseWithLinks
+     */
+    '_links': AlbumResponseLinks;
 }
 /**
  * 
@@ -204,82 +253,45 @@ export interface AlbumUpdateBody {
 /**
  * 
  * @export
- * @interface AlbumsListResponseWithLinks
+ * @interface CPVEventResponseWithLinks
  */
-export interface AlbumsListResponseWithLinks {
-    /**
-     * 
-     * @type {number}
-     * @memberof AlbumsListResponseWithLinks
-     */
-    'id': number;
+export interface CPVEventResponseWithLinks {
     /**
      * 
      * @type {string}
-     * @memberof AlbumsListResponseWithLinks
-     */
-    'status': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AlbumsListResponseWithLinks
+     * @memberof CPVEventResponseWithLinks
      */
     'name': string;
     /**
      * 
      * @type {string}
-     * @memberof AlbumsListResponseWithLinks
-     */
-    'dateFrom'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AlbumsListResponseWithLinks
-     */
-    'dateTill'?: string;
-    /**
-     * 
-     * @type {object}
-     * @memberof AlbumsListResponseWithLinks
-     */
-    '_links': object;
-}
-/**
- * 
- * @export
- * @interface CPVEventResponse
- */
-export interface CPVEventResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof CPVEventResponse
-     */
-    'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CPVEventResponse
+     * @memberof CPVEventResponseWithLinks
      */
     'dateFrom': string;
     /**
      * 
      * @type {string}
-     * @memberof CPVEventResponse
+     * @memberof CPVEventResponseWithLinks
      */
     'dateTill': string;
     /**
      * 
      * @type {string}
-     * @memberof CPVEventResponse
+     * @memberof CPVEventResponseWithLinks
      */
     'description'?: string;
     /**
      * 
      * @type {string}
-     * @memberof CPVEventResponse
+     * @memberof CPVEventResponseWithLinks
      */
     'link'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof CPVEventResponseWithLinks
+     */
+    '_links': object;
 }
 /**
  * 
@@ -394,6 +406,76 @@ export type EventAttendeeResponseTypeEnum = typeof EventAttendeeResponseTypeEnum
 /**
  * 
  * @export
+ * @interface EventAttendeeResponseLinks
+ */
+export interface EventAttendeeResponseLinks {
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventAttendeeResponseLinks
+     */
+    'updateEventAttendee': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventAttendeeResponseLinks
+     */
+    'deleteEventAttendee': AcLink;
+}
+/**
+ * 
+ * @export
+ * @interface EventAttendeeResponseWithLinks
+ */
+export interface EventAttendeeResponseWithLinks {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventAttendeeResponseWithLinks
+     */
+    'eventId': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof EventAttendeeResponseWithLinks
+     */
+    'memberId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventAttendeeResponseWithLinks
+     */
+    'type': EventAttendeeResponseWithLinksTypeEnum;
+    /**
+     * 
+     * @type {object}
+     * @memberof EventAttendeeResponseWithLinks
+     */
+    'event'?: object;
+    /**
+     * 
+     * @type {MemberResponse}
+     * @memberof EventAttendeeResponseWithLinks
+     */
+    'member'?: MemberResponse;
+    /**
+     * 
+     * @type {EventAttendeeResponseLinks}
+     * @memberof EventAttendeeResponseWithLinks
+     */
+    '_links': EventAttendeeResponseLinks;
+}
+
+export const EventAttendeeResponseWithLinksTypeEnum = {
+    Attendee: 'attendee',
+    Leader: 'leader'
+} as const;
+
+export type EventAttendeeResponseWithLinksTypeEnum = typeof EventAttendeeResponseWithLinksTypeEnum[keyof typeof EventAttendeeResponseWithLinksTypeEnum];
+
+/**
+ * 
+ * @export
  * @interface EventCreateBody
  */
 export interface EventCreateBody {
@@ -475,6 +557,85 @@ export const EventExpenseResponseTypeEnum = {
 } as const;
 
 export type EventExpenseResponseTypeEnum = typeof EventExpenseResponseTypeEnum[keyof typeof EventExpenseResponseTypeEnum];
+
+/**
+ * 
+ * @export
+ * @interface EventExpenseResponseLinks
+ */
+export interface EventExpenseResponseLinks {
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventExpenseResponseLinks
+     */
+    'updateEventExpense': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventExpenseResponseLinks
+     */
+    'deleteEventExpense': AcLink;
+}
+/**
+ * 
+ * @export
+ * @interface EventExpenseResponseWithLinks
+ */
+export interface EventExpenseResponseWithLinks {
+    /**
+     * 
+     * @type {string}
+     * @memberof EventExpenseResponseWithLinks
+     */
+    'id': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof EventExpenseResponseWithLinks
+     */
+    'eventId': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof EventExpenseResponseWithLinks
+     */
+    'amount'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventExpenseResponseWithLinks
+     */
+    'type'?: EventExpenseResponseWithLinksTypeEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventExpenseResponseWithLinks
+     */
+    'description'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof EventExpenseResponseWithLinks
+     */
+    'event'?: object;
+    /**
+     * 
+     * @type {EventExpenseResponseLinks}
+     * @memberof EventExpenseResponseWithLinks
+     */
+    '_links': EventExpenseResponseLinks;
+}
+
+export const EventExpenseResponseWithLinksTypeEnum = {
+    Food: 'food',
+    Transport: 'transport',
+    Material: 'material',
+    Accommodation: 'accommodation',
+    Other: 'other'
+} as const;
+
+export type EventExpenseResponseWithLinksTypeEnum = typeof EventExpenseResponseWithLinksTypeEnum[keyof typeof EventExpenseResponseWithLinksTypeEnum];
 
 /**
  * 
@@ -624,6 +785,276 @@ export const EventResponseStatusEnum = {
 } as const;
 
 export type EventResponseStatusEnum = typeof EventResponseStatusEnum[keyof typeof EventResponseStatusEnum];
+
+/**
+ * 
+ * @export
+ * @interface EventResponseLinks
+ */
+export interface EventResponseLinks {
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'listEventAttendees': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'addEventAttendee': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'listEventExpenses': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'addEventExpense': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'getEventRegistration': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'saveEventRegistration': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'deleteEventRegistration': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'getEventReport': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'getEventsYears': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'updateEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'deleteEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'leadEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'submitEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'rejectEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'publishEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'unpublishEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'cancelEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof EventResponseLinks
+     */
+    'uncancelEvent': AcLink;
+}
+/**
+ * 
+ * @export
+ * @interface EventResponseWithLinks
+ */
+export interface EventResponseWithLinks {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventResponseWithLinks
+     */
+    'id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'status': EventResponseWithLinksStatusEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'dateFrom': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'dateTill': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof EventResponseWithLinks
+     */
+    'leadersEvent': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'type'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'statusNote'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'place'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'description'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'timeFrom'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'timeTill'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'meetingPlaceStart'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'meetingPlaceEnd'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof EventResponseWithLinks
+     */
+    'waterKm'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'river'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof EventResponseWithLinks
+     */
+    'deletedAt'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof EventResponseWithLinks
+     */
+    'album'?: object;
+    /**
+     * 
+     * @type {Array<GroupResponse>}
+     * @memberof EventResponseWithLinks
+     */
+    'groups'?: Array<GroupResponse>;
+    /**
+     * 
+     * @type {Array<EventAttendeeResponse>}
+     * @memberof EventResponseWithLinks
+     */
+    'attendees'?: Array<EventAttendeeResponse>;
+    /**
+     * 
+     * @type {Array<EventExpenseResponse>}
+     * @memberof EventResponseWithLinks
+     */
+    'expenses'?: Array<EventExpenseResponse>;
+    /**
+     * 
+     * @type {Array<MemberResponse>}
+     * @memberof EventResponseWithLinks
+     */
+    'leaders'?: Array<MemberResponse>;
+    /**
+     * 
+     * @type {EventResponseLinks}
+     * @memberof EventResponseWithLinks
+     */
+    '_links': EventResponseLinks;
+}
+
+export const EventResponseWithLinksStatusEnum = {
+    Draft: 'draft',
+    Pending: 'pending',
+    Public: 'public',
+    Cancelled: 'cancelled'
+} as const;
+
+export type EventResponseWithLinksStatusEnum = typeof EventResponseWithLinksStatusEnum[keyof typeof EventResponseWithLinksStatusEnum];
 
 /**
  * 
@@ -1493,112 +1924,21 @@ export interface PadlersTotalsResponse {
 /**
  * 
  * @export
- * @interface PhotoCreateBodyWithLinks
+ * @interface PhotoCreateBody
  */
-export interface PhotoCreateBodyWithLinks {
+export interface PhotoCreateBody {
     /**
      * 
      * @type {number}
-     * @memberof PhotoCreateBodyWithLinks
+     * @memberof PhotoCreateBody
      */
     'albumId': number;
     /**
      * 
      * @type {File}
-     * @memberof PhotoCreateBodyWithLinks
+     * @memberof PhotoCreateBody
      */
     'file': File;
-    /**
-     * 
-     * @type {object}
-     * @memberof PhotoCreateBodyWithLinks
-     */
-    '_links': object;
-}
-/**
- * 
- * @export
- * @interface PhotoResponse
- */
-export interface PhotoResponse {
-    /**
-     * 
-     * @type {number}
-     * @memberof PhotoResponse
-     */
-    'id': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PhotoResponse
-     */
-    'albumId': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof PhotoResponse
-     */
-    'timestamp': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PhotoResponse
-     */
-    'name': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof PhotoResponse
-     */
-    'width'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PhotoResponse
-     */
-    'height'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PhotoResponse
-     */
-    'uploadedById'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof PhotoResponse
-     */
-    'title'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PhotoResponse
-     */
-    'caption'?: string;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof PhotoResponse
-     */
-    'tags'?: Array<string>;
-    /**
-     * 
-     * @type {string}
-     * @memberof PhotoResponse
-     */
-    'bg'?: string;
-    /**
-     * 
-     * @type {object}
-     * @memberof PhotoResponse
-     */
-    'album'?: object;
-    /**
-     * 
-     * @type {UserResponse}
-     * @memberof PhotoResponse
-     */
-    'uploadedBy'?: UserResponse;
 }
 /**
  * 
@@ -1705,16 +2045,16 @@ export interface PhotoResponseWithLinks {
     'bg'?: string;
     /**
      * 
-     * @type {object}
+     * @type {AlbumResponseWithLinks}
      * @memberof PhotoResponseWithLinks
      */
-    'album'?: object;
+    'album'?: AlbumResponseWithLinks;
     /**
      * 
-     * @type {UserResponse}
+     * @type {UserResponseWithLinks}
      * @memberof PhotoResponseWithLinks
      */
-    'uploadedBy'?: UserResponse;
+    'uploadedBy'?: UserResponseWithLinks;
     /**
      * 
      * @type {PhotoResponseLinks}
@@ -1750,43 +2090,6 @@ export interface PhotoUpdateBody {
 /**
  * 
  * @export
- * @interface PhotosListResponseWithLinks
- */
-export interface PhotosListResponseWithLinks {
-    /**
-     * 
-     * @type {number}
-     * @memberof PhotosListResponseWithLinks
-     */
-    'id': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PhotosListResponseWithLinks
-     */
-    'albumId': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof PhotosListResponseWithLinks
-     */
-    'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PhotosListResponseWithLinks
-     */
-    'title'?: string;
-    /**
-     * 
-     * @type {object}
-     * @memberof PhotosListResponseWithLinks
-     */
-    '_links': object;
-}
-/**
- * 
- * @export
  * @interface RootResponseLinks
  */
 export interface RootResponseLinks {
@@ -1808,6 +2111,12 @@ export interface RootResponseLinks {
      * @memberof RootResponseLinks
      */
     'listPhotos': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof RootResponseLinks
+     */
+    'createPhoto': AcLink;
     /**
      * 
      * @type {AcLink}
@@ -2076,76 +2385,6 @@ export type UserCreateBodyRolesEnum = typeof UserCreateBodyRolesEnum[keyof typeo
 /**
  * 
  * @export
- * @interface UserResponse
- */
-export interface UserResponse {
-    /**
-     * 
-     * @type {number}
-     * @memberof UserResponse
-     */
-    'id': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof UserResponse
-     */
-    'login': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof UserResponse
-     */
-    'memberId'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof UserResponse
-     */
-    'password'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UserResponse
-     */
-    'email'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UserResponse
-     */
-    'loginCode'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UserResponse
-     */
-    'loginCodeExp'?: string;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof UserResponse
-     */
-    'roles'?: Array<UserResponseRolesEnum>;
-    /**
-     * 
-     * @type {MemberResponseWithLinks}
-     * @memberof UserResponse
-     */
-    'member'?: MemberResponseWithLinks;
-}
-
-export const UserResponseRolesEnum = {
-    Admin: 'admin',
-    Revizor: 'revizor',
-    Program: 'program'
-} as const;
-
-export type UserResponseRolesEnum = typeof UserResponseRolesEnum[keyof typeof UserResponseRolesEnum];
-
-/**
- * 
- * @export
  * @interface UserResponseLinks
  */
 export interface UserResponseLinks {
@@ -2322,7 +2561,7 @@ export const APIApiAxiosParamCreator = function (configuration?: Configuration) 
          * @throws {RequiredError}
          */
         getApiInfo: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/root`;
+            const localVarPath = `/root`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2416,7 +2655,7 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
          * @throws {RequiredError}
          */
         getMe: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/account`;
+            const localVarPath = `/account`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2448,7 +2687,7 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
         loginUsingCredentials: async (loginCredentialsBody: LoginCredentialsBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginCredentialsBody' is not null or undefined
             assertParamExists('loginUsingCredentials', 'loginCredentialsBody', loginCredentialsBody)
-            const localVarPath = `/api/login/credentials`;
+            const localVarPath = `/login/credentials`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2483,7 +2722,7 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
         loginUsingGoogle: async (loginGoogleBody: LoginGoogleBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginGoogleBody' is not null or undefined
             assertParamExists('loginUsingGoogle', 'loginGoogleBody', loginGoogleBody)
-            const localVarPath = `/api/login/google`;
+            const localVarPath = `/login/google`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2518,7 +2757,7 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
         loginUsingLink: async (loginLinkBody: LoginLinkBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginLinkBody' is not null or undefined
             assertParamExists('loginUsingLink', 'loginLinkBody', loginLinkBody)
-            const localVarPath = `/api/login/link`;
+            const localVarPath = `/login/link`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2550,7 +2789,7 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
          * @throws {RequiredError}
          */
         logout: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/login/logout`;
+            const localVarPath = `/login/logout`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2582,7 +2821,7 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
         sendLoginLink: async (loginSendLinkBody: LoginSendLinkBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'loginSendLinkBody' is not null or undefined
             assertParamExists('sendLoginLink', 'loginSendLinkBody', loginSendLinkBody)
-            const localVarPath = `/api/login/sendLink`;
+            const localVarPath = `/login/sendLink`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2835,7 +3074,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             assertParamExists('addEventAttendee', 'memberId', memberId)
             // verify required parameter 'body' is not null or undefined
             assertParamExists('addEventAttendee', 'body', body)
-            const localVarPath = `/api/events/{eventId}/attendees/{memberId}`
+            const localVarPath = `/events/{eventId}/attendees/{memberId}`
                 .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)))
                 .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -2865,6 +3104,49 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @param {number} eventId 
+         * @param {string} expenseId 
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addEventExpense: async (eventId: number, expenseId: string, body: object, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('addEventExpense', 'eventId', eventId)
+            // verify required parameter 'expenseId' is not null or undefined
+            assertParamExists('addEventExpense', 'expenseId', expenseId)
+            // verify required parameter 'body' is not null or undefined
+            assertParamExists('addEventExpense', 'body', body)
+            const localVarPath = `/events/{eventId}/expenses/{expenseId}`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)))
+                .replace(`{${"expenseId"}}`, encodeURIComponent(String(expenseId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {number} id 
          * @param {EventStatusChangeBody} eventStatusChangeBody 
          * @param {*} [options] Override http request option.
@@ -2875,7 +3157,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             assertParamExists('cancelEvent', 'id', id)
             // verify required parameter 'eventStatusChangeBody' is not null or undefined
             assertParamExists('cancelEvent', 'eventStatusChangeBody', eventStatusChangeBody)
-            const localVarPath = `/api/events/{id}/cancel`
+            const localVarPath = `/events/{id}/cancel`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2911,7 +3193,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
         createEvent: async (eventCreateBody: EventCreateBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'eventCreateBody' is not null or undefined
             assertParamExists('createEvent', 'eventCreateBody', eventCreateBody)
-            const localVarPath = `/api/events`;
+            const localVarPath = `/events`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2946,7 +3228,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
         deleteEvent: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteEvent', 'id', id)
-            const localVarPath = `/api/events/{id}`
+            const localVarPath = `/events/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2982,9 +3264,46 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             assertParamExists('deleteEventAttendee', 'eventId', eventId)
             // verify required parameter 'memberId' is not null or undefined
             assertParamExists('deleteEventAttendee', 'memberId', memberId)
-            const localVarPath = `/api/events/{eventId}/attendees/{memberId}`
+            const localVarPath = `/events/{eventId}/attendees/{memberId}`
                 .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)))
                 .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} eventId 
+         * @param {string} expenseId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteEventExpense: async (eventId: number, expenseId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('deleteEventExpense', 'eventId', eventId)
+            // verify required parameter 'expenseId' is not null or undefined
+            assertParamExists('deleteEventExpense', 'expenseId', expenseId)
+            const localVarPath = `/events/{eventId}/expenses/{expenseId}`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)))
+                .replace(`{${"expenseId"}}`, encodeURIComponent(String(expenseId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3016,7 +3335,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
         deleteEventRegistration: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteEventRegistration', 'id', id)
-            const localVarPath = `/api/events/{id}/registration`
+            const localVarPath = `/events/{id}/registration`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3046,7 +3365,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
          * @throws {RequiredError}
          */
         getCPVEvents: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/cpv-events`;
+            const localVarPath = `/cpv-events`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3078,7 +3397,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
         getEvent: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getEvent', 'id', id)
-            const localVarPath = `/api/events/{id}`
+            const localVarPath = `/events/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3111,7 +3430,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
         getEventRegistration: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getEventRegistration', 'id', id)
-            const localVarPath = `/api/events/{id}/registration`
+            const localVarPath = `/events/{id}/registration`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3144,7 +3463,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
         getEventReport: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getEventReport', 'id', id)
-            const localVarPath = `/api/events/{id}/report`
+            const localVarPath = `/events/{id}/report`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3174,7 +3493,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
          * @throws {RequiredError}
          */
         getEventsYears: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/events/years`;
+            const localVarPath = `/events/years`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3206,7 +3525,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
         leadEvent: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('leadEvent', 'id', id)
-            const localVarPath = `/api/events/{id}/lead`
+            const localVarPath = `/events/{id}/lead`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3239,7 +3558,40 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
         listEventAttendees: async (eventId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'eventId' is not null or undefined
             assertParamExists('listEventAttendees', 'eventId', eventId)
-            const localVarPath = `/api/events/{eventId}/attendees`
+            const localVarPath = `/events/{eventId}/attendees`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} eventId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listEventExpenses: async (eventId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('listEventExpenses', 'eventId', eventId)
+            const localVarPath = `/events/{eventId}/expenses`
                 .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3274,7 +3626,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
          * @throws {RequiredError}
          */
         listEvents: async (year?: number, status?: string, search?: string, my?: boolean, noleader?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/events`;
+            const localVarPath = `/events`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3329,7 +3681,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             assertParamExists('publishEvent', 'id', id)
             // verify required parameter 'eventStatusChangeBody' is not null or undefined
             assertParamExists('publishEvent', 'eventStatusChangeBody', eventStatusChangeBody)
-            const localVarPath = `/api/events/{id}/publish`
+            const localVarPath = `/events/{id}/publish`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3368,7 +3720,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             assertParamExists('rejectEvent', 'id', id)
             // verify required parameter 'eventStatusChangeBody' is not null or undefined
             assertParamExists('rejectEvent', 'eventStatusChangeBody', eventStatusChangeBody)
-            const localVarPath = `/api/events/{id}/reject`
+            const localVarPath = `/events/{id}/reject`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3407,7 +3759,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             assertParamExists('saveEventRegistration', 'id', id)
             // verify required parameter 'saveEventRegistrationRequest' is not null or undefined
             assertParamExists('saveEventRegistration', 'saveEventRegistrationRequest', saveEventRegistrationRequest)
-            const localVarPath = `/api/events/{id}/registration`
+            const localVarPath = `/events/{id}/registration`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3446,7 +3798,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             assertParamExists('submitEvent', 'id', id)
             // verify required parameter 'eventStatusChangeBody' is not null or undefined
             assertParamExists('submitEvent', 'eventStatusChangeBody', eventStatusChangeBody)
-            const localVarPath = `/api/events/{id}/submit`
+            const localVarPath = `/events/{id}/submit`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3485,7 +3837,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             assertParamExists('uncancelEvent', 'id', id)
             // verify required parameter 'eventStatusChangeBody' is not null or undefined
             assertParamExists('uncancelEvent', 'eventStatusChangeBody', eventStatusChangeBody)
-            const localVarPath = `/api/events/{id}/uncancel`
+            const localVarPath = `/events/{id}/uncancel`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3524,7 +3876,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             assertParamExists('unpublishEvent', 'id', id)
             // verify required parameter 'eventStatusChangeBody' is not null or undefined
             assertParamExists('unpublishEvent', 'eventStatusChangeBody', eventStatusChangeBody)
-            const localVarPath = `/api/events/{id}/unpublish`
+            const localVarPath = `/events/{id}/unpublish`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3563,7 +3915,7 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             assertParamExists('updateEvent', 'id', id)
             // verify required parameter 'eventUpdateBody' is not null or undefined
             assertParamExists('updateEvent', 'eventUpdateBody', eventUpdateBody)
-            const localVarPath = `/api/events/{id}`
+            const localVarPath = `/events/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3605,9 +3957,52 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             assertParamExists('updateEventAttendee', 'memberId', memberId)
             // verify required parameter 'body' is not null or undefined
             assertParamExists('updateEventAttendee', 'body', body)
-            const localVarPath = `/api/events/{eventId}/attendees/{memberId}`
+            const localVarPath = `/events/{eventId}/attendees/{memberId}`
                 .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)))
                 .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} eventId 
+         * @param {string} expenseId 
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateEventExpense: async (eventId: number, expenseId: string, body: object, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('updateEventExpense', 'eventId', eventId)
+            // verify required parameter 'expenseId' is not null or undefined
+            assertParamExists('updateEventExpense', 'expenseId', expenseId)
+            // verify required parameter 'body' is not null or undefined
+            assertParamExists('updateEventExpense', 'body', body)
+            const localVarPath = `/events/{eventId}/expenses/{expenseId}`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)))
+                .replace(`{${"expenseId"}}`, encodeURIComponent(String(expenseId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3657,6 +4052,18 @@ export const EventsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {number} eventId 
+         * @param {string} expenseId 
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addEventExpense(eventId: number, expenseId: string, body: object, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addEventExpense(eventId, expenseId, body, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @param {number} id 
          * @param {EventStatusChangeBody} eventStatusChangeBody 
          * @param {*} [options] Override http request option.
@@ -3699,6 +4106,17 @@ export const EventsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {number} eventId 
+         * @param {string} expenseId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteEventExpense(eventId: number, expenseId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteEventExpense(eventId, expenseId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @param {number} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3712,7 +4130,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getCPVEvents(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CPVEventResponse>>> {
+        async getCPVEvents(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CPVEventResponseWithLinks>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getCPVEvents(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3722,7 +4140,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getEvent(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventResponse>> {
+        async getEvent(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getEvent(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3771,8 +4189,18 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listEventAttendees(eventId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventAttendeeResponse>> {
+        async listEventAttendees(eventId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventAttendeeResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listEventAttendees(eventId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} eventId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listEventExpenses(eventId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventExpenseResponseWithLinks>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listEventExpenses(eventId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3785,7 +4213,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listEvents(year?: number, status?: string, search?: string, my?: boolean, noleader?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventResponse>>> {
+        async listEvents(year?: number, status?: string, search?: string, my?: boolean, noleader?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventResponseWithLinks>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listEvents(year, status, search, my, noleader, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -3878,6 +4306,18 @@ export const EventsApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateEventAttendee(eventId, memberId, body, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 
+         * @param {number} eventId 
+         * @param {string} expenseId 
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateEventExpense(eventId: number, expenseId: string, body: object, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateEventExpense(eventId, expenseId, body, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -3898,6 +4338,17 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          */
         addEventAttendee(eventId: number, memberId: number, body: object, options?: any): AxiosPromise<void> {
             return localVarFp.addEventAttendee(eventId, memberId, body, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} eventId 
+         * @param {string} expenseId 
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addEventExpense(eventId: number, expenseId: string, body: object, options?: any): AxiosPromise<void> {
+            return localVarFp.addEventExpense(eventId, expenseId, body, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3939,6 +4390,16 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
+         * @param {number} eventId 
+         * @param {string} expenseId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteEventExpense(eventId: number, expenseId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteEventExpense(eventId, expenseId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {number} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3951,7 +4412,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getCPVEvents(options?: any): AxiosPromise<Array<CPVEventResponse>> {
+        getCPVEvents(options?: any): AxiosPromise<Array<CPVEventResponseWithLinks>> {
             return localVarFp.getCPVEvents(options).then((request) => request(axios, basePath));
         },
         /**
@@ -3960,7 +4421,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEvent(id: number, options?: any): AxiosPromise<EventResponse> {
+        getEvent(id: number, options?: any): AxiosPromise<EventResponseWithLinks> {
             return localVarFp.getEvent(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -4004,8 +4465,17 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEventAttendees(eventId: number, options?: any): AxiosPromise<EventAttendeeResponse> {
+        listEventAttendees(eventId: number, options?: any): AxiosPromise<EventAttendeeResponseWithLinks> {
             return localVarFp.listEventAttendees(eventId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} eventId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listEventExpenses(eventId: number, options?: any): AxiosPromise<EventExpenseResponseWithLinks> {
+            return localVarFp.listEventExpenses(eventId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -4017,7 +4487,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(year?: number, status?: string, search?: string, my?: boolean, noleader?: boolean, options?: any): AxiosPromise<Array<EventResponse>> {
+        listEvents(year?: number, status?: string, search?: string, my?: boolean, noleader?: boolean, options?: any): AxiosPromise<Array<EventResponseWithLinks>> {
             return localVarFp.listEvents(year, status, search, my, noleader, options).then((request) => request(axios, basePath));
         },
         /**
@@ -4101,6 +4571,17 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
         updateEventAttendee(eventId: number, memberId: number, body: object, options?: any): AxiosPromise<void> {
             return localVarFp.updateEventAttendee(eventId, memberId, body, options).then((request) => request(axios, basePath));
         },
+        /**
+         * 
+         * @param {number} eventId 
+         * @param {string} expenseId 
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateEventExpense(eventId: number, expenseId: string, body: object, options?: any): AxiosPromise<void> {
+            return localVarFp.updateEventExpense(eventId, expenseId, body, options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -4122,6 +4603,19 @@ export class EventsApi extends BaseAPI {
      */
     public addEventAttendee(eventId: number, memberId: number, body: object, options?: AxiosRequestConfig) {
         return EventsApiFp(this.configuration).addEventAttendee(eventId, memberId, body, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} eventId 
+     * @param {string} expenseId 
+     * @param {object} body 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public addEventExpense(eventId: number, expenseId: string, body: object, options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).addEventExpense(eventId, expenseId, body, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4168,6 +4662,18 @@ export class EventsApi extends BaseAPI {
      */
     public deleteEventAttendee(eventId: number, memberId: number, options?: AxiosRequestConfig) {
         return EventsApiFp(this.configuration).deleteEventAttendee(eventId, memberId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} eventId 
+     * @param {string} expenseId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public deleteEventExpense(eventId: number, expenseId: string, options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).deleteEventExpense(eventId, expenseId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4254,6 +4760,17 @@ export class EventsApi extends BaseAPI {
      */
     public listEventAttendees(eventId: number, options?: AxiosRequestConfig) {
         return EventsApiFp(this.configuration).listEventAttendees(eventId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} eventId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public listEventExpenses(eventId: number, options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).listEventExpenses(eventId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4367,6 +4884,19 @@ export class EventsApi extends BaseAPI {
     public updateEventAttendee(eventId: number, memberId: number, body: object, options?: AxiosRequestConfig) {
         return EventsApiFp(this.configuration).updateEventAttendee(eventId, memberId, body, options).then((request) => request(this.axios, this.basePath));
     }
+
+    /**
+     * 
+     * @param {number} eventId 
+     * @param {string} expenseId 
+     * @param {object} body 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public updateEventExpense(eventId: number, expenseId: string, body: object, options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).updateEventExpense(eventId, expenseId, body, options).then((request) => request(this.axios, this.basePath));
+    }
 }
 
 
@@ -4385,7 +4915,7 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
         createGroup: async (createGroupBody: CreateGroupBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'createGroupBody' is not null or undefined
             assertParamExists('createGroup', 'createGroupBody', createGroupBody)
-            const localVarPath = `/api/groups`;
+            const localVarPath = `/groups`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4420,7 +4950,7 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
         createMember: async (createMemberBody: CreateMemberBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'createMemberBody' is not null or undefined
             assertParamExists('createMember', 'createMemberBody', createMemberBody)
-            const localVarPath = `/api/members`;
+            const localVarPath = `/members`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4455,7 +4985,7 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
         deleteGroup: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteGroup', 'id', id)
-            const localVarPath = `/api/groups/{id}`
+            const localVarPath = `/groups/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4488,7 +5018,7 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
         deleteMember: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteMember', 'id', id)
-            const localVarPath = `/api/members/{id}`
+            const localVarPath = `/members/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4521,7 +5051,7 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
         getGroup: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getGroup', 'id', id)
-            const localVarPath = `/api/groups/{id}`
+            const localVarPath = `/groups/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4554,7 +5084,7 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
         getMember: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getMember', 'id', id)
-            const localVarPath = `/api/members/{id}`
+            const localVarPath = `/members/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4584,7 +5114,7 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
          * @throws {RequiredError}
          */
         listGroups: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/groups`;
+            const localVarPath = `/groups`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4613,7 +5143,7 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
          * @throws {RequiredError}
          */
         listMembers: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/members`;
+            const localVarPath = `/members`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4645,7 +5175,7 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
         updateGroup: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateGroup', 'id', id)
-            const localVarPath = `/api/groups/{id}`
+            const localVarPath = `/groups/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4681,7 +5211,7 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
             assertParamExists('updateMember', 'id', id)
             // verify required parameter 'updateMemberBody' is not null or undefined
             assertParamExists('updateMember', 'updateMemberBody', updateMemberBody)
-            const localVarPath = `/api/members/{id}`
+            const localVarPath = `/members/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4724,7 +5254,7 @@ export const MembersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createGroup(createGroupBody: CreateGroupBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GroupResponse>> {
+        async createGroup(createGroupBody: CreateGroupBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GroupResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createGroup(createGroupBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4764,7 +5294,7 @@ export const MembersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getGroup(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GroupResponse>> {
+        async getGroup(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GroupResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getGroup(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4783,7 +5313,7 @@ export const MembersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listGroups(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GroupResponse>>> {
+        async listGroups(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<GroupResponseWithLinks>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listGroups(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4833,7 +5363,7 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroup(createGroupBody: CreateGroupBody, options?: any): AxiosPromise<GroupResponse> {
+        createGroup(createGroupBody: CreateGroupBody, options?: any): AxiosPromise<GroupResponseWithLinks> {
             return localVarFp.createGroup(createGroupBody, options).then((request) => request(axios, basePath));
         },
         /**
@@ -4869,7 +5399,7 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getGroup(id: number, options?: any): AxiosPromise<GroupResponse> {
+        getGroup(id: number, options?: any): AxiosPromise<GroupResponseWithLinks> {
             return localVarFp.getGroup(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -4886,7 +5416,7 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listGroups(options?: any): AxiosPromise<Array<GroupResponse>> {
+        listGroups(options?: any): AxiosPromise<Array<GroupResponseWithLinks>> {
             return localVarFp.listGroups(options).then((request) => request(axios, basePath));
         },
         /**
@@ -5052,7 +5582,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
         createAlbum: async (albumCreateBody: AlbumCreateBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'albumCreateBody' is not null or undefined
             assertParamExists('createAlbum', 'albumCreateBody', albumCreateBody)
-            const localVarPath = `/api/albums`;
+            const localVarPath = `/albums`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5080,14 +5610,14 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
         },
         /**
          * 
-         * @param {PhotoCreateBodyWithLinks} photoCreateBodyWithLinks 
+         * @param {PhotoCreateBody} photoCreateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPhoto: async (photoCreateBodyWithLinks: PhotoCreateBodyWithLinks, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'photoCreateBodyWithLinks' is not null or undefined
-            assertParamExists('createPhoto', 'photoCreateBodyWithLinks', photoCreateBodyWithLinks)
-            const localVarPath = `/api/photos`;
+        createPhoto: async (photoCreateBody: PhotoCreateBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'photoCreateBody' is not null or undefined
+            assertParamExists('createPhoto', 'photoCreateBody', photoCreateBody)
+            const localVarPath = `/photos`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5106,7 +5636,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(photoCreateBodyWithLinks, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(photoCreateBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -5122,7 +5652,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
         deleteAlbum: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteAlbum', 'id', id)
-            const localVarPath = `/api/albums/{id}`
+            const localVarPath = `/albums/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5155,7 +5685,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
         deletePhoto: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deletePhoto', 'id', id)
-            const localVarPath = `/api/photos/{id}`
+            const localVarPath = `/photos/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5188,7 +5718,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
         getAlbum: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getAlbum', 'id', id)
-            const localVarPath = `/api/albums/{id}`
+            const localVarPath = `/albums/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5221,7 +5751,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
         getAlbumPhotos: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getAlbumPhotos', 'id', id)
-            const localVarPath = `/api/albums/{id}/photos`
+            const localVarPath = `/albums/{id}/photos`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5254,7 +5784,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
         getPhoto: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getPhoto', 'id', id)
-            const localVarPath = `/api/photos/{id}`
+            const localVarPath = `/photos/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5290,7 +5820,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
             assertParamExists('getPhotoImage', 'id', id)
             // verify required parameter 'size' is not null or undefined
             assertParamExists('getPhotoImage', 'size', size)
-            const localVarPath = `/api/photos/{id}/image/{size}`
+            const localVarPath = `/photos/{id}/image/{size}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)))
                 .replace(`{${"size"}}`, encodeURIComponent(String(size)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -5321,7 +5851,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
          * @throws {RequiredError}
          */
         listAlbums: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/albums`;
+            const localVarPath = `/albums`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5350,7 +5880,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
          * @throws {RequiredError}
          */
         listPhotos: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/photos`;
+            const localVarPath = `/photos`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5382,7 +5912,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
         publishAlbum: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('publishAlbum', 'id', id)
-            const localVarPath = `/api/albums/{id}/publish`
+            const localVarPath = `/albums/{id}/publish`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5415,7 +5945,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
         unpublishAlbum: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('unpublishAlbum', 'id', id)
-            const localVarPath = `/api/albums/{id}/unpublish`
+            const localVarPath = `/albums/{id}/unpublish`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5451,7 +5981,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
             assertParamExists('updateAlbum', 'id', id)
             // verify required parameter 'albumUpdateBody' is not null or undefined
             assertParamExists('updateAlbum', 'albumUpdateBody', albumUpdateBody)
-            const localVarPath = `/api/albums/{id}`
+            const localVarPath = `/albums/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5490,7 +6020,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
             assertParamExists('updatePhoto', 'id', id)
             // verify required parameter 'photoUpdateBody' is not null or undefined
             assertParamExists('updatePhoto', 'photoUpdateBody', photoUpdateBody)
-            const localVarPath = `/api/photos/{id}`
+            const localVarPath = `/photos/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5533,18 +6063,18 @@ export const PhotoGalleryApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createAlbum(albumCreateBody: AlbumCreateBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AlbumResponse>> {
+        async createAlbum(albumCreateBody: AlbumCreateBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AlbumResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createAlbum(albumCreateBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * 
-         * @param {PhotoCreateBodyWithLinks} photoCreateBodyWithLinks 
+         * @param {PhotoCreateBody} photoCreateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPhoto(photoCreateBodyWithLinks: PhotoCreateBodyWithLinks, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPhoto(photoCreateBodyWithLinks, options);
+        async createPhoto(photoCreateBody: PhotoCreateBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPhoto(photoCreateBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5573,7 +6103,7 @@ export const PhotoGalleryApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAlbum(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AlbumResponse>> {
+        async getAlbum(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AlbumResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAlbum(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5613,7 +6143,7 @@ export const PhotoGalleryApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAlbums(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AlbumsListResponseWithLinks>>> {
+        async listAlbums(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AlbumResponseWithLinks>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listAlbums(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5622,7 +6152,7 @@ export const PhotoGalleryApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listPhotos(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PhotosListResponseWithLinks>>> {
+        async listPhotos(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PhotoResponseWithLinks>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listPhotos(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5684,17 +6214,17 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAlbum(albumCreateBody: AlbumCreateBody, options?: any): AxiosPromise<AlbumResponse> {
+        createAlbum(albumCreateBody: AlbumCreateBody, options?: any): AxiosPromise<AlbumResponseWithLinks> {
             return localVarFp.createAlbum(albumCreateBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {PhotoCreateBodyWithLinks} photoCreateBodyWithLinks 
+         * @param {PhotoCreateBody} photoCreateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPhoto(photoCreateBodyWithLinks: PhotoCreateBodyWithLinks, options?: any): AxiosPromise<void> {
-            return localVarFp.createPhoto(photoCreateBodyWithLinks, options).then((request) => request(axios, basePath));
+        createPhoto(photoCreateBody: PhotoCreateBody, options?: any): AxiosPromise<void> {
+            return localVarFp.createPhoto(photoCreateBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -5720,7 +6250,7 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAlbum(id: number, options?: any): AxiosPromise<AlbumResponse> {
+        getAlbum(id: number, options?: any): AxiosPromise<AlbumResponseWithLinks> {
             return localVarFp.getAlbum(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -5756,7 +6286,7 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAlbums(options?: any): AxiosPromise<Array<AlbumsListResponseWithLinks>> {
+        listAlbums(options?: any): AxiosPromise<Array<AlbumResponseWithLinks>> {
             return localVarFp.listAlbums(options).then((request) => request(axios, basePath));
         },
         /**
@@ -5764,7 +6294,7 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPhotos(options?: any): AxiosPromise<Array<PhotosListResponseWithLinks>> {
+        listPhotos(options?: any): AxiosPromise<Array<PhotoResponseWithLinks>> {
             return localVarFp.listPhotos(options).then((request) => request(axios, basePath));
         },
         /**
@@ -5828,13 +6358,13 @@ export class PhotoGalleryApi extends BaseAPI {
 
     /**
      * 
-     * @param {PhotoCreateBodyWithLinks} photoCreateBodyWithLinks 
+     * @param {PhotoCreateBody} photoCreateBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
      */
-    public createPhoto(photoCreateBodyWithLinks: PhotoCreateBodyWithLinks, options?: AxiosRequestConfig) {
-        return PhotoGalleryApiFp(this.configuration).createPhoto(photoCreateBodyWithLinks, options).then((request) => request(this.axios, this.basePath));
+    public createPhoto(photoCreateBody: PhotoCreateBody, options?: AxiosRequestConfig) {
+        return PhotoGalleryApiFp(this.configuration).createPhoto(photoCreateBody, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -5984,7 +6514,7 @@ export const PublicApiAxiosParamCreator = function (configuration?: Configuratio
          * @throws {RequiredError}
          */
         getGallery: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/public`;
+            const localVarPath = `/public`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6078,7 +6608,7 @@ export const StatisticsApiAxiosParamCreator = function (configuration?: Configur
          * @throws {RequiredError}
          */
         getEventsAttendeesReport: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/statistics/events/attendees`;
+            const localVarPath = `/statistics/events/attendees`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6107,7 +6637,7 @@ export const StatisticsApiAxiosParamCreator = function (configuration?: Configur
          * @throws {RequiredError}
          */
         getEventsLeadersReport: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/statistics/events/leaders`;
+            const localVarPath = `/statistics/events/leaders`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6136,7 +6666,7 @@ export const StatisticsApiAxiosParamCreator = function (configuration?: Configur
          * @throws {RequiredError}
          */
         getEventsReport: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/statistics/events/events`;
+            const localVarPath = `/statistics/events/events`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6165,7 +6695,7 @@ export const StatisticsApiAxiosParamCreator = function (configuration?: Configur
          * @throws {RequiredError}
          */
         getEventsReportYears: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/statistics/events/years`;
+            const localVarPath = `/statistics/events/years`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6194,7 +6724,7 @@ export const StatisticsApiAxiosParamCreator = function (configuration?: Configur
          * @throws {RequiredError}
          */
         getMembersReport: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/statistics/members`;
+            const localVarPath = `/statistics/members`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6226,7 +6756,7 @@ export const StatisticsApiAxiosParamCreator = function (configuration?: Configur
         getPaddlersRanking: async (year: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'year' is not null or undefined
             assertParamExists('getPaddlersRanking', 'year', year)
-            const localVarPath = `/api/statistics/paddlers/{year}/ranking`
+            const localVarPath = `/statistics/paddlers/{year}/ranking`
                 .replace(`{${"year"}}`, encodeURIComponent(String(year)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6256,7 +6786,7 @@ export const StatisticsApiAxiosParamCreator = function (configuration?: Configur
          * @throws {RequiredError}
          */
         getPaddlersTotals: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/statistics/paddlers`;
+            const localVarPath = `/statistics/paddlers`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6518,7 +7048,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         createUser: async (userCreateBody: UserCreateBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userCreateBody' is not null or undefined
             assertParamExists('createUser', 'userCreateBody', userCreateBody)
-            const localVarPath = `/api/users`;
+            const localVarPath = `/users`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6553,7 +7083,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         deleteUser: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteUser', 'id', id)
-            const localVarPath = `/api/users/{id}`
+            const localVarPath = `/users/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6586,7 +7116,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         getUser: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getUser', 'id', id)
-            const localVarPath = `/api/users/{id}`
+            const localVarPath = `/users/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6619,7 +7149,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         impersonateUser: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('impersonateUser', 'id', id)
-            const localVarPath = `/api/users/{id}/impersonate`
+            const localVarPath = `/users/{id}/impersonate`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6649,7 +7179,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
          * @throws {RequiredError}
          */
         listUsers: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/users`;
+            const localVarPath = `/users`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6684,7 +7214,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
             assertParamExists('setUserPassword', 'id', id)
             // verify required parameter 'userSetPasswordBody' is not null or undefined
             assertParamExists('setUserPassword', 'userSetPasswordBody', userSetPasswordBody)
-            const localVarPath = `/api/users/{id}/password`
+            const localVarPath = `/users/{id}/password`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6723,7 +7253,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
             assertParamExists('updateUser', 'id', id)
             // verify required parameter 'userUpdateBody' is not null or undefined
             assertParamExists('updateUser', 'userUpdateBody', userUpdateBody)
-            const localVarPath = `/api/users/{id}`
+            const localVarPath = `/users/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6766,7 +7296,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createUser(userCreateBody: UserCreateBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
+        async createUser(userCreateBody: UserCreateBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(userCreateBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6786,7 +7316,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getUser(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
+        async getUser(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getUser(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6847,7 +7377,7 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUser(userCreateBody: UserCreateBody, options?: any): AxiosPromise<UserResponse> {
+        createUser(userCreateBody: UserCreateBody, options?: any): AxiosPromise<UserResponseWithLinks> {
             return localVarFp.createUser(userCreateBody, options).then((request) => request(axios, basePath));
         },
         /**
@@ -6865,7 +7395,7 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getUser(id: number, options?: any): AxiosPromise<UserResponse> {
+        getUser(id: number, options?: any): AxiosPromise<UserResponseWithLinks> {
             return localVarFp.getUser(id, options).then((request) => request(axios, basePath));
         },
         /**

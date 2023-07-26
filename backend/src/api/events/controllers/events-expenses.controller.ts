@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
-import { AcController, AcLinks } from "src/access-control/access-control-lib";
+import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { EventsService } from "src/models/events/services/events.service";
 import {
   EventExpenseCreateRoute,
@@ -11,15 +11,15 @@ import {
 } from "../acl/event-expense.acl";
 import { EventExpenseCreateBody, EventExpenseResponse, EventExpenseUpdateBody } from "../dto/event-expense.dto";
 
-@Controller("events")
+@Controller("events/:eventId/expenses")
 @AcController()
 @ApiTags("Events")
 export class EventsExpensesController {
   constructor(private events: EventsService) {}
 
-  @Get(":eventId/attendees")
+  @Get("")
   @AcLinks(EventExpensesListRoute)
-  @ApiResponse({ type: EventExpenseResponse })
+  @ApiResponse({ type: WithLinks(EventExpenseResponse) })
   async listEventExpenses(@Req() req: Request, @Param("eventId") eventId: number): Promise<EventExpenseResponse[]> {
     const event = await this.events.getEvent(eventId);
     if (!event) throw new NotFoundException();
@@ -29,7 +29,7 @@ export class EventsExpensesController {
     return this.events.getEventExpenses(eventId);
   }
 
-  @Post(":eventId/attendees/:expenseId")
+  @Post(":expenseId")
   @AcLinks(EventExpenseCreateRoute)
   @ApiResponse({ status: 204 })
   async addEventExpense(
@@ -46,7 +46,7 @@ export class EventsExpensesController {
     await this.events.createEventExpense(eventId, expenseId, body);
   }
 
-  @Patch(":eventId/attendees/:expenseId")
+  @Patch(":expenseId")
   @AcLinks(EventExpenseEditRoute)
   @ApiResponse({ status: 204 })
   async updateEventExpense(
@@ -65,7 +65,7 @@ export class EventsExpensesController {
     await this.events.updateEventExpense(eventId, expenseId, body);
   }
 
-  @Delete(":eventId/attendees/:expenseId")
+  @Delete(":expenseId")
   @AcLinks(EventExpenseDeleteRoute)
   @ApiResponse({ status: 204 })
   async deleteEventExpense(

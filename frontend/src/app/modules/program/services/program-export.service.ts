@@ -15,14 +15,14 @@ import { saveAs } from "file-saver";
 import { DateTime } from "luxon";
 import { from } from "rxjs";
 import { groupBy, mergeMap, toArray } from "rxjs/operators";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 
 @Injectable({
   providedIn: "root",
 })
 export class ProgramExportService {
-  export(events: EventResponse[]) {
-    const groupedEvents: EventResponse[][] = [];
+  export(events: EventResponseWithLinks[]) {
+    const groupedEvents: EventResponseWithLinks[][] = [];
     from(events)
       .pipe(
         groupBy((event) => `${event.dateFrom},${event.dateTill}`),

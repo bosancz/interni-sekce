@@ -1,18 +1,18 @@
 import { Injectable } from "@angular/core";
 import { DateTime } from "luxon";
 import { BehaviorSubject } from "rxjs";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class EventsService {
-  event$ = new BehaviorSubject<EventResponse | undefined>(undefined);
+  event$ = new BehaviorSubject<EventResponseWithLinks | undefined>(undefined);
 
   constructor(private api: ApiService) {}
 
-  async loadEvent(eventId: number): Promise<EventResponse> {
+  async loadEvent(eventId: number): Promise<EventResponseWithLinks> {
     const event = await this.api.events.getEvent(eventId).then((res) => res.data);
 
     event.attendees?.sort((a, b) => (a.member!.nickname || "").localeCompare(b.member!.nickname || ""));
@@ -34,7 +34,7 @@ export class EventsService {
     return this.api.events.listEvents();
   }
 
-  async updateEvent(eventId: number, data: Partial<EventResponse>) {
+  async updateEvent(eventId: number, data: Partial<EventResponseWithLinks>) {
     return this.api.events.updateEvent(eventId, data);
   }
 }

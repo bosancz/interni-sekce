@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 import { EventTypes } from "src/app/config/event-types";
 
 type EventPipeProperty = "image" | "color" | "class";
@@ -15,7 +15,7 @@ export class EventPipe implements PipeTransform {
 
   constructor() {}
 
-  transform(event: EventResponse | undefined, property: EventPipeProperty): string {
+  transform(event: EventResponseWithLinks | undefined, property: EventPipeProperty): string {
     if (!event) return this.defaultProperties[property];
 
     switch (property) {

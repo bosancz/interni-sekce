@@ -1,7 +1,7 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
 import { CzechHolidays } from "czech-holidays";
 import { DateTime } from "luxon";
-import { CPVEventResponse, EventResponse } from "src/app/api";
+import { CPVEventResponseWithLinks, EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 const months = [
@@ -23,14 +23,14 @@ class CalendarRow {
   days: CalendarDay[] = [];
 
   blocks = {
-    own: new CalendarRowBlock<EventResponse>(),
-    cpv: new CalendarRowBlock<CPVEventResponse>(),
+    own: new CalendarRowBlock<EventResponseWithLinks>(),
+    cpv: new CalendarRowBlock<CPVEventResponseWithLinks>(),
   };
 
   constructor(public from: DateTime, public to: DateTime) {}
 }
 
-class CalendarRowBlock<T extends CPVEventResponse | EventResponse> {
+class CalendarRowBlock<T extends CPVEventResponseWithLinks | EventResponseWithLinks> {
   events: CalendarEvent<T>[] = [];
   levels: number = 1;
 }
@@ -47,7 +47,7 @@ class CalendarDay {
   constructor(public date: DateTime, public properties: CalendarDayProperties) {}
 }
 
-class CalendarEvent<T extends CPVEventResponse | EventResponse> {
+class CalendarEvent<T extends CPVEventResponseWithLinks | EventResponseWithLinks> {
   level: number = 0;
 
   dateFrom: DateTime;
@@ -74,7 +74,7 @@ export class EventCalendarComponent implements OnInit, OnChanges {
     this.dateTill.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
   }
 
-  @Input() events: EventResponse[] = [];
+  @Input() events: EventResponseWithLinks[] = [];
 
   @Input() cpv: boolean = false;
   @Input() selection: boolean = false;
@@ -90,7 +90,7 @@ export class EventCalendarComponent implements OnInit, OnChanges {
   dateFrom!: DateTime;
   dateTill!: DateTime;
 
-  eventsCPV: CPVEventResponse[] = [];
+  eventsCPV: CPVEventResponseWithLinks[] = [];
 
   eventHeight = 22;
 
@@ -164,9 +164,9 @@ export class EventCalendarComponent implements OnInit, OnChanges {
       });
   }
 
-  assignEvents(events: Array<EventResponse>, type: "own"): void;
-  assignEvents(events: Array<CPVEventResponse>, type: "cpv"): void;
-  assignEvents(events: Array<CPVEventResponse | EventResponse>, type: "own" | "cpv"): void {
+  assignEvents(events: Array<EventResponseWithLinks>, type: "own"): void;
+  assignEvents(events: Array<CPVEventResponseWithLinks>, type: "cpv"): void;
+  assignEvents(events: Array<CPVEventResponseWithLinks | EventResponseWithLinks>, type: "own" | "cpv"): void {
     if (!this.calendar) return;
     if (!events) return;
 
@@ -240,15 +240,15 @@ export class EventCalendarComponent implements OnInit, OnChanges {
     if (!this.selection) return;
   }
 
-  getEventLeft(event: CalendarEvent<CPVEventResponse | EventResponse>, row: CalendarRow) {
+  getEventLeft(event: CalendarEvent<CPVEventResponseWithLinks | EventResponseWithLinks>, row: CalendarRow) {
     return event.dateFrom.diff(row.days[0].date, "days").days / row.days.length;
   }
 
-  getEventWidth(event: CalendarEvent<CPVEventResponse | EventResponse>, month: CalendarRow) {
+  getEventWidth(event: CalendarEvent<CPVEventResponseWithLinks | EventResponseWithLinks>, month: CalendarRow) {
     return (event.dateTill.diff(event.dateFrom, "days").days + 1) / month.days.length;
   }
 
-  getEventTooltip(event: EventResponse): string {
+  getEventTooltip(event: EventResponseWithLinks): string {
     return event.name;
   }
 }

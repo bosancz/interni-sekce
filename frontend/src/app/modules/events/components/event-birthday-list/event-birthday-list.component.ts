@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { DateTime } from "luxon";
-import { EventResponse, MemberResponse } from "src/app/api";
+import { EventResponseWithLinks, MemberResponse } from "src/app/api";
 
 @Component({
   selector: "event-birthday-list",
@@ -13,11 +13,11 @@ export class EventBirthdayListComponent {
   constructor() {}
 
   @Input()
-  set event(event: EventResponse) {
+  set event(event: EventResponseWithLinks) {
     this.updateBirthdays(event);
   }
 
-  updateBirthdays(event: EventResponse) {
+  updateBirthdays(event: EventResponseWithLinks) {
     const members = [];
     if (event.leaders) members.push(...event.leaders);
     if (event.attendees) members.push(...event.attendees.map((ea) => ea.member!));

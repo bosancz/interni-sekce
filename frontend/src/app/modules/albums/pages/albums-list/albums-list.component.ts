@@ -4,7 +4,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { transliterate } from "inflected";
 import { BehaviorSubject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
-import { AlbumCreateBody, AlbumResponse } from "src/app/api";
+import { AlbumCreateBody, AlbumResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -16,8 +16,8 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./albums-list.component.scss"],
 })
 export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
-  albums?: AlbumResponse[];
-  filteredAlbums: AlbumResponse[] = [];
+  albums?: AlbumResponseWithLinks[];
+  filteredAlbums: AlbumResponseWithLinks[] = [];
 
   searchIndex: string[] = [];
 
@@ -84,7 +84,7 @@ export class AlbumsListComponent implements OnInit, OnDestroy, ViewWillEnter {
     this.filteredAlbums = this.filterAlbums(this.albums, this.searchString.value);
   }
 
-  private filterAlbums(albums: AlbumResponse[], searchString: string) {
+  private filterAlbums(albums: AlbumResponseWithLinks[], searchString: string) {
     if (!searchString) return albums;
 
     const search_re = new RegExp("(^| )" + transliterate(searchString).replace(/[^a-zA-Z0-9]/g, ""), "i");

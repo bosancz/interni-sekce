@@ -11,7 +11,7 @@ import {
 } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { ModalController } from "@ionic/angular";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { EventSelectorModalComponent } from "../event-selector-modal/event-selector-modal.component";
 
@@ -28,16 +28,16 @@ import { EventSelectorModalComponent } from "../event-selector-modal/event-selec
   ],
 })
 export class EventSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {
-  value?: EventResponse["id"] | null;
-  event?: EventResponse;
+  value?: EventResponseWithLinks["id"] | null;
+  event?: EventResponseWithLinks;
 
   @Input() placeholder?: string;
-  @Output("event") eventOutput = new EventEmitter<EventResponse>();
+  @Output("event") eventOutput = new EventEmitter<EventResponseWithLinks>();
 
   modal?: HTMLIonModalElement;
 
   /* ControlValueAccessor */
-  onChange?: (value: EventResponse["id"] | null) => void;
+  onChange?: (value: EventResponseWithLinks["id"] | null) => void;
   onTouched?: () => void;
 
   focused = false;
@@ -93,7 +93,7 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
     this.modal.present();
   }
 
-  private async updateValue(value: EventResponse["id"] | null) {
+  private async updateValue(value: EventResponseWithLinks["id"] | null) {
     if (value === this.value) return;
 
     this.value = value;
@@ -104,16 +104,16 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
     this.emitIonStyle();
   }
 
-  private async loadEvent(eventId: EventResponse["id"]) {
+  private async loadEvent(eventId: EventResponseWithLinks["id"]) {
     return this.api.events.getEvent(eventId).then((res) => res.data);
   }
 
   /* ControlValueAccessor */
-  writeValue(obj?: EventResponse["id"] | null): void {
+  writeValue(obj?: EventResponseWithLinks["id"] | null): void {
     this.updateValue(obj || null);
   }
 
-  registerOnChange(fn: (value: EventResponse["id"] | null) => void): void {
+  registerOnChange(fn: (value: EventResponseWithLinks["id"] | null) => void): void {
     this.onChange = fn;
   }
 

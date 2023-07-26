@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Put, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
-import { AcController, AcLinks } from "src/access-control/access-control-lib";
+import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { EventsService } from "src/models/events/services/events.service";
 import {
   EventAttendeeCreateRoute,
@@ -20,7 +20,7 @@ export class EventsAttendeesController {
 
   @Get(":eventId/attendees")
   @AcLinks(EventAttendeesListRoute)
-  @ApiResponse({ type: EventAttendeeResponse })
+  @ApiResponse({ type: WithLinks(EventAttendeeResponse) })
   async listEventAttendees(@Req() req: Request, @Param("eventId") eventId: number): Promise<EventAttendeeResponse[]> {
     const event = await this.events.getEvent(eventId);
     if (!event) throw new NotFoundException();

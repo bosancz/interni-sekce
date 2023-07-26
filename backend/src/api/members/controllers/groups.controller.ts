@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
-import { AcController, AcLinks } from "src/access-control/access-control-lib";
+import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Group } from "src/models/members/entities/group.entity";
 import { GroupsService } from "src/models/members/services/groups.service";
 import { Repository } from "typeorm";
@@ -20,14 +20,14 @@ export class GroupsController {
 
   @Get()
   @AcLinks(GroupListRoute)
-  @ApiResponse({ type: GroupResponse, isArray: true })
+  @ApiResponse({ type: WithLinks(GroupResponse), isArray: true })
   async listGroups(@Req() req: Request) {
     return this.groupsRepository.createQueryBuilder().where(GroupListRoute.canWhere(req)).getMany();
   }
 
   @Post()
   @AcLinks(GroupCreateRoute)
-  @ApiResponse({ status: 201, type: GroupResponse })
+  @ApiResponse({ status: 201, type: WithLinks(GroupResponse) })
   async createGroup(@Req() req: Request, @Body() groupData: CreateGroupBody) {
     GroupCreateRoute.canOrThrow(req, undefined);
     return this.groupsService.createGroup(groupData);
@@ -35,7 +35,7 @@ export class GroupsController {
 
   @Get(":id")
   @AcLinks(GroupReadRoute)
-  @ApiResponse({ type: GroupResponse })
+  @ApiResponse({ type: WithLinks(GroupResponse) })
   async getGroup(@Param("id") id: number, @Req() req: Request) {
     const group = await this.groupsService.getGroup(id);
     if (!group) throw new NotFoundException();

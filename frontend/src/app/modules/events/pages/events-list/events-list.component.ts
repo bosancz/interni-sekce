@@ -2,12 +2,12 @@ import { Component } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 import { EventStatuses } from "src/app/config/event-statuses";
 import { ApiEndpoints, ApiService } from "src/app/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
-type EventWithSearchString = EventResponse & { searchString: string };
+type EventWithSearchString = EventResponseWithLinks & { searchString: string };
 
 @UntilDestroy()
 @Component({
@@ -63,7 +63,7 @@ export class EventsListComponent implements ViewWillEnter {
     this.router.navigate(["vytvorit"], { relativeTo: this.route });
   }
 
-  getLeadersString(event: EventResponse) {
+  getLeadersString(event: EventResponseWithLinks) {
     return event.leaders?.map((item) => item.nickname).join(", ");
   }
 

@@ -9,10 +9,10 @@ import {
   Output,
   SimpleChanges,
 } from "@angular/core";
-import { PhotoResponse } from "src/app/api";
+import { PhotoResponseWithLinks } from "src/app/api";
 
 interface PhotoRowItem {
-  photo: PhotoResponse;
+  photo: PhotoResponseWithLinks;
   ratio: number;
 }
 
@@ -27,13 +27,13 @@ class PhotoRow {
   styleUrls: ["./photo-gallery.component.scss"],
 })
 export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChanges {
-  @Input() photos: PhotoResponse[] = [];
+  @Input() photos: PhotoResponseWithLinks[] = [];
   @Input() maxHeight: number = 200;
   @Input() clickable: boolean = false;
 
   margin: number = 5;
 
-  @Output() click = new EventEmitter<PhotoResponse>();
+  @Output() click = new EventEmitter<PhotoResponseWithLinks>();
 
   rows: PhotoRow[] = [];
 
@@ -68,7 +68,7 @@ export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChange
     while (photos.length) {
       let rowWidth = 0;
       let row = new PhotoRow();
-      let photo: PhotoResponse | undefined;
+      let photo: PhotoResponseWithLinks | undefined;
 
       // add photos to row, stop when first photo over limit
       while (rowWidth <= this.width && (photo = photos.shift())) {
@@ -99,7 +99,7 @@ export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChange
     this.rows = rows;
   }
 
-  onPhotoClick(event: MouseEvent, photo: PhotoResponse) {
+  onPhotoClick(event: MouseEvent, photo: PhotoResponseWithLinks) {
     if (!this.clickable) return;
 
     event.preventDefault();

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ModalController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { EventAttendeeResponse, EventResponse, MemberResponse } from "src/app/api";
+import { EventAttendeeResponse, EventResponseWithLinks, MemberResponse } from "src/app/api";
 import { MemberSelectorModalComponent } from "src/app/modules/events/components/member-selector-modal/member-selector-modal.component";
 import { EventsService } from "src/app/modules/events/services/events.service";
 import { ApiService } from "src/app/services/api.service";
@@ -15,7 +15,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./events-view-attendees.component.scss"],
 })
 export class EventsViewAttendeesComponent implements OnInit, OnDestroy {
-  event?: EventResponse;
+  event?: EventResponseWithLinks;
 
   attendees: EventAttendeeResponse[] = [];
 
@@ -111,7 +111,7 @@ export class EventsViewAttendeesComponent implements OnInit, OnDestroy {
     });
   }
 
-  private async exportExcel(event: EventResponse) {
+  private async exportExcel(event: EventResponseWithLinks) {
     // TODO:
     // if (event._links.["announcement-template"]) {
     //   const url = environment.apiRoot + event._links.["announcement-template"].href;
@@ -119,7 +119,7 @@ export class EventsViewAttendeesComponent implements OnInit, OnDestroy {
     // }
   }
 
-  private setActions(event?: EventResponse) {
+  private setActions(event?: EventResponseWithLinks) {
     this.actions = [
       {
         text: "Přidat",

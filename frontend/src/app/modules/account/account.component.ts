@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { UserResponse } from "src/app/api";
+import { UserResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -8,7 +8,7 @@ import { ApiService } from "src/app/services/api.service";
   styleUrls: ["./account.component.scss"],
 })
 export class AccountComponent {
-  user?: UserResponse;
+  user?: UserResponseWithLinks;
 
   modal?: HTMLIonModalElement;
 

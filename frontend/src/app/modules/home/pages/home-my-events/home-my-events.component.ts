@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ApiService } from "src/app/services/api.service";
 
 import { DateTime } from "luxon";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 
 type DashboardMyEventsStats = {
   count: number;
@@ -22,7 +22,7 @@ export class HomeMyEventsComponent implements OnInit {
 
   title = "Moje akce";
 
-  events: EventResponse[] = [];
+  events: EventResponseWithLinks[] = [];
 
   stats: DashboardMyEventsStats = {
     count: 0,

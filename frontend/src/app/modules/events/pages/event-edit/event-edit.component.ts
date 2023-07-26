@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { NavController } from "@ionic/angular";
-import { EventResponse, MemberResponse } from "src/app/api";
+import { EventResponseWithLinks, MemberResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -14,7 +14,7 @@ import { EventsService } from "../../services/events.service";
   styleUrls: ["./event-edit.component.scss"],
 })
 export class EventEditComponent implements OnInit {
-  event?: EventResponse;
+  event?: EventResponseWithLinks;
 
   members: MemberResponse[] = [];
 
@@ -60,7 +60,7 @@ export class EventEditComponent implements OnInit {
   async saveEvent() {
     if (!this.event) return;
 
-    const eventData: Partial<EventResponse> = this.form.value;
+    const eventData: Partial<EventResponseWithLinks> = this.form.value;
 
     // prevent switched date order
     if (eventData.dateFrom && eventData.dateTill) {

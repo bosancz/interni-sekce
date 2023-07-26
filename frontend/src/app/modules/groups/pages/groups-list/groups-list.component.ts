@@ -7,7 +7,7 @@ import {
   NavController,
   ViewWillEnter,
 } from "@ionic/angular";
-import { GroupResponse } from "src/app/api";
+import { GroupResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -18,7 +18,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./groups-list.component.scss"],
 })
 export class GroupsListComponent implements ViewWillEnter {
-  groups?: GroupResponse[];
+  groups?: GroupResponseWithLinks[];
 
   actions: Action[] = [
     {
@@ -46,7 +46,7 @@ export class GroupsListComponent implements ViewWillEnter {
     this.groups = await this.api.members.listGroups().then((res) => res.data);
   }
 
-  async openGroupMenu(group: GroupResponse) {
+  async openGroupMenu(group: GroupResponseWithLinks) {
     const buttons: ActionSheetButton[] = [];
 
     if (group._links.updateGroup.allowed) {
@@ -74,7 +74,7 @@ export class GroupsListComponent implements ViewWillEnter {
     sheet.present();
   }
 
-  private async deleteGroup(group: GroupResponse) {
+  private async deleteGroup(group: GroupResponseWithLinks) {
     const alert = await this.alertController.create({
       header: `Smazat ${group.name ?? group.id}?`,
       buttons: [
@@ -93,7 +93,7 @@ export class GroupsListComponent implements ViewWillEnter {
     alert.present();
   }
 
-  private async deleteGroupConfirmed(group: GroupResponse) {
+  private async deleteGroupConfirmed(group: GroupResponseWithLinks) {
     await this.api.members.deleteGroup(group.id);
 
     await this.loadGroups();

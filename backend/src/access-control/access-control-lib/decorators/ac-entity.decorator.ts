@@ -1,15 +1,15 @@
-import { Type } from "@nestjs/common";
 import { EntityStore } from "../entity-store";
+import { EntityType } from "../schema/entity-type";
 
 export interface AcEntityOptions {
-  entity: Type<any>;
+  entity: EntityType;
   isArray?: boolean;
 }
 
-export function AcEntity(entity: Type<any>, options?: Omit<AcEntityOptions, "entity">): PropertyDecorator;
+export function AcEntity(entity: EntityType, options?: Omit<AcEntityOptions, "entity">): PropertyDecorator;
 export function AcEntity(options: AcEntityOptions): PropertyDecorator;
 export function AcEntity(
-  entityOrOptions: Type<any> | AcEntityOptions,
+  entityOrOptions: EntityType | AcEntityOptions,
   additionalOptions: PartialBy<AcEntityOptions, "entity"> = {},
 ): PropertyDecorator {
   const options =

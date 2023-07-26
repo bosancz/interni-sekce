@@ -1,7 +1,7 @@
 import { Component, HostListener, Input, NgZone, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, IonInput, ModalController, Platform, ViewWillLeave } from "@ionic/angular";
-import { PhotoResponse } from "src/app/api";
+import { PhotoResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import Swiper, { SwiperOptions } from "swiper";
 
@@ -11,8 +11,8 @@ import Swiper, { SwiperOptions } from "swiper";
   styleUrls: ["./photos-edit.component.scss"],
 })
 export class PhotosEditComponent implements ViewWillLeave {
-  photo?: PhotoResponse;
-  @Input() photos!: PhotoResponse[];
+  photo?: PhotoResponseWithLinks;
+  @Input() photos!: PhotoResponseWithLinks[];
 
   editingCaption = false;
 
@@ -128,7 +128,7 @@ export class PhotosEditComponent implements ViewWillLeave {
     await this.modalController.dismiss();
   }
 
-  async delete(photo: PhotoResponse) {
+  async delete(photo: PhotoResponseWithLinks) {
     const alert = await this.alertController.create({
       header: "Smazat fotku",
       message: "Chcete opravdu smazat tuto fotku?",
@@ -141,7 +141,7 @@ export class PhotosEditComponent implements ViewWillLeave {
     alert.present();
   }
 
-  async deleteConfirmed(photo: PhotoResponse) {
+  async deleteConfirmed(photo: PhotoResponseWithLinks) {
     await this.api.albums.deletePhoto(photo.id);
 
     const i = this.photos.findIndex((item) => item.id === photo.id);

@@ -5,7 +5,6 @@ import {
   InternalServerErrorException,
   Logger,
   NestInterceptor,
-  Type,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Request } from "express";
@@ -14,6 +13,7 @@ import { Config } from "src/config";
 import { EntityStore } from "../entity-store";
 import { OptionsStore } from "../options-store";
 import { RouteStore } from "../route-store";
+import { EntityType } from "../schema/entity-type";
 import { MetadataConstant } from "../schema/metadata-constant";
 import { RouteStoreItem } from "../schema/route-store-item";
 
@@ -38,7 +38,7 @@ export class AcLinksInterceptor implements NestInterceptor {
     );
   }
 
-  private addLinksToEntity(req: Request, entity: Type<any>, docs: any[]) {
+  private addLinksToEntity(req: Request, entity: EntityType, docs: any[]) {
     const routes = this.findRoutes(entity);
 
     for (let doc of docs) {
@@ -74,7 +74,7 @@ export class AcLinksInterceptor implements NestInterceptor {
     }
   }
 
-  private findRoutes(entity: Type<any>) {
+  private findRoutes(entity: EntityType) {
     return RouteStore.filter((route) => route.acl.options.linkTo === entity);
   }
 

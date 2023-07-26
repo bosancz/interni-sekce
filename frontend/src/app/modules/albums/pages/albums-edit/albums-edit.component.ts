@@ -3,7 +3,7 @@ import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { NavController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { AlbumResponse, AlbumUpdateBody, EventResponse } from "src/app/api";
+import { AlbumResponseWithLinks, AlbumUpdateBody, EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -15,7 +15,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./albums-edit.component.scss"],
 })
 export class AlbumsEditComponent {
-  album?: AlbumResponse;
+  album?: AlbumResponseWithLinks;
 
   actions: Action[] = [
     {
@@ -42,7 +42,7 @@ export class AlbumsEditComponent {
     this.album = await this.api.albums.getAlbum(albumId).then((res) => res.data);
   }
 
-  eventUpdated(event: EventResponse) {
+  eventUpdated(event: EventResponseWithLinks) {
     if (!this.album || !event) return;
 
     this.album.dateFrom = event.dateFrom;

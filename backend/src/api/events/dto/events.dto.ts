@@ -6,6 +6,6 @@ export class GetEventsQuery {
   @ApiPropertyOptional() @Type(() => Number) @IsNumber() @IsOptional() year?: number;
   @ApiPropertyOptional() @IsString() @IsOptional() status?: string;
   @ApiPropertyOptional() @IsString() @IsOptional() search?: string;
-  @ApiPropertyOptional() @IsBoolean() @IsOptional() my?: boolean;
-  @ApiPropertyOptional() @IsBoolean() @IsOptional() noleader?: boolean;
+  @ApiPropertyOptional() @Type(() => Boolean) @IsBoolean() @IsOptional() my?: boolean;
+  @ApiPropertyOptional() @Type(() => Boolean) @IsBoolean() @IsOptional() noleader?: boolean;
 }

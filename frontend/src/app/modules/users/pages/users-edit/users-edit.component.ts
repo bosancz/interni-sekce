@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { MemberResponse, UserResponse, UserResponseRolesEnum } from "src/app/api";
+import { MemberResponse, UserResponseWithLinks, UserResponseWithLinksRolesEnum } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -14,9 +14,9 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./users-edit.component.scss"],
 })
 export class UsersEditComponent implements OnInit {
-  user?: UserResponse;
+  user?: UserResponseWithLinks;
 
-  roles = Object.entries(UserResponseRolesEnum).map(([title, name]) => ({
+  roles = Object.entries(UserResponseWithLinksRolesEnum).map(([title, name]) => ({
     name,
     title,
     active: false,
@@ -58,7 +58,7 @@ export class UsersEditComponent implements OnInit {
     this.updateRoles(this.user);
   }
 
-  updateRoles(user: UserResponse): void {
+  updateRoles(user: UserResponseWithLinks): void {
     this.roles.forEach((role) => (role.active = user.roles?.includes(role.name) ?? false));
   }
 

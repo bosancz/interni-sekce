@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { DateTime } from "luxon";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 
 @Component({
   selector: "event-age-histogram",
@@ -18,11 +18,11 @@ export class EventAgeHistogramComponent {
   constructor() {}
 
   @Input()
-  set event(event: EventResponse) {
+  set event(event: EventResponseWithLinks) {
     this.updateAges(event);
   }
 
-  updateAges(event: EventResponse): void {
+  updateAges(event: EventResponseWithLinks): void {
     const members = event.attendees?.map((ea) => ea.member!) || [];
 
     const ages: { [age: string]: number } = {};

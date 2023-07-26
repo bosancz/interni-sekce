@@ -2,7 +2,7 @@ import { Component, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter } from "@ionic/angular";
-import { GroupResponse, MemberResponseRoleEnum } from "src/app/api";
+import { GroupResponseWithLinks, MemberResponseRoleEnum } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -13,7 +13,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./members-create.component.scss"],
 })
 export class MembersCreateComponent implements ViewWillEnter {
-  groups?: GroupResponse[];
+  groups?: GroupResponseWithLinks[];
   roles = MemberResponseRoleEnum;
 
   actions: Action[] = [

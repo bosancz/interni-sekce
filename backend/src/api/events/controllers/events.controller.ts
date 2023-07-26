@@ -16,7 +16,7 @@ import {
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
-import { AcController, AcLinks } from "src/access-control/access-control-lib";
+import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Token } from "src/auth/decorators/token.decorator";
 import { TokenData } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
@@ -51,7 +51,7 @@ export class EventsController {
 
   @Get()
   @AcLinks(EventsListRoute)
-  @ApiResponse({ type: EventResponse, isArray: true })
+  @ApiResponse({ type: WithLinks(EventResponse), isArray: true })
   async listEvents(
     @Req() req: Request,
     @Token() token: TokenData,
@@ -108,7 +108,7 @@ export class EventsController {
 
   @Get(":id")
   @AcLinks(EventReadRoute)
-  @ApiResponse({ type: EventResponse })
+  @ApiResponse({ type: WithLinks(EventResponse) })
   async getEvent(@Req() req: Request, @Param("id") id: number): Promise<Omit<EventResponse, "_links">> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();

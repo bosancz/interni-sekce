@@ -4,7 +4,7 @@ import { BehaviorSubject } from "rxjs";
 import { ApiService } from "src/app/services/api.service";
 
 import axios from "axios";
-import { UserResponse } from "../api";
+import { UserResponseWithLinks } from "../api";
 /**
  * Service to save user information and commnicate user data with server
  */
@@ -12,7 +12,7 @@ import { UserResponse } from "../api";
   providedIn: "root",
 })
 export class UserService {
-  user = new BehaviorSubject<UserResponse | null | undefined>(undefined);
+  user = new BehaviorSubject<UserResponseWithLinks | null | undefined>(undefined);
 
   constructor(private api: ApiService) {
     this.loadUser();

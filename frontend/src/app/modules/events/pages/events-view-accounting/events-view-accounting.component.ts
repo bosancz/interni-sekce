@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { AlertController, ModalController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { EventExpenseResponse, EventResponse } from "src/app/api";
+import { EventExpenseResponse, EventResponseWithLinks } from "src/app/api";
 import { EventExpenseTypes } from "src/app/config/event-expense-types";
 import { EventExpenseModalComponent } from "src/app/modules/events/components/event-expense-modal/event-expense-modal.component";
 import { EventsService } from "src/app/modules/events/services/events.service";
@@ -15,7 +15,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./events-view-accounting.component.scss"],
 })
 export class EventsViewAccountingComponent implements OnInit, OnDestroy {
-  event?: EventResponse;
+  event?: EventResponseWithLinks;
 
   expenses: EventExpenseResponse[] = [];
 
@@ -127,7 +127,7 @@ export class EventsViewAccountingComponent implements OnInit, OnDestroy {
     return "V" + String(maxId + 1);
   }
 
-  private async exportExcel(event: EventResponse) {
+  private async exportExcel(event: EventResponseWithLinks) {
     // TODO:
     // if (event._links.["accounting-template"]) {
     //   const url = environment.apiRoot + event._links.["accounting-template"].href;
@@ -135,7 +135,7 @@ export class EventsViewAccountingComponent implements OnInit, OnDestroy {
     // }
   }
 
-  private setActions(event?: EventResponse) {
+  private setActions(event?: EventResponseWithLinks) {
     this.actions = [
       {
         text: "Přidat",

@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ModalController, Platform, ViewWillLeave } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { AlbumResponse, PhotoResponse } from "src/app/api";
+import { AlbumResponseWithLinks, PhotoResponseWithLinks } from "src/app/api";
 import { PhotosEditComponent } from "src/app/modules/albums/components/photos-edit/photos-edit.component";
 import { PhotosUploadComponent } from "src/app/modules/albums/components/photos-upload/photos-upload.component";
 import { ApiService } from "src/app/services/api.service";
@@ -16,9 +16,9 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./albums-view-photos.component.scss"],
 })
 export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
-  album?: AlbumResponse;
+  album?: AlbumResponseWithLinks;
 
-  photos?: PhotoResponse[];
+  photos?: PhotoResponseWithLinks[];
 
   actions: Action[] = [];
 
@@ -27,10 +27,10 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
   enableOrdering = false;
   enableDeleting = false;
 
-  oldOrder?: PhotoResponse[];
+  oldOrder?: PhotoResponseWithLinks[];
 
   showCheckboxes = false;
-  selectedPhotos: PhotoResponse[] = [];
+  selectedPhotos: PhotoResponseWithLinks[] = [];
 
   photosModal?: HTMLIonModalElement;
   uploadModal?: HTMLIonModalElement;
@@ -79,7 +79,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
 
   private async saveAlbum() {}
 
-  onPhotoClick(event: CustomEvent<PhotoResponse | undefined>) {
+  onPhotoClick(event: CustomEvent<PhotoResponseWithLinks | undefined>) {
     if (this.enableDeleting || this.enableOrdering) return;
 
     if (!event.detail) return;
@@ -87,7 +87,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
     this.router.navigate([], { queryParams: { photo: event.detail.id } });
   }
 
-  async openPhoto(photo: PhotoResponse) {
+  async openPhoto(photo: PhotoResponseWithLinks) {
     if (this.photosModal) this.photosModal.dismiss();
 
     const originalCount = this.photos?.length;
@@ -219,7 +219,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
 
     // TODO: vymyslet jak se bude ukládat řazení fotek!!!
 
-    // const data: Pick<AlbumResponse, "photos"> = {
+    // const data: Pick<AlbumResponseWithLinks, "photos"> = {
     //   photos: this.photos.map((photo) => photo.id),
     // };
 
@@ -232,7 +232,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
     // this.toastService.toast("Uloženo.");
   }
 
-  private getActions(album: AlbumResponse): Action[] {
+  private getActions(album: AlbumResponseWithLinks): Action[] {
     return [
       {
         text: "Seřadit",

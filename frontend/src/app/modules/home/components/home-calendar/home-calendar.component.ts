@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { DateTime } from "luxon";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -12,7 +12,7 @@ export class HomeCalendarComponent implements OnInit {
   dateFrom = DateTime.local();
   dateTill = DateTime.local().plus({ months: 1 });
 
-  events: EventResponse[] = [];
+  events: EventResponseWithLinks[] = [];
 
   @Input() months: number = 1;
 

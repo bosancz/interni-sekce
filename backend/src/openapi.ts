@@ -7,11 +7,10 @@ export function registerOpenApi(app: INestApplication) {
   const config = new DocumentBuilder()
     .setTitle(Config.app.name)
     .setVersion(`v${Config.app.version}`)
-    // .addSecurity("AuthToken", { type: "apiKey", name: "token", in: "query" })
-
+    .addServer(Config.app.baseUrl + "/api")
     .build();
   const document = SwaggerModule.createDocument(app, config, {
-    // ignoreGlobalPrefix: true,
+    ignoreGlobalPrefix: true,
     operationIdFactory: (controllerKey, methodKey) => methodKey,
   });
   SwaggerModule.setup("/api", app, document, { customSiteTitle: `${Config.app.name} API` });

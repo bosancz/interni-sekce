@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 
 @Component({
   selector: "bo-event-status-badge",
@@ -8,7 +8,7 @@ import { EventResponse } from "src/app/api";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventStatusBadgeComponent {
-  @Input() event!: EventResponse;
+  @Input() event!: EventResponseWithLinks;
 
   constructor() {}
 }

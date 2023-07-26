@@ -3,7 +3,7 @@ import { ActivatedRoute, Params } from "@angular/router";
 import { NavController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter } from "rxjs/operators";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { EventsService } from "./services/events.service";
@@ -15,7 +15,7 @@ import { EventsService } from "./services/events.service";
   styleUrls: ["./events.component.scss"],
 })
 export class EventsComponent implements OnInit {
-  event?: EventResponse;
+  event?: EventResponseWithLinks;
 
   actions: Action[] = [];
 

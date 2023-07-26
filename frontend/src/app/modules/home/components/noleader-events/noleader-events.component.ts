@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -8,7 +8,7 @@ import { ApiService } from "src/app/services/api.service";
   styleUrls: ["./noleader-events.component.scss"],
 })
 export class NoleaderEventsComponent implements OnInit {
-  events: EventResponse[] = [];
+  events: EventResponseWithLinks[] = [];
 
   constructor(private api: ApiService) {}
 

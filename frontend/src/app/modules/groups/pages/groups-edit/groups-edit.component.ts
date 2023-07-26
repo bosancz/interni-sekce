@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { GroupResponse } from "src/app/api";
+import { GroupResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -10,7 +10,7 @@ import { ApiService } from "src/app/services/api.service";
   styleUrls: ["./groups-edit.component.scss"],
 })
 export class GroupsEditComponent implements OnInit {
-  group?: GroupResponse;
+  group?: GroupResponseWithLinks;
 
   constructor(private route: ActivatedRoute, private api: ApiService) {}
 

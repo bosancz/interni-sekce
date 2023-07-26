@@ -34,7 +34,7 @@ export class UsersController {
 
   @Post()
   @AcLinks(UserCreateRoute)
-  @ApiResponse({ type: UserResponse })
+  @ApiResponse({ type: WithLinks(UserResponse) })
   async createUser(@Req() req: Request, @Body() body: UserCreateBody): Promise<Omit<UserResponse, "_links">> {
     UserCreateRoute.canOrThrow(req, undefined);
 
@@ -43,7 +43,7 @@ export class UsersController {
 
   @Get(":id")
   @AcLinks(UserReadRoute)
-  @ApiResponse({ type: UserResponse })
+  @ApiResponse({ type: WithLinks(UserResponse) })
   async getUser(@Req() req: Request, @Param("id") id: number): Promise<Omit<UserResponse, "_links">> {
     const user = await this.userService.getUser(id);
     if (!user) throw new NotFoundException();

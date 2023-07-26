@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { filter } from "rxjs/operators";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -15,7 +15,7 @@ import { EventsService } from "../../services/events.service";
   styleUrls: ["./events-view-registration.component.scss"],
 })
 export class EventsViewRegistrationComponent {
-  event?: EventResponse;
+  event?: EventResponseWithLinks;
 
   uploadingRegistration: boolean = false;
 
@@ -32,7 +32,7 @@ export class EventsViewRegistrationComponent {
     this.eventService.event$.pipe(filter((event) => !!event)).subscribe((event) => this.updateEvent(event!));
   }
 
-  private updateEvent(event: EventResponse) {
+  private updateEvent(event: EventResponseWithLinks) {
     this.event = event;
     this.setActions(event);
   }
@@ -81,15 +81,15 @@ export class EventsViewRegistrationComponent {
     window.open(this.getRegistrationUrl(this.event));
   }
 
-  getRegistrationUrl(event: EventResponse) {
+  getRegistrationUrl(event: EventResponseWithLinks) {
     return event._links.getEventRegistration.href;
   }
 
-  getSafeRegistrationUrl(event: EventResponse) {
+  getSafeRegistrationUrl(event: EventResponseWithLinks) {
     return this.sanitizer.bypassSecurityTrustResourceUrl(this.getRegistrationUrl(event));
   }
 
-  setActions(event: EventResponse) {
+  setActions(event: EventResponseWithLinks) {
     this.actions = [
       {
         text: "Stáhnout",

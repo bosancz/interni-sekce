@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, NavController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { AlbumResponse, PhotoResponse } from "src/app/api";
+import { AlbumResponseWithLinks, PhotoResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -14,7 +14,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   styleUrls: ["./albums-view-info.component.scss"],
 })
 export class AlbumsViewInfoComponent implements OnInit {
-  album?: AlbumResponse;
+  album?: AlbumResponseWithLinks;
 
   actions: Action[] = [];
 
@@ -82,7 +82,7 @@ export class AlbumsViewInfoComponent implements OnInit {
     window.open("https://bosan.cz/fotogalerie/" + this.album.id);
   }
 
-  onPhotoClick(event: PhotoResponse) {
+  onPhotoClick(event: PhotoResponseWithLinks) {
     if (this.album) {
       this.navController.navigateForward(`/galerie/${this.album.id}/fotky`, {
         queryParams: { photo: event.id },
@@ -90,7 +90,7 @@ export class AlbumsViewInfoComponent implements OnInit {
     }
   }
 
-  private updateActions(album: AlbumResponse) {
+  private updateActions(album: AlbumResponseWithLinks) {
     this.actions = [
       {
         text: "Upravit",

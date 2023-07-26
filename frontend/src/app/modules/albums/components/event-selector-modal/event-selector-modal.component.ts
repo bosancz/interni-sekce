@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ModalController } from "@ionic/angular";
-import { EventResponse } from "src/app/api";
+import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -9,7 +9,7 @@ import { ApiService } from "src/app/services/api.service";
   styleUrls: ["./event-selector-modal.component.scss"],
 })
 export class EventSelectorModalComponent implements OnInit {
-  events: EventResponse[] = [];
+  events: EventResponseWithLinks[] = [];
 
   constructor(private api: ApiService, private modalController: ModalController) {}
 
@@ -28,7 +28,7 @@ export class EventSelectorModalComponent implements OnInit {
     this.events = await this.api.events.listEvents().then((res) => res.data);
   }
 
-  close(eventId?: EventResponse["id"]) {
+  close(eventId?: EventResponseWithLinks["id"]) {
     this.modalController.dismiss({ event: eventId });
   }
 }

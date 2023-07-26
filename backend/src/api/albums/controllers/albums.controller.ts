@@ -15,7 +15,7 @@ import {
   AlbumUnpublishRoute,
   AlbumsListRoute,
 } from "../acl/albums.acl";
-import { AlbumCreateBody, AlbumResponse, AlbumUpdateBody, AlbumsListResponse } from "../dto/album.dto";
+import { AlbumCreateBody, AlbumResponse, AlbumUpdateBody } from "../dto/album.dto";
 import { PhotoResponse } from "../dto/photo.dto";
 
 @Controller("albums")
@@ -26,18 +26,18 @@ export class AlbumsController {
 
   @Get()
   @AcLinks(AlbumsListRoute)
-  @ApiResponse({ type: WithLinks(AlbumsListResponse), isArray: true })
-  async listAlbums(@Req() req: Request): Promise<AlbumsListResponse[]> {
+  @ApiResponse({ type: WithLinks(AlbumResponse), isArray: true })
+  async listAlbums(@Req() req: Request): Promise<AlbumResponse[]> {
     return await this.albumsService.repository
       .createQueryBuilder("albums")
       .select(["albums.id", "albums.name", "albums.status", "albums.dateFrom", "albums.dateTill"])
       .where(AlbumsListRoute.canWhere(req))
-      .getRawMany<AlbumsListResponse>();
+      .getRawMany<AlbumResponse>();
   }
 
   @Post()
   @AcLinks(AlbumCreateRoute)
-  @ApiResponse({ type: AlbumResponse })
+  @ApiResponse({ type: WithLinks(AlbumResponse) })
   async createAlbum(@Req() req: Request, @Body() body: AlbumCreateBody): Promise<AlbumResponse> {
     AlbumCreateRoute.canOrThrow(req, undefined);
 
@@ -46,7 +46,7 @@ export class AlbumsController {
 
   @Get(":id")
   @AcLinks(AlbumReadRoute)
-  @ApiResponse({ type: AlbumResponse })
+  @ApiResponse({ type: WithLinks(AlbumResponse) })
   async getAlbum(@Param("id") id: number, @Req() req: Request): Promise<AlbumResponse> {
     const album = await this.albumsService.repository.findOneBy({ id });
 

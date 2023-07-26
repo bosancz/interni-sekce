@@ -10,7 +10,7 @@ import {
   ViewChild,
 } from "@angular/core";
 import { ModalController, Platform } from "@ionic/angular";
-import { AlbumResponse } from "src/app/api";
+import { AlbumResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 interface PhotoUploadItem {
@@ -26,7 +26,7 @@ interface PhotoUploadItem {
   styleUrls: ["./photos-upload.component.scss"],
 })
 export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() album!: AlbumResponse;
+  @Input() album!: AlbumResponseWithLinks;
 
   tags: string[] = [];
   selectedTags: string[] = [];
@@ -118,7 +118,7 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
     this.modalController.dismiss(false);
   }
 
-  async uploadPhotos(album: AlbumResponse) {
+  async uploadPhotos(album: AlbumResponseWithLinks) {
     this.uploading = true;
     this.preventExit();
 
@@ -144,7 +144,7 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
     this.modalController.dismiss(true);
   }
 
-  async uploadPhoto(album: AlbumResponse, uploadItem: PhotoUploadItem): Promise<void> {
+  async uploadPhoto(album: AlbumResponseWithLinks, uploadItem: PhotoUploadItem): Promise<void> {
     if (!this.allowedFiles_re.test(uploadItem.file.name)) {
       throw new Error("Unsupported file type.");
     }
