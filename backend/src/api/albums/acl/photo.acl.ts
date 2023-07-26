@@ -3,7 +3,7 @@ import { RootResponse } from "src/api/root/dto/root-response";
 import { Photo } from "src/models/albums/entities/photo.entity";
 import { PhotoResponse } from "../dto/photo.dto";
 
-export const PhotosListRoute = new RouteACL<undefined, PhotoResponse[]>({
+export const PhotosListRoute = new RouteACL({
   linkTo: RootResponse,
   contains: PhotoResponse,
 
@@ -14,12 +14,16 @@ export const PhotosListRoute = new RouteACL<undefined, PhotoResponse[]>({
 
 export const PhotoReadRoute = new RouteACL({
   linkTo: PhotoResponse,
+  contains: PhotoResponse,
+
   permissions: {
     vedouci: true,
   },
 });
 
-export const PhotoCreateRoute = new RouteACL<undefined, PhotoResponse>({
+export const PhotoCreateRoute = new RouteACL({
+  linkTo: RootResponse,
+
   permissions: {
     vedouci: true,
   },

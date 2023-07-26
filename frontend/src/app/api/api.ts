@@ -157,55 +157,6 @@ export interface AlbumResponse {
      * @memberof AlbumResponse
      */
     'photos'?: Array<PhotoResponse>;
-    /**
-     * 
-     * @type {AlbumResponseLinks}
-     * @memberof AlbumResponse
-     */
-    '_links': AlbumResponseLinks;
-}
-/**
- * 
- * @export
- * @interface AlbumResponseLinks
- */
-export interface AlbumResponseLinks {
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof AlbumResponseLinks
-     */
-    'deleteAlbum': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof AlbumResponseLinks
-     */
-    'getAlbum': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof AlbumResponseLinks
-     */
-    'getAlbumPhotos': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof AlbumResponseLinks
-     */
-    'publishAlbum': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof AlbumResponseLinks
-     */
-    'unpublishAlbum': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof AlbumResponseLinks
-     */
-    'updateAlbum': AcLink;
 }
 /**
  * 
@@ -253,45 +204,45 @@ export interface AlbumUpdateBody {
 /**
  * 
  * @export
- * @interface AlbumsListResponse
+ * @interface AlbumsListResponseWithLinks
  */
-export interface AlbumsListResponse {
+export interface AlbumsListResponseWithLinks {
     /**
      * 
      * @type {number}
-     * @memberof AlbumsListResponse
+     * @memberof AlbumsListResponseWithLinks
      */
     'id': number;
     /**
      * 
      * @type {string}
-     * @memberof AlbumsListResponse
+     * @memberof AlbumsListResponseWithLinks
      */
     'status': string;
     /**
      * 
      * @type {string}
-     * @memberof AlbumsListResponse
+     * @memberof AlbumsListResponseWithLinks
      */
     'name': string;
     /**
      * 
      * @type {string}
-     * @memberof AlbumsListResponse
+     * @memberof AlbumsListResponseWithLinks
      */
     'dateFrom'?: string;
     /**
      * 
      * @type {string}
-     * @memberof AlbumsListResponse
+     * @memberof AlbumsListResponseWithLinks
      */
     'dateTill'?: string;
     /**
      * 
-     * @type {AlbumResponseLinks}
-     * @memberof AlbumsListResponse
+     * @type {object}
+     * @memberof AlbumsListResponseWithLinks
      */
-    '_links': AlbumResponseLinks;
+    '_links': object;
 }
 /**
  * 
@@ -363,28 +314,10 @@ export interface CreateMemberBody {
     'groupId': number;
     /**
      * 
-     * @type {boolean}
-     * @memberof CreateMemberBody
-     */
-    'active'?: boolean;
-    /**
-     * 
      * @type {string}
      * @memberof CreateMemberBody
      */
-    'membership'?: CreateMemberBodyMembershipEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateMemberBody
-     */
-    'nickname'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateMemberBody
-     */
-    'function'?: string;
+    'nickname': string;
     /**
      * 
      * @type {string}
@@ -402,83 +335,16 @@ export interface CreateMemberBody {
      * @type {string}
      * @memberof CreateMemberBody
      */
-    'birthday'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateMemberBody
-     */
-    'addressStreet'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateMemberBody
-     */
-    'addressStreetNo'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateMemberBody
-     */
-    'addressCity'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateMemberBody
-     */
-    'addressPostalCode'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateMemberBody
-     */
-    'addressCountry'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateMemberBody
-     */
-    'mobile'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateMemberBody
-     */
-    'email'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateMemberBody
-     */
     'role'?: CreateMemberBodyRoleEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateMemberBody
-     */
-    'rank'?: CreateMemberBodyRankEnum;
 }
 
-export const CreateMemberBodyMembershipEnum = {
-    Clen: 'clen',
-    Neclen: 'neclen',
-    Pozastaveno: 'pozastaveno'
-} as const;
-
-export type CreateMemberBodyMembershipEnum = typeof CreateMemberBodyMembershipEnum[keyof typeof CreateMemberBodyMembershipEnum];
 export const CreateMemberBodyRoleEnum = {
-    Clen: 'clen',
-    Vedouci: 'vedouci'
-} as const;
-
-export type CreateMemberBodyRoleEnum = typeof CreateMemberBodyRoleEnum[keyof typeof CreateMemberBodyRoleEnum];
-export const CreateMemberBodyRankEnum = {
     Dite: 'dite',
     Instruktor: 'instruktor',
     Vedouci: 'vedouci'
 } as const;
 
-export type CreateMemberBodyRankEnum = typeof CreateMemberBodyRankEnum[keyof typeof CreateMemberBodyRankEnum];
+export type CreateMemberBodyRoleEnum = typeof CreateMemberBodyRoleEnum[keyof typeof CreateMemberBodyRoleEnum];
 
 /**
  * 
@@ -748,12 +614,6 @@ export interface EventResponse {
      * @memberof EventResponse
      */
     'leaders'?: Array<MemberResponse>;
-    /**
-     * 
-     * @type {EventResponseLinks}
-     * @memberof EventResponse
-     */
-    '_links': EventResponseLinks;
 }
 
 export const EventResponseStatusEnum = {
@@ -765,121 +625,6 @@ export const EventResponseStatusEnum = {
 
 export type EventResponseStatusEnum = typeof EventResponseStatusEnum[keyof typeof EventResponseStatusEnum];
 
-/**
- * 
- * @export
- * @interface EventResponseLinks
- */
-export interface EventResponseLinks {
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'addEventAttendee': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'addEventExpense': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'cancelEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'deleteEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'deleteEventRegistration': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'getEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'getEventRegistration': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'getEventReport': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'leadEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'listEventAttendees': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'listEventExpenses': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'publishEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'rejectEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'saveEventRegistration': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'submitEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'uncancelEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'unpublishEvent': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof EventResponseLinks
-     */
-    'updateEvent': AcLink;
-}
 /**
  * 
  * @export
@@ -1194,12 +939,6 @@ export interface GroupResponse {
      * @memberof GroupResponse
      */
     'deletedAt'?: string;
-    /**
-     * 
-     * @type {GroupResponseLinks}
-     * @memberof GroupResponse
-     */
-    '_links': GroupResponseLinks;
 }
 /**
  * 
@@ -1212,7 +951,7 @@ export interface GroupResponseLinks {
      * @type {AcLink}
      * @memberof GroupResponseLinks
      */
-    'deleteGroup': AcLink;
+    'getGroup': AcLink;
     /**
      * 
      * @type {AcLink}
@@ -1224,7 +963,50 @@ export interface GroupResponseLinks {
      * @type {AcLink}
      * @memberof GroupResponseLinks
      */
-    'getGroup': AcLink;
+    'deleteGroup': AcLink;
+}
+/**
+ * 
+ * @export
+ * @interface GroupResponseWithLinks
+ */
+export interface GroupResponseWithLinks {
+    /**
+     * 
+     * @type {number}
+     * @memberof GroupResponseWithLinks
+     */
+    'id': number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof GroupResponseWithLinks
+     */
+    'active': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof GroupResponseWithLinks
+     */
+    'shortName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GroupResponseWithLinks
+     */
+    'name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GroupResponseWithLinks
+     */
+    'deletedAt'?: string;
+    /**
+     * 
+     * @type {GroupResponseLinks}
+     * @memberof GroupResponseWithLinks
+     */
+    '_links': GroupResponseLinks;
 }
 /**
  * 
@@ -1304,6 +1086,12 @@ export interface MemberResponse {
     'groupId': number;
     /**
      * 
+     * @type {string}
+     * @memberof MemberResponse
+     */
+    'nickname': string;
+    /**
+     * 
      * @type {boolean}
      * @memberof MemberResponse
      */
@@ -1314,12 +1102,6 @@ export interface MemberResponse {
      * @memberof MemberResponse
      */
     'membership'?: MemberResponseMembershipEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof MemberResponse
-     */
-    'nickname'?: string;
     /**
      * 
      * @type {string}
@@ -1400,10 +1182,10 @@ export interface MemberResponse {
     'rank'?: MemberResponseRankEnum;
     /**
      * 
-     * @type {GroupResponse}
+     * @type {GroupResponseWithLinks}
      * @memberof MemberResponse
      */
-    'group'?: GroupResponse;
+    'group'?: GroupResponseWithLinks;
     /**
      * 
      * @type {object}
@@ -1426,7 +1208,8 @@ export const MemberResponseMembershipEnum = {
 
 export type MemberResponseMembershipEnum = typeof MemberResponseMembershipEnum[keyof typeof MemberResponseMembershipEnum];
 export const MemberResponseRoleEnum = {
-    Clen: 'clen',
+    Dite: 'dite',
+    Instruktor: 'instruktor',
     Vedouci: 'vedouci'
 } as const;
 
@@ -1438,6 +1221,193 @@ export const MemberResponseRankEnum = {
 } as const;
 
 export type MemberResponseRankEnum = typeof MemberResponseRankEnum[keyof typeof MemberResponseRankEnum];
+
+/**
+ * 
+ * @export
+ * @interface MemberResponseLinks
+ */
+export interface MemberResponseLinks {
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof MemberResponseLinks
+     */
+    'createMember': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof MemberResponseLinks
+     */
+    'updateMember': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof MemberResponseLinks
+     */
+    'deleteMember': AcLink;
+}
+/**
+ * 
+ * @export
+ * @interface MemberResponseWithLinks
+ */
+export interface MemberResponseWithLinks {
+    /**
+     * 
+     * @type {number}
+     * @memberof MemberResponseWithLinks
+     */
+    'id': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof MemberResponseWithLinks
+     */
+    'groupId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'nickname': string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof MemberResponseWithLinks
+     */
+    'active'?: boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'membership'?: MemberResponseWithLinksMembershipEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'function'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'firstName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'lastName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'birthday'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'addressStreet'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'addressStreetNo'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'addressCity'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'addressPostalCode'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'addressCountry'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'mobile'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'email'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'role'?: MemberResponseWithLinksRoleEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'rank'?: MemberResponseWithLinksRankEnum;
+    /**
+     * 
+     * @type {GroupResponseWithLinks}
+     * @memberof MemberResponseWithLinks
+     */
+    'group'?: GroupResponseWithLinks;
+    /**
+     * 
+     * @type {object}
+     * @memberof MemberResponseWithLinks
+     */
+    'contacts'?: object;
+    /**
+     * 
+     * @type {object}
+     * @memberof MemberResponseWithLinks
+     */
+    'achievements'?: object;
+    /**
+     * 
+     * @type {MemberResponseLinks}
+     * @memberof MemberResponseWithLinks
+     */
+    '_links': MemberResponseLinks;
+}
+
+export const MemberResponseWithLinksMembershipEnum = {
+    Clen: 'clen',
+    Neclen: 'neclen',
+    Pozastaveno: 'pozastaveno'
+} as const;
+
+export type MemberResponseWithLinksMembershipEnum = typeof MemberResponseWithLinksMembershipEnum[keyof typeof MemberResponseWithLinksMembershipEnum];
+export const MemberResponseWithLinksRoleEnum = {
+    Dite: 'dite',
+    Instruktor: 'instruktor',
+    Vedouci: 'vedouci'
+} as const;
+
+export type MemberResponseWithLinksRoleEnum = typeof MemberResponseWithLinksRoleEnum[keyof typeof MemberResponseWithLinksRoleEnum];
+export const MemberResponseWithLinksRankEnum = {
+    Dite: 'dite',
+    Instruktor: 'instruktor',
+    Vedouci: 'vedouci'
+} as const;
+
+export type MemberResponseWithLinksRankEnum = typeof MemberResponseWithLinksRankEnum[keyof typeof MemberResponseWithLinksRankEnum];
 
 /**
  * 
@@ -1523,21 +1493,27 @@ export interface PadlersTotalsResponse {
 /**
  * 
  * @export
- * @interface PhotoCreateBody
+ * @interface PhotoCreateBodyWithLinks
  */
-export interface PhotoCreateBody {
+export interface PhotoCreateBodyWithLinks {
     /**
      * 
      * @type {number}
-     * @memberof PhotoCreateBody
+     * @memberof PhotoCreateBodyWithLinks
      */
     'albumId': number;
     /**
      * 
      * @type {File}
-     * @memberof PhotoCreateBody
+     * @memberof PhotoCreateBodyWithLinks
      */
     'file': File;
+    /**
+     * 
+     * @type {object}
+     * @memberof PhotoCreateBodyWithLinks
+     */
+    '_links': object;
 }
 /**
  * 
@@ -1623,12 +1599,6 @@ export interface PhotoResponse {
      * @memberof PhotoResponse
      */
     'uploadedBy'?: UserResponse;
-    /**
-     * 
-     * @type {PhotoResponseLinks}
-     * @memberof PhotoResponse
-     */
-    '_links': PhotoResponseLinks;
 }
 /**
  * 
@@ -1641,7 +1611,116 @@ export interface PhotoResponseLinks {
      * @type {AcLink}
      * @memberof PhotoResponseLinks
      */
+    'getPhoto': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof PhotoResponseLinks
+     */
+    'updatePhoto': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof PhotoResponseLinks
+     */
+    'deletePhoto': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof PhotoResponseLinks
+     */
     'getPhotoImage': AcLink;
+}
+/**
+ * 
+ * @export
+ * @interface PhotoResponseWithLinks
+ */
+export interface PhotoResponseWithLinks {
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoResponseWithLinks
+     */
+    'id': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoResponseWithLinks
+     */
+    'albumId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PhotoResponseWithLinks
+     */
+    'timestamp': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PhotoResponseWithLinks
+     */
+    'name': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoResponseWithLinks
+     */
+    'width'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoResponseWithLinks
+     */
+    'height'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoResponseWithLinks
+     */
+    'uploadedById'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PhotoResponseWithLinks
+     */
+    'title'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PhotoResponseWithLinks
+     */
+    'caption'?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof PhotoResponseWithLinks
+     */
+    'tags'?: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof PhotoResponseWithLinks
+     */
+    'bg'?: string;
+    /**
+     * 
+     * @type {object}
+     * @memberof PhotoResponseWithLinks
+     */
+    'album'?: object;
+    /**
+     * 
+     * @type {UserResponse}
+     * @memberof PhotoResponseWithLinks
+     */
+    'uploadedBy'?: UserResponse;
+    /**
+     * 
+     * @type {PhotoResponseLinks}
+     * @memberof PhotoResponseWithLinks
+     */
+    '_links': PhotoResponseLinks;
 }
 /**
  * 
@@ -1671,64 +1750,39 @@ export interface PhotoUpdateBody {
 /**
  * 
  * @export
- * @interface PhotosListResponse
+ * @interface PhotosListResponseWithLinks
  */
-export interface PhotosListResponse {
+export interface PhotosListResponseWithLinks {
     /**
      * 
      * @type {number}
-     * @memberof PhotosListResponse
+     * @memberof PhotosListResponseWithLinks
      */
     'id': number;
     /**
      * 
      * @type {number}
-     * @memberof PhotosListResponse
+     * @memberof PhotosListResponseWithLinks
      */
     'albumId': number;
     /**
      * 
      * @type {string}
-     * @memberof PhotosListResponse
+     * @memberof PhotosListResponseWithLinks
      */
     'name': string;
     /**
      * 
      * @type {string}
-     * @memberof PhotosListResponse
+     * @memberof PhotosListResponseWithLinks
      */
     'title'?: string;
-}
-/**
- * 
- * @export
- * @interface RootResponse
- */
-export interface RootResponse {
     /**
      * 
-     * @type {string}
-     * @memberof RootResponse
+     * @type {object}
+     * @memberof PhotosListResponseWithLinks
      */
-    'version': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RootResponse
-     */
-    'environmentTitle': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RootResponse
-     */
-    'googleClientId'?: string;
-    /**
-     * 
-     * @type {RootResponseLinks}
-     * @memberof RootResponse
-     */
-    '_links': RootResponseLinks;
+    '_links': object;
 }
 /**
  * 
@@ -1741,13 +1795,13 @@ export interface RootResponseLinks {
      * @type {AcLink}
      * @memberof RootResponseLinks
      */
-    'createEvent': AcLink;
+    'listAlbums': AcLink;
     /**
      * 
      * @type {AcLink}
      * @memberof RootResponseLinks
      */
-    'listAlbums': AcLink;
+    'createAlbum': AcLink;
     /**
      * 
      * @type {AcLink}
@@ -1759,13 +1813,80 @@ export interface RootResponseLinks {
      * @type {AcLink}
      * @memberof RootResponseLinks
      */
-    'listMembers': AcLink;
+    'getCPVEvents': AcLink;
     /**
      * 
      * @type {AcLink}
      * @memberof RootResponseLinks
      */
     'listEvents': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof RootResponseLinks
+     */
+    'createEvent': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof RootResponseLinks
+     */
+    'listGroups': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof RootResponseLinks
+     */
+    'createGroup': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof RootResponseLinks
+     */
+    'listMembers': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof RootResponseLinks
+     */
+    'listUsers': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof RootResponseLinks
+     */
+    'createUser': AcLink;
+}
+/**
+ * 
+ * @export
+ * @interface RootResponseWithLinks
+ */
+export interface RootResponseWithLinks {
+    /**
+     * 
+     * @type {string}
+     * @memberof RootResponseWithLinks
+     */
+    'version': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RootResponseWithLinks
+     */
+    'environmentTitle': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RootResponseWithLinks
+     */
+    'googleClientId'?: string;
+    /**
+     * 
+     * @type {RootResponseLinks}
+     * @memberof RootResponseWithLinks
+     */
+    '_links': RootResponseLinks;
 }
 /**
  * 
@@ -1794,6 +1915,12 @@ export interface UpdateMemberBody {
     'groupId'?: number;
     /**
      * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'nickname'?: string;
+    /**
+     * 
      * @type {boolean}
      * @memberof UpdateMemberBody
      */
@@ -1804,12 +1931,6 @@ export interface UpdateMemberBody {
      * @memberof UpdateMemberBody
      */
     'membership'?: UpdateMemberBodyMembershipEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'nickname'?: string;
     /**
      * 
      * @type {string}
@@ -1898,7 +2019,8 @@ export const UpdateMemberBodyMembershipEnum = {
 
 export type UpdateMemberBodyMembershipEnum = typeof UpdateMemberBodyMembershipEnum[keyof typeof UpdateMemberBodyMembershipEnum];
 export const UpdateMemberBodyRoleEnum = {
-    Clen: 'clen',
+    Dite: 'dite',
+    Instruktor: 'instruktor',
     Vedouci: 'vedouci'
 } as const;
 
@@ -2007,16 +2129,10 @@ export interface UserResponse {
     'roles'?: Array<UserResponseRolesEnum>;
     /**
      * 
-     * @type {MemberResponse}
+     * @type {MemberResponseWithLinks}
      * @memberof UserResponse
      */
-    'member'?: MemberResponse;
-    /**
-     * 
-     * @type {UserResponseLinks}
-     * @memberof UserResponse
-     */
-    '_links': UserResponseLinks;
+    'member'?: MemberResponseWithLinks;
 }
 
 export const UserResponseRolesEnum = {
@@ -2038,12 +2154,6 @@ export interface UserResponseLinks {
      * @type {AcLink}
      * @memberof UserResponseLinks
      */
-    'deleteUser': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof UserResponseLinks
-     */
     'getUser': AcLink;
     /**
      * 
@@ -2056,14 +2166,96 @@ export interface UserResponseLinks {
      * @type {AcLink}
      * @memberof UserResponseLinks
      */
-    'impersonateUser': AcLink;
+    'deleteUser': AcLink;
     /**
      * 
      * @type {AcLink}
      * @memberof UserResponseLinks
      */
     'setUserPassword': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof UserResponseLinks
+     */
+    'impersonateUser': AcLink;
 }
+/**
+ * 
+ * @export
+ * @interface UserResponseWithLinks
+ */
+export interface UserResponseWithLinks {
+    /**
+     * 
+     * @type {number}
+     * @memberof UserResponseWithLinks
+     */
+    'id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserResponseWithLinks
+     */
+    'login': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof UserResponseWithLinks
+     */
+    'memberId'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserResponseWithLinks
+     */
+    'password'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserResponseWithLinks
+     */
+    'email'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserResponseWithLinks
+     */
+    'loginCode'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserResponseWithLinks
+     */
+    'loginCodeExp'?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof UserResponseWithLinks
+     */
+    'roles'?: Array<UserResponseWithLinksRolesEnum>;
+    /**
+     * 
+     * @type {MemberResponseWithLinks}
+     * @memberof UserResponseWithLinks
+     */
+    'member'?: MemberResponseWithLinks;
+    /**
+     * 
+     * @type {UserResponseLinks}
+     * @memberof UserResponseWithLinks
+     */
+    '_links': UserResponseLinks;
+}
+
+export const UserResponseWithLinksRolesEnum = {
+    Admin: 'admin',
+    Revizor: 'revizor',
+    Program: 'program'
+} as const;
+
+export type UserResponseWithLinksRolesEnum = typeof UserResponseWithLinksRolesEnum[keyof typeof UserResponseWithLinksRolesEnum];
+
 /**
  * 
  * @export
@@ -2168,7 +2360,7 @@ export const APIApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getApiInfo(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RootResponse>> {
+        async getApiInfo(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RootResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getApiInfo(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2187,7 +2379,7 @@ export const APIApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getApiInfo(options?: any): AxiosPromise<RootResponse> {
+        getApiInfo(options?: any): AxiosPromise<RootResponseWithLinks> {
             return localVarFp.getApiInfo(options).then((request) => request(axios, basePath));
         },
     };
@@ -2431,7 +2623,7 @@ export const AccountApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getMe(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>> {
+        async getMe(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getMe(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2499,7 +2691,7 @@ export const AccountApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMe(options?: any): AxiosPromise<UserResponse> {
+        getMe(options?: any): AxiosPromise<UserResponseWithLinks> {
             return localVarFp.getMe(options).then((request) => request(axios, basePath));
         },
         /**
@@ -3076,10 +3268,12 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {number} [year] 
          * @param {string} [status] 
          * @param {string} [search] 
+         * @param {boolean} [my] 
+         * @param {boolean} [noleader] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents: async (year?: number, status?: string, search?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listEvents: async (year?: number, status?: string, search?: string, my?: boolean, noleader?: boolean, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/events`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3102,6 +3296,14 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
 
             if (search !== undefined) {
                 localVarQueryParameter['search'] = search;
+            }
+
+            if (my !== undefined) {
+                localVarQueryParameter['my'] = my;
+            }
+
+            if (noleader !== undefined) {
+                localVarQueryParameter['noleader'] = noleader;
             }
 
 
@@ -3578,11 +3780,13 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {number} [year] 
          * @param {string} [status] 
          * @param {string} [search] 
+         * @param {boolean} [my] 
+         * @param {boolean} [noleader] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listEvents(year?: number, status?: string, search?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listEvents(year, status, search, options);
+        async listEvents(year?: number, status?: string, search?: string, my?: boolean, noleader?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventResponse>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listEvents(year, status, search, my, noleader, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -3808,11 +4012,13 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {number} [year] 
          * @param {string} [status] 
          * @param {string} [search] 
+         * @param {boolean} [my] 
+         * @param {boolean} [noleader] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(year?: number, status?: string, search?: string, options?: any): AxiosPromise<Array<EventResponse>> {
-            return localVarFp.listEvents(year, status, search, options).then((request) => request(axios, basePath));
+        listEvents(year?: number, status?: string, search?: string, my?: boolean, noleader?: boolean, options?: any): AxiosPromise<Array<EventResponse>> {
+            return localVarFp.listEvents(year, status, search, my, noleader, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -4055,12 +4261,14 @@ export class EventsApi extends BaseAPI {
      * @param {number} [year] 
      * @param {string} [status] 
      * @param {string} [search] 
+     * @param {boolean} [my] 
+     * @param {boolean} [noleader] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
      */
-    public listEvents(year?: number, status?: string, search?: string, options?: AxiosRequestConfig) {
-        return EventsApiFp(this.configuration).listEvents(year, status, search, options).then((request) => request(this.axios, this.basePath));
+    public listEvents(year?: number, status?: string, search?: string, my?: boolean, noleader?: boolean, options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).listEvents(year, status, search, my, noleader, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4872,13 +5080,13 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
         },
         /**
          * 
-         * @param {PhotoCreateBody} photoCreateBody 
+         * @param {PhotoCreateBodyWithLinks} photoCreateBodyWithLinks 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPhoto: async (photoCreateBody: PhotoCreateBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'photoCreateBody' is not null or undefined
-            assertParamExists('createPhoto', 'photoCreateBody', photoCreateBody)
+        createPhoto: async (photoCreateBodyWithLinks: PhotoCreateBodyWithLinks, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'photoCreateBodyWithLinks' is not null or undefined
+            assertParamExists('createPhoto', 'photoCreateBodyWithLinks', photoCreateBodyWithLinks)
             const localVarPath = `/api/photos`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4898,7 +5106,7 @@ export const PhotoGalleryApiAxiosParamCreator = function (configuration?: Config
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(photoCreateBody, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(photoCreateBodyWithLinks, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -5331,12 +5539,12 @@ export const PhotoGalleryApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {PhotoCreateBody} photoCreateBody 
+         * @param {PhotoCreateBodyWithLinks} photoCreateBodyWithLinks 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPhoto(photoCreateBody: PhotoCreateBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createPhoto(photoCreateBody, options);
+        async createPhoto(photoCreateBodyWithLinks: PhotoCreateBodyWithLinks, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPhoto(photoCreateBodyWithLinks, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5375,7 +5583,7 @@ export const PhotoGalleryApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAlbumPhotos(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PhotoResponse>>> {
+        async getAlbumPhotos(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PhotoResponseWithLinks>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAlbumPhotos(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5385,7 +5593,7 @@ export const PhotoGalleryApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPhoto(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhotoResponse>> {
+        async getPhoto(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhotoResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPhoto(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5405,7 +5613,7 @@ export const PhotoGalleryApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listAlbums(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AlbumsListResponse>>> {
+        async listAlbums(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AlbumsListResponseWithLinks>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listAlbums(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5414,7 +5622,7 @@ export const PhotoGalleryApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listPhotos(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PhotosListResponse>>> {
+        async listPhotos(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PhotosListResponseWithLinks>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listPhotos(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -5481,12 +5689,12 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
         },
         /**
          * 
-         * @param {PhotoCreateBody} photoCreateBody 
+         * @param {PhotoCreateBodyWithLinks} photoCreateBodyWithLinks 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPhoto(photoCreateBody: PhotoCreateBody, options?: any): AxiosPromise<void> {
-            return localVarFp.createPhoto(photoCreateBody, options).then((request) => request(axios, basePath));
+        createPhoto(photoCreateBodyWithLinks: PhotoCreateBodyWithLinks, options?: any): AxiosPromise<void> {
+            return localVarFp.createPhoto(photoCreateBodyWithLinks, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -5521,7 +5729,7 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAlbumPhotos(id: number, options?: any): AxiosPromise<Array<PhotoResponse>> {
+        getAlbumPhotos(id: number, options?: any): AxiosPromise<Array<PhotoResponseWithLinks>> {
             return localVarFp.getAlbumPhotos(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -5530,7 +5738,7 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPhoto(id: number, options?: any): AxiosPromise<PhotoResponse> {
+        getPhoto(id: number, options?: any): AxiosPromise<PhotoResponseWithLinks> {
             return localVarFp.getPhoto(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -5548,7 +5756,7 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAlbums(options?: any): AxiosPromise<Array<AlbumsListResponse>> {
+        listAlbums(options?: any): AxiosPromise<Array<AlbumsListResponseWithLinks>> {
             return localVarFp.listAlbums(options).then((request) => request(axios, basePath));
         },
         /**
@@ -5556,7 +5764,7 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPhotos(options?: any): AxiosPromise<Array<PhotosListResponse>> {
+        listPhotos(options?: any): AxiosPromise<Array<PhotosListResponseWithLinks>> {
             return localVarFp.listPhotos(options).then((request) => request(axios, basePath));
         },
         /**
@@ -5620,13 +5828,13 @@ export class PhotoGalleryApi extends BaseAPI {
 
     /**
      * 
-     * @param {PhotoCreateBody} photoCreateBody 
+     * @param {PhotoCreateBodyWithLinks} photoCreateBodyWithLinks 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
      */
-    public createPhoto(photoCreateBody: PhotoCreateBody, options?: AxiosRequestConfig) {
-        return PhotoGalleryApiFp(this.configuration).createPhoto(photoCreateBody, options).then((request) => request(this.axios, this.basePath));
+    public createPhoto(photoCreateBodyWithLinks: PhotoCreateBodyWithLinks, options?: AxiosRequestConfig) {
+        return PhotoGalleryApiFp(this.configuration).createPhoto(photoCreateBodyWithLinks, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -6597,7 +6805,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listUsers(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserResponse>>> {
+        async listUsers(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserResponseWithLinks>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listUsers(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -6674,7 +6882,7 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listUsers(options?: any): AxiosPromise<Array<UserResponse>> {
+        listUsers(options?: any): AxiosPromise<Array<UserResponseWithLinks>> {
             return localVarFp.listUsers(options).then((request) => request(axios, basePath));
         },
         /**

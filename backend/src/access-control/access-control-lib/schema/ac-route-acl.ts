@@ -2,7 +2,7 @@ import { ForbiddenException, InternalServerErrorException, Type } from "@nestjs/
 import { Request } from "express";
 import { OptionsStore } from "../options-store";
 
-export interface AcRouteOptions<DOC, CONTAINS = DOC, ROLES extends string = string, PDATA extends Object = {}> {
+export interface AcRouteOptions<DOC, ROLES extends string = string, PDATA extends Object = {}> {
   // TODO: maybe rename to `linkTo`
   /** Add link for this route to the specified parent entity. This adds a links object as a property (default `_links`) to all routes of the same entity */
   linkTo?: Type<any>;
@@ -15,7 +15,7 @@ export interface AcRouteOptions<DOC, CONTAINS = DOC, ROLES extends string = stri
   permissions?: AcPermissions<DOC, ROLES, PDATA>;
 
   /** Inherit permissions of the specified entity */
-  inheritPermissions?: AcRouteACL<DOC, any, ROLES>;
+  inheritPermissions?: AcRouteACL<DOC, ROLES>;
 
   // TODO: maybe rename to `applicable` like the resulting property
   /** Global condition whether this route is accessible (i.e. is document in the state to perform this operation) */
@@ -39,8 +39,8 @@ export type AcPermissionObject<DOC, PDATA> = {
   permission: boolean | AcPermissionFunction<DOC>;
 } & PDATA;
 
-export class AcRouteACL<DOC, CONTAINS = DOC, ROLES extends string = string, PDATA extends Object = {}> {
-  constructor(public options: AcRouteOptions<DOC, CONTAINS, ROLES, PDATA>) {}
+export class AcRouteACL<DOC, ROLES extends string = string, PDATA extends Object = {}> {
+  constructor(public options: AcRouteOptions<DOC, ROLES, PDATA>) {}
 
   canOrThrow(req: Request, doc: DOC) {
     if (!this.can(req, doc)) throw new ForbiddenException();

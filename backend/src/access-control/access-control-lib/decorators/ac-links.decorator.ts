@@ -12,7 +12,7 @@ import { RouteStoreItem } from "../schema/route-store-item";
  * @param options Options for field generation
  * @returns
  */
-export function AcLinks<D, C>(acl: AcRouteACL<D, C>): MethodDecorator {
+export function AcLinks(acl: AcRouteACL<any>): MethodDecorator {
   return (target: any, method: string | symbol, descriptor: PropertyDescriptor) => {
     const controller = target;
     const handler = descriptor.value;

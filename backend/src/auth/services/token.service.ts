@@ -3,7 +3,7 @@ import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { validateSync } from "class-validator";
 import { Request, Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
-import { UserTokenData } from "../schema/user-token";
+import { TokenData, UserData } from "../schema/user-token";
 
 @Injectable()
 export class TokenService {
@@ -29,12 +29,12 @@ export class TokenService {
     return req["user"];
   }
 
-  async createToken(tokenData: UserTokenData, options: JwtSignOptions = {}) {
-    return this.jwtService.signAsync(tokenData, { expiresIn: "30d", ...options });
+  async createToken(userData: UserData, options: JwtSignOptions = {}) {
+    return this.jwtService.signAsync(userData, { expiresIn: "30d", ...options });
   }
 
-  async setToken(res: Response, tokenData: UserTokenData) {
-    const token = await this.createToken(tokenData);
+  async setToken(res: Response, userData: UserData) {
+    const token = await this.createToken(userData);
 
     res.cookie(this.cookieName, token);
   }
@@ -43,8 +43,8 @@ export class TokenService {
     res.clearCookie(this.cookieName);
   }
 
-  private validateToken(tokenData: JwtPayload): tokenData is UserTokenData & JwtPayload {
-    let validateData = Object.assign(new UserTokenData(), tokenData);
+  private validateToken(tokenData: JwtPayload): tokenData is TokenData {
+    let validateData = Object.assign(new UserData(), tokenData);
 
     const validateErrors = validateSync(validateData, { stopAtFirstError: true });
 

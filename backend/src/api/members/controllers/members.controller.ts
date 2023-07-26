@@ -6,7 +6,13 @@ import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Member } from "src/models/members/entities/member.entity";
 import { MembersService } from "src/models/members/services/members.service";
 import { Repository } from "typeorm";
-import { MemberCreateRoute, MemberDeleteRoute, MemberRoute, MemberUpdateRoute, MembersRoute } from "../acl/members.acl";
+import {
+  MemberCreateRoute,
+  MemberDeleteRoute,
+  MemberReadRoute,
+  MemberUpdateRoute,
+  MembersListRoute,
+} from "../acl/members.acl";
 import { CreateMemberBody, MemberResponse, UpdateMemberBody } from "../dto/member.dto";
 
 @Controller("members")
@@ -19,10 +25,10 @@ export class MembersController {
   ) {}
 
   @Get()
-  @AcLinks(MembersRoute)
+  @AcLinks(MembersListRoute)
   @ApiResponse({ type: MemberResponse, isArray: true })
   async listMembers(@Req() req: Request) {
-    return this.membersRepository.createQueryBuilder().where(MembersRoute.canWhere(req)).getMany();
+    return this.membersRepository.createQueryBuilder().where(MembersListRoute.canWhere(req)).getMany();
   }
 
   @Post()
@@ -35,13 +41,13 @@ export class MembersController {
   }
 
   @Get(":id")
-  @AcLinks(MemberRoute)
+  @AcLinks(MemberReadRoute)
   @ApiResponse({ type: MemberResponse })
   async getMember(@Param("id") id: number, @Req() req: Request): Promise<MemberResponse> {
     const member = await this.membersService.getMember(id);
     if (!member) throw new NotFoundException();
 
-    MemberRoute.canOrThrow(req, member);
+    MemberReadRoute.canOrThrow(req, member);
 
     return member;
   }

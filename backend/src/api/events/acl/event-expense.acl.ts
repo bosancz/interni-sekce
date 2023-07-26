@@ -5,7 +5,7 @@ import { EventExpenseResponse } from "../dto/event-expense.dto";
 import { EventResponse } from "../dto/event.dto";
 import { EventReadRoute, isMyEvent } from "./events.acl";
 
-export const EventExpensesListRoute = new RouteACL<Event, EventExpenseResponse[]>({
+export const EventExpensesListRoute = new RouteACL<Event>({
   linkTo: EventResponse,
   contains: EventExpenseResponse,
 
@@ -21,7 +21,7 @@ export const EventExpenseReadRoute = new RouteACL<EventExpense>({
   },
 });
 
-export const EventExpenseCreateRoute = new RouteACL<Event, EventExpense>({
+export const EventExpenseCreateRoute = new RouteACL<Event>({
   linkTo: EventResponse,
   contains: EventExpenseResponse,
 

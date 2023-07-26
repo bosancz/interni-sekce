@@ -3,7 +3,7 @@ import { RootResponse } from "src/api/root/dto/root-response";
 import { User } from "src/models/users/entities/user.entity";
 import { UserResponse } from "../dto/user.dto";
 
-export const UsersListRoute = new RouteACL<undefined, UserResponse[]>({
+export const UsersListRoute = new RouteACL({
   linkTo: RootResponse,
   contains: UserResponse,
 
@@ -13,7 +13,7 @@ export const UsersListRoute = new RouteACL<undefined, UserResponse[]>({
   },
 });
 
-export const UserCreateRoute = new RouteACL<undefined, UserResponse>({
+export const UserCreateRoute = new RouteACL({
   linkTo: RootResponse,
   contains: UserResponse,
 

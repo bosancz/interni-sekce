@@ -6,7 +6,7 @@ import { Roles } from "./roles";
 
 export type WhereData = { where?: (qb: WhereExpressionBuilder, req: Request) => WhereExpressionBuilder };
 
-export class RouteACL<DOC, CONTAINS = DOC> extends AcRouteACL<DOC, CONTAINS, Roles, WhereData> {
+export class RouteACL<DOC> extends AcRouteACL<DOC, Roles, WhereData> {
   /**
    * Functon that merges WHERE conditions from all permissions if defined
    * and returns them as Brackets object to use in the TypeORM query builder.

@@ -14,7 +14,7 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
-import { AcController, AcLinks } from "src/access-control/access-control-lib";
+import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { PhotosService } from "src/models/albums/services/photos.service";
 import {
   PhotoCreateRoute,
@@ -24,7 +24,7 @@ import {
   PhotoReadRoute,
   PhotosListRoute,
 } from "../acl/photo.acl";
-import { PhotoCreateBody, PhotoResponse, PhotoSizes, PhotoUpdateBody, PhotosListResponse } from "../dto/photo.dto";
+import { PhotoCreateBody, PhotoResponse, PhotoSizes, PhotoUpdateBody } from "../dto/photo.dto";
 
 @Controller("photos")
 @AcController()
@@ -34,7 +34,7 @@ export class PhotosController {
 
   @Get()
   @AcLinks(PhotosListRoute)
-  @ApiResponse({ type: PhotosListResponse, isArray: true })
+  @ApiResponse({ type: WithLinks(PhotoResponse), isArray: true })
   async listPhotos(@Req() req: Request) {
     return await this.photosService.repository
       .createQueryBuilder("photos")
@@ -46,14 +46,14 @@ export class PhotosController {
   @Post()
   @AcLinks(PhotoCreateRoute)
   @UseInterceptors(FileInterceptor("file"))
-  @ApiBody({ type: PhotoCreateBody })
+  @ApiBody({ type: WithLinks(PhotoCreateBody) })
   createPhoto(@UploadedFile() file: Express.Multer.File, @Body() body: PhotoCreateBody) {
     //TODO:
   }
 
   @Get(":id")
   @AcLinks(PhotoReadRoute)
-  @ApiResponse({ type: PhotoResponse })
+  @ApiResponse({ type: WithLinks(PhotoResponse) })
   async getPhoto(@Param("id") id: number, @Req() req: Request) {
     const photo = await this.photosService.repository.findOneBy({ id });
 

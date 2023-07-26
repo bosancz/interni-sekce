@@ -1,11 +1,10 @@
 import { RouteACL } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
 import { Album } from "src/models/albums/entities/album.entity";
-import { Photo } from "src/models/albums/entities/photo.entity";
 import { AlbumResponse } from "../dto/album.dto";
 import { PhotoResponse } from "../dto/photo.dto";
 
-export const AlbumsListRoute = new RouteACL<undefined, Album[]>({
+export const AlbumsListRoute = new RouteACL({
   linkTo: RootResponse,
   contains: AlbumResponse,
 
@@ -21,7 +20,7 @@ export const AlbumReadRoute = new RouteACL<Album>({
   },
 });
 
-export const AlbumCreateRoute = new RouteACL<undefined, Album>({
+export const AlbumCreateRoute = new RouteACL({
   linkTo: RootResponse,
 
   permissions: {
@@ -56,7 +55,7 @@ export const AlbumUnpublishRoute = new RouteACL<Album>({
   condition: (album) => album.status === "public",
 });
 
-export const AlbumPhotosRoute = new RouteACL<Album, Photo[]>({
+export const AlbumPhotosRoute = new RouteACL<Album>({
   linkTo: AlbumResponse,
   contains: PhotoResponse,
 

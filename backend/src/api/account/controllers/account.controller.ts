@@ -5,7 +5,7 @@ import { AcController, AcLinks, WithLinks } from "src/access-control/access-cont
 import { UserResponse } from "src/api/users/dto/user.dto";
 import { Token } from "src/auth/decorators/token.decorator";
 import { UserGuard } from "src/auth/guards/user.guard";
-import { UserToken } from "src/auth/schema/user-token";
+import { TokenData } from "src/auth/schema/user-token";
 import { UsersService } from "src/models/users/services/users.service";
 import { AccountReadRoute } from "../acl/account.acl";
 
@@ -19,7 +19,7 @@ export class AccountController {
   @Get()
   @AcLinks(AccountReadRoute)
   @ApiResponse({ type: WithLinks(UserResponse) })
-  async getMe(@Req() req: Request, @Token() token: UserToken): Promise<UserResponse> {
+  async getMe(@Req() req: Request, @Token() token: TokenData): Promise<UserResponse> {
     const user = await this.userService.getUser(token.userId);
     if (!user) throw new NotFoundException();
 

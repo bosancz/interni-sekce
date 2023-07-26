@@ -18,7 +18,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Token } from "src/auth/decorators/token.decorator";
-import { UserToken } from "src/auth/schema/user-token";
+import { TokenData } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
@@ -52,7 +52,11 @@ export class EventsController {
   @Get()
   @AcLinks(EventsListRoute)
   @ApiResponse({ type: EventResponse, isArray: true })
-  async listEvents(@Req() req: Request, @Query() query: GetEventsQuery): Promise<EventResponse[]> {
+  async listEvents(
+    @Req() req: Request,
+    @Token() token: TokenData,
+    @Query() query: GetEventsQuery,
+  ): Promise<EventResponse[]> {
     const q = this.eventsRepository
       .createQueryBuilder("events")
       .select(["events.id", "events.name", "events.status", "events.dateFrom", "events.dateTill"])
@@ -68,13 +72,13 @@ export class EventsController {
       });
     }
 
-    if (query?.status) {
-      q.andWhere("status = :status", { status: query.status });
-    }
+    if (query?.status) q.andWhere("status = :status", { status: query.status });
 
-    if (query?.search) {
-      q.andWhere("name LIKE :search", { search: `%${query.search}%` });
-    }
+    if (query?.search) q.andWhere("name LIKE :search", { search: `%${query.search}%` });
+
+    if (query?.my) q.andWhere("leaders.id = :userId", { userId: token.userId });
+
+    if (query?.noleader) q.andWhere("leaders.id IS NULL");
 
     return q.getMany();
   }
@@ -144,7 +148,7 @@ export class EventsController {
   @HttpCode(204)
   @AcLinks(EventLeadRoute)
   @ApiResponse({ status: 204 })
-  async leadEvent(@Req() req: Request, @Param("id") id: number, @Token() token: UserToken): Promise<void> {
+  async leadEvent(@Req() req: Request, @Param("id") id: number, @Token() token: TokenData): Promise<void> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 

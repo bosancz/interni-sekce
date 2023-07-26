@@ -13,7 +13,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { DateTime } from "luxon";
 import { AcController } from "src/access-control/access-control-lib";
-import { UserTokenData } from "src/auth/schema/user-token";
+import { UserData } from "src/auth/schema/user-token";
 import { HashService } from "src/auth/services/hash.service";
 import { TokenService } from "src/auth/services/token.service";
 import { Config } from "src/config";
@@ -118,8 +118,8 @@ export class LoginController {
     this.tokenService.clearToken(res);
   }
 
-  private async setLoginToken(res: Response, user: User, data?: UserTokenData) {
-    const tokenData: UserTokenData = {
+  private async setLoginToken(res: Response, user: User, data?: UserData) {
+    const tokenData: UserData = {
       roles: user.roles ?? [],
       userId: user.id,
       ...data,

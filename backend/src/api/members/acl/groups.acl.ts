@@ -3,12 +3,13 @@ import { RootResponse } from "src/api/root/dto/root-response";
 import { Group } from "src/models/members/entities/group.entity";
 import { GroupResponse } from "../dto/group.dto";
 
-export const GroupListRoute = new RouteACL<undefined, Group[]>({
+export const GroupListRoute = new RouteACL<undefined>({
   linkTo: RootResponse,
+  contains: GroupResponse,
+
   permissions: {
     vedouci: true,
   },
-  contains: GroupResponse,
 });
 
 export const GroupCreateRoute = new RouteACL<undefined>({

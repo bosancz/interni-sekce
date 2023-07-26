@@ -2,7 +2,7 @@ import { IsEnum, IsNumber } from "class-validator";
 import { JwtPayload } from "jsonwebtoken";
 import { UserRoles } from "src/models/users/entities/user.entity";
 
-export class UserTokenData {
+export class UserData {
   @IsNumber()
   userId!: number;
 
@@ -10,4 +10,4 @@ export class UserTokenData {
   roles!: UserRoles[];
 }
 
-export type UserToken = UserTokenData & JwtPayload;
+export type TokenData = UserData & JwtPayload;

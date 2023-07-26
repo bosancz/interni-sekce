@@ -7,7 +7,7 @@ import { EventCreateBody, EventResponse } from "../dto/event.dto";
 export const isMyEvent = (doc: Pick<Event, "leaders"> | undefined, req: Request) =>
   doc?.leaders?.some((l) => l.id === req.user?.userId) ?? false;
 
-export const EventsListRoute = new RouteACL<undefined, EventResponse[]>({
+export const EventsListRoute = new RouteACL({
   linkTo: RootResponse,
   contains: EventResponse,
 
@@ -21,7 +21,7 @@ export const EventsYearsRoute = new RouteACL<undefined>({
   inheritPermissions: EventsListRoute,
 });
 
-export const EventReadRoute = new RouteACL<Event, EventResponse>({
+export const EventReadRoute = new RouteACL<Event>({
   contains: EventResponse,
 
   permissions: {
@@ -29,7 +29,7 @@ export const EventReadRoute = new RouteACL<Event, EventResponse>({
   },
 });
 
-export const EventCreateRoute = new RouteACL<EventCreateBody, EventResponse>({
+export const EventCreateRoute = new RouteACL<EventCreateBody>({
   linkTo: RootResponse,
   contains: EventResponse,
 
@@ -38,7 +38,7 @@ export const EventCreateRoute = new RouteACL<EventCreateBody, EventResponse>({
   },
 });
 
-export const EventEditRoute = new RouteACL<Event, EventResponse>({
+export const EventEditRoute = new RouteACL<Event>({
   linkTo: EventResponse,
 
   permissions: {
@@ -48,7 +48,7 @@ export const EventEditRoute = new RouteACL<Event, EventResponse>({
   },
 });
 
-export const EventDeleteRoute = new RouteACL<Event, EventResponse>({
+export const EventDeleteRoute = new RouteACL<Event>({
   linkTo: EventResponse,
   permissions: {
     program: true,
@@ -57,7 +57,7 @@ export const EventDeleteRoute = new RouteACL<Event, EventResponse>({
   condition: (doc) => doc.status !== EventStatus.public,
 });
 
-export const EventLeadRoute = new RouteACL<Event, EventResponse>({
+export const EventLeadRoute = new RouteACL<Event>({
   linkTo: EventResponse,
 
   permissions: {
@@ -68,7 +68,7 @@ export const EventLeadRoute = new RouteACL<Event, EventResponse>({
   condition: (doc) => !doc.leaders || !doc.leaders.length,
 });
 
-export const EventSubmitRoute = new RouteACL<Event, EventResponse>({
+export const EventSubmitRoute = new RouteACL<Event>({
   linkTo: EventResponse,
 
   permissions: {
@@ -80,7 +80,7 @@ export const EventSubmitRoute = new RouteACL<Event, EventResponse>({
   condition: (doc) => doc.status === EventStatus.draft,
 });
 
-export const EventPublishRoute = new RouteACL<Event, EventResponse>({
+export const EventPublishRoute = new RouteACL<Event>({
   linkTo: EventResponse,
   permissions: {
     program: true,
@@ -89,7 +89,7 @@ export const EventPublishRoute = new RouteACL<Event, EventResponse>({
   condition: (doc) => doc.status === EventStatus.pending,
 });
 
-export const EventRejectRoute = new RouteACL<Event, EventResponse>({
+export const EventRejectRoute = new RouteACL<Event>({
   linkTo: EventResponse,
   permissions: {
     program: true,
@@ -98,7 +98,7 @@ export const EventRejectRoute = new RouteACL<Event, EventResponse>({
   condition: (doc) => doc.status === EventStatus.pending,
 });
 
-export const EventUnpublishRoute = new RouteACL<Event, EventResponse>({
+export const EventUnpublishRoute = new RouteACL<Event>({
   linkTo: EventResponse,
   permissions: {
     program: true,
@@ -107,7 +107,7 @@ export const EventUnpublishRoute = new RouteACL<Event, EventResponse>({
   condition: (doc) => doc.status === EventStatus.public,
 });
 
-export const EventCancelRoute = new RouteACL<Event, EventResponse>({
+export const EventCancelRoute = new RouteACL<Event>({
   linkTo: EventResponse,
   permissions: {
     program: true,
@@ -116,7 +116,7 @@ export const EventCancelRoute = new RouteACL<Event, EventResponse>({
   condition: (doc) => doc.status !== EventStatus.public,
 });
 
-export const EventUncancelRoute = new RouteACL<Event, EventResponse>({
+export const EventUncancelRoute = new RouteACL<Event>({
   linkTo: EventResponse,
   permissions: {
     program: true,
