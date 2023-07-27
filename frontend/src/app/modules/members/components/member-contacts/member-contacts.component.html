@@ -1,6 +1,5 @@
-<div class="ion-padding">
-  <h2>Kontakty</h2>
-  <!-- <table class="table table-sm table-borderless">
+<h2 class="ion-padding">Kontakty</h2>
+<!-- <table class="table table-sm table-borderless">
   <tbody>
     <tr *ngFor="let contact of member?.contacts">
       <th>Mobil:</th>
@@ -20,4 +19,31 @@
     </tr>
   </tbody>
 </table> -->
-</div>
+
+<ion-list>
+  <ion-item *ngFor="let contact of contacts">
+    <ion-label>
+      <h3>{{ contact.label }} ({{ contact.type }})</h3>
+      <p>{{ contact.value }}</p>
+    </ion-label>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="copyContact(contact.value)" color="secondary" fill="clear">
+        <ion-icon name="copy-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button *ngIf="contact.type === 'mobile'" [href]="'tel:' + contact.value" color="primary" fill="clear">
+        <ion-icon name="call-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button *ngIf="contact.type === 'email'" [href]="'mailto:' + contact.value" color="primary" fill="clear">
+        <ion-icon name="mail-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-item>
+</ion-list>
+
+<ion-buttons class="mt-3 justify-content-center">
+  <ion-button>
+    <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+    přidat kontakt
+  </ion-button>
+</ion-buttons>

@@ -132,48 +132,16 @@
       </div>
     </div>
 
-    <h4 class="mt-4">Kontakty</h4>
-    <div class="row">
-      <div class="col-lg-6">
-        <ion-item>
-          <ion-label position="floating">Mobil</ion-label>
-          <ion-input type="text" name="mobile" [ngModel]="member?.mobile" placeholder="+420 777123456"></ion-input>
-        </ion-item>
-      </div>
-      <div class="col-lg-6">
-        <ion-item>
-          <ion-label position="floating">E-mail</ion-label>
-          <ion-input type="text" name="email" [ngModel]="member?.email" placeholder="bilbo@valinor.ea"></ion-input>
-        </ion-item>
-      </div>
-    </div>
-    <!-- 
-      <div class="row">
-        <div class="col-lg-6">
-          <ion-item>
-            <ion-label position="floating">Otec</ion-label>
-            <ion-input
-              type="text"
-              name="father"
-              [ngModel]="member?.contacts?.father"
-              placeholder="+420 728123456 (Bungo Pytlík)"
-            ></ion-input>
-          </ion-item>
-        </div>
-        <div class="col-lg-6">
-          <ion-item>
-            <ion-label position="floating">Matka</ion-label>
-            <ion-input
-              type="text"
-              name="mother"
-              [ngModel]="member?.contacts?.mother"
-              placeholder="bela.bral@gandalfmail.shire (Beladona Bralová)"
-            ></ion-input>
-          </ion-item>
-        </div>
-      </div> -->
-
     <h4 name="zdravi" class="mt-4">Zdravotní údaje</h4>
+    <ion-item>
+      <ion-label position="floating">Známé problémy a léky</ion-label>
+      <ion-textarea name="knownProblems" [ngModel]="member?.knownProblems" placeholder="2x denně Lembas"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Alergie</ion-label>
+      <ion-textarea name="allergies" [ngModel]="member?.allergies" placeholder="prsteny moci"></ion-textarea>
+    </ion-item>
   </form>
 </bo-page-content>
 

@@ -1,3 +1,4 @@
+<h4 class="ion-padding">Základní informace</h4>
 <ion-list *ngIf="member" class="selectable">
   <ion-item>
     <ion-label>Jméno:</ion-label>
@@ -8,20 +9,21 @@
     <ion-label>Datum narození:</ion-label>
     <ion-label>{{ member.birthday ? (member.birthday | date : "d. M. y") : "-" }}</ion-label>
   </ion-item>
+</ion-list>
 
-  <ion-item>
-    <ion-label>Adresa:</ion-label>
-    <ion-label>
-      {{ member.addressStreet }} {{ member.addressStreetNo }}<br />
-      {{ member.addressCity }}<br />
-      {{ member.addressPostalCode }}
-      <ng-container *ngIf="member.addressCountry"
-        ><br />
-        {{ member.addressCountry }}
-      </ng-container>
-    </ion-label>
-  </ion-item>
+<h4 class="mt-4 ion-padding">Adresa</h4>
+<p *ngIf="member">
+  {{ member.addressStreet }} {{ member.addressStreetNo }}<br />
+  {{ member.addressCity }}<br />
+  {{ member.addressPostalCode }}
+  <ng-container *ngIf="member.addressCountry"
+    ><br />
+    {{ member.addressCountry }}
+  </ng-container>
+</p>
 
+<h4 class="mt-4 ion-padding">Členství ve skupině</h4>
+<ion-list *ngIf="member">
   <ion-item>
     <ion-label>Zaplacené příspěvky:</ion-label>
     <ion-label>
