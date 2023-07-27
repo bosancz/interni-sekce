@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
+import { UserGuard } from "src/auth/guards/user.guard";
 import { Group } from "src/models/members/entities/group.entity";
 import { GroupsService } from "src/models/members/services/groups.service";
 import { Repository } from "typeorm";
@@ -10,6 +11,7 @@ import { GroupCreateRoute, GroupDeleteRoute, GroupEditRoute, GroupListRoute, Gro
 import { CreateGroupBody, GroupResponse } from "../dto/group.dto";
 
 @Controller("groups")
+@UseGuards(UserGuard)
 @AcController()
 @ApiTags("Members")
 export class GroupsController {

@@ -1523,13 +1523,13 @@ export interface MemberResponse {
      * @type {boolean}
      * @memberof MemberResponse
      */
-    'active'?: boolean;
+    'active': boolean;
     /**
      * 
      * @type {string}
      * @memberof MemberResponse
      */
-    'membership'?: MemberResponseMembershipEnum;
+    'membership': MemberResponseMembershipEnum;
     /**
      * 
      * @type {string}
@@ -1604,6 +1604,18 @@ export interface MemberResponse {
     'rank'?: MemberResponseRankEnum;
     /**
      * 
+     * @type {string}
+     * @memberof MemberResponse
+     */
+    'knownProblems'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponse
+     */
+    'allergies'?: string;
+    /**
+     * 
      * @type {GroupResponseWithLinks}
      * @memberof MemberResponse
      */
@@ -1668,6 +1680,24 @@ export interface MemberResponseLinks {
      * @memberof MemberResponseLinks
      */
     'deleteMember': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof MemberResponseLinks
+     */
+    'getInsuranceCard': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof MemberResponseLinks
+     */
+    'uploadInsuranceCard': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof MemberResponseLinks
+     */
+    'deleteInsuranceCard': AcLink;
 }
 /**
  * 
@@ -1704,13 +1734,13 @@ export interface MemberResponseWithLinks {
      * @type {boolean}
      * @memberof MemberResponseWithLinks
      */
-    'active'?: boolean;
+    'active': boolean;
     /**
      * 
      * @type {string}
      * @memberof MemberResponseWithLinks
      */
-    'membership'?: MemberResponseWithLinksMembershipEnum;
+    'membership': MemberResponseWithLinksMembershipEnum;
     /**
      * 
      * @type {string}
@@ -1783,6 +1813,18 @@ export interface MemberResponseWithLinks {
      * @memberof MemberResponseWithLinks
      */
     'rank'?: MemberResponseWithLinksRankEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'knownProblems'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'allergies'?: string;
     /**
      * 
      * @type {GroupResponseWithLinks}
@@ -2309,6 +2351,18 @@ export interface UpdateMemberBody {
      * @memberof UpdateMemberBody
      */
     'rank'?: UpdateMemberBodyRankEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'knownProblems'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'allergies'?: string;
 }
 
 export const UpdateMemberBodyRoleEnum = {
@@ -5006,6 +5060,39 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        deleteInsuranceCard: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteInsuranceCard', 'id', id)
+            const localVarPath = `/members/{id}/insurance-card`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         deleteMember: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('deleteMember', 'id', id)
@@ -5043,6 +5130,39 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
             // verify required parameter 'id' is not null or undefined
             assertParamExists('getGroup', 'id', id)
             const localVarPath = `/groups/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getInsuranceCard: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getInsuranceCard', 'id', id)
+            const localVarPath = `/members/{id}/insurance-card`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5275,6 +5395,16 @@ export const MembersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        async deleteInsuranceCard(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteInsuranceCard(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         async deleteMember(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteMember(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -5287,6 +5417,16 @@ export const MembersApiFp = function(configuration?: Configuration) {
          */
         async getGroup(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GroupResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getGroup(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getInsuranceCard(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getInsuranceCard(id, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5381,6 +5521,15 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        deleteInsuranceCard(id: number, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteInsuranceCard(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         deleteMember(id: number, options?: any): AxiosPromise<void> {
             return localVarFp.deleteMember(id, options).then((request) => request(axios, basePath));
         },
@@ -5392,6 +5541,15 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
          */
         getGroup(id: number, options?: any): AxiosPromise<GroupResponseWithLinks> {
             return localVarFp.getGroup(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getInsuranceCard(id: number, options?: any): AxiosPromise<void> {
+            return localVarFp.getInsuranceCard(id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -5487,6 +5645,17 @@ export class MembersApi extends BaseAPI {
      * @throws {RequiredError}
      * @memberof MembersApi
      */
+    public deleteInsuranceCard(id: number, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).deleteInsuranceCard(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MembersApi
+     */
     public deleteMember(id: number, options?: AxiosRequestConfig) {
         return MembersApiFp(this.configuration).deleteMember(id, options).then((request) => request(this.axios, this.basePath));
     }
@@ -5500,6 +5669,17 @@ export class MembersApi extends BaseAPI {
      */
     public getGroup(id: number, options?: AxiosRequestConfig) {
         return MembersApiFp(this.configuration).getGroup(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MembersApi
+     */
+    public getInsuranceCard(id: number, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).getInsuranceCard(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -19,9 +19,7 @@ registerLocaleData(localeCs);
 SwiperCore.use([Navigation]);
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
+  declarations: [AppComponent],
   imports: [
     SharedModule,
     CoreModule,

@@ -6,6 +6,10 @@ import { IonicModule } from "@ionic/angular";
 import { SwiperModule } from "swiper/angular";
 import { ActionButtonsComponent } from "./components/action-buttons/action-buttons.component";
 import { AdminTableComponent } from "./components/admin-table/admin-table.component";
+import { CardContentComponent } from "./components/card-content/card-content.component";
+import { CardFooterComponent } from "./components/card-footer/card-footer.component";
+import { CardTitleComponent } from "./components/card-title/card-title.component";
+import { CardComponent } from "./components/card/card.component";
 import { DotComponent } from "./components/dot/dot.component";
 import { EventCalendarComponent } from "./components/event-calendar/event-calendar.component";
 import { EventCardComponent } from "./components/event-card/event-card.component";
@@ -26,6 +30,7 @@ import { EventPipe } from "./pipes/event.pipe";
 import { FormatPhonePipe } from "./pipes/format-phone.pipe";
 import { GroupPipe } from "./pipes/group.pipe";
 import { JoinLeadersPipe } from "./pipes/join-leaders.pipe";
+import { MarkdownPipe } from "./pipes/markdown.pipe";
 import { MemberPipe } from "./pipes/member.pipe";
 import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
 
@@ -35,6 +40,9 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
     ActionButtonsComponent,
     AdminTableComponent,
     AgePipe,
+    CardComponent,
+    CardContentComponent,
+    CardTitleComponent,
     DateRangePipe,
     DotComponent,
     EventCalendarComponent,
@@ -42,6 +50,7 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
     EventPipe,
     EventStatusBadgeComponent,
     EventStatusPipe,
+    FilterComponent,
     FormatPhonePipe,
     GroupPipe,
     GroupsSelectComponent,
@@ -51,11 +60,12 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
     PageContentComponent,
     PageFooterComponent,
     PageHeaderComponent,
+    PaginationComponent,
     PhotoFaceComponent,
     PhotoGalleryComponent,
     PrettyBytesPipe,
-    PaginationComponent,
-    FilterComponent,
+    CardFooterComponent,
+    MarkdownPipe,
   ],
   exports: [
     FormsModule,
@@ -66,6 +76,10 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
     ActionButtonsComponent,
     AdminTableComponent,
     AgePipe,
+    CardComponent,
+    CardContentComponent,
+    CardFooterComponent,
+    CardTitleComponent,
     DateRangePipe,
     DotComponent,
     EventCalendarComponent,
@@ -73,6 +87,7 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
     EventPipe,
     EventStatusBadgeComponent,
     EventStatusPipe,
+    FilterComponent,
     FormatPhonePipe,
     GroupPipe,
     GroupsSelectComponent,
@@ -82,11 +97,11 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
     PageContentComponent,
     PageFooterComponent,
     PageHeaderComponent,
+    PaginationComponent,
     PhotoFaceComponent,
     PhotoGalleryComponent,
     PrettyBytesPipe,
-    PaginationComponent,
-    FilterComponent,
+    MarkdownPipe,
   ],
   providers: [DatePipe],
 })

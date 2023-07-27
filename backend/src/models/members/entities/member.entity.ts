@@ -31,19 +31,25 @@ export class Member {
   @Column({ nullable: false }) groupId!: Group["id"];
   @Column({ type: "varchar", nullable: false }) nickname!: string;
   @Column({ type: "enum", enum: MemberRole, nullable: false }) role!: MemberRole;
+  @Column({ type: "boolean", nullable: false, default: true }) active!: boolean;
+  @Column({ type: "enum", enum: MembershipStatus, nullable: false, default: MembershipStatus.clen })
+  membership!: MembershipStatus;
 
-  @Column({ type: "enum", enum: MemberRank, nullable: true }) rank!: MemberRank | null;
-  @Column({ type: "varchar", nullable: true }) function!: string | null;
-  @Column({ type: "varchar", nullable: true }) firstName!: string | null;
-  @Column({ type: "varchar", nullable: true }) lastName!: string | null;
-  @Column({ type: "date", nullable: true }) birthday!: string | null;
-  @Column({ type: "varchar", nullable: true }) addressStreet!: string | null;
-  @Column({ type: "varchar", nullable: true }) addressStreetNo!: string | null;
-  @Column({ type: "varchar", nullable: true }) addressCity!: string | null;
-  @Column({ type: "varchar", nullable: true }) addressPostalCode!: string | null;
-  @Column({ type: "varchar", nullable: true }) addressCountry!: string | null;
-  @Column({ type: "varchar", nullable: true }) mobile!: string | null;
-  @Column({ type: "varchar", nullable: true }) email!: string | null;
+  @Column({ type: "enum", enum: MemberRank, nullable: true }) rank?: MemberRank | null;
+  @Column({ type: "varchar", nullable: true }) function?: string | null;
+  @Column({ type: "varchar", nullable: true }) firstName?: string | null;
+  @Column({ type: "varchar", nullable: true }) lastName?: string | null;
+  @Column({ type: "date", nullable: true }) birthday?: string | null;
+  @Column({ type: "varchar", nullable: true }) addressStreet?: string | null;
+  @Column({ type: "varchar", nullable: true }) addressStreetNo?: string | null;
+  @Column({ type: "varchar", nullable: true }) addressCity?: string | null;
+  @Column({ type: "varchar", nullable: true }) addressPostalCode?: string | null;
+  @Column({ type: "varchar", nullable: true }) addressCountry?: string | null;
+  @Column({ type: "varchar", nullable: true }) mobile?: string | null;
+  @Column({ type: "varchar", nullable: true }) email?: string | null;
+  @Column({ type: "text", nullable: true }) knownProblems?: string | null;
+  @Column({ type: "text", nullable: true }) allergies?: string | null;
+  @Column({ type: "varchar", nullable: true }) insuranceCardFile?: string | null;
 
   @DeleteDateColumn() deletedAt?: Date;
 
@@ -56,10 +62,6 @@ export class Member {
 
   @OneToMany(() => MemberAchievement, (mb) => mb.member)
   achievements?: MemberAchievement[];
-
-  @Column({ type: "boolean", nullable: false, default: true }) active!: boolean;
-  @Column({ type: "enum", enum: MembershipStatus, nullable: false, default: MembershipStatus.clen })
-  membership!: MembershipStatus;
 
   @OneToMany(() => EventAttendee, (ea) => ea.member)
   eventAttendees?: EventAttendee[];

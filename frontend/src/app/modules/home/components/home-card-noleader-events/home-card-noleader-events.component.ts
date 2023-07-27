@@ -3,11 +3,11 @@ import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
-  selector: "bo-noleader-events",
-  templateUrl: "./noleader-events.component.html",
-  styleUrls: ["./noleader-events.component.scss"],
+  selector: "bo-home-card-noleader-events",
+  templateUrl: "./home-card-noleader-events.component.html",
+  styleUrls: ["./home-card-noleader-events.component.scss"],
 })
-export class NoleaderEventsComponent implements OnInit {
+export class HomeCardNoleaderEventsComponent implements OnInit {
   events: EventResponseWithLinks[] = [];
 
   constructor(private api: ApiService) {}

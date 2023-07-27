@@ -13,21 +13,23 @@ export class MemberResponse implements Member {
   @ApiProperty() groupId!: number;
   @ApiProperty({ type: "string" }) nickname!: string;
   @ApiProperty({ type: "enum", enum: MemberRole }) role!: MemberRole;
+  @ApiProperty({ type: "boolean" }) active!: boolean;
+  @ApiProperty({ type: "string", enum: MembershipStatus }) membership!: MembershipStatus;
 
-  @ApiPropertyOptional({ type: "boolean" }) active!: boolean;
-  @ApiPropertyOptional({ type: "string", enum: MembershipStatus }) membership!: MembershipStatus;
-  @ApiPropertyOptional({ type: "string" }) function!: string | null;
-  @ApiPropertyOptional({ type: "string" }) firstName!: string | null;
-  @ApiPropertyOptional({ type: "string" }) lastName!: string | null;
-  @ApiPropertyOptional({ type: "string" }) birthday!: string | null;
-  @ApiPropertyOptional({ type: "string" }) addressStreet!: string | null;
-  @ApiPropertyOptional({ type: "string" }) addressStreetNo!: string | null;
-  @ApiPropertyOptional({ type: "string" }) addressCity!: string | null;
-  @ApiPropertyOptional({ type: "string" }) addressPostalCode!: string | null;
-  @ApiPropertyOptional({ type: "string" }) addressCountry!: string | null;
-  @ApiPropertyOptional({ type: "string" }) mobile!: string | null;
-  @ApiPropertyOptional({ type: "string" }) email!: string | null;
-  @ApiPropertyOptional({ type: "enum", enum: MemberRank }) rank!: MemberRank | null;
+  @ApiPropertyOptional({ type: "string" }) function?: string | null;
+  @ApiPropertyOptional({ type: "string" }) firstName?: string | null;
+  @ApiPropertyOptional({ type: "string" }) lastName?: string | null;
+  @ApiPropertyOptional({ type: "string" }) birthday?: string | null;
+  @ApiPropertyOptional({ type: "string" }) addressStreet?: string | null;
+  @ApiPropertyOptional({ type: "string" }) addressStreetNo?: string | null;
+  @ApiPropertyOptional({ type: "string" }) addressCity?: string | null;
+  @ApiPropertyOptional({ type: "string" }) addressPostalCode?: string | null;
+  @ApiPropertyOptional({ type: "string" }) addressCountry?: string | null;
+  @ApiPropertyOptional({ type: "string" }) mobile?: string | null;
+  @ApiPropertyOptional({ type: "string" }) email?: string | null;
+  @ApiPropertyOptional({ type: "enum", enum: MemberRank }) rank?: MemberRank | null;
+  @ApiPropertyOptional({ type: "string" }) knownProblems?: string | null;
+  @ApiPropertyOptional({ type: "string" }) allergies?: string | null;
 
   @AcEntity(GroupResponse)
   @ApiPropertyOptional({ type: WithLinks(GroupResponse) })

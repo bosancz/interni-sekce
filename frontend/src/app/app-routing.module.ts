@@ -59,7 +59,12 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { paramsInheritanceStrategy: "always" })],
+  imports: [
+    RouterModule.forRoot(routes, {
+      paramsInheritanceStrategy: "always",
+      anchorScrolling: "enabled",
+    }),
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

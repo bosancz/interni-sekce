@@ -76,10 +76,19 @@ const mongoDb = {
   uri: process.env["MONGODB_URI"] ?? "",
 };
 
-const keysDir = process.env["KEYS_DIR"] ?? "../keys";
+const dataDir = process.env["DATA_DIR"] ?? "../data";
+
+const fs = {
+  dataDir,
+  keysDir: process.env["KEYS_DIR"] ?? "../keys",
+  photosDir: process.env["PHOTOS_DIR"] ?? path.join(dataDir, "photos"),
+  thumbnailsDir: process.env["THUMBNAILS_DIR"] ?? path.join("thumbnails"),
+  eventsDir: process.env["EVENTS_DIR"] ?? path.join(dataDir, "events"),
+  membersDir: process.env["MEMBERS_DIR"] ?? path.join(dataDir, "members"),
+};
 
 const google = {
-  keyFile: path.join(keysDir, process.env["GOOGLE_KEY_FILE"] ?? "google.json"),
+  keyFile: path.join(fs.keysDir, process.env["GOOGLE_KEY_FILE"] ?? "google.json"),
   impersonate: process.env["GOOGLE_IMPERSONATE"],
   clientId: process.env["GOOGLE_CLIENT_ID"],
   clientSecret: process.env["GOOGLE_CLIENT_SECRET"],
@@ -96,4 +105,5 @@ export const Config = {
   mongoDb,
   production,
   server,
+  fs,
 };

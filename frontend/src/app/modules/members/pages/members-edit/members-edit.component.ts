@@ -1,12 +1,14 @@
 import { Component, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
-import { ActivatedRoute, Params, Router } from "@angular/router";
-import { NavController } from "@ionic/angular";
+import { ActivatedRoute, Params } from "@angular/router";
+import { NavController, ViewWillEnter } from "@ionic/angular";
 import { Subscription } from "rxjs";
-import { MemberResponse } from "src/app/api";
-import { MemberGroups } from "src/app/config/member-groups";
-import { MemberRoles } from "src/app/config/member-roles";
-import { MembershipTypes } from "src/app/config/membership-types";
+import {
+  GroupResponseWithLinks,
+  MemberResponseMembershipEnum,
+  MemberResponseWithLinks,
+  MemberResponseWithLinksRoleEnum,
+} from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -16,15 +18,12 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   templateUrl: "./members-edit.component.html",
   styleUrls: ["./members-edit.component.scss"],
 })
-export class MembersEditComponent {
-  member?: MemberResponse;
+export class MembersEditComponent implements ViewWillEnter {
+  member?: MemberResponseWithLinks;
+  groups?: GroupResponseWithLinks[];
 
-  groups = Object.entries(MemberGroups)
-    .map((entry) => ({ key: entry[0], value: entry[1] }))
-    .filter((entry) => entry.value.real);
-
-  roles = MemberRoles;
-  membershipTypes = MembershipTypes;
+  roles = MemberResponseWithLinksRoleEnum;
+  membershipTypes = MemberResponseMembershipEnum;
 
   paramsSubscription?: Subscription;
 
@@ -42,7 +41,6 @@ export class MembersEditComponent {
     private api: ApiService,
     private toastService: ToastService,
     private route: ActivatedRoute,
-    private router: Router,
     private navController: NavController,
   ) {}
 
@@ -52,12 +50,20 @@ export class MembersEditComponent {
     });
   }
 
+  ionViewWillEnter() {
+    this.loadGroups();
+  }
+
   ngOnDestroy() {
     this.paramsSubscription?.unsubscribe();
   }
 
   async loadMember(memberId: number) {
     this.member = await this.api.members.getMember(memberId).then((res) => res.data);
+  }
+
+  async loadGroups() {
+    this.groups = await this.api.members.listGroups().then((res) => res.data);
   }
 
   async saveMember() {

@@ -1,6 +1,6 @@
-<bo-home-card>
-  <bo-home-card-title> Členská databáze </bo-home-card-title>
-  <bo-home-card-content>
+<bo-card>
+  <bo-card-title> Členská databáze </bo-card-title>
+  <bo-card-content>
     <ion-searchbar
       ngModel
       (ngModelChange)="searchString.next($event)"
@@ -25,5 +25,5 @@
     <p *ngIf="!searching && members && !members.length" class="m-0 mt-2 text-center">Žádný člen nenalezen.</p>
 
     <p *ngIf="!members?.length && searching" class="m-0 mt-2 text-center">Vyhledávání&hellip;</p>
-  </bo-home-card-content>
-</bo-home-card>
+  </bo-card-content>
+</bo-card>

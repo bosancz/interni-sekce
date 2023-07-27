@@ -1,6 +1,6 @@
-<bo-home-card>
-  <bo-home-card-title>Volné akce</bo-home-card-title>
-  <bo-home-card-content>
+<bo-card>
+  <bo-card-title>Volné akce</bo-card-title>
+  <bo-card-content>
     <div class="list-container">
       <ion-list *ngIf="events.length">
         <ion-item *ngFor="let event of events" [detail]="true" [routerLink]="'/akce/' + event.id">
@@ -16,5 +16,5 @@
     </div>
 
     <p *ngIf="!events.length" class="m-0">Momentálně nejsou žádné volné akce.</p>
-  </bo-home-card-content>
-</bo-home-card>
+  </bo-card-content>
+</bo-card>

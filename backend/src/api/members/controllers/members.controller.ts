@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
+import { UserGuard } from "src/auth/guards/user.guard";
 import { Member } from "src/models/members/entities/member.entity";
 import { MembersService } from "src/models/members/services/members.service";
 import { Repository } from "typeorm";
@@ -16,6 +17,7 @@ import {
 import { CreateMemberBody, MemberResponse, UpdateMemberBody } from "../dto/member.dto";
 
 @Controller("members")
+@UseGuards(UserGuard)
 @AcController()
 @ApiTags("Members")
 export class MembersController {

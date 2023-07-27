@@ -22,3 +22,7 @@ a.clickable {
   cursor: pointer;
   color: $blue;
 }
+
+.selectable {
+  user-select: text !important;
+}

@@ -19,6 +19,9 @@ html {
   --lightGrey: #{$lightGrey};
   --white: #{$white};
 
+  --lightShade: #{$lightShade};
+  --darkShade: #{$darkShade};
+
   --blue: #{$blue};
   --lightBlue: #{$lightBlue};
   --linkBlue: #{$linkBlue};
@@ -42,6 +45,9 @@ body.dark {
   --grey: #{$grey};
   --lightGrey: #{$darkGrey};
   --white: #{$black};
+
+  --lightShade: #{$darkShade};
+  --darkShade: #{$lightShade};
 
   --blue: #{$blue};
   --lightBlue: #{$lightBlue};

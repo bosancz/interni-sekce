@@ -1,6 +1,6 @@
-<bo-home-card>
-  <bo-home-card-title>Moje akce</bo-home-card-title>
-  <bo-home-card-content>
+<bo-card>
+  <bo-card-title>Moje akce</bo-card-title>
+  <bo-card-content>
     <ion-list *ngIf="myEvents?.length !== 0">
       <ion-item *ngFor="let event of myEvents | slice : 0 : 3" [detail]="true" [routerLink]="'/akce/' + event.id">
         <ion-label>
@@ -24,5 +24,5 @@
     <p *ngIf="myEvents?.length" class="text-center m-0">
       <a routerLink="moje-akce">Zobrazit všechny moje akce</a>
     </p>
-  </bo-home-card-content>
-</bo-home-card>
+  </bo-card-content>
+</bo-card>
