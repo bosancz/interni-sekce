@@ -1,0 +1,45 @@
+<bo-card class="insurance-card">
+  <bo-card-content>
+    <div class="preview" *ngIf="insuranceCardUrl" [ngSwitch]="member?.insuranceCardFile">
+      <img *ngSwitchCase="'jpg'" [src]="insuranceCardUrl" />
+      <img *ngSwitchCase="'png'" [src]="insuranceCardUrl" />
+      <img *ngSwitchCase="'jpeg'" [src]="insuranceCardUrl" />
+      <embed *ngSwitchCase="'pdf'" [src]="insuranceCardSafeUrl" style="width: 100%" height="200" />
+      <a *ngSwitchDefault [href]="insuranceCardUrl">Stáhnout {{ member?.insuranceCardFile }}</a>
+    </div>
+    <div
+      class="upload"
+      #dropzone
+      *ngIf="insuranceCardUrl === null"
+      (drop)="onFileDrop($event, dropzone)"
+      (dragover)="$event.stopPropagation(); $event.preventDefault()"
+    >
+      <ion-button fill="clear" color="primary" (click)="fileInput.click()">Nahrát kartičku</ion-button>
+    </div>
+
+    <input
+      class="file-input"
+      type="file"
+      accept="image/jpeg,image/png,image/gif,application/pdf"
+      name="insuranceCard"
+      #fileInput
+      (change)="onFileOpen(fileInput)"
+    />
+
+    <div class="loading" *ngIf="insuranceCardUrl === undefined"><ion-skeleton-text></ion-skeleton-text></div>
+  </bo-card-content>
+
+  <bo-card-footer *ngIf="insuranceCardUrl">
+    <ion-buttons>
+      <ion-button [href]="insuranceCardUrl" color="primary" target="_blank" download>Stáhnout</ion-button>
+
+      <ion-button
+        *ngIf="member?._links?.deleteInsuranceCard?.applicable"
+        [disabled]="!member?._links?.deleteInsuranceCard?.allowed"
+        color="danger"
+        (click)="deleteCard()"
+        >Smazat</ion-button
+      >
+    </ion-buttons>
+  </bo-card-footer>
+</bo-card>

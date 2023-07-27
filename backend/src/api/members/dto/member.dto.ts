@@ -30,6 +30,7 @@ export class MemberResponse implements Member {
   @ApiPropertyOptional({ type: "enum", enum: MemberRank }) rank?: MemberRank | null;
   @ApiPropertyOptional({ type: "string" }) knownProblems?: string | null;
   @ApiPropertyOptional({ type: "string" }) allergies?: string | null;
+  @ApiPropertyOptional({ type: "string" }) insuranceCardFile?: string | null;
 
   @AcEntity(GroupResponse)
   @ApiPropertyOptional({ type: WithLinks(GroupResponse) })

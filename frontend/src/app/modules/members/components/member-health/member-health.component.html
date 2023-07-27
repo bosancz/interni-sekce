@@ -12,31 +12,5 @@
   <a *ngIf="member" [routerLink]="['/databaze', member.id, 'upravit']" fragment="zdravi">Upravit</a>
 
   <h2 class="mt-5">Kartička pojištěnce</h2>
-  <bo-card class="insurance-card">
-    <bo-card-content>
-      <img [src]="insuranceCardUrl" *ngIf="insuranceCardUrl" />
-
-      <div class="upload" *ngIf="insuranceCardUrl === null">
-        <ion-button fill="clear" color="primary">Nahrát kartičku</ion-button>
-      </div>
-
-      <div class="loading" *ngIf="insuranceCardUrl === undefined"><ion-skeleton-text></ion-skeleton-text></div>
-    </bo-card-content>
-
-    <bo-card-footer *ngIf="insuranceCardUrl">
-      <ion-buttons>
-        <ion-button
-          *ngIf="member?._links?.uploadInsuranceCard?.applicable"
-          [disabled]="!member?._links?.uploadInsuranceCard?.allowed"
-          >Změnit</ion-button
-        >
-        <ion-button
-          *ngIf="member?._links?.deleteInsuranceCard?.applicable"
-          [disabled]="!member?._links?.deleteInsuranceCard?.allowed"
-          color="danger"
-          >Smazat</ion-button
-        >
-      </ion-buttons>
-    </bo-card-footer>
-  </bo-card>
+  <bo-card-insurance-card [member]="member"></bo-card-insurance-card>
 </div>

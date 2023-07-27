@@ -22,6 +22,7 @@ import { MembersModelModule } from "./models/members/members-model.module";
 import { StatisticsModelModule } from "./models/statistics/statistics-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
 import { MongoMigrationModule } from "./mongo-migration/mongo-migration.module";
+import { FilesModule } from './models/files/files.module';
 
 const typeOrmOptions: TypeOrmModuleOptions = {
   ...Config.db,
@@ -57,6 +58,7 @@ const typeOrmOptions: TypeOrmModuleOptions = {
     RootModule,
     StatisticsModelModule,
     GoogleModelModule,
+    FilesModule,
   ],
   controllers: [UsersController],
   providers: [MailService],

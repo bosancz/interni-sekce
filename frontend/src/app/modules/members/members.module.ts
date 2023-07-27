@@ -9,6 +9,7 @@ import { MembersCreateComponent } from "./pages/members-create/members-create.co
 import { MembersEditComponent } from "./pages/members-edit/members-edit.component";
 import { MembersListComponent } from "./pages/members-list/members-list.component";
 import { MembersViewComponent } from "./pages/members-view/members-view.component";
+import { CardInsuranceCardComponent } from './components/card-insurance-card/card-insurance-card.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { MembersViewComponent } from "./pages/members-view/members-view.componen
     MemberInfoComponent,
     MemberHealthComponent,
     MemberContactsComponent,
+    CardInsuranceCardComponent,
   ],
   imports: [CommonModule, MembersRoutingModule, SharedModule],
 })

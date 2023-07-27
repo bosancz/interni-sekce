@@ -1706,6 +1706,12 @@ export interface MemberResponse {
     'allergies'?: string;
     /**
      * 
+     * @type {string}
+     * @memberof MemberResponse
+     */
+    'insuranceCardFile'?: string;
+    /**
+     * 
      * @type {GroupResponseWithLinks}
      * @memberof MemberResponse
      */
@@ -1757,19 +1763,13 @@ export interface MemberResponseLinks {
      * @type {AcLink}
      * @memberof MemberResponseLinks
      */
-    'createMember': AcLink;
+    'listContacts': AcLink;
     /**
      * 
      * @type {AcLink}
      * @memberof MemberResponseLinks
      */
-    'updateMember': AcLink;
-    /**
-     * 
-     * @type {AcLink}
-     * @memberof MemberResponseLinks
-     */
-    'deleteMember': AcLink;
+    'createContact': AcLink;
     /**
      * 
      * @type {AcLink}
@@ -1793,13 +1793,19 @@ export interface MemberResponseLinks {
      * @type {AcLink}
      * @memberof MemberResponseLinks
      */
-    'listContacts': AcLink;
+    'createMember': AcLink;
     /**
      * 
      * @type {AcLink}
      * @memberof MemberResponseLinks
      */
-    'createContact': AcLink;
+    'updateMember': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof MemberResponseLinks
+     */
+    'deleteMember': AcLink;
 }
 /**
  * 
@@ -1927,6 +1933,12 @@ export interface MemberResponseWithLinks {
      * @memberof MemberResponseWithLinks
      */
     'allergies'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberResponseWithLinks
+     */
+    'insuranceCardFile'?: string;
     /**
      * 
      * @type {GroupResponseWithLinks}
@@ -2465,6 +2477,12 @@ export interface UpdateMemberBody {
      * @memberof UpdateMemberBody
      */
     'allergies'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateMemberBody
+     */
+    'insuranceCardFile'?: string;
 }
 
 export const UpdateMemberBodyRoleEnum = {
@@ -5250,7 +5268,7 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -5560,6 +5578,48 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @param {number} id 
+         * @param {File} [file] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        uploadInsuranceCard: async (id: number, file?: File, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('uploadInsuranceCard', 'id', id)
+            const localVarPath = `/members/{id}/insurance-card`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+
+            if (file !== undefined) { 
+                localVarFormParams.append('file', file as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -5721,6 +5781,17 @@ export const MembersApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateMember(id, updateMemberBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 
+         * @param {number} id 
+         * @param {File} [file] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async uploadInsuranceCard(id: number, file?: File, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.uploadInsuranceCard(id, file, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -5866,6 +5937,16 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
          */
         updateMember(id: number, updateMemberBody: UpdateMemberBody, options?: any): AxiosPromise<void> {
             return localVarFp.updateMember(id, updateMemberBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {File} [file] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        uploadInsuranceCard(id: number, file?: File, options?: any): AxiosPromise<void> {
+            return localVarFp.uploadInsuranceCard(id, file, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -6041,6 +6122,18 @@ export class MembersApi extends BaseAPI {
      */
     public updateMember(id: number, updateMemberBody: UpdateMemberBody, options?: AxiosRequestConfig) {
         return MembersApiFp(this.configuration).updateMember(id, updateMemberBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {File} [file] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MembersApi
+     */
+    public uploadInsuranceCard(id: number, file?: File, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).uploadInsuranceCard(id, file, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
