@@ -19,6 +19,10 @@ export class GroupsService {
     return this.groupsRepository.save({ ...groupData, active: true });
   }
 
+  async updateGroup(id: number, groupData: Partial<Group>) {
+    await this.groupsRepository.update({ id }, groupData);
+  }
+
   async deleteGroup(id: number) {
     await this.groupsRepository.softDelete({ id });
   }

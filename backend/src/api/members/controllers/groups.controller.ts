@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
@@ -8,7 +20,7 @@ import { Group } from "src/models/members/entities/group.entity";
 import { GroupsService } from "src/models/members/services/groups.service";
 import { Repository } from "typeorm";
 import { GroupCreateRoute, GroupDeleteRoute, GroupEditRoute, GroupListRoute, GroupReadRoute } from "../acl/groups.acl";
-import { CreateGroupBody, GroupResponse } from "../dto/group.dto";
+import { CreateGroupBody, GroupResponse, UpdateGroupBody } from "../dto/group.dto";
 
 @Controller("groups")
 @UseGuards(UserGuard)
@@ -29,7 +41,7 @@ export class GroupsController {
 
   @Post()
   @AcLinks(GroupCreateRoute)
-  @ApiResponse({ status: 201, type: WithLinks(GroupResponse) })
+  @ApiResponse({ status: HttpStatus.CREATED, type: WithLinks(GroupResponse) })
   async createGroup(@Req() req: Request, @Body() groupData: CreateGroupBody) {
     GroupCreateRoute.canOrThrow(req, undefined);
     return this.groupsService.createGroup(groupData);
@@ -49,13 +61,14 @@ export class GroupsController {
 
   @Put(":id")
   @AcLinks(GroupEditRoute)
-  async updateGroup(@Param("id") id: number, @Req() req: Request) {
+  @ApiResponse({ status: HttpStatus.OK })
+  async updateGroup(@Param("id") id: number, @Req() req: Request, @Body() body: UpdateGroupBody) {
     const group = await this.groupsService.getGroup(id);
     if (!group) throw new NotFoundException();
 
     GroupEditRoute.canOrThrow(req, group);
 
-    // TODO:
+    await this.groupsService.updateGroup(id, req.body);
   }
 
   @Delete(":id")

@@ -1,12 +1,6 @@
 import { Component } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import {
-  ActionSheetButton,
-  ActionSheetController,
-  AlertController,
-  NavController,
-  ViewWillEnter,
-} from "@ionic/angular";
+import { ActionSheetController, AlertController, NavController, ViewWillEnter } from "@ionic/angular";
 import { GroupResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
@@ -44,37 +38,12 @@ export class GroupsListComponent implements ViewWillEnter {
 
   private async loadGroups() {
     this.groups = await this.api.members.listGroups().then((res) => res.data);
+    this.groups.sort((a, b) =>
+      (a.name ?? a.shortName).localeCompare(b.name ?? b.shortName, undefined, { numeric: true }),
+    );
   }
 
-  async openGroupMenu(group: GroupResponseWithLinks) {
-    const buttons: ActionSheetButton[] = [];
-
-    if (group._links.updateGroup.allowed) {
-      buttons.push({
-        text: "Upravit",
-        icon: "create-outline",
-        handler: () => this.navController.navigateForward([group.id], { relativeTo: this.route }),
-      });
-    }
-
-    if (group._links.deleteGroup.allowed) {
-      buttons.push({
-        text: "Smazat",
-        role: "destructive",
-        icon: "trash-outline",
-        handler: () => this.deleteGroup(group),
-      });
-    }
-
-    const sheet = await this.actionSheetController.create({
-      header: group.name ?? group.shortName ?? `Oddíl ${group.id}`,
-      buttons,
-    });
-
-    sheet.present();
-  }
-
-  private async deleteGroup(group: GroupResponseWithLinks) {
+  async deleteGroup(group: GroupResponseWithLinks) {
     const alert = await this.alertController.create({
       header: `Smazat ${group.name ?? group.id}?`,
       buttons: [

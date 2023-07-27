@@ -14,3 +14,8 @@ export class CreateGroupBody implements Pick<Group, "shortName" | "name"> {
   @ApiProperty() @IsString() shortName!: string;
   @ApiPropertyOptional({ type: "string" }) @IsString() @IsOptional() name!: string | null;
 }
+
+export class UpdateGroupBody implements Partial<Pick<Group, "shortName" | "name">> {
+  @ApiProperty() @IsString() shortName!: string;
+  @ApiPropertyOptional({ type: "string" }) @IsString() @IsOptional() name!: string | null;
+}

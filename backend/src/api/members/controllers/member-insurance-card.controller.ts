@@ -81,7 +81,6 @@ export class MemberInsuranceCardController {
     @Param("id") memberId: number,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log("saving", file);
     const member = await this.membersService.getMember(memberId);
     if (!member) throw new NotFoundException("Member not found");
 
@@ -94,7 +93,6 @@ export class MemberInsuranceCardController {
       await this.membersService.updateMember(member.id, { insuranceCardFile: ext });
 
       await this.filesService.saveFile(path, file.buffer);
-      console.log("saved");
     } catch (e) {
       this.logger.error(e);
       this.filesService.deleteFile(path).catch(() => {});

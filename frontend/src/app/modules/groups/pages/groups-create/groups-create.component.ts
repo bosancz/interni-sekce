@@ -16,8 +16,8 @@ export class GroupsCreateComponent {
 
     const groupData = form.value;
 
-    const group = await this.api.members.createGroup(groupData).then((res) => res.data);
+    await this.api.members.createGroup(groupData);
 
-    this.navController.navigateForward(["..", group.id], { relativeTo: this.route, replaceUrl: true });
+    this.navController.back();
   }
 }
