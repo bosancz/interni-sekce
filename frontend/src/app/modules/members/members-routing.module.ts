@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
-import { MemberContactsComponent } from "./components/member-contacts/member-contacts.component";
+import MemberContactsComponent from "./components/member-contacts/member-contacts.component";
 import { MemberHealthComponent } from "./components/member-health/member-health.component";
 import { MemberInfoComponent } from "./components/member-info/member-info.component";
 import { MembersEditComponent } from "./pages/members-edit/members-edit.component";

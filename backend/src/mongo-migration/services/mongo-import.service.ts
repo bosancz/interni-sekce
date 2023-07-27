@@ -9,7 +9,7 @@ import { EventExpense, EventExpenseType } from "src/models/events/entities/event
 import { EventGroup } from "src/models/events/entities/event-group.entity";
 import { Event, EventStatus } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
-import { MemberContact, MemberContactType } from "src/models/members/entities/member-contacts.entity";
+import { MemberContact, MemberContactType } from "src/models/members/entities/member-contact.entity";
 import { Member, MemberRank, MemberRole, MembershipStatus } from "src/models/members/entities/member.entity";
 import { User, UserRoles } from "src/models/users/entities/user.entity";
 import { EntityManager } from "typeorm";

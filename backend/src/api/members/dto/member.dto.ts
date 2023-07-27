@@ -4,7 +4,7 @@ import { IsNumber, IsOptional, IsString } from "class-validator";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
-import { MemberContact } from "src/models/members/entities/member-contacts.entity";
+import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member, MemberRank, MemberRole, MembershipStatus } from "src/models/members/entities/member.entity";
 import { GroupResponse } from "./group.dto";
 

@@ -2,7 +2,7 @@ import { EventAttendee } from "src/models/events/entities/event-attendee.entity"
 import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Group } from "./group.entity";
 import { MemberAchievement } from "./member-achievements.entity";
-import { MemberContact } from "./member-contacts.entity";
+import { MemberContact } from "./member-contact.entity";
 
 export enum MemberRole {
   "dite" = "dite",

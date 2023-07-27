@@ -296,6 +296,31 @@ export interface CPVEventResponseWithLinks {
 /**
  * 
  * @export
+ * @interface CreateContactBody
+ */
+export interface CreateContactBody {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateContactBody
+     */
+    'title': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateContactBody
+     */
+    'type': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateContactBody
+     */
+    'contact': string;
+}
+/**
+ * 
+ * @export
  * @interface CreateGroupBody
  */
 export interface CreateGroupBody {
@@ -1491,6 +1516,71 @@ export interface LoginSendLinkBody {
 /**
  * 
  * @export
+ * @interface MemberContactResponseLinks
+ */
+export interface MemberContactResponseLinks {
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof MemberContactResponseLinks
+     */
+    'deleteContact': AcLink;
+}
+/**
+ * 
+ * @export
+ * @interface MemberContactResponseWithLinks
+ */
+export interface MemberContactResponseWithLinks {
+    /**
+     * 
+     * @type {number}
+     * @memberof MemberContactResponseWithLinks
+     */
+    'id': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof MemberContactResponseWithLinks
+     */
+    'memberId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberContactResponseWithLinks
+     */
+    'title': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberContactResponseWithLinks
+     */
+    'type': MemberContactResponseWithLinksTypeEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberContactResponseWithLinks
+     */
+    'contact': string;
+    /**
+     * 
+     * @type {MemberContactResponseLinks}
+     * @memberof MemberContactResponseWithLinks
+     */
+    '_links': MemberContactResponseLinks;
+}
+
+export const MemberContactResponseWithLinksTypeEnum = {
+    Mobile: 'mobile',
+    Email: 'email',
+    Other: 'other'
+} as const;
+
+export type MemberContactResponseWithLinksTypeEnum = typeof MemberContactResponseWithLinksTypeEnum[keyof typeof MemberContactResponseWithLinksTypeEnum];
+
+/**
+ * 
+ * @export
  * @interface MemberResponse
  */
 export interface MemberResponse {
@@ -1698,6 +1788,18 @@ export interface MemberResponseLinks {
      * @memberof MemberResponseLinks
      */
     'deleteInsuranceCard': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof MemberResponseLinks
+     */
+    'listContacts': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof MemberResponseLinks
+     */
+    'createContact': AcLink;
 }
 /**
  * 
@@ -4953,6 +5055,45 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
     return {
         /**
          * 
+         * @param {number} id 
+         * @param {CreateContactBody} createContactBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createContact: async (id: number, createContactBody: CreateContactBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('createContact', 'id', id)
+            // verify required parameter 'createContactBody' is not null or undefined
+            assertParamExists('createContact', 'createContactBody', createContactBody)
+            const localVarPath = `/members/{id}/contacts`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createContactBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {CreateGroupBody} createGroupBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -5015,6 +5156,43 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(createMemberBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {number} contactId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteContact: async (id: number, contactId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteContact', 'id', id)
+            // verify required parameter 'contactId' is not null or undefined
+            assertParamExists('deleteContact', 'contactId', contactId)
+            const localVarPath = `/members/{id}/contacts/{contactId}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"contactId"}}`, encodeURIComponent(String(contactId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -5221,6 +5399,39 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listContacts: async (id: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('listContacts', 'id', id)
+            const localVarPath = `/members/{id}/contacts`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5361,6 +5572,17 @@ export const MembersApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {number} id 
+         * @param {CreateContactBody} createContactBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createContact(id: number, createContactBody: CreateContactBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MemberContactResponseWithLinks>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createContact(id, createContactBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @param {CreateGroupBody} createGroupBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -5377,6 +5599,17 @@ export const MembersApiFp = function(configuration?: Configuration) {
          */
         async createMember(createMemberBody: CreateMemberBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MemberResponseWithLinks>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createMember(createMemberBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {number} contactId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteContact(id: number, contactId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MemberContactResponseWithLinks>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteContact(id, contactId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5441,6 +5674,16 @@ export const MembersApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listContacts(id: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MemberContactResponseWithLinks>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listContacts(id, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5490,6 +5733,16 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * 
+         * @param {number} id 
+         * @param {CreateContactBody} createContactBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createContact(id: number, createContactBody: CreateContactBody, options?: any): AxiosPromise<MemberContactResponseWithLinks> {
+            return localVarFp.createContact(id, createContactBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {CreateGroupBody} createGroupBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -5505,6 +5758,16 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
          */
         createMember(createMemberBody: CreateMemberBody, options?: any): AxiosPromise<MemberResponseWithLinks> {
             return localVarFp.createMember(createMemberBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {number} id 
+         * @param {number} contactId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteContact(id: number, contactId: number, options?: any): AxiosPromise<MemberContactResponseWithLinks> {
+            return localVarFp.deleteContact(id, contactId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -5562,6 +5825,15 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @param {number} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listContacts(id: number, options?: any): AxiosPromise<Array<MemberContactResponseWithLinks>> {
+            return localVarFp.listContacts(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -5607,6 +5879,18 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
 export class MembersApi extends BaseAPI {
     /**
      * 
+     * @param {number} id 
+     * @param {CreateContactBody} createContactBody 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MembersApi
+     */
+    public createContact(id: number, createContactBody: CreateContactBody, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).createContact(id, createContactBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @param {CreateGroupBody} createGroupBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -5625,6 +5909,18 @@ export class MembersApi extends BaseAPI {
      */
     public createMember(createMemberBody: CreateMemberBody, options?: AxiosRequestConfig) {
         return MembersApiFp(this.configuration).createMember(createMemberBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {number} contactId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MembersApi
+     */
+    public deleteContact(id: number, contactId: number, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).deleteContact(id, contactId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -5691,6 +5987,17 @@ export class MembersApi extends BaseAPI {
      */
     public getMember(id: number, options?: AxiosRequestConfig) {
         return MembersApiFp(this.configuration).getMember(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {number} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MembersApi
+     */
+    public listContacts(id: number, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).listContacts(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
