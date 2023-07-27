@@ -1,21 +1,24 @@
-import { DatePipe } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
+import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter } from "@ionic/angular";
-import { UntilDestroy } from "@ngneat/until-destroy";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
-import { GroupResponseWithLinks, MemberResponse, MemberResponseRankEnum, MemberResponseWithLinks } from "src/app/api";
+import { tap } from "rxjs/operators";
+import { GroupResponseWithLinks, MemberResponseWithLinks, MemberRolesEnum, MembershipStatesEnum } from "src/app/api";
+import { MemberRoles } from "src/app/config/member-roles";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { MembershipStates } from "../../../../config/membership-states";
 
 type MemberWithSearchString = MemberResponseWithLinks & { searchString: string };
 
 interface TableFilter {
   search?: string;
   groups?: number[];
-  ranks?: MemberResponseRankEnum[];
-  status?: ("active" | "inactive")[];
+  roles?: MemberRolesEnum[];
+  membership?: MembershipStatesEnum[];
 }
 
 @UntilDestroy()
@@ -24,17 +27,18 @@ interface TableFilter {
   templateUrl: "./members-list.component.html",
   styleUrls: ["./members-list.component.scss"],
 })
-export class MembersListComponent implements OnInit, ViewWillEnter {
+export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnter {
   members?: MemberWithSearchString[];
   groups?: GroupResponseWithLinks[];
-  ranks = MemberResponseRankEnum;
+  roles = MemberRoles;
+  membershipStates = MembershipStates;
 
   filteredMembers?: MemberWithSearchString[];
 
   loadingRows = new Array(10).fill(null);
 
   filter: TableFilter = {
-    status: ["active"],
+    membership: ["clen"],
   };
 
   actions: Action[] = [
@@ -46,15 +50,22 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     },
   ];
 
+  @ViewChild("filterForm") filterForm?: NgForm;
+
   constructor(
     private api: ApiService,
     private route: ActivatedRoute,
     private router: Router,
-    private datePipe: DatePipe,
     private toasts: ToastService,
   ) {}
 
   ngOnInit() {}
+
+  ngAfterViewInit(): void {
+    this.filterForm?.valueChanges
+      ?.pipe(untilDestroyed(this), tap(console.log))
+      .subscribe((filter) => this.filterMembers({ ...this.filter, ...filter }));
+  }
 
   ionViewWillEnter() {
     this.loadMembers();
@@ -85,11 +96,10 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
       return { ...member, searchString };
     });
 
-    this.sortMembers(members);
-
     this.members = members;
 
-    this.filterData(this.filter);
+    this.sortMembers();
+    this.filterMembers(this.filter);
   }
 
   private async loadGroups() {
@@ -100,7 +110,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
     this.router.navigate(["pridat"], { relativeTo: this.route });
   }
 
-  public filterData(filter: TableFilter) {
+  public filterMembers(filter: TableFilter) {
     if (!this.members) {
       this.filteredMembers = [];
       return;
@@ -112,28 +122,28 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 
     this.filteredMembers = this.members.filter((member) => {
       if (search_re && !search_re.test(member.searchString)) return false;
-      if (filter.ranks && filter.ranks.length && (!member.rank || filter.ranks.indexOf(member.rank) === -1))
+      if (filter.roles && filter.roles.length && (!member.role || filter.roles.indexOf(member.role) === -1))
         return false;
       if (filter.groups && filter.groups.length && filter.groups.indexOf(member.groupId) === -1) return false;
-      if (filter.status && filter.status.length && filter.status.indexOf(member.active ? "active" : "inactive") === -1)
+      if (filter.membership && filter.membership.length && filter.membership.indexOf(member.membership) === -1)
         return false;
 
       return true;
     });
   }
 
-  private sortMembers(members: MemberResponse[]): void {
+  private sortMembers(): void {
     // const groupIndex = Object.keys(this.groups);
     // const roleIndex = Object.keys(this.roles);
     // FIXME: sort by group and role
 
-    const roleOrder: MemberResponseRankEnum[] = ["vedouci", "instruktor", "dite"];
+    const roleOrder: MemberRolesEnum[] = ["vedouci", "instruktor", "dite"];
 
-    members.sort(
+    this.members?.sort(
       (a, b) =>
         Number(b.active) - Number(a.active) ||
         (a.group && b.group && a.group.shortName.localeCompare(b.group.shortName)) ||
-        (a.rank && b.rank && roleOrder.indexOf(a.rank) - roleOrder.indexOf(b.rank)) ||
+        (a.role && b.role && roleOrder.indexOf(a.role) - roleOrder.indexOf(b.role)) ||
         (a.nickname && b.nickname && a.nickname.localeCompare(b.nickname)) ||
         0,
     );

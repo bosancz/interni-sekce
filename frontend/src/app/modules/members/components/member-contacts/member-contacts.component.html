@@ -3,7 +3,7 @@
 <ion-list>
   <ion-item *ngFor="let contact of contacts">
     <ion-label>
-      <h3>{{ contact.title }} ({{ contact.type }})</h3>
+      <h3>{{ contact.title }} ({{ contactTypes[contact.type].title }})</h3>
       <p>{{ contact.contact }}</p>
     </ion-label>
 

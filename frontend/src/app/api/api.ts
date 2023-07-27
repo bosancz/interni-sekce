@@ -394,10 +394,10 @@ export interface EventAttendeeResponse {
     'memberId': number;
     /**
      * 
-     * @type {string}
+     * @type {EventAttendeeTypeEnum}
      * @memberof EventAttendeeResponse
      */
-    'type': EventAttendeeResponseTypeEnum;
+    'type': EventAttendeeTypeEnum;
     /**
      * 
      * @type {object}
@@ -412,12 +412,6 @@ export interface EventAttendeeResponse {
     'member'?: MemberResponse;
 }
 
-export const EventAttendeeResponseTypeEnum = {
-    Attendee: 'attendee',
-    Leader: 'leader'
-} as const;
-
-export type EventAttendeeResponseTypeEnum = typeof EventAttendeeResponseTypeEnum[keyof typeof EventAttendeeResponseTypeEnum];
 
 /**
  * 
@@ -458,10 +452,10 @@ export interface EventAttendeeResponseWithLinks {
     'memberId': number;
     /**
      * 
-     * @type {string}
+     * @type {EventAttendeeTypeEnum}
      * @memberof EventAttendeeResponseWithLinks
      */
-    'type': EventAttendeeResponseWithLinksTypeEnum;
+    'type': EventAttendeeTypeEnum;
     /**
      * 
      * @type {object}
@@ -482,12 +476,20 @@ export interface EventAttendeeResponseWithLinks {
     '_links': EventAttendeeResponseLinks;
 }
 
-export const EventAttendeeResponseWithLinksTypeEnum = {
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const EventAttendeeTypeEnum = {
     Attendee: 'attendee',
     Leader: 'leader'
 } as const;
 
-export type EventAttendeeResponseWithLinksTypeEnum = typeof EventAttendeeResponseWithLinksTypeEnum[keyof typeof EventAttendeeResponseWithLinksTypeEnum];
+export type EventAttendeeTypeEnum = typeof EventAttendeeTypeEnum[keyof typeof EventAttendeeTypeEnum];
+
 
 /**
  * 
@@ -546,10 +548,10 @@ export interface EventExpenseResponse {
     'amount'?: number;
     /**
      * 
-     * @type {string}
+     * @type {EventExpenseTypesEnum}
      * @memberof EventExpenseResponse
      */
-    'type'?: EventExpenseResponseTypeEnum;
+    'type'?: EventExpenseTypesEnum;
     /**
      * 
      * @type {string}
@@ -564,15 +566,6 @@ export interface EventExpenseResponse {
     'event'?: object;
 }
 
-export const EventExpenseResponseTypeEnum = {
-    Food: 'food',
-    Transport: 'transport',
-    Material: 'material',
-    Accommodation: 'accommodation',
-    Other: 'other'
-} as const;
-
-export type EventExpenseResponseTypeEnum = typeof EventExpenseResponseTypeEnum[keyof typeof EventExpenseResponseTypeEnum];
 
 /**
  * 
@@ -619,10 +612,10 @@ export interface EventExpenseResponseWithLinks {
     'amount'?: number;
     /**
      * 
-     * @type {string}
+     * @type {EventExpenseTypesEnum}
      * @memberof EventExpenseResponseWithLinks
      */
-    'type'?: EventExpenseResponseWithLinksTypeEnum;
+    'type'?: EventExpenseTypesEnum;
     /**
      * 
      * @type {string}
@@ -643,7 +636,14 @@ export interface EventExpenseResponseWithLinks {
     '_links': EventExpenseResponseLinks;
 }
 
-export const EventExpenseResponseWithLinksTypeEnum = {
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const EventExpenseTypesEnum = {
     Food: 'food',
     Transport: 'transport',
     Material: 'material',
@@ -651,7 +651,8 @@ export const EventExpenseResponseWithLinksTypeEnum = {
     Other: 'other'
 } as const;
 
-export type EventExpenseResponseWithLinksTypeEnum = typeof EventExpenseResponseWithLinksTypeEnum[keyof typeof EventExpenseResponseWithLinksTypeEnum];
+export type EventExpenseTypesEnum = typeof EventExpenseTypesEnum[keyof typeof EventExpenseTypesEnum];
+
 
 /**
  * 
@@ -673,10 +674,10 @@ export interface EventResponse {
     'name': string;
     /**
      * 
-     * @type {string}
+     * @type {EventStatesEnum}
      * @memberof EventResponse
      */
-    'status': EventResponseStatusEnum;
+    'status': EventStatesEnum;
     /**
      * 
      * @type {string}
@@ -793,14 +794,6 @@ export interface EventResponse {
     'leaders'?: Array<MemberResponse>;
 }
 
-export const EventResponseStatusEnum = {
-    Draft: 'draft',
-    Pending: 'pending',
-    Public: 'public',
-    Cancelled: 'cancelled'
-} as const;
-
-export type EventResponseStatusEnum = typeof EventResponseStatusEnum[keyof typeof EventResponseStatusEnum];
 
 /**
  * 
@@ -937,10 +930,10 @@ export interface EventResponseWithLinks {
     'name': string;
     /**
      * 
-     * @type {string}
+     * @type {EventStatesEnum}
      * @memberof EventResponseWithLinks
      */
-    'status': EventResponseWithLinksStatusEnum;
+    'status': EventStatesEnum;
     /**
      * 
      * @type {string}
@@ -1063,14 +1056,22 @@ export interface EventResponseWithLinks {
     '_links': EventResponseLinks;
 }
 
-export const EventResponseWithLinksStatusEnum = {
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const EventStatesEnum = {
     Draft: 'draft',
     Pending: 'pending',
     Public: 'public',
     Cancelled: 'cancelled'
 } as const;
 
-export type EventResponseWithLinksStatusEnum = typeof EventResponseWithLinksStatusEnum[keyof typeof EventResponseWithLinksStatusEnum];
+export type EventStatesEnum = typeof EventStatesEnum[keyof typeof EventStatesEnum];
+
 
 /**
  * 
@@ -1552,10 +1553,10 @@ export interface MemberContactResponseWithLinks {
     'title': string;
     /**
      * 
-     * @type {string}
+     * @type {MemberContactTypesEnum}
      * @memberof MemberContactResponseWithLinks
      */
-    'type': MemberContactResponseWithLinksTypeEnum;
+    'type': MemberContactTypesEnum;
     /**
      * 
      * @type {string}
@@ -1570,13 +1571,36 @@ export interface MemberContactResponseWithLinks {
     '_links': MemberContactResponseLinks;
 }
 
-export const MemberContactResponseWithLinksTypeEnum = {
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const MemberContactTypesEnum = {
     Mobile: 'mobile',
     Email: 'email',
     Other: 'other'
 } as const;
 
-export type MemberContactResponseWithLinksTypeEnum = typeof MemberContactResponseWithLinksTypeEnum[keyof typeof MemberContactResponseWithLinksTypeEnum];
+export type MemberContactTypesEnum = typeof MemberContactTypesEnum[keyof typeof MemberContactTypesEnum];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const MemberRanksEnum = {
+    Dite: 'dite',
+    Instruktor: 'instruktor',
+    Vedouci: 'vedouci'
+} as const;
+
+export type MemberRanksEnum = typeof MemberRanksEnum[keyof typeof MemberRanksEnum];
+
 
 /**
  * 
@@ -1604,10 +1628,10 @@ export interface MemberResponse {
     'nickname': string;
     /**
      * 
-     * @type {string}
+     * @type {MemberRolesEnum}
      * @memberof MemberResponse
      */
-    'role': MemberResponseRoleEnum;
+    'role': MemberRolesEnum;
     /**
      * 
      * @type {boolean}
@@ -1616,10 +1640,10 @@ export interface MemberResponse {
     'active': boolean;
     /**
      * 
-     * @type {string}
+     * @type {MembershipStatesEnum}
      * @memberof MemberResponse
      */
-    'membership': MemberResponseMembershipEnum;
+    'membership': MembershipStatesEnum;
     /**
      * 
      * @type {string}
@@ -1688,10 +1712,10 @@ export interface MemberResponse {
     'email'?: string;
     /**
      * 
-     * @type {string}
+     * @type {MemberRanksEnum}
      * @memberof MemberResponse
      */
-    'rank'?: MemberResponseRankEnum;
+    'rank'?: MemberRanksEnum;
     /**
      * 
      * @type {string}
@@ -1730,27 +1754,6 @@ export interface MemberResponse {
     'achievements'?: object;
 }
 
-export const MemberResponseRoleEnum = {
-    Dite: 'dite',
-    Instruktor: 'instruktor',
-    Vedouci: 'vedouci'
-} as const;
-
-export type MemberResponseRoleEnum = typeof MemberResponseRoleEnum[keyof typeof MemberResponseRoleEnum];
-export const MemberResponseMembershipEnum = {
-    Clen: 'clen',
-    Neclen: 'neclen',
-    Pozastaveno: 'pozastaveno'
-} as const;
-
-export type MemberResponseMembershipEnum = typeof MemberResponseMembershipEnum[keyof typeof MemberResponseMembershipEnum];
-export const MemberResponseRankEnum = {
-    Dite: 'dite',
-    Instruktor: 'instruktor',
-    Vedouci: 'vedouci'
-} as const;
-
-export type MemberResponseRankEnum = typeof MemberResponseRankEnum[keyof typeof MemberResponseRankEnum];
 
 /**
  * 
@@ -1833,10 +1836,10 @@ export interface MemberResponseWithLinks {
     'nickname': string;
     /**
      * 
-     * @type {string}
+     * @type {MemberRolesEnum}
      * @memberof MemberResponseWithLinks
      */
-    'role': MemberResponseWithLinksRoleEnum;
+    'role': MemberRolesEnum;
     /**
      * 
      * @type {boolean}
@@ -1845,10 +1848,10 @@ export interface MemberResponseWithLinks {
     'active': boolean;
     /**
      * 
-     * @type {string}
+     * @type {MembershipStatesEnum}
      * @memberof MemberResponseWithLinks
      */
-    'membership': MemberResponseWithLinksMembershipEnum;
+    'membership': MembershipStatesEnum;
     /**
      * 
      * @type {string}
@@ -1917,10 +1920,10 @@ export interface MemberResponseWithLinks {
     'email'?: string;
     /**
      * 
-     * @type {string}
+     * @type {MemberRanksEnum}
      * @memberof MemberResponseWithLinks
      */
-    'rank'?: MemberResponseWithLinksRankEnum;
+    'rank'?: MemberRanksEnum;
     /**
      * 
      * @type {string}
@@ -1965,27 +1968,21 @@ export interface MemberResponseWithLinks {
     '_links': MemberResponseLinks;
 }
 
-export const MemberResponseWithLinksRoleEnum = {
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const MemberRolesEnum = {
     Dite: 'dite',
     Instruktor: 'instruktor',
     Vedouci: 'vedouci'
 } as const;
 
-export type MemberResponseWithLinksRoleEnum = typeof MemberResponseWithLinksRoleEnum[keyof typeof MemberResponseWithLinksRoleEnum];
-export const MemberResponseWithLinksMembershipEnum = {
-    Clen: 'clen',
-    Neclen: 'neclen',
-    Pozastaveno: 'pozastaveno'
-} as const;
+export type MemberRolesEnum = typeof MemberRolesEnum[keyof typeof MemberRolesEnum];
 
-export type MemberResponseWithLinksMembershipEnum = typeof MemberResponseWithLinksMembershipEnum[keyof typeof MemberResponseWithLinksMembershipEnum];
-export const MemberResponseWithLinksRankEnum = {
-    Dite: 'dite',
-    Instruktor: 'instruktor',
-    Vedouci: 'vedouci'
-} as const;
-
-export type MemberResponseWithLinksRankEnum = typeof MemberResponseWithLinksRankEnum[keyof typeof MemberResponseWithLinksRankEnum];
 
 /**
  * 
@@ -2012,6 +2009,21 @@ export interface MembersReportResponse {
      */
     'ages': { [key: string]: { [key: string]: number; }; };
 }
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const MembershipStatesEnum = {
+    Clen: 'clen',
+    Neclen: 'neclen',
+    Pozastaveno: 'pozastaveno'
+} as const;
+
+export type MembershipStatesEnum = typeof MembershipStatesEnum[keyof typeof MembershipStatesEnum];
+
+
 /**
  * 
  * @export
@@ -2396,10 +2408,10 @@ export interface UpdateMemberBody {
     'nickname'?: string;
     /**
      * 
-     * @type {string}
+     * @type {MemberRolesEnum}
      * @memberof UpdateMemberBody
      */
-    'role'?: UpdateMemberBodyRoleEnum;
+    'role'?: MemberRolesEnum;
     /**
      * 
      * @type {boolean}
@@ -2408,10 +2420,10 @@ export interface UpdateMemberBody {
     'active'?: boolean;
     /**
      * 
-     * @type {string}
+     * @type {MembershipStatesEnum}
      * @memberof UpdateMemberBody
      */
-    'membership'?: UpdateMemberBodyMembershipEnum;
+    'membership'?: MembershipStatesEnum;
     /**
      * 
      * @type {string}
@@ -2480,10 +2492,10 @@ export interface UpdateMemberBody {
     'email'?: string;
     /**
      * 
-     * @type {string}
+     * @type {MemberRanksEnum}
      * @memberof UpdateMemberBody
      */
-    'rank'?: UpdateMemberBodyRankEnum;
+    'rank'?: MemberRanksEnum;
     /**
      * 
      * @type {string}
@@ -2504,27 +2516,6 @@ export interface UpdateMemberBody {
     'insuranceCardFile'?: string;
 }
 
-export const UpdateMemberBodyRoleEnum = {
-    Dite: 'dite',
-    Instruktor: 'instruktor',
-    Vedouci: 'vedouci'
-} as const;
-
-export type UpdateMemberBodyRoleEnum = typeof UpdateMemberBodyRoleEnum[keyof typeof UpdateMemberBodyRoleEnum];
-export const UpdateMemberBodyMembershipEnum = {
-    Clen: 'clen',
-    Neclen: 'neclen',
-    Pozastaveno: 'pozastaveno'
-} as const;
-
-export type UpdateMemberBodyMembershipEnum = typeof UpdateMemberBodyMembershipEnum[keyof typeof UpdateMemberBodyMembershipEnum];
-export const UpdateMemberBodyRankEnum = {
-    Dite: 'dite',
-    Instruktor: 'instruktor',
-    Vedouci: 'vedouci'
-} as const;
-
-export type UpdateMemberBodyRankEnum = typeof UpdateMemberBodyRankEnum[keyof typeof UpdateMemberBodyRankEnum];
 
 /**
  * 
@@ -2653,10 +2644,10 @@ export interface UserResponseWithLinks {
     'loginCodeExp'?: string;
     /**
      * 
-     * @type {Array<string>}
+     * @type {Array<UserRolesEnum>}
      * @memberof UserResponseWithLinks
      */
-    'roles'?: Array<UserResponseWithLinksRolesEnum>;
+    'roles'?: Array<UserRolesEnum>;
     /**
      * 
      * @type {MemberResponseWithLinks}
@@ -2670,14 +2661,20 @@ export interface UserResponseWithLinks {
      */
     '_links': UserResponseLinks;
 }
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
 
-export const UserResponseWithLinksRolesEnum = {
+export const UserRolesEnum = {
     Admin: 'admin',
     Revizor: 'revizor',
     Program: 'program'
 } as const;
 
-export type UserResponseWithLinksRolesEnum = typeof UserResponseWithLinksRolesEnum[keyof typeof UserResponseWithLinksRolesEnum];
+export type UserRolesEnum = typeof UserRolesEnum[keyof typeof UserRolesEnum];
+
 
 /**
  * 
@@ -5498,10 +5495,13 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @param {number} [group] 
+         * @param {string} [search] 
+         * @param {number} [limit] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMembers: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listMembers: async (group?: number, search?: string, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/members`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5513,6 +5513,18 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (group !== undefined) {
+                localVarQueryParameter['group'] = group;
+            }
+
+            if (search !== undefined) {
+                localVarQueryParameter['search'] = search;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
 
 
     
@@ -5778,11 +5790,14 @@ export const MembersApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {number} [group] 
+         * @param {string} [search] 
+         * @param {number} [limit] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listMembers(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MemberResponseWithLinks>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listMembers(options);
+        async listMembers(group?: number, search?: string, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MemberResponseWithLinks>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listMembers(group, search, limit, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5939,11 +5954,14 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @param {number} [group] 
+         * @param {string} [search] 
+         * @param {number} [limit] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMembers(options?: any): AxiosPromise<Array<MemberResponseWithLinks>> {
-            return localVarFp.listMembers(options).then((request) => request(axios, basePath));
+        listMembers(group?: number, search?: string, limit?: number, options?: any): AxiosPromise<Array<MemberResponseWithLinks>> {
+            return localVarFp.listMembers(group, search, limit, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -6120,12 +6138,15 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
+     * @param {number} [group] 
+     * @param {string} [search] 
+     * @param {number} [limit] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
      */
-    public listMembers(options?: AxiosRequestConfig) {
-        return MembersApiFp(this.configuration).listMembers(options).then((request) => request(this.axios, this.basePath));
+    public listMembers(group?: number, search?: string, limit?: number, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).listMembers(group, search, limit, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

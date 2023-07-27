@@ -2,7 +2,8 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { MemberResponse, UserResponseWithLinks, UserResponseWithLinksRolesEnum } from "src/app/api";
+import { MemberResponse, UserResponseWithLinks } from "src/app/api";
+import { UserRoles } from "src/app/config/user-roles";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -16,11 +17,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 export class UsersEditComponent implements OnInit {
   user?: UserResponseWithLinks;
 
-  roles = Object.entries(UserResponseWithLinksRolesEnum).map(([title, name]) => ({
-    name,
-    title,
-    active: false,
-  }));
+  roles = UserRoles;
 
   members: MemberResponse[] = [];
 
@@ -55,11 +52,6 @@ export class UsersEditComponent implements OnInit {
   // DB interaction
   async loadUser(userId: number) {
     this.user = await this.api.users.getUser(userId).then((res) => res.data);
-    this.updateRoles(this.user);
-  }
-
-  updateRoles(user: UserResponseWithLinks): void {
-    this.roles.forEach((role) => (role.active = user.roles?.includes(role.name) ?? false));
   }
 
   async loadMembers() {
@@ -78,9 +70,5 @@ export class UsersEditComponent implements OnInit {
     this.toastService.toast("Uloženo.");
 
     this.router.navigate(["../"], { relativeTo: this.route, replaceUrl: true });
-  }
-
-  hasRole(name: string) {
-    return this.roles.some((role) => role.name === name && role.active === true);
   }
 }

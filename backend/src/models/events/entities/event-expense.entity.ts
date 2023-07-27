@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Event } from "./event.entity";
 
-export enum EventExpenseType {
+export enum EventExpenseTypes {
   "food" = "food",
   "transport" = "transport",
   "material" = "material",
@@ -22,6 +22,6 @@ export class EventExpense {
   event?: Event;
 
   @Column({ type: "numeric" }) amount!: number | null;
-  @Column({ type: "enum", enum: EventExpenseType }) type!: EventExpenseType | null;
+  @Column({ type: "enum", enum: EventExpenseTypes }) type!: EventExpenseTypes | null;
   @Column({ type: "text" }) description!: string | null;
 }

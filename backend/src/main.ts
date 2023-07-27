@@ -18,7 +18,9 @@ async function bootstrap() {
 
   app.setGlobalPrefix(Config.server.baseDir + "/api");
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, transform: true, transformOptions: { enableImplicitConversion: true } }),
+  );
 
   if (!Config.production) {
     // make JSONs nice for debugging

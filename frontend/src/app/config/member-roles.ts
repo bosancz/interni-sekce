@@ -1,23 +1,21 @@
-export interface MemberRole {
+import { MemberRolesEnum } from "../api";
+
+export interface MemberRoleMetadata {
   title: string;
   genitiv: string;
 }
 
-export type MemberRoleID = keyof typeof MemberRoles;
-
-const asMemberRoles = <T>(value: { [key in keyof T]: MemberRole }) => value;
-
-export const MemberRoles = asMemberRoles({
-  "dítě": {
+export const MemberRoles: { [role in MemberRolesEnum]: MemberRoleMetadata } = {
+  dite: {
     title: "dítě",
-    genitiv: "dětí"
+    genitiv: "dětí",
   },
-  "instruktor": {
+  instruktor: {
     title: "instruktor",
-    genitiv: "instruktorů"
+    genitiv: "instruktorů",
   },
-  "vedoucí": {
+  vedouci: {
     title: "vedoucí",
-    genitiv: "vedoucích"
-  }
-});
+    genitiv: "vedoucích",
+  },
+};

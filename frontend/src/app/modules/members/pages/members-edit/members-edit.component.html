@@ -65,8 +65,8 @@
         <ion-item>
           <ion-label position="floating">Členství</ion-label>
           <ion-select name="membership" [ngModel]="member?.membership" required>
-            <ion-select-option *ngFor="let item of membershipTypes | keyvalue" [value]="item.value">
-              {{ item.key }}
+            <ion-select-option *ngFor="let item of membershipStates | keyvalue" [value]="item.key">
+              {{ item.value.title }}
             </ion-select-option>
           </ion-select>
         </ion-item>

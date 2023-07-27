@@ -7,7 +7,7 @@ import { Album } from "src/models/albums/entities/album.entity";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";
 import { EventGroup } from "src/models/events/entities/event-group.entity";
-import { Event, EventStatus } from "src/models/events/entities/event.entity";
+import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { EventAttendeeResponse } from "./event-attendee.dto";
 import { EventExpenseResponse } from "./event-expense.dto";
@@ -15,7 +15,7 @@ import { EventExpenseResponse } from "./event-expense.dto";
 export class EventResponse implements Event {
   @ApiProperty() id!: number;
   @ApiProperty() name!: string;
-  @ApiProperty({ enum: EventStatus }) status!: EventStatus;
+  @ApiProperty({ enum: EventStates, enumName: "EventStatesEnum" }) status!: EventStates;
   @ApiProperty() dateFrom!: string;
   @ApiProperty() dateTill!: string;
   @ApiProperty() leadersEvent!: boolean;
@@ -48,7 +48,7 @@ export class EventCreateBody implements Pick<Event, "name" | "description" | "da
 
 export class EventUpdateBody {
   @ApiPropertyOptional() @IsOptional() @IsString() name?: string;
-  @ApiPropertyOptional() @IsOptional() @IsEnum(EventStatus) status?: EventStatus;
+  @ApiPropertyOptional() @IsOptional() @IsEnum(EventStates) status?: EventStates;
   @ApiPropertyOptional() @IsOptional() @IsString() dateFrom?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() dateTill?: string;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() leadersEvent?: boolean;

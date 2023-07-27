@@ -10,40 +10,43 @@
   </ion-toolbar>
 </ion-header>
 
-<bo-filter (change)="filterData($event)">
-  <div class="row">
-    <div class="col-12 col-md-4">
-      <ion-item lines="none">
-        <ion-label position="stacked">Oddíl</ion-label>
-        <ion-select multiple name="groups" [ngModel]="filter.groups" placeholder="všechny">
-          <ion-select-option *ngFor="let group of groups" [value]="group.id">
-            {{ group.name }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-    </div>
+<bo-filter [(ngModel)]="filter.search" (ngModelChange)="filterMembers(filter)">
+  <form #filterForm="ngForm">
+    <div class="row">
+      <div class="col-12 col-md-4">
+        <ion-item lines="none">
+          <ion-label position="stacked">Oddíl</ion-label>
+          <ion-select multiple name="groups" [(ngModel)]="filter.groups" placeholder="všechny">
+            <ion-select-option *ngFor="let group of groups" [value]="group.id">
+              {{ group.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
 
-    <div class="col-12 col-md-4">
-      <ion-item lines="none">
-        <ion-label position="stacked">Role</ion-label>
-        <ion-select multiple name="roles" [ngModel]="filter.ranks" placeholder="všechny">
-          <ion-select-option *ngFor="let rank of ranks | keyvalue" [value]="rank.key">
-            {{ rank.value }}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-    </div>
+      <div class="col-12 col-md-4">
+        <ion-item lines="none">
+          <ion-label position="stacked">Role</ion-label>
+          <ion-select multiple name="roles" [(ngModel)]="filter.roles" placeholder="všechny">
+            <ion-select-option *ngFor="let role of roles | keyvalue" [value]="role.key">
+              {{ role.value.title }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
 
-    <div class="col-12 col-md-4">
-      <ion-item lines="none">
-        <ion-label position="stacked">Aktivní člen</ion-label>
-        <ion-select multiple name="status" [ngModel]="filter.status">
-          <ion-select-option value="active">Aktivní</ion-select-option>
-          <ion-select-option value="inactive">Neaktivní</ion-select-option>
-        </ion-select>
-      </ion-item>
+      <div class="col-12 col-md-4">
+        <ion-item lines="none">
+          <ion-label position="stacked">Členství</ion-label>
+          <ion-select multiple name="membership" [(ngModel)]="filter.membership">
+            <ion-select-option *ngFor="let state of membershipStates | keyvalue" [value]="state.key">{{
+              state.value.title
+            }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
     </div>
-  </div>
+  </form>
 </bo-filter>
 
 <ion-content>

@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { AlertController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MemberContactResponseWithLinks, MemberResponseWithLinks } from "src/app/api";
+import { MemberContactTypes } from "src/app/config/member-contact-types";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { MembersService } from "../../services/members.service";
@@ -14,6 +15,8 @@ import { MembersService } from "../../services/members.service";
 })
 export default class MemberContactsComponent implements OnInit {
   contacts?: MemberContactResponseWithLinks[];
+
+  contactTypes = MemberContactTypes;
 
   constructor(
     private toastService: ToastService,

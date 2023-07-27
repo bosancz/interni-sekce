@@ -4,20 +4,20 @@ import { Group } from "./group.entity";
 import { MemberAchievement } from "./member-achievements.entity";
 import { MemberContact } from "./member-contact.entity";
 
-export enum MemberRole {
+export enum MemberRoles {
   "dite" = "dite",
   "instruktor" = "instruktor",
   "vedouci" = "vedouci",
 }
 
 // FIXME:
-export enum MemberRank {
+export enum MemberRanks {
   "dite" = "dite",
   "instruktor" = "instruktor",
   "vedouci" = "vedouci",
 }
 
-export enum MembershipStatus {
+export enum MembershipStates {
   "clen" = "clen",
   "neclen" = "neclen",
   "pozastaveno" = "pozastaveno",
@@ -30,12 +30,12 @@ export class Member {
 
   @Column({ nullable: false }) groupId!: Group["id"];
   @Column({ type: "varchar", nullable: false }) nickname!: string;
-  @Column({ type: "enum", enum: MemberRole, nullable: false }) role!: MemberRole;
+  @Column({ type: "enum", enum: MemberRoles, nullable: false }) role!: MemberRoles;
   @Column({ type: "boolean", nullable: false, default: true }) active!: boolean;
-  @Column({ type: "enum", enum: MembershipStatus, nullable: false, default: MembershipStatus.clen })
-  membership!: MembershipStatus;
+  @Column({ type: "enum", enum: MembershipStates, nullable: false, default: MembershipStates.clen })
+  membership!: MembershipStates;
 
-  @Column({ type: "enum", enum: MemberRank, nullable: true }) rank?: MemberRank | null;
+  @Column({ type: "enum", enum: MemberRanks, nullable: true }) rank?: MemberRanks | null;
   @Column({ type: "varchar", nullable: true }) function?: string | null;
   @Column({ type: "varchar", nullable: true }) firstName?: string | null;
   @Column({ type: "varchar", nullable: true }) lastName?: string | null;

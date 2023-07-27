@@ -5,14 +5,14 @@ import { ActionSheetController, Platform } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { BehaviorSubject } from "rxjs";
 import { debounceTime } from "rxjs/operators";
-import { UserResponseWithLinks, UserResponseWithLinksRolesEnum } from "src/app/api";
+import { UserResponseWithLinks, UserRolesEnum } from "src/app/api";
 import { UserRoles } from "src/app/config/user-roles";
 import { ApiService } from "src/app/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 type UsersFilter = {
   search: string;
-  role: UserResponseWithLinksRolesEnum[];
+  role: UserRolesEnum[];
 };
 
 @UntilDestroy()
@@ -28,7 +28,7 @@ export class UsersListComponent implements OnInit, AfterViewInit {
   searchIndex: string[] = [];
   searchString = new BehaviorSubject<string>("");
 
-  roles = UserRoles.filter((item) => item.assignable);
+  userRoles = UserRoles;
 
   @ViewChild("filterForm", { static: true }) filterForm!: NgForm;
 
@@ -90,8 +90,8 @@ export class UsersListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  getRoleName(roleId: string) {
-    return this.roles.find((item) => item.id === roleId)?.title || roleId;
+  getRoleName(roleId: UserRolesEnum) {
+    return UserRoles[roleId];
   }
 
   async openUserMenu(user: UserResponseWithLinks) {

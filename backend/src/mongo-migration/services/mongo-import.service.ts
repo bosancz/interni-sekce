@@ -5,12 +5,12 @@ import { Model } from "mongoose";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
-import { EventExpense, EventExpenseType } from "src/models/events/entities/event-expense.entity";
+import { EventExpense, EventExpenseTypes } from "src/models/events/entities/event-expense.entity";
 import { EventGroup } from "src/models/events/entities/event-group.entity";
-import { Event, EventStatus } from "src/models/events/entities/event.entity";
+import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
-import { MemberContact, MemberContactType } from "src/models/members/entities/member-contact.entity";
-import { Member, MemberRank, MemberRole, MembershipStatus } from "src/models/members/entities/member.entity";
+import { MemberContact, MemberContactTypes } from "src/models/members/entities/member-contact.entity";
+import { Member, MemberRanks, MemberRoles, MembershipStates } from "src/models/members/entities/member.entity";
 import { User, UserRoles } from "src/models/users/entities/user.entity";
 import { EntityManager } from "typeorm";
 import { MongoAlbum } from "../models/album";
@@ -108,13 +108,13 @@ export class MongoImportService {
         function: mongoMember.function ?? null,
         groupId: groupsIndex[mongoMember.group],
         active: mongoMember.inactive === false ? true : false,
-        membership: Object.values(MembershipStatus).includes(<any>mongoMember.membership)
-          ? <MembershipStatus>mongoMember.membership
-          : MembershipStatus.clen,
-        role: Object.values(MemberRole).includes(<any>mongoMember.role)
-          ? <MemberRole>mongoMember.role
-          : MemberRole.vedouci,
-        rank: Object.values(MemberRank).includes(<any>mongoMember.rank) ? <MemberRank>mongoMember.rank : null,
+        membership: Object.values(MembershipStates).includes(<any>mongoMember.membership)
+          ? <MembershipStates>mongoMember.membership
+          : MembershipStates.clen,
+        role: Object.values(MemberRoles).includes(<any>mongoMember.role)
+          ? <MemberRoles>mongoMember.role
+          : MemberRoles.vedouci,
+        rank: Object.values(MemberRanks).includes(<any>mongoMember.rank) ? <MemberRanks>mongoMember.rank : null,
         nickname: mongoMember.nickname ?? mongoMember.name?.first ?? "???",
         firstName: mongoMember.name?.first ?? null,
         lastName: mongoMember.name?.last ?? null,
@@ -136,7 +136,7 @@ export class MongoImportService {
         const contactData: Omit<MemberContact, "id"> = {
           memberId: member.id,
           title: "Otec",
-          type: MemberContactType.mobile,
+          type: MemberContactTypes.mobile,
           contact: mongoMember.contacts?.father,
         };
 
@@ -147,7 +147,7 @@ export class MongoImportService {
         const contactData: Omit<MemberContact, "id"> = {
           memberId: member.id,
           title: "Matka",
-          type: MemberContactType.mobile,
+          type: MemberContactTypes.mobile,
           contact: mongoMember.contacts?.mother,
         };
 
@@ -179,7 +179,7 @@ export class MongoImportService {
 
       const eventData: Omit<Event, "id"> = {
         name: mongoEvent.name,
-        status: <any>mongoEvent.status ?? EventStatus.draft,
+        status: <any>mongoEvent.status ?? EventStates.draft,
         statusNote: mongoEvent.statusNote ?? null,
         place: mongoEvent.place ?? null,
         description: mongoEvent.description ?? null,
@@ -199,10 +199,10 @@ export class MongoImportService {
 
       eventIds[mongoEvent._id.toString()] = event.id;
 
-      const mongoTypeToPostgresType: { [mongoType: string]: EventExpenseType } = {
-        Potraviny: EventExpenseType.food,
-        Doprava: EventExpenseType.transport,
-        Materiál: EventExpenseType.material,
+      const mongoTypeToPostgresType: { [mongoType: string]: EventExpenseTypes } = {
+        Potraviny: EventExpenseTypes.food,
+        Doprava: EventExpenseTypes.transport,
+        Materiál: EventExpenseTypes.material,
       };
 
       if (mongoEvent.expenses) {
@@ -212,7 +212,7 @@ export class MongoImportService {
             description: mongoExpense.description ?? "",
             amount: mongoExpense.amount ?? 0,
             type:
-              (mongoExpense.type ? mongoTypeToPostgresType[mongoExpense.type] : undefined) ?? EventExpenseType.other,
+              (mongoExpense.type ? mongoTypeToPostgresType[mongoExpense.type] : undefined) ?? EventExpenseTypes.other,
           };
 
           await t.save(EventExpense, expenseData);

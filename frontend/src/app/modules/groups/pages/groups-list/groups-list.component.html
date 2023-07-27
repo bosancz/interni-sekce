@@ -2,33 +2,12 @@
 
 <bo-page-content [padding]="true">
   <div class="row">
-    <div *ngFor="let group of groups" class="col-12 col-lg-6 col-xl-4 mb-4">
+    <div *ngFor="let group of groups" class="col-6 col-lg-6 col-xl-4 mb-4">
       <bo-card [routerLink]="['/oddily', group.id]" class="group">
         <bo-card-title>{{ group.name }}</bo-card-title>
         <bo-card-content>
           <p>{{ group.name }}</p>
         </bo-card-content>
-        <bo-card-footer>
-          <ion-buttons (click)="$event.stopPropagation()">
-            <ion-button
-              *ngIf="group._links.updateGroup.applicable"
-              [disabled]="!group._links.updateGroup.allowed"
-              fill="clear"
-              [routerLink]="['/oddily', group.id, 'upravit']"
-            >
-              Upravit
-            </ion-button>
-            <ion-button
-              *ngIf="group._links.deleteGroup.applicable"
-              [disabled]="!group._links.deleteGroup.allowed"
-              fill="clear"
-              color="danger"
-              (click)="deleteGroup(group)"
-            >
-              Smazat
-            </ion-button>
-          </ion-buttons>
-        </bo-card-footer>
       </bo-card>
     </div>
   </div>

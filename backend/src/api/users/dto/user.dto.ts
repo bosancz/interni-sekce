@@ -13,7 +13,7 @@ export class UserResponse implements User {
   @ApiPropertyOptional({ type: "string" }) email!: string | null;
   @ApiPropertyOptional({ type: "string" }) loginCode!: string | null;
   @ApiPropertyOptional({ type: "string" }) loginCodeExp!: string | null;
-  @ApiPropertyOptional({ enum: UserRoles, isArray: true }) roles!: UserRoles[] | null;
+  @ApiPropertyOptional({ enum: UserRoles, enumName: "UserRolesEnum", isArray: true }) roles!: UserRoles[] | null;
 
   @AcEntity(MemberResponse)
   @ApiPropertyOptional({ type: WithLinks(MemberResponse) })

@@ -5,16 +5,17 @@ import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
-import { Member, MemberRank, MemberRole, MembershipStatus } from "src/models/members/entities/member.entity";
+import { Member, MemberRanks, MemberRoles, MembershipStates } from "src/models/members/entities/member.entity";
 import { GroupResponse } from "./group.dto";
 
 export class MemberResponse implements Member {
   @ApiProperty() id!: number;
   @ApiProperty() groupId!: number;
   @ApiProperty({ type: "string" }) nickname!: string;
-  @ApiProperty({ type: "enum", enum: MemberRole }) role!: MemberRole;
+  @ApiProperty({ type: "enum", enum: MemberRoles, enumName: "MemberRolesEnum" }) role!: MemberRoles;
   @ApiProperty({ type: "boolean" }) active!: boolean;
-  @ApiProperty({ type: "string", enum: MembershipStatus }) membership!: MembershipStatus;
+  @ApiProperty({ type: "string", enum: MembershipStates, enumName: "MembershipStatesEnum" })
+  membership!: MembershipStates;
 
   @ApiPropertyOptional({ type: "string" }) function?: string | null;
   @ApiPropertyOptional({ type: "string" }) firstName?: string | null;
@@ -27,7 +28,7 @@ export class MemberResponse implements Member {
   @ApiPropertyOptional({ type: "string" }) addressCountry?: string | null;
   @ApiPropertyOptional({ type: "string" }) mobile?: string | null;
   @ApiPropertyOptional({ type: "string" }) email?: string | null;
-  @ApiPropertyOptional({ type: "enum", enum: MemberRank }) rank?: MemberRank | null;
+  @ApiPropertyOptional({ type: "enum", enum: MemberRanks, enumName: "MemberRanksEnum" }) rank?: MemberRanks | null;
   @ApiPropertyOptional({ type: "string" }) knownProblems?: string | null;
   @ApiPropertyOptional({ type: "string" }) allergies?: string | null;
   @ApiPropertyOptional({ type: "string" }) insuranceCardFile?: string | null;
@@ -48,7 +49,7 @@ export class CreateMemberBody
 {
   @ApiProperty() @Type(() => Number) @IsNumber() groupId!: number;
   @ApiProperty() @IsString() nickname!: string;
-  @ApiProperty() @IsString() role!: MemberRole;
+  @ApiProperty() @IsString() role!: MemberRoles;
   @ApiProperty() @IsString() @IsOptional() firstName!: string | null;
   @ApiProperty() @IsString() @IsOptional() lastName!: string | null;
 }
@@ -56,3 +57,9 @@ export class CreateMemberBody
 export class UpdateMemberBody extends PartialType(
   OmitType(MemberResponse, ["group", "contacts", "achievements", "id"]),
 ) {}
+
+export class ListMembersQuery {
+  @ApiPropertyOptional() @IsNumber() @IsOptional() group?: number;
+  @ApiPropertyOptional() @IsString() @IsOptional() search?: string;
+  @ApiPropertyOptional() @IsNumber() @IsOptional() limit?: number;
+}

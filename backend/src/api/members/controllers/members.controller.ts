@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
@@ -14,7 +26,7 @@ import {
   MemberUpdateRoute,
   MembersListRoute,
 } from "../acl/members.acl";
-import { CreateMemberBody, MemberResponse, UpdateMemberBody } from "../dto/member.dto";
+import { CreateMemberBody, ListMembersQuery, MemberResponse, UpdateMemberBody } from "../dto/member.dto";
 
 @Controller("members")
 @UseGuards(UserGuard)
@@ -29,8 +41,22 @@ export class MembersController {
   @Get()
   @AcLinks(MembersListRoute)
   @ApiResponse({ type: WithLinks(MemberResponse), isArray: true })
-  async listMembers(@Req() req: Request) {
-    return this.membersRepository.createQueryBuilder().where(MembersListRoute.canWhere(req)).getMany();
+  async listMembers(@Req() req: Request, @Query() query: ListMembersQuery): Promise<MemberResponse[]> {
+    const q = this.membersRepository.createQueryBuilder("members").where(MembersListRoute.canWhere(req));
+
+    if (query.group) q.andWhere("members.groupId = :groupId", { groupId: query.group });
+
+    if (query.search)
+      q.andWhere(
+        "members.nickname ILIKE :search OR members.firstName ILIKE :search OR members.lastName ILIKE :search",
+        {
+          search: `%${query.search}%`,
+        },
+      );
+
+    if (query.limit) q.limit(query.limit);
+
+    return q.getMany();
   }
 
   @Post()

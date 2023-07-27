@@ -5,7 +5,7 @@ import { EventAttendee } from "./event-attendee.entity";
 import { EventExpense } from "./event-expense.entity";
 import { EventGroup } from "./event-group.entity";
 
-export enum EventStatus {
+export enum EventStates {
   "draft" = "draft",
   "pending" = "pending",
   "public" = "public",
@@ -30,7 +30,7 @@ export class Event {
   expenses?: EventExpense[];
 
   @Column({ type: "text", nullable: false }) name!: string;
-  @Column({ type: "enum", nullable: false, enum: EventStatus, default: EventStatus.draft }) status!: EventStatus;
+  @Column({ type: "enum", nullable: false, enum: EventStates, default: EventStates.draft }) status!: EventStates;
   @Column({ type: "text", nullable: true }) statusNote!: string | null;
   @Column({ type: "text", nullable: true }) place!: string | null;
   @Column({ type: "text", nullable: true }) description!: string | null;

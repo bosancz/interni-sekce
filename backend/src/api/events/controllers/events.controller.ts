@@ -20,7 +20,7 @@ import { AcController, AcLinks, WithLinks } from "src/access-control/access-cont
 import { Token } from "src/auth/decorators/token.decorator";
 import { TokenData } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
-import { Event, EventStatus } from "src/models/events/entities/event.entity";
+import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { EventsService } from "src/models/events/services/events.service";
 import { Repository } from "typeorm";
 import {
@@ -167,7 +167,7 @@ export class EventsController {
 
     EventSubmitRoute.canOrThrow(req, event);
 
-    await this.events.updateEvent(id, { status: EventStatus.pending, statusNote: body.statusNote });
+    await this.events.updateEvent(id, { status: EventStates.pending, statusNote: body.statusNote });
   }
 
   @Post(":id/reject")
@@ -180,7 +180,7 @@ export class EventsController {
 
     EventRejectRoute.canOrThrow(req, event);
 
-    await this.events.updateEvent(id, { status: EventStatus.draft, statusNote: body.statusNote });
+    await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
   }
 
   @Post(":id/publish")
@@ -193,7 +193,7 @@ export class EventsController {
 
     EventRejectRoute.canOrThrow(req, event);
 
-    await this.events.updateEvent(id, { status: EventStatus.draft, statusNote: body.statusNote });
+    await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
   }
 
   @Post(":id/unpublish")
@@ -210,7 +210,7 @@ export class EventsController {
 
     EventRejectRoute.canOrThrow(req, event);
 
-    await this.events.updateEvent(id, { status: EventStatus.draft, statusNote: body.statusNote });
+    await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
   }
 
   @Post(":id/cancel")
@@ -223,7 +223,7 @@ export class EventsController {
 
     EventRejectRoute.canOrThrow(req, event);
 
-    await this.events.updateEvent(id, { status: EventStatus.draft, statusNote: body.statusNote });
+    await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
   }
 
   @Post(":id/uncancel")
@@ -240,6 +240,6 @@ export class EventsController {
 
     EventRejectRoute.canOrThrow(req, event);
 
-    await this.events.updateEvent(id, { status: EventStatus.draft, statusNote: body.statusNote });
+    await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
   }
 }

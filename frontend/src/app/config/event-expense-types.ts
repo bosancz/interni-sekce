@@ -1,11 +1,11 @@
-import { EventExpenseResponseTypeEnum } from "../api";
+import { EventExpenseTypesEnum } from "../api";
 
-export interface EventExpenseType {
+export interface EventExpenseTypesMetadata {
   title: string;
   color: string;
 }
 
-export const EventExpenseTypes: { [id in EventExpenseResponseTypeEnum]: EventExpenseType } = {
+export const EventExpenseTypes: { [id in EventExpenseTypesEnum]: EventExpenseTypesMetadata } = {
   food: { title: "Potraviny", color: "primary" },
   transport: { title: "Doprava", color: "secondary" },
   material: { title: "Materiál", color: "dark" },

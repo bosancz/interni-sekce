@@ -1,7 +1,7 @@
 import { Request } from "express";
 import { RouteACL } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
-import { Event, EventStatus } from "src/models/events/entities/event.entity";
+import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { EventCreateBody, EventResponse } from "../dto/event.dto";
 
 export const isMyEvent = (doc: Pick<Event, "leaders"> | undefined, req: Request) =>
@@ -54,7 +54,7 @@ export const EventDeleteRoute = new RouteACL<Event>({
     program: true,
     admin: true,
   },
-  condition: (doc) => doc.status !== EventStatus.public,
+  condition: (doc) => doc.status !== EventStates.public,
 });
 
 export const EventLeadRoute = new RouteACL<Event>({
@@ -77,7 +77,7 @@ export const EventSubmitRoute = new RouteACL<Event>({
     vedouci: ({ doc, req }) => isMyEvent(doc, req),
   },
 
-  condition: (doc) => doc.status === EventStatus.draft,
+  condition: (doc) => doc.status === EventStates.draft,
 });
 
 export const EventPublishRoute = new RouteACL<Event>({
@@ -86,7 +86,7 @@ export const EventPublishRoute = new RouteACL<Event>({
     program: true,
     admin: true,
   },
-  condition: (doc) => doc.status === EventStatus.pending,
+  condition: (doc) => doc.status === EventStates.pending,
 });
 
 export const EventRejectRoute = new RouteACL<Event>({
@@ -95,7 +95,7 @@ export const EventRejectRoute = new RouteACL<Event>({
     program: true,
     admin: true,
   },
-  condition: (doc) => doc.status === EventStatus.pending,
+  condition: (doc) => doc.status === EventStates.pending,
 });
 
 export const EventUnpublishRoute = new RouteACL<Event>({
@@ -104,7 +104,7 @@ export const EventUnpublishRoute = new RouteACL<Event>({
     program: true,
     admin: true,
   },
-  condition: (doc) => doc.status === EventStatus.public,
+  condition: (doc) => doc.status === EventStates.public,
 });
 
 export const EventCancelRoute = new RouteACL<Event>({
@@ -113,7 +113,7 @@ export const EventCancelRoute = new RouteACL<Event>({
     program: true,
     admin: true,
   },
-  condition: (doc) => doc.status !== EventStatus.public,
+  condition: (doc) => doc.status !== EventStates.public,
 });
 
 export const EventUncancelRoute = new RouteACL<Event>({
@@ -122,7 +122,7 @@ export const EventUncancelRoute = new RouteACL<Event>({
     program: true,
     admin: true,
   },
-  condition: (doc) => doc.status === EventStatus.cancelled,
+  condition: (doc) => doc.status === EventStates.cancelled,
 });
 
 export const EventRegistrationReadRoute = new RouteACL<Event>({

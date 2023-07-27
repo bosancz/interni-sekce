@@ -20,7 +20,9 @@
       <ion-item lines="none">
         <ion-label position="floating">Role</ion-label>
         <ion-select multiple name="role" ngModel placeholder="všechny">
-          <ion-select-option *ngFor="let role of roles" [value]="role.id">{{ role.title }}</ion-select-option>
+          <ion-select-option *ngFor="let role of userRoles | keyvalue" [value]="role.key">{{
+            role.value.title
+          }}</ion-select-option>
         </ion-select>
       </ion-item>
     </div>
@@ -37,11 +39,11 @@
           {{ user.member.nickname || "-" }} ({{ user.member.firstName }} {{ user.member.lastName }})
         </p>
         <p class="d-lg-none">
-          <ion-badge *ngFor="let role of user.roles">{{ getRoleName(role) }}</ion-badge>
+          <ion-badge *ngFor="let role of user.roles">{{ userRoles[role].title }}</ion-badge>
         </p>
       </ion-label>
       <ion-label class="d-none d-lg-block">
-        <ion-badge *ngFor="let role of user.roles">{{ getRoleName(role) }}</ion-badge>
+        <ion-badge *ngFor="let role of user.roles">{{ userRoles[role].title }}</ion-badge>
       </ion-label>
       <ion-label class="d-none d-lg-block">
         <h3 *ngIf="user.member">{{ user.member.nickname || "-" }}</h3>

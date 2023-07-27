@@ -1,0 +1,27 @@
+<bo-filter [(ngModel)]="filter.search" (ngModelChange)="filterMembers()">
+  <ion-item>
+    <ion-label>Seřadit podle</ion-label>
+    <ion-select [(ngModel)]="sortField" (ngModelChange)="sortMembers()" name="sortField">
+      <ion-select-option value="nickname">přezdívky</ion-select-option>
+      <ion-select-option value="age">věku</ion-select-option>
+    </ion-select>
+  </ion-item>
+</bo-filter>
+
+<ion-list>
+  <ion-item *ngFor="let member of filteredMembers" [routerLink]="['/databaze', member.id]" [detail]="true">
+    <ion-label>
+      <h3>{{ member.nickname }}</h3>
+      <p>
+        {{ member.firstName }} {{ member.lastName }}<br />
+        {{ member.role }}, {{ (member.birthday | age) || "?" }} let
+      </p>
+    </ion-label>
+  </ion-item>
+
+  <ng-container *ngIf="members === undefined">
+    <ion-list><ion-skeleton-text></ion-skeleton-text></ion-list>
+    <ion-list><ion-skeleton-text></ion-skeleton-text></ion-list>
+    <ion-list><ion-skeleton-text></ion-skeleton-text></ion-list>
+  </ng-container>
+</ion-list>

@@ -2,7 +2,8 @@ import { Component } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter } from "@ionic/angular";
-import { GroupResponseWithLinks, MemberResponseRoleEnum } from "src/app/api";
+import { GroupResponseWithLinks } from "src/app/api";
+import { MemberRoles } from "src/app/config/member-roles";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 
@@ -13,7 +14,7 @@ import { ToastService } from "src/app/services/toast.service";
 })
 export class MembersCreateComponent implements ViewWillEnter {
   groups?: GroupResponseWithLinks[];
-  roles = MemberResponseRoleEnum;
+  roles = MemberRoles;
 
   constructor(
     private api: ApiService,

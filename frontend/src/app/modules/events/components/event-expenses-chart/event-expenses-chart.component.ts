@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { DateTime } from "luxon";
 import { EventResponseWithLinks } from "src/app/api";
-import { EventExpenseType, EventExpenseTypes } from "src/app/config/event-expense-types";
+import { EventExpenseTypes, EventExpenseTypesMetadata } from "src/app/config/event-expense-types";
 
 @Component({
   selector: "bo-event-expenses-chart",
@@ -14,7 +14,7 @@ export class EventExpensesChartComponent implements OnInit {
 
   total: number = 0;
 
-  totalByType: { [type: string]: { total: number; type?: EventExpenseType } } = {};
+  totalByType: { [type: string]: { total: number; type?: EventExpenseTypesMetadata } } = {};
 
   @Input() set event(event: EventResponseWithLinks) {
     const dateFrom = DateTime.fromISO(event.dateFrom).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, ViewWillEnter } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MemberResponseWithLinks } from "src/app/api";
-import { MembershipTypes } from "src/app/config/membership-types";
+import { MembershipStates } from "src/app/config/membership-states";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -18,18 +18,19 @@ import { MembersService } from "../../services/members.service";
 export class MembersViewComponent implements OnInit, ViewWillEnter {
   member?: MemberResponseWithLinks | null;
 
-  membershipTypes = MembershipTypes;
+  membershipStates = MembershipStates;
 
   actions: Action[] = [
     {
       text: "Upravit",
       pinned: true,
-      icon: "create-outline",
+      icon: "create",
       handler: () => this.router.navigate(["upravit"], { relativeTo: this.route }),
     },
     {
       text: "Smazat",
       role: "destructive",
+      icon: "trash",
       color: "danger",
       handler: () => this.delete(),
     },

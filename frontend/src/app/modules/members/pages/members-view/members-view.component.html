@@ -7,13 +7,25 @@
 <bo-page-footer>
   <ion-toolbar>
     <ion-tab-bar>
-      <ion-tab-button [routerLink]="['/databaze', member?.id, 'info']" routerLinkActive="tab-selected">
+      <ion-tab-button
+        [routerLink]="['/databaze', member?.id, 'info']"
+        routerLinkActive="tab-selected"
+        [replaceUrl]="true"
+      >
         <ion-icon name="information-circle-outline"></ion-icon>
       </ion-tab-button>
-      <ion-tab-button [routerLink]="['/databaze', member?.id, 'zdravotni-udaje']" routerLinkActive="tab-selected">
+      <ion-tab-button
+        [routerLink]="['/databaze', member?.id, 'zdravotni-udaje']"
+        routerLinkActive="tab-selected"
+        [replaceUrl]="true"
+      >
         <ion-icon name="heart-outline"></ion-icon>
       </ion-tab-button>
-      <ion-tab-button [routerLink]="['/databaze', member?.id, 'kontakty']" routerLinkActive="tab-selected">
+      <ion-tab-button
+        [routerLink]="['/databaze', member?.id, 'kontakty']"
+        routerLinkActive="tab-selected"
+        [replaceUrl]="true"
+      >
         <ion-icon name="call-outline"></ion-icon>
       </ion-tab-button>
     </ion-tab-bar>

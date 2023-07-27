@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Member } from "./member.entity";
 
-export enum MemberContactType {
+export enum MemberContactTypes {
   "mobile" = "mobile",
   "email" = "email",
   "other" = "other",
@@ -20,6 +20,6 @@ export class MemberContact {
   member?: Member;
 
   @Column({ nullable: false }) title!: string;
-  @Column({ type: "enum", enum: MemberContactType, nullable: false }) type!: MemberContactType;
+  @Column({ type: "enum", enum: MemberContactTypes, nullable: false }) type!: MemberContactTypes;
   @Column({ nullable: false }) contact!: string;
 }

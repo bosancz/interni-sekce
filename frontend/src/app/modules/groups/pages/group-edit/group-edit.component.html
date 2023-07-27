@@ -1,4 +1,4 @@
-<bo-page-header title="Upravit: {{ group?.name }}" backUrl="/oddily"></bo-page-header>
+<bo-page-header [title]="'Upravit: ' + group?.name" backUrl="/oddily"></bo-page-header>
 
 <bo-page-content>
   <form #createGroupForm="ngForm" id="editGroupForm" (ngSubmit)="editGroup(createGroupForm)">

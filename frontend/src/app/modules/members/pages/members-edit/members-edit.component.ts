@@ -3,12 +3,9 @@ import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Params } from "@angular/router";
 import { NavController, ViewWillEnter } from "@ionic/angular";
 import { Subscription } from "rxjs";
-import {
-  GroupResponseWithLinks,
-  MemberResponseMembershipEnum,
-  MemberResponseWithLinks,
-  MemberResponseWithLinksRoleEnum,
-} from "src/app/api";
+import { GroupResponseWithLinks, MemberResponseWithLinks } from "src/app/api";
+import { MemberRoles } from "src/app/config/member-roles";
+import { MembershipStates } from "src/app/config/membership-states";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -22,8 +19,8 @@ export class MembersEditComponent implements ViewWillEnter {
   member?: MemberResponseWithLinks;
   groups?: GroupResponseWithLinks[];
 
-  roles = MemberResponseWithLinksRoleEnum;
-  membershipTypes = MemberResponseMembershipEnum;
+  roles = MemberRoles;
+  membershipStates = MembershipStates;
 
   paramsSubscription?: Subscription;
 

@@ -1,12 +1,12 @@
-export const UserRoles = [
-  { id: "user", assignable: false, title: "Uživatel" },
-  { id: "guest", assignable: false, title: "Host" },
+import { UserRolesEnum } from "../api";
 
-  { id: "clen", assignable: true, title: "Člen" },
-  { id: "spravce", assignable: true, title: "Správce webu" },
-  { id: "vedouci", assignable: true, title: "Vedoucí" },
-  { id: "vedeni", assignable: true, title: "Člen vedení" },
-  { id: "program", assignable: true, title: "Správce programu" },
-  { id: "revizor", assignable: true, title: "Revizor" },
-  { id: "admin", assignable: true, title: "Administrátor" },
-];
+export type UserRolesMetadata = {
+  assignable: boolean;
+  title: string;
+};
+
+export const UserRoles: { [role in UserRolesEnum]: UserRolesMetadata } = {
+  program: { assignable: true, title: "Správce programu" },
+  revizor: { assignable: true, title: "Revizor" },
+  admin: { assignable: true, title: "Administrátor" },
+};
