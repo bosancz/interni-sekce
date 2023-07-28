@@ -1,33 +1,17 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
-    </ion-buttons>
-    <ion-title pageTitle>Uživatelské účty</ion-title>
-    <ion-buttons slot="end">
-      <bo-action-buttons [actions]="actions" header="Uživatelské účty"></bo-action-buttons>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<bo-page-header title="Uživatelské účty" backUrl="/" [actions]="actions"></bo-page-header>
 
-<form #filterForm="ngForm" class="filter d-md-block px-3">
-  <div class="row">
-    <div class="col">
-      <ion-searchbar type="text" name="search" ngModel (keydown.enter)="$event.preventDefault()"></ion-searchbar>
-    </div>
-
-    <div class="col-12 col-md col-xl-2">
-      <ion-item lines="none">
-        <ion-label position="floating">Role</ion-label>
-        <ion-select multiple name="role" ngModel placeholder="všechny">
-          <ion-select-option *ngFor="let role of userRoles | keyvalue" [value]="role.key">{{
-            role.value.title
-          }}</ion-select-option>
-        </ion-select>
-      </ion-item>
-    </div>
-  </div>
-</form>
+<bo-filter>
+  <form #filterForm="ngForm" class="filter d-md-block px-3">
+    <ion-item lines="none">
+      <ion-label position="floating">Role</ion-label>
+      <ion-select multiple name="role" ngModel placeholder="všechny">
+        <ion-select-option *ngFor="let role of userRoles | keyvalue" [value]="role.key">{{
+          role.value.title
+        }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </form>
+</bo-filter>
 
 <ion-content>
   <ion-list>
