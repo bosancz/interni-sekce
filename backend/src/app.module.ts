@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import { MongooseModule } from "@nestjs/mongoose";
 import { MulterModule } from "@nestjs/platform-express";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
@@ -16,13 +15,12 @@ import { UsersController } from "./api/users/controllers/users.controller";
 import { AuthModule } from "./auth/auth.module";
 import { Config } from "./config";
 import { AlbumsModelModule } from "./models/albums/albums-model.module";
+import { FilesModule } from "./models/files/files.module";
 import { GoogleModelModule } from "./models/google/google-model.module";
 import { MailService } from "./models/mail/services/mail.service";
 import { MembersModelModule } from "./models/members/members-model.module";
 import { StatisticsModelModule } from "./models/statistics/statistics-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
-import { MongoMigrationModule } from "./mongo-migration/mongo-migration.module";
-import { FilesModule } from './models/files/files.module';
 
 const typeOrmOptions: TypeOrmModuleOptions = {
   ...Config.db,
@@ -35,7 +33,6 @@ const typeOrmOptions: TypeOrmModuleOptions = {
       rootPath: path.join(__dirname, "../../frontend/dist"),
     }),
     TypeOrmModule.forRoot(typeOrmOptions),
-    MongooseModule.forRoot(Config.mongoDb.uri),
     MulterModule.register({
       dest: "/tmp/uploads",
       limits: {
@@ -51,7 +48,6 @@ const typeOrmOptions: TypeOrmModuleOptions = {
     AlbumsModelModule,
     UsersModelModule,
     AlbumsModule,
-    MongoMigrationModule,
     AccessControlModule,
     AccountModule,
     StatisticsModule,

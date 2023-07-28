@@ -13,7 +13,7 @@ const logger = new Logger("CONFIG");
 /**
  * Sets environment type (production/development) for use in other configurations
  */
-const environment = process.env.ENVIRONMENT || "development";
+const environment = process.env.NODE_ENV || "development";
 
 const production = ["production", "staging"].includes(environment);
 
@@ -24,8 +24,8 @@ const production = ["production", "staging"].includes(environment);
  * @property baseDir - Server base directory
  */
 const server = {
-  host: process.env.HOST || "localhost",
-  port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
+  host: process.env.HOST || production ? "0.0.0.0" : "localhost",
+  port: process.env.PORT ? parseInt(process.env.PORT, 10) : production ? 80 : 3000,
   baseDir: process.env.BASE_DIR || "",
 };
 
@@ -82,7 +82,7 @@ const fs = {
   dataDir,
   keysDir: process.env["KEYS_DIR"] ?? "../keys",
   photosDir: process.env["PHOTOS_DIR"] ?? path.join(dataDir, "photos"),
-  thumbnailsDir: process.env["THUMBNAILS_DIR"] ?? path.join("thumbnails"),
+  thumbnailsDir: process.env["THUMBNAILS_DIR"] ?? path.join(dataDir, "thumbnails"),
   eventsDir: process.env["EVENTS_DIR"] ?? path.join(dataDir, "events"),
   membersDir: process.env["MEMBERS_DIR"] ?? path.join(dataDir, "members"),
 };

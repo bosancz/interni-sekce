@@ -31,4 +31,4 @@ const typeOrmOptions: TypeOrmModuleOptions = {
   controllers: [],
   providers: [],
 })
-export class CliModule {}
+export class ImportModule {}

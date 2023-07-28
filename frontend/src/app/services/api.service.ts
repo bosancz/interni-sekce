@@ -22,7 +22,7 @@ export type ApiError = AxiosError;
   providedIn: "root",
 })
 export class ApiService {
-  http = axios.create({ baseURL: environment.apiRoot, withCredentials: true });
+  http = axios.create({ withCredentials: true });
 
   readonly albums = new PhotoGalleryApi(undefined, environment.apiRoot, this.http);
   readonly events = new EventsApi(undefined, environment.apiRoot, this.http);

@@ -13,17 +13,18 @@ COPY ./frontend .
 RUN npx ng build --configuration="${NG_CONFIGURATION}"
 
 
+
+
 FROM node:18-alpine as build-backend
 
 WORKDIR /app
-ENV NODE_ENV=production
 
 # INSTALL DEPENDENCIES
-COPY package.json package-lock.json ./
+COPY ./backend/package.json ./backend/package-lock.json ./
 RUN npm ci
 
 # BUILD
-COPY . .
+COPY ./backend .
 RUN npm run build
 
 # CLEANUP
@@ -35,10 +36,14 @@ FROM node:18-alpine
 WORKDIR /app
 
 # COPY FILES
-COPY --from=build-frontend /app ./frontend
-COPY --from=build-backend /app ./backend
+COPY --from=build-backend /app/node_modules ./backend/node_modules
+COPY --from=build-backend /app/dist ./backend/dist
+COPY --from=build-backend /app/package.json ./backend/package.json
+COPY --from=build-frontend /app/dist ./frontend/dist
 COPY package.json ./
 
 # RUN
+ENV NODE_ENV=production
+EXPOSE 80
 WORKDIR /app/backend
 CMD npm start

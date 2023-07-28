@@ -1,12 +1,17 @@
 {
-  "name": "bosan.cz",
+  "name": "@bosancz/interni-sekce",
   "description": "Webové stránky Dětské vodácké skupiny ŠÁN",
   "main": "index.js",
   "version": "4.0.0",
+  "private": true,
   "scripts": {
     "prepare": "husky install",
     "all-contributors:check": "all-contributors check",
-    "all-contributors:generate": "all-contributors generate"
+    "all-contributors:generate": "all-contributors generate",
+    "build": "docker build -t docker.bosan.cz/interni-sekce:${TAG:=latest} .",
+    "predeploy": "npm run build",
+    "deploy": "docker push docker.bosan.cz/interni-sekce:${TAG:=latest}",
+    "deploy:alpha": "TAG=alpha npm run deploy"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.3.0",

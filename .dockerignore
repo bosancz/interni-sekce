@@ -1,0 +1,16 @@
+# runtime files
+**/node_modules
+**/dist
+**/.angular/cache
+
+# data
+data
+\!old
+
+# config files
+.git
+.github
+.husky
+.vscode
+.devcontainer
+**/.env

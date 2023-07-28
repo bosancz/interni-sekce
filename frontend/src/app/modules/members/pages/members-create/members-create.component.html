@@ -45,8 +45,8 @@
         <ion-item>
           <ion-label position="stacked">Role</ion-label>
           <ion-select name="role" ngModel required placeholder="nositel prstenu">
-            <ion-select-option *ngFor="let role of roles | keyvalue" [value]="role.value">
-              {{ role.key }}
+            <ion-select-option *ngFor="let role of roles | keyvalue" [value]="role.key">
+              {{ role.value.title }}
             </ion-select-option>
           </ion-select>
         </ion-item>
