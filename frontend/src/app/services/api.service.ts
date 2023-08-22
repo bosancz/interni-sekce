@@ -1,11 +1,12 @@
 import { Injectable } from "@angular/core";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { BehaviorSubject } from "rxjs";
 import { environment } from "src/environments/environment";
 import {
   APIApi,
   AccountApi,
   EventsApi,
+  GroupResponseWithLinks,
   MembersApi,
   PhotoGalleryApi,
   RootResponseLinks,
@@ -36,6 +37,10 @@ export class ApiService {
 
   info?: RootResponseWithLinks;
 
+  readonly cache = {
+    groups: new CachedSubject<GroupResponseWithLinks[]>(this, (api) => api.members.listGroups()),
+  };
+
   constructor() {}
 
   async reloadApi() {
@@ -45,5 +50,17 @@ export class ApiService {
 
   isApiError(err: unknown): err is ApiError {
     return axios.isAxiosError(err);
+  }
+}
+
+class CachedSubject<T> extends BehaviorSubject<T | undefined> {
+  constructor(private api: ApiService, private request: (api: ApiService) => Promise<AxiosResponse<T>>) {
+    super(undefined);
+    this.load();
+  }
+
+  async load() {
+    const res = await this.request(this.api);
+    this.next(res.data);
   }
 }

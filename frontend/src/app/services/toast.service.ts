@@ -22,7 +22,7 @@ export class ToastService {
     toastOptions = {
       ...toastOptions,
       message: toast,
-      duration: toastOptions?.duration || 2000,
+      duration: toastOptions?.duration ?? 2000,
     };
 
     return this.toastController.create(toastOptions).then((toast) => {

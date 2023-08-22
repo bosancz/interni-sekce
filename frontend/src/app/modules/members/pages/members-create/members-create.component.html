@@ -31,11 +31,12 @@
       <div class="col-12 col-xl-6">
         <ion-item>
           <ion-label position="stacked">Oddíl</ion-label>
-          <ion-select name="groupId" ngModel required placeholder="Chluponozi">
+          <bo-group-select ngModel name="groupId"></bo-group-select>
+          <!-- <ion-select name="groupId" ngModel required placeholder="Chluponozi">
             <ion-select-option *ngFor="let group of groups" [value]="group.id">
               {{ group.name }}
             </ion-select-option>
-          </ion-select>
+          </ion-select> -->
         </ion-item>
       </div>
 
@@ -53,6 +54,7 @@
       </div>
     </div>
   </form>
+  {{ createMemberForm.value | json }}
 </bo-page-content>
 
 <bo-page-footer [padding]="true">

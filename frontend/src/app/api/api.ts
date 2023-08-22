@@ -1380,6 +1380,18 @@ export interface GroupResponse {
      * @type {string}
      * @memberof GroupResponse
      */
+    'color'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GroupResponse
+     */
+    'darkColor'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GroupResponse
+     */
     'name'?: string;
     /**
      * 
@@ -1437,6 +1449,18 @@ export interface GroupResponseWithLinks {
      * @memberof GroupResponseWithLinks
      */
     'shortName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GroupResponseWithLinks
+     */
+    'color'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof GroupResponseWithLinks
+     */
+    'darkColor'?: string;
     /**
      * 
      * @type {string}

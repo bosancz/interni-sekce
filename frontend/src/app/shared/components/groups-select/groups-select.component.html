@@ -1,15 +1,15 @@
 <div class="group-badges">
   <span
     *ngFor="let group of groups; let isLast = last"
-    (click)="toggleGroup(group.key)"
-    [class.active]="isSelected(group.key)"
-    [style.background-color]="group.value.color"
+    (click)="toggleGroup(group.id)"
+    [class.active]="isSelected(group.id)"
+    [style.background-color]="'#000'"
     class="group-badge mr-2 my-2"
   >
-    {{ group.key }}
+    {{ group.shortName }}
   </span>
 </div>
-<div class="selectAll custom-control custom-checkbox mr-2">
+<div *ngIf="multiple" class="selectAll custom-control custom-checkbox mr-2">
   <input
     type="checkbox"
     [ngModel]="isSelectedAll()"

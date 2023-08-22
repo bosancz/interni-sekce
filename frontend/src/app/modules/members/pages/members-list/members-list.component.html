@@ -68,4 +68,8 @@
       </ion-label>
     </ion-item>
   </ion-list>
+
+  <p *ngIf="members && !members.length" class="ion-padding">
+    Členská databáze je prázdná. Chceš <a routerLink="/databaze/pridat">přidat prvního člena</a>?
+  </p>
 </ion-content>

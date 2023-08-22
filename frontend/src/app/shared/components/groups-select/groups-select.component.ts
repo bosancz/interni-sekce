@@ -1,9 +1,10 @@
 import { AfterViewInit, Component, ElementRef, forwardRef, Input, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { MemberGroups } from "src/app/config/member-groups";
+import { GroupResponseWithLinks } from "src/app/api";
+import { ApiService } from "src/app/services/api.service";
 
 @Component({
-  selector: "groups-select",
+  selector: "bo-group-select",
   templateUrl: "./groups-select.component.html",
   styleUrls: ["./groups-select.component.scss"],
   providers: [
@@ -19,74 +20,70 @@ import { MemberGroups } from "src/app/config/member-groups";
   },
 })
 export class GroupsSelectComponent implements OnInit, ControlValueAccessor, AfterViewInit {
-  groups = Object.entries(MemberGroups)
-    .map(([key, value]) => ({ key, value }))
-    .filter((group) => group.value.event && group.value.active)
-    .sort(
-      (a, b) =>
-        Number(b.value.children) - Number(a.value.children) || a.key.localeCompare(b.key, "cs", { numeric: true }),
-    );
+  groups?: GroupResponseWithLinks[];
 
-  selectedGroups: string[] = [];
+  selectedGroups: number[] = [];
 
   disabled: boolean = false;
   @Input() readonly: boolean = false;
+  @Input() multiple: boolean = false;
 
-  onChange: any = () => {};
-  onTouched: any = () => {};
+  onChange: (value: number | number[]) => void = () => {};
+  onTouched: () => void = () => {};
 
-  writeValue(groups: any): void {
-    this.selectedGroups = groups || [];
+  constructor(private elRef: ElementRef<HTMLElement>, private api: ApiService) {
+    this.loadGroups();
   }
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-  setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
-    this.selectedGroups = [];
-  }
-
-  constructor(private elRef: ElementRef<HTMLElement>) {}
 
   ngOnInit() {}
+
+  async loadGroups() {
+    this.groups = await this.api.members.listGroups().then((res) => res.data);
+  }
 
   ngAfterViewInit() {
     this.emitIonStyle();
   }
 
-  isSelected(groupId: string) {
+  emitChange() {
+    if (this.multiple) this.onChange(this.selectedGroups);
+    else this.onChange(this.selectedGroups[0]);
+  }
+
+  isSelected(groupId: number) {
     return this.selectedGroups.indexOf(groupId) !== -1;
   }
 
   selectAll(checked: boolean): void {
-    if (this.disabled || this.readonly) return;
+    if (this.disabled || this.readonly || !this.multiple) return;
 
     if (checked) {
-      this.selectedGroups = this.getChildrenGroups().map((group) => group.key);
-    } else this.selectedGroups = [];
-    this.onChange(this.selectedGroups);
+      this.selectedGroups = this.groups?.map((group) => group.id) ?? [];
+    } else {
+      this.selectedGroups = [];
+    }
+
+    this.emitChange();
   }
 
   isSelectedAll(): boolean {
-    return !this.getChildrenGroups().some((group) => this.selectedGroups.indexOf(group.key) === -1);
+    return this.groups?.every((group) => this.selectedGroups.includes(group.id)) ?? false;
   }
 
-  toggleGroup(groupId: string, deselectOther = false) {
+  toggleGroup(groupId: number) {
     if (this.disabled || this.readonly) return;
 
     let i = this.selectedGroups.indexOf(groupId);
-    if (i === -1) {
-      if (deselectOther) this.selectedGroups = [];
-      this.selectedGroups.push(groupId);
-    } else this.selectedGroups.splice(i, 1);
-    this.onChange(this.selectedGroups);
-  }
 
-  getChildrenGroups() {
-    return this.groups.filter((group) => group.value.children);
+    if (i === -1) {
+      if (!this.multiple) this.selectedGroups = [];
+      this.selectedGroups.push(groupId);
+    } else {
+      if (!this.multiple) this.selectedGroups = [];
+      else this.selectedGroups.splice(i, 1);
+    }
+
+    this.emitChange();
   }
 
   private emitIonStyle() {
@@ -105,5 +102,20 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
         },
       }),
     );
+  }
+
+  // ControlValueAccessor
+  writeValue(groups: any): void {
+    this.selectedGroups = groups || [];
+  }
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+    this.selectedGroups = [];
   }
 }

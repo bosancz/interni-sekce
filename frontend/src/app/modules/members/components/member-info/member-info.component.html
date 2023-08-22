@@ -1,8 +1,13 @@
-<h4 class="ion-padding">Základní informace</h4>
+<h4 class="ion-padding-horizontal ion-padding-top">Základní informace</h4>
 <ion-list *ngIf="member" class="selectable">
   <ion-item>
     <ion-label>Jméno:</ion-label>
     <ion-label>{{ member.firstName || "-" }} {{ member.lastName || "-" }}</ion-label>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Přezdívka:</ion-label>
+    <ion-label>{{ member.nickname || "-" }}</ion-label>
   </ion-item>
 
   <ion-item>
@@ -11,19 +16,33 @@
   </ion-item>
 </ion-list>
 
-<h4 class="mt-4 ion-padding">Adresa</h4>
-<p *ngIf="member">
-  {{ member.addressStreet }} {{ member.addressStreetNo }}<br />
-  {{ member.addressCity }}<br />
-  {{ member.addressPostalCode }}
-  <ng-container *ngIf="member.addressCountry"
-    ><br />
-    {{ member.addressCountry }}
-  </ng-container>
-</p>
+<h4 class="mt-4 ion-padding-horizontal">Adresa</h4>
+<div class="ion-padding-horizontal">
+  <p *ngIf="member" class="bg-light selectable">
+    {{ member.addressStreet }} {{ member.addressStreetNo }}<br />
+    {{ member.addressCity }}<br />
+    {{ member.addressPostalCode }}
+    <ng-container *ngIf="member.addressCountry"
+      ><br />
+      {{ member.addressCountry }}
+    </ng-container>
+  </p>
+</div>
 
-<h4 class="mt-4 ion-padding">Členství ve skupině</h4>
-<ion-list *ngIf="member">
+<h4 class="mt-4 ion-padding-horizontal">Členství ve skupině</h4>
+<ion-list *ngIf="member" class="selectable">
+  <ion-item>
+    <ion-label>Aktivní člen:</ion-label>
+    <ion-label>{{ member.active === undefined ? "-" : member.active ? "Ano" : "Ne" }}</ion-label>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Oddíl</ion-label>
+    <ion-label
+      ><span [style.color]="member.groupId | group : 'color'">{{ member.groupId | group : "name" }}</span></ion-label
+    >
+  </ion-item>
+
   <ion-item>
     <ion-label>Zaplacené příspěvky:</ion-label>
     <ion-label>
@@ -32,10 +51,5 @@
           membershipTypes[member.membership].title
         }}</ng-container> -->
     </ion-label>
-  </ion-item>
-
-  <ion-item>
-    <ion-label>Aktivní člen:</ion-label>
-    <ion-label>{{ member.active === undefined ? "-" : member.active ? "Ano" : "Ne" }}</ion-label>
   </ion-item>
 </ion-list>

@@ -6,6 +6,8 @@ export class GroupResponse implements Group {
   @ApiProperty() id!: number;
   @ApiProperty() active!: boolean;
   @ApiProperty() shortName!: string;
+  @ApiPropertyOptional({ type: "string" }) color!: string | null;
+  @ApiPropertyOptional({ type: "string" }) darkColor!: string | null;
   @ApiPropertyOptional({ type: "string" }) name!: string | null;
   @ApiPropertyOptional({ type: "string" }) deletedAt!: string | null;
 }

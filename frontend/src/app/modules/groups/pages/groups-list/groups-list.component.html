@@ -11,4 +11,8 @@
       </bo-card>
     </div>
   </div>
+
+  <p *ngIf="groups !== undefined && !groups.length" class="ion-padding">
+    Žádné oddíly zatím nejsou vytvořeny. Chceš <a routerLink="/oddily/vytvorit">vytvořit první oddíl</a>?
+  </p>
 </bo-page-content>
