@@ -33,6 +33,7 @@ import { JoinLeadersPipe } from "./pipes/join-leaders.pipe";
 import { MarkdownPipe } from "./pipes/markdown.pipe";
 import { MemberPipe } from "./pipes/member.pipe";
 import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
+import { MemberSelectComponent } from './components/member-select/member-select.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, RouterModule, IonicModule, SwiperModule],
@@ -66,6 +67,7 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
     PrettyBytesPipe,
     CardFooterComponent,
     MarkdownPipe,
+    MemberSelectComponent,
   ],
   exports: [
     FormsModule,

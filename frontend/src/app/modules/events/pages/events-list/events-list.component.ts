@@ -45,9 +45,7 @@ export class EventsListComponent implements ViewWillEnter {
   async loadEvents(filter: any) {
     this.events = undefined;
 
-    const events = await this.api.events
-      .listEvents(filter.year || null, filter.status || null, filter.search || null)
-      .then((res) => res.data);
+    const events = await this.api.events.listEvents(filter).then((res) => res.data);
 
     const eventsWithSearchString = events.map((event) => {
       const searchString = [event.name, event.place, event.leaders?.map((member) => member.nickname).join(" ")]

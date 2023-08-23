@@ -41,6 +41,9 @@
     <ion-item>
       <ion-label position="stacked">Člen</ion-label>
       <ion-select name="member" [ngModel]="user?.member?.id" placeholder="žádný">
+        <ion-select-option [value]="null">
+          <em>--žádný--</em>
+        </ion-select-option>
         <ion-select-option *ngFor="let member of members" [value]="member.id">
           {{ member.nickname || member.firstName }}
           ({{ member.group?.name }}, {{ member.firstName }} {{ member.firstName }})

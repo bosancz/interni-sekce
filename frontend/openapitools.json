@@ -6,9 +6,12 @@
     "generators": {
       "axios": {
         "generatorName": "typescript-axios",
-        "output": "src/app/api",
+        "output": "src/app/api/sdk",
         "inputSpec": "http://localhost:3000/api-json",
-        "additionalProperties": {}
+        "templateDir": "./src/app/api/templates",
+        "additionalProperties": {
+          "useSingleRequestParameter": true
+        }
       }
     }
   }

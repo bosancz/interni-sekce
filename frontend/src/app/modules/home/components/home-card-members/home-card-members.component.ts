@@ -31,7 +31,7 @@ export class HomeCardMembersComponent implements OnInit {
     console.log("search", searchString);
     this.searching = false;
     if (searchString) {
-      this.members = await this.api.members.listMembers(undefined, searchString).then((res) => res.data);
+      this.members = await this.api.members.listMembers({ search: searchString }).then((res) => res.data);
     } else {
       this.clearMembers();
     }

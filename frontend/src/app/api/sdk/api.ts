@@ -2823,11 +2823,12 @@ export const APIApiFactory = function (configuration?: Configuration, basePath?:
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getApiInfo(options?: any): AxiosPromise<RootResponseWithLinks> {
+        getApiInfo(options?: AxiosRequestConfig): AxiosPromise<RootResponseWithLinks> {
             return localVarFp.getApiInfo(options).then((request) => request(axios, basePath));
         },
     };
 };
+
 
 /**
  * APIApi - object-oriented interface
@@ -2846,6 +2847,7 @@ export class APIApi extends BaseAPI {
         return APIApiFp(this.configuration).getApiInfo(options).then((request) => request(this.axios, this.basePath));
     }
 }
+
 
 
 /**
@@ -3135,55 +3137,117 @@ export const AccountApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMe(options?: any): AxiosPromise<UserResponseWithLinks> {
+        getMe(options?: AxiosRequestConfig): AxiosPromise<UserResponseWithLinks> {
             return localVarFp.getMe(options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {LoginCredentialsBody} loginCredentialsBody 
+         * @param {AccountApiLoginUsingCredentialsRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        loginUsingCredentials(loginCredentialsBody: LoginCredentialsBody, options?: any): AxiosPromise<void> {
-            return localVarFp.loginUsingCredentials(loginCredentialsBody, options).then((request) => request(axios, basePath));
+        loginUsingCredentials(requestParameters: AccountApiLoginUsingCredentialsRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.loginUsingCredentials(requestParameters.loginCredentialsBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {LoginGoogleBody} loginGoogleBody 
+         * @param {AccountApiLoginUsingGoogleRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        loginUsingGoogle(loginGoogleBody: LoginGoogleBody, options?: any): AxiosPromise<void> {
-            return localVarFp.loginUsingGoogle(loginGoogleBody, options).then((request) => request(axios, basePath));
+        loginUsingGoogle(requestParameters: AccountApiLoginUsingGoogleRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.loginUsingGoogle(requestParameters.loginGoogleBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {LoginLinkBody} loginLinkBody 
+         * @param {AccountApiLoginUsingLinkRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        loginUsingLink(loginLinkBody: LoginLinkBody, options?: any): AxiosPromise<void> {
-            return localVarFp.loginUsingLink(loginLinkBody, options).then((request) => request(axios, basePath));
+        loginUsingLink(requestParameters: AccountApiLoginUsingLinkRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.loginUsingLink(requestParameters.loginLinkBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        logout(options?: any): AxiosPromise<void> {
+        logout(options?: AxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.logout(options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {LoginSendLinkBody} loginSendLinkBody 
+         * @param {AccountApiSendLoginLinkRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        sendLoginLink(loginSendLinkBody: LoginSendLinkBody, options?: any): AxiosPromise<void> {
-            return localVarFp.sendLoginLink(loginSendLinkBody, options).then((request) => request(axios, basePath));
+        sendLoginLink(requestParameters: AccountApiSendLoginLinkRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.sendLoginLink(requestParameters.loginSendLinkBody, options).then((request) => request(axios, basePath));
         },
     };
 };
+
+
+/**
+ * Request parameters for loginUsingCredentials operation in AccountApi.
+ * @export
+ * @interface AccountApiLoginUsingCredentialsRequest
+ */
+export interface AccountApiLoginUsingCredentialsRequest {
+    /**
+     * 
+     * @type {LoginCredentialsBody}
+     * @memberof AccountApiLoginUsingCredentials
+     */
+    readonly loginCredentialsBody: LoginCredentialsBody
+}
+
+
+/**
+ * Request parameters for loginUsingGoogle operation in AccountApi.
+ * @export
+ * @interface AccountApiLoginUsingGoogleRequest
+ */
+export interface AccountApiLoginUsingGoogleRequest {
+    /**
+     * 
+     * @type {LoginGoogleBody}
+     * @memberof AccountApiLoginUsingGoogle
+     */
+    readonly loginGoogleBody: LoginGoogleBody
+}
+
+
+/**
+ * Request parameters for loginUsingLink operation in AccountApi.
+ * @export
+ * @interface AccountApiLoginUsingLinkRequest
+ */
+export interface AccountApiLoginUsingLinkRequest {
+    /**
+     * 
+     * @type {LoginLinkBody}
+     * @memberof AccountApiLoginUsingLink
+     */
+    readonly loginLinkBody: LoginLinkBody
+}
+
+
+
+/**
+ * Request parameters for sendLoginLink operation in AccountApi.
+ * @export
+ * @interface AccountApiSendLoginLinkRequest
+ */
+export interface AccountApiSendLoginLinkRequest {
+    /**
+     * 
+     * @type {LoginSendLinkBody}
+     * @memberof AccountApiSendLoginLink
+     */
+    readonly loginSendLinkBody: LoginSendLinkBody
+}
+
 
 /**
  * AccountApi - object-oriented interface
@@ -3204,7 +3268,7 @@ export class AccountApi extends BaseAPI {
 
     /**
      * 
-     * @param {LoginCredentialsBody} loginCredentialsBody 
+     * @param {AccountApiLoginUsingCredentialsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccountApi
@@ -3215,7 +3279,7 @@ export class AccountApi extends BaseAPI {
 
     /**
      * 
-     * @param {LoginGoogleBody} loginGoogleBody 
+     * @param {AccountApiLoginUsingGoogleRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccountApi
@@ -3226,7 +3290,7 @@ export class AccountApi extends BaseAPI {
 
     /**
      * 
-     * @param {LoginLinkBody} loginLinkBody 
+     * @param {AccountApiLoginUsingLinkRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccountApi
@@ -3247,7 +3311,7 @@ export class AccountApi extends BaseAPI {
 
     /**
      * 
-     * @param {LoginSendLinkBody} loginSendLinkBody 
+     * @param {AccountApiSendLoginLinkRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AccountApi
@@ -3256,6 +3320,7 @@ export class AccountApi extends BaseAPI {
         return AccountApiFp(this.configuration).sendLoginLink(loginSendLinkBody, options).then((request) => request(this.axios, this.basePath));
     }
 }
+
 
 
 /**
@@ -4535,260 +4600,796 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
     return {
         /**
          * 
-         * @param {number} eventId 
-         * @param {number} memberId 
-         * @param {object} body 
+         * @param {EventsApiAddEventAttendeeRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addEventAttendee(eventId: number, memberId: number, body: object, options?: any): AxiosPromise<void> {
-            return localVarFp.addEventAttendee(eventId, memberId, body, options).then((request) => request(axios, basePath));
+        addEventAttendee(requestParameters: EventsApiAddEventAttendeeRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.addEventAttendee(requestParameters.eventId, requestParameters.memberId, requestParameters.body, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} eventId 
-         * @param {string} expenseId 
-         * @param {object} body 
+         * @param {EventsApiAddEventExpenseRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addEventExpense(eventId: number, expenseId: string, body: object, options?: any): AxiosPromise<void> {
-            return localVarFp.addEventExpense(eventId, expenseId, body, options).then((request) => request(axios, basePath));
+        addEventExpense(requestParameters: EventsApiAddEventExpenseRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.addEventExpense(requestParameters.eventId, requestParameters.expenseId, requestParameters.body, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {EventStatusChangeBody} eventStatusChangeBody 
+         * @param {EventsApiCancelEventRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        cancelEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: any): AxiosPromise<void> {
-            return localVarFp.cancelEvent(id, eventStatusChangeBody, options).then((request) => request(axios, basePath));
+        cancelEvent(requestParameters: EventsApiCancelEventRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.cancelEvent(requestParameters.id, requestParameters.eventStatusChangeBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {EventCreateBody} eventCreateBody 
+         * @param {EventsApiCreateEventRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createEvent(eventCreateBody: EventCreateBody, options?: any): AxiosPromise<EventResponse> {
-            return localVarFp.createEvent(eventCreateBody, options).then((request) => request(axios, basePath));
+        createEvent(requestParameters: EventsApiCreateEventRequest, options?: AxiosRequestConfig): AxiosPromise<EventResponse> {
+            return localVarFp.createEvent(requestParameters.eventCreateBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {EventsApiDeleteEventRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteEvent(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.deleteEvent(id, options).then((request) => request(axios, basePath));
+        deleteEvent(requestParameters: EventsApiDeleteEventRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteEvent(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} eventId 
-         * @param {number} memberId 
+         * @param {EventsApiDeleteEventAttendeeRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteEventAttendee(eventId: number, memberId: number, options?: any): AxiosPromise<void> {
-            return localVarFp.deleteEventAttendee(eventId, memberId, options).then((request) => request(axios, basePath));
+        deleteEventAttendee(requestParameters: EventsApiDeleteEventAttendeeRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteEventAttendee(requestParameters.eventId, requestParameters.memberId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} eventId 
-         * @param {string} expenseId 
+         * @param {EventsApiDeleteEventExpenseRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteEventExpense(eventId: number, expenseId: string, options?: any): AxiosPromise<void> {
-            return localVarFp.deleteEventExpense(eventId, expenseId, options).then((request) => request(axios, basePath));
+        deleteEventExpense(requestParameters: EventsApiDeleteEventExpenseRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteEventExpense(requestParameters.eventId, requestParameters.expenseId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {EventsApiDeleteEventRegistrationRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteEventRegistration(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.deleteEventRegistration(id, options).then((request) => request(axios, basePath));
+        deleteEventRegistration(requestParameters: EventsApiDeleteEventRegistrationRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteEventRegistration(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getCPVEvents(options?: any): AxiosPromise<Array<CPVEventResponseWithLinks>> {
+        getCPVEvents(options?: AxiosRequestConfig): AxiosPromise<Array<CPVEventResponseWithLinks>> {
             return localVarFp.getCPVEvents(options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {EventsApiGetEventRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEvent(id: number, options?: any): AxiosPromise<EventResponseWithLinks> {
-            return localVarFp.getEvent(id, options).then((request) => request(axios, basePath));
+        getEvent(requestParameters: EventsApiGetEventRequest, options?: AxiosRequestConfig): AxiosPromise<EventResponseWithLinks> {
+            return localVarFp.getEvent(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {EventsApiGetEventRegistrationRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEventRegistration(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.getEventRegistration(id, options).then((request) => request(axios, basePath));
+        getEventRegistration(requestParameters: EventsApiGetEventRegistrationRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.getEventRegistration(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {EventsApiGetEventReportRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEventReport(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.getEventReport(id, options).then((request) => request(axios, basePath));
+        getEventReport(requestParameters: EventsApiGetEventReportRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.getEventReport(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEventsYears(options?: any): AxiosPromise<Array<number>> {
+        getEventsYears(options?: AxiosRequestConfig): AxiosPromise<Array<number>> {
             return localVarFp.getEventsYears(options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {EventsApiLeadEventRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        leadEvent(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.leadEvent(id, options).then((request) => request(axios, basePath));
+        leadEvent(requestParameters: EventsApiLeadEventRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.leadEvent(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} eventId 
+         * @param {EventsApiListEventAttendeesRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEventAttendees(eventId: number, options?: any): AxiosPromise<EventAttendeeResponseWithLinks> {
-            return localVarFp.listEventAttendees(eventId, options).then((request) => request(axios, basePath));
+        listEventAttendees(requestParameters: EventsApiListEventAttendeesRequest, options?: AxiosRequestConfig): AxiosPromise<EventAttendeeResponseWithLinks> {
+            return localVarFp.listEventAttendees(requestParameters.eventId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} eventId 
+         * @param {EventsApiListEventExpensesRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEventExpenses(eventId: number, options?: any): AxiosPromise<EventExpenseResponseWithLinks> {
-            return localVarFp.listEventExpenses(eventId, options).then((request) => request(axios, basePath));
+        listEventExpenses(requestParameters: EventsApiListEventExpensesRequest, options?: AxiosRequestConfig): AxiosPromise<EventExpenseResponseWithLinks> {
+            return localVarFp.listEventExpenses(requestParameters.eventId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} [year] 
-         * @param {string} [status] 
-         * @param {string} [search] 
-         * @param {boolean} [my] 
-         * @param {boolean} [noleader] 
+         * @param {EventsApiListEventsRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEvents(year?: number, status?: string, search?: string, my?: boolean, noleader?: boolean, options?: any): AxiosPromise<Array<EventResponseWithLinks>> {
-            return localVarFp.listEvents(year, status, search, my, noleader, options).then((request) => request(axios, basePath));
+        listEvents(requestParameters: EventsApiListEventsRequest = {}, options?: AxiosRequestConfig): AxiosPromise<Array<EventResponseWithLinks>> {
+            return localVarFp.listEvents(requestParameters.year, requestParameters.status, requestParameters.search, requestParameters.my, requestParameters.noleader, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {EventStatusChangeBody} eventStatusChangeBody 
+         * @param {EventsApiPublishEventRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        publishEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: any): AxiosPromise<void> {
-            return localVarFp.publishEvent(id, eventStatusChangeBody, options).then((request) => request(axios, basePath));
+        publishEvent(requestParameters: EventsApiPublishEventRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.publishEvent(requestParameters.id, requestParameters.eventStatusChangeBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {EventStatusChangeBody} eventStatusChangeBody 
+         * @param {EventsApiRejectEventRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        rejectEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: any): AxiosPromise<void> {
-            return localVarFp.rejectEvent(id, eventStatusChangeBody, options).then((request) => request(axios, basePath));
+        rejectEvent(requestParameters: EventsApiRejectEventRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.rejectEvent(requestParameters.id, requestParameters.eventStatusChangeBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {SaveEventRegistrationRequest} saveEventRegistrationRequest 
+         * @param {EventsApiSaveEventRegistrationRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        saveEventRegistration(id: number, saveEventRegistrationRequest: SaveEventRegistrationRequest, options?: any): AxiosPromise<void> {
-            return localVarFp.saveEventRegistration(id, saveEventRegistrationRequest, options).then((request) => request(axios, basePath));
+        saveEventRegistration(requestParameters: EventsApiSaveEventRegistrationRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.saveEventRegistration(requestParameters.id, requestParameters.saveEventRegistrationRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {EventStatusChangeBody} eventStatusChangeBody 
+         * @param {EventsApiSubmitEventRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        submitEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: any): AxiosPromise<void> {
-            return localVarFp.submitEvent(id, eventStatusChangeBody, options).then((request) => request(axios, basePath));
+        submitEvent(requestParameters: EventsApiSubmitEventRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.submitEvent(requestParameters.id, requestParameters.eventStatusChangeBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {EventStatusChangeBody} eventStatusChangeBody 
+         * @param {EventsApiUncancelEventRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        uncancelEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: any): AxiosPromise<void> {
-            return localVarFp.uncancelEvent(id, eventStatusChangeBody, options).then((request) => request(axios, basePath));
+        uncancelEvent(requestParameters: EventsApiUncancelEventRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.uncancelEvent(requestParameters.id, requestParameters.eventStatusChangeBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {EventStatusChangeBody} eventStatusChangeBody 
+         * @param {EventsApiUnpublishEventRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        unpublishEvent(id: number, eventStatusChangeBody: EventStatusChangeBody, options?: any): AxiosPromise<void> {
-            return localVarFp.unpublishEvent(id, eventStatusChangeBody, options).then((request) => request(axios, basePath));
+        unpublishEvent(requestParameters: EventsApiUnpublishEventRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.unpublishEvent(requestParameters.id, requestParameters.eventStatusChangeBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {EventUpdateBody} eventUpdateBody 
+         * @param {EventsApiUpdateEventRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateEvent(id: number, eventUpdateBody: EventUpdateBody, options?: any): AxiosPromise<void> {
-            return localVarFp.updateEvent(id, eventUpdateBody, options).then((request) => request(axios, basePath));
+        updateEvent(requestParameters: EventsApiUpdateEventRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.updateEvent(requestParameters.id, requestParameters.eventUpdateBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} eventId 
-         * @param {number} memberId 
-         * @param {object} body 
+         * @param {EventsApiUpdateEventAttendeeRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateEventAttendee(eventId: number, memberId: number, body: object, options?: any): AxiosPromise<void> {
-            return localVarFp.updateEventAttendee(eventId, memberId, body, options).then((request) => request(axios, basePath));
+        updateEventAttendee(requestParameters: EventsApiUpdateEventAttendeeRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.updateEventAttendee(requestParameters.eventId, requestParameters.memberId, requestParameters.body, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} eventId 
-         * @param {string} expenseId 
-         * @param {object} body 
+         * @param {EventsApiUpdateEventExpenseRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateEventExpense(eventId: number, expenseId: string, body: object, options?: any): AxiosPromise<void> {
-            return localVarFp.updateEventExpense(eventId, expenseId, body, options).then((request) => request(axios, basePath));
+        updateEventExpense(requestParameters: EventsApiUpdateEventExpenseRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.updateEventExpense(requestParameters.eventId, requestParameters.expenseId, requestParameters.body, options).then((request) => request(axios, basePath));
         },
     };
 };
+
+/**
+ * Request parameters for addEventAttendee operation in EventsApi.
+ * @export
+ * @interface EventsApiAddEventAttendeeRequest
+ */
+export interface EventsApiAddEventAttendeeRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiAddEventAttendee
+     */
+    readonly eventId: number
+
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiAddEventAttendee
+     */
+    readonly memberId: number
+
+    /**
+     * 
+     * @type {object}
+     * @memberof EventsApiAddEventAttendee
+     */
+    readonly body: object
+}
+
+
+/**
+ * Request parameters for addEventExpense operation in EventsApi.
+ * @export
+ * @interface EventsApiAddEventExpenseRequest
+ */
+export interface EventsApiAddEventExpenseRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiAddEventExpense
+     */
+    readonly eventId: number
+
+    /**
+     * 
+     * @type {string}
+     * @memberof EventsApiAddEventExpense
+     */
+    readonly expenseId: string
+
+    /**
+     * 
+     * @type {object}
+     * @memberof EventsApiAddEventExpense
+     */
+    readonly body: object
+}
+
+
+/**
+ * Request parameters for cancelEvent operation in EventsApi.
+ * @export
+ * @interface EventsApiCancelEventRequest
+ */
+export interface EventsApiCancelEventRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiCancelEvent
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {EventStatusChangeBody}
+     * @memberof EventsApiCancelEvent
+     */
+    readonly eventStatusChangeBody: EventStatusChangeBody
+}
+
+
+/**
+ * Request parameters for createEvent operation in EventsApi.
+ * @export
+ * @interface EventsApiCreateEventRequest
+ */
+export interface EventsApiCreateEventRequest {
+    /**
+     * 
+     * @type {EventCreateBody}
+     * @memberof EventsApiCreateEvent
+     */
+    readonly eventCreateBody: EventCreateBody
+}
+
+
+/**
+ * Request parameters for deleteEvent operation in EventsApi.
+ * @export
+ * @interface EventsApiDeleteEventRequest
+ */
+export interface EventsApiDeleteEventRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiDeleteEvent
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for deleteEventAttendee operation in EventsApi.
+ * @export
+ * @interface EventsApiDeleteEventAttendeeRequest
+ */
+export interface EventsApiDeleteEventAttendeeRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiDeleteEventAttendee
+     */
+    readonly eventId: number
+
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiDeleteEventAttendee
+     */
+    readonly memberId: number
+}
+
+
+/**
+ * Request parameters for deleteEventExpense operation in EventsApi.
+ * @export
+ * @interface EventsApiDeleteEventExpenseRequest
+ */
+export interface EventsApiDeleteEventExpenseRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiDeleteEventExpense
+     */
+    readonly eventId: number
+
+    /**
+     * 
+     * @type {string}
+     * @memberof EventsApiDeleteEventExpense
+     */
+    readonly expenseId: string
+}
+
+
+/**
+ * Request parameters for deleteEventRegistration operation in EventsApi.
+ * @export
+ * @interface EventsApiDeleteEventRegistrationRequest
+ */
+export interface EventsApiDeleteEventRegistrationRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiDeleteEventRegistration
+     */
+    readonly id: number
+}
+
+
+
+/**
+ * Request parameters for getEvent operation in EventsApi.
+ * @export
+ * @interface EventsApiGetEventRequest
+ */
+export interface EventsApiGetEventRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiGetEvent
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for getEventRegistration operation in EventsApi.
+ * @export
+ * @interface EventsApiGetEventRegistrationRequest
+ */
+export interface EventsApiGetEventRegistrationRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiGetEventRegistration
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for getEventReport operation in EventsApi.
+ * @export
+ * @interface EventsApiGetEventReportRequest
+ */
+export interface EventsApiGetEventReportRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiGetEventReport
+     */
+    readonly id: number
+}
+
+
+
+/**
+ * Request parameters for leadEvent operation in EventsApi.
+ * @export
+ * @interface EventsApiLeadEventRequest
+ */
+export interface EventsApiLeadEventRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiLeadEvent
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for listEventAttendees operation in EventsApi.
+ * @export
+ * @interface EventsApiListEventAttendeesRequest
+ */
+export interface EventsApiListEventAttendeesRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiListEventAttendees
+     */
+    readonly eventId: number
+}
+
+
+/**
+ * Request parameters for listEventExpenses operation in EventsApi.
+ * @export
+ * @interface EventsApiListEventExpensesRequest
+ */
+export interface EventsApiListEventExpensesRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiListEventExpenses
+     */
+    readonly eventId: number
+}
+
+
+/**
+ * Request parameters for listEvents operation in EventsApi.
+ * @export
+ * @interface EventsApiListEventsRequest
+ */
+export interface EventsApiListEventsRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiListEvents
+     */
+    readonly year?: number
+
+    /**
+     * 
+     * @type {string}
+     * @memberof EventsApiListEvents
+     */
+    readonly status?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof EventsApiListEvents
+     */
+    readonly search?: string
+
+    /**
+     * 
+     * @type {boolean}
+     * @memberof EventsApiListEvents
+     */
+    readonly my?: boolean
+
+    /**
+     * 
+     * @type {boolean}
+     * @memberof EventsApiListEvents
+     */
+    readonly noleader?: boolean
+}
+
+
+/**
+ * Query parameters for listEvents operation in EventsApi.
+ * @export
+ * @interface EventsApiListEventsQueryParams
+ */
+export interface EventsApiListEventsQueryParams {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiListEvents
+     */
+    readonly year?: number
+
+    /**
+     * 
+     * @type {string}
+     * @memberof EventsApiListEvents
+     */
+    readonly status?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof EventsApiListEvents
+     */
+    readonly search?: string
+
+    /**
+     * 
+     * @type {boolean}
+     * @memberof EventsApiListEvents
+     */
+    readonly my?: boolean
+
+    /**
+     * 
+     * @type {boolean}
+     * @memberof EventsApiListEvents
+     */
+    readonly noleader?: boolean
+}
+
+/**
+ * Request parameters for publishEvent operation in EventsApi.
+ * @export
+ * @interface EventsApiPublishEventRequest
+ */
+export interface EventsApiPublishEventRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiPublishEvent
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {EventStatusChangeBody}
+     * @memberof EventsApiPublishEvent
+     */
+    readonly eventStatusChangeBody: EventStatusChangeBody
+}
+
+
+/**
+ * Request parameters for rejectEvent operation in EventsApi.
+ * @export
+ * @interface EventsApiRejectEventRequest
+ */
+export interface EventsApiRejectEventRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiRejectEvent
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {EventStatusChangeBody}
+     * @memberof EventsApiRejectEvent
+     */
+    readonly eventStatusChangeBody: EventStatusChangeBody
+}
+
+
+/**
+ * Request parameters for saveEventRegistration operation in EventsApi.
+ * @export
+ * @interface EventsApiSaveEventRegistrationRequest
+ */
+export interface EventsApiSaveEventRegistrationRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiSaveEventRegistration
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {SaveEventRegistrationRequest}
+     * @memberof EventsApiSaveEventRegistration
+     */
+    readonly saveEventRegistrationRequest: SaveEventRegistrationRequest
+}
+
+
+/**
+ * Request parameters for submitEvent operation in EventsApi.
+ * @export
+ * @interface EventsApiSubmitEventRequest
+ */
+export interface EventsApiSubmitEventRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiSubmitEvent
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {EventStatusChangeBody}
+     * @memberof EventsApiSubmitEvent
+     */
+    readonly eventStatusChangeBody: EventStatusChangeBody
+}
+
+
+/**
+ * Request parameters for uncancelEvent operation in EventsApi.
+ * @export
+ * @interface EventsApiUncancelEventRequest
+ */
+export interface EventsApiUncancelEventRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiUncancelEvent
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {EventStatusChangeBody}
+     * @memberof EventsApiUncancelEvent
+     */
+    readonly eventStatusChangeBody: EventStatusChangeBody
+}
+
+
+/**
+ * Request parameters for unpublishEvent operation in EventsApi.
+ * @export
+ * @interface EventsApiUnpublishEventRequest
+ */
+export interface EventsApiUnpublishEventRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiUnpublishEvent
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {EventStatusChangeBody}
+     * @memberof EventsApiUnpublishEvent
+     */
+    readonly eventStatusChangeBody: EventStatusChangeBody
+}
+
+
+/**
+ * Request parameters for updateEvent operation in EventsApi.
+ * @export
+ * @interface EventsApiUpdateEventRequest
+ */
+export interface EventsApiUpdateEventRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiUpdateEvent
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {EventUpdateBody}
+     * @memberof EventsApiUpdateEvent
+     */
+    readonly eventUpdateBody: EventUpdateBody
+}
+
+
+/**
+ * Request parameters for updateEventAttendee operation in EventsApi.
+ * @export
+ * @interface EventsApiUpdateEventAttendeeRequest
+ */
+export interface EventsApiUpdateEventAttendeeRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiUpdateEventAttendee
+     */
+    readonly eventId: number
+
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiUpdateEventAttendee
+     */
+    readonly memberId: number
+
+    /**
+     * 
+     * @type {object}
+     * @memberof EventsApiUpdateEventAttendee
+     */
+    readonly body: object
+}
+
+
+/**
+ * Request parameters for updateEventExpense operation in EventsApi.
+ * @export
+ * @interface EventsApiUpdateEventExpenseRequest
+ */
+export interface EventsApiUpdateEventExpenseRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof EventsApiUpdateEventExpense
+     */
+    readonly eventId: number
+
+    /**
+     * 
+     * @type {string}
+     * @memberof EventsApiUpdateEventExpense
+     */
+    readonly expenseId: string
+
+    /**
+     * 
+     * @type {object}
+     * @memberof EventsApiUpdateEventExpense
+     */
+    readonly body: object
+}
+
 
 /**
  * EventsApi - object-oriented interface
@@ -4799,9 +5400,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
 export class EventsApi extends BaseAPI {
     /**
      * 
-     * @param {number} eventId 
-     * @param {number} memberId 
-     * @param {object} body 
+     * @param {EventsApiAddEventAttendeeRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4812,9 +5411,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} eventId 
-     * @param {string} expenseId 
-     * @param {object} body 
+     * @param {EventsApiAddEventExpenseRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4825,8 +5422,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {EventStatusChangeBody} eventStatusChangeBody 
+     * @param {EventsApiCancelEventRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4837,7 +5433,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {EventCreateBody} eventCreateBody 
+     * @param {EventsApiCreateEventRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4848,7 +5444,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {EventsApiDeleteEventRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4859,8 +5455,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} eventId 
-     * @param {number} memberId 
+     * @param {EventsApiDeleteEventAttendeeRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4871,8 +5466,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} eventId 
-     * @param {string} expenseId 
+     * @param {EventsApiDeleteEventExpenseRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4883,7 +5477,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {EventsApiDeleteEventRegistrationRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4904,7 +5498,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {EventsApiGetEventRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4915,7 +5509,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {EventsApiGetEventRegistrationRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4926,7 +5520,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {EventsApiGetEventReportRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4947,7 +5541,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {EventsApiLeadEventRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4958,7 +5552,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} eventId 
+     * @param {EventsApiListEventAttendeesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4969,7 +5563,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} eventId 
+     * @param {EventsApiListEventExpensesRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -4980,23 +5574,18 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} [year] 
-     * @param {string} [status] 
-     * @param {string} [search] 
-     * @param {boolean} [my] 
-     * @param {boolean} [noleader] 
+     * @param {EventsApiListEventsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
      */
-    public listEvents(year?: number, status?: string, search?: string, my?: boolean, noleader?: boolean, options?: AxiosRequestConfig) {
-        return EventsApiFp(this.configuration).listEvents(year, status, search, my, noleader, options).then((request) => request(this.axios, this.basePath));
+    public listEvents(queryParams: EventsApiListEventsQueryParams = {}, options?: AxiosRequestConfig) {
+        return EventsApiFp(this.configuration).listEvents(queryParams.year, queryParams.status, queryParams.search, queryParams.my, queryParams.noleader, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {number} id 
-     * @param {EventStatusChangeBody} eventStatusChangeBody 
+     * @param {EventsApiPublishEventRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -5007,8 +5596,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {EventStatusChangeBody} eventStatusChangeBody 
+     * @param {EventsApiRejectEventRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -5019,8 +5607,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {SaveEventRegistrationRequest} saveEventRegistrationRequest 
+     * @param {EventsApiSaveEventRegistrationRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -5031,8 +5618,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {EventStatusChangeBody} eventStatusChangeBody 
+     * @param {EventsApiSubmitEventRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -5043,8 +5629,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {EventStatusChangeBody} eventStatusChangeBody 
+     * @param {EventsApiUncancelEventRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -5055,8 +5640,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {EventStatusChangeBody} eventStatusChangeBody 
+     * @param {EventsApiUnpublishEventRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -5067,8 +5651,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {EventUpdateBody} eventUpdateBody 
+     * @param {EventsApiUpdateEventRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -5079,9 +5662,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} eventId 
-     * @param {number} memberId 
-     * @param {object} body 
+     * @param {EventsApiUpdateEventAttendeeRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -5092,9 +5673,7 @@ export class EventsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} eventId 
-     * @param {string} expenseId 
-     * @param {object} body 
+     * @param {EventsApiUpdateEventExpenseRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EventsApi
@@ -5103,6 +5682,7 @@ export class EventsApi extends BaseAPI {
         return EventsApiFp(this.configuration).updateEventExpense(eventId, expenseId, body, options).then((request) => request(this.axios, this.basePath));
     }
 }
+
 
 
 /**
@@ -5869,156 +6449,452 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * 
-         * @param {number} id 
-         * @param {CreateContactBody} createContactBody 
+         * @param {MembersApiCreateContactRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createContact(id: number, createContactBody: CreateContactBody, options?: any): AxiosPromise<MemberContactResponseWithLinks> {
-            return localVarFp.createContact(id, createContactBody, options).then((request) => request(axios, basePath));
+        createContact(requestParameters: MembersApiCreateContactRequest, options?: AxiosRequestConfig): AxiosPromise<MemberContactResponseWithLinks> {
+            return localVarFp.createContact(requestParameters.id, requestParameters.createContactBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {CreateGroupBody} createGroupBody 
+         * @param {MembersApiCreateGroupRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createGroup(createGroupBody: CreateGroupBody, options?: any): AxiosPromise<GroupResponseWithLinks> {
-            return localVarFp.createGroup(createGroupBody, options).then((request) => request(axios, basePath));
+        createGroup(requestParameters: MembersApiCreateGroupRequest, options?: AxiosRequestConfig): AxiosPromise<GroupResponseWithLinks> {
+            return localVarFp.createGroup(requestParameters.createGroupBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {MemberCreateBody} memberCreateBody 
+         * @param {MembersApiCreateMemberRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createMember(memberCreateBody: MemberCreateBody, options?: any): AxiosPromise<MemberResponseWithLinks> {
-            return localVarFp.createMember(memberCreateBody, options).then((request) => request(axios, basePath));
+        createMember(requestParameters: MembersApiCreateMemberRequest, options?: AxiosRequestConfig): AxiosPromise<MemberResponseWithLinks> {
+            return localVarFp.createMember(requestParameters.memberCreateBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {number} contactId 
+         * @param {MembersApiDeleteContactRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteContact(id: number, contactId: number, options?: any): AxiosPromise<MemberContactResponseWithLinks> {
-            return localVarFp.deleteContact(id, contactId, options).then((request) => request(axios, basePath));
+        deleteContact(requestParameters: MembersApiDeleteContactRequest, options?: AxiosRequestConfig): AxiosPromise<MemberContactResponseWithLinks> {
+            return localVarFp.deleteContact(requestParameters.id, requestParameters.contactId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {MembersApiDeleteGroupRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteGroup(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.deleteGroup(id, options).then((request) => request(axios, basePath));
+        deleteGroup(requestParameters: MembersApiDeleteGroupRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteGroup(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {MembersApiDeleteInsuranceCardRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteInsuranceCard(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.deleteInsuranceCard(id, options).then((request) => request(axios, basePath));
+        deleteInsuranceCard(requestParameters: MembersApiDeleteInsuranceCardRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteInsuranceCard(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {MembersApiDeleteMemberRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteMember(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.deleteMember(id, options).then((request) => request(axios, basePath));
+        deleteMember(requestParameters: MembersApiDeleteMemberRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteMember(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {MembersApiGetGroupRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getGroup(id: number, options?: any): AxiosPromise<GroupResponseWithLinks> {
-            return localVarFp.getGroup(id, options).then((request) => request(axios, basePath));
+        getGroup(requestParameters: MembersApiGetGroupRequest, options?: AxiosRequestConfig): AxiosPromise<GroupResponseWithLinks> {
+            return localVarFp.getGroup(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {MembersApiGetInsuranceCardRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getInsuranceCard(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.getInsuranceCard(id, options).then((request) => request(axios, basePath));
+        getInsuranceCard(requestParameters: MembersApiGetInsuranceCardRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.getInsuranceCard(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {MembersApiGetMemberRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMember(id: number, options?: any): AxiosPromise<MemberResponseWithLinks> {
-            return localVarFp.getMember(id, options).then((request) => request(axios, basePath));
+        getMember(requestParameters: MembersApiGetMemberRequest, options?: AxiosRequestConfig): AxiosPromise<MemberResponseWithLinks> {
+            return localVarFp.getMember(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {MembersApiListContactsRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listContacts(id: number, options?: any): AxiosPromise<Array<MemberContactResponseWithLinks>> {
-            return localVarFp.listContacts(id, options).then((request) => request(axios, basePath));
+        listContacts(requestParameters: MembersApiListContactsRequest, options?: AxiosRequestConfig): AxiosPromise<Array<MemberContactResponseWithLinks>> {
+            return localVarFp.listContacts(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listGroups(options?: any): AxiosPromise<Array<GroupResponseWithLinks>> {
+        listGroups(options?: AxiosRequestConfig): AxiosPromise<Array<GroupResponseWithLinks>> {
             return localVarFp.listGroups(options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} [group] 
-         * @param {string} [search] 
-         * @param {number} [limit] 
+         * @param {MembersApiListMembersRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMembers(group?: number, search?: string, limit?: number, options?: any): AxiosPromise<Array<MemberResponseWithLinks>> {
-            return localVarFp.listMembers(group, search, limit, options).then((request) => request(axios, basePath));
+        listMembers(requestParameters: MembersApiListMembersRequest = {}, options?: AxiosRequestConfig): AxiosPromise<Array<MemberResponseWithLinks>> {
+            return localVarFp.listMembers(requestParameters.group, requestParameters.search, requestParameters.limit, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {UpdateGroupBody} updateGroupBody 
+         * @param {MembersApiUpdateGroupRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateGroup(id: number, updateGroupBody: UpdateGroupBody, options?: any): AxiosPromise<void> {
-            return localVarFp.updateGroup(id, updateGroupBody, options).then((request) => request(axios, basePath));
+        updateGroup(requestParameters: MembersApiUpdateGroupRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.updateGroup(requestParameters.id, requestParameters.updateGroupBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {MemberUpdateBody} memberUpdateBody 
+         * @param {MembersApiUpdateMemberRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateMember(id: number, memberUpdateBody: MemberUpdateBody, options?: any): AxiosPromise<void> {
-            return localVarFp.updateMember(id, memberUpdateBody, options).then((request) => request(axios, basePath));
+        updateMember(requestParameters: MembersApiUpdateMemberRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.updateMember(requestParameters.id, requestParameters.memberUpdateBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {File} [file] 
+         * @param {MembersApiUploadInsuranceCardRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        uploadInsuranceCard(id: number, file?: File, options?: any): AxiosPromise<void> {
-            return localVarFp.uploadInsuranceCard(id, file, options).then((request) => request(axios, basePath));
+        uploadInsuranceCard(requestParameters: MembersApiUploadInsuranceCardRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.uploadInsuranceCard(requestParameters.id, requestParameters.file, options).then((request) => request(axios, basePath));
         },
     };
 };
+
+/**
+ * Request parameters for createContact operation in MembersApi.
+ * @export
+ * @interface MembersApiCreateContactRequest
+ */
+export interface MembersApiCreateContactRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiCreateContact
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {CreateContactBody}
+     * @memberof MembersApiCreateContact
+     */
+    readonly createContactBody: CreateContactBody
+}
+
+
+/**
+ * Request parameters for createGroup operation in MembersApi.
+ * @export
+ * @interface MembersApiCreateGroupRequest
+ */
+export interface MembersApiCreateGroupRequest {
+    /**
+     * 
+     * @type {CreateGroupBody}
+     * @memberof MembersApiCreateGroup
+     */
+    readonly createGroupBody: CreateGroupBody
+}
+
+
+/**
+ * Request parameters for createMember operation in MembersApi.
+ * @export
+ * @interface MembersApiCreateMemberRequest
+ */
+export interface MembersApiCreateMemberRequest {
+    /**
+     * 
+     * @type {MemberCreateBody}
+     * @memberof MembersApiCreateMember
+     */
+    readonly memberCreateBody: MemberCreateBody
+}
+
+
+/**
+ * Request parameters for deleteContact operation in MembersApi.
+ * @export
+ * @interface MembersApiDeleteContactRequest
+ */
+export interface MembersApiDeleteContactRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiDeleteContact
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiDeleteContact
+     */
+    readonly contactId: number
+}
+
+
+/**
+ * Request parameters for deleteGroup operation in MembersApi.
+ * @export
+ * @interface MembersApiDeleteGroupRequest
+ */
+export interface MembersApiDeleteGroupRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiDeleteGroup
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for deleteInsuranceCard operation in MembersApi.
+ * @export
+ * @interface MembersApiDeleteInsuranceCardRequest
+ */
+export interface MembersApiDeleteInsuranceCardRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiDeleteInsuranceCard
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for deleteMember operation in MembersApi.
+ * @export
+ * @interface MembersApiDeleteMemberRequest
+ */
+export interface MembersApiDeleteMemberRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiDeleteMember
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for getGroup operation in MembersApi.
+ * @export
+ * @interface MembersApiGetGroupRequest
+ */
+export interface MembersApiGetGroupRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiGetGroup
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for getInsuranceCard operation in MembersApi.
+ * @export
+ * @interface MembersApiGetInsuranceCardRequest
+ */
+export interface MembersApiGetInsuranceCardRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiGetInsuranceCard
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for getMember operation in MembersApi.
+ * @export
+ * @interface MembersApiGetMemberRequest
+ */
+export interface MembersApiGetMemberRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiGetMember
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for listContacts operation in MembersApi.
+ * @export
+ * @interface MembersApiListContactsRequest
+ */
+export interface MembersApiListContactsRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiListContacts
+     */
+    readonly id: number
+}
+
+
+
+/**
+ * Request parameters for listMembers operation in MembersApi.
+ * @export
+ * @interface MembersApiListMembersRequest
+ */
+export interface MembersApiListMembersRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiListMembers
+     */
+    readonly group?: number
+
+    /**
+     * 
+     * @type {string}
+     * @memberof MembersApiListMembers
+     */
+    readonly search?: string
+
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiListMembers
+     */
+    readonly limit?: number
+}
+
+
+/**
+ * Query parameters for listMembers operation in MembersApi.
+ * @export
+ * @interface MembersApiListMembersQueryParams
+ */
+export interface MembersApiListMembersQueryParams {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiListMembers
+     */
+    readonly group?: number
+
+    /**
+     * 
+     * @type {string}
+     * @memberof MembersApiListMembers
+     */
+    readonly search?: string
+
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiListMembers
+     */
+    readonly limit?: number
+}
+
+/**
+ * Request parameters for updateGroup operation in MembersApi.
+ * @export
+ * @interface MembersApiUpdateGroupRequest
+ */
+export interface MembersApiUpdateGroupRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiUpdateGroup
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {UpdateGroupBody}
+     * @memberof MembersApiUpdateGroup
+     */
+    readonly updateGroupBody: UpdateGroupBody
+}
+
+
+/**
+ * Request parameters for updateMember operation in MembersApi.
+ * @export
+ * @interface MembersApiUpdateMemberRequest
+ */
+export interface MembersApiUpdateMemberRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiUpdateMember
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {MemberUpdateBody}
+     * @memberof MembersApiUpdateMember
+     */
+    readonly memberUpdateBody: MemberUpdateBody
+}
+
+
+/**
+ * Request parameters for uploadInsuranceCard operation in MembersApi.
+ * @export
+ * @interface MembersApiUploadInsuranceCardRequest
+ */
+export interface MembersApiUploadInsuranceCardRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiUploadInsuranceCard
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {File}
+     * @memberof MembersApiUploadInsuranceCard
+     */
+    readonly file?: File
+}
+
 
 /**
  * MembersApi - object-oriented interface
@@ -6029,8 +6905,7 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
 export class MembersApi extends BaseAPI {
     /**
      * 
-     * @param {number} id 
-     * @param {CreateContactBody} createContactBody 
+     * @param {MembersApiCreateContactRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
@@ -6041,7 +6916,7 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {CreateGroupBody} createGroupBody 
+     * @param {MembersApiCreateGroupRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
@@ -6052,7 +6927,7 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {MemberCreateBody} memberCreateBody 
+     * @param {MembersApiCreateMemberRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
@@ -6063,8 +6938,7 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {number} contactId 
+     * @param {MembersApiDeleteContactRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
@@ -6075,7 +6949,7 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {MembersApiDeleteGroupRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
@@ -6086,7 +6960,7 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {MembersApiDeleteInsuranceCardRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
@@ -6097,7 +6971,7 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {MembersApiDeleteMemberRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
@@ -6108,7 +6982,7 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {MembersApiGetGroupRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
@@ -6119,7 +6993,7 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {MembersApiGetInsuranceCardRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
@@ -6130,7 +7004,7 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {MembersApiGetMemberRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
@@ -6141,7 +7015,7 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {MembersApiListContactsRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
@@ -6162,21 +7036,18 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} [group] 
-     * @param {string} [search] 
-     * @param {number} [limit] 
+     * @param {MembersApiListMembersRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
      */
-    public listMembers(group?: number, search?: string, limit?: number, options?: AxiosRequestConfig) {
-        return MembersApiFp(this.configuration).listMembers(group, search, limit, options).then((request) => request(this.axios, this.basePath));
+    public listMembers(queryParams: MembersApiListMembersQueryParams = {}, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).listMembers(queryParams.group, queryParams.search, queryParams.limit, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {number} id 
-     * @param {UpdateGroupBody} updateGroupBody 
+     * @param {MembersApiUpdateGroupRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
@@ -6187,8 +7058,7 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {MemberUpdateBody} memberUpdateBody 
+     * @param {MembersApiUpdateMemberRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
@@ -6199,16 +7069,16 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {File} [file] 
+     * @param {MembersApiUploadInsuranceCardRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
      */
-    public uploadInsuranceCard(id: number, file?: File, options?: AxiosRequestConfig) {
+    public uploadInsuranceCard(id: number, file: File, options?: AxiosRequestConfig) {
         return MembersApiFp(this.configuration).uploadInsuranceCard(id, file, options).then((request) => request(this.axios, this.basePath));
     }
 }
+
 
 
 /**
@@ -6854,83 +7724,82 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
     return {
         /**
          * 
-         * @param {AlbumCreateBody} albumCreateBody 
+         * @param {PhotoGalleryApiCreateAlbumRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createAlbum(albumCreateBody: AlbumCreateBody, options?: any): AxiosPromise<AlbumResponseWithLinks> {
-            return localVarFp.createAlbum(albumCreateBody, options).then((request) => request(axios, basePath));
+        createAlbum(requestParameters: PhotoGalleryApiCreateAlbumRequest, options?: AxiosRequestConfig): AxiosPromise<AlbumResponseWithLinks> {
+            return localVarFp.createAlbum(requestParameters.albumCreateBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {PhotoCreateBody} photoCreateBody 
+         * @param {PhotoGalleryApiCreatePhotoRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPhoto(photoCreateBody: PhotoCreateBody, options?: any): AxiosPromise<void> {
-            return localVarFp.createPhoto(photoCreateBody, options).then((request) => request(axios, basePath));
+        createPhoto(requestParameters: PhotoGalleryApiCreatePhotoRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.createPhoto(requestParameters.photoCreateBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {PhotoGalleryApiDeleteAlbumRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteAlbum(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.deleteAlbum(id, options).then((request) => request(axios, basePath));
+        deleteAlbum(requestParameters: PhotoGalleryApiDeleteAlbumRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteAlbum(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {PhotoGalleryApiDeletePhotoRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePhoto(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.deletePhoto(id, options).then((request) => request(axios, basePath));
+        deletePhoto(requestParameters: PhotoGalleryApiDeletePhotoRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deletePhoto(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {PhotoGalleryApiGetAlbumRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAlbum(id: number, options?: any): AxiosPromise<AlbumResponseWithLinks> {
-            return localVarFp.getAlbum(id, options).then((request) => request(axios, basePath));
+        getAlbum(requestParameters: PhotoGalleryApiGetAlbumRequest, options?: AxiosRequestConfig): AxiosPromise<AlbumResponseWithLinks> {
+            return localVarFp.getAlbum(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {PhotoGalleryApiGetAlbumPhotosRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAlbumPhotos(id: number, options?: any): AxiosPromise<Array<PhotoResponseWithLinks>> {
-            return localVarFp.getAlbumPhotos(id, options).then((request) => request(axios, basePath));
+        getAlbumPhotos(requestParameters: PhotoGalleryApiGetAlbumPhotosRequest, options?: AxiosRequestConfig): AxiosPromise<Array<PhotoResponseWithLinks>> {
+            return localVarFp.getAlbumPhotos(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {PhotoGalleryApiGetPhotoRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPhoto(id: number, options?: any): AxiosPromise<PhotoResponseWithLinks> {
-            return localVarFp.getPhoto(id, options).then((request) => request(axios, basePath));
+        getPhoto(requestParameters: PhotoGalleryApiGetPhotoRequest, options?: AxiosRequestConfig): AxiosPromise<PhotoResponseWithLinks> {
+            return localVarFp.getPhoto(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {string} size 
+         * @param {PhotoGalleryApiGetPhotoImageRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPhotoImage(id: number, size: string, options?: any): AxiosPromise<void> {
-            return localVarFp.getPhotoImage(id, size, options).then((request) => request(axios, basePath));
+        getPhotoImage(requestParameters: PhotoGalleryApiGetPhotoImageRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.getPhotoImage(requestParameters.id, requestParameters.size, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listAlbums(options?: any): AxiosPromise<Array<AlbumResponseWithLinks>> {
+        listAlbums(options?: AxiosRequestConfig): AxiosPromise<Array<AlbumResponseWithLinks>> {
             return localVarFp.listAlbums(options).then((request) => request(axios, basePath));
         },
         /**
@@ -6938,49 +7807,250 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listPhotos(options?: any): AxiosPromise<Array<PhotoResponseWithLinks>> {
+        listPhotos(options?: AxiosRequestConfig): AxiosPromise<Array<PhotoResponseWithLinks>> {
             return localVarFp.listPhotos(options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {PhotoGalleryApiPublishAlbumRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        publishAlbum(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.publishAlbum(id, options).then((request) => request(axios, basePath));
+        publishAlbum(requestParameters: PhotoGalleryApiPublishAlbumRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.publishAlbum(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {PhotoGalleryApiUnpublishAlbumRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        unpublishAlbum(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.unpublishAlbum(id, options).then((request) => request(axios, basePath));
+        unpublishAlbum(requestParameters: PhotoGalleryApiUnpublishAlbumRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.unpublishAlbum(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {AlbumUpdateBody} albumUpdateBody 
+         * @param {PhotoGalleryApiUpdateAlbumRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateAlbum(id: number, albumUpdateBody: AlbumUpdateBody, options?: any): AxiosPromise<void> {
-            return localVarFp.updateAlbum(id, albumUpdateBody, options).then((request) => request(axios, basePath));
+        updateAlbum(requestParameters: PhotoGalleryApiUpdateAlbumRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.updateAlbum(requestParameters.id, requestParameters.albumUpdateBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {PhotoUpdateBody} photoUpdateBody 
+         * @param {PhotoGalleryApiUpdatePhotoRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePhoto(id: number, photoUpdateBody: PhotoUpdateBody, options?: any): AxiosPromise<void> {
-            return localVarFp.updatePhoto(id, photoUpdateBody, options).then((request) => request(axios, basePath));
+        updatePhoto(requestParameters: PhotoGalleryApiUpdatePhotoRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.updatePhoto(requestParameters.id, requestParameters.photoUpdateBody, options).then((request) => request(axios, basePath));
         },
     };
 };
+
+/**
+ * Request parameters for createAlbum operation in PhotoGalleryApi.
+ * @export
+ * @interface PhotoGalleryApiCreateAlbumRequest
+ */
+export interface PhotoGalleryApiCreateAlbumRequest {
+    /**
+     * 
+     * @type {AlbumCreateBody}
+     * @memberof PhotoGalleryApiCreateAlbum
+     */
+    readonly albumCreateBody: AlbumCreateBody
+}
+
+
+/**
+ * Request parameters for createPhoto operation in PhotoGalleryApi.
+ * @export
+ * @interface PhotoGalleryApiCreatePhotoRequest
+ */
+export interface PhotoGalleryApiCreatePhotoRequest {
+    /**
+     * 
+     * @type {PhotoCreateBody}
+     * @memberof PhotoGalleryApiCreatePhoto
+     */
+    readonly photoCreateBody: PhotoCreateBody
+}
+
+
+/**
+ * Request parameters for deleteAlbum operation in PhotoGalleryApi.
+ * @export
+ * @interface PhotoGalleryApiDeleteAlbumRequest
+ */
+export interface PhotoGalleryApiDeleteAlbumRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoGalleryApiDeleteAlbum
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for deletePhoto operation in PhotoGalleryApi.
+ * @export
+ * @interface PhotoGalleryApiDeletePhotoRequest
+ */
+export interface PhotoGalleryApiDeletePhotoRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoGalleryApiDeletePhoto
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for getAlbum operation in PhotoGalleryApi.
+ * @export
+ * @interface PhotoGalleryApiGetAlbumRequest
+ */
+export interface PhotoGalleryApiGetAlbumRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoGalleryApiGetAlbum
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for getAlbumPhotos operation in PhotoGalleryApi.
+ * @export
+ * @interface PhotoGalleryApiGetAlbumPhotosRequest
+ */
+export interface PhotoGalleryApiGetAlbumPhotosRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoGalleryApiGetAlbumPhotos
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for getPhoto operation in PhotoGalleryApi.
+ * @export
+ * @interface PhotoGalleryApiGetPhotoRequest
+ */
+export interface PhotoGalleryApiGetPhotoRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoGalleryApiGetPhoto
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for getPhotoImage operation in PhotoGalleryApi.
+ * @export
+ * @interface PhotoGalleryApiGetPhotoImageRequest
+ */
+export interface PhotoGalleryApiGetPhotoImageRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoGalleryApiGetPhotoImage
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {string}
+     * @memberof PhotoGalleryApiGetPhotoImage
+     */
+    readonly size: string
+}
+
+
+
+
+/**
+ * Request parameters for publishAlbum operation in PhotoGalleryApi.
+ * @export
+ * @interface PhotoGalleryApiPublishAlbumRequest
+ */
+export interface PhotoGalleryApiPublishAlbumRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoGalleryApiPublishAlbum
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for unpublishAlbum operation in PhotoGalleryApi.
+ * @export
+ * @interface PhotoGalleryApiUnpublishAlbumRequest
+ */
+export interface PhotoGalleryApiUnpublishAlbumRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoGalleryApiUnpublishAlbum
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for updateAlbum operation in PhotoGalleryApi.
+ * @export
+ * @interface PhotoGalleryApiUpdateAlbumRequest
+ */
+export interface PhotoGalleryApiUpdateAlbumRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoGalleryApiUpdateAlbum
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {AlbumUpdateBody}
+     * @memberof PhotoGalleryApiUpdateAlbum
+     */
+    readonly albumUpdateBody: AlbumUpdateBody
+}
+
+
+/**
+ * Request parameters for updatePhoto operation in PhotoGalleryApi.
+ * @export
+ * @interface PhotoGalleryApiUpdatePhotoRequest
+ */
+export interface PhotoGalleryApiUpdatePhotoRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof PhotoGalleryApiUpdatePhoto
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {PhotoUpdateBody}
+     * @memberof PhotoGalleryApiUpdatePhoto
+     */
+    readonly photoUpdateBody: PhotoUpdateBody
+}
+
 
 /**
  * PhotoGalleryApi - object-oriented interface
@@ -6991,7 +8061,7 @@ export const PhotoGalleryApiFactory = function (configuration?: Configuration, b
 export class PhotoGalleryApi extends BaseAPI {
     /**
      * 
-     * @param {AlbumCreateBody} albumCreateBody 
+     * @param {PhotoGalleryApiCreateAlbumRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
@@ -7002,7 +8072,7 @@ export class PhotoGalleryApi extends BaseAPI {
 
     /**
      * 
-     * @param {PhotoCreateBody} photoCreateBody 
+     * @param {PhotoGalleryApiCreatePhotoRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
@@ -7013,7 +8083,7 @@ export class PhotoGalleryApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {PhotoGalleryApiDeleteAlbumRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
@@ -7024,7 +8094,7 @@ export class PhotoGalleryApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {PhotoGalleryApiDeletePhotoRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
@@ -7035,7 +8105,7 @@ export class PhotoGalleryApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {PhotoGalleryApiGetAlbumRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
@@ -7046,7 +8116,7 @@ export class PhotoGalleryApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {PhotoGalleryApiGetAlbumPhotosRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
@@ -7057,7 +8127,7 @@ export class PhotoGalleryApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {PhotoGalleryApiGetPhotoRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
@@ -7068,8 +8138,7 @@ export class PhotoGalleryApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {string} size 
+     * @param {PhotoGalleryApiGetPhotoImageRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
@@ -7100,7 +8169,7 @@ export class PhotoGalleryApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {PhotoGalleryApiPublishAlbumRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
@@ -7111,7 +8180,7 @@ export class PhotoGalleryApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {PhotoGalleryApiUnpublishAlbumRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
@@ -7122,8 +8191,7 @@ export class PhotoGalleryApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {AlbumUpdateBody} albumUpdateBody 
+     * @param {PhotoGalleryApiUpdateAlbumRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
@@ -7134,8 +8202,7 @@ export class PhotoGalleryApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {PhotoUpdateBody} photoUpdateBody 
+     * @param {PhotoGalleryApiUpdatePhotoRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PhotoGalleryApi
@@ -7144,6 +8211,7 @@ export class PhotoGalleryApi extends BaseAPI {
         return PhotoGalleryApiFp(this.configuration).updatePhoto(id, photoUpdateBody, options).then((request) => request(this.axios, this.basePath));
     }
 }
+
 
 
 /**
@@ -7215,11 +8283,12 @@ export const PublicApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getGallery(options?: any): AxiosPromise<void> {
+        getGallery(options?: AxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.getGallery(options).then((request) => request(axios, basePath));
         },
     };
 };
+
 
 /**
  * PublicApi - object-oriented interface
@@ -7238,6 +8307,7 @@ export class PublicApi extends BaseAPI {
         return PublicApiFp(this.configuration).getGallery(options).then((request) => request(this.axios, this.basePath));
     }
 }
+
 
 
 /**
@@ -7542,7 +8612,7 @@ export const StatisticsApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEventsAttendeesReport(options?: any): AxiosPromise<EventsAttendeesReportResponse> {
+        getEventsAttendeesReport(options?: AxiosRequestConfig): AxiosPromise<EventsAttendeesReportResponse> {
             return localVarFp.getEventsAttendeesReport(options).then((request) => request(axios, basePath));
         },
         /**
@@ -7550,7 +8620,7 @@ export const StatisticsApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEventsLeadersReport(options?: any): AxiosPromise<EventsLeadersReportResponse> {
+        getEventsLeadersReport(options?: AxiosRequestConfig): AxiosPromise<EventsLeadersReportResponse> {
             return localVarFp.getEventsLeadersReport(options).then((request) => request(axios, basePath));
         },
         /**
@@ -7558,7 +8628,7 @@ export const StatisticsApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEventsReport(options?: any): AxiosPromise<EventsReportResponse> {
+        getEventsReport(options?: AxiosRequestConfig): AxiosPromise<EventsReportResponse> {
             return localVarFp.getEventsReport(options).then((request) => request(axios, basePath));
         },
         /**
@@ -7566,7 +8636,7 @@ export const StatisticsApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getEventsReportYears(options?: any): AxiosPromise<Array<number>> {
+        getEventsReportYears(options?: AxiosRequestConfig): AxiosPromise<Array<number>> {
             return localVarFp.getEventsReportYears(options).then((request) => request(axios, basePath));
         },
         /**
@@ -7574,28 +8644,49 @@ export const StatisticsApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getMembersReport(options?: any): AxiosPromise<MembersReportResponse> {
+        getMembersReport(options?: AxiosRequestConfig): AxiosPromise<MembersReportResponse> {
             return localVarFp.getMembersReport(options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} year 
+         * @param {StatisticsApiGetPaddlersRankingRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPaddlersRanking(year: number, options?: any): AxiosPromise<Array<PaddlersRankingResponse>> {
-            return localVarFp.getPaddlersRanking(year, options).then((request) => request(axios, basePath));
+        getPaddlersRanking(requestParameters: StatisticsApiGetPaddlersRankingRequest, options?: AxiosRequestConfig): AxiosPromise<Array<PaddlersRankingResponse>> {
+            return localVarFp.getPaddlersRanking(requestParameters.year, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPaddlersTotals(options?: any): AxiosPromise<PadlersTotalsResponse> {
+        getPaddlersTotals(options?: AxiosRequestConfig): AxiosPromise<PadlersTotalsResponse> {
             return localVarFp.getPaddlersTotals(options).then((request) => request(axios, basePath));
         },
     };
 };
+
+
+
+
+
+
+/**
+ * Request parameters for getPaddlersRanking operation in StatisticsApi.
+ * @export
+ * @interface StatisticsApiGetPaddlersRankingRequest
+ */
+export interface StatisticsApiGetPaddlersRankingRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof StatisticsApiGetPaddlersRanking
+     */
+    readonly year: number
+}
+
+
 
 /**
  * StatisticsApi - object-oriented interface
@@ -7656,7 +8747,7 @@ export class StatisticsApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} year 
+     * @param {StatisticsApiGetPaddlersRankingRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof StatisticsApi
@@ -7675,6 +8766,7 @@ export class StatisticsApi extends BaseAPI {
         return StatisticsApiFp(this.configuration).getPaddlersTotals(options).then((request) => request(this.axios, this.basePath));
     }
 }
+
 
 
 /**
@@ -8017,70 +9109,173 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
     return {
         /**
          * 
-         * @param {UserCreateBody} userCreateBody 
+         * @param {UsersApiCreateUserRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUser(userCreateBody: UserCreateBody, options?: any): AxiosPromise<UserResponseWithLinks> {
-            return localVarFp.createUser(userCreateBody, options).then((request) => request(axios, basePath));
+        createUser(requestParameters: UsersApiCreateUserRequest, options?: AxiosRequestConfig): AxiosPromise<UserResponseWithLinks> {
+            return localVarFp.createUser(requestParameters.userCreateBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {UsersApiDeleteUserRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteUser(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.deleteUser(id, options).then((request) => request(axios, basePath));
+        deleteUser(requestParameters: UsersApiDeleteUserRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteUser(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {UsersApiGetUserRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getUser(id: number, options?: any): AxiosPromise<UserResponseWithLinks> {
-            return localVarFp.getUser(id, options).then((request) => request(axios, basePath));
+        getUser(requestParameters: UsersApiGetUserRequest, options?: AxiosRequestConfig): AxiosPromise<UserResponseWithLinks> {
+            return localVarFp.getUser(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
+         * @param {UsersApiImpersonateUserRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        impersonateUser(id: number, options?: any): AxiosPromise<void> {
-            return localVarFp.impersonateUser(id, options).then((request) => request(axios, basePath));
+        impersonateUser(requestParameters: UsersApiImpersonateUserRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.impersonateUser(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listUsers(options?: any): AxiosPromise<Array<UserResponseWithLinks>> {
+        listUsers(options?: AxiosRequestConfig): AxiosPromise<Array<UserResponseWithLinks>> {
             return localVarFp.listUsers(options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {UserSetPasswordBody} userSetPasswordBody 
+         * @param {UsersApiSetUserPasswordRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        setUserPassword(id: number, userSetPasswordBody: UserSetPasswordBody, options?: any): AxiosPromise<void> {
-            return localVarFp.setUserPassword(id, userSetPasswordBody, options).then((request) => request(axios, basePath));
+        setUserPassword(requestParameters: UsersApiSetUserPasswordRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.setUserPassword(requestParameters.id, requestParameters.userSetPasswordBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {number} id 
-         * @param {UserUpdateBody} userUpdateBody 
+         * @param {UsersApiUpdateUserRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUser(id: number, userUpdateBody: UserUpdateBody, options?: any): AxiosPromise<void> {
-            return localVarFp.updateUser(id, userUpdateBody, options).then((request) => request(axios, basePath));
+        updateUser(requestParameters: UsersApiUpdateUserRequest, options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.updateUser(requestParameters.id, requestParameters.userUpdateBody, options).then((request) => request(axios, basePath));
         },
     };
 };
+
+/**
+ * Request parameters for createUser operation in UsersApi.
+ * @export
+ * @interface UsersApiCreateUserRequest
+ */
+export interface UsersApiCreateUserRequest {
+    /**
+     * 
+     * @type {UserCreateBody}
+     * @memberof UsersApiCreateUser
+     */
+    readonly userCreateBody: UserCreateBody
+}
+
+
+/**
+ * Request parameters for deleteUser operation in UsersApi.
+ * @export
+ * @interface UsersApiDeleteUserRequest
+ */
+export interface UsersApiDeleteUserRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof UsersApiDeleteUser
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for getUser operation in UsersApi.
+ * @export
+ * @interface UsersApiGetUserRequest
+ */
+export interface UsersApiGetUserRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof UsersApiGetUser
+     */
+    readonly id: number
+}
+
+
+/**
+ * Request parameters for impersonateUser operation in UsersApi.
+ * @export
+ * @interface UsersApiImpersonateUserRequest
+ */
+export interface UsersApiImpersonateUserRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof UsersApiImpersonateUser
+     */
+    readonly id: number
+}
+
+
+
+/**
+ * Request parameters for setUserPassword operation in UsersApi.
+ * @export
+ * @interface UsersApiSetUserPasswordRequest
+ */
+export interface UsersApiSetUserPasswordRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof UsersApiSetUserPassword
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {UserSetPasswordBody}
+     * @memberof UsersApiSetUserPassword
+     */
+    readonly userSetPasswordBody: UserSetPasswordBody
+}
+
+
+/**
+ * Request parameters for updateUser operation in UsersApi.
+ * @export
+ * @interface UsersApiUpdateUserRequest
+ */
+export interface UsersApiUpdateUserRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof UsersApiUpdateUser
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {UserUpdateBody}
+     * @memberof UsersApiUpdateUser
+     */
+    readonly userUpdateBody: UserUpdateBody
+}
+
 
 /**
  * UsersApi - object-oriented interface
@@ -8091,7 +9286,7 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
 export class UsersApi extends BaseAPI {
     /**
      * 
-     * @param {UserCreateBody} userCreateBody 
+     * @param {UsersApiCreateUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UsersApi
@@ -8102,7 +9297,7 @@ export class UsersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {UsersApiDeleteUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UsersApi
@@ -8113,7 +9308,7 @@ export class UsersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {UsersApiGetUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UsersApi
@@ -8124,7 +9319,7 @@ export class UsersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
+     * @param {UsersApiImpersonateUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UsersApi
@@ -8145,8 +9340,7 @@ export class UsersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {UserSetPasswordBody} userSetPasswordBody 
+     * @param {UsersApiSetUserPasswordRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UsersApi
@@ -8157,8 +9351,7 @@ export class UsersApi extends BaseAPI {
 
     /**
      * 
-     * @param {number} id 
-     * @param {UserUpdateBody} userUpdateBody 
+     * @param {UsersApiUpdateUserRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UsersApi
@@ -8167,5 +9360,6 @@ export class UsersApi extends BaseAPI {
         return UsersApiFp(this.configuration).updateUser(id, userUpdateBody, options).then((request) => request(this.axios, this.basePath));
     }
 }
+
 
 

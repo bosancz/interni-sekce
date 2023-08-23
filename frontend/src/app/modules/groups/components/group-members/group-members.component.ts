@@ -32,7 +32,7 @@ export class GroupMembersComponent implements OnInit {
       return;
     }
 
-    this.members = await this.api.members.listMembers(groupId).then((res) => res.data);
+    this.members = await this.api.members.listMembers({ group: groupId }).then((res) => res.data);
 
     this.members.forEach((member) => {
       member.searchString = [member.nickname, member.firstName, member.lastName].join(" ");

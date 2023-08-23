@@ -18,7 +18,7 @@ export class HomeCardMyEventsComponent implements OnInit {
 
   async loadMyEvents() {
     // TODO: list only my events
-    this.myEvents = await this.api.events.listEvents(undefined, undefined, undefined, true).then((res) => res.data);
+    this.myEvents = await this.api.events.listEvents({ my: true }).then((res) => res.data);
     this.myEvents.sort((a, b) => b.dateFrom.localeCompare(a.dateFrom));
   }
 }

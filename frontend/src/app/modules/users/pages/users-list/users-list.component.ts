@@ -72,6 +72,8 @@ export class UsersListComponent implements OnInit, AfterViewInit {
         .filter((item) => !!item)
         .join(" ");
     });
+
+    this.filterUsers();
   }
 
   filterUsers() {
