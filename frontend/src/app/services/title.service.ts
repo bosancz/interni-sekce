@@ -1,32 +1,31 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import { Title } from "@angular/platform-browser";
-import { BehaviorSubject } from 'rxjs';
+import { RouterStateSnapshot, TitleStrategy } from "@angular/router";
+import { ApiService } from "./api.service";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
-export class TitleService {
+export class TitleService extends TitleStrategy {
+  private mainTitle: string = "Bošán interní";
+  private subTitle: string | null = null;
 
-  pageTitle = new BehaviorSubject<string | null>(null);
-
-  private mainTitle?: string = "Bošán interní";
-
-  constructor(private title: Title) {
-    this.pageTitle.subscribe(() => this.updateWindowTitle());
+  constructor(private title: Title, private api: ApiService) {
+    super();
+    this.api.cache.apiInfo.subscribe((info) => {
+      this.mainTitle = "Bošán interní" + (info?.environmentTitle ? " " + info.environmentTitle : "");
+      this.setTitle(this.subTitle);
+    });
   }
 
-  setPageTitle(title: string | null) {
-    setTimeout(() => this.pageTitle.next(title || null), 0);
+  setTitle(title: string | null) {
+    this.subTitle = title;
+    this.title.setTitle(title ? `${title} | ${this.mainTitle}` : this.mainTitle);
   }
 
-  private updateWindowTitle() {
-    const titleParts = [];
-    if (this.pageTitle.value) titleParts.push(this.pageTitle.value);
-    if (this.mainTitle) titleParts.push(this.mainTitle);
-    return this.title.setTitle(titleParts.join(" :: "));
-  }
+  updateTitle(routerState: RouterStateSnapshot) {
+    const title = this.buildTitle(routerState);
 
-  reset() {
-    this.setPageTitle(null);
+    this.setTitle(title ?? null);
   }
 }

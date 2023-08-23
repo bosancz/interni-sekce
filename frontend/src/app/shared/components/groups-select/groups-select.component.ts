@@ -105,8 +105,12 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
   }
 
   // ControlValueAccessor
-  writeValue(groups: any): void {
-    this.selectedGroups = groups || [];
+  writeValue(groups: number | number[] | undefined): void {
+    if (this.multiple && Array.isArray(groups)) {
+      this.selectedGroups = groups ?? [];
+    } else if (!this.multiple && (typeof groups === "number" || typeof groups === "undefined")) {
+      this.selectedGroups = groups ? [groups] : [];
+    }
   }
   registerOnChange(fn: any): void {
     this.onChange = fn;

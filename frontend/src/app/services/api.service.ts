@@ -1,7 +1,9 @@
 import { Injectable } from "@angular/core";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { BehaviorSubject } from "rxjs";
+import { map } from "rxjs/operators";
 import { environment } from "src/environments/environment";
+import { Logger } from "src/logger";
 import {
   APIApi,
   AccountApi,
@@ -23,6 +25,8 @@ export type ApiError = AxiosError;
   providedIn: "root",
 })
 export class ApiService {
+  private readonly logger = new Logger(ApiService.name);
+
   http = axios.create({ withCredentials: true });
 
   readonly albums = new PhotoGalleryApi(undefined, environment.apiRoot, this.http);
@@ -33,19 +37,24 @@ export class ApiService {
   readonly statistics = new StatisticsApi(undefined, environment.apiRoot, this.http);
   readonly api = new APIApi(undefined, environment.apiRoot, this.http);
 
-  endpoints = new BehaviorSubject<ApiEndpoints | null>(null);
-
-  info?: RootResponseWithLinks;
-
   readonly cache = {
     groups: new CachedSubject<GroupResponseWithLinks[]>(this, (api) => api.members.listGroups()),
+    apiInfo: new CachedSubject<RootResponseWithLinks>(this, (api) => api.api.getApiInfo()),
   };
 
-  constructor() {}
+  endpoints = new BehaviorSubject<ApiEndpoints | null>(null);
+
+  constructor() {
+    this.cache.apiInfo.pipe(map((info) => info?._links ?? null)).subscribe(this.endpoints);
+  }
+
+  async init() {
+    await this.reloadApi();
+    this.logger.log("API initialized", this.cache.apiInfo.value);
+  }
 
   async reloadApi() {
-    this.info = await this.api.getApiInfo().then((res) => res.data);
-    this.endpoints.next(this.info._links);
+    return Promise.all(Object.values(this.cache).map((subject) => subject.load()));
   }
 
   isApiError(err: unknown): err is ApiError {

@@ -44,7 +44,7 @@ export class MemberResponse implements Member {
   achievements?: MemberAchievement[] | undefined;
 }
 
-export class CreateMemberBody
+export class MemberCreateBody
   implements Pick<MemberResponse, "nickname" | "firstName" | "lastName" | "groupId" | "role">
 {
   @ApiProperty() @Type(() => Number) @IsNumber() groupId!: number;
@@ -54,11 +54,11 @@ export class CreateMemberBody
   @ApiProperty() @IsString() @IsOptional() lastName!: string | null;
 }
 
-export class UpdateMemberBody extends PartialType(
+export class MemberUpdateBody extends PartialType(
   OmitType(MemberResponse, ["group", "contacts", "achievements", "id"]),
 ) {}
 
-export class ListMembersQuery {
+export class MembersListQuery {
   @ApiPropertyOptional() @IsNumber() @IsOptional() group?: number;
   @ApiPropertyOptional() @IsString() @IsOptional() search?: string;
   @ApiPropertyOptional() @IsNumber() @IsOptional() limit?: number;

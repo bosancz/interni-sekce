@@ -4,7 +4,7 @@ import { AlertController } from "@ionic/angular";
 import { MemberResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
-import { MembersService } from "../../services/members.service";
+import { MemberStoreService } from "../../services/member-store.service";
 
 @Component({
   selector: "bo-card-insurance-card",
@@ -17,7 +17,7 @@ export class CardInsuranceCardComponent implements OnChanges {
   insuranceCardSafeUrl?: SafeResourceUrl;
 
   constructor(
-    private membersService: MembersService,
+    private memberStore: MemberStoreService,
     private api: ApiService,
     private toastService: ToastService,
     private alertController: AlertController,
@@ -59,7 +59,7 @@ export class CardInsuranceCardComponent implements OnChanges {
     try {
       await this.api.members.uploadInsuranceCard(this.member!.id, file);
 
-      await this.membersService.loadMember(this.member!.id);
+      await this.memberStore.loadMember(this.member!.id);
 
       this.toastService.toast("Karta byla nahrána", { color: "success" });
     } catch (e) {
@@ -94,7 +94,7 @@ export class CardInsuranceCardComponent implements OnChanges {
   private async deleteCardConfirmed() {
     await this.api.members.deleteInsuranceCard(this.member!.id);
 
-    await this.membersService.loadMember(this.member!.id);
+    await this.memberStore.loadMember(this.member!.id);
 
     this.toastService.toast("Karta byla smazána", { color: "success" });
   }

@@ -1,0 +1,6 @@
+ion-list {
+  max-width: 700px;
+}
+.address {
+  max-width: calc(700px - var(--ion-padding, 16px));
+}

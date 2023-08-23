@@ -340,43 +340,6 @@ export interface CreateGroupBody {
 /**
  * 
  * @export
- * @interface CreateMemberBody
- */
-export interface CreateMemberBody {
-    /**
-     * 
-     * @type {number}
-     * @memberof CreateMemberBody
-     */
-    'groupId': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateMemberBody
-     */
-    'nickname': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateMemberBody
-     */
-    'role': string;
-    /**
-     * 
-     * @type {object}
-     * @memberof CreateMemberBody
-     */
-    'firstName': object;
-    /**
-     * 
-     * @type {object}
-     * @memberof CreateMemberBody
-     */
-    'lastName': object;
-}
-/**
- * 
- * @export
  * @interface EventAttendeeResponse
  */
 export interface EventAttendeeResponse {
@@ -1614,6 +1577,43 @@ export type MemberContactTypesEnum = typeof MemberContactTypesEnum[keyof typeof 
 /**
  * 
  * @export
+ * @interface MemberCreateBody
+ */
+export interface MemberCreateBody {
+    /**
+     * 
+     * @type {number}
+     * @memberof MemberCreateBody
+     */
+    'groupId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberCreateBody
+     */
+    'nickname': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberCreateBody
+     */
+    'role': string;
+    /**
+     * 
+     * @type {object}
+     * @memberof MemberCreateBody
+     */
+    'firstName': object;
+    /**
+     * 
+     * @type {object}
+     * @memberof MemberCreateBody
+     */
+    'lastName': object;
+}
+/**
+ * 
+ * @export
  * @enum {string}
  */
 
@@ -2006,6 +2006,135 @@ export const MemberRolesEnum = {
 } as const;
 
 export type MemberRolesEnum = typeof MemberRolesEnum[keyof typeof MemberRolesEnum];
+
+
+/**
+ * 
+ * @export
+ * @interface MemberUpdateBody
+ */
+export interface MemberUpdateBody {
+    /**
+     * 
+     * @type {number}
+     * @memberof MemberUpdateBody
+     */
+    'groupId'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'nickname'?: string;
+    /**
+     * 
+     * @type {MemberRolesEnum}
+     * @memberof MemberUpdateBody
+     */
+    'role'?: MemberRolesEnum;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof MemberUpdateBody
+     */
+    'active'?: boolean;
+    /**
+     * 
+     * @type {MembershipStatesEnum}
+     * @memberof MemberUpdateBody
+     */
+    'membership'?: MembershipStatesEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'function'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'firstName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'lastName'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'birthday'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'addressStreet'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'addressStreetNo'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'addressCity'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'addressPostalCode'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'addressCountry'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'mobile'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'email'?: string;
+    /**
+     * 
+     * @type {MemberRanksEnum}
+     * @memberof MemberUpdateBody
+     */
+    'rank'?: MemberRanksEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'knownProblems'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'allergies'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MemberUpdateBody
+     */
+    'insuranceCardFile'?: string;
+}
 
 
 /**
@@ -2412,135 +2541,6 @@ export interface UpdateGroupBody {
      */
     'name'?: string;
 }
-/**
- * 
- * @export
- * @interface UpdateMemberBody
- */
-export interface UpdateMemberBody {
-    /**
-     * 
-     * @type {number}
-     * @memberof UpdateMemberBody
-     */
-    'groupId'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'nickname'?: string;
-    /**
-     * 
-     * @type {MemberRolesEnum}
-     * @memberof UpdateMemberBody
-     */
-    'role'?: MemberRolesEnum;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof UpdateMemberBody
-     */
-    'active'?: boolean;
-    /**
-     * 
-     * @type {MembershipStatesEnum}
-     * @memberof UpdateMemberBody
-     */
-    'membership'?: MembershipStatesEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'function'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'firstName'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'lastName'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'birthday'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'addressStreet'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'addressStreetNo'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'addressCity'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'addressPostalCode'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'addressCountry'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'mobile'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'email'?: string;
-    /**
-     * 
-     * @type {MemberRanksEnum}
-     * @memberof UpdateMemberBody
-     */
-    'rank'?: MemberRanksEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'knownProblems'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'allergies'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateMemberBody
-     */
-    'insuranceCardFile'?: string;
-}
-
-
 /**
  * 
  * @export
@@ -5187,13 +5187,13 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @param {CreateMemberBody} createMemberBody 
+         * @param {MemberCreateBody} memberCreateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createMember: async (createMemberBody: CreateMemberBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createMemberBody' is not null or undefined
-            assertParamExists('createMember', 'createMemberBody', createMemberBody)
+        createMember: async (memberCreateBody: MemberCreateBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'memberCreateBody' is not null or undefined
+            assertParamExists('createMember', 'memberCreateBody', memberCreateBody)
             const localVarPath = `/members`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5213,7 +5213,7 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createMemberBody, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(memberCreateBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -5603,15 +5603,15 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @param {number} id 
-         * @param {UpdateMemberBody} updateMemberBody 
+         * @param {MemberUpdateBody} memberUpdateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateMember: async (id: number, updateMemberBody: UpdateMemberBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateMember: async (id: number, memberUpdateBody: MemberUpdateBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateMember', 'id', id)
-            // verify required parameter 'updateMemberBody' is not null or undefined
-            assertParamExists('updateMember', 'updateMemberBody', updateMemberBody)
+            // verify required parameter 'memberUpdateBody' is not null or undefined
+            assertParamExists('updateMember', 'memberUpdateBody', memberUpdateBody)
             const localVarPath = `/members/{id}`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -5632,7 +5632,7 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(updateMemberBody, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(memberUpdateBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -5714,12 +5714,12 @@ export const MembersApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {CreateMemberBody} createMemberBody 
+         * @param {MemberCreateBody} memberCreateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createMember(createMemberBody: CreateMemberBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MemberResponseWithLinks>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createMember(createMemberBody, options);
+        async createMember(memberCreateBody: MemberCreateBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MemberResponseWithLinks>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createMember(memberCreateBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5838,12 +5838,12 @@ export const MembersApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {number} id 
-         * @param {UpdateMemberBody} updateMemberBody 
+         * @param {MemberUpdateBody} memberUpdateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateMember(id: number, updateMemberBody: UpdateMemberBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateMember(id, updateMemberBody, options);
+        async updateMember(id: number, memberUpdateBody: MemberUpdateBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateMember(id, memberUpdateBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -5888,12 +5888,12 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @param {CreateMemberBody} createMemberBody 
+         * @param {MemberCreateBody} memberCreateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createMember(createMemberBody: CreateMemberBody, options?: any): AxiosPromise<MemberResponseWithLinks> {
-            return localVarFp.createMember(createMemberBody, options).then((request) => request(axios, basePath));
+        createMember(memberCreateBody: MemberCreateBody, options?: any): AxiosPromise<MemberResponseWithLinks> {
+            return localVarFp.createMember(memberCreateBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -6000,12 +6000,12 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
         /**
          * 
          * @param {number} id 
-         * @param {UpdateMemberBody} updateMemberBody 
+         * @param {MemberUpdateBody} memberUpdateBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateMember(id: number, updateMemberBody: UpdateMemberBody, options?: any): AxiosPromise<void> {
-            return localVarFp.updateMember(id, updateMemberBody, options).then((request) => request(axios, basePath));
+        updateMember(id: number, memberUpdateBody: MemberUpdateBody, options?: any): AxiosPromise<void> {
+            return localVarFp.updateMember(id, memberUpdateBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -6052,13 +6052,13 @@ export class MembersApi extends BaseAPI {
 
     /**
      * 
-     * @param {CreateMemberBody} createMemberBody 
+     * @param {MemberCreateBody} memberCreateBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
      */
-    public createMember(createMemberBody: CreateMemberBody, options?: AxiosRequestConfig) {
-        return MembersApiFp(this.configuration).createMember(createMemberBody, options).then((request) => request(this.axios, this.basePath));
+    public createMember(memberCreateBody: MemberCreateBody, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).createMember(memberCreateBody, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -6188,13 +6188,13 @@ export class MembersApi extends BaseAPI {
     /**
      * 
      * @param {number} id 
-     * @param {UpdateMemberBody} updateMemberBody 
+     * @param {MemberUpdateBody} memberUpdateBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof MembersApi
      */
-    public updateMember(id: number, updateMemberBody: UpdateMemberBody, options?: AxiosRequestConfig) {
-        return MembersApiFp(this.configuration).updateMember(id, updateMemberBody, options).then((request) => request(this.axios, this.basePath));
+    public updateMember(id: number, memberUpdateBody: MemberUpdateBody, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).updateMember(id, memberUpdateBody, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

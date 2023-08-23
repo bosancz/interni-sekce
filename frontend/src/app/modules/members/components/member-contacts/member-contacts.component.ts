@@ -5,7 +5,7 @@ import { MemberContactResponseWithLinks, MemberResponseWithLinks } from "src/app
 import { MemberContactTypes } from "src/app/config/member-contact-types";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
-import { MembersService } from "../../services/members.service";
+import { MemberStoreService } from "../../services/member-store.service";
 
 @UntilDestroy()
 @Component({
@@ -21,12 +21,12 @@ export default class MemberContactsComponent implements OnInit {
   constructor(
     private toastService: ToastService,
     private api: ApiService,
-    private membersService: MembersService,
+    private memberStore: MemberStoreService,
     private alertController: AlertController,
   ) {}
 
   ngOnInit(): void {
-    this.membersService.currentMember.pipe(untilDestroyed(this)).subscribe((member) => this.loadContacts(member));
+    this.memberStore.currentMember.pipe(untilDestroyed(this)).subscribe((member) => this.loadContacts(member));
   }
 
   async loadContacts(member?: MemberResponseWithLinks | null) {
@@ -96,8 +96,8 @@ export default class MemberContactsComponent implements OnInit {
   }
 
   private async addContact(data: { title: string; email?: string; mobile?: string; other?: string }) {
-    if (!this.membersService.currentMember.value) return;
-    const memberId = this.membersService.currentMember.value.id;
+    if (!this.memberStore.currentMember.value) return;
+    const memberId = this.memberStore.currentMember.value.id;
 
     if (data.email) {
       await this.api.members.createContact(memberId, {
@@ -123,7 +123,7 @@ export default class MemberContactsComponent implements OnInit {
       });
     }
 
-    await this.loadContacts(this.membersService.currentMember.value);
+    await this.loadContacts(this.memberStore.currentMember.value);
 
     await this.toastService.toast("Kontakt byl přidán");
   }
@@ -150,12 +150,12 @@ export default class MemberContactsComponent implements OnInit {
   }
 
   async deleteContactConfirmed(contact: MemberContactResponseWithLinks) {
-    if (!this.membersService.currentMember.value) return;
-    const memberId = this.membersService.currentMember.value.id;
+    if (!this.memberStore.currentMember.value) return;
+    const memberId = this.memberStore.currentMember.value.id;
 
     await this.api.members.deleteContact(memberId, contact.id);
 
-    await this.loadContacts(this.membersService.currentMember.value);
+    await this.loadContacts(this.memberStore.currentMember.value);
 
     await this.toastService.toast("Kontakt byl smazán");
   }

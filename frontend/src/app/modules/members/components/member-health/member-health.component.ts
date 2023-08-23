@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MemberResponseWithLinks } from "src/app/api";
-import { MembersService } from "../../services/members.service";
+import { MemberStoreService } from "../../services/member-store.service";
 @UntilDestroy()
 @Component({
   selector: "bo-member-health",
@@ -11,10 +11,10 @@ import { MembersService } from "../../services/members.service";
 export class MemberHealthComponent implements OnInit {
   member?: MemberResponseWithLinks | null;
 
-  constructor(private membersService: MembersService) {}
+  constructor(private memberStore: MemberStoreService) {}
 
   ngOnInit(): void {
-    this.membersService.currentMember.pipe(untilDestroyed(this)).subscribe((member) => {
+    this.memberStore.currentMember.pipe(untilDestroyed(this)).subscribe((member) => {
       this.member = member;
     });
   }

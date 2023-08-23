@@ -14,7 +14,6 @@ export class NotFoundComponent implements OnInit, OnDestroy {
   constructor(private titleService: TitleService, private metaService: Meta) {}
 
   ngOnInit() {
-    this.titleService.setPageTitle("404 Nenalezeno");
     this.setNoIndex();
 
     this.url = location.pathname || location.href;

@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
-import { tap } from "rxjs/operators";
 import { GroupResponseWithLinks, MemberResponseWithLinks, MemberRolesEnum, MembershipStatesEnum } from "src/app/api";
 import { MemberRoles } from "src/app/config/member-roles";
 import { ApiService } from "src/app/services/api.service";
@@ -48,6 +47,12 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
       text: "Přidat",
       handler: () => this.create(),
     },
+    {
+      icon: "download-outline",
+      pinned: true,
+      text: "Stáhnout XLSX",
+      handler: () => this.export(),
+    },
   ];
 
   @ViewChild("filterForm") filterForm?: NgForm;
@@ -63,7 +68,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
   ngAfterViewInit(): void {
     this.filterForm?.valueChanges
-      ?.pipe(untilDestroyed(this), tap(console.log))
+      ?.pipe(untilDestroyed(this))
       .subscribe((filter) => this.filterMembers({ ...this.filter, ...filter }));
   }
 
@@ -71,6 +76,8 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
     this.loadMembers();
     this.loadGroups();
   }
+
+  export() {}
 
   copyRow(cells: string[]) {
     const data = cells.join("\t");

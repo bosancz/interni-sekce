@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Subject } from "rxjs";
-import { debounceTime, tap } from "rxjs/operators";
+import { debounceTime } from "rxjs/operators";
 import { MemberResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
@@ -23,7 +23,6 @@ export class HomeCardMembersComponent implements OnInit {
   ngOnInit(): void {
     this.searchString
       .pipe(untilDestroyed(this))
-      .pipe(tap((searchString) => (this.searching = !!searchString)))
       .pipe(debounceTime(500))
       .subscribe((searchString) => this.loadMembers(searchString));
   }

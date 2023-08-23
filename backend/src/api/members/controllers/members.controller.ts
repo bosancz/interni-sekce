@@ -26,7 +26,7 @@ import {
   MemberUpdateRoute,
   MembersListRoute,
 } from "../acl/members.acl";
-import { CreateMemberBody, ListMembersQuery, MemberResponse, UpdateMemberBody } from "../dto/member.dto";
+import { MemberCreateBody, MemberResponse, MemberUpdateBody, MembersListQuery } from "../dto/member.dto";
 
 @Controller("members")
 @UseGuards(UserGuard)
@@ -41,7 +41,7 @@ export class MembersController {
   @Get()
   @AcLinks(MembersListRoute)
   @ApiResponse({ type: WithLinks(MemberResponse), isArray: true })
-  async listMembers(@Req() req: Request, @Query() query: ListMembersQuery): Promise<MemberResponse[]> {
+  async listMembers(@Req() req: Request, @Query() query: MembersListQuery): Promise<MemberResponse[]> {
     const q = this.membersRepository.createQueryBuilder("members").where(MembersListRoute.canWhere(req));
 
     if (query.group) q.andWhere("members.groupId = :groupId", { groupId: query.group });
@@ -62,7 +62,7 @@ export class MembersController {
   @Post()
   @AcLinks(MemberCreateRoute)
   @ApiResponse({ type: WithLinks(MemberResponse) })
-  async createMember(@Req() req: Request, @Body() body: CreateMemberBody): Promise<MemberResponse> {
+  async createMember(@Req() req: Request, @Body() body: MemberCreateBody): Promise<MemberResponse> {
     console.log(body);
     MemberCreateRoute.canOrThrow(req, undefined);
 
@@ -84,7 +84,7 @@ export class MembersController {
   @Patch(":id")
   @AcLinks(MemberUpdateRoute)
   @ApiResponse({ status: 204 })
-  async updateMember(@Req() req: Request, @Param("id") id: number, @Body() body: UpdateMemberBody) {
+  async updateMember(@Req() req: Request, @Param("id") id: number, @Body() body: MemberUpdateBody) {
     const member = await this.membersService.getMember(id);
     if (!member) throw new NotFoundException();
 

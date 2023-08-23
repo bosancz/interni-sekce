@@ -1,6 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from "@angular/core";
-import { ViewDidEnter, ViewWillLeave } from "@ionic/angular";
-import { TitleService } from "src/app/services/title.service";
+import { Component, Input } from "@angular/core";
 import { Action } from "../action-buttons/action-buttons.component";
 
 @Component({
@@ -8,7 +6,7 @@ import { Action } from "../action-buttons/action-buttons.component";
   templateUrl: "./page-header.component.html",
   styleUrls: ["./page-header.component.scss"],
 })
-export class PageHeaderComponent implements OnChanges, ViewDidEnter, ViewWillLeave {
+export class PageHeaderComponent {
   @Input() actions?: Action[];
 
   @Input() title?: string;
@@ -19,25 +17,5 @@ export class PageHeaderComponent implements OnChanges, ViewDidEnter, ViewWillLea
 
   viewActive: boolean = false;
 
-  constructor(private titleService: TitleService) {}
-
-  ionViewDidEnter(): void {
-    this.viewActive = true;
-    this.setWindowTitle(this.title ?? null);
-  }
-
-  ionViewWillLeave(): void {
-    this.viewActive = false;
-    this.setWindowTitle(null);
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes["title"] && this.viewActive) {
-      this.setWindowTitle(this.title ?? null);
-    }
-  }
-
-  setWindowTitle(title: string | null): void {
-    this.titleService.setPageTitle(this.title ?? null);
-  }
+  constructor() {}
 }
