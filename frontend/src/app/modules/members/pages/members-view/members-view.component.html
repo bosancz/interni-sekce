@@ -1,28 +1,43 @@
 <bo-page-header [title]="getFullName(member)" backUrl="/databaze" [actions]="actions"></bo-page-header>
 
 <bo-page-content>
-  <router-outlet></router-outlet>
+  <div class="row">
+    <div class="col-lg-12 col-xl-4 d-lg-block" [class.d-none]="view !== 'info'">
+      <bo-member-info [member]="member" (update)="updateMember($event)"></bo-member-info>
+    </div>
+
+    <div class="col-lg-12 col-xl-4 d-lg-block" [class.d-none]="view !== 'zdravi'">
+      <bo-member-health [member]="member" (update)="updateMember($event)"></bo-member-health>
+    </div>
+
+    <div class="col-lg-12 col-xl-4 d-lg-block" [class.d-none]="view !== 'kontakty'">
+      <bo-member-contacts [member]="member" (update)="updateMember($event)"></bo-member-contacts>
+    </div>
+  </div>
 </bo-page-content>
 
-<bo-page-footer>
+<bo-page-footer class="d-lg-none">
   <ion-toolbar>
     <ion-tab-bar>
       <ion-tab-button
-        [routerLink]="['/databaze', member?.id, 'info']"
+        routerLink="."
+        [queryParams]="{ view: 'info' }"
         routerLinkActive="tab-selected"
         [replaceUrl]="true"
       >
         <ion-icon name="information-circle-outline"></ion-icon>
       </ion-tab-button>
       <ion-tab-button
-        [routerLink]="['/databaze', member?.id, 'zdravotni-udaje']"
+        routerLink="."
+        [queryParams]="{ view: 'zdravi' }"
         routerLinkActive="tab-selected"
         [replaceUrl]="true"
       >
         <ion-icon name="heart-outline"></ion-icon>
       </ion-tab-button>
       <ion-tab-button
-        [routerLink]="['/databaze', member?.id, 'kontakty']"
+        routerLink="."
+        [queryParams]="{ view: 'kontakty' }"
         routerLinkActive="tab-selected"
         [replaceUrl]="true"
       >

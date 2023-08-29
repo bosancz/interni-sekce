@@ -1,7 +1,6 @@
-import { Component, OnInit } from "@angular/core";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { MemberResponseWithLinks } from "src/app/api";
-import { MemberStoreService } from "../../services/member-store.service";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { UntilDestroy } from "@ngneat/until-destroy";
+import { MemberResponse, MemberResponseWithLinks } from "src/app/api";
 
 @UntilDestroy()
 @Component({
@@ -10,11 +9,10 @@ import { MemberStoreService } from "../../services/member-store.service";
   styleUrls: ["./member-info.component.scss"],
 })
 export class MemberInfoComponent implements OnInit {
-  member?: MemberResponseWithLinks | null;
+  @Input() member?: MemberResponseWithLinks | null;
+  @Output() update = new EventEmitter<Partial<MemberResponse>>();
 
-  constructor(private memberStore: MemberStoreService) {}
+  constructor() {}
 
-  ngOnInit(): void {
-    this.memberStore.currentMember.pipe(untilDestroyed(this)).subscribe((member) => (this.member = member));
-  }
+  ngOnInit(): void {}
 }

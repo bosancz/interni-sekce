@@ -3,16 +3,40 @@
   <ion-item>
     <ion-label>Jméno:</ion-label>
     <ion-label>{{ member.firstName || "-" }} {{ member.lastName || "-" }}</ion-label>
+    <bo-edit-button
+      *ngIf="member._links.updateMember.applicable"
+      [disabled]="!member._links.updateMember.allowed"
+      [inputs]="{ firstName: 'text', lastName: 'text' }"
+      [value]="member"
+      slot="end"
+      (change)="update.emit($event)"
+    ></bo-edit-button>
   </ion-item>
 
   <ion-item>
     <ion-label>Přezdívka:</ion-label>
     <ion-label>{{ member.nickname || "-" }}</ion-label>
+    <bo-edit-button
+      *ngIf="member._links.updateMember.applicable"
+      [disabled]="!member._links.updateMember.allowed"
+      [inputs]="{ nickname: 'text' }"
+      [value]="member"
+      slot="end"
+      (change)="update.emit($event)"
+    ></bo-edit-button>
   </ion-item>
 
   <ion-item>
     <ion-label>Datum narození:</ion-label>
     <ion-label>{{ member.birthday ? (member.birthday | date : "d. M. y") : "-" }}</ion-label>
+    <bo-edit-button
+      *ngIf="member._links.updateMember.applicable"
+      [disabled]="!member._links.updateMember.allowed"
+      [inputs]="{ birthday: 'date' }"
+      [value]="member"
+      slot="end"
+      (change)="update.emit($event)"
+    ></bo-edit-button>
   </ion-item>
 </ion-list>
 

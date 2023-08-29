@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, ViewWillEnter, ViewWillLeave } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { MemberResponseWithLinks } from "src/app/api";
+import { MemberResponse, MemberResponseWithLinks } from "src/app/api";
 import { MembershipStates } from "src/app/config/membership-states";
 import { ApiService } from "src/app/services/api.service";
 import { TitleService } from "src/app/services/title.service";
@@ -19,16 +19,11 @@ import { MemberStoreService } from "../../services/member-store.service";
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeave {
   member?: MemberResponseWithLinks | null;
+  view?: "info" | "zdravi" | "kontakty" = "info";
 
   membershipStates = MembershipStates;
 
   actions: Action[] = [
-    {
-      text: "Upravit",
-      pinned: true,
-      icon: "create",
-      handler: () => this.router.navigate(["upravit"], { relativeTo: this.route }),
-    },
     {
       text: "Smazat",
       role: "destructive",
@@ -44,25 +39,44 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
     private route: ActivatedRoute,
     private router: Router,
     private alertController: AlertController,
-    private memberStore: MemberStoreService,
     private titleService: TitleService,
   ) {}
 
   ngOnInit() {
-    this.route.params
-      .pipe(untilDestroyed(this))
-      .subscribe((params) => this.memberStore.loadMember(parseInt(params.member)));
+    this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {
+      if (this.member?.id !== parseInt(params.member)) this.loadMember(parseInt(params.member));
+    });
 
-    this.memberStore.currentMember.pipe(untilDestroyed(this)).subscribe((member) => (this.member = member));
+    this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => {
+      if (params.view) {
+        this.view = params.view;
+      } else {
+        this.router.navigate([], { relativeTo: this.route, queryParams: { view: "info" }, replaceUrl: true });
+      }
+    });
   }
 
-  ionViewWillEnter() {
-    this.memberStore.currentMember
-      .pipe(untilDestroyed(this, "ionViewWillLeave"))
-      .subscribe((member) => this.titleService.setTitle(member?.nickname ?? null));
-  }
+  ionViewWillEnter(): void {}
 
   ionViewWillLeave(): void {}
+
+  async loadMember(id: number) {
+    this.member = await this.api.members.getMember(id).then((res) => res.data);
+    this.titleService.setTitle(this.member?.nickname ?? null);
+  }
+
+  async updateMember(data: Partial<MemberResponse>) {
+    if (!this.member) return;
+
+    const toast = await this.toastService.toast("Ukládám...");
+
+    await this.api.members.updateMember(this.member.id, data);
+
+    await this.loadMember(this.member.id);
+
+    toast.dismiss();
+    this.toastService.toast("Uloženo.");
+  }
 
   async delete() {
     if (!this.member) return;

@@ -1,6 +1,6 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { AlertController } from "@ionic/angular";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { MemberContactResponseWithLinks, MemberResponseWithLinks } from "src/app/api";
 import { MemberContactTypes } from "src/app/config/member-contact-types";
 import { ApiService } from "src/app/services/api.service";
@@ -13,7 +13,10 @@ import { MemberStoreService } from "../../services/member-store.service";
   templateUrl: "./member-contacts.component.html",
   styleUrls: ["./member-contacts.component.scss"],
 })
-export default class MemberContactsComponent implements OnInit {
+export default class MemberContactsComponent implements OnChanges {
+  @Input() member?: MemberResponseWithLinks | null;
+  @Output() update = new EventEmitter<Partial<MemberResponseWithLinks>>();
+
   contacts?: MemberContactResponseWithLinks[];
 
   contactTypes = MemberContactTypes;
@@ -25,8 +28,8 @@ export default class MemberContactsComponent implements OnInit {
     private alertController: AlertController,
   ) {}
 
-  ngOnInit(): void {
-    this.memberStore.currentMember.pipe(untilDestroyed(this)).subscribe((member) => this.loadContacts(member));
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["member"]) this.loadContacts(this.member);
   }
 
   async loadContacts(member?: MemberResponseWithLinks | null) {

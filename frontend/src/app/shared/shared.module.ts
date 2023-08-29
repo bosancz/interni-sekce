@@ -11,12 +11,14 @@ import { CardFooterComponent } from "./components/card-footer/card-footer.compon
 import { CardTitleComponent } from "./components/card-title/card-title.component";
 import { CardComponent } from "./components/card/card.component";
 import { DotComponent } from "./components/dot/dot.component";
+import { EditButtonComponent } from "./components/edit-button/edit-button.component";
 import { EventCalendarComponent } from "./components/event-calendar/event-calendar.component";
 import { EventCardComponent } from "./components/event-card/event-card.component";
 import { EventStatusBadgeComponent } from "./components/event-status-badge/event-status-badge.component";
 import { FilterComponent } from "./components/filter/filter.component";
 import { GroupsSelectComponent } from "./components/groups-select/groups-select.component";
 import { MemberItemDetailComponent } from "./components/member-item-detail/member-item-detail.component";
+import { MemberSelectComponent } from "./components/member-select/member-select.component";
 import { PageContentComponent } from "./components/page-content/page-content.component";
 import { PageFooterComponent } from "./components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "./components/page-header/page-header.component";
@@ -33,7 +35,6 @@ import { JoinLeadersPipe } from "./pipes/join-leaders.pipe";
 import { MarkdownPipe } from "./pipes/markdown.pipe";
 import { MemberPipe } from "./pipes/member.pipe";
 import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
-import { MemberSelectComponent } from './components/member-select/member-select.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, RouterModule, IonicModule, SwiperModule],
@@ -68,6 +69,7 @@ import { MemberSelectComponent } from './components/member-select/member-select.
     CardFooterComponent,
     MarkdownPipe,
     MemberSelectComponent,
+    EditButtonComponent,
   ],
   exports: [
     FormsModule,
@@ -104,6 +106,7 @@ import { MemberSelectComponent } from './components/member-select/member-select.
     PhotoGalleryComponent,
     PrettyBytesPipe,
     MarkdownPipe,
+    EditButtonComponent,
   ],
   providers: [DatePipe],
 })
