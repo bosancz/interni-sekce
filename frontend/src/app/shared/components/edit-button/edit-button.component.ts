@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { AlertController, AlertInput } from "@ionic/angular";
+import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from "@angular/core";
+import { AlertInput, IonModal, ModalController, Platform } from "@ionic/angular";
 
 type EditTypes = "alert" | "member" | "markdown";
 type EditInputs = { [key: string]: AlertInput["type"] };
@@ -9,7 +9,7 @@ type EditInputs = { [key: string]: AlertInput["type"] };
   templateUrl: "./edit-button.component.html",
   styleUrls: ["./edit-button.component.scss"],
 })
-export class EditButtonComponent {
+export class EditButtonComponent implements AfterViewInit {
   @Input() type: EditTypes = "alert";
   @Input() inputs!: EditInputs;
   @Input() value?: any;
@@ -17,35 +17,43 @@ export class EditButtonComponent {
 
   @Output() change = new EventEmitter();
 
-  constructor(private alertController: AlertController) {}
+  @ViewChild(IonModal) modal!: IonModal;
 
-  onClick() {
-    switch (this.type) {
-      case "alert":
-        return this.openEditAlert();
-    }
+  constructor(private modalController: ModalController, private platform: Platform) {}
+
+  ngAfterViewInit(): void {
+    this.modal.backdropDismiss = false;
+  }
+  open() {
+    this.modal.present();
   }
 
-  async openEditAlert() {
-    const alert = await this.alertController.create({
-      header: "Edit",
-      inputs: Object.entries(this.inputs).map(([name, type]) => ({
-        name,
-        type,
-        value: this.value?.[name],
-      })),
-      buttons: [
-        {
-          text: "Cancel",
-          role: "cancel",
-        },
-        {
-          text: "Save",
-          handler: (data) => this.change.emit(data),
-        },
-      ],
-    });
-
-    alert.present();
+  close() {
+    this.modal.dismiss();
   }
+
+  onModalWillDismiss(event: Event) {}
+
+  // async openEditAlert() {
+  //   const alert = await this.alertController.create({
+  //     header: "Edit",
+  //     inputs: Object.entries(this.inputs).map(([name, type]) => ({
+  //       name,
+  //       type,
+  //       value: this.value?.[name],
+  //     })),
+  //     buttons: [
+  //       {
+  //         text: "Cancel",
+  //         role: "cancel",
+  //       },
+  //       {
+  //         text: "Save",
+  //         handler: (data) => this.change.emit(data),
+  //       },
+  //     ],
+  //   });
+
+  //   alert.present();
+  // }
 }
