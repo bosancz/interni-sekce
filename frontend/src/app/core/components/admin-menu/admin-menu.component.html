@@ -44,9 +44,13 @@
       <ion-item slot="header">
         <ion-label>Půjčovna</ion-label>
       </ion-item>
-      <div class="ion-padding" slot="content"><a href="https://sites.google.com/bosan.cz/pujcovna" target="_blank">Zadat výpůjčku</a></div>
-      <div class="ion-padding" slot="content"><a href="https://docs.google.com/spreadsheets/d/1SHl5o2PEmohP7LKxfoQWvs--zCrdNrIYXK6NsxfbBdo/edit#gid=48607272" target="_blank">Prohlížet výpůjčky</a></div>
-    </ion-accordion>
+      <ion-item slot="content" href="https://sites.google.com/bosan.cz/pujcovna" target="_blank" color="light">
+        <ion-label>Zadat výpůjčku</ion-label>
+      </ion-item>
+      <ion-item slot="content" href="https://docs.google.com/spreadsheets/d/1SHl5o2PEmohP7LKxfoQWvs--zCrdNrIYXK6NsxfbBdo/edit#gid=48607272" target="_blank" color="light">
+        <ion-label>Přehled výpůjček</ion-label>
+      </ion-item>
+   </ion-accordion>
   </ion-accordion-group>
 
   <ng-container *ngIf="userService.user | async as user">
