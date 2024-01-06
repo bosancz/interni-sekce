@@ -28,7 +28,7 @@ COPY ./backend .
 RUN npm run build
 
 # CLEANUP
-RUN npm prune --production
+RUN npm prune --omit=dev
 
 
 

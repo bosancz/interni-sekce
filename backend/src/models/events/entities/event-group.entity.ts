@@ -8,7 +8,7 @@ export class EventGroup {
   eventId!: number;
 
   @PrimaryColumn()
-  groupId!: string;
+  groupId!: number;
 
   @ManyToOne(() => Event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
   @JoinColumn({ name: "event_id" })

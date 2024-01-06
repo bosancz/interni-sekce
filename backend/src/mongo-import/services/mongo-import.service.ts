@@ -58,7 +58,6 @@ export class MongoImportService {
     console.debug(` - Found ${mongoUsers.length} users in mongo.`);
 
     let c = 0;
-    const groups: string[] = [];
 
     for (let mongoUser of mongoUsers) {
       if (!mongoUser.login) continue;
@@ -174,12 +173,17 @@ export class MongoImportService {
     console.debug(` - Found ${mongoEvents.length} events in mongo.`);
 
     let c = 0;
+    const groupsIndex: { [name: string]: number } = {};
+
     for (let mongoEvent of mongoEvents) {
       if (!mongoEvent.dateFrom || !mongoEvent.dateTill) continue;
 
+      let status = <any>mongoEvent.status ?? EventStates.draft;
+      if (status === "rejected") status = EventStates.pending;
+
       const eventData: Omit<Event, "id"> = {
         name: mongoEvent.name,
-        status: <any>mongoEvent.status ?? EventStates.draft,
+        status,
         statusNote: mongoEvent.statusNote ?? null,
         place: mongoEvent.place ?? null,
         description: mongoEvent.description ?? null,
@@ -239,9 +243,14 @@ export class MongoImportService {
         for (let mongoEventGroup of mongoEvent.groups) {
           if (mongoEventGroup === "V") continue;
 
+          if (mongoEventGroup && !(mongoEventGroup in groupsIndex)) {
+            const group = await t.save(Group, { shortName: mongoEventGroup, active: true, name: mongoEventGroup });
+            groupsIndex[mongoEventGroup] = group.id;
+          }
+
           const eventGroupData: EventGroup = {
             eventId: event.id,
-            groupId: mongoEventGroup,
+            groupId: groupsIndex[mongoEventGroup],
           };
 
           await t.save(EventGroup, eventGroupData);
