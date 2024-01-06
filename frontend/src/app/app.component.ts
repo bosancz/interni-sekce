@@ -21,13 +21,17 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.userService.user.subscribe((user) => this.api.reloadApi());
+    this.userService.user.subscribe((user) => {
+      if (user !== undefined) {
+        this.api.reloadApi();
+      }
+    });
 
     this.loginService.onLogin.subscribe(() => {
       this.userService.loadUser();
     });
     this.loginService.onLogout.subscribe(() => {
-      this.userService.loadUser();
+      this.userService.clearUser();
     });
   }
 

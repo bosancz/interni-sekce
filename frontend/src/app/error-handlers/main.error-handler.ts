@@ -1,7 +1,6 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { ErrorHandler, Injectable, Injector } from "@angular/core";
 import { NavController } from "@ionic/angular";
-import { OnlineService } from "src/app/services/online.service";
 import { ToastService } from "src/app/services/toast.service";
 
 @Injectable()
@@ -9,7 +8,6 @@ export class MainErrorHandler implements ErrorHandler {
   constructor(private injector: Injector) {}
 
   handleError(err: any) {
-    const onlineService = this.injector.get(OnlineService);
     const navController = this.injector.get(NavController);
     const toastService = this.injector.get(ToastService);
 
@@ -18,7 +16,7 @@ export class MainErrorHandler implements ErrorHandler {
     var propagateError = true;
 
     if (err instanceof HttpErrorResponse) {
-      if (!onlineService.online.value) {
+      if (!navigator.onLine) {
         propagateError = false;
         toastService.toast("Akci se nepodařilo dokončit - jsi bez internetu.");
       } else if (err.status === 401) {

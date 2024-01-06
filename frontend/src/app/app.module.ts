@@ -1,6 +1,6 @@
 import { registerLocaleData } from "@angular/common";
 import localeCs from "@angular/common/locales/cs";
-import { APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule } from "@angular/core";
+import { ErrorHandler, LOCALE_ID, NgModule } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouteReuseStrategy, TitleStrategy } from "@angular/router";
 import { ServiceWorkerModule } from "@angular/service-worker";
@@ -12,7 +12,6 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { CoreModule } from "./core/core.module";
 import { MainErrorHandler } from "./error-handlers/main.error-handler";
-import { ApiService } from "./services/api.service";
 import { TitleService } from "./services/title.service";
 import { SharedModule } from "./shared/shared.module";
 
@@ -34,7 +33,6 @@ SwiperCore.use([Navigation]);
     SwiperModule,
   ],
   providers: [
-    { provide: APP_INITIALIZER, useFactory: (api: ApiService) => () => api.init(), deps: [ApiService], multi: true },
     { provide: TitleStrategy, useClass: TitleService },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: ErrorHandler, useClass: MainErrorHandler },

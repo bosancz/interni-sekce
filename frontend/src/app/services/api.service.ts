@@ -65,11 +65,20 @@ export class ApiService {
 class CachedSubject<T> extends BehaviorSubject<T | undefined> {
   constructor(private api: ApiService, private request: (api: ApiService) => Promise<AxiosResponse<T>>) {
     super(undefined);
-    this.load();
   }
 
   async load() {
-    const res = await this.request(this.api);
-    this.next(res.data);
+    try {
+      const res = await this.request(this.api);
+      this.next(res.data);
+    } catch (err) {
+      if (this.api.isApiError(err)) {
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          this.next(undefined);
+          return;
+        }
+        throw err;
+      }
+    }
   }
 }

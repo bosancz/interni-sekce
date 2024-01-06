@@ -19,6 +19,10 @@ export class UserService {
     this.loadUser();
   }
 
+  clearUser() {
+    this.user.next(null);
+  }
+
   async loadUser() {
     try {
       const user = await this.api.account.getMe().then((res) => res.data);
@@ -26,7 +30,6 @@ export class UserService {
       return user;
     } catch (err) {
       if (axios.isAxiosError(err) && [404, 401, 403].includes(err.response?.status!)) {
-        this.toastService.toast("Přihlášení na tomto zařízení vypršelo. Přihlaš se prosím znovu.");
         this.user.next(null);
       } else if (axios.isAxiosError(err)) {
         this.toastService.toast(`Nepodařilo se načíst uživatele: ${err.response?.data.message}`, {
