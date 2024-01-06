@@ -1,6 +1,4 @@
-FROM node:18
-
-WORKDIR /workspace
+FROM node:20
 
 # alpine linux utilities
 # RUN apk add --no-cache git nano lsof openjdk8-jre
@@ -11,4 +9,4 @@ RUN apt-get update && apt-get install -y default-jre
 
 
 # development tools
-RUN npm i -g @angular/cli @nestjs/cli
+RUN npm i -g @angular/cli @nestjs/cli npm-check-updates
