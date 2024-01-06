@@ -1,4 +1,4 @@
-FROM node:18-alpine as build-frontend
+FROM node:20-alpine as build-frontend
 
 ARG NG_CONFIGURATION=production
 
@@ -15,7 +15,7 @@ RUN npx ng build --configuration="${NG_CONFIGURATION}"
 
 
 
-FROM node:18-alpine as build-backend
+FROM node:20-alpine as build-backend
 
 WORKDIR /app
 
@@ -31,7 +31,7 @@ RUN npm run build
 RUN npm prune --production
 
 
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
