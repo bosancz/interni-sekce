@@ -8,9 +8,10 @@
     "prepare": "husky install",
     "all-contributors:check": "all-contributors check",
     "all-contributors:generate": "all-contributors generate",
-    "build": "docker build -t docker.bosan.cz/interni-sekce:${TAG:=latest} .",
+    "build": "docker build -t ghcr.io/bosancz/interni-sekce:${TAG:=latest} .",
+    "build:alpha": "TAG=alpha npm run build",
     "predeploy": "npm run build",
-    "deploy": "docker push docker.bosan.cz/interni-sekce:${TAG:=latest}",
+    "deploy": "docker push ghcr.io/bosancz/interni-sekce:${TAG:=latest}",
     "deploy:alpha": "TAG=alpha npm run deploy"
   },
   "devDependencies": {
