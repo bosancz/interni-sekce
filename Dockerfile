@@ -37,21 +37,21 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# COPY BACKEND
+# COPY BACKEND FILES
 COPY --from=build-backend /app/node_modules ./backend/node_modules
 COPY --from=build-backend /app/dist ./backend/dist
-COPY --from=build-backend /app/package.json /app/cli.js ./backend/
+COPY --from=build-backend /app/package.json ./backend/
 
-# COPY FRONTEND
+# COPY FRONTEND FILES
 COPY --from=build-frontend /app/dist ./frontend/dist
 COPY --from=build-frontend /app/package.json ./frontend/
 
-# COPY MAIN
-COPY package.json ./
-COPY entrypoint.sh ./
+# COPY ROOT FILES
+RUN apk add --no-cache bash
+COPY package.json entrypoint.sh ./
 
 # RUN
 ENV NODE_ENV=production
 EXPOSE 80
-ENTRYPOINT [ "entrypoint.sh" ]
+ENTRYPOINT [ "./entrypoint.sh" ]
 CMD [ "start" ]
