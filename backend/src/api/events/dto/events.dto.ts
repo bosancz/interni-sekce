@@ -8,4 +8,6 @@ export class GetEventsQuery {
   @ApiPropertyOptional() @IsString() @IsOptional() search?: string;
   @ApiPropertyOptional() @Type(() => Boolean) @IsBoolean() @IsOptional() my?: boolean;
   @ApiPropertyOptional() @Type(() => Boolean) @IsBoolean() @IsOptional() noleader?: boolean;
+  @ApiPropertyOptional() @Type(() => Number) @IsNumber() @IsOptional() limit?: number;
+  @ApiPropertyOptional() @Type(() => Number) @IsNumber() @IsOptional() offset?: number;
 }

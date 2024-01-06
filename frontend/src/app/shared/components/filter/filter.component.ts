@@ -1,37 +1,26 @@
-import { Component, Input, forwardRef } from "@angular/core";
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { Component, EventEmitter, Input, Output, ViewChild } from "@angular/core";
+import { IonModal } from "@ionic/angular";
 
 @Component({
   selector: "bo-filter",
   templateUrl: "./filter.component.html",
   styleUrls: ["./filter.component.scss"],
-  providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: forwardRef(() => FilterComponent) }],
+  // providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: forwardRef(() => FilterComponent) }],
 })
-export class FilterComponent implements ControlValueAccessor {
-  @Input("search") showSearch = true;
+export class FilterComponent {
+  @Input() disabled: boolean = false;
+  @Output() cancel = new EventEmitter<void>();
+  @Output() submit = new EventEmitter<void>();
 
-  showFilter = false;
+  @ViewChild(IonModal) modal?: IonModal;
 
-  searchString?: string;
-
-  disabled = false;
-  onChange = (filter: any) => {};
-  onTouched = () => {};
-
-  searchStringChanged() {
-    this.onChange(this.searchString);
+  public onCancel() {
+    this.modal!.dismiss();
+    this.cancel.emit();
   }
 
-  writeValue(value: string): void {
-    this.searchString = value;
-  }
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-  setDisabledState?(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+  public onSubmit() {
+    this.modal!.dismiss();
+    this.submit.emit();
   }
 }

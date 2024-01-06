@@ -47,7 +47,10 @@ import { GetEventsQuery } from "../dto/events.dto";
 export class EventsController {
   private logger = new Logger(EventsController.name);
 
-  constructor(private events: EventsService, @InjectRepository(Event) private eventsRepository: Repository<Event>) {}
+  constructor(
+    private events: EventsService,
+    @InjectRepository(Event) private eventsRepository: Repository<Event>,
+  ) {}
 
   @Get()
   @AcLinks(EventsListRoute)
@@ -59,26 +62,28 @@ export class EventsController {
   ): Promise<EventResponse[]> {
     const q = this.eventsRepository
       .createQueryBuilder("events")
-      .select(["events.id", "events.name", "events.status", "events.dateFrom", "events.dateTill"])
+      .select(["events.id", "events.name", "events.status", "events.dateFrom", "events.dateTill", "events.type"])
       .leftJoin("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
       .leftJoinAndSelect("attendees.member", "leaders")
       .where(EventsListRoute.canWhere(req))
-      .limit(25);
+      .orderBy("events.dateFrom", "ASC")
+      .limit(query.limit ?? 25)
+      .offset(query.offset ?? 0);
 
-    if (query?.year) {
+    if (query.year) {
       q.andWhere("date_till >= :yearStart AND date_from <= :yearEnd", {
         yearStart: `${query.year}-01-01`,
         yearEnd: `${query.year}-12-31`,
       });
     }
 
-    if (query?.status) q.andWhere("status = :status", { status: query.status });
+    if (query.status) q.andWhere("status = :status", { status: query.status });
 
-    if (query?.search) q.andWhere("name LIKE :search", { search: `%${query.search}%` });
+    if (query.search) q.andWhere("name LIKE :search", { search: `%${query.search}%` });
 
-    if (query?.my) q.andWhere("leaders.id = :userId", { userId: token.userId });
+    if (query.my) q.andWhere("leaders.id = :userId", { userId: token.userId });
 
-    if (query?.noleader) q.andWhere("leaders.id IS NULL");
+    if (query.noleader) q.andWhere("leaders.id IS NULL");
 
     return q.getMany();
   }

@@ -13,6 +13,7 @@ import { UserService } from "src/app/services/user.service";
 })
 export class SideMenuComponent implements OnInit {
   submenu?: string;
+  versionUpdates = this.swUpdate.versionUpdates;
 
   dropdownsCollapsed = {
     program: true,
@@ -22,7 +23,7 @@ export class SideMenuComponent implements OnInit {
     public titleService: TitleService,
     public userService: UserService,
     private loginService: LoginService,
-    public swUpdate: SwUpdate,
+    private swUpdate: SwUpdate,
     public platform: Platform,
   ) {}
 

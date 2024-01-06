@@ -41,9 +41,10 @@ export class EventResponse implements Event {
 
 export class EventCreateBody implements Pick<Event, "name" | "description" | "dateFrom" | "dateTill"> {
   @ApiProperty() @IsString() name!: string;
-  @ApiPropertyOptional() @IsOptional() @IsString() description!: string | null;
   @ApiProperty() @IsString() dateFrom!: string;
   @ApiProperty() @IsString() dateTill!: string;
+  @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() description!: string | null;
+  @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() type!: string | null;
 }
 
 export class EventUpdateBody {

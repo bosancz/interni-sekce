@@ -7,3 +7,5 @@ export type MethodOf<T> = {
 }[keyof T];
 
 export type ExtractExisting<T, K extends T> = Extract<T, K>;
+
+export type UrlParams = Record<string, string | undefined>;

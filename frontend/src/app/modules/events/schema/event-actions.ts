@@ -1,5 +1,5 @@
 import { EventsApi } from "src/app/api";
-import { ExtractExisting } from "src/utilities/typings";
+import { ExtractExisting } from "src/helpers/typings";
 
 export type EventActions = ExtractExisting<
   keyof EventsApi,

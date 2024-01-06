@@ -1,6 +1,6 @@
 import { CommonModule, DatePipe } from "@angular/common";
 import { NgModule } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { IonicModule } from "@ionic/angular";
 import { SwiperModule } from "swiper/angular";
@@ -73,6 +73,7 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
   ],
   exports: [
     FormsModule,
+    ReactiveFormsModule,
     IonicModule,
     SwiperModule,
     RouterModule,

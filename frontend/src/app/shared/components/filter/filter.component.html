@@ -1,20 +1,19 @@
-<ion-toolbar>
-  <ion-searchbar
-    *ngIf="showSearch"
-    type="text"
-    name="search"
-    [(ngModel)]="searchString"
-    (ngModelChange)="searchStringChanged()"
-    (keydown.enter)="$event.preventDefault()"
-    [disabled]="disabled"
-  ></ion-searchbar>
-  <ion-buttons slot="end">
-    <ion-button (click)="showFilter = !showFilter" [color]="showFilter ? 'primary' : 'default'" [disabled]="disabled">
-      <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
-    </ion-button>
-  </ion-buttons>
-</ion-toolbar>
+<ion-button color="primary" fill="none" id="filter-modal" [disabled]="disabled">
+  <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
+</ion-button>
 
-<div [hidden]="!showFilter">
-  <ng-content></ng-content>
-</div>
+<ion-modal trigger="filter-modal">
+  <ng-template>
+    <ion-content>
+      <ng-content></ng-content>
+    </ion-content>
+    <ion-footer>
+      <ion-toolbar>
+        <ion-buttons slot="end">
+          <ion-button color="secondary" (click)="onCancel()">Zrušit</ion-button>
+          <ion-button color="primary" [strong]="true" (click)="onSubmit()">Filtrovat</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-footer>
+  </ng-template>
+</ion-modal>

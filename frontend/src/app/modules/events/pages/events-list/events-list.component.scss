@@ -1,6 +1,18 @@
-.table .filter{cursor:pointer;}
+.table .filter {
+  cursor: pointer;
+}
 
-.date{white-space:nowrap;}
+.date {
+  white-space: nowrap;
+}
 
-tr.event-big{font-weight:bold;}
-tr.event-small{opacity:.8;}
+tr.event-big {
+  font-weight: bold;
+}
+tr.event-small {
+  opacity: 0.8;
+}
+
+ion-list {
+  flex-grow: 1;
+}

@@ -59,7 +59,16 @@
     <ion-label>Nejste připojeni k internetu. Zobrazené údaje mohou být zastaralé.</ion-label>
   </ion-item> -->
 
-  <ion-item *ngIf="swUpdate.available | async" [button]="true" (click)="reload()" color="warning">
-    <ion-label class="ion-text-wrap">Je k dispozici nová verze, klikněte pro načtení.</ion-label>
-  </ion-item>
+  @switch ((versionUpdates | async)?.type) {
+    @case ("VERSION_DETECTED") {
+      <ion-item color="warning">
+        <ion-label class="ion-text-wrap">Je k dispozici nová verze, stahuji...</ion-label>
+      </ion-item>
+    }
+    @case ("VERSION_READY") {
+      <ion-item [button]="true" (click)="reload()" color="warning">
+        <ion-label class="ion-text-wrap">Je stažena nová verze, klikněte pro aktualizaci.</ion-label>
+      </ion-item>
+    }
+  }
 </ion-list>

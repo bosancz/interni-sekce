@@ -4,7 +4,7 @@ import { Router } from "@angular/router";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 
-import { NgForm } from "@angular/forms";
+import { FormControl, FormGroup } from "@angular/forms";
 
 @Component({
   selector: "events-create",
@@ -12,19 +12,35 @@ import { NgForm } from "@angular/forms";
   styleUrls: ["./events-create.component.scss"],
 })
 export class EventsCreateComponent implements OnInit {
-  constructor(private api: ApiService, private toastService: ToastService, private router: Router) {}
+  showValidationErrors = false;
+
+  constructor(
+    private api: ApiService,
+    private toastService: ToastService,
+    private router: Router,
+  ) {}
+
+  form = new FormGroup({
+    name: new FormControl<string>("", { nonNullable: true }),
+    dateFrom: new FormControl<string>("", { nonNullable: true }),
+    dateTill: new FormControl<string>("", { nonNullable: true }),
+    description: new FormControl<string>("", { nonNullable: true }),
+    type: new FormControl<string>("", { nonNullable: true }),
+  });
 
   ngOnInit() {}
 
-  async createEvent(form: NgForm) {
-    if (!form.valid) {
+  async createEvent() {
+    this.form.markAllAsTouched();
+
+    if (!this.form.valid) {
       this.toastService.toast("Akci nelze vytvořit, ve formuláři jsou chyby.");
       return;
     }
 
     // get data from form
     // TODO: create a typed form
-    let eventData = form.value;
+    let eventData = this.form.getRawValue();
 
     // prevent switched date order
     if (eventData.dateFrom && eventData.dateTill) {
