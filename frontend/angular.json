@@ -83,16 +83,16 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "bosancz:build",
             "host": "127.0.0.1",
-            "port": 4200
+            "port": 4200,
+            "buildTarget": "bosancz:build"
           },
           "configurations": {
             "development": {
-              "browserTarget": "bosancz:build:development"
+              "buildTarget": "bosancz:build:development"
             },
             "test-server": {
-              "browserTarget": "bosancz:build:test-server"
+              "buildTarget": "bosancz:build:test-server"
             }
           },
           "defaultConfiguration": "development"
@@ -100,7 +100,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "bosancz:build"
+            "buildTarget": "bosancz:build"
           }
         }
       }

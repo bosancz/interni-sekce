@@ -9,14 +9,14 @@
     "api:generate": "openapi-generator-cli generate"
   },
   "dependencies": {
-    "@angular/animations": "^16.1.4",
-    "@angular/common": "^16.1.4",
-    "@angular/compiler": "^16.1.4",
-    "@angular/core": "^16.1.4",
-    "@angular/forms": "^16.1.4",
-    "@angular/platform-browser": "^16.1.4",
-    "@angular/router": "^16.1.4",
-    "@angular/service-worker": "^16.1.4",
+    "@angular/animations": "^17.0.8",
+    "@angular/common": "^17.0.8",
+    "@angular/compiler": "^17.0.8",
+    "@angular/core": "^17.0.8",
+    "@angular/forms": "^17.0.8",
+    "@angular/platform-browser": "^17.0.8",
+    "@angular/router": "^17.0.8",
+    "@angular/service-worker": "^17.0.8",
     "@editorjs/editorjs": "^2.26.3",
     "@editorjs/header": "^2.7.0",
     "@editorjs/image": "^2.7.1",
@@ -38,19 +38,20 @@
     "pretty-bytes": "^6.0.0",
     "rxjs": "^7.8.1",
     "swiper": "^8.4.5",
-    "zone.js": "^0.13.1"
+    "zone.js": "^0.14.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^16.1.4",
-    "@angular/cli": "^16.1.4",
-    "@angular/compiler-cli": "^16.1.4",
-    "@angular/language-service": "^16.1.4",
+    "@angular-devkit/build-angular": "^17.0.9",
+    "@angular/cli": "^17.0.9",
+    "@angular/compiler-cli": "^17.0.8",
+    "@angular/language-service": "^17.0.8",
     "@openapitools/openapi-generator-cli": "^2.5.2",
     "@types/file-saver": "^2.0.5",
     "@types/google.accounts": "^0.0.7",
     "@types/inflected": "^1.1.29",
     "@types/luxon": "^3.1.0",
     "@types/marked": "^5.0.1",
-    "typescript": "~5.1.6"
+    "prettier": "^3.1.1",
+    "typescript": "~5.2.2"
   }
 }
