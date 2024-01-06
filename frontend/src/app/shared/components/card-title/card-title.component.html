@@ -1,1 +1,6 @@
-<h3><ng-content></ng-content></h3>
+<h3>
+  <ng-content></ng-content>
+  <div>
+    <ng-content select="[slot=end]"></ng-content>
+  </div>
+</h3>

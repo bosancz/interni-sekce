@@ -66,7 +66,7 @@ export class EventsController {
       .leftJoin("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
       .leftJoinAndSelect("attendees.member", "leaders")
       .where(EventsListRoute.canWhere(req))
-      .orderBy("events.dateFrom", "ASC")
+      .orderBy("events.dateFrom", "DESC")
       .limit(query.limit ?? 25)
       .offset(query.offset ?? 0);
 

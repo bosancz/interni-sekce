@@ -17,7 +17,7 @@ export class RouteACL<DOC> extends AcRouteACL<DOC, Roles, WhereData> {
     const permissions = this.getPermissions(req);
 
     if (permissions.some((p) => p === true)) return {};
-    if (permissions.every((p) => p === false)) throw new ForbiddenException();
+    if (!permissions.length || permissions.every((p) => p === false)) throw new ForbiddenException();
 
     return new Brackets((qb) => {
       permissions.reduce((acc, cur, i) => {

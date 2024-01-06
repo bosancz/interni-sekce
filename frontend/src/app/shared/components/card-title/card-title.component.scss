@@ -5,6 +5,9 @@
 
 h3 {
   font-size: 1.3rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 h1,

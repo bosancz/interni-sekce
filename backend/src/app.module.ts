@@ -10,7 +10,7 @@ import { MembersModule } from "./api/members/members.module";
 import { PublicModule } from "./api/public/public.module";
 import { RootModule } from "./api/root/root.module";
 import { StatisticsModule } from "./api/statistics/statistics.module";
-import { UsersController } from "./api/users/controllers/users.controller";
+import { UsersModule } from "./api/users/users.module";
 import { AuthModule } from "./auth/auth.module";
 import { Config } from "./config";
 import { AlbumsModelModule } from "./models/albums/albums-model.module";
@@ -43,6 +43,7 @@ const typeOrmOptions: TypeOrmModuleOptions = {
     PublicModule,
     MembersModule,
     AuthModule,
+    UsersModule,
     MembersModelModule,
     AlbumsModelModule,
     UsersModelModule,
@@ -55,7 +56,7 @@ const typeOrmOptions: TypeOrmModuleOptions = {
     GoogleModelModule,
     FilesModule,
   ],
-  controllers: [UsersController],
+  controllers: [],
   providers: [MailService],
 })
 export class AppModule {}

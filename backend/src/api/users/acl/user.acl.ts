@@ -24,6 +24,7 @@ export const UserCreateRoute = new RouteACL({
 
 export const UserReadRoute = new RouteACL<User>({
   linkTo: UserResponse,
+  contains: UserResponse,
 
   permissions: {
     vedouci: true,

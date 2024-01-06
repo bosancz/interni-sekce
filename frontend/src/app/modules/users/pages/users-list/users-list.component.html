@@ -1,21 +1,28 @@
 <bo-page-header title="Uživatelské účty" backUrl="/" [actions]="actions"></bo-page-header>
 
-<bo-filter>
-  <form #filterForm="ngForm" class="filter d-md-block px-3">
-    <ion-item lines="none">
-      <ion-label position="floating">Role</ion-label>
-      <ion-select multiple name="role" ngModel placeholder="všechny">
-        <ion-select-option *ngFor="let role of userRoles | keyvalue" [value]="role.key">{{
-          role.value.title
-        }}</ion-select-option>
-      </ion-select>
-    </ion-item>
-  </form>
-</bo-filter>
+<form [formGroup]="filterForm">
+  <ion-toolbar>
+    <ion-searchbar formControlName="search" (ionChange)="onFilterChange()" [debounce]="500"></ion-searchbar>
+
+    <ion-buttons slot="end">
+      <bo-filter (cancel)="resetFilter()" (submit)="onFilterChange()">
+        <ion-item lines="none">
+          <ion-label position="floating">Role</ion-label>
+          <ion-select multiple formControlName="roles">
+            <ion-select-option [value]="null">všechny</ion-select-option>
+            <ion-select-option *ngFor="let role of userRoles | keyvalue" [value]="role.key">
+              {{ role.value.title }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </bo-filter>
+    </ion-buttons>
+  </ion-toolbar>
+</form>
 
 <ion-content>
   <ion-list>
-    <ion-item *ngFor="let user of filteredUsers">
+    <ion-item *ngFor="let user of users" [routerLink]="['/uzivatele', user.id]" [button]="true" [detail]="true">
       <ion-label>
         <h3>{{ user.login }}</h3>
         <p *ngIf="user.email">{{ user.email }}</p>
@@ -26,37 +33,16 @@
           <ion-badge *ngFor="let role of user.roles">{{ userRoles[role].title }}</ion-badge>
         </p>
       </ion-label>
-      <ion-label class="d-none d-lg-block">
-        <ion-badge *ngFor="let role of user.roles">{{ userRoles[role].title }}</ion-badge>
-      </ion-label>
+
       <ion-label class="d-none d-lg-block">
         <h3 *ngIf="user.member">{{ user.member.nickname || "-" }}</h3>
         <p *ngIf="user.member">{{ user.member.firstName }} {{ user.member.lastName }}</p>
         <p *ngIf="!user.member"><i>bez člena</i></p>
       </ion-label>
-      <!-- <td>{{ user.email || "-" }}</td> -->
-      <!-- <td>
-          <ng-container *ngIf="user.member">
-            {{ user.member.nickname }} ({{ user.member.firstName }} {{ user.member.lastName }})
-          </ng-container>
-          <ng-container *ngIf="!user.member">-</ng-container>
-        </td>
-        <td>
-          <span *ngFor="let role of user.roles" class="role badge badge-dark">{{ getRoleName(role) }}</span>
-        </td>
-        <td> -->
-      <ion-buttons>
-        <ion-button
-          [routerLink]="['/uzivatele', user.id]"
-          *ngIf="user._links.updateUser.applicable"
-          [disabled]="!user._links.updateUser.allowed"
-        >
-          <ion-icon name="create-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-        <ion-button (click)="openUserMenu(user)">
-          <ion-icon name="menu-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-buttons>
+
+      <ion-label class="d-none d-lg-block">
+        <ion-badge *ngFor="let role of user.roles">{{ userRoles[role].title }}</ion-badge>
+      </ion-label>
     </ion-item>
   </ion-list>
 </ion-content>

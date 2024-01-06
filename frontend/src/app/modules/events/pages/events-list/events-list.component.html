@@ -42,8 +42,10 @@
     </ng-container>
 
     <ion-item *ngFor="let event of events" [routerLink]="'' + event.id">
-      <ion-avatar aria-hidden="true" slot="start">
-        <img *ngIf="event | event: 'image'" class="img-fluid" [src]="event | event: 'image'" />
+      <ion-avatar aria-hidden="true" slot="start" [style.background-color]="(event | event: 'color') || '#000'">
+        @if (event | event: "image") {
+          <img class="img-fluid" [src]="event | event: 'image'" />
+        }
       </ion-avatar>
       <ion-label>
         <h3>{{ event.name }}</h3>

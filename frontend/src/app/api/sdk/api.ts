@@ -8957,10 +8957,12 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @param {string} [search] 
+         * @param {string} [roles] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listUsers: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listUsers: async (search?: string, roles?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/users`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -8972,6 +8974,14 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (search !== undefined) {
+                localVarQueryParameter['search'] = search;
+            }
+
+            if (roles !== undefined) {
+                localVarQueryParameter['roles'] = roles;
+            }
 
 
     
@@ -9114,11 +9124,13 @@ export const UsersApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {string} [search] 
+         * @param {string} [roles] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listUsers(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserResponseWithLinks>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listUsers(options);
+        async listUsers(search?: string, roles?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserResponseWithLinks>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listUsers(search, roles, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -9191,11 +9203,12 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @param {UsersApiListUsersRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listUsers(options?: AxiosRequestConfig): AxiosPromise<Array<UserResponseWithLinks>> {
-            return localVarFp.listUsers(options).then((request) => request(axios, basePath));
+        listUsers(requestParameters: UsersApiListUsersRequest = {}, options?: AxiosRequestConfig): AxiosPromise<Array<UserResponseWithLinks>> {
+            return localVarFp.listUsers(requestParameters.search, requestParameters.roles, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -9278,6 +9291,48 @@ export interface UsersApiImpersonateUserRequest {
 }
 
 
+/**
+ * Request parameters for listUsers operation in UsersApi.
+ * @export
+ * @interface UsersApiListUsersRequest
+ */
+export interface UsersApiListUsersRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof UsersApiListUsers
+     */
+    readonly search?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof UsersApiListUsers
+     */
+    readonly roles?: string
+}
+
+
+/**
+ * Query parameters for listUsers operation in UsersApi.
+ * @export
+ * @interface UsersApiListUsersQueryParams
+ */
+export interface UsersApiListUsersQueryParams {
+    /**
+     * 
+     * @type {string}
+     * @memberof UsersApiListUsers
+     */
+    search?: string
+
+    /**
+     * 
+     * @type {string}
+     * @memberof UsersApiListUsers
+     */
+    roles?: string
+}
 
 /**
  * Request parameters for setUserPassword operation in UsersApi.
@@ -9376,12 +9431,13 @@ export class UsersApi extends BaseAPI {
 
     /**
      * 
+     * @param {UsersApiListUsersRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UsersApi
      */
-    public listUsers(options?: AxiosRequestConfig) {
-        return UsersApiFp(this.configuration).listUsers(options).then((request) => request(this.axios, this.basePath));
+    public listUsers(queryParams: UsersApiListUsersQueryParams = {}, options?: AxiosRequestConfig) {
+        return UsersApiFp(this.configuration).listUsers(queryParams.search, queryParams.roles, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

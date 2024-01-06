@@ -1,8 +1,11 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, Query, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
+import { User } from "src/models/users/entities/user.entity";
 import { UsersService } from "src/models/users/services/users.service";
+import { Repository } from "typeorm";
 import {
   UserCreateRoute,
   UserDeleteRoute,
@@ -16,20 +19,44 @@ import { UserCreateBody } from "../dto/user-create-body";
 import { UserSetPasswordBody } from "../dto/user-set-password-body";
 import { UserUpdateBody } from "../dto/user-update-body";
 import { UserResponse } from "../dto/user.dto";
+import { ListUsersQuery } from "../dto/users.dto";
 
 @Controller("users")
 @AcController()
 @ApiTags("Users")
 export class UsersController {
-  constructor(private userService: UsersService) {}
+  constructor(
+    private userService: UsersService,
+    @InjectRepository(User) private userRepository: Repository<User>,
+  ) {}
 
   @Get()
   @AcLinks(UsersListRoute)
   @ApiResponse({ type: WithLinks(UserResponse), isArray: true })
-  async listUsers(@Req() req: Request): Promise<Omit<UserResponse, "_links">[]> {
-    UsersListRoute.canOrThrow(req, undefined);
+  async listUsers(@Req() req: Request, @Query() query: ListUsersQuery): Promise<Omit<UserResponse, "_links">[]> {
+    const q = this.userRepository
+      .createQueryBuilder("user")
+      .select([
+        "user.id",
+        "user.login",
+        "user.memberId",
+        "user.login",
+        "user.roles",
+        "user.email",
+        "member.nickname",
+        "member.firstName",
+        "member.lastName",
+      ])
+      .leftJoin("user.member", "member")
+      .where(UsersListRoute.canWhere(req))
+      .orderBy("user.login", "ASC");
 
-    return this.userService.listUsers();
+    if (query.search)
+      q.andWhere("user.login ILIKE :search OR member.nickname ILIKE :search", { search: `%${query.search}%` });
+
+    if (query.roles) q.andWhere("user.roles && :roles", { roles: query.roles?.split(",") });
+
+    return q.getMany();
   }
 
   @Post()
@@ -45,7 +72,7 @@ export class UsersController {
   @AcLinks(UserReadRoute)
   @ApiResponse({ type: WithLinks(UserResponse) })
   async getUser(@Req() req: Request, @Param("id") id: number): Promise<Omit<UserResponse, "_links">> {
-    const user = await this.userService.getUser(id);
+    const user = await this.userRepository.findOne({ where: { id }, relations: ["member"] });
     if (!user) throw new NotFoundException();
 
     UserReadRoute.canOrThrow(req, user);
