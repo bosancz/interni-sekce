@@ -31,6 +31,8 @@ RUN npm run build
 RUN npm prune --production
 
 
+
+
 FROM node:20-alpine
 
 WORKDIR /app
@@ -38,7 +40,7 @@ WORKDIR /app
 # COPY FILES
 COPY --from=build-backend /app/node_modules ./backend/node_modules
 COPY --from=build-backend /app/dist ./backend/dist
-COPY --from=build-backend /app/package.json ./backend/package.json
+COPY --from=build-backend /app/package.json /app/cli.js ./backend/
 COPY --from=build-frontend /app/dist ./frontend/dist
 COPY package.json ./
 
