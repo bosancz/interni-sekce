@@ -16,7 +16,7 @@ async function bootstrap() {
     rawBody: true,
   });
 
-  app.setGlobalPrefix(Config.server.baseDir + "/api");
+  app.setGlobalPrefix(Config.server.basePath + "/api");
 
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, transform: true, transformOptions: { enableImplicitConversion: true } }),

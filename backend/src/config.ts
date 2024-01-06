@@ -21,12 +21,13 @@ const production = ["production", "staging"].includes(environment);
  * Sets server startup settings
  * @property host - Server listening hostname
  * @property port - Server listening port
- * @property baseDir - Server base directory
+ * @property basePath - Server base directory
  */
 const server = {
   host: process.env.HOST || production ? "0.0.0.0" : "localhost",
   port: process.env.PORT ? parseInt(process.env.PORT, 10) : production ? 80 : 3000,
-  baseDir: process.env.BASE_DIR || "",
+  basePath: process.env.BASE_PATH || "",
+  staticRoot: process.env.STATIC_ROOT || path.join(__dirname, "../../frontend/dist"),
 };
 
 const logging: { level?: LogLevel[] } = {
@@ -43,7 +44,7 @@ const cors: { enable: boolean; options: CorsOptions } = {
  */
 const app = {
   name: "Bošán - Interní sekce",
-  baseUrl: process.env["BASE_URL"] || `http://${server.host}${server.port ? ":" + server.port : ""}${server.baseDir}`,
+  baseUrl: process.env["BASE_URL"] || `http://${server.host}${server.port ? ":" + server.port : ""}${server.basePath}`,
   version: "0.0.0",
   environmentTitle: process.env["ENV_TITLE"] ?? (environment === "production" ? "" : environment.toUpperCase()),
 };

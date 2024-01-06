@@ -1,5 +1,5 @@
 import { Command, CommandRunner } from "nest-commander";
-import { AlbumsMetadataService } from "../services/albums-metadata.service";
+import { AlbumsMetadataService } from "../../models/albums/services/albums-metadata.service";
 
 @Command({
   name: "write-album-metadata",

@@ -2,7 +2,6 @@ import { Module } from "@nestjs/common";
 import { MulterModule } from "@nestjs/platform-express";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
-import * as path from "path";
 import { AccessControlModule } from "./access-control/access-control.module";
 import { AccountModule } from "./api/account/account.module";
 import { AlbumsModule } from "./api/albums/albums.module";
@@ -30,7 +29,7 @@ const typeOrmOptions: TypeOrmModuleOptions = {
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: path.join(__dirname, "../../frontend/dist"),
+      rootPath: Config.server.staticRoot,
     }),
     TypeOrmModule.forRoot(typeOrmOptions),
     MulterModule.register({

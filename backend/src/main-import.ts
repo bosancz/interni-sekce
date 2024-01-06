@@ -1,8 +1,8 @@
 import { CommandFactory } from "nest-commander";
-import { CliModule } from "./cli.module";
+import { MongoImportModule } from "./mongo-import/mongo-import.module";
 
 async function bootstrap() {
-  await CommandFactory.run(CliModule, ["warn", "error"]);
+  await CommandFactory.run(MongoImportModule, ["warn", "error"]);
 }
 
 bootstrap();
