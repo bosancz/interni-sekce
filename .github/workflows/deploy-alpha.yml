@@ -3,11 +3,7 @@ name: Deploy to ALPHA environment
 on:
   push:
     branches:
-      - alpha
-    paths:
-      - frontend/**
-      - backend/**
-      - ".github/workflows/deploy-production.yml"
+      - feature/new-backend
 
 jobs:
   build:
