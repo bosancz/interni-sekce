@@ -4,11 +4,12 @@ services:
   devcontainer:
     container_name: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-devcontainer
     build: "."
-    command: /bin/sh -c "while sleep 1000; do :; done"
     volumes:
       - ..:/workspace:cached
     networks:
       - default
+    # extra_hosts: 
+    #   - host.docker.internal:host-gateway
     environment:
       ENV_TITLE: "DEV"
       DB_HOST: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-postgres

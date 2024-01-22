@@ -10,3 +10,5 @@ RUN apt-get update && apt-get install -y default-jre
 
 # development tools
 RUN npm i -g @angular/cli @nestjs/cli npm-check-updates
+
+CMD /bin/sh -c "while sleep 1000; do :; done"
