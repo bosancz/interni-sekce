@@ -7,6 +7,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "build:watch": "nest build --watch",
     "start": "node dist/main.js",
     "dev": "nest start --watch",
     "premigrations": "npm run build",
