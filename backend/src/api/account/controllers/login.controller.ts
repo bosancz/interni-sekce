@@ -42,7 +42,7 @@ export class LoginController {
     @Res({ passthrough: true }) res: Response,
     @Body() body: LoginCredentialsBody,
   ) {
-    const user = await this.userService.findUser({ login: body.login }, { credentials: true });
+    const user = await this.userService.findUser({ login: body.login.toLocaleLowerCase() }, { credentials: true });
     if (!user) throw new NotFoundException();
 
     LoginCredentialsRoute.canOrThrow(req, user);
