@@ -20,5 +20,6 @@
   "bugs": {
     "url": "https://github.com/bosancz/bosan.cz/issues"
   },
-  "homepage": "https://github.com/bosancz/bosan.cz#readme"
+  "homepage": "https://github.com/bosancz/bosan.cz#readme",
+  "version": "3.3.0"
 }
