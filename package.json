@@ -7,12 +7,7 @@
   "scripts": {
     "prepare": "husky install",
     "all-contributors:check": "all-contributors check",
-    "all-contributors:generate": "all-contributors generate",
-    "build": "docker build -t ghcr.io/bosancz/interni-sekce:${TAG:=latest} .",
-    "build:alpha": "TAG=alpha npm run build",
-    "predeploy": "npm run build",
-    "deploy": "docker push ghcr.io/bosancz/interni-sekce:${TAG:=latest}",
-    "deploy:alpha": "TAG=alpha npm run deploy"
+    "all-contributors:generate": "all-contributors generate"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.3.0",
