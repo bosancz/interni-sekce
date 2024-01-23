@@ -6,10 +6,6 @@ services:
     build: "."
     volumes:
       - ..:/workspace:cached
-    networks:
-      - default
-    # extra_hosts: 
-    #   - host.docker.internal:host-gateway
     environment:
       ENV_TITLE: "DEV"
       DB_HOST: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-postgres
