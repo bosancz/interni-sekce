@@ -1,5 +1,5 @@
 import { Member } from "src/models/members/entities/member.entity";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export enum UserRoles {
   "admin" = "admin",
@@ -8,6 +8,7 @@ export enum UserRoles {
 }
 
 @Entity("users")
+@Index(["login"], { unique: true })
 export class User {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -19,7 +20,12 @@ export class User {
   @JoinColumn({ name: "member_id" })
   member?: Member | null;
 
-  @Column({ type: "varchar", unique: true }) login!: string;
+  @Column({
+    type: "varchar",
+    unique: true,
+    transformer: { from: (v) => v, to: (v: string) => v.toLocaleLowerCase() },
+  })
+  login!: string;
   @Column({ type: "varchar", nullable: true, select: false }) password!: string | null;
   @Column({ type: "varchar", unique: true }) email!: string | null;
   @Column({ type: "enum", enum: UserRoles, array: true, nullable: true }) roles!: UserRoles[] | null;

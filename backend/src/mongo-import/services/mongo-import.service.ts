@@ -12,7 +12,7 @@ import { Group } from "src/models/members/entities/group.entity";
 import { MemberContact, MemberContactTypes } from "src/models/members/entities/member-contact.entity";
 import { Member, MemberRanks, MemberRoles, MembershipStates } from "src/models/members/entities/member.entity";
 import { User, UserRoles } from "src/models/users/entities/user.entity";
-import { EntityManager } from "typeorm";
+import { EntityManager, EntityTarget, ObjectLiteral } from "typeorm";
 import { MongoAlbum } from "../models/album";
 import { MongoEvent } from "../models/event";
 import { MongoMember } from "../models/member";
@@ -21,7 +21,9 @@ import { MongoUser } from "../models/user";
 
 @Injectable()
 export class MongoImportService {
-  logger = new Logger(MongoImportService.name);
+  private readonly logger = new Logger(MongoImportService.name);
+
+  private readonly groupsIndex = new Map<string, number>();
 
   constructor(
     @InjectModel(MongoAlbum.name) private albumsModel: Model<MongoAlbum>,
@@ -36,6 +38,8 @@ export class MongoImportService {
     this.logger.log("Mongo import started.");
 
     await this.entityManager.transaction(async (t) => {
+      await this.init(t);
+
       const memberIds = await this.importMembers(t);
 
       const userIds = await this.importUsers(t, memberIds);
@@ -46,13 +50,30 @@ export class MongoImportService {
     });
   }
 
+  async init(t: EntityManager) {
+    console.debug("Preparing import...");
+
+    await this.clearTable(t, Photo);
+    await this.clearTable(t, Album);
+    await this.clearTable(t, EventAttendee);
+    await this.clearTable(t, EventExpense);
+    await this.clearTable(t, EventGroup);
+    await this.clearTable(t, Event);
+    await this.clearTable(t, MemberContact);
+    await this.clearTable(t, Member);
+    await this.clearTable(t, User);
+    await this.clearTable(t, Group);
+  }
+
+  private async clearTable<T extends ObjectLiteral>(t: EntityManager, entity: EntityTarget<T>) {
+    const deleteCount = await t.delete(entity, {}).then((res) => res.affected);
+    console.debug(` - Removed ${deleteCount} ${(<any>entity).name} entities in postgres.`);
+  }
+
   async importUsers(t: EntityManager, memberIds: Record<string, number>) {
     console.debug("Importing users...");
 
     const userIds: Record<string, number> = {};
-
-    const deleteCount = await t.delete(User, {}).then((res) => res.affected);
-    console.debug(` - Removed ${deleteCount} users in postgres.`);
 
     const mongoUsers = await this.usersModel.find({}).lean();
     console.debug(` - Found ${mongoUsers.length} users in mongo.`);
@@ -88,24 +109,17 @@ export class MongoImportService {
 
     const memberIds: Record<string, number> = {};
 
-    const deleteCount = await t.delete(Member, {}).then((res) => res.affected);
-    console.debug(` - Removed ${deleteCount} members in postgres.`);
-
     const mongoMembers = await this.membersModel.find({}).lean();
     console.debug(` - Found ${mongoMembers.length} members in mongo.`);
 
     let c = 0;
-    const groupsIndex: { [name: string]: number } = {};
 
     for (let mongoMember of mongoMembers) {
-      if (mongoMember.group && !(mongoMember.group in groupsIndex)) {
-        const group = await t.save(Group, { shortName: mongoMember.group, active: true, name: mongoMember.group });
-        groupsIndex[mongoMember.group] = group.id;
-      }
+      const groupId = mongoMember.group ? await this.getGroup(t, mongoMember.group) : await this.getGroup(t, "KP");
 
       const memberData: Omit<Member, "id"> = {
         function: mongoMember.function ?? null,
-        groupId: groupsIndex[mongoMember.group],
+        groupId,
         active: mongoMember.inactive === false ? true : false,
         membership: Object.values(MembershipStates).includes(<any>mongoMember.membership)
           ? <MembershipStates>mongoMember.membership
@@ -166,14 +180,10 @@ export class MongoImportService {
 
     const eventIds: Record<string, number> = {};
 
-    const deleteCount = await t.delete(Event, {}).then((res) => res.affected);
-    console.debug(` - Removed ${deleteCount} events in postgres.`);
-
     const mongoEvents = await this.eventsModel.find({}).lean();
     console.debug(` - Found ${mongoEvents.length} events in mongo.`);
 
     let c = 0;
-    const groupsIndex: { [name: string]: number } = {};
 
     for (let mongoEvent of mongoEvents) {
       if (!mongoEvent.dateFrom || !mongoEvent.dateTill) continue;
@@ -243,14 +253,9 @@ export class MongoImportService {
         for (let mongoEventGroup of mongoEvent.groups) {
           if (mongoEventGroup === "V") continue;
 
-          if (mongoEventGroup && !(mongoEventGroup in groupsIndex)) {
-            const group = await t.save(Group, { shortName: mongoEventGroup, active: true, name: mongoEventGroup });
-            groupsIndex[mongoEventGroup] = group.id;
-          }
-
           const eventGroupData: EventGroup = {
             eventId: event.id,
-            groupId: groupsIndex[mongoEventGroup],
+            groupId: await this.getGroup(t, mongoEventGroup),
           };
 
           await t.save(EventGroup, eventGroupData);
@@ -269,12 +274,6 @@ export class MongoImportService {
     console.debug("Importing albums...");
 
     const albumIds: Record<string, number> = {};
-
-    const photosDeleteCount = await t.delete(Photo, {}).then((res) => res.affected);
-    console.debug(` - Removed ${photosDeleteCount} photos in postgres.`);
-
-    const deleteCount = await t.delete(Album, {}).then((res) => res.affected);
-    console.debug(` - Removed ${deleteCount} albums in postgres.`);
 
     const mongoAlbums = await this.albumsModel.find({}).lean();
     console.debug(` - Found ${mongoAlbums.length} albums in mongo.`);
@@ -330,6 +329,14 @@ export class MongoImportService {
     }
 
     console.debug(` - Imported ${c} photos.`);
+  }
+
+  private async getGroup(t: EntityManager, oldGroupId: string) {
+    if (this.groupsIndex.has(oldGroupId)) return this.groupsIndex.get(oldGroupId)!;
+
+    const group = await t.save(Group, { shortName: oldGroupId, active: true, name: oldGroupId });
+    this.groupsIndex.set(oldGroupId, group.id);
+    return group.id;
   }
 
   private getUserRoles(mongoUser: MongoUser): UserRoles[] {

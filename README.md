@@ -11,10 +11,8 @@
 
 Detaily k rozvoji jednotlivých částí webu najdeš v jejich složkách:
 
-- Webová aplikace (`./interni`) - https://interni.bosan.cz
-  - [Backend](./interni/backend)
-  - [Frontend](./interni/frontend)
-- [Worker (`./worker`)](./worker) - ostatní procesy na pozadí
+ - [Administrační webová aplikace (`./frontend`)](./frontend)
+ - [Backendové API (`./backend`)](./backend)
 
 ## Kdo dělá interní sekci ✨
 
