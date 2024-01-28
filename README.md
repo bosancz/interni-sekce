@@ -11,9 +11,8 @@
 
 Detaily k rozvoji jednotlivých částí webu najdeš v jejich složkách:
 
- - [Veřejná část (`./web`)](./web)
- - [Interní část (`./frontend`)](./frontend)
- - [Server (`./server`)](./server)
+ - [Administrační webová aplikace (`./frontend`)](./frontend)
+ - [Backendové API (`./backend`)](./backend)
 
 ## Kdo dělá web ✨
 
