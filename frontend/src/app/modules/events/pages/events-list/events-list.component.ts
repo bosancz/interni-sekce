@@ -52,7 +52,9 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
   ionViewWillLeave(): void {}
 
   async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
-    await this.loadNextPage();
+    if (this.events && this.events.length < this.page * this.pageSize) return;
+    this.page++;
+    await this.loadEvents(this.page);
     e.target.complete();
   }
 
@@ -87,21 +89,10 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
     this.years.sort((a, b) => b - a);
   }
 
-  private async loadFirstPage() {
-    this.events = await this.loadEvents(0, this.pageSize);
-  }
-
-  private async loadNextPage() {
-    if (this.events && this.events.length < this.page * this.pageSize) return;
-    const events = await this.loadEvents((this.page - 1) * this.pageSize, this.page * this.pageSize);
-    if (!this.events) this.events = [];
-    this.events.push(...events);
-  }
-
   private onParamsChange(queryParams: UrlParams) {
-    console.log(queryParams);
     this.setFilter(queryParams);
-    this.loadFirstPage();
+    this.events = undefined;
+    this.loadEvents(1);
   }
 
   private setFilter(data: UrlParams) {
@@ -112,18 +103,21 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
     });
   }
 
-  private async loadEvents(offset: number, limit: number) {
+  private async loadEvents(page: number) {
     const filter = this.filterForm.value;
 
     const params: EventsApiListEventsQueryParams = {
       search: filter.search || undefined,
       status: filter.status || undefined,
       year: filter.year || undefined,
-      offset,
-      limit,
+      offset: (page - 1) * this.pageSize,
+      limit: this.pageSize,
     };
 
-    return this.api.events.listEvents(params).then((res) => res.data);
+    const events = await this.api.events.listEvents(params).then((res) => res.data);
+
+    if (!this.events) this.events = [];
+    this.events.push(...events);
   }
 
   private setActions(endpoints: ApiEndpoints | null) {

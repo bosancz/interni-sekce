@@ -67,8 +67,8 @@ export class EventsController {
       .leftJoinAndSelect("attendees.member", "leaders")
       .where(EventsListRoute.canWhere(req))
       .orderBy("events.dateFrom", "DESC")
-      .limit(query.limit ?? 25)
-      .offset(query.offset ?? 0);
+      .take(query.limit ?? 25)
+      .skip(query.offset ?? 0);
 
     if (query.year) {
       q.andWhere("date_till >= :yearStart AND date_from <= :yearEnd", {
@@ -87,9 +87,10 @@ export class EventsController {
 
     if (query.noleader) q.andWhere("leaders.id IS NULL");
 
-    this.logger.debug(q.getQuery());
-
-    return q.getMany();
+    return q
+      .take(query.limit ?? 25)
+      .skip(query.offset ?? 0)
+      .getMany();
   }
 
   @Post()

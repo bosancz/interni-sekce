@@ -21,7 +21,6 @@ export class EventPipe implements PipeTransform {
     switch (property) {
       case "color":
       case "image":
-        console.log(event.type);
         return event.type && event.type in this.eventTypes
           ? this.eventTypes[<keyof typeof this.eventTypes>event.type][property] ?? ""
           : "";

@@ -12,8 +12,8 @@
 
       <bo-filter (submit)="onFilterChange()" (cancel)="resetFilter()" slot="end">
         <ion-item>
-          <ion-label>Rok</ion-label>
-          <ion-select formControlName="year">
+          <ion-label position="stacked">Rok</ion-label>
+          <ion-select formControlName="year" placeholder="Vyber rok">
             <ion-select-option [value]="null">všechny</ion-select-option>
             <ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
           </ion-select>
@@ -21,7 +21,7 @@
 
         <ion-item>
           <ion-label>Stav</ion-label>
-          <ion-select formControlName="status">
+          <ion-select formControlName="status" placeholder="Vyber stav">
             <ion-select-option [value]="null">všechny</ion-select-option>
             <ion-select-option *ngFor="let status of statuses | keyvalue" [value]="status.key">
               {{ status.value.name }}
