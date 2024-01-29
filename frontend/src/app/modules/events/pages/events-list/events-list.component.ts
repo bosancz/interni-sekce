@@ -40,9 +40,10 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
   ionViewWillEnter(): void {
     this.loadYears();
 
-    this.route.queryParams
-      .pipe(untilDestroyed(this, "ionViewWillLeave"))
-      .subscribe((queryParams) => this.onParamsChange(queryParams));
+    this.route.queryParams.pipe(untilDestroyed(this, "ionViewWillLeave")).subscribe((queryParams) => {
+      this.setFilter(queryParams);
+      this.loadEvents();
+    });
 
     this.api.endpoints
       .pipe(untilDestroyed(this, "ionViewWillLeave"))
@@ -50,13 +51,6 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
   }
 
   ionViewWillLeave(): void {}
-
-  async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
-    if (this.events && this.events.length < this.page * this.pageSize) return;
-    this.page++;
-    await this.loadEvents(this.page);
-    e.target.complete();
-  }
 
   setParams(params: UrlParams) {
     this.router.navigate([], { replaceUrl: true, queryParams: params });
@@ -89,10 +83,9 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
     this.years.sort((a, b) => b - a);
   }
 
-  private onParamsChange(queryParams: UrlParams) {
-    this.setFilter(queryParams);
-    this.events = undefined;
-    this.loadEvents(1);
+  async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
+    await this.loadEvents(true);
+    e.target.complete();
   }
 
   private setFilter(data: UrlParams) {
@@ -103,14 +96,21 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
     });
   }
 
-  private async loadEvents(page: number) {
+  private async loadEvents(loadMore: boolean = false) {
+    if (loadMore) {
+      if (this.events && this.events.length < this.page * this.pageSize) return;
+      this.page++;
+    } else {
+      this.events = undefined;
+    }
+
     const filter = this.filterForm.value;
 
     const params: EventsApiListEventsQueryParams = {
       search: filter.search || undefined,
       status: filter.status || undefined,
       year: filter.year || undefined,
-      offset: (page - 1) * this.pageSize,
+      offset: (this.page - 1) * this.pageSize,
       limit: this.pageSize,
     };
 

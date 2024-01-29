@@ -26,6 +26,7 @@ import { PaginationComponent } from "./components/pagination/pagination.componen
 import { PhotoFaceComponent } from "./components/photo-face/photo-face.component";
 import { PhotoGalleryComponent } from "./components/photo-gallery/photo-gallery.component";
 import { AgePipe } from "./pipes/age.pipe";
+import { AlbumPipe } from "./pipes/album.pipe";
 import { DateRangePipe } from "./pipes/date-range.pipe";
 import { EventStatusPipe } from "./pipes/event-status.pipe";
 import { EventPipe } from "./pipes/event.pipe";
@@ -42,6 +43,7 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
     ActionButtonsComponent,
     AdminTableComponent,
     AgePipe,
+    AlbumPipe,
     CardComponent,
     CardContentComponent,
     CardTitleComponent,
@@ -81,6 +83,7 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
     ActionButtonsComponent,
     AdminTableComponent,
     AgePipe,
+    AlbumPipe,
     CardComponent,
     CardContentComponent,
     CardFooterComponent,

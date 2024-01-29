@@ -13,6 +13,11 @@ export const AlbumsListRoute = new RouteACL({
   },
 });
 
+export const AlbumsYearsRoute = new RouteACL({
+  linkTo: RootResponse,
+  inheritPermissions: AlbumsListRoute,
+});
+
 export const AlbumReadRoute = new RouteACL<Album>({
   linkTo: AlbumResponse,
   permissions: {

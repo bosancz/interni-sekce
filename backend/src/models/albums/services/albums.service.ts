@@ -6,7 +6,10 @@ import { PhotosService } from "./photos.service";
 
 @Injectable()
 export class AlbumsService {
-  constructor(private photosService: PhotosService, @InjectRepository(Album) public repository: Repository<Album>) {}
+  constructor(
+    private photosService: PhotosService,
+    @InjectRepository(Album) public repository: Repository<Album>,
+  ) {}
 
   createQueryBuilder(alias?: string) {
     return this.repository.createQueryBuilder(alias);
@@ -14,6 +17,15 @@ export class AlbumsService {
 
   async getAlbums(options?: FindManyOptions<Album>) {
     return this.repository.find(options);
+  }
+
+  async getAlbumsYears() {
+    return this.repository
+      .createQueryBuilder("albums")
+      .select("DISTINCT EXTRACT(YEAR FROM albums.dateFrom)", "year")
+      .orderBy("year", "DESC")
+      .getRawMany<{ year: string }>()
+      .then((years) => years.map((y) => parseInt(y.year)));
   }
 
   async createAlbum(album: Partial<Album>) {

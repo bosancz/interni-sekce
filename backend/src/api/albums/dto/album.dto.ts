@@ -1,13 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsEnum, IsNumberString, IsOptional, IsString } from "class-validator";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { EventResponse } from "src/api/events/dto/event.dto";
+import { PaginationQuery } from "src/api/helpers/dto";
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
 import { Event } from "src/models/events/entities/event.entity";
 import { PhotoResponse } from "./photo.dto";
 
 export class AlbumResponse {
   @ApiProperty() id!: number;
-  @ApiProperty() status!: AlbumStatus;
+  @ApiProperty({ enum: AlbumStatus }) status!: AlbumStatus;
   @ApiProperty() name!: string;
   @ApiPropertyOptional({ type: "string" }) description!: string | null;
   @ApiPropertyOptional({ type: "string" }) datePublished!: Date | string | null;
@@ -19,6 +21,12 @@ export class AlbumResponse {
   @AcEntity(PhotoResponse)
   @ApiPropertyOptional({ type: WithLinks(() => PhotoResponse), isArray: true })
   photos?: PhotoResponse[];
+}
+
+export class AlbumListQuery extends PaginationQuery {
+  @ApiPropertyOptional() @IsString() @IsOptional() search?: string;
+  @ApiPropertyOptional() @IsEnum(AlbumStatus) @IsOptional() status?: AlbumStatus;
+  @ApiPropertyOptional() @IsNumberString() @IsOptional() year?: string;
 }
 
 export class AlbumCreateBody {

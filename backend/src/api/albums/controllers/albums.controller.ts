@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
@@ -14,25 +14,47 @@ import {
   AlbumReadRoute,
   AlbumUnpublishRoute,
   AlbumsListRoute,
+  AlbumsYearsRoute,
 } from "../acl/albums.acl";
-import { AlbumCreateBody, AlbumResponse, AlbumUpdateBody } from "../dto/album.dto";
+import { AlbumCreateBody, AlbumListQuery, AlbumResponse, AlbumUpdateBody } from "../dto/album.dto";
 import { PhotoResponse } from "../dto/photo.dto";
 
 @Controller("albums")
 @AcController()
 @ApiTags("Photo gallery")
 export class AlbumsController {
-  constructor(private albumsService: AlbumsService, private photosService: PhotosService) {}
+  constructor(
+    private albumsService: AlbumsService,
+    private photosService: PhotosService,
+  ) {}
 
   @Get()
   @AcLinks(AlbumsListRoute)
   @ApiResponse({ type: WithLinks(AlbumResponse), isArray: true })
-  async listAlbums(@Req() req: Request): Promise<AlbumResponse[]> {
-    return await this.albumsService.repository
+  async listAlbums(@Req() req: Request, @Query() query: AlbumListQuery): Promise<AlbumResponse[]> {
+    const q = this.albumsService.repository
       .createQueryBuilder("albums")
       .select(["albums.id", "albums.name", "albums.status", "albums.dateFrom", "albums.dateTill"])
       .where(AlbumsListRoute.canWhere(req))
-      .getRawMany<AlbumResponse>();
+      .orderBy("albums.dateFrom", "DESC")
+      .take(query.limit || 25)
+      .skip(query.offset || 0);
+
+    if (query.year) {
+      q.andWhere("date_till >= :yearStart AND date_from <= :yearEnd", {
+        yearStart: `${query.year}-01-01`,
+        yearEnd: `${query.year}-12-31`,
+      });
+    }
+
+    if (query.status) q.andWhere("albums.status = :status", { status: query.status });
+
+    if (query.search) {
+      const search = `%${query.search}%`;
+      q.andWhere("albums.name LIKE :search", { search });
+    }
+
+    return q.getMany();
   }
 
   @Post()
@@ -42,6 +64,15 @@ export class AlbumsController {
     AlbumCreateRoute.canOrThrow(req, undefined);
 
     return this.albumsService.createAlbum(body);
+  }
+
+  @Get("years")
+  @AcLinks(AlbumsYearsRoute)
+  @ApiResponse({ schema: { type: "array", items: { type: "number" } } })
+  async getAlbumsYears(@Req() req: Request): Promise<number[]> {
+    AlbumsYearsRoute.canOrThrow(req, undefined);
+
+    return this.albumsService.getAlbumsYears();
   }
 
   @Get(":id")

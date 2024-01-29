@@ -20,7 +20,7 @@
         </ion-item>
 
         <ion-item>
-          <ion-label>Stav</ion-label>
+          <ion-label position="stacked">Stav</ion-label>
           <ion-select formControlName="status" placeholder="Vyber stav">
             <ion-select-option [value]="null">všechny</ion-select-option>
             <ion-select-option *ngFor="let status of statuses | keyvalue" [value]="status.key">
