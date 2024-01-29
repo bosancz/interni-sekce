@@ -65,7 +65,7 @@ export class MongoEvent {
       },
     ]),
   )
-  leaders?: unknown[];
+  leaders?: Types.ObjectId[];
 
   @Prop(
     raw([

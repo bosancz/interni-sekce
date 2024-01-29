@@ -6,7 +6,7 @@ import * as path from "path";
 import { DataSourceOptions } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 
-config();
+config({ override: true });
 
 const logger = new Logger("CONFIG");
 
