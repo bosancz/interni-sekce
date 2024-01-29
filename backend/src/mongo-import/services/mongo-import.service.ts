@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { DateTime } from "luxon";
 import { Model } from "mongoose";
+import { Config } from "src/config";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
@@ -35,7 +36,7 @@ export class MongoImportService {
   ) {}
 
   async importData() {
-    this.logger.log("Mongo import started.");
+    this.logger.log(`Starting mongo import from ${Config.mongoDb.uri}...`);
 
     await this.entityManager.transaction(async (t) => {
       await this.init(t);
@@ -48,10 +49,12 @@ export class MongoImportService {
 
       await this.importAlbums(t, userIds, eventIds);
     });
+
+    this.logger.log(`Mongo import finished.`);
   }
 
   async init(t: EntityManager) {
-    console.debug("Preparing import...");
+    this.logger.debug("Preparing import...");
 
     await this.clearTable(t, Photo);
     await this.clearTable(t, Album);
@@ -67,16 +70,16 @@ export class MongoImportService {
 
   private async clearTable<T extends ObjectLiteral>(t: EntityManager, entity: EntityTarget<T>) {
     const deleteCount = await t.delete(entity, {}).then((res) => res.affected);
-    console.debug(` - Removed ${deleteCount} ${(<any>entity).name} entities in postgres.`);
+    this.logger.debug(` - Removed ${deleteCount} ${(<any>entity).name} entities in postgres.`);
   }
 
   async importUsers(t: EntityManager, memberIds: Record<string, number>) {
-    console.debug("Importing users...");
+    this.logger.debug("Importing users...");
 
     const userIds: Record<string, number> = {};
 
     const mongoUsers = await this.usersModel.find({}).lean();
-    console.debug(` - Found ${mongoUsers.length} users in mongo.`);
+    this.logger.debug(` - Found ${mongoUsers.length} users in mongo.`);
 
     let c = 0;
 
@@ -100,17 +103,17 @@ export class MongoImportService {
       c++;
     }
 
-    console.debug(` - Imported ${c} users.`);
+    this.logger.debug(` - Imported ${c} users.`);
 
     return userIds;
   }
   async importMembers(t: EntityManager) {
-    console.debug("Importing members...");
+    this.logger.debug("Importing members...");
 
     const memberIds: Record<string, number> = {};
 
     const mongoMembers = await this.membersModel.find({}).lean();
-    console.debug(` - Found ${mongoMembers.length} members in mongo.`);
+    this.logger.debug(` - Found ${mongoMembers.length} members in mongo.`);
 
     let c = 0;
 
@@ -170,18 +173,18 @@ export class MongoImportService {
       c++;
     }
 
-    console.debug(` - Imported ${c} members.`);
+    this.logger.debug(` - Imported ${c} members.`);
 
     return memberIds;
   }
 
   async importEvents(t: EntityManager, memberIds: Record<string, number>) {
-    console.debug("Importing events...");
+    this.logger.debug("Importing events...");
 
     const eventIds: Record<string, number> = {};
 
     const mongoEvents = await this.eventsModel.find({}).lean();
-    console.debug(` - Found ${mongoEvents.length} events in mongo.`);
+    this.logger.debug(` - Found ${mongoEvents.length} events in mongo.`);
 
     let c = 0;
 
@@ -249,6 +252,22 @@ export class MongoImportService {
         }
       }
 
+      if (mongoEvent.leaders) {
+        for (let mongoLeader of mongoEvent.leaders) {
+          const memberId = mongoLeader ? memberIds[mongoLeader.toString()] : null;
+
+          if (!memberId) continue;
+
+          const attendeeData: EventAttendee = {
+            eventId: event.id,
+            memberId,
+            type: EventAttendeeType.leader,
+          };
+
+          await t.save(EventAttendee, attendeeData);
+        }
+      }
+
       if (mongoEvent.groups) {
         for (let mongoEventGroup of mongoEvent.groups) {
           if (mongoEventGroup === "V") continue;
@@ -265,18 +284,18 @@ export class MongoImportService {
       c++;
     }
 
-    console.debug(` - Imported ${c} events.`);
+    this.logger.debug(` - Imported ${c} events.`);
 
     return eventIds;
   }
 
   async importAlbums(t: EntityManager, userIds: Record<string, number>, eventIds: Record<string, number>) {
-    console.debug("Importing albums...");
+    this.logger.debug("Importing albums...");
 
     const albumIds: Record<string, number> = {};
 
     const mongoAlbums = await this.albumsModel.find({}).lean();
-    console.debug(` - Found ${mongoAlbums.length} albums in mongo.`);
+    this.logger.debug(` - Found ${mongoAlbums.length} albums in mongo.`);
 
     let c = 0;
     for (let mongoAlbum of mongoAlbums) {
@@ -297,10 +316,10 @@ export class MongoImportService {
       c++;
     }
 
-    console.debug(` - Imported ${c} albums.`);
+    this.logger.debug(` - Imported ${c} albums.`);
 
     const mongoPhotos = await this.photosModel.find({}).lean();
-    console.debug(` - Found ${mongoPhotos.length} photos in mongo.`);
+    this.logger.debug(` - Found ${mongoPhotos.length} photos in mongo.`);
 
     c = 0;
 
@@ -328,7 +347,7 @@ export class MongoImportService {
       c++;
     }
 
-    console.debug(` - Imported ${c} photos.`);
+    this.logger.debug(` - Imported ${c} photos.`);
   }
 
   private async getGroup(t: EntityManager, oldGroupId: string) {

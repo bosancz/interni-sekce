@@ -1,5 +1,15 @@
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
-import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/models/users/entities/user.entity";
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { Group } from "./group.entity";
 import { MemberAchievement } from "./member-achievements.entity";
 import { MemberContact } from "./member-contact.entity";
@@ -65,4 +75,7 @@ export class Member {
 
   @OneToMany(() => EventAttendee, (ea) => ea.member)
   eventAttendees?: EventAttendee[];
+
+  @OneToOne(() => User, (user) => user.member)
+  user?: User;
 }

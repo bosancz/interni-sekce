@@ -81,9 +81,13 @@ export class EventsController {
 
     if (query.search) q.andWhere("name LIKE :search", { search: `%${query.search}%` });
 
-    if (query.my) q.andWhere("leaders.id = :userId", { userId: token.userId });
+    if (query.my) {
+      q.leftJoin("leaders.user", "users").andWhere("users.id = :userId", { userId: token.userId });
+    }
 
     if (query.noleader) q.andWhere("leaders.id IS NULL");
+
+    this.logger.debug(q.getQuery());
 
     return q.getMany();
   }
