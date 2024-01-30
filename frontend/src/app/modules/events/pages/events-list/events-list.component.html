@@ -1,36 +1,25 @@
 <bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions"></bo-page-header>
 
 <bo-page-content>
-  <form [formGroup]="filterForm">
-    <ion-toolbar>
-      <ion-searchbar
-        formControlName="search"
-        placeholder="Hledat"
-        (ionChange)="onFilterChange()"
-        [debounce]="500"
-      ></ion-searchbar>
+  <bo-filter [search]="true" (change)="onFilterChange($event)">
+    <ion-item>
+      <ion-label position="stacked">Rok</ion-label>
+      <ion-select name="year" ngModel placeholder="Vyber rok">
+        <ion-select-option [value]="null">všechny</ion-select-option>
+        <ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
+      </ion-select>
+    </ion-item>
 
-      <bo-filter (submit)="onFilterChange()" (cancel)="resetFilter()" slot="end">
-        <ion-item>
-          <ion-label position="stacked">Rok</ion-label>
-          <ion-select formControlName="year" placeholder="Vyber rok">
-            <ion-select-option [value]="null">všechny</ion-select-option>
-            <ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <ion-item>
-          <ion-label position="stacked">Stav</ion-label>
-          <ion-select formControlName="status" placeholder="Vyber stav">
-            <ion-select-option [value]="null">všechny</ion-select-option>
-            <ion-select-option *ngFor="let status of statuses | keyvalue" [value]="status.key">
-              {{ status.value.name }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-      </bo-filter>
-    </ion-toolbar>
-  </form>
+    <ion-item>
+      <ion-label position="stacked">Stav</ion-label>
+      <ion-select name="status" ngModel placeholder="Vyber stav">
+        <ion-select-option [value]="null">všechny</ion-select-option>
+        <ion-select-option *ngFor="let status of statuses | keyvalue" [value]="status.key">
+          {{ status.value.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+  </bo-filter>
 
   <ion-list>
     <ng-container *ngIf="events === undefined">
@@ -67,12 +56,4 @@
       <ion-infinite-scroll-content></ion-infinite-scroll-content>
     </ion-infinite-scroll>
   </ion-list>
-
-  <!-- <td>
-          
-        </td>
-        <td>
-          
-        </td>
-      </tr> -->
 </bo-page-content>

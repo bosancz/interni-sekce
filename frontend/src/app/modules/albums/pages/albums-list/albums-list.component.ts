@@ -29,7 +29,7 @@ import { UrlParams } from "src/helpers/typings";
   styleUrls: ["./albums-list.component.scss"],
 })
 export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
-  years: number[] = [];
+  years: string[] = [];
   albums?: AlbumResponseWithLinks[];
 
   view: "table" | "grid" = this.platform.isPortrait() ? "grid" : "table";
@@ -44,6 +44,8 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
   actions: Action[] = [];
 
   alert?: HTMLIonAlertElement;
+
+  filter: UrlParams = {};
 
   readonly filterForm = new FormGroup({
     search: new FormControl<string | null>(null),
@@ -64,11 +66,6 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
   ionViewWillEnter() {
     this.loadYears();
 
-    this.route.queryParams.pipe(untilDestroyed(this, "ionViewWillLeave")).subscribe((queryParams) => {
-      this.setFilter(queryParams);
-      this.loadAlbums();
-    });
-
     this.api.endpoints
       .pipe(untilDestroyed(this, "ionViewWillLeave"))
       .subscribe((endpoints) => this.setActions(endpoints));
@@ -78,35 +75,9 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
     this.alert?.dismiss();
   }
 
-  setParams(params: UrlParams) {
-    this.router.navigate([], { replaceUrl: true, queryParams: params });
-  }
-
-  onFilterChange() {
-    const filter = this.filterForm.value;
-
-    this.setParams({
-      search: filter.search || undefined,
-      status: filter.status || undefined,
-      year: filter.year?.toString() || undefined,
-    });
-  }
-
-  resetFilter() {
-    this.setFilter(this.route.snapshot.queryParams);
-  }
-
-  private setFilter(data: UrlParams) {
-    console.log({
-      search: data.search || null,
-      status: data.status || null,
-      year: data.year ? parseInt(data.year) : null,
-    });
-    this.filterForm.setValue({
-      search: data.search || null,
-      status: data.status || null,
-      year: data.year ? parseInt(data.year) : null,
-    });
+  onFilterChange(filter: UrlParams) {
+    this.filter = filter;
+    this.loadAlbums(filter);
   }
 
   setActions(endpoints: RootResponseLinks | null) {
@@ -121,24 +92,23 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
   }
 
   async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
-    await this.loadAlbums(true);
+    await this.loadAlbums(this.filter, true);
     e.target.complete();
   }
 
   private async loadYears() {
-    this.years = await this.api.albums.getAlbumsYears().then((res) => res.data);
-    this.years.sort((a, b) => b - a);
+    this.years = await this.api.albums.getAlbumsYears().then((res) => res.data.map((y) => String(y)));
+    this.years.sort((a, b) => b.localeCompare(a));
   }
 
-  private async loadAlbums(loadMore = false) {
+  private async loadAlbums(filter: UrlParams, loadMore = false) {
     if (loadMore) {
       if (this.albums && this.albums.length < this.page * this.pageSize) return;
       this.page++;
     } else {
+      this.page = 1;
       this.albums = undefined;
     }
-
-    const filter = this.filterForm.value;
 
     const params: PhotoGalleryApiListAlbumsQueryParams = {
       search: filter.search || undefined,

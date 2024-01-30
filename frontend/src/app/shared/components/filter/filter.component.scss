@@ -6,3 +6,10 @@ ion-toolbar {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
 }
+
+ion-badge {
+  position: absolute;
+  left: calc(50% + 6px);
+  top: 0;
+  border-radius: 50%;
+}

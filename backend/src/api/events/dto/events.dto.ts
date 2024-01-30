@@ -3,7 +3,7 @@ import { Type } from "class-transformer";
 import { IsBoolean, IsNumber, IsOptional, IsString } from "class-validator";
 import { PaginationQuery } from "src/api/helpers/dto";
 
-export class GetEventsQuery extends PaginationQuery {
+export class ListEventsQuery extends PaginationQuery {
   @ApiPropertyOptional() @Type(() => Number) @IsNumber() @IsOptional() year?: number;
   @ApiPropertyOptional() @IsString() @IsOptional() status?: string;
   @ApiPropertyOptional() @IsString() @IsOptional() search?: string;

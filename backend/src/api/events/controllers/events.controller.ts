@@ -39,7 +39,7 @@ import {
   EventsYearsRoute,
 } from "../acl/events.acl";
 import { EventCreateBody, EventResponse, EventStatusChangeBody, EventUpdateBody } from "../dto/event.dto";
-import { GetEventsQuery } from "../dto/events.dto";
+import { ListEventsQuery } from "../dto/events.dto";
 
 @Controller("events")
 @AcController()
@@ -58,7 +58,7 @@ export class EventsController {
   async listEvents(
     @Req() req: Request,
     @Token() token: TokenData,
-    @Query() query: GetEventsQuery,
+    @Query() query: ListEventsQuery,
   ): Promise<EventResponse[]> {
     const q = this.eventsRepository
       .createQueryBuilder("events")
@@ -79,7 +79,7 @@ export class EventsController {
 
     if (query.status) q.andWhere("status = :status", { status: query.status });
 
-    if (query.search) q.andWhere("name LIKE :search", { search: `%${query.search}%` });
+    if (query.search) q.andWhere("name ILIKE :search", { search: `%${query.search}%` });
 
     if (query.my) {
       q.leftJoin("leaders.user", "users").andWhere("users.id = :userId", { userId: token.userId });

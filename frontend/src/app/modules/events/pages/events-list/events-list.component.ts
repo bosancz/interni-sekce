@@ -1,5 +1,4 @@
 import { Component } from "@angular/core";
-import { FormControl, FormGroup } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { InfiniteScrollCustomEvent, ViewWillEnter, ViewWillLeave } from "@ionic/angular";
 import { untilDestroyed } from "@ngneat/until-destroy";
@@ -25,11 +24,7 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
   page = 1;
   readonly pageSize = 50;
 
-  filterForm = new FormGroup({
-    search: new FormControl<string | null>(null),
-    status: new FormControl<string | null>(null),
-    year: new FormControl<number | null>(null),
-  });
+  filter: UrlParams = {};
 
   constructor(
     private api: ApiService,
@@ -40,11 +35,6 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
   ionViewWillEnter(): void {
     this.loadYears();
 
-    this.route.queryParams.pipe(untilDestroyed(this, "ionViewWillLeave")).subscribe((queryParams) => {
-      this.setFilter(queryParams);
-      this.loadEvents();
-    });
-
     this.api.endpoints
       .pipe(untilDestroyed(this, "ionViewWillLeave"))
       .subscribe((endpoints) => this.setActions(endpoints));
@@ -52,22 +42,9 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
 
   ionViewWillLeave(): void {}
 
-  setParams(params: UrlParams) {
-    this.router.navigate([], { replaceUrl: true, queryParams: params });
-  }
-
-  onFilterChange() {
-    const filter = this.filterForm.value;
-
-    this.setParams({
-      search: filter.search || undefined,
-      status: filter.status || undefined,
-      year: filter.year?.toString() || undefined,
-    });
-  }
-
-  resetFilter() {
-    this.setFilter(this.route.snapshot.queryParams);
+  onFilterChange(filter: UrlParams) {
+    this.filter = filter;
+    this.loadEvents(filter);
   }
 
   createEvent() {
@@ -84,19 +61,11 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
   }
 
   async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
-    await this.loadEvents(true);
+    await this.loadEvents(this.filter, true);
     e.target.complete();
   }
 
-  private setFilter(data: UrlParams) {
-    this.filterForm.setValue({
-      search: data.search || null,
-      status: data.status || null,
-      year: data.year ? parseInt(data.year) : null,
-    });
-  }
-
-  private async loadEvents(loadMore: boolean = false) {
+  private async loadEvents(filter: UrlParams, loadMore: boolean = false) {
     if (loadMore) {
       if (this.events && this.events.length < this.page * this.pageSize) return;
       this.page++;
@@ -104,12 +73,10 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
       this.events = undefined;
     }
 
-    const filter = this.filterForm.value;
-
     const params: EventsApiListEventsQueryParams = {
       search: filter.search || undefined,
       status: filter.status || undefined,
-      year: filter.year || undefined,
+      year: filter.year ? parseInt(filter.year) : undefined,
       offset: (this.page - 1) * this.pageSize,
       limit: this.pageSize,
     };

@@ -1,6 +1,20 @@
-<ion-button color="primary" fill="none" id="filter-modal" [disabled]="disabled">
-  <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
-</ion-button>
+<ion-toolbar>
+  <ion-searchbar
+    *ngIf="search"
+    name="search"
+    ngModel
+    placeholder="Hledat"
+    [debounce]="500"
+    [(ngModel)]="searchString"
+    (ngModelChange)="onSubmit()"
+    (change)="$event.stopPropagation()"
+  ></ion-searchbar>
+
+  <ion-button color="primary" fill="none" id="filter-modal" [disabled]="disabled" slot="end">
+    <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
+    <ion-badge *ngIf="getFilterCount()" color="warning">{{ getFilterCount() }}</ion-badge>
+  </ion-button>
+</ion-toolbar>
 
 <ion-modal trigger="filter-modal">
   <ng-template>
