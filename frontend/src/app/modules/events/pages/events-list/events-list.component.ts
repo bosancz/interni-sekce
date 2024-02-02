@@ -70,6 +70,7 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
       if (this.events && this.events.length < this.page * this.pageSize) return;
       this.page++;
     } else {
+      this.page = 1;
       this.events = undefined;
     }
 

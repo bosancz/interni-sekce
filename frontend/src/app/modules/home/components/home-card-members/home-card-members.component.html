@@ -15,8 +15,8 @@
           <h3>{{ member.nickname || member.firstName || "?" }}</h3>
           <p>
             {{ member.firstName }} {{ member.lastName }},
-            <span [style.color]="member.groupId | group : 'color'">{{ member.groupId | group : "name" }}</span
-            >, {{ (member.birthday | age) || "?" }}&nbsp;let
+            <span [style.color]="member.groupId | group: 'color'">{{ member.groupId | group: "name" }}</span
+            >, {{ (member | member: "age") || "?" }}&nbsp;let
           </p>
         </ion-label>
       </ion-item>

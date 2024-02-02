@@ -42,7 +42,12 @@ export class MembersController {
   @AcLinks(MembersListRoute)
   @ApiResponse({ type: WithLinks(MemberResponse), isArray: true })
   async listMembers(@Req() req: Request, @Query() query: MembersListQuery): Promise<MemberResponse[]> {
-    const q = this.membersRepository.createQueryBuilder("members").where(MembersListRoute.canWhere(req));
+    const q = this.membersRepository
+      .createQueryBuilder("members")
+      .where(MembersListRoute.canWhere(req))
+      .orderBy("CONCAT(members.nickname,members.first_name,members.last_name)", "ASC")
+      .take(query.limit || 25)
+      .skip(query.offset || 0);
 
     if (query.group) q.andWhere("members.groupId = :groupId", { groupId: query.group });
 
@@ -54,7 +59,9 @@ export class MembersController {
         },
       );
 
-    if (query.limit) q.limit(query.limit);
+    if (query.roles) q.andWhere("members.role IN (:...roles)", { roles: query.roles });
+
+    if (query.membership) q.andWhere("members.membership = :membership", { membership: query.membership });
 
     return q.getMany();
   }

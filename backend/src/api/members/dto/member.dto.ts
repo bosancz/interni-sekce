@@ -1,11 +1,13 @@
 import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
+import { PaginationQuery } from "src/api/helpers/dto";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member, MemberRanks, MemberRoles, MembershipStates } from "src/models/members/entities/member.entity";
+import { EnsureArray } from "src/utilities/validation";
 import { GroupResponse } from "./group.dto";
 
 export class MemberResponse implements Member {
@@ -58,8 +60,9 @@ export class MemberUpdateBody extends PartialType(
   OmitType(MemberResponse, ["group", "contacts", "achievements", "id"]),
 ) {}
 
-export class MembersListQuery {
+export class MembersListQuery extends PaginationQuery {
   @ApiPropertyOptional() @IsNumber() @IsOptional() group?: number;
   @ApiPropertyOptional() @IsString() @IsOptional() search?: string;
-  @ApiPropertyOptional() @IsNumber() @IsOptional() limit?: number;
+  @ApiPropertyOptional() @EnsureArray() @IsEnum(MemberRoles, { each: true }) @IsOptional() roles?: MemberRoles[];
+  @ApiPropertyOptional() @IsEnum(MembershipStates) @IsOptional() membership?: MembershipStates;
 }

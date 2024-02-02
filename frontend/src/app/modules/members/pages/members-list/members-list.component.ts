@@ -1,24 +1,15 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
-import { NgForm } from "@angular/forms";
+import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ViewWillEnter } from "@ionic/angular";
+import { InfiniteScrollCustomEvent, Platform, ViewWillEnter } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
-import { GroupResponseWithLinks, MemberResponseWithLinks, MemberRolesEnum, MembershipStatesEnum } from "src/app/api";
+import { GroupResponseWithLinks, MemberResponseWithLinks, MembersApiListMembersQueryParams } from "src/app/api";
 import { MemberRoles } from "src/app/config/member-roles";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { FilterData } from "src/app/shared/components/filter/filter.component";
 import { MembershipStates } from "../../../../config/membership-states";
-
-type MemberWithSearchString = MemberResponseWithLinks & { searchString: string };
-
-interface TableFilter {
-  search?: string;
-  groups?: number[];
-  roles?: MemberRolesEnum[];
-  membership?: MembershipStatesEnum[];
-}
 
 @UntilDestroy()
 @Component({
@@ -27,53 +18,42 @@ interface TableFilter {
   styleUrls: ["./members-list.component.scss"],
 })
 export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnter {
-  members?: MemberWithSearchString[];
+  members?: MemberResponseWithLinks[];
   groups?: GroupResponseWithLinks[];
   roles = MemberRoles;
   membershipStates = MembershipStates;
 
-  filteredMembers?: MemberWithSearchString[];
-
   loadingRows = new Array(10).fill(null);
 
-  filter: TableFilter = {
-    membership: ["clen"],
-  };
+  filter: FilterData = {};
 
-  actions: Action[] = [
-    {
-      icon: "add-outline",
-      pinned: true,
-      text: "Přidat",
-      handler: () => this.create(),
-    },
-    {
-      icon: "download-outline",
-      pinned: true,
-      text: "Stáhnout XLSX",
-      handler: () => this.export(),
-    },
-  ];
+  actions: Action[] = [];
 
-  @ViewChild("filterForm") filterForm?: NgForm;
+  view?: "table" | "list";
+
+  page = 1;
+  pageSize = 50;
 
   constructor(
     private api: ApiService,
     private route: ActivatedRoute,
     private router: Router,
     private toasts: ToastService,
+    private platform: Platform,
   ) {}
 
   ngOnInit() {}
 
   ngAfterViewInit(): void {
-    this.filterForm?.valueChanges
-      ?.pipe(untilDestroyed(this))
-      .subscribe((filter) => this.filterMembers({ ...this.filter, ...filter }));
+    this.api.endpoints.pipe(untilDestroyed(this)).subscribe(() => {
+      this.setActions();
+    });
+
+    this.updateView();
+    this.platform.resize.pipe(untilDestroyed(this)).subscribe(() => this.updateView());
   }
 
   ionViewWillEnter() {
-    this.loadMembers();
     this.loadGroups();
   }
 
@@ -87,26 +67,37 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
     this.toasts.toast("Zkopírováno do schránky.");
   }
 
-  private async loadMembers() {
-    const members = (await this.api.members.listMembers().then((res) => res.data)).map((member) => {
-      const searchString = [
-        member.nickname,
-        member.firstName,
-        member.lastName,
-        member.birthday ? DateTime.fromISO(member.birthday).year : undefined,
-        member.email,
-        member.mobile && member.mobile.replace(/[^0-9]/g, "").replace("+420", ""),
-        member.addressCity,
-      ]
-        .filter((item) => !!item)
-        .join(" ");
-      return { ...member, searchString };
-    });
+  onFilterChange(filter: FilterData) {
+    this.filter = filter;
+    this.loadMembers(filter);
+  }
 
-    this.members = members;
+  async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
+    await this.loadMembers(this.filter, true);
+    e.target.complete();
+  }
 
-    this.sortMembers();
-    this.filterMembers(this.filter);
+  private async loadMembers(filter: FilterData, loadMore: boolean = false) {
+    if (loadMore) {
+      if (this.members && this.members.length < this.page * this.pageSize) return;
+      this.page++;
+    } else {
+      this.page = 1;
+      this.members = undefined;
+    }
+
+    const params: MembersApiListMembersQueryParams = {
+      search: filter.search || undefined,
+      offset: (this.page - 1) * this.pageSize,
+      roles: filter.roles || undefined,
+      membership: filter.membership || undefined,
+      limit: this.pageSize,
+    };
+
+    const members = await this.api.members.listMembers(params).then((res) => res.data);
+
+    if (!this.members) this.members = [];
+    this.members.push(...members);
   }
 
   private async loadGroups() {
@@ -117,46 +108,28 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
     this.router.navigate(["pridat"], { relativeTo: this.route });
   }
 
-  public filterMembers(filter: TableFilter) {
-    if (!this.members) {
-      this.filteredMembers = [];
-      return;
-    }
-
-    const search_re = filter.search
-      ? new RegExp("(^| )" + filter.search.replace(/ /g, "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i")
-      : undefined;
-
-    this.filteredMembers = this.members.filter((member) => {
-      if (search_re && !search_re.test(member.searchString)) return false;
-      if (filter.roles && filter.roles.length && (!member.role || filter.roles.indexOf(member.role) === -1))
-        return false;
-      if (filter.groups && filter.groups.length && filter.groups.indexOf(member.groupId) === -1) return false;
-      if (filter.membership && filter.membership.length && filter.membership.indexOf(member.membership) === -1)
-        return false;
-
-      return true;
-    });
-  }
-
-  private sortMembers(): void {
-    // const groupIndex = Object.keys(this.groups);
-    // const roleIndex = Object.keys(this.roles);
-    // FIXME: sort by group and role
-
-    const roleOrder: MemberRolesEnum[] = ["vedouci", "instruktor", "dite"];
-
-    this.members?.sort(
-      (a, b) =>
-        Number(b.active) - Number(a.active) ||
-        (a.group && b.group && a.group.shortName.localeCompare(b.group.shortName)) ||
-        (a.role && b.role && roleOrder.indexOf(a.role) - roleOrder.indexOf(b.role)) ||
-        (a.nickname && b.nickname && a.nickname.localeCompare(b.nickname)) ||
-        0,
-    );
-  }
-
   getAge(birthday: string) {
     return Math.floor(-1 * DateTime.fromISO(birthday).diffNow("years").years).toFixed(0);
+  }
+
+  private updateView() {
+    this.view = this.platform.isPortrait() ? "list" : "table";
+  }
+
+  private setActions() {
+    this.actions = [
+      {
+        icon: "add-outline",
+        pinned: true,
+        text: "Přidat",
+        handler: () => this.create(),
+      },
+      {
+        icon: "download-outline",
+        pinned: true,
+        text: "Stáhnout XLSX",
+        handler: () => this.export(),
+      },
+    ];
   }
 }

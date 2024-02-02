@@ -14,7 +14,7 @@
       <h3>{{ member.nickname }}</h3>
       <p>
         {{ member.firstName }} {{ member.lastName }}<br />
-        {{ member.role }}, {{ (member.birthday | age) || "?" }} let
+        {{ member.role }}, {{ (member | member: "age") || "?" }} let
       </p>
     </ion-label>
   </ion-item>

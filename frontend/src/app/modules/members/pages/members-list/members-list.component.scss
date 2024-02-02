@@ -1,7 +1,12 @@
+@import "src/styles/variables.scss";
+
 .member {
   cursor: pointer;
 }
 
-tr.inactive {
+tr.mmber-inactive {
   text-decoration: line-through;
+}
+tr.mmber-paused {
+  color: $grey;
 }

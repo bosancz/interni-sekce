@@ -14,6 +14,8 @@ import { IonModal } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UrlParams } from "src/helpers/typings";
 
+export type FilterData = any;
+
 @UntilDestroy()
 @Component({
   selector: "bo-filter",
@@ -23,7 +25,8 @@ import { UrlParams } from "src/helpers/typings";
 })
 export class FilterComponent implements AfterContentInit {
   @Input() search: boolean = false;
-  @Output() change = new EventEmitter<UrlParams>();
+  @Input() paramsSeparator: string = ",";
+  @Output() change = new EventEmitter<FilterData>();
 
   @ViewChild(IonModal) modal?: IonModal;
 
@@ -62,7 +65,9 @@ export class FilterComponent implements AfterContentInit {
     const queryParams: UrlParams = { ...this.route.snapshot.queryParams };
 
     this.controls.forEach((item) => {
-      if (item.value) queryParams[item.name] = String(item.value);
+      if (Array.isArray(item.value))
+        queryParams[item.name] = item.value.map((i) => String(i)).join(this.paramsSeparator);
+      else if (item.value) queryParams[item.name] = String(item.value);
       else delete queryParams[item.name];
     });
 
@@ -75,15 +80,19 @@ export class FilterComponent implements AfterContentInit {
   }
 
   emitValue() {
-    const value: any = this.controls.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value || null }), {});
+    const value: FilterData = this.controls.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value || null }), {});
     if (this.search && this.searchString) value["search"] = this.searchString;
     this.change.emit(value);
   }
 
   setControls(params: UrlParams) {
-    this.controls.forEach((item) => {
-      item.control.setValue(params[item.name] || null);
-    });
+    for (const item of this.controls) {
+      let value: any = params[item.name]?.split(this.paramsSeparator);
+      if (Array.isArray(value) && value.length === 1) value = value[0];
+
+      item.control.setValue(value || null);
+    }
+
     if (this.search && params["search"]) this.searchString = params["search"];
   }
 
