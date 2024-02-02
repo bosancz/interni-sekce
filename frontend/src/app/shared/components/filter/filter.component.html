@@ -10,13 +10,13 @@
     (change)="$event.stopPropagation()"
   ></ion-searchbar>
 
-  <ion-button color="primary" fill="none" id="filter-modal" [disabled]="disabled" slot="end">
+  <ion-button color="primary" fill="none" [id]="'filter-modal-' + filterId" [disabled]="disabled" slot="end">
     <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
     <ion-badge *ngIf="getFilterCount()" color="warning">{{ getFilterCount() }}</ion-badge>
   </ion-button>
 </ion-toolbar>
 
-<ion-modal trigger="filter-modal">
+<ion-modal [trigger]="'filter-modal-' + filterId">
   <ng-template>
     <ion-content class="ion-padding">
       <ng-content></ng-content>

@@ -32,6 +32,8 @@ export class FilterComponent implements AfterContentInit {
 
   @ContentChildren(NgModel, { descendants: true }) controls!: QueryList<NgModel>;
 
+  readonly filterId = String(new Date().getTime());
+
   searchString?: string;
 
   // ControlValueAccessor
