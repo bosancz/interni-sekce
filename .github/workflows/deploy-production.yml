@@ -64,6 +64,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
+    name: Deploy to PRODUCTION environment
     needs:
       - build-backend
       - build-frontend

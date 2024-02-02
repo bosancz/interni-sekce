@@ -34,6 +34,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
+    name: Deploy to ALPHA environment
     needs: build
     runs-on: ubuntu-latest # Run the job on an Ubuntu runner
     steps:

@@ -61,6 +61,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
+    name: Deploy to TEST environment
     needs:
       - build-backend
       - build-frontend
