@@ -63,7 +63,7 @@ export class EventsController {
     const q = this.eventsRepository
       .createQueryBuilder("events")
       .select(["events.id", "events.name", "events.status", "events.dateFrom", "events.dateTill", "events.type"])
-      .leftJoin("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
+      .leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
       .leftJoinAndSelect("attendees.member", "leaders")
       .where(EventsListRoute.canWhere(req))
       .orderBy("events.dateFrom", "DESC")

@@ -194,7 +194,7 @@ export class MongoImportService {
       let status = <any>mongoEvent.status ?? EventStates.draft;
       if (status === "rejected") status = EventStates.pending;
 
-      const eventData: Omit<Event, "id"> = {
+      const eventData: Omit<Event, "id" | "setLeaders"> = {
         name: mongoEvent.name,
         status,
         statusNote: mongoEvent.statusNote ?? null,

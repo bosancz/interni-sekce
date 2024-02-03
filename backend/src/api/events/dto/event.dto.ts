@@ -12,7 +12,7 @@ import { Member } from "src/models/members/entities/member.entity";
 import { EventAttendeeResponse } from "./event-attendee.dto";
 import { EventExpenseResponse } from "./event-expense.dto";
 
-export class EventResponse implements Event {
+export class EventResponse implements Omit<Event, "setLeaders"> {
   @ApiProperty() id!: number;
   @ApiProperty() name!: string;
   @ApiProperty({ enum: EventStates, enumName: "EventStatesEnum" }) status!: EventStates;

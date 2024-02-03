@@ -1,7 +1,6 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { InfiniteScrollCustomEvent, ViewWillEnter, ViewWillLeave } from "@ionic/angular";
-import { untilDestroyed } from "@ngneat/until-destroy";
+import { InfiniteScrollCustomEvent, Platform } from "@ionic/angular";
 import { EventResponseWithLinks, EventsApiListEventsQueryParams } from "src/app/api";
 import { EventStatuses } from "src/app/config/event-statuses";
 import { ApiEndpoints, ApiService } from "src/app/services/api.service";
@@ -13,7 +12,7 @@ import { UrlParams } from "src/helpers/typings";
   templateUrl: "./events-list.component.html",
   styleUrls: ["./events-list.component.scss"],
 })
-export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
+export class EventsListComponent implements OnInit {
   events?: EventResponseWithLinks[];
 
   years: number[] = [];
@@ -26,21 +25,27 @@ export class EventsListComponent implements ViewWillEnter, ViewWillLeave {
 
   filter: UrlParams = {};
 
+  view?: "table" | "list";
+
   constructor(
     private api: ApiService,
     private router: Router,
     private route: ActivatedRoute,
+    private platform: Platform,
   ) {}
 
-  ionViewWillEnter(): void {
+  ngOnInit(): void {
     this.loadYears();
 
-    this.api.endpoints
-      .pipe(untilDestroyed(this, "ionViewWillLeave"))
-      .subscribe((endpoints) => this.setActions(endpoints));
+    this.api.endpoints.subscribe((endpoints) => this.setActions(endpoints));
+
+    this.updateView();
+    this.platform.resize.subscribe(() => this.updateView());
   }
 
-  ionViewWillLeave(): void {}
+  updateView() {
+    this.view = this.platform.isPortrait() ? "list" : "table";
+  }
 
   onFilterChange(filter: UrlParams) {
     this.filter = filter;

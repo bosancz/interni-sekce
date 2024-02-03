@@ -1,7 +1,7 @@
 import { Album } from "src/models/albums/entities/album.entity";
 import { Member } from "src/models/members/entities/member.entity";
-import { Column, DeleteDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { EventAttendee } from "./event-attendee.entity";
+import { AfterLoad, Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { EventAttendee, EventAttendeeType } from "./event-attendee.entity";
 import { EventExpense } from "./event-expense.entity";
 import { EventGroup } from "./event-group.entity";
 
@@ -20,13 +20,13 @@ export class Event {
   @OneToOne(() => Album)
   album?: Album;
 
-  @OneToMany(() => EventGroup, (group) => group.event)
+  @OneToMany(() => EventGroup, (group) => group.event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
   groups?: EventGroup[];
 
-  @OneToMany(() => EventAttendee, (ea) => ea.event)
+  @OneToMany(() => EventAttendee, (ea) => ea.event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
   attendees?: EventAttendee[];
 
-  @OneToMany(() => EventExpense, (expense) => expense.event)
+  @OneToMany(() => EventExpense, (expense) => expense.event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
   expenses?: EventExpense[];
 
   @Column({ type: "text", nullable: false }) name!: string;
@@ -45,8 +45,10 @@ export class Event {
   @Column({ type: "varchar", nullable: true }) river!: string | null;
   @Column({ type: "boolean", nullable: false, default: false }) leadersEvent!: boolean;
 
-  @DeleteDateColumn()
-  deletedAt?: Date | string | null;
-
   leaders?: Member[];
+
+  @AfterLoad()
+  setLeaders() {
+    this.leaders = this.attendees?.filter((a) => a.member && a.type === EventAttendeeType.leader).map((a) => a.member!);
+  }
 }
