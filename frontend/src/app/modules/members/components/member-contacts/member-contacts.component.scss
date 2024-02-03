@@ -4,13 +4,10 @@
 
 ion-list {
   padding: 0;
-  max-width: 900px;
-}
-
-.contact {
-  max-width: 900px;
 }
 
 .address {
-  white-space: pre-wrap;
+  ion-label {
+    white-space: pre-wrap;
+  }
 }

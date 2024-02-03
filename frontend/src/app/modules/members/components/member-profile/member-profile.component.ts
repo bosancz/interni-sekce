@@ -8,8 +8,4 @@ import { MemberResponseWithLinks } from "src/app/api";
 })
 export class MemberProfileComponent {
   @Input() member?: MemberResponseWithLinks | null;
-
-  getInitials(member: MemberResponseWithLinks): string {
-    return member.firstName?.[0] + "" + member.lastName?.[0];
-  }
 }

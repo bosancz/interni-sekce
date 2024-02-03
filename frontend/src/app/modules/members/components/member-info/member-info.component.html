@@ -24,13 +24,15 @@
   <ion-item [button]="true" [detail]="false">
     <ion-label>Aktivní člen:</ion-label>
     <ion-label>{{ member.active === undefined ? "-" : member.active ? "Ano" : "Ne" }}</ion-label>
+    <bo-edit-button slot="end"></bo-edit-button>
   </ion-item>
 
   <ion-item [button]="true" [detail]="false">
     <ion-label>Oddíl</ion-label>
-    <ion-label
-      ><span [style.color]="member.groupId | group: 'color'">{{ member.groupId | group: "name" }}</span></ion-label
-    >
+    <ion-label>
+      <bo-group-badge [groupId]="member.groupId"></bo-group-badge>
+    </ion-label>
+    <bo-edit-button slot="end"></bo-edit-button>
   </ion-item>
 
   <!-- <ion-item [button]="true" [detail]="false">

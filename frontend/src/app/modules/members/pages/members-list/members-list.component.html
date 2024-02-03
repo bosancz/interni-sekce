@@ -67,9 +67,7 @@
             <td>{{ member.nickname }}</td>
             <td>{{ member.firstName }} {{ member.lastName }}</td>
             <td>
-              <ion-badge [style.background-color]="member.groupId | group: 'color'">{{
-                member.groupId | group: "name"
-              }}</ion-badge>
+              <bo-group-badge [groupId]="member.groupId"></bo-group-badge>
             </td>
             <td>{{ member | member: "role" }}</td>
             <td>{{ member | member: "age" }}</td>

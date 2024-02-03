@@ -1,14 +1,13 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { DateTime } from "luxon";
 import { MemberResponse } from "src/app/api";
-import { MemberRoles } from "src/app/config/member-roles";
 import { MembershipStates } from "src/app/config/membership-states";
 
 @Pipe({
   name: "member",
 })
 export class MemberPipe implements PipeTransform {
-  transform(member: MemberResponse | undefined, property: "nickname" | "age" | "membership" | "role") {
+  transform(member: MemberResponse | undefined, property: "nickname" | "age" | "membership" | "role" | "initials") {
     if (!member) return "";
 
     switch (property) {
@@ -27,8 +26,16 @@ export class MemberPipe implements PipeTransform {
       case "membership":
         return MembershipStates[member.membership].title;
 
-      case "role":
-        return MemberRoles[member.role].title;
+      case "initials":
+        return member ? this.getInitials(member) : "";
     }
+  }
+
+  getInitials(member: MemberResponse): string {
+    return this.getFirstLetterLocal(member.firstName || "") + this.getFirstLetterLocal(member.lastName || "");
+  }
+
+  getFirstLetterLocal(value: string): string {
+    return value.match(/^(Ch|\w)/)?.[0] || "";
   }
 }

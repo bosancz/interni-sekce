@@ -38,6 +38,7 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
 import { register } from "swiper/element/bundle";
 import { AddButtonComponent } from "./components/add-button/add-button.component";
 import { CopyButtonComponent } from "./components/copy-button/copy-button.component";
+import { GroupBadgeComponent } from "./components/group-badge/group-badge.component";
 // register Swiper custom elements
 register();
 
@@ -77,6 +78,7 @@ register();
     EditButtonComponent,
     CopyButtonComponent,
     AddButtonComponent,
+    GroupBadgeComponent,
   ],
   exports: [
     FormsModule,
@@ -116,6 +118,7 @@ register();
     EditButtonComponent,
     CopyButtonComponent,
     AddButtonComponent,
+    GroupBadgeComponent,
   ],
   providers: [DatePipe],
 })

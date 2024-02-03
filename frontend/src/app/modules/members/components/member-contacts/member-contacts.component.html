@@ -2,7 +2,14 @@
 
 @for (contact of contacts; track $index) {
   <bo-card class="contact mb-3">
-    <bo-card-title>{{ contact.title }}</bo-card-title>
+    <bo-card-title>
+      {{ contact.title }}
+      <ion-buttons slot="end">
+        <ion-button (click)="openContactForm(contact)" color="secondary" fill="clear"> Upravit </ion-button>
+        <ion-button (click)="deleteContact(contact)" color="danger" fill="clear"> Smazat </ion-button>
+      </ion-buttons>
+    </bo-card-title>
+
     <bo-card-content>
       <ion-list lines="none">
         @if (contact.mobile) {
@@ -33,9 +40,6 @@
         }
       </ion-list>
     </bo-card-content>
-
-    <ion-button (click)="openContactForm(contact)" color="secondary" fill="clear"> Upravit </ion-button>
-    <ion-button (click)="deleteContact(contact)" color="danger" fill="clear"> Smazat </ion-button>
   </bo-card>
 }
 
@@ -58,11 +62,11 @@
 </ion-buttons>
 
 <h4 class="mt-4">Adresa</h4>
-<bo-card>
+<bo-card class="address">
   <bo-card-content>
     <ion-list *ngIf="member" class="selectable" lines="none">
       <ion-item [button]="true" [detail]="false">
-        <ion-label *ngIf="member" class="address">{{ getFullAddress(member) }}</ion-label>
+        <ion-label *ngIf="member">{{ getFullAddress(member) }}</ion-label>
         <ion-buttons slot="end">
           <bo-copy-button [text]="getFullAddress(member)"></bo-copy-button>
           <bo-edit-button></bo-edit-button>
