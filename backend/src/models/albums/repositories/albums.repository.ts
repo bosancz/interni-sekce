@@ -25,7 +25,14 @@ export class AlbumsRepository {
   async getAlbums(options: GetAlbumsOptions = {}) {
     const q = this.repository
       .createQueryBuilder("albums")
-      .select(["albums.id", "albums.name", "albums.status", "albums.dateFrom", "albums.dateTill"])
+      .select([
+        "albums.id",
+        "albums.name",
+        "albums.status",
+        "albums.dateFrom",
+        "albums.dateTill",
+        "albums.datePublished",
+      ])
       .orderBy("albums.dateFrom", "DESC")
       .take(options.limit || 25)
       .skip(options.offset || 0);
