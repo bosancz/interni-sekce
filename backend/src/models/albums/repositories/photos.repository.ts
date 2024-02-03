@@ -1,12 +1,29 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { PaginationOptions } from "src/models/helpers/pagination";
 import { Member } from "src/models/members/entities/member.entity";
 import { Repository } from "typeorm";
 import { Photo } from "../entities/photo.entity";
 
+export interface GetPhotosOptions extends PaginationOptions {
+  album?: number;
+}
+
 @Injectable()
-export class PhotosService {
-  constructor(@InjectRepository(Photo) public repository: Repository<Photo>) {}
+export class PhotosRepository {
+  constructor(@InjectRepository(Photo) private repository: Repository<Photo>) {}
+
+  getPhotos(options: GetPhotosOptions = {}) {
+    const q = this.repository
+      .createQueryBuilder("photos")
+      .select(["photos.id", "photos.name", "photos.status"])
+      .take(options.limit || 25)
+      .skip(options.offset || 0);
+
+    if (options.album) q.where("photos.album_id = :album", { album: options.album });
+
+    return q.getMany();
+  }
 
   async getPhotosByMemberFace(memberId: Member["id"], options: { limit?: number } = {}) {
     const query = this.repository
@@ -18,6 +35,10 @@ export class PhotosService {
     if (options.limit) query.limit(options.limit);
 
     return query.getMany();
+  }
+
+  async getPhoto(id: Photo["id"]) {
+    return this.repository.findOneBy({ id });
   }
 
   async createPhoto(albumId: number, photo: Omit<Photo, "id">, file: Express.Multer.File) {

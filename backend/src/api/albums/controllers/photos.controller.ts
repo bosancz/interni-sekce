@@ -15,7 +15,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
-import { PhotosService } from "src/models/albums/services/photos.service";
+import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import {
   PhotoCreateRoute,
   PhotoDeleteRoute,
@@ -30,17 +30,13 @@ import { PhotoCreateBody, PhotoResponse, PhotoSizes, PhotoUpdateBody } from "../
 @AcController()
 @ApiTags("Photo gallery")
 export class PhotosController {
-  constructor(private photosService: PhotosService) {}
+  constructor(private photos: PhotosRepository) {}
 
   @Get()
   @AcLinks(PhotosListRoute)
   @ApiResponse({ type: WithLinks(PhotoResponse), isArray: true })
   async listPhotos(@Req() req: Request) {
-    return await this.photosService.repository
-      .createQueryBuilder("photos")
-      .select(["photos.id", "photos.name", "photos.status"])
-      .where(PhotosListRoute.canWhere(req))
-      .getMany();
+    return this.photos.getPhotos();
   }
 
   @Post()
@@ -55,8 +51,7 @@ export class PhotosController {
   @AcLinks(PhotoReadRoute)
   @ApiResponse({ type: WithLinks(PhotoResponse) })
   async getPhoto(@Param("id") id: number, @Req() req: Request) {
-    const photo = await this.photosService.repository.findOneBy({ id });
-
+    const photo = await this.photos.getPhoto(id);
     if (!photo) throw new NotFoundException();
 
     PhotoReadRoute.canOrThrow(req, photo);
@@ -68,33 +63,30 @@ export class PhotosController {
   @AcLinks(PhotoEditRoute)
   @ApiResponse({ status: 204 })
   async updatePhoto(@Param("id") id: number, @Req() req: Request, @Body() body: PhotoUpdateBody): Promise<void> {
-    const photo = await this.photosService.repository.findOneBy({ id });
-
+    const photo = await this.photos.getPhoto(id);
     if (!photo) throw new NotFoundException();
 
     PhotoEditRoute.canOrThrow(req, photo);
 
-    await this.photosService.updatePhoto(photo.id, body);
+    await this.photos.updatePhoto(photo.id, body);
   }
 
   @Delete(":id")
   @AcLinks(PhotoDeleteRoute)
   @ApiResponse({ status: 204 })
   async deletePhoto(@Param("id") id: number, @Req() req: Request): Promise<void> {
-    const photo = await this.photosService.repository.findOneBy({ id });
-
+    const photo = await this.photos.getPhoto(id);
     if (!photo) throw new NotFoundException();
 
     PhotoEditRoute.canOrThrow(req, photo);
 
-    await this.photosService.deletePhoto(photo.id);
+    await this.photos.deletePhoto(photo.id);
   }
 
   @Get(":id/image/:size")
   @AcLinks(PhotoReadFileRoute)
   async getPhotoImage(@Param("id") id: number, @Param("size") size: PhotoSizes, @Req() req: Request): Promise<void> {
-    const photo = await this.photosService.repository.findOneBy({ id });
-
+    const photo = await this.photos.getPhoto(id);
     if (!photo) throw new NotFoundException();
 
     PhotoReadFileRoute.canOrThrow(req, photo);
