@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { DateTime } from "luxon";
 import { MemberResponse } from "src/app/api";
+import { MemberRoles } from "src/app/config/member-roles";
 import { MembershipStates } from "src/app/config/membership-states";
 
 @Pipe({
@@ -25,6 +26,9 @@ export class MemberPipe implements PipeTransform {
 
       case "membership":
         return MembershipStates[member.membership].title;
+
+      case "role":
+        return MemberRoles[member.role]?.title || member.role;
 
       case "initials":
         return member ? this.getInitials(member) : "";

@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsOptional, IsString } from "class-validator";
 import { Group } from "src/models/members/entities/group.entity";
+import { EnsureBoolean } from "src/utilities/validation";
 
 export class GroupResponse implements Group {
   @ApiProperty() id!: number;
@@ -10,6 +11,10 @@ export class GroupResponse implements Group {
   @ApiPropertyOptional({ type: "string" }) darkColor!: string | null;
   @ApiPropertyOptional({ type: "string" }) name!: string | null;
   @ApiPropertyOptional({ type: "string" }) deletedAt!: string | null;
+}
+
+export class ListGroupsQuery {
+  @ApiPropertyOptional() @EnsureBoolean() @IsOptional() active?: boolean;
 }
 
 export class CreateGroupBody implements Pick<Group, "shortName" | "name"> {

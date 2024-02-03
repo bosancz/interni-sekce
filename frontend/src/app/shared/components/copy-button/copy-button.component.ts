@@ -7,7 +7,7 @@ import { ToastService } from "src/app/services/toast.service";
   styleUrl: "./copy-button.component.scss",
 })
 export class CopyButtonComponent {
-  @Input() text?: string;
+  @Input() text?: string | null;
 
   constructor(private toastService: ToastService) {}
 

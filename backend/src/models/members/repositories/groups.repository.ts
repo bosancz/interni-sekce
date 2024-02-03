@@ -1,14 +1,21 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { FindManyOptions, FindOneOptions, Repository } from "typeorm";
+import { FindOneOptions, Repository } from "typeorm";
 import { Group } from "../entities/group.entity";
+
+export interface GetGroupsOptions {
+  active?: boolean;
+}
 
 @Injectable()
 export class GroupsRepository {
   constructor(@InjectRepository(Group) private groupsRepository: Repository<Group>) {}
 
-  async getGroups(options?: FindManyOptions) {
-    return this.groupsRepository.find(options);
+  async getGroups(options: GetGroupsOptions = {}) {
+    return this.groupsRepository.find({
+      order: { shortName: "ASC" },
+      where: { active: options.active },
+    });
   }
 
   async getGroup(id: number, options?: FindOneOptions<Group>) {

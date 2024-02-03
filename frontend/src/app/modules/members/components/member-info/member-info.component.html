@@ -1,38 +1,48 @@
-<h4>Základní informace</h4>
+<h4 class="d-flex justify-content-between">
+  Základní informace
+  <bo-edit-button slot="end" (click)="openBasicInfoForm()" class="float-end">Upravit</bo-edit-button>
+</h4>
 <ion-list *ngIf="member" class="selectable">
-  <ion-item [button]="true" [detail]="false">
+  <ion-item>
     <ion-label>Jméno:</ion-label>
     <ion-label>{{ member.firstName || "-" }} {{ member.lastName || "-" }}</ion-label>
-    <bo-edit-button slot="end"></bo-edit-button>
+    <bo-copy-button slot="end" [text]="member.firstName + ' ' + member.lastName"></bo-copy-button>
   </ion-item>
 
-  <ion-item [button]="true" [detail]="false">
+  <ion-item>
     <ion-label>Přezdívka:</ion-label>
     <ion-label>{{ member.nickname || "-" }}</ion-label>
-    <bo-edit-button slot="end"></bo-edit-button>
+    <bo-copy-button slot="end" [text]="member.nickname"></bo-copy-button>
   </ion-item>
 
-  <ion-item [button]="true" [detail]="false">
+  <ion-item>
     <ion-label>Datum narození:</ion-label>
     <ion-label>{{ member.birthday ? (member.birthday | date: "d. M. y") : "-" }}</ion-label>
-    <bo-edit-button slot="end"></bo-edit-button>
+    <bo-copy-button slot="end" [text]="member.birthday | date: 'd. M. y'"></bo-copy-button>
   </ion-item>
 </ion-list>
 
 <h4 class="mt-4">Členství ve skupině</h4>
 <ion-list *ngIf="member" class="selectable">
-  <ion-item [button]="true" [detail]="false">
-    <ion-label>Aktivní člen:</ion-label>
+  <ion-item>
+    <ion-label>Aktivní:</ion-label>
     <ion-label>{{ member.active === undefined ? "-" : member.active ? "Ano" : "Ne" }}</ion-label>
-    <bo-edit-button slot="end"></bo-edit-button>
+    <bo-edit-button slot="end" (click)="openMembershipChangeForm()"></bo-edit-button>
   </ion-item>
 
-  <ion-item [button]="true" [detail]="false">
+  <ion-item>
+    <ion-label>Role:</ion-label>
+
+    <ion-label>{{ member | member: "role" || "-" }}</ion-label>
+    <bo-edit-button slot="end" (click)="openRoleChangeForm()"></bo-edit-button>
+  </ion-item>
+
+  <ion-item>
     <ion-label>Oddíl</ion-label>
     <ion-label>
       <bo-group-badge [groupId]="member.groupId"></bo-group-badge>
     </ion-label>
-    <bo-edit-button slot="end"></bo-edit-button>
+    <bo-edit-button slot="end" (click)="openGroupChangeForm()"></bo-edit-button>
   </ion-item>
 
   <!-- <ion-item [button]="true" [detail]="false">
