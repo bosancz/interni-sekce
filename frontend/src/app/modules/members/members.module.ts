@@ -10,6 +10,7 @@ import { MembersCreateComponent } from "./pages/members-create/members-create.co
 import { MembersEditComponent } from "./pages/members-edit/members-edit.component";
 import { MembersListComponent } from "./pages/members-list/members-list.component";
 import { MembersViewComponent } from "./pages/members-view/members-view.component";
+import { MemberProfileComponent } from './components/member-profile/member-profile.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { MembersViewComponent } from "./pages/members-view/members-view.componen
     MemberHealthComponent,
     MemberContactsComponent,
     CardInsuranceCardComponent,
+    MemberProfileComponent,
   ],
   imports: [CommonModule, MembersRoutingModule, SharedModule],
 })

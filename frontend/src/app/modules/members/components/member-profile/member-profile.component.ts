@@ -1,0 +1,15 @@
+import { Component, Input } from "@angular/core";
+import { MemberResponseWithLinks } from "src/app/api";
+
+@Component({
+  selector: "bo-member-profile",
+  templateUrl: "./member-profile.component.html",
+  styleUrl: "./member-profile.component.scss",
+})
+export class MemberProfileComponent {
+  @Input() member?: MemberResponseWithLinks | null;
+
+  getInitials(member: MemberResponseWithLinks): string {
+    return member.firstName?.[0] + "" + member.lastName?.[0];
+  }
+}

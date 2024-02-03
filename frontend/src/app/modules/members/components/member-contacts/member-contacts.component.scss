@@ -4,8 +4,13 @@
 
 ion-list {
   padding: 0;
+  max-width: 900px;
 }
 
-ion-card-content {
-  padding-bottom: 0;
+.contact {
+  max-width: 900px;
+}
+
+.address {
+  white-space: pre-wrap;
 }

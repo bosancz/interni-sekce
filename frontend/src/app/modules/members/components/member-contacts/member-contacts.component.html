@@ -1,11 +1,9 @@
-<h4 class="ion-padding">Kontakty</h4>
+<h4>Kontakty</h4>
 
 @for (contact of contacts; track $index) {
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>{{ contact.title }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
+  <bo-card class="contact mb-3">
+    <bo-card-title>{{ contact.title }}</bo-card-title>
+    <bo-card-content>
       <ion-list lines="none">
         @if (contact.mobile) {
           <ion-item [button]="true" [detail]="false">
@@ -34,29 +32,42 @@
           </ion-item>
         }
       </ion-list>
-    </ion-card-content>
+    </bo-card-content>
 
     <ion-button (click)="openContactForm(contact)" color="secondary" fill="clear"> Upravit </ion-button>
     <ion-button (click)="deleteContact(contact)" color="danger" fill="clear"> Smazat </ion-button>
-  </ion-card>
+  </bo-card>
 }
 
 @if (member === undefined) {
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title><ion-skeleton-text [animated]="true"></ion-skeleton-text></ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
+  <bo-card class="contact mb-3">
+    <bo-card-title><ion-skeleton-text [animated]="true"></ion-skeleton-text></bo-card-title>
+    <bo-card-content>
       <ion-list lines="none">
         <ion-item>
           <ion-icon name="call-outline" slot="start"></ion-icon>
           <ion-label><ion-skeleton-text [animated]="true"></ion-skeleton-text></ion-label>
         </ion-item>
       </ion-list>
-    </ion-card-content>
-  </ion-card>
+    </bo-card-content>
+  </bo-card>
 }
 
 <ion-buttons class="mt-3 justify-content-center">
   <bo-add-button (click)="openContactForm(null)">Přidat kontakt</bo-add-button>
 </ion-buttons>
+
+<h4 class="mt-4">Adresa</h4>
+<bo-card>
+  <bo-card-content>
+    <ion-list *ngIf="member" class="selectable" lines="none">
+      <ion-item [button]="true" [detail]="false">
+        <ion-label *ngIf="member" class="address">{{ getFullAddress(member) }}</ion-label>
+        <ion-buttons slot="end">
+          <bo-copy-button [text]="getFullAddress(member)"></bo-copy-button>
+          <bo-edit-button></bo-edit-button>
+        </ion-buttons>
+      </ion-item>
+    </ion-list>
+  </bo-card-content>
+</bo-card>

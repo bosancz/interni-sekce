@@ -1,33 +1,25 @@
-<h4 class="ion-padding-horizontal ion-padding-top">Základní informace</h4>
+<h4>Základní informace</h4>
 <ion-list *ngIf="member" class="selectable">
   <ion-item [button]="true" [detail]="false">
     <ion-label>Jméno:</ion-label>
     <ion-label>{{ member.firstName || "-" }} {{ member.lastName || "-" }}</ion-label>
-    <bo-edit-button></bo-edit-button>
+    <bo-edit-button slot="end"></bo-edit-button>
   </ion-item>
 
   <ion-item [button]="true" [detail]="false">
     <ion-label>Přezdívka:</ion-label>
     <ion-label>{{ member.nickname || "-" }}</ion-label>
-    <bo-edit-button></bo-edit-button>
+    <bo-edit-button slot="end"></bo-edit-button>
   </ion-item>
 
   <ion-item [button]="true" [detail]="false">
     <ion-label>Datum narození:</ion-label>
     <ion-label>{{ member.birthday ? (member.birthday | date: "d. M. y") : "-" }}</ion-label>
-    <bo-edit-button></bo-edit-button>
+    <bo-edit-button slot="end"></bo-edit-button>
   </ion-item>
 </ion-list>
 
-<h4 class="mt-4 ion-padding-horizontal">Adresa</h4>
-<ion-list *ngIf="member" class="selectable" lines="none">
-  <ion-item [button]="true" [detail]="false">
-    <ion-label *ngIf="member" class="address">{{ getFullAddress(member) }}</ion-label>
-    <bo-copy-button [text]="getFullAddress(member)" slot="end"></bo-copy-button>
-  </ion-item>
-</ion-list>
-
-<h4 class="mt-4 ion-padding-horizontal">Členství ve skupině</h4>
+<h4 class="mt-4">Členství ve skupině</h4>
 <ion-list *ngIf="member" class="selectable">
   <ion-item [button]="true" [detail]="false">
     <ion-label>Aktivní člen:</ion-label>

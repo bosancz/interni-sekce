@@ -19,7 +19,7 @@ import { MemberStoreService } from "../../services/member-store.service";
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeave {
   member?: MemberResponseWithLinks | null;
-  view?: "info" | "zdravi" | "kontakty" = "info";
+  view?: "info" | "health" | "contacts" | "profile" = "info";
 
   membershipStates = MembershipStates;
 
@@ -51,7 +51,7 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
       if (params.view) {
         this.view = params.view;
       } else {
-        this.router.navigate([], { relativeTo: this.route, queryParams: { view: "info" }, replaceUrl: true });
+        this.router.navigate([], { relativeTo: this.route, queryParams: { view: "profile" }, replaceUrl: true });
       }
     });
   }
