@@ -37,7 +37,7 @@ export default class MemberContactsComponent implements OnChanges {
 
   async openContactForm(contact: MemberContactResponseWithLinks | null) {
     const alert = await this.alertController.create({
-      header: "Přidat kontakt",
+      header: contact ? "Upravit kontakt" : "Přidat kontakt",
       inputs: [
         {
           name: "title",
