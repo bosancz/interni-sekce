@@ -36,6 +36,8 @@ import { MemberPipe } from "./pipes/member.pipe";
 import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
 
 import { register } from "swiper/element/bundle";
+import { AddButtonComponent } from "./components/add-button/add-button.component";
+import { CopyButtonComponent } from "./components/copy-button/copy-button.component";
 // register Swiper custom elements
 register();
 
@@ -73,6 +75,8 @@ register();
     MarkdownPipe,
     MemberSelectComponent,
     EditButtonComponent,
+    CopyButtonComponent,
+    AddButtonComponent,
   ],
   exports: [
     FormsModule,
@@ -110,6 +114,8 @@ register();
     PrettyBytesPipe,
     MarkdownPipe,
     EditButtonComponent,
+    CopyButtonComponent,
+    AddButtonComponent,
   ],
   providers: [DatePipe],
 })

@@ -15,4 +15,12 @@ export class MemberInfoComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}
+
+  getFullAddress(member: MemberResponseWithLinks) {
+    let address = `${member.addressStreet} ${member.addressStreetNo}\n${member.addressCity}\n${member.addressPostalCode}`;
+    if (member.addressCountry) {
+      address += `\n${member.addressCountry}`;
+    }
+    return address;
+  }
 }

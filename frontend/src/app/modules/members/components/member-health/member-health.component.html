@@ -3,18 +3,15 @@
   <ion-skeleton-text *ngIf="member === undefined"></ion-skeleton-text>
   <p *ngIf="member?.knownProblems" [innerHtml]="member!.knownProblems | markdown" class="selectable"></p>
   <p *ngIf="member && !member.knownProblems"><i>Žádné známé problémy</i></p>
-  <bo-edit-button
-    [inputs]="{ knownProblems: 'textarea' }"
-    [value]="member"
-    (change)="update.emit($event)"
-  ></bo-edit-button>
+
+  <bo-edit-button>Upravit</bo-edit-button>
 
   <h4 class="mt-5">Alergie</h4>
 
   <ion-skeleton-text *ngIf="member === undefined"></ion-skeleton-text>
   <p *ngIf="member?.allergies" [innerHtml]="member!.allergies | markdown" class="selectable"></p>
   <p *ngIf="member && !member.allergies"><i>Žádné známé alergie</i></p>
-  <bo-edit-button [inputs]="{ allergies: 'textarea' }" [value]="member" (change)="update.emit($event)"></bo-edit-button>
+  <bo-edit-button (click)="openEditAllergies()">Upravit</bo-edit-button>
 
   <h4 class="mt-5">Kartička pojištěnce</h4>
   <bo-card-insurance-card [member]="member"></bo-card-insurance-card>

@@ -35,11 +35,6 @@ export default class MemberContactsComponent implements OnChanges {
     }
   }
 
-  async copyContact(contact: string) {
-    await navigator.clipboard.writeText(contact);
-    await this.toastService.toast("Kontakt byl zkopírován do schránky");
-  }
-
   async openContactForm(contact: MemberContactResponseWithLinks | null) {
     const alert = await this.alertController.create({
       header: "Přidat kontakt",

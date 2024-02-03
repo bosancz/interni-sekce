@@ -8,35 +8,29 @@
     <ion-card-content>
       <ion-list lines="none">
         @if (contact.mobile) {
-          <ion-item>
+          <ion-item [button]="true" [detail]="false">
             <ion-icon name="call-outline" slot="start"></ion-icon>
             <ion-label>{{ contact.mobile }}</ion-label>
             <ion-button [href]="'tel:' + contact.mobile" color="primary" fill="clear">
               <ion-icon name="call-outline" slot="icon-only"></ion-icon>
             </ion-button>
-            <ion-button (click)="copyContact(contact.mobile)" color="secondary" fill="clear">
-              <ion-icon name="copy-outline" slot="icon-only"></ion-icon>
-            </ion-button>
+            <bo-copy-button [text]="contact.mobile"></bo-copy-button>
           </ion-item>
         }
         @if (contact.email) {
-          <ion-item>
+          <ion-item [button]="true" [detail]="false">
             <ion-icon name="mail-outline" slot="start"></ion-icon>
             <ion-label>{{ contact.email }}</ion-label>
             <ion-button [href]="'mailto:' + contact.email" color="primary" fill="clear">
               <ion-icon name="mail-outline" slot="icon-only"></ion-icon>
             </ion-button>
-            <ion-button (click)="copyContact(contact.email)" color="secondary" fill="clear">
-              <ion-icon name="copy-outline" slot="icon-only"></ion-icon>
-            </ion-button>
+            <bo-copy-button [text]="contact.email"></bo-copy-button>
           </ion-item>
         }
         @if (contact.other) {
-          <ion-item>
+          <ion-item [button]="true" [detail]="false">
             <ion-label>{{ contact.other }}</ion-label>
-            <ion-button (click)="copyContact(contact.other)" color="secondary" fill="clear">
-              <ion-icon name="copy-outline" slot="icon-only"></ion-icon>
-            </ion-button>
+            <bo-copy-button [text]="contact.other"></bo-copy-button>
           </ion-item>
         }
       </ion-list>
@@ -64,8 +58,5 @@
 }
 
 <ion-buttons class="mt-3 justify-content-center">
-  <ion-button (click)="openContactForm(null)">
-    <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-    přidat kontakt
-  </ion-button>
+  <bo-add-button (click)="openContactForm(null)">Přidat kontakt</bo-add-button>
 </ion-buttons>

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { AlertController } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { MemberResponseWithLinks } from "src/app/api";
-import { MemberStoreService } from "../../services/member-store.service";
 @UntilDestroy()
 @Component({
   selector: "bo-member-health",
@@ -12,7 +12,33 @@ export class MemberHealthComponent implements OnInit {
   @Input() member?: MemberResponseWithLinks | null;
   @Output() update = new EventEmitter<Partial<MemberResponseWithLinks>>();
 
-  constructor(private memberStore: MemberStoreService) {}
+  constructor(private alertController: AlertController) {}
 
   ngOnInit(): void {}
+
+  async openEditAllergies() {
+    const alert = await this.alertController.create({
+      header: "Upravit alergie",
+      inputs: [
+        {
+          name: "allergies",
+          type: "textarea",
+          placeholder: "Seznam alergenů a jejich závažnost",
+          value: this.member?.allergies,
+        },
+      ],
+      buttons: [
+        {
+          text: "Zrušit",
+          role: "cancel",
+        },
+        {
+          text: "Uložit",
+          handler: async (data) => this.update.emit({ allergies: data.allergies }),
+        },
+      ],
+    });
+
+    await alert.present();
+  }
 }
