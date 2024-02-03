@@ -4,7 +4,7 @@ import { FindManyOptions, FindOneOptions, Repository } from "typeorm";
 import { Group } from "../entities/group.entity";
 
 @Injectable()
-export class GroupsService {
+export class GroupsRepository {
   constructor(@InjectRepository(Group) private groupsRepository: Repository<Group>) {}
 
   async getGroups(options?: FindManyOptions) {

@@ -19,10 +19,13 @@ export class EditButtonComponent implements AfterViewInit {
 
   @ViewChild(IonModal) modal!: IonModal;
 
-  constructor(private modalController: ModalController, private platform: Platform) {}
+  constructor(
+    private modalController: ModalController,
+    private platform: Platform,
+  ) {}
 
   ngAfterViewInit(): void {
-    this.modal.backdropDismiss = false;
+    // this.modal.backdropDismiss = false;
   }
   open() {
     this.modal.present();

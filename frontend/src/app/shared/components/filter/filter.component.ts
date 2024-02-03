@@ -1,5 +1,6 @@
 import {
   AfterContentInit,
+  AfterViewInit,
   Component,
   ContentChildren,
   EventEmitter,
@@ -10,7 +11,7 @@ import {
 } from "@angular/core";
 import { NgModel } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { IonModal } from "@ionic/angular";
+import { IonModal, IonSearchbar } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UrlParams } from "src/helpers/typings";
 
@@ -23,12 +24,13 @@ export type FilterData = any;
   styleUrls: ["./filter.component.scss"],
   // providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: forwardRef(() => FilterComponent) }],
 })
-export class FilterComponent implements AfterContentInit {
+export class FilterComponent implements AfterContentInit, AfterViewInit {
   @Input() search: boolean = false;
   @Input() paramsSeparator: string = ",";
   @Output() change = new EventEmitter<FilterData>();
 
   @ViewChild(IonModal) modal?: IonModal;
+  @ViewChild(IonSearchbar) searchbar?: IonSearchbar;
 
   @ContentChildren(NgModel, { descendants: true }) controls!: QueryList<NgModel>;
 
@@ -51,6 +53,11 @@ export class FilterComponent implements AfterContentInit {
         this.emitValue();
       });
     });
+  }
+
+  ngAfterViewInit(): void {
+    // FIXME: Workaround for focus on searchbar, because it's not working when called directly
+    setTimeout(() => this.searchbar?.setFocus(), 500);
   }
 
   public onCancel() {

@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { AlertController } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { MemberContactResponseWithLinks, MemberResponseWithLinks } from "src/app/api";
-import { MemberContactTypes } from "src/app/config/member-contact-types";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { MemberStoreService } from "../../services/member-store.service";
@@ -18,8 +17,6 @@ export default class MemberContactsComponent implements OnChanges {
   @Output() update = new EventEmitter<Partial<MemberResponseWithLinks>>();
 
   contacts?: MemberContactResponseWithLinks[];
-
-  contactTypes = MemberContactTypes;
 
   constructor(
     private toastService: ToastService,
@@ -40,8 +37,8 @@ export default class MemberContactsComponent implements OnChanges {
     }
   }
 
-  async copyContact(contact: MemberContactResponseWithLinks) {
-    await navigator.clipboard.writeText(contact.contact);
+  async copyContact(contact: string) {
+    await navigator.clipboard.writeText(contact);
     await this.toastService.toast("Kontakt byl zkopírován do schránky");
   }
 
@@ -102,29 +99,12 @@ export default class MemberContactsComponent implements OnChanges {
     if (!this.memberStore.currentMember.value) return;
     const memberId = this.memberStore.currentMember.value.id;
 
-    if (data.email) {
-      await this.api.members.createContact(memberId, {
-        title: data.title,
-        type: "email",
-        contact: data.email,
-      });
-    }
-
-    if (data.mobile) {
-      await this.api.members.createContact(memberId, {
-        title: data.title,
-        type: "mobile",
-        contact: data.mobile,
-      });
-    }
-
-    if (data.other) {
-      await this.api.members.createContact(memberId, {
-        title: data.title,
-        type: "other",
-        contact: data.other,
-      });
-    }
+    await this.api.members.createContact(memberId, {
+      title: data.title,
+      email: data.email,
+      mobile: data.mobile,
+      other: data.other,
+    });
 
     await this.loadContacts(this.memberStore.currentMember.value);
 

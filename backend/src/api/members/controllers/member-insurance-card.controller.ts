@@ -25,7 +25,7 @@ import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { UserGuard } from "src/auth/guards/user.guard";
 import { Config } from "src/config";
 import { FilesService } from "src/models/files/services/files.service";
-import { MembersService } from "src/models/members/services/members.service";
+import { MembersRepository } from "src/models/members/repositories/members.repository";
 import {
   MemberInsuranceCardDeleteRoute,
   MemberInsuranceCardReadRoute,
@@ -39,7 +39,10 @@ import {
 export class MemberInsuranceCardController {
   logger = new Logger(MemberInsuranceCardController.name);
 
-  constructor(private membersService: MembersService, private filesService: FilesService) {}
+  constructor(
+    private membersService: MembersRepository,
+    private filesService: FilesService,
+  ) {}
 
   @Get("")
   @AcLinks(MemberInsuranceCardReadRoute)

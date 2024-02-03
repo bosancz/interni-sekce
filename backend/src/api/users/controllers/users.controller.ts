@@ -52,7 +52,6 @@ export class UsersController {
       .take(query.limit || 25)
       .skip(query.offset || 0);
 
-    console.log(q.getSql());
 
     if (query.search)
       q.andWhere("user.login ILIKE :search OR member.nickname ILIKE :search", { search: `%${query.search}%` });

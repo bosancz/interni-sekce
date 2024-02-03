@@ -1,12 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Member } from "./member.entity";
 
-export enum MemberContactTypes {
-  "mobile" = "mobile",
-  "email" = "email",
-  "other" = "other",
-}
-
 @Entity("members_contacts")
 export class MemberContact {
   @PrimaryGeneratedColumn()
@@ -19,7 +13,8 @@ export class MemberContact {
   @JoinColumn({ name: "member_id" })
   member?: Member;
 
-  @Column({ nullable: false }) title!: string;
-  @Column({ type: "enum", enum: MemberContactTypes, nullable: false }) type!: MemberContactTypes;
-  @Column({ nullable: false }) contact!: string;
+  @Column({ type: "varchar", nullable: false }) title!: string;
+  @Column({ type: "varchar", nullable: true }) mobile?: string;
+  @Column({ type: "varchar", nullable: true }) email?: string;
+  @Column({ type: "text", nullable: true }) other?: string;
 }

@@ -23,7 +23,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
   roles = MemberRoles;
   membershipStates = MembershipStates;
 
-  loadingRows = new Array(10).fill(null);
+  loadingItems = new Array(10).fill(null);
 
   filter: FilterData = {};
 
@@ -32,7 +32,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
   view?: "table" | "list";
 
   page = 1;
-  pageSize = 50;
+  pageSize = 100;
 
   constructor(
     private api: ApiService,
@@ -57,7 +57,20 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
     this.loadGroups();
   }
 
-  export() {}
+  export() {
+    this.api.members.exportMembersXlsx({}, { responseType: "blob" }).then((res) => {
+      const blob = new Blob([res.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "clenove.xlsx";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
 
   copyRow(cells: string[]) {
     const data = cells.join("\t");

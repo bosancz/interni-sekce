@@ -10,10 +10,11 @@ import { EventExpense, EventExpenseTypes } from "src/models/events/entities/even
 import { EventGroup } from "src/models/events/entities/event-group.entity";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
-import { MemberContact, MemberContactTypes } from "src/models/members/entities/member-contact.entity";
+import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member, MemberRanks, MemberRoles, MembershipStates } from "src/models/members/entities/member.entity";
 import { User, UserRoles } from "src/models/users/entities/user.entity";
 import { EntityManager, EntityTarget, ObjectLiteral } from "typeorm";
+import { MongoMemberGroups } from "../data/member-groups";
 import { MongoAlbum } from "../models/album";
 import { MongoEvent } from "../models/event";
 import { MongoMember } from "../models/member";
@@ -152,8 +153,7 @@ export class MongoImportService {
         const contactData: Omit<MemberContact, "id"> = {
           memberId: member.id,
           title: "Otec",
-          type: MemberContactTypes.mobile,
-          contact: mongoMember.contacts?.father,
+          mobile: mongoMember.contacts?.father,
         };
 
         await t.save(MemberContact, contactData);
@@ -163,8 +163,7 @@ export class MongoImportService {
         const contactData: Omit<MemberContact, "id"> = {
           memberId: member.id,
           title: "Matka",
-          type: MemberContactTypes.mobile,
-          contact: mongoMember.contacts?.mother,
+          mobile: mongoMember.contacts?.mother,
         };
 
         await t.save(MemberContact, contactData);
@@ -353,8 +352,20 @@ export class MongoImportService {
   private async getGroup(t: EntityManager, oldGroupId: string) {
     if (this.groupsIndex.has(oldGroupId)) return this.groupsIndex.get(oldGroupId)!;
 
-    const group = await t.save(Group, { shortName: oldGroupId, active: true, name: oldGroupId });
+    const oldGroupData =
+      oldGroupId in MongoMemberGroups ? MongoMemberGroups[<keyof typeof MongoMemberGroups>oldGroupId] : null;
+
+    const groupData: Partial<Group> = {
+      shortName: oldGroupId,
+      active: true,
+      name: oldGroupData?.name ?? oldGroupId,
+      color: oldGroupData?.color,
+      darkColor: oldGroupData?.color,
+    };
+
+    const group = await t.save(Group, groupData);
     this.groupsIndex.set(oldGroupId, group.id);
+
     return group.id;
   }
 

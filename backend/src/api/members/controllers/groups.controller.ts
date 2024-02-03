@@ -17,7 +17,7 @@ import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { UserGuard } from "src/auth/guards/user.guard";
 import { Group } from "src/models/members/entities/group.entity";
-import { GroupsService } from "src/models/members/services/groups.service";
+import { GroupsRepository } from "src/models/members/repositories/groups.repository";
 import { Repository } from "typeorm";
 import { GroupCreateRoute, GroupDeleteRoute, GroupEditRoute, GroupListRoute, GroupReadRoute } from "../acl/groups.acl";
 import { CreateGroupBody, GroupResponse, UpdateGroupBody } from "../dto/group.dto";
@@ -28,7 +28,7 @@ import { CreateGroupBody, GroupResponse, UpdateGroupBody } from "../dto/group.dt
 @ApiTags("Members")
 export class GroupsController {
   constructor(
-    private groupsService: GroupsService,
+    private groupsService: GroupsRepository,
     @InjectRepository(Group) private groupsRepository: Repository<Group>,
   ) {}
 

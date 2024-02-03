@@ -3,7 +3,7 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { UserGuard } from "src/auth/guards/user.guard";
-import { MembersService } from "src/models/members/services/members.service";
+import { MembersRepository } from "src/models/members/repositories/members.repository";
 import {
   MemberContactsCreateRoute,
   MemberContactsDeleteRoute,
@@ -16,7 +16,7 @@ import { CreateContactBody, MemberContactResponse } from "../dto/member-contact.
 @AcController()
 @ApiTags("Members")
 export class MemberContactsController {
-  constructor(private membersService: MembersService) {}
+  constructor(private membersService: MembersRepository) {}
 
   @Get()
   @AcLinks(MemberContactsListRoute)

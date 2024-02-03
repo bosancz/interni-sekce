@@ -47,7 +47,8 @@
     "rimraf": "^5.0.5",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.19",
-    "typeorm-naming-strategies": "^4.1.0"
+    "typeorm-naming-strategies": "^4.1.0",
+    "write-excel-file": "^1.4.29"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.2.1",
