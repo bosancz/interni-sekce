@@ -4,10 +4,7 @@
   <bo-card class="contact mb-3">
     <bo-card-title>
       {{ contact.title }}
-      <ion-buttons slot="end">
-        <ion-button (click)="openContactForm(contact)" color="secondary" fill="clear"> Upravit </ion-button>
-        <ion-button (click)="deleteContact(contact)" color="danger" fill="clear"> Smazat </ion-button>
-      </ion-buttons>
+      <bo-edit-button (click)="openContactForm(contact)" slot="end"></bo-edit-button>
     </bo-card-title>
 
     <bo-card-content>

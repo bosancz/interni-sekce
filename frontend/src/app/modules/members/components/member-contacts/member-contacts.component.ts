@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
-import { AlertController } from "@ionic/angular";
+import { AlertButton, AlertController } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { MemberContactResponseWithLinks, MemberResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
@@ -36,6 +36,39 @@ export default class MemberContactsComponent implements OnChanges {
   }
 
   async openContactForm(contact: MemberContactResponseWithLinks | null) {
+    const buttons: AlertButton[] = [
+      {
+        text: contact ? "Uložit" : "Přidat",
+        handler: async (data) => {
+          if (!data.title) {
+            this.toastService.toast("Chybí název kontaktu", { color: "danger" });
+            return false;
+          } else if (!data.email && !data.mobile && !data.other) {
+            this.toastService.toast("Musí být vyplněn alespoň jeden kontakt", { color: "danger" });
+            return false;
+          } else {
+            await this.saveContact(contact?.id ?? null, data);
+          }
+        },
+      },
+    ];
+
+    if (contact) {
+      buttons.unshift({
+        text: "Smazat",
+        role: "destructive",
+        handler: () => {
+          alert.dismiss();
+          if (contact) this.deleteContact(contact);
+        },
+      });
+    } else {
+      buttons.unshift({
+        text: "Zrušit",
+        role: "cancel",
+      });
+    }
+
     const alert = await this.alertController.create({
       header: contact ? "Upravit kontakt" : "Přidat kontakt",
       inputs: [
@@ -67,26 +100,7 @@ export default class MemberContactsComponent implements OnChanges {
           value: contact?.other,
         },
       ],
-      buttons: [
-        {
-          text: "Zrušit",
-          role: "cancel",
-        },
-        {
-          text: contact ? "Uložit" : "Přidat",
-          handler: async (data) => {
-            if (!data.title) {
-              this.toastService.toast("Chybí název kontaktu", { color: "danger" });
-              return false;
-            } else if (!data.email && !data.mobile && !data.other) {
-              this.toastService.toast("Musí být vyplněn alespoň jeden kontakt", { color: "danger" });
-              return false;
-            } else {
-              await this.saveContact(contact?.id ?? null, data);
-            }
-          },
-        },
-      ],
+      buttons,
     });
 
     await alert.present();
