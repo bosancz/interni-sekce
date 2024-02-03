@@ -1,3 +1,10 @@
-<ng-content select="bo-card-title"></ng-content>
+<div class="header">
+  <ng-content select="bo-card-title"></ng-content>
+
+  <div>
+    <ng-content select="[slot=end],bo-card-open-button"></ng-content>
+  </div>
+</div>
+
 <ng-content select="bo-card-content"></ng-content>
 <ng-content select="bo-card-footer"></ng-content>

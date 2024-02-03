@@ -52,3 +52,9 @@ body.dark {
     --ion-background-color: #1e1e1e;
   }
 }
+
+ion-list {
+  ion-item:last-child {
+    --border-width: 0 !important;
+  }
+}

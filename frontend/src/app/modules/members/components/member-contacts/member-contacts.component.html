@@ -10,27 +10,22 @@
     <bo-card-content>
       <ion-list lines="none">
         @if (contact.mobile) {
-          <ion-item [button]="true" [detail]="false">
+          <ion-item [button]="true" [detail]="false" [href]="'tel:' + contact.mobile" target="_blank">
             <ion-icon name="call-outline" slot="start"></ion-icon>
             <ion-label>{{ contact.mobile }}</ion-label>
-            <ion-button [href]="'tel:' + contact.mobile" color="primary" fill="clear">
-              <ion-icon name="call-outline" slot="icon-only"></ion-icon>
-            </ion-button>
             <bo-copy-button [text]="contact.mobile"></bo-copy-button>
           </ion-item>
         }
         @if (contact.email) {
-          <ion-item [button]="true" [detail]="false">
+          <ion-item [button]="true" [detail]="false" [href]="'mailto:' + contact.email" target="_blank">
             <ion-icon name="mail-outline" slot="start"></ion-icon>
             <ion-label>{{ contact.email }}</ion-label>
-            <ion-button [href]="'mailto:' + contact.email" color="primary" fill="clear">
-              <ion-icon name="mail-outline" slot="icon-only"></ion-icon>
-            </ion-button>
             <bo-copy-button [text]="contact.email"></bo-copy-button>
           </ion-item>
         }
         @if (contact.other) {
           <ion-item [button]="true" [detail]="false">
+            <ion-icon name="information-circle-outline" slot="start"></ion-icon>
             <ion-label>{{ contact.other }}</ion-label>
             <bo-copy-button [text]="contact.other"></bo-copy-button>
           </ion-item>

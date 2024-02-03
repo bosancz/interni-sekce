@@ -1,5 +1,6 @@
 <bo-card>
-  <bo-card-title>Kalendář</bo-card-title>
+  <bo-card-title> Kalendář </bo-card-title>
+  <bo-card-open-button routerLink="/program"></bo-card-open-button>
   <bo-card-content>
     <bo-event-calendar
       [dateFrom]="dateFrom"
@@ -8,9 +9,5 @@
       [cpv]="true"
       [headingLevel]="3"
     ></bo-event-calendar>
-
-    <div class="text-center">
-      <a routerLink="/program">Zobrazit celý program</a>
-    </div>
   </bo-card-content>
 </bo-card>

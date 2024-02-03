@@ -9,3 +9,12 @@
 ::ng-deep bo-card-content ion-item {
   --ion-item-background: var(--lightGrey);
 }
+
+.header {
+  // padding: 1em 1em 0.8em 1em;
+  background-color: var(--darkShade);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}

@@ -1,4 +1,4 @@
-<ion-button (click)="copy()" color="dark" fill="clear">
+<ion-button (click)="copy(); $event.preventDefault(); $event.stopPropagation()" color="dark" fill="clear">
   <ion-icon name="copy-outline" slot="start"></ion-icon>
   <ng-content></ng-content>
 </ion-button>

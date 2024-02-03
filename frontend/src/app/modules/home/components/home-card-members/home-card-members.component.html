@@ -1,5 +1,6 @@
 <bo-card>
   <bo-card-title> Členská databáze </bo-card-title>
+  <bo-card-open-button routerLink="/databaze"></bo-card-open-button>
   <bo-card-content>
     <ion-searchbar
       ngModel
@@ -22,8 +23,8 @@
       </ion-item>
     </ion-list>
 
-    <p *ngIf="!searching && members && !members.length" class="m-0 mt-2 text-center">Žádný člen nenalezen.</p>
+    <p *ngIf="!searching && members && !members.length" class="m-0 mt-2 mb-3 text-center">Žádný člen nenalezen.</p>
 
-    <p *ngIf="!members?.length && searching" class="m-0 mt-2 text-center">Vyhledávání&hellip;</p>
+    <p *ngIf="!members?.length && searching" class="m-0 mt-2 mb-3 text-center">Vyhledávání&hellip;</p>
   </bo-card-content>
 </bo-card>
