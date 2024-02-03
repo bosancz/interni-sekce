@@ -16,15 +16,15 @@ export class MemberHealthComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  async openEditAllergies() {
+  async openKnownProblemsForm() {
     const alert = await this.alertController.create({
-      header: "Upravit alergie",
+      header: "Upravit známé problémy",
       inputs: [
         {
-          name: "allergies",
+          name: "knownProblems",
           type: "textarea",
-          placeholder: "Seznam alergenů a jejich závažnost",
-          value: this.member?.allergies,
+          placeholder: "Přehled známých zdravotních a jiných problémů",
+          value: this.member?.knownProblems,
         },
       ],
       buttons: [
@@ -34,11 +34,40 @@ export class MemberHealthComponent implements OnInit {
         },
         {
           text: "Uložit",
-          handler: async (data) => this.update.emit({ allergies: data.allergies }),
+          handler: async (data) => this.update.emit({ knownProblems: data.knownProblems }),
         },
       ],
     });
 
     await alert.present();
+  }
+
+  async openAllergiesForm() {
+    const alert = await this.alertController.create({
+      header: "Přidat alergii",
+      inputs: [
+        {
+          name: "allergy",
+          type: "text",
+          placeholder: "Vyplň alergii a její závažnost",
+        },
+      ],
+      buttons: [
+        {
+          text: "Zrušit",
+          role: "cancel",
+        },
+        {
+          text: "Uložit",
+          handler: async (data) => this.update.emit({ allergies: [...(this.member!.allergies || []), data.allergy] }),
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  deleteAllergy(index: number) {
+    this.update.emit({ allergies: this.member!.allergies!.filter((_, i) => i !== index) });
   }
 }

@@ -59,7 +59,7 @@
         <ion-label *ngIf="member">{{ getFullAddress(member) }}</ion-label>
         <ion-buttons slot="end">
           <bo-copy-button [text]="getFullAddress(member)"></bo-copy-button>
-          <bo-edit-button></bo-edit-button>
+          <bo-edit-button (click)="openAddressForm()"></bo-edit-button>
         </ion-buttons>
       </ion-item>
     </ion-list>

@@ -27,6 +27,7 @@
 
       <bo-member-contacts
         [member]="member"
+        (update)="updateMember($event)"
         class="d-lg-block mb-5"
         [class.d-none]="view !== 'contacts'"
       ></bo-member-contacts>

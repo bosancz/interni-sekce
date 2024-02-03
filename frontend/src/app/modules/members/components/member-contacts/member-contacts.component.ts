@@ -13,7 +13,7 @@ import { ToastService } from "src/app/services/toast.service";
 })
 export default class MemberContactsComponent implements OnChanges {
   @Input() member?: MemberResponseWithLinks | null;
-  @Output() change = new EventEmitter<Partial<MemberResponseWithLinks>>();
+  @Output() update = new EventEmitter<Partial<MemberResponseWithLinks>>();
 
   contacts?: MemberContactResponseWithLinks[];
 
@@ -120,8 +120,6 @@ export default class MemberContactsComponent implements OnChanges {
 
     await this.loadContacts(this.member.id);
 
-    this.change.emit();
-
     await this.toastService.toast(contactId ? "Kontakt byl upraven" : "Kontakt byl přidán");
   }
 
@@ -153,9 +151,57 @@ export default class MemberContactsComponent implements OnChanges {
 
     await this.loadContacts(this.member.id);
 
-    this.change.emit();
-
     await this.toastService.toast("Kontakt byl smazán");
+  }
+
+  async openAddressForm() {
+    const alert = await this.alertController.create({
+      header: "Upravit adresu",
+      inputs: [
+        {
+          name: "addressStreet",
+          type: "text",
+          placeholder: "Ulice",
+          value: this.member?.addressStreet,
+        },
+        {
+          name: "addressStreetNo",
+          type: "text",
+          placeholder: "Číslo popisné",
+          value: this.member?.addressStreetNo,
+        },
+        {
+          name: "addressCity",
+          type: "text",
+          placeholder: "Město",
+          value: this.member?.addressCity,
+        },
+        {
+          name: "addressPostalCode",
+          type: "text",
+          placeholder: "PSČ",
+          value: this.member?.addressPostalCode,
+        },
+        {
+          name: "addressCountry",
+          type: "text",
+          placeholder: "Země",
+          value: this.member?.addressCountry,
+        },
+      ],
+      buttons: [
+        {
+          text: "Zrušit",
+          role: "cancel",
+        },
+        {
+          text: "Uložit",
+          handler: async (data) => this.update.emit(data),
+        },
+      ],
+    });
+
+    await alert.present();
   }
 
   getFullAddress(member: MemberResponseWithLinks) {

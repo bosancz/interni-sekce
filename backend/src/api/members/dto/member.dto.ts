@@ -32,7 +32,7 @@ export class MemberResponse implements Member {
   @ApiPropertyOptional({ type: "string" }) email?: string | null;
   @ApiPropertyOptional({ type: "enum", enum: MemberRanks, enumName: "MemberRanksEnum" }) rank?: MemberRanks | null;
   @ApiPropertyOptional({ type: "string" }) knownProblems?: string | null;
-  @ApiPropertyOptional({ type: "string" }) allergies?: string | null;
+  @ApiPropertyOptional({ type: "string", isArray: true }) allergies?: string[] | null;
   @ApiPropertyOptional({ type: "string" }) insuranceCardFile?: string | null;
 
   @AcEntity(GroupResponse)
