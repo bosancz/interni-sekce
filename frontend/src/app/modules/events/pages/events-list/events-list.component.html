@@ -2,21 +2,29 @@
 
 <bo-filter [search]="true" (change)="onFilterChange($event)">
   <ion-item>
-    <ion-label position="stacked">Rok</ion-label>
-    <ion-select name="year" ngModel placeholder="Vyber rok">
+    <ion-select name="year" ngModel label="Rok">
       <ion-select-option [value]="null">všechny</ion-select-option>
       <ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
     </ion-select>
   </ion-item>
 
   <ion-item>
-    <ion-label position="stacked">Stav</ion-label>
-    <ion-select name="status" ngModel placeholder="Vyber stav">
+    <ion-select name="status" ngModel label="Stav akce v programu">
       <ion-select-option [value]="null">všechny</ion-select-option>
       <ion-select-option *ngFor="let status of statuses | keyvalue" [value]="status.key">
         {{ status.value.name }}
       </ion-select-option>
     </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-checkbox name="my" ngModel value="1" labelPlacement="start">Zobrazit pouze moje akce</ion-checkbox>
+  </ion-item>
+
+  <ion-item>
+    <ion-checkbox name="noleader" ngModel value="1" labelPlacement="start">
+      Zobrazit pouze akce bez vedoucího
+    </ion-checkbox>
   </ion-item>
 </bo-filter>
 

@@ -9,3 +9,13 @@ export function EnsureArray(options: { split?: string } = {}): PropertyDecorator
     return [param.value];
   });
 }
+
+export function EnsureBoolean(): PropertyDecorator {
+  return Transform((param) => {
+    const originalValue = param.obj[param.key];
+    if (originalValue === undefined) return undefined;
+    if (originalValue === "true") return true;
+    if (originalValue === "false") return false;
+    return !!originalValue;
+  });
+}

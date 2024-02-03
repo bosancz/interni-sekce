@@ -6,6 +6,6 @@ import { marked } from "marked";
 export class MarkdownPipe implements PipeTransform {
   transform(value: string | undefined, ...args: unknown[]): string {
     if (!value) return "<span>hoho</span>";
-    return marked.parse(value);
+    return marked.parse(value, { async: false }) as string;
   }
 }

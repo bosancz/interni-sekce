@@ -17,15 +17,15 @@
         <ion-label>
           <h2>
             <strong>{{ expense.id }}</strong> - {{ expense.description }}
-            <!-- TODO:  <ion-icon class="ml-1" *ngIf="expense.photo" name="camera-outline"></ion-icon> -->
+            <!-- TODO:  <ion-icon class="ms-1" *ngIf="expense.photo" name="camera-outline"></ion-icon> -->
           </h2>
-          <p class="d-lg-none">{{ expense.amount | number : "1.2-2" : "cs" }}&nbsp;Kč</p>
+          <p class="d-lg-none">{{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč</p>
         </ion-label>
 
         <ion-badge mode="ios" [color]="getExpenseColor(expense)">{{ expense.type }}</ion-badge>
 
-        <ion-label class="d-none d-lg-block text-right mr-3">
-          {{ expense.amount | number : "1.2-2" : "cs" }}&nbsp;Kč
+        <ion-label class="d-none d-lg-block text-right me-3">
+          {{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč
         </ion-label>
       </ion-item>
       <ion-item-options side="end">

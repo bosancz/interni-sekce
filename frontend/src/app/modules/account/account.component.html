@@ -30,7 +30,7 @@
   </ion-list>
 
   <h2 class="m-3">Člen skupiny</h2>
-  <p *ngIf="!user?.member" class="ml-3 text-warning">Nespárováno s členským účtem</p>
+  <p *ngIf="!user?.member" class="ms-3 text-warning">Nespárováno s členským účtem</p>
 
   <ion-list *ngIf="user?.member">
     <ion-item>
@@ -43,7 +43,7 @@
     </ion-item>
     <ion-item>
       <ion-label>Oddíl:</ion-label>
-      <ion-label>{{ user!.member!.groupId | group : "name" }}</ion-label>
+      <ion-label>{{ user!.member!.groupId | group: "name" }}</ion-label>
     </ion-item>
   </ion-list>
 
@@ -51,12 +51,12 @@
   <bo-account-credentials></bo-account-credentials>
 
   <h2 class="m-3 mt-4">Aplikace</h2>
-  <div class="ml-3">
+  <div class="ms-3">
     <bo-account-app></bo-account-app>
   </div>
 
   <!-- <h2 class="m-3 mt-4">Notifikace</h2>
-  <div class="ml-3 mb-5">
+  <div class="ms-3 mb-5">
     <bo-account-notifications></bo-account-notifications>
   </div> -->
 </ion-content>

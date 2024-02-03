@@ -22,7 +22,7 @@
           <ion-item>
             <ion-label>
               <h3>Datum</h3>
-              <p>{{ photo.timestamp | date : "d. M. y H:mm:ss" }}</p>
+              <p>{{ photo.timestamp | date: "d. M. y H:mm:ss" }}</p>
             </ion-label>
           </ion-item>
           <ion-item>
@@ -51,16 +51,20 @@
       </ion-content>
     </ng-template>
   </ion-popover>
-
-  <swiper #slider [config]="swiperConfig" (swiper)="onSwiper($event)" (slideChange)="onSlideChange($any($event))">
-    <ng-template swiperSlide *ngFor="let item of photos; let i = index">
+  <!-- 
+  <swiper-container
+    #slider
+    (swiper)="onSwiper($event)"
+    (slideChange)="onSlideChange($any($event))"
+  >
+    <swiper-slides *ngFor="let item of photos; let i = index">
       <div
         *ngIf="i <= currentIndex + 1 && i >= currentIndex - 1"
         class="image"
         [style.background-image]="'url(' + item._links.getPhotoImage.href + ')'"
       ></div>
-    </ng-template>
-  </swiper>
+    </swiper-slides>
+  </swiper-container> -->
 
   <ion-toolbar *ngIf="photo" class="bottom-toolbar">
     <ion-item *ngIf="!editingCaption" lines="none">

@@ -55,6 +55,7 @@ export class EventsController {
     @Token() token: TokenData,
     @Query() query: ListEventsQuery,
   ): Promise<EventResponse[]> {
+    console.log("listEvents", query);
     const options: GetEventsOptions = {
       limit: query.limit,
       offset: query.offset,

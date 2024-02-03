@@ -6,8 +6,6 @@ import { RouteReuseStrategy, TitleStrategy } from "@angular/router";
 import { ServiceWorkerModule } from "@angular/service-worker";
 import { IonicModule, IonicRouteStrategy, isPlatform } from "@ionic/angular";
 import { environment } from "src/environments/environment";
-import SwiperCore, { Navigation } from "swiper";
-import { SwiperModule } from "swiper/angular";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { CoreModule } from "./core/core.module";
@@ -16,8 +14,6 @@ import { TitleService } from "./services/title.service";
 import { SharedModule } from "./shared/shared.module";
 
 registerLocaleData(localeCs);
-
-SwiperCore.use([Navigation]);
 
 @NgModule({
   declarations: [AppComponent],
@@ -30,7 +26,6 @@ SwiperCore.use([Navigation]);
       backButtonText: isPlatform("ios") ? "Zpět" : "",
     }),
     ServiceWorkerModule.register("ngsw-worker.js", { enabled: environment.production }),
-    SwiperModule,
   ],
   providers: [
     { provide: TitleStrategy, useClass: TitleService },

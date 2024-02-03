@@ -3,7 +3,8 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, IonInput, ModalController, Platform, ViewWillLeave } from "@ionic/angular";
 import { PhotoResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
-import Swiper, { SwiperOptions } from "swiper";
+import Swiper from "swiper";
+import { SwiperOptions } from "swiper/types";
 
 @Component({
   selector: "bo-photos-edit",

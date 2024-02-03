@@ -83,6 +83,8 @@ export class EventsListComponent implements OnInit {
       search: filter.search || undefined,
       status: filter.status || undefined,
       year: filter.year ? parseInt(filter.year) : undefined,
+      my: !!filter.my,
+      noleader: !!filter.noleader,
       offset: (this.page - 1) * this.pageSize,
       limit: this.pageSize,
     };

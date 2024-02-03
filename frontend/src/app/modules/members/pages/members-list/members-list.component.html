@@ -12,24 +12,21 @@
 
 <bo-filter [search]="true" (change)="onFilterChange($event)">
   <ion-item lines="none">
-    <ion-label position="stacked">Oddíl</ion-label>
-    <ion-select multiple name="groups" ngModel placeholder="všechny">
+    <ion-select multiple name="groups" ngModel label="Oddíl" placeholder="všechny">
       <ion-select-option *ngFor="let group of groups" [value]="group.id">
         {{ group.name }}
       </ion-select-option>
     </ion-select>
   </ion-item>
   <ion-item lines="none">
-    <ion-label position="stacked">Role</ion-label>
-    <ion-select multiple name="roles" ngModel placeholder="všechny">
+    <ion-select multiple name="roles" ngModel label="Role" placeholder="všechny">
       <ion-select-option *ngFor="let role of roles | keyvalue" [value]="role.key">
         {{ role.value.title }}
       </ion-select-option>
     </ion-select>
   </ion-item>
   <ion-item lines="none">
-    <ion-label position="stacked">Členství</ion-label>
-    <ion-select multiple name="membership" ngModel>
+    <ion-select multiple name="membership" ngModel label="Členství">
       <ion-select-option *ngFor="let state of membershipStates | keyvalue" [value]="state.key">{{
         state.value.title
       }}</ion-select-option>

@@ -3,7 +3,6 @@ import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { IonicModule } from "@ionic/angular";
-import { SwiperModule } from "swiper/angular";
 import { ActionButtonsComponent } from "./components/action-buttons/action-buttons.component";
 import { AdminTableComponent } from "./components/admin-table/admin-table.component";
 import { CardContentComponent } from "./components/card-content/card-content.component";
@@ -36,8 +35,12 @@ import { MarkdownPipe } from "./pipes/markdown.pipe";
 import { MemberPipe } from "./pipes/member.pipe";
 import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
 
+import { register } from "swiper/element/bundle";
+// register Swiper custom elements
+register();
+
 @NgModule({
-  imports: [CommonModule, FormsModule, RouterModule, IonicModule, SwiperModule],
+  imports: [CommonModule, FormsModule, RouterModule, IonicModule],
   declarations: [
     ActionButtonsComponent,
     AdminTableComponent,
@@ -75,7 +78,6 @@ import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    SwiperModule,
     RouterModule,
 
     ActionButtonsComponent,
