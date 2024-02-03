@@ -1,13 +1,17 @@
 :host {
-  padding: 1em 1em 0.8em 1em;
+  // padding: 1em 1em 0.8em 1em;
   background-color: var(--darkShade);
-}
-
-h3 {
-  font-size: 1.3rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
+}
+
+h3 {
+  padding: 0.7em;
+  padding-left: 1em;
+
+  font-size: 1.3rem;
 }
 
 h1,
