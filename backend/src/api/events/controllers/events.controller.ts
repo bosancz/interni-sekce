@@ -14,15 +14,13 @@ import {
   Res,
 } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Token } from "src/auth/decorators/token.decorator";
 import { TokenData } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
-import { Event, EventStates } from "src/models/events/entities/event.entity";
-import { EventsService } from "src/models/events/services/events.service";
-import { Repository } from "typeorm";
+import { EventStates } from "src/models/events/entities/event.entity";
+import { EventsRepository, GetEventsOptions } from "src/models/events/repositories/events.repository";
 import {
   EventCancelRoute,
   EventCreateRoute,
@@ -47,10 +45,7 @@ import { ListEventsQuery } from "../dto/events.dto";
 export class EventsController {
   private logger = new Logger(EventsController.name);
 
-  constructor(
-    private events: EventsService,
-    @InjectRepository(Event) private eventsRepository: Repository<Event>,
-  ) {}
+  constructor(private events: EventsRepository) {}
 
   @Get()
   @AcLinks(EventsListRoute)
@@ -60,37 +55,19 @@ export class EventsController {
     @Token() token: TokenData,
     @Query() query: ListEventsQuery,
   ): Promise<EventResponse[]> {
-    const q = this.eventsRepository
-      .createQueryBuilder("events")
-      .select(["events.id", "events.name", "events.status", "events.dateFrom", "events.dateTill", "events.type"])
-      .leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
-      .leftJoinAndSelect("attendees.member", "leaders")
-      .where(EventsListRoute.canWhere(req))
-      .orderBy("events.dateFrom", "DESC")
-      .take(query.limit ?? 25)
-      .skip(query.offset ?? 0);
+    const options: GetEventsOptions = {
+      limit: query.limit,
+      offset: query.offset,
+      year: query.year,
+      status: query.status,
+      search: query.search,
+      userId: query.my ? token.userId : undefined,
+      noleader: query.noleader,
+    };
 
-    if (query.year) {
-      q.andWhere("date_till >= :yearStart AND date_from <= :yearEnd", {
-        yearStart: `${query.year}-01-01`,
-        yearEnd: `${query.year}-12-31`,
-      });
-    }
+    // FIXME: add ACL logic
 
-    if (query.status) q.andWhere("status = :status", { status: query.status });
-
-    if (query.search) q.andWhere("name ILIKE :search", { search: `%${query.search}%` });
-
-    if (query.my) {
-      q.leftJoin("leaders.user", "users").andWhere("users.id = :userId", { userId: token.userId });
-    }
-
-    if (query.noleader) q.andWhere("leaders.id IS NULL");
-
-    return q
-      .take(query.limit ?? 25)
-      .skip(query.offset ?? 0)
-      .getMany();
+    return this.events.getEvents(options);
   }
 
   @Post()

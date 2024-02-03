@@ -4,7 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Event } from "src/models/events/entities/event.entity";
-import { EventsService } from "src/models/events/services/events.service";
+import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { Repository } from "typeorm";
 import { EventReportReadRoute } from "../acl/events.acl";
 
@@ -12,7 +12,10 @@ import { EventReportReadRoute } from "../acl/events.acl";
 @AcController()
 @ApiTags("Events")
 export class EventsReportsController {
-  constructor(private events: EventsService, @InjectRepository(Event) private eventsRepository: Repository<Event>) {}
+  constructor(
+    private events: EventsRepository,
+    @InjectRepository(Event) private eventsRepository: Repository<Event>,
+  ) {}
 
   @Get(":id/report")
   @HttpCode(204)

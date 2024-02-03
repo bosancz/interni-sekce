@@ -4,11 +4,11 @@ import { EventAttendee } from "./entities/event-attendee.entity";
 import { EventExpense } from "./entities/event-expense.entity";
 import { EventGroup } from "./entities/event-group.entity";
 import { Event } from "./entities/event.entity";
-import { EventsService } from "./services/events.service";
+import { EventsRepository } from "./repositories/events.repository";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Event, EventGroup, EventExpense, EventAttendee])],
-  providers: [EventsService],
-  exports: [EventsService],
+  providers: [EventsRepository],
+  exports: [EventsRepository],
 })
 export class EventsModelModule {}

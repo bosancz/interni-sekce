@@ -1,40 +1,55 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { PaginationOptions } from "src/models/helpers/pagination";
 import { FindOptionsSelect, Repository } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "../entities/event-attendee.entity";
 import { EventExpense } from "../entities/event-expense.entity";
 import { Event } from "../entities/event.entity";
 
+export interface GetEventsOptions extends PaginationOptions {
+  year?: number;
+  status?: string;
+  search?: string;
+  userId?: number;
+  noleader?: boolean;
+}
+
 @Injectable()
-export class EventsService {
+export class EventsRepository {
   constructor(
     @InjectRepository(Event) private eventsRepository: Repository<Event>,
     @InjectRepository(EventAttendee) private eventAttendeesRepository: Repository<EventAttendee>,
     @InjectRepository(EventExpense) private eventExpensesRepository: Repository<EventExpense>,
   ) {}
 
-  async getEvents(options: { select?: (keyof Event)[]; leaders?: boolean } = {}) {
-    let query = this.eventsRepository.createQueryBuilder("events");
+  async getEvents(options: GetEventsOptions = {}) {
+    const q = this.eventsRepository
+      .createQueryBuilder("events")
+      .select(["events.id", "events.name", "events.status", "events.dateFrom", "events.dateTill", "events.type"])
+      .leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
+      .leftJoinAndSelect("attendees.member", "leaders")
+      .orderBy("events.dateFrom", "DESC")
+      .take(options.limit ?? 25)
+      .skip(options.offset ?? 0);
 
-    if (options.select) {
-      query.select(options.select.map((f) => `events.${f}`));
-    }
-
-    if (options.leaders) {
-      query
-        .leftJoinAndMapMany("events.leadersAttendees", "events.attendees", "attendees", "attendees.type = 'leader'")
-        .leftJoinAndMapOne("attendees.member", "attendees.member", "leaders");
-    }
-
-    const events = await (<Promise<(Event & { leadersAttendees?: EventAttendee[] })[]>>query.getMany());
-
-    if (options.leaders) {
-      events.forEach((e) => {
-        e.leaders = e.leadersAttendees?.map((ea) => ea.member!);
-        delete e.leadersAttendees;
+    if (options.year) {
+      q.andWhere("date_till >= :yearStart AND date_from <= :yearEnd", {
+        yearStart: `${options.year}-01-01`,
+        yearEnd: `${options.year}-12-31`,
       });
     }
-    return <Event[]>events;
+
+    if (options.status) q.andWhere("status = :status", { status: options.status });
+
+    if (options.search) q.andWhere("name ILIKE :search", { search: `%${options.search}%` });
+
+    if (options.userId) {
+      q.leftJoin("leaders.user", "users").andWhere("users.id = :userId", { userId: options.userId });
+    }
+
+    if (options.noleader) q.andWhere("leaders.id IS NULL");
+
+    return q.getMany();
   }
 
   async getEvent(id: number, options: { select?: FindOptionsSelect<Event>; leaders?: boolean } = {}) {

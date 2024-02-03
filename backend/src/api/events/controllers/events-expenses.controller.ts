@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, R
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
-import { EventsService } from "src/models/events/services/events.service";
+import { EventsRepository } from "src/models/events/repositories/events.repository";
 import {
   EventExpenseCreateRoute,
   EventExpenseDeleteRoute,
@@ -15,7 +15,7 @@ import { EventExpenseCreateBody, EventExpenseResponse, EventExpenseUpdateBody } 
 @AcController()
 @ApiTags("Events")
 export class EventsExpensesController {
-  constructor(private events: EventsService) {}
+  constructor(private events: EventsRepository) {}
 
   @Get("")
   @AcLinks(EventExpensesListRoute)
