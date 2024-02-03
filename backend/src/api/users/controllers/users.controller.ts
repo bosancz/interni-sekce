@@ -40,7 +40,6 @@ export class UsersController {
         "user.id",
         "user.login",
         "user.memberId",
-        "user.login",
         "user.roles",
         "user.email",
         "member.nickname",
@@ -49,12 +48,16 @@ export class UsersController {
       ])
       .leftJoin("user.member", "member")
       .where(UsersListRoute.canWhere(req))
-      .orderBy("user.login", "ASC");
+      .orderBy("user.login", "ASC")
+      .take(query.limit || 25)
+      .skip(query.offset || 0);
+
+    console.log(q.getSql());
 
     if (query.search)
       q.andWhere("user.login ILIKE :search OR member.nickname ILIKE :search", { search: `%${query.search}%` });
 
-    if (query.roles) q.andWhere("user.roles && :roles", { roles: query.roles?.split(",") });
+    if (query.roles) q.andWhere("user.roles && array[:...roles]::users_roles_enum[]", { roles: query.roles });
 
     return q.getMany();
   }

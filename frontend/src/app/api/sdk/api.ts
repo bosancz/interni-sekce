@@ -9204,12 +9204,14 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @param {number} [limit] 
+         * @param {number} [offset] 
          * @param {string} [search] 
-         * @param {string} [roles] 
+         * @param {Array<string>} [roles] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listUsers: async (search?: string, roles?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listUsers: async (limit?: number, offset?: number, search?: string, roles?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/users`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -9222,11 +9224,19 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
             if (search !== undefined) {
                 localVarQueryParameter['search'] = search;
             }
 
-            if (roles !== undefined) {
+            if (roles) {
                 localVarQueryParameter['roles'] = roles;
             }
 
@@ -9371,13 +9381,15 @@ export const UsersApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {number} [limit] 
+         * @param {number} [offset] 
          * @param {string} [search] 
-         * @param {string} [roles] 
+         * @param {Array<string>} [roles] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listUsers(search?: string, roles?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserResponseWithLinks>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listUsers(search, roles, options);
+        async listUsers(limit?: number, offset?: number, search?: string, roles?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserResponseWithLinks>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listUsers(limit, offset, search, roles, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -9455,7 +9467,7 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
          * @throws {RequiredError}
          */
         listUsers(requestParameters: UsersApiListUsersRequest = {}, options?: AxiosRequestConfig): AxiosPromise<Array<UserResponseWithLinks>> {
-            return localVarFp.listUsers(requestParameters.search, requestParameters.roles, options).then((request) => request(axios, basePath));
+            return localVarFp.listUsers(requestParameters.limit, requestParameters.offset, requestParameters.search, requestParameters.roles, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -9546,6 +9558,20 @@ export interface UsersApiImpersonateUserRequest {
 export interface UsersApiListUsersRequest {
     /**
      * 
+     * @type {number}
+     * @memberof UsersApiListUsers
+     */
+    readonly limit?: number
+
+    /**
+     * 
+     * @type {number}
+     * @memberof UsersApiListUsers
+     */
+    readonly offset?: number
+
+    /**
+     * 
      * @type {string}
      * @memberof UsersApiListUsers
      */
@@ -9553,10 +9579,10 @@ export interface UsersApiListUsersRequest {
 
     /**
      * 
-     * @type {string}
+     * @type {Array<string>}
      * @memberof UsersApiListUsers
      */
-    readonly roles?: string
+    readonly roles?: Array<string>
 }
 
 
@@ -9568,6 +9594,20 @@ export interface UsersApiListUsersRequest {
 export interface UsersApiListUsersQueryParams {
     /**
      * 
+     * @type {number}
+     * @memberof UsersApiListUsers
+     */
+    limit?: number
+
+    /**
+     * 
+     * @type {number}
+     * @memberof UsersApiListUsers
+     */
+    offset?: number
+
+    /**
+     * 
      * @type {string}
      * @memberof UsersApiListUsers
      */
@@ -9575,10 +9615,10 @@ export interface UsersApiListUsersQueryParams {
 
     /**
      * 
-     * @type {string}
+     * @type {Array<string>}
      * @memberof UsersApiListUsers
      */
-    roles?: string
+    roles?: Array<string>
 }
 
 /**
@@ -9684,7 +9724,7 @@ export class UsersApi extends BaseAPI {
      * @memberof UsersApi
      */
     public listUsers(queryParams: UsersApiListUsersQueryParams = {}, options?: AxiosRequestConfig) {
-        return UsersApiFp(this.configuration).listUsers(queryParams.search, queryParams.roles, options).then((request) => request(this.axios, this.basePath));
+        return UsersApiFp(this.configuration).listUsers(queryParams.limit, queryParams.offset, queryParams.search, queryParams.roles, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
