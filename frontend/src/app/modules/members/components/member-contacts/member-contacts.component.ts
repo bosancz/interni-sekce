@@ -4,7 +4,6 @@ import { UntilDestroy } from "@ngneat/until-destroy";
 import { MemberContactResponseWithLinks, MemberResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
-import { MemberStoreService } from "../../services/member-store.service";
 
 @UntilDestroy()
 @Component({
@@ -14,26 +13,25 @@ import { MemberStoreService } from "../../services/member-store.service";
 })
 export default class MemberContactsComponent implements OnChanges {
   @Input() member?: MemberResponseWithLinks | null;
-  @Output() update = new EventEmitter<Partial<MemberResponseWithLinks>>();
+  @Output() change = new EventEmitter<Partial<MemberResponseWithLinks>>();
 
   contacts?: MemberContactResponseWithLinks[];
 
   constructor(
     private toastService: ToastService,
     private api: ApiService,
-    private memberStore: MemberStoreService,
     private alertController: AlertController,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes["member"]) this.loadContacts(this.member);
+    if (changes["member"]) this.loadContacts(this.member?.id ?? null);
   }
 
-  async loadContacts(member?: MemberResponseWithLinks | null) {
-    if (!member) {
+  async loadContacts(memberId: number | null) {
+    if (!memberId) {
       this.contacts = [];
     } else {
-      this.contacts = await this.api.members.listContacts(member.id).then((res) => res.data);
+      this.contacts = await this.api.members.listContacts(memberId).then((res) => res.data);
     }
   }
 
@@ -42,7 +40,7 @@ export default class MemberContactsComponent implements OnChanges {
     await this.toastService.toast("Kontakt byl zkopírován do schránky");
   }
 
-  async openAddContact() {
+  async openContactForm(contact: MemberContactResponseWithLinks | null) {
     const alert = await this.alertController.create({
       header: "Přidat kontakt",
       inputs: [
@@ -53,21 +51,25 @@ export default class MemberContactsComponent implements OnChanges {
             required: true,
           },
           placeholder: "Název kontaktu",
+          value: contact?.title,
         },
         {
           name: "email",
           type: "email",
           placeholder: "Email",
+          value: contact?.email,
         },
         {
           name: "mobile",
           type: "tel",
           placeholder: "Mobil",
+          value: contact?.mobile,
         },
         {
           name: "other",
           type: "text",
           placeholder: "Jiný",
+          value: contact?.other,
         },
       ],
       buttons: [
@@ -76,7 +78,7 @@ export default class MemberContactsComponent implements OnChanges {
           role: "cancel",
         },
         {
-          text: "Přidat",
+          text: contact ? "Uložit" : "Přidat",
           handler: async (data) => {
             if (!data.title) {
               this.toastService.toast("Chybí název kontaktu", { color: "danger" });
@@ -85,7 +87,7 @@ export default class MemberContactsComponent implements OnChanges {
               this.toastService.toast("Musí být vyplněn alespoň jeden kontakt", { color: "danger" });
               return false;
             } else {
-              await this.addContact(data);
+              await this.saveContact(contact?.id ?? null, data);
             }
           },
         },
@@ -95,18 +97,21 @@ export default class MemberContactsComponent implements OnChanges {
     await alert.present();
   }
 
-  private async addContact(data: { title: string; email?: string; mobile?: string; other?: string }) {
-    if (!this.memberStore.currentMember.value) return;
-    const memberId = this.memberStore.currentMember.value.id;
+  private async saveContact(
+    contactId: number | null,
+    data: { title: string; email?: string; mobile?: string; other?: string },
+  ) {
+    if (!this.member) return;
 
-    await this.api.members.createContact(memberId, {
-      title: data.title,
-      email: data.email,
-      mobile: data.mobile,
-      other: data.other,
-    });
+    if (contactId) {
+      await this.api.members.updateContact(this.member.id, contactId, data);
+    } else {
+      await this.api.members.createContact(this.member.id, data);
+    }
 
-    await this.loadContacts(this.memberStore.currentMember.value);
+    await this.loadContacts(this.member.id);
+
+    this.change.emit();
 
     await this.toastService.toast("Kontakt byl přidán");
   }
@@ -114,7 +119,7 @@ export default class MemberContactsComponent implements OnChanges {
   async deleteContact(contact: MemberContactResponseWithLinks) {
     const alert = await this.alertController.create({
       header: "Smazat kontakt",
-      message: `Opravdu chcete smazat kontakt <strong>${contact.title}</strong>?`,
+      message: `Opravdu chcete smazat kontakt ${contact.title}?`,
       buttons: [
         {
           text: "Zrušit",
@@ -133,12 +138,13 @@ export default class MemberContactsComponent implements OnChanges {
   }
 
   async deleteContactConfirmed(contact: MemberContactResponseWithLinks) {
-    if (!this.memberStore.currentMember.value) return;
-    const memberId = this.memberStore.currentMember.value.id;
+    if (!this.member) return;
 
-    await this.api.members.deleteContact(memberId, contact.id);
+    await this.api.members.deleteContact(this.member.id, contact.id);
 
-    await this.loadContacts(this.memberStore.currentMember.value);
+    await this.loadContacts(this.member.id);
+
+    this.change.emit();
 
     await this.toastService.toast("Kontakt byl smazán");
   }

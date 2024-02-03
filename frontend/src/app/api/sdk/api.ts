@@ -1811,6 +1811,12 @@ export interface MemberResponseLinks {
      * @type {AcLink}
      * @memberof MemberResponseLinks
      */
+    'updateContact': AcLink;
+    /**
+     * 
+     * @type {AcLink}
+     * @memberof MemberResponseLinks
+     */
     'getInsuranceCard': AcLink;
     /**
      * 
@@ -6279,6 +6285,49 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @param {number} id 
+         * @param {number} contactId 
+         * @param {CreateContactBody} createContactBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateContact: async (id: number, contactId: number, createContactBody: CreateContactBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateContact', 'id', id)
+            // verify required parameter 'contactId' is not null or undefined
+            assertParamExists('updateContact', 'contactId', contactId)
+            // verify required parameter 'createContactBody' is not null or undefined
+            assertParamExists('updateContact', 'createContactBody', createContactBody)
+            const localVarPath = `/members/{id}/contacts/{contactId}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"contactId"}}`, encodeURIComponent(String(contactId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createContactBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {number} id 
          * @param {UpdateGroupBody} updateGroupBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -6560,6 +6609,18 @@ export const MembersApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {number} id 
+         * @param {number} contactId 
+         * @param {CreateContactBody} createContactBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateContact(id: number, contactId: number, createContactBody: CreateContactBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MemberContactResponseWithLinks>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateContact(id, contactId, createContactBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {number} id 
          * @param {UpdateGroupBody} updateGroupBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -6724,6 +6785,15 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
          */
         listMembers(requestParameters: MembersApiListMembersRequest = {}, options?: AxiosRequestConfig): AxiosPromise<Array<MemberResponseWithLinks>> {
             return localVarFp.listMembers(requestParameters.limit, requestParameters.offset, requestParameters.group, requestParameters.search, requestParameters.roles, requestParameters.membership, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {MembersApiUpdateContactRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateContact(requestParameters: MembersApiUpdateContactRequest, options?: AxiosRequestConfig): AxiosPromise<MemberContactResponseWithLinks> {
+            return localVarFp.updateContact(requestParameters.id, requestParameters.contactId, requestParameters.createContactBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -7134,6 +7204,35 @@ export interface MembersApiListMembersQueryParams {
 }
 
 /**
+ * Request parameters for updateContact operation in MembersApi.
+ * @export
+ * @interface MembersApiUpdateContactRequest
+ */
+export interface MembersApiUpdateContactRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiUpdateContact
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {number}
+     * @memberof MembersApiUpdateContact
+     */
+    readonly contactId: number
+
+    /**
+     * 
+     * @type {CreateContactBody}
+     * @memberof MembersApiUpdateContact
+     */
+    readonly createContactBody: CreateContactBody
+}
+
+
+/**
  * Request parameters for updateGroup operation in MembersApi.
  * @export
  * @interface MembersApiUpdateGroupRequest
@@ -7357,6 +7456,17 @@ export class MembersApi extends BaseAPI {
      */
     public listMembers(queryParams: MembersApiListMembersQueryParams = {}, options?: AxiosRequestConfig) {
         return MembersApiFp(this.configuration).listMembers(queryParams.limit, queryParams.offset, queryParams.group, queryParams.search, queryParams.roles, queryParams.membership, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {MembersApiUpdateContactRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MembersApi
+     */
+    public updateContact(id: number, contactId: number, createContactBody: CreateContactBody, options?: AxiosRequestConfig) {
+        return MembersApiFp(this.configuration).updateContact(id, contactId, createContactBody, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

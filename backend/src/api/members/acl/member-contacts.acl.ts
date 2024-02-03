@@ -16,6 +16,12 @@ export const MemberContactsCreateRoute = new RouteACL<Member>({
   inheritPermissions: MemberUpdateRoute,
 });
 
+export const MemberContactsUpdateRoute = new RouteACL<Member>({
+  linkTo: MemberResponse,
+  contains: MemberContactResponse,
+  inheritPermissions: MemberUpdateRoute,
+});
+
 export const MemberContactsDeleteRoute = new RouteACL<Member>({
   linkTo: MemberContactResponse,
   inheritPermissions: MemberUpdateRoute,

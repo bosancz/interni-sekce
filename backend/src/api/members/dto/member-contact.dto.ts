@@ -19,3 +19,5 @@ export class CreateContactBody {
   @ApiPropertyOptional() @IsString() @IsOptional() email?: string;
   @ApiPropertyOptional() @IsString() @IsOptional() other?: string;
 }
+
+export class UpdateContactBody extends CreateContactBody {}
