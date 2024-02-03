@@ -2,10 +2,8 @@
 
 @for (contact of contacts; track $index) {
   <bo-card class="contact mb-3">
-    <bo-card-title>
-      {{ contact.title }}
-      <bo-edit-button (click)="openContactForm(contact)" slot="end"></bo-edit-button>
-    </bo-card-title>
+    <bo-card-title>{{ contact.title }}</bo-card-title>
+    <bo-edit-button (click)="openContactForm(contact)" slot="buttons"></bo-edit-button>
 
     <bo-card-content>
       <ion-list lines="none">

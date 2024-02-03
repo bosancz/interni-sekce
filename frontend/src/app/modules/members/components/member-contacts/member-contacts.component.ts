@@ -122,7 +122,7 @@ export default class MemberContactsComponent implements OnChanges {
 
     this.change.emit();
 
-    await this.toastService.toast("Kontakt byl přidán");
+    await this.toastService.toast(contactId ? "Kontakt byl upraven" : "Kontakt byl přidán");
   }
 
   async deleteContact(contact: MemberContactResponseWithLinks) {
