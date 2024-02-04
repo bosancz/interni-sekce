@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { AlertController, AlertInput } from "@ionic/angular";
+import { AlertController } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { MemberResponse, MemberResponseWithLinks } from "src/app/api";
+import { MemberResponse, MemberResponseWithLinks, MemberRolesEnum } from "src/app/api";
 import { MemberRoles } from "src/app/config/member-roles";
 import { ApiService } from "src/app/services/api.service";
+import { ModalService } from "src/app/services/modal.service";
 
 @UntilDestroy()
 @Component({
@@ -18,140 +19,65 @@ export class MemberInfoComponent implements OnInit {
   constructor(
     private alertController: AlertController,
     private api: ApiService,
+    private modalService: ModalService,
   ) {}
 
   ngOnInit(): void {}
 
   async openBasicInfoForm() {
-    const alert = await this.alertController.create({
+    const data = await this.modalService.inputModal({
       header: "Upravit základní informace",
-      inputs: [
-        {
-          name: "firstName",
-          type: "text",
-          placeholder: "Jméno",
-          value: this.member?.firstName,
-        },
-        {
-          name: "lastName",
-          type: "text",
-          placeholder: "Příjmení",
-          value: this.member?.lastName,
-        },
-        {
-          name: "nickname",
-          type: "text",
-          placeholder: "Přezdívka",
-          value: this.member?.nickname,
-        },
-        {
-          name: "phone",
-          type: "date",
-          placeholder: "Datum narození",
-          value: this.member?.birthday,
-        },
-      ],
-      buttons: [
-        {
-          text: "Zrušit",
-          role: "cancel",
-        },
-        {
-          text: "Uložit",
-          handler: async (data) => this.update.emit(data),
-        },
-      ],
+      inputs: {
+        firstName: { placeholder: "Jméno", value: this.member?.firstName },
+        lastName: { placeholder: "Příjmení", value: this.member?.lastName },
+        nickname: { placeholder: "Přezdívka", value: this.member?.nickname },
+        birthday: { type: "date", placeholder: "Datum narození", value: this.member?.birthday },
+      },
     });
 
-    await alert.present();
+    if (data !== null) this.update.emit(data);
   }
 
   async openMembershipChangeForm() {
-    const alert = await this.alertController.create({
-      header: "Změnit členství",
-      inputs: [
-        {
-          name: "active",
-          type: "radio",
-          label: "Aktivní",
-          value: true,
-          checked: this.member?.active,
-        },
-        {
-          name: "active",
-          type: "radio",
-          label: "Neaktivní",
-          value: false,
-          checked: !this.member?.active,
-        },
+    const result = await this.modalService.selectModal({
+      header: "Změnit aktivitu",
+      buttonText: "Uložit",
+      values: [
+        { label: "Aktivní", value: true },
+        { label: "Neaktivní", value: false },
       ],
-      buttons: [
-        {
-          text: "Zrušit",
-          role: "cancel",
-        },
-        {
-          text: "Uložit",
-          handler: async (data) => this.update.emit(data),
-        },
-      ],
+      value: this.member?.active,
     });
 
-    await alert.present();
+    if (result !== null) this.update.emit({ active: result });
   }
 
   async openRoleChangeForm() {
-    const alert = await this.alertController.create({
+    const role = await this.modalService.selectModal<MemberRolesEnum>({
       header: "Změnit roli",
-      inputs: Object.entries(MemberRoles).map(([id, role]) => ({
-        name: "role",
-        type: "radio",
+      buttonText: "Uložit",
+      values: Object.entries(MemberRoles).map(([id, role]) => ({
         label: role.title,
-        value: id,
+        value: id as MemberRolesEnum,
         checked: this.member?.role === id,
       })),
-      buttons: [
-        {
-          text: "Zrušit",
-          role: "cancel",
-        },
-        {
-          text: "Uložit",
-          handler: async (data) => this.update.emit(data),
-        },
-      ],
+      value: this.member?.role,
     });
 
-    await alert.present();
+    if (role !== null) this.update.emit({ role });
   }
 
   async openGroupChangeForm() {
     const groups = await this.api.members.listGroups({ active: true }).then((res) => res.data);
     groups.sort((a, b) => a.shortName.localeCompare(b.shortName, "cs", { numeric: true }));
 
-    const inputs: AlertInput[] = groups.map((g) => ({
-      name: "groupId",
-      type: "radio",
-      value: g.id,
-      label: g.name,
-      checked: this.member?.groupId === g.id,
-    }));
-
-    const alert = await this.alertController.create({
+    const group = await this.modalService.selectModal({
       header: "Změnit skupinu",
-      inputs,
-      buttons: [
-        {
-          text: "Zrušit",
-          role: "cancel",
-        },
-        {
-          text: "Uložit",
-          handler: async (data) => this.update.emit({ groupId: data }),
-        },
-      ],
+      buttonText: "Uložit",
+      values: groups.map((g) => ({ label: g.name ?? g.shortName, value: g.id })),
+      value: this.member?.groupId,
     });
 
-    await alert.present();
+    if (group !== null) this.update.emit({ groupId: group });
   }
 }

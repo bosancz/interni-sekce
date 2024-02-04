@@ -1,6 +1,12 @@
 <h4 class="d-flex justify-content-between">
   Základní informace
-  <bo-edit-button slot="end" (click)="openBasicInfoForm()" class="float-end">Upravit</bo-edit-button>
+  <bo-edit-button
+    *ngIf="member?._links?.updateMember?.allowed"
+    slot="end"
+    (click)="openBasicInfoForm()"
+    class="float-end"
+    >Upravit</bo-edit-button
+  >
 </h4>
 <ion-list *ngIf="member" class="selectable">
   <ion-item>
@@ -27,14 +33,22 @@
   <ion-item>
     <ion-label>Aktivní:</ion-label>
     <ion-label>{{ member.active === undefined ? "-" : member.active ? "Ano" : "Ne" }}</ion-label>
-    <bo-edit-button slot="end" (click)="openMembershipChangeForm()"></bo-edit-button>
+    <bo-edit-button
+      *ngIf="member?._links?.updateMember?.allowed"
+      slot="end"
+      (click)="openMembershipChangeForm()"
+    ></bo-edit-button>
   </ion-item>
 
   <ion-item>
     <ion-label>Role:</ion-label>
 
     <ion-label>{{ member | member: "role" || "-" }}</ion-label>
-    <bo-edit-button slot="end" (click)="openRoleChangeForm()"></bo-edit-button>
+    <bo-edit-button
+      *ngIf="member?._links?.updateMember?.allowed"
+      slot="end"
+      (click)="openRoleChangeForm()"
+    ></bo-edit-button>
   </ion-item>
 
   <ion-item>
@@ -42,7 +56,11 @@
     <ion-label>
       <bo-group-badge [groupId]="member.groupId"></bo-group-badge>
     </ion-label>
-    <bo-edit-button slot="end" (click)="openGroupChangeForm()"></bo-edit-button>
+    <bo-edit-button
+      *ngIf="member?._links?.updateMember?.allowed"
+      slot="end"
+      (click)="openGroupChangeForm()"
+    ></bo-edit-button>
   </ion-item>
 
   <!-- <ion-item [button]="true" [detail]="false">

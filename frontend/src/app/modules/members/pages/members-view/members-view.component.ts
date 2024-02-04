@@ -70,12 +70,17 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
     const toast = await this.toastService.toast("Ukládám...");
 
-    await this.api.members.updateMember(this.member.id, data);
+    try {
+      await this.api.members.updateMember(this.member.id, data);
 
-    await this.loadMember(this.member.id);
+      await this.loadMember(this.member.id);
 
-    toast.dismiss();
-    this.toastService.toast("Uloženo.");
+      toast.dismiss();
+      this.toastService.toast("Uloženo.");
+    } catch (e) {
+      toast.dismiss();
+      this.toastService.toast("Chyba při ukládání.", { color: "danger" });
+    }
   }
 
   async delete() {

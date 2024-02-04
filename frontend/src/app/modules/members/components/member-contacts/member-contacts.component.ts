@@ -3,6 +3,7 @@ import { AlertButton, AlertController } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { MemberContactResponseWithLinks, MemberResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
 
 @UntilDestroy()
@@ -21,6 +22,7 @@ export default class MemberContactsComponent implements OnChanges {
     private toastService: ToastService,
     private api: ApiService,
     private alertController: AlertController,
+    private modalService: ModalService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -124,84 +126,45 @@ export default class MemberContactsComponent implements OnChanges {
   }
 
   async deleteContact(contact: MemberContactResponseWithLinks) {
-    const alert = await this.alertController.create({
-      header: "Smazat kontakt",
-      message: `Opravdu chcete smazat kontakt ${contact.title}?`,
-      buttons: [
-        {
-          text: "Zrušit",
-          role: "cancel",
-        },
-        {
-          text: "Smazat",
-          handler: async () => {
-            this.deleteContactConfirmed(contact);
-          },
-        },
-      ],
-    });
-
-    await alert.present();
-  }
-
-  async deleteContactConfirmed(contact: MemberContactResponseWithLinks) {
-    if (!this.member) return;
-
-    await this.api.members.deleteContact(this.member.id, contact.id);
-
-    await this.loadContacts(this.member.id);
-
-    await this.toastService.toast("Kontakt byl smazán");
+    const confirmation = await this.modalService.deleteConfirmationModal(
+      `Opravdu chcete smazat kontakt ${contact.title}?`,
+    );
+    console.log(confirmation);
   }
 
   async openAddressForm() {
-    const alert = await this.alertController.create({
+    const data = await this.modalService.inputModal({
       header: "Upravit adresu",
-      inputs: [
-        {
-          name: "addressStreet",
+      inputs: {
+        addressStreet: {
           type: "text",
           placeholder: "Ulice",
           value: this.member?.addressStreet,
         },
-        {
-          name: "addressStreetNo",
+        addressStreetNo: {
           type: "text",
           placeholder: "Číslo popisné",
           value: this.member?.addressStreetNo,
         },
-        {
-          name: "addressCity",
+        addressCity: {
           type: "text",
           placeholder: "Město",
           value: this.member?.addressCity,
         },
-        {
-          name: "addressPostalCode",
+        addressPostalCode: {
           type: "text",
           placeholder: "PSČ",
           value: this.member?.addressPostalCode,
         },
-        {
-          name: "addressCountry",
+        addressCountry: {
           type: "text",
           placeholder: "Země",
           value: this.member?.addressCountry,
         },
-      ],
-      buttons: [
-        {
-          text: "Zrušit",
-          role: "cancel",
-        },
-        {
-          text: "Uložit",
-          handler: async (data) => this.update.emit(data),
-        },
-      ],
+      },
     });
 
-    await alert.present();
+    if (data) this.update.emit(data);
   }
 
   getFullAddress(member: MemberResponseWithLinks) {
