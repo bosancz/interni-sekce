@@ -118,19 +118,37 @@ export class MongoImportService {
 
     let c = 0;
 
+    const roleTransform: { [role: string]: MemberRoles } = {
+      vedoucí: MemberRoles.vedouci,
+      dítě: MemberRoles.dite,
+      instruktor: MemberRoles.instruktor,
+    };
+
+    const membershipTransform: { [membership: string]: MembershipStates } = {
+      člen: MembershipStates.clen,
+      clen: MembershipStates.clen,
+      nečlen: MembershipStates.neclen,
+      neclen: MembershipStates.neclen,
+      pozastaveno: MembershipStates.pozastaveno,
+    };
+
     for (let mongoMember of mongoMembers) {
       const groupId = mongoMember.group ? await this.getGroup(t, mongoMember.group) : await this.getGroup(t, "KP");
+
+      const membership =
+        mongoMember.membership && mongoMember.membership in membershipTransform
+          ? membershipTransform[mongoMember.membership]
+          : MembershipStates.clen;
+
+      const role =
+        mongoMember.role && mongoMember.role in roleTransform ? roleTransform[mongoMember.role] : MemberRoles.dite;
 
       const memberData: Omit<Member, "id"> = {
         function: mongoMember.function ?? null,
         groupId,
         active: mongoMember.inactive === false ? true : false,
-        membership: Object.values(MembershipStates).includes(<any>mongoMember.membership)
-          ? <MembershipStates>mongoMember.membership
-          : MembershipStates.clen,
-        role: Object.values(MemberRoles).includes(<any>mongoMember.role)
-          ? <MemberRoles>mongoMember.role
-          : MemberRoles.vedouci,
+        membership,
+        role,
         rank: Object.values(MemberRanks).includes(<any>mongoMember.rank) ? <MemberRanks>mongoMember.rank : null,
         nickname: mongoMember.nickname ?? mongoMember.name?.first ?? "???",
         firstName: mongoMember.name?.first ?? null,
