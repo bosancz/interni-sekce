@@ -58,7 +58,9 @@
 
     <ion-list *ngIf="member" class="selectable" lines="none">
       <ion-item [button]="true" [detail]="false">
-        <ion-label *ngIf="member">{{ getFullAddress(member) }}</ion-label>
+        <ion-label *ngIf="getFullAddress(member)">{{ getFullAddress(member) }}</ion-label>
+        <ion-label *ngIf="!getFullAddress(member)"><em>Adresa není vyplněna</em></ion-label>
+
         <ion-buttons slot="end">
           <bo-copy-button [text]="getFullAddress(member)"></bo-copy-button>
           <bo-edit-button (click)="openAddressForm()"></bo-edit-button>
