@@ -1,10 +1,9 @@
-import { Component, Input, OnChanges, SimpleChanges } from "@angular/core";
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
-import { AlertController } from "@ionic/angular";
 import { MemberResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
-import { MemberStoreService } from "../../services/member-store.service";
 
 @Component({
   selector: "bo-card-insurance-card",
@@ -13,27 +12,35 @@ import { MemberStoreService } from "../../services/member-store.service";
 })
 export class CardInsuranceCardComponent implements OnChanges {
   @Input() member?: MemberResponseWithLinks | null;
+  @Output() update = new EventEmitter<void>();
+
   insuranceCardUrl?: string | null;
-  insuranceCardSafeUrl?: SafeResourceUrl;
+  insuranceCardSafeUrl?: SafeResourceUrl | null;
 
   constructor(
-    private memberStore: MemberStoreService,
     private api: ApiService,
     private toastService: ToastService,
-    private alertController: AlertController,
     private sanitizer: DomSanitizer,
+    private modalService: ModalService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.member) {
+    if (changes.member) this.setInsuranceCardUrl(this.member);
+  }
+
+  private setInsuranceCardUrl(member?: MemberResponseWithLinks | null) {
+    if (member) {
       this.insuranceCardUrl =
-        this.member?._links?.getInsuranceCard.applicable && this.member?._links?.getInsuranceCard.applicable
-          ? this.member._links.getInsuranceCard.href
+        member?._links?.getInsuranceCard.applicable && member?._links?.getInsuranceCard.applicable
+          ? member._links.getInsuranceCard.href
           : null;
 
       this.insuranceCardSafeUrl = this.insuranceCardUrl
         ? this.sanitizer.bypassSecurityTrustResourceUrl(this.insuranceCardUrl)
         : undefined;
+    } else {
+      this.insuranceCardUrl = null;
+      this.insuranceCardSafeUrl = null;
     }
   }
 
@@ -59,7 +66,7 @@ export class CardInsuranceCardComponent implements OnChanges {
     try {
       await this.api.members.uploadInsuranceCard(this.member!.id, file);
 
-      await this.memberStore.loadMember(this.member!.id);
+      this.setInsuranceCardUrl(this.member);
 
       this.toastService.toast("Karta byla nahrána", { color: "success" });
     } catch (e) {
@@ -70,32 +77,15 @@ export class CardInsuranceCardComponent implements OnChanges {
   }
 
   async deleteCard() {
-    const alert = await this.alertController.create({
-      header: "Smazat kartičku pojištěnce",
-      message: "Opravdu chcete smazat kartičku pojištěnce?",
+    const confirmation = await this.modalService.deleteConfirmationModal(
+      "Opravdu chcete smazat tuto kartu pojištěnce?",
+    );
+    if (confirmation) {
+      await this.api.members.deleteInsuranceCard(this.member!.id);
 
-      buttons: [
-        {
-          text: "Zrušit",
-          role: "cancel",
-        },
-        {
-          text: "Smazat",
-          handler: async () => {
-            this.deleteCardConfirmed();
-          },
-        },
-      ],
-    });
+      this.setInsuranceCardUrl(null);
 
-    await alert.present();
-  }
-
-  private async deleteCardConfirmed() {
-    await this.api.members.deleteInsuranceCard(this.member!.id);
-
-    await this.memberStore.loadMember(this.member!.id);
-
-    this.toastService.toast("Karta byla smazána", { color: "success" });
+      this.toastService.toast("Karta byla smazána", { color: "success" });
+    }
   }
 }
