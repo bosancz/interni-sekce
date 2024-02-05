@@ -1,4 +1,4 @@
-<ion-button fill="clear" color="dark">
-  <ion-icon name="create-outline" slot="start"></ion-icon>
-  <ng-content></ng-content>
+<ion-button fill="clear" color="dark" size="small">
+  <ion-icon name="create-outline" [slot]="label ? 'start' : 'icon-only'"></ion-icon>
+  {{ label }}
 </ion-button>

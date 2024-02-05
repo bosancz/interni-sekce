@@ -1,6 +1,8 @@
 <bo-card>
-  <bo-card-title> Volné akce </bo-card-title>
-  <bo-card-open-button routerLink="/akce" [queryParams]="{ noleader: true }"></bo-card-open-button>
+  <bo-card-header>
+    <bo-card-title> Volné akce </bo-card-title>
+    <bo-card-open-button routerLink="/akce" [queryParams]="{ noleader: true }"></bo-card-open-button>
+  </bo-card-header>
   <bo-card-content>
     <div class="list-container">
       <ion-list *ngIf="events.length" lines="full">

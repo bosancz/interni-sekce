@@ -2,8 +2,10 @@
 
 @for (contact of contacts; track $index) {
   <bo-card class="contact mb-3">
-    <bo-card-title>{{ contact.title }}</bo-card-title>
-    <bo-edit-button (click)="openContactForm(contact)" slot="buttons"></bo-edit-button>
+    <bo-card-header>
+      <bo-card-title>{{ contact.title }}</bo-card-title>
+      <bo-edit-button (click)="openContactForm(contact)" slot="buttons"></bo-edit-button>
+    </bo-card-header>
 
     <bo-card-content>
       <ion-list lines="none">
@@ -35,7 +37,9 @@
 
 @if (member === undefined) {
   <bo-card class="contact mb-3">
-    <bo-card-title><ion-skeleton-text [animated]="true"></ion-skeleton-text></bo-card-title>
+    <bo-card-header>
+      <bo-card-title><ion-skeleton-text [animated]="true"></ion-skeleton-text></bo-card-title>
+    </bo-card-header>
     <bo-card-content>
       <ion-list lines="none">
         <ion-item>

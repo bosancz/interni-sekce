@@ -1,6 +1,9 @@
 <bo-card *ngIf="myEvents?.length">
-  <bo-card-title> Moje akce </bo-card-title>
-  <bo-card-open-button routerLink="/akce" [queryParams]="{ my: true }"></bo-card-open-button>
+  <bo-card-header>
+    <bo-card-title> Moje akce </bo-card-title>
+    <bo-card-open-button routerLink="/akce" [queryParams]="{ my: true }"></bo-card-open-button>
+  </bo-card-header>
+
   <bo-card-content>
     <ion-list *ngIf="myEvents?.length !== 0" lines="full">
       <ion-item *ngFor="let event of myEvents | slice: 0 : 3" [detail]="true" [routerLink]="'/akce/' + event.id">

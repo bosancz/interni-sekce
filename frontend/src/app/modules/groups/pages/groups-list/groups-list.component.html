@@ -4,7 +4,9 @@
   <div class="row">
     <div *ngFor="let group of groups" class="col-6 col-lg-6 col-xl-4 mb-4">
       <bo-card [routerLink]="['/oddily', group.id]" class="group">
-        <bo-card-title>{{ group.name }}</bo-card-title>
+        <bo-card-header>
+          <bo-card-title>{{ group.name }}</bo-card-title>
+        </bo-card-header>
         <bo-card-content>
           <p>{{ group.name }}</p>
         </bo-card-content>

@@ -5,7 +5,7 @@ import { Component, OnInit } from "@angular/core";
   templateUrl: "./card-content.component.html",
   styleUrls: ["./card-content.component.scss"],
   host: {
-    class: "p-lg-3",
+    class: "p-3",
   },
 })
 export class CardContentComponent implements OnInit {

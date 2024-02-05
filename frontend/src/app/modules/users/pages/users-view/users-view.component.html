@@ -8,10 +8,10 @@
   <div class="row">
     <div class="col-lg-4 mb-3">
       <bo-card>
-        <bo-card-title>
-          Uživatelský účet
+        <bo-card-header>
+          <bo-card-title> Uživatelský účet </bo-card-title>
           <bo-edit-button slot="end"><bo-users-edit-account></bo-users-edit-account></bo-edit-button>
-        </bo-card-title>
+        </bo-card-header>
         <bo-card-content>
           <table class="table">
             <tr>
@@ -34,15 +34,15 @@
     </div>
     <div class="col-lg-4 mb-3">
       <bo-card>
-        <bo-card-title>
-          Propojený člen
+        <bo-card-header>
+          <bo-card-title> Propojený člen </bo-card-title>
           <ion-buttons slot="end">
             <bo-edit-button><bo-users-edit-account></bo-users-edit-account></bo-edit-button>
             <ion-button color="primary" [routerLink]="['/databaze', user.member?.id]">
               <ion-icon name="arrow-forward"></ion-icon>
             </ion-button>
           </ion-buttons>
-        </bo-card-title>
+        </bo-card-header>
         <bo-card-content>
           <table *ngIf="user.member" class="table">
             <tr>
