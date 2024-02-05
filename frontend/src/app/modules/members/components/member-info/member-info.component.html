@@ -1,30 +1,39 @@
-<h4 class="d-flex justify-content-between">
-  Základní informace
-  <bo-edit-button
-    *ngIf="member?._links?.updateMember?.allowed"
-    slot="end"
-    (click)="openBasicInfoForm()"
-    class="float-end"
-    >Upravit</bo-edit-button
-  >
-</h4>
+<h4>Základní informace</h4>
+
 <ion-list *ngIf="member" class="selectable">
   <ion-item>
     <ion-label>Jméno:</ion-label>
     <ion-label>{{ member.firstName || "-" }} {{ member.lastName || "-" }}</ion-label>
-    <bo-copy-button slot="end" [text]="member.firstName + ' ' + member.lastName"></bo-copy-button>
+    <ion-buttons>
+      <bo-copy-button slot="end" [text]="member.firstName + ' ' + member.lastName"></bo-copy-button>
+      <bo-edit-button *ngIf="member?._links?.updateMember?.allowed" slot="end" (click)="editName()"></bo-edit-button>
+    </ion-buttons>
   </ion-item>
 
   <ion-item>
     <ion-label>Přezdívka:</ion-label>
     <ion-label>{{ member.nickname || "-" }}</ion-label>
-    <bo-copy-button slot="end" [text]="member.nickname"></bo-copy-button>
+    <ion-buttons>
+      <bo-copy-button slot="end" [text]="member.nickname"></bo-copy-button>
+      <bo-edit-button
+        *ngIf="member?._links?.updateMember?.allowed"
+        slot="end"
+        (click)="editNickname()"
+      ></bo-edit-button>
+    </ion-buttons>
   </ion-item>
 
   <ion-item>
     <ion-label>Datum narození:</ion-label>
     <ion-label>{{ member.birthday ? (member.birthday | date: "d. M. y") : "-" }}</ion-label>
-    <bo-copy-button slot="end" [text]="member.birthday | date: 'd. M. y'"></bo-copy-button>
+    <ion-buttons>
+      <bo-copy-button slot="end" [text]="member.birthday | date: 'd. M. y'"></bo-copy-button>
+      <bo-edit-button
+        *ngIf="member?._links?.updateMember?.allowed"
+        slot="end"
+        (click)="editBirthday()"
+      ></bo-edit-button>
+    </ion-buttons>
   </ion-item>
 </ion-list>
 
@@ -33,22 +42,14 @@
   <ion-item>
     <ion-label>Aktivní:</ion-label>
     <ion-label>{{ member.active === undefined ? "-" : member.active ? "Ano" : "Ne" }}</ion-label>
-    <bo-edit-button
-      *ngIf="member?._links?.updateMember?.allowed"
-      slot="end"
-      (click)="openMembershipChangeForm()"
-    ></bo-edit-button>
+    <bo-edit-button *ngIf="member?._links?.updateMember?.allowed" slot="end" (click)="editActivity()"></bo-edit-button>
   </ion-item>
 
   <ion-item>
     <ion-label>Role:</ion-label>
 
     <ion-label>{{ member | member: "role" || "-" }}</ion-label>
-    <bo-edit-button
-      *ngIf="member?._links?.updateMember?.allowed"
-      slot="end"
-      (click)="openRoleChangeForm()"
-    ></bo-edit-button>
+    <bo-edit-button *ngIf="member?._links?.updateMember?.allowed" slot="end" (click)="editRole()"></bo-edit-button>
   </ion-item>
 
   <ion-item>
@@ -56,20 +57,16 @@
     <ion-label>
       <bo-group-badge [groupId]="member.groupId"></bo-group-badge>
     </ion-label>
+    <bo-edit-button *ngIf="member?._links?.updateMember?.allowed" slot="end" (click)="editGroup()"></bo-edit-button>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Stav členství:</ion-label>
+    <ion-label>{{ member | member: "membership" || "-" }}</ion-label>
     <bo-edit-button
       *ngIf="member?._links?.updateMember?.allowed"
       slot="end"
-      (click)="openGroupChangeForm()"
+      (click)="editMembership()"
     ></bo-edit-button>
   </ion-item>
-
-  <!-- <ion-item [button]="true" [detail]="false">
-    <ion-label>Zaplacené příspěvky:</ion-label>
-    <ion-label>
-      TODO:
-      <ng-container *ngIf="membershipTypes[member.membership]">{{
-          membershipTypes[member.membership].title
-        }}</ng-container>
-    </ion-label>
-  </ion-item> -->
 </ion-list>

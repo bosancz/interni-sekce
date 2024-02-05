@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { AlertController } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { MemberResponse, MemberResponseWithLinks, MemberRolesEnum } from "src/app/api";
+import { MemberResponse, MemberResponseWithLinks, MemberRolesEnum, MembershipStatesEnum } from "src/app/api";
 import { MemberRoles } from "src/app/config/member-roles";
+import { MembershipStates } from "src/app/config/membership-states";
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 
@@ -17,20 +17,39 @@ export class MemberInfoComponent implements OnInit {
   @Output() update = new EventEmitter<Partial<MemberResponse>>();
 
   constructor(
-    private alertController: AlertController,
     private api: ApiService,
     private modalService: ModalService,
   ) {}
 
   ngOnInit(): void {}
 
-  async openBasicInfoForm() {
+  async editName() {
     const data = await this.modalService.inputModal({
-      header: "Upravit základní informace",
+      header: "Upravit jméno",
       inputs: {
         firstName: { placeholder: "Jméno", value: this.member?.firstName },
         lastName: { placeholder: "Příjmení", value: this.member?.lastName },
+      },
+    });
+
+    if (data !== null) this.update.emit(data);
+  }
+
+  async editNickname() {
+    const data = await this.modalService.inputModal({
+      header: "Upravit přezdívku",
+      inputs: {
         nickname: { placeholder: "Přezdívka", value: this.member?.nickname },
+      },
+    });
+
+    if (data !== null) this.update.emit(data);
+  }
+
+  async editBirthday() {
+    const data = await this.modalService.inputModal({
+      header: "Upravit datum narození",
+      inputs: {
         birthday: { type: "date", placeholder: "Datum narození", value: this.member?.birthday },
       },
     });
@@ -38,7 +57,7 @@ export class MemberInfoComponent implements OnInit {
     if (data !== null) this.update.emit(data);
   }
 
-  async openMembershipChangeForm() {
+  async editActivity() {
     const result = await this.modalService.selectModal({
       header: "Změnit aktivitu",
       buttonText: "Uložit",
@@ -52,7 +71,7 @@ export class MemberInfoComponent implements OnInit {
     if (result !== null) this.update.emit({ active: result });
   }
 
-  async openRoleChangeForm() {
+  async editRole() {
     const role = await this.modalService.selectModal<MemberRolesEnum>({
       header: "Změnit roli",
       buttonText: "Uložit",
@@ -67,7 +86,7 @@ export class MemberInfoComponent implements OnInit {
     if (role !== null) this.update.emit({ role });
   }
 
-  async openGroupChangeForm() {
+  async editGroup() {
     const groups = await this.api.members.listGroups({ active: true }).then((res) => res.data);
     groups.sort((a, b) => a.shortName.localeCompare(b.shortName, "cs", { numeric: true }));
 
@@ -79,5 +98,20 @@ export class MemberInfoComponent implements OnInit {
     });
 
     if (group !== null) this.update.emit({ groupId: group });
+  }
+
+  async editMembership() {
+    const result = await this.modalService.selectModal({
+      header: "Změnit aktivitu",
+      buttonText: "Uložit",
+      values: Object.entries(MembershipStates).map(([id, role]) => ({
+        label: role.title,
+        value: id as MembershipStatesEnum,
+        checked: this.member?.role === id,
+      })),
+      value: this.member?.membership,
+    });
+
+    if (result !== null) this.update.emit({ membership: result });
   }
 }

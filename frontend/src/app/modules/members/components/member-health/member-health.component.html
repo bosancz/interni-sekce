@@ -1,6 +1,6 @@
 <h4>Alergie</h4>
 
-<ion-skeleton-text *ngIf="member === undefined"></ion-skeleton-text>
+<ion-skeleton-text *ngIf="member === undefined" [animated]="true"></ion-skeleton-text>
 
 <p *ngIf="member && !member?.allergies?.length"><i>Žádné alergie</i></p>
 
@@ -18,11 +18,11 @@
 </ion-buttons>
 
 <h4 class="mt-5">Jiné známé problémy</h4>
-<ion-skeleton-text *ngIf="member === undefined"></ion-skeleton-text>
+<ion-skeleton-text *ngIf="member === undefined" [animated]="true"></ion-skeleton-text>
 <p *ngIf="member?.knownProblems" [innerHtml]="member!.knownProblems | markdown" class="selectable"></p>
 <p *ngIf="member && !member.knownProblems"><i>Žádné známé problémy</i></p>
 
 <bo-edit-button (click)="openKnownProblemsForm()">Upravit</bo-edit-button>
 
 <h4 class="mt-5">Kartička pojištěnce</h4>
-<bo-card-insurance-card [member]="member"></bo-card-insurance-card>
+<bo-card-insurance-card [member]="member" (update)="this.update.emit()"></bo-card-insurance-card>

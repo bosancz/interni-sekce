@@ -57,4 +57,11 @@ ion-list {
   ion-item:last-child {
     --border-width: 0 !important;
   }
+
+  @media screen and (max-width: 992px) {
+    ion-item {
+      --padding-start: 0;
+      --inner-padding-end: 0;
+    }
+  }
 }
