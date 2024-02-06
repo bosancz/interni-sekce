@@ -1,10 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from "@angular/core";
+import { IonMenu } from "@ionic/angular";
 
 @Component({
-  selector: 'bo-app-layout',
-  templateUrl: './app-layout.component.html',
-  styleUrls: ['./app-layout.component.scss']
+  selector: "bo-app-layout",
+  templateUrl: "./app-layout.component.html",
+  styleUrls: ["./app-layout.component.scss"],
 })
 export class AppLayoutComponent {
+  @ViewChild(IonMenu) private menu!: IonMenu;
 
+  closeMenu() {
+    this.menu.close();
+  }
 }
