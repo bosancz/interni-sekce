@@ -5,17 +5,16 @@
     <ion-item lines="none">
       <ion-label *ngIf="event?._links?.getEventRegistration?.applicable">Přihláška nahrána.</ion-label>
       <ion-label *ngIf="!event?._links?.getEventRegistration?.applicable">Přihláška chybí.</ion-label>
-      <ion-button *ngIf="event?._links?.saveEventRegistration?.allowed" [href]="getRegistrationUrl(event!)" fill="clear"
-        >Nahrát</ion-button
-      >
-      <ion-button *ngIf="event?._links?.getEventRegistration?.allowed" [href]="getRegistrationUrl(event!)" fill="clear"
-        >Stáhnout</ion-button
-      >
+
+      <ion-button *ngIf="event?._links?.saveEventRegistration?.allowed" fill="clear">Nahrát</ion-button>
       <ion-button
-        *ngIf="event?._links?.deleteEventRegistration?.allowed"
+        *ngIf="event?._links?.getEventRegistration?.allowed"
         [href]="getRegistrationUrl(event!)"
+        target="_blank"
         fill="clear"
-        color="danger"
+        >Zobrazit</ion-button
+      >
+      <ion-button *ngIf="event?._links?.deleteEventRegistration?.allowed" fill="clear" color="danger"
         >Smazat</ion-button
       >
     </ion-item>
