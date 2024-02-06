@@ -1,0 +1,118 @@
+<bo-page-header [title]="event?.name" [actions]="actions" backUrl="/akce"></bo-page-header>
+
+<bo-page-content [padding]="true">
+  <div class="row layout">
+    <div class="col-12 col-xl-4 col-xxl-3">
+      <event-card
+        [event]="event"
+        [actions]="false"
+        class="d-lg-block mb-5"
+        [class.d-none]="view !== 'info'"
+      ></event-card>
+    </div>
+    <div class="col-12 col-xl-8 col-xxl-9 row">
+      <div class="col-12 col-xxl-6">
+        <div class="p-xl-3">
+          <bo-event-info
+            [event]="event"
+            class="d-lg-block mb-5"
+            [class.d-none]="view !== 'info'"
+            (update)="updateEvent($event)"
+          ></bo-event-info>
+
+          <bo-event-registration
+            [event]="event"
+            class="d-lg-block mb-5"
+            [class.d-none]="view !== 'info'"
+          ></bo-event-registration>
+        </div>
+      </div>
+
+      <div class="col-12 col-xxl-6">
+        <div class="p-xl-3">
+          <bo-event-attendees
+            [event]="event"
+            class="d-lg-block mb-5"
+            [class.d-none]="view !== 'attendees'"
+          ></bo-event-attendees>
+
+          <bo-event-accounting
+            [event]="event"
+            class="d-lg-block mb-5"
+            [class.d-none]="view !== 'accounting'"
+          ></bo-event-accounting>
+
+          <bo-event-report [event]="event" class="d-lg-block mb-5" [class.d-none]="view !== 'report'"></bo-event-report>
+        </div>
+      </div>
+      <div class="col-12 col-xxl-6"></div>
+    </div>
+  </div>
+</bo-page-content>
+
+<bo-page-footer class="d-lg-none">
+  <bo-tabs defaultTab="info" (change)="view = $any($event)">
+    <bo-tab name="info" label="Info" icon="calendar"></bo-tab>
+    <bo-tab name="attendees" label="Účastníci" icon="people-outline"></bo-tab>
+    <bo-tab name="accounting" label="Účtování" icon="cash-outline"></bo-tab>
+    <bo-tab name="report" label="Report" icon="document-outline"></bo-tab>
+  </bo-tabs>
+  <!-- <ion-toolbar>
+    <ion-tab-bar>
+      <ion-tab-button
+        routerLink="."
+        [queryParams]="{ view: 'info' }"
+        routerLinkActive="tab-selected"
+        [replaceUrl]="true"
+      >
+        <ion-icon name="calendar"></ion-icon>
+        <ion-label>Akce</ion-label>
+        <ion-badge [color]="event?.status | eventStatus: 'color'">&nbsp;&nbsp;</ion-badge>
+      </ion-tab-button>
+      <ion-tab-button
+        routerLink="."
+        [queryParams]="{ view: 'prihlaska' }"
+        routerLinkActive="tab-selected"
+        [replaceUrl]="true"
+      >
+        <ion-icon name="document-outline"></ion-icon>
+        <ion-label>Přihláška</ion-label>
+        <ion-badge *ngIf="event?._links?.getEventRegistration?.applicable" color="success">&nbsp;&nbsp;</ion-badge>
+        <ion-badge *ngIf="!event?._links?.getEventRegistration?.applicable" color="danger">&nbsp;&nbsp;</ion-badge>
+      </ion-tab-button>
+      <ion-tab-button
+        routerLink="."
+        [queryParams]="{ view: 'ucastnici' }"
+        routerLinkActive="tab-selected"
+        [replaceUrl]="true"
+      >
+        <ion-icon name="people-outline"></ion-icon>
+        <ion-label>Účastníci</ion-label>
+        <ion-badge [color]="event?.attendees?.length ? 'success' : 'danger'">
+          {{ (event?.leaders?.length || 0) + (event?.attendees?.length || 0) }}
+        </ion-badge>
+      </ion-tab-button>
+      <ion-tab-button
+        routerLink="."
+        [queryParams]="{ view: 'uctovani' }"
+        routerLinkActive="tab-selected"
+        [replaceUrl]="true"
+      >
+        <ion-icon name="cash-outline"></ion-icon>
+        <ion-label>Účtování</ion-label>
+        <ion-badge color="success">{{ event?.expenses?.length }}</ion-badge>
+      </ion-tab-button>
+      <ion-tab-button
+        routerLink="."
+        [queryParams]="{ view: 'report' }"
+        routerLinkActive="tab-selected"
+        [replaceUrl]="true"
+      >
+        <ion-icon name="document-outline"></ion-icon>
+        <ion-label>Report</ion-label>
+        <ion-badge *ngIf="event?._links?.getEventReport?.applicable" color="success">&nbsp;&nbsp;</ion-badge>
+        <ion-badge *ngIf="!event?._links?.getEventReport?.applicable" color="danger">&nbsp;&nbsp;</ion-badge>
+      </ion-tab-button>
+    </ion-tab-bar>
+  </ion-toolbar> -->
+</bo-page-footer>

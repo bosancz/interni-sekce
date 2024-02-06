@@ -1,6 +1,6 @@
-import { Injectable } from "@angular/core";
-import { AlertController } from "@ionic/angular";
-import { TextFieldTypes } from "@ionic/core";
+import { EventEmitter, Injectable } from "@angular/core";
+import { AlertController, ModalController } from "@ionic/angular";
+import { ComponentProps, TextFieldTypes } from "@ionic/core";
 
 interface BaseModalOptions {
   header?: string;
@@ -13,7 +13,7 @@ interface InputModalOptions<D extends Record<string, any>> extends BaseModalOpti
   inputs: { [K in keyof D]: InputModalInput<D[K]> };
 }
 
-interface InputModalInput<T> {
+export interface InputModalInput<T> {
   type?: T extends number ? "number" : T extends boolean ? "checkbox" : Exclude<TextFieldTypes, "number"> | "textarea";
   placeholder?: string;
   value?: T;
@@ -24,11 +24,29 @@ interface SelectModalOptions<D> extends BaseModalOptions {
   value?: D;
 }
 
+export class ModalComponent<D = any> {
+  submit = new EventEmitter<D>();
+  close = new EventEmitter<void>();
+
+  constructor(private modalCtrl: ModalController) {
+    this.submit.subscribe((data) => this.modalCtrl.dismiss(data));
+    this.close.subscribe(() => this.modalCtrl.dismiss(null));
+  }
+}
+
+type ModalComponentRef = { new (...args: any): ModalComponent };
+
+type ModalComponentData<C extends ModalComponentRef> =
+  InstanceType<C> extends { submit: EventEmitter<infer D> } ? D : never;
+
 @Injectable({
   providedIn: "root",
 })
 export class ModalService {
-  constructor(private alertController: AlertController) {}
+  constructor(
+    private alertController: AlertController,
+    private modalController: ModalController,
+  ) {}
 
   async deleteConfirmationModal(message: string, options: DeleteConfirmationModalOptions = {}) {
     return new Promise<boolean>(async (resolve, reject) => {
@@ -92,6 +110,19 @@ export class ModalService {
       });
 
       await alert.present();
+    });
+  }
+
+  async componentModal<C extends ModalComponentRef>(component: C, componentProps?: ComponentProps<C>) {
+    return new Promise<ModalComponentData<C> | null>(async (resolve, reject) => {
+      const modal = await this.modalController.create({
+        component,
+        componentProps,
+      });
+
+      modal.onWillDismiss().then((ev) => resolve(ev.data ?? null));
+
+      await modal.present();
     });
   }
 }

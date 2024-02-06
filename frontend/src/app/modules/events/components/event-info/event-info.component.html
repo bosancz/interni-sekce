@@ -1,0 +1,35 @@
+<h3>Základní informace</h3>
+
+<ion-list>
+  <bo-item label="Název" [loading]="!event" [editable]="!!event?._links?.updateEvent?.allowed" (edit)="editName()">
+    <p>{{ event?.name }}</p>
+  </bo-item>
+
+  <bo-item label="Termín" [loading]="!event" [editable]="!!event?._links?.updateEvent?.allowed" (edit)="editDate()">
+    <p>{{ [event?.dateFrom, event?.dateTill] | dateRange }}</p>
+  </bo-item>
+
+  <bo-item label="Typ" [loading]="!event">
+    <bo-event-type-selector
+      *ngIf="event"
+      [disabled]="!event._links.updateEvent.allowed"
+      [ngModel]="event.type"
+      (ngModelChange)="updateType($event)"
+      slot="end"
+    ></bo-event-type-selector>
+  </bo-item>
+</ion-list>
+
+<h3 class="mt-5">Popis</h3>
+<bo-card>
+  <bo-card-content>
+    <bo-item
+      lines="none"
+      [loading]="!event"
+      [editable]="!!event?._links?.updateEvent?.allowed"
+      (edit)="editDescription()"
+    >
+      <p *ngIf="event">{{ event.description }}</p>
+    </bo-item>
+  </bo-card-content>
+</bo-card>

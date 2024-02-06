@@ -1,45 +1,45 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { SharedModule } from "src/app/shared/shared.module";
+import { EventAccountingComponent } from "./components/event-accounting/event-accounting.component";
 import { EventAddAttendeesComponent } from "./components/event-add-attendees/event-add-attendees.component";
 import { EventAgeHistogramComponent } from "./components/event-age-histogram/event-age-histogram.component";
+import { EventAttendeesComponent } from "./components/event-attendees/event-attendees.component";
 import { EventBirthdayListComponent } from "./components/event-birthday-list/event-birthday-list.component";
 import { EventExpenseModalComponent } from "./components/event-expense-modal/event-expense-modal.component";
 import { EventExpensesChartComponent } from "./components/event-expenses-chart/event-expenses-chart.component";
-import { EventSubtypeSelectorComponent } from "./components/event-subtype-selector/event-subtype-selector.component";
+import { EventInfoComponent } from "./components/event-info/event-info.component";
+import { EventRegistrationComponent } from "./components/event-registration/event-registration.component";
+import { EventReportComponent } from "./components/event-report/event-report.component";
+import { EventTypeSelectorComponent } from "./components/event-type-selector/event-type-selector.component";
 import { MemberSelectorModalComponent } from "./components/member-selector-modal/member-selector-modal.component";
 import { MemberSelectorComponent } from "./components/member-selector/member-selector.component";
 import { EventsRoutingModule } from "./events-routing.module";
-import { EventsComponent } from "./events.component";
 import { EventEditComponent } from "./pages/event-edit/event-edit.component";
+import { EventViewComponent } from "./pages/event-view/event-view.component";
 import { EventsCreateComponent } from "./pages/events-create/events-create.component";
 import { EventsListComponent } from "./pages/events-list/events-list.component";
-import { EventsViewAccountingComponent } from "./pages/events-view-accounting/events-view-accounting.component";
-import { EventsViewAttendeesComponent } from "./pages/events-view-attendees/events-view-attendees.component";
-import { EventsViewInfoComponent } from "./pages/events-view-info/events-view-info.component";
-import { EventsViewRegistrationComponent } from "./pages/events-view-registration/events-view-registration.component";
-import { EventsViewReportComponent } from "./pages/events-view-report/events-view-report.component";
 import { EventsService } from "./services/events.service";
 
 @NgModule({
   declarations: [
-    EventsListComponent,
-    EventEditComponent,
-    EventsViewRegistrationComponent,
-    EventAgeHistogramComponent,
-    EventBirthdayListComponent,
-    EventSubtypeSelectorComponent,
-    EventExpensesChartComponent,
-    EventsCreateComponent,
-    EventsViewAttendeesComponent,
-    EventsViewInfoComponent,
-    EventsViewAccountingComponent,
+    EventAccountingComponent,
     EventAddAttendeesComponent,
+    EventAgeHistogramComponent,
+    EventAttendeesComponent,
+    EventBirthdayListComponent,
+    EventEditComponent,
+    EventExpenseModalComponent,
+    EventExpensesChartComponent,
+    EventInfoComponent,
+    EventRegistrationComponent,
+    EventReportComponent,
+    EventsCreateComponent,
+    EventsListComponent,
+    EventTypeSelectorComponent,
+    EventViewComponent,
     MemberSelectorComponent,
     MemberSelectorModalComponent,
-    EventExpenseModalComponent,
-    EventsViewReportComponent,
-    EventsComponent,
   ],
   imports: [CommonModule, EventsRoutingModule, SharedModule],
   providers: [EventsService],

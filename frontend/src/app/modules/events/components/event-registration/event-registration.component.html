@@ -1,0 +1,34 @@
+<h3>Přihláška</h3>
+
+<bo-card>
+  <bo-card-content>
+    <ion-item lines="none">
+      <ion-label *ngIf="event?._links?.getEventRegistration?.applicable">Přihláška nahrána.</ion-label>
+      <ion-label *ngIf="!event?._links?.getEventRegistration?.applicable">Přihláška chybí.</ion-label>
+      <ion-button *ngIf="event?._links?.saveEventRegistration?.allowed" [href]="getRegistrationUrl(event!)" fill="clear"
+        >Nahrát</ion-button
+      >
+      <ion-button *ngIf="event?._links?.getEventRegistration?.allowed" [href]="getRegistrationUrl(event!)" fill="clear"
+        >Stáhnout</ion-button
+      >
+      <ion-button
+        *ngIf="event?._links?.deleteEventRegistration?.allowed"
+        [href]="getRegistrationUrl(event!)"
+        fill="clear"
+        color="danger"
+        >Smazat</ion-button
+      >
+    </ion-item>
+  </bo-card-content>
+</bo-card>
+
+<p *ngIf="uploadingRegistration">Nahrávám&hellip;</p>
+<input
+  class="d-none"
+  type="file"
+  accept="application/pdf"
+  #registrationInput
+  ngModel
+  (ngModelChange)="uploadRegistration(registrationInput)"
+  required
+/>

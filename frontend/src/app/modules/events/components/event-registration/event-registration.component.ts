@@ -1,7 +1,6 @@
-import { Component, ElementRef, ViewChild } from "@angular/core";
+import { Component, ElementRef, Input, ViewChild } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { filter } from "rxjs/operators";
 import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
@@ -10,12 +9,12 @@ import { EventsService } from "../../services/events.service";
 
 @UntilDestroy()
 @Component({
-  selector: "events-view-registration",
-  templateUrl: "./events-view-registration.component.html",
-  styleUrls: ["./events-view-registration.component.scss"],
+  selector: "bo-event-registration",
+  templateUrl: "./event-registration.component.html",
+  styleUrls: ["./event-registration.component.scss"],
 })
-export class EventsViewRegistrationComponent {
-  event?: EventResponseWithLinks;
+export class EventRegistrationComponent {
+  @Input() event?: EventResponseWithLinks;
 
   uploadingRegistration: boolean = false;
 
@@ -28,14 +27,7 @@ export class EventsViewRegistrationComponent {
     private toastService: ToastService,
     private eventService: EventsService,
     private sanitizer: DomSanitizer,
-  ) {
-    this.eventService.event$.pipe(filter((event) => !!event)).subscribe((event) => this.updateEvent(event!));
-  }
-
-  private updateEvent(event: EventResponseWithLinks) {
-    this.event = event;
-    this.setActions(event);
-  }
+  ) {}
 
   uploadRegistrationSelect() {
     this.registrationInput.nativeElement.click();

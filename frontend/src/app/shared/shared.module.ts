@@ -41,6 +41,9 @@ import { CardHeaderComponent } from "./components/card-header/card-header.compon
 import { CardOpenButtonComponent } from "./components/card-open-button/card-open-button.component";
 import { CopyButtonComponent } from "./components/copy-button/copy-button.component";
 import { GroupBadgeComponent } from "./components/group-badge/group-badge.component";
+import { ItemComponent } from "./components/item/item.component";
+import { TabComponent } from "./components/tab/tab.component";
+import { TabsComponent } from "./components/tabs/tabs.component";
 // register Swiper custom elements
 register();
 
@@ -83,6 +86,9 @@ register();
     GroupBadgeComponent,
     CardOpenButtonComponent,
     CardHeaderComponent,
+    TabsComponent,
+    TabComponent,
+    ItemComponent,
   ],
   exports: [
     FormsModule,
@@ -125,6 +131,9 @@ register();
     GroupBadgeComponent,
     CardOpenButtonComponent,
     CardHeaderComponent,
+    TabsComponent,
+    TabComponent,
+    ItemComponent,
   ],
   providers: [DatePipe],
 })

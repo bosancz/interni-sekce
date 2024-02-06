@@ -3,14 +3,14 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { EventTypeID, EventTypes } from "src/app/config/event-types";
 
 @Component({
-  selector: "event-subtype-selector",
-  templateUrl: "./event-subtype-selector.component.html",
-  styleUrls: ["./event-subtype-selector.component.scss"],
+  selector: "bo-event-type-selector",
+  templateUrl: "./event-type-selector.component.html",
+  styleUrls: ["./event-type-selector.component.scss"],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: forwardRef(() => EventSubtypeSelectorComponent),
+      useExisting: forwardRef(() => EventTypeSelectorComponent),
     },
   ],
   host: {
@@ -18,14 +18,14 @@ import { EventTypeID, EventTypes } from "src/app/config/event-types";
     "[class.readonly]": "readonly",
   },
 })
-export class EventSubtypeSelectorComponent implements ControlValueAccessor, AfterViewInit {
+export class EventTypeSelectorComponent implements ControlValueAccessor, AfterViewInit {
   value?: EventTypeID;
   types = EventTypes;
 
   onChange: any = () => {};
   onTouched: any = () => {};
 
-  disabled: boolean = false;
+  @Input() disabled: boolean = false;
   @Input() readonly: boolean = false;
 
   constructor(private elRef: ElementRef<HTMLElement>) {}
@@ -42,7 +42,7 @@ export class EventSubtypeSelectorComponent implements ControlValueAccessor, Afte
   }
 
   /* ControlValueAccessor */
-  writeValue(value: EventTypeID) {
+  writeValue(value?: EventTypeID) {
     this.value = value;
   }
 

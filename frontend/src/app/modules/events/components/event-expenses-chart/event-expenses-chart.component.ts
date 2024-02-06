@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import { DateTime } from "luxon";
 import { EventResponseWithLinks } from "src/app/api";
 import { EventExpenseTypes, EventExpenseTypesMetadata } from "src/app/config/event-expense-types";
@@ -8,7 +8,9 @@ import { EventExpenseTypes, EventExpenseTypesMetadata } from "src/app/config/eve
   templateUrl: "./event-expenses-chart.component.html",
   styleUrls: ["./event-expenses-chart.component.scss"],
 })
-export class EventExpensesChartComponent implements OnInit {
+export class EventExpensesChartComponent implements OnInit, OnChanges {
+  @Input() event?: EventResponseWithLinks;
+
   days: number = 0;
   persons: number = 0;
 
@@ -16,7 +18,19 @@ export class EventExpensesChartComponent implements OnInit {
 
   totalByType: { [type: string]: { total: number; type?: EventExpenseTypesMetadata } } = {};
 
-  @Input() set event(event: EventResponseWithLinks) {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["event"]) this.updateChart(this.event);
+  }
+  private updateChart(event?: EventResponseWithLinks) {
+    if (!event) {
+      this.days = 0;
+      this.persons = 0;
+      this.total = 0;
+      this.totalByType = {};
+
+      return;
+    }
+
     const dateFrom = DateTime.fromISO(event.dateFrom).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
     const dateTill = DateTime.fromISO(event.dateTill)
       .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })

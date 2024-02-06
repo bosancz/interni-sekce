@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { AlertController, ModalController } from "@ionic/angular";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { EventExpenseResponse, EventResponseWithLinks } from "src/app/api";
 import { EventExpenseTypes } from "src/app/config/event-expense-types";
 import { EventExpenseModalComponent } from "src/app/modules/events/components/event-expense-modal/event-expense-modal.component";
@@ -10,12 +10,12 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 
 @UntilDestroy()
 @Component({
-  selector: "bo-events-view-accounting",
-  templateUrl: "./events-view-accounting.component.html",
-  styleUrls: ["./events-view-accounting.component.scss"],
+  selector: "bo-event-accounting",
+  templateUrl: "./event-accounting.component.html",
+  styleUrls: ["./event-accounting.component.scss"],
 })
-export class EventsViewAccountingComponent implements OnInit, OnDestroy {
-  event?: EventResponseWithLinks;
+export class EventAccountingComponent implements OnInit, OnDestroy {
+  @Input() event?: EventResponseWithLinks;
 
   expenses: EventExpenseResponse[] = [];
 
@@ -31,15 +31,7 @@ export class EventsViewAccountingComponent implements OnInit, OnDestroy {
     private toastService: ToastService,
   ) {}
 
-  ngOnInit(): void {
-    this.eventsService.event$.pipe(untilDestroyed(this)).subscribe((event) => {
-      this.event = event;
-      this.expenses = event?.expenses || [];
-      this.sortExpenes();
-
-      this.setActions(event);
-    });
-  }
+  ngOnInit(): void {}
 
   ngOnDestroy() {
     this.modal?.dismiss();

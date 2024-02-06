@@ -2,13 +2,14 @@ import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { IonSearchbar, ModalController, ViewDidEnter } from "@ionic/angular";
 import { MemberResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { ModalComponent } from "src/app/services/modal.service";
 
 @Component({
   selector: "bo-member-selector-modal",
   templateUrl: "./member-selector-modal.component.html",
   styleUrls: ["./member-selector-modal.component.scss"],
 })
-export class MemberSelectorModalComponent implements OnInit, ViewDidEnter {
+export class MemberSelectorModalComponent extends ModalComponent<MemberResponse> implements OnInit, ViewDidEnter {
   @Input() members: MemberResponse[] = [];
 
   membersIndex: string[] = [];
@@ -17,7 +18,12 @@ export class MemberSelectorModalComponent implements OnInit, ViewDidEnter {
 
   @ViewChild("searchBar") searchBar!: IonSearchbar;
 
-  constructor(private modalController: ModalController, private api: ApiService) {}
+  constructor(
+    private api: ApiService,
+    modalController: ModalController,
+  ) {
+    super(modalController);
+  }
 
   ngOnInit(): void {
     this.loadMembers();
@@ -33,9 +39,11 @@ export class MemberSelectorModalComponent implements OnInit, ViewDidEnter {
   }
 
   ionViewDidEnter() {
-    // TODO: remove setTimeout when following bug gets resolved
-    // https://github.com/ionic-team/ionic-framework/issues/17745
     window.setTimeout(() => this.searchBar.setFocus(), 300);
+  }
+
+  selectMember(member: MemberResponse) {
+    this.submit.emit(member);
   }
 
   searchMembers(searchString?: string) {
@@ -62,9 +70,5 @@ export class MemberSelectorModalComponent implements OnInit, ViewDidEnter {
       const bString = b.nickname || b.firstName || b.lastName || "";
       return aString.localeCompare(bString);
     });
-  }
-
-  close(member?: MemberResponse) {
-    this.modalController.dismiss({ member: member });
   }
 }
