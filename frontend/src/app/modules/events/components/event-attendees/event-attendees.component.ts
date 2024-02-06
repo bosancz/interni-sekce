@@ -72,6 +72,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
         this.toastService.toast("Účastník přidán.");
       } catch (e) {
         this.toastService.toast("Nepodařilo se přidat účastníka.");
+        attendees.pop(); // rollback
       }
 
       this.change.emit();
