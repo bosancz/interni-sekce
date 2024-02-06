@@ -107,13 +107,6 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
         handler: () => this.leadEvent(event),
       },
       {
-        text: "Upravit",
-        pinned: true,
-        icon: "create-outline",
-        hidden: !event._links.updateEvent.allowed,
-        handler: () => this.router.navigate(["../upravit"], { relativeTo: this.route }),
-      },
-      {
         text: "Ke schválení",
         icon: "arrow-forward-outline",
         color: "primary",
