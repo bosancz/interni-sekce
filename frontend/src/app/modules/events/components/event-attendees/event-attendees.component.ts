@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { EventAttendeeResponse, EventResponseWithLinks } from "src/app/api";
+import { EventResponseWithLinks, MemberResponse } from "src/app/api";
 import { MemberSelectorModalComponent } from "src/app/modules/events/components/member-selector-modal/member-selector-modal.component";
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
@@ -13,11 +13,12 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
   templateUrl: "./event-attendees.component.html",
   styleUrls: ["./event-attendees.component.scss"],
 })
-export class EventAttendeesComponent implements OnInit, OnDestroy {
-  @Input() event?: EventResponseWithLinks;
+export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
+  @Input() event?: EventResponseWithLinks | null;
   @Output() change = new EventEmitter<void>();
 
-  attendees: EventAttendeeResponse[] = [];
+  attendees: MemberResponse[] = [];
+  leaders: MemberResponse[] = [];
 
   actions: Action[] = [];
 
@@ -35,10 +36,30 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
     this.modal?.dismiss();
   }
 
-  private sortAttendees() {
-    this.attendees.sort((a, b) => {
-      const aString = a.member?.nickname || a.member?.firstName || a.member?.lastName || "";
-      const bString = b.member?.nickname || b.member?.firstName || b.member?.lastName || "";
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.event) this.loadAttendees(this.event);
+  }
+
+  private async loadAttendees(event?: EventResponseWithLinks | null) {
+    if (!event) {
+      this.attendees = [];
+      this.leaders = [];
+      return;
+    }
+
+    const attendees = await this.api.events.listEventAttendees(event.id).then((res) => res.data);
+
+    this.attendees = attendees.filter((a) => a.type === "attendee").map((m) => m.member!) || [];
+    this.sortMembers(this.attendees);
+
+    this.leaders = attendees.filter((a) => a.type === "leader").map((m) => m.member!) || [];
+    this.sortMembers(this.leaders);
+  }
+
+  private sortMembers(members: MemberResponse[]) {
+    members.sort((a, b) => {
+      const aString = a.nickname || a.firstName || a.lastName || "";
+      const bString = b.nickname || b.firstName || b.lastName || "";
       return aString.localeCompare(bString);
     });
   }
@@ -57,15 +78,9 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
       }
 
       // optimistic update
-      attendees.push({
-        memberId: member.id,
-        member,
-        eventId: this.event.id,
-        type: "attendee",
-      });
+      this.attendees.push(member);
 
-      this.attendees = attendees;
-      this.sortAttendees();
+      this.sortMembers(this.attendees);
 
       try {
         await this.api.events.addEventAttendee(this.event.id, member.id, {});
@@ -79,17 +94,20 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
     }
   }
 
-  async removeAttendee(attendee: EventAttendeeResponse) {
+  async removeAttendee(member: MemberResponse) {
     if (!this.event) return;
 
-    let attendees = this.event.attendees || [];
-    attendees = attendees.filter((item) => item.memberId !== attendee.memberId);
+    try {
+      // optimistic update
+      this.attendees.filter((item) => item.id !== member.id);
 
-    this.attendees = attendees; // optimistic update
+      await this.api.events.deleteEventAttendee(this.event.id, member.id);
 
-    await this.api.events.deleteEventAttendee(this.event.id, attendee.memberId);
-
-    this.change.emit();
+      this.change.emit();
+    } catch (e) {
+      this.toastService.toast("Nepodařilo se odebrat účastníka.");
+      this.attendees.push(member); // rollback
+    }
   }
 
   toggleSliding(sliding: any) {

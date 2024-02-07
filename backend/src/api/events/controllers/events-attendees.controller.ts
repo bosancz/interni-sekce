@@ -20,7 +20,7 @@ export class EventsAttendeesController {
 
   @Get(":eventId/attendees")
   @AcLinks(EventAttendeesListRoute)
-  @ApiResponse({ type: WithLinks(EventAttendeeResponse) })
+  @ApiResponse({ type: WithLinks(EventAttendeeResponse), isArray: true })
   async listEventAttendees(@Req() req: Request, @Param("eventId") eventId: number): Promise<EventAttendeeResponse[]> {
     const event = await this.events.getEvent(eventId);
     if (!event) throw new NotFoundException();
