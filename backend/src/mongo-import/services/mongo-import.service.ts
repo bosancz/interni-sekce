@@ -133,7 +133,7 @@ export class MongoImportService {
     };
 
     for (let mongoMember of mongoMembers) {
-      const groupId = mongoMember.group ? await this.getGroup(t, mongoMember.group) : await this.getGroup(t, "KP");
+      const groupId = mongoMember.group ? await this.getGroupId(t, mongoMember.group) : await this.getGroupId(t, "KP");
 
       const membership =
         mongoMember.membership && mongoMember.membership in membershipTransform
@@ -211,7 +211,11 @@ export class MongoImportService {
       let status = <any>mongoEvent.status ?? EventStates.draft;
       if (status === "rejected") status = EventStates.pending;
 
-      const eventData: Omit<Event, "id" | "setLeaders"> = {
+      const groups = (await Promise.all(
+        mongoEvent.groups?.map((g) => this.getGroupId(t, g).then((id) => ({ id }))) ?? [],
+      )) as Group[];
+
+      const eventData: Omit<Event, "id" | "setLeaders" | "groupsIds"> = {
         name: mongoEvent.name,
         status,
         statusNote: mongoEvent.statusNote ?? null,
@@ -227,6 +231,7 @@ export class MongoImportService {
         waterKm: null,
         river: null,
         leadersEvent: mongoEvent.groups?.includes("V") || false,
+        groups,
       };
 
       const event = await t.save(Event, eventData);
@@ -240,16 +245,19 @@ export class MongoImportService {
       };
 
       if (mongoEvent.expenses) {
+        let i = 0;
         for (let mongoExpense of mongoEvent.expenses) {
+          i++;
+
           const expenseData: Omit<EventExpense, "id"> = {
+            receiptNumber: mongoExpense.id ?? `X${i}`,
             eventId: event.id,
             description: mongoExpense.description ?? "",
             amount: mongoExpense.amount ?? 0,
-            type:
-              (mongoExpense.type ? mongoTypeToPostgresType[mongoExpense.type] : undefined) ?? EventExpenseTypes.other,
+            type: (mongoExpense.type && mongoTypeToPostgresType[mongoExpense.type]) || EventExpenseTypes.other,
           };
 
-          await t.save(EventExpense, expenseData);
+          await t.insert(EventExpense, expenseData);
         }
       }
 
@@ -282,19 +290,6 @@ export class MongoImportService {
           };
 
           await t.save(EventAttendee, attendeeData);
-        }
-      }
-
-      if (mongoEvent.groups) {
-        for (let mongoEventGroup of mongoEvent.groups) {
-          if (mongoEventGroup === "V") continue;
-
-          const eventGroupData: EventGroup = {
-            eventId: event.id,
-            groupId: await this.getGroup(t, mongoEventGroup),
-          };
-
-          await t.save(EventGroup, eventGroupData);
         }
       }
 
@@ -367,7 +362,7 @@ export class MongoImportService {
     this.logger.debug(` - Imported ${c} photos.`);
   }
 
-  private async getGroup(t: EntityManager, oldGroupId: string) {
+  private async getGroupId(t: EntityManager, oldGroupId: string) {
     if (this.groupsIndex.has(oldGroupId)) return this.groupsIndex.get(oldGroupId)!;
 
     const oldGroupData =
@@ -375,7 +370,7 @@ export class MongoImportService {
 
     const groupData: Partial<Group> = {
       shortName: oldGroupId,
-      active: true,
+      active: oldGroupData?.active ?? true,
       name: oldGroupData?.name ?? oldGroupId,
       color: oldGroupData?.color,
       darkColor: oldGroupData?.color,
@@ -390,8 +385,10 @@ export class MongoImportService {
   private getUserRoles(mongoUser: MongoUser): UserRoles[] {
     const roles: UserRoles[] = [];
     if (mongoUser.roles?.includes("admin")) roles.push(UserRoles.admin);
-    if (mongoUser.roles?.includes("spravce")) roles.push(UserRoles.program);
+    if (mongoUser.roles?.includes("spravce")) roles.push(UserRoles.admin);
+    if (mongoUser.roles?.includes("program")) roles.push(UserRoles.program);
     if (mongoUser.roles?.includes("revizor")) roles.push(UserRoles.revizor);
+
     return roles;
   }
 }

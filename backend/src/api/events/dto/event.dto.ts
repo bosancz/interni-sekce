@@ -1,13 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsBoolean, IsEnum, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { AlbumResponse } from "src/api/albums/dto/album.dto";
 import { GroupResponse } from "src/api/members/dto/group.dto";
 import { MemberResponse } from "src/api/members/dto/member.dto";
 import { Album } from "src/models/albums/entities/album.entity";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";
-import { EventGroup } from "src/models/events/entities/event-group.entity";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
+import { Group } from "src/models/members/entities/group.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { EventAttendeeResponse } from "./event-attendee.dto";
 import { EventExpenseResponse } from "./event-expense.dto";
@@ -19,6 +19,7 @@ export class EventResponse implements Omit<Event, "setLeaders"> {
   @ApiProperty() dateFrom!: string;
   @ApiProperty() dateTill!: string;
   @ApiProperty() leadersEvent!: boolean;
+  @ApiProperty() groupsIds!: number[];
 
   @ApiPropertyOptional({ type: "string" }) type!: string | null;
   @ApiPropertyOptional({ type: "string" }) statusNote!: string | null;
@@ -33,7 +34,7 @@ export class EventResponse implements Omit<Event, "setLeaders"> {
   @ApiPropertyOptional({ type: "string" }) deletedAt?: Date | string | null;
 
   @ApiPropertyOptional({ type: AlbumResponse }) album?: Album | undefined;
-  @ApiPropertyOptional({ type: GroupResponse, isArray: true }) groups?: EventGroup[] | undefined;
+  @ApiPropertyOptional({ type: GroupResponse, isArray: true }) groups?: Group[] | undefined;
   @ApiPropertyOptional({ type: EventAttendeeResponse, isArray: true }) attendees?: EventAttendee[] | undefined;
   @ApiPropertyOptional({ type: EventExpenseResponse, isArray: true }) expenses?: EventExpense[] | undefined;
   @ApiPropertyOptional({ type: MemberResponse, isArray: true }) leaders?: Member[] | undefined;
@@ -53,6 +54,12 @@ export class EventUpdateBody {
   @ApiPropertyOptional() @IsOptional() @IsString() dateFrom?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() dateTill?: string;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() leadersEvent?: boolean;
+
+  @ApiPropertyOptional({ type: "number", isArray: true })
+  @IsOptional()
+  @IsNumber({}, { each: true })
+  groupsIds?: number[];
+
   @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() type?: string | null;
   @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() description?: string | null;
   @ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() statusNote?: string | null;

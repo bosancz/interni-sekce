@@ -116,24 +116,31 @@ export class EventsRepository {
 
   //
   async getEventExpenses(id: number) {
-    return this.eventExpensesRepository.find({ where: { eventId: id } });
+    const q = this.eventExpensesRepository
+      .createQueryBuilder("expenses")
+      .where("expenses.event_id = :id", { id })
+      .leftJoinAndSelect("expenses.event", "events")
+      .leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
+      .select(["expenses", "events.id", "attendees"]);
+
+    return q.getMany();
   }
 
-  async getEventExpense(eventId: number, id: string) {
+  async getEventExpense(eventId: number, id: number) {
     return this.eventExpensesRepository.findOne({
       where: { eventId, id },
     });
   }
 
-  async createEventExpense(eventId: number, expenseId: string, data: Partial<EventExpense>) {
+  async createEventExpense(eventId: number, expenseId: number, data: Partial<EventExpense>) {
     this.eventExpensesRepository.save({ ...data, eventId, id: expenseId });
   }
 
-  async updateEventExpense(eventId: number, expenseId: string, data: Partial<EventExpense>) {
+  async updateEventExpense(eventId: number, expenseId: number, data: Partial<EventExpense>) {
     this.eventExpensesRepository.update({ eventId, id: expenseId }, data);
   }
 
-  async deleteEventExpense(eventId: number, expenseId: string) {
+  async deleteEventExpense(eventId: number, expenseId: number) {
     await this.eventExpensesRepository.delete({ eventId, id: expenseId });
   }
 }

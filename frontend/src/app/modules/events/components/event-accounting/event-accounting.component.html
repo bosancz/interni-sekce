@@ -1,29 +1,27 @@
 <h3>Účtování</h3>
-<bo-event-expenses-chart></bo-event-expenses-chart>
+
+<bo-event-expenses-chart
+  *ngIf="expenses?.length"
+  [event]="event"
+  [expenses]="expenses"
+  class="mb-5"
+></bo-event-expenses-chart>
+
 <ion-list>
-  <ion-item-sliding #sliding *ngFor="let expense of expenses" (click)="toggleSliding(sliding)">
-    <ion-item [button]="true" [detail]="false">
-      <ion-label>
-        <h2>
-          <strong>{{ expense.id }}</strong> - {{ expense.description }}
-          <!-- TODO:  <ion-icon class="ms-1" *ngIf="expense.photo" name="camera-outline"></ion-icon> -->
-        </h2>
-        <p class="d-lg-none">{{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč</p>
-      </ion-label>
+  <bo-item
+    *ngFor="let expense of expenses"
+    [label]="expense.receiptNumber"
+    [editable]="expense._links.updateEventExpense.allowed"
+    (edit)="editExpense(expense)"
+  >
+    <p>{{ expense.description }}</p>
 
-      <ion-badge mode="ios" [color]="getExpenseColor(expense)">{{ expense.type }}</ion-badge>
+    <div slot="end" class="type flex-shrink-0">
+      <ion-badge mode="ios" [style.background-color]="expense | eventExpense: 'color'">
+        {{ expense | eventExpense: "type" }}
+      </ion-badge>
+    </div>
 
-      <ion-label class="d-none d-lg-block text-right me-3">
-        {{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč
-      </ion-label>
-    </ion-item>
-    <ion-item-options side="end">
-      <ion-item-option color="primary" (click)="editExpenseModal(expense)">
-        <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-      </ion-item-option>
-      <ion-item-option color="danger" (click)="removeExpense(expense)">
-        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-      </ion-item-option>
-    </ion-item-options>
-  </ion-item-sliding>
+    <ion-label slot="end" class="amount"> {{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč </ion-label>
+  </bo-item>
 </ion-list>

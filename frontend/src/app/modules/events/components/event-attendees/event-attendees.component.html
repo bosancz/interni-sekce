@@ -2,50 +2,26 @@
 
 <p *ngIf="leaders && !leaders.length"><em>Žádní účastníci</em></p>
 
-<ion-item *ngFor="let leader of leaders">
-  <ion-label>
-    <h3>{{ leader | member: "nickname" }}</h3>
-    <p><bo-member-item-detail *ngIf="leader" [member]="leader"></bo-member-item-detail></p>
-  </ion-label>
-
-  <bo-group-badge [groupId]="leader.groupId"></bo-group-badge>
-
-  <ion-button fill="clear" [routerLink]="'/databaze/' + leader.id" slot="end">
-    <ion-icon name="information-circle-outline"></ion-icon>
-  </ion-button>
-
-  <ion-button fill="clear" color="danger" (click)="removeAttendee(leader)" slot="end">
-    <ion-icon name="trash-outline"></ion-icon>
-  </ion-button>
-</ion-item>
+<bo-event-attendees-list
+  [event]="event"
+  [attendees]="leaders"
+  (remove)="removeAttendee($event)"
+></bo-event-attendees-list>
 
 <div class="text-center">
-  <bo-add-button (click)="addAttendee()">Přidat účastníka</bo-add-button>
+  <bo-add-button (click)="addAttendee()">Přidat vedoucí</bo-add-button>
 </div>
 
 <h3>Účastníci</h3>
 
 <p *ngIf="attendees && !attendees.length"><em>Žádní účastníci</em></p>
 
-<ion-list>
-  <ion-item *ngFor="let attendee of attendees">
-    <ion-label>
-      <h3>{{ attendee | member: "nickname" }}</h3>
-      <p><bo-member-item-detail *ngIf="attendee" [member]="attendee"></bo-member-item-detail></p>
-    </ion-label>
+<bo-event-attendees-list
+  [event]="event"
+  [attendees]="attendees"
+  (remove)="removeAttendee($event)"
+></bo-event-attendees-list>
 
-    <bo-group-badge [groupId]="attendee.groupId"></bo-group-badge>
-
-    <ion-button fill="clear" [routerLink]="'/databaze/' + attendee.id" slot="end">
-      <ion-icon name="information-circle-outline"></ion-icon>
-    </ion-button>
-
-    <ion-button fill="clear" color="danger" (click)="removeAttendee(attendee)" slot="end">
-      <ion-icon name="trash-outline"></ion-icon>
-    </ion-button>
-  </ion-item>
-
-  <div class="text-center">
-    <bo-add-button (click)="addAttendee()">Přidat účastníka</bo-add-button>
-  </div>
-</ion-list>
+<div *ngIf="event?._links?.addEventAttendee?.allowed" class="text-center">
+  <bo-add-button (click)="addAttendee()">Přidat účastníka</bo-add-button>
+</div>

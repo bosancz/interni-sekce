@@ -4,8 +4,8 @@ import { RootResponse } from "src/api/root/dto/root-response";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { EventCreateBody, EventResponse } from "../dto/event.dto";
 
-export const isMyEvent = (doc: Pick<Event, "leaders"> | undefined, req: Request) =>
-  doc?.leaders?.some((l) => l.id === req.user?.userId) ?? false;
+export const isMyEvent = (doc: Pick<Event, "attendees"> | undefined, req: Request) =>
+  doc?.attendees?.some((l) => l.memberId === req.user?.userId && l.type === "leader") ?? false;
 
 export const EventsListRoute = new RouteACL({
   linkTo: RootResponse,

@@ -61,10 +61,6 @@
 
           <bo-event-status-badge [event]="event"></bo-event-status-badge>
         </ion-item>
-
-        <ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
-          <ion-infinite-scroll-content></ion-infinite-scroll-content>
-        </ion-infinite-scroll>
       </ion-list>
     }
 
@@ -98,4 +94,8 @@
       </admin-table>
     }
   }
+
+  <ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </bo-page-content>

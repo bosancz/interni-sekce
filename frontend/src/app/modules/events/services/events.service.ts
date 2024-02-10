@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { DateTime } from "luxon";
 import { BehaviorSubject } from "rxjs";
-import { EventResponseWithLinks } from "src/app/api";
+import { EventResponseWithLinks, EventUpdateBody } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Injectable({
@@ -34,7 +34,7 @@ export class EventsService {
     return this.api.events.listEvents();
   }
 
-  async updateEvent(eventId: number, data: Partial<EventResponseWithLinks>) {
+  async updateEvent(eventId: number, data: Partial<EventUpdateBody>) {
     return this.api.events.updateEvent(eventId, data);
   }
 }

@@ -1,9 +1,19 @@
 import { Album } from "src/models/albums/entities/album.entity";
+import { Group } from "src/models/members/entities/group.entity";
 import { Member } from "src/models/members/entities/member.entity";
-import { AfterLoad, Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  AfterLoad,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  RelationId,
+} from "typeorm";
 import { EventAttendee, EventAttendeeType } from "./event-attendee.entity";
 import { EventExpense } from "./event-expense.entity";
-import { EventGroup } from "./event-group.entity";
 
 export enum EventStates {
   "draft" = "draft",
@@ -20,8 +30,12 @@ export class Event {
   @OneToOne(() => Album)
   album?: Album;
 
-  @OneToMany(() => EventGroup, (group) => group.event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
-  groups?: EventGroup[];
+  @RelationId((event: Event) => event.groups)
+  groupsIds!: number[];
+
+  @ManyToMany(() => Group, { onDelete: "CASCADE", onUpdate: "CASCADE" })
+  @JoinTable({ name: "events_groups", joinColumn: { name: "event_id" }, inverseJoinColumn: { name: "group_id" } })
+  groups?: Group[];
 
   @OneToMany(() => EventAttendee, (ea) => ea.event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
   attendees?: EventAttendee[];

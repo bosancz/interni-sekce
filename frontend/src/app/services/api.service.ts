@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { BehaviorSubject } from "rxjs";
 import { map } from "rxjs/operators";
+import { appConfig } from "src/config";
 import { environment } from "src/environments/environment";
 import { Logger } from "src/logger";
 import {
@@ -21,21 +22,25 @@ export type ApiEndpoints = RootResponseLinks;
 
 export type ApiError = AxiosError;
 
+axios.defaults.withCredentials = true;
+
 @Injectable({
   providedIn: "root",
 })
 export class ApiService {
   private readonly logger = new Logger(ApiService.name);
 
-  http = axios.create({ withCredentials: true });
+  readonly http = axios.create({ withCredentials: true });
 
-  readonly albums = new PhotoGalleryApi(undefined, environment.apiRoot, this.http);
-  readonly events = new EventsApi(undefined, environment.apiRoot, this.http);
-  readonly members = new MembersApi(undefined, environment.apiRoot, this.http);
-  readonly account = new AccountApi(undefined, environment.apiRoot, this.http);
-  readonly users = new UsersApi(undefined, environment.apiRoot, this.http);
-  readonly statistics = new StatisticsApi(undefined, environment.apiRoot, this.http);
-  readonly api = new APIApi(undefined, environment.apiRoot, this.http);
+  private readonly apiRoot = appConfig.apiRoot ?? environment.apiRoot;
+
+  readonly albums = new PhotoGalleryApi(undefined, this.apiRoot, this.http);
+  readonly events = new EventsApi(undefined, this.apiRoot, this.http);
+  readonly members = new MembersApi(undefined, this.apiRoot, this.http);
+  readonly account = new AccountApi(undefined, this.apiRoot, this.http);
+  readonly users = new UsersApi(undefined, this.apiRoot, this.http);
+  readonly statistics = new StatisticsApi(undefined, this.apiRoot, this.http);
+  readonly api = new APIApi(undefined, this.apiRoot, this.http);
 
   readonly cache = {
     groups: new CachedSubject<GroupResponseWithLinks[]>(this, (api) => api.members.listGroups()),
@@ -63,7 +68,10 @@ export class ApiService {
 }
 
 class CachedSubject<T> extends BehaviorSubject<T | undefined> {
-  constructor(private api: ApiService, private request: (api: ApiService) => Promise<AxiosResponse<T>>) {
+  constructor(
+    private api: ApiService,
+    private request: (api: ApiService) => Promise<AxiosResponse<T>>,
+  ) {
     super(undefined);
   }
 

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { EventResponse, EventResponseWithLinks } from "src/app/api";
+import { EventResponseWithLinks, EventUpdateBody } from "src/app/api";
 import { ModalService } from "src/app/services/modal.service";
 
 @UntilDestroy()
@@ -11,7 +11,7 @@ import { ModalService } from "src/app/services/modal.service";
 })
 export class EventInfoComponent implements OnInit, OnDestroy {
   @Input() event?: EventResponseWithLinks;
-  @Output() update = new EventEmitter<Partial<EventResponse>>();
+  @Output() update = new EventEmitter<EventUpdateBody>();
 
   constructor(private modalService: ModalService) {}
 
@@ -24,7 +24,7 @@ export class EventInfoComponent implements OnInit, OnDestroy {
       header: "Název akce",
       inputs: {
         name: {
-          placeholder: "Název",
+          placeholder: "Neočekávaný dýchánek",
           type: "text",
           value: this.event?.name,
         },
@@ -54,6 +54,48 @@ export class EventInfoComponent implements OnInit, OnDestroy {
     if (result) this.update.emit(result);
   }
 
+  async editPlace() {
+    const result = await this.modalService.inputModal({
+      header: "Místo akce",
+      inputs: {
+        place: {
+          placeholder: "Dno pytle (u Bilba doma)",
+          value: this.event?.place,
+        },
+      },
+    });
+
+    if (result) this.update.emit(result);
+  }
+
+  async editMeetingStart() {
+    const result = await this.modalService.inputModal({
+      header: "Místo a čas začátku akce",
+      inputs: {
+        meetingPlaceStart: {
+          placeholder: "Dno pytle, 18:30",
+          value: this.event?.meetingPlaceStart,
+        },
+      },
+    });
+
+    if (result) this.update.emit(result);
+  }
+
+  async editMeetingEnd() {
+    const result = await this.modalService.inputModal({
+      header: "Místo a čas konce akce",
+      inputs: {
+        meetingPlaceEnd: {
+          placeholder: "Dno pytle, 3:00",
+          value: this.event?.meetingPlaceEnd,
+        },
+      },
+    });
+
+    if (result) this.update.emit(result);
+  }
+
   async editDescription() {
     const result = await this.modalService.inputModal({
       header: "Popis akce",
@@ -71,5 +113,9 @@ export class EventInfoComponent implements OnInit, OnDestroy {
 
   updateType(type: string) {
     this.update.emit({ type });
+  }
+
+  updateGroup(groupsIds: number[]) {
+    this.update.emit({ groupsIds });
   }
 }

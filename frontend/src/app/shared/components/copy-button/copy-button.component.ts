@@ -14,7 +14,11 @@ export class CopyButtonComponent {
 
   async copy() {
     if (!this.text) return;
-    await navigator.clipboard.writeText(this.text);
-    await this.toastService.toast("Zkopírováno do schránky.");
+    if ("clipboard" in navigator) {
+      await navigator.clipboard.writeText(this.text);
+      await this.toastService.toast("Zkopírováno do schránky.");
+    } else {
+      await this.toastService.toast("Kopírování do schránky není podporováno.", { color: "warning" });
+    }
   }
 }

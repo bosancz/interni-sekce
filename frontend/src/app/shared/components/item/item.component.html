@@ -1,8 +1,18 @@
-<ion-item [lines]="lines">
-  <ion-label *ngIf="label" class="label">{{ label }}</ion-label>
+<ion-label *ngIf="label" class="label">{{ label }}</ion-label>
 
-  <ng-content></ng-content>
-  <ion-label *ngIf="loading"><ion-skeleton-text [animated]="true"></ion-skeleton-text></ion-label>
+<div class="start">
+  <ng-content select="[slot=start]"></ng-content>
+</div>
 
+<ng-content></ng-content>
+
+<ion-label *ngIf="loading"><ion-skeleton-text [animated]="true"></ion-skeleton-text></ion-label>
+
+<div class="spacer"></div>
+
+<div class="end">
+  <ng-content select="[slot=end]"></ng-content>
   <bo-edit-button *ngIf="editable" (click)="edit.emit()" slot="end"></bo-edit-button>
-</ion-item>
+</div>
+
+<ion-ripple-effect></ion-ripple-effect>

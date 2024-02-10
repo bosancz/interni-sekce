@@ -1,1 +1,4 @@
-
+:host ::ng-deep ion-item {
+  --ion-item-background: var(--lightGrey);
+  --inner-padding-end: 0;
+}

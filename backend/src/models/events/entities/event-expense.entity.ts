@@ -12,7 +12,7 @@ export enum EventExpenseTypes {
 @Entity("events_expenses")
 export class EventExpense {
   @PrimaryGeneratedColumn()
-  id!: string;
+  id!: number;
 
   @Column()
   eventId!: number;
@@ -21,7 +21,8 @@ export class EventExpense {
   @JoinColumn({ name: "event_id" })
   event?: Event;
 
-  @Column({ type: "numeric" }) amount!: number | null;
-  @Column({ type: "enum", enum: EventExpenseTypes }) type!: EventExpenseTypes | null;
-  @Column({ type: "text" }) description!: string | null;
+  @Column({ type: "varchar", nullable: false }) receiptNumber!: string;
+  @Column({ type: "numeric", nullable: false }) amount!: number;
+  @Column({ type: "enum", enum: EventExpenseTypes, nullable: false }) type!: EventExpenseTypes;
+  @Column({ type: "text", nullable: false }) description!: string;
 }

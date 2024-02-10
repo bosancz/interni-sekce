@@ -1,6 +1,6 @@
 <h3>Základní informace</h3>
 
-<ion-list>
+<ion-list class="selectable">
   <bo-item label="Název" [loading]="!event" [editable]="!!event?._links?.updateEvent?.allowed" (edit)="editName()">
     <p>{{ event?.name }}</p>
   </bo-item>
@@ -9,14 +9,43 @@
     <p>{{ [event?.dateFrom, event?.dateTill] | dateRange }}</p>
   </bo-item>
 
-  <bo-item label="Typ" [loading]="!event">
+  <bo-item label="Místo" [loading]="!event" [editable]="!!event?._links?.updateEvent?.allowed" (edit)="editPlace()">
+    <p>{{ event?.place ?? "-" }}</p>
+  </bo-item>
+
+  <bo-item
+    label="Sraz"
+    [loading]="!event"
+    [editable]="!!event?._links?.updateEvent?.allowed"
+    (edit)="editMeetingStart()"
+  >
+    <p>{{ event?.meetingPlaceStart ?? "-" }}</p>
+  </bo-item>
+
+  <bo-item
+    label="Konec"
+    [loading]="!event"
+    [editable]="!!event?._links?.updateEvent?.allowed"
+    (edit)="editMeetingEnd()"
+  >
+    <p>{{ event?.meetingPlaceEnd ?? "-" }}</p>
+  </bo-item>
+
+  <bo-item label="Typ" [loading]="!event" lines="inset">
     <bo-event-type-selector
-      *ngIf="event"
-      [disabled]="!event._links.updateEvent.allowed"
-      [ngModel]="event.type"
+      [disabled]="!event?._links?.updateEvent?.allowed"
+      [ngModel]="event?.type"
       (ngModelChange)="updateType($event)"
-      slot="end"
     ></bo-event-type-selector>
+  </bo-item>
+
+  <bo-item label="Oddíl" [loading]="!event">
+    <bo-group-select
+      [disabled]="!event?._links?.updateEvent?.allowed"
+      [ngModel]="event?.groupsIds ?? []"
+      (ngModelChange)="updateGroup($event)"
+      [multiple]="true"
+    ></bo-group-select>
   </bo-item>
 </ion-list>
 

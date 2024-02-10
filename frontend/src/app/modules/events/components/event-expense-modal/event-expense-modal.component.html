@@ -1,35 +1,47 @@
-<ion-header>
+<!-- <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button *ngIf="platform.is('ios')" (click)="close()">Zavřít</ion-button>
-      <ion-button *ngIf="!platform.is('ios')" (click)="close()"><ion-icon name="close"></ion-icon></ion-button>
+      <ion-button *ngIf="!platform.is('ios')" (click)="close.emit()"><ion-icon name="close"></ion-icon></ion-button>
     </ion-buttons>
-    <ion-title>Účtenka {{ expense.id }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" color="primary" (click)="save(expenseForm.value)">Uložit</ion-button>
-    </ion-buttons>
+    
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content> -->
+<bo-modal>
+  <h4 slot="title">Účtenka {{ expense.receiptNumber }}</h4>
+
   <form #expenseForm="ngForm">
     <ion-item>
       <ion-label position="floating">ID</ion-label>
-      <ion-input placeholder="V12" name="id" [ngModel]="expense.id"></ion-input>
+      <ion-input placeholder="V12" name="receiptNumber" [ngModel]="expense.receiptNumber" required></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="floating">Typ</ion-label>
       <ion-select placeholder="Potraviny" name="type" [ngModel]="expense.type">
-        <ion-select-option *ngFor="let type of types | keyvalue" [value]="type.key">{{ type.key }}</ion-select-option>
+        <ion-select-option *ngFor="let type of types | keyvalue" [value]="type.key" required>{{
+          type.value.title
+        }}</ion-select-option>
       </ion-select>
     </ion-item>
     <ion-item>
       <ion-label position="floating">Popis</ion-label>
-      <ion-input placeholder="Tabák do Gandalfovy dýmky" name="description" [ngModel]="expense.description"></ion-input>
+      <ion-input
+        placeholder="Tabák do Gandalfovy dýmky"
+        name="description"
+        [ngModel]="expense.description"
+        required
+      ></ion-input>
     </ion-item>
+
     <ion-item>
       <ion-label position="floating">Částka</ion-label>
-      <ion-input type="number" placeholder="1000" name="amount" [ngModel]="expense.amount"></ion-input>
+      <ion-input type="number" placeholder="1000" name="amount" [ngModel]="expense.amount" required></ion-input>
     </ion-item>
   </form>
-</ion-content>
+
+  <ion-buttons slot="buttons">
+    <ion-button (click)="close.emit()">Zrušit</ion-button>
+    <ion-button fill="clear" color="primary" (click)="submit.emit(expenseForm.value)">Uložit</ion-button>
+  </ion-buttons>
+</bo-modal>

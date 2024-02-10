@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { EventResponseWithLinks, MemberResponse } from "src/app/api";
+import { EventAttendeeResponseWithLinks, EventResponseWithLinks } from "src/app/api";
 import { MemberSelectorModalComponent } from "src/app/modules/events/components/member-selector-modal/member-selector-modal.component";
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
@@ -17,8 +17,8 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
   @Input() event?: EventResponseWithLinks | null;
   @Output() change = new EventEmitter<void>();
 
-  attendees: MemberResponse[] = [];
-  leaders: MemberResponse[] = [];
+  attendees: EventAttendeeResponseWithLinks[] = [];
+  leaders: EventAttendeeResponseWithLinks[] = [];
 
   actions: Action[] = [];
 
@@ -49,18 +49,21 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
 
     const attendees = await this.api.events.listEventAttendees(event.id).then((res) => res.data);
 
-    this.attendees = attendees.filter((a) => a.type === "attendee").map((m) => m.member!) || [];
-    this.sortMembers(this.attendees);
+    this.attendees = attendees.filter((a) => a.type === "attendee");
+    this.sortAttendees(this.attendees);
 
-    this.leaders = attendees.filter((a) => a.type === "leader").map((m) => m.member!) || [];
-    this.sortMembers(this.leaders);
+    this.leaders = attendees.filter((a) => a.type === "leader");
+    this.sortAttendees(this.leaders);
   }
 
-  private sortMembers(members: MemberResponse[]) {
+  private sortAttendees(members: EventAttendeeResponseWithLinks[]) {
     members.sort((a, b) => {
-      const aString = a.nickname || a.firstName || a.lastName || "";
-      const bString = b.nickname || b.firstName || b.lastName || "";
-      return aString.localeCompare(bString);
+      if (!a.member || !b.member) return 0;
+
+      const aString = [a.member.nickname, a.member.firstName, a.member.lastName].join(" ");
+      const bString = [b.member.nickname, b.member.firstName, b.member.lastName].join(" ");
+
+      return b.member.role.localeCompare(a.member.role) || aString.localeCompare(bString);
     });
   }
 
@@ -78,9 +81,13 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
       }
 
       // optimistic update
-      this.attendees.push(member);
+      this.attendees.push({
+        eventId: this.event.id,
+        memberId: member.id,
+        member,
+      } as EventAttendeeResponseWithLinks);
 
-      this.sortMembers(this.attendees);
+      this.sortAttendees(this.attendees);
 
       try {
         await this.api.events.addEventAttendee(this.event.id, member.id, {});
@@ -94,19 +101,24 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  async removeAttendee(member: MemberResponse) {
+  async removeAttendee(attendee: EventAttendeeResponseWithLinks) {
     if (!this.event) return;
+
+    if (attendee.type === "leader") {
+      const confirmation = await this.modalService.deleteConfirmationModal("Opravdu chcete odebrat vedoucího akce?");
+      if (!confirmation) return;
+    }
 
     try {
       // optimistic update
-      this.attendees.filter((item) => item.id !== member.id);
+      this.attendees.filter((item) => item.memberId !== attendee.memberId);
 
-      await this.api.events.deleteEventAttendee(this.event.id, member.id);
+      await this.api.events.deleteEventAttendee(this.event.id, attendee.memberId);
 
       this.change.emit();
     } catch (e) {
       this.toastService.toast("Nepodařilo se odebrat účastníka.");
-      this.attendees.push(member); // rollback
+      this.attendees.push(attendee); // rollback
     }
   }
 

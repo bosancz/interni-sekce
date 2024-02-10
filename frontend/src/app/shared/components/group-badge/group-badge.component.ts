@@ -8,4 +8,5 @@ import { GroupResponse } from "src/app/api";
 })
 export class GroupBadgeComponent {
   @Input() groupId!: GroupResponse["id"];
+  @Input() short = false;
 }

@@ -26,6 +26,7 @@ export const EventAttendeeCreateRoute = new RouteACL<Event>({
   contains: EventAttendeeResponse,
 
   permissions: {
+    admin: true,
     vedouci: ({ doc, req }) => isMyEvent(doc, req),
   },
 });
@@ -35,6 +36,7 @@ export const EventAttendeeEditRoute = new RouteACL<EventAttendee>({
   contains: EventAttendeeResponse,
 
   permissions: {
+    admin: true,
     vedouci: ({ doc, req }) => isMyEvent(doc.event, req),
   },
 

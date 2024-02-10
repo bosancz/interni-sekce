@@ -525,22 +525,28 @@ export interface EventExpenseResponse {
     'eventId': number;
     /**
      * 
+     * @type {string}
+     * @memberof EventExpenseResponse
+     */
+    'receiptNumber': string;
+    /**
+     * 
      * @type {number}
      * @memberof EventExpenseResponse
      */
-    'amount'?: number;
+    'amount': number;
     /**
      * 
      * @type {EventExpenseTypesEnum}
      * @memberof EventExpenseResponse
      */
-    'type'?: EventExpenseTypesEnum;
+    'type': EventExpenseTypesEnum;
     /**
      * 
      * @type {string}
      * @memberof EventExpenseResponse
      */
-    'description'?: string;
+    'description': string;
     /**
      * 
      * @type {object}
@@ -589,22 +595,28 @@ export interface EventExpenseResponseWithLinks {
     'eventId': number;
     /**
      * 
+     * @type {string}
+     * @memberof EventExpenseResponseWithLinks
+     */
+    'receiptNumber': string;
+    /**
+     * 
      * @type {number}
      * @memberof EventExpenseResponseWithLinks
      */
-    'amount'?: number;
+    'amount': number;
     /**
      * 
      * @type {EventExpenseTypesEnum}
      * @memberof EventExpenseResponseWithLinks
      */
-    'type'?: EventExpenseTypesEnum;
+    'type': EventExpenseTypesEnum;
     /**
      * 
      * @type {string}
      * @memberof EventExpenseResponseWithLinks
      */
-    'description'?: string;
+    'description': string;
     /**
      * 
      * @type {object}
@@ -679,6 +691,12 @@ export interface EventResponse {
      * @memberof EventResponse
      */
     'leadersEvent': boolean;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof EventResponse
+     */
+    'groupsIds': Array<string>;
     /**
      * 
      * @type {string}
@@ -937,6 +955,12 @@ export interface EventResponseWithLinks {
     'leadersEvent': boolean;
     /**
      * 
+     * @type {Array<string>}
+     * @memberof EventResponseWithLinks
+     */
+    'groupsIds': Array<string>;
+    /**
+     * 
      * @type {string}
      * @memberof EventResponseWithLinks
      */
@@ -1105,6 +1129,12 @@ export interface EventUpdateBody {
      * @memberof EventUpdateBody
      */
     'leadersEvent'?: boolean;
+    /**
+     * 
+     * @type {Array<number>}
+     * @memberof EventUpdateBody
+     */
+    'groupsIds'?: Array<number>;
     /**
      * 
      * @type {string}
@@ -4506,7 +4536,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listEventExpenses(eventId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventExpenseResponseWithLinks>> {
+        async listEventExpenses(eventId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventExpenseResponseWithLinks>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listEventExpenses(eventId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -4776,7 +4806,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listEventExpenses(requestParameters: EventsApiListEventExpensesRequest, options?: AxiosRequestConfig): AxiosPromise<EventExpenseResponseWithLinks> {
+        listEventExpenses(requestParameters: EventsApiListEventExpensesRequest, options?: AxiosRequestConfig): AxiosPromise<Array<EventExpenseResponseWithLinks>> {
             return localVarFp.listEventExpenses(requestParameters.eventId, options).then((request) => request(axios, basePath));
         },
         /**

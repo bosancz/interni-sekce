@@ -31,14 +31,17 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
   onChange: (value: number | number[]) => void = () => {};
   onTouched: () => void = () => {};
 
-  constructor(private elRef: ElementRef<HTMLElement>, private api: ApiService) {
+  constructor(
+    private elRef: ElementRef<HTMLElement>,
+    private api: ApiService,
+  ) {
     this.loadGroups();
   }
 
   ngOnInit() {}
 
   async loadGroups() {
-    this.groups = await this.api.members.listGroups().then((res) => res.data);
+    this.groups = await this.api.members.listGroups({ active: true }).then((res) => res.data);
   }
 
   ngAfterViewInit() {
@@ -106,10 +109,10 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 
   // ControlValueAccessor
   writeValue(groups: number | number[] | undefined): void {
-    if (this.multiple && Array.isArray(groups)) {
-      this.selectedGroups = groups ?? [];
-    } else if (!this.multiple && (typeof groups === "number" || typeof groups === "undefined")) {
-      this.selectedGroups = groups ? [groups] : [];
+    if (this.multiple) {
+      this.selectedGroups = Array.isArray(groups) ? groups : this.groups?.map((group) => group.id) ?? [];
+    } else {
+      this.selectedGroups = groups ? (Array.isArray(groups) ? groups : [groups]) : [];
     }
   }
   registerOnChange(fn: any): void {

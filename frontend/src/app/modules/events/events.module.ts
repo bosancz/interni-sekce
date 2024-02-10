@@ -4,6 +4,7 @@ import { SharedModule } from "src/app/shared/shared.module";
 import { EventAccountingComponent } from "./components/event-accounting/event-accounting.component";
 import { EventAddAttendeesComponent } from "./components/event-add-attendees/event-add-attendees.component";
 import { EventAgeHistogramComponent } from "./components/event-age-histogram/event-age-histogram.component";
+import { EventAttendeesListComponent } from "./components/event-attendees-list/event-attendees-list.component";
 import { EventAttendeesComponent } from "./components/event-attendees/event-attendees.component";
 import { EventBirthdayListComponent } from "./components/event-birthday-list/event-birthday-list.component";
 import { EventExpenseModalComponent } from "./components/event-expense-modal/event-expense-modal.component";
@@ -40,6 +41,7 @@ import { EventsService } from "./services/events.service";
     EventViewComponent,
     MemberSelectorComponent,
     MemberSelectorModalComponent,
+    EventAttendeesListComponent,
   ],
   imports: [CommonModule, EventsRoutingModule, SharedModule],
   providers: [EventsService],

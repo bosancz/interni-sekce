@@ -22,7 +22,7 @@ export class MemberPipe implements PipeTransform {
 
         if (typeof birthday === "string") birthday = DateTime.fromISO(birthday);
 
-        return Math.floor(birthday.diffNow("years").years * -1);
+        return String(Math.floor(birthday.diffNow("years").years * -1));
 
       case "membership":
         return MembershipStates[member.membership].title;

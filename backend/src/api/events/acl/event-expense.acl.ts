@@ -34,6 +34,7 @@ export const EventExpenseEditRoute = new RouteACL<EventExpense>({
   linkTo: EventExpenseResponse,
 
   permissions: {
+    admin: true,
     vedouci: ({ doc, req }) => isMyEvent(doc.event, req),
   },
 

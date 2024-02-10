@@ -5,18 +5,16 @@ import { CardInsuranceCardComponent } from "./components/card-insurance-card/car
 import MemberContactsComponent from "./components/member-contacts/member-contacts.component";
 import { MemberHealthComponent } from "./components/member-health/member-health.component";
 import { MemberInfoComponent } from "./components/member-info/member-info.component";
+import { MemberProfileComponent } from "./components/member-profile/member-profile.component";
 import { MembersRoutingModule } from "./members-routing.module";
 import { MembersCreateComponent } from "./pages/members-create/members-create.component";
-import { MembersEditComponent } from "./pages/members-edit/members-edit.component";
 import { MembersListComponent } from "./pages/members-list/members-list.component";
 import { MembersViewComponent } from "./pages/members-view/members-view.component";
-import { MemberProfileComponent } from './components/member-profile/member-profile.component';
 
 @NgModule({
   declarations: [
     MembersListComponent,
     MembersViewComponent,
-    MembersEditComponent,
     MembersCreateComponent,
     MemberInfoComponent,
     MemberHealthComponent,

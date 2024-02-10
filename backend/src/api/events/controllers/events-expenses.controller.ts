@@ -19,14 +19,16 @@ export class EventsExpensesController {
 
   @Get("")
   @AcLinks(EventExpensesListRoute)
-  @ApiResponse({ type: WithLinks(EventExpenseResponse) })
+  @ApiResponse({ type: WithLinks(EventExpenseResponse), isArray: true })
   async listEventExpenses(@Req() req: Request, @Param("eventId") eventId: number): Promise<EventExpenseResponse[]> {
     const event = await this.events.getEvent(eventId);
     if (!event) throw new NotFoundException();
 
     EventExpensesListRoute.canOrThrow(req, event);
 
-    return this.events.getEventExpenses(eventId);
+    const expenses = await this.events.getEventExpenses(eventId);
+
+    return expenses;
   }
 
   @Post(":expenseId")
@@ -35,7 +37,7 @@ export class EventsExpensesController {
   async addEventExpense(
     @Req() req: Request,
     @Param("eventId") eventId: number,
-    @Param("expenseId") expenseId: string,
+    @Param("expenseId") expenseId: number,
     @Body() body: EventExpenseCreateBody,
   ) {
     const event = await this.events.getEvent(eventId);
@@ -52,7 +54,7 @@ export class EventsExpensesController {
   async updateEventExpense(
     @Req() req: Request,
     @Param("eventId") eventId: number,
-    @Param("expenseId") expenseId: string,
+    @Param("expenseId") expenseId: number,
     @Body() body: EventExpenseUpdateBody,
   ) {
     const eventExpense = await this.events.getEventExpense(eventId, expenseId);
@@ -71,7 +73,7 @@ export class EventsExpensesController {
   async deleteEventExpense(
     @Req() req: Request,
     @Param("eventId") eventId: number,
-    @Param("expenseId") expenseId: string,
+    @Param("expenseId") expenseId: number,
   ) {
     const eventExpense = await this.events.getEventExpense(eventId, expenseId);
     if (!eventExpense) throw new NotFoundException();

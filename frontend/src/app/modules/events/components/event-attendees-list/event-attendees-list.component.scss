@@ -1,0 +1,23 @@
+@import "src/styles/variables.scss";
+
+bo-item {
+  --label-width: 80px;
+}
+
+.group {
+  flex: 0 0 40px;
+  text-align: center;
+}
+
+.birthday {
+  white-space: nowrap;
+}
+
+.role {
+  flex: 0 0 20px;
+  text-align: center;
+  line-height: 0;
+  ion-badge {
+    background-color: $colorMedium;
+  }
+}

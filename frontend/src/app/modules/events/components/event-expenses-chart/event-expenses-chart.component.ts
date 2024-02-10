@@ -1,7 +1,9 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
+import { ChartData, ChartOptions } from "chart.js";
 import { DateTime } from "luxon";
-import { EventResponseWithLinks } from "src/app/api";
-import { EventExpenseTypes, EventExpenseTypesMetadata } from "src/app/config/event-expense-types";
+import { EventExpenseResponseWithLinks, EventExpenseTypesEnum, EventResponseWithLinks } from "src/app/api";
+import { EventExpenseTypes } from "src/app/config/event-expense-types";
+import { ApiService } from "src/app/services/api.service";
 
 @Component({
   selector: "bo-event-expenses-chart",
@@ -10,57 +12,87 @@ import { EventExpenseTypes, EventExpenseTypesMetadata } from "src/app/config/eve
 })
 export class EventExpensesChartComponent implements OnInit, OnChanges {
   @Input() event?: EventResponseWithLinks;
+  @Input() expenses?: EventExpenseResponseWithLinks[];
 
   days: number = 0;
   persons: number = 0;
 
   total: number = 0;
 
-  totalByType: { [type: string]: { total: number; type?: EventExpenseTypesMetadata } } = {};
+  totalByType: Record<EventExpenseTypesEnum, number> = {
+    accommodation: 0,
+    food: 0,
+    material: 0,
+    other: 0,
+    transport: 0,
+  };
+
+  chartData?: ChartData<"doughnut">;
+
+  chartOptions: ChartOptions<"doughnut"> = {
+    cutout: "60%",
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          useBorderRadius: true,
+        },
+      },
+    },
+  };
+
+  constructor(private api: ApiService) {}
+
+  ngOnInit() {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes["event"]) this.updateChart(this.event);
+    this.updateChart();
   }
-  private updateChart(event?: EventResponseWithLinks) {
-    if (!event) {
-      this.days = 0;
-      this.persons = 0;
-      this.total = 0;
-      this.totalByType = {};
 
-      return;
-    }
+  private async updateChart() {
+    this.totalByType = {
+      accommodation: 0,
+      food: 0,
+      material: 0,
+      other: 0,
+      transport: 0,
+    };
 
-    const dateFrom = DateTime.fromISO(event.dateFrom).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-    const dateTill = DateTime.fromISO(event.dateTill)
+    if (!this.event || !this.expenses) return;
+
+    const dateFrom = DateTime.fromISO(this.event.dateFrom).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+    const dateTill = DateTime.fromISO(this.event.dateTill)
       .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
       .plus({ days: 1 });
 
     this.days = Math.ceil(dateTill.diff(dateFrom, "days").days);
-    this.persons = (event.attendees?.length || 0) + (event.leaders?.length || 0);
 
-    // reset
-    this.total = 0;
-    this.totalByType = {};
+    const attendees = await this.api.events.listEventAttendees(this.event.id).then((res) => res.data);
 
-    event.expenses?.forEach((expense) => {
-      const amount = expense.amount || 0;
-      this.total += amount;
+    this.persons = attendees?.length || 1;
 
-      if (expense.type) {
-        if (!this.totalByType[expense.type]) {
-          this.totalByType[expense.type] = {
-            total: 0,
-            type: EventExpenseTypes[expense.type],
-          };
-        }
-
-        this.totalByType[expense.type]!.total += amount;
-      }
+    const data: ChartData<"doughnut">["datasets"][0]["data"] = Object.keys(EventExpenseTypes).map((type) => {
+      return this.getTotalExpenseByType(type as EventExpenseTypesEnum) / this.persons / this.days;
     });
+
+    this.chartData = {
+      labels: Object.values(EventExpenseTypes).map((t) => t.title),
+      datasets: [
+        {
+          // backgroundColor: EventExpenseTypes[type as EventExpenseTypesEnum].color,
+          // tooltip: Math.round(value * 100) / 100 + "/os/den",
+          data,
+          borderRadius: 4,
+
+          backgroundColor: Object.values(EventExpenseTypes).map((t) => t.color),
+        },
+      ],
+    };
+
+    this.total = this.expenses.reduce((acc, e) => acc + parseFloat(e.amount as any), 0);
   }
 
-  constructor() {}
-
-  ngOnInit() {}
+  private getTotalExpenseByType(type: EventExpenseTypesEnum) {
+    return this.expenses?.filter((e) => e.type === type).reduce((acc, e) => acc + parseFloat(e.amount as any), 0) || 0;
+  }
 }

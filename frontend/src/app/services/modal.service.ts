@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from "@angular/core";
-import { AlertController, ModalController } from "@ionic/angular";
+import { AlertController, ModalController, ModalOptions } from "@ionic/angular";
 import { ComponentProps, TextFieldTypes } from "@ionic/core";
 
 interface BaseModalOptions {
@@ -113,11 +113,22 @@ export class ModalService {
     });
   }
 
-  async componentModal<C extends ModalComponentRef>(component: C, componentProps?: ComponentProps<C>) {
+  async componentModal<C extends ModalComponentRef>(
+    component: C,
+    componentProps?: ComponentProps<C>,
+    options: Omit<ModalOptions<C>, "component" | "componentProps"> = {},
+  ) {
+    const classes = ["dialog"];
+
+    if (options.cssClass)
+      Array.isArray(options.cssClass) ? classes.push(...options.cssClass) : classes.push(options.cssClass);
+
     return new Promise<ModalComponentData<C> | null>(async (resolve, reject) => {
       const modal = await this.modalController.create({
         component,
         componentProps,
+        ...options,
+        cssClass: classes.join(" "),
       });
 
       modal.onWillDismiss().then((ev) => resolve(ev.data ?? null));

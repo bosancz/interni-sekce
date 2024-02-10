@@ -17,10 +17,12 @@ h6 {
   font-weight: bold;
 }
 
-a[href],
-a.clickable {
-  cursor: pointer;
+a[href] {
   color: $blue;
+}
+
+.clickable {
+  cursor: pointer;
 }
 
 .selectable {

@@ -2,7 +2,7 @@ import { Component } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter, ViewWillLeave } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { EventResponseWithLinks } from "src/app/api";
+import { EventResponseWithLinks, EventUpdateBody } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
@@ -43,7 +43,7 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 
   ionViewWillLeave(): void {}
 
-  async updateEvent(data: Partial<EventResponseWithLinks>) {
+  async updateEvent(data: Partial<EventUpdateBody>) {
     if (!this.event) return;
 
     try {

@@ -35,20 +35,25 @@ import { MarkdownPipe } from "./pipes/markdown.pipe";
 import { MemberPipe } from "./pipes/member.pipe";
 import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
 
+import { NgChartsModule } from "ng2-charts";
 import { register } from "swiper/element/bundle";
 import { AddButtonComponent } from "./components/add-button/add-button.component";
 import { CardHeaderComponent } from "./components/card-header/card-header.component";
 import { CardOpenButtonComponent } from "./components/card-open-button/card-open-button.component";
 import { CopyButtonComponent } from "./components/copy-button/copy-button.component";
+import { DeleteButtonComponent } from "./components/delete-button/delete-button.component";
 import { GroupBadgeComponent } from "./components/group-badge/group-badge.component";
 import { ItemComponent } from "./components/item/item.component";
+import { ModalComponent } from "./components/modal/modal.component";
 import { TabComponent } from "./components/tab/tab.component";
 import { TabsComponent } from "./components/tabs/tabs.component";
+import { EventExpensePipe } from "./pipes/event-expense.pipe";
+import { RolePipe } from "./pipes/role.pipe";
 // register Swiper custom elements
 register();
 
 @NgModule({
-  imports: [CommonModule, FormsModule, RouterModule, IonicModule],
+  imports: [CommonModule, FormsModule, RouterModule, IonicModule, NgChartsModule],
   declarations: [
     ActionButtonsComponent,
     AdminTableComponent,
@@ -89,12 +94,17 @@ register();
     TabsComponent,
     TabComponent,
     ItemComponent,
+    ModalComponent,
+    EventExpensePipe,
+    DeleteButtonComponent,
+    RolePipe,
   ],
   exports: [
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
     RouterModule,
+    NgChartsModule,
 
     ActionButtonsComponent,
     AdminTableComponent,
@@ -134,6 +144,10 @@ register();
     TabsComponent,
     TabComponent,
     ItemComponent,
+    ModalComponent,
+    EventExpensePipe,
+    DeleteButtonComponent,
+    RolePipe,
   ],
   providers: [DatePipe],
 })

@@ -6,9 +6,9 @@ export interface EventExpenseTypesMetadata {
 }
 
 export const EventExpenseTypes: { [id in EventExpenseTypesEnum]: EventExpenseTypesMetadata } = {
-  food: { title: "Potraviny", color: "primary" },
-  transport: { title: "Doprava", color: "secondary" },
-  material: { title: "Materiál", color: "dark" },
-  accommodation: { title: "Ubytování", color: "dark" },
-  other: { title: "Ostatní", color: "dark" },
+  food: { title: "Potraviny", color: "#4caf50" },
+  transport: { title: "Doprava", color: "#ff9800" },
+  material: { title: "Materiál", color: "#2196f3" },
+  accommodation: { title: "Ubytování", color: "#9c27b0" },
+  other: { title: "Ostatní", color: "#607d8b" },
 };

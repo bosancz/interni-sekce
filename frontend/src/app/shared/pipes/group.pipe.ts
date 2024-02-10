@@ -2,9 +2,9 @@ import { ChangeDetectorRef, Pipe, PipeTransform } from "@angular/core";
 import { GroupResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
-export type GroupPipeProperty = "name" | "color";
+export type GroupPipeProperty = "name" | "color" | "code";
 
-type GroupPipeData = { color: string; name: string };
+type GroupPipeData = { color: string; name: string; code: string };
 
 @Pipe({
   name: "group",
@@ -16,9 +16,13 @@ export class GroupPipe implements PipeTransform {
   defaultValues: GroupPipeData = {
     color: "#000",
     name: "???",
+    code: "?",
   };
 
-  constructor(private api: ApiService, private cdRef: ChangeDetectorRef) {
+  constructor(
+    private api: ApiService,
+    private cdRef: ChangeDetectorRef,
+  ) {
     this.api.cache.groups.subscribe((groups) => {
       if (!groups) return;
 
@@ -35,6 +39,8 @@ export class GroupPipe implements PipeTransform {
     switch (property) {
       case "name":
         return group.name ?? group.shortName;
+      case "code":
+        return group.shortName ?? "?";
       default:
         return group[property] ?? "???";
     }
