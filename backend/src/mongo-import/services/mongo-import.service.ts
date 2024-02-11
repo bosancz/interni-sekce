@@ -211,9 +211,10 @@ export class MongoImportService {
       let status = <any>mongoEvent.status ?? EventStates.draft;
       if (status === "rejected") status = EventStates.pending;
 
-      const groups = (await Promise.all(
-        mongoEvent.groups?.map((g) => this.getGroupId(t, g).then((id) => ({ id }))) ?? [],
-      )) as Group[];
+      const groups = await Promise.all(
+        mongoEvent.groups?.filter((g) => g !== "V").map((g) => this.getGroupId(t, g).then((id) => ({ id }) as Group)) ??
+          [],
+      );
 
       const eventData: Omit<Event, "id" | "setLeaders" | "groupsIds"> = {
         name: mongoEvent.name,
