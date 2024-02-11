@@ -1,7 +1,7 @@
 <ion-card *ngIf="event" class="event">
-  <ion-card-content class="statusNote" [style.background-color]="event.status | eventStatus : 'color'">
+  <ion-card-content class="statusNote" [style.background-color]="event.status | eventStatus: 'color'">
     <p>
-      <strong>{{ event.status | eventStatus : "name" }}</strong
+      <strong>{{ event.status | eventStatus: "name" }}</strong
       ><ng-container *ngIf="event.statusNote">: {{ event.statusNote }}</ng-container>
     </p>
   </ion-card-content>
@@ -18,9 +18,9 @@
     <div
       slot="start"
       class="icon"
-      [style.background-color]="(event | event : 'image') ? 'transparent' : (event | event : 'color') || '#ccc'"
+      [style.background-color]="(event | event: 'image') ? 'transparent' : (event | event: 'color') || '#ccc'"
     >
-      <img *ngIf="event | event : 'image'" class="img-fluid" [src]="event | event : 'image'" />
+      <img *ngIf="event | event: 'image'" class="img-fluid" [src]="event | event: 'image'" />
     </div>
 
     <ion-label>
@@ -49,7 +49,7 @@
   <ion-card-content *ngIf="actions" class="text-right buttons">
     <ion-buttons class="d-block">
       <ion-button
-        *ngIf="event._links.submitEvent?.applicable"
+        *ngIf="event._links.submitEvent.applicable"
         color="primary"
         [disabled]="!event._links.submitEvent.allowed"
         (click)="eventAction(event, 'submitEvent')"
@@ -58,7 +58,7 @@
       </ion-button>
 
       <ion-button
-        *ngIf="event._links.rejectEvent?.applicable"
+        *ngIf="event._links.rejectEvent.applicable"
         [disabled]="!event._links!.rejectEvent.allowed"
         (click)="eventAction(event, 'rejectEvent')"
       >
@@ -66,7 +66,7 @@
       </ion-button>
 
       <ion-button
-        *ngIf="event._links.publishEvent"
+        *ngIf="event._links.publishEvent.applicable"
         color="primary"
         [disabled]="!event._links!.publishEvent.allowed"
         (click)="eventAction(event, 'publishEvent')"
@@ -75,7 +75,7 @@
       </ion-button>
 
       <ion-button
-        *ngIf="event._links.unpublishEvent"
+        *ngIf="event._links.unpublishEvent.applicable"
         [disabled]="!event._links!.unpublishEvent.allowed"
         (click)="eventAction(event, 'unpublishEvent')"
       >
@@ -83,7 +83,7 @@
       </ion-button>
 
       <ion-button
-        *ngIf="event._links.cancelEvent"
+        *ngIf="event._links.cancelEvent.applicable"
         color="danger"
         [disabled]="!event._links!.cancelEvent.allowed"
         (click)="eventAction(event, 'cancelEvent')"
@@ -92,7 +92,7 @@
       </ion-button>
 
       <ion-button
-        *ngIf="event._links.uncancelEvent"
+        *ngIf="event._links.uncancelEvent.applicable"
         [disabled]="!event._links!.uncancelEvent.allowed"
         (click)="eventAction(event, 'uncancelEvent')"
       >
