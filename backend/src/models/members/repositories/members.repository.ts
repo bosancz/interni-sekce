@@ -6,7 +6,7 @@ import { MemberContact } from "../entities/member-contact.entity";
 import { Member } from "../entities/member.entity";
 
 export interface GetMembersOptions extends PaginationOptions {
-  group?: number;
+  groups?: number[];
   search?: string;
   roles?: string[];
   membership?: string;
@@ -26,7 +26,7 @@ export class MembersRepository {
       .take(options.limit)
       .skip(options.offset);
 
-    if (options.group) q.andWhere("members.groupId = :groupId", { groupId: options.group });
+    if (options.groups) q.andWhere("members.groupId IN (:...groupIds)", { groupIds: options.groups });
 
     if (options.search)
       q.andWhere(

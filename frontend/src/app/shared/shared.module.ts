@@ -42,8 +42,10 @@ import { CardHeaderComponent } from "./components/card-header/card-header.compon
 import { CardOpenButtonComponent } from "./components/card-open-button/card-open-button.component";
 import { CopyButtonComponent } from "./components/copy-button/copy-button.component";
 import { DeleteButtonComponent } from "./components/delete-button/delete-button.component";
+import { FilterModalComponent } from "./components/filter-modal/filter-modal.component";
 import { GroupBadgeComponent } from "./components/group-badge/group-badge.component";
 import { ItemComponent } from "./components/item/item.component";
+import { ModalTemplateComponent } from "./components/modal-template/modal-template.component";
 import { ModalComponent } from "./components/modal/modal.component";
 import { TabComponent } from "./components/tab/tab.component";
 import { TabsComponent } from "./components/tabs/tabs.component";
@@ -98,6 +100,8 @@ register();
     EventExpensePipe,
     DeleteButtonComponent,
     RolePipe,
+    FilterModalComponent,
+    ModalTemplateComponent,
   ],
   exports: [
     FormsModule,
@@ -148,6 +152,7 @@ register();
     EventExpensePipe,
     DeleteButtonComponent,
     RolePipe,
+    ModalTemplateComponent,
   ],
   providers: [DatePipe],
 })

@@ -105,6 +105,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
       roles: filter.roles || undefined,
       membership: filter.membership || undefined,
       limit: this.pageSize,
+      groups: filter.groups || undefined,
     };
 
     const members = await this.api.members.listMembers(params).then((res) => res.data);

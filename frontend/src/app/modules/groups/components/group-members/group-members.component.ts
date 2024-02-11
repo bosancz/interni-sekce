@@ -20,7 +20,10 @@ export class GroupMembersComponent implements OnInit {
     search: "",
   };
 
-  constructor(private api: ApiService, private groupsService: GroupsService) {}
+  constructor(
+    private api: ApiService,
+    private groupsService: GroupsService,
+  ) {}
 
   ngOnInit(): void {
     this.groupsService.currentGroup.pipe(untilDestroyed(this)).subscribe((group) => this.loadMembers(group?.id));
@@ -32,7 +35,7 @@ export class GroupMembersComponent implements OnInit {
       return;
     }
 
-    this.members = await this.api.members.listMembers({ group: groupId }).then((res) => res.data);
+    this.members = await this.api.members.listMembers({ groups: [groupId] }).then((res) => res.data);
 
     this.members.forEach((member) => {
       member.searchString = [member.nickname, member.firstName, member.lastName].join(" ");

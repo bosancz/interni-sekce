@@ -61,7 +61,13 @@ export class MemberUpdateBody extends PartialType(
 ) {}
 
 export class MembersListQuery extends PaginationQuery {
-  @ApiPropertyOptional() @IsNumber() @IsOptional() group?: number;
+  @ApiPropertyOptional({ type: "number", isArray: true })
+  @EnsureArray()
+  @Type(() => Number, {})
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  groups?: number[];
+
   @ApiPropertyOptional() @IsString() @IsOptional() search?: string;
   @ApiPropertyOptional() @EnsureArray() @IsEnum(MemberRoles, { each: true }) @IsOptional() roles?: MemberRoles[];
   @ApiPropertyOptional() @IsEnum(MembershipStates) @IsOptional() membership?: MembershipStates;

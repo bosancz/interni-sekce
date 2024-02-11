@@ -6037,14 +6037,14 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
          * 
          * @param {number} [limit] 
          * @param {number} [offset] 
-         * @param {number} [group] 
+         * @param {Array<number>} [groups] 
          * @param {string} [search] 
          * @param {Array<string>} [roles] 
          * @param {string} [membership] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        exportMembersXlsx: async (limit?: number, offset?: number, group?: number, search?: string, roles?: Array<string>, membership?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        exportMembersXlsx: async (limit?: number, offset?: number, groups?: Array<number>, search?: string, roles?: Array<string>, membership?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/members/export/xlsx`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6065,8 +6065,8 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['offset'] = offset;
             }
 
-            if (group !== undefined) {
-                localVarQueryParameter['group'] = group;
+            if (groups) {
+                localVarQueryParameter['groups'] = groups;
             }
 
             if (search !== undefined) {
@@ -6262,14 +6262,14 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
          * 
          * @param {number} [limit] 
          * @param {number} [offset] 
-         * @param {number} [group] 
+         * @param {Array<number>} [groups] 
          * @param {string} [search] 
          * @param {Array<string>} [roles] 
          * @param {string} [membership] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listMembers: async (limit?: number, offset?: number, group?: number, search?: string, roles?: Array<string>, membership?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        listMembers: async (limit?: number, offset?: number, groups?: Array<number>, search?: string, roles?: Array<string>, membership?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/members`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6290,8 +6290,8 @@ export const MembersApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['offset'] = offset;
             }
 
-            if (group !== undefined) {
-                localVarQueryParameter['group'] = group;
+            if (groups) {
+                localVarQueryParameter['groups'] = groups;
             }
 
             if (search !== undefined) {
@@ -6566,15 +6566,15 @@ export const MembersApiFp = function(configuration?: Configuration) {
          * 
          * @param {number} [limit] 
          * @param {number} [offset] 
-         * @param {number} [group] 
+         * @param {Array<number>} [groups] 
          * @param {string} [search] 
          * @param {Array<string>} [roles] 
          * @param {string} [membership] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async exportMembersXlsx(limit?: number, offset?: number, group?: number, search?: string, roles?: Array<string>, membership?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<File>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.exportMembersXlsx(limit, offset, group, search, roles, membership, options);
+        async exportMembersXlsx(limit?: number, offset?: number, groups?: Array<number>, search?: string, roles?: Array<string>, membership?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<File>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.exportMembersXlsx(limit, offset, groups, search, roles, membership, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -6631,15 +6631,15 @@ export const MembersApiFp = function(configuration?: Configuration) {
          * 
          * @param {number} [limit] 
          * @param {number} [offset] 
-         * @param {number} [group] 
+         * @param {Array<number>} [groups] 
          * @param {string} [search] 
          * @param {Array<string>} [roles] 
          * @param {string} [membership] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listMembers(limit?: number, offset?: number, group?: number, search?: string, roles?: Array<string>, membership?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MemberResponseWithLinks>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listMembers(limit, offset, group, search, roles, membership, options);
+        async listMembers(limit?: number, offset?: number, groups?: Array<number>, search?: string, roles?: Array<string>, membership?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MemberResponseWithLinks>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listMembers(limit, offset, groups, search, roles, membership, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -6767,7 +6767,7 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
          * @throws {RequiredError}
          */
         exportMembersXlsx(requestParameters: MembersApiExportMembersXlsxRequest = {}, options?: AxiosRequestConfig): AxiosPromise<File> {
-            return localVarFp.exportMembersXlsx(requestParameters.limit, requestParameters.offset, requestParameters.group, requestParameters.search, requestParameters.roles, requestParameters.membership, options).then((request) => request(axios, basePath));
+            return localVarFp.exportMembersXlsx(requestParameters.limit, requestParameters.offset, requestParameters.groups, requestParameters.search, requestParameters.roles, requestParameters.membership, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -6821,7 +6821,7 @@ export const MembersApiFactory = function (configuration?: Configuration, basePa
          * @throws {RequiredError}
          */
         listMembers(requestParameters: MembersApiListMembersRequest = {}, options?: AxiosRequestConfig): AxiosPromise<Array<MemberResponseWithLinks>> {
-            return localVarFp.listMembers(requestParameters.limit, requestParameters.offset, requestParameters.group, requestParameters.search, requestParameters.roles, requestParameters.membership, options).then((request) => request(axios, basePath));
+            return localVarFp.listMembers(requestParameters.limit, requestParameters.offset, requestParameters.groups, requestParameters.search, requestParameters.roles, requestParameters.membership, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -7003,10 +7003,10 @@ export interface MembersApiExportMembersXlsxRequest {
 
     /**
      * 
-     * @type {number}
+     * @type {Array<number>}
      * @memberof MembersApiExportMembersXlsx
      */
-    readonly group?: number
+    readonly groups?: Array<number>
 
     /**
      * 
@@ -7053,10 +7053,10 @@ export interface MembersApiExportMembersXlsxQueryParams {
 
     /**
      * 
-     * @type {number}
+     * @type {Array<number>}
      * @memberof MembersApiExportMembersXlsx
      */
-    group?: number
+    groups?: Array<number>
 
     /**
      * 
@@ -7191,10 +7191,10 @@ export interface MembersApiListMembersRequest {
 
     /**
      * 
-     * @type {number}
+     * @type {Array<number>}
      * @memberof MembersApiListMembers
      */
-    readonly group?: number
+    readonly groups?: Array<number>
 
     /**
      * 
@@ -7241,10 +7241,10 @@ export interface MembersApiListMembersQueryParams {
 
     /**
      * 
-     * @type {number}
+     * @type {Array<number>}
      * @memberof MembersApiListMembers
      */
-    group?: number
+    groups?: Array<number>
 
     /**
      * 
@@ -7455,7 +7455,7 @@ export class MembersApi extends BaseAPI {
      * @memberof MembersApi
      */
     public exportMembersXlsx(queryParams: MembersApiExportMembersXlsxQueryParams = {}, options?: AxiosRequestConfig) {
-        return MembersApiFp(this.configuration).exportMembersXlsx(queryParams.limit, queryParams.offset, queryParams.group, queryParams.search, queryParams.roles, queryParams.membership, options).then((request) => request(this.axios, this.basePath));
+        return MembersApiFp(this.configuration).exportMembersXlsx(queryParams.limit, queryParams.offset, queryParams.groups, queryParams.search, queryParams.roles, queryParams.membership, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -7521,7 +7521,7 @@ export class MembersApi extends BaseAPI {
      * @memberof MembersApi
      */
     public listMembers(queryParams: MembersApiListMembersQueryParams = {}, options?: AxiosRequestConfig) {
-        return MembersApiFp(this.configuration).listMembers(queryParams.limit, queryParams.offset, queryParams.group, queryParams.search, queryParams.roles, queryParams.membership, options).then((request) => request(this.axios, this.basePath));
+        return MembersApiFp(this.configuration).listMembers(queryParams.limit, queryParams.offset, queryParams.groups, queryParams.search, queryParams.roles, queryParams.membership, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

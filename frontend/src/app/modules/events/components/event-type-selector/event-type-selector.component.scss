@@ -8,6 +8,7 @@ span.type {
   display: inline-block;
   opacity: 0.2;
   cursor: pointer;
+  filter: grayscale(1);
 }
 span.type img {
   height: $size;
@@ -20,6 +21,7 @@ span.type .circle {
 }
 
 span.type.selected {
+  filter: grayscale(0);
   opacity: 1;
 }
 span.type:hover {

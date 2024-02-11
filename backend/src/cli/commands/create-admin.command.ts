@@ -1,3 +1,4 @@
+import { Logger } from "@nestjs/common";
 import { Command, CommandRunner } from "nest-commander";
 import { HashService } from "src/auth/services/hash.service";
 import { UserRoles } from "../../models/users/entities/user.entity";
@@ -9,6 +10,8 @@ import { UsersRepository } from "../../models/users/repositories/users.repositor
   options: {},
 })
 export class CreateAdminCommand extends CommandRunner {
+  private logger = new Logger(CreateAdminCommand.name);
+
   constructor(
     private usersService: UsersRepository,
     private hashService: HashService,
@@ -28,6 +31,6 @@ export class CreateAdminCommand extends CommandRunner {
       email: "admin@bosan.cz",
       roles: [UserRoles.admin],
     });
-    console.warn("Created user 'admin' with password 'admin'");
+    this.logger.warn("Created user 'admin' with password 'admin'");
   }
 }

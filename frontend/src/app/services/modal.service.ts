@@ -1,6 +1,7 @@
-import { EventEmitter, Injectable } from "@angular/core";
+import { EventEmitter, Injectable, TemplateRef } from "@angular/core";
 import { AlertController, ModalController, ModalOptions } from "@ionic/angular";
 import { ComponentProps, TextFieldTypes } from "@ionic/core";
+import { ModalTemplateComponent } from "../shared/components/modal-template/modal-template.component";
 
 interface BaseModalOptions {
   header?: string;
@@ -128,10 +129,25 @@ export class ModalService {
         component,
         componentProps,
         ...options,
+
         cssClass: classes.join(" "),
       });
 
       modal.onWillDismiss().then((ev) => resolve(ev.data ?? null));
+
+      await modal.present();
+    });
+  }
+
+  async templateModal(template: TemplateRef<any>) {
+    return new Promise<void>(async (resolve, reject) => {
+      const modal = await this.modalController.create({
+        component: ModalTemplateComponent,
+        componentProps: { template },
+        cssClass: "dialog",
+      });
+
+      modal.onWillDismiss().then(() => resolve());
 
       await modal.present();
     });

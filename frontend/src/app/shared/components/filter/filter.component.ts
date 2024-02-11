@@ -7,13 +7,16 @@ import {
   Input,
   Output,
   QueryList,
+  TemplateRef,
   ViewChild,
 } from "@angular/core";
 import { NgModel } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { IonModal, IonSearchbar } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { ModalService } from "src/app/services/modal.service";
 import { UrlParams } from "src/helpers/typings";
+import { FilterModalComponent } from "../filter-modal/filter-modal.component";
 
 export type FilterData = any;
 
@@ -38,12 +41,15 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 
   searchString?: string;
 
+  filterCount: number = 0;
+
   // ControlValueAccessor
   disabled = false;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
+    private modalService: ModalService,
   ) {}
 
   public ngAfterContentInit() {
@@ -60,13 +66,16 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
     setTimeout(() => this.searchbar?.setFocus(), 500);
   }
 
-  public onCancel() {
-    this.modal!.dismiss();
-    this.setControls(this.route.snapshot.queryParams);
+  async openFilter(filterContent: TemplateRef<any>) {
+    const result = await this.modalService.componentModal(FilterModalComponent, { content: filterContent });
+    if (result) this.setParams();
+    else {
+      this.setControls({});
+      this.setParams();
+    }
   }
 
-  onSubmit() {
-    this.modal!.dismiss();
+  onSearchbarUpdate() {
     this.setParams();
   }
 
@@ -74,10 +83,16 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
     const queryParams: UrlParams = { ...this.route.snapshot.queryParams };
 
     this.controls.forEach((item) => {
-      if (Array.isArray(item.value))
-        queryParams[item.name] = item.value.map((i) => String(i)).join(this.paramsSeparator);
-      else if (item.value) queryParams[item.name] = String(item.value);
-      else delete queryParams[item.name];
+      if (Array.isArray(item.value)) {
+        queryParams[item.name] = item.value
+          .filter((i) => !!i)
+          .map((i) => String(i))
+          .join(this.paramsSeparator);
+      } else {
+        queryParams[item.name] = item.value ? String(item.value) : undefined;
+      }
+
+      if (!queryParams[item.name]) delete queryParams[item.name];
     });
 
     if (this.search) {
@@ -102,10 +117,8 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
       item.control.setValue(value || null);
     }
 
-    if (this.search && params["search"]) this.searchString = params["search"];
-  }
+    this.filterCount = this.controls.reduce((acc, cur) => acc + (cur.value ? 1 : 0), 0);
 
-  public getFilterCount() {
-    return this.controls.reduce((acc, cur) => acc + (cur.value ? 1 : 0), 0);
+    if (this.search && params["search"]) this.searchString = params["search"];
   }
 }

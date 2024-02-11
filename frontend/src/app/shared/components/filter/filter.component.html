@@ -6,28 +6,23 @@
     placeholder="Hledat"
     [debounce]="500"
     [(ngModel)]="searchString"
-    (ngModelChange)="onSubmit()"
+    (ngModelChange)="onSearchbarUpdate()"
     (change)="$event.stopPropagation()"
   ></ion-searchbar>
 
-  <ion-button color="primary" fill="none" [id]="'filter-modal-' + filterId" [disabled]="disabled" slot="end">
+  <ion-button
+    color="primary"
+    fill="none"
+    [id]="'filter-modal-' + filterId"
+    [disabled]="disabled"
+    (click)="openFilter(filterContent)"
+    slot="end"
+  >
     <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
-    <ion-badge *ngIf="getFilterCount()" color="warning">{{ getFilterCount() }}</ion-badge>
+    <ion-badge *ngIf="filterCount" color="warning">{{ filterCount }}</ion-badge>
   </ion-button>
 </ion-toolbar>
 
-<ion-modal [trigger]="'filter-modal-' + filterId">
-  <ng-template>
-    <ion-content class="ion-padding">
-      <ng-content></ng-content>
-    </ion-content>
-    <ion-footer>
-      <ion-toolbar>
-        <ion-buttons slot="end">
-          <ion-button color="secondary" (click)="onCancel()">Zrušit</ion-button>
-          <ion-button color="primary" [strong]="true" (click)="onSubmit()">Filtrovat</ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-footer>
-  </ng-template>
-</ion-modal>
+<ng-template #filterContent>
+  <ng-content></ng-content>
+</ng-template>

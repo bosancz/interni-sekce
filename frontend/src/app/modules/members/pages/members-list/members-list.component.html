@@ -3,7 +3,7 @@
 <bo-filter [search]="true" (change)="onFilterChange($event)">
   <ion-item lines="none">
     <ion-select multiple name="groups" ngModel label="Oddíl" placeholder="všechny">
-      <ion-select-option *ngFor="let group of groups" [value]="group.id">
+      <ion-select-option *ngFor="let group of groups" [value]="'' + group.id">
         {{ group.name }}
       </ion-select-option>
     </ion-select>
@@ -16,7 +16,7 @@
     </ion-select>
   </ion-item>
   <ion-item lines="none">
-    <ion-select multiple name="membership" ngModel label="Členství">
+    <ion-select multiple name="membership" ngModel label="Členství" placeholder="všechny">
       <ion-select-option *ngFor="let state of membershipStates | keyvalue" [value]="state.key">{{
         state.value.title
       }}</ion-select-option>
