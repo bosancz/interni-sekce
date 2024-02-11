@@ -27,7 +27,6 @@ export class EventsRepository {
       .createQueryBuilder("events")
       .select(["events.id", "events.name", "events.status", "events.dateFrom", "events.dateTill", "events.type"])
       .leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
-      .leftJoinAndSelect("attendees.member", "leaders")
       .orderBy("events.dateFrom", "DESC")
       .take(options.limit ?? 25)
       .skip(options.offset ?? 0);
@@ -43,9 +42,9 @@ export class EventsRepository {
 
     if (options.search) q.andWhere("name ILIKE :search", { search: `%${options.search}%` });
 
-    if (options.memberId) q.andWhere("leaders.member_id = :memberId", { memberId: options.memberId });
+    if (options.memberId) q.andWhere("attendees.member_id = :memberId", { memberId: options.memberId });
 
-    if (options.noleader) q.andWhere("leaders.id IS NULL");
+    if (options.noleader) q.andWhere("attendees.member_id IS NULL");
 
     return q.getMany();
   }
