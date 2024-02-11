@@ -2,7 +2,7 @@
   "name": "@bosancz/interni-sekce",
   "description": "Webové stránky Dětské vodácké skupiny ŠÁN",
   "main": "index.js",
-  "version": "4.0.0-rc.13",
+  "version": "4.0.0-rc.14",
   "private": true,
   "scripts": {
     "prepare": "husky install",
