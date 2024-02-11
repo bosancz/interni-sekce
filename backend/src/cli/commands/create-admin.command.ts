@@ -1,7 +1,7 @@
 import { Command, CommandRunner } from "nest-commander";
 import { HashService } from "src/auth/services/hash.service";
 import { UserRoles } from "../../models/users/entities/user.entity";
-import { UsersService } from "../../models/users/services/users.service";
+import { UsersRepository } from "../../models/users/repositories/users.repository";
 
 @Command({
   name: "create-admin",
@@ -10,7 +10,7 @@ import { UsersService } from "../../models/users/services/users.service";
 })
 export class CreateAdminCommand extends CommandRunner {
   constructor(
-    private usersService: UsersService,
+    private usersService: UsersRepository,
     private hashService: HashService,
   ) {
     super();

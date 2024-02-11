@@ -5,7 +5,7 @@ import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { EventCreateBody, EventResponse } from "../dto/event.dto";
 
 export const isMyEvent = (doc: Pick<Event, "attendees"> | undefined, req: Request) =>
-  doc?.attendees?.some((l) => l.memberId === req.user?.userId && l.type === "leader") ?? false;
+  doc?.attendees?.some((l) => l.memberId === req.user?.memberId && l.type === "leader") ?? false;
 
 export const EventsListRoute = new RouteACL({
   linkTo: RootResponse,
@@ -72,7 +72,6 @@ export const EventSubmitRoute = new RouteACL<Event>({
   linkTo: EventResponse,
 
   permissions: {
-    program: true,
     admin: true,
     vedouci: ({ doc, req }) => isMyEvent(doc, req),
   },
@@ -86,7 +85,7 @@ export const EventPublishRoute = new RouteACL<Event>({
     program: true,
     admin: true,
   },
-  condition: (doc) => doc.status === EventStates.pending,
+  condition: (doc) => [EventStates.pending, EventStates.draft].includes(doc.status),
 });
 
 export const EventRejectRoute = new RouteACL<Event>({
@@ -113,7 +112,7 @@ export const EventCancelRoute = new RouteACL<Event>({
     program: true,
     admin: true,
   },
-  condition: (doc) => doc.status !== EventStates.public,
+  condition: (doc) => doc.status === EventStates.public,
 });
 
 export const EventUncancelRoute = new RouteACL<Event>({

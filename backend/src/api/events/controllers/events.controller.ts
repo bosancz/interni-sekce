@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -61,9 +62,13 @@ export class EventsController {
       year: query.year,
       status: query.status,
       search: query.search,
-      userId: query.my ? token.userId : undefined,
       noleader: query.noleader,
     };
+
+    if (query.my) {
+      if (!token.memberId) throw new BadRequestException("Cannot show my events, user is not linked to a member.");
+      options.memberId = token.memberId;
+    }
 
     // FIXME: add ACL logic
 
@@ -136,12 +141,14 @@ export class EventsController {
   @AcLinks(EventLeadRoute)
   @ApiResponse({ status: 204 })
   async leadEvent(@Req() req: Request, @Param("id") id: number, @Token() token: TokenData): Promise<void> {
+    if (token.memberId === undefined) throw new BadRequestException("User is not linked to a member.");
+
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
     EventLeadRoute.canOrThrow(req, event);
 
-    await this.events.createEventAttendee(id, token.userId, { type: EventAttendeeType.leader });
+    await this.events.createEventAttendee(id, token.memberId, { type: EventAttendeeType.leader });
   }
 
   @Post(":id/submit")
@@ -178,9 +185,9 @@ export class EventsController {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
-    EventRejectRoute.canOrThrow(req, event);
+    EventPublishRoute.canOrThrow(req, event);
 
-    await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
+    await this.events.updateEvent(id, { status: EventStates.public, statusNote: body.statusNote });
   }
 
   @Post(":id/unpublish")
@@ -195,7 +202,7 @@ export class EventsController {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
-    EventRejectRoute.canOrThrow(req, event);
+    EventUnpublishRoute.canOrThrow(req, event);
 
     await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
   }
@@ -208,9 +215,9 @@ export class EventsController {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
-    EventRejectRoute.canOrThrow(req, event);
+    EventCancelRoute.canOrThrow(req, event);
 
-    await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
+    await this.events.updateEvent(id, { status: EventStates.cancelled, statusNote: body.statusNote });
   }
 
   @Post(":id/uncancel")
@@ -225,8 +232,8 @@ export class EventsController {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 
-    EventRejectRoute.canOrThrow(req, event);
+    EventUncancelRoute.canOrThrow(req, event);
 
-    await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
+    await this.events.updateEvent(id, { status: EventStates.public, statusNote: body.statusNote });
   }
 }

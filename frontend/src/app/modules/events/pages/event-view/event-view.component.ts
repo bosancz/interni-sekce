@@ -63,6 +63,10 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
     this.setActions(this.event);
   }
 
+  async reloadEvent() {
+    await this.loadEvent(this.event.id);
+  }
+
   async leadEvent(event: EventResponseWithLinks) {
     await this.api.events.leadEvent(event.id);
 

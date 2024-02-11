@@ -6,7 +6,7 @@ import { UserResponse } from "src/api/users/dto/user.dto";
 import { Token } from "src/auth/decorators/token.decorator";
 import { UserGuard } from "src/auth/guards/user.guard";
 import { TokenData } from "src/auth/schema/user-token";
-import { UsersService } from "src/models/users/services/users.service";
+import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { AccountReadRoute } from "../acl/account.acl";
 
 @Controller("account")
@@ -14,7 +14,7 @@ import { AccountReadRoute } from "../acl/account.acl";
 @ApiTags("Account")
 @AcController()
 export class AccountController {
-  constructor(private userService: UsersService) {}
+  constructor(private userService: UsersRepository) {}
 
   @Get()
   @AcLinks(AccountReadRoute)

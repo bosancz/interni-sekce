@@ -4,7 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { User } from "src/models/users/entities/user.entity";
-import { UsersService } from "src/models/users/services/users.service";
+import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { Repository } from "typeorm";
 import {
   UserCreateRoute,
@@ -26,7 +26,7 @@ import { ListUsersQuery } from "../dto/users.dto";
 @ApiTags("Users")
 export class UsersController {
   constructor(
-    private userService: UsersService,
+    private userService: UsersRepository,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
@@ -51,7 +51,6 @@ export class UsersController {
       .orderBy("user.login", "ASC")
       .take(query.limit || 25)
       .skip(query.offset || 0);
-
 
     if (query.search)
       q.andWhere("user.login ILIKE :search OR member.nickname ILIKE :search", { search: `%${query.search}%` });

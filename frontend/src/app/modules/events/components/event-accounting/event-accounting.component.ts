@@ -96,7 +96,7 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
     const re = /\d+/;
 
     const maxId = this.expenses.reduce((acc, cur) => {
-      const match = re.exec(cur.id);
+      const match = re.exec(cur.receiptNumber);
       return match ? Math.max(acc, Number(match[0])) : acc;
     }, 0);
 

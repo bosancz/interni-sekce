@@ -115,6 +115,9 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
 
       await this.api.events.deleteEventAttendee(this.event.id, attendee.memberId);
 
+      if (attendee.type === "leader") this.toastService.toast("Vedoucí odebrán.");
+      else this.toastService.toast("Účastník odebrán.");
+
       this.change.emit();
     } catch (e) {
       this.toastService.toast("Nepodařilo se odebrat účastníka.");

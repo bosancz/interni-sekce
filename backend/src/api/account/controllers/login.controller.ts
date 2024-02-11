@@ -20,7 +20,7 @@ import { Config } from "src/config";
 import { GoogleService } from "src/models/google/services/google.service";
 import { MailService } from "src/models/mail/services/mail.service";
 import { User } from "src/models/users/entities/user.entity";
-import { UsersService } from "src/models/users/services/users.service";
+import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { LoginCredentialsRoute, LoginGoogleRoute, LoginLinkRoute, LoginSendLinkRoute } from "../acl/login.acl";
 import { LoginCredentialsBody, LoginGoogleBody, LoginLinkBody, LoginSendLinkBody } from "../dto/login-body.dto";
 import { SendLoginLinkMailTemplate } from "../mail-templates/send-login-link/send-login-link.mail-template";
@@ -30,7 +30,7 @@ import { SendLoginLinkMailTemplate } from "../mail-templates/send-login-link/sen
 @AcController()
 export class LoginController {
   constructor(
-    private userService: UsersService,
+    private userService: UsersRepository,
     private hashService: HashService,
     private tokenService: TokenService,
     private mailService: MailService,
@@ -122,6 +122,7 @@ export class LoginController {
     const tokenData: UserData = {
       roles: user.roles ?? [],
       userId: user.id,
+      memberId: user.memberId ?? undefined,
       ...data,
     };
 

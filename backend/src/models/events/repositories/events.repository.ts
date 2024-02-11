@@ -10,7 +10,7 @@ export interface GetEventsOptions extends PaginationOptions {
   year?: number;
   status?: string;
   search?: string;
-  userId?: number;
+  memberId?: number;
   noleader?: boolean;
 }
 
@@ -43,9 +43,7 @@ export class EventsRepository {
 
     if (options.search) q.andWhere("name ILIKE :search", { search: `%${options.search}%` });
 
-    if (options.userId) {
-      q.leftJoin("leaders.user", "users").andWhere("users.id = :userId", { userId: options.userId });
-    }
+    if (options.memberId) q.andWhere("leaders.member_id = :memberId", { memberId: options.memberId });
 
     if (options.noleader) q.andWhere("leaders.id IS NULL");
 

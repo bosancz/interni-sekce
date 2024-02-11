@@ -4,23 +4,23 @@ import { FindOptionsWhere, Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 
 @Injectable()
-export class UsersService {
-  constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
+export class UsersRepository {
+  constructor(@InjectRepository(User) private repository: Repository<User>) {}
 
   async listUsers() {
-    return this.userRepository.find({ relations: ["member", "member.group"] });
+    return this.repository.find({ relations: ["member", "member.group"] });
   }
 
   async createUser(data: Partial<User>) {
-    return this.userRepository.save(data);
+    return this.repository.save(data);
   }
 
   async getUser(id: number) {
-    return this.userRepository.findOneBy({ id });
+    return this.repository.findOneBy({ id });
   }
 
   async findUser(where: FindOptionsWhere<User> | FindOptionsWhere<User>[], options: { credentials?: boolean } = {}) {
-    return this.userRepository.findOne({
+    return this.repository.findOne({
       select: options.credentials
         ? {
             id: true,
@@ -38,10 +38,10 @@ export class UsersService {
   }
 
   async updateUser(id: number, data: Partial<User>) {
-    return this.userRepository.update(id, data);
+    return this.repository.update(id, data);
   }
 
   async deleteUser(id: number) {
-    return this.userRepository.delete(id);
+    return this.repository.delete(id);
   }
 }

@@ -23,18 +23,21 @@
           [event]="event"
           class="d-lg-block mb-5"
           [class.d-none]="view !== 'info'"
+          (change)="reloadEvent()"
         ></bo-event-registration>
 
         <bo-event-attendees
           [event]="event"
           class="d-lg-block mb-5"
           [class.d-none]="view !== 'attendees'"
+          (change)="reloadEvent()"
         ></bo-event-attendees>
 
         <bo-event-accounting
           [event]="event"
           class="d-lg-block mb-5"
           [class.d-none]="view !== 'accounting'"
+          (change)="reloadEvent()"
         ></bo-event-accounting>
 
         <bo-event-report [event]="event" class="d-lg-block mb-5" [class.d-none]="view !== 'report'"></bo-event-report>

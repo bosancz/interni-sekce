@@ -23,8 +23,8 @@ export function AcLinks(acl: AcRouteACL<any>): MethodDecorator {
     const name = acl.options.name
       ? acl.options.name
       : OptionsStore.routeNameConvention
-      ? OptionsStore.routeNameConvention(String(method))
-      : String(method);
+        ? OptionsStore.routeNameConvention(String(method))
+        : String(method);
 
     const routeStoreItem: RouteStoreItem = {
       acl,
@@ -37,10 +37,13 @@ export function AcLinks(acl: AcRouteACL<any>): MethodDecorator {
 
     RouteStore.push(routeStoreItem);
 
-    return applyDecorators(SetMetadata(MetadataConstant.route, routeStoreItem), UseInterceptors(AcLinksInterceptor))(
-      target,
-      method,
-      descriptor,
-    );
+    const decorators: MethodDecorator[] = [
+      SetMetadata(MetadataConstant.route, routeStoreItem),
+      UseInterceptors(AcLinksInterceptor),
+    ];
+
+    // if (acl.options.contains) decorators.push(ApiResponse({ type: WithLinks(acl.options.contains) }));
+
+    return applyDecorators(...decorators)(target, method, descriptor);
   };
 }

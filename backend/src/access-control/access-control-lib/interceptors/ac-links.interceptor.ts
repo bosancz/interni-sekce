@@ -26,9 +26,9 @@ export class AcLinksInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler) {
     return next.handle().pipe(
       map((res) => {
-        const route = <RouteStoreItem>this.reflector.get(MetadataConstant.route, context.getHandler());
+        const route = <RouteStoreItem | undefined>this.reflector.get(MetadataConstant.route, context.getHandler());
 
-        if (route.acl.options.contains) {
+        if (route?.acl.options.contains) {
           const req = context.switchToHttp().getRequest<Request>();
           this.addLinksToEntity(req, route.acl.options.contains, Array.isArray(res) ? res : [res]);
         }
