@@ -31,6 +31,7 @@ import {
   EventPublishRoute,
   EventReadRoute,
   EventRejectRoute,
+  EventRestoreRoute,
   EventSubmitRoute,
   EventUncancelRoute,
   EventUnpublishRoute,
@@ -57,12 +58,7 @@ export class EventsController {
     @Query() query: ListEventsQuery,
   ): Promise<EventResponse[]> {
     const options: GetEventsOptions = {
-      limit: query.limit,
-      offset: query.offset,
-      year: query.year,
-      status: query.status,
-      search: query.search,
-      noleader: query.noleader,
+      ...query,
     };
 
     if (query.my) {
@@ -134,6 +130,19 @@ export class EventsController {
     EventDeleteRoute.canOrThrow(req, event);
 
     return this.events.deleteEvent(id);
+  }
+
+  @Post(":id/restore")
+  @HttpCode(204)
+  @AcLinks(EventRestoreRoute)
+  @ApiResponse({ status: 204 })
+  async restoreEvent(@Req() req: Request, @Param("id") id: number): Promise<void> {
+    const event = await this.events.getEvent(id, { leaders: true });
+    if (!event) throw new NotFoundException();
+
+    EventRestoreRoute.canOrThrow(req, event);
+
+    return this.events.restoreEvent(id);
   }
 
   @Post(":id/lead")

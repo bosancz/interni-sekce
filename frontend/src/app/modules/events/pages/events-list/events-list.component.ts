@@ -1,11 +1,14 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Router } from "@angular/router";
 import { InfiniteScrollCustomEvent, Platform } from "@ionic/angular";
 import { EventResponseWithLinks, EventsApiListEventsQueryParams } from "src/app/api";
 import { EventStatuses } from "src/app/config/event-statuses";
 import { ApiEndpoints, ApiService } from "src/app/services/api.service";
+import { ModalService } from "src/app/services/modal.service";
+import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { UrlParams } from "src/helpers/typings";
+import { EventCreateModalComponent } from "../../components/event-create-modal/event-create-modal.component";
 
 @Component({
   selector: "bo-events-list",
@@ -29,9 +32,10 @@ export class EventsListComponent implements OnInit {
 
   constructor(
     private api: ApiService,
-    private router: Router,
-    private route: ActivatedRoute,
     private platform: Platform,
+    private modalService: ModalService,
+    private toastService: ToastService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -50,10 +54,6 @@ export class EventsListComponent implements OnInit {
   onFilterChange(filter: UrlParams) {
     this.filter = filter;
     this.loadEvents(filter);
-  }
-
-  createEvent() {
-    this.router.navigate(["vytvorit"], { relativeTo: this.route });
   }
 
   getLeadersString(event: EventResponseWithLinks) {
@@ -85,6 +85,7 @@ export class EventsListComponent implements OnInit {
       year: filter.year ? parseInt(filter.year) : undefined,
       my: !!filter.my,
       noleader: !!filter.noleader,
+      deleted: !!filter.deleted,
       offset: (this.page - 1) * this.pageSize,
       limit: this.pageSize,
     };
@@ -93,6 +94,19 @@ export class EventsListComponent implements OnInit {
 
     if (!this.events) this.events = [];
     this.events.push(...events);
+  }
+
+  private async createEvent() {
+    const data = await this.modalService.componentModal(EventCreateModalComponent);
+
+    if (!data) return;
+
+    // create the event and wait for confirmation
+    let event = await this.api.events.createEvent(data).then((res) => res.data);
+    // show the confrmation
+    this.toastService.toast("Akce vytvořena a uložena.");
+    // open the event
+    this.router.navigate(["/akce/" + event.id]);
   }
 
   private setActions(endpoints: ApiEndpoints | null) {

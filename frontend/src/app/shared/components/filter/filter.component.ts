@@ -68,10 +68,17 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 
   async openFilter(filterContent: TemplateRef<any>) {
     const result = await this.modalService.componentModal(FilterModalComponent, { content: filterContent });
-    if (result) this.setParams();
-    else {
+
+    if (result === true) {
+      // filter submitted - set new filters
+      this.setParams();
+    } else if (result === false) {
+      // filter reset - clear all filters
       this.setControls({});
       this.setParams();
+    } else {
+      // filter dismissed - revert changes
+      this.setControls(this.route.snapshot.queryParams);
     }
   }
 

@@ -10,4 +10,5 @@ export class ListEventsQuery extends PaginationQuery {
   @ApiPropertyOptional() @IsString() @IsOptional() search?: string;
   @ApiPropertyOptional() @EnsureBoolean() @IsBoolean() @IsOptional() my?: boolean;
   @ApiPropertyOptional() @EnsureBoolean() @IsBoolean() @IsOptional() noleader?: boolean;
+  @ApiPropertyOptional() @EnsureBoolean() @IsBoolean() @IsOptional() deleted?: boolean;
 }

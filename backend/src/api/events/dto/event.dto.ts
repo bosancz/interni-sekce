@@ -31,7 +31,7 @@ export class EventResponse implements Omit<Event, "setLeaders"> {
   @ApiPropertyOptional({ type: "string" }) meetingPlaceEnd!: string | null;
   @ApiPropertyOptional({ type: "number" }) waterKm!: number | null;
   @ApiPropertyOptional({ type: "string" }) river!: string | null;
-  @ApiPropertyOptional({ type: "string" }) deletedAt?: Date | string | null;
+  @ApiPropertyOptional({ type: "string" }) deletedAt?: Date | null;
 
   @ApiPropertyOptional({ type: AlbumResponse }) album?: Album | undefined;
   @ApiPropertyOptional({ type: GroupResponse, isArray: true }) groups?: Group[] | undefined;

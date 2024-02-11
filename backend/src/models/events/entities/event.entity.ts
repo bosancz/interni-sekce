@@ -4,6 +4,7 @@ import { Member } from "src/models/members/entities/member.entity";
 import {
   AfterLoad,
   Column,
+  DeleteDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
@@ -58,6 +59,8 @@ export class Event {
   @Column({ type: "numeric", nullable: true }) waterKm!: number | null;
   @Column({ type: "varchar", nullable: true }) river!: string | null;
   @Column({ type: "boolean", nullable: false, default: false }) leadersEvent!: boolean;
+
+  @DeleteDateColumn() deletedAt?: Date | null;
 
   leaders?: Member[];
 

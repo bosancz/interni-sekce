@@ -12,6 +12,7 @@ export interface GetEventsOptions extends PaginationOptions {
   search?: string;
   memberId?: number;
   noleader?: boolean;
+  deleted?: boolean;
 }
 
 @Injectable()
@@ -46,11 +47,13 @@ export class EventsRepository {
 
     if (options.noleader) q.andWhere("attendees.member_id IS NULL");
 
+    if (options.deleted) q.withDeleted().andWhere("events.deleted_at IS NOT NULL");
+
     return q.getMany();
   }
 
   async getEvent(id: number, options: { select?: FindOptionsSelect<Event>; leaders?: boolean } = {}) {
-    const event = await this.eventsRepository.findOne({ where: { id }, select: options.select });
+    const event = await this.eventsRepository.findOne({ where: { id }, select: options.select, withDeleted: true });
     if (!event) return null;
 
     event.leaders = await this.getEventLeaders(id);
@@ -70,11 +73,16 @@ export class EventsRepository {
     await this.eventsRepository.softRemove({ id });
   }
 
+  async restoreEvent(id: number) {
+    await this.eventsRepository.restore({ id });
+  }
+
   async getEventsYears() {
     const q = this.eventsRepository
       .createQueryBuilder("events")
       .distinct(true)
-      .select("EXTRACT('YEAR' FROM events.dateFrom) AS year");
+      .select("EXTRACT('YEAR' FROM events.dateFrom) AS year")
+      .withDeleted();
 
     return q.getRawMany<{ year: number }>().then((res) => res.map((r) => r.year));
   }
@@ -84,18 +92,24 @@ export class EventsRepository {
       .find({
         where: { eventId: id, type: EventAttendeeType.leader },
         relations: { member: true },
+        withDeleted: true,
       })
       .then((res) => res.map((ea) => ea.member!));
   }
 
   async getEventAttendees(id: number) {
-    return this.eventAttendeesRepository.find({ where: { eventId: id }, relations: { member: true, event: true } });
+    return this.eventAttendeesRepository.find({
+      where: { eventId: id },
+      relations: { member: true, event: true },
+      withDeleted: true,
+    });
   }
 
   async getEventAttendee(eventId: number, memberId: number) {
     return this.eventAttendeesRepository.findOne({
       where: { eventId, memberId },
       relations: { member: true, event: true },
+      withDeleted: true,
     });
   }
 
@@ -118,7 +132,8 @@ export class EventsRepository {
       .where("expenses.event_id = :id", { id })
       .leftJoinAndSelect("expenses.event", "events")
       .leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
-      .select(["expenses", "events.id", "attendees"]);
+      .select(["expenses", "events.id", "attendees"])
+      .withDeleted();
 
     return q.getMany();
   }
@@ -126,6 +141,7 @@ export class EventsRepository {
   async getEventExpense(eventId: number, id: number) {
     return this.eventExpensesRepository.findOne({
       where: { eventId, id },
+      withDeleted: true,
     });
   }
 

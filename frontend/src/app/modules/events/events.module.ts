@@ -7,13 +7,13 @@ import { EventAgeHistogramComponent } from "./components/event-age-histogram/eve
 import { EventAttendeesListComponent } from "./components/event-attendees-list/event-attendees-list.component";
 import { EventAttendeesComponent } from "./components/event-attendees/event-attendees.component";
 import { EventBirthdayListComponent } from "./components/event-birthday-list/event-birthday-list.component";
+import { EventCreateModalComponent } from "./components/event-create-modal/event-create-modal.component";
 import { EventExpenseModalComponent } from "./components/event-expense-modal/event-expense-modal.component";
 import { EventExpensesChartComponent } from "./components/event-expenses-chart/event-expenses-chart.component";
 import { EventInfoComponent } from "./components/event-info/event-info.component";
 import { EventRegistrationComponent } from "./components/event-registration/event-registration.component";
 import { EventReportComponent } from "./components/event-report/event-report.component";
 import { EventTypeSelectorComponent } from "./components/event-type-selector/event-type-selector.component";
-import { EventsCreateComponent } from "./components/events-create/events-create.component";
 import { MemberSelectorModalComponent } from "./components/member-selector-modal/member-selector-modal.component";
 import { MemberSelectorComponent } from "./components/member-selector/member-selector.component";
 import { EventsRoutingModule } from "./events-routing.module";
@@ -33,7 +33,7 @@ import { EventsService } from "./services/events.service";
     EventInfoComponent,
     EventRegistrationComponent,
     EventReportComponent,
-    EventsCreateComponent,
+    EventCreateModalComponent,
     EventsListComponent,
     EventTypeSelectorComponent,
     EventViewComponent,

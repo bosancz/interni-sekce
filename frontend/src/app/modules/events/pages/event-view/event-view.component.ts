@@ -101,6 +101,12 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
     }
   }
 
+  private async restoreEvent(event: EventResponseWithLinks) {
+    await this.api.events.restoreEvent(event.id);
+    await this.loadEvent(event.id);
+    this.toastService.toast("Akce obnovena");
+  }
+
   private setActions(event: EventResponseWithLinks) {
     this.actions = [
       {
@@ -158,6 +164,14 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
         icon: "trash-outline",
         hidden: !event._links.deleteEvent.allowed,
         handler: () => this.deleteEvent(event),
+      },
+      {
+        text: "Obnovit",
+        role: "destructive",
+        color: "success",
+        icon: "arrow-undo-outline",
+        hidden: !event._links.restoreEvent.allowed,
+        handler: () => this.restoreEvent(event),
       },
     ];
   }
