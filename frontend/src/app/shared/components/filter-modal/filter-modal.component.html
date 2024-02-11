@@ -1,8 +1,8 @@
-<bo-modal>
+<bo-modal-layout>
   <ng-container [ngTemplateOutlet]="content"></ng-container>
 
   <ion-buttons slot="buttons">
     <ion-button color="secondary" (click)="submit.emit(false)">Vymazat</ion-button>
     <ion-button color="primary" [strong]="true" (click)="submit.emit(true)">Filtrovat</ion-button>
   </ion-buttons>
-</bo-modal>
+</bo-modal-layout>

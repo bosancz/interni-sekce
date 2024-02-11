@@ -1,14 +1,4 @@
-<!-- <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button *ngIf="!platform.is('ios')" (click)="close.emit()"><ion-icon name="close"></ion-icon></ion-button>
-    </ion-buttons>
-    
-  </ion-toolbar>
-</ion-header>
-
-<ion-content> -->
-<bo-modal>
+<bo-modal-layout>
   <h4 slot="title">Účtenka {{ expense.receiptNumber }}</h4>
 
   <form #expenseForm="ngForm">
@@ -44,4 +34,4 @@
     <ion-button (click)="close.emit()">Zrušit</ion-button>
     <ion-button fill="clear" color="primary" (click)="submit.emit(expenseForm.value)">Uložit</ion-button>
   </ion-buttons>
-</bo-modal>
+</bo-modal-layout>

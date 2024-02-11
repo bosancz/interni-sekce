@@ -13,12 +13,11 @@ import { EventInfoComponent } from "./components/event-info/event-info.component
 import { EventRegistrationComponent } from "./components/event-registration/event-registration.component";
 import { EventReportComponent } from "./components/event-report/event-report.component";
 import { EventTypeSelectorComponent } from "./components/event-type-selector/event-type-selector.component";
+import { EventsCreateComponent } from "./components/events-create/events-create.component";
 import { MemberSelectorModalComponent } from "./components/member-selector-modal/member-selector-modal.component";
 import { MemberSelectorComponent } from "./components/member-selector/member-selector.component";
 import { EventsRoutingModule } from "./events-routing.module";
-import { EventEditComponent } from "./pages/event-edit/event-edit.component";
 import { EventViewComponent } from "./pages/event-view/event-view.component";
-import { EventsCreateComponent } from "./pages/events-create/events-create.component";
 import { EventsListComponent } from "./pages/events-list/events-list.component";
 import { EventsService } from "./services/events.service";
 
@@ -29,7 +28,6 @@ import { EventsService } from "./services/events.service";
     EventAgeHistogramComponent,
     EventAttendeesComponent,
     EventBirthdayListComponent,
-    EventEditComponent,
     EventExpenseModalComponent,
     EventExpensesChartComponent,
     EventInfoComponent,

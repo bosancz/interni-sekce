@@ -45,8 +45,8 @@ import { DeleteButtonComponent } from "./components/delete-button/delete-button.
 import { FilterModalComponent } from "./components/filter-modal/filter-modal.component";
 import { GroupBadgeComponent } from "./components/group-badge/group-badge.component";
 import { ItemComponent } from "./components/item/item.component";
+import { ModalLayoutComponent } from "./components/modal-layout/modal-layout.component";
 import { ModalTemplateComponent } from "./components/modal-template/modal-template.component";
-import { ModalComponent } from "./components/modal/modal.component";
 import { TabComponent } from "./components/tab/tab.component";
 import { TabsComponent } from "./components/tabs/tabs.component";
 import { EventExpensePipe } from "./pipes/event-expense.pipe";
@@ -96,7 +96,7 @@ register();
     TabsComponent,
     TabComponent,
     ItemComponent,
-    ModalComponent,
+    ModalLayoutComponent,
     EventExpensePipe,
     DeleteButtonComponent,
     RolePipe,
@@ -148,7 +148,7 @@ register();
     TabsComponent,
     TabComponent,
     ItemComponent,
-    ModalComponent,
+    ModalLayoutComponent,
     EventExpensePipe,
     DeleteButtonComponent,
     RolePipe,

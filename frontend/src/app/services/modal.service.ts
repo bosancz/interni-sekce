@@ -25,17 +25,17 @@ interface SelectModalOptions<D> extends BaseModalOptions {
   value?: D;
 }
 
-export class ModalComponent<D = any> {
+export class AbstractModalComponent<D = any> {
   submit = new EventEmitter<D>();
   close = new EventEmitter<void>();
 
-  constructor(private modalCtrl: ModalController) {
-    this.submit.subscribe((data) => this.modalCtrl.dismiss(data));
-    this.close.subscribe(() => this.modalCtrl.dismiss(null));
+  constructor(modalCtrl: ModalController) {
+    this.submit.subscribe((data) => modalCtrl.dismiss(data));
+    this.close.subscribe(() => modalCtrl.dismiss(null));
   }
 }
 
-type ModalComponentRef = { new (...args: any): ModalComponent };
+type ModalComponentRef = { new (...args: any): AbstractModalComponent };
 
 type ModalComponentData<C extends ModalComponentRef> =
   InstanceType<C> extends { submit: EventEmitter<infer D> } ? D : never;

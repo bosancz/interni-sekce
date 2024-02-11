@@ -1,6 +1,4 @@
-<bo-page-header title="Vytvořit akci" backUrl="/akce"></bo-page-header>
-
-<bo-page-content [padding]="true">
+<bo-modal>
   <form [formGroup]="form" (ngSubmit)="createEvent()">
     <div class="row">
       <div class="col-lg-8">
@@ -44,4 +42,4 @@
       <button type="submit" class="btn btn-primary w-100">Vytvořit</button>
     </div>
   </form>
-</bo-page-content>
+</bo-modal>
