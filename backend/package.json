@@ -9,7 +9,7 @@
     "build": "nest build",
     "build:watch": "nest build --watch",
     "start": "node dist/main.js",
-    "dev": "nest start --watch",
+    "dev": "nest start --debug --watch",
     "premigrations": "npm run build",
     "migrations:run": "npm run premigrations && typeorm migration:run -d dist/data-source.js",
     "migrations:generate": "npm run premigrations && typeorm migration:generate -d dist/data-source.js",

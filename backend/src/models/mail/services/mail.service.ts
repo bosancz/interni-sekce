@@ -1,20 +1,21 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
+import { Config } from "src/config";
 import { GoogleService } from "src/models/google/services/google.service";
 import { MailOptions } from "../schema/mail-options";
 
 @Injectable()
 export class MailService {
+  private readonly logger = new Logger(MailService.name);
+
   constructor(private google: GoogleService) {}
 
   async sendMail(options: MailOptions) {
-    const utf8Subject = `=?utf-8?B?${Buffer.from(options.subject).toString("base64")}?=`;
-
     const messageParts = [
-      "From: Justin Beckwith <beckwith@google.com>",
-      "To: Justin Beckwith <beckwith@google.com>",
+      `From: ${this.encodeUtf8("Bošán Interní")} <${Config.google.impersonate}>`,
+      `To: ${options.to}`,
       "Content-Type: text/html; charset=utf-8",
       "MIME-Version: 1.0",
-      `Subject: ${utf8Subject}`,
+      `Subject: ${this.encodeUtf8(options.subject)}`,
       "",
       options.body,
     ];
@@ -28,6 +29,8 @@ export class MailService {
       .replace(/\//g, "_")
       .replace(/=+$/, "");
 
+    this.logger.debug(`Sending email to ${options.to}`);
+
     const res = await this.google.gmail.users.messages.send({
       userId: "me",
       requestBody: {
@@ -36,5 +39,9 @@ export class MailService {
     });
 
     return res.data;
+  }
+
+  private encodeUtf8(text: string) {
+    return `=?utf-8?B?${Buffer.from(text).toString("base64")}?=`;
   }
 }

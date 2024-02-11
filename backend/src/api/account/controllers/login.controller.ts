@@ -3,8 +3,10 @@ import {
   ConflictException,
   Controller,
   ForbiddenException,
+  Get,
   NotFoundException,
   Post,
+  Query,
   Req,
   Res,
   UnauthorizedException,
@@ -22,7 +24,7 @@ import { MailService } from "src/models/mail/services/mail.service";
 import { User } from "src/models/users/entities/user.entity";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { LoginCredentialsRoute, LoginGoogleRoute, LoginLinkRoute, LoginSendLinkRoute } from "../acl/login.acl";
-import { LoginCredentialsBody, LoginGoogleBody, LoginLinkBody, LoginSendLinkBody } from "../dto/login-body.dto";
+import { LoginCredentialsBody, LoginGoogleBody, LoginLinkQuery, LoginSendLinkBody } from "../dto/login-body.dto";
 import { SendLoginLinkMailTemplate } from "../mail-templates/send-login-link/send-login-link.mail-template";
 
 @Controller("login")
@@ -30,7 +32,7 @@ import { SendLoginLinkMailTemplate } from "../mail-templates/send-login-link/sen
 @AcController()
 export class LoginController {
   constructor(
-    private userService: UsersRepository,
+    private users: UsersRepository,
     private hashService: HashService,
     private tokenService: TokenService,
     private mailService: MailService,
@@ -42,7 +44,7 @@ export class LoginController {
     @Res({ passthrough: true }) res: Response,
     @Body() body: LoginCredentialsBody,
   ) {
-    const user = await this.userService.findUser({ login: body.login.toLocaleLowerCase() }, { credentials: true });
+    const user = await this.users.findUser({ login: body.login.toLocaleLowerCase() }, { credentials: true });
     if (!user) throw new NotFoundException();
 
     LoginCredentialsRoute.canOrThrow(req, user);
@@ -64,7 +66,7 @@ export class LoginController {
     const tokenInfo = await this.googleService.validateOauthToken(body.token);
     if (!tokenInfo?.email) throw new UnauthorizedException("Email missing in Google user account.");
 
-    const user = await this.userService.findUser({ email: tokenInfo.email });
+    const user = await this.users.findUser({ email: tokenInfo.email });
     if (!user) throw new NotFoundException(`User with email ${tokenInfo.email} not found.`);
 
     LoginGoogleRoute.canOrThrow(req, user);
@@ -74,7 +76,7 @@ export class LoginController {
 
   @Post("sendLink")
   async sendLoginLink(@Req() req: Request, @Body() body: LoginSendLinkBody) {
-    const user = await this.userService.findUser([{ login: body.login }, { email: body.login }]);
+    const user = await this.users.findUser([{ login: body.login }, { email: body.login }]);
     if (!user) throw new NotFoundException();
     if (!user.email) throw new ConflictException();
 
@@ -82,7 +84,7 @@ export class LoginController {
 
     const loginCode = this.hashService.generateRandomString();
 
-    this.userService.updateUser(user.id, {
+    this.users.updateUser(user.id, {
       loginCode: loginCode,
       loginCodeExp: DateTime.local().toISO(),
     });
@@ -94,9 +96,10 @@ export class LoginController {
     await this.mailService.sendMail(mail);
   }
 
-  @Post("link")
-  async loginUsingLink(@Req() req: Request, @Res({ passthrough: true }) res: Response, @Body() body: LoginLinkBody) {
-    const user = await this.userService.findUser({ loginCode: body.code }, { credentials: true });
+  @Get("link")
+  async loginUsingLink(@Req() req: Request, @Res({ passthrough: true }) res: Response, @Query() query: LoginLinkQuery) {
+    console.log(query.code);
+    const user = await this.users.findUser({ loginCode: query.code }, { credentials: true });
     if (!user || !user.loginCodeExp) throw new NotFoundException();
 
     LoginLinkRoute.canOrThrow(req, user);
@@ -105,12 +108,14 @@ export class LoginController {
       throw new ForbiddenException("Login code expired");
     }
 
-    this.userService.updateUser(user.id, {
+    this.users.updateUser(user.id, {
       loginCode: null,
       loginCodeExp: null,
     });
 
     await this.setLoginToken(res, user);
+
+    res.redirect(Config.app.baseUrl);
   }
 
   @Post("logout")

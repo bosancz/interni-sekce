@@ -53,6 +53,8 @@ export class LoginComponent implements OnInit {
 
       const formData = linkForm.value;
       await this.loginService.sendLoginLink(formData.login);
+
+      this.status = "linkSent";
     } catch (err: any) {
       this.status = undefined;
       this.error = "linkSendFailed";

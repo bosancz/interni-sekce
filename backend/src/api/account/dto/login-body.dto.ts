@@ -10,7 +10,7 @@ export class LoginGoogleBody {
   @ApiProperty() @IsString() token!: string;
 }
 
-export class LoginLinkBody {
+export class LoginLinkQuery {
   @ApiProperty() @IsString() code!: string;
 }
 

@@ -90,7 +90,7 @@ const fs = {
 
 const google = {
   keyFile: path.join(fs.keysDir, process.env["GOOGLE_KEY_FILE"] ?? "google.json"),
-  impersonate: process.env["GOOGLE_IMPERSONATE"],
+  impersonate: process.env["GOOGLE_IMPERSONATE"] ?? "interni@bosan.cz",
   clientId: process.env["GOOGLE_CLIENT_ID"],
   clientSecret: process.env["GOOGLE_CLIENT_SECRET"],
 };
