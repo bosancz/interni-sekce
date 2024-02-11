@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationOptions } from "src/models/helpers/pagination";
+import { Group } from "src/models/members/entities/group.entity";
 import { FindOptionsSelect, Repository } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "../entities/event-attendee.entity";
 import { EventExpense } from "../entities/event-expense.entity";
@@ -66,7 +67,14 @@ export class EventsRepository {
   }
 
   async updateEvent(id: number, data: Partial<Event>) {
-    return this.eventsRepository.update(id, data);
+    if (data.groupsIds) {
+      data.groups = data.groupsIds.map((id) => ({ id }) as Group);
+      delete data.groupsIds;
+    }
+
+    data.id = id;
+
+    return this.eventsRepository.save(data);
   }
 
   async deleteEvent(id: number) {
