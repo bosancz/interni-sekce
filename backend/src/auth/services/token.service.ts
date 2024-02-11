@@ -36,7 +36,7 @@ export class TokenService {
   async setToken(res: Response, userData: UserData) {
     const token = await this.createToken(userData);
 
-    res.cookie(this.cookieName, token, { domain: "192.168.1.17" });
+    res.cookie(this.cookieName, token);
   }
 
   clearToken(res: Response) {
