@@ -36,7 +36,13 @@ export class MemberPipe implements PipeTransform {
   }
 
   getInitials(member: MemberResponse): string {
-    return this.getFirstLetterLocal(member.firstName || "") + this.getFirstLetterLocal(member.lastName || "");
+    return member.nickname
+      ? this.getFirstLetterLocal(member.nickname)
+      : member.firstName
+        ? this.getFirstLetterLocal(member.firstName)
+        : member.lastName
+          ? this.getFirstLetterLocal(member.lastName)
+          : "?";
   }
 
   getFirstLetterLocal(value: string): string {
