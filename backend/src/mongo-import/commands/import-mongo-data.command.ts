@@ -2,7 +2,7 @@ import { Command, CommandRunner } from "nest-commander";
 import { MongoImportService } from "../services/mongo-import.service";
 
 @Command({
-  name: "start",
+  name: "mongo-import",
   arguments: "",
   options: {},
 })

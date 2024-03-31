@@ -18,7 +18,6 @@
     "migrations:reset-schema": "npm run migrations:drop-schema && npm run migrations:run",
     "migrations:create": "typeorm migration:create",
     "cli": "node dist/main-cli",
-    "import": "node dist/main-import",
     "upgrade:check": "npx npm-check-updates",
     "upgrade": "npx npm-check-updates -u && npm install"
   },
