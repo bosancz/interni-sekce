@@ -37,6 +37,76 @@ export default class MemberContactsComponent implements OnChanges {
     }
   }
 
+  async editAddress() {
+    const data = await this.modalService.inputModal({
+      header: "Upravit adresu",
+      inputs: {
+        addressStreet: {
+          type: "text",
+          placeholder: "Ulice",
+          value: this.member?.addressStreet,
+        },
+        addressStreetNo: {
+          type: "text",
+          placeholder: "Číslo popisné",
+          value: this.member?.addressStreetNo,
+        },
+        addressCity: {
+          type: "text",
+          placeholder: "Město",
+          value: this.member?.addressCity,
+        },
+        addressPostalCode: {
+          type: "text",
+          placeholder: "PSČ",
+          value: this.member?.addressPostalCode,
+        },
+        addressCountry: {
+          type: "text",
+          placeholder: "Země",
+          value: this.member?.addressCountry,
+        },
+      },
+    });
+
+    if (data) this.update.emit(data);
+  }
+
+  getFullAddress(member: MemberResponseWithLinks) {
+    const addressLines = [
+      `${member.addressStreet ?? ""}${member.addressStreetNo ? ` ${member.addressStreetNo}` : ""}`,
+      member.addressCity,
+      member.addressPostalCode,
+    ];
+
+    if (member.addressCountry) {
+      addressLines.push(member.addressCountry);
+    }
+    return addressLines.filter((line) => !!line).join("\n");
+  }
+
+  async editMobile() {
+    const data = await this.modalService.inputModal({
+      header: "Upravit telefonní číslo",
+      inputs: {
+        mobile: { type: "tel", placeholder: "Telefonní číslo", value: this.member?.mobile },
+      },
+    });
+
+    if (data !== null) this.update.emit(data);
+  }
+
+  async editEmail() {
+    const data = await this.modalService.inputModal({
+      header: "Upravit email",
+      inputs: {
+        email: { type: "email", placeholder: "Email", value: this.member?.email },
+      },
+    });
+
+    if (data !== null) this.update.emit(data);
+  }
+
   async openContactForm(contact: MemberContactResponseWithLinks | null) {
     const buttons: AlertButton[] = [
       {
@@ -126,57 +196,16 @@ export default class MemberContactsComponent implements OnChanges {
   }
 
   async deleteContact(contact: MemberContactResponseWithLinks) {
+    if (!this.member) return;
+
     const confirmation = await this.modalService.deleteConfirmationModal(
       `Opravdu chcete smazat kontakt ${contact.title}?`,
     );
-    console.log(confirmation);
-  }
 
-  async openAddressForm() {
-    const data = await this.modalService.inputModal({
-      header: "Upravit adresu",
-      inputs: {
-        addressStreet: {
-          type: "text",
-          placeholder: "Ulice",
-          value: this.member?.addressStreet,
-        },
-        addressStreetNo: {
-          type: "text",
-          placeholder: "Číslo popisné",
-          value: this.member?.addressStreetNo,
-        },
-        addressCity: {
-          type: "text",
-          placeholder: "Město",
-          value: this.member?.addressCity,
-        },
-        addressPostalCode: {
-          type: "text",
-          placeholder: "PSČ",
-          value: this.member?.addressPostalCode,
-        },
-        addressCountry: {
-          type: "text",
-          placeholder: "Země",
-          value: this.member?.addressCountry,
-        },
-      },
-    });
+    await this.api.members.deleteContact(this.member.id, contact.id);
 
-    if (data) this.update.emit(data);
-  }
+    await this.loadContacts(this.member.id);
 
-  getFullAddress(member: MemberResponseWithLinks) {
-    const addressLines = [
-      `${member.addressStreet ?? ""}${member.addressStreetNo ? ` ${member.addressStreetNo}` : ""}`,
-      member.addressCity,
-      member.addressPostalCode,
-    ];
-
-    if (member.addressCountry) {
-      addressLines.push(member.addressCountry);
-    }
-    return addressLines.filter((line) => !!line).join("\n");
+    await this.toastService.toast("Kontakt byl smazán", { color: "danger" });
   }
 }

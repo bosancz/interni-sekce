@@ -44,6 +44,7 @@ import { CopyButtonComponent } from "./components/copy-button/copy-button.compon
 import { DeleteButtonComponent } from "./components/delete-button/delete-button.component";
 import { FilterModalComponent } from "./components/filter-modal/filter-modal.component";
 import { GroupBadgeComponent } from "./components/group-badge/group-badge.component";
+import { IconButtonComponent } from "./components/icon-button/icon-button.component";
 import { ItemComponent } from "./components/item/item.component";
 import { ModalLayoutComponent } from "./components/modal-layout/modal-layout.component";
 import { ModalTemplateComponent } from "./components/modal-template/modal-template.component";
@@ -102,6 +103,7 @@ register();
     RolePipe,
     FilterModalComponent,
     ModalTemplateComponent,
+    IconButtonComponent,
   ],
   exports: [
     FormsModule,
@@ -153,6 +155,7 @@ register();
     DeleteButtonComponent,
     RolePipe,
     ModalTemplateComponent,
+    IconButtonComponent,
   ],
   providers: [DatePipe],
 })

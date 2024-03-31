@@ -1,4 +1,4 @@
-<h4>Kontakty</h4>
+<h4>Kontakty rodiče</h4>
 
 @for (contact of contacts; track $index) {
   <bo-card class="contact mb-3">
@@ -54,22 +54,3 @@
 <ion-buttons class="mt-3 justify-content-center">
   <bo-add-button (click)="openContactForm(null)">Přidat kontakt</bo-add-button>
 </ion-buttons>
-
-<h4 class="mt-4">Adresa</h4>
-<bo-card class="address">
-  <bo-card-content>
-    <ion-skeleton-text *ngIf="member === undefined" [animated]="true"></ion-skeleton-text>
-
-    <ion-list *ngIf="member" class="selectable" lines="none">
-      <ion-item [button]="true" [detail]="false">
-        <ion-label *ngIf="getFullAddress(member)">{{ getFullAddress(member) }}</ion-label>
-        <ion-label *ngIf="!getFullAddress(member)"><em>Adresa není vyplněna</em></ion-label>
-
-        <ion-buttons slot="end">
-          <bo-copy-button [text]="getFullAddress(member)"></bo-copy-button>
-          <bo-edit-button (click)="openAddressForm()"></bo-edit-button>
-        </ion-buttons>
-      </ion-item>
-    </ion-list>
-  </bo-card-content>
-</bo-card>
