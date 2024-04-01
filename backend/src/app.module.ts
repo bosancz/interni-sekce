@@ -3,6 +3,7 @@ import { MulterModule } from "@nestjs/platform-express";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { AccessControlModule } from "./access-control/access-control.module";
+import { AiModule } from "./ai/ai.module";
 import { AccountModule } from "./api/account/account.module";
 import { AlbumsModule } from "./api/albums/albums.module";
 import { EventsModule } from "./api/events/events.module";
@@ -55,6 +56,7 @@ const typeOrmOptions: TypeOrmModuleOptions = {
     StatisticsModelModule,
     GoogleModelModule,
     FilesModule,
+    AiModule,
   ],
   controllers: [],
   providers: [MailService],

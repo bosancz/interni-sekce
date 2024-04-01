@@ -11,7 +11,7 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { UserGuard } from "src/auth/guards/user.guard";
@@ -34,6 +34,7 @@ export class MembersController {
 
   @Get()
   @AcLinks(MembersListRoute)
+  @ApiOperation({ description: "Search members in the members database" })
   @ApiResponse({ type: WithLinks(MemberResponse), isArray: true })
   async listMembers(@Req() req: Request, @Query() query: MembersListQuery): Promise<MemberResponse[]> {
     return this.members.getMembers({

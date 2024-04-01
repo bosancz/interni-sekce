@@ -12,7 +12,7 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { UserGuard } from "src/auth/guards/user.guard";
@@ -29,6 +29,7 @@ export class GroupsController {
 
   @Get()
   @AcLinks(GroupListRoute)
+  @ApiOperation({ description: "List groups in the groups database" })
   @ApiResponse({ type: WithLinks(GroupResponse), isArray: true })
   async listGroups(@Req() req: Request, @Query() query: ListGroupsQuery): Promise<GroupResponse[]> {
     return this.groups.getGroups(query);

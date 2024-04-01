@@ -1,7 +1,5 @@
 <h3>Vedoucí</h3>
 
-<p *ngIf="leaders && !leaders.length"><em>Žádní účastníci</em></p>
-
 <bo-event-attendees-list
   [event]="event"
   [attendees]="leaders"
@@ -13,8 +11,6 @@
 </div>
 
 <h3>Účastníci</h3>
-
-<p *ngIf="attendees && !attendees.length"><em>Žádní účastníci</em></p>
 
 <bo-event-attendees-list
   [event]="event"

@@ -95,7 +95,15 @@ const google = {
   clientSecret: process.env["GOOGLE_CLIENT_SECRET"],
 };
 
+const ai = {
+  apiKey: process.env["OPENAI_API_KEY"],
+  chat: {
+    model: "gpt-4-turbo-preview",
+  },
+};
+
 export const Config = {
+  ai,
   app,
   cors,
   db,

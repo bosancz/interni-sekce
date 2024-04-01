@@ -22,7 +22,8 @@ export class MembersRepository {
   async getMembers(options: GetMembersOptions = {}) {
     const q = this.membersRepository
       .createQueryBuilder("members")
-      .orderBy("CONCAT(members.nickname,members.first_name,members.last_name)", "ASC")
+      .leftJoinAndSelect("members.group", "group")
+      // .orderBy("CONCAT(members.nickname,members.first_name,members.last_name)", "ASC")
       .take(options.limit)
       .skip(options.offset);
 
