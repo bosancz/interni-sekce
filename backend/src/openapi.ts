@@ -14,7 +14,6 @@ export const OpenApiDocument: OpenAPIObject = {
 };
 
 export function registerOpenApi(app: INestApplication) {
-  console.log("Registering OpenAPI");
   // OpenAPI
   const document = SwaggerModule.createDocument(app, config, {
     ignoreGlobalPrefix: true,

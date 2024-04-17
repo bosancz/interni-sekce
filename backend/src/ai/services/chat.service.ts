@@ -1,4 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { ParameterObject, ReferenceObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface";
 import axios from "axios";
 import { EventEmitter } from "node:events";
 import OpenAI from "openai";
@@ -9,6 +10,7 @@ import { OpenAIService } from "./openai.service";
 interface ChatTool {
   path: string;
   method: string;
+  parameters: ParameterObject[];
   tool: OpenAI.Chat.Completions.ChatCompletionTool;
 }
 
@@ -65,6 +67,8 @@ export class ChatService {
         tools[name] = {
           path,
           method,
+          parameters:
+            operation.parameters?.filter((p): p is Exclude<typeof p, ReferenceObject> => !("$ref" in p)) ?? [],
           tool: {
             type: "function",
             function: {
@@ -174,7 +178,7 @@ export class ChatInstance extends EventEmitter {
   private async callTool(tool_call: OpenAI.Chat.Completions.ChatCompletionMessageToolCall) {
     this.logger.debug("ChatInstance.callTool", JSON.stringify(tool_call));
 
-    const response = await this.runToll(tool_call.function.name, tool_call.function.arguments);
+    const response = await this.runTool(tool_call.function.name, tool_call.function.arguments);
 
     this.messages.push({
       tool_call_id: tool_call.id,
@@ -183,24 +187,29 @@ export class ChatInstance extends EventEmitter {
     });
   }
 
-  private async runToll(name: string, args: any) {
+  private async runTool(name: string, args: any) {
     const tool = this.tools[name];
     if (!tool) return `Tool ${name} not found`;
 
     const args_object = JSON.parse(args);
-    const params = Object.keys(args_object).reduce(
-      (acc, key) => {
-        acc[key] = args_object[key];
-        return acc;
-      },
-      {} as Record<string, any>,
-    );
+
+    const params: Record<string, any> = {};
+    const query: Record<string, any> = {};
+
+    let path = `${Config.app.baseUrl}/api${tool.path}`;
+
+    tool.parameters.forEach((param) => {
+      if (!args_object[param.name]) return;
+
+      if (param.in === "query") query[param.name] = args_object[param.name];
+      else if (param.in === "path") path = path.replace(`{${param.name}}`, args_object[param.name]);
+    });
 
     const data = await axios
       .request<any>({
         method: tool.method,
-        url: `${Config.app.baseUrl}/api${tool.path}`,
-        params,
+        url: path,
+        params: query,
         headers: {
           Cookie: `token=${this.token}`,
         },
@@ -211,7 +220,10 @@ export class ChatInstance extends EventEmitter {
     if (Array.isArray(data)) data.forEach((item) => (item._links = undefined));
     else data._links = undefined;
 
-    this.emit("tool_call", `${tool.method.toUpperCase()} ${tool.path}?${new URLSearchParams(params)}`);
+    const urlParams = decodeURIComponent(new URLSearchParams(query).toString());
+    this.emit("tool_call", {
+      endpoint: `${tool.method.toUpperCase()} ${path}?${urlParams}`,
+    });
 
     return data;
   }

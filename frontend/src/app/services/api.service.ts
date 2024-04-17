@@ -8,6 +8,7 @@ import { Logger } from "src/logger";
 import {
   APIApi,
   AccountApi,
+  ChatApi,
   EventsApi,
   GroupResponseWithLinks,
   MembersApi,
@@ -40,6 +41,8 @@ export class ApiService {
   readonly account = new AccountApi(undefined, this.apiRoot, this.http);
   readonly users = new UsersApi(undefined, this.apiRoot, this.http);
   readonly statistics = new StatisticsApi(undefined, this.apiRoot, this.http);
+  readonly chat = new ChatApi(undefined, this.apiRoot, this.http);
+
   readonly api = new APIApi(undefined, this.apiRoot, this.http);
 
   readonly cache = {

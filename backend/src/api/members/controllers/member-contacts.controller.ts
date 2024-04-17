@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { UserGuard } from "src/auth/guards/user.guard";
@@ -11,7 +11,7 @@ import {
 } from "../acl/member-contacts.acl";
 import { CreateContactBody, MemberContactResponse } from "../dto/member-contact.dto";
 
-@Controller("members/:id/contacts")
+@Controller("members/:memberId/contacts")
 @UseGuards(UserGuard)
 @AcController()
 @ApiTags("Members")
@@ -21,7 +21,8 @@ export class MemberContactsController {
   @Get()
   @AcLinks(MemberContactsListRoute)
   @ApiResponse({ type: WithLinks(MemberContactResponse), isArray: true })
-  async listContacts(@Req() req: Request, @Param("id") memberId: number): Promise<MemberContactResponse[]> {
+  @ApiOperation({ description: "List parent contacts for a specific member" })
+  async listContacts(@Req() req: Request, @Param("memberId") memberId: number): Promise<MemberContactResponse[]> {
     const member = await this.membersRepository.getMember(memberId, { relations: ["contacts"] });
     if (!member) throw new NotFoundException();
 

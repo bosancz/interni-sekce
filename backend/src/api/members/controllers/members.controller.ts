@@ -56,7 +56,7 @@ export class MembersController {
   @AcLinks(MemberReadRoute)
   @ApiResponse({ type: WithLinks(MemberResponse) })
   async getMember(@Param("id") id: number, @Req() req: Request): Promise<MemberResponse> {
-    const member = await this.members.getMember(id);
+    const member = await this.members.getMember(id, { relations: ["group", "contacts"] });
     if (!member) throw new NotFoundException();
 
     MemberReadRoute.canOrThrow(req, member);
@@ -64,27 +64,27 @@ export class MembersController {
     return member;
   }
 
-  @Patch(":id")
+  @Patch(":memberId")
   @AcLinks(MemberUpdateRoute)
   @ApiResponse({ status: 204 })
-  async updateMember(@Req() req: Request, @Param("id") id: number, @Body() body: MemberUpdateBody) {
-    const member = await this.members.getMember(id);
+  async updateMember(@Req() req: Request, @Param("memberId") memberId: number, @Body() body: MemberUpdateBody) {
+    const member = await this.members.getMember(memberId);
     if (!member) throw new NotFoundException();
 
     MemberUpdateRoute.canOrThrow(req, member);
 
-    this.members.updateMember(id, body);
+    this.members.updateMember(memberId, body);
   }
 
-  @Delete(":id")
+  @Delete(":memberId")
   @AcLinks(MemberDeleteRoute)
   @ApiResponse({ status: 204 })
-  async deleteMember(@Req() req: Request, @Param("id") id: number) {
-    const member = await this.members.getMember(id);
+  async deleteMember(@Req() req: Request, @Param("memberId") memberId: number) {
+    const member = await this.members.getMember(memberId);
     if (!member) throw new NotFoundException();
 
     MemberDeleteRoute.canOrThrow(req, member);
 
-    this.members.deleteMember(id);
+    this.members.deleteMember(memberId);
   }
 }

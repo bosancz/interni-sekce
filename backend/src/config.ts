@@ -98,7 +98,7 @@ const google = {
 const ai = {
   apiKey: process.env["OPENAI_API_KEY"],
   chat: {
-    model: "gpt-4-turbo-preview",
+    model: process.env["OPENAI_MODEL"] ?? "gpt-4-turbo-preview",
   },
 };
 

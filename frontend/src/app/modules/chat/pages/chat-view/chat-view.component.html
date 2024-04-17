@@ -1,0 +1,31 @@
+<bo-page-header title="Chat"> </bo-page-header>
+<bo-page-content [padding]="true" class="selectable">
+  <div class="messages">
+    <div>
+      @for (message of messages; track $index) {
+        @if (message.tool_calls.length) {
+          <ion-list>
+            @for (tool_call of message.tool_calls; track $index) {
+              <bo-item>{{ tool_call.endpoint }}</bo-item>
+            }
+          </ion-list>
+        }
+
+        <bo-card [class]="message.role">
+          <bo-card-content>
+            <div [innerHTML]="message.content | markdown"></div>
+          </bo-card-content>
+        </bo-card>
+      }
+      <bo-item></bo-item>
+    </div>
+  </div>
+</bo-page-content>
+
+<bo-page-footer>
+  <bo-item>
+    <ion-input [(ngModel)]="prompt" placeholder="Zeptej se Čibu" (keydown.enter)="sendPrompt()">
+      <bo-icon-button slot="end" icon="send" (click)="sendPrompt()" [disabled]="loading"></bo-icon-button
+    ></ion-input>
+  </bo-item>
+</bo-page-footer>

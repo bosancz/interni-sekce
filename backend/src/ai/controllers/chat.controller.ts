@@ -1,36 +1,40 @@
-import { Body, Controller, Get, NotFoundException, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { Body, Controller, NotFoundException, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
+import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Token } from "src/auth/decorators/token.decorator";
 import { UserGuard } from "src/auth/guards/user.guard";
 import { TokenData } from "src/auth/schema/user-token";
-import { ConversationChatDto } from "../dtos/ConversationChatDto";
+import { ConversationChatRoute, ConversationCreateRoute } from "../acl/Conversation.acl";
+import { ConversationChatBody } from "../dto/ConversationChatBody.dto";
+import { ConversationResponse } from "../dto/ConversationResponse.dto";
 import { ConversationRepository } from "../repositories/ConversationRepository";
 import { ChatService } from "../services/chat.service";
 
 @Controller("chat")
 @ApiTags("Chat")
+@AcController()
+@UseGuards(UserGuard)
 export class ChatController {
   constructor(
     private chatService: ChatService,
     private conversationRepository: ConversationRepository,
   ) {}
 
-  @Get()
-  @UseGuards(UserGuard)
-  listConversations(@Token() token: TokenData) {
-    return this.conversationRepository.getUserConversations(token.userId);
-  }
+  // @Get()
+  // @AcLinks(ConversationsListRoute)
+  // async listConversations(@Req() req: Request, @Token() token: TokenData) {
+  //   ConversationsListRoute.canOrThrow(req, undefined);
 
-  @Get(":id")
-  @UseGuards(UserGuard)
-  getConversation(@Token() token: TokenData, @Param("id") id: number) {
-    return this.conversationRepository.getUserConversation(token.userId, id);
-  }
+  //   return this.conversationRepository.getUserConversations(token.userId);
+  // }
 
   @Post()
-  @UseGuards(UserGuard)
-  async createConversation(@Token() token: TokenData) {
+  @AcLinks(ConversationCreateRoute)
+  @ApiResponse({ type: WithLinks(ConversationResponse) })
+  async createConversation(@Req() req: Request, @Token() token: TokenData) {
+    ConversationCreateRoute.canOrThrow(req, undefined);
+
     const conversation = await this.conversationRepository.repository.save({
       userId: token.userId,
     });
@@ -38,12 +42,24 @@ export class ChatController {
     return conversation;
   }
 
+  // @Get(":id")
+  // @AcLinks(ConversationReadRoute)
+  // async readConversation(@Req() req: Request, @Token() token: TokenData, @Param("id") id: number) {
+  //   const conversation = await this.conversationRepository.getUserConversation(token.userId, id);
+  //   if (!conversation) throw new NotFoundException("Conversation not found");
+
+  //   ConversationReadRoute.canOrThrow(req, conversation);
+
+  //   return conversation;
+  // }
+
   @Post(":id")
-  @UseGuards(UserGuard)
+  @AcLinks(ConversationChatRoute)
+  @ApiResponse({ schema: { type: "string" } })
   async prompt(
     @Token() token: TokenData,
     @Param("id") id: number,
-    @Body() body: ConversationChatDto,
+    @Body() body: ConversationChatBody,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -52,6 +68,8 @@ export class ChatController {
     });
     if (!conversation) throw new NotFoundException("Conversation not found");
 
+    ConversationChatRoute.canOrThrow(req, conversation);
+
     const chat = this.chatService.createChat(conversation.messages, req.token);
 
     req.on("close", () => {
@@ -59,11 +77,11 @@ export class ChatController {
     });
 
     chat.on("content", async (content: string) => {
-      res.write(content);
+      res.write(JSON.stringify({ content }) + "\n");
     });
 
     chat.on("tool_call", (tool_call) => {
-      res.write(`%%%TOOL_CALL%%%${tool_call}%%%TOOL_CALL_END%%%`);
+      res.write(JSON.stringify({ tool_call }) + "\n");
     });
 
     await chat.prompt(body.prompt);

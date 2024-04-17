@@ -9,14 +9,14 @@ export class IconButtonComponent {
   @Input() label?: string;
   @Input() icon?: string;
   @Input() href?: string;
+  @Input() disabled?: boolean;
 
   constructor() {}
 
   onClick(event: Event) {
-    event.preventDefault();
-    event.stopPropagation();
-
     if (this.href) {
+      event.preventDefault();
+      event.stopPropagation();
       window.location.href = this.href;
     }
   }
