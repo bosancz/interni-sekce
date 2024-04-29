@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { BehaviorSubject } from "rxjs";
-import { map } from "rxjs/operators";
+import { BehaviorSubject, defer, fromEvent } from "rxjs";
+import { filter, map, repeat, retry } from "rxjs/operators";
 import { appConfig } from "src/config";
 import { environment } from "src/environments/environment";
 import { Logger } from "src/logger";
@@ -23,6 +23,23 @@ export type ApiEndpoints = RootResponseLinks;
 export type ApiError = AxiosError;
 
 axios.defaults.withCredentials = true;
+
+interface RetryRequestOptions {
+  maxRetries?: number;
+  onFocus?: boolean;
+}
+
+const tabFocusEvent = fromEvent(document, "visibilitychange").pipe(
+  filter(() => document.visibilityState === "visible"),
+);
+
+export function retryRequest<T, D>(request: () => Promise<AxiosResponse<T, D>>, options: RetryRequestOptions = {}) {
+  let o = defer(() => request());
+  if (options.maxRetries) o = o.pipe(retry(options.maxRetries));
+  if (options.onFocus) o = o.pipe(repeat({ delay: () => tabFocusEvent }));
+
+  return o;
+}
 
 @Injectable({
   providedIn: "root",
