@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Pipe, PipeTransform } from "@angular/core";
+import { map } from "rxjs";
 import { GroupResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
@@ -23,12 +24,13 @@ export class GroupPipe implements PipeTransform {
     private api: ApiService,
     private cdRef: ChangeDetectorRef,
   ) {
-    this.api.cache.groups.subscribe((groups) => {
-      if (!groups) return;
-
-      this.groups = new Map(groups.map((group) => [group.id, group]));
-      this.cdRef.markForCheck();
-    });
+    this.api
+      .watchRequest((signal) => this.api.members.listGroups({}, { signal }))
+      .pipe(map((res) => res.data))
+      .subscribe((groups) => {
+        this.groups = new Map(groups.map((group) => [group.id, group]));
+        this.cdRef.markForCheck();
+      });
   }
 
   transform(groupId: number | undefined, property: GroupPipeProperty): string | undefined {

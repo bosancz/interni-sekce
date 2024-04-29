@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { BehaviorSubject, defer, fromEvent } from "rxjs";
-import { filter, map, repeat, retry } from "rxjs/operators";
+import { Subject, fromEvent } from "rxjs";
+import { filter, retry, switchMap } from "rxjs/operators";
 import { appConfig } from "src/config";
 import { environment } from "src/environments/environment";
 import { Logger } from "src/logger";
@@ -9,11 +9,9 @@ import {
   APIApi,
   AccountApi,
   EventsApi,
-  GroupResponseWithLinks,
   MembersApi,
   PhotoGalleryApi,
   RootResponseLinks,
-  RootResponseWithLinks,
   StatisticsApi,
   UsersApi,
 } from "../api";
@@ -24,21 +22,9 @@ export type ApiError = AxiosError;
 
 axios.defaults.withCredentials = true;
 
-interface RetryRequestOptions {
+interface WatchRequestOptions {
   maxRetries?: number;
   onFocus?: boolean;
-}
-
-const tabFocusEvent = fromEvent(document, "visibilitychange").pipe(
-  filter(() => document.visibilityState === "visible"),
-);
-
-export function retryRequest<T, D>(request: () => Promise<AxiosResponse<T, D>>, options: RetryRequestOptions = {}) {
-  let o = defer(() => request());
-  if (options.maxRetries) o = o.pipe(retry(options.maxRetries));
-  if (options.onFocus) o = o.pipe(repeat({ delay: () => tabFocusEvent }));
-
-  return o;
 }
 
 @Injectable({
@@ -59,51 +45,43 @@ export class ApiService {
   readonly statistics = new StatisticsApi(undefined, this.apiRoot, this.http);
   readonly api = new APIApi(undefined, this.apiRoot, this.http);
 
-  readonly cache = {
-    groups: new CachedSubject<GroupResponseWithLinks[]>(this, (api) => api.members.listGroups()),
-    apiInfo: new CachedSubject<RootResponseWithLinks>(this, (api) => api.api.getApiInfo()),
-  };
+  private tabFocusEvent = fromEvent(document, "visibilitychange").pipe(
+    filter(() => document.visibilityState === "visible"),
+  );
 
-  endpoints = new BehaviorSubject<ApiEndpoints | null>(null);
+  private reloadApiEvent = new Subject<void>();
 
-  constructor() {
-    this.cache.apiInfo.pipe(map((info) => info?._links ?? null)).subscribe(this.endpoints);
-  }
+  constructor() {}
 
   async init() {
     await this.reloadApi();
-    this.logger.log("API initialized", this.cache.apiInfo.value);
   }
 
   async reloadApi() {
-    return Promise.all(Object.values(this.cache).map((subject) => subject.load()));
+    this.reloadApiEvent.next();
   }
 
   isApiError(err: unknown): err is ApiError {
     return axios.isAxiosError(err);
   }
-}
 
-class CachedSubject<T> extends BehaviorSubject<T | undefined> {
-  constructor(
-    private api: ApiService,
-    private request: (api: ApiService) => Promise<AxiosResponse<T>>,
+  watchRequest<T, D>(
+    request: (signal: AbortSignal) => Promise<AxiosResponse<T, D>>,
+    options: WatchRequestOptions = {},
   ) {
-    super(undefined);
-  }
+    const trigger = new Subject<void>();
 
-  async load() {
-    try {
-      const res = await this.request(this.api);
-      this.next(res.data);
-    } catch (err) {
-      if (this.api.isApiError(err)) {
-        if (err.response?.status === 401 || err.response?.status === 403) {
-          this.next(undefined);
-          return;
-        }
-        throw err;
-      }
-    }
+    this.tabFocusEvent.subscribe(() => trigger.next());
+    this.reloadApiEvent.subscribe(() => trigger.next());
+
+    return trigger
+      .pipe(
+        switchMap(() => {
+          const controller = new AbortController();
+          trigger.subscribe(() => controller.abort());
+          return request(controller.signal);
+        }),
+      )
+      .pipe(retry(options.maxRetries));
   }
 }
