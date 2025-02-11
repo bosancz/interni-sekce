@@ -5,6 +5,7 @@
   "service": "devcontainer",
   "workspaceFolder": "/workspace",
   "shutdownAction": "stopCompose",
+  "postCreateCommand": "./.devcontainer/post-create.sh",
   "forwardPorts": [
     4200,
     9229,
@@ -12,6 +13,9 @@
     5432,
     "adminer:8080"
   ],
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {}
+  },
   "customizations": {
     "vscode": {
       "extensions": [

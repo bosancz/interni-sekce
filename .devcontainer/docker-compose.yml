@@ -2,40 +2,36 @@ name: bosan_interni_sekce_development
 
 services:
   devcontainer:
-    container_name: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-devcontainer
-    build: "."
+    image: mcr.microsoft.com/devcontainers/typescript-node:1-22
+    command: sleep infinity
     volumes:
       - ..:/workspace:cached
     environment:
       ENV_TITLE: "DEV"
-      DB_HOST: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-postgres
+      DB_HOST: postgres
       DB_USER: postgres
       DB_PASSWORD: password
       DB_DATABASE: postgres
       DB_SCHEMA: public
-      MONGODB_URI: mongodb://${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-mongo/bosan
+      MONGODB_URI: mongodb://mongo/bosan
       CORS_ENABLE: "true"
       CORS_ORIGINS: "http://localhost:4200,http://localhost:4300"
 
   postgres:
-    container_name: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-postgres
     image: postgres:15
     environment:
       POSTGRES_PASSWORD: password
 
   adminer:
-    container_name: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-adminer
     image: adminer
 
   mongo:
-    container_name: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-mongo
     image: mongo:4.2
     environment:
       MONGO_INITDB_DATABASE: bosan
 
   mongoexpress:
-    container_name: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-mongoexpress
     image: mongo-express
     environment:
-      ME_CONFIG_MONGODB_SERVER: ${COMPOSE_PROJECT_NAME:-bosan-interni-dev}-mongo
+      ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
