@@ -1,19 +1,19 @@
 import { Injectable } from "@angular/core";
 import { DateTime } from "luxon";
 import { BehaviorSubject } from "rxjs";
-import { EventResponseWithLinks, EventUpdateBody } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 
 @Injectable({
   providedIn: "root",
 })
 export class EventsService {
-  event$ = new BehaviorSubject<EventResponseWithLinks | undefined>(undefined);
+  event$ = new BehaviorSubject<SDK.EventResponseWithLinks | undefined>(undefined);
 
   constructor(private api: ApiService) {}
 
-  async loadEvent(eventId: number): Promise<EventResponseWithLinks> {
-    const event = await this.api.events.getEvent(eventId).then((res) => res.data);
+  async loadEvent(eventId: number): Promise<SDK.EventResponseWithLinks> {
+    const event = await this.api.EventsApi.getEvent(eventId).then((res) => res.data);
 
     event.attendees?.sort((a, b) => (a.member!.nickname || "").localeCompare(b.member!.nickname || ""));
 
@@ -26,15 +26,15 @@ export class EventsService {
   }
 
   async deleteEvent(eventId: number) {
-    await this.api.events.deleteEvent(eventId);
+    await this.api.EventsApi.deleteEvent(eventId);
   }
 
   async listEvents(options: any) {
     // TODO: implement options
-    return this.api.events.listEvents();
+    return this.api.EventsApi.listEvents();
   }
 
-  async updateEvent(eventId: number, data: Partial<EventUpdateBody>) {
-    return this.api.events.updateEvent(eventId, data);
+  async updateEvent(eventId: number, data: Partial<SDK.EventUpdateBody>) {
+    return this.api.EventsApi.updateEvent(eventId, data);
   }
 }

@@ -1,13 +1,13 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { MemberRolesEnum } from "src/app/api";
 import { MemberRoleMetadata, MemberRoles } from "src/app/config/member-roles";
+import { SDK } from "src/sdk";
 
 type RolePipeProperty = "code";
 
 @Pipe({
-    name: "role",
-    pure: false,
-    standalone: false
+  name: "role",
+  pure: false,
+  standalone: false,
 })
 export class RolePipe implements PipeTransform {
   roles = MemberRoles;
@@ -20,7 +20,7 @@ export class RolePipe implements PipeTransform {
 
   constructor() {}
 
-  transform(roleId: MemberRolesEnum | undefined, property: RolePipeProperty): string {
+  transform(roleId: SDK.MemberRolesEnum | undefined, property: RolePipeProperty): string {
     if (!roleId) return this.defaultProperties[property];
     if (!(roleId in this.roles)) return this.defaultProperties[property];
 

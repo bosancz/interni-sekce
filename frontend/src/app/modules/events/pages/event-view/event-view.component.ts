@@ -2,24 +2,24 @@ import { Component } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter, ViewWillLeave } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { EventResponseWithLinks, EventUpdateBody } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { ExtractExisting } from "src/helpers/typings";
+import { SDK } from "src/sdk";
 
 export type EventStatusActions = ExtractExisting<
-  keyof EventResponseWithLinks["_links"],
+  keyof SDK.EventResponseWithLinks["_links"],
   "publishEvent" | "unpublishEvent" | "uncancelEvent" | "cancelEvent" | "rejectEvent" | "submitEvent"
 >;
 
 @UntilDestroy()
 @Component({
-    selector: "bo-event-view",
-    templateUrl: "./event-view.component.html",
-    styleUrl: "./event-view.component.scss",
-    standalone: false
+  selector: "bo-event-view",
+  templateUrl: "./event-view.component.html",
+  styleUrl: "./event-view.component.scss",
+  standalone: false,
 })
 export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
   event: any;
@@ -44,12 +44,12 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 
   ionViewWillLeave(): void {}
 
-  async updateEvent(data: Partial<EventUpdateBody>) {
+  async updateEvent(data: Partial<SDK.EventUpdateBody>) {
     if (!this.event) return;
 
     try {
       Object.assign(this.event, data);
-      await this.api.events.updateEvent(this.event.id, data);
+      await this.api.EventsApi.updateEvent(this.event.id, data);
       this.toastService.toast("Uloženo.");
     } catch (e) {
       this.toastService.toast("Nepodařilo se uložit změny.", { color: "warning" });
@@ -59,7 +59,7 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
   }
 
   private async loadEvent(eventId: number) {
-    this.event = await this.api.events.getEvent(eventId).then((res) => res.data);
+    this.event = await this.api.EventsApi.getEvent(eventId).then((res) => res.data);
 
     this.setActions(this.event);
   }
@@ -68,15 +68,15 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
     await this.loadEvent(this.event.id);
   }
 
-  async leadEvent(event: EventResponseWithLinks) {
-    await this.api.events.leadEvent(event.id);
+  async leadEvent(event: SDK.EventResponseWithLinks) {
+    await this.api.EventsApi.leadEvent(event.id);
 
     await this.loadEvent(event.id);
 
     this.toastService.toast("Uloženo");
   }
 
-  private async eventStatusAction(event: EventResponseWithLinks, action: EventStatusActions) {
+  private async eventStatusAction(event: SDK.EventResponseWithLinks, action: EventStatusActions) {
     if (!event._links[action].allowed) {
       this.toastService.toast("K této akci nemáš oprávnění.");
       return;
@@ -85,30 +85,30 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
     const statusNote = window.prompt("Poznámka ke změně stavu (můžeš nechat prázdné):");
     if (statusNote === null) return; // user clicked on cancel
 
-    await this.api.events[action](event.id, { statusNote });
+    await this.api.EventsApi[action](event.id, { statusNote });
 
     await this.loadEvent(event.id);
 
     this.toastService.toast("Uloženo");
   }
 
-  private async deleteEvent(event: EventResponseWithLinks) {
+  private async deleteEvent(event: SDK.EventResponseWithLinks) {
     const confirmation = await this.modalService.deleteConfirmationModal(`Opravdu chcete smazat akci ${event.name}?`);
 
     if (confirmation) {
-      await this.api.events.deleteEvent(event.id);
+      await this.api.EventsApi.deleteEvent(event.id);
       this.router.navigate(["/akce"], { relativeTo: this.route, replaceUrl: true });
       this.toastService.toast("Akce smazána");
     }
   }
 
-  private async restoreEvent(event: EventResponseWithLinks) {
-    await this.api.events.restoreEvent(event.id);
+  private async restoreEvent(event: SDK.EventResponseWithLinks) {
+    await this.api.EventsApi.restoreEvent(event.id);
     await this.loadEvent(event.id);
     this.toastService.toast("Akce obnovena");
   }
 
-  private setActions(event: EventResponseWithLinks) {
+  private setActions(event: SDK.EventResponseWithLinks) {
     this.actions = [
       {
         text: "Vést akci",

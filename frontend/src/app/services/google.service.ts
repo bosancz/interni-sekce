@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { firstValueFrom } from "rxjs";
 import { ApiService } from "./api.service";
 
 export class GoogleError extends Error {
@@ -23,7 +22,7 @@ export class GoogleService {
       document.body.appendChild(script);
     });
 
-    const client_id = await firstValueFrom(this.api.cache.apiInfo).then((info) => info?.googleClientId);
+    const client_id = await this.api.RootApi.getApiInfo().then((res) => res.data.googleClientId);
     if (!client_id) throw new Error("Client ID not provided by API");
 
     const response = await new Promise<google.accounts.oauth2.CodeResponse>((resolve, reject) => {

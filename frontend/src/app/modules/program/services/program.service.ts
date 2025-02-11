@@ -22,7 +22,7 @@ export class ProgramService {
     };
 
     // TODO: list events above
-    const events = await this.api.events.listEvents().then((res) => res.data);
+    const events = await this.api.EventsApi.listEvents().then((res) => res.data);
 
     this.pendingEventsCount.next(events.length);
   }

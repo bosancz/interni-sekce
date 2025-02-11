@@ -10,8 +10,8 @@ import {
   ViewChild,
 } from "@angular/core";
 import { ModalController, Platform } from "@ionic/angular";
-import { AlbumResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 
 interface PhotoUploadItem {
   file: File;
@@ -21,13 +21,13 @@ interface PhotoUploadItem {
 }
 
 @Component({
-    selector: "photos-upload",
-    templateUrl: "./photos-upload.component.html",
-    styleUrls: ["./photos-upload.component.scss"],
-    standalone: false
+  selector: "photos-upload",
+  templateUrl: "./photos-upload.component.html",
+  styleUrls: ["./photos-upload.component.scss"],
+  standalone: false,
 })
 export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() album!: AlbumResponseWithLinks;
+  @Input() album!: SDK.AlbumResponseWithLinks;
 
   tags: string[] = [];
   selectedTags: string[] = [];
@@ -119,7 +119,7 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
     this.modalController.dismiss(false);
   }
 
-  async uploadPhotos(album: AlbumResponseWithLinks) {
+  async uploadPhotos(album: SDK.AlbumResponseWithLinks) {
     this.uploading = true;
     this.preventExit();
 
@@ -145,7 +145,7 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
     this.modalController.dismiss(true);
   }
 
-  async uploadPhoto(album: AlbumResponseWithLinks, uploadItem: PhotoUploadItem): Promise<void> {
+  async uploadPhoto(album: SDK.AlbumResponseWithLinks, uploadItem: PhotoUploadItem): Promise<void> {
     if (!this.allowedFiles_re.test(uploadItem.file.name)) {
       throw new Error("Unsupported file type.");
     }
@@ -158,7 +158,7 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
     if (uploadItem.file.lastModified)
       formData.set("lastModified", new Date(uploadItem.file.lastModified).toISOString());
 
-    const req = await this.api.albums.createPhoto({ file: uploadItem.file, albumId: album.id });
+    const req = await this.api.PhotoGalleryApi.createPhoto({ file: uploadItem.file, albumId: album.id });
 
     // TODO: monitor upload using axios
     // return new Promise<void>((resolve, reject) => {

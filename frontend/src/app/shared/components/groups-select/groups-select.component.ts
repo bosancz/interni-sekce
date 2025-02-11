@@ -1,27 +1,27 @@
 import { AfterViewInit, Component, ElementRef, forwardRef, Input, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { GroupResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "bo-group-select",
-    templateUrl: "./groups-select.component.html",
-    styleUrls: ["./groups-select.component.scss"],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            multi: true,
-            useExisting: forwardRef(() => GroupsSelectComponent),
-        },
-    ],
-    host: {
-        "[class.disabled]": "disabled",
-        "[class.readonly]": "readonly",
+  selector: "bo-group-select",
+  templateUrl: "./groups-select.component.html",
+  styleUrls: ["./groups-select.component.scss"],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: forwardRef(() => GroupsSelectComponent),
     },
-    standalone: false
+  ],
+  host: {
+    "[class.disabled]": "disabled",
+    "[class.readonly]": "readonly",
+  },
+  standalone: false,
 })
 export class GroupsSelectComponent implements OnInit, ControlValueAccessor, AfterViewInit {
-  groups?: GroupResponseWithLinks[];
+  groups?: SDK.GroupResponseWithLinks[];
 
   selectedGroups: number[] = [];
 
@@ -42,7 +42,7 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
   ngOnInit() {}
 
   async loadGroups() {
-    this.groups = await this.api.members.listGroups({ active: true }).then((res) => res.data);
+    this.groups = await this.api.MembersApi.listGroups({ active: true }).then((res) => res.data);
   }
 
   ngAfterViewInit() {
@@ -111,7 +111,7 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
   // ControlValueAccessor
   writeValue(groups: number | number[] | undefined): void {
     if (this.multiple) {
-      this.selectedGroups = Array.isArray(groups) ? groups : this.groups?.map((group) => group.id) ?? [];
+      this.selectedGroups = Array.isArray(groups) ? groups : (this.groups?.map((group) => group.id) ?? []);
     } else {
       this.selectedGroups = groups ? (Array.isArray(groups) ? groups : [groups]) : [];
     }

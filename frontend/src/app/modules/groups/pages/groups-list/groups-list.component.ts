@@ -1,19 +1,19 @@
 import { Component } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ActionSheetController, AlertController, NavController, ViewWillEnter } from "@ionic/angular";
-import { GroupResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "bo-groups-list",
-    templateUrl: "./groups-list.component.html",
-    styleUrls: ["./groups-list.component.scss"],
-    standalone: false
+  selector: "bo-groups-list",
+  templateUrl: "./groups-list.component.html",
+  styleUrls: ["./groups-list.component.scss"],
+  standalone: false,
 })
 export class GroupsListComponent implements ViewWillEnter {
-  groups?: GroupResponseWithLinks[];
+  groups?: SDK.GroupResponseWithLinks[];
 
   actions: Action[] = [
     {
@@ -38,13 +38,13 @@ export class GroupsListComponent implements ViewWillEnter {
   }
 
   private async loadGroups() {
-    this.groups = await this.api.members.listGroups().then((res) => res.data);
+    this.groups = await this.api.MembersApi.listGroups().then((res) => res.data);
     this.groups.sort((a, b) =>
       (a.name ?? a.shortName).localeCompare(b.name ?? b.shortName, undefined, { numeric: true }),
     );
   }
 
-  async deleteGroup(group: GroupResponseWithLinks) {
+  async deleteGroup(group: SDK.GroupResponseWithLinks) {
     const alert = await this.alertController.create({
       header: `Smazat ${group.name ?? group.id}?`,
       buttons: [
@@ -63,8 +63,8 @@ export class GroupsListComponent implements ViewWillEnter {
     alert.present();
   }
 
-  private async deleteGroupConfirmed(group: GroupResponseWithLinks) {
-    await this.api.members.deleteGroup(group.id);
+  private async deleteGroupConfirmed(group: SDK.GroupResponseWithLinks) {
+    await this.api.MembersApi.deleteGroup(group.id);
 
     await this.loadGroups();
 

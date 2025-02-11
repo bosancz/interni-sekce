@@ -9,7 +9,7 @@ import { EventResponse } from "./event.dto";
 export class EventAttendeeResponse {
   @ApiProperty() eventId!: number;
   @ApiProperty() memberId!: number;
-  @ApiProperty({ enum: EventAttendeeType, enumName: "EventAttendeeTypeEnum" }) type!: EventAttendeeType;
+  @ApiProperty({ enum: EventAttendeeType }) type!: EventAttendeeType;
   @ApiPropertyOptional({ type: EventResponse }) event?: Event | undefined;
   @ApiPropertyOptional({ type: MemberResponse }) member?: Member | undefined;
 }

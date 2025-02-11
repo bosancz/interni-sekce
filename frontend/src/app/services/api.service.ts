@@ -5,18 +5,9 @@ import { filter, retry, switchMap } from "rxjs/operators";
 import { appConfig } from "src/config";
 import { environment } from "src/environments/environment";
 import { Logger } from "src/logger";
-import {
-  APIApi,
-  AccountApi,
-  EventsApi,
-  MembersApi,
-  PhotoGalleryApi,
-  RootResponseLinks,
-  StatisticsApi,
-  UsersApi,
-} from "../api";
+import { SDK } from "src/sdk";
 
-export type ApiEndpoints = RootResponseLinks;
+export type RootLinks = SDK.RootResponseLinks;
 
 export type ApiError = AxiosError;
 
@@ -30,28 +21,26 @@ interface WatchRequestOptions {
 @Injectable({
   providedIn: "root",
 })
-export class ApiService {
+export class ApiService extends SDK {
   private readonly logger = new Logger(ApiService.name);
-
-  readonly http = axios.create({ withCredentials: true });
-
-  private readonly apiRoot = appConfig.apiRoot ?? environment.apiRoot;
-
-  readonly albums = new PhotoGalleryApi(undefined, this.apiRoot, this.http);
-  readonly events = new EventsApi(undefined, this.apiRoot, this.http);
-  readonly members = new MembersApi(undefined, this.apiRoot, this.http);
-  readonly account = new AccountApi(undefined, this.apiRoot, this.http);
-  readonly users = new UsersApi(undefined, this.apiRoot, this.http);
-  readonly statistics = new StatisticsApi(undefined, this.apiRoot, this.http);
-  readonly api = new APIApi(undefined, this.apiRoot, this.http);
 
   private tabFocusEvent = fromEvent(document, "visibilitychange").pipe(
     filter(() => document.visibilityState === "visible"),
   );
-
   private reloadApiEvent = new Subject<void>();
 
-  constructor() {}
+  public info = new Subject<SDK.RootResponseWithLinks>();
+  public rootLinks = new Subject<SDK.RootResponseLinks>();
+
+  constructor() {
+    super({
+      basePath: appConfig.apiRoot ?? environment.apiRoot,
+    });
+
+    this.reloadApiEvent.subscribe(() => this.loadInfo());
+
+    this.reloadApi();
+  }
 
   async init() {
     await this.reloadApi();
@@ -59,6 +48,12 @@ export class ApiService {
 
   async reloadApi() {
     this.reloadApiEvent.next();
+  }
+
+  private async loadInfo() {
+    const info = await this.RootApi.getApiInfo().then((res) => res.data);
+    this.info.next(info);
+    this.rootLinks.next(info._links);
   }
 
   isApiError(err: unknown): err is ApiError {

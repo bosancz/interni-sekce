@@ -8,28 +8,28 @@ import { EventsReportResponse } from "../dto/events-report.dto";
 @ApiTags("Statistics")
 export class EventsStatisticsController {
   @Get("years")
-  @ApiResponse({ schema: { type: "array", items: { type: "number" } } })
+  @ApiResponse({ status: 200, schema: { type: "array", items: { type: "number" } } })
   getEventsReportYears() {
     // TODO:
     return {};
   }
 
   @Get("events")
-  @ApiResponse({ type: EventsReportResponse })
+  @ApiResponse({ status: 200, type: EventsReportResponse })
   getEventsReport() {
     // TODO:
     return {};
   }
 
   @Get("attendees")
-  @ApiResponse({ type: EventsAttendeesReportResponse })
+  @ApiResponse({ status: 200, type: EventsAttendeesReportResponse })
   getEventsAttendeesReport() {
     // TODO:
     return {};
   }
 
   @Get("leaders")
-  @ApiResponse({ type: EventsLeadersReportResponse })
+  @ApiResponse({ status: 200, type: EventsLeadersReportResponse })
   getEventsLeadersReport() {
     // TODO:
     return {};

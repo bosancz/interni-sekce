@@ -1,13 +1,13 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { EventResponseWithLinks } from "src/app/api";
 import { EventTypes } from "src/app/config/event-types";
+import { SDK } from "src/sdk";
 
 type EventPipeProperty = "image" | "color" | "class";
 
 @Pipe({
-    name: "event",
-    pure: false,
-    standalone: false
+  name: "event",
+  pure: false,
+  standalone: false,
 })
 export class EventPipe implements PipeTransform {
   eventTypes = EventTypes;
@@ -16,14 +16,14 @@ export class EventPipe implements PipeTransform {
 
   constructor() {}
 
-  transform(event: EventResponseWithLinks | undefined, property: EventPipeProperty): string {
+  transform(event: SDK.EventResponseWithLinks | undefined, property: EventPipeProperty): string {
     if (!event) return this.defaultProperties[property];
 
     switch (property) {
       case "color":
       case "image":
         return event.type && event.type in this.eventTypes
-          ? this.eventTypes[<keyof typeof this.eventTypes>event.type][property] ?? ""
+          ? (this.eventTypes[<keyof typeof this.eventTypes>event.type][property] ?? "")
           : "";
 
       default:

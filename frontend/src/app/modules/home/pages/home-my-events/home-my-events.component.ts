@@ -1,10 +1,8 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-
-import { ApiService } from "src/app/services/api.service";
-
 import { DateTime } from "luxon";
-import { EventResponseWithLinks } from "src/app/api";
+import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 
 type DashboardMyEventsStats = {
   count: number;
@@ -13,17 +11,17 @@ type DashboardMyEventsStats = {
 };
 
 @Component({
-    selector: "bo-home-my-events",
-    templateUrl: "./home-my-events.component.html",
-    styleUrls: ["./home-my-events.component.scss"],
-    standalone: false
+  selector: "bo-home-my-events",
+  templateUrl: "./home-my-events.component.html",
+  styleUrls: ["./home-my-events.component.scss"],
+  standalone: false,
 })
 export class HomeMyEventsComponent implements OnInit {
   @Input() limit?: number;
 
   title = "Moje akce";
 
-  events: EventResponseWithLinks[] = [];
+  events: SDK.EventResponseWithLinks[] = [];
 
   stats: DashboardMyEventsStats = {
     count: 0,
@@ -31,7 +29,11 @@ export class HomeMyEventsComponent implements OnInit {
     mandays: 0,
   };
 
-  constructor(private api: ApiService, private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private api: ApiService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit() {
     this.loadMyEvents();
@@ -39,7 +41,7 @@ export class HomeMyEventsComponent implements OnInit {
 
   async loadMyEvents() {
     // TODO: list only my events
-    this.events = await this.api.events.listEvents().then((res) => res.data);
+    this.events = await this.api.EventsApi.listEvents().then((res) => res.data);
 
     this.events.sort((a, b) => b.dateFrom.localeCompare(a.dateFrom));
 

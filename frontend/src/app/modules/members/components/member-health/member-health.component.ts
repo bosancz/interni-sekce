@@ -1,17 +1,17 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { AlertController } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { MemberResponseWithLinks } from "src/app/api";
+import { SDK } from "src/sdk";
 @UntilDestroy()
 @Component({
-    selector: "bo-member-health",
-    templateUrl: "./member-health.component.html",
-    styleUrls: ["./member-health.component.scss"],
-    standalone: false
+  selector: "bo-member-health",
+  templateUrl: "./member-health.component.html",
+  styleUrls: ["./member-health.component.scss"],
+  standalone: false,
 })
 export class MemberHealthComponent implements OnInit {
-  @Input() member?: MemberResponseWithLinks | null;
-  @Output() update = new EventEmitter<Partial<MemberResponseWithLinks>>();
+  @Input() member?: SDK.MemberResponseWithLinks | null;
+  @Output() update = new EventEmitter<Partial<SDK.MemberResponseWithLinks>>();
 
   constructor(private alertController: AlertController) {}
 

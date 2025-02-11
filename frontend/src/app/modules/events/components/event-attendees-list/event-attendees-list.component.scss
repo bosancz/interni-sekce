@@ -1,4 +1,4 @@
-@import "src/styles/variables.scss";
+@use "src/styles/variables" as *;
 
 bo-item {
   --label-width: 80px;

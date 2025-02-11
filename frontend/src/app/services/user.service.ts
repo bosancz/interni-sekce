@@ -4,7 +4,7 @@ import { BehaviorSubject } from "rxjs";
 import { ApiService } from "src/app/services/api.service";
 
 import axios from "axios";
-import { UserResponseWithLinks } from "../api";
+import { SDK } from "src/sdk";
 import { ToastService } from "./toast.service";
 /**
  * Service to save user information and commnicate user data with server
@@ -13,9 +13,12 @@ import { ToastService } from "./toast.service";
   providedIn: "root",
 })
 export class UserService {
-  user = new BehaviorSubject<UserResponseWithLinks | null | undefined>(undefined);
+  user = new BehaviorSubject<SDK.UserResponseWithLinks | null | undefined>(undefined);
 
-  constructor(private api: ApiService, private toastService: ToastService) {
+  constructor(
+    private api: ApiService,
+    private toastService: ToastService,
+  ) {
     this.loadUser();
   }
 
@@ -25,7 +28,7 @@ export class UserService {
 
   async loadUser() {
     try {
-      const user = await this.api.account.getMe().then((res) => res.data);
+      const user = await this.api.AccountApi.getMe().then((res) => res.data);
       this.user.next(user);
       return user;
     } catch (err) {

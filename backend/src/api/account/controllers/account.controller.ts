@@ -18,7 +18,7 @@ export class AccountController {
 
   @Get()
   @AcLinks(AccountReadRoute)
-  @ApiResponse({ type: WithLinks(UserResponse) })
+  @ApiResponse({ status: 200, type: WithLinks(UserResponse) })
   async getMe(@Req() req: Request, @Token() token: TokenData): Promise<UserResponse> {
     const user = await this.userService.getUser(token.userId);
     if (!user) throw new NotFoundException();

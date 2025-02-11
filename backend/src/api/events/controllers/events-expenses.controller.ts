@@ -19,7 +19,7 @@ export class EventsExpensesController {
 
   @Get("")
   @AcLinks(EventExpensesListRoute)
-  @ApiResponse({ type: WithLinks(EventExpenseResponse), isArray: true })
+  @ApiResponse({ status: 200, type: WithLinks(EventExpenseResponse), isArray: true })
   async listEventExpenses(@Req() req: Request, @Param("eventId") eventId: number): Promise<EventExpenseResponse[]> {
     const event = await this.events.getEvent(eventId);
     if (!event) throw new NotFoundException();

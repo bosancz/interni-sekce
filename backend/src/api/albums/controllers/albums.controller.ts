@@ -30,7 +30,7 @@ export class AlbumsController {
 
   @Get()
   @AcLinks(AlbumsListRoute)
-  @ApiResponse({ type: WithLinks(AlbumResponse), isArray: true })
+  @ApiResponse({ status: 200, type: WithLinks(AlbumResponse), isArray: true })
   async listAlbums(@Req() req: Request, @Query() query: AlbumListQuery): Promise<AlbumResponse[]> {
     const options: GetAlbumsOptions = {
       limit: query.limit,
@@ -45,7 +45,7 @@ export class AlbumsController {
 
   @Post()
   @AcLinks(AlbumCreateRoute)
-  @ApiResponse({ type: WithLinks(AlbumResponse) })
+  @ApiResponse({ status: 200, type: WithLinks(AlbumResponse) })
   async createAlbum(@Req() req: Request, @Body() body: AlbumCreateBody): Promise<AlbumResponse> {
     AlbumCreateRoute.canOrThrow(req, undefined);
 
@@ -54,7 +54,7 @@ export class AlbumsController {
 
   @Get("years")
   @AcLinks(AlbumsYearsRoute)
-  @ApiResponse({ schema: { type: "array", items: { type: "number" } } })
+  @ApiResponse({ status: 200, schema: { type: "array", items: { type: "number" } } })
   async getAlbumsYears(@Req() req: Request): Promise<number[]> {
     AlbumsYearsRoute.canOrThrow(req, undefined);
 
@@ -63,7 +63,7 @@ export class AlbumsController {
 
   @Get(":id")
   @AcLinks(AlbumReadRoute)
-  @ApiResponse({ type: WithLinks(AlbumResponse) })
+  @ApiResponse({ status: 200, type: WithLinks(AlbumResponse) })
   async getAlbum(@Param("id") id: number, @Req() req: Request): Promise<AlbumResponse> {
     const album = await this.albums.getAlbum(id);
     if (!album) throw new NotFoundException();
@@ -123,7 +123,7 @@ export class AlbumsController {
 
   @Get(":id/photos")
   @AcLinks(AlbumPhotosRoute)
-  @ApiResponse({ type: WithLinks(PhotoResponse), isArray: true })
+  @ApiResponse({ status: 200, type: WithLinks(PhotoResponse), isArray: true })
   async getAlbumPhotos(@Param("id") id: number, @Req() req: Request): Promise<PhotoResponse[]> {
     return this.photos.getPhotos({ album: id });
   }

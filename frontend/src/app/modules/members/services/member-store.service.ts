@@ -1,17 +1,16 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import { MemberResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
-import { TitleService } from "src/app/services/title.service";
+import { SDK } from "src/sdk";
 
 @Injectable()
 export class MemberStoreService {
-  currentMember = new BehaviorSubject<MemberResponseWithLinks | null>(null);
+  currentMember = new BehaviorSubject<SDK.MemberResponseWithLinks | null>(null);
 
-  constructor(private api: ApiService, private titleService: TitleService) {}
+  constructor(private api: ApiService) {}
 
   async loadMember(id: number) {
-    const member = await this.api.members.getMember(id).then((res) => res.data);
+    const member = await this.api.MembersApi.getMember(id).then((res) => res.data);
     this.currentMember.next(member);
   }
 }

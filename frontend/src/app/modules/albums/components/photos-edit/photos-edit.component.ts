@@ -1,20 +1,20 @@
 import { Component, HostListener, Input, NgZone, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, IonInput, ModalController, Platform, ViewWillLeave } from "@ionic/angular";
-import { PhotoResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 import Swiper from "swiper";
 import { SwiperOptions } from "swiper/types";
 
 @Component({
-    selector: "bo-photos-edit",
-    templateUrl: "./photos-edit.component.html",
-    styleUrls: ["./photos-edit.component.scss"],
-    standalone: false
+  selector: "bo-photos-edit",
+  templateUrl: "./photos-edit.component.html",
+  styleUrls: ["./photos-edit.component.scss"],
+  standalone: false,
 })
 export class PhotosEditComponent implements ViewWillLeave {
-  photo?: PhotoResponseWithLinks;
-  @Input() photos!: PhotoResponseWithLinks[];
+  photo?: SDK.PhotoResponseWithLinks;
+  @Input() photos!: SDK.PhotoResponseWithLinks[];
 
   editingCaption = false;
 
@@ -123,14 +123,14 @@ export class PhotosEditComponent implements ViewWillLeave {
     value = String(value);
     this.photo!.caption = value;
     this.editingCaption = false;
-    await this.api.albums.updatePhoto(this.photo!.id, { caption: value });
+    await this.api.PhotoGalleryApi.updatePhoto(this.photo!.id, { caption: value });
   }
 
   async close() {
     await this.modalController.dismiss();
   }
 
-  async delete(photo: PhotoResponseWithLinks) {
+  async delete(photo: SDK.PhotoResponseWithLinks) {
     const alert = await this.alertController.create({
       header: "Smazat fotku",
       message: "Chcete opravdu smazat tuto fotku?",
@@ -143,8 +143,8 @@ export class PhotosEditComponent implements ViewWillLeave {
     alert.present();
   }
 
-  async deleteConfirmed(photo: PhotoResponseWithLinks) {
-    await this.api.albums.deletePhoto(photo.id);
+  async deleteConfirmed(photo: SDK.PhotoResponseWithLinks) {
+    await this.api.PhotoGalleryApi.deletePhoto(photo.id);
 
     const i = this.photos.findIndex((item) => item.id === photo.id);
     this.photos.splice(i, 1);

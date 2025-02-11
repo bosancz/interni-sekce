@@ -1,23 +1,23 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { InfiniteScrollCustomEvent, Platform } from "@ionic/angular";
-import { EventResponseWithLinks, EventsApiListEventsQueryParams } from "src/app/api";
 import { EventStatuses } from "src/app/config/event-statuses";
-import { ApiEndpoints, ApiService } from "src/app/services/api.service";
+import { ApiService, RootLinks } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { UrlParams } from "src/helpers/typings";
+import { SDK } from "src/sdk";
 import { EventCreateModalComponent } from "../../components/event-create-modal/event-create-modal.component";
 
 @Component({
-    selector: "bo-events-list",
-    templateUrl: "./events-list.component.html",
-    styleUrls: ["./events-list.component.scss"],
-    standalone: false
+  selector: "bo-events-list",
+  templateUrl: "./events-list.component.html",
+  styleUrls: ["./events-list.component.scss"],
+  standalone: false,
 })
 export class EventsListComponent implements OnInit {
-  events?: EventResponseWithLinks[];
+  events?: SDK.EventResponseWithLinks[];
 
   years: number[] = [];
   statuses = EventStatuses;
@@ -42,7 +42,7 @@ export class EventsListComponent implements OnInit {
   ngOnInit(): void {
     this.loadYears();
 
-    this.api.endpoints.subscribe((endpoints) => this.setActions(endpoints));
+    this.api.rootLinks.subscribe((endpoints) => this.setActions(endpoints));
 
     this.updateView();
     this.platform.resize.subscribe(() => this.updateView());
@@ -57,12 +57,12 @@ export class EventsListComponent implements OnInit {
     this.loadEvents(filter);
   }
 
-  getLeadersString(event: EventResponseWithLinks) {
+  getLeadersString(event: SDK.EventResponseWithLinks) {
     return event.leaders?.map((item) => item.nickname).join(", ");
   }
 
   private async loadYears() {
-    this.years = await this.api.events.getEventsYears().then((res) => res.data);
+    this.years = await this.api.EventsApi.getEventsYears().then((res) => res.data);
     this.years.sort((a, b) => b - a);
   }
 
@@ -80,7 +80,7 @@ export class EventsListComponent implements OnInit {
       this.events = undefined;
     }
 
-    const params: EventsApiListEventsQueryParams = {
+    const params: SDK.EventsApiListEventsQueryParams = {
       search: filter.search || undefined,
       status: filter.status || undefined,
       year: filter.year ? parseInt(filter.year) : undefined,
@@ -91,7 +91,7 @@ export class EventsListComponent implements OnInit {
       limit: this.pageSize,
     };
 
-    const events = await this.api.events.listEvents(params).then((res) => res.data);
+    const events = await this.api.EventsApi.listEvents(params).then((res) => res.data);
 
     if (!this.events) this.events = [];
     this.events.push(...events);
@@ -103,14 +103,14 @@ export class EventsListComponent implements OnInit {
     if (!data) return;
 
     // create the event and wait for confirmation
-    let event = await this.api.events.createEvent(data).then((res) => res.data);
+    let event = await this.api.EventsApi.createEvent(data).then((res) => res.data);
     // show the confrmation
     this.toastService.toast("Akce vytvořena a uložena.");
     // open the event
     this.router.navigate(["/akce/" + event.id]);
   }
 
-  private setActions(endpoints: ApiEndpoints | null) {
+  private setActions(endpoints: RootLinks | null) {
     this.actions = [
       {
         icon: "add-outline",

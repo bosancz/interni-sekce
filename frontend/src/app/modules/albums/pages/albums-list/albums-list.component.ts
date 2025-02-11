@@ -10,28 +10,24 @@ import {
   ViewWillLeave,
 } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import {
-  AlbumCreateBody,
-  AlbumResponseWithLinks,
-  PhotoGalleryApiListAlbumsQueryParams,
-  RootResponseLinks,
-} from "src/app/api";
 import { AlbumStatuses } from "src/app/config/album-statuses";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+
 import { UrlParams } from "src/helpers/typings";
+import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
-    selector: "albums-list",
-    templateUrl: "./albums-list.component.html",
-    styleUrls: ["./albums-list.component.scss"],
-    standalone: false
+  selector: "albums-list",
+  templateUrl: "./albums-list.component.html",
+  styleUrls: ["./albums-list.component.scss"],
+  standalone: false,
 })
 export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
   years: string[] = [];
-  albums?: AlbumResponseWithLinks[];
+  albums?: SDK.AlbumResponseWithLinks[];
 
   view: "table" | "grid" = this.platform.isPortrait() ? "grid" : "table";
 
@@ -67,7 +63,7 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
   ionViewWillEnter() {
     this.loadYears();
 
-    this.api.endpoints
+    this.api.rootLinks
       .pipe(untilDestroyed(this, "ionViewWillLeave"))
       .subscribe((endpoints) => this.setActions(endpoints));
   }
@@ -81,7 +77,7 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
     this.loadAlbums(filter);
   }
 
-  setActions(endpoints: RootResponseLinks | null) {
+  setActions(endpoints: SDK.RootResponseLinks | null) {
     this.actions = [
       {
         text: "Přidat",
@@ -98,7 +94,7 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
   }
 
   private async loadYears() {
-    this.years = await this.api.albums.getAlbumsYears().then((res) => res.data.map((y) => String(y)));
+    this.years = await this.api.PhotoGalleryApi.getAlbumsYears().then((res) => res.data.map((y) => String(y)));
     this.years.sort((a, b) => b.localeCompare(a));
   }
 
@@ -111,15 +107,16 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
       this.albums = undefined;
     }
 
-    const params: PhotoGalleryApiListAlbumsQueryParams = {
+    // TODO: validate SDK.ListAlbumsStatusEnum
+    const params: SDK.PhotoGalleryApiListAlbumsQueryParams = {
       search: filter.search || undefined,
-      status: filter.status || undefined,
+      status: (filter.status as SDK.ListAlbumsStatusEnum) || undefined,
       year: filter.year ? String(filter.year) : undefined,
       offset: (this.page - 1) * this.pageSize,
       limit: this.pageSize,
     };
 
-    const albums = await this.api.albums.listAlbums(params).then((res) => res.data);
+    const albums = await this.api.PhotoGalleryApi.listAlbums(params).then((res) => res.data);
 
     if (!this.albums) this.albums = [];
     this.albums.push(...albums);
@@ -138,7 +135,7 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
         { role: "cancel", text: "Zrušit" },
         {
           text: "Vytvořit",
-          handler: (data: AlbumCreateBody) => this.onCreateAlbum(data),
+          handler: (data: SDK.AlbumCreateBody) => this.onCreateAlbum(data),
         },
       ],
     });
@@ -146,7 +143,7 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
     await this.alert.present();
   }
 
-  private onCreateAlbum(albumData: AlbumCreateBody) {
+  private onCreateAlbum(albumData: SDK.AlbumCreateBody) {
     // prevent switched date order
     if (albumData.dateFrom && albumData.dateTill) {
       const dates = [albumData.dateFrom, albumData.dateTill];
@@ -163,13 +160,13 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
     this.createAlbum(albumData);
   }
 
-  private async createAlbum(albumData: AlbumCreateBody) {
+  private async createAlbum(albumData: SDK.AlbumCreateBody) {
     if (!albumData.name || !albumData.dateFrom || !albumData.dateTill) {
       this.toastService.toast("Musíš vyplnit jméno i datumy");
       return false;
     }
 
-    const album = await this.api.albums.createAlbum(albumData).then((res) => res.data);
+    const album = await this.api.PhotoGalleryApi.createAlbum(albumData).then((res) => res.data);
 
     await this.navController.navigateForward("/galerie/" + album.id);
   }

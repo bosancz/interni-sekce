@@ -6,10 +6,10 @@ import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 @Component({
-    selector: "users-create",
-    templateUrl: "./users-create.component.html",
-    styleUrls: ["./users-create.component.scss"],
-    standalone: false
+  selector: "users-create",
+  templateUrl: "./users-create.component.html",
+  styleUrls: ["./users-create.component.scss"],
+  standalone: false,
 })
 export class UsersCreateComponent implements OnInit {
   actions: Action[] = [
@@ -22,7 +22,11 @@ export class UsersCreateComponent implements OnInit {
 
   @ViewChild("createUserForm") form!: NgForm;
 
-  constructor(private api: ApiService, private toastService: ToastService, private router: Router) {}
+  constructor(
+    private api: ApiService,
+    private toastService: ToastService,
+    private router: Router,
+  ) {}
 
   ngOnInit() {}
 
@@ -31,7 +35,7 @@ export class UsersCreateComponent implements OnInit {
     const userData = this.form.value;
 
     // create the user and wait for confirmation
-    const user = await this.api.users.createUser(userData).then((res) => res.data);
+    const user = await this.api.UsersApi.createUser(userData).then((res) => res.data);
 
     // show the confrmation
     this.toastService.toast("Uživatel vytvořen.");

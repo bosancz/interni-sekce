@@ -1,18 +1,18 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
-import { MemberResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "bo-card-insurance-card",
-    templateUrl: "./card-insurance-card.component.html",
-    styleUrls: ["./card-insurance-card.component.scss"],
-    standalone: false
+  selector: "bo-card-insurance-card",
+  templateUrl: "./card-insurance-card.component.html",
+  styleUrls: ["./card-insurance-card.component.scss"],
+  standalone: false,
 })
 export class CardInsuranceCardComponent implements OnChanges {
-  @Input() member?: MemberResponseWithLinks | null;
+  @Input() member?: SDK.MemberResponseWithLinks | null;
   @Output() update = new EventEmitter<void>();
 
   insuranceCardUrl?: string | null;
@@ -29,7 +29,7 @@ export class CardInsuranceCardComponent implements OnChanges {
     if (changes.member) this.setInsuranceCardUrl(this.member);
   }
 
-  private setInsuranceCardUrl(member?: MemberResponseWithLinks | null) {
+  private setInsuranceCardUrl(member?: SDK.MemberResponseWithLinks | null) {
     if (member) {
       this.insuranceCardUrl =
         member?._links?.getInsuranceCard.applicable && member?._links?.getInsuranceCard.applicable
@@ -65,7 +65,7 @@ export class CardInsuranceCardComponent implements OnChanges {
     const uploadToast = await this.toastService.toast("Nahrávám kartičku pojištěnce...");
 
     try {
-      await this.api.members.uploadInsuranceCard(this.member!.id, file);
+      await this.api.MembersApi.uploadInsuranceCard(this.member!.id, file);
 
       this.setInsuranceCardUrl(this.member);
 
@@ -82,7 +82,7 @@ export class CardInsuranceCardComponent implements OnChanges {
       "Opravdu chcete smazat tuto kartu pojištěnce?",
     );
     if (confirmation) {
-      await this.api.members.deleteInsuranceCard(this.member!.id);
+      await this.api.MembersApi.deleteInsuranceCard(this.member!.id);
 
       this.setInsuranceCardUrl(null);
 

@@ -1,15 +1,15 @@
 /* IMPORTS */
 
-@import "src/styles/bootstrap";
+@use "src/styles/bootstrap";
 
-@import "src/styles/ionic-theme";
+@use "src/styles/ionic-theme";
 
-@import "src/styles/ionic";
+@use "src/styles/ionic";
 
-@import "src/styles/theme";
+@use "src/styles/theme";
 
-@import "src/styles/general";
+@use "src/styles/general";
 
-@import "swiper/scss";
-@import "swiper/scss/navigation";
-@import "node_modules/@ionic/angular/css/ionic-swiper";
+@use "swiper/scss";
+@use "swiper/scss/navigation";
+@use "node_modules/@ionic/angular/css/ionic-swiper";

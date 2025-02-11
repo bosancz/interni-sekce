@@ -1,14 +1,14 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { EventExpenseResponseWithLinks } from "src/app/api";
 import { EventExpenseTypes } from "src/app/config/event-expense-types";
 import { EventTypes } from "src/app/config/event-types";
+import { SDK } from "src/sdk";
 
 type EventExpensePipeProperty = "type" | "color";
 
 @Pipe({
-    name: "eventExpense",
-    pure: true,
-    standalone: false
+  name: "eventExpense",
+  pure: true,
+  standalone: false,
 })
 export class EventExpensePipe implements PipeTransform {
   eventTypes = EventTypes;
@@ -17,7 +17,7 @@ export class EventExpensePipe implements PipeTransform {
 
   constructor() {}
 
-  transform(eventExpense: EventExpenseResponseWithLinks | undefined, property: EventExpensePipeProperty): string {
+  transform(eventExpense: SDK.EventExpenseResponseWithLinks | undefined, property: EventExpensePipeProperty): string {
     if (!eventExpense) return this.defaultProperties[property];
     if (!(eventExpense.type in EventExpenseTypes)) return this.defaultProperties[property];
 

@@ -2,20 +2,20 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, NavController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { AlbumResponseWithLinks, PhotoResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
-    selector: "bo-albums-view-info",
-    templateUrl: "./albums-view-info.component.html",
-    styleUrls: ["./albums-view-info.component.scss"],
-    standalone: false
+  selector: "bo-albums-view-info",
+  templateUrl: "./albums-view-info.component.html",
+  styleUrls: ["./albums-view-info.component.scss"],
+  standalone: false,
 })
 export class AlbumsViewInfoComponent implements OnInit {
-  album?: AlbumResponseWithLinks;
+  album?: SDK.AlbumResponseWithLinks;
 
   actions: Action[] = [];
 
@@ -39,20 +39,20 @@ export class AlbumsViewInfoComponent implements OnInit {
   }
 
   async loadAlbum(albumId: number) {
-    this.album = await this.api.albums.getAlbum(albumId).then((res) => res.data);
+    this.album = await this.api.PhotoGalleryApi.getAlbum(albumId).then((res) => res.data);
     this.updateActions(this.album);
   }
 
   private async publish() {
     if (!this.album?._links.unpublishAlbum.allowed) return;
-    await this.api.albums.unpublishAlbum(this.album.id);
+    await this.api.PhotoGalleryApi.unpublishAlbum(this.album.id);
     await this.loadAlbum(this.album.id);
     this.toastService.toast("Publikováno.");
   }
 
   private async unpublish() {
     if (!this.album?._links.publishAlbum.allowed) return;
-    await this.api.albums.publishAlbum(this.album.id);
+    await this.api.PhotoGalleryApi.publishAlbum(this.album.id);
     await this.loadAlbum(this.album.id);
     this.toastService.toast("Publikováno.");
   }
@@ -72,7 +72,7 @@ export class AlbumsViewInfoComponent implements OnInit {
   private async deleteConfirmed() {
     if (!this.album) return;
 
-    await this.api.albums.deleteAlbum(this.album.id);
+    await this.api.PhotoGalleryApi.deleteAlbum(this.album.id);
 
     this.toastService.toast("Smazáno.");
     this.router.navigate(["/galerie"], { relativeTo: this.route, replaceUrl: true });
@@ -83,7 +83,7 @@ export class AlbumsViewInfoComponent implements OnInit {
     window.open("https://bosan.cz/fotogalerie/" + this.album.id);
   }
 
-  onPhotoClick(event: PhotoResponseWithLinks) {
+  onPhotoClick(event: SDK.PhotoResponseWithLinks) {
     if (this.album) {
       this.navController.navigateForward(`/galerie/${this.album.id}/fotky`, {
         queryParams: { photo: event.id },
@@ -91,7 +91,7 @@ export class AlbumsViewInfoComponent implements OnInit {
     }
   }
 
-  private updateActions(album: AlbumResponseWithLinks) {
+  private updateActions(album: SDK.AlbumResponseWithLinks) {
     this.actions = [
       {
         text: "Upravit",

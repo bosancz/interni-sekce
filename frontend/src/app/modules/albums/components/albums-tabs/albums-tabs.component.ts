@@ -1,15 +1,15 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { NavController } from "@ionic/angular";
-import { AlbumResponseWithLinks } from "src/app/api";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "bo-albums-tabs",
-    templateUrl: "./albums-tabs.component.html",
-    styleUrls: ["./albums-tabs.component.scss"],
-    standalone: false
+  selector: "bo-albums-tabs",
+  templateUrl: "./albums-tabs.component.html",
+  styleUrls: ["./albums-tabs.component.scss"],
+  standalone: false,
 })
 export class AlbumsTabsComponent implements OnInit {
-  @Input() album?: AlbumResponseWithLinks;
+  @Input() album?: SDK.AlbumResponseWithLinks;
   @Input() selected?: "info" | "fotky";
 
   constructor(private navController: NavController) {}

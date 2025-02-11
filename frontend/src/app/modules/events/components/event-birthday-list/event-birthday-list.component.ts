@@ -1,24 +1,24 @@
 import { Component, Input } from "@angular/core";
 import { DateTime } from "luxon";
-import { EventResponseWithLinks, MemberResponse } from "src/app/api";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "event-birthday-list",
-    templateUrl: "./event-birthday-list.component.html",
-    styleUrls: ["./event-birthday-list.component.scss"],
-    standalone: false
+  selector: "event-birthday-list",
+  templateUrl: "./event-birthday-list.component.html",
+  styleUrls: ["./event-birthday-list.component.scss"],
+  standalone: false,
 })
 export class EventBirthdayListComponent {
-  birthdays: Array<{ age: number; date: string; member: MemberResponse }> = [];
+  birthdays: Array<{ age: number; date: string; member: SDK.MemberResponse }> = [];
 
   constructor() {}
 
   @Input()
-  set event(event: EventResponseWithLinks) {
+  set event(event: SDK.EventResponseWithLinks) {
     this.updateBirthdays(event);
   }
 
-  updateBirthdays(event: EventResponseWithLinks) {
+  updateBirthdays(event: SDK.EventResponseWithLinks) {
     const members = [];
     if (event.leaders) members.push(...event.leaders);
     if (event.attendees) members.push(...event.attendees.map((ea) => ea.member!));

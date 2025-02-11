@@ -1,26 +1,26 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import { ChartData, ChartOptions } from "chart.js";
 import { DateTime } from "luxon";
-import { EventExpenseResponseWithLinks, EventExpenseTypesEnum, EventResponseWithLinks } from "src/app/api";
 import { EventExpenseTypes } from "src/app/config/event-expense-types";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "bo-event-expenses-chart",
-    templateUrl: "./event-expenses-chart.component.html",
-    styleUrls: ["./event-expenses-chart.component.scss"],
-    standalone: false
+  selector: "bo-event-expenses-chart",
+  templateUrl: "./event-expenses-chart.component.html",
+  styleUrls: ["./event-expenses-chart.component.scss"],
+  standalone: false,
 })
 export class EventExpensesChartComponent implements OnInit, OnChanges {
-  @Input() event?: EventResponseWithLinks;
-  @Input() expenses?: EventExpenseResponseWithLinks[];
+  @Input() event?: SDK.EventResponseWithLinks;
+  @Input() expenses?: SDK.EventExpenseResponseWithLinks[];
 
   days: number = 0;
   persons: number = 0;
 
   total: number = 0;
 
-  totalByType: Record<EventExpenseTypesEnum, number> = {
+  totalByType: Record<SDK.EventExpenseTypesEnum, number> = {
     accommodation: 0,
     food: 0,
     material: 0,
@@ -68,12 +68,12 @@ export class EventExpensesChartComponent implements OnInit, OnChanges {
 
     this.days = Math.ceil(dateTill.diff(dateFrom, "days").days);
 
-    const attendees = await this.api.events.listEventAttendees(this.event.id).then((res) => res.data);
+    const attendees = await this.api.EventsApi.listEventAttendees(this.event.id).then((res) => res.data);
 
     this.persons = attendees?.length || 1;
 
     const data: ChartData<"doughnut">["datasets"][0]["data"] = Object.keys(EventExpenseTypes).map((type) => {
-      return this.getTotalExpenseByType(type as EventExpenseTypesEnum) / this.persons / this.days;
+      return this.getTotalExpenseByType(type as SDK.EventExpenseTypesEnum) / this.persons / this.days;
     });
 
     this.chartData = {
@@ -93,7 +93,7 @@ export class EventExpensesChartComponent implements OnInit, OnChanges {
     this.total = this.expenses.reduce((acc, e) => acc + parseFloat(e.amount as any), 0);
   }
 
-  private getTotalExpenseByType(type: EventExpenseTypesEnum) {
+  private getTotalExpenseByType(type: SDK.EventExpenseTypesEnum) {
     return this.expenses?.filter((e) => e.type === type).reduce((acc, e) => acc + parseFloat(e.amount as any), 0) || 0;
   }
 }

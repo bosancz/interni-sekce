@@ -2,25 +2,25 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { MemberResponse, UserResponseWithLinks } from "src/app/api";
 import { UserRoles } from "src/app/config/user-roles";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
-    selector: "bo-users-edit",
-    templateUrl: "./users-edit.component.html",
-    styleUrls: ["./users-edit.component.scss"],
-    standalone: false
+  selector: "bo-users-edit",
+  templateUrl: "./users-edit.component.html",
+  styleUrls: ["./users-edit.component.scss"],
+  standalone: false,
 })
 export class UsersEditComponent implements OnInit {
-  user?: UserResponseWithLinks;
+  user?: SDK.UserResponseWithLinks;
 
   roles = UserRoles;
 
-  members: MemberResponse[] = [];
+  members: SDK.MemberResponse[] = [];
 
   category: string = "ucet";
 
@@ -52,11 +52,11 @@ export class UsersEditComponent implements OnInit {
 
   // DB interaction
   async loadUser(userId: number) {
-    this.user = await this.api.users.getUser(userId).then((res) => res.data);
+    this.user = await this.api.UsersApi.getUser(userId).then((res) => res.data);
   }
 
   async loadMembers() {
-    let members = await this.api.members.listMembers().then((res) => res.data);
+    let members = await this.api.MembersApi.listMembers().then((res) => res.data);
     members.sort((a, b) => (a.nickname || "").localeCompare(b.nickname || ""));
     this.members = members;
   }
@@ -66,7 +66,7 @@ export class UsersEditComponent implements OnInit {
 
     const userData = this.form.value;
 
-    await this.api.users.updateUser(this.user.id, userData);
+    await this.api.UsersApi.updateUser(this.user.id, userData);
 
     this.toastService.toast("Uloženo.");
 

@@ -1,22 +1,22 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ModalController, ViewWillEnter } from "@ionic/angular";
-import { EventResponseWithLinks } from "src/app/api";
 import { EventsService } from "src/app/modules/events/services/events.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { SDK } from "src/sdk";
 import { TrimesterDateRange } from "../../components/trimester-selector/trimester-selector.component";
 
 @Component({
-    selector: "bo-program-calendar",
-    templateUrl: "./program-calendar.component.html",
-    styleUrls: ["./program-calendar.component.scss"],
-    standalone: false
+  selector: "bo-program-calendar",
+  templateUrl: "./program-calendar.component.html",
+  styleUrls: ["./program-calendar.component.scss"],
+  standalone: false,
 })
 export class ProgramCalendarComponent implements OnInit, OnDestroy, ViewWillEnter {
   dateFrom?: string;
   dateTill?: string;
 
-  calendarEvents: EventResponseWithLinks[] = [];
+  calendarEvents: SDK.EventResponseWithLinks[] = [];
 
   showFilter: boolean = true;
 

@@ -34,7 +34,7 @@ export class MembersController {
 
   @Get()
   @AcLinks(MembersListRoute)
-  @ApiResponse({ type: WithLinks(MemberResponse), isArray: true })
+  @ApiResponse({ status: 200, type: WithLinks(MemberResponse), isArray: true })
   async listMembers(@Req() req: Request, @Query() query: MembersListQuery): Promise<MemberResponse[]> {
     return this.members.getMembers({
       ...query,
@@ -44,7 +44,7 @@ export class MembersController {
 
   @Post()
   @AcLinks(MemberCreateRoute)
-  @ApiResponse({ type: WithLinks(MemberResponse) })
+  @ApiResponse({ status: 200, type: WithLinks(MemberResponse) })
   async createMember(@Req() req: Request, @Body() body: MemberCreateBody): Promise<MemberResponse> {
     MemberCreateRoute.canOrThrow(req, undefined);
 
@@ -53,7 +53,7 @@ export class MembersController {
 
   @Get(":id")
   @AcLinks(MemberReadRoute)
-  @ApiResponse({ type: WithLinks(MemberResponse) })
+  @ApiResponse({ status: 200, type: WithLinks(MemberResponse) })
   async getMember(@Param("id") id: number, @Req() req: Request): Promise<MemberResponse> {
     const member = await this.members.getMember(id);
     if (!member) throw new NotFoundException();

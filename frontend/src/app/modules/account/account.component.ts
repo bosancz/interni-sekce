@@ -1,15 +1,15 @@
 import { Component } from "@angular/core";
-import { UserResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "bo-account",
-    templateUrl: "./account.component.html",
-    styleUrls: ["./account.component.scss"],
-    standalone: false
+  selector: "bo-account",
+  templateUrl: "./account.component.html",
+  styleUrls: ["./account.component.scss"],
+  standalone: false,
 })
 export class AccountComponent {
-  user?: UserResponseWithLinks;
+  user?: SDK.UserResponseWithLinks;
 
   modal?: HTMLIonModalElement;
 
@@ -20,6 +20,6 @@ export class AccountComponent {
   }
 
   async loadUser() {
-    this.user = await this.api.account.getMe().then((res) => res.data);
+    this.user = await this.api.AccountApi.getMe().then((res) => res.data);
   }
 }

@@ -51,7 +51,7 @@ export class EventsController {
 
   @Get()
   @AcLinks(EventsListRoute)
-  @ApiResponse({ type: WithLinks(EventResponse), isArray: true })
+  @ApiResponse({ status: 200, type: WithLinks(EventResponse), isArray: true })
   async listEvents(
     @Req() req: Request,
     @Token() token: TokenData,
@@ -87,7 +87,7 @@ export class EventsController {
 
   @Get("years")
   @AcLinks(EventsYearsRoute)
-  @ApiResponse({ schema: { type: "array", items: { type: "number" } } })
+  @ApiResponse({ status: 200, schema: { type: "array", items: { type: "number" } } })
   async getEventsYears(@Req() req: Request): Promise<number[]> {
     EventsYearsRoute.canOrThrow(req, undefined);
 
@@ -96,8 +96,8 @@ export class EventsController {
 
   @Get(":id")
   @AcLinks(EventReadRoute)
-  @ApiResponse({ type: WithLinks(EventResponse) })
-  async getEvent(@Req() req: Request, @Param("id") id: number): Promise<Omit<EventResponse, "_links">> {
+  @ApiResponse({ status: 200, type: WithLinks(EventResponse) })
+  async getEvent(@Req() req: Request, @Param("id") id: number): Promise<EventResponse> {
     const event = await this.events.getEvent(id, { leaders: true });
     if (!event) throw new NotFoundException();
 

@@ -1,8 +1,8 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
 import { CzechHolidays } from "czech-holidays";
 import { DateTime } from "luxon";
-import { CPVEventResponseWithLinks, EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 
 const months = [
   "Leden",
@@ -23,14 +23,17 @@ class CalendarRow {
   days: CalendarDay[] = [];
 
   blocks = {
-    own: new CalendarRowBlock<EventResponseWithLinks>(),
-    cpv: new CalendarRowBlock<CPVEventResponseWithLinks>(),
+    own: new CalendarRowBlock<SDK.EventResponseWithLinks>(),
+    cpv: new CalendarRowBlock<SDK.CPVEventResponseWithLinks>(),
   };
 
-  constructor(public from: DateTime, public to: DateTime) {}
+  constructor(
+    public from: DateTime,
+    public to: DateTime,
+  ) {}
 }
 
-class CalendarRowBlock<T extends CPVEventResponseWithLinks | EventResponseWithLinks> {
+class CalendarRowBlock<T extends SDK.CPVEventResponseWithLinks | SDK.EventResponseWithLinks> {
   events: CalendarEvent<T>[] = [];
   levels: number = 1;
 }
@@ -44,10 +47,13 @@ interface CalendarDayProperties {
 }
 class CalendarDay {
   eventCount: number = 0;
-  constructor(public date: DateTime, public properties: CalendarDayProperties) {}
+  constructor(
+    public date: DateTime,
+    public properties: CalendarDayProperties,
+  ) {}
 }
 
-class CalendarEvent<T extends CPVEventResponseWithLinks | EventResponseWithLinks> {
+class CalendarEvent<T extends SDK.CPVEventResponseWithLinks | SDK.EventResponseWithLinks> {
   level: number = 0;
 
   dateFrom: DateTime;
@@ -60,10 +66,10 @@ class CalendarEvent<T extends CPVEventResponseWithLinks | EventResponseWithLinks
 }
 
 @Component({
-    selector: "bo-event-calendar",
-    templateUrl: "./event-calendar.component.html",
-    styleUrls: ["./event-calendar.component.scss"],
-    standalone: false
+  selector: "bo-event-calendar",
+  templateUrl: "./event-calendar.component.html",
+  styleUrls: ["./event-calendar.component.scss"],
+  standalone: false,
 })
 export class EventCalendarComponent implements OnInit, OnChanges {
   @Input("dateFrom") set dateFromString(value: DateTime | string) {
@@ -75,7 +81,7 @@ export class EventCalendarComponent implements OnInit, OnChanges {
     this.dateTill.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
   }
 
-  @Input() events: EventResponseWithLinks[] = [];
+  @Input() events: SDK.EventResponseWithLinks[] = [];
 
   @Input() cpv: boolean = false;
   @Input() selection: boolean = false;
@@ -91,7 +97,7 @@ export class EventCalendarComponent implements OnInit, OnChanges {
   dateFrom!: DateTime;
   dateTill!: DateTime;
 
-  eventsCPV: CPVEventResponseWithLinks[] = [];
+  eventsCPV: SDK.CPVEventResponseWithLinks[] = [];
 
   eventHeight = 22;
 
@@ -156,8 +162,7 @@ export class EventCalendarComponent implements OnInit, OnChanges {
   async loadEventsCPV() {
     this.eventsCPV = [];
 
-    this.api.events
-      .getCPVEvents()
+    this.api.EventsApi.getCPVEvents()
       .then((res) => res.data)
       .then((events) => {
         this.eventsCPV.push(...events);
@@ -165,9 +170,12 @@ export class EventCalendarComponent implements OnInit, OnChanges {
       });
   }
 
-  assignEvents(events: Array<EventResponseWithLinks>, type: "own"): void;
-  assignEvents(events: Array<CPVEventResponseWithLinks>, type: "cpv"): void;
-  assignEvents(events: Array<CPVEventResponseWithLinks | EventResponseWithLinks>, type: "own" | "cpv"): void {
+  assignEvents(events: Array<SDK.EventResponseWithLinks>, type: "own"): void;
+  assignEvents(events: Array<SDK.CPVEventResponseWithLinks>, type: "cpv"): void;
+  assignEvents(
+    events: Array<SDK.CPVEventResponseWithLinks> | Array<SDK.EventResponseWithLinks>,
+    type: "own" | "cpv",
+  ): void {
     if (!this.calendar) return;
     if (!events) return;
 
@@ -176,9 +184,11 @@ export class EventCalendarComponent implements OnInit, OnChanges {
       const rowBlock = row.blocks[type];
 
       // assign events based on first and last day, convert to CalendarEvent
-      rowBlock.events = events
-        .map((event) => new CalendarEvent(event))
-        .filter((event) => event.dateTill >= row.from && event.dateFrom <= row.to);
+      rowBlock.events = <CalendarEvent<SDK.CPVEventResponseWithLinks>[] | CalendarEvent<SDK.EventResponseWithLinks>[]>(
+        events
+          .map((event) => new CalendarEvent(event))
+          .filter((event) => event.dateTill >= row.from && event.dateFrom <= row.to)
+      );
 
       rowBlock.events.sort((a, b) => a.dateFrom.diff(b.dateFrom).valueOf());
 
@@ -241,15 +251,15 @@ export class EventCalendarComponent implements OnInit, OnChanges {
     if (!this.selection) return;
   }
 
-  getEventLeft(event: CalendarEvent<CPVEventResponseWithLinks | EventResponseWithLinks>, row: CalendarRow) {
+  getEventLeft(event: CalendarEvent<SDK.CPVEventResponseWithLinks | SDK.EventResponseWithLinks>, row: CalendarRow) {
     return event.dateFrom.diff(row.days[0].date, "days").days / row.days.length;
   }
 
-  getEventWidth(event: CalendarEvent<CPVEventResponseWithLinks | EventResponseWithLinks>, month: CalendarRow) {
+  getEventWidth(event: CalendarEvent<SDK.CPVEventResponseWithLinks | SDK.EventResponseWithLinks>, month: CalendarRow) {
     return (event.dateTill.diff(event.dateFrom, "days").days + 1) / month.days.length;
   }
 
-  getEventTooltip(event: EventResponseWithLinks): string {
+  getEventTooltip(event: SDK.EventResponseWithLinks): string {
     return event.name;
   }
 }

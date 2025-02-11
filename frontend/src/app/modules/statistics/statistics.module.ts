@@ -1,6 +1,5 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
-import { NgChartsModule } from "ng2-charts";
 import { SharedModule } from "src/app/shared/shared.module";
 import { ListSliderComponent } from "./components/list-slider/list-slider.component";
 import { EventsDashboardComponent } from "./pages/events-dashboard/events-dashboard.component";
@@ -17,6 +16,7 @@ import { StatisticsComponent } from "./statistics.component";
     PaddlerCompetitionComponent,
     ListSliderComponent,
   ],
-  imports: [CommonModule, SharedModule, StatisticsRoutingModule, NgChartsModule],
+  imports: [CommonModule, SharedModule, StatisticsRoutingModule],
+  providers: [],
 })
 export class StatisticsModule {}

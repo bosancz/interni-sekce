@@ -20,7 +20,7 @@ export class MemberContactsController {
 
   @Get()
   @AcLinks(MemberContactsListRoute)
-  @ApiResponse({ type: WithLinks(MemberContactResponse), isArray: true })
+  @ApiResponse({ status: 200, type: WithLinks(MemberContactResponse), isArray: true })
   async listContacts(@Req() req: Request, @Param("id") memberId: number): Promise<MemberContactResponse[]> {
     const member = await this.membersRepository.getMember(memberId, { relations: ["contacts"] });
     if (!member) throw new NotFoundException();

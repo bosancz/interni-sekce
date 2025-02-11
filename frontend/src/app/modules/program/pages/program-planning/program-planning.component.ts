@@ -3,24 +3,24 @@ import { ActivatedRoute, Params, Router } from "@angular/router";
 import { ViewWillEnter } from "@ionic/angular";
 import { DateTime } from "luxon";
 import { Subscription } from "rxjs";
-import { EventResponseWithLinks } from "src/app/api";
 import { EventStatuses } from "src/app/config/event-statuses";
 import { EventCreateModalComponent } from "src/app/modules/events/components/event-create-modal/event-create-modal.component";
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "program-planning",
-    templateUrl: "./program-planning.component.html",
-    styleUrls: ["./program-planning.component.scss"],
-    standalone: false
+  selector: "program-planning",
+  templateUrl: "./program-planning.component.html",
+  styleUrls: ["./program-planning.component.scss"],
+  standalone: false,
 })
 export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnter {
   dateFrom?: DateTime;
   dateTill?: DateTime;
 
-  events: EventResponseWithLinks[] = [];
+  events: SDK.EventResponseWithLinks[] = [];
 
   statuses = EventStatuses;
 
@@ -65,7 +65,7 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
     };
 
     // TODO: use options above
-    this.events = await this.api.events.listEvents().then((res) => res.data);
+    this.events = await this.api.EventsApi.listEvents().then((res) => res.data);
   }
 
   setPeriod(period: [string, string]) {
@@ -86,7 +86,7 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
 
     if (!eventData) return;
 
-    await this.api.events.createEvent(eventData);
+    await this.api.EventsApi.createEvent(eventData);
 
     await this.loadEvents();
 

@@ -1,21 +1,21 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { MemberResponse, MemberResponseWithLinks, MemberRolesEnum, MembershipStatesEnum } from "src/app/api";
 import { MemberRoles } from "src/app/config/member-roles";
 import { MembershipStates } from "src/app/config/membership-states";
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
+import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
-    selector: "bo-member-info",
-    templateUrl: "./member-info.component.html",
-    styleUrls: ["./member-info.component.scss"],
-    standalone: false
+  selector: "bo-member-info",
+  templateUrl: "./member-info.component.html",
+  styleUrls: ["./member-info.component.scss"],
+  standalone: false,
 })
 export class MemberInfoComponent implements OnInit {
-  @Input() member?: MemberResponseWithLinks | null;
-  @Output() update = new EventEmitter<Partial<MemberResponse>>();
+  @Input() member?: SDK.MemberResponseWithLinks | null;
+  @Output() update = new EventEmitter<Partial<SDK.MemberResponse>>();
 
   constructor(
     private api: ApiService,
@@ -115,7 +115,7 @@ export class MemberInfoComponent implements OnInit {
     if (data) this.update.emit(data);
   }
 
-  getFullAddress(member: MemberResponseWithLinks) {
+  getFullAddress(member: SDK.MemberResponseWithLinks) {
     const addressLines = [
       `${member.addressStreet ?? ""}${member.addressStreetNo ? ` ${member.addressStreetNo}` : ""}`,
       member.addressCity,
@@ -143,12 +143,12 @@ export class MemberInfoComponent implements OnInit {
   }
 
   async editRole() {
-    const role = await this.modalService.selectModal<MemberRolesEnum>({
+    const role = await this.modalService.selectModal<SDK.MemberRolesEnum>({
       header: "Změnit roli",
       buttonText: "Uložit",
       values: Object.entries(MemberRoles).map(([id, role]) => ({
         label: role.title,
-        value: id as MemberRolesEnum,
+        value: id as SDK.MemberRolesEnum,
         checked: this.member?.role === id,
       })),
       value: this.member?.role,
@@ -158,7 +158,7 @@ export class MemberInfoComponent implements OnInit {
   }
 
   async editGroup() {
-    const groups = await this.api.members.listGroups({ active: true }).then((res) => res.data);
+    const groups = await this.api.MembersApi.listGroups({ active: true }).then((res) => res.data);
     groups.sort((a, b) => a.shortName.localeCompare(b.shortName, "cs", { numeric: true }));
 
     const group = await this.modalService.selectModal({
@@ -177,7 +177,7 @@ export class MemberInfoComponent implements OnInit {
       buttonText: "Uložit",
       values: Object.entries(MembershipStates).map(([id, role]) => ({
         label: role.title,
-        value: id as MembershipStatesEnum,
+        value: id as SDK.MembershipStatesEnum,
         checked: this.member?.role === id,
       })),
       value: this.member?.membership,

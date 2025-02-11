@@ -53,7 +53,7 @@ async function bootstrap() {
   registerTemplating(app);
 
   // comment to disable OpenAPI and Swagger
-  registerOpenAPI("api", app, config);
+  registerOpenAPI("api/openapi", app, config);
 
   if (!config.production) {
     // make JSONs nice for debugging

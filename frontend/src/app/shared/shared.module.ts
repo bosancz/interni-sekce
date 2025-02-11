@@ -35,7 +35,7 @@ import { MarkdownPipe } from "./pipes/markdown.pipe";
 import { MemberPipe } from "./pipes/member.pipe";
 import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
 
-import { NgChartsModule } from "ng2-charts";
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from "ng2-charts";
 import { register } from "swiper/element/bundle";
 import { AddButtonComponent } from "./components/add-button/add-button.component";
 import { CardHeaderComponent } from "./components/card-header/card-header.component";
@@ -56,7 +56,7 @@ import { RolePipe } from "./pipes/role.pipe";
 register();
 
 @NgModule({
-  imports: [CommonModule, FormsModule, RouterModule, IonicModule, NgChartsModule],
+  imports: [CommonModule, FormsModule, RouterModule, IonicModule, BaseChartDirective],
   declarations: [
     ActionButtonsComponent,
     AdminTableComponent,
@@ -110,7 +110,7 @@ register();
     ReactiveFormsModule,
     IonicModule,
     RouterModule,
-    NgChartsModule,
+    BaseChartDirective,
 
     ActionButtonsComponent,
     AdminTableComponent,
@@ -157,6 +157,6 @@ register();
     ModalTemplateComponent,
     IconButtonComponent,
   ],
-  providers: [DatePipe],
+  providers: [DatePipe, provideCharts(withDefaultRegisterables())],
 })
 export class SharedModule {}

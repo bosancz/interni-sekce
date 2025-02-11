@@ -34,7 +34,7 @@ export class PhotosController {
 
   @Get()
   @AcLinks(PhotosListRoute)
-  @ApiResponse({ type: WithLinks(PhotoResponse), isArray: true })
+  @ApiResponse({ status: 200, type: WithLinks(PhotoResponse), isArray: true })
   async listPhotos(@Req() req: Request) {
     return this.photos.getPhotos();
   }
@@ -49,7 +49,7 @@ export class PhotosController {
 
   @Get(":id")
   @AcLinks(PhotoReadRoute)
-  @ApiResponse({ type: WithLinks(PhotoResponse) })
+  @ApiResponse({ status: 200, type: WithLinks(PhotoResponse) })
   async getPhoto(@Param("id") id: number, @Req() req: Request) {
     const photo = await this.photos.getPhoto(id);
     if (!photo) throw new NotFoundException();

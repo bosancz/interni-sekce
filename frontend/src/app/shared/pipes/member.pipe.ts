@@ -1,15 +1,15 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { DateTime } from "luxon";
-import { MemberResponse } from "src/app/api";
 import { MemberRoles } from "src/app/config/member-roles";
 import { MembershipStates } from "src/app/config/membership-states";
+import { SDK } from "src/sdk";
 
 @Pipe({
-    name: "member",
-    standalone: false
+  name: "member",
+  standalone: false,
 })
 export class MemberPipe implements PipeTransform {
-  transform(member: MemberResponse | undefined, property: "nickname" | "age" | "membership" | "role" | "initials") {
+  transform(member: SDK.MemberResponse | undefined, property: "nickname" | "age" | "membership" | "role" | "initials") {
     if (!member) return "";
 
     switch (property) {
@@ -17,7 +17,7 @@ export class MemberPipe implements PipeTransform {
         return member.nickname || member.firstName || member.lastName || "?";
 
       case "age":
-        let birthday: DateTime | string | undefined = member.birthday;
+        let birthday: DateTime | string | null | undefined = member.birthday;
 
         if (!birthday) return "";
 
@@ -36,7 +36,7 @@ export class MemberPipe implements PipeTransform {
     }
   }
 
-  getInitials(member: MemberResponse): string {
+  getInitials(member: SDK.MemberResponse): string {
     return member.nickname
       ? this.getFirstLetterLocal(member.nickname)
       : member.firstName

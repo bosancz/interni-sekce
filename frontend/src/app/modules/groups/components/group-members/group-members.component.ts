@@ -1,19 +1,19 @@
 import { Component, OnInit } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { MemberResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 import { GroupsService } from "../../services/groups.service";
 
 @UntilDestroy()
 @Component({
-    selector: "bo-group-members",
-    templateUrl: "./group-members.component.html",
-    styleUrls: ["./group-members.component.scss"],
-    standalone: false
+  selector: "bo-group-members",
+  templateUrl: "./group-members.component.html",
+  styleUrls: ["./group-members.component.scss"],
+  standalone: false,
 })
 export class GroupMembersComponent implements OnInit {
-  members?: (MemberResponseWithLinks & { searchString?: string })[];
-  filteredMembers?: MemberResponseWithLinks[];
+  members?: (SDK.MemberResponseWithLinks & { searchString?: string })[];
+  filteredMembers?: SDK.MemberResponseWithLinks[];
 
   sortField: "nickname" | "age" = "nickname";
 
@@ -36,7 +36,7 @@ export class GroupMembersComponent implements OnInit {
       return;
     }
 
-    this.members = await this.api.members.listMembers({ groups: [groupId] }).then((res) => res.data);
+    this.members = await this.api.MembersApi.listMembers({ groups: [groupId] }).then((res) => res.data);
 
     this.members.forEach((member) => {
       member.searchString = [member.nickname, member.firstName, member.lastName].join(" ");

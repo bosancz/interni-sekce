@@ -20,10 +20,10 @@ export interface PaddlerCompetitionGroup {
 }
 
 @Component({
-    selector: "paddler-competition",
-    templateUrl: "./paddler-competition.component.html",
-    styleUrls: ["./paddler-competition.component.scss"],
-    standalone: false
+  selector: "paddler-competition",
+  templateUrl: "./paddler-competition.component.html",
+  styleUrls: ["./paddler-competition.component.scss"],
+  standalone: false,
 })
 export class PaddlerCompetitionComponent implements OnInit {
   years: number[] = [];
@@ -33,7 +33,11 @@ export class PaddlerCompetitionComponent implements OnInit {
   rankings: Ranked<PaddlerCompetitionMember>[] = [];
   groups: Ranked<PaddlerCompetitionGroup>[] = [];
 
-  constructor(private api: ApiService, private router: Router, private route: ActivatedRoute) {
+  constructor(
+    private api: ApiService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {
     this.year
       .pipe(filter((year): year is Exclude<typeof year, null> => !!year))
       .pipe(debounceTime(500))
@@ -48,14 +52,14 @@ export class PaddlerCompetitionComponent implements OnInit {
   }
 
   async loadYears() {
-    const totals = await this.api.statistics.getPaddlersTotals().then((res) => res.data);
+    const totals = await this.api.StatisticsApi.getPaddlersTotals().then((res) => res.data);
     this.years = totals.years;
     this.years.sort();
     if (!this.currentYear) this.setYear(this.years[this.years.length - 1]);
   }
 
   async loadRanking(year: number) {
-    const rankings = await this.api.statistics.getPaddlersRanking(year).then((res) => res.data);
+    const rankings = await this.api.StatisticsApi.getPaddlersRanking(year).then((res) => res.data);
 
     this.rankings = this.setRanks(rankings);
 

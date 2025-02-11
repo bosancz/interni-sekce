@@ -1,19 +1,19 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { DateTime } from "luxon";
-import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "bo-home-calendar",
-    templateUrl: "./home-calendar.component.html",
-    styleUrls: ["./home-calendar.component.scss"],
-    standalone: false
+  selector: "bo-home-calendar",
+  templateUrl: "./home-calendar.component.html",
+  styleUrls: ["./home-calendar.component.scss"],
+  standalone: false,
 })
 export class HomeCalendarComponent implements OnInit {
   dateFrom = DateTime.local();
   dateTill = DateTime.local().plus({ months: 1 });
 
-  events: EventResponseWithLinks[] = [];
+  events: SDK.EventResponseWithLinks[] = [];
 
   @Input() months: number = 1;
 
@@ -36,6 +36,6 @@ export class HomeCalendarComponent implements OnInit {
     };
 
     // TODO: use options above
-    this.events = await this.api.events.listEvents().then((res) => res.data);
+    this.events = await this.api.EventsApi.listEvents().then((res) => res.data);
   }
 }

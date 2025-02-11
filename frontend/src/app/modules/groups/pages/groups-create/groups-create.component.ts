@@ -5,19 +5,23 @@ import { NavController } from "@ionic/angular";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
-    selector: "bo-groups-create",
-    templateUrl: "./groups-create.component.html",
-    styleUrls: ["./groups-create.component.scss"],
-    standalone: false
+  selector: "bo-groups-create",
+  templateUrl: "./groups-create.component.html",
+  styleUrls: ["./groups-create.component.scss"],
+  standalone: false,
 })
 export class GroupsCreateComponent {
-  constructor(private api: ApiService, private navController: NavController, private route: ActivatedRoute) {}
+  constructor(
+    private api: ApiService,
+    private navController: NavController,
+    private route: ActivatedRoute,
+  ) {}
   async createGroup(form: NgForm) {
     if (form.invalid) return;
 
     const groupData = form.value;
 
-    await this.api.members.createGroup(groupData);
+    await this.api.MembersApi.createGroup(groupData);
 
     this.navController.back();
   }

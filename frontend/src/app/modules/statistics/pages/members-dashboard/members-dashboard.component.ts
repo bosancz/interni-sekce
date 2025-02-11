@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
-import { MembersReportResponse } from "src/app/api";
 import { MemberRoles } from "src/app/config/member-roles";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 
 interface ChartData {
   labels: string[];
@@ -9,13 +9,13 @@ interface ChartData {
 }
 
 @Component({
-    selector: "members-dashboard",
-    templateUrl: "./members-dashboard.component.html",
-    styleUrls: ["./members-dashboard.component.scss"],
-    standalone: false
+  selector: "members-dashboard",
+  templateUrl: "./members-dashboard.component.html",
+  styleUrls: ["./members-dashboard.component.scss"],
+  standalone: false,
 })
 export class MembersDashboardComponent implements OnInit {
-  report?: MembersReportResponse;
+  report?: SDK.MembersReportResponse;
 
   cities?: string[];
 
@@ -45,7 +45,7 @@ export class MembersDashboardComponent implements OnInit {
   }
 
   async loadReport() {
-    this.report = await this.api.statistics.getMembersReport().then((res) => res.data);
+    this.report = await this.api.StatisticsApi.getMembersReport().then((res) => res.data);
 
     this.updateAgesData();
   }

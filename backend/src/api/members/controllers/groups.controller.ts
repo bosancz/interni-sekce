@@ -29,7 +29,7 @@ export class GroupsController {
 
   @Get()
   @AcLinks(GroupListRoute)
-  @ApiResponse({ type: WithLinks(GroupResponse), isArray: true })
+  @ApiResponse({ status: 200, type: WithLinks(GroupResponse), isArray: true })
   async listGroups(@Req() req: Request, @Query() query: ListGroupsQuery): Promise<GroupResponse[]> {
     return this.groups.getGroups(query);
   }
@@ -44,7 +44,7 @@ export class GroupsController {
 
   @Get(":id")
   @AcLinks(GroupReadRoute)
-  @ApiResponse({ type: WithLinks(GroupResponse) })
+  @ApiResponse({ status: 200, type: WithLinks(GroupResponse) })
   async getGroup(@Param("id") id: number, @Req() req: Request) {
     const group = await this.groups.getGroup(id);
     if (!group) throw new NotFoundException();

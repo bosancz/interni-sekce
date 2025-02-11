@@ -1,5 +1,5 @@
-@import "src/styles/variables";
-// @import "src/styles/ionic-theme";
+@use "src/styles/variables" as *;
+// @use "src/styles/ionic-theme";
 
 $eventHeight: 20px;
 

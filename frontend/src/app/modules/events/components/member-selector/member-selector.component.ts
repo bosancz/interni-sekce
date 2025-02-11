@@ -1,32 +1,32 @@
 import { AfterViewInit, Component, ElementRef, forwardRef, Input, OnDestroy, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { ModalController } from "@ionic/angular";
-import { MemberResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 import { MemberSelectorModalComponent } from "../member-selector-modal/member-selector-modal.component";
 
-export type MemberSelectorType = MemberResponse | MemberResponse[] | null;
+export type MemberSelectorType = SDK.MemberResponse | SDK.MemberResponse[] | null;
 
 @Component({
-    selector: "bo-member-selector",
-    templateUrl: "./member-selector.component.html",
-    styleUrls: ["./member-selector.component.scss"],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            multi: true,
-            useExisting: forwardRef(() => MemberSelectorComponent),
-        },
-    ],
-    host: {
-        "(click)": "openModal(); $event.stopPropagation()",
+  selector: "bo-member-selector",
+  templateUrl: "./member-selector.component.html",
+  styleUrls: ["./member-selector.component.scss"],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: forwardRef(() => MemberSelectorComponent),
     },
-    standalone: false
+  ],
+  host: {
+    "(click)": "openModal(); $event.stopPropagation()",
+  },
+  standalone: false,
 })
 export class MemberSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {
-  value: MemberResponse[] = [];
+  value: SDK.MemberResponse[] = [];
 
-  @Input() members!: MemberResponse[];
+  @Input() members!: SDK.MemberResponse[];
 
   @Input() placeholder?: string;
   @Input() multiple: boolean | string = false;
@@ -100,13 +100,13 @@ export class MemberSelectorComponent implements OnInit, ControlValueAccessor, Af
     this.modal.present();
   }
 
-  addMember(member: MemberResponse) {
+  addMember(member: SDK.MemberResponse) {
     const i = this.value.findIndex((item) => item.id === member.id);
     if (i !== -1) return;
     return this.updateValue([...this.value, member]);
   }
 
-  removeMember(member: MemberResponse) {
+  removeMember(member: SDK.MemberResponse) {
     const i = this.value.findIndex((item) => item.id === member.id);
     if (i === -1) return;
 

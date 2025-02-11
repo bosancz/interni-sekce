@@ -13,7 +13,10 @@ export type LoginErrorCode =
   | "credentialsLoginNotAvalible";
 
 export class LoginError extends Error {
-  constructor(public code: LoginErrorCode, err: unknown) {
+  constructor(
+    public code: LoginErrorCode,
+    err: unknown,
+  ) {
     const message =
       err && typeof err === "object" && "message" in err && typeof err.message === "string" ? err.message : undefined;
     super(message);
@@ -36,7 +39,7 @@ export class LoginService {
 
   async loginCredentials(credentials: { login: string; password: string }) {
     try {
-      await this.api.account.loginUsingCredentials(credentials);
+      await this.api.AccountApi.loginUsingCredentials(credentials);
 
       await this.userService.loadUser();
     } catch (err: any) {
@@ -66,7 +69,7 @@ export class LoginService {
       const googleToken = await this.googleService.signIn();
 
       // validate token with the server
-      await this.api.account.loginUsingGoogle({ token: googleToken });
+      await this.api.AccountApi.loginUsingGoogle({ token: googleToken });
 
       // load user
       await this.userService.loadUser();
@@ -77,7 +80,7 @@ export class LoginService {
 
   async loginImpersonate(userId: number) {
     try {
-      await this.api.users.impersonateUser(userId);
+      await this.api.UsersApi.impersonateUser(userId);
 
       await this.userService.loadUser();
 
@@ -88,11 +91,11 @@ export class LoginService {
   }
 
   async sendLoginLink(login: string) {
-    return this.api.account.sendLoginLink({ login });
+    return this.api.AccountApi.sendLoginLink({ login });
   }
 
   async logout() {
-    await this.api.account.logout();
+    await this.api.AccountApi.logout();
     const user = await this.userService.loadUser();
 
     if (user) this.toastService.toast("Přihlášen zpět jako " + user.login);

@@ -5,7 +5,6 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouteReuseStrategy, TitleStrategy } from "@angular/router";
 import { ServiceWorkerModule } from "@angular/service-worker";
 import { IonicModule, IonicRouteStrategy, isPlatform } from "@ionic/angular";
-import { NgChartsModule } from "ng2-charts";
 import { loadConfig } from "src/config";
 import { environment } from "src/environments/environment";
 import { AppRoutingModule } from "./app-routing.module";
@@ -27,9 +26,6 @@ registerLocaleData(localeCs);
     IonicModule.forRoot({
       backButtonText: isPlatform("ios") ? "Zpět" : "",
     }),
-    NgChartsModule.forRoot({
-      generateColors: true,
-    }),
     ServiceWorkerModule.register("ngsw-worker.js", { enabled: environment.production }),
   ],
   providers: [
@@ -38,9 +34,9 @@ registerLocaleData(localeCs);
     { provide: ErrorHandler, useClass: MainErrorHandler },
     { provide: LOCALE_ID, useValue: "cs" },
     provideAppInitializer(() => {
-        const initializerFn = (() => loadConfig)();
-        return initializerFn();
-      }),
+      const initializerFn = (() => loadConfig)();
+      return initializerFn();
+    }),
   ],
   bootstrap: [AppComponent],
 })

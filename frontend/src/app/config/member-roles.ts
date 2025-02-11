@@ -1,4 +1,4 @@
-import { MemberRolesEnum } from "../api";
+import { SDK } from "src/sdk";
 
 export interface MemberRoleMetadata {
   title: string;
@@ -6,7 +6,7 @@ export interface MemberRoleMetadata {
   code?: string;
 }
 
-export const MemberRoles: { [role in MemberRolesEnum]: MemberRoleMetadata } = {
+export const MemberRoles: { [role in SDK.MemberRolesEnum]: MemberRoleMetadata } = {
   dite: {
     title: "dítě",
     genitiv: "dětí",

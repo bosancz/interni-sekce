@@ -10,12 +10,17 @@ export class TitleService extends TitleStrategy {
   private mainTitle: string = "Bošán interní";
   private subTitle: string | null = null;
 
-  constructor(private title: Title, private api: ApiService) {
+  constructor(
+    private title: Title,
+    private api: ApiService,
+  ) {
     super();
-    this.api.cache.apiInfo.subscribe((info) => {
-      this.mainTitle = "Bošán interní" + (info?.environmentTitle ? " " + info.environmentTitle : "");
-      this.setTitle(this.subTitle);
-    });
+    this.api.RootApi.getApiInfo()
+      .then((res) => res.data)
+      .then((info) => {
+        this.mainTitle = "Bošán interní" + (info?.environmentTitle ? " " + info.environmentTitle : "");
+        this.setTitle(this.subTitle);
+      });
   }
 
   setTitle(title: string | null) {

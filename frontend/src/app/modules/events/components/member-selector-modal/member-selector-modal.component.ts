@@ -1,24 +1,24 @@
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { IonSearchbar, ModalController, ViewDidEnter } from "@ionic/angular";
-import { MemberResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { AbstractModalComponent } from "src/app/services/modal.service";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "bo-member-selector-modal",
-    templateUrl: "./member-selector-modal.component.html",
-    styleUrls: ["./member-selector-modal.component.scss"],
-    standalone: false
+  selector: "bo-member-selector-modal",
+  templateUrl: "./member-selector-modal.component.html",
+  styleUrls: ["./member-selector-modal.component.scss"],
+  standalone: false,
 })
 export class MemberSelectorModalComponent
-  extends AbstractModalComponent<MemberResponse>
+  extends AbstractModalComponent<SDK.MemberResponse>
   implements OnInit, ViewDidEnter
 {
-  @Input() members: MemberResponse[] = [];
+  @Input() members: SDK.MemberResponse[] = [];
 
   membersIndex: string[] = [];
 
-  filteredMembers: MemberResponse[] = [];
+  filteredMembers: SDK.MemberResponse[] = [];
 
   @ViewChild("searchBar") searchBar!: IonSearchbar;
 
@@ -33,7 +33,7 @@ export class MemberSelectorModalComponent
     this.loadMembers();
   }
   private async loadMembers() {
-    if (this.members) this.members = await this.api.members.listMembers().then((res) => res.data);
+    if (this.members) this.members = await this.api.MembersApi.listMembers().then((res) => res.data);
 
     this.sortMembers();
 
@@ -46,7 +46,7 @@ export class MemberSelectorModalComponent
     window.setTimeout(() => this.searchBar.setFocus(), 300);
   }
 
-  selectMember(member: MemberResponse) {
+  selectMember(member: SDK.MemberResponse) {
     this.submit.emit(member);
   }
 

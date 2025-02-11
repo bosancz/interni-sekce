@@ -5,21 +5,22 @@ import { filter, map } from "rxjs/operators";
 import { DateTime } from "luxon";
 
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { EventResponseWithLinks } from "src/app/api";
+
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 import { ProgramService } from "../../services/program.service";
 
 @UntilDestroy()
 @Component({
-    selector: "program-workflow",
-    templateUrl: "./program-workflow.component.html",
-    styleUrls: ["./program-workflow.component.scss"],
-    standalone: false
+  selector: "program-workflow",
+  templateUrl: "./program-workflow.component.html",
+  styleUrls: ["./program-workflow.component.scss"],
+  standalone: false,
 })
 export class ProgramWorkflowComponent implements OnInit {
   selectedColumn = "pending";
 
-  events = new BehaviorSubject<undefined | EventResponseWithLinks[]>([]);
+  events = new BehaviorSubject<undefined | SDK.EventResponseWithLinks[]>([]);
 
   noLeaderEvents = this.events.pipe(
     map((events) =>
@@ -42,7 +43,10 @@ export class ProgramWorkflowComponent implements OnInit {
 
   loading: boolean = true;
 
-  constructor(private api: ApiService, private programService: ProgramService) {}
+  constructor(
+    private api: ApiService,
+    private programService: ProgramService,
+  ) {}
 
   ngOnInit() {
     this.loadEvents();
@@ -65,14 +69,14 @@ export class ProgramWorkflowComponent implements OnInit {
     };
 
     // TODO: use options above
-    const events = await this.api.events.listEvents().then((res) => res.data);
+    const events = await this.api.EventsApi.listEvents().then((res) => res.data);
 
     this.events.next(events);
 
     this.loading = false;
   }
 
-  eventChanged(newEvent: EventResponseWithLinks) {
+  eventChanged(newEvent: SDK.EventResponseWithLinks) {
     const events = this.events.value || [];
     const i = events.findIndex((event) => event.id === newEvent.id);
     if (i >= 0) {

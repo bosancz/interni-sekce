@@ -1,21 +1,21 @@
 import { Component, ElementRef, Input, ViewChild } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { SDK } from "src/sdk";
 import { EventsService } from "../../services/events.service";
 
 @UntilDestroy()
 @Component({
-    selector: "bo-event-registration",
-    templateUrl: "./event-registration.component.html",
-    styleUrls: ["./event-registration.component.scss"],
-    standalone: false
+  selector: "bo-event-registration",
+  templateUrl: "./event-registration.component.html",
+  styleUrls: ["./event-registration.component.scss"],
+  standalone: false,
 })
 export class EventRegistrationComponent {
-  @Input() event?: EventResponseWithLinks;
+  @Input() event?: SDK.EventResponseWithLinks;
 
   uploadingRegistration: boolean = false;
 
@@ -49,7 +49,7 @@ export class EventRegistrationComponent {
     this.uploadingRegistration = true;
 
     try {
-      await this.api.events.saveEventRegistration(this.event.id, { registration: file });
+      await this.api.EventsApi.saveEventRegistration(this.event.id, { registration: file });
     } catch (err: any) {
       this.toastService.toast("Nastala chyba při nahrávání: " + err.message);
     }
@@ -63,7 +63,7 @@ export class EventRegistrationComponent {
   async deleteRegistration() {
     if (!this.event) return;
 
-    await this.api.events.deleteEventRegistration(this.event.id);
+    await this.api.EventsApi.deleteEventRegistration(this.event.id);
     this.toastService.toast("Přihláška smazána.");
 
     this.eventService.loadEvent(this.event.id);
@@ -74,15 +74,15 @@ export class EventRegistrationComponent {
     window.open(this.getRegistrationUrl(this.event));
   }
 
-  getRegistrationUrl(event: EventResponseWithLinks) {
+  getRegistrationUrl(event: SDK.EventResponseWithLinks) {
     return event._links.getEventRegistration.href;
   }
 
-  getSafeRegistrationUrl(event: EventResponseWithLinks) {
+  getSafeRegistrationUrl(event: SDK.EventResponseWithLinks) {
     return this.sanitizer.bypassSecurityTrustResourceUrl(this.getRegistrationUrl(event));
   }
 
-  setActions(event: EventResponseWithLinks) {
+  setActions(event: SDK.EventResponseWithLinks) {
     this.actions = [
       {
         text: "Stáhnout",

@@ -1,23 +1,23 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { EventExpenseResponseWithLinks, EventResponseWithLinks } from "src/app/api";
 import { EventExpenseModalComponent } from "src/app/modules/events/components/event-expense-modal/event-expense-modal.component";
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
-    selector: "bo-event-accounting",
-    templateUrl: "./event-accounting.component.html",
-    styleUrls: ["./event-accounting.component.scss"],
-    standalone: false
+  selector: "bo-event-accounting",
+  templateUrl: "./event-accounting.component.html",
+  styleUrls: ["./event-accounting.component.scss"],
+  standalone: false,
 })
 export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() event?: EventResponseWithLinks;
+  @Input() event?: SDK.EventResponseWithLinks;
 
-  expenses: EventExpenseResponseWithLinks[] = [];
+  expenses: SDK.EventExpenseResponseWithLinks[] = [];
 
   actions: Action[] = [];
 
@@ -43,11 +43,11 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 
   private async loadExpenses() {
     if (!this.event) return;
-    this.expenses = await this.api.events.listEventExpenses(this.event?.id).then((res) => res.data);
+    this.expenses = await this.api.EventsApi.listEventExpenses(this.event?.id).then((res) => res.data);
     this.expenses.sort((a, b) => a.receiptNumber.localeCompare(b.receiptNumber, "cs", { numeric: true }));
   }
 
-  async editExpense(expense: EventExpenseResponseWithLinks) {
+  async editExpense(expense: SDK.EventExpenseResponseWithLinks) {
     if (!this.event) return;
 
     const data = await this.modalService.componentModal(EventExpenseModalComponent, {
@@ -62,7 +62,7 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
       const i = this.expenses.indexOf(expense);
       this.expenses.splice(i, 1, expense);
 
-      await this.api.events.updateEventExpense(this.event.id, expense.id, data);
+      await this.api.EventsApi.updateEventExpense(this.event.id, expense.id, data);
       await this.loadExpenses();
 
       this.toastService.toast("Uloženo");
@@ -72,7 +72,7 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  async removeExpense(expense: EventExpenseResponseWithLinks) {
+  async removeExpense(expense: SDK.EventExpenseResponseWithLinks) {
     if (!this.event) return;
 
     const confirmation = await this.modalService.deleteConfirmationModal(`Opravdu chceš smazat účtenku ${expense.id}?`);
@@ -81,11 +81,11 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
       const i = this.expenses.indexOf(expense);
       this.expenses.splice(i, 1, expense);
 
-      await this.api.events.deleteEventExpense(this.event.id, expense.id);
+      await this.api.EventsApi.deleteEventExpense(this.event.id, expense.id);
     }
   }
 
-  private async exportExcel(event: EventResponseWithLinks) {
+  private async exportExcel(event: SDK.EventResponseWithLinks) {
     // TODO:
     // if (event._links.["accounting-template"]) {
     //   const url = environment.apiRoot + event._links.["accounting-template"].href;

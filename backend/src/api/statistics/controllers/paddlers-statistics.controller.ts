@@ -12,7 +12,7 @@ export class PaddlersStatisticsController {
   constructor(private statistics: PaddlersStatisticsService) {}
 
   @Get("")
-  @ApiResponse({ type: PadlersTotalsResponse })
+  @ApiResponse({ status: 200, type: PadlersTotalsResponse })
   getPaddlersTotals(@Req() req: Request): Promise<PadlersTotalsResponse> {
     PadlersTotalsRoute.canOrThrow(req, undefined);
 
@@ -20,7 +20,7 @@ export class PaddlersStatisticsController {
   }
 
   @Get(":year/ranking")
-  @ApiResponse({ type: PaddlersRankingResponse, isArray: true })
+  @ApiResponse({ status: 200, type: PaddlersRankingResponse, isArray: true })
   getPaddlersRanking(@Req() req: Request, @Param("year") year: number): Promise<PaddlersRankingResponse[]> {
     PadlersRankingRoute.canOrThrow(req, undefined);
 

@@ -11,7 +11,7 @@ import { CPVEventResponse } from "../dto/cpv-event.dto";
 export class CPVEventsController {
   @Get("")
   @AcLinks(CPVEventsListRoute)
-  @ApiResponse({ type: WithLinks(CPVEventResponse), isArray: true })
+  @ApiResponse({ status: 200, type: WithLinks(CPVEventResponse), isArray: true })
   async getCPVEvents(@Req() req: Request): Promise<CPVEventResponse[]> {
     CPVEventsListRoute.canOrThrow(req, undefined);
     // TODO: load events from raft.cz

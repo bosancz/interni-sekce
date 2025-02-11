@@ -1,23 +1,23 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { AlertButton, AlertController } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { MemberContactResponseWithLinks, MemberResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
+import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
-    selector: "bo-member-contacts",
-    templateUrl: "./member-contacts.component.html",
-    styleUrls: ["./member-contacts.component.scss"],
-    standalone: false
+  selector: "bo-member-contacts",
+  templateUrl: "./member-contacts.component.html",
+  styleUrls: ["./member-contacts.component.scss"],
+  standalone: false,
 })
 export default class MemberContactsComponent implements OnChanges {
-  @Input() member?: MemberResponseWithLinks | null;
-  @Output() update = new EventEmitter<Partial<MemberResponseWithLinks>>();
+  @Input() member?: SDK.MemberResponseWithLinks | null;
+  @Output() update = new EventEmitter<Partial<SDK.MemberResponse>>();
 
-  contacts?: MemberContactResponseWithLinks[];
+  contacts?: SDK.MemberContactResponseWithLinks[];
 
   constructor(
     private toastService: ToastService,
@@ -34,7 +34,7 @@ export default class MemberContactsComponent implements OnChanges {
     if (!memberId) {
       this.contacts = [];
     } else {
-      this.contacts = await this.api.members.listContacts(memberId).then((res) => res.data);
+      this.contacts = await this.api.MembersApi.listContacts(memberId).then((res) => res.data);
     }
   }
 
@@ -73,7 +73,7 @@ export default class MemberContactsComponent implements OnChanges {
     if (data) this.update.emit(data);
   }
 
-  getFullAddress(member: MemberResponseWithLinks) {
+  getFullAddress(member: SDK.MemberResponseWithLinks) {
     const addressLines = [
       `${member.addressStreet ?? ""}${member.addressStreetNo ? ` ${member.addressStreetNo}` : ""}`,
       member.addressCity,
@@ -108,7 +108,7 @@ export default class MemberContactsComponent implements OnChanges {
     if (data !== null) this.update.emit(data);
   }
 
-  async openContactForm(contact: MemberContactResponseWithLinks | null) {
+  async openContactForm(contact: SDK.MemberContactResponseWithLinks | null) {
     const buttons: AlertButton[] = [
       {
         text: contact ? "Uložit" : "Přidat",
@@ -186,9 +186,9 @@ export default class MemberContactsComponent implements OnChanges {
     if (!this.member) return;
 
     if (contactId) {
-      await this.api.members.updateContact(this.member.id, contactId, data);
+      await this.api.MembersApi.updateContact(this.member.id, contactId, data);
     } else {
-      await this.api.members.createContact(this.member.id, data);
+      await this.api.MembersApi.createContact(this.member.id, data);
     }
 
     await this.loadContacts(this.member.id);
@@ -196,14 +196,14 @@ export default class MemberContactsComponent implements OnChanges {
     await this.toastService.toast(contactId ? "Kontakt byl upraven" : "Kontakt byl přidán");
   }
 
-  async deleteContact(contact: MemberContactResponseWithLinks) {
+  async deleteContact(contact: SDK.MemberContactResponseWithLinks) {
     if (!this.member) return;
 
     const confirmation = await this.modalService.deleteConfirmationModal(
       `Opravdu chcete smazat kontakt ${contact.title}?`,
     );
 
-    await this.api.members.deleteContact(this.member.id, contact.id);
+    await this.api.MembersApi.deleteContact(this.member.id, contact.id);
 
     await this.loadContacts(this.member.id);
 

@@ -3,20 +3,20 @@ import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { NavController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { AlbumResponseWithLinks, AlbumUpdateBody, EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
-    selector: "albums-edit",
-    templateUrl: "./albums-edit.component.html",
-    styleUrls: ["./albums-edit.component.scss"],
-    standalone: false
+  selector: "albums-edit",
+  templateUrl: "./albums-edit.component.html",
+  styleUrls: ["./albums-edit.component.scss"],
+  standalone: false,
 })
 export class AlbumsEditComponent {
-  album?: AlbumResponseWithLinks;
+  album?: SDK.AlbumResponseWithLinks;
 
   actions: Action[] = [
     {
@@ -40,10 +40,10 @@ export class AlbumsEditComponent {
   }
 
   private async loadAlbum(albumId: number) {
-    this.album = await this.api.albums.getAlbum(albumId).then((res) => res.data);
+    this.album = await this.api.PhotoGalleryApi.getAlbum(albumId).then((res) => res.data);
   }
 
-  eventUpdated(event: EventResponseWithLinks) {
+  eventUpdated(event: SDK.EventResponseWithLinks) {
     if (!this.album || !event) return;
 
     this.album.dateFrom = event.dateFrom;
@@ -58,7 +58,7 @@ export class AlbumsEditComponent {
       return;
     }
 
-    let albumData: AlbumUpdateBody = this.albumForm.value;
+    let albumData: SDK.AlbumUpdateBody = this.albumForm.value;
 
     // prevent switched date order
     if (albumData.dateFrom && albumData.dateTill) {
@@ -68,7 +68,7 @@ export class AlbumsEditComponent {
       albumData.dateTill = dates[1];
     }
 
-    await this.api.albums.updateAlbum(this.album.id, albumData);
+    await this.api.PhotoGalleryApi.updateAlbum(this.album.id, albumData);
 
     this.toastService.toast("Uloženo.");
 

@@ -1,19 +1,19 @@
 import { Component } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { UserResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
-    selector: "bo-users-view",
-    templateUrl: "./users-view.component.html",
-    styleUrl: "./users-view.component.scss",
-    standalone: false
+  selector: "bo-users-view",
+  templateUrl: "./users-view.component.html",
+  styleUrl: "./users-view.component.scss",
+  standalone: false,
 })
 export class UsersViewComponent {
-  user?: UserResponseWithLinks;
+  user?: SDK.UserResponseWithLinks;
 
   actions: Action[] = [];
 
@@ -27,15 +27,15 @@ export class UsersViewComponent {
   }
 
   private async loadUser(id: number) {
-    this.user = await this.api.users.getUser(id).then((res) => res.data);
+    this.user = await this.api.UsersApi.getUser(id).then((res) => res.data);
     this.setActions(this.user);
   }
 
-  private impersonateUser(user: UserResponseWithLinks) {}
+  private impersonateUser(user: SDK.UserResponseWithLinks) {}
 
-  private deleteUser(user: UserResponseWithLinks) {}
+  private deleteUser(user: SDK.UserResponseWithLinks) {}
 
-  private setActions(user: UserResponseWithLinks) {
+  private setActions(user: SDK.UserResponseWithLinks) {
     this.actions = [
       {
         text: "Přihlásit se jako",

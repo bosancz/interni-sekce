@@ -1,19 +1,19 @@
 import { ChangeDetectorRef, Pipe, PipeTransform } from "@angular/core";
 import { map } from "rxjs";
-import { GroupResponse } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 
 export type GroupPipeProperty = "name" | "color" | "code";
 
 type GroupPipeData = { color: string; name: string; code: string };
 
 @Pipe({
-    name: "group",
-    pure: false,
-    standalone: false
+  name: "group",
+  pure: false,
+  standalone: false,
 })
 export class GroupPipe implements PipeTransform {
-  groups = new Map<number, GroupResponse>();
+  groups = new Map<number, SDK.GroupResponse>();
 
   defaultValues: GroupPipeData = {
     color: "#000",
@@ -26,7 +26,7 @@ export class GroupPipe implements PipeTransform {
     private cdRef: ChangeDetectorRef,
   ) {
     this.api
-      .watchRequest((signal) => this.api.members.listGroups({}, { signal }))
+      .watchRequest((signal) => this.api.MembersApi.listGroups({}, { signal }))
       .pipe(map((res) => res.data))
       .subscribe((groups) => {
         this.groups = new Map(groups.map((group) => [group.id, group]));

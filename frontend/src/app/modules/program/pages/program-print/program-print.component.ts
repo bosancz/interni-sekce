@@ -5,17 +5,21 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 import { TrimesterDateRange } from "../../components/trimester-selector/trimester-selector.component";
 
 @Component({
-    selector: "bo-program-print",
-    templateUrl: "./program-print.component.html",
-    styleUrls: ["./program-print.component.scss"],
-    standalone: false
+  selector: "bo-program-print",
+  templateUrl: "./program-print.component.html",
+  styleUrls: ["./program-print.component.scss"],
+  standalone: false,
 })
 export class ProgramPrintComponent implements OnInit {
   dateRange?: TrimesterDateRange;
 
   actions: Action[] = [];
 
-  constructor(private api: ApiService, private toasts: ToastService, private injector: Injector) {}
+  constructor(
+    private api: ApiService,
+    private toasts: ToastService,
+    private injector: Injector,
+  ) {}
 
   ngOnInit(): void {}
 
@@ -35,7 +39,7 @@ export class ProgramPrintComponent implements OnInit {
     };
 
     //TODO: use options above
-    const events = await this.api.events.listEvents().then((res) => res.data);
+    const events = await this.api.EventsApi.listEvents().then((res) => res.data);
 
     if (!events.length) {
       this.toasts.toast("Nelze vygenerovat program, ve vybraném rozmezí nejsou žádné akce.");

@@ -1,20 +1,20 @@
 import { Component, OnInit } from "@angular/core";
 import { SwPush } from "@angular/service-worker";
-import { UserResponseWithLinks } from "src/app/api";
 
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
+import { SDK } from "src/sdk";
 
 declare const Notification: any;
 
 @Component({
-    selector: "bo-account-notifications",
-    templateUrl: "./account-notifications.component.html",
-    styleUrls: ["./account-notifications.component.scss"],
-    standalone: false
+  selector: "bo-account-notifications",
+  templateUrl: "./account-notifications.component.html",
+  styleUrls: ["./account-notifications.component.scss"],
+  standalone: false,
 })
 export class AccountNotificationsComponent implements OnInit {
-  user?: UserResponseWithLinks;
+  user?: SDK.UserResponseWithLinks;
 
   notifications = [
     { id: "new-event", name: "Nová událost" },
@@ -27,7 +27,11 @@ export class AccountNotificationsComponent implements OnInit {
 
   systemNotificationStatus: string = "default";
 
-  constructor(private api: ApiService, public swPush: SwPush, private toastService: ToastService) {}
+  constructor(
+    private api: ApiService,
+    public swPush: SwPush,
+    private toastService: ToastService,
+  ) {}
 
   ngOnInit() {
     this.loadUser();
@@ -35,7 +39,7 @@ export class AccountNotificationsComponent implements OnInit {
   }
 
   async loadUser() {
-    this.user = await this.api.account.getMe().then((res) => res.data);
+    this.user = await this.api.AccountApi.getMe().then((res) => res.data);
     this.updateNotifications();
   }
 

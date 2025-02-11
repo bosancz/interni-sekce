@@ -2,17 +2,17 @@ import { Component, Input, OnInit } from "@angular/core";
 
 import { FormControl, FormGroup } from "@angular/forms";
 import { ModalController } from "@ionic/angular";
-import { EventCreateBody } from "src/app/api";
 import { AbstractModalComponent } from "src/app/services/modal.service";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "bo-event-create-modal",
-    templateUrl: "./event-create-modal.component.html",
-    styleUrls: ["./event-create-modal.component.scss"],
-    standalone: false
+  selector: "bo-event-create-modal",
+  templateUrl: "./event-create-modal.component.html",
+  styleUrls: ["./event-create-modal.component.scss"],
+  standalone: false,
 })
-export class EventCreateModalComponent extends AbstractModalComponent<EventCreateBody> implements OnInit {
-  @Input() data: Partial<EventCreateBody> = {};
+export class EventCreateModalComponent extends AbstractModalComponent<SDK.EventCreateBody> implements OnInit {
+  @Input() data: Partial<SDK.EventCreateBody> = {};
 
   showValidationErrors = false;
 
@@ -29,7 +29,13 @@ export class EventCreateModalComponent extends AbstractModalComponent<EventCreat
   });
 
   ngOnInit() {
-    this.form.patchValue(this.data);
+    this.form.patchValue({
+      dateFrom: this.data.dateFrom,
+      dateTill: this.data.dateTill,
+      name: this.data.name,
+      description: this.data.description ?? undefined,
+      type: this.data.type ?? undefined,
+    });
   }
 
   async createEvent() {

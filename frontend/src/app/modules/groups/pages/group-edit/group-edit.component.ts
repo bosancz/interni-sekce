@@ -2,18 +2,18 @@ import { Component, OnInit } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { NavController } from "@ionic/angular";
-import { GroupResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "bo-group-edit",
-    templateUrl: "./group-edit.component.html",
-    styleUrls: ["./group-edit.component.scss"],
-    standalone: false
+  selector: "bo-group-edit",
+  templateUrl: "./group-edit.component.html",
+  styleUrls: ["./group-edit.component.scss"],
+  standalone: false,
 })
 export class GroupEditComponent implements OnInit {
-  group?: GroupResponseWithLinks;
+  group?: SDK.GroupResponseWithLinks;
 
   constructor(
     private route: ActivatedRoute,
@@ -29,13 +29,13 @@ export class GroupEditComponent implements OnInit {
   }
 
   private async loadGroup(groupId: number) {
-    this.group = await this.api.members.getGroup(groupId).then((res) => res.data);
+    this.group = await this.api.MembersApi.getGroup(groupId).then((res) => res.data);
   }
 
   async editGroup(form: NgForm) {
     const groupData = form.value;
 
-    await this.api.members.updateGroup(this.group!.id, groupData);
+    await this.api.MembersApi.updateGroup(this.group!.id, groupData);
 
     this.toastService.toast("Uloženo.", { color: "success" });
 

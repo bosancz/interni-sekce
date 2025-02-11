@@ -32,8 +32,8 @@ export class UsersController {
 
   @Get()
   @AcLinks(UsersListRoute)
-  @ApiResponse({ type: WithLinks(UserResponse), isArray: true })
-  async listUsers(@Req() req: Request, @Query() query: ListUsersQuery): Promise<Omit<UserResponse, "_links">[]> {
+  @ApiResponse({ status: 200, type: WithLinks(UserResponse), isArray: true })
+  async listUsers(@Req() req: Request, @Query() query: ListUsersQuery): Promise<UserResponse[]> {
     const q = this.userRepository
       .createQueryBuilder("user")
       .select([
@@ -63,7 +63,7 @@ export class UsersController {
   @Post()
   @AcLinks(UserCreateRoute)
   @ApiResponse({ type: WithLinks(UserResponse) })
-  async createUser(@Req() req: Request, @Body() body: UserCreateBody): Promise<Omit<UserResponse, "_links">> {
+  async createUser(@Req() req: Request, @Body() body: UserCreateBody): Promise<UserResponse> {
     UserCreateRoute.canOrThrow(req, undefined);
 
     return this.userService.createUser(body);
@@ -71,8 +71,8 @@ export class UsersController {
 
   @Get(":id")
   @AcLinks(UserReadRoute)
-  @ApiResponse({ type: WithLinks(UserResponse) })
-  async getUser(@Req() req: Request, @Param("id") id: number): Promise<Omit<UserResponse, "_links">> {
+  @ApiResponse({ status: 200, type: WithLinks(UserResponse) })
+  async getUser(@Req() req: Request, @Param("id") id: number): Promise<UserResponse> {
     const user = await this.userRepository.findOne({ where: { id }, relations: ["member"] });
     if (!user) throw new NotFoundException();
 

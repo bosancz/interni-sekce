@@ -11,34 +11,34 @@ import {
 } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { ModalController } from "@ionic/angular";
-import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 import { EventSelectorModalComponent } from "../event-selector-modal/event-selector-modal.component";
 
 @Component({
-    selector: "bo-event-selector",
-    templateUrl: "./event-selector.component.html",
-    styleUrls: ["./event-selector.component.scss"],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            multi: true,
-            useExisting: forwardRef(() => EventSelectorComponent),
-        },
-    ],
-    standalone: false
+  selector: "bo-event-selector",
+  templateUrl: "./event-selector.component.html",
+  styleUrls: ["./event-selector.component.scss"],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      multi: true,
+      useExisting: forwardRef(() => EventSelectorComponent),
+    },
+  ],
+  standalone: false,
 })
 export class EventSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {
-  value?: EventResponseWithLinks["id"] | null;
-  event?: EventResponseWithLinks;
+  value?: SDK.EventResponseWithLinks["id"] | null;
+  event?: SDK.EventResponseWithLinks;
 
   @Input() placeholder?: string;
-  @Output("event") eventOutput = new EventEmitter<EventResponseWithLinks>();
+  @Output("event") eventOutput = new EventEmitter<SDK.EventResponseWithLinks>();
 
   modal?: HTMLIonModalElement;
 
   /* ControlValueAccessor */
-  onChange?: (value: EventResponseWithLinks["id"] | null) => void;
+  onChange?: (value: SDK.EventResponseWithLinks["id"] | null) => void;
   onTouched?: () => void;
 
   focused = false;
@@ -94,7 +94,7 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
     this.modal.present();
   }
 
-  private async updateValue(value: EventResponseWithLinks["id"] | null) {
+  private async updateValue(value: SDK.EventResponseWithLinks["id"] | null) {
     if (value === this.value) return;
 
     this.value = value;
@@ -105,16 +105,16 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
     this.emitIonStyle();
   }
 
-  private async loadEvent(eventId: EventResponseWithLinks["id"]) {
-    return this.api.events.getEvent(eventId).then((res) => res.data);
+  private async loadEvent(eventId: SDK.EventResponseWithLinks["id"]) {
+    return this.api.EventsApi.getEvent(eventId).then((res) => res.data);
   }
 
   /* ControlValueAccessor */
-  writeValue(obj?: EventResponseWithLinks["id"] | null): void {
+  writeValue(obj?: SDK.EventResponseWithLinks["id"] | null): void {
     this.updateValue(obj || null);
   }
 
-  registerOnChange(fn: (value: EventResponseWithLinks["id"] | null) => void): void {
+  registerOnChange(fn: (value: SDK.EventResponseWithLinks["id"] | null) => void): void {
     this.onChange = fn;
   }
 

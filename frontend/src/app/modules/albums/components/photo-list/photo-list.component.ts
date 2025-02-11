@@ -1,24 +1,24 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { ItemReorderEventDetail } from "@ionic/core";
-import { PhotoResponseWithLinks } from "src/app/api";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "bo-photo-list",
-    templateUrl: "./photo-list.component.html",
-    styleUrls: ["./photo-list.component.scss"],
-    standalone: false
+  selector: "bo-photo-list",
+  templateUrl: "./photo-list.component.html",
+  styleUrls: ["./photo-list.component.scss"],
+  standalone: false,
 })
 export class PhotoListComponent implements OnInit {
-  @Input() photos?: PhotoResponseWithLinks[];
+  @Input() photos?: SDK.PhotoResponseWithLinks[];
   @Input() view: "list" | "grid" = "grid";
 
   @Input() selectable: boolean = false;
   @Input() sortable: boolean = false;
 
-  @Input() selected: PhotoResponseWithLinks[] = [];
-  @Output() selectedChange = new EventEmitter<PhotoResponseWithLinks[]>();
+  @Input() selected: SDK.PhotoResponseWithLinks[] = [];
+  @Output() selectedChange = new EventEmitter<SDK.PhotoResponseWithLinks[]>();
 
-  @Output() click = new EventEmitter<CustomEvent<PhotoResponseWithLinks | undefined>>();
+  @Output() click = new EventEmitter<CustomEvent<SDK.PhotoResponseWithLinks | undefined>>();
 
   loadingPhotos?: any[] = Array(5).fill(true);
 
@@ -35,7 +35,7 @@ export class PhotoListComponent implements OnInit {
     return Math.round((width * height) / 1000000);
   }
 
-  onPhotoClick(photo: PhotoResponseWithLinks, event: MouseEvent) {
+  onPhotoClick(photo: SDK.PhotoResponseWithLinks, event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -48,11 +48,11 @@ export class PhotoListComponent implements OnInit {
     }
   }
 
-  isPhotoChecked(photo: PhotoResponseWithLinks) {
+  isPhotoChecked(photo: SDK.PhotoResponseWithLinks) {
     return this.selected.indexOf(photo) !== -1;
   }
 
-  onPhotoCheck(photo: PhotoResponseWithLinks, isChecked: boolean) {
+  onPhotoCheck(photo: SDK.PhotoResponseWithLinks, isChecked: boolean) {
     console.log("onPhotoCheck", isChecked);
     const i = this.selected.indexOf(photo);
 

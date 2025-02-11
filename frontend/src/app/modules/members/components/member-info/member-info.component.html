@@ -50,7 +50,7 @@
   </bo-item>
 
   <bo-item label="Role" [editable]="!!member._links.updateMember.allowed" (edit)="editRole()">
-    <ion-label>{{ member | member: "role" || "-" }}</ion-label>
+    <ion-label>{{ (member | member: "role") || "-" }}</ion-label>
   </bo-item>
 
   <bo-item label="Oddíl" [editable]="!!member._links.updateMember.allowed" (edit)="editGroup()">
@@ -58,6 +58,6 @@
   </bo-item>
 
   <bo-item label="Stav členství" [editable]="!!member._links.updateMember.allowed" (edit)="editMembership()">
-    <ion-label>{{ member | member: "membership" || "-" }}</ion-label>
+    <ion-label>{{ (member | member: "membership") || "-" }}</ion-label>
   </bo-item>
 </ion-list>

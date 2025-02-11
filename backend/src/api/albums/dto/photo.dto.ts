@@ -27,8 +27,8 @@ export class PhotoResponse {
   @ApiPropertyOptional({ type: "string" }) bg!: string | null;
 
   // @ApiPropertyOptional() faces?: PhotoFace[] | null;
-  @ApiPropertyOptional({ type: WithLinks(() => AlbumResponse) }) album?: Album | undefined;
-  @ApiPropertyOptional({ type: WithLinks(UserResponse) }) uploadedBy?: User | null;
+  @ApiPropertyOptional({ type: () => WithLinks(() => AlbumResponse) }) album?: Album | undefined;
+  @ApiPropertyOptional({ type: () => WithLinks(UserResponse) }) uploadedBy?: User | null;
 }
 
 export class PhotoCreateBody extends PickType(PhotoResponse, ["albumId"]) {

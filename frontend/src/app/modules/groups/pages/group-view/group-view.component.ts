@@ -2,20 +2,20 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { NavController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { GroupResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { SDK } from "src/sdk";
 import { GroupsService } from "../../services/groups.service";
 
 @UntilDestroy()
 @Component({
-    selector: "bo-group-view",
-    templateUrl: "./group-view.component.html",
-    styleUrls: ["./group-view.component.scss"],
-    standalone: false
+  selector: "bo-group-view",
+  templateUrl: "./group-view.component.html",
+  styleUrls: ["./group-view.component.scss"],
+  standalone: false,
 })
 export class GroupViewComponent implements OnInit {
-  group?: GroupResponseWithLinks | null;
+  group?: SDK.GroupResponseWithLinks | null;
 
   actions: Action[] = [
     {

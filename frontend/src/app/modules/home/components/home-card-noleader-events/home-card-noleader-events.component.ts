@@ -1,15 +1,15 @@
 import { Component, OnInit } from "@angular/core";
-import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "bo-home-card-noleader-events",
-    templateUrl: "./home-card-noleader-events.component.html",
-    styleUrls: ["./home-card-noleader-events.component.scss"],
-    standalone: false
+  selector: "bo-home-card-noleader-events",
+  templateUrl: "./home-card-noleader-events.component.html",
+  styleUrls: ["./home-card-noleader-events.component.scss"],
+  standalone: false,
 })
 export class HomeCardNoleaderEventsComponent implements OnInit {
-  events: EventResponseWithLinks[] = [];
+  events: SDK.EventResponseWithLinks[] = [];
 
   constructor(private api: ApiService) {}
 
@@ -19,6 +19,6 @@ export class HomeCardNoleaderEventsComponent implements OnInit {
 
   async loadNoLeaderEvents() {
     // TODO: list only noleader events
-    this.events = await this.api.events.listEvents().then((res) => res.data);
+    this.events = await this.api.EventsApi.listEvents().then((res) => res.data);
   }
 }

@@ -1,10 +1,10 @@
-import { MembershipStatesEnum } from "../api";
+import { SDK } from "src/sdk";
 
 export interface MembershipStatesMetadata {
   title: string;
 }
 
-export const MembershipStates: { [status in MembershipStatesEnum]: MembershipStatesMetadata } = {
+export const MembershipStates: { [status in SDK.MembershipStatesEnum]: MembershipStatesMetadata } = {
   clen: {
     title: "Člen",
   },

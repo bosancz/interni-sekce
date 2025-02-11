@@ -1,12 +1,12 @@
 import { Component, Input } from "@angular/core";
 import { DateTime } from "luxon";
-import { EventResponseWithLinks } from "src/app/api";
+import { SDK } from "src/sdk";
 
 @Component({
-    selector: "event-age-histogram",
-    templateUrl: "./event-age-histogram.component.html",
-    styleUrls: ["./event-age-histogram.component.scss"],
-    standalone: false
+  selector: "event-age-histogram",
+  templateUrl: "./event-age-histogram.component.html",
+  styleUrls: ["./event-age-histogram.component.scss"],
+  standalone: false,
 })
 export class EventAgeHistogramComponent {
   @Input() min: number = 7;
@@ -19,11 +19,11 @@ export class EventAgeHistogramComponent {
   constructor() {}
 
   @Input()
-  set event(event: EventResponseWithLinks) {
+  set event(event: SDK.EventResponseWithLinks) {
     this.updateAges(event);
   }
 
-  updateAges(event: EventResponseWithLinks): void {
+  updateAges(event: SDK.EventResponseWithLinks): void {
     const members = event.attendees?.map((ea) => ea.member!) || [];
 
     const ages: { [age: string]: number } = {};

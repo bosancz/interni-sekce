@@ -6,9 +6,9 @@ import { MembersReportResponse } from "../dto/members-report.dto";
 @ApiTags("Statistics")
 export class MembersStatisticsController {
   @Get()
-  @ApiResponse({ type: MembersReportResponse })
+  @ApiResponse({ status: 200, type: MembersReportResponse })
   getMembersReport() {
     // TODO:
-    return {};
+    throw new Error("Not implemented");
   }
 }

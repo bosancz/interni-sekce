@@ -1,18 +1,18 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { EventResponseWithLinks, EventUpdateBody } from "src/app/api";
 import { ModalService } from "src/app/services/modal.service";
+import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
-    selector: "bo-event-info",
-    templateUrl: "./event-info.component.html",
-    styleUrls: ["./event-info.component.scss"],
-    standalone: false
+  selector: "bo-event-info",
+  templateUrl: "./event-info.component.html",
+  styleUrls: ["./event-info.component.scss"],
+  standalone: false,
 })
 export class EventInfoComponent implements OnInit, OnDestroy {
-  @Input() event?: EventResponseWithLinks;
-  @Output() update = new EventEmitter<EventUpdateBody>();
+  @Input() event?: SDK.EventResponseWithLinks;
+  @Output() update = new EventEmitter<SDK.EventUpdateBody>();
 
   constructor(private modalService: ModalService) {}
 

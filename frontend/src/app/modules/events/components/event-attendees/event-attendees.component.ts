@@ -1,25 +1,25 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { EventAttendeeResponseWithLinks, EventResponseWithLinks } from "src/app/api";
 import { MemberSelectorModalComponent } from "src/app/modules/events/components/member-selector-modal/member-selector-modal.component";
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
-    selector: "bo-event-attendees",
-    templateUrl: "./event-attendees.component.html",
-    styleUrls: ["./event-attendees.component.scss"],
-    standalone: false
+  selector: "bo-event-attendees",
+  templateUrl: "./event-attendees.component.html",
+  styleUrls: ["./event-attendees.component.scss"],
+  standalone: false,
 })
 export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() event?: EventResponseWithLinks | null;
+  @Input() event?: SDK.EventResponseWithLinks | null;
   @Output() change = new EventEmitter<void>();
 
-  attendees: EventAttendeeResponseWithLinks[] = [];
-  leaders: EventAttendeeResponseWithLinks[] = [];
+  attendees: SDK.EventAttendeeResponseWithLinks[] = [];
+  leaders: SDK.EventAttendeeResponseWithLinks[] = [];
 
   actions: Action[] = [];
 
@@ -41,14 +41,14 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
     if (changes.event) this.loadAttendees(this.event);
   }
 
-  private async loadAttendees(event?: EventResponseWithLinks | null) {
+  private async loadAttendees(event?: SDK.EventResponseWithLinks | null) {
     if (!event) {
       this.attendees = [];
       this.leaders = [];
       return;
     }
 
-    const attendees = await this.api.events.listEventAttendees(event.id).then((res) => res.data);
+    const attendees = await this.api.EventsApi.listEventAttendees(event.id).then((res) => res.data);
 
     this.attendees = attendees.filter((a) => a.type === "attendee");
     this.sortAttendees(this.attendees);
@@ -57,7 +57,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
     this.sortAttendees(this.leaders);
   }
 
-  private sortAttendees(members: EventAttendeeResponseWithLinks[]) {
+  private sortAttendees(members: SDK.EventAttendeeResponseWithLinks[]) {
     members.sort((a, b) => {
       if (!a.member || !b.member) return 0;
 
@@ -86,12 +86,12 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
         eventId: this.event.id,
         memberId: member.id,
         member,
-      } as EventAttendeeResponseWithLinks);
+      } as SDK.EventAttendeeResponseWithLinks);
 
       this.sortAttendees(this.attendees);
 
       try {
-        await this.api.events.addEventAttendee(this.event.id, member.id, {});
+        await this.api.EventsApi.addEventAttendee(this.event.id, member.id, { type: "attendee" });
         this.toastService.toast("Účastník přidán.");
       } catch (e) {
         this.toastService.toast("Nepodařilo se přidat účastníka.");
@@ -102,7 +102,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  async removeAttendee(attendee: EventAttendeeResponseWithLinks) {
+  async removeAttendee(attendee: SDK.EventAttendeeResponseWithLinks) {
     if (!this.event) return;
 
     if (attendee.type === "leader") {
@@ -114,7 +114,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
       // optimistic update
       this.attendees.filter((item) => item.memberId !== attendee.memberId);
 
-      await this.api.events.deleteEventAttendee(this.event.id, attendee.memberId);
+      await this.api.EventsApi.deleteEventAttendee(this.event.id, attendee.memberId);
 
       if (attendee.type === "leader") this.toastService.toast("Vedoucí odebrán.");
       else this.toastService.toast("Účastník odebrán.");
@@ -133,7 +133,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
     });
   }
 
-  private async exportExcel(event: EventResponseWithLinks) {
+  private async exportExcel(event: SDK.EventResponseWithLinks) {
     // TODO:
     // if (event._links.["announcement-template"]) {
     //   const url = environment.apiRoot + event._links.["announcement-template"].href;
@@ -141,7 +141,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
     // }
   }
 
-  private setActions(event?: EventResponseWithLinks) {
+  private setActions(event?: SDK.EventResponseWithLinks) {
     this.actions = [
       {
         text: "Stáhnout ohlášku",

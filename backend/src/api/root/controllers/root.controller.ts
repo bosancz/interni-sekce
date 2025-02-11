@@ -5,15 +5,15 @@ import { Config } from "src/config";
 import { RootRoute } from "../acl/root.acl";
 import { RootResponse } from "../dto/root-response";
 
-@Controller("root")
-@ApiTags("API")
+@Controller("")
+@ApiTags("Root")
 @AcController()
 export class RootController {
   constructor(private readonly config: Config) {}
 
   @Get()
   @AcLinks(RootRoute)
-  @ApiResponse({ type: WithLinks(RootResponse) })
+  @ApiResponse({ status: 200, type: WithLinks(RootResponse) })
   getApiInfo(): RootResponse {
     return {
       version: this.config.app.version,

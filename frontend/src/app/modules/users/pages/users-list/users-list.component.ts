@@ -2,26 +2,26 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { InfiniteScrollCustomEvent, Platform, ViewWillEnter } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { UserResponseWithLinks, UserRolesEnum, UsersApiListUsersQueryParams } from "src/app/api";
 import { UserRoles } from "src/app/config/user-roles";
 import { ApiService } from "src/app/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { FilterData } from "src/app/shared/components/filter/filter.component";
+import { SDK } from "src/sdk";
 
 type UsersFilter = {
   search: string;
-  role: UserRolesEnum[];
+  role: SDK.UserRolesEnum[];
 };
 
 @UntilDestroy()
 @Component({
-    selector: "users-list",
-    templateUrl: "./users-list.component.html",
-    styleUrls: ["./users-list.component.scss"],
-    standalone: false
+  selector: "users-list",
+  templateUrl: "./users-list.component.html",
+  styleUrls: ["./users-list.component.scss"],
+  standalone: false,
 })
 export class UsersListComponent implements OnInit, ViewWillEnter {
-  users?: UserResponseWithLinks[] = [];
+  users?: SDK.UserResponseWithLinks[] = [];
 
   userRoles = UserRoles;
 
@@ -42,8 +42,7 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
   ) {}
 
   ngOnInit(): void {
-    this.api.endpoints.subscribe(() => this.setActions());
-
+    this.setActions();
     this.updateView();
     this.platform.resize.subscribe(() => this.updateView());
   }
@@ -75,24 +74,25 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
       this.users = undefined;
     }
 
-    const params: UsersApiListUsersQueryParams = {
+    const params: SDK.UsersApiListUsersQueryParams = {
       search: filter.search || undefined,
       roles: filter.roles || undefined,
       limit: this.pageSize,
       offset: (this.page - 1) * this.pageSize,
     };
 
-    const users = await this.api.users.listUsers(params).then((res) => res.data);
+    const users = await this.api.UsersApi.listUsers(params).then((res) => res.data);
 
     if (!this.users) this.users = [];
     this.users.push(...users);
   }
 
-  getRoleName(roleId: UserRolesEnum) {
+  getRoleName(roleId: SDK.UserRolesEnum) {
     return UserRoles[roleId];
   }
 
   private setActions(): void {
+    // TODO: check permissions
     this.actions = [
       {
         text: "Přidat",

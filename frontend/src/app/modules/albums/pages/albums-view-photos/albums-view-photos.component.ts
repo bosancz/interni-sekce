@@ -2,24 +2,24 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ModalController, Platform, ViewWillLeave } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { AlbumResponseWithLinks, PhotoResponseWithLinks } from "src/app/api";
 import { PhotosEditComponent } from "src/app/modules/albums/components/photos-edit/photos-edit.component";
 import { PhotosUploadComponent } from "src/app/modules/albums/components/photos-upload/photos-upload.component";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
-    selector: "bo-albums-view-photos",
-    templateUrl: "./albums-view-photos.component.html",
-    styleUrls: ["./albums-view-photos.component.scss"],
-    standalone: false
+  selector: "bo-albums-view-photos",
+  templateUrl: "./albums-view-photos.component.html",
+  styleUrls: ["./albums-view-photos.component.scss"],
+  standalone: false,
 })
 export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
-  album?: AlbumResponseWithLinks;
+  album?: SDK.AlbumResponseWithLinks;
 
-  photos?: PhotoResponseWithLinks[];
+  photos?: SDK.PhotoResponseWithLinks[];
 
   actions: Action[] = [];
 
@@ -28,10 +28,10 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
   enableOrdering = false;
   enableDeleting = false;
 
-  oldOrder?: PhotoResponseWithLinks[];
+  oldOrder?: SDK.PhotoResponseWithLinks[];
 
   showCheckboxes = false;
-  selectedPhotos: PhotoResponseWithLinks[] = [];
+  selectedPhotos: SDK.PhotoResponseWithLinks[] = [];
 
   photosModal?: HTMLIonModalElement;
   uploadModal?: HTMLIonModalElement;
@@ -67,10 +67,10 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
   }
 
   async loadPhotos(albumId: number) {
-    this.album = await this.api.albums.getAlbum(albumId).then((res) => res.data);
+    this.album = await this.api.PhotoGalleryApi.getAlbum(albumId).then((res) => res.data);
     this.actions = this.getActions(this.album);
 
-    this.photos = await this.api.albums.getAlbumPhotos(albumId).then((res) => res.data);
+    this.photos = await this.api.PhotoGalleryApi.getAlbumPhotos(albumId).then((res) => res.data);
 
     if (this.route.snapshot.queryParams["photo"] && !this.photosModal) {
       const photo = this.photos?.find((item) => item.id);
@@ -80,7 +80,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
 
   private async saveAlbum() {}
 
-  onPhotoClick(event: CustomEvent<PhotoResponseWithLinks | undefined>) {
+  onPhotoClick(event: CustomEvent<SDK.PhotoResponseWithLinks | undefined>) {
     if (this.enableDeleting || this.enableOrdering) return;
 
     if (!event.detail) return;
@@ -88,7 +88,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
     this.router.navigate([], { queryParams: { photo: event.detail.id } });
   }
 
-  async openPhoto(photo: PhotoResponseWithLinks) {
+  async openPhoto(photo: SDK.PhotoResponseWithLinks) {
     if (this.photosModal) this.photosModal.dismiss();
 
     const originalCount = this.photos?.length;
@@ -188,7 +188,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
     const toast = await this.toastService.toast("Mažu fotky...");
 
     for (let photo of this.selectedPhotos) {
-      await this.api.albums.deletePhoto(photo.id);
+      await this.api.PhotoGalleryApi.deletePhoto(photo.id);
     }
 
     await this.loadPhotos(this.album!.id); // wouldnt be able to delete photos if no album was present
@@ -233,7 +233,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
     // this.toastService.toast("Uloženo.");
   }
 
-  private getActions(album: AlbumResponseWithLinks): Action[] {
+  private getActions(album: SDK.AlbumResponseWithLinks): Action[] {
     return [
       {
         text: "Seřadit",

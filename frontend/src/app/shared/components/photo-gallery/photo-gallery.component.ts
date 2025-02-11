@@ -9,10 +9,10 @@ import {
   Output,
   SimpleChanges,
 } from "@angular/core";
-import { PhotoResponseWithLinks } from "src/app/api";
+import { SDK } from "src/sdk";
 
 interface PhotoRowItem {
-  photo: PhotoResponseWithLinks;
+  photo: SDK.PhotoResponseWithLinks;
   ratio: number;
 }
 
@@ -22,19 +22,19 @@ class PhotoRow {
 }
 
 @Component({
-    selector: "bo-photo-gallery",
-    templateUrl: "./photo-gallery.component.html",
-    styleUrls: ["./photo-gallery.component.scss"],
-    standalone: false
+  selector: "bo-photo-gallery",
+  templateUrl: "./photo-gallery.component.html",
+  styleUrls: ["./photo-gallery.component.scss"],
+  standalone: false,
 })
 export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChanges {
-  @Input() photos: PhotoResponseWithLinks[] = [];
+  @Input() photos: SDK.PhotoResponseWithLinks[] = [];
   @Input() maxHeight: number = 200;
   @Input() clickable: boolean = false;
 
   margin: number = 5;
 
-  @Output() click = new EventEmitter<PhotoResponseWithLinks>();
+  @Output() click = new EventEmitter<SDK.PhotoResponseWithLinks>();
 
   rows: PhotoRow[] = [];
 
@@ -69,7 +69,7 @@ export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChange
     while (photos.length) {
       let rowWidth = 0;
       let row = new PhotoRow();
-      let photo: PhotoResponseWithLinks | undefined;
+      let photo: SDK.PhotoResponseWithLinks | undefined;
 
       // add photos to row, stop when first photo over limit
       while (rowWidth <= this.width && (photo = photos.shift())) {
@@ -100,7 +100,7 @@ export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChange
     this.rows = rows;
   }
 
-  onPhotoClick(event: MouseEvent, photo: PhotoResponseWithLinks) {
+  onPhotoClick(event: MouseEvent, photo: SDK.PhotoResponseWithLinks) {
     if (!this.clickable) return;
 
     event.preventDefault();
