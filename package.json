@@ -1,0 +1,20 @@
+{
+  "name": "",
+  "version": "1.0.0",
+  "author": {
+    "name": "Martin Kopeček",
+    "email": "martin.kopecek@smallhill.cz"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n FE,BE --prefix-colors green,yellow \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "release": "git switch master && git push && git switch release && git merge master --ff-only && git push --follow-tags && git switch master",
+    "release:patch": "git switch master && npm version patch && git push && npm run release",
+    "release:minor": "git switch master && npm version minor && git push && npm run release",
+    "release:major": "git switch master && npm version major && git push && npm run release"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
