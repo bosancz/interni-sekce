@@ -1,28 +1,28 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsOptional, IsString } from "class-validator";
+import { EnsureBoolean } from "src/helpers/validation";
 import { Group } from "src/models/members/entities/group.entity";
-import { EnsureBoolean } from "src/utilities/validation";
 
 export class GroupResponse implements Group {
-  @ApiProperty() id!: number;
-  @ApiProperty() active!: boolean;
-  @ApiProperty() shortName!: string;
-  @ApiPropertyOptional({ type: "string" }) color!: string | null;
-  @ApiPropertyOptional({ type: "string" }) darkColor!: string | null;
-  @ApiPropertyOptional({ type: "string" }) name!: string | null;
-  @ApiPropertyOptional({ type: "string" }) deletedAt!: string | null;
+	@ApiProperty() id!: number;
+	@ApiProperty() active!: boolean;
+	@ApiProperty() shortName!: string;
+	@ApiPropertyOptional({ type: "string" }) color!: string | null;
+	@ApiPropertyOptional({ type: "string" }) darkColor!: string | null;
+	@ApiPropertyOptional({ type: "string" }) name!: string | null;
+	@ApiPropertyOptional({ type: "string" }) deletedAt!: string | null;
 }
 
 export class ListGroupsQuery {
-  @ApiPropertyOptional() @EnsureBoolean() @IsOptional() active?: boolean;
+	@ApiPropertyOptional() @EnsureBoolean() @IsOptional() active?: boolean;
 }
 
 export class CreateGroupBody implements Pick<Group, "shortName" | "name"> {
-  @ApiProperty() @IsString() shortName!: string;
-  @ApiPropertyOptional({ type: "string" }) @IsString() @IsOptional() name!: string | null;
+	@ApiProperty() @IsString() shortName!: string;
+	@ApiPropertyOptional({ type: "string" }) @IsString() @IsOptional() name!: string | null;
 }
 
 export class UpdateGroupBody implements Partial<Pick<Group, "shortName" | "name">> {
-  @ApiProperty() @IsString() shortName!: string;
-  @ApiPropertyOptional({ type: "string" }) @IsString() @IsOptional() name!: string | null;
+	@ApiProperty() @IsString() shortName!: string;
+	@ApiPropertyOptional({ type: "string" }) @IsString() @IsOptional() name!: string | null;
 }
