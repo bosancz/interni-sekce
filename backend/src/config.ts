@@ -1,12 +1,11 @@
-import { Logger, LogLevel } from "@nestjs/common";
-import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
+import { Global, Injectable, Logger, Module } from "@nestjs/common";
 import { config } from "dotenv";
 import { readFileSync } from "fs";
 import * as path from "path";
-import { DataSourceOptions } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
+import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 
-config({ override: true });
+config({ override: true, debug: true });
 
 const logger = new Logger("CONFIG");
 
@@ -28,15 +27,12 @@ const server = {
   port: process.env.PORT ? parseInt(process.env.PORT, 10) : production ? 80 : 3000,
   basePath: process.env.BASE_PATH || "",
   staticRoot: process.env.STATIC_ROOT || path.join(__dirname, "../../frontend/dist"),
+  globalPrefix: process.env.GLOBAL_PREFIX ?? "api",
+  cors: environment === "development",
 };
 
-const logging: { level?: LogLevel[] } = {
-  level: production ? ["log", "error", "warn"] : undefined,
-};
-
-const cors: { enable: boolean; options: CorsOptions } = {
-  enable: !production,
-  options: { credentials: true, origin: true },
+const logging = {
+  debug: process.env.LOG_DEBUG === "true" || process.env.LOG_DEBUG === "1",
 };
 
 /**
@@ -60,7 +56,7 @@ const jwt = {
   secret: process.env["JWT_SECRET"] ?? "secret",
 };
 
-const db: DataSourceOptions = {
+const db: PostgresConnectionOptions = {
   type: "postgres",
   host: process.env["DB_HOST"] ?? "localhost",
   port: process.env["DB_HOST"] ? parseInt(process.env["DB_HOST"]) : 5432,
@@ -95,16 +91,22 @@ const google = {
   clientSecret: process.env["GOOGLE_CLIENT_SECRET"],
 };
 
-export const Config = {
-  app,
-  cors,
-  db,
-  environment,
-  google,
-  jwt,
-  logging,
-  mongoDb,
-  production,
-  server,
-  fs,
-};
+@Injectable()
+export class Config {
+  app = app;
+  db = db;
+  environment = environment;
+  google = google;
+  jwt = jwt;
+  logging = logging;
+  mongoDb = mongoDb;
+  production = production;
+  server = server;
+  fs = fs;
+}
+
+@Global()
+@Module({ providers: [Config], exports: [Config] })
+export class ConfigModule {}
+
+export const StaticConfig = new Config();

@@ -14,7 +14,7 @@ export class MemberResponse implements Member {
   @ApiProperty() id!: number;
   @ApiProperty() groupId!: number;
   @ApiProperty({ type: "string" }) nickname!: string;
-  @ApiProperty({ type: "enum", enum: MemberRoles, enumName: "MemberRolesEnum" }) role!: MemberRoles;
+  @ApiProperty({ type: "string", enum: MemberRoles, enumName: "MemberRolesEnum" }) role!: MemberRoles;
   @ApiProperty({ type: "boolean" }) active!: boolean;
   @ApiProperty({ type: "string", enum: MembershipStates, enumName: "MembershipStatesEnum" })
   membership!: MembershipStates;
@@ -30,7 +30,7 @@ export class MemberResponse implements Member {
   @ApiPropertyOptional({ type: "string" }) addressCountry?: string | null;
   @ApiPropertyOptional({ type: "string" }) mobile?: string | null;
   @ApiPropertyOptional({ type: "string" }) email?: string | null;
-  @ApiPropertyOptional({ type: "enum", enum: MemberRanks, enumName: "MemberRanksEnum" }) rank?: MemberRanks | null;
+  @ApiPropertyOptional({ type: "string", enum: MemberRanks, enumName: "MemberRanksEnum" }) rank?: MemberRanks | null;
   @ApiPropertyOptional({ type: "string" }) knownProblems?: string | null;
   @ApiPropertyOptional({ type: "string", isArray: true }) allergies?: string[] | null;
   @ApiPropertyOptional({ type: "string" }) insuranceCardFile?: string | null;

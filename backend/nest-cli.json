@@ -11,6 +11,20 @@
       "**/*.html",
       "**/*.hbs"
     ],
-    "watchAssets": true
+    "watchAssets": true,
+    "deleteOutDir": true,
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "classValidatorShim": false,
+          "introspectComments": true,
+          "dtoFileNameSuffix": [
+            ".dto.ts",
+            ".entity.ts"
+          ]
+        }
+      }
+    ]
   }
 }

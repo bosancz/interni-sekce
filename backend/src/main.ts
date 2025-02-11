@@ -1,45 +1,69 @@
-import { Logger, ValidationPipe } from "@nestjs/common";
+import { Logger, NestApplicationOptions, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import { NestExpressApplication } from "@nestjs/platform-express";
 import * as cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
-import { Config } from "./config";
-import { registerOpenApi } from "./openapi";
+import { Config, StaticConfig } from "./config";
+import { runMigrations } from "./database/run-migrations";
+import { registerOpenAPI } from "./openapi";
+import { registerTemplating } from "./templating";
 
 async function bootstrap() {
   const logger = new Logger("MAIN");
 
   logger.log("Bošán - Interní sekce");
-  logger.log(`Verze: ${Config.app.version}`);
+  logger.log(`Verze: ${StaticConfig.app.version}`);
 
-  const app = await NestFactory.create(AppModule, {
-    logger: Config.logging.level,
+  if (StaticConfig.environment === "production") {
+    logger.log("Spouštím migrace...");
+    await runMigrations(StaticConfig);
+    logger.log("Migrace dokončeny.");
+  }
+
+  const nestOptions: NestApplicationOptions = {
     rawBody: true,
-  });
+    logger:
+      StaticConfig.logging.debug || StaticConfig.environment === "development"
+        ? ["log", "error", "warn", "debug", "verbose"]
+        : ["log", "error", "warn"],
+  };
 
-  app.setGlobalPrefix(Config.server.basePath + "/api");
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, nestOptions);
+
+  const config = app.get(Config);
+
+  if (config.server.globalPrefix) {
+    app.setGlobalPrefix(config.server.globalPrefix);
+  }
+
+  if (config.server.cors) {
+    app.enableCors();
+  }
 
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, transform: true, transformOptions: { enableImplicitConversion: true } }),
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
   );
 
-  if (!Config.production) {
+  // comment to disable templating
+  registerTemplating(app);
+
+  // comment to disable OpenAPI and Swagger
+  registerOpenAPI("api", app, config);
+
+  if (!config.production) {
     // make JSONs nice for debugging
     app.getHttpAdapter().getInstance().set("json spaces", 2);
   }
 
-  if (Config.cors.enable) {
-    // enable local app access
-    app.enableCors(Config.cors.options);
-  }
-
   app.use(cookieParser());
 
-  registerOpenApi(app);
+  await app.listen(config.server.port, config.server.host);
 
-  const port = Config.server.port;
-  const host = Config.server.host;
-
-  await app.listen(port, host);
-  logger.log(`Server started at http://${host}:${port}`);
+  logger.log(`Server running on http://${config.server.host}:${config.server.port}`);
 }
 bootstrap();

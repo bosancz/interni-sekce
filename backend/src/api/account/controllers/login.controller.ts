@@ -37,6 +37,7 @@ export class LoginController {
     private tokenService: TokenService,
     private mailService: MailService,
     private googleService: GoogleService,
+    private readonly config: Config,
   ) {}
   @Post("credentials")
   async loginUsingCredentials(
@@ -90,7 +91,7 @@ export class LoginController {
     });
 
     const mail = SendLoginLinkMailTemplate(user.email, {
-      link: `${Config.app.baseUrl}/api/login/link?code=${loginCode}`,
+      link: `${this.config.app.baseUrl}/api/login/link?code=${loginCode}`,
     });
 
     await this.mailService.sendMail(mail);
@@ -115,7 +116,7 @@ export class LoginController {
 
     await this.setLoginToken(res, user);
 
-    res.redirect(Config.app.baseUrl);
+    res.redirect(this.config.app.baseUrl);
   }
 
   @Post("logout")

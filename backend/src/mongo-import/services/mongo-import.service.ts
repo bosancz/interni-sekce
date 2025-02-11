@@ -34,10 +34,11 @@ export class MongoImportService {
     @InjectModel(MongoMember.name) private membersModel: Model<MongoMember>,
     @InjectModel(MongoUser.name) private usersModel: Model<MongoUser>,
     private entityManager: EntityManager,
+    private config: Config,
   ) {}
 
   async importData() {
-    this.logger.log(`Starting mongo import from ${Config.mongoDb.uri}...`);
+    this.logger.log(`Starting mongo import from ${this.config.mongoDb.uri}...`);
 
     await this.entityManager.transaction(async (t) => {
       await this.init(t);

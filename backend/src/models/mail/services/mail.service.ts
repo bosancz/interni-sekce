@@ -7,11 +7,14 @@ import { MailOptions } from "../schema/mail-options";
 export class MailService {
   private readonly logger = new Logger(MailService.name);
 
-  constructor(private google: GoogleService) {}
+  constructor(
+    private google: GoogleService,
+    private readonly config: Config,
+  ) {}
 
   async sendMail(options: MailOptions) {
     const messageParts = [
-      `From: ${this.encodeUtf8("Bošán Interní")} <${Config.google.impersonate}>`,
+      `From: ${this.encodeUtf8("Bošán Interní")} <${this.config.google.impersonate}>`,
       `To: ${options.to}`,
       "Content-Type: text/html; charset=utf-8",
       "MIME-Version: 1.0",

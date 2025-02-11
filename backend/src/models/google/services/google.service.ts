@@ -9,13 +9,13 @@ export class GoogleService {
   readonly gmail = google.gmail({ version: "v1" });
 
   readonly oauth = new google.auth.OAuth2({
-    clientId: Config.google.clientId,
-    clientSecret: Config.google.clientSecret,
+    clientId: this.config.google.clientId,
+    clientSecret: this.config.google.clientSecret,
     redirectUri: "postmessage",
   });
 
-  constructor() {
-    const keyFilePath = Config.google.keyFile;
+  constructor(private readonly config: Config) {
+    const keyFilePath = this.config.google.keyFile;
 
     const auth = new google.auth.GoogleAuth({
       keyFile: keyFilePath,
@@ -23,7 +23,7 @@ export class GoogleService {
         "https://mail.google.com/", // sending email
       ],
       clientOptions: {
-        subject: Config.google.impersonate,
+        subject: this.config.google.impersonate,
       },
     });
 
@@ -37,7 +37,7 @@ export class GoogleService {
     const tokenData = this.oauth
       .verifyIdToken({
         idToken: tokens.id_token,
-        audience: Config.google.clientId,
+        audience: this.config.google.clientId,
       })
       .then((res) => res.getPayload());
 

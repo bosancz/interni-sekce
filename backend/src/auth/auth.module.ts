@@ -7,7 +7,12 @@ import { TokenService } from "./services/token.service";
 
 @Global()
 @Module({
-  imports: [JwtModule.register({ secret: Config.jwt.secret })],
+  imports: [
+    JwtModule.registerAsync({
+      inject: [Config],
+      useFactory: (config: Config) => ({ secret: config.jwt.secret }),
+    }),
+  ],
   providers: [TokenService, HashService],
   exports: [HashService, TokenService],
 })

@@ -21,7 +21,10 @@ import { RouteStoreItem } from "../schema/route-store-item";
 export class AcLinksInterceptor implements NestInterceptor {
   private logger = new Logger(AcLinksInterceptor.name);
 
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
+    private readonly config: Config,
+  ) {}
 
   intercept(context: ExecutionContext, next: CallHandler) {
     return next.handle().pipe(
@@ -79,7 +82,7 @@ export class AcLinksInterceptor implements NestInterceptor {
   }
 
   private getPath(route: RouteStoreItem, doc: any) {
-    const pathItems = [Config.app.baseUrl, "api", this.getControllerPath(route)];
+    const pathItems = [this.config.app.baseUrl, "api", this.getControllerPath(route)];
 
     if (typeof route.acl.options.path === "function") pathItems.push(String(route.acl.options.path(doc)));
     else pathItems.push(<string>Reflect.getMetadata(MetadataConstant.routePath, route.handler));

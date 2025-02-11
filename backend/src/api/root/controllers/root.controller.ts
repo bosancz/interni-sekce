@@ -9,14 +9,16 @@ import { RootResponse } from "../dto/root-response";
 @ApiTags("API")
 @AcController()
 export class RootController {
+  constructor(private readonly config: Config) {}
+
   @Get()
   @AcLinks(RootRoute)
   @ApiResponse({ type: WithLinks(RootResponse) })
   getApiInfo(): RootResponse {
     return {
-      version: Config.app.version,
-      environmentTitle: Config.app.environmentTitle,
-      googleClientId: Config.google.clientId,
+      version: this.config.app.version,
+      environmentTitle: this.config.app.environmentTitle,
+      googleClientId: this.config.google.clientId,
     };
   }
 }

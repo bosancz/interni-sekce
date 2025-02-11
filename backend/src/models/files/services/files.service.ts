@@ -5,12 +5,14 @@ import { Config } from "src/config";
 
 @Injectable()
 export class FilesService implements OnApplicationBootstrap {
+  constructor(private readonly config: Config) {}
+
   async onApplicationBootstrap() {
-    await mkdir(Config.fs.dataDir, { recursive: true });
-    await mkdir(Config.fs.membersDir, { recursive: true });
-    await mkdir(Config.fs.eventsDir, { recursive: true });
-    await mkdir(Config.fs.photosDir, { recursive: true });
-    await mkdir(Config.fs.thumbnailsDir, { recursive: true });
+    await mkdir(this.config.fs.dataDir, { recursive: true });
+    await mkdir(this.config.fs.membersDir, { recursive: true });
+    await mkdir(this.config.fs.eventsDir, { recursive: true });
+    await mkdir(this.config.fs.photosDir, { recursive: true });
+    await mkdir(this.config.fs.thumbnailsDir, { recursive: true });
   }
 
   async ensureDir(path: string) {

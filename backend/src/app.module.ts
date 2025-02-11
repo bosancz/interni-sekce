@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 import { MulterModule } from "@nestjs/platform-express";
 import { ServeStaticModule } from "@nestjs/serve-static";
-import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { AccessControlModule } from "./access-control/access-control.module";
 import { AccountModule } from "./api/account/account.module";
 import { AlbumsModule } from "./api/albums/albums.module";
@@ -12,7 +11,8 @@ import { RootModule } from "./api/root/root.module";
 import { StatisticsModule } from "./api/statistics/statistics.module";
 import { UsersModule } from "./api/users/users.module";
 import { AuthModule } from "./auth/auth.module";
-import { Config } from "./config";
+import { Config, ConfigModule } from "./config";
+import { DatabaseModule } from "./database/database.module";
 import { AlbumsModelModule } from "./models/albums/albums-model.module";
 import { FilesModule } from "./models/files/files.module";
 import { GoogleModelModule } from "./models/google/google-model.module";
@@ -21,17 +21,14 @@ import { MembersModelModule } from "./models/members/members-model.module";
 import { StatisticsModelModule } from "./models/statistics/statistics-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
 
-const typeOrmOptions: TypeOrmModuleOptions = {
-  ...Config.db,
-  autoLoadEntities: true,
-};
-
 @Module({
   imports: [
-    ServeStaticModule.forRoot({
-      rootPath: Config.server.staticRoot,
+    DatabaseModule,
+    ConfigModule,
+    ServeStaticModule.forRootAsync({
+      inject: [Config],
+      useFactory: (config: Config) => [{ rootPath: config.server.staticRoot }],
     }),
-    TypeOrmModule.forRoot(typeOrmOptions),
     MulterModule.register({
       dest: "/tmp/uploads",
       limits: {

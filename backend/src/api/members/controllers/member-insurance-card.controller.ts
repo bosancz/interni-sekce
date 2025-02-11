@@ -42,6 +42,7 @@ export class MemberInsuranceCardController {
   constructor(
     private membersService: MembersRepository,
     private filesService: FilesService,
+    private readonly config: Config,
   ) {}
 
   @Get("")
@@ -128,6 +129,6 @@ export class MemberInsuranceCardController {
   }
 
   private getInsuraceCardPath(memberId: number, extenstion: string) {
-    return `${Config.fs.membersDir}/${memberId}/insurance_card.${extenstion}`;
+    return `${this.config.fs.membersDir}/${memberId}/insurance_card.${extenstion}`;
   }
 }
