@@ -3,9 +3,10 @@ import { DateTime } from "luxon";
 import { EventAttendeeResponseWithLinks, EventResponseWithLinks } from "src/app/api";
 
 @Component({
-  selector: "bo-event-attendees-list",
-  templateUrl: "./event-attendees-list.component.html",
-  styleUrl: "./event-attendees-list.component.scss",
+    selector: "bo-event-attendees-list",
+    templateUrl: "./event-attendees-list.component.html",
+    styleUrl: "./event-attendees-list.component.scss",
+    standalone: false
 })
 export class EventAttendeesListComponent {
   @Input() event?: EventResponseWithLinks | null;

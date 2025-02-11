@@ -2,9 +2,10 @@ import { Component, Input } from "@angular/core";
 import { ToastService } from "src/app/services/toast.service";
 
 @Component({
-  selector: "bo-copy-button",
-  templateUrl: "./copy-button.component.html",
-  styleUrl: "./copy-button.component.scss",
+    selector: "bo-copy-button",
+    templateUrl: "./copy-button.component.html",
+    styleUrl: "./copy-button.component.scss",
+    standalone: false
 })
 export class CopyButtonComponent {
   @Input() text?: string | null;

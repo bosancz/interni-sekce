@@ -9,9 +9,10 @@ import { EventsService } from "../../services/events.service";
 
 @UntilDestroy()
 @Component({
-  selector: "bo-event-registration",
-  templateUrl: "./event-registration.component.html",
-  styleUrls: ["./event-registration.component.scss"],
+    selector: "bo-event-registration",
+    templateUrl: "./event-registration.component.html",
+    styleUrls: ["./event-registration.component.scss"],
+    standalone: false
 })
 export class EventRegistrationComponent {
   @Input() event?: EventResponseWithLinks;

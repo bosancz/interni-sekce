@@ -8,9 +8,10 @@ import { ToastService } from "src/app/services/toast.service";
 
 @UntilDestroy()
 @Component({
-  selector: "bo-member-contacts",
-  templateUrl: "./member-contacts.component.html",
-  styleUrls: ["./member-contacts.component.scss"],
+    selector: "bo-member-contacts",
+    templateUrl: "./member-contacts.component.html",
+    styleUrls: ["./member-contacts.component.scss"],
+    standalone: false
 })
 export default class MemberContactsComponent implements OnChanges {
   @Input() member?: MemberResponseWithLinks | null;

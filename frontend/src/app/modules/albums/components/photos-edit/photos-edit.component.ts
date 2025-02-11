@@ -7,9 +7,10 @@ import Swiper from "swiper";
 import { SwiperOptions } from "swiper/types";
 
 @Component({
-  selector: "bo-photos-edit",
-  templateUrl: "./photos-edit.component.html",
-  styleUrls: ["./photos-edit.component.scss"],
+    selector: "bo-photos-edit",
+    templateUrl: "./photos-edit.component.html",
+    styleUrls: ["./photos-edit.component.scss"],
+    standalone: false
 })
 export class PhotosEditComponent implements ViewWillLeave {
   photo?: PhotoResponseWithLinks;

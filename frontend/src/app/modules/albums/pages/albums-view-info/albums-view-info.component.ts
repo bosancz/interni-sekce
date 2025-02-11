@@ -9,9 +9,10 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 
 @UntilDestroy()
 @Component({
-  selector: "bo-albums-view-info",
-  templateUrl: "./albums-view-info.component.html",
-  styleUrls: ["./albums-view-info.component.scss"],
+    selector: "bo-albums-view-info",
+    templateUrl: "./albums-view-info.component.html",
+    styleUrls: ["./albums-view-info.component.scss"],
+    standalone: false
 })
 export class AlbumsViewInfoComponent implements OnInit {
   album?: AlbumResponseWithLinks;

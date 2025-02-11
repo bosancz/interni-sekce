@@ -6,9 +6,10 @@ import { GroupsService } from "../../services/groups.service";
 
 @UntilDestroy()
 @Component({
-  selector: "bo-group-members",
-  templateUrl: "./group-members.component.html",
-  styleUrls: ["./group-members.component.scss"],
+    selector: "bo-group-members",
+    templateUrl: "./group-members.component.html",
+    styleUrls: ["./group-members.component.scss"],
+    standalone: false
 })
 export class GroupMembersComponent implements OnInit {
   members?: (MemberResponseWithLinks & { searchString?: string })[];

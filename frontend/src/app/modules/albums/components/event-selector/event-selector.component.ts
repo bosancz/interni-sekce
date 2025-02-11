@@ -16,16 +16,17 @@ import { ApiService } from "src/app/services/api.service";
 import { EventSelectorModalComponent } from "../event-selector-modal/event-selector-modal.component";
 
 @Component({
-  selector: "bo-event-selector",
-  templateUrl: "./event-selector.component.html",
-  styleUrls: ["./event-selector.component.scss"],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: forwardRef(() => EventSelectorComponent),
-    },
-  ],
+    selector: "bo-event-selector",
+    templateUrl: "./event-selector.component.html",
+    styleUrls: ["./event-selector.component.scss"],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: forwardRef(() => EventSelectorComponent),
+        },
+    ],
+    standalone: false
 })
 export class EventSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {
   value?: EventResponseWithLinks["id"] | null;

@@ -4,9 +4,10 @@ import { UntilDestroy } from "@ngneat/until-destroy";
 import { MemberResponseWithLinks } from "src/app/api";
 @UntilDestroy()
 @Component({
-  selector: "bo-member-health",
-  templateUrl: "./member-health.component.html",
-  styleUrls: ["./member-health.component.scss"],
+    selector: "bo-member-health",
+    templateUrl: "./member-health.component.html",
+    styleUrls: ["./member-health.component.scss"],
+    standalone: false
 })
 export class MemberHealthComponent implements OnInit {
   @Input() member?: MemberResponseWithLinks | null;

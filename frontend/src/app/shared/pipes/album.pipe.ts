@@ -5,8 +5,9 @@ import { AlbumStatuses } from "src/app/config/album-statuses";
 type AlbumPipeProperty = "status";
 
 @Pipe({
-  name: "album",
-  pure: false,
+    name: "album",
+    pure: false,
+    standalone: false
 })
 export class AlbumPipe implements PipeTransform {
   defaultProperties: { [property: string]: any } = {};

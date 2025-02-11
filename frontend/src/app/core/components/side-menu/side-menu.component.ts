@@ -7,9 +7,10 @@ import { TitleService } from "src/app/services/title.service";
 import { UserService } from "src/app/services/user.service";
 
 @Component({
-  selector: "side-menu",
-  templateUrl: "./side-menu.component.html",
-  styleUrls: ["./side-menu.component.scss"],
+    selector: "side-menu",
+    templateUrl: "./side-menu.component.html",
+    styleUrls: ["./side-menu.component.scss"],
+    standalone: false
 })
 export class SideMenuComponent implements OnInit {
   submenu?: string;

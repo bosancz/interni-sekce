@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 
 @Component({
-  selector: "bo-pagination",
-  templateUrl: "./pagination.component.html",
-  styleUrls: ["./pagination.component.scss"],
+    selector: "bo-pagination",
+    templateUrl: "./pagination.component.html",
+    styleUrls: ["./pagination.component.scss"],
+    standalone: false
 })
 export class PaginationComponent {
   @Input() page?: number;

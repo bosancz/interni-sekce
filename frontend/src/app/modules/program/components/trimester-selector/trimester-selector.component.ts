@@ -5,16 +5,17 @@ import { DateTime } from "luxon";
 export type TrimesterDateRange = [string, string];
 
 @Component({
-  selector: "bo-trimester-selector",
-  templateUrl: "./trimester-selector.component.html",
-  styleUrls: ["./trimester-selector.component.scss"],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => TrimesterSelectorComponent),
-      multi: true,
-    },
-  ],
+    selector: "bo-trimester-selector",
+    templateUrl: "./trimester-selector.component.html",
+    styleUrls: ["./trimester-selector.component.scss"],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => TrimesterSelectorComponent),
+            multi: true,
+        },
+    ],
+    standalone: false
 })
 export class TrimesterSelectorComponent implements OnInit, ControlValueAccessor {
   @Input() lines?: string;

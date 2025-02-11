@@ -4,9 +4,10 @@ import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
-  selector: "bo-home-calendar",
-  templateUrl: "./home-calendar.component.html",
-  styleUrls: ["./home-calendar.component.scss"],
+    selector: "bo-home-calendar",
+    templateUrl: "./home-calendar.component.html",
+    styleUrls: ["./home-calendar.component.scss"],
+    standalone: false
 })
 export class HomeCalendarComponent implements OnInit {
   dateFrom = DateTime.local();

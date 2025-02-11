@@ -2,9 +2,10 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 @Component({
-  selector: 'photo-face',
-  templateUrl: './photo-face.component.html',
-  styleUrls: ['./photo-face.component.scss'],
+    selector: 'photo-face',
+    templateUrl: './photo-face.component.html',
+    styleUrls: ['./photo-face.component.scss'],
+    standalone: false
 })
 export class PhotoFaceComponent implements OnChanges {
 

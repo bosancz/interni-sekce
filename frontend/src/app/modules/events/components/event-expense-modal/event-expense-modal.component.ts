@@ -5,9 +5,10 @@ import { EventExpenseTypes } from "src/app/config/event-expense-types";
 import { AbstractModalComponent } from "src/app/services/modal.service";
 
 @Component({
-  selector: "bo-event-expense-modal",
-  templateUrl: "./event-expense-modal.component.html",
-  styleUrls: ["./event-expense-modal.component.scss"],
+    selector: "bo-event-expense-modal",
+    templateUrl: "./event-expense-modal.component.html",
+    styleUrls: ["./event-expense-modal.component.scss"],
+    standalone: false
 })
 export class EventExpenseModalComponent extends AbstractModalComponent<EventExpenseResponse> implements OnInit {
   @Input() expense!: EventExpenseResponse;

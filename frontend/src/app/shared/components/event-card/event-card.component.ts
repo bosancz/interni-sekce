@@ -4,9 +4,10 @@ import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
-  selector: "event-card",
-  templateUrl: "./event-card.component.html",
-  styleUrls: ["./event-card.component.scss"],
+    selector: "event-card",
+    templateUrl: "./event-card.component.html",
+    styleUrls: ["./event-card.component.scss"],
+    standalone: false
 })
 export class EventCardComponent implements OnInit {
   @Input()

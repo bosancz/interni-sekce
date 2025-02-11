@@ -3,9 +3,10 @@ import { ViewWillEnter } from "@ionic/angular";
 import { ProgramService } from "./services/program.service";
 
 @Component({
-  selector: "bo-program",
-  templateUrl: "./program.component.html",
-  styleUrls: ["./program.component.scss"],
+    selector: "bo-program",
+    templateUrl: "./program.component.html",
+    styleUrls: ["./program.component.scss"],
+    standalone: false
 })
 export class ProgramComponent implements OnInit, ViewWillEnter {
   pendingEventsCount?: number;

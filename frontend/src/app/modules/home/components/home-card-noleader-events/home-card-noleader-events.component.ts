@@ -3,9 +3,10 @@ import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
-  selector: "bo-home-card-noleader-events",
-  templateUrl: "./home-card-noleader-events.component.html",
-  styleUrls: ["./home-card-noleader-events.component.scss"],
+    selector: "bo-home-card-noleader-events",
+    templateUrl: "./home-card-noleader-events.component.html",
+    styleUrls: ["./home-card-noleader-events.component.scss"],
+    standalone: false
 })
 export class HomeCardNoleaderEventsComponent implements OnInit {
   events: EventResponseWithLinks[] = [];

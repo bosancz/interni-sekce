@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from "@angular/core";
 import prettyBytes, { Options } from "pretty-bytes";
 
 @Pipe({
-  name: "prettyBytes",
+    name: "prettyBytes",
+    standalone: false
 })
 export class PrettyBytesPipe implements PipeTransform {
   transform(value: number, options?: Options) {

@@ -3,9 +3,10 @@ import { ItemReorderEventDetail } from "@ionic/core";
 import { PhotoResponseWithLinks } from "src/app/api";
 
 @Component({
-  selector: "bo-photo-list",
-  templateUrl: "./photo-list.component.html",
-  styleUrls: ["./photo-list.component.scss"],
+    selector: "bo-photo-list",
+    templateUrl: "./photo-list.component.html",
+    styleUrls: ["./photo-list.component.scss"],
+    standalone: false
 })
 export class PhotoListComponent implements OnInit {
   @Input() photos?: PhotoResponseWithLinks[];

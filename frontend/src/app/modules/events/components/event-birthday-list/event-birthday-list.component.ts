@@ -3,9 +3,10 @@ import { DateTime } from "luxon";
 import { EventResponseWithLinks, MemberResponse } from "src/app/api";
 
 @Component({
-  selector: "event-birthday-list",
-  templateUrl: "./event-birthday-list.component.html",
-  styleUrls: ["./event-birthday-list.component.scss"],
+    selector: "event-birthday-list",
+    templateUrl: "./event-birthday-list.component.html",
+    styleUrls: ["./event-birthday-list.component.scss"],
+    standalone: false
 })
 export class EventBirthdayListComponent {
   birthdays: Array<{ age: number; date: string; member: MemberResponse }> = [];

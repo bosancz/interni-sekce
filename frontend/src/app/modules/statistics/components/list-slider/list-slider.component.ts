@@ -2,16 +2,17 @@ import { Component, Input, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'list-slider',
-  templateUrl: './list-slider.component.html',
-  styleUrls: ['./list-slider.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: forwardRef(() => ListSliderComponent),
-    }
-  ]
+    selector: 'list-slider',
+    templateUrl: './list-slider.component.html',
+    styleUrls: ['./list-slider.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: forwardRef(() => ListSliderComponent),
+        }
+    ],
+    standalone: false
 })
 export class ListSliderComponent implements ControlValueAccessor {
 

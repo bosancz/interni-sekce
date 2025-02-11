@@ -12,10 +12,11 @@ import { MemberStoreService } from "../../services/member-store.service";
 
 @UntilDestroy()
 @Component({
-  selector: "members-view",
-  templateUrl: "./members-view.component.html",
-  styleUrls: ["./members-view.component.scss"],
-  providers: [MemberStoreService],
+    selector: "members-view",
+    templateUrl: "./members-view.component.html",
+    styleUrls: ["./members-view.component.scss"],
+    providers: [MemberStoreService],
+    standalone: false
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeave {
   member?: MemberResponseWithLinks | null;

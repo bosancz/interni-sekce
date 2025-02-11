@@ -3,7 +3,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { FormatPhonePipe } from "./format-phone.pipe";
 
 @Pipe({
-  name: 'joinLeaders'
+    name: 'joinLeaders',
+    standalone: false
 })
 export class JoinLeadersPipe implements PipeTransform {
 

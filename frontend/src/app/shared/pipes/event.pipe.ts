@@ -5,8 +5,9 @@ import { EventTypes } from "src/app/config/event-types";
 type EventPipeProperty = "image" | "color" | "class";
 
 @Pipe({
-  name: "event",
-  pure: false,
+    name: "event",
+    pure: false,
+    standalone: false
 })
 export class EventPipe implements PipeTransform {
   eventTypes = EventTypes;

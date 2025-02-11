@@ -9,9 +9,10 @@ interface ChartData {
 }
 
 @Component({
-  selector: "members-dashboard",
-  templateUrl: "./members-dashboard.component.html",
-  styleUrls: ["./members-dashboard.component.scss"],
+    selector: "members-dashboard",
+    templateUrl: "./members-dashboard.component.html",
+    styleUrls: ["./members-dashboard.component.scss"],
+    standalone: false
 })
 export class MembersDashboardComponent implements OnInit {
   report?: MembersReportResponse;

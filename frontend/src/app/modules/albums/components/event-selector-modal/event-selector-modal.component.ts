@@ -4,9 +4,10 @@ import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
-  selector: "bo-event-selector-modal",
-  templateUrl: "./event-selector-modal.component.html",
-  styleUrls: ["./event-selector-modal.component.scss"],
+    selector: "bo-event-selector-modal",
+    templateUrl: "./event-selector-modal.component.html",
+    styleUrls: ["./event-selector-modal.component.scss"],
+    standalone: false
 })
 export class EventSelectorModalComponent implements OnInit {
   events: EventResponseWithLinks[] = [];

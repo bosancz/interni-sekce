@@ -4,10 +4,10 @@ import { ActivatedRoute, Router } from "@angular/router";
 export const TABS_QUERY_PARAM = "tab";
 
 @Component({
-  selector: "bo-tabs",
-  templateUrl: "./tabs.component.html",
-  styleUrl: "./tabs.component.scss",
-  // providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => TabsComponent), multi: true }],
+    selector: "bo-tabs",
+    templateUrl: "./tabs.component.html",
+    styleUrl: "./tabs.component.scss",
+    standalone: false
 })
 export class TabsComponent implements OnInit {
   @Input() defaultTab?: string;

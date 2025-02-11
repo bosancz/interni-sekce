@@ -20,9 +20,10 @@ export interface PaddlerCompetitionGroup {
 }
 
 @Component({
-  selector: "paddler-competition",
-  templateUrl: "./paddler-competition.component.html",
-  styleUrls: ["./paddler-competition.component.scss"],
+    selector: "paddler-competition",
+    templateUrl: "./paddler-competition.component.html",
+    styleUrls: ["./paddler-competition.component.scss"],
+    standalone: false
 })
 export class PaddlerCompetitionComponent implements OnInit {
   years: number[] = [];

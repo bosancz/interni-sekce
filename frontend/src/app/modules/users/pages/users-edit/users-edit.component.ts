@@ -10,9 +10,10 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 
 @UntilDestroy()
 @Component({
-  selector: "bo-users-edit",
-  templateUrl: "./users-edit.component.html",
-  styleUrls: ["./users-edit.component.scss"],
+    selector: "bo-users-edit",
+    templateUrl: "./users-edit.component.html",
+    styleUrls: ["./users-edit.component.scss"],
+    standalone: false
 })
 export class UsersEditComponent implements OnInit {
   user?: UserResponseWithLinks;

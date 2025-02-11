@@ -9,9 +9,10 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 
 @UntilDestroy()
 @Component({
-  selector: "bo-event-attendees",
-  templateUrl: "./event-attendees.component.html",
-  styleUrls: ["./event-attendees.component.scss"],
+    selector: "bo-event-attendees",
+    templateUrl: "./event-attendees.component.html",
+    styleUrls: ["./event-attendees.component.scss"],
+    standalone: false
 })
 export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
   @Input() event?: EventResponseWithLinks | null;

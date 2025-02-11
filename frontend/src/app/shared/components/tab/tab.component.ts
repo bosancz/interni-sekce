@@ -3,9 +3,10 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { TABS_QUERY_PARAM } from "../tabs/tabs.component";
 
 @Component({
-  selector: "bo-tab",
-  templateUrl: "./tab.component.html",
-  styleUrl: "./tab.component.scss",
+    selector: "bo-tab",
+    templateUrl: "./tab.component.html",
+    styleUrl: "./tab.component.scss",
+    standalone: false
 })
 export class TabComponent implements OnInit {
   @Input() label?: string;

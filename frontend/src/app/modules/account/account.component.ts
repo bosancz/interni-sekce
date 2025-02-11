@@ -3,9 +3,10 @@ import { UserResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
-  selector: "bo-account",
-  templateUrl: "./account.component.html",
-  styleUrls: ["./account.component.scss"],
+    selector: "bo-account",
+    templateUrl: "./account.component.html",
+    styleUrls: ["./account.component.scss"],
+    standalone: false
 })
 export class AccountComponent {
   user?: UserResponseWithLinks;

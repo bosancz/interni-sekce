@@ -10,9 +10,10 @@ export interface Action extends ActionSheetButton {
 }
 
 @Component({
-  selector: 'bo-action-buttons',
-  templateUrl: './action-buttons.component.html',
-  styleUrls: ['./action-buttons.component.scss']
+    selector: 'bo-action-buttons',
+    templateUrl: './action-buttons.component.html',
+    styleUrls: ['./action-buttons.component.scss'],
+    standalone: false
 })
 export class ActionButtonsComponent implements OnInit {
 

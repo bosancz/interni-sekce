@@ -6,9 +6,10 @@ import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 @Component({
-  selector: "users-create",
-  templateUrl: "./users-create.component.html",
-  styleUrls: ["./users-create.component.scss"],
+    selector: "users-create",
+    templateUrl: "./users-create.component.html",
+    styleUrls: ["./users-create.component.scss"],
+    standalone: false
 })
 export class UsersCreateComponent implements OnInit {
   actions: Action[] = [

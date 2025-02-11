@@ -6,9 +6,10 @@ import { EventExpenseTypes } from "src/app/config/event-expense-types";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
-  selector: "bo-event-expenses-chart",
-  templateUrl: "./event-expenses-chart.component.html",
-  styleUrls: ["./event-expenses-chart.component.scss"],
+    selector: "bo-event-expenses-chart",
+    templateUrl: "./event-expenses-chart.component.html",
+    styleUrls: ["./event-expenses-chart.component.scss"],
+    standalone: false
 })
 export class EventExpensesChartComponent implements OnInit, OnChanges {
   @Input() event?: EventResponseWithLinks;

@@ -5,9 +5,10 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
 @UntilDestroy()
 @Component({
-  selector: "bo-page-content",
-  templateUrl: "./page-content.component.html",
-  styleUrls: ["./page-content.component.scss"],
+    selector: "bo-page-content",
+    templateUrl: "./page-content.component.html",
+    styleUrls: ["./page-content.component.scss"],
+    standalone: false
 })
 export class PageContentComponent {
   @Input() padding?: boolean;

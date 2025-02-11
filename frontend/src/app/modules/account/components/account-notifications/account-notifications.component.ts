@@ -8,9 +8,10 @@ import { ToastService } from "src/app/services/toast.service";
 declare const Notification: any;
 
 @Component({
-  selector: "bo-account-notifications",
-  templateUrl: "./account-notifications.component.html",
-  styleUrls: ["./account-notifications.component.scss"],
+    selector: "bo-account-notifications",
+    templateUrl: "./account-notifications.component.html",
+    styleUrls: ["./account-notifications.component.scss"],
+    standalone: false
 })
 export class AccountNotificationsComponent implements OnInit {
   user?: UserResponseWithLinks;

@@ -8,9 +8,10 @@ import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 
 @Component({
-  selector: "members-create",
-  templateUrl: "./members-create.component.html",
-  styleUrls: ["./members-create.component.scss"],
+    selector: "members-create",
+    templateUrl: "./members-create.component.html",
+    styleUrls: ["./members-create.component.scss"],
+    standalone: false
 })
 export class MembersCreateComponent implements ViewWillEnter {
   groups?: GroupResponseWithLinks[];

@@ -6,9 +6,10 @@ import { map } from "rxjs/operators";
 import { LoginError, LoginErrorCode, LoginService } from "src/app/services/login.service";
 
 @Component({
-  selector: "bo-login",
-  templateUrl: "./login.component.html",
-  styleUrls: ["./login.component.scss"],
+    selector: "bo-login",
+    templateUrl: "./login.component.html",
+    styleUrls: ["./login.component.scss"],
+    standalone: false
 })
 export class LoginComponent implements OnInit {
   expired = this.route.params.pipe(map((params) => params.expired));

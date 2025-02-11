@@ -7,9 +7,10 @@ import { ApiService } from "src/app/services/api.service";
 
 @UntilDestroy()
 @Component({
-  selector: "bo-home-card-members",
-  templateUrl: "./home-card-members.component.html",
-  styleUrls: ["./home-card-members.component.scss"],
+    selector: "bo-home-card-members",
+    templateUrl: "./home-card-members.component.html",
+    styleUrls: ["./home-card-members.component.scss"],
+    standalone: false
 })
 export class HomeCardMembersComponent implements OnInit {
   searchString = new Subject<string>();

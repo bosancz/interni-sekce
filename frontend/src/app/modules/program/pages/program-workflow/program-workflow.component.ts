@@ -11,9 +11,10 @@ import { ProgramService } from "../../services/program.service";
 
 @UntilDestroy()
 @Component({
-  selector: "program-workflow",
-  templateUrl: "./program-workflow.component.html",
-  styleUrls: ["./program-workflow.component.scss"],
+    selector: "program-workflow",
+    templateUrl: "./program-workflow.component.html",
+    styleUrls: ["./program-workflow.component.scss"],
+    standalone: false
 })
 export class ProgramWorkflowComponent implements OnInit {
   selectedColumn = "pending";

@@ -7,9 +7,10 @@ interface HomeMenuItem {
 }
 
 @Component({
-  selector: 'bo-home-menu',
-  templateUrl: './home-menu.component.html',
-  styleUrls: ['./home-menu.component.scss']
+    selector: 'bo-home-menu',
+    templateUrl: './home-menu.component.html',
+    styleUrls: ['./home-menu.component.scss'],
+    standalone: false
 })
 export class HomeMenuComponent implements OnInit {
 

@@ -5,7 +5,8 @@ import { MemberRoles } from "src/app/config/member-roles";
 import { MembershipStates } from "src/app/config/membership-states";
 
 @Pipe({
-  name: "member",
+    name: "member",
+    standalone: false
 })
 export class MemberPipe implements PipeTransform {
   transform(member: MemberResponse | undefined, property: "nickname" | "age" | "membership" | "role" | "initials") {

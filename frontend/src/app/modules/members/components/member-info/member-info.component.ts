@@ -8,9 +8,10 @@ import { ModalService } from "src/app/services/modal.service";
 
 @UntilDestroy()
 @Component({
-  selector: "bo-member-info",
-  templateUrl: "./member-info.component.html",
-  styleUrls: ["./member-info.component.scss"],
+    selector: "bo-member-info",
+    templateUrl: "./member-info.component.html",
+    styleUrls: ["./member-info.component.scss"],
+    standalone: false
 })
 export class MemberInfoComponent implements OnInit {
   @Input() member?: MemberResponseWithLinks | null;

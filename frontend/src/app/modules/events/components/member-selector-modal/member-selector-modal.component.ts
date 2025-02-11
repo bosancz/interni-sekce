@@ -5,9 +5,10 @@ import { ApiService } from "src/app/services/api.service";
 import { AbstractModalComponent } from "src/app/services/modal.service";
 
 @Component({
-  selector: "bo-member-selector-modal",
-  templateUrl: "./member-selector-modal.component.html",
-  styleUrls: ["./member-selector-modal.component.scss"],
+    selector: "bo-member-selector-modal",
+    templateUrl: "./member-selector-modal.component.html",
+    styleUrls: ["./member-selector-modal.component.scss"],
+    standalone: false
 })
 export class MemberSelectorModalComponent
   extends AbstractModalComponent<MemberResponse>

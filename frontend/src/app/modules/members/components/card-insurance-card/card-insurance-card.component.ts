@@ -6,9 +6,10 @@ import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
 
 @Component({
-  selector: "bo-card-insurance-card",
-  templateUrl: "./card-insurance-card.component.html",
-  styleUrls: ["./card-insurance-card.component.scss"],
+    selector: "bo-card-insurance-card",
+    templateUrl: "./card-insurance-card.component.html",
+    styleUrls: ["./card-insurance-card.component.scss"],
+    standalone: false
 })
 export class CardInsuranceCardComponent implements OnChanges {
   @Input() member?: MemberResponseWithLinks | null;

@@ -6,8 +6,9 @@ import { EventTypes } from "src/app/config/event-types";
 type EventExpensePipeProperty = "type" | "color";
 
 @Pipe({
-  name: "eventExpense",
-  pure: true,
+    name: "eventExpense",
+    pure: true,
+    standalone: false
 })
 export class EventExpensePipe implements PipeTransform {
   eventTypes = EventTypes;

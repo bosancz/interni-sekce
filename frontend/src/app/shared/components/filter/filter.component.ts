@@ -22,10 +22,10 @@ export type FilterData = any;
 
 @UntilDestroy()
 @Component({
-  selector: "bo-filter",
-  templateUrl: "./filter.component.html",
-  styleUrls: ["./filter.component.scss"],
-  // providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: forwardRef(() => FilterComponent) }],
+    selector: "bo-filter",
+    templateUrl: "./filter.component.html",
+    styleUrls: ["./filter.component.scss"],
+    standalone: false
 })
 export class FilterComponent implements AfterContentInit, AfterViewInit {
   @Input() search: boolean = false;

@@ -11,9 +11,10 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 
 @UntilDestroy()
 @Component({
-  selector: "bo-albums-view-photos",
-  templateUrl: "./albums-view-photos.component.html",
-  styleUrls: ["./albums-view-photos.component.scss"],
+    selector: "bo-albums-view-photos",
+    templateUrl: "./albums-view-photos.component.html",
+    styleUrls: ["./albums-view-photos.component.scss"],
+    standalone: false
 })
 export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
   album?: AlbumResponseWithLinks;

@@ -11,9 +11,10 @@ import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
 
 @Component({
-  selector: "program-planning",
-  templateUrl: "./program-planning.component.html",
-  styleUrls: ["./program-planning.component.scss"],
+    selector: "program-planning",
+    templateUrl: "./program-planning.component.html",
+    styleUrls: ["./program-planning.component.scss"],
+    standalone: false
 })
 export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnter {
   dateFrom?: DateTime;

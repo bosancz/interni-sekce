@@ -5,9 +5,10 @@ import { ModalService } from "src/app/services/modal.service";
 
 @UntilDestroy()
 @Component({
-  selector: "bo-event-info",
-  templateUrl: "./event-info.component.html",
-  styleUrls: ["./event-info.component.scss"],
+    selector: "bo-event-info",
+    templateUrl: "./event-info.component.html",
+    styleUrls: ["./event-info.component.scss"],
+    standalone: false
 })
 export class EventInfoComponent implements OnInit, OnDestroy {
   @Input() event?: EventResponseWithLinks;

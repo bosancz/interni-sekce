@@ -21,9 +21,10 @@ interface PhotoUploadItem {
 }
 
 @Component({
-  selector: "photos-upload",
-  templateUrl: "./photos-upload.component.html",
-  styleUrls: ["./photos-upload.component.scss"],
+    selector: "photos-upload",
+    templateUrl: "./photos-upload.component.html",
+    styleUrls: ["./photos-upload.component.scss"],
+    standalone: false
 })
 export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() album!: AlbumResponseWithLinks;

@@ -7,9 +7,10 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 
 @UntilDestroy()
 @Component({
-  selector: "bo-users-view",
-  templateUrl: "./users-view.component.html",
-  styleUrl: "./users-view.component.scss",
+    selector: "bo-users-view",
+    templateUrl: "./users-view.component.html",
+    styleUrl: "./users-view.component.scss",
+    standalone: false
 })
 export class UsersViewComponent {
   user?: UserResponseWithLinks;

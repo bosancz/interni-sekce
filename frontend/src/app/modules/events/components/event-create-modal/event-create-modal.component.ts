@@ -6,9 +6,10 @@ import { EventCreateBody } from "src/app/api";
 import { AbstractModalComponent } from "src/app/services/modal.service";
 
 @Component({
-  selector: "bo-event-create-modal",
-  templateUrl: "./event-create-modal.component.html",
-  styleUrls: ["./event-create-modal.component.scss"],
+    selector: "bo-event-create-modal",
+    templateUrl: "./event-create-modal.component.html",
+    styleUrls: ["./event-create-modal.component.scss"],
+    standalone: false
 })
 export class EventCreateModalComponent extends AbstractModalComponent<EventCreateBody> implements OnInit {
   @Input() data: Partial<EventCreateBody> = {};

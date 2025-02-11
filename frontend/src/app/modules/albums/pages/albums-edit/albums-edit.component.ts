@@ -10,9 +10,10 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 
 @UntilDestroy()
 @Component({
-  selector: "albums-edit",
-  templateUrl: "./albums-edit.component.html",
-  styleUrls: ["./albums-edit.component.scss"],
+    selector: "albums-edit",
+    templateUrl: "./albums-edit.component.html",
+    styleUrls: ["./albums-edit.component.scss"],
+    standalone: false
 })
 export class AlbumsEditComponent {
   album?: AlbumResponseWithLinks;

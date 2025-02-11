@@ -1,6 +1,6 @@
 import { registerLocaleData } from "@angular/common";
 import localeCs from "@angular/common/locales/cs";
-import { APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule } from "@angular/core";
+import { ErrorHandler, LOCALE_ID, NgModule, provideAppInitializer } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouteReuseStrategy, TitleStrategy } from "@angular/router";
 import { ServiceWorkerModule } from "@angular/service-worker";
@@ -37,7 +37,10 @@ registerLocaleData(localeCs);
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: ErrorHandler, useClass: MainErrorHandler },
     { provide: LOCALE_ID, useValue: "cs" },
-    { provide: APP_INITIALIZER, useFactory: () => loadConfig, multi: true },
+    provideAppInitializer(() => {
+        const initializerFn = (() => loadConfig)();
+        return initializerFn();
+      }),
   ],
   bootstrap: [AppComponent],
 })

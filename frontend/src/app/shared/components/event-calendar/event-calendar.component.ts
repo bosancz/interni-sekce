@@ -60,9 +60,10 @@ class CalendarEvent<T extends CPVEventResponseWithLinks | EventResponseWithLinks
 }
 
 @Component({
-  selector: "bo-event-calendar",
-  templateUrl: "./event-calendar.component.html",
-  styleUrls: ["./event-calendar.component.scss"],
+    selector: "bo-event-calendar",
+    templateUrl: "./event-calendar.component.html",
+    styleUrls: ["./event-calendar.component.scss"],
+    standalone: false
 })
 export class EventCalendarComponent implements OnInit, OnChanges {
   @Input("dateFrom") set dateFromString(value: DateTime | string) {

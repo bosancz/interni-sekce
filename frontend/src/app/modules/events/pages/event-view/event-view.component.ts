@@ -16,9 +16,10 @@ export type EventStatusActions = ExtractExisting<
 
 @UntilDestroy()
 @Component({
-  selector: "bo-event-view",
-  templateUrl: "./event-view.component.html",
-  styleUrl: "./event-view.component.scss",
+    selector: "bo-event-view",
+    templateUrl: "./event-view.component.html",
+    styleUrl: "./event-view.component.scss",
+    standalone: false
 })
 export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
   event: any;

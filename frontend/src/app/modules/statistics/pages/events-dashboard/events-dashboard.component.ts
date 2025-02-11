@@ -17,9 +17,10 @@ class ChartData {
 }
 
 @Component({
-  selector: "events-dashboard",
-  templateUrl: "./events-dashboard.component.html",
-  styleUrls: ["./events-dashboard.component.scss"],
+    selector: "events-dashboard",
+    templateUrl: "./events-dashboard.component.html",
+    styleUrls: ["./events-dashboard.component.scss"],
+    standalone: false
 })
 export class EventsDashboardComponent implements OnInit {
   eventsReport?: EventsReportResponse;

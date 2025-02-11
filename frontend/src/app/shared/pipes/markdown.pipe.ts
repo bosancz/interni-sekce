@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { marked } from "marked";
 @Pipe({
-  name: "markdown",
+    name: "markdown",
+    standalone: false
 })
 export class MarkdownPipe implements PipeTransform {
   transform(value: string | undefined, ...args: unknown[]): string {

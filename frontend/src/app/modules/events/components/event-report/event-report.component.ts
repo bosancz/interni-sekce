@@ -4,9 +4,10 @@ import { EventResponseWithLinks } from "src/app/api";
 
 @UntilDestroy()
 @Component({
-  selector: "bo-event-report",
-  templateUrl: "./event-report.component.html",
-  styleUrls: ["./event-report.component.scss"],
+    selector: "bo-event-report",
+    templateUrl: "./event-report.component.html",
+    styleUrls: ["./event-report.component.scss"],
+    standalone: false
 })
 export class EventReportComponent {
   @Input() event?: EventResponseWithLinks;

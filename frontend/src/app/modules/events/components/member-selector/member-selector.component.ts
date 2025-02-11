@@ -8,19 +8,20 @@ import { MemberSelectorModalComponent } from "../member-selector-modal/member-se
 export type MemberSelectorType = MemberResponse | MemberResponse[] | null;
 
 @Component({
-  selector: "bo-member-selector",
-  templateUrl: "./member-selector.component.html",
-  styleUrls: ["./member-selector.component.scss"],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: forwardRef(() => MemberSelectorComponent),
+    selector: "bo-member-selector",
+    templateUrl: "./member-selector.component.html",
+    styleUrls: ["./member-selector.component.scss"],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: forwardRef(() => MemberSelectorComponent),
+        },
+    ],
+    host: {
+        "(click)": "openModal(); $event.stopPropagation()",
     },
-  ],
-  host: {
-    "(click)": "openModal(); $event.stopPropagation()",
-  },
+    standalone: false
 })
 export class MemberSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {
   value: MemberResponse[] = [];

@@ -7,9 +7,10 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 import { TrimesterDateRange } from "../../components/trimester-selector/trimester-selector.component";
 
 @Component({
-  selector: "bo-program-calendar",
-  templateUrl: "./program-calendar.component.html",
-  styleUrls: ["./program-calendar.component.scss"],
+    selector: "bo-program-calendar",
+    templateUrl: "./program-calendar.component.html",
+    styleUrls: ["./program-calendar.component.scss"],
+    standalone: false
 })
 export class ProgramCalendarComponent implements OnInit, OnDestroy, ViewWillEnter {
   dateFrom?: string;

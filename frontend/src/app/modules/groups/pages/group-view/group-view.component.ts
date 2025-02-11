@@ -9,9 +9,10 @@ import { GroupsService } from "../../services/groups.service";
 
 @UntilDestroy()
 @Component({
-  selector: "bo-group-view",
-  templateUrl: "./group-view.component.html",
-  styleUrls: ["./group-view.component.scss"],
+    selector: "bo-group-view",
+    templateUrl: "./group-view.component.html",
+    styleUrls: ["./group-view.component.scss"],
+    standalone: false
 })
 export class GroupViewComponent implements OnInit {
   group?: GroupResponseWithLinks | null;

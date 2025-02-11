@@ -3,9 +3,10 @@ import { EventResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
-  selector: "bo-home-card-my-events",
-  templateUrl: "./home-card-my-events.component.html",
-  styleUrls: ["./home-card-my-events.component.scss"],
+    selector: "bo-home-card-my-events",
+    templateUrl: "./home-card-my-events.component.html",
+    styleUrls: ["./home-card-my-events.component.scss"],
+    standalone: false
 })
 export class HomeCardMyEventsComponent implements OnInit {
   myEvents?: EventResponseWithLinks[];

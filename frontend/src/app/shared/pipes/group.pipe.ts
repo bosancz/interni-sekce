@@ -8,8 +8,9 @@ export type GroupPipeProperty = "name" | "color" | "code";
 type GroupPipeData = { color: string; name: string; code: string };
 
 @Pipe({
-  name: "group",
-  pure: false,
+    name: "group",
+    pure: false,
+    standalone: false
 })
 export class GroupPipe implements PipeTransform {
   groups = new Map<number, GroupResponse>();

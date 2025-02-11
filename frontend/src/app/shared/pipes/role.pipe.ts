@@ -5,8 +5,9 @@ import { MemberRoleMetadata, MemberRoles } from "src/app/config/member-roles";
 type RolePipeProperty = "code";
 
 @Pipe({
-  name: "role",
-  pure: false,
+    name: "role",
+    pure: false,
+    standalone: false
 })
 export class RolePipe implements PipeTransform {
   roles = MemberRoles;

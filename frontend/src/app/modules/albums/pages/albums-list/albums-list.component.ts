@@ -24,9 +24,10 @@ import { UrlParams } from "src/helpers/typings";
 
 @UntilDestroy()
 @Component({
-  selector: "albums-list",
-  templateUrl: "./albums-list.component.html",
-  styleUrls: ["./albums-list.component.scss"],
+    selector: "albums-list",
+    templateUrl: "./albums-list.component.html",
+    styleUrls: ["./albums-list.component.scss"],
+    standalone: false
 })
 export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
   years: string[] = [];

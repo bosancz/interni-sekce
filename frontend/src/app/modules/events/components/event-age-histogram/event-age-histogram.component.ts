@@ -3,9 +3,10 @@ import { DateTime } from "luxon";
 import { EventResponseWithLinks } from "src/app/api";
 
 @Component({
-  selector: "event-age-histogram",
-  templateUrl: "./event-age-histogram.component.html",
-  styleUrls: ["./event-age-histogram.component.scss"],
+    selector: "event-age-histogram",
+    templateUrl: "./event-age-histogram.component.html",
+    styleUrls: ["./event-age-histogram.component.scss"],
+    standalone: false
 })
 export class EventAgeHistogramComponent {
   @Input() min: number = 7;

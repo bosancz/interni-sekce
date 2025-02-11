@@ -5,9 +5,10 @@ import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 
 @Component({
-  selector: "bo-account-credentials",
-  templateUrl: "./account-credentials.component.html",
-  styleUrls: ["./account-credentials.component.scss"],
+    selector: "bo-account-credentials",
+    templateUrl: "./account-credentials.component.html",
+    styleUrls: ["./account-credentials.component.scss"],
+    standalone: false
 })
 export class AccountCredentialsComponent implements OnInit {
   user?: UserResponseWithLinks;

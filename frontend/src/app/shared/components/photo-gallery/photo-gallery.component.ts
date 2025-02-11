@@ -22,9 +22,10 @@ class PhotoRow {
 }
 
 @Component({
-  selector: "bo-photo-gallery",
-  templateUrl: "./photo-gallery.component.html",
-  styleUrls: ["./photo-gallery.component.scss"],
+    selector: "bo-photo-gallery",
+    templateUrl: "./photo-gallery.component.html",
+    styleUrls: ["./photo-gallery.component.scss"],
+    standalone: false
 })
 export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChanges {
   @Input() photos: PhotoResponseWithLinks[] = [];

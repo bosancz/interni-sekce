@@ -3,20 +3,21 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { EventTypeID, EventTypes } from "src/app/config/event-types";
 
 @Component({
-  selector: "bo-event-type-selector",
-  templateUrl: "./event-type-selector.component.html",
-  styleUrls: ["./event-type-selector.component.scss"],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: forwardRef(() => EventTypeSelectorComponent),
+    selector: "bo-event-type-selector",
+    templateUrl: "./event-type-selector.component.html",
+    styleUrls: ["./event-type-selector.component.scss"],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: forwardRef(() => EventTypeSelectorComponent),
+        },
+    ],
+    host: {
+        "[class.disabled]": "disabled",
+        "[class.readonly]": "readonly",
     },
-  ],
-  host: {
-    "[class.disabled]": "disabled",
-    "[class.readonly]": "readonly",
-  },
+    standalone: false
 })
 export class EventTypeSelectorComponent implements ControlValueAccessor, AfterViewInit {
   value?: EventTypeID;

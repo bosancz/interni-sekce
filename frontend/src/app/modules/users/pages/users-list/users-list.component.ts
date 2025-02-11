@@ -15,9 +15,10 @@ type UsersFilter = {
 
 @UntilDestroy()
 @Component({
-  selector: "users-list",
-  templateUrl: "./users-list.component.html",
-  styleUrls: ["./users-list.component.scss"],
+    selector: "users-list",
+    templateUrl: "./users-list.component.html",
+    styleUrls: ["./users-list.component.scss"],
+    standalone: false
 })
 export class UsersListComponent implements OnInit, ViewWillEnter {
   users?: UserResponseWithLinks[] = [];

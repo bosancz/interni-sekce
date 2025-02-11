@@ -4,9 +4,10 @@ import { Meta } from "@angular/platform-browser";
 import { TitleService } from "src/app/services/title.service";
 
 @Component({
-  selector: "not-found",
-  templateUrl: "./not-found.component.html",
-  styleUrls: ["./not-found.component.scss"],
+    selector: "not-found",
+    templateUrl: "./not-found.component.html",
+    styleUrls: ["./not-found.component.scss"],
+    standalone: false
 })
 export class NotFoundComponent implements OnInit, OnDestroy {
   url?: string;

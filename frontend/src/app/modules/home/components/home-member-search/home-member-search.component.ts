@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'bo-home-member-search',
-  templateUrl: './home-member-search.component.html',
-  styleUrls: ['./home-member-search.component.scss']
+    selector: 'bo-home-member-search',
+    templateUrl: './home-member-search.component.html',
+    styleUrls: ['./home-member-search.component.scss'],
+    standalone: false
 })
 export class HomeMemberSearchComponent implements OnInit {
 

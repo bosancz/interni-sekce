@@ -3,9 +3,10 @@ import { NavController } from "@ionic/angular";
 import { AlbumResponseWithLinks } from "src/app/api";
 
 @Component({
-  selector: "bo-albums-tabs",
-  templateUrl: "./albums-tabs.component.html",
-  styleUrls: ["./albums-tabs.component.scss"],
+    selector: "bo-albums-tabs",
+    templateUrl: "./albums-tabs.component.html",
+    styleUrls: ["./albums-tabs.component.scss"],
+    standalone: false
 })
 export class AlbumsTabsComponent implements OnInit {
   @Input() album?: AlbumResponseWithLinks;

@@ -5,9 +5,10 @@ import { UserService } from "src/app/services/user.service";
 import { ApiService } from "./services/api.service";
 
 @Component({
-  selector: "bo-app",
-  templateUrl: "./app.component.html",
-  styleUrls: ["./app.component.scss"],
+    selector: "bo-app",
+    templateUrl: "./app.component.html",
+    styleUrls: ["./app.component.scss"],
+    standalone: false
 })
 export class AppComponent implements OnInit {
   user = this.userService.user;

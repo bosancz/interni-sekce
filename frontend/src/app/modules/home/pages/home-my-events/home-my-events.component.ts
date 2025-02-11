@@ -13,9 +13,10 @@ type DashboardMyEventsStats = {
 };
 
 @Component({
-  selector: "bo-home-my-events",
-  templateUrl: "./home-my-events.component.html",
-  styleUrls: ["./home-my-events.component.scss"],
+    selector: "bo-home-my-events",
+    templateUrl: "./home-my-events.component.html",
+    styleUrls: ["./home-my-events.component.scss"],
+    standalone: false
 })
 export class HomeMyEventsComponent implements OnInit {
   @Input() limit?: number;

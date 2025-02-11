@@ -4,16 +4,17 @@ import { MemberResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
-  selector: "bo-member-select",
-  templateUrl: "./member-select.component.html",
-  styleUrls: ["./member-select.component.scss"],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => MemberSelectComponent),
-      multi: true,
-    },
-  ],
+    selector: "bo-member-select",
+    templateUrl: "./member-select.component.html",
+    styleUrls: ["./member-select.component.scss"],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => MemberSelectComponent),
+            multi: true,
+        },
+    ],
+    standalone: false
 })
 export class MemberSelectComponent implements ControlValueAccessor {
   @Input() multiple: boolean = false;

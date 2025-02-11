@@ -4,20 +4,21 @@ import { GroupResponseWithLinks } from "src/app/api";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
-  selector: "bo-group-select",
-  templateUrl: "./groups-select.component.html",
-  styleUrls: ["./groups-select.component.scss"],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: forwardRef(() => GroupsSelectComponent),
+    selector: "bo-group-select",
+    templateUrl: "./groups-select.component.html",
+    styleUrls: ["./groups-select.component.scss"],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: forwardRef(() => GroupsSelectComponent),
+        },
+    ],
+    host: {
+        "[class.disabled]": "disabled",
+        "[class.readonly]": "readonly",
     },
-  ],
-  host: {
-    "[class.disabled]": "disabled",
-    "[class.readonly]": "readonly",
-  },
+    standalone: false
 })
 export class GroupsSelectComponent implements OnInit, ControlValueAccessor, AfterViewInit {
   groups?: GroupResponseWithLinks[];

@@ -7,9 +7,10 @@ import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 
 @Component({
-  selector: "bo-group-edit",
-  templateUrl: "./group-edit.component.html",
-  styleUrls: ["./group-edit.component.scss"],
+    selector: "bo-group-edit",
+    templateUrl: "./group-edit.component.html",
+    styleUrls: ["./group-edit.component.scss"],
+    standalone: false
 })
 export class GroupEditComponent implements OnInit {
   group?: GroupResponseWithLinks;

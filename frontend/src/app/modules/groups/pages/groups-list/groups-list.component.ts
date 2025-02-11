@@ -7,9 +7,10 @@ import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 @Component({
-  selector: "bo-groups-list",
-  templateUrl: "./groups-list.component.html",
-  styleUrls: ["./groups-list.component.scss"],
+    selector: "bo-groups-list",
+    templateUrl: "./groups-list.component.html",
+    styleUrls: ["./groups-list.component.scss"],
+    standalone: false
 })
 export class GroupsListComponent implements ViewWillEnter {
   groups?: GroupResponseWithLinks[];

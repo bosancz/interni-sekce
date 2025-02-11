@@ -9,9 +9,10 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 
 @UntilDestroy()
 @Component({
-  selector: "bo-event-accounting",
-  templateUrl: "./event-accounting.component.html",
-  styleUrls: ["./event-accounting.component.scss"],
+    selector: "bo-event-accounting",
+    templateUrl: "./event-accounting.component.html",
+    styleUrls: ["./event-accounting.component.scss"],
+    standalone: false
 })
 export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
   @Input() event?: EventResponseWithLinks;

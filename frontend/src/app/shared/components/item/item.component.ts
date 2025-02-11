@@ -2,10 +2,11 @@ import { Component, EventEmitter, Host, Input, Optional, Output } from "@angular
 import { RouterLink } from "@angular/router";
 
 @Component({
-  selector: "bo-item",
-  templateUrl: "./item.component.html",
-  styleUrl: "./item.component.scss",
-  host: { "[class.ion-activatable]": "button", "[class.clickable]": "button || !!routerLink" },
+    selector: "bo-item",
+    templateUrl: "./item.component.html",
+    styleUrl: "./item.component.scss",
+    host: { "[class.ion-activatable]": "button", "[class.clickable]": "button || !!routerLink" },
+    standalone: false
 })
 export class ItemComponent {
   @Input() label?: string;

@@ -13,9 +13,10 @@ import { MembershipStates } from "../../../../config/membership-states";
 
 @UntilDestroy()
 @Component({
-  selector: "members-list",
-  templateUrl: "./members-list.component.html",
-  styleUrls: ["./members-list.component.scss"],
+    selector: "members-list",
+    templateUrl: "./members-list.component.html",
+    styleUrls: ["./members-list.component.scss"],
+    standalone: false
 })
 export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnter {
   members?: MemberResponseWithLinks[];

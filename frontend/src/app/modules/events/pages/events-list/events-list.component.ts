@@ -11,9 +11,10 @@ import { UrlParams } from "src/helpers/typings";
 import { EventCreateModalComponent } from "../../components/event-create-modal/event-create-modal.component";
 
 @Component({
-  selector: "bo-events-list",
-  templateUrl: "./events-list.component.html",
-  styleUrls: ["./events-list.component.scss"],
+    selector: "bo-events-list",
+    templateUrl: "./events-list.component.html",
+    styleUrls: ["./events-list.component.scss"],
+    standalone: false
 })
 export class EventsListComponent implements OnInit {
   events?: EventResponseWithLinks[];
