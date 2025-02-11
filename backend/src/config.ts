@@ -26,7 +26,7 @@ const server = {
 	host: process.env.HOST || production ? "0.0.0.0" : "127.0.0.1",
 	port: process.env.PORT ? parseInt(process.env.PORT, 10) : production ? 80 : 3000,
 	basePath: process.env.BASE_PATH || "",
-	staticRoot: process.env.STATIC_ROOT || path.join(__dirname, "../../frontend/dist"),
+	staticRoot: process.env.STATIC_ROOT || path.join(__dirname, "../../frontend/dist/browser"),
 	globalPrefix: process.env.GLOBAL_PREFIX ?? "api",
 	cors: environment === "development",
 };
