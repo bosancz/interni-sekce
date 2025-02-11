@@ -21,12 +21,11 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli -d ./src/database/data-source.ts",
-    "premigrations": "npm run build",
-    "migrations:generate": "npm run premigrations && npm run typeorm migration:generate ./src/database/migrations/$npm_config_name",
+    "migrations:generate": "npm run typeorm migration:generate ./src/database/migrations/$npm_config_name",
     "migrations:create": "npm run typeorm migration:create ./src/database/migrations/$npm_config_name",
-    "migrations:run": "npm run premigrations && npm run typeorm migration:run",
-    "migrations:revert": "npm run premigrations && npm run typeorm migration:revert",
-    "migrations:drop-schema": "npm run premigrations && npm run typeorm schema:drop",
+    "migrations:run": "npm run typeorm migration:run",
+    "migrations:revert": "npm run typeorm migration:revert",
+    "migrations:drop-schema": "npm run typeorm schema:drop",
     "migrations:reset": "npm run migrations:drop-schema && npm run migrations:run"
   },
   "dependencies": {

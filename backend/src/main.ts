@@ -9,61 +9,65 @@ import { registerOpenAPI } from "./openapi";
 import { registerTemplating } from "./templating";
 
 async function bootstrap() {
-  const logger = new Logger("MAIN");
+	const logger = new Logger("MAIN");
 
-  logger.log("Bošán - Interní sekce");
-  logger.log(`Verze: ${StaticConfig.app.version}`);
+	logger.log("Bošán - Interní sekce");
+	logger.log(`Version: ${StaticConfig.app.version}`);
+	logger.log(`Environment: ${StaticConfig.environment}`);
 
-  if (StaticConfig.environment === "production") {
-    logger.log("Spouštím migrace...");
-    await runMigrations(StaticConfig);
-    logger.log("Migrace dokončeny.");
-  }
+	if (StaticConfig.environment === "production") {
+		logger.log("Spouštím migrace...");
+		await runMigrations(StaticConfig);
+		logger.log("Migrace dokončeny.");
+	}
 
-  const nestOptions: NestApplicationOptions = {
-    rawBody: true,
-    logger:
-      StaticConfig.logging.debug || StaticConfig.environment === "development"
-        ? ["log", "error", "warn", "debug", "verbose"]
-        : ["log", "error", "warn"],
-  };
+	const nestOptions: NestApplicationOptions = {
+		rawBody: true,
+		logger:
+			StaticConfig.logging.debug || StaticConfig.environment === "development"
+				? ["log", "error", "warn", "debug", "verbose"]
+				: ["log", "error", "warn"],
+	};
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, nestOptions);
+	const app = await NestFactory.create<NestExpressApplication>(AppModule, nestOptions);
 
-  const config = app.get(Config);
+	const config = app.get(Config);
 
-  if (config.server.globalPrefix) {
-    app.setGlobalPrefix(config.server.globalPrefix);
-  }
+	if (config.server.globalPrefix) {
+		app.setGlobalPrefix(config.server.globalPrefix);
+	}
 
-  if (config.server.cors) {
-    app.enableCors();
-  }
+	if (config.server.cors) {
+		app.enableCors({
+			origin: true,
+			credentials: true,
+		});
+	}
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      transformOptions: { enableImplicitConversion: true },
-    }),
-  );
+	app.useGlobalPipes(
+		new ValidationPipe({
+			whitelist: true,
+			forbidNonWhitelisted: true,
+			transform: true,
+			transformOptions: { enableImplicitConversion: true },
+		}),
+	);
 
-  // comment to disable templating
-  registerTemplating(app);
+	// comment to disable templating
+	registerTemplating(app);
 
-  // comment to disable OpenAPI and Swagger
-  registerOpenAPI("api/openapi", app, config);
+	// comment to disable OpenAPI and Swagger
+	registerOpenAPI("api/openapi", app, config);
 
-  if (!config.production) {
-    // make JSONs nice for debugging
-    app.getHttpAdapter().getInstance().set("json spaces", 2);
-  }
+	if (!config.production) {
+		// make JSONs nice for debugging
+		app.getHttpAdapter().getInstance().set("json spaces", 2);
+	}
 
-  app.use(cookieParser());
+	app.use(cookieParser());
 
-  await app.listen(config.server.port, config.server.host);
+	await app.listen(config.server.port, config.server.host);
 
-  logger.log(`Server running on http://${config.server.host}:${config.server.port}`);
+	logger.log(`Server running on http://${config.server.host}:${config.server.port}`);
 }
 bootstrap();

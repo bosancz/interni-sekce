@@ -1,15 +1,15 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { UntilDestroy } from "@ngneat/until-destroy";
 import { SDK } from "src/sdk";
 
-@UntilDestroy()
 @Component({
-	selector: "bo-member-info",
-	templateUrl: "./member-info.component.html",
-	styleUrls: ["./member-info.component.scss"],
+	selector: "bo-member-contact",
 	standalone: false,
+	templateUrl: "./member-contact.component.html",
+	styleUrl: "./member-contact.component.scss",
 })
-export class MemberInfoComponent {
+export class MemberContactComponent {
 	@Input() member?: SDK.MemberResponseWithLinks | null;
 	@Output() update = new EventEmitter<Partial<SDK.MemberResponse>>();
+
+	constructor() {}
 }

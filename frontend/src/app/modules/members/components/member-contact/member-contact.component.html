@@ -1,0 +1,31 @@
+<h4>Kontakt</h4>
+
+<ion-list *ngIf="member" class="selectable">
+	<bo-item label="Mobil">
+		<ion-label>{{ member.mobile || "-" }}</ion-label>
+		<bo-icon-button icon="call-outline" [href]="'tel:' + member.mobile" slot="end"></bo-icon-button>
+		<bo-edit-button-text
+			slot="end"
+			type="tel"
+			label="Mobil"
+			placeholder="777 123 456"
+			[disabled]="!member._links.updateMember.allowed"
+			[value]="member.mobile"
+			(update)="update.emit({ mobile: $event })"
+		></bo-edit-button-text>
+	</bo-item>
+
+	<bo-item label="Email">
+		<ion-label>{{ member.email || "-" }}</ion-label>
+		<bo-icon-button icon="mail-outline" [href]="'mailto:' + member.email" slot="end"></bo-icon-button>
+		<bo-edit-button-text
+			slot="end"
+			type="email"
+			label="Email"
+			placeholder="bilbo@bosan.cz"
+			[disabled]="!member._links.updateMember.allowed"
+			[value]="member.email"
+			(update)="update.emit({ email: $event })"
+		></bo-edit-button-text>
+	</bo-item>
+</ion-list>

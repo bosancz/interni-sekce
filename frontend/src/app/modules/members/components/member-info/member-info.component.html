@@ -1,63 +1,38 @@
 <h4>Osobní informace</h4>
 
 <ion-list *ngIf="member" class="selectable">
-  <bo-item label="Jméno" [editable]="!!member._links.updateMember.allowed" (edit)="editName()">
-    <ion-label>{{ member.firstName || "-" }} {{ member.lastName || "-" }}</ion-label>
-  </bo-item>
+	<bo-item label="Jméno">
+		<ion-label>{{ member.firstName || "-" }} {{ member.lastName || "-" }}</ion-label>
+		<bo-edit-button-name
+			slot="end"
+			label="Jméno"
+			placeholder="Bilbo"
+			[disabled]="!member._links.updateMember.allowed"
+			[value]="{ firstName: member.firstName, lastName: member.lastName }"
+			(update)="update.emit({ firstName: $event.firstName, lastName: $event.lastName })"
+		/>
+	</bo-item>
 
-  <bo-item label="Přezdívka" [editable]="!!member._links.updateMember.allowed" (edit)="editNickname()">
-    <ion-label>{{ member.nickname || "-" }}</ion-label>
-  </bo-item>
+	<bo-item label="Přezdívka">
+		<ion-label>{{ member.nickname || "-" }}</ion-label>
+		<bo-edit-button-text
+			slot="end"
+			label="Přezdívka"
+			placeholder="Bilbo"
+			[disabled]="!member._links.updateMember.allowed"
+			[value]="member.nickname"
+			(update)="update.emit({ nickname: $event ?? undefined })"
+		/>
+	</bo-item>
 
-  <bo-item label="Datum narození" [editable]="!!member._links.updateMember.allowed" (edit)="editBirthday()">
-    <ion-label>{{ member.birthday ? (member.birthday | date: "d. M. y") : "-" }}</ion-label>
-  </bo-item>
-
-  <bo-item label="Mobil" [editable]="!!member._links.updateMember.allowed" (edit)="editMobile()">
-    <ion-label>{{ member.mobile || "-" }}</ion-label>
-    <bo-icon-button icon="call-outline" [href]="'tel:' + member.mobile" slot="end"></bo-icon-button>
-  </bo-item>
-
-  <bo-item label="Email" [editable]="!!member._links.updateMember.allowed" (edit)="editEmail()">
-    <ion-label>{{ member.email || "-" }}</ion-label>
-    <bo-icon-button icon="mail-outline" [href]="'mailto:' + member.email" slot="end"></bo-icon-button>
-  </bo-item>
-</ion-list>
-
-<h4 class="mt-4">Adresa</h4>
-<bo-card class="address">
-  <bo-card-content>
-    <ion-skeleton-text *ngIf="member === undefined" [animated]="true"></ion-skeleton-text>
-
-    <ion-list *ngIf="member" class="selectable" lines="none">
-      <ion-item [button]="true" [detail]="false">
-        <ion-label *ngIf="getFullAddress(member)">{{ getFullAddress(member) }}</ion-label>
-        <ion-label *ngIf="!getFullAddress(member)"><em>Adresa není vyplněna</em></ion-label>
-
-        <ion-buttons slot="end">
-          <bo-copy-button [text]="getFullAddress(member)"></bo-copy-button>
-          <bo-edit-button (click)="editAddress()"></bo-edit-button>
-        </ion-buttons>
-      </ion-item>
-    </ion-list>
-  </bo-card-content>
-</bo-card>
-
-<h4 class="mt-4">Členství ve skupině</h4>
-<ion-list *ngIf="member" class="selectable">
-  <bo-item label="Aktivní" [editable]="!!member._links.updateMember.allowed" (edit)="editActivity()">
-    <ion-label>{{ member.active === undefined ? "-" : member.active ? "Ano" : "Ne" }}</ion-label>
-  </bo-item>
-
-  <bo-item label="Role" [editable]="!!member._links.updateMember.allowed" (edit)="editRole()">
-    <ion-label>{{ (member | member: "role") || "-" }}</ion-label>
-  </bo-item>
-
-  <bo-item label="Oddíl" [editable]="!!member._links.updateMember.allowed" (edit)="editGroup()">
-    <bo-group-badge [groupId]="member.groupId"></bo-group-badge>
-  </bo-item>
-
-  <bo-item label="Stav členství" [editable]="!!member._links.updateMember.allowed" (edit)="editMembership()">
-    <ion-label>{{ (member | member: "membership") || "-" }}</ion-label>
-  </bo-item>
+	<bo-item label="Datum narození">
+		<ion-label>{{ member.birthday ? (member.birthday | date: "d. M. y") : "-" }}</ion-label>
+		<bo-edit-button-date
+			slot="end"
+			label="Datum narození"
+			[disabled]="!member._links.updateMember.allowed"
+			[value]="member.birthday"
+			(update)="update.emit({ birthday: $event })"
+		/>
+	</bo-item>
 </ion-list>

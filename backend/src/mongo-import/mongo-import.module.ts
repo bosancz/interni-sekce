@@ -12,7 +12,6 @@ import { Member } from "src/models/members/entities/member.entity";
 import { MembersModelModule } from "src/models/members/members-model.module";
 import { User } from "src/models/users/entities/user.entity";
 import { UsersModelModule } from "src/models/users/users-model.module";
-import { DatabaseModule } from "../database/database.module";
 import { StartImportCommand } from "./commands/import-mongo-data.command";
 import { MongoAlbum, MongoAlbumSchema } from "./models/album";
 import { MongoEvent, MongoEventSchema } from "./models/event";
@@ -22,31 +21,30 @@ import { MongoUser, MongoUserSchema } from "./models/user";
 import { MongoImportService } from "./services/mongo-import.service";
 
 @Module({
-  imports: [
-    DatabaseModule,
-    MongooseModule.forFeature([
-      { name: MongoAlbum.name, schema: MongoAlbumSchema },
-      { name: MongoPhoto.name, schema: MongoPhotoSchema },
-      { name: MongoEvent.name, schema: MongoEventSchema },
-      { name: MongoMember.name, schema: MongoMemberSchema },
-      { name: MongoUser.name, schema: MongoUserSchema },
-    ]),
-    MongooseModule.forRootAsync({
-      inject: [Config],
-      useFactory: (config: Config) => ({ uri: config.mongoDb.uri }),
-    }),
-    TypeOrmModule.forFeature([Album, Photo, Event, Member, User]),
+	imports: [
+		MongooseModule.forFeature([
+			{ name: MongoAlbum.name, schema: MongoAlbumSchema },
+			{ name: MongoPhoto.name, schema: MongoPhotoSchema },
+			{ name: MongoEvent.name, schema: MongoEventSchema },
+			{ name: MongoMember.name, schema: MongoMemberSchema },
+			{ name: MongoUser.name, schema: MongoUserSchema },
+		]),
+		MongooseModule.forRootAsync({
+			inject: [Config],
+			useFactory: (config: Config) => ({ uri: config.mongoDb.uri }),
+		}),
+		TypeOrmModule.forFeature([Album, Photo, Event, Member, User]),
 
-    AuthModule,
+		AuthModule,
 
-    EventsModelModule,
-    MembersModelModule,
-    AlbumsModelModule,
-    UsersModelModule,
-  ],
-  providers: [MongoImportService, StartImportCommand],
-  exports: [StartImportCommand],
+		EventsModelModule,
+		MembersModelModule,
+		AlbumsModelModule,
+		UsersModelModule,
+	],
+	providers: [MongoImportService, StartImportCommand],
+	exports: [StartImportCommand],
 })
 export class MongoImportModule {
-  constructor() {}
+	constructor() {}
 }

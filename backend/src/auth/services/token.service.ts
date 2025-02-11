@@ -7,47 +7,47 @@ import { TokenData, UserData } from "../schema/user-token";
 
 @Injectable()
 export class TokenService {
-  private readonly cookieName = "token";
+	private readonly cookieName = "token";
 
-  constructor(private jwtService: JwtService) {}
+	constructor(private jwtService: JwtService) {}
 
-  async parseToken(req: Request) {
-    const tokenString = req.cookies?.[this.cookieName];
-    if (!tokenString) return;
+	async parseToken(req: Request) {
+		const tokenString = req.cookies?.[this.cookieName];
+		if (!tokenString) return;
 
-    try {
-      const tokenData = await this.jwtService.verifyAsync<JwtPayload>(tokenString, {});
+		try {
+			const tokenData = await this.jwtService.verifyAsync<JwtPayload>(tokenString, {});
 
-      if (this.validateToken(tokenData)) {
-        req.token = tokenString;
-        req.user = tokenData;
-      }
-    } catch (err) {}
-  }
+			if (this.validateToken(tokenData)) {
+				req.token = tokenString;
+				req.user = tokenData;
+			}
+		} catch (err) {}
+	}
 
-  getToken(req: Request) {
-    return req["user"];
-  }
+	getToken(req: Request) {
+		return req["user"];
+	}
 
-  async createToken(userData: UserData, options: JwtSignOptions = {}) {
-    return this.jwtService.signAsync(userData, { expiresIn: "30d", ...options });
-  }
+	async createToken(userData: UserData, options: JwtSignOptions = {}) {
+		return this.jwtService.signAsync(userData, { expiresIn: "30d", ...options });
+	}
 
-  async setToken(res: Response, userData: UserData) {
-    const token = await this.createToken(userData);
+	async setToken(res: Response, userData: UserData) {
+		const token = await this.createToken(userData);
 
-    res.cookie(this.cookieName, token);
-  }
+		res.cookie(this.cookieName, token, { sameSite: "none", secure: true, httpOnly: true });
+	}
 
-  clearToken(res: Response) {
-    res.clearCookie(this.cookieName);
-  }
+	clearToken(res: Response) {
+		res.clearCookie(this.cookieName);
+	}
 
-  private validateToken(tokenData: JwtPayload): tokenData is TokenData {
-    let validateData = Object.assign(new UserData(), tokenData);
+	private validateToken(tokenData: JwtPayload): tokenData is TokenData {
+		let validateData = Object.assign(new UserData(), tokenData);
 
-    const validateErrors = validateSync(validateData, { stopAtFirstError: true });
+		const validateErrors = validateSync(validateData, { stopAtFirstError: true });
 
-    return validateErrors.length === 0;
-  }
+		return validateErrors.length === 0;
+	}
 }

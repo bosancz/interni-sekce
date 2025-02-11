@@ -1,64 +1,97 @@
 <h3>Základní informace</h3>
 
 <ion-list class="selectable">
-  <bo-item label="Název" [loading]="!event" [editable]="!!event?._links?.updateEvent?.allowed" (edit)="editName()">
-    <p>{{ event?.name }}</p>
-  </bo-item>
+	<bo-item label="Název" [loading]="!event">
+		<p>{{ event?.name }}</p>
+		<bo-edit-button-text
+			slot="end"
+			label="Název akce"
+			placeholder="Neočekávaný dýchánek"
+			[disabled]="!event?._links?.updateEvent?.allowed"
+			[value]="event?.name"
+			(update)="update.emit({ name: $event ?? '' })"
+		/>
+	</bo-item>
 
-  <bo-item label="Termín" [loading]="!event" [editable]="!!event?._links?.updateEvent?.allowed" (edit)="editDate()">
-    <p>{{ [event?.dateFrom, event?.dateTill] | dateRange }}</p>
-  </bo-item>
+	<bo-item label="Termín" [loading]="!event">
+		<p>{{ [event?.dateFrom, event?.dateTill] | dateRange }}</p>
+		<bo-edit-button-date-range
+			slot="end"
+			label="Datum od - do"
+			[disabled]="!event?._links?.updateEvent?.allowed"
+			[value]="[event?.dateFrom, event?.dateTill]"
+			(update)="update.emit({ dateFrom: $event[0], dateTill: $event[1] })"
+		/>
+	</bo-item>
 
-  <bo-item label="Místo" [loading]="!event" [editable]="!!event?._links?.updateEvent?.allowed" (edit)="editPlace()">
-    <p>{{ event?.place ?? "-" }}</p>
-  </bo-item>
+	<bo-item label="Místo">
+		<p>{{ event?.place ?? "-" }}</p>
+		<bo-edit-button-text
+			slot="end"
+			label="Místo akce"
+			placeholder="Dno pytle (u Bilba doma)"
+			[disabled]="!event?._links?.updateEvent?.allowed"
+			[value]="event?.place"
+			(update)="update.emit({ place: $event })"
+		/>
+	</bo-item>
 
-  <bo-item
-    label="Sraz"
-    [loading]="!event"
-    [editable]="!!event?._links?.updateEvent?.allowed"
-    (edit)="editMeetingStart()"
-  >
-    <p>{{ event?.meetingPlaceStart ?? "-" }}</p>
-  </bo-item>
+	<bo-item label="Sraz" [loading]="!event">
+		<p>{{ event?.meetingPlaceStart ?? "-" }}</p>
+		<bo-edit-button-text
+			slot="end"
+			label="Místo srazu"
+			placeholder="Dno pytle, 8:00"
+			[disabled]="!event?._links?.updateEvent?.allowed"
+			[value]="event?.meetingPlaceStart"
+			(update)="update.emit({ meetingPlaceStart: $event })"
+		/>
+	</bo-item>
 
-  <bo-item
-    label="Konec"
-    [loading]="!event"
-    [editable]="!!event?._links?.updateEvent?.allowed"
-    (edit)="editMeetingEnd()"
-  >
-    <p>{{ event?.meetingPlaceEnd ?? "-" }}</p>
-  </bo-item>
+	<bo-item label="Konec" [loading]="!event">
+		<p>{{ event?.meetingPlaceEnd ?? "-" }}</p>
+		<bo-edit-button-text
+			slot="end"
+			label="Místo konce"
+			placeholder="Dno pytle, 18:30"
+			[disabled]="!event?._links?.updateEvent?.allowed"
+			[value]="event?.meetingPlaceEnd"
+			(update)="update.emit({ meetingPlaceEnd: $event })"
+		/>
+	</bo-item>
 
-  <bo-item label="Typ" [loading]="!event" lines="inset">
-    <bo-event-type-selector
-      [disabled]="!event?._links?.updateEvent?.allowed"
-      [ngModel]="event?.type"
-      (ngModelChange)="updateType($event)"
-    ></bo-event-type-selector>
-  </bo-item>
+	<bo-item label="Typ" [loading]="!event" lines="inset">
+		<bo-event-type-selector
+			[disabled]="!event?._links?.updateEvent?.allowed"
+			[ngModel]="event?.type"
+			(ngModelChange)="update.emit({ type: $event })"
+		></bo-event-type-selector>
+	</bo-item>
 
-  <bo-item label="Oddíl" [loading]="!event">
-    <bo-group-select
-      [disabled]="!event?._links?.updateEvent?.allowed"
-      [ngModel]="event?.groupsIds ?? []"
-      (ngModelChange)="updateGroup($event)"
-      [multiple]="true"
-    ></bo-group-select>
-  </bo-item>
+	<bo-item label="Oddíl" [loading]="!event">
+		<bo-group-select
+			[disabled]="!event?._links?.updateEvent?.allowed"
+			[ngModel]="event?.groupsIds ?? []"
+			(ngModelChange)="update.emit({ groupsIds: $event })"
+			[multiple]="true"
+		></bo-group-select>
+	</bo-item>
 </ion-list>
 
-<h3 class="mt-5">Popis</h3>
+<h3 class="mt-5">
+	Popis
+	<bo-edit-button-markdown
+		slot="end"
+		label="Popis"
+		[disabled]="!event?._links?.updateEvent?.allowed"
+		[value]="event?.description"
+		(update)="update.emit({ description: $event })"
+	/>
+</h3>
 <bo-card>
-  <bo-card-content>
-    <bo-item
-      lines="none"
-      [loading]="!event"
-      [editable]="!!event?._links?.updateEvent?.allowed"
-      (edit)="editDescription()"
-    >
-      <p *ngIf="event">{{ event.description }}</p>
-    </bo-item>
-  </bo-card-content>
+	<bo-card-content>
+		<bo-item lines="none" [loading]="!event">
+			<p *ngIf="event">{{ event.description }}</p>
+		</bo-item>
+	</bo-card-content>
 </bo-card>

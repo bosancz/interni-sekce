@@ -1,0 +1,18 @@
+<h4 class="mt-4">Členství ve skupině</h4>
+<ion-list *ngIf="member" class="selectable">
+	<bo-item label="Aktivní" [editable]="!!member._links.updateMember.allowed" (edit)="editActivity()">
+		<ion-label>{{ member.active === undefined ? "-" : member.active ? "Ano" : "Ne" }}</ion-label>
+	</bo-item>
+
+	<bo-item label="Role" [editable]="!!member._links.updateMember.allowed" (edit)="editRole()">
+		<ion-label>{{ (member | member: "role") || "-" }}</ion-label>
+	</bo-item>
+
+	<bo-item label="Oddíl" [editable]="!!member._links.updateMember.allowed" (edit)="editGroup()">
+		<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
+	</bo-item>
+
+	<bo-item label="Stav členství" [editable]="!!member._links.updateMember.allowed" (edit)="editMembership()">
+		<ion-label>{{ (member | member: "membership") || "-" }}</ion-label>
+	</bo-item>
+</ion-list>
