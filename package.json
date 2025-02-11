@@ -8,9 +8,13 @@
     "prepare": "husky install",
     "all-contributors:check": "all-contributors check",
     "all-contributors:generate": "all-contributors generate",
+    "dev": "concurrently -k -n FE,BE --prefix-colors green,yellow \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
-    "dev": "concurrently -n BE,FE -c magenta,green \"npm run dev:backend\" \"npm run dev:frontend\""
+    "release": "git switch master && git push && git switch release && git merge master --ff-only && git push --follow-tags && git switch master",
+    "release:patch": "git switch master && npm version patch && git push && npm run release",
+    "release:minor": "git switch master && npm version minor && git push && npm run release",
+    "release:major": "git switch master && npm version major && git push && npm run release"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.3.0",
