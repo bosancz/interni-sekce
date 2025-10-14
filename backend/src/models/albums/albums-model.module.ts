@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { WriteAlbumsMetadataCommand } from "./commands/write-album-metadata.command";
 import { Album } from "./entities/album.entity";
 import { PhotoFace } from "./entities/photo-face.entity";
 import { Photo } from "./entities/photo.entity";
@@ -9,8 +10,14 @@ import { AlbumsMetadataService } from "./services/albums-metadata.service";
 import { PhotoFacesService } from "./services/photo-faces.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Album, Photo, PhotoFace])],
-  providers: [AlbumsRepository, AlbumsMetadataService, PhotoFacesService, PhotosRepository],
-  exports: [AlbumsRepository, PhotosRepository],
+	imports: [TypeOrmModule.forFeature([Album, Photo, PhotoFace])],
+	providers: [
+		AlbumsRepository,
+		AlbumsMetadataService,
+		PhotoFacesService,
+		PhotosRepository,
+		WriteAlbumsMetadataCommand,
+	],
+	exports: [AlbumsRepository, PhotosRepository],
 })
 export class AlbumsModelModule {}

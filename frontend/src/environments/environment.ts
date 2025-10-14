@@ -4,13 +4,13 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
 export const environment = {
-  production: false,
+	production: false,
 
-  apiRoot: "http://localhost:3000/api",
+	apiRoot: "http://localhost:3000",
 
-  gapi: {
-    client_id: "249555539983-j8rvff7bovgnecsmjffe0a3dj55j33hh.apps.googleusercontent.com",
-    cookiepolicy: "single_host_origin",
-    scope: "profile email",
-  },
+	gapi: {
+		client_id: "249555539983-j8rvff7bovgnecsmjffe0a3dj55j33hh.apps.googleusercontent.com",
+		cookiepolicy: "single_host_origin",
+		scope: "profile email",
+	},
 };

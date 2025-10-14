@@ -10,7 +10,7 @@
     "build:watch": "nest build --watch",
     "start": "node dist/main.js",
     "start:dev": "npm run dev",
-    "dev": "nest start --debug --watch",
+    "dev": "nest start --debug --watch --preserveWatchOutput",
     "cli": "node dist/main-cli",
     "upgrade:check": "npx npm-check-updates",
     "upgrade": "npx npm-check-updates -u && npm install",

@@ -5,13 +5,11 @@
   "service": "devcontainer",
   "workspaceFolder": "/workspace",
   "shutdownAction": "stopCompose",
-  "postCreateCommand": "./.devcontainer/post-create.sh",
   "forwardPorts": [
     4200,
     9229,
     3000,
-    5432,
-    "adminer:8080"
+    5432
   ],
   "features": {
     "ghcr.io/devcontainers/features/java:1": {}

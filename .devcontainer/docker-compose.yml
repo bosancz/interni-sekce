@@ -1,37 +1,39 @@
 name: bosan_interni_sekce_development
 
 services:
-  devcontainer:
-    image: mcr.microsoft.com/devcontainers/typescript-node:1-22
-    command: sleep infinity
-    volumes:
-      - ..:/workspace:cached
-    environment:
-      ENV_TITLE: "DEV"
-      DB_HOST: postgres
-      DB_USER: postgres
-      DB_PASSWORD: password
-      DB_DATABASE: postgres
-      DB_SCHEMA: public
-      MONGODB_URI: mongodb://mongo/bosan
-      CORS_ENABLE: "true"
-      CORS_ORIGINS: "http://localhost:4200,http://localhost:4300"
+    devcontainer:
+        build: .
+        command: sleep infinity
+        volumes:
+            - ..:/workspace:cached
+        environment:
+            ENV_TITLE: "DEV"
+            DB_HOST: postgres
+            DB_USER: postgres
+            DB_PASSWORD: password
+            DB_DATABASE: postgres
+            DB_SCHEMA: public
+            MONGODB_URI: mongodb://mongo/bosan
+            CORS_ENABLE: "true"
+            CORS_ORIGINS: "http://localhost:4200,http://localhost:4300"
 
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_PASSWORD: password
+    postgres:
+        image: postgres:15
+        environment:
+            POSTGRES_PASSWORD: password
 
-  adminer:
-    image: adminer
+    adminer:
+        image: adminer
+        ports:
+            - 8080:8080
 
-  mongo:
-    image: mongo:4.2
-    environment:
-      MONGO_INITDB_DATABASE: bosan
+    mongo:
+        image: mongo:4.2
+        environment:
+            MONGO_INITDB_DATABASE: bosan
 
-  mongoexpress:
-    image: mongo-express
-    environment:
-      ME_CONFIG_MONGODB_SERVER: mongo
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+    mongoexpress:
+        image: mongo-express
+        environment:
+            ME_CONFIG_MONGODB_SERVER: mongo
+            ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
