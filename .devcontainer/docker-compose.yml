@@ -4,8 +4,6 @@ services:
   devcontainer:
     build: .
     command: sleep infinity
-    volumes:
-      - ..:/workspace:cached
     environment:
       ENV_TITLE: "DEV"
       DB_HOST: postgres

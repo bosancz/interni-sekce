@@ -3,7 +3,6 @@
   "name": "Bosan.cz Interni Development",
   "dockerComposeFile": "./docker-compose.yml",
   "service": "devcontainer",
-  "workspaceFolder": "/workspace",
   "shutdownAction": "stopCompose",
   "forwardPorts": [
     4200,
