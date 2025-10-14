@@ -2,3 +2,9 @@ printWidth: 120
 singleQuote: false
 useTabs: true
 tabWidth: 4
+overrides:
+  - files:
+      - "*.yml"
+      - "*.yaml"
+    options:
+      tabWidth: 2
