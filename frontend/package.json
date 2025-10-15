@@ -11,6 +11,7 @@
   "dependencies": {
     "@angular-devkit/build-angular": "^19.1.6",
     "@angular/animations": "^19.1.5",
+    "@angular/cdk": "^19.1.5",
     "@angular/common": "^19.1.5",
     "@angular/compiler": "^19.1.5",
     "@angular/core": "^19.1.5",
@@ -33,6 +34,7 @@
     "czech-holidays": "^1.0.6",
     "docx": "^9.1.1",
     "file-saver": "^2.0.5",
+    "googleapis": "^162.0.0",
     "inflected": "^2.1.0",
     "luxon": "^3.5.0",
     "marked": "^15.0.7",

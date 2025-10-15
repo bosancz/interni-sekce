@@ -5,7 +5,6 @@
   "version": "4.0.0-rc.17",
   "private": true,
   "scripts": {
-    "prepare": "husky install",
     "all-contributors:check": "all-contributors check",
     "all-contributors:generate": "all-contributors generate",
     "dev": "concurrently -k -n FE,BE --prefix-colors green,yellow \"npm run dev:frontend\" \"npm run dev:backend\"",
@@ -20,7 +19,6 @@
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
     "all-contributors-cli": "^6.20.0",
-    "husky": "^8.0.2",
     "concurrently": "^8.2.2"
   },
   "dependencies": {},
@@ -31,5 +29,9 @@
   "bugs": {
     "url": "https://github.com/bosancz/bosan.cz/issues"
   },
-  "homepage": "https://github.com/bosancz/bosan.cz#readme"
+  "homepage": "https://github.com/bosancz/bosan.cz#readme",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ]
 }
