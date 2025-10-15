@@ -1,78 +1,76 @@
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { IonSearchbar, ModalController, ViewDidEnter } from "@ionic/angular";
-import { ApiService } from "src/app/services/api.service";
 import { AbstractModalComponent } from "src/app/services/modal.service";
-import { SDK } from "src/sdk";
 
 @Component({
-  selector: "bo-member-selector-modal",
-  templateUrl: "./member-selector-modal.component.html",
-  styleUrls: ["./member-selector-modal.component.scss"],
-  standalone: false,
+	selector: "bo-member-selector-modal",
+	templateUrl: "./member-selector-modal.component.html",
+	styleUrls: ["./member-selector-modal.component.scss"],
+	standalone: false,
 })
 export class MemberSelectorModalComponent
-  extends AbstractModalComponent<SDK.MemberResponse>
-  implements OnInit, ViewDidEnter
+	extends AbstractModalComponent<BackendApiTypes.MemberResponse>
+	implements OnInit, ViewDidEnter
 {
-  @Input() members: SDK.MemberResponse[] = [];
+	@Input() members: BackendApiTypes.MemberResponse[] = [];
 
-  membersIndex: string[] = [];
+	membersIndex: string[] = [];
 
-  filteredMembers: SDK.MemberResponse[] = [];
+	filteredMembers: BackendApiTypes.MemberResponse[] = [];
 
-  @ViewChild("searchBar") searchBar!: IonSearchbar;
+	@ViewChild("searchBar") searchBar!: IonSearchbar;
 
-  constructor(
-    private api: ApiService,
-    modalController: ModalController,
-  ) {
-    super(modalController);
-  }
+	constructor(
+		private api: BackendApi,
+		modalController: ModalController,
+	) {
+		super(modalController);
+	}
 
-  ngOnInit(): void {
-    this.loadMembers();
-  }
-  private async loadMembers() {
-    if (this.members) this.members = await this.api.MembersApi.listMembers().then((res) => res.data);
+	ngOnInit(): void {
+		this.loadMembers();
+	}
+	private async loadMembers() {
+		if (this.members) this.members = await this.api.MembersApi.listMembers().then((res) => res.data);
 
-    this.sortMembers();
+		this.sortMembers();
 
-    this.createIndex();
+		this.createIndex();
 
-    this.searchMembers();
-  }
+		this.searchMembers();
+	}
 
-  ionViewDidEnter() {
-    window.setTimeout(() => this.searchBar.setFocus(), 300);
-  }
+	ionViewDidEnter() {
+		window.setTimeout(() => this.searchBar.setFocus(), 300);
+	}
 
-  selectMember(member: SDK.MemberResponse) {
-    this.submit.emit(member);
-  }
+	selectMember(member: BackendApiTypes.MemberResponse) {
+		this.submit.emit(member);
+	}
 
-  searchMembers(searchString?: string) {
-    if (!searchString) {
-      this.filteredMembers = this.members;
-      return;
-    }
+	searchMembers(searchString?: string) {
+		if (!searchString) {
+			this.filteredMembers = this.members;
+			return;
+		}
 
-    searchString = searchString.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
-    const re = new RegExp("(^| )" + searchString, "i");
+		searchString = searchString.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
+		const re = new RegExp("(^| )" + searchString, "i");
 
-    this.filteredMembers = this.members.filter((member, i) => re.test(this.membersIndex[i]));
-  }
+		this.filteredMembers = this.members.filter((member, i) => re.test(this.membersIndex[i]));
+	}
 
-  private createIndex() {
-    this.membersIndex = this.members.map((member) => {
-      return [member.nickname, member.firstName, member.lastName].filter((value) => !!value).join(" ");
-    });
-  }
+	private createIndex() {
+		this.membersIndex = this.members.map((member) => {
+			return [member.nickname, member.firstName, member.lastName].filter((value) => !!value).join(" ");
+		});
+	}
 
-  private sortMembers() {
-    this.members.sort((a, b) => {
-      const aString = a.nickname || a.firstName || a.lastName || "";
-      const bString = b.nickname || b.firstName || b.lastName || "";
-      return aString.localeCompare(bString);
-    });
-  }
+	private sortMembers() {
+		this.members.sort((a, b) => {
+			const aString = a.nickname || a.firstName || a.lastName || "";
+			const bString = b.nickname || b.firstName || b.lastName || "";
+			return aString.localeCompare(bString);
+		});
+	}
 }

@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
@@ -10,6 +9,6 @@ import { SDK } from "src/sdk";
 	standalone: false,
 })
 export class MemberInfoComponent {
-	@Input() member?: SDK.MemberResponseWithLinks | null;
-	@Output() update = new EventEmitter<Partial<SDK.MemberResponse>>();
+	@Input() member?: BackendApiTypes.MemberResponseWithLinks | null;
+	@Output() update = new EventEmitter<Partial<BackendApiTypes.MemberResponse>>();
 }

@@ -1,107 +1,105 @@
 import { Component, ElementRef, Input, ViewChild } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { SDK } from "src/sdk";
 import { EventsService } from "../../services/events.service";
 
 @UntilDestroy()
 @Component({
-  selector: "bo-event-registration",
-  templateUrl: "./event-registration.component.html",
-  styleUrls: ["./event-registration.component.scss"],
-  standalone: false,
+	selector: "bo-event-registration",
+	templateUrl: "./event-registration.component.html",
+	styleUrls: ["./event-registration.component.scss"],
+	standalone: false,
 })
 export class EventRegistrationComponent {
-  @Input() event?: SDK.EventResponseWithLinks;
+	@Input() event?: BackendApiTypes.EventResponseWithLinks;
 
-  uploadingRegistration: boolean = false;
+	uploadingRegistration: boolean = false;
 
-  actions: Action[] = [];
+	actions: Action[] = [];
 
-  @ViewChild("registrationInput") registrationInput!: ElementRef<HTMLInputElement>;
+	@ViewChild("registrationInput") registrationInput!: ElementRef<HTMLInputElement>;
 
-  constructor(
-    private api: ApiService,
-    private toastService: ToastService,
-    private eventService: EventsService,
-    private sanitizer: DomSanitizer,
-  ) {}
+	constructor(
+		private api: BackendApi,
+		private toastService: ToastService,
+		private eventService: EventsService,
+		private sanitizer: DomSanitizer,
+	) {}
 
-  uploadRegistrationSelect() {
-    this.registrationInput.nativeElement.click();
-  }
+	uploadRegistrationSelect() {
+		this.registrationInput.nativeElement.click();
+	}
 
-  async uploadRegistration(input: HTMLInputElement) {
-    if (!this.event) return;
+	async uploadRegistration(input: HTMLInputElement) {
+		if (!this.event) return;
 
-    if (!input.files?.length) return;
+		if (!input.files?.length) return;
 
-    let file = input.files![0];
+		let file = input.files![0];
 
-    if (file.name.split(".").pop()?.toLowerCase() !== "pdf") {
-      this.toastService.toast("Soubor musí být ve formátu PDF");
-      return;
-    }
+		if (file.name.split(".").pop()?.toLowerCase() !== "pdf") {
+			this.toastService.toast("Soubor musí být ve formátu PDF");
+			return;
+		}
 
-    this.uploadingRegistration = true;
+		this.uploadingRegistration = true;
 
-    try {
-      await this.api.EventsApi.saveEventRegistration(this.event.id, { registration: file });
-    } catch (err: any) {
-      this.toastService.toast("Nastala chyba při nahrávání: " + err.message);
-    }
+		try {
+			await this.api.EventsApi.saveEventRegistration(this.event.id, { registration: file });
+		} catch (err: any) {
+			this.toastService.toast("Nastala chyba při nahrávání: " + err.message);
+		}
 
-    this.uploadingRegistration = false;
-    this.toastService.toast("Přihláška nahrána.");
+		this.uploadingRegistration = false;
+		this.toastService.toast("Přihláška nahrána.");
 
-    this.eventService.loadEvent(this.event.id);
-  }
+		this.eventService.loadEvent(this.event.id);
+	}
 
-  async deleteRegistration() {
-    if (!this.event) return;
+	async deleteRegistration() {
+		if (!this.event) return;
 
-    await this.api.EventsApi.deleteEventRegistration(this.event.id);
-    this.toastService.toast("Přihláška smazána.");
+		await this.api.EventsApi.deleteEventRegistration(this.event.id);
+		this.toastService.toast("Přihláška smazána.");
 
-    this.eventService.loadEvent(this.event.id);
-  }
+		this.eventService.loadEvent(this.event.id);
+	}
 
-  private downloadRegistration() {
-    if (!this.event) return;
-    window.open(this.getRegistrationUrl(this.event));
-  }
+	private downloadRegistration() {
+		if (!this.event) return;
+		window.open(this.getRegistrationUrl(this.event));
+	}
 
-  getRegistrationUrl(event: SDK.EventResponseWithLinks) {
-    return event._links.getEventRegistration.href;
-  }
+	getRegistrationUrl(event: BackendApiTypes.EventResponseWithLinks) {
+		return event._links.getEventRegistration.href;
+	}
 
-  getSafeRegistrationUrl(event: SDK.EventResponseWithLinks) {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(this.getRegistrationUrl(event));
-  }
+	getSafeRegistrationUrl(event: BackendApiTypes.EventResponseWithLinks) {
+		return this.sanitizer.bypassSecurityTrustResourceUrl(this.getRegistrationUrl(event));
+	}
 
-  setActions(event: SDK.EventResponseWithLinks) {
-    this.actions = [
-      {
-        text: "Stáhnout",
-        hidden: !event._links.getEventRegistration.applicable,
-        disabled: !event._links.getEventRegistration.allowed,
-        handler: () => this.downloadRegistration(),
-      },
-      {
-        text: "Nahrát",
-        hidden: !event._links.getEventRegistration.allowed,
-        handler: () => this.uploadRegistrationSelect(),
-      },
-      {
-        text: "Smazat",
-        role: "destructive",
-        color: "danger",
-        hidden: !event?._links.getEventRegistration.allowed,
-        handler: () => this.deleteRegistration(),
-      },
-    ];
-  }
+	setActions(event: BackendApiTypes.EventResponseWithLinks) {
+		this.actions = [
+			{
+				text: "Stáhnout",
+				hidden: !event._links.getEventRegistration.applicable,
+				disabled: !event._links.getEventRegistration.allowed,
+				handler: () => this.downloadRegistration(),
+			},
+			{
+				text: "Nahrát",
+				hidden: !event._links.getEventRegistration.allowed,
+				handler: () => this.uploadRegistrationSelect(),
+			},
+			{
+				text: "Smazat",
+				role: "destructive",
+				color: "danger",
+				hidden: !event?._links.getEventRegistration.allowed,
+				handler: () => this.deleteRegistration(),
+			},
+		];
+	}
 }

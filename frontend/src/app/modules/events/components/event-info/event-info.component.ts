@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
@@ -10,6 +9,6 @@ import { SDK } from "src/sdk";
 	standalone: false,
 })
 export class EventInfoComponent {
-	@Input() event?: SDK.EventResponseWithLinks;
-	@Output() update = new EventEmitter<SDK.EventUpdateBody>();
+	@Input() event?: BackendApiTypes.EventResponseWithLinks;
+	@Output() update = new EventEmitter<BackendApiTypes.EventUpdateBody>();
 }

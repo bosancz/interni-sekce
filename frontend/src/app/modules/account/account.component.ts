@@ -1,25 +1,23 @@
 import { Component } from "@angular/core";
-import { ApiService } from "src/app/services/api.service";
-import { SDK } from "src/sdk";
 
 @Component({
-  selector: "bo-account",
-  templateUrl: "./account.component.html",
-  styleUrls: ["./account.component.scss"],
-  standalone: false,
+	selector: "bo-account",
+	templateUrl: "./account.component.html",
+	styleUrls: ["./account.component.scss"],
+	standalone: false,
 })
 export class AccountComponent {
-  user?: SDK.UserResponseWithLinks;
+	user?: BackendApiTypes.UserResponseWithLinks;
 
-  modal?: HTMLIonModalElement;
+	modal?: HTMLIonModalElement;
 
-  constructor(private api: ApiService) {}
+	constructor(private api: BackendApi) {}
 
-  ngOnInit() {
-    this.loadUser();
-  }
+	ngOnInit() {
+		this.loadUser();
+	}
 
-  async loadUser() {
-    this.user = await this.api.AccountApi.getMe().then((res) => res.data);
-  }
+	async loadUser() {
+		this.user = await this.api.AccountApi.getMe().then((res) => res.data);
+	}
 }

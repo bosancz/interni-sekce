@@ -3,7 +3,6 @@ import { MemberRoles } from "src/app/config/member-roles";
 import { MembershipStates } from "src/app/config/membership-states";
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
-import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-member-membership",
@@ -12,8 +11,8 @@ import { SDK } from "src/sdk";
 	styleUrl: "./member-membership.component.scss",
 })
 export class MemberMembershipComponent {
-	@Input() member?: SDK.MemberResponseWithLinks | null;
-	@Output() update = new EventEmitter<Partial<SDK.MemberResponse>>();
+	@Input() member?: BackendApiTypes.MemberResponseWithLinks | null;
+	@Output() update = new EventEmitter<Partial<BackendApiTypes.MemberResponse>>();
 
 	constructor(
 		private readonly api: ApiService,
@@ -35,12 +34,12 @@ export class MemberMembershipComponent {
 	}
 
 	async editRole() {
-		const role = await this.modalService.selectModal<SDK.MemberRolesEnum>({
+		const role = await this.modalService.selectModal<BackendApiTypes.MemberRolesEnum>({
 			header: "Změnit roli",
 			buttonText: "Uložit",
 			values: Object.entries(MemberRoles).map(([id, role]) => ({
 				label: role.title,
-				value: id as SDK.MemberRolesEnum,
+				value: id as BackendApiTypes.MemberRolesEnum,
 				checked: this.member?.role === id,
 			})),
 			value: this.member?.role,
@@ -69,7 +68,7 @@ export class MemberMembershipComponent {
 			buttonText: "Uložit",
 			values: Object.entries(MembershipStates).map(([id, role]) => ({
 				label: role.title,
-				value: id as SDK.MembershipStatesEnum,
+				value: id as BackendApiTypes.MembershipStatesEnum,
 				checked: this.member?.role === id,
 			})),
 			value: this.member?.membership,

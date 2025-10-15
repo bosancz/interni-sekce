@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-member-contact",
@@ -8,8 +7,8 @@ import { SDK } from "src/sdk";
 	styleUrl: "./member-contact.component.scss",
 })
 export class MemberContactComponent {
-	@Input() member?: SDK.MemberResponseWithLinks | null;
-	@Output() update = new EventEmitter<Partial<SDK.MemberResponse>>();
+	@Input() member?: BackendApiTypes.MemberResponseWithLinks | null;
+	@Output() update = new EventEmitter<Partial<BackendApiTypes.MemberResponse>>();
 
 	constructor() {}
 }

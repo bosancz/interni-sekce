@@ -1,0 +1,10 @@
+apis:
+  backend:
+    root: http://localhost:3000/api/openapi-json
+    x-openapi-ts:
+      output: ./src/sdk/backend.types.ts
+
+rules:
+  operation-operationId-unique: error
+  operation-parameters-unique: error
+  path-not-include-query: error

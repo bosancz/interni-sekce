@@ -1,202 +1,200 @@
 import { HttpClient } from "@angular/common/http";
 import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
+	AfterViewInit,
+	ChangeDetectorRef,
+	Component,
+	ElementRef,
+	Input,
+	OnDestroy,
+	OnInit,
+	ViewChild,
 } from "@angular/core";
 import { ModalController, Platform } from "@ionic/angular";
-import { ApiService } from "src/app/services/api.service";
-import { SDK } from "src/sdk";
 
 interface PhotoUploadItem {
-  file: File;
-  progress: number;
-  status: string;
-  error?: Error;
+	file: File;
+	progress: number;
+	status: string;
+	error?: Error;
 }
 
 @Component({
-  selector: "photos-upload",
-  templateUrl: "./photos-upload.component.html",
-  styleUrls: ["./photos-upload.component.scss"],
-  standalone: false,
+	selector: "photos-upload",
+	templateUrl: "./photos-upload.component.html",
+	styleUrls: ["./photos-upload.component.scss"],
+	standalone: false,
 })
 export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() album!: SDK.AlbumResponseWithLinks;
+	@Input() album!: BackendApiTypes.AlbumResponseWithLinks;
 
-  tags: string[] = [];
-  selectedTags: string[] = [];
+	tags: string[] = [];
+	selectedTags: string[] = [];
 
-  uploading: boolean = false;
+	uploading: boolean = false;
 
-  photoUploadQueue: PhotoUploadItem[] = [];
+	photoUploadQueue: PhotoUploadItem[] = [];
 
-  allowedFiles_re = /\.(jpg|jpeg|png|gif)$/i;
+	allowedFiles_re = /\.(jpg|jpeg|png|gif)$/i;
 
-  @ViewChild("photoInput") photoInput!: ElementRef<HTMLInputElement>;
+	@ViewChild("photoInput") photoInput!: ElementRef<HTMLInputElement>;
 
-  isMobile: boolean = false;
+	isMobile: boolean = false;
 
-  private preventExitListener = (event: BeforeUnloadEvent) => {
-    event.preventDefault();
-    event.returnValue = "Opravdu chcete zrušit nahrávání fotek?";
-    return "Opravdu chcete zrušit nahrávání fotek?";
-  };
+	private preventExitListener = (event: BeforeUnloadEvent) => {
+		event.preventDefault();
+		event.returnValue = "Opravdu chcete zrušit nahrávání fotek?";
+		return "Opravdu chcete zrušit nahrávání fotek?";
+	};
 
-  constructor(
-    private api: ApiService,
-    private http: HttpClient,
-    private modalController: ModalController,
-    private platform: Platform,
-    private cdRef: ChangeDetectorRef,
-  ) {}
+	constructor(
+		private api: BackendApi,
+		private http: HttpClient,
+		private modalController: ModalController,
+		private platform: Platform,
+		private cdRef: ChangeDetectorRef,
+	) {}
 
-  ngOnInit() {
-    this.updateTags();
-  }
-  ngOnDestroy() {
-    this.uploading = false;
-    this.allowExit();
-  }
+	ngOnInit() {
+		this.updateTags();
+	}
+	ngOnDestroy() {
+		this.uploading = false;
+		this.allowExit();
+	}
 
-  ngAfterViewInit() {
-    if (this.platform.is("mobile")) {
-      this.isMobile = true;
-      this.photoInput.nativeElement.click();
-    }
-  }
+	ngAfterViewInit() {
+		if (this.platform.is("mobile")) {
+			this.isMobile = true;
+			this.photoInput.nativeElement.click();
+		}
+	}
 
-  updateTags() {
-    this.tags = [];
-    // TODO: check photos populater, if it is not populated, get tags from photos
-    this.album.photos!.forEach((photo) => {
-      photo.tags?.filter((tag) => this.tags.indexOf(tag) === -1).forEach((tag) => this.tags.push(tag));
-    });
-  }
+	updateTags() {
+		this.tags = [];
+		// TODO: check photos populater, if it is not populated, get tags from photos
+		this.album.photos!.forEach((photo) => {
+			photo.tags?.filter((tag) => this.tags.indexOf(tag) === -1).forEach((tag) => this.tags.push(tag));
+		});
+	}
 
-  addPhotosByInput(photoInput: HTMLInputElement) {
-    if (!photoInput.files?.length) return;
+	addPhotosByInput(photoInput: HTMLInputElement) {
+		if (!photoInput.files?.length) return;
 
-    for (let i = 0; i < photoInput.files.length; i++) {
-      this.photoUploadQueue.push({
-        file: photoInput.files[i],
-        progress: 0,
-        status: "pending",
-      });
-    }
-  }
+		for (let i = 0; i < photoInput.files.length; i++) {
+			this.photoUploadQueue.push({
+				file: photoInput.files[i],
+				progress: 0,
+				status: "pending",
+			});
+		}
+	}
 
-  addPhotosByDropzone(event: DragEvent, dropZone: HTMLDivElement) {
-    event.preventDefault();
+	addPhotosByDropzone(event: DragEvent, dropZone: HTMLDivElement) {
+		event.preventDefault();
 
-    if (!event.dataTransfer?.files) return;
+		if (!event.dataTransfer?.files) return;
 
-    for (let i = 0; i < event.dataTransfer.files.length; i++) {
-      this.photoUploadQueue.push({
-        file: event.dataTransfer.files[i],
-        progress: 0,
-        status: "pending",
-      });
-    }
-  }
+		for (let i = 0; i < event.dataTransfer.files.length; i++) {
+			this.photoUploadQueue.push({
+				file: event.dataTransfer.files[i],
+				progress: 0,
+				status: "pending",
+			});
+		}
+	}
 
-  onDragOver(event: DragEvent) {
-    event.stopPropagation();
-    event.preventDefault();
-  }
+	onDragOver(event: DragEvent) {
+		event.stopPropagation();
+		event.preventDefault();
+	}
 
-  removeFromQueue(uploadItem: PhotoUploadItem) {
-    let i = this.photoUploadQueue.indexOf(uploadItem);
-    if (i !== -1) this.photoUploadQueue.splice(i, 1);
-  }
+	removeFromQueue(uploadItem: PhotoUploadItem) {
+		let i = this.photoUploadQueue.indexOf(uploadItem);
+		if (i !== -1) this.photoUploadQueue.splice(i, 1);
+	}
 
-  close() {
-    this.modalController.dismiss(false);
-  }
+	close() {
+		this.modalController.dismiss(false);
+	}
 
-  async uploadPhotos(album: SDK.AlbumResponseWithLinks) {
-    this.uploading = true;
-    this.preventExit();
+	async uploadPhotos(album: BackendApiTypes.AlbumResponseWithLinks) {
+		this.uploading = true;
+		this.preventExit();
 
-    let uploadItem: PhotoUploadItem;
-    for (uploadItem of this.photoUploadQueue) {
-      if (!this.uploading) break;
+		let uploadItem: PhotoUploadItem;
+		for (uploadItem of this.photoUploadQueue) {
+			if (!this.uploading) break;
 
-      if (uploadItem.status === "finished") continue;
+			if (uploadItem.status === "finished") continue;
 
-      try {
-        uploadItem.status = "uploading";
-        await this.uploadPhoto(album, uploadItem);
-        uploadItem.status = "finished";
-      } catch (err: any) {
-        uploadItem.status = "error";
-        uploadItem.error = err;
-      }
-    }
+			try {
+				uploadItem.status = "uploading";
+				await this.uploadPhoto(album, uploadItem);
+				uploadItem.status = "finished";
+			} catch (err: any) {
+				uploadItem.status = "error";
+				uploadItem.error = err;
+			}
+		}
 
-    this.uploading = false;
-    this.allowExit();
+		this.uploading = false;
+		this.allowExit();
 
-    this.modalController.dismiss(true);
-  }
+		this.modalController.dismiss(true);
+	}
 
-  async uploadPhoto(album: SDK.AlbumResponseWithLinks, uploadItem: PhotoUploadItem): Promise<void> {
-    if (!this.allowedFiles_re.test(uploadItem.file.name)) {
-      throw new Error("Unsupported file type.");
-    }
+	async uploadPhoto(album: BackendApiTypes.AlbumResponseWithLinks, uploadItem: PhotoUploadItem): Promise<void> {
+		if (!this.allowedFiles_re.test(uploadItem.file.name)) {
+			throw new Error("Unsupported file type.");
+		}
 
-    let formData: FormData = new FormData();
+		let formData: FormData = new FormData();
 
-    formData.set("album", String(album.id));
-    formData.set("tags", this.selectedTags.join(","));
-    formData.set("photo", uploadItem.file, uploadItem.file.name);
-    if (uploadItem.file.lastModified)
-      formData.set("lastModified", new Date(uploadItem.file.lastModified).toISOString());
+		formData.set("album", String(album.id));
+		formData.set("tags", this.selectedTags.join(","));
+		formData.set("photo", uploadItem.file, uploadItem.file.name);
+		if (uploadItem.file.lastModified)
+			formData.set("lastModified", new Date(uploadItem.file.lastModified).toISOString());
 
-    const req = await this.api.PhotoGalleryApi.createPhoto({ file: uploadItem.file, albumId: album.id });
+		const req = await this.api.PhotoGalleryApi.createPhoto({ file: uploadItem.file, albumId: album.id });
 
-    // TODO: monitor upload using axios
-    // return new Promise<void>((resolve, reject) => {
-    //   this.http
-    //     .post(uploadPath, formData, {
-    //       withCredentials: true,
-    //       observe: "events",
-    //       reportProgress: true,
-    //       responseType: "text",
-    //     })
-    //     .subscribe(
-    //       (event: HttpEvent<any>) => {
-    //         switch (event.type) {
-    //           case HttpEventType.Sent:
-    //             break;
+		// TODO: monitor upload using axios
+		// return new Promise<void>((resolve, reject) => {
+		//   this.http
+		//     .post(uploadPath, formData, {
+		//       withCredentials: true,
+		//       observe: "events",
+		//       reportProgress: true,
+		//       responseType: "text",
+		//     })
+		//     .subscribe(
+		//       (event: HttpEvent<any>) => {
+		//         switch (event.type) {
+		//           case HttpEventType.Sent:
+		//             break;
 
-    //           case HttpEventType.UploadProgress:
-    //             uploadItem.progress = event.total ? Math.round((event.loaded / event.total) * 100) : 0;
-    //             this.cdRef.markForCheck();
-    //             if (event.loaded === event.total) uploadItem.status = "processing";
-    //             break;
+		//           case HttpEventType.UploadProgress:
+		//             uploadItem.progress = event.total ? Math.round((event.loaded / event.total) * 100) : 0;
+		//             this.cdRef.markForCheck();
+		//             if (event.loaded === event.total) uploadItem.status = "processing";
+		//             break;
 
-    //           case HttpEventType.Response:
-    //             uploadItem.progress = 100;
-    //             resolve();
-    //             break;
-    //         }
-    //       },
-    //       (err) => reject(err),
-    //     );
-    // });
-  }
+		//           case HttpEventType.Response:
+		//             uploadItem.progress = 100;
+		//             resolve();
+		//             break;
+		//         }
+		//       },
+		//       (err) => reject(err),
+		//     );
+		// });
+	}
 
-  private preventExit() {
-    window.addEventListener("beforeunload", this.preventExitListener);
-  }
+	private preventExit() {
+		window.addEventListener("beforeunload", this.preventExitListener);
+	}
 
-  private allowExit() {
-    window.removeEventListener("beforeunload", this.preventExitListener);
-  }
+	private allowExit() {
+		window.removeEventListener("beforeunload", this.preventExitListener);
+	}
 }

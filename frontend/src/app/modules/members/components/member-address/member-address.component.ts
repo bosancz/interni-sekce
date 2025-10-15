@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { ModalService } from "src/app/services/modal.service";
-import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-member-address",
@@ -9,12 +8,12 @@ import { SDK } from "src/sdk";
 	styleUrl: "./member-address.component.scss",
 })
 export class MemberAddressComponent {
-	@Input() member?: SDK.MemberResponseWithLinks | null;
-	@Output() update = new EventEmitter<Partial<SDK.MemberResponse>>();
+	@Input() member?: BackendApiTypes.MemberResponseWithLinks | null;
+	@Output() update = new EventEmitter<Partial<BackendApiTypes.MemberResponse>>();
 
 	constructor(private modalService: ModalService) {}
 
-	getFullAddress(member: SDK.MemberResponseWithLinks) {
+	getFullAddress(member: BackendApiTypes.MemberResponseWithLinks) {
 		const addressLines = [
 			`${member.addressStreet ?? ""}${member.addressStreetNo ? ` ${member.addressStreetNo}` : ""}`,
 			member.addressCity,

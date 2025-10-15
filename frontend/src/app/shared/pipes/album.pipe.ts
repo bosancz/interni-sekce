@@ -1,28 +1,27 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { AlbumStatuses } from "src/app/config/album-statuses";
-import { SDK } from "src/sdk";
 
 type AlbumPipeProperty = "status";
 
 @Pipe({
-  name: "album",
-  pure: false,
-  standalone: false,
+	name: "album",
+	pure: false,
+	standalone: false,
 })
 export class AlbumPipe implements PipeTransform {
-  defaultProperties: { [property: string]: any } = {};
+	defaultProperties: { [property: string]: any } = {};
 
-  constructor() {}
+	constructor() {}
 
-  transform(album: SDK.AlbumResponseWithLinks | undefined, property: AlbumPipeProperty): string {
-    if (!album) return this.defaultProperties[property];
+	transform(album: BackendApiTypes.AlbumResponseWithLinks | undefined, property: AlbumPipeProperty): string {
+		if (!album) return this.defaultProperties[property];
 
-    switch (property) {
-      case "status":
-        return AlbumStatuses[album.status]?.name || "?";
+		switch (property) {
+			case "status":
+				return AlbumStatuses[album.status]?.name || "?";
 
-      default:
-        return "?";
-    }
-  }
+			default:
+				return "?";
+		}
+	}
 }

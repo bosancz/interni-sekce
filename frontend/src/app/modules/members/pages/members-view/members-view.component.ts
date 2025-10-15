@@ -3,115 +3,118 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, ViewWillEnter, ViewWillLeave } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MembershipStates } from "src/app/config/membership-states";
-import { ApiService } from "src/app/services/api.service";
 import { TitleService } from "src/app/services/title.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { SDK } from "src/sdk";
 import { MemberStoreService } from "../../services/member-store.service";
 
 @UntilDestroy()
 @Component({
-  selector: "members-view",
-  templateUrl: "./members-view.component.html",
-  styleUrls: ["./members-view.component.scss"],
-  providers: [MemberStoreService],
-  standalone: false,
+	selector: "members-view",
+	templateUrl: "./members-view.component.html",
+	styleUrls: ["./members-view.component.scss"],
+	providers: [MemberStoreService],
+	standalone: false,
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeave {
-  member?: SDK.MemberResponseWithLinks | null;
-  view?: "info" | "health" | "contacts" | "profile" = "info";
+	member?: BackendApiTypes.MemberResponseWithLinks | null;
+	view?: "info" | "health" | "contacts" | "profile" = "info";
 
-  membershipStates = MembershipStates;
+	membershipStates = MembershipStates;
 
-  actions: Action[] = [
-    {
-      text: "Smazat",
-      role: "destructive",
-      icon: "trash",
-      color: "danger",
-      handler: () => this.delete(),
-    },
-  ];
+	actions: Action[] = [
+		{
+			text: "Smazat",
+			role: "destructive",
+			icon: "trash",
+			color: "danger",
+			handler: () => this.delete(),
+		},
+	];
 
-  constructor(
-    private api: ApiService,
-    private toastService: ToastService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private alertController: AlertController,
-    private titleService: TitleService,
-  ) {}
+	constructor(
+		private api: BackendApi,
+		private toastService: ToastService,
+		private route: ActivatedRoute,
+		private router: Router,
+		private alertController: AlertController,
+		private titleService: TitleService,
+	) {}
 
-  ngOnInit() {
-    this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {
-      if (this.member?.id !== parseInt(params.member)) this.loadMember(parseInt(params.member));
-    });
+	ngOnInit() {
+		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {
+			if (this.member?.id !== parseInt(params.member)) this.loadMember(parseInt(params.member));
+		});
 
-    this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => {
-      if (params.view) {
-        this.view = params.view;
-      } else {
-        this.router.navigate([], { relativeTo: this.route, queryParams: { view: "profile" }, replaceUrl: true });
-      }
-    });
-  }
+		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => {
+			if (params.view) {
+				this.view = params.view;
+			} else {
+				this.router.navigate([], {
+					relativeTo: this.route,
+					queryParams: { view: "profile" },
+					replaceUrl: true,
+				});
+			}
+		});
+	}
 
-  ionViewWillEnter(): void {}
+	ionViewWillEnter(): void {}
 
-  ionViewWillLeave(): void {}
+	ionViewWillLeave(): void {}
 
-  async loadMember(id: number) {
-    this.member = await this.api.MembersApi.getMember(id).then((res) => res.data);
-    this.titleService.setTitle(this.member?.nickname ?? null);
-  }
+	async loadMember(id: number) {
+		this.member = await this.api.MembersApi.getMember(id).then((res) => res.data);
+		this.titleService.setTitle(this.member?.nickname ?? null);
+	}
 
-  async updateMember(data: SDK.MemberUpdateBody) {
-    if (!this.member) return;
+	async updateMember(data: BackendApiTypes.MemberUpdateBody) {
+		if (!this.member) return;
 
-    const toast = await this.toastService.toast("Ukládám...");
+		const toast = await this.toastService.toast("Ukládám...");
 
-    try {
-      await this.api.MembersApi.updateMember(this.member.id, data);
+		try {
+			await this.api.MembersApi.updateMember(this.member.id, data);
 
-      await this.loadMember(this.member.id);
+			await this.loadMember(this.member.id);
 
-      toast.dismiss();
-      this.toastService.toast("Uloženo.");
-    } catch (e) {
-      toast.dismiss();
-      this.toastService.toast("Chyba při ukládání.", { color: "danger" });
-    }
-  }
+			toast.dismiss();
+			this.toastService.toast("Uloženo.");
+		} catch (e) {
+			toast.dismiss();
+			this.toastService.toast("Chyba při ukládání.", { color: "danger" });
+		}
+	}
 
-  async delete() {
-    if (!this.member) return;
+	async delete() {
+		if (!this.member) return;
 
-    const alert = await this.alertController.create({
-      header: "Smazat člena?",
-      message: `Opravdu chcete smazat člena „<strong>${this.getFullName(this.member)}</strong>“?`,
-      buttons: [{ text: "Zrušit" }, { text: "Smazat", handler: () => this.deleteConfirmed() }],
-    });
+		const alert = await this.alertController.create({
+			header: "Smazat člena?",
+			message: `Opravdu chcete smazat člena „<strong>${this.getFullName(this.member)}</strong>“?`,
+			buttons: [{ text: "Zrušit" }, { text: "Smazat", handler: () => this.deleteConfirmed() }],
+		});
 
-    await alert.present();
-  }
+		await alert.present();
+	}
 
-  async deleteConfirmed() {
-    if (!this.member) return;
+	async deleteConfirmed() {
+		if (!this.member) return;
 
-    await this.api.MembersApi.deleteMember(this.member?.id);
+		await this.api.MembersApi.deleteMember(this.member?.id);
 
-    this.toastService.toast(`Člen ${this.member?.nickname} smazán.`);
+		this.toastService.toast(`Člen ${this.member?.nickname} smazán.`);
 
-    this.router.navigate(["../"], { relativeTo: this.route, replaceUrl: true });
-  }
+		this.router.navigate(["../"], { relativeTo: this.route, replaceUrl: true });
+	}
 
-  getFullName(member?: SDK.MemberResponseWithLinks | null) {
-    if (!member) return "";
-    return (
-      member.nickname + (member?.firstName || member.lastName ? ` (${member?.firstName} ${member?.lastName})` : "")
-    );
-  }
+	getFullName(member?: BackendApiTypes.MemberResponseWithLinks | null) {
+		if (!member) return "";
+		return (
+			member.nickname +
+			(member?.firstName || member.lastName ? ` (${member?.firstName} ${member?.lastName})` : "")
+		);
+	}
 
-  getAge(member?: SDK.MemberResponseWithLinks) {}
+	getAge(member?: BackendApiTypes.MemberResponseWithLinks) {}
 }
