@@ -9,10 +9,6 @@
     .
     ├── dist                    # Výstupní kompilované soubory
     ├── node_modules            # NPM balíčky, na kterých je aplikace závislá
-    ├── public                  # Veřejné statické soubory
-    ├── views                   # HTML šablony pro renderování
-    │   ├── layouts             # Rozvržení stránek
-    │   └── partials            # Částečné šablony
     ├── test                    # End-to-end testy
     └── src                     # Zdrojové kódy
         ├── access-control      # Systém řízení přístupu
@@ -57,7 +53,7 @@
         ├── config.ts           # Konfigurace aplikace
         ├── main-cli.ts         # Vstupní bod pro CLI
         ├── main.ts             # Hlavní vstupní bod aplikace
-        ├── openapi.ts          # OpenAPI specifikace
+        ├── openapi.ts          # Nastavení generování OpenAPI specifikace
 
 ## Migrace
 
