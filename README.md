@@ -1,18 +1,16 @@
 # Interní sekce Dětské vodácké skupiny ŠÁN.
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-17-orange.svg?style=flat-square)](#contributors-) ![UptimeRobot](https://badgen.net/uptime-robot/month/ur482829-fa51144d74e17b8b556c2f6c)
 
 ## Nahlášení chyby nebo návrh nové funkce 🐛💡
 
-1) Pokud nemáš účet tak se [zaregistruj na GitHubu](https://github.com/join). (zabere asi 1 minutu)
-2) V záložce Issues [vytvoř nové hlášení](https://github.com/bosancz/interni-sekce/issues/new/choose), kde popíšeš, co je špatně nebo co by mohlo být lépe.
-3) Hotovo! Lidi co mají interní sekci na starosti to vyřeší a tobě přijde zpráva.
+1. Pokud nemáš účet tak se [zaregistruj na GitHubu](https://github.com/join). (zabere asi 1 minutu)
+2. V záložce Issues [vytvoř nové hlášení](https://github.com/bosancz/interni-sekce/issues/new/choose), kde popíšeš, co je špatně nebo co by mohlo být lépe.
+3. Hotovo! Lidi co mají interní sekci na starosti to vyřeší a tobě přijde zpráva.
 
-## Rozvoj 🚀
+## Vývoj 🚀
 
-Detaily k rozvoji jednotlivých částí webu najdeš v jejich složkách:
-
- - [Administrační webová aplikace (`./frontend`)](./frontend)
- - [Backendové API (`./backend`)](./backend)
+Detaily k rozvoji interní sekce najdeš v souboru [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## Kdo dělá interní sekci ✨
 
