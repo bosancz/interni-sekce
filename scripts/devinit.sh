@@ -4,15 +4,6 @@ log_yellow() {
   echo -e "\033[1;33m$1\033[0m"
 }
 
-# Cleanup
-log_yellow "Cleaning up..."
-
-rm -fr ./node_modules
-rm -fr ./frontend/node_modules
-rm -fr ./backend/node_modules
-rm -fr ./backend/dist
-rm -fr ./frontend/dist
-
 # Root
 log_yellow "Installing root dependencies..."
 
