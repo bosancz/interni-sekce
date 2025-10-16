@@ -21,6 +21,7 @@ import { EditButtonDateRangeComponent } from "./components/edit-button-date-rang
 import { EditButtonDateComponent } from "./components/edit-button-date/edit-button-date.component";
 import { EditButtonMarkdownComponent } from "./components/edit-button-markdown/edit-button-markdown.component";
 import { EditButtonNameComponent } from "./components/edit-button-name/edit-button-name.component";
+import { EditButtonSelectComponent } from "./components/edit-button-select/edit-button-select.component";
 import { EditButtonTextComponent } from "./components/edit-button-text/edit-button-text.component";
 import { EditButtonComponent } from "./components/edit-button/edit-button.component";
 import { EventCalendarComponent } from "./components/event-calendar/event-calendar.component";
@@ -113,6 +114,7 @@ register();
 		EditButtonMarkdownComponent,
 		EditButtonNameComponent,
 		EditButtonDateComponent,
+		EditButtonSelectComponent,
 	],
 	exports: [
 		FormsModule,
@@ -170,6 +172,7 @@ register();
 		EditButtonMarkdownComponent,
 		EditButtonNameComponent,
 		EditButtonDateComponent,
+		EditButtonSelectComponent,
 	],
 	providers: [DatePipe, provideCharts(withDefaultRegisterables())],
 })

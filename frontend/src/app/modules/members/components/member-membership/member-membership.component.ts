@@ -15,6 +15,11 @@ export class MemberMembershipComponent {
 	@Input() member?: SDK.MemberResponseWithLinks | null;
 	@Output() update = new EventEmitter<Partial<SDK.MemberResponse>>();
 
+	memberRolesOptions = Object.entries(MemberRoles).map(([id, role]) => ({
+		label: role.title,
+		value: id as SDK.MemberRolesEnum,
+	}));
+
 	constructor(
 		private readonly api: ApiService,
 		private readonly modalService: ModalService,

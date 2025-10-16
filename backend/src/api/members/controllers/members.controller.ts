@@ -36,10 +36,12 @@ export class MembersController {
 	@AcLinks(MembersListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(MemberResponse), isArray: true })
 	async listMembers(@Req() req: Request, @Query() query: MembersListQuery): Promise<MemberResponse[]> {
-		return this.members.getMembers({
+		const members = await this.members.getMembers({
 			...query,
 			limit: query.limit ?? 25,
 		});
+
+		return members;
 	}
 
 	@Post()
@@ -48,7 +50,7 @@ export class MembersController {
 	async createMember(@Req() req: Request, @Body() body: MemberCreateBody): Promise<MemberResponse> {
 		MemberCreatePermission.canOrThrow(req);
 
-		return this.members.createMember(body);
+		return await this.members.createMember(body);
 	}
 
 	@Get(":id")
@@ -72,7 +74,7 @@ export class MembersController {
 
 		MemberUpdatePermission.canOrThrow(req, member);
 
-		this.members.updateMember(id, body);
+		await this.members.updateMember(id, body);
 	}
 
 	@Delete(":id")
@@ -84,6 +86,6 @@ export class MembersController {
 
 		MemberDeletePermission.canOrThrow(req, member);
 
-		this.members.deleteMember(id);
+		await this.members.deleteMember(id);
 	}
 }

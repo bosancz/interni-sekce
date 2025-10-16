@@ -230,7 +230,6 @@ export const EventAttendeeReadPermission = new Permission({
 
 export const EventAttendeeCreatePermission = new Permission({
 	linkTo: EventResponse,
-	contains: EventAttendeeResponse,
 
 	allowed: {
 		admin: true,
@@ -240,7 +239,6 @@ export const EventAttendeeCreatePermission = new Permission({
 
 export const EventAttendeeEditPermission = new Permission({
 	linkTo: EventAttendeeResponse,
-	contains: EventAttendeeResponse,
 
 	allowed: {
 		admin: true,

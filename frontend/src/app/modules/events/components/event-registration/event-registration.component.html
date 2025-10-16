@@ -1,33 +1,45 @@
 <h3>Přihláška</h3>
 
 <bo-card>
-  <bo-card-content>
-    <ion-item lines="none">
-      <ion-label *ngIf="event?._links?.getEventRegistration?.applicable">Přihláška nahrána.</ion-label>
-      <ion-label *ngIf="!event?._links?.getEventRegistration?.applicable">Přihláška chybí.</ion-label>
+	<bo-card-content>
+		<div class="buttons">
+			<ion-button
+				*ngIf="
+					event?._links?.saveEventRegistration?.applicable && !event?._links?.getEventRegistration?.applicable
+				"
+				[disabled]="!event?._links?.saveEventRegistration?.allowed || uploadingRegistration"
+				fill="clear"
+				(click)="uploadRegistration(registrationInput)"
+				>Nahrát</ion-button
+			>
 
-      <ion-button *ngIf="event?._links?.saveEventRegistration?.allowed" fill="clear">Nahrát</ion-button>
-      <ion-button
-        *ngIf="event?._links?.getEventRegistration?.allowed"
-        [href]="getRegistrationUrl(event!)"
-        target="_blank"
-        fill="clear"
-        >Zobrazit</ion-button
-      >
-      <ion-button *ngIf="event?._links?.deleteEventRegistration?.allowed" fill="clear" color="danger"
-        >Smazat</ion-button
-      >
-    </ion-item>
-  </bo-card-content>
+			<ion-button
+				*ngIf="event?._links?.getEventRegistration?.applicable"
+				[disabled]="!event?._links?.getEventRegistration?.allowed || uploadingRegistration"
+				[href]="getRegistrationUrl(event!)"
+				target="_blank"
+				fill="clear"
+				>Zobrazit</ion-button
+			>
+			<ion-button
+				*ngIf="event?._links?.deleteEventRegistration?.applicable"
+				[disabled]="!event?._links?.deleteEventRegistration?.allowed || uploadingRegistration"
+				fill="clear"
+				color="danger"
+				(click)="deleteRegistration()"
+				>Smazat</ion-button
+			>
+		</div>
+	</bo-card-content>
 </bo-card>
 
 <p *ngIf="uploadingRegistration">Nahrávám&hellip;</p>
 <input
-  class="d-none"
-  type="file"
-  accept="application/pdf"
-  #registrationInput
-  ngModel
-  (ngModelChange)="uploadRegistration(registrationInput)"
-  required
+	class="d-none"
+	type="file"
+	accept="application/pdf"
+	#registrationInput
+	ngModel
+	(ngModelChange)="uploadRegistration(registrationInput)"
+	required
 />

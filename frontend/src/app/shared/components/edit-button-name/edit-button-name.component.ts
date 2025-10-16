@@ -7,7 +7,7 @@ import { ModalService } from "src/app/services/modal.service";
 	templateUrl: "./edit-button-name.component.html",
 	styleUrl: "./edit-button-name.component.scss",
 })
-export class EditButtonNameComponent {
+export class 	EditButtonNameComponent {
 	@Input() label?: string;
 	@Input() placeholder?: string;
 	@Input() value?: { firstName?: string | null; lastName?: string | null };

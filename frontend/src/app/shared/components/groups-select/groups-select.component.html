@@ -1,11 +1,11 @@
 <div class="group-badges">
-  <span
-    *ngFor="let group of groups; let isLast = last"
-    (click)="toggleGroup(group.id)"
-    [class.active]="isSelected(group.id)"
-    [style.background-color]="group.color"
-    class="group-badge me-2 my-2"
-  >
-    {{ group.shortName }}
-  </span>
+	<span
+		*ngFor="let group of groups; let isLast = last"
+		(click)="toggleGroup(group.id)"
+		[class.active]="isSelected(group.id)"
+		[style.background-color]="group.color || '#999'"
+		class="group-badge me-2 my-2"
+	>
+		{{ group.shortName }}
+	</span>
 </div>

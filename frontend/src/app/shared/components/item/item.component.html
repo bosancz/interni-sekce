@@ -1,7 +1,7 @@
 <ion-label *ngIf="label" class="label">{{ label }}</ion-label>
 
 <div class="start">
-  <ng-content select="[slot=start]"></ng-content>
+	<ng-content select="[slot=start]"></ng-content>
 </div>
 
 <ng-content></ng-content>
@@ -11,8 +11,7 @@
 <div class="spacer"></div>
 
 <div class="end">
-  <ng-content select="[slot=end]"></ng-content>
-  <bo-edit-button *ngIf="editable" (click)="edit.emit()" slot="end"></bo-edit-button>
+	<ng-content select="[slot=end]"></ng-content>
 </div>
 
 <ion-ripple-effect></ion-ripple-effect>

@@ -1,27 +1,22 @@
 <h3>Účtování</h3>
 
 <bo-event-expenses-chart
-  *ngIf="expenses?.length"
-  [event]="event"
-  [expenses]="expenses"
-  class="mb-5"
+	*ngIf="expenses?.length"
+	[event]="event"
+	[expenses]="expenses"
+	class="mb-5"
 ></bo-event-expenses-chart>
 
 <ion-list>
-  <bo-item
-    *ngFor="let expense of expenses"
-    [label]="expense.receiptNumber"
-    [editable]="expense._links.updateEventExpense.allowed"
-    (edit)="editExpense(expense)"
-  >
-    <p>{{ expense.description }}</p>
+	<bo-item *ngFor="let expense of expenses" [label]="expense.receiptNumber">
+		<p>{{ expense.description }}</p>
 
-    <div slot="end" class="type flex-shrink-0">
-      <ion-badge mode="ios" [style.background-color]="expense | eventExpense: 'color'">
-        {{ expense | eventExpense: "type" }}
-      </ion-badge>
-    </div>
+		<div slot="end" class="type flex-shrink-0">
+			<ion-badge mode="ios" [style.background-color]="expense | eventExpense: 'color'">
+				{{ expense | eventExpense: "type" }}
+			</ion-badge>
+		</div>
 
-    <ion-label slot="end" class="amount"> {{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč </ion-label>
-  </bo-item>
+		<ion-label slot="end" class="amount"> {{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč </ion-label>
+	</bo-item>
 </ion-list>

@@ -3,13 +3,13 @@
 <p *ngIf="leaders && !leaders.length"><em>Žádní účastníci</em></p>
 
 <bo-event-attendees-list
-  [event]="event"
-  [attendees]="leaders"
-  (remove)="removeAttendee($event)"
+	[event]="event"
+	[attendees]="leaders"
+	(remove)="removeAttendee($event)"
 ></bo-event-attendees-list>
 
 <div class="text-center">
-  <bo-add-button (click)="addAttendee()">Přidat vedoucí</bo-add-button>
+	<bo-add-button (click)="addAttendee('leader')">Přidat vedoucí</bo-add-button>
 </div>
 
 <h3>Účastníci</h3>
@@ -17,11 +17,11 @@
 <p *ngIf="attendees && !attendees.length"><em>Žádní účastníci</em></p>
 
 <bo-event-attendees-list
-  [event]="event"
-  [attendees]="attendees"
-  (remove)="removeAttendee($event)"
+	[event]="event"
+	[attendees]="attendees"
+	(remove)="removeAttendee($event)"
 ></bo-event-attendees-list>
 
 <div *ngIf="event?._links?.addEventAttendee?.allowed" class="text-center">
-  <bo-add-button (click)="addAttendee()">Přidat účastníka</bo-add-button>
+	<bo-add-button (click)="addAttendee('attendee')">Přidat účastníka</bo-add-button>
 </div>

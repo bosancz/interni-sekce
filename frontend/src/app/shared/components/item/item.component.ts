@@ -1,24 +1,16 @@
-import { Component, EventEmitter, Host, Input, Optional, Output } from "@angular/core";
-import { RouterLink } from "@angular/router";
+import { Component, Input } from "@angular/core";
 
 @Component({
-    selector: "bo-item",
-    templateUrl: "./item.component.html",
-    styleUrl: "./item.component.scss",
-    host: { "[class.ion-activatable]": "button", "[class.clickable]": "button || !!routerLink" },
-    standalone: false
+	selector: "bo-item",
+	templateUrl: "./item.component.html",
+	styleUrl: "./item.component.scss",
+	host: { "[class.ion-activatable]": "button", "[class.clickable]": "button || !!routerLink" },
+	standalone: false,
 })
 export class ItemComponent {
-  @Input() label?: string;
-  @Input() editable: boolean = false;
-  @Input() loading?: boolean;
-  @Input() lines?: string;
-  @Input() button?: boolean;
-  @Input() detail?: boolean;
-
-  @Output() edit = new EventEmitter<void>();
-
-  constructor(@Optional() @Host() public routerLink: RouterLink) {
-    console.log(this, routerLink);
-  }
+	@Input() label?: string;
+	@Input() loading?: boolean;
+	@Input() lines?: string;
+	@Input() button?: boolean;
+	@Input() detail?: boolean;
 }
