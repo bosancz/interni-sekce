@@ -29,9 +29,5 @@
   "bugs": {
     "url": "https://github.com/bosancz/bosan.cz/issues"
   },
-  "homepage": "https://github.com/bosancz/bosan.cz#readme",
-  "workspaces": [
-    "frontend",
-    "backend"
-  ]
+  "homepage": "https://github.com/bosancz/bosan.cz#readme"
 }
