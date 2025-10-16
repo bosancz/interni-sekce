@@ -28,3 +28,14 @@ services:
       - DATABASE_URL=postgres://postgres:password@postgres:5432/postgres?sslmode=disable
     depends_on:
       - postgres
+
+  mongo:
+    image: mongo:4.2
+    environment:
+      MONGO_INITDB_DATABASE: bosan
+
+  mongoexpress:
+    image: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"

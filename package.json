@@ -7,6 +7,7 @@
   "scripts": {
     "all-contributors:check": "all-contributors check",
     "all-contributors:generate": "all-contributors generate",
+    "dev:init": "./scripts/devinit.sh",
     "dev": "concurrently -k -n FE,BE --prefix-colors green,yellow \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
