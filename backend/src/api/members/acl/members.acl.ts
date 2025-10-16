@@ -17,7 +17,7 @@ export const MembersExportPermission = new Permission<void>({
 });
 
 export const MemberCreatePermission = new Permission<void>({
-	linkTo: MemberResponse,
+	linkTo: RootResponse,
 	allowed: {
 		vedouci: true,
 	},

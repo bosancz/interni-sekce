@@ -52,7 +52,7 @@ export const EventEditPermission = new Permission({
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
 
-	applicable: (doc) => !doc.deletedAt,
+	applicable: ({ doc }) => !doc.deletedAt,
 });
 
 export const EventDeletePermission = new Permission({
@@ -61,7 +61,7 @@ export const EventDeletePermission = new Permission({
 		program: true,
 		admin: true,
 	},
-	applicable: (doc) => doc.status !== EventStates.public && !doc.deletedAt,
+	applicable: ({ doc }) => doc.status !== EventStates.public && !doc.deletedAt,
 });
 
 export const EventRestorePermission = new Permission({
@@ -70,7 +70,7 @@ export const EventRestorePermission = new Permission({
 		program: true,
 		admin: true,
 	},
-	applicable: (doc) => !!doc.deletedAt,
+	applicable: ({ doc }) => !!doc.deletedAt,
 });
 
 export const EventLeadPermission = new Permission({
@@ -81,7 +81,7 @@ export const EventLeadPermission = new Permission({
 		vedouci: true,
 	},
 
-	applicable: (doc) => (!doc.leaders || !doc.leaders.length) && !doc.deletedAt,
+	applicable: ({ doc, req }) => (!doc.leaders || !doc.leaders.length) && !doc.deletedAt && !!req.user?.memberId,
 });
 
 export const EventSubmitPermission = new Permission({
@@ -92,7 +92,7 @@ export const EventSubmitPermission = new Permission({
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
 
-	applicable: (doc) => doc.status === EventStates.draft && !doc.deletedAt,
+	applicable: ({ doc }) => doc.status === EventStates.draft && !doc.deletedAt,
 });
 
 export const EventPublishPermission = new Permission({
@@ -101,7 +101,7 @@ export const EventPublishPermission = new Permission({
 		program: true,
 		admin: true,
 	},
-	applicable: (doc) => [EventStates.pending, EventStates.draft].includes(doc.status) && !doc.deletedAt,
+	applicable: ({ doc }) => [EventStates.pending, EventStates.draft].includes(doc.status) && !doc.deletedAt,
 });
 
 export const EventRejectPermission = new Permission({
@@ -110,7 +110,7 @@ export const EventRejectPermission = new Permission({
 		program: true,
 		admin: true,
 	},
-	applicable: (doc) => doc.status === EventStates.pending && !doc.deletedAt,
+	applicable: ({ doc }) => doc.status === EventStates.pending && !doc.deletedAt,
 });
 
 export const EventUnpublishPermission = new Permission({
@@ -119,7 +119,7 @@ export const EventUnpublishPermission = new Permission({
 		program: true,
 		admin: true,
 	},
-	applicable: (doc) => doc.status === EventStates.public && !doc.deletedAt,
+	applicable: ({ doc }) => doc.status === EventStates.public && !doc.deletedAt,
 });
 
 export const EventCancelPermission = new Permission({
@@ -128,7 +128,7 @@ export const EventCancelPermission = new Permission({
 		program: true,
 		admin: true,
 	},
-	applicable: (doc) => doc.status === EventStates.public && !doc.deletedAt,
+	applicable: ({ doc }) => doc.status === EventStates.public && !doc.deletedAt,
 });
 
 export const EventUncancelPermission = new Permission({
@@ -137,7 +137,7 @@ export const EventUncancelPermission = new Permission({
 		program: true,
 		admin: true,
 	},
-	applicable: (doc) => doc.status === EventStates.cancelled && !doc.deletedAt,
+	applicable: ({ doc, req }) => doc.status === EventStates.cancelled && !doc.deletedAt,
 });
 
 export const EventRegistrationReadPermission = new Permission({

@@ -1,6 +1,6 @@
 import {
-	BadRequestException,
 	Body,
+	ConflictException,
 	Controller,
 	Delete,
 	Get,
@@ -62,8 +62,7 @@ export class EventsController {
 		};
 
 		if (query.my) {
-			if (!token.memberId)
-				throw new BadRequestException("Cannot show my events, user is not linked to a member.");
+			if (!token.memberId) throw new ConflictException("Cannot show my events, user is not linked to a member.");
 			options.memberId = token.memberId;
 		}
 
@@ -151,7 +150,7 @@ export class EventsController {
 	@AcLinks(EventLeadPermission)
 	@ApiResponse({ status: 204 })
 	async leadEvent(@Req() req: Request, @Param("id") id: number, @Token() token: TokenData): Promise<void> {
-		if (token.memberId === undefined) throw new BadRequestException("User is not linked to a member.");
+		if (token.memberId === undefined) throw new ConflictException("User is not linked to a member.");
 
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();

@@ -4,10 +4,10 @@ import { TokenService } from "../services/token.service";
 
 @Injectable()
 export class TokenMiddleware implements NestMiddleware {
-  constructor(private tokenService: TokenService) {}
+	constructor(private tokenService: TokenService) {}
 
-  async use(req: Request, res: Response, next: () => void) {
-    await this.tokenService.parseToken(req);
-    next();
-  }
+	async use(req: Request, res: Response, next: () => void) {
+		await this.tokenService.parseToken(req);
+		next();
+	}
 }

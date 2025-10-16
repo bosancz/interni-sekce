@@ -17,7 +17,7 @@ export interface AcRouteOptions<DOC = void, ROLES extends string = string, PDATA
 	inherit?: AcPermission<DOC, ROLES>;
 
 	/** Global condition whether this route is accessible (e.g. is document in the state to perform this operation) */
-	applicable?: (d: DOC) => boolean;
+	applicable?: (params: { doc: DOC; req: Request }) => boolean;
 
 	path?: (d: DOC) => string;
 
@@ -48,25 +48,27 @@ export class AcPermission<DOC, ROLES extends string = string, PDATA extends Obje
 		const req = args[0];
 		const doc = args[1];
 
-		const permissions = this.getAllowed(req);
+		if (!this.checkApplicable(req, doc)) return false;
 
-		if (!this.checkCondition(doc)) return false;
+		const allowed = this.getAllowed(req);
 
-		return permissions.some((permission) => this.checkAllowed(permission, args[0], args[1]));
+		return allowed.some((permission) => this.checkAllowed(permission, args[0], args[1]));
 	}
 
 	getAllowed(req: Request): AcAllowedValue<DOC, PDATA>[] {
 		const userRoles = <ROLES[]>OptionsStore.getUserRoles(req);
 
-		const permissions: AcAllowedValue<DOC, PDATA>[] = [];
+		const allowed: AcAllowedValue<DOC, PDATA>[] = [];
 
 		this.getInheritedPermissions().forEach((permission) => {
 			userRoles.forEach((role) => {
-				if (role in permission) permissions.push(permission[role]);
+				if (role in permission) allowed.push(permission[role]);
 			});
 		});
 
-		return permissions;
+		if (OptionsStore.adminRole && userRoles.includes(OptionsStore.adminRole as ROLES)) allowed.push(true);
+
+		return allowed;
 	}
 
 	getInheritedPermissions() {
@@ -102,10 +104,10 @@ export class AcPermission<DOC, ROLES extends string = string, PDATA extends Obje
 		return false;
 	}
 
-	private checkCondition(doc?: DOC) {
+	private checkApplicable(req: Request, doc?: DOC) {
 		if (typeof this.options.applicable === "function") {
 			if (!doc) throw new InternalServerErrorException("Document must be provided for applicable check.");
-			return this.options.applicable(doc);
+			return this.options.applicable({ req, doc });
 		} else {
 			return true;
 		}

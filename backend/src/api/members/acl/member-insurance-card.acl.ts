@@ -5,7 +5,7 @@ import { MemberReadPermission, MemberUpdatePermission } from "./members.acl";
 export const MemberInsuranceCardReadPermission = new Permission({
 	linkTo: MemberResponse,
 	inherit: MemberReadPermission,
-	applicable: (member) => !!member.insuranceCardFile,
+	applicable: ({ doc }) => !!doc.insuranceCardFile,
 });
 
 export const MemberInsuranceCardUploadPermission = new Permission({
@@ -16,5 +16,5 @@ export const MemberInsuranceCardUploadPermission = new Permission({
 export const MemberInsuranceCardDeletePermission = new Permission<MemberResponse>({
 	linkTo: MemberResponse,
 	inherit: MemberUpdatePermission,
-	applicable: (member) => !!member.insuranceCardFile,
+	applicable: ({ doc }) => !!doc.insuranceCardFile,
 });

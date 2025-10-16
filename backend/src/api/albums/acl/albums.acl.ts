@@ -48,7 +48,7 @@ export const AlbumDeletePermission = new Permission({
 export const AlbumPublishPermission = new Permission({
 	linkTo: AlbumResponse,
 	inherit: AlbumEditPermission,
-	applicable: (album) => album.status === "draft",
+	applicable: ({ doc }) => doc.status === "draft",
 });
 
 export const AlbumUnpublishPermission = new Permission({
@@ -56,7 +56,7 @@ export const AlbumUnpublishPermission = new Permission({
 
 	inherit: AlbumEditPermission,
 
-	applicable: (album) => album.status === "public",
+	applicable: ({ doc }) => doc.status === "public",
 });
 
 export const AlbumPhotosPermission = new Permission({

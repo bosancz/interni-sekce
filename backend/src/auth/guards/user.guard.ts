@@ -3,8 +3,9 @@ import { Request } from "express";
 
 @Injectable()
 export class UserGuard implements CanActivate {
-  canActivate(context: ExecutionContext) {
-    const request: Request = context.switchToHttp().getRequest();
-    return !!request.user;
-  }
+	async canActivate(context: ExecutionContext) {
+		const req: Request = context.switchToHttp().getRequest();
+
+		return !!req.user;
+	}
 }

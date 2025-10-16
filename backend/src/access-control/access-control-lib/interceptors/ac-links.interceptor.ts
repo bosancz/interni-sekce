@@ -69,7 +69,7 @@ export class AcLinksInterceptor implements NestInterceptor {
 		for (let route of routes) {
 			const allowed = route.acl.can(req, doc);
 			const applicable =
-				typeof route.acl.options.applicable === "function" ? route.acl.options.applicable(doc) : true;
+				typeof route.acl.options.applicable === "function" ? route.acl.options.applicable({ doc, req }) : true;
 
 			doc[OptionsStore.linksProperty][route.name] = {
 				method: route.httpMethod,
