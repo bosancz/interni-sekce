@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { AlertButton, AlertController } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
+import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 @UntilDestroy()
 @Component({
@@ -19,7 +21,7 @@ export default class MemberContactsComponent implements OnChanges {
 
 	constructor(
 		private toastService: ToastService,
-		private api: BackendApi,
+		private api: ApiService,
 		private alertController: AlertController,
 		private modalService: ModalService,
 	) {}
@@ -32,7 +34,9 @@ export default class MemberContactsComponent implements OnChanges {
 		if (!memberId) {
 			this.contacts = [];
 		} else {
-			this.contacts = await this.api.MembersApi.listContacts(memberId).then((res) => res.data);
+			this.contacts = await this.api
+				.get("/api/members/{id}/contacts", { params: { id: memberId } })
+				.then((res) => res.data);
 		}
 	}
 

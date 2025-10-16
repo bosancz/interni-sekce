@@ -9,7 +9,7 @@ import { Component, OnInit } from "@angular/core";
 export class HomeCardNoleaderEventsComponent implements OnInit {
 	events: BackendApiTypes.EventResponseWithLinks[] = [];
 
-	constructor(private api: BackendApi) {}
+	constructor(private api: ApiService) {}
 
 	ngOnInit(): void {
 		this.loadNoLeaderEvents();

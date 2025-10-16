@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { EventTypes } from "src/app/config/event-types";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 type EventPipeProperty = "image" | "color" | "class";
 

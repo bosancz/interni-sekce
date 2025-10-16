@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
 		private userService: UserService,
 		private loginService: LoginService,
 		private menuController: MenuController,
-		private api: BackendApi,
+		private api: ApiService,
 		public platform: Platform,
 	) {}
 

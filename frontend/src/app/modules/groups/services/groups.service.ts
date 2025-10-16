@@ -7,7 +7,7 @@ import { BehaviorSubject } from "rxjs";
 export class GroupsService {
 	currentGroup = new BehaviorSubject<BackendApiTypes.GroupResponseWithLinks | null | undefined>(undefined);
 
-	constructor(private api: BackendApi) {}
+	constructor(private api: ApiService) {}
 
 	async loadGroup(groupId: number) {
 		this.currentGroup.next(undefined);

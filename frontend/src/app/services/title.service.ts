@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 import { RouterStateSnapshot, TitleStrategy } from "@angular/router";
-import { BackendApi } from "src/sdk/backend.client";
+import { ApiService } from "./api.service";
 
 @Injectable({
 	providedIn: "root",
@@ -12,16 +12,13 @@ export class TitleService extends TitleStrategy {
 
 	constructor(
 		private title: Title,
-		private api: BackendApi,
+		private api: ApiService,
 	) {
 		super();
-		this.api
-			.GET("/api")
-			.then((res) => res.data)
-			.then((info) => {
-				this.mainTitle = "Bošán interní" + (info?.environmentTitle ? " " + info.environmentTitle : "");
-				this.setTitle(this.subTitle);
-			});
+		this.api.info.subscribe((info) => {
+			this.mainTitle = "Bošán interní" + (info?.environmentTitle ? " " + info.environmentTitle : "");
+			this.setTitle(this.subTitle);
+		});
 	}
 
 	setTitle(title: string | null) {

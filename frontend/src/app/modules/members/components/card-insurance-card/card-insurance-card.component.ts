@@ -1,7 +1,9 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 @Component({
 	selector: "bo-card-insurance-card",
@@ -17,7 +19,7 @@ export class CardInsuranceCardComponent implements OnChanges {
 	insuranceCardSafeUrl?: SafeResourceUrl | null;
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private toastService: ToastService,
 		private sanitizer: DomSanitizer,
 		private modalService: ModalService,
@@ -63,7 +65,7 @@ export class CardInsuranceCardComponent implements OnChanges {
 		const uploadToast = await this.toastService.toast("Nahrávám kartičku pojištěnce...");
 
 		try {
-			await this.api.MembersApi.uploadInsuranceCard(this.member!.id, file);
+			await this.api.put("/api/members/{id}/insurance-card", { file: file as unknown as string }); // https://github.com/openapi-ts/openapi-typescript/issues/1214
 
 			this.setInsuranceCardUrl(this.member);
 

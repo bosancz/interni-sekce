@@ -22,7 +22,7 @@ export class AlbumsViewInfoComponent implements OnInit {
 	constructor(
 		private route: ActivatedRoute,
 		private router: Router,
-		private api: BackendApi,
+		private api: ApiService,
 		private toastService: ToastService,
 		private alertController: AlertController,
 		private navController: NavController,

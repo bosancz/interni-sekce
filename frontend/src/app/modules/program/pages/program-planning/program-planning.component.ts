@@ -5,8 +5,10 @@ import { DateTime } from "luxon";
 import { Subscription } from "rxjs";
 import { EventStatuses } from "src/app/config/event-statuses";
 import { EventCreateModalComponent } from "src/app/modules/events/components/event-create-modal/event-create-modal.component";
+import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 @Component({
 	selector: "program-planning",
@@ -25,7 +27,7 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
 	paramsSubscription?: Subscription;
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private router: Router,
 		private route: ActivatedRoute,
 		private toastService: ToastService,
@@ -54,16 +56,16 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
 	async loadEvents() {
 		if (!this.dateTill || !this.dateFrom) return;
 
-		const requestOptions = {
-			filter: {
-				dateFrom: { $lte: this.dateTill.toISODate() },
-				dateTill: { $gte: this.dateFrom.toISODate() },
-			},
-			select: "_id name status type dateFrom dateTill timeFrom timeTill",
-		};
+		// const requestOptions = {
+		// 	filter: {
+		// 		dateFrom: { $lte: this.dateTill.toISODate() },
+		// 		dateTill: { $gte: this.dateFrom.toISODate() },
+		// 	},
+		// 	select: "_id name status type dateFrom dateTill timeFrom timeTill",
+		// };
 
 		// TODO: use options above
-		this.events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		this.events = await this.api.get("/api/events", { query: {} }).then((res) => res.data);
 	}
 
 	setPeriod(period: [string, string]) {
@@ -84,10 +86,12 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
 
 		if (!eventData) return;
 
-		await this.api.EventsApi.createEvent(eventData);
+		const event = await this.api.post("/api/events", eventData).then((res) => res.data);
 
 		await this.loadEvents();
 
-		this.toastService.toast("Akce vytvořena.");
+		this.toastService.toast("Akce vytvořena.", {
+			buttons: [{ text: "Zobrazit", role: "cancel", handler: () => this.router.navigate(["/events", event.id]) }],
+		});
 	}
 }

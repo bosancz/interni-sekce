@@ -1,5 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { MemberRoles } from "src/app/config/member-roles";
+import { ApiService } from "src/app/services/api.service";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 interface ChartData {
 	labels: string[];
@@ -36,14 +38,14 @@ export class MembersDashboardComponent implements OnInit {
 		},
 	};
 
-	constructor(private api: BackendApi) {}
+	constructor(private api: ApiService) {}
 
 	ngOnInit() {
 		this.loadReport();
 	}
 
 	async loadReport() {
-		this.report = await this.api.StatisticsApi.getMembersReport().then((res) => res.data);
+		this.report = await this.api.get("/api/statistics/members").then((res) => res.data);
 
 		this.updateAgesData();
 	}

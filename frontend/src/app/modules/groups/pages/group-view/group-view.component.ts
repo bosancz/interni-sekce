@@ -33,7 +33,7 @@ export class GroupViewComponent implements OnInit {
 
 	constructor(
 		private route: ActivatedRoute,
-		private api: BackendApi,
+		private api: ApiService,
 		private navController: NavController,
 		private groupsService: GroupsService,
 	) {}

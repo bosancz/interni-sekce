@@ -31,7 +31,7 @@ export class EventsListComponent implements OnInit {
 	view?: "table" | "list";
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private platform: Platform,
 		private modalService: ModalService,
 		private toastService: ToastService,

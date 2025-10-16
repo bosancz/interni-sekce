@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 @Component({
 	selector: "bo-member-item-detail",

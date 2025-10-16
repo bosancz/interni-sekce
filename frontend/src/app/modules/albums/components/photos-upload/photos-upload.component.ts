@@ -1,13 +1,13 @@
 import { HttpClient } from "@angular/common/http";
 import {
-	AfterViewInit,
-	ChangeDetectorRef,
-	Component,
-	ElementRef,
-	Input,
-	OnDestroy,
-	OnInit,
-	ViewChild,
+    AfterViewInit,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    Input,
+    OnDestroy,
+    OnInit,
+    ViewChild,
 } from "@angular/core";
 import { ModalController, Platform } from "@ionic/angular";
 
@@ -47,7 +47,7 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 	};
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private http: HttpClient,
 		private modalController: ModalController,
 		private platform: Platform,

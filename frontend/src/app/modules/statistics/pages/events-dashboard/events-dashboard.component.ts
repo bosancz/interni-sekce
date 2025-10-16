@@ -2,6 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { DateTime } from "luxon";
 import { debounceTime } from "rxjs/operators";
+import { ApiService } from "src/app/services/api.service";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 class ChartData {
 	data: { data: number[]; label?: string }[] = [];
@@ -31,7 +33,7 @@ export class EventsDashboardComponent implements OnInit {
 	};
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private route: ActivatedRoute,
 		private router: Router,
 	) {}
@@ -49,15 +51,15 @@ export class EventsDashboardComponent implements OnInit {
 	}
 
 	async loadEventYears() {
-		this.years = await this.api.StatisticsApi.getEventsReportYears().then((res) => res.data);
+		this.years = await this.api.get("/api/statistics/events/years").then((res) => res.data);
 		this.years.sort();
 	}
 
 	async loadData(year: number) {
-		this.eventsReport = await this.api.StatisticsApi.getEventsReport().then((res) => res.data);
+		this.eventsReport = await this.api.get("/api/statistics/events/events").then((res) => res.data);
 
-		this.leadersReport = await this.api.StatisticsApi.getEventsLeadersReport().then((res) => res.data);
-		this.attendeesReport = await this.api.StatisticsApi.getEventsAttendeesReport().then((res) => res.data);
+		this.leadersReport = await this.api.get("/api/statistics/events/leaders").then((res) => res.data);
+		this.attendeesReport = await this.api.get("/api/statistics/events/attendees").then((res) => res.data);
 
 		this.chartData.leaders = {
 			data: [{ data: Object.values(this.leadersReport.age) }],

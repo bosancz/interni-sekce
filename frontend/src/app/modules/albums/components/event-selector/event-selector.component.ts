@@ -1,13 +1,13 @@
 import {
-	AfterViewInit,
-	Component,
-	ElementRef,
-	EventEmitter,
-	forwardRef,
-	Input,
-	OnDestroy,
-	OnInit,
-	Output,
+    AfterViewInit,
+    Component,
+    ElementRef,
+    EventEmitter,
+    forwardRef,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
 } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { ModalController } from "@ionic/angular";
@@ -44,7 +44,7 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 
 	constructor(
 		private modalController: ModalController,
-		private api: BackendApi,
+		private api: ApiService,
 		private elRef: ElementRef<HTMLElement>,
 	) {}
 

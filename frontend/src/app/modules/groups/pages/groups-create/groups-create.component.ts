@@ -11,7 +11,7 @@ import { NavController } from "@ionic/angular";
 })
 export class GroupsCreateComponent {
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private navController: NavController,
 		private route: ActivatedRoute,
 	) {}

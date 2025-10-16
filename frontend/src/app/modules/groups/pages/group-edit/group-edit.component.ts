@@ -15,7 +15,7 @@ export class GroupEditComponent implements OnInit {
 
 	constructor(
 		private route: ActivatedRoute,
-		private api: BackendApi,
+		private api: ApiService,
 		private toastService: ToastService,
 		private navController: NavController,
 	) {}

@@ -4,9 +4,11 @@ import { InfiniteScrollCustomEvent, Platform, ViewWillEnter } from "@ionic/angul
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/config/member-roles";
+import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { FilterData } from "src/app/shared/components/filter/filter.component";
+import { BackendApiTypes } from "src/sdk/backend.client";
 import { MembershipStates } from "../../../../config/membership-states";
 
 @UntilDestroy()
@@ -34,7 +36,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	pageSize = 100;
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private route: ActivatedRoute,
 		private router: Router,
 		private toasts: ToastService,
@@ -57,7 +59,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	}
 
 	export() {
-		this.api.MembersApi.exportMembersXlsx({}, { responseType: "blob" }).then((res) => {
+		this.api.get("/api/members/export/xlsx", { query: {}, axios: { responseType: "blob" } }).then((res) => {
 			const blob = new Blob([res.data], {
 				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			});
@@ -98,23 +100,25 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			this.members = undefined;
 		}
 
-		const params: BackendApiTypes.MembersApiListMembersQueryParams = {
-			search: filter.search || undefined,
-			offset: (this.page - 1) * this.pageSize,
-			roles: filter.roles || undefined,
-			membership: filter.membership || undefined,
-			limit: this.pageSize,
-			groups: filter.groups || undefined,
-		};
-
-		const members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
+		const members = await this.api
+			.get("/api/members", {
+				query: {
+					search: filter.search || undefined,
+					offset: (this.page - 1) * this.pageSize,
+					roles: filter.roles || undefined,
+					membership: filter.membership || undefined,
+					limit: this.pageSize,
+					groups: filter.groups || undefined,
+				},
+			})
+			.then((res) => res.data);
 
 		if (!this.members) this.members = [];
 		this.members.push(...members);
 	}
 
 	private async loadGroups() {
-		this.groups = await this.api.MembersApi.listGroups().then((res) => res.data);
+		this.groups = await this.api.get("/api/groups", { query: {} }).then((res) => res.data);
 	}
 
 	private create() {

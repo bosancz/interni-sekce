@@ -21,7 +21,7 @@ export class MemberSelectorModalComponent
 	@ViewChild("searchBar") searchBar!: IonSearchbar;
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		modalController: ModalController,
 	) {
 		super(modalController);

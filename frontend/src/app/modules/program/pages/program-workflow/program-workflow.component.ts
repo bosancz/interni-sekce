@@ -2,10 +2,10 @@ import { Component, OnInit } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { filter, map } from "rxjs/operators";
 
-import { DateTime } from "luxon";
-
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
+import { ApiService } from "src/app/services/api.service";
+import { BackendApiTypes } from "src/sdk/backend.client";
 import { ProgramService } from "../../services/program.service";
 
 @UntilDestroy()
@@ -43,7 +43,7 @@ export class ProgramWorkflowComponent implements OnInit {
 	loading: boolean = true;
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private programService: ProgramService,
 	) {}
 
@@ -58,17 +58,23 @@ export class ProgramWorkflowComponent implements OnInit {
 	async loadEvents() {
 		this.loading = true;
 
-		const options = {
-			limit: 100,
-			filter: {
-				dateFrom: { $gte: DateTime.local().toISODate() },
-			},
-			sort: "dateFrom",
-			select: "_id status statusNote name description dateFrom dateTill leaders subtype",
-		};
+		// const options = {
+		// 	limit: 100,
+		// 	filter: {
+		// 		dateFrom: { $gte: DateTime.local().toISODate() },
+		// 	},
+		// 	sort: "dateFrom",
+		// 	select: "_id status statusNote name description dateFrom dateTill leaders subtype",
+		// };
 
 		// TODO: use options above
-		const events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		const events = await this.api
+			.get("/api/events", {
+				query: {
+					limit: 100,
+				},
+			})
+			.then((res) => res.data);
 
 		this.events.next(events);
 

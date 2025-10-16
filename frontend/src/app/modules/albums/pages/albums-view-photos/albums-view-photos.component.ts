@@ -35,7 +35,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
 	uploadModal?: HTMLIonModalElement;
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		public platform: Platform,
 		public modalController: ModalController,
 		private toastService: ToastService,

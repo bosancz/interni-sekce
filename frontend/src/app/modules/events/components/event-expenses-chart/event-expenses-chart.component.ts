@@ -40,7 +40,7 @@ export class EventExpensesChartComponent implements OnInit, OnChanges {
 		},
 	};
 
-	constructor(private api: BackendApi) {}
+	constructor(private api: ApiService) {}
 
 	ngOnInit() {}
 

@@ -924,7 +924,7 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /** @enum {string} */
-        EventStatesEnum: "draft" | "pending" | "public" | "cancelled";
+        EventStatesEnum: EventStatesEnum;
         Group: {
             id: number;
             name: string | null;
@@ -948,7 +948,7 @@ export interface components {
             memberId: number;
             member?: components["schemas"]["Member"];
             /** @enum {string} */
-            type: "star" | "certificate" | "other";
+            type: MemberAchievementType;
             dateFrom: string;
             dateTill: string;
         };
@@ -968,10 +968,10 @@ export interface components {
             groupId: number;
             nickname: string;
             /** @enum {string} */
-            role: "dite" | "instruktor" | "vedouci";
+            role: MemberRole;
             active: boolean;
             /** @enum {string} */
-            membership: "clen" | "neclen" | "pozastaveno";
+            membership: MemberMembership;
             rank?: Record<string, unknown> | null;
             function?: string | null;
             firstName?: string | null;
@@ -1001,7 +1001,7 @@ export interface components {
             event?: components["schemas"]["Event"];
             member?: components["schemas"]["Member"];
             /** @enum {string} */
-            type: "attendee" | "leader";
+            type: EventAttendeeType;
         };
         EventExpense: {
             id: number;
@@ -1010,7 +1010,7 @@ export interface components {
             receiptNumber: string;
             amount: number;
             /** @enum {string} */
-            type: "food" | "transport" | "material" | "accommodation" | "other";
+            type: EventExpenseType;
             description: string;
         };
         Event: {
@@ -1022,7 +1022,7 @@ export interface components {
             expenses?: components["schemas"]["EventExpense"][];
             name: string;
             /** @enum {string} */
-            status: "draft" | "pending" | "public" | "cancelled";
+            status: EventStatus;
             statusNote: string | null;
             place: string | null;
             description: string | null;
@@ -1072,7 +1072,7 @@ export interface components {
             event?: components["schemas"]["Event"];
             photos?: components["schemas"]["Photo"][];
             /** @enum {string} */
-            status: "public" | "draft";
+            status: AlbumStatus;
             name: string;
             description: string | null;
             datePublished: Record<string, unknown>;
@@ -1089,11 +1089,11 @@ export interface components {
             deletedAt?: string | null;
         };
         /** @enum {string} */
-        MemberRolesEnum: "dite" | "instruktor" | "vedouci";
+        MemberRolesEnum: MemberRolesEnum;
         /** @enum {string} */
-        MembershipStatesEnum: "clen" | "neclen" | "pozastaveno";
+        MembershipStatesEnum: MembershipStatesEnum;
         /** @enum {string} */
-        MemberRanksEnum: "dite" | "instruktor" | "vedouci";
+        MemberRanksEnum: MemberRanksEnum;
         AcLink: {
             allowed: boolean;
             applicable: boolean;
@@ -1145,12 +1145,12 @@ export interface components {
             eventId: number;
             memberId: number;
             /** @enum {string} */
-            type: "attendee" | "leader";
+            type: EventAttendeeResponseType;
             event?: components["schemas"]["Event"];
             member?: components["schemas"]["MemberResponse"];
         };
         /** @enum {string} */
-        EventExpenseTypesEnum: "food" | "transport" | "material" | "accommodation" | "other";
+        EventExpenseTypesEnum: EventExpenseTypesEnum;
         EventExpenseResponse: {
             id: number;
             eventId: number;
@@ -1242,7 +1242,7 @@ export interface components {
         EventUpdateBody: {
             name?: string;
             /** @enum {string} */
-            status?: "draft" | "pending" | "public" | "cancelled";
+            status?: EventUpdateBodyStatus;
             dateFrom?: string;
             dateTill?: string;
             leadersEvent?: boolean;
@@ -1269,18 +1269,18 @@ export interface components {
             eventId: number;
             memberId: number;
             /** @enum {string} */
-            type: "attendee" | "leader";
+            type: EventAttendeeResponseWithLinksType;
             event?: components["schemas"]["Event"];
             member?: components["schemas"]["MemberResponse"];
             _links: components["schemas"]["EventAttendeeResponseLinks"];
         };
         EventAttendeeCreateBody: {
             /** @enum {string} */
-            type: "attendee" | "leader";
+            type: EventAttendeeCreateBodyType;
         };
         EventAttendeeUpdateBody: {
             /** @enum {string} */
-            type: "attendee" | "leader";
+            type: EventAttendeeUpdateBodyType;
         };
         EventExpenseResponseLinks: {
             updateEventExpense: components["schemas"]["AcLink"];
@@ -1299,14 +1299,14 @@ export interface components {
         EventExpenseCreateBody: {
             receiptNumber: string;
             /** @enum {string} */
-            type: "food" | "transport" | "material" | "accommodation" | "other";
+            type: EventExpenseCreateBodyType;
             amount: number;
             description: string;
         };
         EventExpenseUpdateBody: {
             receiptNumber: string;
             /** @enum {string} */
-            type: "food" | "transport" | "material" | "accommodation" | "other";
+            type: EventExpenseUpdateBodyType;
             amount: number;
             description: string;
         };
@@ -1361,7 +1361,7 @@ export interface components {
             groupId: number;
             nickname: string;
             /** @enum {string} */
-            role: "dite" | "instruktor" | "vedouci";
+            role: MemberCreateBodyRole;
             firstName: string | null;
             lastName: string | null;
         };
@@ -1422,7 +1422,7 @@ export interface components {
             other?: string;
         };
         /** @enum {string} */
-        UserRolesEnum: "admin" | "revizor" | "program";
+        UserRolesEnum: UserRolesEnum;
         UserResponseLinks: {
             getUser: components["schemas"]["AcLink"];
             updateUser: components["schemas"]["AcLink"];
@@ -1446,7 +1446,7 @@ export interface components {
             memberId?: number;
             login?: string;
             email?: string;
-            roles?: ("admin" | "revizor" | "program")[];
+            roles?: UserCreateBodyRoles[];
         };
         UserResponse: {
             id: number;
@@ -1463,7 +1463,7 @@ export interface components {
             memberId?: number;
             login?: string;
             email?: string;
-            roles?: ("admin" | "revizor" | "program")[];
+            roles?: UserUpdateBodyRoles[];
         };
         UserSetPasswordBody: {
             password: string;
@@ -1479,7 +1479,7 @@ export interface components {
         AlbumResponseWithLinks: {
             id: number;
             /** @enum {string} */
-            status: "public" | "draft";
+            status: AlbumResponseWithLinksStatus;
             name: string;
             description?: string | null;
             datePublished?: string;
@@ -1522,7 +1522,7 @@ export interface components {
         AlbumResponse: {
             id: number;
             /** @enum {string} */
-            status: "public" | "draft";
+            status: AlbumResponseStatus;
             name: string;
             description?: string | null;
             datePublished?: string;
@@ -1655,7 +1655,6 @@ export interface components {
     headers: never;
     pathItems: never;
 }
-export type EventStatesEnum = components['schemas']['EventStatesEnum'];
 export type Group = components['schemas']['Group'];
 export type MemberContact = components['schemas']['MemberContact'];
 export type MemberAchievement = components['schemas']['MemberAchievement'];
@@ -1668,15 +1667,11 @@ export type PhotoFace = components['schemas']['PhotoFace'];
 export type Photo = components['schemas']['Photo'];
 export type Album = components['schemas']['Album'];
 export type GroupResponse = components['schemas']['GroupResponse'];
-export type MemberRolesEnum = components['schemas']['MemberRolesEnum'];
-export type MembershipStatesEnum = components['schemas']['MembershipStatesEnum'];
-export type MemberRanksEnum = components['schemas']['MemberRanksEnum'];
 export type AcLink = components['schemas']['AcLink'];
 export type GroupResponseLinks = components['schemas']['GroupResponseLinks'];
 export type GroupResponseWithLinks = components['schemas']['GroupResponseWithLinks'];
 export type MemberResponse = components['schemas']['MemberResponse'];
 export type EventAttendeeResponse = components['schemas']['EventAttendeeResponse'];
-export type EventExpenseTypesEnum = components['schemas']['EventExpenseTypesEnum'];
 export type EventExpenseResponse = components['schemas']['EventExpenseResponse'];
 export type EventResponseLinks = components['schemas']['EventResponseLinks'];
 export type EventResponseWithLinks = components['schemas']['EventResponseWithLinks'];
@@ -1704,7 +1699,6 @@ export type MemberContactResponseLinks = components['schemas']['MemberContactRes
 export type MemberContactResponseWithLinks = components['schemas']['MemberContactResponseWithLinks'];
 export type CreateContactBody = components['schemas']['CreateContactBody'];
 export type MemberContactResponse = components['schemas']['MemberContactResponse'];
-export type UserRolesEnum = components['schemas']['UserRolesEnum'];
 export type UserResponseLinks = components['schemas']['UserResponseLinks'];
 export type UserResponseWithLinks = components['schemas']['UserResponseWithLinks'];
 export type UserCreateBody = components['schemas']['UserCreateBody'];
@@ -2385,7 +2379,7 @@ export interface operations {
                 groups?: number[];
                 search?: string;
                 roles?: string[];
-                membership?: "clen" | "neclen" | "pozastaveno";
+                membership?: PathsApiMembersGetParametersQueryMembership;
             };
             header?: never;
             path?: never;
@@ -2816,7 +2810,7 @@ export interface operations {
                 groups?: number[];
                 search?: string;
                 roles?: string[];
-                membership?: "clen" | "neclen" | "pozastaveno";
+                membership?: PathsApiMembersExportXlsxGetParametersQueryMembership;
             };
             header?: never;
             path?: never;
@@ -3018,7 +3012,7 @@ export interface operations {
                 limit?: number;
                 offset?: number;
                 search?: string;
-                status?: "public" | "draft";
+                status?: PathsApiAlbumsGetParametersQueryStatus;
                 year?: string;
             };
             header?: never;
@@ -3700,4 +3694,146 @@ export interface operations {
             };
         };
     };
+}
+export enum PathsApiMembersGetParametersQueryMembership {
+    clen = "clen",
+    neclen = "neclen",
+    pozastaveno = "pozastaveno"
+}
+export enum PathsApiMembersExportXlsxGetParametersQueryMembership {
+    clen = "clen",
+    neclen = "neclen",
+    pozastaveno = "pozastaveno"
+}
+export enum PathsApiAlbumsGetParametersQueryStatus {
+    public = "public",
+    draft = "draft"
+}
+export enum EventStatesEnum {
+    draft = "draft",
+    pending = "pending",
+    public = "public",
+    cancelled = "cancelled"
+}
+export enum MemberAchievementType {
+    star = "star",
+    certificate = "certificate",
+    other = "other"
+}
+export enum MemberRole {
+    dite = "dite",
+    instruktor = "instruktor",
+    vedouci = "vedouci"
+}
+export enum MemberMembership {
+    clen = "clen",
+    neclen = "neclen",
+    pozastaveno = "pozastaveno"
+}
+export enum EventAttendeeType {
+    attendee = "attendee",
+    leader = "leader"
+}
+export enum EventExpenseType {
+    food = "food",
+    transport = "transport",
+    material = "material",
+    accommodation = "accommodation",
+    other = "other"
+}
+export enum EventStatus {
+    draft = "draft",
+    pending = "pending",
+    public = "public",
+    cancelled = "cancelled"
+}
+export enum AlbumStatus {
+    public = "public",
+    draft = "draft"
+}
+export enum MemberRolesEnum {
+    dite = "dite",
+    instruktor = "instruktor",
+    vedouci = "vedouci"
+}
+export enum MembershipStatesEnum {
+    clen = "clen",
+    neclen = "neclen",
+    pozastaveno = "pozastaveno"
+}
+export enum MemberRanksEnum {
+    dite = "dite",
+    instruktor = "instruktor",
+    vedouci = "vedouci"
+}
+export enum EventAttendeeResponseType {
+    attendee = "attendee",
+    leader = "leader"
+}
+export enum EventExpenseTypesEnum {
+    food = "food",
+    transport = "transport",
+    material = "material",
+    accommodation = "accommodation",
+    other = "other"
+}
+export enum EventUpdateBodyStatus {
+    draft = "draft",
+    pending = "pending",
+    public = "public",
+    cancelled = "cancelled"
+}
+export enum EventAttendeeResponseWithLinksType {
+    attendee = "attendee",
+    leader = "leader"
+}
+export enum EventAttendeeCreateBodyType {
+    attendee = "attendee",
+    leader = "leader"
+}
+export enum EventAttendeeUpdateBodyType {
+    attendee = "attendee",
+    leader = "leader"
+}
+export enum EventExpenseCreateBodyType {
+    food = "food",
+    transport = "transport",
+    material = "material",
+    accommodation = "accommodation",
+    other = "other"
+}
+export enum EventExpenseUpdateBodyType {
+    food = "food",
+    transport = "transport",
+    material = "material",
+    accommodation = "accommodation",
+    other = "other"
+}
+export enum MemberCreateBodyRole {
+    dite = "dite",
+    instruktor = "instruktor",
+    vedouci = "vedouci"
+}
+export enum UserRolesEnum {
+    admin = "admin",
+    revizor = "revizor",
+    program = "program"
+}
+export enum UserCreateBodyRoles {
+    admin = "admin",
+    revizor = "revizor",
+    program = "program"
+}
+export enum UserUpdateBodyRoles {
+    admin = "admin",
+    revizor = "revizor",
+    program = "program"
+}
+export enum AlbumResponseWithLinksStatus {
+    public = "public",
+    draft = "draft"
+}
+export enum AlbumResponseStatus {
+    public = "public",
+    draft = "draft"
 }

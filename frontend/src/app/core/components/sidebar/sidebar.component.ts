@@ -12,7 +12,7 @@ export class SidebarComponent implements OnInit {
 	environment?: string;
 	version?: string;
 
-	constructor(private api: BackendApi) {}
+	constructor(private api: ApiService) {}
 
 	ngOnInit(): void {
 		this.loadEnvironment();

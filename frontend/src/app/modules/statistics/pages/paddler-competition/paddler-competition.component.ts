@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { debounceTime, filter, map } from "rxjs/operators";
+import { ApiService } from "src/app/services/api.service";
 
 export type Ranked<T> = T & { rank?: number; rankTo?: number };
 
@@ -32,7 +33,7 @@ export class PaddlerCompetitionComponent implements OnInit {
 	groups: Ranked<PaddlerCompetitionGroup>[] = [];
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private router: Router,
 		private route: ActivatedRoute,
 	) {
@@ -50,14 +51,16 @@ export class PaddlerCompetitionComponent implements OnInit {
 	}
 
 	async loadYears() {
-		const totals = await this.api.StatisticsApi.getPaddlersTotals().then((res) => res.data);
+		const totals = await this.api.get("/api/statistics/paddlers").then((res) => res.data);
 		this.years = totals.years;
 		this.years.sort();
 		if (!this.currentYear) this.setYear(this.years[this.years.length - 1]);
 	}
 
 	async loadRanking(year: number) {
-		const rankings = await this.api.StatisticsApi.getPaddlersRanking(year).then((res) => res.data);
+		const rankings = await this.api
+			.get("/api/statistics/paddlers/{year}/ranking", { params: { year } })
+			.then((res) => res.data);
 
 		this.rankings = this.setRanks(rankings);
 

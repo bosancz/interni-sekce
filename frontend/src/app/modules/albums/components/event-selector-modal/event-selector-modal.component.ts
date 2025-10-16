@@ -11,7 +11,7 @@ export class EventSelectorModalComponent implements OnInit {
 	events: BackendApiTypes.EventResponseWithLinks[] = [];
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private modalController: ModalController,
 	) {}
 

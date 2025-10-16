@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ModalController, ViewWillEnter } from "@ionic/angular";
 import { EventsService } from "src/app/modules/events/services/events.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { BackendApiTypes } from "src/sdk/backend.client";
 import { TrimesterDateRange } from "../../components/trimester-selector/trimester-selector.component";
 
 @Component({

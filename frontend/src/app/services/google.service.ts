@@ -1,4 +1,6 @@
 import { Injectable } from "@angular/core";
+import { firstValueFrom } from "rxjs";
+import { ApiService } from "./api.service";
 
 export class GoogleError extends Error {
 	name: string = "GoogleError"; // when transpiled to ES5 cant test if instanceof GoogleError
@@ -10,7 +12,7 @@ export class GoogleError extends Error {
 	providedIn: "root",
 })
 export class GoogleService {
-	constructor(private api: BackendApi) {}
+	constructor(private api: ApiService) {}
 
 	async signIn() {
 		await new Promise<void>((resolve, reject) => {
@@ -21,8 +23,9 @@ export class GoogleService {
 			document.body.appendChild(script);
 		});
 
-		const client_id = await this.api.RootApi.getApiInfo().then((res) => res.data.googleClientId);
-		if (!client_id) throw new Error("Client ID not provided by API");
+		// In your signIn method:
+		const info = await firstValueFrom(this.api.info);
+		const client_id = info?.googleClientId;
 
 		const response = await new Promise<google.accounts.oauth2.CodeResponse>((resolve, reject) => {
 			const client = google.accounts.oauth2.initCodeClient({

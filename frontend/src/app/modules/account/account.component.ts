@@ -11,7 +11,7 @@ export class AccountComponent {
 
 	modal?: HTMLIonModalElement;
 
-	constructor(private api: BackendApi) {}
+	constructor(private api: ApiService) {}
 
 	ngOnInit() {
 		this.loadUser();

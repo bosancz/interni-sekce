@@ -23,7 +23,7 @@ export class GroupsListComponent implements ViewWillEnter {
 	];
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private navController: NavController,
 		private route: ActivatedRoute,
 		private actionSheetController: ActionSheetController,

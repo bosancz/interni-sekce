@@ -1,6 +1,8 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
 import { CzechHolidays } from "czech-holidays";
 import { DateTime } from "luxon";
+import { ApiService } from "src/app/services/api.service";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 const months = [
 	"Leden",
@@ -22,7 +24,7 @@ class CalendarRow {
 
 	blocks = {
 		own: new CalendarRowBlock<BackendApiTypes.EventResponseWithLinks>(),
-		cpv: new CalendarRowBlock<BackendApiTypes.CPVEventResponseWithLinks>(),
+		cpv: new CalendarRowBlock<BackendApiTypes.CpvEventResponseWithLinks>(),
 	};
 
 	constructor(
@@ -31,7 +33,7 @@ class CalendarRow {
 	) {}
 }
 
-class CalendarRowBlock<T extends BackendApiTypes.CPVEventResponseWithLinks | BackendApiTypes.EventResponseWithLinks> {
+class CalendarRowBlock<T extends BackendApiTypes.CpvEventResponseWithLinks | BackendApiTypes.EventResponseWithLinks> {
 	events: CalendarEvent<T>[] = [];
 	levels: number = 1;
 }
@@ -51,7 +53,7 @@ class CalendarDay {
 	) {}
 }
 
-class CalendarEvent<T extends BackendApiTypes.CPVEventResponseWithLinks | BackendApiTypes.EventResponseWithLinks> {
+class CalendarEvent<T extends BackendApiTypes.CpvEventResponseWithLinks | BackendApiTypes.EventResponseWithLinks> {
 	level: number = 0;
 
 	dateFrom: DateTime;
@@ -95,11 +97,11 @@ export class EventCalendarComponent implements OnInit, OnChanges {
 	dateFrom!: DateTime;
 	dateTill!: DateTime;
 
-	eventsCPV: BackendApiTypes.CPVEventResponseWithLinks[] = [];
+	eventsCPV: BackendApiTypes.CpvEventResponseWithLinks[] = [];
 
 	eventHeight = 22;
 
-	constructor(private api: BackendApi) {}
+	constructor(private api: ApiService) {}
 
 	ngOnInit() {}
 
@@ -160,7 +162,8 @@ export class EventCalendarComponent implements OnInit, OnChanges {
 	async loadEventsCPV() {
 		this.eventsCPV = [];
 
-		this.api.EventsApi.getCPVEvents()
+		this.api
+			.get("/api/cpv-events")
 			.then((res) => res.data)
 			.then((events) => {
 				this.eventsCPV.push(...events);
@@ -169,9 +172,9 @@ export class EventCalendarComponent implements OnInit, OnChanges {
 	}
 
 	assignEvents(events: Array<BackendApiTypes.EventResponseWithLinks>, type: "own"): void;
-	assignEvents(events: Array<BackendApiTypes.CPVEventResponseWithLinks>, type: "cpv"): void;
+	assignEvents(events: Array<BackendApiTypes.CpvEventResponseWithLinks>, type: "cpv"): void;
 	assignEvents(
-		events: Array<BackendApiTypes.CPVEventResponseWithLinks> | Array<BackendApiTypes.EventResponseWithLinks>,
+		events: Array<BackendApiTypes.CpvEventResponseWithLinks> | Array<BackendApiTypes.EventResponseWithLinks>,
 		type: "own" | "cpv",
 	): void {
 		if (!this.calendar) return;
@@ -183,7 +186,7 @@ export class EventCalendarComponent implements OnInit, OnChanges {
 
 			// assign events based on first and last day, convert to CalendarEvent
 			rowBlock.events = <
-				| CalendarEvent<BackendApiTypes.CPVEventResponseWithLinks>[]
+				| CalendarEvent<BackendApiTypes.CpvEventResponseWithLinks>[]
 				| CalendarEvent<BackendApiTypes.EventResponseWithLinks>[]
 			>events
 				.map((event) => new CalendarEvent(event))
@@ -251,14 +254,14 @@ export class EventCalendarComponent implements OnInit, OnChanges {
 	}
 
 	getEventLeft(
-		event: CalendarEvent<BackendApiTypes.CPVEventResponseWithLinks | BackendApiTypes.EventResponseWithLinks>,
+		event: CalendarEvent<BackendApiTypes.CpvEventResponseWithLinks | BackendApiTypes.EventResponseWithLinks>,
 		row: CalendarRow,
 	) {
 		return event.dateFrom.diff(row.days[0].date, "days").days / row.days.length;
 	}
 
 	getEventWidth(
-		event: CalendarEvent<BackendApiTypes.CPVEventResponseWithLinks | BackendApiTypes.EventResponseWithLinks>,
+		event: CalendarEvent<BackendApiTypes.CpvEventResponseWithLinks | BackendApiTypes.EventResponseWithLinks>,
 		month: CalendarRow,
 	) {
 		return (event.dateTill.diff(event.dateFrom, "days").days + 1) / month.days.length;

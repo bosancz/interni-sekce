@@ -24,7 +24,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
 	modal?: HTMLIonModalElement;
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private toastService: ToastService,
 		private modalService: ModalService,
 	) {}

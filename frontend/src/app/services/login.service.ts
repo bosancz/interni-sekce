@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable } from "@angular/core";
 
 import { GoogleService } from "src/app/services/google.service";
+import { ApiService } from "./api.service";
 import { ToastService } from "./toast.service";
 import { UserService } from "./user.service";
 
@@ -32,7 +33,7 @@ export class LoginService {
 	onLogout: EventEmitter<void> = new EventEmitter();
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private googleService: GoogleService,
 		private userService: UserService,
 		private toastService: ToastService,
@@ -40,7 +41,7 @@ export class LoginService {
 
 	async loginCredentials(credentials: { login: string; password: string }) {
 		try {
-			await this.api.AccountApi.loginUsingCredentials(credentials);
+			await this.api.post("/api/login/credentials", credentials);
 
 			await this.userService.loadUser();
 		} catch (err: any) {
@@ -70,7 +71,7 @@ export class LoginService {
 			const googleToken = await this.googleService.signIn();
 
 			// validate token with the server
-			await this.api.AccountApi.loginUsingGoogle({ token: googleToken });
+			await this.api.post("/api/login/google", { token: googleToken });
 
 			// load user
 			await this.userService.loadUser();
@@ -81,7 +82,7 @@ export class LoginService {
 
 	async loginImpersonate(userId: number) {
 		try {
-			await this.api.UsersApi.impersonateUser(userId);
+			await this.api.post("/api/users/{id}/impersonate", undefined, { params: { id: userId } });
 
 			await this.userService.loadUser();
 
@@ -92,11 +93,11 @@ export class LoginService {
 	}
 
 	async sendLoginLink(login: string) {
-		return this.api.AccountApi.sendLoginLink({ login });
+		return this.api.post("/api/login/sendLink", { login });
 	}
 
 	async logout() {
-		await this.api.AccountApi.logout();
+		await this.api.post("/api/login/logout", undefined);
 		const user = await this.userService.loadUser();
 
 		if (user) this.toastService.toast("Přihlášen zpět jako " + user.login);

@@ -2,6 +2,8 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 
 import axios from "axios";
+import { BackendApiTypes } from "src/sdk/backend.client";
+import { ApiService } from "./api.service";
 import { ToastService } from "./toast.service";
 /**
  * Service to save user information and commnicate user data with server
@@ -13,7 +15,7 @@ export class UserService {
 	user = new BehaviorSubject<BackendApiTypes.UserResponseWithLinks | null | undefined>(undefined);
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private toastService: ToastService,
 	) {
 		this.loadUser();
@@ -25,7 +27,7 @@ export class UserService {
 
 	async loadUser() {
 		try {
-			const user = await this.api.AccountApi.getMe().then((res) => res.data);
+			const user = await this.api.get("/api/account").then((res) => res.data);
 			this.user.next(user);
 			return user;
 		} catch (err) {

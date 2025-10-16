@@ -20,7 +20,7 @@ export class GroupMembersComponent implements OnInit {
 	};
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private groupsService: GroupsService,
 	) {}
 

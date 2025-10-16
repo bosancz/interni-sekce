@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Pipe, PipeTransform } from "@angular/core";
 import { map } from "rxjs";
-import { BackendApi, BackendApiTypes } from "src/sdk/backend.client";
+import { ApiService } from "src/app/services/api.service";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 export type GroupPipeProperty = "name" | "color" | "code";
 
@@ -21,11 +22,11 @@ export class GroupPipe implements PipeTransform {
 	};
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private cdRef: ChangeDetectorRef,
 	) {
 		this.api
-			.watchRequest((signal) => this.api.GET("/api/groups")
+			.watch("/api/groups", { query: {} })
 			.pipe(map((res) => res.data))
 			.subscribe((groups) => {
 				this.groups = new Map(groups.map((group) => [group.id, group]));

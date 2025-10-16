@@ -9,6 +9,7 @@ import {
 	Output,
 	SimpleChanges,
 } from "@angular/core";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 interface PhotoRowItem {
 	photo: BackendApiTypes.PhotoResponseWithLinks;

@@ -13,7 +13,7 @@ export class HomeDashboardComponent implements OnInit {
 	isLg: boolean = false;
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private platform: Platform,
 	) {}
 

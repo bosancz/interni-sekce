@@ -26,7 +26,7 @@ export class AccountNotificationsComponent implements OnInit {
 	systemNotificationStatus: string = "default";
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		public swPush: SwPush,
 		private toastService: ToastService,
 	) {}

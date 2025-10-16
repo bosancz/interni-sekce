@@ -1,5 +1,7 @@
 import { AfterViewInit, Component, ElementRef, forwardRef, Input, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { ApiService } from "src/app/services/api.service";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 @Component({
 	selector: "bo-group-select",
@@ -32,7 +34,7 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 
 	constructor(
 		private elRef: ElementRef<HTMLElement>,
-		private api: BackendApi,
+		private api: ApiService,
 	) {
 		this.loadGroups();
 	}
@@ -40,7 +42,7 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	ngOnInit() {}
 
 	async loadGroups() {
-		this.groups = await this.api.MembersApi.listGroups({ active: true }).then((res) => res.data);
+		this.groups = await this.api.get("/api/groups", { query: { active: true } }).then((res) => res.data);
 	}
 
 	ngAfterViewInit() {

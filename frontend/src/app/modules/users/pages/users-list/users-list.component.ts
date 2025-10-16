@@ -3,8 +3,10 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { InfiniteScrollCustomEvent, Platform, ViewWillEnter } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { UserRoles } from "src/app/config/user-roles";
+import { ApiService } from "src/app/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { FilterData } from "src/app/shared/components/filter/filter.component";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 type UsersFilter = {
 	search: string;
@@ -33,7 +35,7 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
 	view?: "table" | "list";
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private route: ActivatedRoute,
 		private router: Router,
 		private platform: Platform,
@@ -72,14 +74,16 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
 			this.users = undefined;
 		}
 
-		const params: BackendApiTypes.UsersApiListUsersQueryParams = {
-			search: filter.search || undefined,
-			roles: filter.roles || undefined,
-			limit: this.pageSize,
-			offset: (this.page - 1) * this.pageSize,
-		};
-
-		const users = await this.api.UsersApi.listUsers(params).then((res) => res.data);
+		const users = await this.api
+			.get("/api/users", {
+				query: {
+					search: filter.search || undefined,
+					roles: filter.roles || undefined,
+					limit: this.pageSize,
+					offset: (this.page - 1) * this.pageSize,
+				},
+			})
+			.then((res) => res.data);
 
 		if (!this.users) this.users = [];
 		this.users.push(...users);

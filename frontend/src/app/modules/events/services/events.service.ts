@@ -8,7 +8,7 @@ import { BehaviorSubject } from "rxjs";
 export class EventsService {
 	event$ = new BehaviorSubject<BackendApiTypes.EventResponseWithLinks | undefined>(undefined);
 
-	constructor(private api: BackendApi) {}
+	constructor(private api: ApiService) {}
 
 	async loadEvent(eventId: number): Promise<BackendApiTypes.EventResponseWithLinks> {
 		const event = await this.api.EventsApi.getEvent(eventId).then((res) => res.data);

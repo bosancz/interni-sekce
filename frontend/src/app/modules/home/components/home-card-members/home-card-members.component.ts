@@ -17,7 +17,7 @@ export class HomeCardMembersComponent implements OnInit {
 
 	searching: boolean = false;
 
-	constructor(private api: BackendApi) {}
+	constructor(private api: ApiService) {}
 
 	ngOnInit(): void {
 		this.searchString

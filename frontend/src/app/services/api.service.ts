@@ -1,11 +1,9 @@
 import { Injectable } from "@angular/core";
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { Subject, fromEvent } from "rxjs";
-import { filter, retry, switchMap } from "rxjs/operators";
-import { appConfig } from "src/config";
-import { environment } from "src/environments/environment";
+import axios, { AxiosError } from "axios";
+import { Subject } from "rxjs";
 import { Logger } from "src/logger";
-import { SDK } from "src/sdk";
+import { BackendApi, BackendApiTypes } from "src/sdk/backend.client";
+import { RootResponseWithLinks } from "src/sdk/backend.types";
 
 export type RootLinks = BackendApiTypes.RootResponseLinks;
 
@@ -13,70 +11,29 @@ export type ApiError = AxiosError;
 
 axios.defaults.withCredentials = true;
 
-interface WatchRequestOptions {
-	maxRetries?: number;
-	onFocus?: boolean;
-}
-
 @Injectable({
 	providedIn: "root",
 })
-export class ApiService extends SDK {
+export class ApiService extends BackendApi {
 	private readonly logger = new Logger(ApiService.name);
-
-	private tabFocusEvent = fromEvent(document, "visibilitychange").pipe(
-		filter(() => document.visibilityState === "visible"),
-	);
-	private reloadApiEvent = new Subject<void>();
 
 	public info = new Subject<BackendApiTypes.RootResponseWithLinks>();
 	public rootLinks = new Subject<BackendApiTypes.RootResponseLinks>();
 
 	constructor() {
-		super({
-			basePath: appConfig.apiRoot ?? environment.apiRoot,
-		});
+		super();
 
-		this.reloadApiEvent.subscribe(() => this.loadInfo());
-
-		this.reloadApi();
+		this.watch("/api", { watchOptions: { maxRetries: Infinity, onFocus: true } }).subscribe((res) =>
+			this.loadInfo(res.data),
+		);
 	}
 
-	async init() {
-		await this.reloadApi();
-	}
-
-	async reloadApi() {
-		this.reloadApiEvent.next();
-	}
-
-	private async loadInfo() {
-		const info = await this.RootApi.getApiInfo().then((res) => res.data);
+	private async loadInfo(info: RootResponseWithLinks) {
 		this.info.next(info);
 		this.rootLinks.next(info._links);
 	}
 
 	isApiError(err: unknown): err is ApiError {
 		return axios.isAxiosError(err);
-	}
-
-	watchRequest<T, D>(
-		request: (signal: AbortSignal) => Promise<AxiosResponse<T, D>>,
-		options: WatchRequestOptions = {},
-	) {
-		const trigger = new Subject<void>();
-
-		this.tabFocusEvent.subscribe(() => trigger.next());
-		this.reloadApiEvent.subscribe(() => trigger.next());
-
-		return trigger
-			.pipe(
-				switchMap(() => {
-					const controller = new AbortController();
-					trigger.subscribe(() => controller.abort());
-					return request(controller.signal);
-				}),
-			)
-			.pipe(retry(options.maxRetries));
 	}
 }

@@ -22,7 +22,7 @@ export class EventRegistrationComponent {
 	@ViewChild("registrationInput") registrationInput!: ElementRef<HTMLInputElement>;
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private toastService: ToastService,
 		private eventService: EventsService,
 		private sanitizer: DomSanitizer,

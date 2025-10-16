@@ -3,7 +3,9 @@ import { NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter } from "@ionic/angular";
 import { MemberRoles } from "src/app/config/member-roles";
+import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 @Component({
 	selector: "members-create",
@@ -16,7 +18,7 @@ export class MembersCreateComponent implements ViewWillEnter {
 	roles = MemberRoles;
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private toastService: ToastService,
 		private router: Router,
 		private route: ActivatedRoute,
@@ -27,14 +29,14 @@ export class MembersCreateComponent implements ViewWillEnter {
 	}
 
 	private async loadGroups() {
-		this.groups = await this.api.MembersApi.listGroups().then((res) => res.data);
+		this.groups = await this.api.get("/api/groups", { query: {} }).then((res) => res.data);
 	}
 
 	async onSubmit(form: NgForm) {
 		const formData = form.value;
 
-		const member = await this.api.MembersApi.createMember(formData).then((res) => res.data);
-		this.toastService.toast("Člen uložen.");
+		const member = await this.api.post("/api/members", formData).then((res) => res.data);
+		this.toastService.toast("Člen vytvořen.");
 
 		this.router.navigate(["../", {}, member.id], { relativeTo: this.route, replaceUrl: true });
 	}

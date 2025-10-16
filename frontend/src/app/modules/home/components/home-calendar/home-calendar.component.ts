@@ -15,7 +15,7 @@ export class HomeCalendarComponent implements OnInit {
 
 	@Input() months: number = 1;
 
-	constructor(private api: BackendApi) {}
+	constructor(private api: ApiService) {}
 
 	ngOnInit(): void {
 		this.loadCalendarEvents();

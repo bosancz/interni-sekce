@@ -1,7 +1,9 @@
 import { Component } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { ApiService } from "src/app/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 @UntilDestroy()
 @Component({
@@ -17,7 +19,7 @@ export class UsersViewComponent {
 
 	constructor(
 		private route: ActivatedRoute,
-		private api: BackendApi,
+		private api: ApiService,
 	) {}
 
 	ngOnInit() {
@@ -27,7 +29,7 @@ export class UsersViewComponent {
 	}
 
 	private async loadUser(id: number) {
-		this.user = await this.api.UsersApi.getUser(id).then((res) => res.data);
+		this.user = await this.api.get("/api/users/{id}", { params: { id } }).then((res) => res.data);
 		this.setActions(this.user);
 	}
 

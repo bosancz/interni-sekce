@@ -2,12 +2,12 @@ import { Component } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
-	AlertController,
-	InfiniteScrollCustomEvent,
-	NavController,
-	Platform,
-	ViewWillEnter,
-	ViewWillLeave,
+    AlertController,
+    InfiniteScrollCustomEvent,
+    NavController,
+    Platform,
+    ViewWillEnter,
+    ViewWillLeave,
 } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { AlbumStatuses } from "src/app/config/album-statuses";
@@ -49,7 +49,7 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 	});
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private alertController: AlertController,
 		private toastService: ToastService,
 		private navController: NavController,

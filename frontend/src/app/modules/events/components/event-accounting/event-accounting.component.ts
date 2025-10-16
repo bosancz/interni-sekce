@@ -24,7 +24,7 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 
 	constructor(
 		private toastService: ToastService,
-		private api: BackendApi,
+		private api: ApiService,
 		private modalService: ModalService,
 	) {}
 

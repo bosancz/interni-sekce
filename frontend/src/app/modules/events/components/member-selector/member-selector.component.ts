@@ -40,7 +40,7 @@ export class MemberSelectorComponent implements OnInit, ControlValueAccessor, Af
 
 	constructor(
 		private modalController: ModalController,
-		private api: BackendApi,
+		private api: ApiService,
 		private elRef: ElementRef<HTMLElement>,
 	) {}
 

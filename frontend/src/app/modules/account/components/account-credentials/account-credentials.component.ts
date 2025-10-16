@@ -12,7 +12,7 @@ export class AccountCredentialsComponent implements OnInit {
 	user?: BackendApiTypes.UserResponseWithLinks;
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private toastService: ToastService,
 		private alertController: AlertController,
 	) {}

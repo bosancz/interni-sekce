@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { AlbumStatuses } from "src/app/config/album-statuses";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 type AlbumPipeProperty = "status";
 

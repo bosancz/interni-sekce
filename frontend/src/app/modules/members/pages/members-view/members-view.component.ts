@@ -3,9 +3,11 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, ViewWillEnter, ViewWillLeave } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MembershipStates } from "src/app/config/membership-states";
+import { ApiService } from "src/app/services/api.service";
 import { TitleService } from "src/app/services/title.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { BackendApiTypes } from "src/sdk/backend.client";
 import { MemberStoreService } from "../../services/member-store.service";
 
 @UntilDestroy()
@@ -33,7 +35,7 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	];
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private toastService: ToastService,
 		private route: ActivatedRoute,
 		private router: Router,
@@ -64,7 +66,7 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	ionViewWillLeave(): void {}
 
 	async loadMember(id: number) {
-		this.member = await this.api.MembersApi.getMember(id).then((res) => res.data);
+		this.member = await this.api.get("/api/members/{id}", { params: { id } }).then((res) => res.data);
 		this.titleService.setTitle(this.member?.nickname ?? null);
 	}
 
@@ -74,7 +76,7 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		const toast = await this.toastService.toast("Ukládám...");
 
 		try {
-			await this.api.MembersApi.updateMember(this.member.id, data);
+			await this.api.patch("/api/members/{id}", data, { params: { id: this.member.id } });
 
 			await this.loadMember(this.member.id);
 
@@ -101,7 +103,7 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	async deleteConfirmed() {
 		if (!this.member) return;
 
-		await this.api.MembersApi.deleteMember(this.member?.id);
+		await this.api.delete("/api/members/{id}", { params: { id: this.member.id } });
 
 		this.toastService.toast(`Člen ${this.member?.nickname} smazán.`);
 

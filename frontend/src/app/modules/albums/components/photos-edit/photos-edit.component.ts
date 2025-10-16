@@ -30,7 +30,7 @@ export class PhotosEditComponent implements ViewWillLeave {
 
 	constructor(
 		private modalController: ModalController,
-		private api: BackendApi,
+		private api: ApiService,
 		private alertController: AlertController,
 		private route: ActivatedRoute,
 		private router: Router,

@@ -9,7 +9,7 @@ import { Component, OnInit } from "@angular/core";
 export class HomeCardMyEventsComponent implements OnInit {
 	myEvents?: BackendApiTypes.EventResponseWithLinks[];
 
-	constructor(private api: BackendApi) {}
+	constructor(private api: ApiService) {}
 
 	ngOnInit(): void {
 		this.loadMyEvents();

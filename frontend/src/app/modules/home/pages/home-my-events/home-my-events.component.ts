@@ -28,7 +28,7 @@ export class HomeMyEventsComponent implements OnInit {
 	};
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private router: Router,
 		private route: ActivatedRoute,
 	) {}

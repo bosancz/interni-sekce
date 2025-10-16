@@ -1,4 +1,5 @@
 import { Component, Injector, OnInit } from "@angular/core";
+import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { TrimesterDateRange } from "../../components/trimester-selector/trimester-selector.component";
@@ -15,7 +16,7 @@ export class ProgramPrintComponent implements OnInit {
 	actions: Action[] = [];
 
 	constructor(
-		private api: BackendApi,
+		private api: ApiService,
 		private toasts: ToastService,
 		private injector: Injector,
 	) {}
@@ -28,17 +29,23 @@ export class ProgramPrintComponent implements OnInit {
 			return;
 		}
 
-		const requestOptions = {
-			filter: {
-				dateFrom: { $lte: this.dateRange[1] },
-				dateTill: { $gte: this.dateRange[0] },
-				status: "public",
-			},
-			select: "_id name description dateFrom dateTill leaders",
-		};
+		// const requestOptions = {
+		// 	filter: {
+		// 		dateFrom: { $lte: this.dateRange[1] },
+		// 		dateTill: { $gte: this.dateRange[0] },
+		// 		status: "public",
+		// 	},
+		// 	select: "_id name description dateFrom dateTill leaders",
+		// };
 
-		//TODO: use options above
-		const events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		// TODO: filter by date
+		const events = await this.api
+			.get("/api/events", {
+				query: {
+					status: "public",
+				},
+			})
+			.then((res) => res.data);
 
 		if (!events.length) {
 			this.toasts.toast("Nelze vygenerovat program, ve vybraném rozmezí nejsou žádné akce.");

@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { EventExpenseTypes } from "src/app/config/event-expense-types";
 import { EventTypes } from "src/app/config/event-types";
+import { BackendApiTypes } from "src/sdk/backend.client";
 
 type EventExpensePipeProperty = "type" | "color";
 

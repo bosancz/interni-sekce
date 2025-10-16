@@ -1,5 +1,6 @@
 import { Component, Input, forwardRef } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { ApiService } from "src/app/services/api.service";
 import { BackendApiTypes } from "src/sdk/backend.client";
 
 @Component({
@@ -21,10 +22,10 @@ export class MemberSelectComponent implements ControlValueAccessor {
 	members?: BackendApiTypes.MemberResponseWithLinks[];
 	selectedMembers: number[] = [];
 
-	constructor(private api: BackendApi) {}
+	constructor(private api: ApiService) {}
 
 	async loadMembers() {
-		this.members = await this.api.MembersApi.listMembers().then((res) => res.data);
+		this.members = await this.api.get("/api/members", { query: {} }).then((res) => res.data);
 	}
 
 	onChange: (value: number | number[]) => void = () => {};
