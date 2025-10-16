@@ -7,13 +7,13 @@ import { User } from "src/models/users/entities/user.entity";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { Repository } from "typeorm";
 import {
-  UserCreateRoute,
-  UserDeleteRoute,
-  UserEditRoute,
-  UserImpersonateRoute,
-  UserReadRoute,
-  UserSetPassword,
-  UsersListRoute,
+	UserCreateRoute,
+	UserDeleteRoute,
+	UserEditRoute,
+	UserImpersonateRoute,
+	UserReadRoute,
+	UserSetPassword,
+	UsersListRoute,
 } from "../acl/user.acl";
 import { UserCreateBody } from "../dto/user-create-body";
 import { UserSetPasswordBody } from "../dto/user-set-password-body";
@@ -25,110 +25,110 @@ import { ListUsersQuery } from "../dto/users.dto";
 @AcController()
 @ApiTags("Users")
 export class UsersController {
-  constructor(
-    private userService: UsersRepository,
-    @InjectRepository(User) private userRepository: Repository<User>,
-  ) {}
+	constructor(
+		private userService: UsersRepository,
+		@InjectRepository(User) private userRepository: Repository<User>,
+	) {}
 
-  @Get()
-  @AcLinks(UsersListRoute)
-  @ApiResponse({ status: 200, type: WithLinks(UserResponse), isArray: true })
-  async listUsers(@Req() req: Request, @Query() query: ListUsersQuery): Promise<UserResponse[]> {
-    const q = this.userRepository
-      .createQueryBuilder("user")
-      .select([
-        "user.id",
-        "user.login",
-        "user.memberId",
-        "user.roles",
-        "user.email",
-        "member.nickname",
-        "member.firstName",
-        "member.lastName",
-      ])
-      .leftJoin("user.member", "member")
-      .where(UsersListRoute.canWhere(req))
-      .orderBy("user.login", "ASC")
-      .take(query.limit || 25)
-      .skip(query.offset || 0);
+	@Get()
+	@AcLinks(UsersListRoute)
+	@ApiResponse({ status: 200, type: WithLinks(UserResponse), isArray: true })
+	async listUsers(@Req() req: Request, @Query() query: ListUsersQuery): Promise<UserResponse[]> {
+		const q = this.userRepository
+			.createQueryBuilder("user")
+			.select([
+				"user.id",
+				"user.login",
+				"user.memberId",
+				"user.roles",
+				"user.email",
+				"member.nickname",
+				"member.firstName",
+				"member.lastName",
+			])
+			.leftJoin("user.member", "member")
+			.where(UsersListRoute.canWhere(req))
+			.orderBy("user.login", "ASC")
+			.take(query.limit || 25)
+			.skip(query.offset || 0);
 
-    if (query.search)
-      q.andWhere("user.login ILIKE :search OR member.nickname ILIKE :search", { search: `%${query.search}%` });
+		if (query.search)
+			q.andWhere("user.login ILIKE :search OR member.nickname ILIKE :search", { search: `%${query.search}%` });
 
-    if (query.roles) q.andWhere("user.roles && array[:...roles]::users_roles_enum[]", { roles: query.roles });
+		if (query.roles) q.andWhere("user.roles && array[:...roles]::users_roles_enum[]", { roles: query.roles });
 
-    return q.getMany();
-  }
+		return q.getMany();
+	}
 
-  @Post()
-  @AcLinks(UserCreateRoute)
-  @ApiResponse({ type: WithLinks(UserResponse) })
-  async createUser(@Req() req: Request, @Body() body: UserCreateBody): Promise<UserResponse> {
-    UserCreateRoute.canOrThrow(req, undefined);
+	@Post()
+	@AcLinks(UserCreateRoute)
+	@ApiResponse({ type: WithLinks(UserResponse) })
+	async createUser(@Req() req: Request, @Body() body: UserCreateBody): Promise<UserResponse> {
+		UserCreateRoute.canOrThrow(req);
 
-    return this.userService.createUser(body);
-  }
+		return this.userService.createUser(body);
+	}
 
-  @Get(":id")
-  @AcLinks(UserReadRoute)
-  @ApiResponse({ status: 200, type: WithLinks(UserResponse) })
-  async getUser(@Req() req: Request, @Param("id") id: number): Promise<UserResponse> {
-    const user = await this.userRepository.findOne({ where: { id }, relations: ["member"] });
-    if (!user) throw new NotFoundException();
+	@Get(":id")
+	@AcLinks(UserReadRoute)
+	@ApiResponse({ status: 200, type: WithLinks(UserResponse) })
+	async getUser(@Req() req: Request, @Param("id") id: number): Promise<UserResponse> {
+		const user = await this.userRepository.findOne({ where: { id }, relations: ["member"] });
+		if (!user) throw new NotFoundException();
 
-    UserReadRoute.canOrThrow(req, user);
+		UserReadRoute.canOrThrow(req, user);
 
-    return user;
-  }
+		return user;
+	}
 
-  @Patch(":id")
-  @AcLinks(UserEditRoute)
-  @ApiResponse({ status: 204 })
-  async updateUser(@Req() req: Request, @Param("id") id: number, @Body() body: UserUpdateBody): Promise<void> {
-    const user = await this.userService.getUser(id);
-    if (!user) throw new NotFoundException();
+	@Patch(":id")
+	@AcLinks(UserEditRoute)
+	@ApiResponse({ status: 204 })
+	async updateUser(@Req() req: Request, @Param("id") id: number, @Body() body: UserUpdateBody): Promise<void> {
+		const user = await this.userService.getUser(id);
+		if (!user) throw new NotFoundException();
 
-    UserEditRoute.canOrThrow(req, user);
+		UserEditRoute.canOrThrow(req, user);
 
-    await this.userService.updateUser(id, body);
-  }
+		await this.userService.updateUser(id, body);
+	}
 
-  @Delete(":id")
-  @AcLinks(UserDeleteRoute)
-  @ApiResponse({ status: 204 })
-  async deleteUser(@Req() req: Request, @Param("id") id: number): Promise<void> {
-    const user = await this.userService.getUser(id);
-    if (!user) throw new NotFoundException();
+	@Delete(":id")
+	@AcLinks(UserDeleteRoute)
+	@ApiResponse({ status: 204 })
+	async deleteUser(@Req() req: Request, @Param("id") id: number): Promise<void> {
+		const user = await this.userService.getUser(id);
+		if (!user) throw new NotFoundException();
 
-    UserDeleteRoute.canOrThrow(req, user);
+		UserDeleteRoute.canOrThrow(req, user);
 
-    await this.userService.deleteUser(id);
-  }
+		await this.userService.deleteUser(id);
+	}
 
-  @Put(":id/password")
-  @AcLinks(UserSetPassword)
-  @ApiResponse({ status: 204 })
-  async setUserPassword(
-    @Req() req: Request,
-    @Param("id") id: number,
-    @Body() body: UserSetPasswordBody,
-  ): Promise<void> {
-    const user = await this.userService.getUser(id);
-    if (!user) throw new NotFoundException();
+	@Put(":id/password")
+	@AcLinks(UserSetPassword)
+	@ApiResponse({ status: 204 })
+	async setUserPassword(
+		@Req() req: Request,
+		@Param("id") id: number,
+		@Body() body: UserSetPasswordBody,
+	): Promise<void> {
+		const user = await this.userService.getUser(id);
+		if (!user) throw new NotFoundException();
 
-    UserSetPassword.canOrThrow(req, user);
+		UserSetPassword.canOrThrow(req, user);
 
-    await this.userService.updateUser(id, body);
-  }
+		await this.userService.updateUser(id, body);
+	}
 
-  @Post(":id/impersonate")
-  @AcLinks(UserImpersonateRoute)
-  async impersonateUser(@Req() req: Request, @Param("id") id: number) {
-    const user = await this.userService.getUser(id);
-    if (!user) throw new NotFoundException();
+	@Post(":id/impersonate")
+	@AcLinks(UserImpersonateRoute)
+	async impersonateUser(@Req() req: Request, @Param("id") id: number) {
+		const user = await this.userService.getUser(id);
+		if (!user) throw new NotFoundException();
 
-    UserImpersonateRoute.canOrThrow(req, user);
+		UserImpersonateRoute.canOrThrow(req, user);
 
-    //TODO: implement
-  }
+		//TODO: implement
+	}
 }

@@ -1,18 +1,18 @@
-import { RouteACL } from "src/access-control/schema/route-acl";
+import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
 
-export const PadlersRankingRoute = new RouteACL({
-  linkTo: RootResponse,
+export const PadlersRankingRoute = new Permission<void>({
+	linkTo: RootResponse,
 
-  permissions: {
-    vedouci: true,
-  },
+	allowed: {
+		vedouci: true,
+	},
 });
 
-export const PadlersTotalsRoute = new RouteACL({
-  linkTo: RootResponse,
+export const PadlersTotalsRoute = new Permission<void>({
+	linkTo: RootResponse,
 
-  permissions: {
-    vedouci: true,
-  },
+	allowed: {
+		vedouci: true,
+	},
 });

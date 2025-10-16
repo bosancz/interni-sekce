@@ -1,48 +1,46 @@
-import { RouteACL } from "src/access-control/schema/route-acl";
-import { EventExpense } from "src/models/events/entities/event-expense.entity";
-import { Event } from "src/models/events/entities/event.entity";
+import { Permission } from "src/access-control/schema/route-acl";
 import { EventExpenseResponse } from "../dto/event-expense.dto";
 import { EventResponse } from "../dto/event.dto";
 import { EventReadRoute, isMyEvent } from "./events.acl";
 
-export const EventExpensesListRoute = new RouteACL<Event>({
-  linkTo: EventResponse,
-  contains: EventExpenseResponse,
+export const EventExpensesListRoute = new Permission({
+	linkTo: EventResponse,
+	contains: EventExpenseResponse,
 
-  inheritPermissions: EventReadRoute,
+	inherit: EventReadRoute,
 
-  path: (e) => `${e.id}/attendees`,
+	path: (e) => `${e.id}/attendees`,
 });
 
-export const EventExpenseReadRoute = new RouteACL<EventExpense>({
-  linkTo: EventExpenseResponse,
-  permissions: {
-    vedouci: true,
-  },
+export const EventExpenseReadRoute = new Permission({
+	linkTo: EventExpenseResponse,
+	allowed: {
+		vedouci: true,
+	},
 });
 
-export const EventExpenseCreateRoute = new RouteACL<Event>({
-  linkTo: EventResponse,
-  contains: EventExpenseResponse,
+export const EventExpenseCreateRoute = new Permission({
+	linkTo: EventResponse,
+	contains: EventExpenseResponse,
 
-  permissions: {
-    vedouci: ({ doc, req }) => isMyEvent(doc, req),
-  },
+	allowed: {
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
 });
 
-export const EventExpenseEditRoute = new RouteACL<EventExpense>({
-  linkTo: EventExpenseResponse,
+export const EventExpenseEditRoute = new Permission({
+	linkTo: EventExpenseResponse,
 
-  permissions: {
-    admin: true,
-    vedouci: ({ doc, req }) => isMyEvent(doc.event, req),
-  },
+	allowed: {
+		admin: true,
+		vedouci: ({ doc, req }) => isMyEvent(doc.event, req),
+	},
 
-  path: (d) => `${d.eventId}/expenses/${d.id}`,
+	path: (d) => `${d.eventId}/expenses/${d.id}`,
 });
 
-export const EventExpenseDeleteRoute = new RouteACL<EventExpense>({
-  linkTo: EventExpenseResponse,
-  path: (d) => `${d.eventId}/expenses/${d.id}`,
-  inheritPermissions: EventExpenseEditRoute,
+export const EventExpenseDeleteRoute = new Permission({
+	linkTo: EventExpenseResponse,
+	path: (d) => `${d.eventId}/expenses/${d.id}`,
+	inherit: EventExpenseEditRoute,
 });

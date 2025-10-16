@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { Subject, fromEvent } from "rxjs";
 import { filter, retry, switchMap } from "rxjs/operators";
-import { appConfig } from "src/config";
 import { environment } from "src/environments/environment";
 import { Logger } from "src/logger";
 import { SDK } from "src/sdk";
@@ -34,7 +33,7 @@ export class ApiService extends SDK {
 
 	constructor() {
 		super({
-			basePath: appConfig.apiRoot ?? environment.apiRoot,
+			basePath: environment.apiRoot,
 		});
 
 		this.reloadApiEvent.subscribe(() => this.loadInfo());

@@ -63,6 +63,10 @@ export class MembersRepository {
 		return this.membersContactsRepository.save({ ...contactData, memberId });
 	}
 
+	async getContact(memberId: number, contactId: number) {
+		return this.membersContactsRepository.findOne({ where: { id: contactId, memberId } });
+	}
+
 	async updateContact(memberId: number, contactId: number, contactData: Partial<Omit<MemberContact, "id">>) {
 		return this.membersContactsRepository.save({ ...contactData, id: contactId, memberId });
 	}

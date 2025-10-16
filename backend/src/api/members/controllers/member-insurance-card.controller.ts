@@ -1,19 +1,19 @@
 import {
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-  Param,
-  Put,
-  Req,
-  Res,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	HttpStatus,
+	InternalServerErrorException,
+	Logger,
+	NotFoundException,
+	Param,
+	Put,
+	Req,
+	Res,
+	UploadedFile,
+	UseGuards,
+	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -27,9 +27,9 @@ import { Config } from "src/config";
 import { FilesService } from "src/models/files/services/files.service";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
 import {
-  MemberInsuranceCardDeleteRoute,
-  MemberInsuranceCardReadRoute,
-  MemberInsuranceCardUploadRoute,
+	MemberInsuranceCardDeleteRoute,
+	MemberInsuranceCardReadRoute,
+	MemberInsuranceCardUploadRoute,
 } from "../acl/member-insurance-card.acl";
 
 @Controller("members/:id/insurance-card")
@@ -37,98 +37,98 @@ import {
 @AcController()
 @ApiTags("Members")
 export class MemberInsuranceCardController {
-  logger = new Logger(MemberInsuranceCardController.name);
+	logger = new Logger(MemberInsuranceCardController.name);
 
-  constructor(
-    private membersService: MembersRepository,
-    private filesService: FilesService,
-    private readonly config: Config,
-  ) {}
+	constructor(
+		private membersService: MembersRepository,
+		private filesService: FilesService,
+		private readonly config: Config,
+	) {}
 
-  @Get("")
-  @AcLinks(MemberInsuranceCardReadRoute)
-  @ApiResponse({})
-  async getInsuranceCard(@Req() req: Request, @Res() res: Response, @Param("id") memberId: number) {
-    const member = await this.membersService.getMember(memberId);
-    if (!member) throw new NotFoundException("Member not found");
+	@Get("")
+	@AcLinks(MemberInsuranceCardReadRoute)
+	@ApiResponse({})
+	async getInsuranceCard(@Req() req: Request, @Res() res: Response, @Param("id") memberId: number) {
+		const member = await this.membersService.getMember(memberId);
+		if (!member) throw new NotFoundException("Member not found");
 
-    MemberInsuranceCardReadRoute.canOrThrow(req, member);
+		MemberInsuranceCardReadRoute.canOrThrow(req, member);
 
-    if (!member.insuranceCardFile) throw new NotFoundException("Insurance card not found");
-    const path = this.getInsuraceCardPath(member.id, member.insuranceCardFile);
+		if (!member.insuranceCardFile) throw new NotFoundException("Insurance card not found");
+		const path = this.getInsuraceCardPath(member.id, member.insuranceCardFile);
 
-    res.setHeader("Content-Disposition", `inline; filename="insurance_card.${member.insuranceCardFile}"`);
-    res.setHeader("Content-Type", contentType(member.insuranceCardFile) || "application/octet-stream");
+		res.setHeader("Content-Disposition", `inline; filename="insurance_card.${member.insuranceCardFile}"`);
+		res.setHeader("Content-Type", contentType(member.insuranceCardFile) || "application/octet-stream");
 
-    createReadStream(path).pipe(res);
-  }
+		createReadStream(path).pipe(res);
+	}
 
-  @Put("")
-  @UseInterceptors(FileInterceptor("file"))
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @AcLinks(MemberInsuranceCardUploadRoute)
-  @ApiBody({
-    schema: {
-      type: "object",
-      properties: {
-        file: {
-          type: "string",
-          format: "binary",
-        },
-      },
-    },
-  })
-  @ApiConsumes("multipart/form-data")
-  @ApiResponse({ status: HttpStatus.NO_CONTENT })
-  async uploadInsuranceCard(
-    @Req() req: Request,
-    @Param("id") memberId: number,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    const member = await this.membersService.getMember(memberId);
-    if (!member) throw new NotFoundException("Member not found");
+	@Put("")
+	@UseInterceptors(FileInterceptor("file"))
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@AcLinks(MemberInsuranceCardUploadRoute)
+	@ApiBody({
+		schema: {
+			type: "object",
+			properties: {
+				file: {
+					type: "string",
+					format: "binary",
+				},
+			},
+		},
+	})
+	@ApiConsumes("multipart/form-data")
+	@ApiResponse({ status: HttpStatus.NO_CONTENT })
+	async uploadInsuranceCard(
+		@Req() req: Request,
+		@Param("id") memberId: number,
+		@UploadedFile() file: Express.Multer.File,
+	) {
+		const member = await this.membersService.getMember(memberId);
+		if (!member) throw new NotFoundException("Member not found");
 
-    MemberInsuranceCardUploadRoute.canOrThrow(req, member);
+		MemberInsuranceCardUploadRoute.canOrThrow(req, member);
 
-    const ext = extname(file.originalname).slice(1);
-    const path = this.getInsuraceCardPath(member.id, ext);
+		const ext = extname(file.originalname).slice(1);
+		const path = this.getInsuraceCardPath(member.id, ext);
 
-    try {
-      await this.membersService.updateMember(member.id, { insuranceCardFile: ext });
+		try {
+			await this.membersService.updateMember(member.id, { insuranceCardFile: ext });
 
-      await this.filesService.saveFile(path, file.buffer);
-    } catch (e) {
-      this.logger.error(e);
-      this.filesService.deleteFile(path).catch(() => {});
-      throw new InternalServerErrorException("Failed to save card.");
-    }
-  }
+			await this.filesService.saveFile(path, file.buffer);
+		} catch (e) {
+			this.logger.error(e);
+			this.filesService.deleteFile(path).catch(() => {});
+			throw new InternalServerErrorException("Failed to save card.");
+		}
+	}
 
-  @Delete("")
-  @AcLinks(MemberInsuranceCardDeleteRoute)
-  @ApiResponse({ status: HttpStatus.NO_CONTENT })
-  async deleteInsuranceCard(@Req() req: Request, @Param("id") memberId: number) {
-    const member = await this.membersService.getMember(memberId);
-    if (!member) throw new NotFoundException("Member not found");
+	@Delete("")
+	@AcLinks(MemberInsuranceCardDeleteRoute)
+	@ApiResponse({ status: HttpStatus.NO_CONTENT })
+	async deleteInsuranceCard(@Req() req: Request, @Param("id") memberId: number) {
+		const member = await this.membersService.getMember(memberId);
+		if (!member) throw new NotFoundException("Member not found");
 
-    MemberInsuranceCardDeleteRoute.canOrThrow(req, member);
+		MemberInsuranceCardDeleteRoute.canOrThrow(req, member);
 
-    if (!member.insuranceCardFile) throw new NotFoundException("Insurance card not found");
+		if (!member.insuranceCardFile) throw new NotFoundException("Insurance card not found");
 
-    const path = this.getInsuraceCardPath(member.id, member.insuranceCardFile);
+		const path = this.getInsuraceCardPath(member.id, member.insuranceCardFile);
 
-    try {
-      await this.filesService.deleteFile(path);
+		try {
+			await this.filesService.deleteFile(path);
 
-      await this.membersService.updateMember(member.id, { insuranceCardFile: null });
-    } catch (e) {
-      this.logger.error(e);
-      this.filesService.deleteFile(path).catch(() => {});
-      throw new InternalServerErrorException("Failed to delete card.");
-    }
-  }
+			await this.membersService.updateMember(member.id, { insuranceCardFile: null });
+		} catch (e) {
+			this.logger.error(e);
+			this.filesService.deleteFile(path).catch(() => {});
+			throw new InternalServerErrorException("Failed to delete card.");
+		}
+	}
 
-  private getInsuraceCardPath(memberId: number, extenstion: string) {
-    return `${this.config.fs.membersDir}/${memberId}/insurance_card.${extenstion}`;
-  }
+	private getInsuraceCardPath(memberId: number, extenstion: string) {
+		return `${this.config.fs.membersDir}/${memberId}/insurance_card.${extenstion}`;
+	}
 }

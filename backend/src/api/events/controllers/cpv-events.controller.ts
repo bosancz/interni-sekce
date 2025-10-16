@@ -9,12 +9,12 @@ import { CPVEventResponse } from "../dto/cpv-event.dto";
 @AcController()
 @ApiTags("Events")
 export class CPVEventsController {
-  @Get("")
-  @AcLinks(CPVEventsListRoute)
-  @ApiResponse({ status: 200, type: WithLinks(CPVEventResponse), isArray: true })
-  async getCPVEvents(@Req() req: Request): Promise<CPVEventResponse[]> {
-    CPVEventsListRoute.canOrThrow(req, undefined);
-    // TODO: load events from raft.cz
-    return [];
-  }
+	@Get("")
+	@AcLinks(CPVEventsListRoute)
+	@ApiResponse({ status: 200, type: WithLinks(CPVEventResponse), isArray: true })
+	async getCPVEvents(@Req() req: Request): Promise<CPVEventResponse[]> {
+		CPVEventsListRoute.canOrThrow(req);
+		// TODO: load events from raft.cz
+		return [];
+	}
 }

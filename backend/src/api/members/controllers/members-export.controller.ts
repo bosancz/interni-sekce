@@ -14,31 +14,31 @@ import { MembersListQuery } from "../dto/member.dto";
 @AcController()
 @ApiTags("Members")
 export class MembersExportController {
-  constructor(
-    private members: MembersRepository,
-    private membersExportService: MembersExportService,
-  ) {}
+	constructor(
+		private members: MembersRepository,
+		private membersExportService: MembersExportService,
+	) {}
 
-  @Get("xlsx")
-  @AcLinks(MembersExportRoute)
-  @ApiOkResponse({
-    schema: {
-      type: "string",
-      format: "binary",
-    },
-    content: {
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {},
-    },
-  })
-  async exportMembersXlsx(@Req() req: Request, @Query() query: MembersListQuery, @Res() res: Response) {
-    const members = await this.members.getMembers(query);
-    MembersListRoute.canOrThrow(req, undefined);
+	@Get("xlsx")
+	@AcLinks(MembersExportRoute)
+	@ApiOkResponse({
+		schema: {
+			type: "string",
+			format: "binary",
+		},
+		content: {
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {},
+		},
+	})
+	async exportMembersXlsx(@Req() req: Request, @Query() query: MembersListQuery, @Res() res: Response) {
+		const members = await this.members.getMembers(query);
+		MembersListRoute.canOrThrow(req);
 
-    const xlsx = await this.membersExportService.exportXlsx(members);
+		const xlsx = await this.membersExportService.exportXlsx(members);
 
-    res.setHeader("Content-Disposition", "attachment; filename=" + "bo-databaze.xlsx");
-    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		res.setHeader("Content-Disposition", "attachment; filename=" + "bo-databaze.xlsx");
+		res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
-    await pipeline(xlsx, res);
-  }
+		await pipeline(xlsx, res);
+	}
 }

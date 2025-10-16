@@ -1,22 +1,21 @@
-import { RouteACL } from "src/access-control/schema/route-acl";
-import { Event } from "src/models/events/entities/event.entity";
+import { Permission } from "src/access-control/schema/route-acl";
 import { EventResponse } from "../dto/event.dto";
 import { EventEditRoute, EventReadRoute } from "./events.acl";
 
-export const EventRegistrationReadRoute = new RouteACL<Event>({
-  linkTo: EventResponse,
+export const EventRegistrationReadRoute = new Permission({
+	linkTo: EventResponse,
 
-  inheritPermissions: EventReadRoute,
+	inherit: EventReadRoute,
 });
 
-export const EventRegistrationEditRoute = new RouteACL<Event>({
-  linkTo: EventResponse,
+export const EventRegistrationEditRoute = new Permission({
+	linkTo: EventResponse,
 
-  inheritPermissions: EventEditRoute,
+	inherit: EventEditRoute,
 });
 
-export const EventRegistrationDeleteRoute = new RouteACL<Event>({
-  linkTo: EventResponse,
+export const EventRegistrationDeleteRoute = new Permission({
+	linkTo: EventResponse,
 
-  inheritPermissions: EventEditRoute,
+	inherit: EventEditRoute,
 });

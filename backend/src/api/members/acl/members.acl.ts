@@ -1,47 +1,47 @@
-import { RouteACL } from "src/access-control/schema/route-acl";
+import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
-import { Member } from "src/models/members/entities/member.entity";
 import { MemberResponse } from "../dto/member.dto";
 
-export const MembersListRoute = new RouteACL<undefined>({
-  linkTo: RootResponse,
-  contains: MemberResponse,
+export const MembersListRoute = new Permission<void>({
+	linkTo: RootResponse,
+	contains: MemberResponse,
 
-  permissions: {
-    vedouci: true,
-  },
+	allowed: {
+		vedouci: true,
+	},
 });
 
-export const MembersExportRoute = new RouteACL<undefined>({
-  linkTo: RootResponse,
-  inheritPermissions: MembersListRoute,
+export const MembersExportRoute = new Permission<void>({
+	linkTo: RootResponse,
+	inherit: MembersListRoute,
 });
 
-export const MemberCreateRoute = new RouteACL<undefined>({
-  linkTo: MemberResponse,
-  permissions: {
-    vedouci: true,
-  },
+export const MemberCreateRoute = new Permission<void>({
+	linkTo: MemberResponse,
+	allowed: {
+		vedouci: true,
+	},
 });
 
-export const MemberReadRoute = new RouteACL<Member>({
-  contains: MemberResponse,
+export const MemberReadRoute = new Permission({
+	linkTo: MemberResponse,
+	contains: MemberResponse,
 
-  permissions: {
-    vedouci: true,
-  },
+	allowed: {
+		vedouci: true,
+	},
 });
 
-export const MemberUpdateRoute = new RouteACL<Member>({
-  linkTo: MemberResponse,
-  permissions: {
-    vedouci: true,
-  },
+export const MemberUpdateRoute = new Permission({
+	linkTo: MemberResponse,
+	allowed: {
+		vedouci: true,
+	},
 });
 
-export const MemberDeleteRoute = new RouteACL<Member>({
-  linkTo: MemberResponse,
-  permissions: {
-    vedouci: true,
-  },
+export const MemberDeleteRoute = new Permission({
+	linkTo: MemberResponse,
+	allowed: {
+		vedouci: true,
+	},
 });

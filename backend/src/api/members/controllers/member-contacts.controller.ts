@@ -5,9 +5,9 @@ import { AcController, AcLinks, WithLinks } from "src/access-control/access-cont
 import { UserGuard } from "src/auth/guards/user.guard";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
 import {
-  MemberContactsCreateRoute,
-  MemberContactsDeleteRoute,
-  MemberContactsListRoute,
+	MemberContactsCreateRoute,
+	MemberContactsDeleteRoute,
+	MemberContactsListRoute,
 } from "../acl/member-contacts.acl";
 import { CreateContactBody, MemberContactResponse } from "../dto/member-contact.dto";
 
@@ -16,62 +16,62 @@ import { CreateContactBody, MemberContactResponse } from "../dto/member-contact.
 @AcController()
 @ApiTags("Members")
 export class MemberContactsController {
-  constructor(private membersRepository: MembersRepository) {}
+	constructor(private membersRepository: MembersRepository) {}
 
-  @Get()
-  @AcLinks(MemberContactsListRoute)
-  @ApiResponse({ status: 200, type: WithLinks(MemberContactResponse), isArray: true })
-  async listContacts(@Req() req: Request, @Param("id") memberId: number): Promise<MemberContactResponse[]> {
-    const member = await this.membersRepository.getMember(memberId, { relations: ["contacts"] });
-    if (!member) throw new NotFoundException();
+	@Get()
+	@AcLinks(MemberContactsListRoute)
+	@ApiResponse({ status: 200, type: WithLinks(MemberContactResponse), isArray: true })
+	async listContacts(@Req() req: Request, @Param("id") memberId: number): Promise<MemberContactResponse[]> {
+		const member = await this.membersRepository.getMember(memberId, { relations: ["contacts"] });
+		if (!member) throw new NotFoundException();
 
-    MemberContactsListRoute.canOrThrow(req, member);
+		MemberContactsListRoute.canOrThrow(req, member);
 
-    return member.contacts!;
-  }
+		return member.contacts!;
+	}
 
-  @Post()
-  @AcLinks(MemberContactsCreateRoute)
-  @ApiResponse({ type: WithLinks(MemberContactResponse) })
-  async createContact(
-    @Req() req: Request,
-    @Param("id") memberId: number,
-    @Body() body: CreateContactBody,
-  ): Promise<MemberContactResponse> {
-    const member = await this.membersRepository.getMember(memberId);
-    if (!member) throw new NotFoundException();
+	@Post()
+	@AcLinks(MemberContactsCreateRoute)
+	@ApiResponse({ type: WithLinks(MemberContactResponse) })
+	async createContact(
+		@Req() req: Request,
+		@Param("id") memberId: number,
+		@Body() body: CreateContactBody,
+	): Promise<MemberContactResponse> {
+		const member = await this.membersRepository.getMember(memberId);
+		if (!member) throw new NotFoundException();
 
-    MemberContactsCreateRoute.canOrThrow(req, member);
+		MemberContactsCreateRoute.canOrThrow(req, member);
 
-    return this.membersRepository.createContact(member.id, body);
-  }
+		return this.membersRepository.createContact(member.id, body);
+	}
 
-  @Patch(":contactId")
-  @AcLinks(MemberContactsCreateRoute)
-  @ApiResponse({ type: WithLinks(MemberContactResponse) })
-  async updateContact(
-    @Req() req: Request,
-    @Param("id") memberId: number,
-    @Param("contactId") contactId: number,
-    @Body() body: CreateContactBody,
-  ): Promise<MemberContactResponse> {
-    const member = await this.membersRepository.getMember(memberId);
-    if (!member) throw new NotFoundException();
+	@Patch(":contactId")
+	@AcLinks(MemberContactsCreateRoute)
+	@ApiResponse({ type: WithLinks(MemberContactResponse) })
+	async updateContact(
+		@Req() req: Request,
+		@Param("id") memberId: number,
+		@Param("contactId") contactId: number,
+		@Body() body: CreateContactBody,
+	): Promise<MemberContactResponse> {
+		const member = await this.membersRepository.getMember(memberId);
+		if (!member) throw new NotFoundException();
 
-    MemberContactsCreateRoute.canOrThrow(req, member);
+		MemberContactsCreateRoute.canOrThrow(req, member);
 
-    return this.membersRepository.updateContact(member.id, contactId, body);
-  }
+		return this.membersRepository.updateContact(member.id, contactId, body);
+	}
 
-  @Delete(":contactId")
-  @AcLinks(MemberContactsDeleteRoute)
-  @ApiResponse({ type: WithLinks(MemberContactResponse) })
-  async deleteContact(@Req() req: Request, @Param("id") memberId: number, @Param("contactId") contactId: number) {
-    const member = await this.membersRepository.getMember(memberId);
-    if (!member) throw new NotFoundException();
+	@Delete(":contactId")
+	@AcLinks(MemberContactsDeleteRoute)
+	@ApiResponse({ type: WithLinks(MemberContactResponse) })
+	async deleteContact(@Req() req: Request, @Param("id") memberId: number, @Param("contactId") contactId: number) {
+		const memberContact = await this.membersRepository.getContact(memberId, contactId);
+		if (!memberContact) throw new NotFoundException();
 
-    MemberContactsDeleteRoute.canOrThrow(req, member);
+		MemberContactsDeleteRoute.canOrThrow(req, memberContact);
 
-    return this.membersRepository.deleteContact(member.id, contactId);
-  }
+		return this.membersRepository.deleteContact(memberId, contactId);
+	}
 }

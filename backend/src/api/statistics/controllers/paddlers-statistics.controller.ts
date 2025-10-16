@@ -9,21 +9,21 @@ import { PadlersTotalsResponse } from "../dto/paddlers-totals.dto";
 @Controller("statistics/paddlers")
 @ApiTags("Statistics")
 export class PaddlersStatisticsController {
-  constructor(private statistics: PaddlersStatisticsService) {}
+	constructor(private statistics: PaddlersStatisticsService) {}
 
-  @Get("")
-  @ApiResponse({ status: 200, type: PadlersTotalsResponse })
-  getPaddlersTotals(@Req() req: Request): Promise<PadlersTotalsResponse> {
-    PadlersTotalsRoute.canOrThrow(req, undefined);
+	@Get("")
+	@ApiResponse({ status: 200, type: PadlersTotalsResponse })
+	getPaddlersTotals(@Req() req: Request): Promise<PadlersTotalsResponse> {
+		PadlersTotalsRoute.canOrThrow(req);
 
-    return this.statistics.getPaddlersTotals();
-  }
+		return this.statistics.getPaddlersTotals();
+	}
 
-  @Get(":year/ranking")
-  @ApiResponse({ status: 200, type: PaddlersRankingResponse, isArray: true })
-  getPaddlersRanking(@Req() req: Request, @Param("year") year: number): Promise<PaddlersRankingResponse[]> {
-    PadlersRankingRoute.canOrThrow(req, undefined);
+	@Get(":year/ranking")
+	@ApiResponse({ status: 200, type: PaddlersRankingResponse, isArray: true })
+	getPaddlersRanking(@Req() req: Request, @Param("year") year: number): Promise<PaddlersRankingResponse[]> {
+		PadlersRankingRoute.canOrThrow(req);
 
-    return this.statistics.getPaddlersRanking(year);
-  }
+		return this.statistics.getPaddlersRanking(year);
+	}
 }

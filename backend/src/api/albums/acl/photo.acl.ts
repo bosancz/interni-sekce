@@ -1,47 +1,46 @@
-import { RouteACL } from "src/access-control/schema/route-acl";
+import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
-import { Photo } from "src/models/albums/entities/photo.entity";
 import { PhotoResponse } from "../dto/photo.dto";
 
-export const PhotosListRoute = new RouteACL({
-  linkTo: RootResponse,
-  contains: PhotoResponse,
+export const PhotosListRoute = new Permission<void>({
+	linkTo: RootResponse,
+	contains: PhotoResponse,
 
-  permissions: {
-    vedouci: true,
-  },
+	allowed: {
+		vedouci: true,
+	},
 });
 
-export const PhotoReadRoute = new RouteACL({
-  linkTo: PhotoResponse,
-  contains: PhotoResponse,
+export const PhotoReadRoute = new Permission({
+	linkTo: PhotoResponse,
+	contains: PhotoResponse,
 
-  permissions: {
-    vedouci: true,
-  },
+	allowed: {
+		vedouci: true,
+	},
 });
 
-export const PhotoCreateRoute = new RouteACL({
-  linkTo: RootResponse,
+export const PhotoCreateRoute = new Permission<void>({
+	linkTo: RootResponse,
 
-  permissions: {
-    vedouci: true,
-  },
+	allowed: {
+		vedouci: true,
+	},
 });
 
-export const PhotoEditRoute = new RouteACL<Photo>({
-  linkTo: PhotoResponse,
-  permissions: {
-    vedouci: true,
-  },
+export const PhotoEditRoute = new Permission({
+	linkTo: PhotoResponse,
+	allowed: {
+		vedouci: true,
+	},
 });
 
-export const PhotoDeleteRoute = new RouteACL<Photo>({
-  linkTo: PhotoResponse,
-  inheritPermissions: PhotoEditRoute,
+export const PhotoDeleteRoute = new Permission({
+	linkTo: PhotoResponse,
+	inherit: PhotoEditRoute,
 });
 
-export const PhotoReadFileRoute = new RouteACL({
-  linkTo: PhotoResponse,
-  inheritPermissions: PhotoReadRoute,
+export const PhotoReadFileRoute = new Permission({
+	linkTo: PhotoResponse,
+	inherit: PhotoReadRoute,
 });
