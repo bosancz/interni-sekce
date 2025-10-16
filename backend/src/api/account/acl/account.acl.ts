@@ -3,7 +3,7 @@ import { UserResponse } from "src/api/users/dto/user.dto";
 import { User } from "src/models/users/entities/user.entity";
 import { AccountResponse } from "../dto/account.dto";
 
-export const AccountReadRoute = new Permission<User>({
+export const AccountReadPermission = new Permission<User>({
 	linkTo: AccountResponse,
 	contains: UserResponse,
 

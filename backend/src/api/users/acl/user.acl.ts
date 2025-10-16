@@ -3,7 +3,7 @@ import { RootResponse } from "src/api/root/dto/root-response";
 import { User } from "src/models/users/entities/user.entity";
 import { UserResponse } from "../dto/user.dto";
 
-export const UsersListRoute = new Permission<void>({
+export const UsersListPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: UserResponse,
 
@@ -13,7 +13,7 @@ export const UsersListRoute = new Permission<void>({
 	},
 });
 
-export const UserCreateRoute = new Permission<void>({
+export const UserCreatePermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: UserResponse,
 
@@ -22,7 +22,7 @@ export const UserCreateRoute = new Permission<void>({
 	},
 });
 
-export const UserReadRoute = new Permission<User>({
+export const UserReadPermission = new Permission<User>({
 	linkTo: UserResponse,
 	contains: UserResponse,
 
@@ -31,7 +31,7 @@ export const UserReadRoute = new Permission<User>({
 	},
 });
 
-export const UserEditRoute = new Permission<User>({
+export const UserEditPermission = new Permission<User>({
 	linkTo: UserResponse,
 
 	allowed: {
@@ -39,7 +39,7 @@ export const UserEditRoute = new Permission<User>({
 	},
 });
 
-export const UserDeleteRoute = new Permission<User>({
+export const UserDeletePermission = new Permission<User>({
 	linkTo: UserResponse,
 
 	allowed: {
@@ -56,7 +56,7 @@ export const UserSetPassword = new Permission<User>({
 	},
 });
 
-export const UserImpersonateRoute = new Permission<User>({
+export const UserImpersonatePermission = new Permission<User>({
 	linkTo: UserResponse,
 
 	allowed: {

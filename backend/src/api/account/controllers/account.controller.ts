@@ -7,24 +7,24 @@ import { Token } from "src/auth/decorators/token.decorator";
 import { UserGuard } from "src/auth/guards/user.guard";
 import { TokenData } from "src/auth/schema/user-token";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
-import { AccountReadRoute } from "../acl/account.acl";
+import { AccountReadPermission } from "../acl/account.acl";
 
 @Controller("account")
 @UseGuards(UserGuard)
 @ApiTags("Account")
 @AcController()
 export class AccountController {
-  constructor(private userService: UsersRepository) {}
+	constructor(private userService: UsersRepository) {}
 
-  @Get()
-  @AcLinks(AccountReadRoute)
-  @ApiResponse({ status: 200, type: WithLinks(UserResponse) })
-  async getMe(@Req() req: Request, @Token() token: TokenData): Promise<UserResponse> {
-    const user = await this.userService.getUser(token.userId);
-    if (!user) throw new NotFoundException();
+	@Get()
+	@AcLinks(AccountReadPermission)
+	@ApiResponse({ status: 200, type: WithLinks(UserResponse) })
+	async getMe(@Req() req: Request, @Token() token: TokenData): Promise<UserResponse> {
+		const user = await this.userService.getUser(token.userId);
+		if (!user) throw new NotFoundException();
 
-    AccountReadRoute.canOrThrow(req, user);
+		AccountReadPermission.canOrThrow(req, user);
 
-    return user;
-  }
+		return user;
+	}
 }

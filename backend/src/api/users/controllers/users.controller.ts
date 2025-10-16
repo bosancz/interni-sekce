@@ -7,13 +7,13 @@ import { User } from "src/models/users/entities/user.entity";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { Repository } from "typeorm";
 import {
-	UserCreateRoute,
-	UserDeleteRoute,
-	UserEditRoute,
-	UserImpersonateRoute,
-	UserReadRoute,
+	UserCreatePermission,
+	UserDeletePermission,
+	UserEditPermission,
+	UserImpersonatePermission,
+	UserReadPermission,
 	UserSetPassword,
-	UsersListRoute,
+	UsersListPermission,
 } from "../acl/user.acl";
 import { UserCreateBody } from "../dto/user-create-body";
 import { UserSetPasswordBody } from "../dto/user-set-password-body";
@@ -31,7 +31,7 @@ export class UsersController {
 	) {}
 
 	@Get()
-	@AcLinks(UsersListRoute)
+	@AcLinks(UsersListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(UserResponse), isArray: true })
 	async listUsers(@Req() req: Request, @Query() query: ListUsersQuery): Promise<UserResponse[]> {
 		const q = this.userRepository
@@ -47,7 +47,7 @@ export class UsersController {
 				"member.lastName",
 			])
 			.leftJoin("user.member", "member")
-			.where(UsersListRoute.canWhere(req))
+			.where(UsersListPermission.canWhere(req))
 			.orderBy("user.login", "ASC")
 			.take(query.limit || 25)
 			.skip(query.offset || 0);
@@ -61,46 +61,46 @@ export class UsersController {
 	}
 
 	@Post()
-	@AcLinks(UserCreateRoute)
+	@AcLinks(UserCreatePermission)
 	@ApiResponse({ type: WithLinks(UserResponse) })
 	async createUser(@Req() req: Request, @Body() body: UserCreateBody): Promise<UserResponse> {
-		UserCreateRoute.canOrThrow(req);
+		UserCreatePermission.canOrThrow(req);
 
 		return this.userService.createUser(body);
 	}
 
 	@Get(":id")
-	@AcLinks(UserReadRoute)
+	@AcLinks(UserReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(UserResponse) })
 	async getUser(@Req() req: Request, @Param("id") id: number): Promise<UserResponse> {
 		const user = await this.userRepository.findOne({ where: { id }, relations: ["member"] });
 		if (!user) throw new NotFoundException();
 
-		UserReadRoute.canOrThrow(req, user);
+		UserReadPermission.canOrThrow(req, user);
 
 		return user;
 	}
 
 	@Patch(":id")
-	@AcLinks(UserEditRoute)
+	@AcLinks(UserEditPermission)
 	@ApiResponse({ status: 204 })
 	async updateUser(@Req() req: Request, @Param("id") id: number, @Body() body: UserUpdateBody): Promise<void> {
 		const user = await this.userService.getUser(id);
 		if (!user) throw new NotFoundException();
 
-		UserEditRoute.canOrThrow(req, user);
+		UserEditPermission.canOrThrow(req, user);
 
 		await this.userService.updateUser(id, body);
 	}
 
 	@Delete(":id")
-	@AcLinks(UserDeleteRoute)
+	@AcLinks(UserDeletePermission)
 	@ApiResponse({ status: 204 })
 	async deleteUser(@Req() req: Request, @Param("id") id: number): Promise<void> {
 		const user = await this.userService.getUser(id);
 		if (!user) throw new NotFoundException();
 
-		UserDeleteRoute.canOrThrow(req, user);
+		UserDeletePermission.canOrThrow(req, user);
 
 		await this.userService.deleteUser(id);
 	}
@@ -122,12 +122,12 @@ export class UsersController {
 	}
 
 	@Post(":id/impersonate")
-	@AcLinks(UserImpersonateRoute)
+	@AcLinks(UserImpersonatePermission)
 	async impersonateUser(@Req() req: Request, @Param("id") id: number) {
 		const user = await this.userService.getUser(id);
 		if (!user) throw new NotFoundException();
 
-		UserImpersonateRoute.canOrThrow(req, user);
+		UserImpersonatePermission.canOrThrow(req, user);
 
 		//TODO: implement
 	}

@@ -23,7 +23,12 @@ import { GoogleService } from "src/models/google/services/google.service";
 import { MailService } from "src/models/mail/services/mail.service";
 import { User } from "src/models/users/entities/user.entity";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
-import { LoginCredentialsRoute, LoginGoogleRoute, LoginLinkRoute, LoginSendLinkRoute } from "../acl/login.acl";
+import {
+	LoginCredentialsPermission,
+	LoginGooglePermission,
+	LoginLinkPermission,
+	LoginSendLinkPermission,
+} from "../acl/login.acl";
 import { LoginCredentialsBody, LoginGoogleBody, LoginLinkQuery, LoginSendLinkBody } from "../dto/login-body.dto";
 import { SendLoginLinkMailTemplate } from "../mail-templates/send-login-link/send-login-link.mail-template";
 
@@ -48,7 +53,7 @@ export class LoginController {
 		const user = await this.users.findUser({ login: body.login.toLocaleLowerCase() }, { credentials: true });
 		if (!user) throw new NotFoundException();
 
-		LoginCredentialsRoute.canOrThrow(req);
+		LoginCredentialsPermission.canOrThrow(req);
 
 		if (!user.password) throw new ConflictException();
 
@@ -70,7 +75,7 @@ export class LoginController {
 		const user = await this.users.findUser({ email: tokenInfo.email });
 		if (!user) throw new NotFoundException(`User with email ${tokenInfo.email} not found.`);
 
-		LoginGoogleRoute.canOrThrow(req);
+		LoginGooglePermission.canOrThrow(req);
 
 		await this.setLoginToken(res, user);
 	}
@@ -81,7 +86,7 @@ export class LoginController {
 		if (!user) throw new NotFoundException();
 		if (!user.email) throw new ConflictException();
 
-		LoginSendLinkRoute.canOrThrow(req);
+		LoginSendLinkPermission.canOrThrow(req);
 
 		const loginCode = this.hashService.generateRandomString();
 
@@ -107,7 +112,7 @@ export class LoginController {
 		const user = await this.users.findUser({ loginCode: query.code }, { credentials: true });
 		if (!user || !user.loginCodeExp) throw new NotFoundException();
 
-		LoginLinkRoute.canOrThrow(req);
+		LoginLinkPermission.canOrThrow(req);
 
 		if (DateTime.fromISO(user.loginCodeExp).diffNow().milliseconds < 0) {
 			throw new ForbiddenException("Login code expired");

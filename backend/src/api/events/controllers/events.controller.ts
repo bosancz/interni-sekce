@@ -23,20 +23,20 @@ import { EventAttendeeType } from "src/models/events/entities/event-attendee.ent
 import { EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository, GetEventsOptions } from "src/models/events/repositories/events.repository";
 import {
-	EventCancelRoute,
-	EventCreateRoute,
-	EventDeleteRoute,
-	EventEditRoute,
-	EventLeadRoute,
-	EventPublishRoute,
-	EventReadRoute,
-	EventRejectRoute,
-	EventRestoreRoute,
-	EventSubmitRoute,
-	EventUncancelRoute,
-	EventUnpublishRoute,
-	EventsListRoute,
-	EventsYearsRoute,
+	EventCancelPermission,
+	EventCreatePermission,
+	EventDeletePermission,
+	EventEditPermission,
+	EventLeadPermission,
+	EventPublishPermission,
+	EventReadPermission,
+	EventRejectPermission,
+	EventRestorePermission,
+	EventsListPermission,
+	EventSubmitPermission,
+	EventsYearsPermission,
+	EventUncancelPermission,
+	EventUnpublishPermission,
 } from "../acl/events.acl";
 import { EventCreateBody, EventResponse, EventStatusChangeBody, EventUpdateBody } from "../dto/event.dto";
 import { ListEventsQuery } from "../dto/events.dto";
@@ -50,7 +50,7 @@ export class EventsController {
 	constructor(private events: EventsRepository) {}
 
 	@Get()
-	@AcLinks(EventsListRoute)
+	@AcLinks(EventsListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(EventResponse), isArray: true })
 	async listEvents(
 		@Req() req: Request,
@@ -73,82 +73,82 @@ export class EventsController {
 	}
 
 	@Post()
-	@AcLinks(EventCreateRoute)
+	@AcLinks(EventCreatePermission)
 	@ApiResponse({ status: 201, type: EventResponse })
 	async createEvent(
 		@Req() req: Request,
 		@Body() body: EventCreateBody,
 		@Res({ passthrough: true }) res: Response,
 	): Promise<Omit<EventResponse, "_links">> {
-		EventCreateRoute.canOrThrow(req);
+		EventCreatePermission.canOrThrow(req);
 
 		res.status(201);
 		return this.events.createEvent(body);
 	}
 
 	@Get("years")
-	@AcLinks(EventsYearsRoute)
+	@AcLinks(EventsYearsPermission)
 	@ApiResponse({ status: 200, schema: { type: "array", items: { type: "number" } } })
 	async getEventsYears(@Req() req: Request): Promise<number[]> {
-		EventsYearsRoute.canOrThrow(req);
+		EventsYearsPermission.canOrThrow(req);
 
 		return this.events.getEventsYears();
 	}
 
 	@Get(":id")
-	@AcLinks(EventReadRoute)
+	@AcLinks(EventReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(EventResponse) })
 	async getEvent(@Req() req: Request, @Param("id") id: number): Promise<EventResponse> {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
-		EventReadRoute.canOrThrow(req, event);
+		EventReadPermission.canOrThrow(req, event);
 
 		return event;
 	}
 
 	@Patch(":id")
 	@HttpCode(204)
-	@AcLinks(EventEditRoute)
+	@AcLinks(EventEditPermission)
 	@ApiResponse({ status: 204 })
 	async updateEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventUpdateBody): Promise<void> {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
-		EventEditRoute.canOrThrow(req, event);
+		EventEditPermission.canOrThrow(req, event);
 
 		await this.events.updateEvent(id, body);
 	}
 
 	@Delete(":id")
 	@HttpCode(204)
-	@AcLinks(EventDeleteRoute)
+	@AcLinks(EventDeletePermission)
 	@ApiResponse({ status: 204 })
 	async deleteEvent(@Req() req: Request, @Param("id") id: number): Promise<void> {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
-		EventDeleteRoute.canOrThrow(req, event);
+		EventDeletePermission.canOrThrow(req, event);
 
 		return this.events.deleteEvent(id);
 	}
 
 	@Post(":id/restore")
 	@HttpCode(204)
-	@AcLinks(EventRestoreRoute)
+	@AcLinks(EventRestorePermission)
 	@ApiResponse({ status: 204 })
 	async restoreEvent(@Req() req: Request, @Param("id") id: number): Promise<void> {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
-		EventRestoreRoute.canOrThrow(req, event);
+		EventRestorePermission.canOrThrow(req, event);
 
 		return this.events.restoreEvent(id);
 	}
 
 	@Post(":id/lead")
 	@HttpCode(204)
-	@AcLinks(EventLeadRoute)
+	@AcLinks(EventLeadPermission)
 	@ApiResponse({ status: 204 })
 	async leadEvent(@Req() req: Request, @Param("id") id: number, @Token() token: TokenData): Promise<void> {
 		if (token.memberId === undefined) throw new BadRequestException("User is not linked to a member.");
@@ -156,14 +156,14 @@ export class EventsController {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
-		EventLeadRoute.canOrThrow(req, event);
+		EventLeadPermission.canOrThrow(req, event);
 
 		await this.events.createEventAttendee(id, token.memberId, { type: EventAttendeeType.leader });
 	}
 
 	@Post(":id/submit")
 	@HttpCode(204)
-	@AcLinks(EventSubmitRoute)
+	@AcLinks(EventSubmitPermission)
 	@ApiResponse({ status: 204 })
 	async submitEvent(
 		@Req() req: Request,
@@ -173,14 +173,14 @@ export class EventsController {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
-		EventSubmitRoute.canOrThrow(req, event);
+		EventSubmitPermission.canOrThrow(req, event);
 
 		await this.events.updateEvent(id, { status: EventStates.pending, statusNote: body.statusNote });
 	}
 
 	@Post(":id/reject")
 	@HttpCode(204)
-	@AcLinks(EventRejectRoute)
+	@AcLinks(EventRejectPermission)
 	@ApiResponse({ status: 204 })
 	async rejectEvent(
 		@Req() req: Request,
@@ -190,14 +190,14 @@ export class EventsController {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
-		EventRejectRoute.canOrThrow(req, event);
+		EventRejectPermission.canOrThrow(req, event);
 
 		await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
 	}
 
 	@Post(":id/publish")
 	@HttpCode(204)
-	@AcLinks(EventPublishRoute)
+	@AcLinks(EventPublishPermission)
 	@ApiResponse({ status: 204 })
 	async publishEvent(
 		@Req() req: Request,
@@ -207,14 +207,14 @@ export class EventsController {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
-		EventPublishRoute.canOrThrow(req, event);
+		EventPublishPermission.canOrThrow(req, event);
 
 		await this.events.updateEvent(id, { status: EventStates.public, statusNote: body.statusNote });
 	}
 
 	@Post(":id/unpublish")
 	@HttpCode(204)
-	@AcLinks(EventUnpublishRoute)
+	@AcLinks(EventUnpublishPermission)
 	@ApiResponse({ status: 204 })
 	async unpublishEvent(
 		@Req() req: Request,
@@ -224,14 +224,14 @@ export class EventsController {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
-		EventUnpublishRoute.canOrThrow(req, event);
+		EventUnpublishPermission.canOrThrow(req, event);
 
 		await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
 	}
 
 	@Post(":id/cancel")
 	@HttpCode(204)
-	@AcLinks(EventCancelRoute)
+	@AcLinks(EventCancelPermission)
 	@ApiResponse({ status: 204 })
 	async cancelEvent(
 		@Req() req: Request,
@@ -241,14 +241,14 @@ export class EventsController {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
-		EventCancelRoute.canOrThrow(req, event);
+		EventCancelPermission.canOrThrow(req, event);
 
 		await this.events.updateEvent(id, { status: EventStates.cancelled, statusNote: body.statusNote });
 	}
 
 	@Post(":id/uncancel")
 	@HttpCode(204)
-	@AcLinks(EventUncancelRoute)
+	@AcLinks(EventUncancelPermission)
 	@ApiResponse({ status: 204 })
 	async uncancelEvent(
 		@Req() req: Request,
@@ -258,7 +258,7 @@ export class EventsController {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
-		EventUncancelRoute.canOrThrow(req, event);
+		EventUncancelPermission.canOrThrow(req, event);
 
 		await this.events.updateEvent(id, { status: EventStates.public, statusNote: body.statusNote });
 	}

@@ -1,27 +1,27 @@
 import { Permission } from "src/access-control/schema/route-acl";
 import { MemberContactResponse } from "../dto/member-contact.dto";
 import { MemberResponse } from "../dto/member.dto";
-import { MemberReadRoute, MemberUpdateRoute } from "./members.acl";
+import { MemberReadPermission, MemberUpdatePermission } from "./members.acl";
 
-export const MemberContactsListRoute = new Permission({
+export const MemberContactsListPermission = new Permission({
 	linkTo: MemberResponse,
 	contains: MemberContactResponse,
-	inherit: MemberReadRoute,
+	inherit: MemberReadPermission,
 });
 
-export const MemberContactsCreateRoute = new Permission({
+export const MemberContactsCreatePermission = new Permission({
 	linkTo: MemberResponse,
 	contains: MemberContactResponse,
-	inherit: MemberUpdateRoute,
+	inherit: MemberUpdatePermission,
 });
 
-export const MemberContactsUpdateRoute = new Permission({
+export const MemberContactsUpdatePermission = new Permission({
 	linkTo: MemberResponse,
 	contains: MemberContactResponse,
-	inherit: MemberUpdateRoute,
+	inherit: MemberUpdatePermission,
 });
 
-export const MemberContactsDeleteRoute = new Permission({
+export const MemberContactsDeletePermission = new Permission({
 	linkTo: MemberContactResponse,
 	allowed: { vedouci: true },
 });

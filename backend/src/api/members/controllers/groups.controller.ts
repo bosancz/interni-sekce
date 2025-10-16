@@ -17,7 +17,13 @@ import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { UserGuard } from "src/auth/guards/user.guard";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
-import { GroupCreateRoute, GroupDeleteRoute, GroupEditRoute, GroupListRoute, GroupReadRoute } from "../acl/groups.acl";
+import {
+	GroupCreatePermission,
+	GroupDeletePermission,
+	GroupEditPermission,
+	GroupListPermission,
+	GroupReadPermission,
+} from "../acl/groups.acl";
 import { CreateGroupBody, GroupResponse, ListGroupsQuery, UpdateGroupBody } from "../dto/group.dto";
 
 @Controller("groups")
@@ -28,51 +34,51 @@ export class GroupsController {
 	constructor(private groups: GroupsRepository) {}
 
 	@Get()
-	@AcLinks(GroupListRoute)
+	@AcLinks(GroupListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(GroupResponse), isArray: true })
 	async listGroups(@Req() req: Request, @Query() query: ListGroupsQuery): Promise<GroupResponse[]> {
 		return this.groups.getGroups(query);
 	}
 
 	@Post()
-	@AcLinks(GroupCreateRoute)
+	@AcLinks(GroupCreatePermission)
 	@ApiResponse({ status: HttpStatus.CREATED, type: WithLinks(GroupResponse) })
 	async createGroup(@Req() req: Request, @Body() groupData: CreateGroupBody) {
-		GroupCreateRoute.canOrThrow(req);
+		GroupCreatePermission.canOrThrow(req);
 		return this.groups.createGroup(groupData);
 	}
 
 	@Get(":id")
-	@AcLinks(GroupReadRoute)
+	@AcLinks(GroupReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(GroupResponse) })
 	async getGroup(@Param("id") id: number, @Req() req: Request) {
 		const group = await this.groups.getGroup(id);
 		if (!group) throw new NotFoundException();
 
-		GroupReadRoute.canOrThrow(req, group);
+		GroupReadPermission.canOrThrow(req, group);
 
 		return group;
 	}
 
 	@Put(":id")
-	@AcLinks(GroupEditRoute)
+	@AcLinks(GroupEditPermission)
 	@ApiResponse({ status: HttpStatus.OK })
 	async updateGroup(@Param("id") id: number, @Req() req: Request, @Body() body: UpdateGroupBody) {
 		const group = await this.groups.getGroup(id);
 		if (!group) throw new NotFoundException();
 
-		GroupEditRoute.canOrThrow(req, group);
+		GroupEditPermission.canOrThrow(req, group);
 
 		await this.groups.updateGroup(id, req.body);
 	}
 
 	@Delete(":id")
-	@AcLinks(GroupDeleteRoute)
+	@AcLinks(GroupDeletePermission)
 	async deleteGroup(@Param("id") id: number, @Req() req: Request): Promise<void> {
 		const group = await this.groups.getGroup(id);
 		if (!group) throw new NotFoundException();
 
-		GroupDeleteRoute.canOrThrow(req, group);
+		GroupDeletePermission.canOrThrow(req, group);
 
 		await this.groups.deleteGroup(id);
 	}

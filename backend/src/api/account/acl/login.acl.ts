@@ -7,22 +7,22 @@ export const allowed: AcAllowed<void, Roles> = {
 	verejnost: true,
 };
 
-export const LoginCredentialsRoute = new Permission<void>({
+export const LoginCredentialsPermission = new Permission<void>({
 	linkTo: RootResponse,
 	allowed,
 });
 
-export const LoginGoogleRoute = new Permission<void>({
+export const LoginGooglePermission = new Permission<void>({
 	linkTo: RootResponse,
 	allowed,
 });
 
-export const LoginLinkRoute = new Permission<void>({
+export const LoginLinkPermission = new Permission<void>({
 	linkTo: RootResponse,
 	allowed,
 });
 
-export const LoginSendLinkRoute = new Permission<void>({
+export const LoginSendLinkPermission = new Permission<void>({
 	linkTo: RootResponse,
-	inherit: LoginLinkRoute,
+	inherit: LoginLinkPermission,
 });

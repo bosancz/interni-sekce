@@ -2,7 +2,7 @@ import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
 import { PhotoResponse } from "../dto/photo.dto";
 
-export const PhotosListRoute = new Permission<void>({
+export const PhotosListPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: PhotoResponse,
 
@@ -11,7 +11,7 @@ export const PhotosListRoute = new Permission<void>({
 	},
 });
 
-export const PhotoReadRoute = new Permission({
+export const PhotoReadPermission = new Permission({
 	linkTo: PhotoResponse,
 	contains: PhotoResponse,
 
@@ -20,7 +20,7 @@ export const PhotoReadRoute = new Permission({
 	},
 });
 
-export const PhotoCreateRoute = new Permission<void>({
+export const PhotoCreatePermission = new Permission<void>({
 	linkTo: RootResponse,
 
 	allowed: {
@@ -28,19 +28,19 @@ export const PhotoCreateRoute = new Permission<void>({
 	},
 });
 
-export const PhotoEditRoute = new Permission({
+export const PhotoEditPermission = new Permission({
 	linkTo: PhotoResponse,
 	allowed: {
 		vedouci: true,
 	},
 });
 
-export const PhotoDeleteRoute = new Permission({
+export const PhotoDeletePermission = new Permission({
 	linkTo: PhotoResponse,
-	inherit: PhotoEditRoute,
+	inherit: PhotoEditPermission,
 });
 
-export const PhotoReadFileRoute = new Permission({
+export const PhotoReadFilePermission = new Permission({
 	linkTo: PhotoResponse,
-	inherit: PhotoReadRoute,
+	inherit: PhotoReadPermission,
 });

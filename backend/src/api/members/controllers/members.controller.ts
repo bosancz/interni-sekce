@@ -17,11 +17,11 @@ import { AcController, AcLinks, WithLinks } from "src/access-control/access-cont
 import { UserGuard } from "src/auth/guards/user.guard";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
 import {
-	MemberCreateRoute,
-	MemberDeleteRoute,
-	MemberReadRoute,
-	MemberUpdateRoute,
-	MembersListRoute,
+	MemberCreatePermission,
+	MemberDeletePermission,
+	MemberReadPermission,
+	MemberUpdatePermission,
+	MembersListPermission,
 } from "../acl/members.acl";
 import { MemberCreateBody, MemberResponse, MemberUpdateBody, MembersListQuery } from "../dto/member.dto";
 
@@ -33,7 +33,7 @@ export class MembersController {
 	constructor(private members: MembersRepository) {}
 
 	@Get()
-	@AcLinks(MembersListRoute)
+	@AcLinks(MembersListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(MemberResponse), isArray: true })
 	async listMembers(@Req() req: Request, @Query() query: MembersListQuery): Promise<MemberResponse[]> {
 		return this.members.getMembers({
@@ -43,46 +43,46 @@ export class MembersController {
 	}
 
 	@Post()
-	@AcLinks(MemberCreateRoute)
+	@AcLinks(MemberCreatePermission)
 	@ApiResponse({ status: 200, type: WithLinks(MemberResponse) })
 	async createMember(@Req() req: Request, @Body() body: MemberCreateBody): Promise<MemberResponse> {
-		MemberCreateRoute.canOrThrow(req);
+		MemberCreatePermission.canOrThrow(req);
 
 		return this.members.createMember(body);
 	}
 
 	@Get(":id")
-	@AcLinks(MemberReadRoute)
+	@AcLinks(MemberReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(MemberResponse) })
 	async getMember(@Param("id") id: number, @Req() req: Request): Promise<MemberResponse> {
 		const member = await this.members.getMember(id);
 		if (!member) throw new NotFoundException();
 
-		MemberReadRoute.canOrThrow(req, member);
+		MemberReadPermission.canOrThrow(req, member);
 
 		return member;
 	}
 
 	@Patch(":id")
-	@AcLinks(MemberUpdateRoute)
+	@AcLinks(MemberUpdatePermission)
 	@ApiResponse({ status: 204 })
 	async updateMember(@Req() req: Request, @Param("id") id: number, @Body() body: MemberUpdateBody) {
 		const member = await this.members.getMember(id);
 		if (!member) throw new NotFoundException();
 
-		MemberUpdateRoute.canOrThrow(req, member);
+		MemberUpdatePermission.canOrThrow(req, member);
 
 		this.members.updateMember(id, body);
 	}
 
 	@Delete(":id")
-	@AcLinks(MemberDeleteRoute)
+	@AcLinks(MemberDeletePermission)
 	@ApiResponse({ status: 204 })
 	async deleteMember(@Req() req: Request, @Param("id") id: number) {
 		const member = await this.members.getMember(id);
 		if (!member) throw new NotFoundException();
 
-		MemberDeleteRoute.canOrThrow(req, member);
+		MemberDeletePermission.canOrThrow(req, member);
 
 		this.members.deleteMember(id);
 	}

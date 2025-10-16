@@ -3,7 +3,7 @@ import { RootResponse } from "src/api/root/dto/root-response";
 import { AlbumResponse } from "../dto/album.dto";
 import { PhotoResponse } from "../dto/photo.dto";
 
-export const AlbumsListRoute = new Permission<void>({
+export const AlbumsListPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: AlbumResponse,
 
@@ -12,19 +12,19 @@ export const AlbumsListRoute = new Permission<void>({
 	},
 });
 
-export const AlbumsYearsRoute = new Permission<void>({
+export const AlbumsYearsPermission = new Permission<void>({
 	linkTo: RootResponse,
-	inherit: AlbumsListRoute,
+	inherit: AlbumsListPermission,
 });
 
-export const AlbumReadRoute = new Permission({
+export const AlbumReadPermission = new Permission({
 	linkTo: AlbumResponse,
 	allowed: {
 		vedouci: true,
 	},
 });
 
-export const AlbumCreateRoute = new Permission<void>({
+export const AlbumCreatePermission = new Permission<void>({
 	linkTo: RootResponse,
 
 	allowed: {
@@ -33,33 +33,33 @@ export const AlbumCreateRoute = new Permission<void>({
 	contains: AlbumResponse,
 });
 
-export const AlbumEditRoute = new Permission({
+export const AlbumEditPermission = new Permission({
 	linkTo: AlbumResponse,
 	allowed: {
 		vedouci: true,
 	},
 });
 
-export const AlbumDeleteRoute = new Permission({
+export const AlbumDeletePermission = new Permission({
 	linkTo: AlbumResponse,
-	inherit: AlbumEditRoute,
+	inherit: AlbumEditPermission,
 });
 
-export const AlbumPublishRoute = new Permission({
+export const AlbumPublishPermission = new Permission({
 	linkTo: AlbumResponse,
-	inherit: AlbumEditRoute,
+	inherit: AlbumEditPermission,
 	applicable: (album) => album.status === "draft",
 });
 
-export const AlbumUnpublishRoute = new Permission({
+export const AlbumUnpublishPermission = new Permission({
 	linkTo: AlbumResponse,
 
-	inherit: AlbumEditRoute,
+	inherit: AlbumEditPermission,
 
 	applicable: (album) => album.status === "public",
 });
 
-export const AlbumPhotosRoute = new Permission({
+export const AlbumPhotosPermission = new Permission({
 	linkTo: AlbumResponse,
 	contains: PhotoResponse,
 

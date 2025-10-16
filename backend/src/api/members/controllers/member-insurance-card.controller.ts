@@ -27,9 +27,9 @@ import { Config } from "src/config";
 import { FilesService } from "src/models/files/services/files.service";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
 import {
-	MemberInsuranceCardDeleteRoute,
-	MemberInsuranceCardReadRoute,
-	MemberInsuranceCardUploadRoute,
+	MemberInsuranceCardDeletePermission,
+	MemberInsuranceCardReadPermission,
+	MemberInsuranceCardUploadPermission,
 } from "../acl/member-insurance-card.acl";
 
 @Controller("members/:id/insurance-card")
@@ -46,13 +46,13 @@ export class MemberInsuranceCardController {
 	) {}
 
 	@Get("")
-	@AcLinks(MemberInsuranceCardReadRoute)
+	@AcLinks(MemberInsuranceCardReadPermission)
 	@ApiResponse({})
 	async getInsuranceCard(@Req() req: Request, @Res() res: Response, @Param("id") memberId: number) {
 		const member = await this.membersService.getMember(memberId);
 		if (!member) throw new NotFoundException("Member not found");
 
-		MemberInsuranceCardReadRoute.canOrThrow(req, member);
+		MemberInsuranceCardReadPermission.canOrThrow(req, member);
 
 		if (!member.insuranceCardFile) throw new NotFoundException("Insurance card not found");
 		const path = this.getInsuraceCardPath(member.id, member.insuranceCardFile);
@@ -66,7 +66,7 @@ export class MemberInsuranceCardController {
 	@Put("")
 	@UseInterceptors(FileInterceptor("file"))
 	@HttpCode(HttpStatus.NO_CONTENT)
-	@AcLinks(MemberInsuranceCardUploadRoute)
+	@AcLinks(MemberInsuranceCardUploadPermission)
 	@ApiBody({
 		schema: {
 			type: "object",
@@ -88,7 +88,7 @@ export class MemberInsuranceCardController {
 		const member = await this.membersService.getMember(memberId);
 		if (!member) throw new NotFoundException("Member not found");
 
-		MemberInsuranceCardUploadRoute.canOrThrow(req, member);
+		MemberInsuranceCardUploadPermission.canOrThrow(req, member);
 
 		const ext = extname(file.originalname).slice(1);
 		const path = this.getInsuraceCardPath(member.id, ext);
@@ -105,13 +105,13 @@ export class MemberInsuranceCardController {
 	}
 
 	@Delete("")
-	@AcLinks(MemberInsuranceCardDeleteRoute)
+	@AcLinks(MemberInsuranceCardDeletePermission)
 	@ApiResponse({ status: HttpStatus.NO_CONTENT })
 	async deleteInsuranceCard(@Req() req: Request, @Param("id") memberId: number) {
 		const member = await this.membersService.getMember(memberId);
 		if (!member) throw new NotFoundException("Member not found");
 
-		MemberInsuranceCardDeleteRoute.canOrThrow(req, member);
+		MemberInsuranceCardDeletePermission.canOrThrow(req, member);
 
 		if (!member.insuranceCardFile) throw new NotFoundException("Insurance card not found");
 

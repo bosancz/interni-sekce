@@ -6,7 +6,7 @@ import { UserGuard } from "src/auth/guards/user.guard";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
 import { MembersExportService } from "src/models/members/services/members-export.service";
 import { pipeline } from "stream/promises";
-import { MembersExportRoute, MembersListRoute } from "../acl/members.acl";
+import { MembersExportPermission, MembersListPermission } from "../acl/members.acl";
 import { MembersListQuery } from "../dto/member.dto";
 
 @Controller("members/export")
@@ -20,7 +20,7 @@ export class MembersExportController {
 	) {}
 
 	@Get("xlsx")
-	@AcLinks(MembersExportRoute)
+	@AcLinks(MembersExportPermission)
 	@ApiOkResponse({
 		schema: {
 			type: "string",
@@ -32,7 +32,7 @@ export class MembersExportController {
 	})
 	async exportMembersXlsx(@Req() req: Request, @Query() query: MembersListQuery, @Res() res: Response) {
 		const members = await this.members.getMembers(query);
-		MembersListRoute.canOrThrow(req);
+		MembersListPermission.canOrThrow(req);
 
 		const xlsx = await this.membersExportService.exportXlsx(members);
 

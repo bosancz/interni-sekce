@@ -2,7 +2,7 @@ import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
 import { MemberResponse } from "../dto/member.dto";
 
-export const MembersListRoute = new Permission<void>({
+export const MembersListPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: MemberResponse,
 
@@ -11,19 +11,19 @@ export const MembersListRoute = new Permission<void>({
 	},
 });
 
-export const MembersExportRoute = new Permission<void>({
+export const MembersExportPermission = new Permission<void>({
 	linkTo: RootResponse,
-	inherit: MembersListRoute,
+	inherit: MembersListPermission,
 });
 
-export const MemberCreateRoute = new Permission<void>({
+export const MemberCreatePermission = new Permission<void>({
 	linkTo: MemberResponse,
 	allowed: {
 		vedouci: true,
 	},
 });
 
-export const MemberReadRoute = new Permission({
+export const MemberReadPermission = new Permission({
 	linkTo: MemberResponse,
 	contains: MemberResponse,
 
@@ -32,14 +32,14 @@ export const MemberReadRoute = new Permission({
 	},
 });
 
-export const MemberUpdateRoute = new Permission({
+export const MemberUpdatePermission = new Permission({
 	linkTo: MemberResponse,
 	allowed: {
 		vedouci: true,
 	},
 });
 
-export const MemberDeleteRoute = new Permission({
+export const MemberDeletePermission = new Permission({
 	linkTo: MemberResponse,
 	allowed: {
 		vedouci: true,

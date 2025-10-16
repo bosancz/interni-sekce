@@ -1,14 +1,14 @@
 import {
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  NotFoundException,
-  Param,
-  Put,
-  Req,
-  UploadedFile,
-  UseInterceptors,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	NotFoundException,
+	Param,
+	Put,
+	Req,
+	UploadedFile,
+	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -18,63 +18,66 @@ import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { Repository } from "typeorm";
-import { EventRegistrationDeleteRoute } from "../acl/event-registration.acl";
-import { EventRegistrationEditRoute, EventRegistrationReadRoute } from "../acl/events.acl";
+import {
+	EventRegistrationDeletePermission,
+	EventRegistrationEditPermission,
+	EventRegistrationReadPermission,
+} from "../acl/events.acl";
 
 @Controller("events")
 @AcController()
 @ApiTags("Events")
 export class EventsRegistrationsController {
-  constructor(
-    private events: EventsRepository,
-    @InjectRepository(Event) private eventsRepository: Repository<Event>,
-  ) {}
+	constructor(
+		private events: EventsRepository,
+		@InjectRepository(Event) private eventsRepository: Repository<Event>,
+	) {}
 
-  @Get(":id/registration")
-  @AcLinks(EventRegistrationReadRoute)
-  async getEventRegistration(@Req() req: Request, @Param("id") id: number): Promise<void> {
-    const event = await this.events.getEvent(id);
-    if (!event) throw new NotFoundException();
+	@Get(":id/registration")
+	@AcLinks(EventRegistrationReadPermission)
+	async getEventRegistration(@Req() req: Request, @Param("id") id: number): Promise<void> {
+		const event = await this.events.getEvent(id);
+		if (!event) throw new NotFoundException();
 
-    EventRegistrationReadRoute.canOrThrow(req, event);
-    // TODO:
-  }
+		EventRegistrationReadPermission.canOrThrow(req, event);
+		// TODO:
+	}
 
-  @Put(":id/registration")
-  @HttpCode(204)
-  @AcLinks(EventRegistrationEditRoute)
-  @ApiResponse({ status: 204 })
-  @UseInterceptors(FileInterceptor("file"))
-  @ApiBody({
-    schema: {
-      type: "object",
-      properties: {
-        registration: {
-          type: "string",
-          format: "binary",
-        },
-      },
-    },
-  })
-  async saveEventRegistration(
-    @Req() req: Request,
-    @Param("id") id: number,
-    @UploadedFile("registration") registration: Express.Multer.File,
-  ): Promise<void> {
-    const event = await this.events.getEvent(id);
-    if (!event) throw new NotFoundException();
+	@Put(":id/registration")
+	@HttpCode(204)
+	@AcLinks(EventRegistrationEditPermission)
+	@ApiResponse({ status: 204 })
+	@UseInterceptors(FileInterceptor("file"))
+	@ApiBody({
+		schema: {
+			type: "object",
+			properties: {
+				registration: {
+					type: "string",
+					format: "binary",
+				},
+			},
+		},
+	})
+	async saveEventRegistration(
+		@Req() req: Request,
+		@Param("id") id: number,
+		@UploadedFile("registration") registration: Express.Multer.File,
+	): Promise<void> {
+		const event = await this.events.getEvent(id);
+		if (!event) throw new NotFoundException();
 
-    EventRegistrationEditRoute.canOrThrow(req, event);
-    // TODO:
-  }
+		EventRegistrationEditPermission.canOrThrow(req, event);
+		// TODO:
+	}
 
-  @Delete(":id/registration")
-  @AcLinks(EventRegistrationDeleteRoute)
-  async deleteEventRegistration(@Req() req: Request, @Param("id") id: number): Promise<void> {
-    const event = await this.events.getEvent(id);
-    if (!event) throw new NotFoundException();
+	@Delete(":id/registration")
+	@AcLinks(EventRegistrationDeletePermission)
+	async deleteEventRegistration(@Req() req: Request, @Param("id") id: number): Promise<void> {
+		const event = await this.events.getEvent(id);
+		if (!event) throw new NotFoundException();
 
-    EventRegistrationDeleteRoute.canOrThrow(req, event);
-    // TODO:
-  }
+		EventRegistrationDeletePermission.canOrThrow(req, event);
+		// TODO:
+	}
 }

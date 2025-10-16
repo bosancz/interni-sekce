@@ -1,20 +1,20 @@
 import { Permission } from "src/access-control/schema/route-acl";
 import { MemberResponse } from "../dto/member.dto";
-import { MemberReadRoute, MemberUpdateRoute } from "./members.acl";
+import { MemberReadPermission, MemberUpdatePermission } from "./members.acl";
 
-export const MemberInsuranceCardReadRoute = new Permission({
+export const MemberInsuranceCardReadPermission = new Permission({
 	linkTo: MemberResponse,
-	inherit: MemberReadRoute,
+	inherit: MemberReadPermission,
 	applicable: (member) => !!member.insuranceCardFile,
 });
 
-export const MemberInsuranceCardUploadRoute = new Permission({
+export const MemberInsuranceCardUploadPermission = new Permission({
 	linkTo: MemberResponse,
-	inherit: MemberUpdateRoute,
+	inherit: MemberUpdatePermission,
 });
 
-export const MemberInsuranceCardDeleteRoute = new Permission<MemberResponse>({
+export const MemberInsuranceCardDeletePermission = new Permission<MemberResponse>({
 	linkTo: MemberResponse,
-	inherit: MemberUpdateRoute,
+	inherit: MemberUpdatePermission,
 	applicable: (member) => !!member.insuranceCardFile,
 });

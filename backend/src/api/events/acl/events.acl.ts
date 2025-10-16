@@ -2,12 +2,14 @@ import { Request } from "express";
 import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
+import { EventAttendeeResponse } from "../dto/event-attendee.dto";
+import { EventExpenseResponse } from "../dto/event-expense.dto";
 import { EventResponse } from "../dto/event.dto";
 
 export const isMyEvent = (doc: Pick<Event, "attendees"> | undefined, req: Request) =>
 	doc?.attendees?.some((l) => l.memberId === req.user?.memberId && l.type === "leader") ?? false;
 
-export const EventsListRoute = new Permission({
+export const EventsListPermission = new Permission({
 	linkTo: RootResponse,
 	contains: EventResponse,
 
@@ -16,14 +18,14 @@ export const EventsListRoute = new Permission({
 	},
 });
 
-export const EventsYearsRoute = new Permission<void>({
+export const EventsYearsPermission = new Permission<void>({
 	linkTo: EventResponse,
 	allowed: {
 		vedouci: true,
 	},
 });
 
-export const EventReadRoute = new Permission({
+export const EventReadPermission = new Permission({
 	linkTo: EventResponse,
 	contains: EventResponse,
 
@@ -32,7 +34,7 @@ export const EventReadRoute = new Permission({
 	},
 });
 
-export const EventCreateRoute = new Permission<void>({
+export const EventCreatePermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: EventResponse,
 
@@ -41,7 +43,7 @@ export const EventCreateRoute = new Permission<void>({
 	},
 });
 
-export const EventEditRoute = new Permission({
+export const EventEditPermission = new Permission({
 	linkTo: EventResponse,
 
 	allowed: {
@@ -53,7 +55,7 @@ export const EventEditRoute = new Permission({
 	applicable: (doc) => !doc.deletedAt,
 });
 
-export const EventDeleteRoute = new Permission({
+export const EventDeletePermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
@@ -62,7 +64,7 @@ export const EventDeleteRoute = new Permission({
 	applicable: (doc) => doc.status !== EventStates.public && !doc.deletedAt,
 });
 
-export const EventRestoreRoute = new Permission({
+export const EventRestorePermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
@@ -71,7 +73,7 @@ export const EventRestoreRoute = new Permission({
 	applicable: (doc) => !!doc.deletedAt,
 });
 
-export const EventLeadRoute = new Permission({
+export const EventLeadPermission = new Permission({
 	linkTo: EventResponse,
 
 	allowed: {
@@ -82,7 +84,7 @@ export const EventLeadRoute = new Permission({
 	applicable: (doc) => (!doc.leaders || !doc.leaders.length) && !doc.deletedAt,
 });
 
-export const EventSubmitRoute = new Permission({
+export const EventSubmitPermission = new Permission({
 	linkTo: EventResponse,
 
 	allowed: {
@@ -93,7 +95,7 @@ export const EventSubmitRoute = new Permission({
 	applicable: (doc) => doc.status === EventStates.draft && !doc.deletedAt,
 });
 
-export const EventPublishRoute = new Permission({
+export const EventPublishPermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
@@ -102,7 +104,7 @@ export const EventPublishRoute = new Permission({
 	applicable: (doc) => [EventStates.pending, EventStates.draft].includes(doc.status) && !doc.deletedAt,
 });
 
-export const EventRejectRoute = new Permission({
+export const EventRejectPermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
@@ -111,7 +113,7 @@ export const EventRejectRoute = new Permission({
 	applicable: (doc) => doc.status === EventStates.pending && !doc.deletedAt,
 });
 
-export const EventUnpublishRoute = new Permission({
+export const EventUnpublishPermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
@@ -120,7 +122,7 @@ export const EventUnpublishRoute = new Permission({
 	applicable: (doc) => doc.status === EventStates.public && !doc.deletedAt,
 });
 
-export const EventCancelRoute = new Permission({
+export const EventCancelPermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
@@ -129,7 +131,7 @@ export const EventCancelRoute = new Permission({
 	applicable: (doc) => doc.status === EventStates.public && !doc.deletedAt,
 });
 
-export const EventUncancelRoute = new Permission({
+export const EventUncancelPermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
@@ -138,26 +140,118 @@ export const EventUncancelRoute = new Permission({
 	applicable: (doc) => doc.status === EventStates.cancelled && !doc.deletedAt,
 });
 
-export const EventRegistrationReadRoute = new Permission({
+export const EventRegistrationReadPermission = new Permission({
 	linkTo: EventResponse,
 
-	inherit: EventReadRoute,
+	inherit: EventReadPermission,
 });
 
-export const EventRegistrationEditRoute = new Permission({
+export const EventRegistrationEditPermission = new Permission({
 	linkTo: EventResponse,
 
-	inherit: EventEditRoute,
+	inherit: EventEditPermission,
 });
 
-export const EventReportReadRoute = new Permission({
+export const EventRegistrationDeletePermission = new Permission({
 	linkTo: EventResponse,
 
-	inherit: EventReadRoute,
+	inherit: EventEditPermission,
 });
 
-export const EventReportEditRoute = new Permission({
+export const EventReportReadPermission = new Permission({
 	linkTo: EventResponse,
 
-	inherit: EventEditRoute,
+	inherit: EventReadPermission,
+});
+
+export const EventReportEditPermission = new Permission({
+	linkTo: EventResponse,
+
+	inherit: EventEditPermission,
+});
+
+export const EventExpensesListPermission = new Permission({
+	linkTo: EventResponse,
+	contains: EventExpenseResponse,
+
+	inherit: EventReadPermission,
+
+	path: (e) => `${e.id}/attendees`,
+});
+
+export const EventExpenseReadPermission = new Permission({
+	linkTo: EventExpenseResponse,
+	allowed: {
+		vedouci: true,
+	},
+});
+
+export const EventExpenseCreatePermission = new Permission({
+	linkTo: EventResponse,
+	contains: EventExpenseResponse,
+
+	allowed: {
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
+});
+
+export const EventExpenseEditPermission = new Permission({
+	linkTo: EventExpenseResponse,
+
+	allowed: {
+		admin: true,
+		vedouci: ({ doc, req }) => isMyEvent(doc.event, req),
+	},
+
+	path: (d) => `${d.eventId}/expenses/${d.id}`,
+});
+
+export const EventExpenseDeletePermission = new Permission({
+	linkTo: EventExpenseResponse,
+	path: (d) => `${d.eventId}/expenses/${d.id}`,
+	inherit: EventExpenseEditPermission,
+});
+
+export const EventAttendeesListPermission = new Permission({
+	linkTo: EventResponse,
+	contains: EventAttendeeResponse,
+
+	inherit: EventReadPermission,
+
+	path: (e) => `${e.id}/attendees`,
+});
+
+export const EventAttendeeReadPermission = new Permission({
+	linkTo: EventAttendeeResponse,
+	allowed: {
+		vedouci: true,
+	},
+});
+
+export const EventAttendeeCreatePermission = new Permission({
+	linkTo: EventResponse,
+	contains: EventAttendeeResponse,
+
+	allowed: {
+		admin: true,
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
+});
+
+export const EventAttendeeEditPermission = new Permission({
+	linkTo: EventAttendeeResponse,
+	contains: EventAttendeeResponse,
+
+	allowed: {
+		admin: true,
+		vedouci: ({ doc, req }) => isMyEvent(doc.event, req),
+	},
+
+	path: (d) => `${d.eventId}/attendees/${d.memberId}`,
+});
+
+export const EventAttendeeDeletePermission = new Permission({
+	linkTo: EventAttendeeResponse,
+	path: (e) => `${e.eventId}/attendees/${e.memberId}`,
+	inherit: EventAttendeeEditPermission,
 });
