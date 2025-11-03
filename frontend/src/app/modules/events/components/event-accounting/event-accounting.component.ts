@@ -9,98 +9,121 @@ import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
-  selector: "bo-event-accounting",
-  templateUrl: "./event-accounting.component.html",
-  styleUrls: ["./event-accounting.component.scss"],
-  standalone: false,
+	selector: "bo-event-accounting",
+	templateUrl: "./event-accounting.component.html",
+	styleUrls: ["./event-accounting.component.scss"],
+	standalone: false,
 })
 export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() event?: SDK.EventResponseWithLinks;
+	@Input() event?: SDK.EventResponseWithLinks;
 
-  expenses: SDK.EventExpenseResponseWithLinks[] = [];
+	expenses: SDK.EventExpenseResponseWithLinks[] = [];
 
-  actions: Action[] = [];
+	actions: Action[] = [];
 
-  modal?: HTMLIonModalElement;
-  alert?: HTMLIonAlertElement;
+	modal?: HTMLIonModalElement;
+	alert?: HTMLIonAlertElement;
 
-  constructor(
-    private toastService: ToastService,
-    private api: ApiService,
-    private modalService: ModalService,
-  ) {}
+	constructor(
+		private toastService: ToastService,
+		private api: ApiService,
+		private modalService: ModalService,
+	) {}
 
-  ngOnInit(): void {}
+	ngOnInit(): void {}
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.event) this.loadExpenses();
-  }
+	ngOnChanges(changes: SimpleChanges): void {
+		if (changes.event) this.loadExpenses();
+	}
 
-  ngOnDestroy() {
-    this.modal?.dismiss();
-    this.alert?.dismiss();
-  }
+	ngOnDestroy() {
+		this.modal?.dismiss();
+		this.alert?.dismiss();
+	}
 
-  private async loadExpenses() {
-    if (!this.event) return;
-    this.expenses = await this.api.EventsApi.listEventExpenses(this.event?.id).then((res) => res.data);
-    this.expenses.sort((a, b) => a.receiptNumber.localeCompare(b.receiptNumber, "cs", { numeric: true }));
-  }
+	private async loadExpenses() {
+		if (!this.event) return;
+		this.expenses = await this.api.EventsApi.listEventExpenses(this.event?.id).then((res) => res.data);
+		this.expenses.sort((a, b) => a.receiptNumber.localeCompare(b.receiptNumber, "cs", { numeric: true }));
+	}
 
-  async editExpense(expense: SDK.EventExpenseResponseWithLinks) {
-    if (!this.event) return;
+	async addExpense() {
+		if (!this.event) return;
 
-    const data = await this.modalService.componentModal(EventExpenseModalComponent, {
-      expense: expense || { id: this.getNextExpenseId() },
-    });
+		const expense = await this.modalService.componentModal(EventExpenseModalComponent, {
+			expense: { receiptNumber: this.getNextExpenseId() },
+		});
 
-    if (data === null) return;
+		if (expense === null) return;
 
-    const oldExpenses = this.expenses;
+		try {
+			console.log("Adding expense:", expense);
+			const newExpense = await this.api.EventsApi.addEventExpense(this.event.id, expense).then((res) => res.data);
+			this.expenses.push(newExpense);
 
-    try {
-      const i = this.expenses.indexOf(expense);
-      this.expenses.splice(i, 1, expense);
+			this.toastService.toast("Uloženo");
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit", { color: "danger" });
+			throw e;
+		}
+	}
 
-      await this.api.EventsApi.updateEventExpense(this.event.id, expense.id, data);
-      await this.loadExpenses();
+	async editExpense(expense: SDK.EventExpenseResponseWithLinks) {
+		if (!this.event) return;
 
-      this.toastService.toast("Uloženo");
-    } catch (e) {
-      this.expenses = oldExpenses;
-      this.toastService.toast("Nepodařilo se uložit", { color: "danger" });
-    }
-  }
+		const data = await this.modalService.componentModal(EventExpenseModalComponent, {
+			expense: expense,
+		});
 
-  async removeExpense(expense: SDK.EventExpenseResponseWithLinks) {
-    if (!this.event) return;
+		if (data === null) return;
 
-    const confirmation = await this.modalService.deleteConfirmationModal(`Opravdu chceš smazat účtenku ${expense.id}?`);
+		const oldExpenses = this.expenses;
 
-    if (confirmation) {
-      const i = this.expenses.indexOf(expense);
-      this.expenses.splice(i, 1, expense);
+		try {
+			const i = this.expenses.indexOf(expense);
+			this.expenses.splice(i, 1, expense);
 
-      await this.api.EventsApi.deleteEventExpense(this.event.id, expense.id);
-    }
-  }
+			await this.api.EventsApi.updateEventExpense(this.event.id, expense.id, data);
+			await this.loadExpenses();
 
-  private async exportExcel(event: SDK.EventResponseWithLinks) {
-    // TODO:
-    // if (event._links.["accounting-template"]) {
-    //   const url = environment.apiRoot + event._links.["accounting-template"].href;
-    //   window.open(url);
-    // }
-  }
+			this.toastService.toast("Uloženo");
+		} catch (e) {
+			this.expenses = oldExpenses;
+			this.toastService.toast("Nepodařilo se uložit", { color: "danger" });
+		}
+	}
 
-  private getNextExpenseId() {
-    const re = /\d+/;
+	async removeExpense(expense: SDK.EventExpenseResponseWithLinks) {
+		if (!this.event) return;
 
-    const maxId = this.expenses.reduce((acc, cur) => {
-      const match = re.exec(cur.receiptNumber);
-      return match ? Math.max(acc, Number(match[0])) : acc;
-    }, 0);
+		const confirmation = await this.modalService.deleteConfirmationModal(
+			`Opravdu chceš smazat účtenku ${expense.id}?`,
+		);
 
-    return "V" + String(maxId + 1);
-  }
+		if (confirmation) {
+			const i = this.expenses.indexOf(expense);
+			this.expenses.splice(i, 1, expense);
+
+			await this.api.EventsApi.deleteEventExpense(this.event.id, expense.id);
+		}
+	}
+
+	private async exportExcel(event: SDK.EventResponseWithLinks) {
+		// TODO:
+		// if (event._links.["accounting-template"]) {
+		//   const url = environment.apiRoot + event._links.["accounting-template"].href;
+		//   window.open(url);
+		// }
+	}
+
+	private getNextExpenseId() {
+		const re = /\d+/;
+
+		const maxId = this.expenses.reduce((acc, cur) => {
+			const match = re.exec(cur.receiptNumber);
+			return match ? Math.max(acc, Number(match[0])) : acc;
+		}, 0);
+
+		return "V" + String(maxId + 1);
+	}
 }

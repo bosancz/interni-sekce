@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
@@ -31,13 +31,13 @@ export class EventsExpensesController {
 		return expenses;
 	}
 
-	@Post(":expenseId")
+	@Post("")
+	@HttpCode(201)
 	@AcLinks(EventExpenseCreatePermission)
-	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 201, type: WithLinks(EventExpenseResponse) })
 	async addEventExpense(
 		@Req() req: Request,
 		@Param("eventId") eventId: number,
-		@Param("expenseId") expenseId: number,
 		@Body() body: EventExpenseCreateBody,
 	) {
 		const event = await this.events.getEvent(eventId);
@@ -45,7 +45,7 @@ export class EventsExpensesController {
 
 		EventExpenseCreatePermission.canOrThrow(req, event);
 
-		await this.events.createEventExpense(eventId, expenseId, body);
+		return await this.events.createEventExpense(eventId, body);
 	}
 
 	@Patch(":expenseId")

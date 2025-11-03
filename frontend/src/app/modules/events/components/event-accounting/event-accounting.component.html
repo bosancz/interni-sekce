@@ -1,22 +1,25 @@
 <h3>Účtování</h3>
 
-<bo-event-expenses-chart
-	*ngIf="expenses?.length"
-	[event]="event"
-	[expenses]="expenses"
-	class="mb-5"
-></bo-event-expenses-chart>
+<!-- @if (expenses.length > 0) {
+	<bo-event-expenses-chart [event]="event" [expenses]="expenses" class="mb-5"></bo-event-expenses-chart>
+} -->
 
 <ion-list>
-	<bo-item *ngFor="let expense of expenses" [label]="expense.receiptNumber">
-		<p>{{ expense.description }}</p>
+	@for (expense of expenses; track expense.id) {
+		<bo-item [label]="expense.receiptNumber">
+			<p>{{ expense.description }}</p>
 
-		<div slot="end" class="type flex-shrink-0">
-			<ion-badge mode="ios" [style.background-color]="expense | eventExpense: 'color'">
-				{{ expense | eventExpense: "type" }}
-			</ion-badge>
-		</div>
-
-		<ion-label slot="end" class="amount"> {{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč </ion-label>
-	</bo-item>
+			<div slot="end" class="type flex-shrink-0">
+				<ion-badge mode="ios" [style.background-color]="expense | eventExpense: 'color'">
+					{{ expense | eventExpense: "type" }}
+				</ion-badge>
+			</div>
+			<div slot="end">
+				<ion-label class="amount"> {{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč </ion-label>
+				<bo-edit-button (click)="editExpense(expense)" />
+			</div>
+		</bo-item>
+	}
 </ion-list>
+
+<bo-add-button (click)="addExpense()">Přidat účtenku</bo-add-button>
