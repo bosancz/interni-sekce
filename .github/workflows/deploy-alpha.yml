@@ -3,7 +3,7 @@ name: Deploy to ALPHA environment
 on:
   push:
     branches:
-      - feature/new-backend
+      - next
 
 jobs:
   build:
