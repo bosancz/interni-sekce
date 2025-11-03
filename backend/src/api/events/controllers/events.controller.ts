@@ -61,12 +61,14 @@ export class EventsController {
 			...query,
 		};
 
+		console.log("USER TOKEN", token);
+
 		if (query.my) {
 			if (!token.memberId) throw new ConflictException("Cannot show my events, user is not linked to a member.");
 			options.memberId = token.memberId;
 		}
 
-		// FIXME: add ACL logic
+		// FIXME: add ACL logic - filter evens based on role
 
 		return this.events.getEvents(options);
 	}

@@ -153,8 +153,8 @@ export class EventsRepository {
 		});
 	}
 
-	async createEventExpense(eventId: number, expenseId: number, data: Partial<EventExpense>) {
-		this.eventExpensesRepository.save({ ...data, eventId, id: expenseId });
+	async createEventExpense(eventId: number, data: Partial<EventExpense>) {
+		return this.eventExpensesRepository.save({ ...data, eventId });
 	}
 
 	async updateEventExpense(eventId: number, expenseId: number, data: Partial<EventExpense>) {
