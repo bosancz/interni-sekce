@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { Subject, fromEvent } from "rxjs";
+import { ReplaySubject, Subject, fromEvent } from "rxjs";
 import { filter, retry, switchMap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { Logger } from "src/logger";
@@ -28,8 +28,8 @@ export class ApiService extends SDK {
 	);
 	private reloadApiEvent = new Subject<void>();
 
-	public info = new Subject<SDK.RootResponseWithLinks>();
-	public rootLinks = new Subject<SDK.RootResponseLinks>();
+	public info = new ReplaySubject<SDK.RootResponseWithLinks>();
+	public rootLinks = new ReplaySubject<SDK.RootResponseLinks>();
 
 	constructor() {
 		super({
