@@ -3,6 +3,8 @@ name: Deploy to TEST environment
 on:
   pull_request:
     types: [opened, reopened, ready_for_review, synchronize]
+    branches:
+      - main
 
 jobs:
   build-frontend:
