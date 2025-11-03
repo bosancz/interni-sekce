@@ -6,30 +6,30 @@ import { SDK } from "src/sdk";
 type EventExpensePipeProperty = "type" | "color";
 
 @Pipe({
-  name: "eventExpense",
-  pure: true,
-  standalone: false,
+	name: "eventExpense",
+	pure: true,
+	standalone: false,
 })
 export class EventExpensePipe implements PipeTransform {
-  eventTypes = EventTypes;
+	eventTypes = EventTypes;
 
-  defaultProperties: { [property: string]: any } = {};
+	defaultProperties: { [property: string]: any } = {};
 
-  constructor() {}
+	constructor() {}
 
-  transform(eventExpense: SDK.EventExpenseResponseWithLinks | undefined, property: EventExpensePipeProperty): string {
-    if (!eventExpense) return this.defaultProperties[property];
-    if (!(eventExpense.type in EventExpenseTypes)) return this.defaultProperties[property];
+	transform(eventExpense: SDK.EventExpenseResponseWithLinks | undefined, property: EventExpensePipeProperty): string {
+		if (!eventExpense) return this.defaultProperties[property];
+		if (!eventExpense.type || !(eventExpense.type in EventExpenseTypes)) return this.defaultProperties[property];
 
-    switch (property) {
-      case "type":
-        return EventExpenseTypes[eventExpense.type].title;
+		switch (property) {
+			case "type":
+				return EventExpenseTypes[eventExpense.type].title;
 
-      case "color":
-        return EventExpenseTypes[eventExpense.type].color;
+			case "color":
+				return EventExpenseTypes[eventExpense.type].color;
 
-      default:
-        throw new Error(`Unknown property ${property}`);
-    }
-  }
+			default:
+				throw new Error(`Unknown property ${property}`);
+		}
+	}
 }
