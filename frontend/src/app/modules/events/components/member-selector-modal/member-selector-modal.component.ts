@@ -52,6 +52,8 @@ export class MemberSelectorModalComponent
 
   searchMembers(searchString?: string) {
     if (!searchString) {
+      
+      //NOTE: Chceme zobrazit vsechny clenyy, pokud neni nic zadano do vyhledavani stejne tak nikdo nebude vyhledavat ne?
       this.filteredMembers = this.members;
       return;
     }
