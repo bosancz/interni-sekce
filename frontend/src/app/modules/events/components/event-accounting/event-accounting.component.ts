@@ -97,7 +97,7 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 		if (!this.event) return;
 
 		const confirmation = await this.modalService.deleteConfirmationModal(
-			`Opravdu chceš smazat účtenku ${expense.id}?`,
+			`Opravdu chceš smazat účtenku?`,
 		);
 
 		if (confirmation) {
@@ -105,6 +105,9 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 			this.expenses.splice(i, 1, expense);
 
 			await this.api.EventsApi.deleteEventExpense(this.event.id, expense.id);
+			await this.loadExpenses();
+			
+			this.toastService.toast("Smazáno");
 		}
 	}
 

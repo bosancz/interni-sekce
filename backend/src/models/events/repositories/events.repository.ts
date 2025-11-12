@@ -133,7 +133,6 @@ export class EventsRepository {
 		await this.eventAttendeesRepository.delete({ eventId, memberId });
 	}
 
-	//
 	async getEventExpenses(id: number) {
 		const q = this.eventExpensesRepository
 			.createQueryBuilder("expenses")
@@ -146,9 +145,9 @@ export class EventsRepository {
 		return q.getMany();
 	}
 
-	async getEventExpense(eventId: number, id: number) {
+	async getEventExpense(eventId: number, expenseId: number) {
 		return this.eventExpensesRepository.findOne({
-			where: { eventId, id },
+			where: { eventId, id: expenseId },
 			withDeleted: true,
 		});
 	}

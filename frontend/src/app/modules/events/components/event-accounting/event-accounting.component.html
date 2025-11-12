@@ -17,9 +17,12 @@
 			<div slot="end">
 				<ion-label class="amount"> {{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč </ion-label>
 				<bo-edit-button (click)="editExpense(expense)" />
+				<bo-delete-button (click)="removeExpense(expense)" />
 			</div>
 		</bo-item>
 	}
 </ion-list>
 
-<bo-add-button (click)="addExpense()">Přidat účtenku</bo-add-button>
+<div *ngIf="event?._links?.addEventExpense?.allowed" class="text-center">
+	<bo-add-button (click)="addExpense()">Přidat účtenku</bo-add-button>
+</div>
