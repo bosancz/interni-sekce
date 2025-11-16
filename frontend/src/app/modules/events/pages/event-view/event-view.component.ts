@@ -148,7 +148,6 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
         hidden: !event._links.leadEvent.allowed,
         handler: () => this.leadEvent(event),
       },
-      // TODO acl logic not working i guess
       {
         text: "Stáhnout ohlášku",
         color: "success",
