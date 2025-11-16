@@ -1429,6 +1429,14 @@ export namespace SDK {
 		 * @type {AcLink}
 		 * @memberof EventResponseLinks
 		 */
+
+		getEventAnnouncement: AcLink;
+		/**
+		 *
+		 * @type {AcLink}
+		 * @memberof EventResponseLinks
+		 */
+	
 		getEventsYears: AcLink;
 		/**
 		 *
@@ -4889,6 +4897,45 @@ export namespace SDK {
 
 			return this.axios.request<void>(axiosRequestConfig);
 		}
+
+		/**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+
+		public async getEventAnnouncement(id: number, options: AxiosRequestConfig = {}) {
+			// verify required parameter 'id' is not null or undefined
+			assertParamExists("getEventAnnouncement", "id", id);
+
+			const localVarPath = `/api/events/{id}/announcement`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (this.configuration) {
+				baseOptions = this.configuration.baseOptions;
+			}
+
+			const axiosRequestConfig: AxiosRequestConfig = { method: "GET", responseType: 'blob', ...baseOptions, ...options };
+			const requestHeaderParameter = {} as any;
+			const requestQueryParameter = {} as any;
+
+			setSearchParams(requestUrlObj, requestQueryParameter);
+			let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			axiosRequestConfig.headers = { ...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+			axiosRequestConfig["url"] = toPathString(requestUrlObj);
+			axiosRequestConfig["baseURL"] = this.configuration.basePath;
+
+			return this.axios.request<void>(axiosRequestConfig);
+		}
+
+
+
+
 
 		/**
          * 

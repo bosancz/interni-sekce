@@ -170,6 +170,15 @@ export const EventReportEditPermission = new Permission({
 	inherit: EventEditPermission,
 });
 
+export const EventAnnouncementGetPermission = new Permission({
+	linkTo: EventResponse,
+
+	allowed: {
+		admin: true,
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
+});
+
 export const EventExpensesListPermission = new Permission({
 	linkTo: EventResponse,
 	contains: EventExpenseResponse,

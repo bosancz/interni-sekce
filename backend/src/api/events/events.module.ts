@@ -9,7 +9,8 @@ import { EventsExpensesController } from "./controllers/events-expenses.controll
 import { EventsRegistrationsController } from "./controllers/events-registrations.controller";
 import { EventsReportsController } from "./controllers/events-reports.controller";
 import { EventsController } from "./controllers/events.controller";
-
+import { EventsAnnouncementController } from "./controllers/events-announcement.controller"
+import { EventAnnouncementService } from "./providers/event-announcement.service";
 @Module({
   imports: [TypeOrmModule.forFeature([Event, EventAttendee]), EventsModelModule],
   controllers: [
@@ -19,6 +20,8 @@ import { EventsController } from "./controllers/events.controller";
     CPVEventsController,
     EventsReportsController,
     EventsRegistrationsController,
+    EventsAnnouncementController
   ],
+  providers: [EventAnnouncementService],
 })
 export class EventsModule {}

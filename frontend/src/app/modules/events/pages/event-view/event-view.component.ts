@@ -108,6 +108,37 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
     this.toastService.toast("Akce obnovena");
   }
 
+  private async getAnnouncement(event: SDK.EventResponseWithLinks) {
+		if (!event) return;
+
+			let fileName = `announcement.xlsx`;
+
+			const response: any = await this.api.EventsApi.getEventAnnouncement(event.id)
+			const contentDisposition = response.headers['content-disposition'];
+
+			if (contentDisposition) {
+				const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
+				if (fileNameMatch && fileNameMatch[1]) {
+					fileName = fileNameMatch[1];
+				}
+			}
+			
+			const blob = new Blob([response.data], {
+				type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			});
+			
+			const url = window.URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = fileName;
+			document.body.appendChild(link);
+			link.click();
+			
+			// Cleanup
+			document.body.removeChild(link);
+			window.URL.revokeObjectURL(url);
+	}
+
   private setActions(event: SDK.EventResponseWithLinks) {
     this.actions = [
       {
@@ -116,6 +147,14 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
         icon: "hand-left-outline",
         hidden: !event._links.leadEvent.allowed,
         handler: () => this.leadEvent(event),
+      },
+      // TODO acl logic not working i guess
+      {
+        text: "Stáhnout ohlášku",
+        color: "success",
+        icon: "download",
+        hidden: !event._links.getEventAnnouncement.allowed,
+        handler: () => this.getAnnouncement(event),
       },
       {
         text: "Ke schválení",
