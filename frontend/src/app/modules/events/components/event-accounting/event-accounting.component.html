@@ -26,3 +26,8 @@
 <div *ngIf="event?._links?.addEventExpense?.allowed" class="text-center">
 	<bo-add-button (click)="addExpense()">Přidat účtenku</bo-add-button>
 </div>
+<div *ngIf="event && event._links.getEventAccounting.allowed" class="text-center">
+	<ion-button (click)="getAccounting(event)" expand="block" fill="outline">
+        Stáhnout účtování
+    </ion-button>
+</div>

@@ -111,13 +111,37 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 		}
 	}
 
-	private async exportExcel(event: SDK.EventResponseWithLinks) {
-		// TODO:
-		// if (event._links.["accounting-template"]) {
-		//   const url = environment.apiRoot + event._links.["accounting-template"].href;
-		//   window.open(url);
-		// }
+	async getAccounting(event: SDK.EventResponseWithLinks) {
+		if (!event) return;
+
+			let fileName = `accounting.xlsx`;
+
+			const response: any = await this.api.EventsApi.getEventAccounting(event.id)
+			const contentDisposition = response.headers['content-disposition'];
+
+			if (contentDisposition) {
+				const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
+				if (fileNameMatch && fileNameMatch[1]) {
+					fileName = fileNameMatch[1];
+				}
+			}
+			
+			const blob = new Blob([response.data], {
+				type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			});
+			
+			const url = window.URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = fileName;
+			document.body.appendChild(link);
+			link.click();
+			
+			// Cleanup
+			document.body.removeChild(link);
+			window.URL.revokeObjectURL(url);
 	}
+	
 
 	private getNextExpenseId() {
 		const re = /\d+/;

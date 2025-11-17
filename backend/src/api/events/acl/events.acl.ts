@@ -174,7 +174,18 @@ export const EventAnnouncementGetPermission = new Permission({
 	linkTo: EventResponse,
 
 	allowed: {
-		admin: false,
+		admin: true,
+		revizor: true,
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
+});
+
+export const EventAccountingGetPermission = new Permission({
+	linkTo: EventResponse,
+
+	allowed: {
+		admin: true,
+		revizor:true,
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
 });

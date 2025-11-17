@@ -8,9 +8,18 @@ import { Member } from 'src/models/members/entities/member.entity';
 import * as xlsxPopulate from 'xlsx-populate';
 @Injectable() // <-- Now this will work
 export class EventAnnouncementService {
-    constructor() {
-        // Inject other services you might need
+
+    private string2date(stringDate: string|null|undefined):Date|null{
+        if (!stringDate) return null;
+
+        const date = new Date(stringDate);
+        
+        if (isNaN(date.getTime())) {
+            return null;
+        }
+        return date;
     }
+
 
     async generateAnnouncement(event: Event): Promise<{ fileBuffer: Buffer, fileName: string}> {
         
@@ -25,9 +34,9 @@ export class EventAnnouncementService {
         
         // Header
         annoucementSheet.cell("C15").value(event.name || "");
-        if (event.dateFrom) annoucementSheet.cell("C17").value(event.dateFrom);
-        if (event.dateTill) annoucementSheet.cell("C18").value(event.dateTill);
-        if (event.place) annoucementSheet.cell("C18").value(event.place);
+        annoucementSheet.range("C17:C17").value(this.string2date(event.dateFrom) || "");
+        annoucementSheet.range("C18:C18").value(this.string2date(event.dateTill) || "");
+        annoucementSheet.cell("C20").value(event.place || "");
 
         if (event.leaders){
             const leadersString = (member: Member) => member && member.firstName && member.lastName ? `${member.firstName} ${member.lastName}`: "";
@@ -52,25 +61,31 @@ export class EventAnnouncementService {
 
         const missing = "Chybí v DB";
         
-        const attendees = event.attendees?.map(ea => [
+        const attendeesString = event.attendees?.map(ea => {
+ 
+            return [ 
             ea?.member?.firstName || missing,
             ea?.member?.lastName || missing,
-            ea?.member?.birthday || missing,
+            this.string2date(ea?.member?.birthday) || missing,
             (ea?.member?.addressStreet || missing)+ " " + (ea?.member?.addressStreetNo || ""),
             ea?.member?.addressCity|| missing,
             ea?.member?.addressPostalCode || missing,
             (ea?.member?.contacts?.[0]?.mobile || missing) + " " + (ea?.member?.contacts?.[0]?.title ? ` (${ea.member.contacts[0].title})` : "")
+            ];
+             }) || [];
 
-            
-            ]) || [];
-            
-        //attendees.sort((a,b) => a[2].localeCompare(b[2]));
-        console.log(attendees)
+        attendeesString.sort((a, b) => {
+            const dateA = a[2] !== missing ? new Date(String(b[2])).getTime() : 0;
+            const dateB = b[2] !== missing ? new Date(String(b[2])).getTime() : 0;
+            return dateA - dateB;
+        });
         
-        if (attendees.length > 0) {
-            const endRow = 31 + attendees.length;
-            const endCol = String.fromCharCode(64 + 7); // 'G' for 7 columns
-            annoucementSheet.range(`A32:${endCol}${endRow}`).value(attendees);
+        if (attendeesString.length > 0) {
+            const startCol = 'A'
+            const startRow = 32
+            const endCol = String.fromCharCode(startCol.charCodeAt(0) + attendeesString[0].length);
+            const endRow = startRow + attendeesString.length;
+            annoucementSheet.range(`${startCol}${startRow}:${endCol}${endRow}`).value(attendeesString);
         }
 
 
