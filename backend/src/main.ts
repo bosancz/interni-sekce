@@ -22,10 +22,7 @@ async function bootstrap() {
 
 	const nestOptions: NestApplicationOptions = {
 		rawBody: true,
-		logger:
-			StaticConfig.logging.debug || StaticConfig.environment === "development"
-				? ["log", "error", "warn", "debug", "verbose"]
-				: ["log", "error", "warn"],
+		logger: StaticConfig.logging.level,
 	};
 
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, nestOptions);
