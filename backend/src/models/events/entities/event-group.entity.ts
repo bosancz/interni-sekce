@@ -4,17 +4,17 @@ import { Event } from "./event.entity";
 
 @Entity("events_groups")
 export class EventGroup {
-  @PrimaryColumn()
-  eventId!: number;
+	@PrimaryColumn()
+	eventId!: number;
 
-  @PrimaryColumn()
-  groupId!: number;
+	@PrimaryColumn()
+	groupId!: number;
 
-  @ManyToOne(() => Event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
-  @JoinColumn({ name: "event_id" })
-  event?: Event;
+	@ManyToOne(() => Event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
+	@JoinColumn({ name: "event_id" })
+	event?: Event;
 
-  @ManyToOne(() => Group, { onDelete: "CASCADE", onUpdate: "CASCADE" })
-  @JoinColumn({ name: "group_id" })
-  group?: Group;
+	@ManyToOne(() => Group, { onDelete: "CASCADE", onUpdate: "CASCADE" })
+	@JoinColumn({ name: "group_id" })
+	group?: Group;
 }

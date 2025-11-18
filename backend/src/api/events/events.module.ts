@@ -11,14 +11,14 @@ import { EventsReportsController } from "./controllers/events-reports.controller
 import { EventsController } from "./controllers/events.controller";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Event, EventAttendee]), EventsModelModule],
-  controllers: [
-    EventsController,
-    EventsAttendeesController,
-    EventsExpensesController,
-    CPVEventsController,
-    EventsReportsController,
-    EventsRegistrationsController,
-  ],
+	imports: [TypeOrmModule.forFeature([Event, EventAttendee]), EventsModelModule],
+	controllers: [
+		EventsController,
+		EventsAttendeesController,
+		EventsExpensesController,
+		CPVEventsController,
+		EventsReportsController,
+		EventsRegistrationsController,
+	],
 })
 export class EventsModule {}
