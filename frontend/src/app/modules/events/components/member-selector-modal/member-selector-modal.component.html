@@ -2,21 +2,25 @@
 	<ion-searchbar
 		#searchBar
 		enterkeyhint="search"
-		(ionChange)="searchMembers($any($event).detail.value)"
+		(ionInput)="searchMembers($any($event).detail.value)"
+
 	></ion-searchbar>
 	<ion-buttons slot="end">
 		<ion-button (click)="close.emit()">Zrušit</ion-button>
 	</ion-buttons>
 </ion-toolbar>
 
-<ion-list>
-	<ion-item *ngFor="let member of filteredMembers" [button]="true" (click)="selectMember(member)">
-		<ion-label>
-			<h3>{{ member | member: "nickname" }}</h3>
-			<p><bo-member-item-detail [member]="member"></bo-member-item-detail></p>
-		</ion-label>
-		<ion-badge mode="ios" [style.background-color]="member.groupId | group: 'color'">
-			{{ member.group }}
-		</ion-badge>
-	</ion-item>
-</ion-list>
+
+<div class="member-selector-scrollable">
+	<ion-list>
+		<ion-item *ngFor="let member of filteredMembers" [button]="true" (click)="selectMember(member)">
+			<ion-label>
+				<h3>{{ member | member: "nickname" }}</h3>
+				<p><bo-member-item-detail [member]="member"></bo-member-item-detail></p>
+			</ion-label>
+			<ion-badge mode="ios" [style.background-color]="member.groupId | group: 'color'">
+				{{ member.group }}
+			</ion-badge>
+		</ion-item>
+	</ion-list>
+</div>
