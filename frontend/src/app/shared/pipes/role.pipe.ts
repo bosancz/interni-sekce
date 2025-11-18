@@ -5,31 +5,30 @@ import { SDK } from "src/sdk";
 type RolePipeProperty = "code";
 
 @Pipe({
-  name: "role",
-  pure: false,
-  standalone: false,
+	name: "role",
+	standalone: false,
 })
 export class RolePipe implements PipeTransform {
-  roles = MemberRoles;
+	roles = MemberRoles;
 
-  defaultProperties: Required<MemberRoleMetadata> = {
-    genitiv: "",
-    code: "?",
-    title: "",
-  };
+	defaultProperties: Required<MemberRoleMetadata> = {
+		genitiv: "",
+		code: "?",
+		title: "",
+	};
 
-  constructor() {}
+	constructor() {}
 
-  transform(roleId: SDK.MemberRolesEnum | undefined, property: RolePipeProperty): string {
-    if (!roleId) return this.defaultProperties[property];
-    if (!(roleId in this.roles)) return this.defaultProperties[property];
+	transform(roleId: SDK.MemberRolesEnum | undefined, property: RolePipeProperty): string {
+		if (!roleId) return this.defaultProperties[property];
+		if (!(roleId in this.roles)) return this.defaultProperties[property];
 
-    switch (property) {
-      case "code":
-        return this.roles[roleId][property] ?? "";
+		switch (property) {
+			case "code":
+				return this.roles[roleId][property] ?? "";
 
-      default:
-        return "?";
-    }
-  }
+			default:
+				return "?";
+		}
+	}
 }
