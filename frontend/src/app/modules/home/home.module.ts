@@ -12,16 +12,16 @@ import { HomeDashboardComponent } from "./pages/home-dashboard/home-dashboard.co
 import { HomeMyEventsComponent } from "./pages/home-my-events/home-my-events.component";
 
 @NgModule({
-  declarations: [
-    HomeDashboardComponent,
-    HomeMyEventsComponent,
-    HomeMenuComponent,
-    HomeCardNoleaderEventsComponent,
-    HomeCalendarComponent,
-    HomeCardMyEventsComponent,
-    HomeCardMembersComponent,
-    HomeMemberSearchComponent,
-  ],
-  imports: [CommonModule, HomeRoutingModule, SharedModule],
+	declarations: [
+		HomeDashboardComponent,
+		HomeMyEventsComponent,
+		HomeMenuComponent,
+		HomeCardNoleaderEventsComponent,
+		HomeCalendarComponent,
+		HomeCardMyEventsComponent,
+		HomeCardMembersComponent,
+		HomeMemberSearchComponent,
+	],
+	imports: [CommonModule, HomeRoutingModule, SharedModule],
 })
 export class DashboardModule {}

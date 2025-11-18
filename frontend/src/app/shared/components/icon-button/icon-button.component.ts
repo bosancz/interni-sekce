@@ -1,24 +1,24 @@
 import { Component, Input } from "@angular/core";
 
 @Component({
-    selector: "bo-icon-button",
-    templateUrl: "./icon-button.component.html",
-    styleUrl: "./icon-button.component.scss",
-    standalone: false
+	selector: "bo-icon-button",
+	templateUrl: "./icon-button.component.html",
+	styleUrl: "./icon-button.component.scss",
+	standalone: false,
 })
 export class IconButtonComponent {
-  @Input() label?: string;
-  @Input() icon?: string;
-  @Input() href?: string;
+	@Input() label?: string;
+	@Input() icon?: string;
+	@Input() href?: string;
 
-  constructor() {}
+	constructor() {}
 
-  onClick(event: Event) {
-    event.preventDefault();
-    event.stopPropagation();
+	onClick(event: Event) {
+		event.preventDefault();
+		event.stopPropagation();
 
-    if (this.href) {
-      window.location.href = this.href;
-    }
-  }
+		if (this.href) {
+			window.location.href = this.href;
+		}
+	}
 }

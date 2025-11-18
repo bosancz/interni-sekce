@@ -1,20 +1,20 @@
 <bo-page-header title="Oddíly" backUrl="/" [actions]="actions"></bo-page-header>
 
 <bo-page-content [padding]="true">
-  <div class="row">
-    <div *ngFor="let group of groups" class="col-6 col-lg-6 col-xl-4 mb-4">
-      <bo-card [routerLink]="['/oddily', group.id]" class="group">
-        <bo-card-header>
-          <bo-card-title>{{ group.name }}</bo-card-title>
-        </bo-card-header>
-        <bo-card-content>
-          <p>{{ group.name }}</p>
-        </bo-card-content>
-      </bo-card>
-    </div>
-  </div>
+	<div class="row">
+		<div *ngFor="let group of groups" class="col-6 col-lg-6 col-xl-4 mb-4">
+			<bo-card [routerLink]="['/oddily', group.id]" class="group">
+				<bo-card-header>
+					<bo-card-title>{{ group.name }}</bo-card-title>
+				</bo-card-header>
+				<bo-card-content>
+					<p>{{ group.name }}</p>
+				</bo-card-content>
+			</bo-card>
+		</div>
+	</div>
 
-  <p *ngIf="groups !== undefined && !groups.length" class="ion-padding">
-    Žádné oddíly zatím nejsou vytvořeny. Chceš <a routerLink="/oddily/vytvorit">vytvořit první oddíl</a>?
-  </p>
+	<p *ngIf="groups !== undefined && !groups.length" class="ion-padding">
+		Žádné oddíly zatím nejsou vytvořeny. Chceš <a routerLink="/oddily/vytvorit">vytvořit první oddíl</a>?
+	</p>
 </bo-page-content>

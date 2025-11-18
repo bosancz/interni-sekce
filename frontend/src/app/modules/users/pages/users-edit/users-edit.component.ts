@@ -10,66 +10,66 @@ import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
-  selector: "bo-users-edit",
-  templateUrl: "./users-edit.component.html",
-  styleUrls: ["./users-edit.component.scss"],
-  standalone: false,
+	selector: "bo-users-edit",
+	templateUrl: "./users-edit.component.html",
+	styleUrls: ["./users-edit.component.scss"],
+	standalone: false,
 })
 export class UsersEditComponent implements OnInit {
-  user?: SDK.UserResponseWithLinks;
+	user?: SDK.UserResponseWithLinks;
 
-  roles = UserRoles;
+	roles = UserRoles;
 
-  members: SDK.MemberResponse[] = [];
+	members: SDK.MemberResponse[] = [];
 
-  category: string = "ucet";
+	category: string = "ucet";
 
-  actions: Action[] = [
-    {
-      text: "Uložit",
-      handler: () => this.saveUser(),
-    },
-  ];
+	actions: Action[] = [
+		{
+			text: "Uložit",
+			handler: () => this.saveUser(),
+		},
+	];
 
-  @ViewChild("editUserForm") form!: NgForm;
+	@ViewChild("editUserForm") form!: NgForm;
 
-  constructor(
-    private api: ApiService,
-    private toastService: ToastService,
-    private route: ActivatedRoute,
-    private router: Router,
-  ) {}
+	constructor(
+		private api: ApiService,
+		private toastService: ToastService,
+		private route: ActivatedRoute,
+		private router: Router,
+	) {}
 
-  ngOnInit() {
-    this.route.params.pipe(untilDestroyed(this)).subscribe((params: Params) => {
-      if (params.user && (!this.user || this.user.id !== params.user)) this.loadUser(params.user);
+	ngOnInit() {
+		this.route.params.pipe(untilDestroyed(this)).subscribe((params: Params) => {
+			if (params.user && (!this.user || this.user.id !== params.user)) this.loadUser(params.user);
 
-      this.category = params.cat;
-    });
+			this.category = params.cat;
+		});
 
-    this.loadMembers();
-  }
+		this.loadMembers();
+	}
 
-  // DB interaction
-  async loadUser(userId: number) {
-    this.user = await this.api.UsersApi.getUser(userId).then((res) => res.data);
-  }
+	// DB interaction
+	async loadUser(userId: number) {
+		this.user = await this.api.UsersApi.getUser(userId).then((res) => res.data);
+	}
 
-  async loadMembers() {
-    let members = await this.api.MembersApi.listMembers().then((res) => res.data);
-    members.sort((a, b) => (a.nickname || "").localeCompare(b.nickname || ""));
-    this.members = members;
-  }
+	async loadMembers() {
+		let members = await this.api.MembersApi.listMembers().then((res) => res.data);
+		members.sort((a, b) => (a.nickname || "").localeCompare(b.nickname || ""));
+		this.members = members;
+	}
 
-  async saveUser() {
-    if (!this.user) return;
+	async saveUser() {
+		if (!this.user) return;
 
-    const userData = this.form.value;
+		const userData = this.form.value;
 
-    await this.api.UsersApi.updateUser(this.user.id, userData);
+		await this.api.UsersApi.updateUser(this.user.id, userData);
 
-    this.toastService.toast("Uloženo.");
+		this.toastService.toast("Uloženo.");
 
-    this.router.navigate(["../"], { relativeTo: this.route, replaceUrl: true });
-  }
+		this.router.navigate(["../"], { relativeTo: this.route, replaceUrl: true });
+	}
 }

@@ -8,22 +8,22 @@ import { GroupsCreateComponent } from "./pages/groups-create/groups-create.compo
 import { GroupsListComponent } from "./pages/groups-list/groups-list.component";
 
 const routes: Routes = [
-  { path: "", component: GroupsListComponent },
-  { path: "vytvorit", component: GroupsCreateComponent },
-  { path: ":id/upravit", component: GroupEditComponent },
-  {
-    path: ":id",
-    component: GroupViewComponent,
-    children: [
-      { path: "info", component: GroupInfoComponent },
-      { path: "clenove", component: GroupMembersComponent },
-      { path: "", redirectTo: "info", pathMatch: "full" },
-    ],
-  },
+	{ path: "", component: GroupsListComponent },
+	{ path: "vytvorit", component: GroupsCreateComponent },
+	{ path: ":id/upravit", component: GroupEditComponent },
+	{
+		path: ":id",
+		component: GroupViewComponent,
+		children: [
+			{ path: "info", component: GroupInfoComponent },
+			{ path: "clenove", component: GroupMembersComponent },
+			{ path: "", redirectTo: "info", pathMatch: "full" },
+		],
+	},
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
 export class GroupsRoutingModule {}

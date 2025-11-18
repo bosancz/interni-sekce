@@ -1,36 +1,42 @@
 <bo-page-header [title]="'Upravit: ' + group?.name" backUrl="/oddily"></bo-page-header>
 
 <bo-page-content>
-  <form #createGroupForm="ngForm" id="editGroupForm" (ngSubmit)="editGroup(createGroupForm)">
-    <ion-list>
-      <ion-item class="w-100">
-        <ion-label position="floating">Název</ion-label>
-        <ion-input
-          type="text"
-          name="name"
-          placeholder="Společenstvo prstenu"
-          [ngModel]="group?.name"
-          required
-        ></ion-input>
-      </ion-item>
+	<form #createGroupForm="ngForm" id="editGroupForm" (ngSubmit)="editGroup(createGroupForm)">
+		<ion-list>
+			<ion-item class="w-100">
+				<ion-label position="floating">Název</ion-label>
+				<ion-input
+					type="text"
+					name="name"
+					placeholder="Společenstvo prstenu"
+					[ngModel]="group?.name"
+					required
+				></ion-input>
+			</ion-item>
 
-      <ion-item class="w-100">
-        <ion-label position="floating">Zkratka</ion-label>
-        <ion-input type="text" name="shortName" placeholder="SP" [ngModel]="group?.shortName" required></ion-input>
-      </ion-item>
-    </ion-list>
-  </form>
+			<ion-item class="w-100">
+				<ion-label position="floating">Zkratka</ion-label>
+				<ion-input
+					type="text"
+					name="shortName"
+					placeholder="SP"
+					[ngModel]="group?.shortName"
+					required
+				></ion-input>
+			</ion-item>
+		</ion-list>
+	</form>
 </bo-page-content>
 
 <bo-page-footer [padding]="true">
-  <ion-button
-    type="submit"
-    fill="solid"
-    color="primary"
-    class="w-100"
-    form="editGroupForm"
-    [disabled]="!createGroupForm.valid"
-  >
-    Uložit
-  </ion-button>
+	<ion-button
+		type="submit"
+		fill="solid"
+		color="primary"
+		class="w-100"
+		form="editGroupForm"
+		[disabled]="!createGroupForm.valid"
+	>
+		Uložit
+	</ion-button>
 </bo-page-footer>

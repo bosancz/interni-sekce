@@ -1,11 +1,11 @@
 @use "./variables" as *;
 
 body {
-  margin: 0;
-  font-family: $font-family;
-  color: var(--black);
-  background-color: var(--white);
-  font-size: $font-basic;
+	margin: 0;
+	font-family: $font-family;
+	color: var(--black);
+	background-color: var(--white);
+	font-size: $font-basic;
 }
 
 h1,
@@ -14,17 +14,17 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: bold;
+	font-weight: bold;
 }
 
 a[href] {
-  color: $blue;
+	color: $blue;
 }
 
 .clickable {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .selectable {
-  user-select: text !important;
+	user-select: text !important;
 }

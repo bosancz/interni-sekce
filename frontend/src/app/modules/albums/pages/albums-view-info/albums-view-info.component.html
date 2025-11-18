@@ -1,24 +1,24 @@
 <bo-page-header [title]="album?.name" [actions]="actions" actionsHeader="Album" backUrl="/galerie"></bo-page-header>
 
 <bo-page-content [padding]="true">
-  <h2>{{ album?.name }}</h2>
+	<h2>{{ album?.name }}</h2>
 
-  <p *ngIf="album?.dateFrom && album?.dateTill">
-    {{ [album!.dateFrom!, album!.dateTill!] | dateRange : "d. M. y" }}, publikováno
-    {{ album!.datePublished | date : "d. M. y" }}
-  </p>
+	<p *ngIf="album?.dateFrom && album?.dateTill">
+		{{ [album!.dateFrom!, album!.dateTill!] | dateRange: "d. M. y" }}, publikováno
+		{{ album!.datePublished | date: "d. M. y" }}
+	</p>
 
-  <p>{{ album?.description }}</p>
+	<p>{{ album?.description }}</p>
 
-  <div class="gallery">
-    <bo-photo-gallery
-      *ngIf="album?.photos"
-      [photos]="album!.photos!"
-      [maxHeight]="320"
-      [clickable]="true"
-      (click)="onPhotoClick($event)"
-    ></bo-photo-gallery>
-  </div>
+	<div class="gallery">
+		<bo-photo-gallery
+			*ngIf="album?.photos"
+			[photos]="album!.photos!"
+			[maxHeight]="320"
+			[clickable]="true"
+			(click)="onPhotoClick($event)"
+		></bo-photo-gallery>
+	</div>
 </bo-page-content>
 
 <bo-albums-tabs [album]="album" selected="info"></bo-albums-tabs>

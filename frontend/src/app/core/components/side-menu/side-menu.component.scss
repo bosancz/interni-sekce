@@ -1,21 +1,21 @@
 @use "src/styles/variables" as *;
 
 ::ng-deep {
-  .logo-small {
-    height: 2rem;
-  }
-  .environment {
-    color: #f00;
-  }
+	.logo-small {
+		height: 2rem;
+	}
+	.environment {
+		color: #f00;
+	}
 }
 
 ion-item {
-  --inner-border-width: 0;
-  --background: transparent;
+	--inner-border-width: 0;
+	--background: transparent;
 }
 ion-item-group {
-  margin-left: 1em;
-  ion-label {
-    font-size: 0.8em;
-  }
+	margin-left: 1em;
+	ion-label {
+		font-size: 0.8em;
+	}
 }

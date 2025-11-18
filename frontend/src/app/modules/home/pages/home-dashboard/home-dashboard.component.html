@@ -1,18 +1,18 @@
 <bo-page-header title="Přehled"></bo-page-header>
 
 <bo-page-content [padding]="true">
-  <!-- <bo-home-menu *ngIf="!isLg"></bo-home-menu> -->
-  <div class="p-1 p-lg-3">
-    <div class="row no-gutters">
-      <div class="col-lg-6 pr-lg-2">
-        <bo-home-card-members class="mb-3 mb-lg-3"></bo-home-card-members>
-        <bo-home-card-my-events class="mb-3 mb-lg-3"></bo-home-card-my-events>
-        <bo-home-card-noleader-events class="mb-3 mb-lg-3"></bo-home-card-noleader-events>
-      </div>
+	<!-- <bo-home-menu *ngIf="!isLg"></bo-home-menu> -->
+	<div class="p-1 p-lg-3">
+		<div class="row no-gutters">
+			<div class="col-lg-6 pr-lg-2">
+				<bo-home-card-members class="mb-3 mb-lg-3"></bo-home-card-members>
+				<bo-home-card-my-events class="mb-3 mb-lg-3"></bo-home-card-my-events>
+				<bo-home-card-noleader-events class="mb-3 mb-lg-3"></bo-home-card-noleader-events>
+			</div>
 
-      <div class="col-lg-6 pl-lg-2">
-        <bo-home-calendar [months]="1" class="mb-1 mb-lg-3"></bo-home-calendar>
-      </div>
-    </div>
-  </div>
+			<div class="col-lg-6 pl-lg-2">
+				<bo-home-calendar [months]="1" class="mb-1 mb-lg-3"></bo-home-calendar>
+			</div>
+		</div>
+	</div>
 </bo-page-content>

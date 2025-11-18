@@ -1,14 +1,14 @@
 import {
-  AfterContentInit,
-  AfterViewInit,
-  Component,
-  ContentChildren,
-  EventEmitter,
-  Input,
-  Output,
-  QueryList,
-  TemplateRef,
-  ViewChild,
+	AfterContentInit,
+	AfterViewInit,
+	Component,
+	ContentChildren,
+	EventEmitter,
+	Input,
+	Output,
+	QueryList,
+	TemplateRef,
+	ViewChild,
 } from "@angular/core";
 import { NgModel } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -22,110 +22,110 @@ export type FilterData = any;
 
 @UntilDestroy()
 @Component({
-    selector: "bo-filter",
-    templateUrl: "./filter.component.html",
-    styleUrls: ["./filter.component.scss"],
-    standalone: false
+	selector: "bo-filter",
+	templateUrl: "./filter.component.html",
+	styleUrls: ["./filter.component.scss"],
+	standalone: false,
 })
 export class FilterComponent implements AfterContentInit, AfterViewInit {
-  @Input() search: boolean = false;
-  @Input() paramsSeparator: string = ",";
-  @Output() change = new EventEmitter<FilterData>();
+	@Input() search: boolean = false;
+	@Input() paramsSeparator: string = ",";
+	@Output() change = new EventEmitter<FilterData>();
 
-  @ViewChild(IonModal) modal?: IonModal;
-  @ViewChild(IonSearchbar) searchbar?: IonSearchbar;
+	@ViewChild(IonModal) modal?: IonModal;
+	@ViewChild(IonSearchbar) searchbar?: IonSearchbar;
 
-  @ContentChildren(NgModel, { descendants: true }) controls!: QueryList<NgModel>;
+	@ContentChildren(NgModel, { descendants: true }) controls!: QueryList<NgModel>;
 
-  readonly filterId = String(new Date().getTime());
+	readonly filterId = String(new Date().getTime());
 
-  searchString?: string;
+	searchString?: string;
 
-  filterCount: number = 0;
+	filterCount: number = 0;
 
-  // ControlValueAccessor
-  disabled = false;
+	// ControlValueAccessor
+	disabled = false;
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private modalService: ModalService,
-  ) {}
+	constructor(
+		private router: Router,
+		private route: ActivatedRoute,
+		private modalService: ModalService,
+	) {}
 
-  public ngAfterContentInit() {
-    setTimeout(() => {
-      this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => {
-        this.setControls(params);
-        this.emitValue();
-      });
-    });
-  }
+	public ngAfterContentInit() {
+		setTimeout(() => {
+			this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => {
+				this.setControls(params);
+				this.emitValue();
+			});
+		});
+	}
 
-  ngAfterViewInit(): void {
-    // FIXME: Workaround for focus on searchbar, because it's not working when called directly
-    setTimeout(() => this.searchbar?.setFocus(), 500);
-  }
+	ngAfterViewInit(): void {
+		// FIXME: Workaround for focus on searchbar, because it's not working when called directly
+		setTimeout(() => this.searchbar?.setFocus(), 500);
+	}
 
-  async openFilter(filterContent: TemplateRef<any>) {
-    const result = await this.modalService.componentModal(FilterModalComponent, { content: filterContent });
+	async openFilter(filterContent: TemplateRef<any>) {
+		const result = await this.modalService.componentModal(FilterModalComponent, { content: filterContent });
 
-    if (result === true) {
-      // filter submitted - set new filters
-      this.setParams();
-    } else if (result === false) {
-      // filter reset - clear all filters
-      this.setControls({});
-      this.setParams();
-    } else {
-      // filter dismissed - revert changes
-      this.setControls(this.route.snapshot.queryParams);
-    }
-  }
+		if (result === true) {
+			// filter submitted - set new filters
+			this.setParams();
+		} else if (result === false) {
+			// filter reset - clear all filters
+			this.setControls({});
+			this.setParams();
+		} else {
+			// filter dismissed - revert changes
+			this.setControls(this.route.snapshot.queryParams);
+		}
+	}
 
-  onSearchbarUpdate() {
-    this.setParams();
-  }
+	onSearchbarUpdate() {
+		this.setParams();
+	}
 
-  public setParams() {
-    const queryParams: UrlParams = { ...this.route.snapshot.queryParams };
+	public setParams() {
+		const queryParams: UrlParams = { ...this.route.snapshot.queryParams };
 
-    this.controls.forEach((item) => {
-      if (Array.isArray(item.value)) {
-        queryParams[item.name] = item.value
-          .filter((i) => !!i)
-          .map((i) => String(i))
-          .join(this.paramsSeparator);
-      } else {
-        queryParams[item.name] = item.value ? String(item.value) : undefined;
-      }
+		this.controls.forEach((item) => {
+			if (Array.isArray(item.value)) {
+				queryParams[item.name] = item.value
+					.filter((i) => !!i)
+					.map((i) => String(i))
+					.join(this.paramsSeparator);
+			} else {
+				queryParams[item.name] = item.value ? String(item.value) : undefined;
+			}
 
-      if (!queryParams[item.name]) delete queryParams[item.name];
-    });
+			if (!queryParams[item.name]) delete queryParams[item.name];
+		});
 
-    if (this.search) {
-      if (this.searchString) queryParams.search = this.searchString;
-      else delete queryParams.search;
-    }
+		if (this.search) {
+			if (this.searchString) queryParams.search = this.searchString;
+			else delete queryParams.search;
+		}
 
-    this.router.navigate([], { queryParams, replaceUrl: true });
-  }
+		this.router.navigate([], { queryParams, replaceUrl: true });
+	}
 
-  emitValue() {
-    const value: FilterData = this.controls.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value || null }), {});
-    if (this.search && this.searchString) value["search"] = this.searchString;
-    this.change.emit(value);
-  }
+	emitValue() {
+		const value: FilterData = this.controls.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value || null }), {});
+		if (this.search && this.searchString) value["search"] = this.searchString;
+		this.change.emit(value);
+	}
 
-  setControls(params: UrlParams) {
-    for (const item of this.controls) {
-      let value: any = params[item.name]?.split(this.paramsSeparator);
-      if (Array.isArray(value) && value.length === 1) value = value[0];
+	setControls(params: UrlParams) {
+		for (const item of this.controls) {
+			let value: any = params[item.name]?.split(this.paramsSeparator);
+			if (Array.isArray(value) && value.length === 1) value = value[0];
 
-      item.control.setValue(value || null);
-    }
+			item.control.setValue(value || null);
+		}
 
-    this.filterCount = this.controls.reduce((acc, cur) => acc + (cur.value ? 1 : 0), 0);
+		this.filterCount = this.controls.reduce((acc, cur) => acc + (cur.value ? 1 : 0), 0);
 
-    if (this.search && params["search"]) this.searchString = params["search"];
-  }
+		if (this.search && params["search"]) this.searchString = params["search"];
+	}
 }

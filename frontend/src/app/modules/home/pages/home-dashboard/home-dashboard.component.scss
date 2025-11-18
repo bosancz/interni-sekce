@@ -1,13 +1,13 @@
 @use "src/styles/variables" as *;
 
 .right {
-  border-left: 1px solid #eee;
+	border-left: 1px solid #eee;
 }
 
 .ribbon {
-  height: 10vh;
+	height: 10vh;
 }
 
 ion-content {
-  --padding-top: 0;
+	--padding-top: 0;
 }

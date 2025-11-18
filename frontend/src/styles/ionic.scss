@@ -15,55 +15,55 @@
 @use "@ionic/angular/css/flex-utils.css";
 
 ion-header.md {
-  ion-toolbar {
-    --ion-background-color: #333;
-    --ion-toolbar-color: #fff;
-  }
+	ion-toolbar {
+		--ion-background-color: #333;
+		--ion-toolbar-color: #fff;
+	}
 }
 
 ion-menu {
-  ion-toolbar.md {
-    --ion-background-color: #111;
-  }
-  ion-title.ios {
-    padding-left: 0;
-    padding-right: 0;
-  }
+	ion-toolbar.md {
+		--ion-background-color: #111;
+	}
+	ion-title.ios {
+		padding-left: 0;
+		padding-right: 0;
+	}
 }
 
 ion-split-pane {
-  --border: none;
+	--border: none;
 }
 
 @media (min-width: 768px) {
-  ion-modal.ion-modal-lg::part(content) {
-    --width: 80%;
-    --height: 80%;
-  }
+	ion-modal.ion-modal-lg::part(content) {
+		--width: 80%;
+		--height: 80%;
+	}
 }
 
 ion-menu {
-  --ion-background-color: #eee;
+	--ion-background-color: #eee;
 }
 
 body.dark {
-  --ion-backdrop-color: #fff;
-  ion-menu {
-    --ion-background-color: #1e1e1e;
-  }
+	--ion-backdrop-color: #fff;
+	ion-menu {
+		--ion-background-color: #1e1e1e;
+	}
 }
 
 ion-list {
-  ion-item:last-child {
-    --border-width: 0 !important;
-  }
+	ion-item:last-child {
+		--border-width: 0 !important;
+	}
 }
 
 ion-modal.dialog {
-  --width: fit-content;
-  --min-width: 250px;
-  --max-width: 95vw;
-  --height: fit-content;
-  --border-radius: 6px;
-  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+	--width: fit-content;
+	--min-width: 250px;
+	--max-width: 95vw;
+	--height: fit-content;
+	--border-radius: 6px;
+	--box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
 }

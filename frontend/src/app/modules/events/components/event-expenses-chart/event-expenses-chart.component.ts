@@ -6,94 +6,96 @@ import { ApiService } from "src/app/services/api.service";
 import { SDK } from "src/sdk";
 
 @Component({
-  selector: "bo-event-expenses-chart",
-  templateUrl: "./event-expenses-chart.component.html",
-  styleUrls: ["./event-expenses-chart.component.scss"],
-  standalone: false,
+	selector: "bo-event-expenses-chart",
+	templateUrl: "./event-expenses-chart.component.html",
+	styleUrls: ["./event-expenses-chart.component.scss"],
+	standalone: false,
 })
 export class EventExpensesChartComponent implements OnInit, OnChanges {
-  @Input() event?: SDK.EventResponseWithLinks;
-  @Input() expenses?: SDK.EventExpenseResponseWithLinks[];
+	@Input() event?: SDK.EventResponseWithLinks;
+	@Input() expenses?: SDK.EventExpenseResponseWithLinks[];
 
-  days: number = 0;
-  persons: number = 0;
+	days: number = 0;
+	persons: number = 0;
 
-  total: number = 0;
+	total: number = 0;
 
-  totalByType: Record<SDK.EventExpenseTypesEnum, number> = {
-    accommodation: 0,
-    food: 0,
-    material: 0,
-    other: 0,
-    transport: 0,
-  };
+	totalByType: Record<SDK.EventExpenseTypesEnum, number> = {
+		accommodation: 0,
+		food: 0,
+		material: 0,
+		other: 0,
+		transport: 0,
+	};
 
-  chartData?: ChartData<"doughnut">;
+	chartData?: ChartData<"doughnut">;
 
-  chartOptions: ChartOptions<"doughnut"> = {
-    cutout: "60%",
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: {
-          useBorderRadius: true,
-        },
-      },
-    },
-  };
+	chartOptions: ChartOptions<"doughnut"> = {
+		cutout: "60%",
+		plugins: {
+			legend: {
+				position: "bottom",
+				labels: {
+					useBorderRadius: true,
+				},
+			},
+		},
+	};
 
-  constructor(private api: ApiService) {}
+	constructor(private api: ApiService) {}
 
-  ngOnInit() {}
+	ngOnInit() {}
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.updateChart();
-  }
+	ngOnChanges(changes: SimpleChanges): void {
+		this.updateChart();
+	}
 
-  private async updateChart() {
-    this.totalByType = {
-      accommodation: 0,
-      food: 0,
-      material: 0,
-      other: 0,
-      transport: 0,
-    };
+	private async updateChart() {
+		this.totalByType = {
+			accommodation: 0,
+			food: 0,
+			material: 0,
+			other: 0,
+			transport: 0,
+		};
 
-    if (!this.event || !this.expenses) return;
+		if (!this.event || !this.expenses) return;
 
-    const dateFrom = DateTime.fromISO(this.event.dateFrom).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-    const dateTill = DateTime.fromISO(this.event.dateTill)
-      .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-      .plus({ days: 1 });
+		const dateFrom = DateTime.fromISO(this.event.dateFrom).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+		const dateTill = DateTime.fromISO(this.event.dateTill)
+			.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+			.plus({ days: 1 });
 
-    this.days = Math.ceil(dateTill.diff(dateFrom, "days").days);
+		this.days = Math.ceil(dateTill.diff(dateFrom, "days").days);
 
-    const attendees = await this.api.EventsApi.listEventAttendees(this.event.id).then((res) => res.data);
+		const attendees = await this.api.EventsApi.listEventAttendees(this.event.id).then((res) => res.data);
 
-    this.persons = attendees?.length || 1;
+		this.persons = attendees?.length || 1;
 
-    const data: ChartData<"doughnut">["datasets"][0]["data"] = Object.keys(EventExpenseTypes).map((type) => {
-      return this.getTotalExpenseByType(type as SDK.EventExpenseTypesEnum) / this.persons / this.days;
-    });
+		const data: ChartData<"doughnut">["datasets"][0]["data"] = Object.keys(EventExpenseTypes).map((type) => {
+			return this.getTotalExpenseByType(type as SDK.EventExpenseTypesEnum) / this.persons / this.days;
+		});
 
-    this.chartData = {
-      labels: Object.values(EventExpenseTypes).map((t) => t.title),
-      datasets: [
-        {
-          // backgroundColor: EventExpenseTypes[type as EventExpenseTypesEnum].color,
-          // tooltip: Math.round(value * 100) / 100 + "/os/den",
-          data,
-          borderRadius: 4,
+		this.chartData = {
+			labels: Object.values(EventExpenseTypes).map((t) => t.title),
+			datasets: [
+				{
+					// backgroundColor: EventExpenseTypes[type as EventExpenseTypesEnum].color,
+					// tooltip: Math.round(value * 100) / 100 + "/os/den",
+					data,
+					borderRadius: 4,
 
-          backgroundColor: Object.values(EventExpenseTypes).map((t) => t.color),
-        },
-      ],
-    };
+					backgroundColor: Object.values(EventExpenseTypes).map((t) => t.color),
+				},
+			],
+		};
 
-    this.total = this.expenses.reduce((acc, e) => acc + parseFloat(e.amount as any), 0);
-  }
+		this.total = this.expenses.reduce((acc, e) => acc + parseFloat(e.amount as any), 0);
+	}
 
-  private getTotalExpenseByType(type: SDK.EventExpenseTypesEnum) {
-    return this.expenses?.filter((e) => e.type === type).reduce((acc, e) => acc + parseFloat(e.amount as any), 0) || 0;
-  }
+	private getTotalExpenseByType(type: SDK.EventExpenseTypesEnum) {
+		return (
+			this.expenses?.filter((e) => e.type === type).reduce((acc, e) => acc + parseFloat(e.amount as any), 0) || 0
+		);
+	}
 }

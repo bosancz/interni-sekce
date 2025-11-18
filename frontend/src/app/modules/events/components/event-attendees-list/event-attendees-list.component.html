@@ -1,42 +1,42 @@
 <ion-list>
-  <bo-item
-    [label]="attendee.member | member: 'nickname'"
-    *ngFor="let attendee of attendees"
-    [routerLink]="'/databaze/' + attendee.memberId"
-    [button]="true"
-  >
-    <p class="text-muted">
-      <bo-member-item-detail *ngIf="attendee.member" [member]="attendee.member"></bo-member-item-detail>
-    </p>
+	<bo-item
+		[label]="attendee.member | member: 'nickname'"
+		*ngFor="let attendee of attendees"
+		[routerLink]="'/databaze/' + attendee.memberId"
+		[button]="true"
+	>
+		<p class="text-muted">
+			<bo-member-item-detail *ngIf="attendee.member" [member]="attendee.member"></bo-member-item-detail>
+		</p>
 
-    <span *ngIf="attendee.member?.birthday && hasBirthday(attendee)" class="birthday" slot="end">
-      🎉 {{ attendee.member?.birthday | date: "d. M." }}
-    </span>
+		<span *ngIf="attendee.member?.birthday && hasBirthday(attendee)" class="birthday" slot="end">
+			🎉 {{ attendee.member?.birthday | date: "d. M." }}
+		</span>
 
-    <bo-group-badge
-      class="group"
-      *ngIf="attendee.member"
-      [short]="true"
-      slot="end"
-      [groupId]="attendee.member.groupId"
-    ></bo-group-badge>
+		<bo-group-badge
+			class="group"
+			*ngIf="attendee.member"
+			[short]="true"
+			slot="end"
+			[groupId]="attendee.member.groupId"
+		></bo-group-badge>
 
-    <div class="role" slot="end">
-      <ion-badge mode="ios">
-        {{ attendee.member?.role | role: "code" }}
-      </ion-badge>
-    </div>
+		<div class="role" slot="end">
+			<ion-badge mode="ios">
+				{{ attendee.member?.role | role: "code" }}
+			</ion-badge>
+		</div>
 
-    <bo-delete-button
-      *ngIf="attendee._links.deleteEventAttendee.allowed"
-      (click)="remove.emit(attendee); $event.preventDefault(); $event.stopPropagation()"
-      slot="end"
-    ></bo-delete-button>
-  </bo-item>
+		<bo-delete-button
+			*ngIf="attendee._links.deleteEventAttendee.allowed"
+			(click)="remove.emit(attendee); $event.preventDefault(); $event.stopPropagation()"
+			slot="end"
+		></bo-delete-button>
+	</bo-item>
 
-  @if (attendees === undefined) {
-    <bo-item *ngFor="let item of loadingArray">
-      <ion-skeleton-text [animated]="true"></ion-skeleton-text>
-    </bo-item>
-  }
+	@if (attendees === undefined) {
+		<bo-item *ngFor="let item of loadingArray">
+			<ion-skeleton-text [animated]="true"></ion-skeleton-text>
+		</bo-item>
+	}
 </ion-list>
