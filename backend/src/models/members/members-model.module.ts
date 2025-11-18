@@ -9,8 +9,8 @@ import { MembersRepository } from "./repositories/members.repository";
 import { MembersExportService } from "./services/members-export.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Member, MemberContact, MemberAchievement, Group])],
-  providers: [MembersRepository, GroupsRepository, MembersExportService],
-  exports: [MembersRepository, GroupsRepository, MembersExportService],
+	imports: [TypeOrmModule.forFeature([Member, MemberContact, MemberAchievement, Group])],
+	providers: [MembersRepository, GroupsRepository, MembersExportService],
+	exports: [MembersRepository, GroupsRepository, MembersExportService],
 })
 export class MembersModelModule {}

@@ -7,8 +7,8 @@ import { Event } from "./entities/event.entity";
 import { EventsRepository } from "./repositories/events.repository";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Event, EventGroup, EventExpense, EventAttendee])],
-  providers: [EventsRepository],
-  exports: [EventsRepository],
+	imports: [TypeOrmModule.forFeature([Event, EventGroup, EventExpense, EventAttendee])],
+	providers: [EventsRepository],
+	exports: [EventsRepository],
 })
 export class EventsModelModule {}

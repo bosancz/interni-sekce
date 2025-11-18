@@ -1,9 +1,9 @@
 export interface EntityStoreItem {
-  entity: any;
-  properties: {
-    [property: string]: {
-      entity: any;
-      isArray?: boolean;
-    };
-  };
+	entity: any;
+	properties: {
+		[property: string]: {
+			entity: any;
+			isArray?: boolean;
+		};
+	};
 }

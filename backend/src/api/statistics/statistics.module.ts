@@ -5,7 +5,7 @@ import { MembersStatisticsController } from "./controllers/members-statistics.co
 import { PaddlersStatisticsController } from "./controllers/paddlers-statistics.controller";
 
 @Module({
-  controllers: [PaddlersStatisticsController, MembersStatisticsController, EventsStatisticsController],
-  imports: [StatisticsModelModule],
+	controllers: [PaddlersStatisticsController, MembersStatisticsController, EventsStatisticsController],
+	imports: [StatisticsModelModule],
 })
 export class StatisticsModule {}
