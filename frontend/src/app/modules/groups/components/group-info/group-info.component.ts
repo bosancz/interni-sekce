@@ -1,11 +1,9 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
-    selector: 'bo-group-info',
-    templateUrl: './group-info.component.html',
-    styleUrls: ['./group-info.component.scss'],
-    standalone: false
+	selector: "bo-group-info",
+	templateUrl: "./group-info.component.html",
+	styleUrls: ["./group-info.component.scss"],
+	standalone: false,
 })
-export class GroupInfoComponent {
-
-}
+export class GroupInfoComponent {}

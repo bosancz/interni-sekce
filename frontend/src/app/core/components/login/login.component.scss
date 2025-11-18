@@ -1,28 +1,28 @@
 @use "src/styles/variables" as *;
 
 .login-container {
-  height: 100%;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  max-width: 400px;
+	height: 100%;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	max-width: 400px;
 }
 
 .logo {
-  width: 30%;
-  display: inline-block;
-  margin-bottom: 3rem;
+	width: 30%;
+	display: inline-block;
+	margin-bottom: 3rem;
 }
 
 .buttons {
-  text-align: center;
-  ion-button {
-    display: block;
-  }
+	text-align: center;
+	ion-button {
+		display: block;
+	}
 }
 
 form {
-  width: 100%;
+	width: 100%;
 }

@@ -8,13 +8,13 @@ import { Logger } from "./logger";
 const logger = new Logger("MAIN");
 
 if (environment.production) {
-  enableProdMode();
+	enableProdMode();
 }
 
 logger.log(`Starting application...`);
 logger.debug(`Environment: ${environment.production ? "production" : "development"}`);
 
 platformBrowser()
-  .bootstrapModule(AppModule)
-  .then(() => logger.log(`Application started`))
-  .catch((err) => logger.error(`Application failed to start`, err));
+	.bootstrapModule(AppModule)
+	.then(() => logger.log(`Application started`))
+	.catch((err) => logger.error(`Application failed to start`, err));

@@ -9,13 +9,13 @@ import { UsersViewComponent } from "./pages/users-view/users-view.component";
 import { UsersRoutingModule } from "./users-routing.module";
 
 @NgModule({
-  declarations: [
-    UsersListComponent,
-    UsersCreateComponent,
-    UsersEditComponent,
-    UsersViewComponent,
-    UsersEditAccountComponent,
-  ],
-  imports: [CommonModule, UsersRoutingModule, SharedModule],
+	declarations: [
+		UsersListComponent,
+		UsersCreateComponent,
+		UsersEditComponent,
+		UsersViewComponent,
+		UsersEditAccountComponent,
+	],
+	imports: [CommonModule, UsersRoutingModule, SharedModule],
 })
 export class UsersModule {}

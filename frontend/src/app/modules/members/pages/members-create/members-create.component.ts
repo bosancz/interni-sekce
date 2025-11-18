@@ -8,36 +8,36 @@ import { ToastService } from "src/app/services/toast.service";
 import { SDK } from "src/sdk";
 
 @Component({
-  selector: "members-create",
-  templateUrl: "./members-create.component.html",
-  styleUrls: ["./members-create.component.scss"],
-  standalone: false,
+	selector: "members-create",
+	templateUrl: "./members-create.component.html",
+	styleUrls: ["./members-create.component.scss"],
+	standalone: false,
 })
 export class MembersCreateComponent implements ViewWillEnter {
-  groups?: SDK.GroupResponseWithLinks[];
-  roles = MemberRoles;
+	groups?: SDK.GroupResponseWithLinks[];
+	roles = MemberRoles;
 
-  constructor(
-    private api: ApiService,
-    private toastService: ToastService,
-    private router: Router,
-    private route: ActivatedRoute,
-  ) {}
+	constructor(
+		private api: ApiService,
+		private toastService: ToastService,
+		private router: Router,
+		private route: ActivatedRoute,
+	) {}
 
-  ionViewWillEnter() {
-    this.loadGroups();
-  }
+	ionViewWillEnter() {
+		this.loadGroups();
+	}
 
-  private async loadGroups() {
-    this.groups = await this.api.MembersApi.listGroups().then((res) => res.data);
-  }
+	private async loadGroups() {
+		this.groups = await this.api.MembersApi.listGroups().then((res) => res.data);
+	}
 
-  async onSubmit(form: NgForm) {
-    const formData = form.value;
+	async onSubmit(form: NgForm) {
+		const formData = form.value;
 
-    const member = await this.api.MembersApi.createMember(formData).then((res) => res.data);
-    this.toastService.toast("Člen uložen.");
+		const member = await this.api.MembersApi.createMember(formData).then((res) => res.data);
+		this.toastService.toast("Člen uložen.");
 
-    this.router.navigate(["../", {}, member.id], { relativeTo: this.route, replaceUrl: true });
-  }
+		this.router.navigate(["../", {}, member.id], { relativeTo: this.route, replaceUrl: true });
+	}
 }

@@ -7,34 +7,34 @@ import { TitleService } from "src/app/services/title.service";
 import { UserService } from "src/app/services/user.service";
 
 @Component({
-    selector: "side-menu",
-    templateUrl: "./side-menu.component.html",
-    styleUrls: ["./side-menu.component.scss"],
-    standalone: false
+	selector: "side-menu",
+	templateUrl: "./side-menu.component.html",
+	styleUrls: ["./side-menu.component.scss"],
+	standalone: false,
 })
 export class SideMenuComponent implements OnInit {
-  submenu?: string;
-  versionUpdates = this.swUpdate.versionUpdates;
+	submenu?: string;
+	versionUpdates = this.swUpdate.versionUpdates;
 
-  dropdownsCollapsed = {
-    program: true,
-  };
+	dropdownsCollapsed = {
+		program: true,
+	};
 
-  constructor(
-    public titleService: TitleService,
-    public userService: UserService,
-    private loginService: LoginService,
-    private swUpdate: SwUpdate,
-    public platform: Platform,
-  ) {}
+	constructor(
+		public titleService: TitleService,
+		public userService: UserService,
+		private loginService: LoginService,
+		private swUpdate: SwUpdate,
+		public platform: Platform,
+	) {}
 
-  ngOnInit() {}
+	ngOnInit() {}
 
-  async logout() {
-    await this.loginService.logout();
-  }
+	async logout() {
+		await this.loginService.logout();
+	}
 
-  reload() {
-    window.location.reload();
-  }
+	reload() {
+		window.location.reload();
+	}
 }

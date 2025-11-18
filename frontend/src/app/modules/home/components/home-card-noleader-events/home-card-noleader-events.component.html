@@ -1,21 +1,21 @@
 <bo-card>
-  <bo-card-header>
-    <bo-card-title> Volné akce </bo-card-title>
-    <bo-card-open-button routerLink="/akce" [queryParams]="{ noleader: true }"></bo-card-open-button>
-  </bo-card-header>
-  <bo-card-content>
-    <div class="list-container">
-      <ion-list *ngIf="events.length" lines="full">
-        <ion-item *ngFor="let event of events" [detail]="true" [routerLink]="'/akce/' + event.id">
-          <ion-label>
-            <h3>
-              <strong>{{ event.name }}</strong>
-            </h3>
-            <p>{{ event.dateFrom | date: "d. M. Y" }} ~ {{ event.dateTill | date: "d. M. Y" }}</p>
-            <p>{{ event.description }}</p>
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </div>
-  </bo-card-content>
+	<bo-card-header>
+		<bo-card-title> Volné akce </bo-card-title>
+		<bo-card-open-button routerLink="/akce" [queryParams]="{ noleader: true }"></bo-card-open-button>
+	</bo-card-header>
+	<bo-card-content>
+		<div class="list-container">
+			<ion-list *ngIf="events.length" lines="full">
+				<ion-item *ngFor="let event of events" [detail]="true" [routerLink]="'/akce/' + event.id">
+					<ion-label>
+						<h3>
+							<strong>{{ event.name }}</strong>
+						</h3>
+						<p>{{ event.dateFrom | date: "d. M. Y" }} ~ {{ event.dateTill | date: "d. M. Y" }}</p>
+						<p>{{ event.description }}</p>
+					</ion-label>
+				</ion-item>
+			</ion-list>
+		</div>
+	</bo-card-content>
 </bo-card>

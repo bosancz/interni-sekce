@@ -6,18 +6,18 @@ import { AlbumsViewInfoComponent } from "./pages/albums-view-info/albums-view-in
 import { AlbumsViewPhotosComponent } from "./pages/albums-view-photos/albums-view-photos.component";
 
 const routes: Routes = [
-  { path: ":album/upravit", component: AlbumsEditComponent },
+	{ path: ":album/upravit", component: AlbumsEditComponent },
 
-  { path: ":album/info", component: AlbumsViewInfoComponent },
-  { path: ":album/fotky", component: AlbumsViewPhotosComponent },
+	{ path: ":album/info", component: AlbumsViewInfoComponent },
+	{ path: ":album/fotky", component: AlbumsViewPhotosComponent },
 
-  { path: ":album", pathMatch: "full", redirectTo: ":album/info" },
+	{ path: ":album", pathMatch: "full", redirectTo: ":album/info" },
 
-  { path: "", component: AlbumsListComponent },
+	{ path: "", component: AlbumsListComponent },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
 export class AlbumsRoutingModule {}

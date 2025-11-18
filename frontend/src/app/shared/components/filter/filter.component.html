@@ -1,28 +1,28 @@
 <ion-toolbar>
-  <ion-searchbar
-    *ngIf="search"
-    name="search"
-    ngModel
-    placeholder="Hledat"
-    [debounce]="500"
-    [(ngModel)]="searchString"
-    (ngModelChange)="onSearchbarUpdate()"
-    (change)="$event.stopPropagation()"
-  ></ion-searchbar>
+	<ion-searchbar
+		*ngIf="search"
+		name="search"
+		ngModel
+		placeholder="Hledat"
+		[debounce]="500"
+		[(ngModel)]="searchString"
+		(ngModelChange)="onSearchbarUpdate()"
+		(change)="$event.stopPropagation()"
+	></ion-searchbar>
 
-  <ion-button
-    color="primary"
-    fill="none"
-    [id]="'filter-modal-' + filterId"
-    [disabled]="disabled"
-    (click)="openFilter(filterContent)"
-    slot="end"
-  >
-    <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
-    <ion-badge *ngIf="filterCount" color="warning">{{ filterCount }}</ion-badge>
-  </ion-button>
+	<ion-button
+		color="primary"
+		fill="none"
+		[id]="'filter-modal-' + filterId"
+		[disabled]="disabled"
+		(click)="openFilter(filterContent)"
+		slot="end"
+	>
+		<ion-icon slot="icon-only" name="filter-outline"></ion-icon>
+		<ion-badge *ngIf="filterCount" color="warning">{{ filterCount }}</ion-badge>
+	</ion-button>
 </ion-toolbar>
 
 <ng-template #filterContent>
-  <ng-content></ng-content>
+	<ng-content></ng-content>
 </ng-template>

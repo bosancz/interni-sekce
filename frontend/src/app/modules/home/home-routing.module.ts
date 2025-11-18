@@ -4,12 +4,12 @@ import { HomeDashboardComponent } from "./pages/home-dashboard/home-dashboard.co
 import { HomeMyEventsComponent } from "./pages/home-my-events/home-my-events.component";
 
 const routes: Routes = [
-  { path: "", component: HomeDashboardComponent },
-  { path: "moje-akce", component: HomeMyEventsComponent },
+	{ path: "", component: HomeDashboardComponent },
+	{ path: "moje-akce", component: HomeMyEventsComponent },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
 export class HomeRoutingModule {}

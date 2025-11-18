@@ -5,15 +5,15 @@ import { MembersListComponent } from "./pages/members-list/members-list.componen
 import { MembersViewComponent } from "./pages/members-view/members-view.component";
 
 const routes: Routes = [
-  { path: "pridat", component: MembersCreateComponent },
+	{ path: "pridat", component: MembersCreateComponent },
 
-  { path: ":member", component: MembersViewComponent },
+	{ path: ":member", component: MembersViewComponent },
 
-  { path: "", component: MembersListComponent },
+	{ path: "", component: MembersListComponent },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
 export class MembersRoutingModule {}
