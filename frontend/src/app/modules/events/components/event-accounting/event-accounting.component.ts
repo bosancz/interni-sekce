@@ -44,7 +44,11 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 	private async loadExpenses() {
 		if (!this.event) return;
 		this.expenses = await this.api.EventsApi.listEventExpenses(this.event?.id).then((res) => res.data);
-		this.expenses.sort((a, b) => a.receiptNumber.localeCompare(b.receiptNumber, "cs", { numeric: true }));
+		this.expenses.sort((a, b) =>
+			a.receiptNumber && b.receiptNumber
+				? a.receiptNumber.localeCompare(b.receiptNumber, "cs", { numeric: true })
+				: 0,
+		);
 	}
 
 	async addExpense() {
@@ -119,10 +123,12 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 	private getNextExpenseId() {
 		const re = /\d+/;
 
-		const maxId = this.expenses.reduce((acc, cur) => {
-			const match = re.exec(cur.receiptNumber);
-			return match ? Math.max(acc, Number(match[0])) : acc;
-		}, 0);
+		const maxId = this.expenses
+			.filter((expense) => !!expense.receiptNumber)
+			.reduce((acc, cur) => {
+				const match = re.exec(cur.receiptNumber!);
+				return match ? Math.max(acc, Number(match[0])) : acc;
+			}, 0);
 
 		return "V" + String(maxId + 1);
 	}
