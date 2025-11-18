@@ -1,4 +1,4 @@
-import { Global, Injectable, Logger, Module } from "@nestjs/common";
+import { Global, Injectable, Logger, LogLevel, Module } from "@nestjs/common";
 import { config } from "dotenv";
 import { readFileSync } from "fs";
 import * as path from "path";
@@ -31,8 +31,14 @@ const server = {
 	cors: environment === "development",
 };
 
-const logging = {
-	debug: process.env.LOG_DEBUG === "true" || process.env.LOG_DEBUG === "1",
+const logging: { level: LogLevel[]; query: boolean } = {
+	level:
+		process.env["LOG_LEVEL"] === "debug" || process.env["LOG_DEBUG"] === "1" || process.env["LOG_DEBUG"] === "true"
+			? ["verbose", "debug", "log", "warn", "error", "fatal"]
+			: process.env["LOG_LEVEL"] === "verbose"
+				? ["verbose", "log", "warn", "error", "fatal"]
+				: ["log", "warn", "error", "fatal"],
+	query: process.env["LOG_QUERY"] === "true" || process.env["LOG_QUERY"] === "1",
 };
 
 /**
@@ -68,7 +74,7 @@ const db: PostgresConnectionOptions = {
 	entities: [path.join(__dirname, "**/*.entity.{js,ts}")],
 	migrationsRun: production ? true : false,
 	migrations: [path.join(__dirname, "database/migrations/**/*{.ts,.js}")],
-	logging: logging.debug,
+	logging: logging.query,
 	namingStrategy: new SnakeNamingStrategy(),
 };
 

@@ -31,7 +31,7 @@ import { MongoImportService } from "./services/mongo-import.service";
 		]),
 		MongooseModule.forRootAsync({
 			inject: [Config],
-			useFactory: (config: Config) => ({ uri: config.mongoDb.uri }),
+			useFactory: (config: Config) => ({ uri: config.mongoDb.uri, connectTimeoutMS: 1000 }),
 		}),
 		TypeOrmModule.forFeature([Album, Photo, Event, Member, User]),
 

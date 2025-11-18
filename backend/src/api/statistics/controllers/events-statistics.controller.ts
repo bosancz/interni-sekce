@@ -7,31 +7,31 @@ import { EventsReportResponse } from "../dto/events-report.dto";
 @Controller("statistics/events")
 @ApiTags("Statistics")
 export class EventsStatisticsController {
-  @Get("years")
-  @ApiResponse({ status: 200, schema: { type: "array", items: { type: "number" } } })
-  getEventsReportYears() {
-    // TODO:
-    return {};
-  }
+	@Get("years")
+	@ApiResponse({ status: 200, schema: { type: "array", items: { type: "number" } } })
+	getEventsReportYears() {
+		// TODO:
+		return {};
+	}
 
-  @Get("events")
-  @ApiResponse({ status: 200, type: EventsReportResponse })
-  getEventsReport() {
-    // TODO:
-    return {};
-  }
+	@Get("events")
+	@ApiResponse({ status: 200, type: EventsReportResponse })
+	getEventsReport() {
+		// TODO:
+		return {};
+	}
 
-  @Get("attendees")
-  @ApiResponse({ status: 200, type: EventsAttendeesReportResponse })
-  getEventsAttendeesReport() {
-    // TODO:
-    return {};
-  }
+	@Get("attendees")
+	@ApiResponse({ status: 200, type: EventsAttendeesReportResponse })
+	getEventsAttendeesReport() {
+		// TODO:
+		return {};
+	}
 
-  @Get("leaders")
-  @ApiResponse({ status: 200, type: EventsLeadersReportResponse })
-  getEventsLeadersReport() {
-    // TODO:
-    return {};
-  }
+	@Get("leaders")
+	@ApiResponse({ status: 200, type: EventsLeadersReportResponse })
+	getEventsLeadersReport() {
+		// TODO:
+		return {};
+	}
 }
