@@ -5,12 +5,12 @@ import { SDK } from "src/sdk";
 
 @Injectable()
 export class MemberStoreService {
-  currentMember = new BehaviorSubject<SDK.MemberResponseWithLinks | null>(null);
+	currentMember = new BehaviorSubject<SDK.MemberResponseWithLinks | null>(null);
 
-  constructor(private api: ApiService) {}
+	constructor(private api: ApiService) {}
 
-  async loadMember(id: number) {
-    const member = await this.api.MembersApi.getMember(id).then((res) => res.data);
-    this.currentMember.next(member);
-  }
+	async loadMember(id: number) {
+		const member = await this.api.MembersApi.getMember(id).then((res) => res.data);
+		this.currentMember.next(member);
+	}
 }

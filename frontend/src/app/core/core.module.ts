@@ -10,24 +10,24 @@ import { SidebarComponent } from "./components/sidebar/sidebar.component";
 import { NotFoundComponent } from "./pages/not-found/not-found.component";
 
 @NgModule({
-  declarations: [
-    SideMenuComponent,
-    LoginComponent,
-    NotFoundComponent,
-    DarkModeToggleComponent,
-    SidebarComponent,
-    AppLayoutComponent,
-    AppLoadingComponent,
-  ],
-  imports: [CommonModule, SharedModule],
-  exports: [
-    SideMenuComponent,
-    LoginComponent,
-    NotFoundComponent,
-    DarkModeToggleComponent,
-    SidebarComponent,
-    AppLayoutComponent,
-    AppLoadingComponent,
-  ],
+	declarations: [
+		SideMenuComponent,
+		LoginComponent,
+		NotFoundComponent,
+		DarkModeToggleComponent,
+		SidebarComponent,
+		AppLayoutComponent,
+		AppLoadingComponent,
+	],
+	imports: [CommonModule, SharedModule],
+	exports: [
+		SideMenuComponent,
+		LoginComponent,
+		NotFoundComponent,
+		DarkModeToggleComponent,
+		SidebarComponent,
+		AppLayoutComponent,
+		AppLoadingComponent,
+	],
 })
 export class CoreModule {}

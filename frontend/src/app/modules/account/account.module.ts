@@ -8,7 +8,7 @@ import { AccountCredentialsComponent } from "./components/account-credentials/ac
 import { AccountNotificationsComponent } from "./components/account-notifications/account-notifications.component";
 
 @NgModule({
-  declarations: [AccountComponent, AccountAppComponent, AccountCredentialsComponent, AccountNotificationsComponent],
-  imports: [CommonModule, AccountRoutingModule, SharedModule],
+	declarations: [AccountComponent, AccountAppComponent, AccountCredentialsComponent, AccountNotificationsComponent],
+	imports: [CommonModule, AccountRoutingModule, SharedModule],
 })
 export class AccountModule {}

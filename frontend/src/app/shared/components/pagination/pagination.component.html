@@ -1,8 +1,8 @@
 <ion-buttons slot="end">
-  <ion-button fill="solid" color="primary" (click)="onPrevious()" [disabled]="!page || page === 1">&lt;</ion-button>
+	<ion-button fill="solid" color="primary" (click)="onPrevious()" [disabled]="!page || page === 1">&lt;</ion-button>
 
-  <ion-button *ngIf="pages">{{ page ?? "?" }}/{{ pages }}</ion-button>
-  <ion-button *ngIf="!pages">{{ page ?? "?" }}</ion-button>
+	<ion-button *ngIf="pages">{{ page ?? "?" }}/{{ pages }}</ion-button>
+	<ion-button *ngIf="!pages">{{ page ?? "?" }}</ion-button>
 
-  <ion-button fill="solid" color="primary" (click)="onNext()" [disabled]="page === pages">&gt;</ion-button>
+	<ion-button fill="solid" color="primary" (click)="onNext()" [disabled]="page === pages">&gt;</ion-button>
 </ion-buttons>

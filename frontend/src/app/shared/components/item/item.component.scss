@@ -1,56 +1,56 @@
 @use "src/styles/variables" as *;
 
 :host {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 0 1em;
-  padding: 0.5em;
-  border-radius: 4px;
-  position: relative;
-  overflow: hidden;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+	gap: 0 1em;
+	padding: 0.5em;
+	border-radius: 4px;
+	position: relative;
+	overflow: hidden;
 }
 
 :host:not(:last-child) {
-  border-bottom: 1px solid $grey;
+	border-bottom: 1px solid $grey;
 }
 
 :host.clickable:hover {
-  background-color: $lightGrey;
+	background-color: $lightGrey;
 }
 
 @media (max-width: 1200px) {
-  :host ::ng-deep > *:not(.label):not(.end):not(.spacer):not(.start) {
-    order: 999;
-    flex: 0 0 100%;
-    color: $darkGrey;
-    gap: 0 0.5em;
-  }
-  :host {
-    flex-wrap: wrap;
-  }
+	:host ::ng-deep > *:not(.label):not(.end):not(.spacer):not(.start) {
+		order: 999;
+		flex: 0 0 100%;
+		color: $darkGrey;
+		gap: 0 0.5em;
+	}
+	:host {
+		flex-wrap: wrap;
+	}
 }
 
 .label {
-  font-weight: bold;
-  flex: 0 0 var(--label-width, 100px);
+	font-weight: bold;
+	flex: 0 0 var(--label-width, 100px);
 
-  margin-right: 1em;
+	margin-right: 1em;
 }
 
 .spacer {
-  flex: 1;
+	flex: 1;
 }
 
 .end {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 0 1em;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 0 1em;
 }
 
 :host ::ng-deep p {
-  margin: 0;
+	margin: 0;
 }

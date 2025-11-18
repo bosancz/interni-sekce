@@ -9,25 +9,25 @@ import { Observable } from "rxjs";
  * toast() - create new toast
  */
 @Injectable({
-  providedIn: "root",
+	providedIn: "root",
 })
 export class ToastService {
-  constructor(public toastController: ToastController) {}
+	constructor(public toastController: ToastController) {}
 
-  toast(toast: string, toastOptions?: ToastOptions): Promise<HTMLIonToastElement>;
-  toast(
-    toast: string,
-    toastOptions?: ToastOptions,
-  ): Promise<HTMLIonToastElement> | { onAction: () => Observable<void> } {
-    toastOptions = {
-      ...toastOptions,
-      message: toast,
-      duration: toastOptions?.duration ?? 2000,
-    };
+	toast(toast: string, toastOptions?: ToastOptions): Promise<HTMLIonToastElement>;
+	toast(
+		toast: string,
+		toastOptions?: ToastOptions,
+	): Promise<HTMLIonToastElement> | { onAction: () => Observable<void> } {
+		toastOptions = {
+			...toastOptions,
+			message: toast,
+			duration: toastOptions?.duration ?? 2000,
+		};
 
-    return this.toastController.create(toastOptions).then((toast) => {
-      toast.present();
-      return toast;
-    });
-  }
+		return this.toastController.create(toastOptions).then((toast) => {
+			toast.present();
+			return toast;
+		});
+	}
 }

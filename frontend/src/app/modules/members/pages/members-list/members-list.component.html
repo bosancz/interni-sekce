@@ -1,87 +1,89 @@
 <bo-page-header title="Členská databáze" backUrl="/" [actions]="actions"></bo-page-header>
 
 <bo-filter [search]="true" (change)="onFilterChange($event)">
-  <ion-item lines="none">
-    <ion-select multiple name="groups" ngModel label="Oddíl" placeholder="všechny">
-      <ion-select-option *ngFor="let group of groups" [value]="'' + group.id">
-        {{ group.name }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
-  <ion-item lines="none">
-    <ion-select multiple name="roles" ngModel label="Role" placeholder="všechny">
-      <ion-select-option *ngFor="let role of roles | keyvalue" [value]="role.key">
-        {{ role.value.title }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
-  <ion-item lines="none">
-    <ion-select multiple name="membership" ngModel label="Členství" placeholder="všechny">
-      <ion-select-option *ngFor="let state of membershipStates | keyvalue" [value]="state.key">{{
-        state.value.title
-      }}</ion-select-option>
-    </ion-select>
-  </ion-item>
+	<ion-item lines="none">
+		<ion-select multiple name="groups" ngModel label="Oddíl" placeholder="všechny">
+			<ion-select-option *ngFor="let group of groups" [value]="'' + group.id">
+				{{ group.name }}
+			</ion-select-option>
+		</ion-select>
+	</ion-item>
+	<ion-item lines="none">
+		<ion-select multiple name="roles" ngModel label="Role" placeholder="všechny">
+			<ion-select-option *ngFor="let role of roles | keyvalue" [value]="role.key">
+				{{ role.value.title }}
+			</ion-select-option>
+		</ion-select>
+	</ion-item>
+	<ion-item lines="none">
+		<ion-select multiple name="membership" ngModel label="Členství" placeholder="všechny">
+			<ion-select-option *ngFor="let state of membershipStates | keyvalue" [value]="state.key">{{
+				state.value.title
+			}}</ion-select-option>
+		</ion-select>
+	</ion-item>
 </bo-filter>
 
 <ion-content>
-  @switch (view) {
-    @case ("list") {
-      <ion-list>
-        @if (members === undefined) {
-          <ion-item *ngFor="let item of loadingItems">
-            <ion-label><ion-skeleton-text></ion-skeleton-text></ion-label>
-          </ion-item>
-        }
+	@switch (view) {
+		@case ("list") {
+			<ion-list>
+				@if (members === undefined) {
+					<ion-item *ngFor="let item of loadingItems">
+						<ion-label><ion-skeleton-text></ion-skeleton-text></ion-label>
+					</ion-item>
+				}
 
-        <ion-item *ngFor="let member of members" [routerLink]="'' + member.id" [detail]="true">
-          <ion-label>
-            <h2>{{ member.nickname || member.firstName || member.lastName }}</h2>
-            <p>
-              <span [style.color]="member.groupId | group: 'color'">{{ member.groupId | group: "name" }}</span
-              >,
-              <span>{{ member | member: "age" }}</span>
-            </p>
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    }
-    @case ("table") {
-      <admin-table>
-        <thead>
-          <tr>
-            <th>Přezdívka</th>
-            <th>Jméno</th>
-            <th>Oddíl</th>
-            <th>Role</th>
-            <th>Věk</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            *ngFor="let member of members"
-            [routerLink]="'' + member.id"
-            [class.member-inactive]="member.membership === 'neclen'"
-            [class.member-paused]="member.membership === 'pozastaveno'"
-          >
-            <td>{{ member.nickname }}</td>
-            <td>{{ member.firstName }} {{ member.lastName }}</td>
-            <td>
-              <bo-group-badge [groupId]="member.groupId"></bo-group-badge>
-            </td>
-            <td>{{ member | member: "role" }}</td>
-            <td>{{ member | member: "age" }}</td>
-          </tr>
-        </tbody>
-      </admin-table>
-    }
-  }
+				<ion-item *ngFor="let member of members" [routerLink]="'' + member.id" [detail]="true">
+					<ion-label>
+						<h2>{{ member.nickname || member.firstName || member.lastName }}</h2>
+						<p>
+							<span [style.color]="member.groupId | group: 'color'">{{
+								member.groupId | group: "name"
+							}}</span
+							>,
+							<span>{{ member | member: "age" }}</span>
+						</p>
+					</ion-label>
+				</ion-item>
+			</ion-list>
+		}
+		@case ("table") {
+			<admin-table>
+				<thead>
+					<tr>
+						<th>Přezdívka</th>
+						<th>Jméno</th>
+						<th>Oddíl</th>
+						<th>Role</th>
+						<th>Věk</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr
+						*ngFor="let member of members"
+						[routerLink]="'' + member.id"
+						[class.member-inactive]="member.membership === 'neclen'"
+						[class.member-paused]="member.membership === 'pozastaveno'"
+					>
+						<td>{{ member.nickname }}</td>
+						<td>{{ member.firstName }} {{ member.lastName }}</td>
+						<td>
+							<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
+						</td>
+						<td>{{ member | member: "role" }}</td>
+						<td>{{ member | member: "age" }}</td>
+					</tr>
+				</tbody>
+			</admin-table>
+		}
+	}
 
-  <p *ngIf="members && !members.length" class="ion-padding">
-    Členská databáze je prázdná. Chceš <a routerLink="/databaze/pridat">přidat prvního člena</a>?
-  </p>
+	<p *ngIf="members && !members.length" class="ion-padding">
+		Členská databáze je prázdná. Chceš <a routerLink="/databaze/pridat">přidat prvního člena</a>?
+	</p>
 
-  <ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
-    <ion-infinite-scroll-content></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
 </ion-content>

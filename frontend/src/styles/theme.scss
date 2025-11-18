@@ -2,54 +2,54 @@
 
 body,
 html {
-  --colorPrimary: #{$colorPrimary};
-  --colorSecondary: #{$colorSecondary};
-  --colorTertiary: #{$colorTertiary};
-  --colorSuccess: #{$colorSuccess};
-  --colorWarning: #{$colorWarning};
-  --colorDanger: #{$colorDanger};
-  --colorDark: #{$colorDark};
-  --colorMedium: #{$colorMedium};
-  --colorLight: #{$colorLight};
+	--colorPrimary: #{$colorPrimary};
+	--colorSecondary: #{$colorSecondary};
+	--colorTertiary: #{$colorTertiary};
+	--colorSuccess: #{$colorSuccess};
+	--colorWarning: #{$colorWarning};
+	--colorDanger: #{$colorDanger};
+	--colorDark: #{$colorDark};
+	--colorMedium: #{$colorMedium};
+	--colorLight: #{$colorLight};
 
-  --black: #{$black};
-  --black70: #{$black70};
-  --darkGrey: #{$darkGrey};
-  --grey: #{$grey};
-  --lightGrey: #{$lightGrey};
-  --white: #{$white};
+	--black: #{$black};
+	--black70: #{$black70};
+	--darkGrey: #{$darkGrey};
+	--grey: #{$grey};
+	--lightGrey: #{$lightGrey};
+	--white: #{$white};
 
-  --lightShade: #{$lightShade};
-  --darkShade: #{$darkShade};
+	--lightShade: #{$lightShade};
+	--darkShade: #{$darkShade};
 
-  --blue: #{$blue};
-  --lightBlue: #{$lightBlue};
-  --linkBlue: #{$linkBlue};
+	--blue: #{$blue};
+	--lightBlue: #{$lightBlue};
+	--linkBlue: #{$linkBlue};
 
-  // @media (prefers-color-scheme: dark) {
+	// @media (prefers-color-scheme: dark) {
 }
 body.dark {
-  --colorPrimary: #{$colorPrimary};
-  --colorSecondary: #{$colorSecondary};
-  --colorTertiary: #{$colorTertiary};
-  --colorSuccess: #{$colorSuccess};
-  --colorWarning: #{$colorWarning};
-  --colorDanger: #{$colorDanger};
-  --colorDark: #{$colorLight};
-  --colorMedium: #{$colorMedium};
-  --colorLight: #{$colorDark};
+	--colorPrimary: #{$colorPrimary};
+	--colorSecondary: #{$colorSecondary};
+	--colorTertiary: #{$colorTertiary};
+	--colorSuccess: #{$colorSuccess};
+	--colorWarning: #{$colorWarning};
+	--colorDanger: #{$colorDanger};
+	--colorDark: #{$colorLight};
+	--colorMedium: #{$colorMedium};
+	--colorLight: #{$colorDark};
 
-  --black: #{$white};
-  --black70: #{$black70};
-  --darkGrey: #{$lightGrey};
-  --grey: #{$grey};
-  --lightGrey: #{$darkGrey};
-  --white: #{$black};
+	--black: #{$white};
+	--black70: #{$black70};
+	--darkGrey: #{$lightGrey};
+	--grey: #{$grey};
+	--lightGrey: #{$darkGrey};
+	--white: #{$black};
 
-  --lightShade: #{$darkShade};
-  --darkShade: #{$lightShade};
+	--lightShade: #{$darkShade};
+	--darkShade: #{$lightShade};
 
-  --blue: #{$blue};
-  --lightBlue: #{$lightBlue};
-  --linkBlue: #{$linkBlue};
+	--blue: #{$blue};
+	--lightBlue: #{$lightBlue};
+	--linkBlue: #{$linkBlue};
 }

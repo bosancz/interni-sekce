@@ -3,15 +3,15 @@ import { ModalController } from "@ionic/angular";
 import { AbstractModalComponent } from "src/app/services/modal.service";
 
 @Component({
-    selector: "bo-filter-modal",
-    templateUrl: "./filter-modal.component.html",
-    styleUrl: "./filter-modal.component.scss",
-    standalone: false
+	selector: "bo-filter-modal",
+	templateUrl: "./filter-modal.component.html",
+	styleUrl: "./filter-modal.component.scss",
+	standalone: false,
 })
 export class FilterModalComponent extends AbstractModalComponent<boolean> {
-  @Input() content!: TemplateRef<any>;
+	@Input() content!: TemplateRef<any>;
 
-  constructor(modalCtrl: ModalController) {
-    super(modalCtrl);
-  }
+	constructor(modalCtrl: ModalController) {
+		super(modalCtrl);
+	}
 }

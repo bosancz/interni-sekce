@@ -1,21 +1,21 @@
 @use "src/styles/variables" as *;
 
 .numbers .number {
-  display: block;
-  font-size: $font-super-large;
+	display: block;
+	font-size: $font-super-large;
 }
 
 .top td {
-  vertical-align: top;
+	vertical-align: top;
 }
 
 .years .item {
-  display: inline-block;
-  width: 40px;
-  transition: font-weight 250ms;
-  font-size: inherit;
-  line-height: 100%;
+	display: inline-block;
+	width: 40px;
+	transition: font-weight 250ms;
+	font-size: inherit;
+	line-height: 100%;
 }
 .years .item.current {
-  font-weight: bold;
+	font-weight: bold;
 }

@@ -1,3 +1,11 @@
-.tag{cursor:pointer;vertical-align:middle;margin:0 5px 0 0;}
-.tag:not(.active){opacity:.3;}
-.tag:not(.active):hover{opacity:.8;}
+.tag {
+	cursor: pointer;
+	vertical-align: middle;
+	margin: 0 5px 0 0;
+}
+.tag:not(.active) {
+	opacity: 0.3;
+}
+.tag:not(.active):hover {
+	opacity: 0.8;
+}

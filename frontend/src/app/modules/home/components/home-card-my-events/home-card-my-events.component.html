@@ -1,26 +1,26 @@
 <bo-card *ngIf="myEvents?.length">
-  <bo-card-header>
-    <bo-card-title> Moje akce </bo-card-title>
-    <bo-card-open-button routerLink="/akce" [queryParams]="{ my: true }"></bo-card-open-button>
-  </bo-card-header>
+	<bo-card-header>
+		<bo-card-title> Moje akce </bo-card-title>
+		<bo-card-open-button routerLink="/akce" [queryParams]="{ my: true }"></bo-card-open-button>
+	</bo-card-header>
 
-  <bo-card-content>
-    <ion-list *ngIf="myEvents?.length !== 0" lines="full">
-      <ion-item *ngFor="let event of myEvents | slice: 0 : 3" [detail]="true" [routerLink]="'/akce/' + event.id">
-        <ion-label>
-          <h3>
-            <strong>{{ event.name }}</strong>
-          </h3>
-          <p>{{ event.dateFrom | date: "d. M. Y" }} ~ {{ event.dateTill | date: "d. M. Y" }}</p>
-          <p>{{ event.description }}</p>
-        </ion-label>
-      </ion-item>
+	<bo-card-content>
+		<ion-list *ngIf="myEvents?.length !== 0" lines="full">
+			<ion-item *ngFor="let event of myEvents | slice: 0 : 3" [detail]="true" [routerLink]="'/akce/' + event.id">
+				<ion-label>
+					<h3>
+						<strong>{{ event.name }}</strong>
+					</h3>
+					<p>{{ event.dateFrom | date: "d. M. Y" }} ~ {{ event.dateTill | date: "d. M. Y" }}</p>
+					<p>{{ event.description }}</p>
+				</ion-label>
+			</ion-item>
 
-      <ng-container *ngIf="myEvents === undefined">
-        <ion-item>
-          <ion-label><ion-skeleton-text></ion-skeleton-text></ion-label>
-        </ion-item>
-      </ng-container>
-    </ion-list>
-  </bo-card-content>
+			<ng-container *ngIf="myEvents === undefined">
+				<ion-item>
+					<ion-label><ion-skeleton-text></ion-skeleton-text></ion-label>
+				</ion-item>
+			</ng-container>
+		</ion-list>
+	</bo-card-content>
 </bo-card>

@@ -1,68 +1,69 @@
 <ion-content class="ion-padding">
-  <div class="login-container">
-    <img src="assets/img/san_logo_barva.png" alt="Logo" class="logo" />
+	<div class="login-container">
+		<img src="assets/img/san_logo_barva.png" alt="Logo" class="logo" />
 
-    <h1 class="text-center mb-5">Bošán interní</h1>
-    <p *ngIf="expired | async" class="text-danger">Přihlášení vypršelo, přihlas se znovu.</p>
+		<h1 class="text-center mb-5">Bošán interní</h1>
+		<p *ngIf="expired | async" class="text-danger">Přihlášení vypršelo, přihlas se znovu.</p>
 
-    <div class="status" [ngSwitch]="status">
-      <p *ngSwitchCase="'invalidCredentials'" class="text-danger">Chybné uživatelské jméno nebo heslo.</p>
-      <p *ngSwitchCase="'credentialsLoginNotAvalible'" class="text-danger">
-        Přihlášení přes login a heslo není možné. Je možné, že nemáte heslo nastavené. Použijte možnost zaslání odkazu.
-      </p>
-      <p *ngSwitchCase="'linkSending'" class="text-warning">Odesílám odkaz na email...</p>
-      <p *ngSwitchCase="'linkSent'" class="text-success">Odkaz odeslán na email.</p>
-      <p *ngSwitchCase="'userNotFound'" class="text-danger">Uživatel nenalezen.</p>
-      <p *ngSwitchCase="'googleFailed'" class="text-danger">Přihlášení přes Google se nezdařilo.</p>
-    </div>
+		<div class="status" [ngSwitch]="status">
+			<p *ngSwitchCase="'invalidCredentials'" class="text-danger">Chybné uživatelské jméno nebo heslo.</p>
+			<p *ngSwitchCase="'credentialsLoginNotAvalible'" class="text-danger">
+				Přihlášení přes login a heslo není možné. Je možné, že nemáte heslo nastavené. Použijte možnost zaslání
+				odkazu.
+			</p>
+			<p *ngSwitchCase="'linkSending'" class="text-warning">Odesílám odkaz na email...</p>
+			<p *ngSwitchCase="'linkSent'" class="text-success">Odkaz odeslán na email.</p>
+			<p *ngSwitchCase="'userNotFound'" class="text-danger">Uživatel nenalezen.</p>
+			<p *ngSwitchCase="'googleFailed'" class="text-danger">Přihlášení přes Google se nezdařilo.</p>
+		</div>
 
-    <ng-container [ngSwitch]="view">
-      <form *ngSwitchCase="'login'" #loginFormEl #loginForm="ngForm" (ngSubmit)="loginCredentials(loginForm)">
-        <ion-item>
-          <ion-input
-            type="text"
-            name="login"
-            placeholder="Uživatelské jméno"
-            [(ngModel)]="loginValue"
-            required
-          ></ion-input>
-        </ion-item>
+		<ng-container [ngSwitch]="view">
+			<form *ngSwitchCase="'login'" #loginFormEl #loginForm="ngForm" (ngSubmit)="loginCredentials(loginForm)">
+				<ion-item>
+					<ion-input
+						type="text"
+						name="login"
+						placeholder="Uživatelské jméno"
+						[(ngModel)]="loginValue"
+						required
+					></ion-input>
+				</ion-item>
 
-        <ion-item>
-          <ion-input [type]="'password'" name="password" placeholder="Heslo" ngModel required></ion-input>
-        </ion-item>
+				<ion-item>
+					<ion-input [type]="'password'" name="password" placeholder="Heslo" ngModel required></ion-input>
+				</ion-item>
 
-        <div class="buttons text-center">
-          <ion-button type="submit" color="primary" [disabled]="!loginForm.valid" class="my-3">
-            Přihlásit se heslem
-          </ion-button>
+				<div class="buttons text-center">
+					<ion-button type="submit" color="primary" [disabled]="!loginForm.valid" class="my-3">
+						Přihlásit se heslem
+					</ion-button>
 
-          <ion-button type="button" color="secondary" (click)="loginGoogle()" class="my-3">
-            <i class="fab fa-google"></i>&nbsp;&nbsp;Přihlásit přes Bošánovský mail
-          </ion-button>
+					<ion-button type="button" color="secondary" (click)="loginGoogle()" class="my-3">
+						<i class="fab fa-google"></i>&nbsp;&nbsp;Přihlásit přes Bošánovský mail
+					</ion-button>
 
-          <ion-button type="button" color="secondary" (click)="view = 'link'" class="my-3"
-            >Poslat přihlašovací odkaz</ion-button
-          >
-        </div>
+					<ion-button type="button" color="secondary" (click)="view = 'link'" class="my-3"
+						>Poslat přihlašovací odkaz</ion-button
+					>
+				</div>
 
-        <button type="submit" class="d-none"></button>
-      </form>
+				<button type="submit" class="d-none"></button>
+			</form>
 
-      <form *ngSwitchCase="'link'" #loginLinkForm="ngForm" (ngSubmit)="sendLoginLink(loginLinkForm)">
-        <ion-item>
-          <ion-label position="floating">Uživatelské jméno nebo email</ion-label>
-          <ion-input type="text" name="login" [(ngModel)]="loginValue" required></ion-input>
-        </ion-item>
+			<form *ngSwitchCase="'link'" #loginLinkForm="ngForm" (ngSubmit)="sendLoginLink(loginLinkForm)">
+				<ion-item>
+					<ion-label position="floating">Uživatelské jméno nebo email</ion-label>
+					<ion-input type="text" name="login" [(ngModel)]="loginValue" required></ion-input>
+				</ion-item>
 
-        <div class="buttons text-center">
-          <ion-button type="submit" color="primary" [disabled]="!loginLinkForm.valid" class="my-3">
-            Odeslat
-          </ion-button>
+				<div class="buttons text-center">
+					<ion-button type="submit" color="primary" [disabled]="!loginLinkForm.valid" class="my-3">
+						Odeslat
+					</ion-button>
 
-          <ion-button type="submit" color="secondary" (click)="view = 'login'" class="my-3">Zpět</ion-button>
-        </div>
-      </form>
-    </ng-container>
-  </div>
+					<ion-button type="submit" color="secondary" (click)="view = 'login'" class="my-3">Zpět</ion-button>
+				</div>
+			</form>
+		</ng-container>
+	</div>
 </ion-content>

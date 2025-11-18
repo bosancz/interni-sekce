@@ -1,79 +1,76 @@
-import { Component, Input, forwardRef } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Component, Input, forwardRef } from "@angular/core";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 
 @Component({
-    selector: 'list-slider',
-    templateUrl: './list-slider.component.html',
-    styleUrls: ['./list-slider.component.scss'],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            multi: true,
-            useExisting: forwardRef(() => ListSliderComponent),
-        }
-    ],
-    standalone: false
+	selector: "list-slider",
+	templateUrl: "./list-slider.component.html",
+	styleUrls: ["./list-slider.component.scss"],
+	providers: [
+		{
+			provide: NG_VALUE_ACCESSOR,
+			multi: true,
+			useExisting: forwardRef(() => ListSliderComponent),
+		},
+	],
+	standalone: false,
 })
 export class ListSliderComponent implements ControlValueAccessor {
+	@Input() items: any[] = [];
+	@Input() visible: number = 3;
+	@Input() itemWidth = 40;
 
-  @Input() items: any[] = [];
-  @Input() visible: number = 3;
-  @Input() itemWidth = 40;
+	@Input() arrows = true;
 
-  @Input() arrows = true;
+	value: any;
 
-  value: any;
+	disabled: boolean = false;
 
-  disabled: boolean = false;
+	onChange = (value: any) => {};
+	onTouched = () => {};
 
-  onChange = (value: any) => { };
-  onTouched = () => { };
+	constructor() {}
 
+	getI(): number {
+		return this.items.indexOf(this.value);
+	}
+	getLeft() {
+		return (this.getI() + 0.5) * this.itemWidth;
+	}
 
-  constructor() { }
+	getOpacity(i: number) {
+		return Math.max(1 - (1 / this.visible) * Math.abs(this.getI() - i), 0);
+	}
 
-  getI(): number {
-    return this.items.indexOf(this.value);
-  }
-  getLeft() {
-    return (this.getI() + 0.5) * this.itemWidth;
-  }
+	nextItem() {
+		const i = this.getI();
+		if (i + 1 < this.items.length) this.setValue(this.items[i + 1]);
+	}
 
-  getOpacity(i: number) {
-    return Math.max(1 - (1 / this.visible) * Math.abs(this.getI() - i), 0);
-  }
+	prevItem() {
+		const i = this.getI();
+		if (i - 1 >= 0) this.setValue(this.items[i - 1]);
+	}
 
-  nextItem() {
-    const i = this.getI();
-    if (i + 1 < this.items.length) this.setValue(this.items[i + 1]);
-  }
+	/* NgModel (ControlValueAccessor) */
 
-  prevItem() {
-    const i = this.getI();
-    if (i - 1 >= 0) this.setValue(this.items[i - 1]);
-  }
+	setValue(value: any) {
+		this.value = value;
+		this.onChange(this.value);
+	}
 
-  /* NgModel (ControlValueAccessor) */
+	writeValue(value: any): void {
+		this.value = value;
+	}
 
-  setValue(value: any) {
-    this.value = value;
-    this.onChange(this.value);
-  }
+	registerOnChange(fn: (value: any) => void): void {
+		this.onChange = fn;
+	}
 
-  writeValue(value: any): void {
-    this.value = value;
-  }
+	registerOnTouched(fn: any): void {
+		this.onTouched = fn;
+	}
 
-  registerOnChange(fn: (value: any) => void): void {
-    this.onChange = fn;
-  }
-
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-
-  setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
-  }
-
+	setDisabledState(isDisabled: boolean): void {
+		this.disabled = isDisabled;
+	}
 }

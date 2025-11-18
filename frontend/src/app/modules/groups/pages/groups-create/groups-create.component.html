@@ -1,40 +1,40 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/oddily"></ion-back-button>
-    </ion-buttons>
-    <ion-title pageTitle>Vytvořit oddíl</ion-title>
-    <ion-buttons slot="end">
-      <!-- <bo-action-buttons [actions]="actions" header="Uživatelské účty"></bo-action-buttons> -->
-    </ion-buttons>
-  </ion-toolbar>
+	<ion-toolbar>
+		<ion-buttons slot="start">
+			<ion-back-button defaultHref="/oddily"></ion-back-button>
+		</ion-buttons>
+		<ion-title pageTitle>Vytvořit oddíl</ion-title>
+		<ion-buttons slot="end">
+			<!-- <bo-action-buttons [actions]="actions" header="Uživatelské účty"></bo-action-buttons> -->
+		</ion-buttons>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form #createGroupForm="ngForm" id="createGroupForm" (ngSubmit)="createGroup(createGroupForm)">
-    <ion-list>
-      <ion-item class="w-100">
-        <ion-label position="floating">Název</ion-label>
-        <ion-input type="text" name="name" placeholder="Společenstvo prstenu" ngModel required></ion-input>
-      </ion-item>
+	<form #createGroupForm="ngForm" id="createGroupForm" (ngSubmit)="createGroup(createGroupForm)">
+		<ion-list>
+			<ion-item class="w-100">
+				<ion-label position="floating">Název</ion-label>
+				<ion-input type="text" name="name" placeholder="Společenstvo prstenu" ngModel required></ion-input>
+			</ion-item>
 
-      <ion-item class="w-100">
-        <ion-label position="floating">Zkratka</ion-label>
-        <ion-input type="text" name="shortName" placeholder="SP" ngModel required></ion-input>
-      </ion-item>
-    </ion-list>
-  </form>
+			<ion-item class="w-100">
+				<ion-label position="floating">Zkratka</ion-label>
+				<ion-input type="text" name="shortName" placeholder="SP" ngModel required></ion-input>
+			</ion-item>
+		</ion-list>
+	</form>
 </ion-content>
 
 <ion-footer class="ion-padding">
-  <ion-button
-    type="submit"
-    fill="solid"
-    color="primary"
-    class="w-100"
-    form="createGroupForm"
-    [disabled]="!createGroupForm.valid"
-  >
-    Vytvořit
-  </ion-button>
+	<ion-button
+		type="submit"
+		fill="solid"
+		color="primary"
+		class="w-100"
+		form="createGroupForm"
+		[disabled]="!createGroupForm.valid"
+	>
+		Vytvořit
+	</ion-button>
 </ion-footer>

@@ -5,38 +5,38 @@ import { UserService } from "src/app/services/user.service";
 import { ApiService } from "./services/api.service";
 
 @Component({
-    selector: "bo-app",
-    templateUrl: "./app.component.html",
-    styleUrls: ["./app.component.scss"],
-    standalone: false
+	selector: "bo-app",
+	templateUrl: "./app.component.html",
+	styleUrls: ["./app.component.scss"],
+	standalone: false,
 })
 export class AppComponent implements OnInit {
-  user = this.userService.user;
+	user = this.userService.user;
 
-  constructor(
-    private userService: UserService,
-    private loginService: LoginService,
-    private menuController: MenuController,
-    private api: ApiService,
-    public platform: Platform,
-  ) {}
+	constructor(
+		private userService: UserService,
+		private loginService: LoginService,
+		private menuController: MenuController,
+		private api: ApiService,
+		public platform: Platform,
+	) {}
 
-  ngOnInit() {
-    this.userService.user.subscribe((user) => {
-      if (user !== undefined) {
-        this.api.reloadApi();
-      }
-    });
+	ngOnInit() {
+		this.userService.user.subscribe((user) => {
+			if (user !== undefined) {
+				this.api.reloadApi();
+			}
+		});
 
-    this.loginService.onLogin.subscribe(() => {
-      this.userService.loadUser();
-    });
-    this.loginService.onLogout.subscribe(() => {
-      this.userService.clearUser();
-    });
-  }
+		this.loginService.onLogin.subscribe(() => {
+			this.userService.loadUser();
+		});
+		this.loginService.onLogout.subscribe(() => {
+			this.userService.clearUser();
+		});
+	}
 
-  closeSidebar() {
-    this.menuController.close();
-  }
+	closeSidebar() {
+		this.menuController.close();
+	}
 }

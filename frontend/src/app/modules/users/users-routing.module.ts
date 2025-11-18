@@ -7,16 +7,16 @@ import { UsersListComponent } from "./pages/users-list/users-list.component";
 import { UsersViewComponent } from "./pages/users-view/users-view.component";
 
 const routes: Routes = [
-  { path: "vytvorit", component: UsersCreateComponent },
+	{ path: "vytvorit", component: UsersCreateComponent },
 
-  { path: ":user/upravit", component: UsersEditComponent },
-  { path: ":user", component: UsersViewComponent },
+	{ path: ":user/upravit", component: UsersEditComponent },
+	{ path: ":user", component: UsersViewComponent },
 
-  { path: "", component: UsersListComponent },
+	{ path: "", component: UsersListComponent },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
 export class UsersRoutingModule {}

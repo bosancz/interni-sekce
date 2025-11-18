@@ -1,41 +1,41 @@
 $size: 30px;
 
 :host {
-  display: inline-block;
+	display: inline-block;
 }
 
 span.type {
-  display: inline-block;
-  opacity: 0.2;
-  cursor: pointer;
-  filter: grayscale(1);
+	display: inline-block;
+	opacity: 0.2;
+	cursor: pointer;
+	filter: grayscale(1);
 }
 span.type img {
-  height: $size;
+	height: $size;
 }
 span.type .circle {
-  display: inline-block;
-  width: $size;
-  height: $size;
-  border-radius: calc($size/2);
+	display: inline-block;
+	width: $size;
+	height: $size;
+	border-radius: calc($size/2);
 }
 
 span.type.selected {
-  filter: grayscale(0);
-  opacity: 1;
+	filter: grayscale(0);
+	opacity: 1;
 }
 span.type:hover {
-  opacity: 0.8;
+	opacity: 0.8;
 }
 
 :host.disabled,
 :host.readonly,
 :host[disabled],
 :host[readonly] {
-  span.type {
-    cursor: default;
-  }
-  span.type:hover {
-    opacity: auto;
-  }
+	span.type {
+		cursor: default;
+	}
+	span.type:hover {
+		opacity: auto;
+	}
 }

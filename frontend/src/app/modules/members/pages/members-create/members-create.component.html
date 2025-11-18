@@ -1,72 +1,72 @@
 <bo-page-header backUrl="/database" title="Přidat člena"></bo-page-header>
 
 <bo-page-content [padding]="true">
-  <form #createMemberForm="ngForm" id="createMemberForm" (ngSubmit)="onSubmit(createMemberForm)">
-    <div class="row">
-      <div class="col-12 col-xl-6">
-        <ion-item>
-          <ion-label position="stacked">Přezdívka</ion-label>
-          <ion-input type="text" name="nickname" ngModel placeholder="Pulčík"></ion-input>
-        </ion-item>
-      </div>
+	<form #createMemberForm="ngForm" id="createMemberForm" (ngSubmit)="onSubmit(createMemberForm)">
+		<div class="row">
+			<div class="col-12 col-xl-6">
+				<ion-item>
+					<ion-label position="stacked">Přezdívka</ion-label>
+					<ion-input type="text" name="nickname" ngModel placeholder="Pulčík"></ion-input>
+				</ion-item>
+			</div>
 
-      <div class="w-100"></div>
+			<div class="w-100"></div>
 
-      <div class="col-12 col-xl-3">
-        <ion-item>
-          <ion-label position="stacked">Jméno</ion-label>
-          <ion-input type="text" ngModel name="firstName" placeholder="Bilbo" required></ion-input>
-        </ion-item>
-      </div>
+			<div class="col-12 col-xl-3">
+				<ion-item>
+					<ion-label position="stacked">Jméno</ion-label>
+					<ion-input type="text" ngModel name="firstName" placeholder="Bilbo" required></ion-input>
+				</ion-item>
+			</div>
 
-      <div class="col-12 col-xl-3">
-        <ion-item>
-          <ion-label position="stacked">Příjmení</ion-label>
-          <ion-input type="text" ngModel name="lastName" placeholder="Pytlík" required></ion-input>
-        </ion-item>
-      </div>
+			<div class="col-12 col-xl-3">
+				<ion-item>
+					<ion-label position="stacked">Příjmení</ion-label>
+					<ion-input type="text" ngModel name="lastName" placeholder="Pytlík" required></ion-input>
+				</ion-item>
+			</div>
 
-      <div class="w-100"></div>
+			<div class="w-100"></div>
 
-      <div class="col-12 col-xl-6">
-        <ion-item>
-          <ion-label position="stacked">Oddíl</ion-label>
-          <bo-group-select ngModel name="groupId"></bo-group-select>
-          <!-- <ion-select name="groupId" ngModel required placeholder="Chluponozi">
+			<div class="col-12 col-xl-6">
+				<ion-item>
+					<ion-label position="stacked">Oddíl</ion-label>
+					<bo-group-select ngModel name="groupId"></bo-group-select>
+					<!-- <ion-select name="groupId" ngModel required placeholder="Chluponozi">
             <ion-select-option *ngFor="let group of groups" [value]="group.id">
               {{ group.name }}
             </ion-select-option>
           </ion-select> -->
-        </ion-item>
-      </div>
+				</ion-item>
+			</div>
 
-      <div class="w-100"></div>
+			<div class="w-100"></div>
 
-      <div class="col-12 col-xl-6">
-        <ion-item>
-          <ion-label position="stacked">Role</ion-label>
-          <ion-select name="role" ngModel required placeholder="nositel prstenu">
-            <ion-select-option *ngFor="let role of roles | keyvalue" [value]="role.key">
-              {{ role.value.title }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-      </div>
-    </div>
-  </form>
-  {{ createMemberForm.value | json }}
+			<div class="col-12 col-xl-6">
+				<ion-item>
+					<ion-label position="stacked">Role</ion-label>
+					<ion-select name="role" ngModel required placeholder="nositel prstenu">
+						<ion-select-option *ngFor="let role of roles | keyvalue" [value]="role.key">
+							{{ role.value.title }}
+						</ion-select-option>
+					</ion-select>
+				</ion-item>
+			</div>
+		</div>
+	</form>
+	{{ createMemberForm.value | json }}
 </bo-page-content>
 
 <bo-page-footer [padding]="true">
-  <ion-buttons>
-    <ion-button
-      [disabled]="!createMemberForm.valid"
-      form="createMemberForm"
-      type="submit"
-      color="primary"
-      fill="solid"
-      class="w-100"
-      >Přidat člena</ion-button
-    >
-  </ion-buttons>
+	<ion-buttons>
+		<ion-button
+			[disabled]="!createMemberForm.valid"
+			form="createMemberForm"
+			type="submit"
+			color="primary"
+			fill="solid"
+			class="w-100"
+			>Přidat člena</ion-button
+		>
+	</ion-buttons>
 </bo-page-footer>

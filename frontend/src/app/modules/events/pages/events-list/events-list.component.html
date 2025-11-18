@@ -1,105 +1,117 @@
 <bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions"></bo-page-header>
 
 <bo-filter [search]="true" (change)="onFilterChange($event)">
-  <ion-item>
-    <ion-select name="year" ngModel label="Rok">
-      <ion-select-option [value]="null">všechny</ion-select-option>
-      <ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
-    </ion-select>
-  </ion-item>
+	<ion-item>
+		<ion-select name="year" ngModel label="Rok">
+			<ion-select-option [value]="null">všechny</ion-select-option>
+			<ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
+		</ion-select>
+	</ion-item>
 
-  <ion-item>
-    <ion-select name="status" ngModel label="Stav akce v programu">
-      <ion-select-option [value]="null">všechny</ion-select-option>
-      <ion-select-option *ngFor="let status of statuses | keyvalue" [value]="status.key">
-        {{ status.value.name }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
+	<ion-item>
+		<ion-select name="status" ngModel label="Stav akce v programu">
+			<ion-select-option [value]="null">všechny</ion-select-option>
+			<ion-select-option *ngFor="let status of statuses | keyvalue" [value]="status.key">
+				{{ status.value.name }}
+			</ion-select-option>
+		</ion-select>
+	</ion-item>
 
-  <ion-item>
-    <ion-checkbox name="my" ngModel value="1" labelPlacement="start">Zobrazit pouze moje akce</ion-checkbox>
-  </ion-item>
+	<ion-item>
+		<ion-checkbox name="my" ngModel value="1" labelPlacement="start">Zobrazit pouze moje akce</ion-checkbox>
+	</ion-item>
 
-  <ion-item>
-    <ion-checkbox name="noleader" ngModel value="1" labelPlacement="start">
-      Zobrazit pouze akce bez vedoucího
-    </ion-checkbox>
-  </ion-item>
+	<ion-item>
+		<ion-checkbox name="noleader" ngModel value="1" labelPlacement="start">
+			Zobrazit pouze akce bez vedoucího
+		</ion-checkbox>
+	</ion-item>
 
-  <ion-item>
-    <ion-checkbox name="deleted" ngModel value="1" labelPlacement="start"> Zobrazit pouze smazané akce </ion-checkbox>
-  </ion-item>
+	<ion-item>
+		<ion-checkbox name="deleted" ngModel value="1" labelPlacement="start">
+			Zobrazit pouze smazané akce
+		</ion-checkbox>
+	</ion-item>
 </bo-filter>
 
 <bo-page-content>
-  @switch (view) {
-    @case ("list") {
-      <ion-list>
-        <ng-container *ngIf="events === undefined">
-          <ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
-          <ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
-          <ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
-          <ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
-          <ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
-        </ng-container>
+	@switch (view) {
+		@case ("list") {
+			<ion-list>
+				<ng-container *ngIf="events === undefined">
+					<ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
+					<ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
+					<ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
+					<ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
+					<ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
+				</ng-container>
 
-        <ion-item *ngFor="let event of events" [routerLink]="'' + event.id">
-          <ion-avatar aria-hidden="true" slot="start" [style.background-color]="(event | event: 'color') || '#000'">
-            @if (event | event: "image") {
-              <img class="img-fluid" [src]="event | event: 'image'" />
-            }
-          </ion-avatar>
-          <ion-label>
-            <h3>{{ event.name }}</h3>
-            <p>
-              {{ event.dateFrom | date: "EEEEEE d. M." }} - {{ event.dateTill | date: "EEEEEE d. M. y" }}
-              <br />
-              <ng-container *ngFor="let leader of event.leaders; let isFirst = first">
-                <ng-container *ngIf="!isFirst">, </ng-container>
-                <span [style.color]="leader.groupId | group: 'color'">{{ leader | member: "nickname" }}</span>
-              </ng-container>
-              <strong *ngIf="!event.leaders?.length" class="text-danger">Pan NIKDO</strong>
-            </p>
-          </ion-label>
+				<ion-item *ngFor="let event of events" [routerLink]="'' + event.id">
+					<ion-avatar
+						aria-hidden="true"
+						slot="start"
+						[style.background-color]="(event | event: 'color') || '#000'"
+					>
+						@if (event | event: "image") {
+							<img class="img-fluid" [src]="event | event: 'image'" />
+						}
+					</ion-avatar>
+					<ion-label>
+						<h3>{{ event.name }}</h3>
+						<p>
+							{{ event.dateFrom | date: "EEEEEE d. M." }} - {{ event.dateTill | date: "EEEEEE d. M. y" }}
+							<br />
+							<ng-container *ngFor="let leader of event.leaders; let isFirst = first">
+								<ng-container *ngIf="!isFirst">, </ng-container>
+								<span [style.color]="leader.groupId | group: 'color'">{{
+									leader | member: "nickname"
+								}}</span>
+							</ng-container>
+							<strong *ngIf="!event.leaders?.length" class="text-danger">Pan NIKDO</strong>
+						</p>
+					</ion-label>
 
-          <bo-event-status-badge [event]="event"></bo-event-status-badge>
-        </ion-item>
-      </ion-list>
-    }
+					<bo-event-status-badge [event]="event"></bo-event-status-badge>
+				</ion-item>
+			</ion-list>
+		}
 
-    @case ("table") {
-      <admin-table>
-        <thead>
-          <tr>
-            <th>Název</th>
-            <th>Datum</th>
-            <th>Stav</th>
-            <th>Vede</th>
-          </tr>
-        </thead>
+		@case ("table") {
+			<admin-table>
+				<thead>
+					<tr>
+						<th>Název</th>
+						<th>Datum</th>
+						<th>Stav</th>
+						<th>Vede</th>
+					</tr>
+				</thead>
 
-        <tbody>
-          <tr *ngFor="let event of events" [routerLink]="'' + event.id">
-            <td>{{ event.name }}</td>
-            <td>{{ event.dateFrom | date: "EEEEEE d. M." }} - {{ event.dateTill | date: "EEEEEE d. M. y" }}</td>
-            <td>
-              <bo-event-status-badge [event]="event"></bo-event-status-badge>
-            </td>
-            <td>
-              <ng-container *ngFor="let leader of event.leaders; let isFirst = first">
-                <ng-container *ngIf="!isFirst">, </ng-container>
-                <span [style.color]="leader.groupId | group: 'color'">{{ leader | member: "nickname" }}</span>
-              </ng-container>
-              <strong *ngIf="!event.leaders?.length" class="text-danger">Pan NIKDO</strong>
-            </td>
-          </tr>
-        </tbody>
-      </admin-table>
-    }
-  }
+				<tbody>
+					<tr *ngFor="let event of events" [routerLink]="'' + event.id">
+						<td>{{ event.name }}</td>
+						<td>
+							{{ event.dateFrom | date: "EEEEEE d. M." }} - {{ event.dateTill | date: "EEEEEE d. M. y" }}
+						</td>
+						<td>
+							<bo-event-status-badge [event]="event"></bo-event-status-badge>
+						</td>
+						<td>
+							<ng-container *ngFor="let leader of event.leaders; let isFirst = first">
+								<ng-container *ngIf="!isFirst">, </ng-container>
+								<span [style.color]="leader.groupId | group: 'color'">{{
+									leader | member: "nickname"
+								}}</span>
+							</ng-container>
+							<strong *ngIf="!event.leaders?.length" class="text-danger">Pan NIKDO</strong>
+						</td>
+					</tr>
+				</tbody>
+			</admin-table>
+		}
+	}
 
-  <ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
-    <ion-infinite-scroll-content></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
 </bo-page-content>

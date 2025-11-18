@@ -1,5 +1,5 @@
 <ion-tab-button (click)="openTab()" [class.tab-selected]="active">
-  <ion-icon *ngIf="icon" [name]="icon"></ion-icon>
-  <ion-label>{{ label }}</ion-label>
-  <ion-badge *ngIf="badge || badgeColor" [color]="badgeColor">{{ badge || "&nbsp;&nbsp;" }}</ion-badge>
+	<ion-icon *ngIf="icon" [name]="icon"></ion-icon>
+	<ion-label>{{ label }}</ion-label>
+	<ion-badge *ngIf="badge || badgeColor" [color]="badgeColor">{{ badge || "&nbsp;&nbsp;" }}</ion-badge>
 </ion-tab-button>

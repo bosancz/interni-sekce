@@ -1,53 +1,53 @@
 <bo-page-header title="Galerie" [actions]="actions" backUrl="/"></bo-page-header>
 
 <bo-page-content>
-  <bo-filter [search]="true" (change)="onFilterChange($event)">
-    <ion-item>
-      <ion-select name="year" ngModel label="Rok">
-        <ion-select-option [value]="null">všechny</ion-select-option>
-        <ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
-      </ion-select>
-    </ion-item>
+	<bo-filter [search]="true" (change)="onFilterChange($event)">
+		<ion-item>
+			<ion-select name="year" ngModel label="Rok">
+				<ion-select-option [value]="null">všechny</ion-select-option>
+				<ion-select-option *ngFor="let year of years" [value]="year">{{ year }}</ion-select-option>
+			</ion-select>
+		</ion-item>
 
-    <ion-item>
-      <ion-select name="status" ngModel label="Stav zveřejnění">
-        <ion-select-option [value]="null">všechny</ion-select-option>
-        <ion-select-option *ngFor="let status of statuses | keyvalue" [value]="status.key">
-          {{ status.value.name }}
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
-  </bo-filter>
+		<ion-item>
+			<ion-select name="status" ngModel label="Stav zveřejnění">
+				<ion-select-option [value]="null">všechny</ion-select-option>
+				<ion-select-option *ngFor="let status of statuses | keyvalue" [value]="status.key">
+					{{ status.value.name }}
+				</ion-select-option>
+			</ion-select>
+		</ion-item>
+	</bo-filter>
 
-  <admin-table *ngIf="view === 'table'">
-    <thead>
-      <tr>
-        <th>Název alba</th>
-        <th>Datum</th>
-        <th>Stav</th>
-        <th>Publikováno</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let album of albums" [routerLink]="'' + album.id">
-        <td>{{ album.name }}</td>
-        <td class="date">{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }}</td>
-        <td>{{ album | album: "status" }}</td>
-        <td>{{ album.datePublished | date: "d. M. y" }}</td>
-      </tr>
+	<admin-table *ngIf="view === 'table'">
+		<thead>
+			<tr>
+				<th>Název alba</th>
+				<th>Datum</th>
+				<th>Stav</th>
+				<th>Publikováno</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let album of albums" [routerLink]="'' + album.id">
+				<td>{{ album.name }}</td>
+				<td class="date">{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }}</td>
+				<td>{{ album | album: "status" }}</td>
+				<td>{{ album.datePublished | date: "d. M. y" }}</td>
+			</tr>
 
-      <ng-container *ngIf="albums === undefined">
-        <tr *ngFor="let item of loadingArray">
-          <td><ion-skeleton-text animated></ion-skeleton-text></td>
-          <td><ion-skeleton-text animated style="width: 40%"></ion-skeleton-text></td>
-          <td><ion-skeleton-text animated></ion-skeleton-text></td>
-          <td><ion-skeleton-text animated></ion-skeleton-text></td>
-        </tr>
-      </ng-container>
-    </tbody>
-  </admin-table>
+			<ng-container *ngIf="albums === undefined">
+				<tr *ngFor="let item of loadingArray">
+					<td><ion-skeleton-text animated></ion-skeleton-text></td>
+					<td><ion-skeleton-text animated style="width: 40%"></ion-skeleton-text></td>
+					<td><ion-skeleton-text animated></ion-skeleton-text></td>
+					<td><ion-skeleton-text animated></ion-skeleton-text></td>
+				</tr>
+			</ng-container>
+		</tbody>
+	</admin-table>
 
-  <ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
-    <ion-infinite-scroll-content></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
 </bo-page-content>

@@ -1,61 +1,61 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
-    </ion-buttons>
-    <ion-title pageTitle>Můj účet</ion-title>
-    <ion-buttons slot="end">
-      <!-- <bo-action-buttons [actions]="actions" header="Členská databáze"></bo-action-buttons> -->
-    </ion-buttons>
-  </ion-toolbar>
+	<ion-toolbar>
+		<ion-buttons slot="start">
+			<ion-back-button defaultHref="/"></ion-back-button>
+		</ion-buttons>
+		<ion-title pageTitle>Můj účet</ion-title>
+		<ion-buttons slot="end">
+			<!-- <bo-action-buttons [actions]="actions" header="Členská databáze"></bo-action-buttons> -->
+		</ion-buttons>
+	</ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <h2 class="m-3">Uživatelský účet</h2>
+	<h2 class="m-3">Uživatelský účet</h2>
 
-  <ion-list>
-    <ion-item>
-      <ion-label>E-mail:</ion-label>
-      <ion-label>
-        <a *ngIf="user?.email" [href]="'mailto:' + user?.email">{{ user?.email }}</a>
-      </ion-label>
-    </ion-item>
+	<ion-list>
+		<ion-item>
+			<ion-label>E-mail:</ion-label>
+			<ion-label>
+				<a *ngIf="user?.email" [href]="'mailto:' + user?.email">{{ user?.email }}</a>
+			</ion-label>
+		</ion-item>
 
-    <ion-item>
-      <ion-label>Role:</ion-label>
-      <ion-label>
-        <ion-badge *ngFor="let role of user?.roles">{{ role }}</ion-badge>
-      </ion-label>
-    </ion-item>
-  </ion-list>
+		<ion-item>
+			<ion-label>Role:</ion-label>
+			<ion-label>
+				<ion-badge *ngFor="let role of user?.roles">{{ role }}</ion-badge>
+			</ion-label>
+		</ion-item>
+	</ion-list>
 
-  <h2 class="m-3">Člen skupiny</h2>
-  <p *ngIf="!user?.member" class="ms-3 text-warning">Nespárováno s členským účtem</p>
+	<h2 class="m-3">Člen skupiny</h2>
+	<p *ngIf="!user?.member" class="ms-3 text-warning">Nespárováno s členským účtem</p>
 
-  <ion-list *ngIf="user?.member">
-    <ion-item>
-      <ion-label>Přezdívka:</ion-label>
-      <ion-label>{{ user!.member!.nickname }}</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>Jméno:</ion-label>
-      <ion-label>{{ user!.member!.firstName }} {{ user!.member!.lastName }}</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>Oddíl:</ion-label>
-      <ion-label>{{ user!.member!.groupId | group: "name" }}</ion-label>
-    </ion-item>
-  </ion-list>
+	<ion-list *ngIf="user?.member">
+		<ion-item>
+			<ion-label>Přezdívka:</ion-label>
+			<ion-label>{{ user!.member!.nickname }}</ion-label>
+		</ion-item>
+		<ion-item>
+			<ion-label>Jméno:</ion-label>
+			<ion-label>{{ user!.member!.firstName }} {{ user!.member!.lastName }}</ion-label>
+		</ion-item>
+		<ion-item>
+			<ion-label>Oddíl:</ion-label>
+			<ion-label>{{ user!.member!.groupId | group: "name" }}</ion-label>
+		</ion-item>
+	</ion-list>
 
-  <h2 class="m-3 mt-4">Přihlašování</h2>
-  <bo-account-credentials></bo-account-credentials>
+	<h2 class="m-3 mt-4">Přihlašování</h2>
+	<bo-account-credentials></bo-account-credentials>
 
-  <h2 class="m-3 mt-4">Aplikace</h2>
-  <div class="ms-3">
-    <bo-account-app></bo-account-app>
-  </div>
+	<h2 class="m-3 mt-4">Aplikace</h2>
+	<div class="ms-3">
+		<bo-account-app></bo-account-app>
+	</div>
 
-  <!-- <h2 class="m-3 mt-4">Notifikace</h2>
+	<!-- <h2 class="m-3 mt-4">Notifikace</h2>
   <div class="ms-3 mb-5">
     <bo-account-notifications></bo-account-notifications>
   </div> -->

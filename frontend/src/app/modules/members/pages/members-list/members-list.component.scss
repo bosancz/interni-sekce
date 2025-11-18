@@ -1,16 +1,16 @@
 @use "src/styles/variables" as *;
 
 .member {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 tr.mmber-inactive {
-  text-decoration: line-through;
+	text-decoration: line-through;
 }
 tr.mmber-paused {
-  color: $grey;
+	color: $grey;
 }
 
 td ion-badge {
-  vertical-align: text-top;
+	vertical-align: text-top;
 }
