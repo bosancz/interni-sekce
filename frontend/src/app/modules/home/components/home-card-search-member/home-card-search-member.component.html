@@ -1,0 +1,28 @@
+<bo-card>
+	<bo-card-content>
+		<ion-searchbar
+			ngModel
+			(ngModelChange)="searchString.next($event)"
+			(ionClear)="clearMembers()"
+			debounce="0"
+			placeholder="Vyhledat člena v databázi"
+		></ion-searchbar>
+
+		<ion-list *ngIf="members?.length">
+			<ion-item *ngFor="let member of members" [routerLink]="['/databaze', member.id]" [detail]="true">
+				<ion-label>
+					<h3>{{ member.nickname || member.firstName || "?" }}</h3>
+					<p>
+						{{ member.firstName }} {{ member.lastName }},
+						<span [style.color]="member.groupId | group: 'color'">{{ member.groupId | group: "name" }}</span
+						>, {{ (member | member: "age") || "?" }}&nbsp;let
+					</p>
+				</ion-label>
+			</ion-item>
+		</ion-list>
+
+		<p *ngIf="!searching && members && !members.length" class="m-0 mt-2 mb-3 text-center">Žádný člen nenalezen.</p>
+
+		<p *ngIf="!members?.length && searching" class="m-0 mt-2 mb-3 text-center">Vyhledávání&hellip;</p>
+	</bo-card-content>
+</bo-card>

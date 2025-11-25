@@ -8,8 +8,13 @@ import { resolveEntity } from "./resolve-entity";
 
 export type TypeWithLinks<T extends Type<any>> = Type<InstanceType<T> & { _links: { [key: string]: AcLink } }>;
 
-export function WithLinks<T extends EntityType>(entity: T | (() => T)): () => TypeWithLinks<T> {
-	function type() {
+export function WithLinks<E extends EntityType>(contains: E | (() => E)): () => TypeWithLinks<E>;
+export function WithLinks<E extends EntityType, T extends Type>(
+	contains: E | (() => E),
+	type: T | (() => T),
+): () => TypeWithLinks<T>;
+export function WithLinks<T extends Type, E extends EntityType>(contains: E | (() => E), type?: T | (() => T)) {
+	function typeWithLinks() {
 		class ResponseLinksObject {
 			constructor() {}
 		}
@@ -19,14 +24,15 @@ export function WithLinks<T extends EntityType>(entity: T | (() => T)): () => Ty
 			@ApiProperty({ type: ResponseLinksObject }) _links!: ResponseLinksObject;
 		}
 
-		const resolvedEntity = resolveEntity(entity);
+		const entity = resolveEntity(contains);
+		const responseType = type ? resolveEntity(type) : entity;
 
 		if (!entity)
 			throw new Error(
 				`Entity not found, possible problem might be circular depenency. In this case use () => Enitity instead of Entity in the WithLinks helper.`,
 			);
 
-		const linkedRoutes = RouteStore.filter((r) => r.acl.options.linkTo === resolvedEntity);
+		const linkedRoutes = RouteStore.filter((r) => r.acl.options.linkTo === entity);
 
 		const decoratorFactory = ApiProperty({ type: AcLink });
 
@@ -36,17 +42,17 @@ export function WithLinks<T extends EntityType>(entity: T | (() => T)): () => Ty
 		}
 
 		Object.defineProperty(ResponseLinksObject, "name", {
-			value: `${resolvedEntity.name}Links`,
+			value: `${responseType.name}Links`,
 		});
 
-		const EntityWithLinks = IntersectionType(resolvedEntity, ResponseLinksProperty);
+		const EntityWithLinks = IntersectionType(responseType, ResponseLinksProperty);
 
 		Object.defineProperty(EntityWithLinks, "name", {
-			value: `${resolvedEntity.name}WithLinks`,
+			value: `${entity.name}WithLinks`,
 		});
 
 		return EntityWithLinks;
 	}
 
-	return type;
+	return typeWithLinks;
 }

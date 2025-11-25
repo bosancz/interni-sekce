@@ -8,6 +8,7 @@ import { UserGuard } from "src/auth/guards/user.guard";
 import { TokenData } from "src/auth/schema/user-token";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { AccountReadPermission } from "../acl/account.acl";
+import { AccountResponse } from "../dto/account.dto";
 
 @Controller("account")
 @UseGuards(UserGuard)
@@ -18,13 +19,13 @@ export class AccountController {
 
 	@Get()
 	@AcLinks(AccountReadPermission)
-	@ApiResponse({ status: 200, type: WithLinks(UserResponse) })
-	async getMe(@Req() req: Request, @Token() token: TokenData): Promise<UserResponse> {
-		const user = await this.userService.getUser(token.userId);
+	@ApiResponse({ status: 200, type: WithLinks(UserResponse, AccountResponse) })
+	async getMe(@Req() req: Request, @Token() token: TokenData): Promise<AccountResponse> {
+		const user = await this.userService.getUser(token.userId, { includeMember: true });
 		if (!user) throw new NotFoundException();
 
 		AccountReadPermission.canOrThrow(req, user);
 
-		return user;
+		return user as AccountResponse;
 	}
 }

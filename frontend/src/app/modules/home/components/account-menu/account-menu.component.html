@@ -1,0 +1,24 @@
+<h3>{{ (user | async)!.login }}</h3>
+
+<ul>
+	<li>
+		<a routerLink="/ucet" routerDirection="root" routerLinkActive="active">
+			<ion-icon name="person"></ion-icon> Nastavení
+		</a>
+	</li>
+	<li>
+		<a routerLink="/admin" routerDirection="root" routerLinkActive="active">
+			<ion-icon name="settings"></ion-icon> Administrace
+		</a>
+	</li>
+
+	<li>
+		<a (click)="logout()" routerDirection="root" routerLinkActive="active">
+			<ion-icon name="log-out"></ion-icon>
+			Odhlásit se
+		</a>
+	</li>
+</ul>
+
+<bo-dark-mode-toggle></bo-dark-mode-toggle>
+<p class="version mt-2">Verze {{ version }}</p>

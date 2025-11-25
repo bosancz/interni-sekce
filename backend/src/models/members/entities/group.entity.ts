@@ -1,4 +1,5 @@
-import { Column, DeleteDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Member } from "./member.entity";
 
 @Entity("groups")
 export class Group {
@@ -11,4 +12,6 @@ export class Group {
 	@Column({ type: "varchar", nullable: true }) darkColor!: string | null;
 
 	@DeleteDateColumn() deletedAt!: string | null;
+
+	@OneToMany(() => Member, (member) => member.group) members?: Member[];
 }

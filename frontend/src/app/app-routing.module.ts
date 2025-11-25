@@ -29,12 +29,6 @@ const routes: Routes = [
 	},
 
 	{
-		path: "oddily",
-		title: "Oddíly",
-		loadChildren: () => import("./modules/groups/groups.module").then((m) => m.GroupsModule),
-	},
-
-	{
 		path: "program",
 		title: "Program",
 		data: { permission: "program" },
@@ -56,13 +50,11 @@ const routes: Routes = [
 	},
 
 	{
-		path: "uzivatele",
-		title: "Uživatelé",
-		data: { permission: "users" },
-		loadChildren: () => import("./modules/users/users.module").then((m) => m.UsersModule),
+		path: "admin",
+		title: "Administrace",
+		data: { permission: "admin" },
+		loadChildren: () => import("./modules/admin/admin.module").then((m) => m.AdminModule),
 	},
-
-	// { path: '', redirectTo: "prehled", pathMatch: "full" },
 
 	{ path: "**", component: NotFoundComponent },
 ];

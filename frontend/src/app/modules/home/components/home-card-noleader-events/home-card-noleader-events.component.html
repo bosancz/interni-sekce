@@ -8,9 +8,9 @@
 			<ion-list *ngIf="events.length" lines="full">
 				<ion-item *ngFor="let event of events" [detail]="true" [routerLink]="'/akce/' + event.id">
 					<ion-label>
-						<h3>
+						<h4>
 							<strong>{{ event.name }}</strong>
-						</h3>
+						</h4>
 						<p>{{ event.dateFrom | date: "d. M. Y" }} ~ {{ event.dateTill | date: "d. M. Y" }}</p>
 						<p>{{ event.description }}</p>
 					</ion-label>

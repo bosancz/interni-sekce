@@ -2,7 +2,7 @@
 
 body {
 	margin: 0;
-	font-family: $font-family;
+	font-family: $font-regular;
 	color: var(--black);
 	background-color: var(--white);
 	font-size: $font-basic;
@@ -15,6 +15,11 @@ h4,
 h5,
 h6 {
 	font-weight: bold;
+}
+h1,
+h2,
+h3 {
+	font-family: $font-san;
 }
 
 a[href] {

@@ -1,0 +1,20 @@
+:host {
+	display: block;
+	height: 3em;
+	aspect-ratio: 1 / 1;
+	background-color: var(--lightGrey);
+	border-radius: 50%;
+	overflow: hidden;
+
+	h3 {
+		width: 100%;
+		height: 100%;
+		color: var(--colorMedium);
+		font-weight: bold;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0;
+		padding-top: 2px;
+	}
+}
