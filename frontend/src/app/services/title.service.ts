@@ -7,7 +7,7 @@ import { ApiService } from "./api.service";
 	providedIn: "root",
 })
 export class TitleService extends TitleStrategy {
-	private mainTitle: string = "Bošán interní";
+	private mainTitle: string = "Bošán";
 	private subTitle: string | null = null;
 
 	constructor(
@@ -16,7 +16,7 @@ export class TitleService extends TitleStrategy {
 	) {
 		super();
 		this.api.info.subscribe((info) => {
-			this.mainTitle = "Bošán interní" + (info?.environmentTitle ? " " + info.environmentTitle : "");
+			this.mainTitle = "Bošán" + (info?.environmentTitle ? " " + info.environmentTitle : "");
 			this.setTitle(this.subTitle);
 		});
 	}
