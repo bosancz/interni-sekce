@@ -15,18 +15,6 @@ Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze mo
  1. Otevři si ve VSCode složku repozitáře
  2. Otevři menu (F1) a zvol možnost `Remote-Containers: Reopen Folder in Container`
 
-### Spuštění v devcontaineru ve Visual Studiu Code na Bošánovském serveru
-
-**Prerekvizity**:
- - [VSCode](https://code.visualstudio.com/download)
- - Rozšíření pro VSCode [Visual Studio Code Remote Development Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack).
-
-**Postup**:
- 1. Připoj se ve VSCode přes SSH k Bošánovskému serveru (přístupy ti zařídí Kopec)
- 2. Otevři si ve VSCode složku repozitáře
- 3. Ve složce `.devcontainer` vytvoř soubor .env s obsahem `COMPOSE_PROJECT_NAME=mojejmeno` kde nastavíš svoje jméno bez diakritiky -  aby se názvy kontejnerů různých lidí nebily.
- 4. Otevři menu (F1) a zvol možnost `Remote-Containers: Reopen Folder in Container`
-
 ### Spuštění v Github Codespaces
 
 
