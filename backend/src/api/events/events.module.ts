@@ -13,9 +13,11 @@ import { EventsAnnouncementController } from "./controllers/events-announcement.
 import { EventAnnouncementService } from "./providers/event-announcement.service";
 import { EventsAccountingController } from "./controllers/events-accounting.controller"
 import { EventAccountingService } from "./providers/event-accountig.service";
+import { FilesModule } from "src/models/files/files.module";
+
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Event, EventAttendee]), EventsModelModule],
+  imports: [TypeOrmModule.forFeature([Event, EventAttendee]), EventsModelModule, FilesModule],
   controllers: [
     EventsController,
     EventsAttendeesController,

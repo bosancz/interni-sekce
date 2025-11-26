@@ -1,6 +1,6 @@
 import { Injectable, OnApplicationBootstrap } from "@nestjs/common";
-import { access, mkdir, unlink, writeFile } from "fs/promises";
-import { dirname } from "path";
+import { access, mkdir, unlink, writeFile , rename, readdir} from "fs/promises";
+import { dirname, join} from "path";
 import { Config } from "src/config";
 
 @Injectable()
@@ -30,5 +30,19 @@ export class FilesService implements OnApplicationBootstrap {
 
   async deleteFile(path: string) {
     return unlink(path);
+  }
+
+  async moveFile(oldPath: string, newPath: string) {
+    await this.ensureDir(dirname(newPath));
+    return rename(oldPath, newPath);
+  }
+
+  async deleteFilesByPrefix(directoryPath: string, prefix: string): Promise<void> {
+    const files = await readdir(directoryPath);
+    const matchingFiles = files.filter((file) => file.startsWith(prefix));
+    
+    await Promise.all(
+      matchingFiles.map((file) => unlink(join(directoryPath, file)))
+    );
   }
 }

@@ -6,19 +6,10 @@ import { EventAttendee } from 'src/models/events/entities/event-attendee.entity'
 import { Event } from 'src/models/events/entities/event.entity';
 import { Member } from 'src/models/members/entities/member.entity';
 import * as xlsxPopulate from 'xlsx-populate';
+import {string2Date} from '../../../helpers/string2date'
+
 @Injectable() // <-- Now this will work
 export class EventAnnouncementService {
-
-    private string2date(stringDate: string|null|undefined):Date|null{
-        if (!stringDate) return null;
-
-        const date = new Date(stringDate);
-        
-        if (isNaN(date.getTime())) {
-            return null;
-        }
-        return date;
-    }
 
 
     async generateAnnouncement(event: Event): Promise<{ fileBuffer: Buffer, fileName: string}> {
@@ -34,8 +25,8 @@ export class EventAnnouncementService {
         
         // Header
         annoucementSheet.cell("C15").value(event.name || "");
-        annoucementSheet.range("C17:C17").value(this.string2date(event.dateFrom) || "");
-        annoucementSheet.range("C18:C18").value(this.string2date(event.dateTill) || "");
+        annoucementSheet.range("C17:C17").value(string2Date(event.dateFrom) || "");
+        annoucementSheet.range("C18:C18").value(string2Date(event.dateTill) || "");
         annoucementSheet.cell("C20").value(event.place || "");
 
         if (event.leaders){
@@ -66,7 +57,7 @@ export class EventAnnouncementService {
             return [ 
             ea?.member?.firstName || missing,
             ea?.member?.lastName || missing,
-            this.string2date(ea?.member?.birthday) || missing,
+            string2Date(ea?.member?.birthday) || missing,
             (ea?.member?.addressStreet || missing)+ " " + (ea?.member?.addressStreetNo || ""),
             ea?.member?.addressCity|| missing,
             ea?.member?.addressPostalCode || missing,

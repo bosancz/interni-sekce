@@ -8,28 +8,17 @@ import { Event } from 'src/models/events/entities/event.entity';
 import { Member } from 'src/models/members/entities/member.entity';
 import { InternalSymbolName } from 'typescript';
 import * as xlsxPopulate from 'xlsx-populate';
+import {czech2Filename} from '../../../helpers/czech2filename'
+import {string2Date} from '../../../helpers/string2date'
 @Injectable() // <-- Now this will work
 export class EventAccountingService {
     constructor() {
         // Inject other services you might need
     }
 
-    private string2date(stringDate: string|null|undefined): Date|null{
-        if (!stringDate) return null;
-
-        const date = new Date(stringDate);
-        
-        if (isNaN(date.getTime())) {
-            return null;
-        }
-        return date;
-    }
-
-
     async generateAccounting(event: Event): Promise<{ fileBuffer: Buffer, fileName: string}> {
         
-
-        const fileName = `Uctovani_${(event.name).replace(" ", "_").normalize("NFD").replace(/[\u0300-\u036f]/g, "")}`
+        const fileName = "Uctovani_" + czech2Filename(event.name)
         const templatePath = "assets/uctovani-v6.xlsx";
         const xlsx = await xlsxPopulate.fromFileAsync(templatePath);
 
@@ -52,7 +41,7 @@ export class EventAccountingService {
         return [
             ea?.member?.firstName || missing,
             ea?.member?.lastName || missing,
-            this.string2date(ea?.member?.birthday)|| missing,
+            string2Date(ea?.member?.birthday)|| missing,
             (ea?.member?.addressStreet || missing) + " " + (ea?.member?.addressStreetNo || ""),
             ea?.member?.addressCity || missing,
             ea?.member?.addressPostalCode || missing,
@@ -71,8 +60,8 @@ export class EventAccountingService {
         attendeeSheet.cell("B4").value(event.place || "");
 
         // ugly but its working .cell cant store Dateformat
-        attendeeSheet.range("B5:B5").value(this.string2date(event.dateFrom) || "");
-        attendeeSheet.range("B6:B6").value(this.string2date(event.dateTill) || "");
+        attendeeSheet.range("B5:B5").value(string2Date(event.dateFrom) || "");
+        attendeeSheet.range("B6:B6").value(string2Date(event.dateTill) || "");
         attendeeSheet.cell("B7").value(leadersString);
 
 
@@ -110,7 +99,6 @@ export class EventAccountingService {
             expenseSheet.range(`${startCol}${startRow}:${endCol}${endRow}`).value(expensesString);
         }
         
-        console.log(expensesString)
 
         const fileBuffer = await xlsx.outputAsync("buffer") as Buffer;
         return({fileBuffer, fileName})

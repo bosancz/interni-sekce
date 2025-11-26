@@ -1,8 +1,10 @@
 import {
+	BadRequestException,
 	Controller,
 	Delete,
 	Get,
 	HttpCode,
+	InternalServerErrorException,
 	NotFoundException,
 	Param,
 	Put,
@@ -23,6 +25,11 @@ import {
 	EventRegistrationEditPermission,
 	EventRegistrationReadPermission,
 } from "../acl/events.acl";
+import { FilesService } from "../../../models/files/services/files.service";
+import { Config } from "src/config";
+import * as path from 'path';
+import {czech2Filename} from '../../../helpers/czech2filename'
+
 
 @Controller("events")
 @AcController()
@@ -30,6 +37,8 @@ import {
 export class EventsRegistrationsController {
 	constructor(
 		private events: EventsRepository,
+		private fileService: FilesService,
+		private config: Config,
 		@InjectRepository(Event) private eventsRepository: Repository<Event>,
 	) {}
 
@@ -40,14 +49,14 @@ export class EventsRegistrationsController {
 		if (!event) throw new NotFoundException();
 
 		EventRegistrationReadPermission.canOrThrow(req, event);
-		// TODO:
+		// TODO://
 	}
 
 	@Put(":id/registration")
 	@HttpCode(204)
 	@AcLinks(EventRegistrationEditPermission)
 	@ApiResponse({ status: 204 })
-	@UseInterceptors(FileInterceptor("file"))
+	@UseInterceptors(FileInterceptor("registration"))
 	@ApiBody({
 		schema: {
 			type: "object",
@@ -62,14 +71,28 @@ export class EventsRegistrationsController {
 	async saveEventRegistration(
 		@Req() req: Request,
 		@Param("id") id: number,
-		@UploadedFile("registration") registration: Express.Multer.File,
-	): Promise<void> {
-		const event = await this.events.getEvent(id);
-		if (!event) throw new NotFoundException();
-
-		EventRegistrationEditPermission.canOrThrow(req, event);
-		// TODO:
-	}
+		@UploadedFile("registration") registration: Express.Multer.File,): Promise<void> {
+			const event = await this.events.getEvent(id);
+			if (!event) throw new NotFoundException();
+			
+			EventRegistrationEditPermission.canOrThrow(req, event);
+			console.log(registration)
+			if (!registration) throw new BadRequestException("Registration not provided")
+			console.log("uploading \n \n \n \n")
+				
+			const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
+			const registrationFileName = "prihlaska_" +  czech2Filename(event.name) + ".pdf"
+			const registrationPath = path.join(registrationFolder, registrationFileName)
+			try{
+				await this.fileService.ensureDir(registrationFolder)
+				await this.fileService.deleteFilesByPrefix(registrationFolder, "prihlaska")
+			
+			await this.fileService.moveFile(registration.path, registrationPath)
+			}
+			catch(err){
+				throw new InternalServerErrorException("Failed to save registration")
+			}
+}
 
 	@Delete(":id/registration")
 	@AcLinks(EventRegistrationDeletePermission)
