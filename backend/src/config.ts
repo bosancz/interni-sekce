@@ -80,11 +80,11 @@ const dataDir = process.env["DATA_DIR"] ?? "../data";
 
 const fs = {
 	dataDir,
-	keysDir: process.env["KEYS_DIR"] ?? "../keys",
-	photosDir: process.env["PHOTOS_DIR"] ?? path.join(dataDir, "photos"),
-	thumbnailsDir: process.env["THUMBNAILS_DIR"] ?? path.join(dataDir, "thumbnails"),
-	eventsDir: process.env["EVENTS_DIR"] ?? path.join(dataDir, "events"),
-	membersDir: process.env["MEMBERS_DIR"] ?? path.join(dataDir, "members"),
+	keysDir: path.resolve(process.env["KEYS_DIR"] ?? "../keys"),
+	photosDir: path.resolve(process.env["PHOTOS_DIR"] ?? path.join(dataDir, "photos")),
+	thumbnailsDir: path.resolve(process.env["THUMBNAILS_DIR"] ?? path.join(dataDir, "thumbnails")),
+	eventsDir: path.resolve(process.env["EVENTS_DIR"] ?? path.join(dataDir, "events")),
+	membersDir: path.resolve(process.env["MEMBERS_DIR"] ?? path.join(dataDir, "members")),
 };
 
 const google = {

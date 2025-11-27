@@ -5321,16 +5321,16 @@ export namespace SDK {
 
 		public async saveEventRegistration(
 			id: number,
-			body: SaveEventRegistrationRequest,
+			file: File,
 			options: AxiosRequestConfig = {},
 		) {
 			// verify required parameter 'id' is not null or undefined
 			assertParamExists("saveEventRegistration", "id", id);
-			assertParamExists("saveEventRegistration", "saveEventRegistrationRequest", body);
+			assertParamExists("saveEventRegistration", "file", file);
 
 			// verify required parameter 'saveEventRegistrationRequest' is not null or undefined
 			assertParamExists("saveEventRegistration", "id", id);
-			assertParamExists("saveEventRegistration", "saveEventRegistrationRequest", body);
+			assertParamExists("saveEventRegistration", "file", file);
 
 			const localVarPath = `/api/events/{id}/registration`.replace(`{${"id"}}`, encodeURIComponent(String(id)));
 			// use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -5344,12 +5344,15 @@ export namespace SDK {
 			const requestHeaderParameter = {} as any;
 			const requestQueryParameter = {} as any;
 
-			requestHeaderParameter["Content-Type"] = "application/json";
 
 			setSearchParams(requestUrlObj, requestQueryParameter);
 			let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
 			axiosRequestConfig.headers = { ...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers };
-			axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration);
+
+			const formdata = new FormData();
+			formdata.append("registration", file)
+
+			axiosRequestConfig.data = formdata;
 
 			axiosRequestConfig["url"] = toPathString(requestUrlObj);
 			axiosRequestConfig["baseURL"] = this.configuration.basePath;

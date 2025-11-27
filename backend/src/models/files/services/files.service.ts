@@ -45,4 +45,10 @@ export class FilesService implements OnApplicationBootstrap {
       matchingFiles.map((file) => unlink(join(directoryPath, file)))
     );
   }
+
+  async getFilesByPrefx(directoryPath: string, prefix: string): Promise<string[]> {
+  const files = await readdir(directoryPath);
+  const matchingFiles = files.filter((file) => file.startsWith(prefix));
+  return matchingFiles;
+  }
 }

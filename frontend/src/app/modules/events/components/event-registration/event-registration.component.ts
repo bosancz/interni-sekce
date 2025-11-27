@@ -37,21 +37,25 @@ export class EventRegistrationComponent {
 		if (!input.files?.length) return;
 
 		let file = input.files![0];
-
+		
 		if (file.name.split(".").pop()?.toLowerCase() !== "pdf") {
 			this.toastService.toast("Soubor musí být ve formátu PDF");
+			this.uploadingRegistration = false
+
 			return;
 		}
-
+		
 		this.uploadingRegistration = true;
 
 		try {
-			await this.api.EventsApi.saveEventRegistration(this.event.id, { registration: file });
+			await this.api.EventsApi.saveEventRegistration(this.event.id, file);
 		} catch (err: any) {
 			this.toastService.toast("Nastala chyba při nahrávání: " + err.message);
+			return;
+		} finally{
+			this.uploadingRegistration = false
 		}
 
-		this.uploadingRegistration = false;
 		this.toastService.toast("Přihláška nahrána.");
 
 		this.eventService.loadEvent(this.event.id);

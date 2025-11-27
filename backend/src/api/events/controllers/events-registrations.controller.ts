@@ -9,13 +9,14 @@ import {
 	Param,
 	Put,
 	Req,
+	Res,
 	UploadedFile,
 	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Request } from "express";
+import { Request, Response} from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
@@ -44,19 +45,32 @@ export class EventsRegistrationsController {
 
 	@Get(":id/registration")
 	@AcLinks(EventRegistrationReadPermission)
-	async getEventRegistration(@Req() req: Request, @Param("id") id: number): Promise<void> {
+	async getEventRegistration(@Req() req: Request, @Param("id") id: number, @Res() res: Response): Promise<void> {
 		const event = await this.events.getEvent(id);
+		
 		if (!event) throw new NotFoundException();
+		//fix acl
+		//EventRegistrationReadPermission.canOrThrow(req, event);
+		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
+						
+		const matchingFiles = await this.fileService.getFilesByPrefx(registrationFolder, "prihlaska")
+		console.log(matchingFiles)
 
-		EventRegistrationReadPermission.canOrThrow(req, event);
-		// TODO://
+		if (matchingFiles.length !=1){
+			throw new InternalServerErrorException("Failed to get registration -  not one registration saved")
+		}
+		const registrationFn = matchingFiles[0]
+		const registrationPath = path.join(registrationFolder, registrationFn)
+		console.log(registrationPath);
+		res.sendFile(registrationPath);
 	}
+
 
 	@Put(":id/registration")
 	@HttpCode(204)
 	@AcLinks(EventRegistrationEditPermission)
 	@ApiResponse({ status: 204 })
-	@UseInterceptors(FileInterceptor("registration"))
+	@UseInterceptors(FileInterceptor("registration", { dest: './uploads_temp' }))
 	@ApiBody({
 		schema: {
 			type: "object",
@@ -71,14 +85,12 @@ export class EventsRegistrationsController {
 	async saveEventRegistration(
 		@Req() req: Request,
 		@Param("id") id: number,
-		@UploadedFile("registration") registration: Express.Multer.File,): Promise<void> {
+		@UploadedFile() registration: Express.Multer.File): Promise<void> {
 			const event = await this.events.getEvent(id);
 			if (!event) throw new NotFoundException();
 			
 			EventRegistrationEditPermission.canOrThrow(req, event);
-			console.log(registration)
 			if (!registration) throw new BadRequestException("Registration not provided")
-			console.log("uploading \n \n \n \n")
 				
 			const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
 			const registrationFileName = "prihlaska_" +  czech2Filename(event.name) + ".pdf"
@@ -92,7 +104,7 @@ export class EventsRegistrationsController {
 			catch(err){
 				throw new InternalServerErrorException("Failed to save registration")
 			}
-}
+		}
 
 	@Delete(":id/registration")
 	@AcLinks(EventRegistrationDeletePermission)
@@ -100,7 +112,9 @@ export class EventsRegistrationsController {
 		const event = await this.events.getEvent(id);
 		if (!event) throw new NotFoundException();
 
-		EventRegistrationDeletePermission.canOrThrow(req, event);
-		// TODO:
+		EventRegistrationReadPermission.canOrThrow(req, event);
+		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
+						
+		await this.fileService.deleteFilesByPrefix(registrationFolder, "prihlaska")
 	}
 }
