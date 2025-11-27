@@ -4,15 +4,12 @@
 	<bo-card-content>
 		<div class="buttons">
 			<ion-button
-				*ngIf="
-					event?._links?.saveEventRegistration?.applicable
-				"
+				*ngIf="event?._links?.saveEventRegistration?.applicable"
 				[disabled]="!event?._links?.saveEventRegistration?.allowed || uploadingRegistration"
 				fill="clear"
 				(click)="registrationInput.click()"
 				>Nahrát</ion-button
 			>
-
 			<ion-button
 				*ngIf="event?._links?.getEventRegistration?.applicable"
 				[disabled]="!event?._links?.getEventRegistration?.allowed || uploadingRegistration"

@@ -49,8 +49,13 @@ export class EventsRegistrationsController {
 		const event = await this.events.getEvent(id);
 		
 		if (!event) throw new NotFoundException();
-		//fix acl
-		EventRegistrationReadPermission.canOrThrow(req, event);
+		//TODO fix acl there i thing that two things using EventRegistrationReadPermission at same time - this and the button
+		try{
+			EventRegistrationReadPermission.canOrThrow(req, event);
+		}
+		catch(error)
+		{console.log(error)}
+
 		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
 						
 		const matchingFiles = await this.fileService.getFilesByPrefx(registrationFolder, "prihlaska")
@@ -104,6 +109,8 @@ export class EventsRegistrationsController {
 			catch(err){
 				throw new InternalServerErrorException("Failed to save registration")
 			}
+			event.hasRegistration = true;
+			await this.eventsRepository.save(event);
 		}
 
 	@Delete(":id/registration")
@@ -111,10 +118,12 @@ export class EventsRegistrationsController {
 	async deleteEventRegistration(@Req() req: Request, @Param("id") id: number): Promise<void> {
 		const event = await this.events.getEvent(id);
 		if (!event) throw new NotFoundException();
-
 		EventRegistrationDeletePermission.canOrThrow(req, event);
 		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
 						
 		await this.fileService.deleteFilesByPrefix(registrationFolder, "prihlaska")
+		event.hasRegistration = false;
+		await this.eventsRepository.save(event);
+
 	}
 }

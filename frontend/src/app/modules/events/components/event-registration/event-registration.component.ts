@@ -58,7 +58,7 @@ export class EventRegistrationComponent {
 
 		this.toastService.toast("Přihláška nahrána.");
 
-		this.eventService.loadEvent(this.event.id);
+		this.event = await this.eventService.loadEvent(this.event.id);
 	}
 
 	async deleteRegistration() {
@@ -66,8 +66,7 @@ export class EventRegistrationComponent {
 
 		await this.api.EventsApi.deleteEventRegistration(this.event.id);
 		this.toastService.toast("Přihláška smazána.");
-
-		this.eventService.loadEvent(this.event.id);
+		this.event = await this.eventService.loadEvent(this.event.id);
 	}
 
 	private downloadRegistration() {
@@ -82,4 +81,5 @@ export class EventRegistrationComponent {
 	getSafeRegistrationUrl(event: SDK.EventResponseWithLinks) {
 		return this.sanitizer.bypassSecurityTrustResourceUrl(this.getRegistrationUrl(event));
 	}
+
 }

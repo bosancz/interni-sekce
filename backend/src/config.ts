@@ -68,7 +68,7 @@ const db: PostgresConnectionOptions = {
 	entities: [path.join(__dirname, "**/*.entity.{js,ts}")],
 	migrationsRun: production ? true : false,
 	migrations: [path.join(__dirname, "database/migrations/**/*{.ts,.js}")],
-	logging: logging.debug,
+	//logging: logging.debug,
 	namingStrategy: new SnakeNamingStrategy(),
 };
 
