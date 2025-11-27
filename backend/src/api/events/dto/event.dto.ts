@@ -20,6 +20,7 @@ export class EventResponse implements Omit<Event, "setLeaders"> {
   @ApiProperty() dateTill!: string;
   @ApiProperty() leadersEvent!: boolean;
   @ApiProperty() groupsIds!: number[];
+  @ApiProperty() hasRegistration!: boolean;
 
   @ApiPropertyOptional({ type: "string" }) type!: string | null;
   @ApiPropertyOptional({ type: "string" }) statusNote!: string | null;
@@ -54,6 +55,7 @@ export class EventUpdateBody {
   @ApiPropertyOptional() @IsOptional() @IsString() dateFrom?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() dateTill?: string;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() leadersEvent?: boolean;
+  @ApiPropertyOptional() @IsOptional() @IsBoolean() hasRegistration?: boolean;
 
   @ApiPropertyOptional({ type: "number", isArray: true })
   @IsOptional()

@@ -144,6 +144,7 @@ export const EventRegistrationReadPermission = new Permission({
 	linkTo: EventResponse,
 
 	inherit: EventReadPermission,
+	applicable: ({ doc }) => doc.hasRegistration === true
 });
 
 export const EventRegistrationEditPermission = new Permission({
@@ -156,6 +157,7 @@ export const EventRegistrationDeletePermission = new Permission({
 	linkTo: EventResponse,
 
 	inherit: EventEditPermission,
+	applicable: ({ doc }) => doc.hasRegistration === true
 });
 
 export const EventReportReadPermission = new Permission({

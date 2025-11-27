@@ -50,7 +50,7 @@ export class EventsRegistrationsController {
 		
 		if (!event) throw new NotFoundException();
 		//fix acl
-		//EventRegistrationReadPermission.canOrThrow(req, event);
+		EventRegistrationReadPermission.canOrThrow(req, event);
 		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
 						
 		const matchingFiles = await this.fileService.getFilesByPrefx(registrationFolder, "prihlaska")
@@ -112,7 +112,7 @@ export class EventsRegistrationsController {
 		const event = await this.events.getEvent(id);
 		if (!event) throw new NotFoundException();
 
-		EventRegistrationReadPermission.canOrThrow(req, event);
+		EventRegistrationDeletePermission.canOrThrow(req, event);
 		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
 						
 		await this.fileService.deleteFilesByPrefix(registrationFolder, "prihlaska")

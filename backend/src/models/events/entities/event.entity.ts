@@ -59,6 +59,7 @@ export class Event {
   @Column({ type: "numeric", nullable: true }) waterKm!: number | null;
   @Column({ type: "varchar", nullable: true }) river!: string | null;
   @Column({ type: "boolean", nullable: false, default: false }) leadersEvent!: boolean;
+  @Column({ type: "boolean", nullable: false, default: false }) hasRegistration!: boolean;
 
   @DeleteDateColumn() deletedAt?: Date | null;
 

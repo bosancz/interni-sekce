@@ -5,9 +5,9 @@
 		<div class="buttons">
 			<ion-button
 				*ngIf="
-					event?._links?.saveEventRegistration?.applicable && event?._links?.getEventRegistration?.applicable
+					event?._links?.saveEventRegistration?.applicable
 				"
-				[disabled]="!event?._links?.getEventRegistration?.allowed || uploadingRegistration"
+				[disabled]="!event?._links?.saveEventRegistration?.allowed || uploadingRegistration"
 				fill="clear"
 				(click)="registrationInput.click()"
 				>Nahrát</ion-button
