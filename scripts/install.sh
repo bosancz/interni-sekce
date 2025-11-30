@@ -18,5 +18,4 @@ cd backend
 npm ci
 npm run build
 npm run migrations:run
-npm run cli create-admin
 cd ..
