@@ -1,4 +1,6 @@
-<bo-page-header [title]="album?.name" [actions]="actions" actionsHeader="Album" backUrl="/galerie"></bo-page-header>
+<bo-page-header [title]="album?.name" backUrl="/galerie">
+	<bo-page-header-actions [actions]="actions" actionsHeader="Album" />
+</bo-page-header>
 
 <bo-page-content [padding]="true">
 	<h2>{{ album?.name }}</h2>

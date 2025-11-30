@@ -1,9 +1,9 @@
-import { EntityType } from "../schema/entity-type";
+import { Type } from "@nestjs/common";
 
-export function resolveEntity(entity: EntityType | (() => EntityType)): EntityType {
+export function resolveEntity<E>(entity: Type<E> | (() => Type<E>)): Type<E> {
 	if (typeof entity === "function" && entity.name === "") {
-		return (<() => EntityType>entity)();
+		return (<() => Type<E>>entity)();
 	} else {
-		return <EntityType>entity;
+		return entity as Type<E>;
 	}
 }

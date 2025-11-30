@@ -1,0 +1,27 @@
+<bo-page-header title="Oddíly" backUrl="/">
+	<bo-page-header-actions [actions]="actions" actionsHeader="" />
+</bo-page-header>
+
+<bo-page-content [padding]="true">
+	<bo-card [routerLink]="['/databaze/clenove']" class="group">
+		<bo-card-header>
+			<bo-card-title>Celá databáze</bo-card-title>
+		</bo-card-header>
+		<bo-card-content> {{ totalMemberCount }} členů </bo-card-content>
+	</bo-card>
+
+	<div class="row mt-4">
+		<div *ngFor="let group of groups" class="col-6 col-lg-6 col-xl-4 mb-4">
+			<bo-card [routerLink]="['/databaze/clenove']" [queryParams]="{ groups: group.id }" class="group">
+				<bo-card-header>
+					<bo-card-title>{{ group.name }}</bo-card-title>
+				</bo-card-header>
+				<bo-card-content> {{ group.memberCount }} členů </bo-card-content>
+			</bo-card>
+		</div>
+	</div>
+
+	<p *ngIf="groups !== undefined && !groups.length" class="ion-padding">
+		Žádné oddíly zatím nejsou vytvořeny. Chceš <a routerLink="/oddily/vytvorit">vytvořit první oddíl</a>?
+	</p>
+</bo-page-content>

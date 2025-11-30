@@ -8,6 +8,7 @@ import { register } from "swiper/element/bundle";
 import { ActionButtonsComponent } from "./components/action-buttons/action-buttons.component";
 import { AddButtonComponent } from "./components/add-button/add-button.component";
 import { AdminTableComponent } from "./components/admin-table/admin-table.component";
+import { AvatarComponent } from "./components/avatar/avatar.component";
 import { CardContentComponent } from "./components/card-content/card-content.component";
 import { CardFooterComponent } from "./components/card-footer/card-footer.component";
 import { CardHeaderComponent } from "./components/card-header/card-header.component";
@@ -39,6 +40,7 @@ import { ModalLayoutComponent } from "./components/modal-layout/modal-layout.com
 import { ModalTemplateComponent } from "./components/modal-template/modal-template.component";
 import { PageContentComponent } from "./components/page-content/page-content.component";
 import { PageFooterComponent } from "./components/page-footer/page-footer.component";
+import { PageHeaderActionsComponent } from "./components/page-header-actions/page-header-actions.component";
 import { PageHeaderComponent } from "./components/page-header/page-header.component";
 import { PaginationComponent } from "./components/pagination/pagination.component";
 import { PhotoFaceComponent } from "./components/photo-face/photo-face.component";
@@ -115,6 +117,8 @@ register();
 		EditButtonNameComponent,
 		EditButtonDateComponent,
 		EditButtonSelectComponent,
+		PageHeaderActionsComponent,
+		AvatarComponent,
 	],
 	exports: [
 		FormsModule,
@@ -173,6 +177,8 @@ register();
 		EditButtonNameComponent,
 		EditButtonDateComponent,
 		EditButtonSelectComponent,
+		PageHeaderActionsComponent,
+		AvatarComponent,
 	],
 	providers: [DatePipe, provideCharts(withDefaultRegisterables())],
 })

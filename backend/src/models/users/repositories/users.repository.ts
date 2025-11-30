@@ -15,8 +15,11 @@ export class UsersRepository {
 		return this.repository.save(data);
 	}
 
-	async getUser(id: number) {
-		return this.repository.findOneBy({ id });
+	async getUser(id: number, options: { includeMember?: boolean } = {}) {
+		return this.repository.findOne({
+			where: { id },
+			relations: options.includeMember ? ["member", "member.group"] : [],
+		});
 	}
 
 	async findUser(where: FindOptionsWhere<User> | FindOptionsWhere<User>[], options: { credentials?: boolean } = {}) {

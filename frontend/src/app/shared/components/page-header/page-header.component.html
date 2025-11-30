@@ -4,9 +4,12 @@
 			<ion-menu-button *ngIf="!backUrl"></ion-menu-button>
 			<ion-back-button *ngIf="backUrl" [defaultHref]="backUrl"></ion-back-button>
 		</ion-buttons>
+		<ng-content select="[slot=start]"></ng-content>
+
 		<ion-title>{{ title }}</ion-title>
-		<ion-buttons *ngIf="actions" slot="end">
-			<bo-action-buttons [actions]="actions" [header]="actionsHeader ?? title"></bo-action-buttons>
-		</ion-buttons>
+
+		<div class="actions" slot="end">
+			<ng-content select="[slot=end],bo-page-header-actions"></ng-content>
+		</div>
 	</ion-toolbar>
 </ion-header>

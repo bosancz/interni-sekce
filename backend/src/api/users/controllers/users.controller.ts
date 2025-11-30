@@ -18,7 +18,7 @@ import {
 import { UserCreateBody } from "../dto/user-create-body";
 import { UserSetPasswordBody } from "../dto/user-set-password-body";
 import { UserUpdateBody } from "../dto/user-update-body";
-import { UserResponse } from "../dto/user.dto";
+import { GetUserQueryDto, UserResponse } from "../dto/user.dto";
 import { ListUsersQuery } from "../dto/users.dto";
 
 @Controller("users")
@@ -72,8 +72,15 @@ export class UsersController {
 	@Get(":id")
 	@AcLinks(UserReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(UserResponse) })
-	async getUser(@Req() req: Request, @Param("id") id: number): Promise<UserResponse> {
-		const user = await this.userRepository.findOne({ where: { id }, relations: ["member"] });
+	async getUser(
+		@Req() req: Request,
+		@Param("id") id: number,
+		@Query() query: GetUserQueryDto,
+	): Promise<UserResponse> {
+		const user = await this.userRepository.findOne({
+			where: { id },
+			relations: query.includeMember ? ["member", "member.group"] : [],
+		});
 		if (!user) throw new NotFoundException();
 
 		UserReadPermission.canOrThrow(req, user);

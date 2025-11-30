@@ -1,21 +1,26 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { ListGroupsQuery } from "src/api/members/dto/group.dto";
 import { FindOneOptions, Repository } from "typeorm";
 import { Group } from "../entities/group.entity";
-
-export interface GetGroupsOptions {
-	active?: boolean;
-}
 
 @Injectable()
 export class GroupsRepository {
 	constructor(@InjectRepository(Group) private groupsRepository: Repository<Group>) {}
 
-	async getGroups(options: GetGroupsOptions = {}) {
-		return this.groupsRepository.find({
-			order: { shortName: "ASC" },
-			where: { active: options.active },
-		});
+	async getGroups(options: ListGroupsQuery = {}) {
+		const q = this.groupsRepository.createQueryBuilder("groups");
+
+		q.addOrderBy("short_name", "ASC", "NULLS LAST");
+
+		if (options.active) q.where({ active: options.active });
+		if (options.includeMemberCounts) {
+			q.loadRelationCountAndMap("groups.memberCount", "groups.members", "members", (qb) =>
+				qb.andWhere("members.deletedAt IS NULL"),
+			);
+		}
+
+		return q.getMany();
 	}
 
 	async getGroup(id: number, options?: FindOneOptions<Group>) {
