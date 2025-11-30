@@ -24,7 +24,7 @@
     "@editorjs/image": "^2.10.2",
     "@editorjs/list": "^2.0.4",
     "@editorjs/marker": "^1.4.0",
-    "@ionic/angular": "^8.4.3",
+    "@ionic/angular": "^8.7.11",
     "@ngneat/until-destroy": "^10.0.0",
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
