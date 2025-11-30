@@ -1629,6 +1629,12 @@ export namespace SDK {
 		 * @type {string}
 		 * @memberof EventResponseWithLinks
 		 */
+		report?: string | null;
+		/**
+		 *
+		 * @type {string}
+		 * @memberof EventResponseWithLinks
+		 */
 		deletedAt?: string | null;
 		/**
 		 *
@@ -1799,6 +1805,13 @@ export namespace SDK {
 		 * @memberof EventUpdateBody
 		 */
 		river?: string | null;
+		/**
+		 *
+		 * @type {string}
+		 * @memberof EventUpdateBody
+		 */
+		report?: string | null;
+
 	}
 
 	export const EventUpdateBodyStatusEnum = {

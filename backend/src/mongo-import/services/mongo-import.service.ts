@@ -234,6 +234,7 @@ export class MongoImportService {
         river: null,
         leadersEvent: mongoEvent.groups?.includes("V") || false,
         hasRegistration: false,
+        report: null,
         groups,
       };
 

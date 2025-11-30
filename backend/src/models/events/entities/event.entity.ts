@@ -60,6 +60,8 @@ export class Event {
   @Column({ type: "varchar", nullable: true }) river!: string | null;
   @Column({ type: "boolean", nullable: false, default: false }) leadersEvent!: boolean;
   @Column({ type: "boolean", nullable: false, default: false }) hasRegistration!: boolean;
+  @Column({ type: "varchar", nullable: true}) report!: string| null;
+  
 
   @DeleteDateColumn() deletedAt?: Date | null;
 

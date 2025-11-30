@@ -39,6 +39,7 @@
 					[event]="event"
 					class="d-lg-block mb-5"
 					[class.d-none]="view !== 'report'"
+					(update)="updateEvent($event)"
 				></bo-event-report>
 			</div>
 		</div>

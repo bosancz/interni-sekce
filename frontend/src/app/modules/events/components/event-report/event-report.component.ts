@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { SDK } from "src/sdk";
 
@@ -11,4 +11,5 @@ import { SDK } from "src/sdk";
 })
 export class EventReportComponent {
   @Input() event?: SDK.EventResponseWithLinks;
+  @Output() update = new EventEmitter<SDK.EventUpdateBody>();
 }
