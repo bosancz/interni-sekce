@@ -4,11 +4,6 @@ log_yellow() {
   echo -e "\033[1;33m$1\033[0m"
 }
 
-# Root
-log_yellow "Installing root dependencies..."
-
-npm ci
-
 # Frontend
 log_yellow "\n\nSetting up frontend..."
 
