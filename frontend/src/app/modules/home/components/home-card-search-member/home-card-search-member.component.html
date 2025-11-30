@@ -9,7 +9,7 @@
 		></ion-searchbar>
 
 		<ion-list *ngIf="members?.length">
-			<ion-item *ngFor="let member of members" [routerLink]="['/databaze', member.id]" [detail]="true">
+			<ion-item *ngFor="let member of members" [routerLink]="['/databaze/clenove', member.id]" [detail]="true">
 				<ion-label>
 					<h3>{{ member.nickname || member.firstName || "?" }}</h3>
 					<p>
@@ -23,6 +23,6 @@
 
 		<p *ngIf="!searching && members && !members.length" class="m-0 mt-2 mb-3 text-center">Žádný člen nenalezen.</p>
 
-		<p *ngIf="!members?.length && searching" class="m-0 mt-2 mb-3 text-center">Vyhledávání&hellip;</p>
+		<p *ngIf="searching && !members?.length" class="m-0 mt-2 mb-3 text-center">Vyhledávání&hellip;</p>
 	</bo-card-content>
 </bo-card>

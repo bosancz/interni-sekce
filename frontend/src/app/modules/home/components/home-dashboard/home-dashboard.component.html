@@ -1,41 +1,31 @@
-<bo-page-header title="Přehled">
-	<img src="assets/img/logo.svg" alt="Logo" height="56" slot="start" />
-
-	<div slot="end">
-		@if (user | async; as user) {
-			<bo-avatar [initials]="user.member! | member: 'initials'" (click)="openAccountMenu($event)" />
-		}
-	</div>
-</bo-page-header>
-
 <bo-page-content [padding]="true">
 	<!-- <bo-home-menu *ngIf="!isLg"></bo-home-menu> -->
 	<div class="p-1 p-lg-3">
 		<div class="row no-gutters">
 			<div class="col-lg-6 col-xl-8 pr-lg-2">
 				<div class="row">
-					<div class="col-6 mb-4">
+					<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
 						<bo-card routerLink="/akce">
 							<bo-card-header class="p-3">
 								<bo-card-title>Akce</bo-card-title>
 							</bo-card-header>
 						</bo-card>
 					</div>
-					<div class="col-6 mb-4">
+					<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
 						<bo-card routerLink="/program">
 							<bo-card-header class="p-3">
 								<bo-card-title>Program</bo-card-title>
 							</bo-card-header>
 						</bo-card>
 					</div>
-					<div class="col-6 mb-4">
+					<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
 						<bo-card routerLink="/galerie">
 							<bo-card-header class="p-3">
 								<bo-card-title>Galerie</bo-card-title>
 							</bo-card-header>
 						</bo-card>
 					</div>
-					<div class="col-6 mb-4">
+					<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
 						<bo-card routerLink="/databaze">
 							<bo-card-header class="p-3">
 								<bo-card-title>Databáze</bo-card-title>
@@ -43,18 +33,28 @@
 						</bo-card>
 					</div>
 				</div>
-				@if (isPortrait) {
-					<bo-home-card-search-member class="mb-3 mb-lg-3"></bo-home-card-search-member>
-				}
-				<bo-home-calendar [months]="3" class="mb-1 mb-lg-3"></bo-home-calendar>
-			</div>
 
+				<bo-home-card-search-member class="d-lg-none mb-3 mb-lg-3"></bo-home-card-search-member>
+
+				<div class="row pl-lg-2">
+					<div class="col-12 col-lg-6">
+						<bo-home-card-my-events class="mb-3 mb-lg-3"></bo-home-card-my-events>
+					</div>
+					<div class="col-12 col-lg-6">
+						<bo-home-card-noleader-events class="mb-3 mb-lg-3"></bo-home-card-noleader-events>
+					</div>
+				</div>
+			</div>
 			<div class="col-lg-6 col-xl-4 pl-lg-2">
-				@if (!isPortrait) {
-					<bo-home-card-search-member class="mb-3 mb-lg-3"></bo-home-card-search-member>
-				}
-				<bo-home-card-my-events class="mb-3 mb-lg-3"></bo-home-card-my-events>
-				<bo-home-card-noleader-events class="mb-3 mb-lg-3"></bo-home-card-noleader-events>
+				<bo-home-card-search-member class="d-none d-lg-block mb-3 mb-lg-3"></bo-home-card-search-member>
+
+				<bo-event-calendar
+					[dateFrom]="dateFrom"
+					[dateTill]="dateTill"
+					[events]="events"
+					[cpv]="true"
+					[headingLevel]="3"
+				></bo-event-calendar>
 			</div>
 		</div>
 	</div>

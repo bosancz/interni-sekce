@@ -10,6 +10,7 @@ import { SDK } from "src/sdk";
 })
 export class HomeCardNoleaderEventsComponent implements OnInit {
 	events: SDK.EventResponseWithLinks[] = [];
+	hasMore: boolean = false;
 
 	constructor(private api: ApiService) {}
 
@@ -19,6 +20,8 @@ export class HomeCardNoleaderEventsComponent implements OnInit {
 
 	async loadNoLeaderEvents() {
 		// TODO: list only noleader events
-		this.events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		const events = await this.api.EventsApi.listEvents({ limit: 6, noleader: true }).then((res) => res.data);
+		this.hasMore = events.length > 5;
+		this.events = events.slice(0, 5);
 	}
 }

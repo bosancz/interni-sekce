@@ -9,6 +9,7 @@ import { ActionButtonsComponent } from "./components/action-buttons/action-butto
 import { AddButtonComponent } from "./components/add-button/add-button.component";
 import { AdminTableComponent } from "./components/admin-table/admin-table.component";
 import { AvatarComponent } from "./components/avatar/avatar.component";
+import { ButtonComponent } from "./components/button/button.component";
 import { CardContentComponent } from "./components/card-content/card-content.component";
 import { CardFooterComponent } from "./components/card-footer/card-footer.component";
 import { CardHeaderComponent } from "./components/card-header/card-header.component";
@@ -119,6 +120,7 @@ register();
 		EditButtonSelectComponent,
 		PageHeaderActionsComponent,
 		AvatarComponent,
+		ButtonComponent,
 	],
 	exports: [
 		FormsModule,
@@ -179,6 +181,7 @@ register();
 		EditButtonSelectComponent,
 		PageHeaderActionsComponent,
 		AvatarComponent,
+		ButtonComponent,
 	],
 	providers: [DatePipe, provideCharts(withDefaultRegisterables())],
 })

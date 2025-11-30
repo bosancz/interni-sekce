@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { DateTime } from "luxon";
 import { ApiService } from "src/app/services/api.service";
 import { SDK } from "src/sdk";
@@ -10,12 +10,10 @@ import { SDK } from "src/sdk";
 	standalone: false,
 })
 export class HomeCalendarComponent implements OnInit {
-	dateFrom = DateTime.local();
-	dateTill = DateTime.local().plus({ months: 1 });
+	dateFrom = DateTime.local().minus({ weeks: 2 });
+	dateTill = DateTime.local().plus({ years: 1 });
 
 	events: SDK.EventResponseWithLinks[] = [];
-
-	@Input() months: number = 1;
 
 	constructor(private api: ApiService) {}
 
@@ -27,8 +25,6 @@ export class HomeCalendarComponent implements OnInit {
 		const options: any = {
 			sort: "dateFrom",
 		};
-
-		this.dateTill = DateTime.local().plus({ months: 1 });
 
 		options.filter = {
 			dateTill: { $gte: this.dateFrom.toISODate() },
