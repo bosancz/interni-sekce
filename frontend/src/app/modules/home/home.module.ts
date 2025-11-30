@@ -10,15 +10,13 @@ import { HomeCardSearchMemberComponent } from "./components/home-card-search-mem
 import { HomeDashboardComponent } from "./components/home-dashboard/home-dashboard.component";
 import { HomeMemberSearchComponent } from "./components/home-member-search/home-member-search.component";
 import { HomeMenuComponent } from "./components/home-menu/home-menu.component";
+import { HomeMyComponent } from "./components/home-my/home-my.component";
 import { HomeRoutingModule } from "./home-routing.module";
-import { HomeMyEventsComponent } from "./pages/home-my-events/home-my-events.component";
 import { HomeComponent } from "./pages/home/home.component";
-import { HomeMyComponent } from './components/home-my/home-my.component';
 
 @NgModule({
 	declarations: [
 		HomeDashboardComponent,
-		HomeMyEventsComponent,
 		HomeMenuComponent,
 		HomeCardNoleaderEventsComponent,
 		HomeCalendarComponent,
@@ -28,7 +26,7 @@ import { HomeMyComponent } from './components/home-my/home-my.component';
 		DarkModeToggleComponent,
 		AccountMenuComponent,
 		HomeComponent,
-  HomeMyComponent,
+		HomeMyComponent,
 	],
 	imports: [CommonModule, HomeRoutingModule, SharedModule],
 })
