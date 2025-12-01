@@ -6,7 +6,9 @@
   - [Spuštění vývojového prostředí](#spuštění-vývojového-prostředí)
 - [Vývoj](#vývoj)
   - [Struktura repozitáře](#struktura-repozitáře)
-  - [Migrace databáze](#migrace-databáze)
+  - [Sdílení typů mezi frontendem a backendem](#sdílení-typů-mezi-frontendem-a-backendem)
+  - [Nastavení oprávnění](#nastavení-oprávnění)
+  - [Databázové migrace](#databázové-migrace)
 
 ## Instalace
 
@@ -127,12 +129,100 @@ interni-sekce/frontend/
 │   ├── assets/                 # Statické soubory (obrázky, ikony, atd.)
 │   ├── environments/           # Konfigurační soubory pro prostředí
 │   ├── helpers/                # Pomocné funkce a utility
-│   ├── sdk/                    # Vygenerované API klienty
+│   ├── sdk/                    # Vygenerovaný API klient
 │   └── styles/                 # Globální styly
 └── package.json                # NPM skripty a závislosti
 ```
 
-### Migrace databáze
+### Sdílení typů mezi frontendem a backendem
+
+Veškeré sdílení typů probíhá pomocí OpenAPI. Backend definuje API pomocí typů a dekorátorů (`@nestjs/swagger`), následně se pomocí nástroje `openapi-generator-cli` vygenerují typy a klient pro frontend. Ten je umístěn ve složce `frontend/src/sdk`.
+
+Pro aktualizaci vygenerovaného SDK musíš mít **spuštěný backend** a následně spusť ve `frontend/` příkaz:
+
+```bash
+npm run generate:sdk
+```
+
+### Nastavení oprávnění
+
+Oprávnění se definují v backendu ve složkách `acl`. Tato oprávnění se následně přiřadí k metodám v kontrolerech pomocí dekorátoru `@AcLinks(NázevOprávnění)` a uvnitř metody se oprávnění ověří pomocí volání `NázevOprávnění.canOrThrow(user, document)`.
+
+Pomocí dekorátoru `@AcLinks` se frontendu předávají informace o oprávněních, které uživatel nad konkrétnimi dokumenty má, aby se podle toho uživateli zobrazily nebo skryly určité funkce a prvky UI.
+
+Rozdělují se dva typy oprávnění:
+
+- **allowed** - kdo má oprávnění k dané akci (může být `true`, `false` nebo funkce)
+- **applicable** - pokud je daná akce relevantní pro daný dokument (může být `true`, `false` nebo funkce)
+
+Vzorové oprávnění:
+
+```typescript
+export const EventEditPermission = new Permission({
+	linkTo: EventResponse, // připoj informaci o oprávěnní ke každému endpointu, který vrací data typu EventResponse
+
+	allowed: {
+		admin: true, // admin má povoleno pro všechny eventy
+		program: true, // program má povoleno pro všechny eventy
+
+		// vedoucí má povoleno pro eventy, kde je vedoucím
+		// `doc` je typu EventResponse
+		// `req` je typu Express.Request
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
+
+	applicable: ({ doc }) => !doc.deletedAt, // smazané eventy nelze upravovat
+});
+```
+
+Vzorová metoda:
+
+```typescript
+@Controller("events")
+@AcController()
+@ApiTags("Events")
+export class EventsController {
+	constructor(private events: EventsRepository) {} // vyžádej si repozitář pro práci s eventy
+
+	@Patch(":id") // endpoint používá HTTP metodu PATCH
+	@HttpCode(204) // při úspěchu vrací HTTP status 204 No Content
+	@AcLinks(EventEditPermission) // připoj údaje oprávnění k tomuto endpointu
+	async updateEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventUpdateBody): Promise<void> {
+		// načti event z databáze
+		const event = await this.events.getEvent(id, { leaders: true });
+		if (!event) throw new NotFoundException();
+
+		// ověř oprávnění
+		EventEditPermission.canOrThrow(req, event);
+
+		// proveď aktualizaci eventu
+		await this.events.updateEvent(id, body);
+	}
+
+	// ...
+}
+```
+
+Vzorový obsah odpovědi s oprávněními:
+
+```json
+{
+	"id": 1,
+	"name": "Neočekávaný dýchánek",
+	// další data eventu...
+	"_links": {
+		"updateEvent": {
+			// název metody v kontroleru
+			"href": "https://next.interni.bosan.cz/api/events/10062", // URL endpointu (používáme třeba pro zjištění URL přihlášky)
+			"allowed": true, // uživatel má oprávnění volat tento endpoint
+			"applicable": true // tento endpoint je relevantní pro tento dokument
+		}
+		// ...
+	}
+}
+```
+
+### Databázové migrace
 
 #### Vytvoření nové migrace
 

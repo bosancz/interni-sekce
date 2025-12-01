@@ -6,7 +6,7 @@
     "build": "ng build --configuration production",
     "dev": "ng serve",
     "dev:test-server": "ng serve --configuration=test-server",
-    "sdk:generate": "openapi-sdk -i http://127.0.0.1:3000/api/openapi-json -o src/sdk"
+    "generate:sdk": "openapi-sdk -i http://127.0.0.1:3000/api/openapi-json -o src/sdk"
   },
   "dependencies": {
     "@angular-devkit/build-angular": "^19.1.6",
