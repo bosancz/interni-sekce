@@ -216,7 +216,7 @@ Vzor pro nastavení oprávnění:
   ```
 
 - obsah odpovědi s oprávněními:
-  ```json
+  ```javascript
   {
   	"id": 1,
   	"name": "Neočekávaný dýchánek",
