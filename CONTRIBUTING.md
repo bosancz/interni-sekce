@@ -59,6 +59,12 @@ Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a 
 
 ### Instalace závislostí
 
+V terminálu v kořenové složce repozitáře spusť:
+
+```bash
+npm install
+```
+
 > Tím se spustí skript, který:
 >
 > - nainstaluje kořenové závislosti
@@ -74,7 +80,7 @@ V terminálu v kořenové složce repozitáře spusť:
 npm run dev
 ```
 
-> Tím se spustí backend na [http://localhost:3000](http://localhost:3000) a frontend na [http://localhost:4200](http://localhost:4200). Oboje ve vývojovém režimu, kdy se při změně kódu stránka automaticky aktualizuje.
+> Tím se spustí backend (BE) na [http://localhost:3000](http://localhost:3000) a frontend (FE) na [http://localhost:4200](http://localhost:4200). Oboje ve vývojovém režimu, kdy se při změně kódu stránka automaticky aktualizuje.
 
 > Pokud jsi použil devcontainer, bude ještě na [http://localhost:8081](http://localhost:8081) dostupný pgweb pro prohlížení databáze.
 
@@ -152,75 +158,80 @@ Pomocí dekorátoru `@AcLinks` se frontendu předávají informace o oprávněn�
 
 Rozdělují se dva typy oprávnění:
 
-- **allowed** - kdo má oprávnění k dané akci (může být `true`, `false` nebo funkce)
-- **applicable** - pokud je daná akce relevantní pro daný dokument (může být `true`, `false` nebo funkce)
+- **allowed** - Kdo má oprávnění k dané akci (může být `true`, `false` nebo funkce)
+- **applicable** - Pokud je daná akce relevantní pro daný dokument (může být `true`, `false` nebo funkce). Příkladem je akce, která je již v programu a tak ji nelze publikovat.
 
-Vzorové oprávnění:
+Vzor pro nastavení oprávnění:
 
-```typescript
-export const EventEditPermission = new Permission({
-	linkTo: EventResponse, // připoj informaci o oprávěnní ke každému endpointu, který vrací data typu EventResponse
+- Oprávnění v souboru `events.acl.ts`:
 
-	allowed: {
-		admin: true, // admin má povoleno pro všechny eventy
-		program: true, // program má povoleno pro všechny eventy
+  ```typescript
+  export const EventEditPermission = new Permission({
+  	linkTo: EventResponse, // připoj informaci o oprávěnní ke každému endpointu, který vrací data typu EventResponse
 
-		// vedoucí má povoleno pro eventy, kde je vedoucím
-		// `doc` je typu EventResponse
-		// `req` je typu Express.Request
-		vedouci: ({ doc, req }) => isMyEvent(doc, req),
-	},
+  	allowed: {
+  		admin: true, // admin má povoleno pro všechny akce
+  		program: true, // správce programu má povoleno pro všechny akce
 
-	applicable: ({ doc }) => !doc.deletedAt, // smazané eventy nelze upravovat
-});
-```
+  		// vedoucí má povoleno pro akce, kde je vedoucím
+  		//  - `doc` je typu EventResponse
+  		//  - `req` je typu Express.Request (v req.user jsou data o uživateli)
+  		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+  	},
 
-Vzorová metoda:
+  	// smazané akce nelze upravovat
+  	// - `doc` je typu EventResponse
+  	applicable: ({ doc }) => !doc.deletedAt, // smazané akce nelze upravovat
+  });
+  ```
 
-```typescript
-@Controller("events")
-@AcController()
-@ApiTags("Events")
-export class EventsController {
-	constructor(private events: EventsRepository) {} // vyžádej si repozitář pro práci s eventy
+  💡 Typ dat pro parametr `doc` se odvozuje z typu připojeného v `linkTo`, lze vybrat i typ pomocí generik, např. `new Permission<{ name: string }>({...})`, nicméně to musí být podtyp typu připojeného v `linkTo`.
 
-	@Patch(":id") // endpoint používá HTTP metodu PATCH
-	@HttpCode(204) // při úspěchu vrací HTTP status 204 No Content
-	@AcLinks(EventEditPermission) // připoj údaje oprávnění k tomuto endpointu
-	async updateEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventUpdateBody): Promise<void> {
-		// načti event z databáze
-		const event = await this.events.getEvent(id, { leaders: true });
-		if (!event) throw new NotFoundException();
+- Metoda v kontroleru `events.controller.ts`:
 
-		// ověř oprávnění
-		EventEditPermission.canOrThrow(req, event);
+  ```typescript
+  @Controller("events")
+  @AcController()
+  @ApiTags("Events")
+  export class EventsController {
+  	constructor(private events: EventsRepository) {} // vyžádej si repozitář pro práci s eventy
 
-		// proveď aktualizaci eventu
-		await this.events.updateEvent(id, body);
-	}
+  	@Patch(":id") // endpoint používá HTTP metodu PATCH
+  	@HttpCode(204) // při úspěchu vrací HTTP status 204 No Content
+  	@AcLinks(EventEditPermission) // připoj údaje oprávnění k tomuto endpointu
+  	async updateEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventUpdateBody): Promise<void> {
+  		// načti event z databáze
+  		const event = await this.events.getEvent(id, { leaders: true });
+  		if (!event) throw new NotFoundException();
 
-	// ...
-}
-```
+  		// ověř oprávnění
+  		EventEditPermission.canOrThrow(req, event);
 
-Vzorový obsah odpovědi s oprávněními:
+  		// proveď aktualizaci eventu
+  		await this.events.updateEvent(id, body);
+  	}
 
-```json
-{
-	"id": 1,
-	"name": "Neočekávaný dýchánek",
-	// další data eventu...
-	"_links": {
-		"updateEvent": {
-			// název metody v kontroleru
-			"href": "https://next.interni.bosan.cz/api/events/10062", // URL endpointu (používáme třeba pro zjištění URL přihlášky)
-			"allowed": true, // uživatel má oprávnění volat tento endpoint
-			"applicable": true // tento endpoint je relevantní pro tento dokument
-		}
-		// ...
-	}
-}
-```
+  	// ...
+  }
+  ```
+
+- obsah odpovědi s oprávněními:
+  ```json
+  {
+  	"id": 1,
+  	"name": "Neočekávaný dýchánek",
+  	// další data eventu...
+  	"_links": {
+  		// updateEvent = název metody v kontroleru tj. i ve frontendovém SDK
+  		"updateEvent": {
+  			"href": "https://next.interni.bosan.cz/api/events/10062", // URL endpointu (třeba pro zjištění URL přihlášky)
+  			"allowed": true, // uživatel má oprávnění volat tento endpoint
+  			"applicable": true // tento endpoint je relevantní pro tento dokument
+  		}
+  		// ...
+  	}
+  }
+  ```
 
 ### Databázové migrace
 
