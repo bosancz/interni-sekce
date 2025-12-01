@@ -9,8 +9,8 @@ import { UsersViewComponent } from "./pages/users-view/users-view.component";
 const routes: Routes = [
 	{ path: "vytvorit", component: UsersCreateComponent },
 
-	{ path: ":user/upravit", component: UsersEditComponent },
-	{ path: ":user", component: UsersViewComponent },
+	{ path: "uzivatele/:user/upravit", component: UsersEditComponent },
+	{ path: "uzivatele/:user", component: UsersViewComponent },
 
 	{ path: "", component: UsersListComponent },
 ];

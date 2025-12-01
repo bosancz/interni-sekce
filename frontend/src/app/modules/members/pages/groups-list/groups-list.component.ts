@@ -19,7 +19,7 @@ export class GroupsListComponent implements ViewWillEnter {
 
 	actions: Action[] = [
 		{
-			text: "Přidat",
+			text: "Nový oddíl",
 			icon: "add-outline",
 			pinned: true,
 			handler: () => this.navController.navigateForward(["vytvorit"], { relativeTo: this.route }),

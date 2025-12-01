@@ -1,24 +1,21 @@
-<h3>{{ (user | async)!.login }}</h3>
+<ion-list>
+	<ion-item (click)="navigate('/ucet')">
+		<ion-icon slot="start" name="person"></ion-icon>
+		<ion-label>Můj účet</ion-label>
+	</ion-item>
 
-<ul>
-	<li>
-		<a routerLink="/ucet" routerDirection="root" routerLinkActive="active">
-			<ion-icon name="person"></ion-icon> Nastavení
-		</a>
-	</li>
-	<li>
-		<a routerLink="/admin" routerDirection="root" routerLinkActive="active">
-			<ion-icon name="settings"></ion-icon> Administrace
-		</a>
-	</li>
+	<ion-item (click)="navigate('/admin')">
+		<ion-icon slot="start" name="settings"></ion-icon>
+		<ion-label>Administrace</ion-label>
+	</ion-item>
 
-	<li>
-		<a (click)="logout()" routerDirection="root" routerLinkActive="active">
-			<ion-icon name="log-out"></ion-icon>
-			Odhlásit se
-		</a>
-	</li>
-</ul>
+	<ion-item (click)="logout(); this.close()">
+		<ion-icon slot="start" name="log-out"></ion-icon>
+		<ion-label>Odhlásit se</ion-label>
+	</ion-item>
+</ion-list>
 
-<bo-dark-mode-toggle></bo-dark-mode-toggle>
-<p class="version mt-2">Verze {{ version }}</p>
+<div class="bottom">
+	<bo-dark-mode-toggle></bo-dark-mode-toggle>
+	<p class="version">Verze {{ version }}</p>
+</div>
