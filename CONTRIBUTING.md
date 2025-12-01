@@ -82,25 +82,54 @@ npm run dev
 
 ```
 interni-sekce/
-  ├── !old/                  # Starý kód interní sekce (ExpressJS + MongoDB)
-  ├── backend/               # Kód backendu (NestJS + PostgreSQL)
-  ├── frontend/              # Kód frontendu (Angular)
-  └── scripts/               # Skripty pro vývoj a nasazení
+├── !old/                  # Starý kód interní sekce (ExpressJS + MongoDB)
+├── backend/               # Kód backendu (NestJS + PostgreSQL)
+├── frontend/               # Kód frontendu (Angular)
+├── scripts/               # Skripty pro vývoj a nasazení
+└── package.json           # Kořenové NPM skripty a závislosti
 ```
 
 #### backend/
 
 ```
-backend/
+interni-sekce/backend/
 ├── src/
-
+│   ├── access-control/    # Kontrola přístupu a oprávnění
+│   ├── api/               # API endpointy
+│   ├── auth/              # Autentizace a autorizace
+│   ├── database/          # Konfigurace databáze a migrace
+│   ├── helpers/           # Pomocné funkce
+│   ├── models/            # Databázové entity a modely
+│   └── mongo-import/      # Import dat z MongoDB
+├── test/                  # E2E testy
+├── .env                   # Konfigurace prostředí (zejména připojení k databázi)
+├── .env.template          # Šablona konfigurace prostředí
+└── package.json           # NPM skripty a závislosti
 ```
 
 #### frontend/
 
 ```
-frontend/
+interni-sekce/frontend/
 ├── src/
+│   ├── app/
+│   │   ├── config/             # Statická konfigurace aplikace
+│   │   ├── core/               # Kořenové komponenty
+│   │   ├── error-handlers/     # Zpracování chyb
+│   │   ├── modules/            # Funkční moduly aplikace
+│   │   ├── schema/             # Schémata a validace
+│   │   ├── services/           # Služby
+│   │   ├── shared/             # Sdílené komponenty a moduly
+│   │   ├── app.component.ts    # Kořenová komponenta aplikace
+│   │   ├── app.component.html  # HTML šablona kořenové komponenty
+│   │   ├── app.component.scss  # Styly kořenové komponenty
+│   │   └── app.module.ts       # Kořenový modul aplikace
+│   ├── assets/                 # Statické soubory (obrázky, ikony, atd.)
+│   ├── environments/           # Konfigurační soubory pro prostředí
+│   ├── helpers/                # Pomocné funkce a utility
+│   ├── sdk/                    # Vygenerované API klienty
+│   └── styles/                 # Globální styly
+└── package.json                # NPM skripty a závislosti
 ```
 
 ### Migrace databáze
