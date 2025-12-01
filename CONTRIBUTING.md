@@ -65,12 +65,12 @@ V terminálu v kořenové složce repozitáře spusť:
 npm install
 ```
 
-> Tím se spustí skript, který:
->
-> - nainstaluje kořenové závislosti
-> - nainstaluje závislosti frontendu
-> - nainstaluje závislosti backendu
-> - spustí migrace databáze
+Tím se spustí skript, který:
+
+ - nainstaluje kořenové závislosti
+ - nainstaluje závislosti frontendu
+ - nainstaluje závislosti backendu
+ - spustí migrace databáze
 
 ### Spuštění pro vývoj
 
@@ -80,9 +80,9 @@ V terminálu v kořenové složce repozitáře spusť:
 npm run dev
 ```
 
-> Tím se spustí backend (BE) na [http://localhost:3000](http://localhost:3000) a frontend (FE) na [http://localhost:4200](http://localhost:4200). Oboje ve vývojovém režimu, kdy se při změně kódu stránka automaticky aktualizuje.
+Tím se spustí backend (BE) na [http://localhost:3000](http://localhost:3000) a frontend (FE) na [http://localhost:4200](http://localhost:4200). Oboje ve vývojovém režimu, kdy se při změně kódu stránka automaticky aktualizuje.
 
-> Pokud jsi použil devcontainer, bude ještě na [http://localhost:8081](http://localhost:8081) dostupný pgweb pro prohlížení databáze.
+Pokud jsi použil devcontainer, bude ještě na [http://localhost:8081](http://localhost:8081) dostupný pgweb pro prohlížení databáze. Samotná databáze pak bude na `localhost:5432`.
 
 ## Vývoj
 
