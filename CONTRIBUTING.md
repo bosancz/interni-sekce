@@ -240,10 +240,10 @@ Vzor pro nastavení oprávnění:
 Migrace databáze se tvoří pomocí TypeORM. Pro vytvoření nové migrace spusť v terminálu v složce `backend`:
 
 ```bash
-npm run migrations:generate --name nazev-migrace
+npm run migrations:generate --name=nazev-migrace
 ```
 
-Tím se vytvoří nový soubor s migrací ve složce `backend/src/migrations`. Tento soubor bude obsahovat příkazy, které změní strukturu databáze tak, aby odpovídala aktuálním entitám v kódu.
+Tím se vytvoří nový soubor s migrací ve složce `backend/src/database/migrations`. Tento soubor bude obsahovat příkazy, které změní strukturu databáze tak, aby odpovídala aktuálním entitám v kódu.
 
 ⚠️ Vygenerovaný kód migrace je potřeba zkontrolovat a případně upravit, protože automatická generace nemusí vždy správně odhadnout všechny změny.
 
