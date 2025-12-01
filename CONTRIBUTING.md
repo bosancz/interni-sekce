@@ -3,7 +3,7 @@
 - [Instalace](#instalace)
   - [Vývojové prostředí](#vývojové-prostředí)
   - [Instalace závislostí](#instalace-závislostí)
-  - [Spuštění vývojového prostředí](#spuštění-vývojového-prostředí)
+  - [Spuštění pro vývoj](#spuštění-pro-vývoj)
 - [Vývoj](#vývoj)
   - [Struktura repozitáře](#struktura-repozitáře)
   - [Sdílení typů mezi frontendem a backendem](#sdílení-typů-mezi-frontendem-a-backendem)
@@ -72,7 +72,7 @@ npm install
 > - nainstaluje závislosti backendu
 > - spustí migrace databáze
 
-### Spuštění vývojového prostředí
+### Spuštění pro vývoj
 
 V terminálu v kořenové složce repozitáře spusť:
 
@@ -249,10 +249,16 @@ Tím se vytvoří nový soubor s migrací ve složce `backend/src/database/migra
 
 #### Spuštění migrací
 
-Pro spuštění všech neprovedených migrací spusť v terminálu v složce `backend`:
+Pro spuštění **všech** neprovedených migrací spusť v terminálu v složce `backend`:
 
 ```bash
 npm run migrations:run
 ```
 
-Tím se aplikují všechny migrace, které ještě nebyly provedeny, na aktuální databázi.
+#### Vrácení migrace
+
+Pro vrácení **jedné** předchozí migrace spusť v terminálu v složce `backend`:
+
+```bash
+npm run migrations:revert
+```
