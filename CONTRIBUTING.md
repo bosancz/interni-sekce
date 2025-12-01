@@ -167,7 +167,7 @@ Vzor pro nastavení oprávnění:
 
   ```typescript
   export const EventEditPermission = new Permission({
-  	linkTo: EventResponse, // připoj informaci o oprávěnní ke každému endpointu, který vrací data typu EventResponse
+  	linkTo: EventResponse, // připoj informaci o oprávnění ke každému endpointu, který vrací data typu EventResponse
 
   	allowed: {
   		admin: true, // admin má povoleno pro všechny akce
@@ -224,7 +224,7 @@ Vzor pro nastavení oprávnění:
   	"_links": {
   		// updateEvent = název metody v kontroleru tj. i ve frontendovém SDK
   		"updateEvent": {
-  			"href": "https://next.interni.bosan.cz/api/events/10062", // URL endpointu (třeba pro zjištění URL přihlášky)
+  			"href": "https://next.interni.bosan.cz/api/events/1", // URL endpointu (třeba pro zjištění URL přihlášky)
   			"allowed": true, // uživatel má oprávnění volat tento endpoint
   			"applicable": true // tento endpoint je relevantní pro tento dokument
   		}
@@ -240,7 +240,7 @@ Vzor pro nastavení oprávnění:
 Migrace databáze se tvoří pomocí TypeORM. Pro vytvoření nové migrace spusť v terminálu v složce `backend`:
 
 ```bash
-npm run migrations:generate -- --name nazev-migrace
+npm run migrations:generate --name nazev-migrace
 ```
 
 Tím se vytvoří nový soubor s migrací ve složce `backend/src/migrations`. Tento soubor bude obsahovat příkazy, které změní strukturu databáze tak, aby odpovídala aktuálním entitám v kódu.
