@@ -22,52 +22,33 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the updated source code
-        uses: actions/checkout@v4
-
-      - name: Build Docker image
-        uses: ./.github/actions/build-docker-image
-        with:
-          context: .
-          image-name: interni-sekce
-          retention-days: 1
-          build-args: |
-            VERSION=${{ github.sha }}
-            NG_CONFIGURATION=production
+    uses: ./.github/actions/build-docker-image
+    with:
+      context: .
+      image-name: interni-sekce
+      retention-days: 1
+      build-args: |
+        VERSION=${{ github.ref }}-${{ github.sha }}
+        NG_CONFIGURATION=production
 
   publish:
     name: Publish
     needs: build
-    runs-on: ubuntu-latest
-    outputs:
-      images: ${{ steps.publish.outputs.images }}
-    steps:
-      - name: Checkout the updated source code
-        uses: actions/checkout@v4
-
-      - name: Publish Docker image
-        id: publish
-        uses: ./.github/actions/publish-docker-image
-        with:
-          source-image-name: interni-sekce
-          publish-image-name: bosancz/interni-sekce
-          registry: ghcr.io
-          tag: test
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    uses: ./.github/actions/publish-docker-image
+    with:
+      source-image-name: interni-sekce
+      publish-image-name: bosancz/interni-sekce
+      registry: ghcr.io
+      tag: test
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
     name: Deploy
     needs: publish
-    runs-on: ubuntu-latest
-    steps:
-      - name: Tell the watchtower server there is a new image
-        env:
-          WATCHTOWER_URL: ${{ vars.WATCHTOWER_URL }}/v1/update?image=${{ needs.publish.outputs.images }}
-          WATCHTOWER_TOKEN: ${{ vars.WATCHTOWER_TOKEN }}
-        run: 'curl --fail --header "Authorization: Bearer $WATCHTOWER_TOKEN" $WATCHTOWER_URL'
+    uses: ./.github/workflows/deploy.yml
+    with:
+      images: ${{ needs.publish.outputs.images }}
 
   tag:
     name: Tag environment
