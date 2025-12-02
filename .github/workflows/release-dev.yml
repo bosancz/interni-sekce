@@ -1,4 +1,4 @@
-name: Deploy to NEXT environment
+name: Deploy to DEV environment
 
 on:
   workflow_dispatch:
@@ -56,4 +56,4 @@ jobs:
     needs: deploy
     uses: ./.github/workflows/tag.yml
     with:
-      tag: next
+      tag: dev
