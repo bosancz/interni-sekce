@@ -48,7 +48,7 @@
     "@angular/build": "^19.1.6",
     "@angular/cli": "^19.1.6",
     "@angular/compiler-cli": "^19.1.5",
-    "@angular/language-service": "^19.1.5",
+    "@angular/language-service": "^21.0.2",
     "@smallhillcz/openapi-sdk": "^2.1.0",
     "@types/file-saver": "^2.0.7",
     "@types/google.accounts": "^0.0.15",
