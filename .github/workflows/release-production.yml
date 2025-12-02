@@ -69,7 +69,7 @@ jobs:
       images: ${{ needs.publish.outputs.images }}
 
   tag:
-    name: Tag environment
+    name: Tag release
     needs:
       - version
       - deploy

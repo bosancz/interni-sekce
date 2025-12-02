@@ -52,7 +52,7 @@ jobs:
       images: ${{ needs.publish.outputs.images }}
 
   tag:
-    name: Tag environment
+    name: Tag release
     needs: deploy
     uses: ./.github/workflows/tag.yml
     with:

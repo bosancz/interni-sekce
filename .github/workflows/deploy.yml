@@ -21,6 +21,6 @@ jobs:
     steps:
       - name: Tell the watchtower server there is a new image
         env:
-          WATCHTOWER_URL: ${{ vars.WATCHTOWER_URL }}/v1/update?image=${{ inputs.images }}
+          WATCHTOWER_URL: ${{ vars.WATCHTOWER_URL }}?image=${{ inputs.images }}
           WATCHTOWER_TOKEN: ${{ vars.WATCHTOWER_TOKEN }}
         run: 'curl --fail --header "Authorization: Bearer $WATCHTOWER_TOKEN" $WATCHTOWER_URL'
