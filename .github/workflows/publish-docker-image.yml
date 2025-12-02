@@ -26,11 +26,9 @@ on:
     secrets:
       username:
         description: "Username for the container registry"
-        type: string
         required: true
       password:
         description: "Password for the container registry"
-        type: string
         required: true
     outputs:
       images:
