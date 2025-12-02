@@ -57,6 +57,7 @@ jobs:
       registry: ghcr.io
       tag: latest
       varsion: ${{ needs.version.outputs.new_tag }}
+    secrets:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 

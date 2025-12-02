@@ -40,6 +40,7 @@ jobs:
       publish-image-name: bosancz/interni-sekce
       registry: ghcr.io
       tag: test
+    secrets:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 
