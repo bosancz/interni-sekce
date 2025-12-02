@@ -34,7 +34,7 @@
     "czech-holidays": "^1.0.6",
     "docx": "^9.1.1",
     "file-saver": "^2.0.5",
-    "googleapis": "^162.0.0",
+    "googleapis": "^166.0.0",
     "inflected": "^2.1.0",
     "luxon": "^3.5.0",
     "marked": "^15.0.7",
