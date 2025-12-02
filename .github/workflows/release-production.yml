@@ -36,7 +36,7 @@ jobs:
   build:
     name: Build
     needs: version
-    uses: ./.github/actions/build-docker-image
+    uses: ./.github/workflows/build-docker-image.yml
     with:
       context: .
       image-name: interni-sekce
@@ -50,7 +50,7 @@ jobs:
     needs:
       - build
       - version
-    uses: ./.github/actions/publish-docker-image
+    uses: ./.github/workflows/publish-docker-image.yml
     with:
       source-image-name: interni-sekce
       publish-image-name: bosancz/interni-sekce
