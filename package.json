@@ -14,7 +14,8 @@
     "release": "git switch master && git push && git switch release && git merge master --ff-only && git push --follow-tags && git switch master",
     "release:patch": "git switch master && npm version patch && git push && npm run release",
     "release:minor": "git switch master && npm version minor && git push && npm run release",
-    "release:major": "git switch master && npm version major && git push && npm run release"
+    "release:major": "git switch master && npm version major && git push && npm run release",
+    "update-tags": "git fetch --tags --force origin"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.3.0",
