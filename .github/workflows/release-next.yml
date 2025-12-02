@@ -21,7 +21,7 @@ jobs:
 
   build:
     name: Build
-    uses: ./.github/workflows/build-docker-image.yml
+    uses: ./.github/workflows/build.yml
     with:
       context: .
       image-name: interni-sekce
@@ -33,7 +33,7 @@ jobs:
   publish:
     name: Publish
     needs: build
-    uses: ./.github/workflows/publish-docker-image.yml
+    uses: ./.github/workflows/publish.yml
     with:
       source-image-name: interni-sekce
       publish-image-name: bosancz/interni-sekce
@@ -49,6 +49,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       images: ${{ needs.publish.outputs.images }}
+    secrets: inherit
 
   tag:
     name: Tag release
