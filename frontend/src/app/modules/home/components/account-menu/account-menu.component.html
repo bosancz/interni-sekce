@@ -1,0 +1,21 @@
+<ion-list>
+	<ion-item (click)="navigate('/ucet')">
+		<ion-icon slot="start" name="person"></ion-icon>
+		<ion-label>Můj účet</ion-label>
+	</ion-item>
+
+	<ion-item (click)="navigate('/admin')">
+		<ion-icon slot="start" name="settings"></ion-icon>
+		<ion-label>Administrace</ion-label>
+	</ion-item>
+
+	<ion-item (click)="logout(); this.close()">
+		<ion-icon slot="start" name="log-out"></ion-icon>
+		<ion-label>Odhlásit se</ion-label>
+	</ion-item>
+</ion-list>
+
+<div class="bottom">
+	<bo-dark-mode-toggle></bo-dark-mode-toggle>
+	<p class="version">Verze {{ version }}</p>
+</div>

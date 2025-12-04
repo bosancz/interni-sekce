@@ -14,10 +14,15 @@
 @use "@ionic/angular/css/text-transformation.css";
 @use "@ionic/angular/css/flex-utils.css";
 
+@use "./variables" as *;
+
 ion-header.md {
 	ion-toolbar {
 		--ion-background-color: #333;
 		--ion-toolbar-color: #fff;
+	}
+	ion-title {
+		font-family: $font-san;
 	}
 }
 
@@ -66,4 +71,8 @@ ion-modal.dialog {
 	--height: fit-content;
 	--border-radius: 6px;
 	--box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+}
+
+ion-popover.transparent {
+	--background: transparent;
 }

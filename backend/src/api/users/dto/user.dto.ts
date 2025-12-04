@@ -19,3 +19,7 @@ export class UserResponse implements User {
 	@ApiPropertyOptional({ type: WithLinks(MemberResponse) })
 	member?: Member | null;
 }
+
+export class GetUserQueryDto {
+	includeMember?: boolean;
+}

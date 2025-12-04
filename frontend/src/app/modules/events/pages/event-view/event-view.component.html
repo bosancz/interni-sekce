@@ -1,4 +1,6 @@
-<bo-page-header [title]="event?.name" [actions]="actions" backUrl="/akce"></bo-page-header>
+<bo-page-header [title]="event?.name" backUrl="/akce">
+	<bo-page-header-actions [actions]="actions" [actionsHeader]="event?.name" />
+</bo-page-header>
 
 <bo-page-content [padding]="true">
 	<div class="row layout">

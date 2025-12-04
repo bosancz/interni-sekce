@@ -1,4 +1,6 @@
-<bo-page-header [title]="getFullName(member)" backUrl="/databaze" [actions]="actions"></bo-page-header>
+<bo-page-header [title]="getFullName(member)" backUrl="/databaze">
+	<bo-page-header-actions [actions]="actions" [actionsHeader]="getFullName(member)" />
+</bo-page-header>
 
 <bo-page-content [padding]="true">
 	<div class="row mt-3 mt-xxl-5 layout">

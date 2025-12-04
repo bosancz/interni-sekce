@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { shareReplay } from "rxjs";
 import { LocalStorageService } from "./local-storage.service";
 
 @Injectable({
@@ -7,7 +8,7 @@ import { LocalStorageService } from "./local-storage.service";
 export class DarkModeService {
 	private readonly darkModeKey = "isDarkMode";
 
-	readonly status = this.localStorage.watch<boolean>(this.darkModeKey);
+	readonly status = this.localStorage.watch<boolean>(this.darkModeKey).pipe(shareReplay(1));
 
 	constructor(private localStorage: LocalStorageService) {
 		this.status.subscribe((isDarkMode) => this.updateDarkMode(isDarkMode ?? false));

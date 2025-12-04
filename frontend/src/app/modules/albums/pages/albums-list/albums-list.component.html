@@ -1,4 +1,6 @@
-<bo-page-header title="Galerie" [actions]="actions" backUrl="/"></bo-page-header>
+<bo-page-header title="Galerie" backUrl="/">
+	<bo-page-header-actions [actions]="actions" actionsHeader="Galerie" />
+</bo-page-header>
 
 <bo-page-content>
 	<bo-filter [search]="true" (change)="onFilterChange($event)">

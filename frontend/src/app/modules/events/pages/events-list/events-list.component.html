@@ -1,4 +1,6 @@
-<bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions"></bo-page-header>
+<bo-page-header backUrl="/" title="Přehled akcí">
+	<bo-page-header-actions [actions]="actions" actionsHeader="Přehled akcí" />
+</bo-page-header>
 
 <bo-filter [search]="true" (change)="onFilterChange($event)">
 	<ion-item>
