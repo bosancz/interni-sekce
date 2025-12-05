@@ -56,7 +56,7 @@ jobs:
       publish-image-name: bosancz/interni-sekce
       registry: ghcr.io
       tag: latest
-      varsion: ${{ needs.version.outputs.new_tag }}
+      version: ${{ needs.version.outputs.new_tag }}
     secrets:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
