@@ -36,18 +36,14 @@ jobs:
         with:
           context: ${{ inputs.context }}
           tags: ${{ inputs.image-name }}:${{ github.sha }}
-          outputs: type=docker
+          outputs: type=docker,dest=${{ runner.temp }}/${{ inputs.image-name }}-docker-image.tar
           cache-from: type=gha,scope=${{ inputs.image-name }}
           cache-to: type=gha,mode=max,scope=${{ inputs.image-name }}
           build-args: ${{ inputs.build-args }}
-
-      - name: Save Docker image to tarball
-        shell: bash
-        run: docker save ${{ inputs.image-name }}:${{ github.sha }} -o ${{ inputs.image-name }}-docker-image.tar
-
+          
       - name: Upload Docker image tarball
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.image-name }}-docker-image
-          path: ${{ inputs.image-name }}-docker-image.tar
+          path: ${{ runner.temp }}/${{ inputs.image-name }}-docker-image.tar
           retention-days: ${{ inputs.retention-days }}
