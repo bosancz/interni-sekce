@@ -1,3 +1,5 @@
+@use "src/styles/variables";
+
 ion-header {
 	box-shadow: none;
 	ion-toolbar {
@@ -18,4 +20,15 @@ h1 {
 		--box-shadow: none;
 		--ion-background-color: var(--darkShade);
 	}
+}
+
+.environment {
+	text-transform: uppercase;
+	background: variables.$colorWarning;
+	font-family: Roboto, "Helvetica Neue", sans-serif;
+	padding: 0.2em 0.4em;
+	font-size: 0.6em;
+	border-radius: 4px;
+	vertical-align: 4px;
+	color: #fff;
 }

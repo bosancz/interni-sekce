@@ -20,9 +20,7 @@ export class HeaderComponent {
 
 	isLg = toSignal(this.platformService.isLg);
 
-	title = toSignal(
-		this.api.info.pipe(map((info) => "Bošán" + (info.environmentTitle ? ` ${info.environmentTitle}` : ""))),
-	);
+	environment = toSignal(this.api.info.pipe(map((info) => info.environmentTitle || "")));
 
 	constructor(
 		private readonly api: ApiService,

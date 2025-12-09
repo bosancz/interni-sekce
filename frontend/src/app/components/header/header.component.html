@@ -2,7 +2,12 @@
 	<ion-toolbar>
 		@if (!showSearch()) {
 			<a routerLink="/" slot="start"><img src="assets/img/logo.svg" alt="Logo" height="56" /></a>
-			<h1 slot="start">Bošán</h1>
+			<h1 slot="start">
+				Bošán
+				@if (environment()) {
+					<span class="environment">{{ environment() }}</span>
+				}
+			</h1>
 		}
 		<div class="search">
 			@if (isLg() || showSearch()) {

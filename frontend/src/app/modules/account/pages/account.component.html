@@ -1,17 +1,7 @@
-<ion-header>
-	<ion-toolbar>
-		<ion-buttons slot="start">
-			<ion-back-button defaultHref="/"></ion-back-button>
-		</ion-buttons>
-		<ion-title pageTitle>Můj účet</ion-title>
-		<ion-buttons slot="end">
-			<!-- <bo-action-buttons [actions]="actions" header="Členská databáze"></bo-action-buttons> -->
-		</ion-buttons>
-	</ion-toolbar>
-</ion-header>
+<bo-page-header title="Můj účet" />
 
-<ion-content>
-	<h2 class="m-3">Uživatelský účet</h2>
+<bo-page-content>
+	<h3 class="m-3">Uživatelský účet</h3>
 
 	<ion-list>
 		<ion-item>
@@ -29,7 +19,7 @@
 		</ion-item>
 	</ion-list>
 
-	<h2 class="m-3">Člen skupiny</h2>
+	<h3 class="m-3">Člen skupiny</h3>
 	<p *ngIf="!user?.member" class="ms-3 text-warning">Nespárováno s členským účtem</p>
 
 	<ion-list *ngIf="user?.member">
@@ -47,10 +37,10 @@
 		</ion-item>
 	</ion-list>
 
-	<h2 class="m-3 mt-4">Přihlašování</h2>
+	<h3 class="m-3 mt-4">Přihlašování</h3>
 	<bo-account-credentials></bo-account-credentials>
 
-	<h2 class="m-3 mt-4">Aplikace</h2>
+	<h3 class="m-3 mt-4">Aplikace</h3>
 	<div class="ms-3">
 		<bo-account-app></bo-account-app>
 	</div>
@@ -59,4 +49,4 @@
   <div class="ms-3 mb-5">
     <bo-account-notifications></bo-account-notifications>
   </div> -->
-</ion-content>
+</bo-page-content>
