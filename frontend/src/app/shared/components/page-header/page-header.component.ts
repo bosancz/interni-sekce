@@ -1,4 +1,7 @@
 import { Component, Input } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { PlatformService } from "src/app/services/platform.service";
+import { Action } from "../action-buttons/action-buttons.component";
 
 @Component({
 	selector: "bo-page-header",
@@ -8,10 +11,12 @@ import { Component, Input } from "@angular/core";
 })
 export class PageHeaderComponent {
 	@Input() title?: string | null;
+	@Input() actions?: Action[];
 
-	@Input() backUrl?: string | null;
+	isLg = toSignal(this.platformService.isLg);
+	isIos = toSignal(this.platformService.isIos);
 
 	viewActive: boolean = false;
 
-	constructor() {}
+	constructor(private readonly platformService: PlatformService) {}
 }

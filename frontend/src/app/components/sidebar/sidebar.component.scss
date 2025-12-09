@@ -1,0 +1,40 @@
+:host {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	--ion-item-background: transparent;
+	position: relative;
+}
+
+ion-header {
+	box-shadow: none;
+	ion-toolbar {
+		--background: var(--ion-color-light);
+		--color: var(--ion-color-dark);
+		--ion-toolbar-color: var(--ion-color-dark);
+	}
+}
+
+hr {
+	background-color: rgba(204, 204, 204, 0.25);
+	margin: 0 2em;
+	opacity: 1;
+}
+
+.bottom {
+	position: absolute;
+	bottom: 1rem;
+	width: 100%;
+	text-align: center;
+}
+// :host::after {
+// 	content: "";
+// 	position: absolute;
+// 	top: 50%;
+// 	right: 0;
+// 	display: block;
+// 	height: 50px;
+// 	width: 1px;
+// 	background-color: rgba(204, 204, 204, 0.25);
+// 	transform: translateY(-50%);
+// }

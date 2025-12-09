@@ -1,0 +1,21 @@
+ion-header {
+	box-shadow: none;
+	ion-toolbar {
+		--background: var(--ion-color-light);
+		--color: var(--ion-color-dark);
+		--ion-toolbar-color: var(--ion-color-dark);
+	}
+}
+
+h1 {
+	margin: 0;
+}
+
+.search {
+	max-width: 500px;
+	margin: 0 auto;
+	ion-searchbar {
+		--box-shadow: none;
+		--ion-background-color: var(--darkShade);
+	}
+}

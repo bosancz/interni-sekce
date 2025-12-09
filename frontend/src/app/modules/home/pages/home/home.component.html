@@ -1,14 +1,4 @@
-<bo-page-header [title]="title | async">
-	<img src="assets/img/logo.svg" alt="Logo" height="56" slot="start" routerLink="/" />
-
-	<div slot="end">
-		@if (user | async; as user) {
-			<bo-avatar [initials]="user.member! | member: 'initials'" (click)="openAccountMenu($event)" />
-		}
-	</div>
-</bo-page-header>
-
-<bo-page-content>
+<bo-page-content class="col">
 	@switch (view()) {
 		@case ("dashboard") {
 			<bo-home-dashboard></bo-home-dashboard>
@@ -22,10 +12,12 @@
 	}
 </bo-page-content>
 
-<bo-page-footer>
-	<bo-tabs defaultTab="dashboard" (change)="view.set($event)">
-		<bo-tab name="dashboard" label="Bošán" icon="apps-sharp"></bo-tab>
-		<bo-tab name="calendar" label="Kalendář" icon="calendar-sharp"></bo-tab>
-		<bo-tab name="my" label="Moje" icon="heart-sharp"></bo-tab>
-	</bo-tabs>
-</bo-page-footer>
+@if (!isLg()) {
+	<bo-page-footer>
+		<bo-tabs defaultTab="dashboard" (change)="view.set($event)">
+			<bo-tab name="dashboard" label="Bošán" icon="home-sharp"></bo-tab>
+			<bo-tab name="calendar" label="Kalendář" icon="calendar-sharp"></bo-tab>
+			<bo-tab name="my" label="Moje" icon="heart-sharp"></bo-tab>
+		</bo-tabs>
+	</bo-page-footer>
+}

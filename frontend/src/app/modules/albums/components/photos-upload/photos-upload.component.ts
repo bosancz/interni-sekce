@@ -9,8 +9,9 @@ import {
 	OnInit,
 	ViewChild,
 } from "@angular/core";
-import { ModalController, Platform } from "@ionic/angular";
+import { ModalController } from "@ionic/angular";
 import { ApiService } from "src/app/services/api.service";
+import { PlatformService } from "src/app/services/platform.service";
 import { SDK } from "src/sdk";
 
 interface PhotoUploadItem {
@@ -52,7 +53,7 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 		private api: ApiService,
 		private http: HttpClient,
 		private modalController: ModalController,
-		private platform: Platform,
+		private platformService: PlatformService,
 		private cdRef: ChangeDetectorRef,
 	) {}
 
@@ -65,7 +66,7 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	ngAfterViewInit() {
-		if (this.platform.is("mobile")) {
+		if (this.platformService.isMobile.value) {
 			this.isMobile = true;
 			this.photoInput.nativeElement.click();
 		}

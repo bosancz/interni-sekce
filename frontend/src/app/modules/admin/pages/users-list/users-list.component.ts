@@ -1,9 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { InfiniteScrollCustomEvent, Platform, ViewWillEnter } from "@ionic/angular";
+import { InfiniteScrollCustomEvent, ViewWillEnter } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { UserRoles } from "src/app/config/user-roles";
 import { ApiService } from "src/app/services/api.service";
+import { PlatformService } from "src/app/services/platform.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { FilterData } from "src/app/shared/components/filter/filter.component";
 import { SDK } from "src/sdk";
@@ -38,22 +39,20 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
 		private api: ApiService,
 		private route: ActivatedRoute,
 		private router: Router,
-		private platform: Platform,
+		private platformService: PlatformService,
 	) {}
 
 	ngOnInit(): void {
 		this.setActions();
-		this.updateView();
-		this.platform.resize.subscribe(() => this.updateView());
+
+		this.platformService.isPortrait.subscribe((isPortrait) => {
+			this.view = isPortrait ? "list" : "table";
+		});
 	}
 
 	ionViewWillEnter(): void {}
 
 	ngAfterViewInit() {}
-
-	private updateView() {
-		this.view = this.platform.isPortrait() ? "list" : "table";
-	}
 
 	async onFilterChange(filter: FilterData) {
 		this.filter = filter;

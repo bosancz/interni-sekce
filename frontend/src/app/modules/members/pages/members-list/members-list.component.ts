@@ -1,10 +1,11 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { InfiniteScrollCustomEvent, Platform, ViewWillEnter } from "@ionic/angular";
+import { InfiniteScrollCustomEvent, ViewWillEnter } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/config/member-roles";
 import { ApiService } from "src/app/services/api.service";
+import { PlatformService } from "src/app/services/platform.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { FilterData } from "src/app/shared/components/filter/filter.component";
@@ -40,7 +41,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		private route: ActivatedRoute,
 		private router: Router,
 		private toasts: ToastService,
-		private platform: Platform,
+		private platformService: PlatformService,
 	) {}
 
 	ngOnInit() {}
@@ -50,8 +51,9 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			this.setActions();
 		});
 
-		this.updateView();
-		this.platform.resize.pipe(untilDestroyed(this)).subscribe(() => this.updateView());
+		this.platformService.isPortrait.subscribe((isPortrait) => {
+			this.view = isPortrait ? "list" : "table";
+		});
 	}
 
 	ionViewWillEnter() {
@@ -125,10 +127,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	getAge(birthday: string) {
 		return Math.floor(-1 * DateTime.fromISO(birthday).diffNow("years").years).toFixed(0);
-	}
-
-	private updateView() {
-		this.view = this.platform.isPortrait() ? "list" : "table";
 	}
 
 	private setActions() {

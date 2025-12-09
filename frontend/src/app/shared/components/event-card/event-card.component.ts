@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { Platform } from "@ionic/angular";
 import { ApiService } from "src/app/services/api.service";
 import { SDK } from "src/sdk";
 
@@ -24,10 +23,7 @@ export class EventCardComponent implements OnInit {
 	@Output()
 	change = new EventEmitter<SDK.EventResponseWithLinks>();
 
-	constructor(
-		private api: ApiService,
-		public platform: Platform,
-	) {}
+	constructor(private api: ApiService) {}
 
 	ngOnInit() {}
 

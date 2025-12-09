@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from "@angular/core";
-import { Platform, PopoverController } from "@ionic/angular";
+import { PopoverController } from "@ionic/angular";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
 import { ApiService } from "src/app/services/api.service";
@@ -14,11 +14,7 @@ import { SDK } from "src/sdk";
 	standalone: false,
 })
 export class HomeDashboardComponent implements OnInit {
-	isLg: boolean = false;
-
 	view = signal("home");
-
-	isPortrait = this.platform.isPortrait();
 
 	dateFrom = DateTime.local();
 	dateTill = DateTime.local().plus({ months: 1 });
@@ -29,7 +25,6 @@ export class HomeDashboardComponent implements OnInit {
 
 	constructor(
 		private api: ApiService,
-		private platform: Platform,
 		private userService: UserService,
 		public popoverController: PopoverController,
 	) {}
@@ -52,9 +47,5 @@ export class HomeDashboardComponent implements OnInit {
 
 		// TODO: use options above
 		this.events = await this.api.EventsApi.listEvents().then((res) => res.data);
-	}
-
-	updateView() {
-		this.isLg = this.platform.width() >= 992;
 	}
 }

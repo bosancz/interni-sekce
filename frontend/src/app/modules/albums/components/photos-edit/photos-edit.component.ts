@@ -1,7 +1,8 @@
 import { Component, HostListener, Input, NgZone, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { AlertController, IonInput, ModalController, Platform, ViewWillLeave } from "@ionic/angular";
+import { AlertController, IonInput, ModalController, ViewWillLeave } from "@ionic/angular";
 import { ApiService } from "src/app/services/api.service";
+import { PlatformService } from "src/app/services/platform.service";
 import { SDK } from "src/sdk";
 import Swiper from "swiper";
 import { SwiperOptions } from "swiper/types";
@@ -25,7 +26,7 @@ export class PhotosEditComponent implements ViewWillLeave {
 	@ViewChild("captionInput") captionInput!: IonInput;
 
 	swiperConfig: SwiperOptions = {
-		navigation: this.platform.isLandscape(),
+		navigation: this.platformService.isLandscape.value,
 	};
 
 	swiper?: Swiper;
@@ -36,7 +37,7 @@ export class PhotosEditComponent implements ViewWillLeave {
 		private alertController: AlertController,
 		private route: ActivatedRoute,
 		private router: Router,
-		private platform: Platform,
+		private platformService: PlatformService,
 		private ngZone: NgZone,
 	) {}
 

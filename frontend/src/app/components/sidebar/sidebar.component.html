@@ -1,0 +1,27 @@
+<ion-list lines="none" mode="md">
+	<ion-item routerLink="/" [queryParams]="{ tab: 'dashboard' }">
+		<ion-icon name="home-sharp" class="me-3"></ion-icon>
+		<ion-label>Bošán</ion-label>
+	</ion-item>
+	<div class="ms-4">
+		<ion-item routerLink="akce">Akce</ion-item>
+		<ion-item routerLink="program">Program</ion-item>
+		<ion-item routerLink="galerie">Galerie</ion-item>
+		<ion-item routerLink="databaze">Databáze</ion-item>
+	</div>
+	<ion-item routerLink="/" [queryParams]="{ tab: 'calendar' }">
+		<ion-icon name="calendar-sharp" class="me-3"></ion-icon>
+		<ion-label>Kalendář</ion-label>
+	</ion-item>
+	<ion-item routerLink="/" [queryParams]="{ tab: 'my' }">
+		<ion-icon name="heart-sharp" class="me-3"></ion-icon>
+		<ion-label>Moje</ion-label>
+	</ion-item>
+</ion-list>
+<hr />
+<bo-account-menu></bo-account-menu>
+
+<div class="bottom">
+	<bo-dark-mode-toggle></bo-dark-mode-toggle>
+	<bo-version class="mt-2"></bo-version>
+</div>

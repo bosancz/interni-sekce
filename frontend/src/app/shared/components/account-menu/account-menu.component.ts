@@ -1,6 +1,5 @@
 import { Component } from "@angular/core";
 import { NavController, PopoverController } from "@ionic/angular";
-import { ApiService } from "src/app/services/api.service";
 import { LoginService } from "src/app/services/login.service";
 import { UserService } from "src/app/services/user.service";
 
@@ -12,21 +11,13 @@ import { UserService } from "src/app/services/user.service";
 })
 export class AccountMenuComponent {
 	user = this.userService.user;
-	environment?: string;
-	version?: string;
 
 	constructor(
 		private readonly userService: UserService,
 		private readonly loginService: LoginService,
-		private readonly api: ApiService,
 		private readonly popoverController: PopoverController,
 		private readonly navController: NavController,
-	) {
-		this.api.info.subscribe((info) => {
-			this.environment = info.environmentTitle;
-			this.version = info.version;
-		});
-	}
+	) {}
 
 	async navigate(path: string) {
 		await this.navController.navigateRoot([path]);
