@@ -6,7 +6,7 @@ import { map } from "rxjs";
 import { ApiService } from "src/app/services/api.service";
 import { PlatformService } from "src/app/services/platform.service";
 import { UserService } from "src/app/services/user.service";
-import { AccountMenuModalComponent } from "../../components/account-menu-modal/account-menu-modal.component";
+import { AccountMenuModalComponent } from "../../../../components/account-menu-modal/account-menu-modal.component";
 
 @Component({
 	selector: "bo-home",

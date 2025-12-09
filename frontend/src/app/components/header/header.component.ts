@@ -2,7 +2,7 @@ import { Component, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { PopoverController } from "@ionic/angular";
 import { map } from "rxjs";
-import { AccountMenuModalComponent } from "src/app/modules/home/components/account-menu-modal/account-menu-modal.component";
+import { AccountMenuModalComponent } from "src/app/components/account-menu-modal/account-menu-modal.component";
 import { ApiService } from "src/app/services/api.service";
 import { PlatformService } from "src/app/services/platform.service";
 import { UserService } from "src/app/services/user.service";
