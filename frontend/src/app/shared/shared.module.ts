@@ -5,6 +5,8 @@ import { RouterModule } from "@angular/router";
 import { IonicModule } from "@ionic/angular";
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from "ng2-charts";
 import { register } from "swiper/element/bundle";
+import { AccountMenuComponent } from "./components/account-menu/account-menu.component";
+import { ActionButtonsModalComponent } from "./components/action-buttons-modal/action-buttons-modal.component";
 import { ActionButtonsComponent } from "./components/action-buttons/action-buttons.component";
 import { AddButtonComponent } from "./components/add-button/add-button.component";
 import { AdminTableComponent } from "./components/admin-table/admin-table.component";
@@ -17,6 +19,7 @@ import { CardOpenButtonComponent } from "./components/card-open-button/card-open
 import { CardTitleComponent } from "./components/card-title/card-title.component";
 import { CardComponent } from "./components/card/card.component";
 import { CopyButtonComponent } from "./components/copy-button/copy-button.component";
+import { DarkModeToggleComponent } from "./components/dark-mode-toggle/dark-mode-toggle.component";
 import { DeleteButtonComponent } from "./components/delete-button/delete-button.component";
 import { DotComponent } from "./components/dot/dot.component";
 import { EditButtonDateRangeComponent } from "./components/edit-button-date-range/edit-button-date-range.component";
@@ -41,13 +44,13 @@ import { ModalLayoutComponent } from "./components/modal-layout/modal-layout.com
 import { ModalTemplateComponent } from "./components/modal-template/modal-template.component";
 import { PageContentComponent } from "./components/page-content/page-content.component";
 import { PageFooterComponent } from "./components/page-footer/page-footer.component";
-import { PageHeaderActionsComponent } from "./components/page-header-actions/page-header-actions.component";
 import { PageHeaderComponent } from "./components/page-header/page-header.component";
 import { PaginationComponent } from "./components/pagination/pagination.component";
 import { PhotoFaceComponent } from "./components/photo-face/photo-face.component";
 import { PhotoGalleryComponent } from "./components/photo-gallery/photo-gallery.component";
 import { TabComponent } from "./components/tab/tab.component";
 import { TabsComponent } from "./components/tabs/tabs.component";
+import { VersionComponent } from "./components/version/version.component";
 import { AlbumPipe } from "./pipes/album.pipe";
 import { DateRangePipe } from "./pipes/date-range.pipe";
 import { EventExpensePipe } from "./pipes/event-expense.pipe";
@@ -118,9 +121,12 @@ register();
 		EditButtonNameComponent,
 		EditButtonDateComponent,
 		EditButtonSelectComponent,
-		PageHeaderActionsComponent,
 		AvatarComponent,
 		ButtonComponent,
+		AccountMenuComponent,
+		VersionComponent,
+		DarkModeToggleComponent,
+		ActionButtonsModalComponent,
 	],
 	exports: [
 		FormsModule,
@@ -179,9 +185,11 @@ register();
 		EditButtonNameComponent,
 		EditButtonDateComponent,
 		EditButtonSelectComponent,
-		PageHeaderActionsComponent,
 		AvatarComponent,
 		ButtonComponent,
+		AccountMenuComponent,
+		VersionComponent,
+		DarkModeToggleComponent,
 	],
 	providers: [DatePipe, provideCharts(withDefaultRegisterables())],
 })

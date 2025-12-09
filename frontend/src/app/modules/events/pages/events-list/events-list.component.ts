@@ -1,9 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { InfiniteScrollCustomEvent, Platform } from "@ionic/angular";
+import { InfiniteScrollCustomEvent } from "@ionic/angular";
 import { EventStatuses } from "src/app/config/event-statuses";
 import { ApiService, RootLinks } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
+import { PlatformService } from "src/app/services/platform.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { UrlParams } from "src/helpers/typings";
@@ -33,7 +34,7 @@ export class EventsListComponent implements OnInit {
 
 	constructor(
 		private api: ApiService,
-		private platform: Platform,
+		private platformService: PlatformService,
 		private modalService: ModalService,
 		private toastService: ToastService,
 		private router: Router,
@@ -44,12 +45,9 @@ export class EventsListComponent implements OnInit {
 
 		this.api.rootLinks.subscribe((endpoints) => this.setActions(endpoints));
 
-		this.updateView();
-		this.platform.resize.subscribe(() => this.updateView());
-	}
-
-	updateView() {
-		this.view = this.platform.isPortrait() ? "list" : "table";
+		this.platformService.isPortrait.subscribe((isPortrait) => {
+			this.view = isPortrait ? "list" : "table";
+		});
 	}
 
 	onFilterChange(filter: UrlParams) {

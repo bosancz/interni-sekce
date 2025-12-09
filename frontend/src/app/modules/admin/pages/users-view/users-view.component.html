@@ -1,6 +1,4 @@
-<bo-page-header [title]="user ? user.login + ', ' + user.email : '...'" backUrl="/uzivatele">
-	<bo-page-header-actions [actions]="actions" [actionsHeader]="user ? user.login + ', ' + user.email : ''" />
-</bo-page-header>
+<bo-page-header [title]="user ? user.login + ', ' + user.email : '...'" backUrl="/uzivatele" [actions]="actions" />
 
 <bo-page-content [padding]="true" *ngIf="user">
 	<div class="row">

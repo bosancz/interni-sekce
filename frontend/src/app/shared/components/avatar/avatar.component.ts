@@ -8,4 +8,5 @@ import { Component, input } from "@angular/core";
 })
 export class AvatarComponent {
 	initials = input<string | null>(null);
+	color = input<string | null | undefined>(null);
 }

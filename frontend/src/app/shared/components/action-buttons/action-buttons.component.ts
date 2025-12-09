@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { ActionSheetController, Platform } from "@ionic/angular";
+import { ActionSheetController } from "@ionic/angular";
 import { ActionSheetButton, PredefinedColors } from "@ionic/core";
+import { PlatformService } from "src/app/services/platform.service";
 
 export interface Action extends ActionSheetButton {
 	disabled?: boolean;
@@ -34,7 +35,7 @@ export class ActionButtonsComponent implements OnInit {
 			if (actions.filter((item) => !item.pinned).length) {
 				this.menu = actions.filter((item) => item.text && !item.disabled && !item.pinned);
 
-				if (!this.menu.some((item) => item.role === "cancel") && this.platform.is("ios")) {
+				if (!this.menu.some((item) => item.role === "cancel") && this.platformService.isIos.value) {
 					this.menu.push({
 						text: "Zrušit",
 						role: "cancel",
@@ -58,12 +59,12 @@ export class ActionButtonsComponent implements OnInit {
 	@Output() close = new EventEmitter<void>();
 
 	desktop = true;
-	ios = this.platform.is("ios");
+	ios = this.platformService.isIos.value;
 
 	open = false;
 
 	constructor(
-		private platform: Platform,
+		private platformService: PlatformService,
 		private actionsController: ActionSheetController,
 	) {}
 
@@ -72,7 +73,7 @@ export class ActionButtonsComponent implements OnInit {
 	async openActions() {
 		let buttons = this.menu;
 
-		if (this.platform.is("ios")) buttons = buttons.map((item) => ({ ...item, icon: undefined }));
+		if (this.platformService.isIos.value) buttons = buttons.map((item) => ({ ...item, icon: undefined }));
 
 		buttons.sort((a, b) => {
 			if (a.role === "destructive" && b.role !== "destructive") return -1;

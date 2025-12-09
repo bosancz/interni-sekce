@@ -1,0 +1,34 @@
+@use "src/styles/variables";
+
+ion-header {
+	box-shadow: none;
+	ion-toolbar {
+		--background: var(--ion-color-light);
+		--color: var(--ion-color-dark);
+		--ion-toolbar-color: var(--ion-color-dark);
+	}
+}
+
+h1 {
+	margin: 0;
+}
+
+.search {
+	max-width: 500px;
+	margin: 0 auto;
+	ion-searchbar {
+		--box-shadow: none;
+		--ion-background-color: var(--darkShade);
+	}
+}
+
+.environment {
+	text-transform: uppercase;
+	background: variables.$colorWarning;
+	font-family: Roboto, "Helvetica Neue", sans-serif;
+	padding: 0.2em 0.4em;
+	font-size: 0.6em;
+	border-radius: 4px;
+	vertical-align: 4px;
+	color: #fff;
+}

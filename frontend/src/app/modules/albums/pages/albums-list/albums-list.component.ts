@@ -5,13 +5,13 @@ import {
 	AlertController,
 	InfiniteScrollCustomEvent,
 	NavController,
-	Platform,
 	ViewWillEnter,
 	ViewWillLeave,
 } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { AlbumStatuses } from "src/app/config/album-statuses";
 import { ApiService } from "src/app/services/api.service";
+import { PlatformService } from "src/app/services/platform.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 
@@ -29,7 +29,7 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 	years: string[] = [];
 	albums?: SDK.AlbumResponseWithLinks[];
 
-	view: "table" | "grid" = this.platform.isPortrait() ? "grid" : "table";
+	view: "table" | "grid" = this.platformService.isPortrait.value ? "grid" : "table";
 
 	page = 1;
 	readonly pageSize = 50;
@@ -55,7 +55,7 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 		private alertController: AlertController,
 		private toastService: ToastService,
 		private navController: NavController,
-		private platform: Platform,
+		private platformService: PlatformService,
 		private route: ActivatedRoute,
 		private router: Router,
 	) {}

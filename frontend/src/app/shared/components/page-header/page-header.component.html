@@ -1,15 +1,15 @@
-<ion-header>
-	<ion-toolbar>
-		<ion-buttons slot="start">
-			<ion-menu-button *ngIf="!backUrl"></ion-menu-button>
-			<ion-back-button *ngIf="backUrl" [defaultHref]="backUrl"></ion-back-button>
-		</ion-buttons>
-		<ng-content select="[slot=start]"></ng-content>
+<!-- @if (isIos() && backUrl) {
+	<ion-back-button [defaultHref]="backUrl"></ion-back-button>
+} -->
+<ng-content select="[slot=start]"></ng-content>
 
-		<ion-title>{{ title }}</ion-title>
+<h2 class="ms-3">{{ title }}</h2>
 
-		<div class="actions" slot="end">
-			<ng-content select="[slot=end],bo-page-header-actions"></ng-content>
-		</div>
-	</ion-toolbar>
-</ion-header>
+<div class="spacer"></div>
+
+<div *ngIf="actions" class="actions" slot="end">
+	<ion-buttons slot="end">
+		<bo-action-buttons [actions]="actions" [header]="title"></bo-action-buttons>
+	</ion-buttons>
+	<ng-content></ng-content>
+</div>

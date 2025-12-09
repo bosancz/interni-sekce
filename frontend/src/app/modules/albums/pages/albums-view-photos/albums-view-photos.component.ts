@@ -1,10 +1,11 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ModalController, Platform, ViewWillLeave } from "@ionic/angular";
+import { ModalController, ViewWillLeave } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { PhotosEditComponent } from "src/app/modules/albums/components/photos-edit/photos-edit.component";
 import { PhotosUploadComponent } from "src/app/modules/albums/components/photos-upload/photos-upload.component";
 import { ApiService } from "src/app/services/api.service";
+import { PlatformService } from "src/app/services/platform.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { SDK } from "src/sdk";
@@ -38,7 +39,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
 
 	constructor(
 		private api: ApiService,
-		public platform: Platform,
+		public platformService: PlatformService,
 		public modalController: ModalController,
 		private toastService: ToastService,
 		private route: ActivatedRoute,
@@ -134,7 +135,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
 			{ text: "Podle jména", handler: () => this.orderByName() },
 			{
 				text: "Zrušit",
-				hidden: this.platform.is("ios"),
+				hidden: this.platformService.isIos.value,
 				handler: () => this.endOrdering(),
 			},
 		];
@@ -162,7 +163,7 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
 			},
 			{
 				text: "Zrušit",
-				hidden: this.platform.is("ios"),
+				hidden: this.platformService.isIos.value,
 				handler: () => this.endDeleting(),
 			},
 		];

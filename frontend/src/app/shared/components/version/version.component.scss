@@ -1,14 +1,10 @@
 :host {
 	display: block;
-}
-
-.bottom {
 	text-align: center;
-	margin-top: 1rem;
 }
 
-.version {
+p {
 	font-size: 0.8rem;
 	color: var(--ion-color-medium);
-	margin-top: 1rem;
+	margin: 0;
 }
