@@ -30,7 +30,6 @@ import { FilesService } from "../../../models/files/services/files.service";
 import { Config } from "src/config";
 import * as path from 'path';
 import {sanitizeFilename} from '../../../helpers/sanitizefilename'
-import { Console } from "console";
 
 
 @Controller("events")
@@ -54,7 +53,6 @@ export class EventsRegistrationsController {
 		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
 						
 		const matchingFiles = await this.fileService.getFilesByPrefx(registrationFolder, "prihlaska")
-		console.log(matchingFiles)
 
 		if (matchingFiles.length !=1){
 			throw new InternalServerErrorException("Failed to get registration -  not one registration saved")
@@ -93,7 +91,6 @@ export class EventsRegistrationsController {
 				
 			const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
 			const registrationFileName = "prihlaska_" +  sanitizeFilename(event.name) + ".pdf"
-			console.log(registrationFileName)
 			const registrationPath = path.join(registrationFolder, registrationFileName)
 			try{
 				await this.fileService.ensureDir(registrationFolder)

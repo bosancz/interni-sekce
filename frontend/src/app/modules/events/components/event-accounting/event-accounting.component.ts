@@ -57,7 +57,6 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 		if (expense === null) return;
 
 		try {
-			console.log("Adding expense:", expense);
 			const newExpense = await this.api.EventsApi.addEventExpense(this.event.id, expense).then((res) => res.data);
 			this.expenses.push(newExpense);
 
