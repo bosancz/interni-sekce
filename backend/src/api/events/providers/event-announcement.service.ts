@@ -1,14 +1,10 @@
-// event-report.service.ts
-
-import { ConsoleLogger, Injectable } from '@nestjs/common'; // <-- ADD THIS LINE
-import { Console } from 'console';
-import { EventAttendee } from 'src/models/events/entities/event-attendee.entity';
+import { ConsoleLogger, Injectable } from '@nestjs/common';
 import { Event } from 'src/models/events/entities/event.entity';
 import { Member } from 'src/models/members/entities/member.entity';
 import * as xlsxPopulate from 'xlsx-populate';
 import {string2Date} from '../../../helpers/string2date'
 
-@Injectable() // <-- Now this will work
+@Injectable()
 export class EventAnnouncementService {
 
 
@@ -22,28 +18,23 @@ export class EventAnnouncementService {
         const annoucementSheet = xlsx.sheet("Ohláška");
 
         
-        
         // Header
-        annoucementSheet.cell("C15").value(event.name || "");
-        annoucementSheet.range("C17:C17").value(string2Date(event.dateFrom) || "");
-        annoucementSheet.range("C18:C18").value(string2Date(event.dateTill) || "");
-        annoucementSheet.cell("C20").value(event.place || "");
+        annoucementSheet.cell("B12").value(event.name || "");
+        annoucementSheet.range("B14:B14").value(string2Date(event.dateFrom) || "");
+        annoucementSheet.range("B15:B15").value(string2Date(event.dateTill) || "");
+        annoucementSheet.cell("B17").value(event.place || "");
+        if (event.meetingPlaceStart) annoucementSheet.cell("B18").value(event.meetingPlaceStart);
+        if (event.meetingPlaceEnd) annoucementSheet.cell("B19").value(event.meetingPlaceEnd);
 
         if (event.leaders){
             const leadersString = (member: Member) => member && member.firstName && member.lastName ? `${member.firstName} ${member.lastName}`: "";
             
-            annoucementSheet.cell("C22").value(leadersString(event.leaders[0]));
-            annoucementSheet.cell("C23").value(leadersString(event.leaders[1] || event.leaders[0]));
-            annoucementSheet.cell("C24").value(leadersString(event.leaders[2] || event.leaders[1] || event.leaders[0]));
+            annoucementSheet.cell("B21").value(leadersString(event.leaders[0]));
         }
 
 
-
-        if (event.meetingPlaceStart) annoucementSheet.cell("C26").value(event.meetingPlaceStart);
-        if (event.meetingPlaceEnd) annoucementSheet.cell("C27").value(event.meetingPlaceEnd);
-
-        const currentDate = new Date().toLocaleDateString('cs-CZ');
-        annoucementSheet.cell("F11").value(currentDate)
+        const currentDate = new Date();
+        annoucementSheet.range("F10:F10").value(currentDate);
 
         
         const attendeeMembers: Member[] = [
@@ -70,17 +61,14 @@ export class EventAnnouncementService {
             const dateB = b[2] !== missing ? new Date(String(b[2])).getTime() : 0;
             return dateA - dateB;
         });
-        
+    
         if (attendeesString.length > 0) {
             const startCol = 'A'
-            const startRow = 32
+            const startRow = 25
             const endCol = String.fromCharCode(startCol.charCodeAt(0) + attendeesString[0].length);
             const endRow = startRow + attendeesString.length;
             annoucementSheet.range(`${startCol}${startRow}:${endCol}${endRow}`).value(attendeesString);
         }
-
-
-
 
 
         const fileBuffer = await xlsx.outputAsync("buffer") as Buffer;
