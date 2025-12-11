@@ -29,7 +29,8 @@ import {
 import { FilesService } from "../../../models/files/services/files.service";
 import { Config } from "src/config";
 import * as path from 'path';
-import {czech2Filename} from '../../../helpers/czech2filename'
+import {sanitizeFilename} from '../../../helpers/sanitizefilename'
+import { Console } from "console";
 
 
 @Controller("events")
@@ -46,15 +47,9 @@ export class EventsRegistrationsController {
 	@Get(":id/registration")
 	@AcLinks(EventRegistrationReadPermission)
 	async getEventRegistration(@Req() req: Request, @Param("id") id: number, @Res() res: Response): Promise<void> {
-		const event = await this.events.getEvent(id);
-		
+		const event = await this.events.getEvent(id);				
 		if (!event) throw new NotFoundException();
-		//TODO fix acl there i thing that two things using EventRegistrationReadPermission at same time - this and the button
-		try{
-			EventRegistrationReadPermission.canOrThrow(req, event);
-		}
-		catch(error)
-		{console.log(error)}
+		EventRegistrationReadPermission.canOrThrow(req, event);
 
 		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
 						
@@ -66,7 +61,6 @@ export class EventsRegistrationsController {
 		}
 		const registrationFn = matchingFiles[0]
 		const registrationPath = path.join(registrationFolder, registrationFn)
-		console.log(registrationPath);
 		res.sendFile(registrationPath);
 	}
 
@@ -98,7 +92,8 @@ export class EventsRegistrationsController {
 			if (!registration) throw new BadRequestException("Registration not provided")
 				
 			const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
-			const registrationFileName = "prihlaska_" +  czech2Filename(event.name) + ".pdf"
+			const registrationFileName = "prihlaska_" +  sanitizeFilename(event.name) + ".pdf"
+			console.log(registrationFileName)
 			const registrationPath = path.join(registrationFolder, registrationFileName)
 			try{
 				await this.fileService.ensureDir(registrationFolder)

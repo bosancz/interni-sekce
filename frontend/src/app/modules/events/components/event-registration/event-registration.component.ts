@@ -69,17 +69,27 @@ export class EventRegistrationComponent {
 		this.event = await this.eventService.loadEvent(this.event.id);
 	}
 
-	private downloadRegistration() {
+	async getRegistration() {
 		if (!this.event) return;
-		window.open(this.getRegistrationUrl(this.event));
-	}
-
-	getRegistrationUrl(event: SDK.EventResponseWithLinks) {
-		return event._links.getEventRegistration.href;
-	}
-
-	getSafeRegistrationUrl(event: SDK.EventResponseWithLinks) {
-		return this.sanitizer.bypassSecurityTrustResourceUrl(this.getRegistrationUrl(event));
+	
+		const response = await this.api.EventsApi.getEventRegistration(
+            this.event.id, 
+            { responseType: 'blob' }
+        ) as any;        
+		
+		const fileBlob = new Blob([response.data], { type: 'application/pdf' });
+		const fileUrl = window.URL.createObjectURL(fileBlob);
+		
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.target = '_blank';
+        
+        document.body.appendChild(link);
+        link.click();
+        
+        // 4. Cleanup
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(fileUrl);
 	}
 
 }

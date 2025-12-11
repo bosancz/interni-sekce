@@ -13,9 +13,8 @@
 			<ion-button
 				*ngIf="event?._links?.getEventRegistration?.applicable"
 				[disabled]="!event?._links?.getEventRegistration?.allowed || uploadingRegistration"
-				[href]="getRegistrationUrl(event!)"
-				target="_blank"
 				fill="clear"
+				(click)="getRegistration()"
 				>Zobrazit</ion-button
 			>
 			<ion-button

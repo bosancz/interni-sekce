@@ -1,5 +1,3 @@
-// event-report.service.ts
-
 import { ConsoleLogger, Injectable } from '@nestjs/common'; // <-- ADD THIS LINE
 import { Console } from 'console';
 import e from 'express';
@@ -8,7 +6,7 @@ import { Event } from 'src/models/events/entities/event.entity';
 import { Member } from 'src/models/members/entities/member.entity';
 import { InternalSymbolName } from 'typescript';
 import * as xlsxPopulate from 'xlsx-populate';
-import {czech2Filename} from '../../../helpers/czech2filename'
+import {sanitizeFilename} from '../../../helpers/sanitizefilename'
 import {string2Date} from '../../../helpers/string2date'
 @Injectable() // <-- Now this will work
 export class EventAccountingService {
@@ -18,13 +16,14 @@ export class EventAccountingService {
 
     async generateAccounting(event: Event): Promise<{ fileBuffer: Buffer, fileName: string}> {
         
-        const fileName = "Uctovani_" + czech2Filename(event.name)
+        const fileName = "Uctovani_" + sanitizeFilename(event.name)
         const templatePath = "assets/uctovani-v6.xlsx";
         const xlsx = await xlsxPopulate.fromFileAsync(templatePath);
 
         
         const attendeeSheet = xlsx.sheet("Seznam účastníků");
         const expenseSheet = xlsx.sheet("Soupis výdajů")
+        const reportSheet = xlsx.sheet("Report z akce")
 
         // filling up memberssheet
         const leadersString = event?.leaders?.[0]?.firstName && event?.leaders?.[0]?.lastName ? event.leaders[0].firstName+ " " + event?.leaders[0].lastName : "";
@@ -98,6 +97,8 @@ export class EventAccountingService {
             const endRow = startRow + expensesString.length;
             expenseSheet.range(`${startCol}${startRow}:${endCol}${endRow}`).value(expensesString);
         }
+
+        reportSheet.cell("A10").value(event.report)
         
 
         const fileBuffer = await xlsx.outputAsync("buffer") as Buffer;
