@@ -238,6 +238,8 @@ export class MongoImportService {
 				waterKm: null,
 				river: null,
 				leadersEvent: mongoEvent.groups?.includes("V") || false,
+				hasRegistration: false, // TODO: migrate registration
+				report: null,
 				groups,
 			};
 

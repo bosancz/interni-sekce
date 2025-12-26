@@ -143,7 +143,8 @@ export const EventUncancelPermission = new Permission({
 export const EventRegistrationReadPermission = new Permission({
 	linkTo: EventResponse,
 
-	inherit: EventReadPermission,
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => doc.hasRegistration
 });
 
 export const EventRegistrationEditPermission = new Permission({
@@ -156,6 +157,7 @@ export const EventRegistrationDeletePermission = new Permission({
 	linkTo: EventResponse,
 
 	inherit: EventEditPermission,
+	applicable: ({ doc }) => doc.hasRegistration
 });
 
 export const EventReportReadPermission = new Permission({
@@ -168,6 +170,26 @@ export const EventReportEditPermission = new Permission({
 	linkTo: EventResponse,
 
 	inherit: EventEditPermission,
+});
+
+export const EventAnnouncementGetPermission = new Permission({
+	linkTo: EventResponse,
+
+	allowed: {
+		admin: true,
+		revizor: true,
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
+});
+
+export const EventAccountingGetPermission = new Permission({
+	linkTo: EventResponse,
+
+	allowed: {
+		admin: true,
+		revizor:true,
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
 });
 
 export const EventExpensesListPermission = new Permission({

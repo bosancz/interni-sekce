@@ -37,24 +37,28 @@ export class EventRegistrationComponent {
 		if (!input.files?.length) return;
 
 		let file = input.files![0];
-
+		
 		if (file.name.split(".").pop()?.toLowerCase() !== "pdf") {
 			this.toastService.toast("Soubor musí být ve formátu PDF");
+			this.uploadingRegistration = false
+
 			return;
 		}
-
+		
 		this.uploadingRegistration = true;
 
 		try {
-			await this.api.EventsApi.saveEventRegistration(this.event.id, { registration: file });
+			await this.api.EventsApi.saveEventRegistration(this.event.id, file);
 		} catch (err: any) {
 			this.toastService.toast("Nastala chyba při nahrávání: " + err.message);
+			return;
+		} finally{
+			this.uploadingRegistration = false
 		}
 
-		this.uploadingRegistration = false;
 		this.toastService.toast("Přihláška nahrána.");
 
-		this.eventService.loadEvent(this.event.id);
+		this.event = await this.eventService.loadEvent(this.event.id);
 	}
 
 	async deleteRegistration() {
@@ -62,20 +66,30 @@ export class EventRegistrationComponent {
 
 		await this.api.EventsApi.deleteEventRegistration(this.event.id);
 		this.toastService.toast("Přihláška smazána.");
-
-		this.eventService.loadEvent(this.event.id);
+		this.event = await this.eventService.loadEvent(this.event.id);
 	}
 
-	private downloadRegistration() {
+	async getRegistration() {
 		if (!this.event) return;
-		window.open(this.getRegistrationUrl(this.event));
+	
+		const response = await this.api.EventsApi.getEventRegistration(
+            this.event.id, 
+            { responseType: 'blob' }
+        ) as any;        
+		
+		const fileBlob = new Blob([response.data], { type: 'application/pdf' });
+		const fileUrl = window.URL.createObjectURL(fileBlob);
+		
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.target = '_blank';
+        
+        document.body.appendChild(link);
+        link.click();
+        
+        // 4. Cleanup
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(fileUrl);
 	}
 
-	getRegistrationUrl(event: SDK.EventResponseWithLinks) {
-		return event._links.getEventRegistration.href;
-	}
-
-	getSafeRegistrationUrl(event: SDK.EventResponseWithLinks) {
-		return this.sanitizer.bypassSecurityTrustResourceUrl(this.getRegistrationUrl(event));
-	}
 }

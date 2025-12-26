@@ -20,6 +20,7 @@ export class EventResponse implements Omit<Event, "setLeaders"> {
 	@ApiProperty() dateTill!: string;
 	@ApiProperty() leadersEvent!: boolean;
 	@ApiProperty() groupsIds!: number[];
+	@ApiProperty() hasRegistration!: boolean;
 
 	@ApiPropertyOptional({ type: "string" }) type!: string | null;
 	@ApiPropertyOptional({ type: "string" }) statusNote!: string | null;
@@ -32,6 +33,7 @@ export class EventResponse implements Omit<Event, "setLeaders"> {
 	@ApiPropertyOptional({ type: "number" }) waterKm!: number | null;
 	@ApiPropertyOptional({ type: "string" }) river!: string | null;
 	@ApiPropertyOptional({ type: "string" }) deletedAt?: Date | null;
+	@ApiPropertyOptional({ type: "string" }) report!: string | null;
 
 	@ApiPropertyOptional({ type: AlbumResponse }) album?: Album | undefined;
 	@ApiPropertyOptional({ type: GroupResponse, isArray: true }) groups?: Group[] | undefined;
@@ -54,6 +56,7 @@ export class EventUpdateBody {
 	@ApiPropertyOptional() @IsOptional() @IsString() dateFrom?: string;
 	@ApiPropertyOptional() @IsOptional() @IsString() dateTill?: string;
 	@ApiPropertyOptional() @IsOptional() @IsBoolean() leadersEvent?: boolean;
+	@ApiPropertyOptional() @IsOptional() @IsBoolean() hasRegistration?: boolean;
 
 	@ApiPropertyOptional({ type: "number", isArray: true })
 	@IsOptional()
@@ -70,6 +73,7 @@ export class EventUpdateBody {
 	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() meetingPlaceEnd?: string | null;
 	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsString() waterKm?: number | null;
 	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() river?: string | null;
+	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() report?: string | null;
 }
 
 export class EventStatusChangeBody {

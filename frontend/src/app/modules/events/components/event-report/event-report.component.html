@@ -1,1 +1,17 @@
-<h3>Report</h3>
+<h3>
+    Report
+	<bo-edit-button-markdown
+		slot="end"
+		label="Report"
+		[disabled]="!event?._links?.updateEvent?.allowed"
+		[value]="event?.report"
+		(update)="update.emit({ report: $event })"
+	/>
+</h3>
+<bo-card>
+	<bo-card-content>
+		<bo-item lines="none" [loading]="!event">
+			<p *ngIf="event">{{ event.report }}</p>
+		</bo-item>
+	</bo-card-content>
+</bo-card>
