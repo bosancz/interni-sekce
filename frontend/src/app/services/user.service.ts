@@ -13,7 +13,7 @@ import { ToastService } from "./toast.service";
 	providedIn: "root",
 })
 export class UserService {
-	user = new BehaviorSubject<SDK.UserResponseWithLinks | null | undefined>(undefined);
+	user = new BehaviorSubject<SDK.AccountResponseWithLinks | null | undefined>(undefined);
 
 	constructor(
 		private api: ApiService,

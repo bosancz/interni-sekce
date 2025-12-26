@@ -14,7 +14,7 @@ declare const Notification: any;
 	standalone: false,
 })
 export class AccountNotificationsComponent implements OnInit {
-	user?: SDK.UserResponseWithLinks;
+	user?: SDK.AccountResponseWithLinks;
 
 	notifications = [
 		{ id: "new-event", name: "Nová událost" },

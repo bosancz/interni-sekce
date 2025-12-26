@@ -11,7 +11,7 @@ import { SDK } from "src/sdk";
 	standalone: false,
 })
 export class AccountCredentialsComponent implements OnInit {
-	user?: SDK.UserResponseWithLinks;
+	user?: SDK.AccountResponseWithLinks;
 
 	constructor(
 		private api: ApiService,

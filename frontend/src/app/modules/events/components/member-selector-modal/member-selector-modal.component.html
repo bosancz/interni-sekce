@@ -3,13 +3,11 @@
 		#searchBar
 		enterkeyhint="search"
 		(ionInput)="searchMembers($any($event).detail.value)"
-
 	></ion-searchbar>
 	<ion-buttons slot="end">
 		<ion-button (click)="close.emit()">Zrušit</ion-button>
 	</ion-buttons>
 </ion-toolbar>
-
 
 <div class="member-selector-scrollable">
 	<ion-list>
@@ -19,7 +17,7 @@
 				<p><bo-member-item-detail [member]="member"></bo-member-item-detail></p>
 			</ion-label>
 			<ion-badge mode="ios" [style.background-color]="member.groupId | group: 'color'">
-				{{ member.group }}
+				{{ member.groupId | group: "name" }}
 			</ion-badge>
 		</ion-item>
 	</ion-list>

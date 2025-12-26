@@ -1,3 +1,4 @@
+import { ApiHideProperty } from "@nestjs/swagger";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Member } from "./member.entity";
 
@@ -17,6 +18,7 @@ export class MemberAchievement {
 
 	@ManyToOne(() => Member, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
 	@JoinColumn({ name: "member_id" })
+	@ApiHideProperty()
 	member?: Member;
 
 	@Column({ type: "enum", enum: MemberAchievementType, nullable: false }) type!: MemberAchievementType;

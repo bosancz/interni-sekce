@@ -124,6 +124,74 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface AccountResponseWithLinks
+     */
+    export interface AccountResponseWithLinks {
+        /**
+         * 
+         * @type {Array<UserRolesEnum>}
+         * @memberof AccountResponseWithLinks
+         */
+        'roles': Array<UserRolesEnum> | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof AccountResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof AccountResponseWithLinks
+         */
+        'memberId': number | null;
+        /**
+         * 
+         * @type {Member}
+         * @memberof AccountResponseWithLinks
+         */
+        'member'?: Member | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof AccountResponseWithLinks
+         */
+        'login': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof AccountResponseWithLinks
+         */
+        'password': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof AccountResponseWithLinks
+         */
+        'email': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof AccountResponseWithLinks
+         */
+        'loginCode': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof AccountResponseWithLinks
+         */
+        'loginCodeExp': string | null;
+        /**
+         * 
+         * @type {AccountResponseLinks}
+         * @memberof AccountResponseWithLinks
+         */
+        '_links': AccountResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface Album
      */
     export interface Album {
@@ -2469,12 +2537,6 @@ export namespace SDK {
         'deletedAt'?: string;
         /**
          * 
-         * @type {Group}
-         * @memberof Member
-         */
-        'group'?: Group;
-        /**
-         * 
          * @type {Array<MemberContact>}
          * @memberof Member
          */
@@ -2542,12 +2604,6 @@ export namespace SDK {
         'memberId': number;
         /**
          * 
-         * @type {Member}
-         * @memberof MemberAchievement
-         */
-        'member'?: Member;
-        /**
-         * 
          * @type {string}
          * @memberof MemberAchievement
          */
@@ -2593,12 +2649,6 @@ export namespace SDK {
          * @memberof MemberContact
          */
         'memberId': number;
-        /**
-         * 
-         * @type {Member}
-         * @memberof MemberContact
-         */
-        'member'?: Member;
         /**
          * 
          * @type {string}
@@ -2929,12 +2979,6 @@ export namespace SDK {
         'insuranceCardFile'?: string | null;
         /**
          * 
-         * @type {GroupResponseWithLinks}
-         * @memberof MemberResponse
-         */
-        'group'?: GroupResponseWithLinks;
-        /**
-         * 
          * @type {Array<MemberContact>}
          * @memberof MemberResponse
          */
@@ -3143,12 +3187,6 @@ export namespace SDK {
          * @memberof MemberResponseWithLinks
          */
         'insuranceCardFile'?: string | null;
-        /**
-         * 
-         * @type {GroupResponseWithLinks}
-         * @memberof MemberResponseWithLinks
-         */
-        'group'?: GroupResponseWithLinks;
         /**
          * 
          * @type {Array<MemberContact>}
@@ -4102,28 +4140,10 @@ export namespace SDK {
     export interface UserResponseWithLinks {
         /**
          * 
-         * @type {Array<UserRolesEnum>}
-         * @memberof UserResponseWithLinks
-         */
-        'roles': Array<UserRolesEnum> | null;
-        /**
-         * 
          * @type {number}
          * @memberof UserResponseWithLinks
          */
         'id': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof UserResponseWithLinks
-         */
-        'memberId': number | null;
-        /**
-         * 
-         * @type {Member}
-         * @memberof UserResponseWithLinks
-         */
-        'member'?: Member | null;
         /**
          * 
          * @type {string}
@@ -4132,34 +4152,52 @@ export namespace SDK {
         'login': string;
         /**
          * 
-         * @type {string}
+         * @type {number}
          * @memberof UserResponseWithLinks
          */
-        'password': string | null;
+        'memberId'?: number | null;
         /**
          * 
          * @type {string}
          * @memberof UserResponseWithLinks
          */
-        'email': string | null;
+        'password'?: string | null;
         /**
          * 
          * @type {string}
          * @memberof UserResponseWithLinks
          */
-        'loginCode': string | null;
+        'email'?: string | null;
         /**
          * 
          * @type {string}
          * @memberof UserResponseWithLinks
          */
-        'loginCodeExp': string | null;
+        'loginCode'?: string | null;
         /**
          * 
-         * @type {AccountResponseLinks}
+         * @type {string}
          * @memberof UserResponseWithLinks
          */
-        '_links': AccountResponseLinks;
+        'loginCodeExp'?: string | null;
+        /**
+         * 
+         * @type {Array<UserRolesEnum>}
+         * @memberof UserResponseWithLinks
+         */
+        'roles'?: Array<UserRolesEnum> | null;
+        /**
+         * 
+         * @type {MemberResponseWithLinks}
+         * @memberof UserResponseWithLinks
+         */
+        'member'?: MemberResponseWithLinks | null;
+        /**
+         * 
+         * @type {UserResponseLinks}
+         * @memberof UserResponseWithLinks
+         */
+        '_links': UserResponseLinks;
     }
     
         /**
@@ -4319,7 +4357,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<UserResponseWithLinks>(axiosRequestConfig);
+            return this.axios.request<AccountResponseWithLinks>(axiosRequestConfig);
         }
     
         /**

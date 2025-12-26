@@ -46,13 +46,13 @@ export function WithLinks<T extends Type, E extends EntityType>(contains: E | ((
 			value: `${responseType.name}Links`,
 		});
 
-		const EntityWithLinks = IntersectionType(responseType, ResponseLinksProperty);
+		const ResponseWithLinks = IntersectionType(responseType, ResponseLinksProperty);
 
-		Object.defineProperty(EntityWithLinks, "name", {
-			value: `${entity.name}WithLinks`,
+		Object.defineProperty(ResponseWithLinks, "name", {
+			value: `${responseType.name}WithLinks`,
 		});
 
-		return EntityWithLinks;
+		return ResponseWithLinks;
 	}
 
 	return type;

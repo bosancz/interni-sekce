@@ -1,14 +1,11 @@
 import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
-import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { PaginationQuery } from "src/api/helpers/dto";
 import { EnsureArray } from "src/helpers/validation";
-import { Group } from "src/models/members/entities/group.entity";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member, MemberRanks, MemberRoles, MembershipStates } from "src/models/members/entities/member.entity";
-import { GroupResponse } from "./group.dto";
 
 export class MemberResponse implements Member {
 	@ApiProperty() id!: number;
@@ -35,9 +32,9 @@ export class MemberResponse implements Member {
 	@ApiPropertyOptional({ type: "string", isArray: true }) allergies?: string[] | null;
 	@ApiPropertyOptional({ type: "string" }) insuranceCardFile?: string | null;
 
-	@AcEntity(GroupResponse)
-	@ApiPropertyOptional({ type: WithLinks(GroupResponse) })
-	group?: Group | undefined;
+	// @AcEntity(GroupResponse)
+	// @ApiPropertyOptional({ type: WithLinks(GroupResponse) })
+	// group?: Group | undefined;
 
 	@ApiPropertyOptional()
 	contacts?: MemberContact[] | undefined;
@@ -56,9 +53,7 @@ export class MemberCreateBody
 	@ApiProperty() @IsString() @IsOptional() lastName!: string | null;
 }
 
-export class MemberUpdateBody extends PartialType(
-	OmitType(MemberResponse, ["group", "contacts", "achievements", "id"]),
-) {}
+export class MemberUpdateBody extends PartialType(OmitType(MemberResponse, ["contacts", "achievements", "id"])) {}
 
 export class MembersListQuery extends PaginationQuery {
 	@ApiPropertyOptional({ type: "number", isArray: true })
