@@ -5,18 +5,18 @@ import { Request, Response } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
+import { EventAnnouncementService } from "src/models/events/services/event-announcement.service";
 import { Repository } from "typeorm";
 import { EventAnnouncementGetPermission } from "../acl/events.acl";
-import { EventAnnouncementService } from "../providers/event-announcement.service";
 
 @Controller("events")
 @AcController()
 @ApiTags("Events")
 export class EventsAnnouncementController {
 	constructor(
-		private events: EventsRepository,
-		@InjectRepository(Event) private eventsRepository: Repository<Event>,
-		private eventAnnouncementService: EventAnnouncementService,
+		private readonly events: EventsRepository,
+		@InjectRepository(Event) private readonly eventsRepository: Repository<Event>,
+		private readonly eventAnnouncementService: EventAnnouncementService,
 	) {}
 
 	@Get(":id/announcement")
