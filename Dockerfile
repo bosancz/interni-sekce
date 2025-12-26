@@ -40,6 +40,7 @@ WORKDIR /app
 # COPY BACKEND FILES
 COPY --from=build-backend /app/node_modules ./backend/node_modules
 COPY --from=build-backend /app/dist ./backend/dist
+COPY --from=build-backend /app/assets ./backend/assets
 COPY --from=build-backend /app/package.json ./backend/
 
 # COPY FRONTEND FILES
