@@ -8,10 +8,16 @@ import { GroupsController } from "./controllers/groups.controller";
 import { MemberContactsController } from "./controllers/member-contacts.controller";
 import { MemberInsuranceCardController } from "./controllers/member-insurance-card.controller";
 import { MembersController } from "./controllers/members.controller";
-import { MembersExportController } from './controllers/members-export.controller';
+import { MembersExportController } from "./controllers/members-export.controller";
 
 @Module({
-  controllers: [MembersController, GroupsController, MemberInsuranceCardController, MemberContactsController, MembersExportController],
-  imports: [MembersModelModule, TypeOrmModule.forFeature([Member, Group]), FilesModule],
+	controllers: [
+		MembersController,
+		GroupsController,
+		MemberInsuranceCardController,
+		MemberContactsController,
+		MembersExportController,
+	],
+	imports: [MembersModelModule, TypeOrmModule.forFeature([Member, Group]), FilesModule],
 })
 export class MembersModule {}

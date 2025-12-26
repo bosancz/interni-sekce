@@ -1,42 +1,46 @@
 import { Component, OnInit } from "@angular/core";
-import { MenuController, Platform } from "@ionic/angular";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { MenuController } from "@ionic/angular";
 import { LoginService } from "src/app/services/login.service";
 import { UserService } from "src/app/services/user.service";
 import { ApiService } from "./services/api.service";
+import { PlatformService } from "./services/platform.service";
 
 @Component({
-    selector: "bo-app",
-    templateUrl: "./app.component.html",
-    styleUrls: ["./app.component.scss"],
-    standalone: false
+	selector: "bo-app",
+	templateUrl: "./app.component.html",
+	styleUrls: ["./app.component.scss"],
+	standalone: false,
 })
 export class AppComponent implements OnInit {
-  user = this.userService.user;
+	user = toSignal(this.userService.user);
 
-  constructor(
-    private userService: UserService,
-    private loginService: LoginService,
-    private menuController: MenuController,
-    private api: ApiService,
-    public platform: Platform,
-  ) {}
+	isLg = toSignal(this.platformService.isLg);
 
-  ngOnInit() {
-    this.userService.user.subscribe((user) => {
-      if (user !== undefined) {
-        this.api.reloadApi();
-      }
-    });
+	constructor(
+		private userService: UserService,
+		private loginService: LoginService,
+		private menuController: MenuController,
+		private api: ApiService,
+		private readonly platformService: PlatformService,
+	) {}
 
-    this.loginService.onLogin.subscribe(() => {
-      this.userService.loadUser();
-    });
-    this.loginService.onLogout.subscribe(() => {
-      this.userService.clearUser();
-    });
-  }
+	ngOnInit() {
+		this.userService.user.subscribe((user) => {
+			if (user !== undefined) {
+				this.api.reloadApi();
+			}
+		});
 
-  closeSidebar() {
-    this.menuController.close();
-  }
+		this.loginService.onLogin.subscribe(() => {
+			this.userService.loadUser();
+		});
+		this.loginService.onLogout.subscribe(() => {
+			this.userService.clearUser();
+		});
+	}
+
+	closeSidebar() {
+		this.menuController.close();
+	}
 }

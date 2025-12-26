@@ -1,12 +1,12 @@
 <ion-chip *ngFor="let member of value" (click)="$event.stopPropagation()">
-  {{ member | member: "nickname" }}
-  <ion-icon name="close-circle" (click)="removeMember(member); $event.stopPropagation()"></ion-icon>
+	{{ member | member: "nickname" }}
+	<ion-icon name="close-circle" (click)="removeMember(member); $event.stopPropagation()"></ion-icon>
 </ion-chip>
 
 <ion-chip
-  *ngIf="(multiple || multiple === '') && value.length"
-  (click)="openModal(); $event.stopPropagation()"
-  color="success"
+	*ngIf="(multiple || multiple === '') && value.length"
+	(click)="openModal(); $event.stopPropagation()"
+	color="success"
 >
-  přidat <ion-icon name="add-circle"></ion-icon>
+	přidat <ion-icon name="add-circle"></ion-icon>
 </ion-chip>

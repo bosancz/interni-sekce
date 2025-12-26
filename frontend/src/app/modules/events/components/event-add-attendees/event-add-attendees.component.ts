@@ -1,16 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
 
 @Component({
-    selector: 'bo-event-add-attendees',
-    templateUrl: './event-add-attendees.component.html',
-    styleUrls: ['./event-add-attendees.component.scss'],
-    standalone: false
+	selector: "bo-event-add-attendees",
+	templateUrl: "./event-add-attendees.component.html",
+	styleUrls: ["./event-add-attendees.component.scss"],
+	standalone: false,
 })
 export class EventAddAttendeesComponent implements OnInit {
+	constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+	ngOnInit(): void {}
 }

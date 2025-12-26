@@ -6,7 +6,7 @@ import { AccountController } from "./controllers/account.controller";
 import { LoginController } from "./controllers/login.controller";
 
 @Module({
-  controllers: [AccountController, LoginController],
-  imports: [UsersModelModule, MailModelModule, GoogleModelModule],
+	controllers: [AccountController, LoginController],
+	imports: [UsersModelModule, MailModelModule, GoogleModelModule],
 })
 export class AccountModule {}

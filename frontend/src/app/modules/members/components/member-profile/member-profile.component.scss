@@ -1,27 +1,27 @@
 :host {
-  display: block;
+	display: block;
 }
 
 .avatar {
-  background-color: var(--lightGrey);
-  margin: 0 auto;
-  width: 15em;
-  height: 15em;
+	background-color: var(--lightGrey);
+	margin: 0 auto;
+	width: 15em;
+	height: 15em;
 
-  span {
-    width: 100%;
-    height: 100%;
-    font-size: 7em;
-    color: var(--colorMedium);
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+	span {
+		width: 100%;
+		height: 100%;
+		font-size: 7em;
+		color: var(--colorMedium);
+		font-weight: bold;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
 }
 
 h2 {
-  font-size: 2.5em;
-  margin: 0.5em 0;
-  text-align: center;
+	font-size: 2.5em;
+	margin: 0.5em 0;
+	text-align: center;
 }

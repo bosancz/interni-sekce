@@ -1,7 +1,23 @@
 <ion-app>
-  <bo-app-layout *ngIf="user | async"></bo-app-layout>
+	@if (user()) {
+		<div class="layout">
+			<bo-header />
 
-  <bo-login *ngIf="(user | async) === null"></bo-login>
+			<div class="page">
+				@if (isLg()) {
+					<div class="sidebar">
+						<bo-sidebar></bo-sidebar>
+					</div>
+				}
 
-  <bo-app-loading *ngIf="(user | async) === undefined"></bo-app-loading>
+				<main>
+					<ion-router-outlet id="content"></ion-router-outlet>
+				</main>
+			</div>
+		</div>
+	} @else if (user() === null) {
+		<bo-login *ngIf="user() === null"></bo-login>
+	} @else {
+		<bo-app-loading *ngIf="user() === undefined"></bo-app-loading>
+	}
 </ion-app>

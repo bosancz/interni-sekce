@@ -1,65 +1,69 @@
-import { Component, Input, forwardRef } from '@angular/core';
+import { Component, Input, forwardRef } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 
 @Component({
-  selector: 'photo-tags-editor',
-  templateUrl: './photo-tags-editor.component.html',
-  styleUrls: ['./photo-tags-editor.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: forwardRef(() => PhotoTagsEditorComponent),
-    }
-  ]
+	selector: "photo-tags-editor",
+	templateUrl: "./photo-tags-editor.component.html",
+	styleUrls: ["./photo-tags-editor.component.scss"],
+	providers: [
+		{
+			provide: NG_VALUE_ACCESSOR,
+			multi: true,
+			useExisting: forwardRef(() => PhotoTagsEditorComponent),
+		},
+	],
 })
 export class PhotoTagsEditorComponent implements ControlValueAccessor {
+	@Input() tags: string[] = [];
+	selectedTags: string[] = [];
 
-  @Input() tags: string[] = [];
-  selectedTags: string[] = [];
+	disabled: boolean = false;
 
-  disabled: boolean = false;
+	onChange: any = () => {};
+	onTouched: any = () => {};
 
-  onChange: any = () => { };
-  onTouched: any = () => { };
+	writeValue(tags: any): void {
+		this.selectedTags = tags || [];
+	}
+	registerOnChange(fn: any): void {
+		this.onChange = fn;
+	}
+	registerOnTouched(fn: any): void {
+		this.onTouched = fn;
+	}
+	setDisabledState(isDisabled: boolean): void {
+		this.disabled = isDisabled;
+	}
 
-  writeValue(tags: any): void { this.selectedTags = tags || []; }
-  registerOnChange(fn: any): void { this.onChange = fn; }
-  registerOnTouched(fn: any): void { this.onTouched = fn; }
-  setDisabledState(isDisabled: boolean): void { this.disabled = isDisabled; }
+	constructor() {}
 
-  constructor() { }
+	hasTag(tag: string) {
+		return this.selectedTags.indexOf(tag) !== -1;
+	}
 
-  hasTag(tag: string) {
-    return this.selectedTags.indexOf(tag) !== -1;
-  }
+	toggleTag(tag: string) {
+		if (this.disabled) return;
 
-  toggleTag(tag: string) {
+		let i = this.selectedTags.indexOf(tag);
+		if (i === -1) this.selectedTags.push(tag);
+		else this.selectedTags.splice(i, 1);
 
-    if (this.disabled) return;
+		this.onChange(this.selectedTags);
+	}
 
-    let i = this.selectedTags.indexOf(tag);
-    if (i === -1) this.selectedTags.push(tag);
-    else this.selectedTags.splice(i, 1);
+	newTag() {
+		if (this.disabled) return;
 
-    this.onChange(this.selectedTags);
-  }
+		let tag = window.prompt("Zadejte název nového tagu:");
+		if (!tag) return;
 
-  newTag() {
+		if (tag.charAt(0) === "#") tag = tag.substring(1);
 
-    if (this.disabled) return;
+		if (this.tags.indexOf(tag) === -1) this.tags.push(tag);
 
-    let tag = window.prompt("Zadejte název nového tagu:");
-    if (!tag) return;
-
-    if (tag.charAt(0) === "#") tag = tag.substring(1);
-
-    if (this.tags.indexOf(tag) === -1) this.tags.push(tag);
-
-    if (this.selectedTags.indexOf(tag) === -1) {
-      this.selectedTags.push(tag);
-      this.onChange(this.selectedTags);
-    }
-  }
-
+		if (this.selectedTags.indexOf(tag) === -1) {
+			this.selectedTags.push(tag);
+			this.onChange(this.selectedTags);
+		}
+	}
 }

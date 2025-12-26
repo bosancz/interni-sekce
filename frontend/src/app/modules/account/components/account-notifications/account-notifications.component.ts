@@ -8,78 +8,78 @@ import { SDK } from "src/sdk";
 declare const Notification: any;
 
 @Component({
-  selector: "bo-account-notifications",
-  templateUrl: "./account-notifications.component.html",
-  styleUrls: ["./account-notifications.component.scss"],
-  standalone: false,
+	selector: "bo-account-notifications",
+	templateUrl: "./account-notifications.component.html",
+	styleUrls: ["./account-notifications.component.scss"],
+	standalone: false,
 })
 export class AccountNotificationsComponent implements OnInit {
-  user?: SDK.UserResponseWithLinks;
+	user?: SDK.UserResponseWithLinks;
 
-  notifications = [
-    { id: "new-event", name: "Nová událost" },
-    { id: "new-gallery", name: "Nová galerie" },
-    { id: "changed-event", name: "Změna události" },
-    { id: "received-payment", name: "Přijatá platba" },
-  ];
+	notifications = [
+		{ id: "new-event", name: "Nová událost" },
+		{ id: "new-gallery", name: "Nová galerie" },
+		{ id: "changed-event", name: "Změna události" },
+		{ id: "received-payment", name: "Přijatá platba" },
+	];
 
-  userNotifications: { [id: string]: any } = {};
+	userNotifications: { [id: string]: any } = {};
 
-  systemNotificationStatus: string = "default";
+	systemNotificationStatus: string = "default";
 
-  constructor(
-    private api: ApiService,
-    public swPush: SwPush,
-    private toastService: ToastService,
-  ) {}
+	constructor(
+		private api: ApiService,
+		public swPush: SwPush,
+		private toastService: ToastService,
+	) {}
 
-  ngOnInit() {
-    this.loadUser();
-    this.updateSystemNotificationStatus();
-  }
+	ngOnInit() {
+		this.loadUser();
+		this.updateSystemNotificationStatus();
+	}
 
-  async loadUser() {
-    this.user = await this.api.AccountApi.getMe().then((res) => res.data);
-    this.updateNotifications();
-  }
+	async loadUser() {
+		this.user = await this.api.AccountApi.getMe().then((res) => res.data);
+		this.updateNotifications();
+	}
 
-  async subscribe() {
-    // TODO: notifications
-    // const vapidPublicKey = await this.api.getAsText("notifications:key");
-    // try {
-    //   const subscription = await this.swPush.requestSubscription({
-    //     serverPublicKey: vapidPublicKey,
-    //   });
-    //   await this.api.post("user:subscriptions", subscription);
-    //   this.toastService.toast("Notifikace byly zapnuty.");
-    // } catch (err) {
-    //   this.toastService.toast("Nepodařilo se nastavit notifikace.");
-    // }
-  }
+	async subscribe() {
+		// TODO: notifications
+		// const vapidPublicKey = await this.api.getAsText("notifications:key");
+		// try {
+		//   const subscription = await this.swPush.requestSubscription({
+		//     serverPublicKey: vapidPublicKey,
+		//   });
+		//   await this.api.post("user:subscriptions", subscription);
+		//   this.toastService.toast("Notifikace byly zapnuty.");
+		// } catch (err) {
+		//   this.toastService.toast("Nepodařilo se nastavit notifikace.");
+		// }
+	}
 
-  async unsubscribe() {
-    await this.swPush.unsubscribe();
-    this.toastService.toast("Notifikace byly vypnuty.");
-  }
+	async unsubscribe() {
+		await this.swPush.unsubscribe();
+		this.toastService.toast("Notifikace byly vypnuty.");
+	}
 
-  updateNotifications() {
-    this.userNotifications = {};
+	updateNotifications() {
+		this.userNotifications = {};
 
-    // this.notifications.forEach(notification => {
-    //   this.userNotifications[notification.id] = {
-    //     email: notification.id in this.user?.notifications && !!this.user?.notifications[notification.id].email,
-    //     system: notification.id in this.user?.notifications && !!this.user?.notifications[notification.id].system
-    //   };
+		// this.notifications.forEach(notification => {
+		//   this.userNotifications[notification.id] = {
+		//     email: notification.id in this.user?.notifications && !!this.user?.notifications[notification.id].email,
+		//     system: notification.id in this.user?.notifications && !!this.user?.notifications[notification.id].system
+		//   };
 
-    // });
-  }
+		// });
+	}
 
-  updateSystemNotificationStatus() {
-    this.systemNotificationStatus = (Notification && Notification.permission) || "unavailable";
-  }
+	updateSystemNotificationStatus() {
+		this.systemNotificationStatus = (Notification && Notification.permission) || "unavailable";
+	}
 
-  async requestNotificationPermission() {
-    const permission = await Notification.requestPermission();
-    this.systemNotificationStatus = permission;
-  }
+	async requestNotificationPermission() {
+		const permission = await Notification.requestPermission();
+		this.systemNotificationStatus = permission;
+	}
 }

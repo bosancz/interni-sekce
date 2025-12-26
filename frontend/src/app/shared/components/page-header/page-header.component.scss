@@ -1,0 +1,16 @@
+:host {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	background-color: #fff;
+}
+
+.spacer {
+	flex-grow: 1;
+}
+
+.actions {
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+}

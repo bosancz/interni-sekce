@@ -1,4 +1,4 @@
-<h4 class="mt-4">Členství ve skupině</h4>
+<h3 class="mt-4">Členství ve skupině</h3>
 <ion-list *ngIf="member" class="selectable">
 	<bo-item label="Aktivní" (edit)="editActivity()">
 		<ion-label>{{ member.active === undefined ? "-" : member.active ? "Ano" : "Ne" }}</ion-label>
@@ -17,12 +17,13 @@
 	</bo-item>
 
 	<bo-item label="Oddíl">
-		<bo-group-select
+		<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
+		<!-- <bo-group-select
 			[required]="true"
 			[disabled]="!member._links.updateMember.allowed"
 			[ngModel]="member.groupId"
 			(ngModelChange)="update.emit({ groupId: $event })"
-		></bo-group-select>
+		></bo-group-select> -->
 	</bo-item>
 
 	<bo-item label="Stav členství" (edit)="editMembership()">

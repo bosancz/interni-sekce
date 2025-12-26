@@ -5,19 +5,19 @@ import { AbstractModalComponent } from "src/app/services/modal.service";
 import { SDK } from "src/sdk";
 
 @Component({
-  selector: "bo-event-expense-modal",
-  templateUrl: "./event-expense-modal.component.html",
-  styleUrls: ["./event-expense-modal.component.scss"],
-  standalone: false,
+	selector: "bo-event-expense-modal",
+	templateUrl: "./event-expense-modal.component.html",
+	styleUrls: ["./event-expense-modal.component.scss"],
+	standalone: false,
 })
 export class EventExpenseModalComponent extends AbstractModalComponent<SDK.EventExpenseResponse> implements OnInit {
-  @Input() expense!: SDK.EventExpenseResponse;
+	@Input() expense!: SDK.EventExpenseResponse;
 
-  types = EventExpenseTypes;
+	types = EventExpenseTypes;
 
-  constructor(modalController: ModalController) {
-    super(modalController);
-  }
+	constructor(modalController: ModalController) {
+		super(modalController);
+	}
 
-  ngOnInit(): void {}
+	ngOnInit(): void {}
 }

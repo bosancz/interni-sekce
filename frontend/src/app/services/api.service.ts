@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { ReplaySubject, Subject, fromEvent } from "rxjs";
-import { filter, retry, switchMap } from "rxjs/operators";
+import { Observable, ReplaySubject, Subject, fromEvent } from "rxjs";
+import { filter, map, shareReplay, switchMap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { Logger } from "src/logger";
 import { SDK } from "src/sdk";
@@ -13,9 +13,12 @@ export type ApiError = AxiosError;
 axios.defaults.withCredentials = true;
 
 interface WatchRequestOptions {
-	maxRetries?: number;
 	onFocus?: boolean;
+	onApiReload?: boolean;
+	customTrigger?: Observable<void>;
 }
+
+type WatchedRequest<T, D, H> = Observable<AxiosResponse<T, D, H>>;
 
 @Injectable({
 	providedIn: "root",
@@ -28,54 +31,54 @@ export class ApiService extends SDK {
 	);
 	private reloadApiEvent = new Subject<void>();
 
-	public info = new ReplaySubject<SDK.RootResponseWithLinks>();
+	public info = this.watch((signal) => this.RootApi.getApiInfo({ signal })).pipe(
+		map((res) => res.data),
+		shareReplay(1),
+	);
 	public rootLinks = new ReplaySubject<SDK.RootResponseLinks>();
 
 	constructor() {
 		super({
 			basePath: environment.apiRoot,
 		});
-
-		this.reloadApiEvent.subscribe(() => this.loadInfo());
-
-		this.reloadApi();
-	}
-
-	async init() {
-		await this.reloadApi();
 	}
 
 	async reloadApi() {
 		this.reloadApiEvent.next();
 	}
 
-	private async loadInfo() {
-		const info = await this.RootApi.getApiInfo().then((res) => res.data);
-		this.info.next(info);
-		this.rootLinks.next(info._links);
-	}
-
 	isApiError(err: unknown): err is ApiError {
 		return axios.isAxiosError(err);
 	}
 
-	watchRequest<T, D>(
-		request: (signal: AbortSignal) => Promise<AxiosResponse<T, D>>,
+	watch<T, D, H>(
+		request: (signal: AbortSignal) => Promise<AxiosResponse<T, D, H>>,
 		options: WatchRequestOptions = {},
-	) {
-		const trigger = new Subject<void>();
+	): WatchedRequest<T, D, H> {
+		const trigger = new ReplaySubject<void>(1);
 
-		this.tabFocusEvent.subscribe(() => trigger.next());
-		this.reloadApiEvent.subscribe(() => trigger.next());
+		// reload on window/tab blur+focus
+		if (options.onFocus !== false) this.tabFocusEvent.subscribe(() => trigger.next());
 
-		return trigger
-			.pipe(
-				switchMap(() => {
-					const controller = new AbortController();
-					trigger.subscribe(() => controller.abort());
-					return request(controller.signal);
-				}),
-			)
-			.pipe(retry(options.maxRetries));
+		// reload on manual API reload trigger
+		if (options.onApiReload !== false) this.reloadApiEvent.subscribe(() => trigger.next());
+
+		// reload on provided custom trigger
+		if (options.customTrigger) options.customTrigger.subscribe(() => trigger.next());
+
+		// load data on initialization
+		trigger.next();
+
+		let abortController: AbortController | null = null;
+
+		return trigger.pipe(
+			switchMap(() => {
+				// abort previous request if not finished yet
+				abortController?.abort();
+				abortController = new AbortController();
+				// issue new request
+				return request(abortController.signal);
+			}),
+		);
 	}
 }

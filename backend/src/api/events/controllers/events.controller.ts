@@ -61,8 +61,6 @@ export class EventsController {
 			...query,
 		};
 
-		console.log("USER TOKEN", token);
-
 		if (query.my) {
 			if (!token.memberId) throw new ConflictException("Cannot show my events, user is not linked to a member.");
 			options.memberId = token.memberId;

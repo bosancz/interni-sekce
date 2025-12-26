@@ -5,9 +5,13 @@ import { RouterModule } from "@angular/router";
 import { IonicModule } from "@ionic/angular";
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from "ng2-charts";
 import { register } from "swiper/element/bundle";
+import { AccountMenuComponent } from "./components/account-menu/account-menu.component";
+import { ActionButtonsModalComponent } from "./components/action-buttons-modal/action-buttons-modal.component";
 import { ActionButtonsComponent } from "./components/action-buttons/action-buttons.component";
 import { AddButtonComponent } from "./components/add-button/add-button.component";
 import { AdminTableComponent } from "./components/admin-table/admin-table.component";
+import { AvatarComponent } from "./components/avatar/avatar.component";
+import { ButtonComponent } from "./components/button/button.component";
 import { CardContentComponent } from "./components/card-content/card-content.component";
 import { CardFooterComponent } from "./components/card-footer/card-footer.component";
 import { CardHeaderComponent } from "./components/card-header/card-header.component";
@@ -15,6 +19,7 @@ import { CardOpenButtonComponent } from "./components/card-open-button/card-open
 import { CardTitleComponent } from "./components/card-title/card-title.component";
 import { CardComponent } from "./components/card/card.component";
 import { CopyButtonComponent } from "./components/copy-button/copy-button.component";
+import { DarkModeToggleComponent } from "./components/dark-mode-toggle/dark-mode-toggle.component";
 import { DeleteButtonComponent } from "./components/delete-button/delete-button.component";
 import { DotComponent } from "./components/dot/dot.component";
 import { EditButtonDateRangeComponent } from "./components/edit-button-date-range/edit-button-date-range.component";
@@ -45,6 +50,7 @@ import { PhotoFaceComponent } from "./components/photo-face/photo-face.component
 import { PhotoGalleryComponent } from "./components/photo-gallery/photo-gallery.component";
 import { TabComponent } from "./components/tab/tab.component";
 import { TabsComponent } from "./components/tabs/tabs.component";
+import { VersionComponent } from "./components/version/version.component";
 import { AlbumPipe } from "./pipes/album.pipe";
 import { DateRangePipe } from "./pipes/date-range.pipe";
 import { EventExpensePipe } from "./pipes/event-expense.pipe";
@@ -115,6 +121,12 @@ register();
 		EditButtonNameComponent,
 		EditButtonDateComponent,
 		EditButtonSelectComponent,
+		AvatarComponent,
+		ButtonComponent,
+		AccountMenuComponent,
+		VersionComponent,
+		DarkModeToggleComponent,
+		ActionButtonsModalComponent,
 	],
 	exports: [
 		FormsModule,
@@ -173,6 +185,11 @@ register();
 		EditButtonNameComponent,
 		EditButtonDateComponent,
 		EditButtonSelectComponent,
+		AvatarComponent,
+		ButtonComponent,
+		AccountMenuComponent,
+		VersionComponent,
+		DarkModeToggleComponent,
 	],
 	providers: [DatePipe, provideCharts(withDefaultRegisterables())],
 })

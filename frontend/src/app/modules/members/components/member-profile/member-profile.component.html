@@ -1,7 +1,7 @@
 <ion-avatar class="avatar">
-  <span *ngIf="member">{{ member | member: "initials" }}</span>
+	<span *ngIf="member">{{ member | member: "initials" }}</span>
 </ion-avatar>
 
 <h2 *ngIf="member?.nickname || member?.firstName" class="mt-3 d-none d-xl-block selectable">
-  {{ member!.nickname || member!.firstName }}
+	{{ member!.nickname || member!.firstName }}
 </h2>

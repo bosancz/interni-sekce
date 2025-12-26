@@ -8,10 +8,12 @@
     4200,
     9229,
     3000,
-    5432
+    "postgres:5432",
+    "pgweb:8081"
   ],
   "features": {
-    "ghcr.io/devcontainers/features/java:1": {}
+    "ghcr.io/devcontainers/features/java:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "customizations": {
     "vscode": {

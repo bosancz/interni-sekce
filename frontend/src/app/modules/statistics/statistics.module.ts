@@ -9,14 +9,14 @@ import { StatisticsRoutingModule } from "./statistics-routing.module";
 import { StatisticsComponent } from "./statistics.component";
 
 @NgModule({
-  declarations: [
-    StatisticsComponent,
-    EventsDashboardComponent,
-    MembersDashboardComponent,
-    PaddlerCompetitionComponent,
-    ListSliderComponent,
-  ],
-  imports: [CommonModule, SharedModule, StatisticsRoutingModule],
-  providers: [],
+	declarations: [
+		StatisticsComponent,
+		EventsDashboardComponent,
+		MembersDashboardComponent,
+		PaddlerCompetitionComponent,
+		ListSliderComponent,
+	],
+	imports: [CommonModule, SharedModule, StatisticsRoutingModule],
+	providers: [],
 })
 export class StatisticsModule {}

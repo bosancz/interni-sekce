@@ -1,16 +1,16 @@
 <div *ngFor="let row of rows" class="photo-row">
-  <div
-    *ngFor="let item of row.photos"
-    class="photo"
-    (click)="onPhotoClick($event, item.photo)"
-    [class.clickable]="clickable"
-  >
-    <img
-      [src]="item.photo._links.getPhotoImage.href"
-      [style.height]="row.height + 'px'"
-      [style.width]="row.height * item.ratio + 'px'"
-      [style.background-color]="item.photo.bg"
-    />
-    <span *ngIf="item.photo.caption" class="caption">{{ item.photo.caption }}</span>
-  </div>
+	<div
+		*ngFor="let item of row.photos"
+		class="photo"
+		(click)="onPhotoClick($event, item.photo)"
+		[class.clickable]="clickable"
+	>
+		<img
+			[src]="item.photo._links.getPhotoImage.href"
+			[style.height]="row.height + 'px'"
+			[style.width]="row.height * item.ratio + 'px'"
+			[style.background-color]="item.photo.bg"
+		/>
+		<span *ngIf="item.photo.caption" class="caption">{{ item.photo.caption }}</span>
+	</div>
 </div>

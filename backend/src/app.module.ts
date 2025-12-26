@@ -22,38 +22,38 @@ import { StatisticsModelModule } from "./models/statistics/statistics-model.modu
 import { UsersModelModule } from "./models/users/users-model.module";
 
 @Module({
-  imports: [
-    DatabaseModule,
-    ConfigModule,
-    ServeStaticModule.forRootAsync({
-      inject: [Config],
-      useFactory: (config: Config) => [{ rootPath: config.server.staticRoot }],
-    }),
-    MulterModule.register({
-      dest: "/tmp/uploads",
-      limits: {
-        fileSize: 1024 * 1024 * 100, // 100 MB
-      },
-    }),
-    EventsModule,
-    EventsModule,
-    PublicModule,
-    MembersModule,
-    AuthModule,
-    UsersModule,
-    MembersModelModule,
-    AlbumsModelModule,
-    UsersModelModule,
-    AlbumsModule,
-    AccessControlModule,
-    AccountModule,
-    StatisticsModule,
-    RootModule,
-    StatisticsModelModule,
-    GoogleModelModule,
-    FilesModule,
-  ],
-  controllers: [],
-  providers: [MailService],
+	imports: [
+		DatabaseModule,
+		ConfigModule,
+		ServeStaticModule.forRootAsync({
+			inject: [Config],
+			useFactory: (config: Config) => [{ rootPath: config.server.staticRoot }],
+		}),
+		MulterModule.register({
+			dest: "/tmp/uploads",
+			limits: {
+				fileSize: 1024 * 1024 * 100, // 100 MB
+			},
+		}),
+		EventsModule,
+		EventsModule,
+		PublicModule,
+		MembersModule,
+		AuthModule,
+		UsersModule,
+		MembersModelModule,
+		AlbumsModelModule,
+		UsersModelModule,
+		AlbumsModule,
+		AccessControlModule,
+		AccountModule,
+		StatisticsModule,
+		RootModule,
+		StatisticsModelModule,
+		GoogleModelModule,
+		FilesModule,
+	],
+	controllers: [],
+	providers: [MailService],
 })
 export class AppModule {}

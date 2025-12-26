@@ -1,17 +1,17 @@
 import { SDK } from "src/sdk";
 
 export interface MembershipStatesMetadata {
-  title: string;
+	title: string;
 }
 
 export const MembershipStates: { [status in SDK.MembershipStatesEnum]: MembershipStatesMetadata } = {
-  clen: {
-    title: "Člen",
-  },
-  neclen: {
-    title: "Nečlen",
-  },
-  pozastaveno: {
-    title: "Pozastaveno",
-  },
+	clen: {
+		title: "Člen",
+	},
+	neclen: {
+		title: "Nečlen",
+	},
+	pozastaveno: {
+		title: "Pozastaveno",
+	},
 };

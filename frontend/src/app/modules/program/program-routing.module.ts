@@ -8,21 +8,21 @@ import { ProgramWorkflowComponent } from "./pages/program-workflow/program-workf
 import { ProgramComponent } from "./program.component";
 
 const routes: Routes = [
-  {
-    path: "",
-    component: ProgramComponent,
-    children: [
-      { path: "planovani", component: ProgramPlanningComponent },
-      { path: "tisk", component: ProgramPrintComponent },
-      { path: "kalendar", component: ProgramCalendarComponent },
-      { path: "schvalovani", component: ProgramWorkflowComponent },
-      { path: "", pathMatch: "full", redirectTo: "kalendar" },
-    ],
-  },
+	{
+		path: "",
+		component: ProgramComponent,
+		children: [
+			{ path: "planovani", component: ProgramPlanningComponent },
+			{ path: "tisk", component: ProgramPrintComponent },
+			{ path: "kalendar", component: ProgramCalendarComponent },
+			{ path: "schvalovani", component: ProgramWorkflowComponent },
+			{ path: "", pathMatch: "full", redirectTo: "kalendar" },
+		],
+	},
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
 export class ProgramRoutingModule {}

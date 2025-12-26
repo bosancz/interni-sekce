@@ -16,19 +16,19 @@ import { AlbumsViewInfoComponent } from "./pages/albums-view-info/albums-view-in
 import { AlbumsViewPhotosComponent } from "./pages/albums-view-photos/albums-view-photos.component";
 
 @NgModule({
-  declarations: [
-    AlbumsListComponent,
-    AlbumsEditComponent,
-    PhotosUploadComponent,
-    AlbumsViewInfoComponent,
-    AlbumsViewPhotosComponent,
-    PhotosEditComponent,
-    EventSelectorComponent,
-    EventSelectorModalComponent,
-    PhotoListComponent,
-    AlbumsTabsComponent,
-  ],
-  imports: [CommonModule, AlbumsRoutingModule, SharedModule],
-  providers: [],
+	declarations: [
+		AlbumsListComponent,
+		AlbumsEditComponent,
+		PhotosUploadComponent,
+		AlbumsViewInfoComponent,
+		AlbumsViewPhotosComponent,
+		PhotosEditComponent,
+		EventSelectorComponent,
+		EventSelectorModalComponent,
+		PhotoListComponent,
+		AlbumsTabsComponent,
+	],
+	imports: [CommonModule, AlbumsRoutingModule, SharedModule],
+	providers: [],
 })
 export class AlbumsModule {}

@@ -1,0 +1,97 @@
+name: Publish Docker image
+
+on:
+  workflow_call:
+    inputs:
+      source-image-name:
+        description: "Name of the loaded Docker image"
+        type: string
+        required: true
+      publish-image-name:
+        description: "Name of the published docker image"
+        type: string
+        required: true
+      registry:
+        description: "Container registry for the published docker image"
+        type: string
+        required: true
+      tag:
+        description: "Push under this tag"
+        type: string
+        required: false
+      version:
+        description: "Version to tag"
+        type: string
+        required: false
+    secrets:
+      username:
+        description: "Username for the container registry"
+        required: true
+      password:
+        description: "Password for the container registry"
+        required: true
+    outputs:
+      images:
+        description: "List of pushed images, separated by commas"
+        value: ${{ jobs.publish.outputs.images }}
+
+jobs:
+  publish:
+    name: Publish Docker image
+    runs-on: ubuntu-latest
+    outputs:
+      images: ${{ steps.set-images-output.outputs.images }}
+    steps:
+      - name: Login to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ secrets.username }}
+          password: ${{ secrets.password }}
+
+      - name: Download Docker image tarball
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.source-image-name }}-docker-image
+
+      - name: Load Docker image from tarball
+        shell: bash
+        run: |
+          docker load -i ${{ inputs.source-image-name }}-docker-image.tar
+          rm ${{ inputs.source-image-name }}-docker-image.tar
+
+      - name: Push ${{ inputs.tag }} tag to the container registry
+        id: push-tag
+        if: inputs.tag != ''
+        shell: bash
+        run: |
+          docker tag ${{ inputs.source-image-name }}:${{ github.sha }} ${{ inputs.registry }}/${{ inputs.publish-image-name }}:${{ inputs.tag }}
+          docker push ${{ inputs.registry }}/${{ inputs.publish-image-name }}:${{ inputs.tag }}
+          echo "image=${{ inputs.registry }}/${{ inputs.publish-image-name }}:${{ inputs.tag }}" >> $GITHUB_OUTPUT
+
+      - name: Push ${{ inputs.version }} tag to the container registry
+        id: push-version
+        if: inputs.version != ''
+        shell: bash
+        run: |
+          docker tag ${{ inputs.source-image-name }}:${{ github.sha }} ${{ inputs.registry }}/${{ inputs.publish-image-name }}:${{ inputs.version }}
+          docker push ${{ inputs.registry }}/${{ inputs.publish-image-name }}:${{ inputs.version }}
+          echo "image=${{ inputs.registry }}/${{ inputs.publish-image-name }}:${{ inputs.version }}" >> $GITHUB_OUTPUT
+
+      - name: Set images output
+        id: set-images-output
+        shell: bash
+        run: |
+          images=()
+
+          if [ -n "${{ steps.push-tag.outputs.image }}" ]; then
+            images+=("${{ steps.push-tag.outputs.image }}")
+          fi
+          if [ -n "${{ steps.push-version.outputs.image }}" ]; then
+            images+=("${{ steps.push-version.outputs.image }}")
+          fi
+
+          # Join array elements with comma
+          output=$(printf ",%s" "${images[@]}")
+          output=${output:1}  # remove leading comma
+          echo "images=$output" >> $GITHUB_OUTPUT

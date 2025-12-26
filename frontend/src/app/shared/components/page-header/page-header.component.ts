@@ -1,22 +1,22 @@
 import { Component, Input } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { PlatformService } from "src/app/services/platform.service";
 import { Action } from "../action-buttons/action-buttons.component";
 
 @Component({
-  selector: "bo-page-header",
-  templateUrl: "./page-header.component.html",
-  styleUrls: ["./page-header.component.scss"],
-  standalone: false,
+	selector: "bo-page-header",
+	templateUrl: "./page-header.component.html",
+	styleUrls: ["./page-header.component.scss"],
+	standalone: false,
 })
 export class PageHeaderComponent {
-  @Input() actions?: Action[];
+	@Input() title?: string | null;
+	@Input() actions?: Action[];
 
-  @Input() title?: string | null;
+	isLg = toSignal(this.platformService.isLg);
+	isIos = toSignal(this.platformService.isIos);
 
-  @Input() backUrl?: string | null;
+	viewActive: boolean = false;
 
-  @Input() actionsHeader?: string | null;
-
-  viewActive: boolean = false;
-
-  constructor() {}
+	constructor(private readonly platformService: PlatformService) {}
 }

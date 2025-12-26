@@ -1,57 +1,57 @@
 <bo-modal-layout>
-  <h4 slot="title">Vytvořit akci</h4>
-  <form [formGroup]="form" #eventForm [class.was-validated]="showValidationErrors">
-    <ion-list>
-      <ion-item>
-        <ion-input
-          label="Název"
-          labelPlacement="stacked"
-          type="text"
-          formControlName="name"
-          placeholder="Neočekávaný dýchánek"
-          required
-        ></ion-input>
-      </ion-item>
+	<h4 slot="title">Vytvořit akci</h4>
+	<form [formGroup]="form" #eventForm [class.was-validated]="showValidationErrors">
+		<ion-list>
+			<ion-item>
+				<ion-input
+					label="Název"
+					labelPlacement="stacked"
+					type="text"
+					formControlName="name"
+					placeholder="Neočekávaný dýchánek"
+					required
+				></ion-input>
+			</ion-item>
 
-      <ion-item>
-        <ion-input
-          label="Datum"
-          labelPlacement="stacked"
-          type="date"
-          formControlName="dateFrom"
-          placeholder="Začátek"
-          required
-        ></ion-input>
-      </ion-item>
+			<ion-item>
+				<ion-input
+					label="Datum"
+					labelPlacement="stacked"
+					type="date"
+					formControlName="dateFrom"
+					placeholder="Začátek"
+					required
+				></ion-input>
+			</ion-item>
 
-      <ion-item>
-        <ion-input
-          label="Datum"
-          labelPlacement="stacked"
-          type="date"
-          formControlName="dateTill"
-          placeholder="Konec"
-          required
-        ></ion-input>
-      </ion-item>
+			<ion-item>
+				<ion-input
+					label="Datum"
+					labelPlacement="stacked"
+					type="date"
+					formControlName="dateTill"
+					placeholder="Konec"
+					required
+				></ion-input>
+			</ion-item>
 
-      <ion-item>
-        <ion-textarea
-          label="Popis"
-          labelPlacement="stacked"
-          formControlName="description"
-          id="createEventInput-description"
-        ></ion-textarea>
-      </ion-item>
+			<ion-item>
+				<ion-textarea
+					label="Popis"
+					labelPlacement="stacked"
+					formControlName="description"
+					id="createEventInput-description"
+				></ion-textarea>
+			</ion-item>
 
-      <ion-item>
-        <ion-label position="stacked">Typ akce</ion-label>
-        <bo-event-type-selector formControlName="type"></bo-event-type-selector>
-      </ion-item>
-    </ion-list>
-  </form>
-  <ion-buttons slot="buttons">
-    <ion-button (click)="close.emit()" color="secondary">Zrušit</ion-button>
-    <ion-button (click)="createEvent()" color="primary">Vytvořit</ion-button>
-  </ion-buttons>
+			<ion-item>
+				<ion-label position="stacked">Typ akce</ion-label>
+				<bo-event-type-selector formControlName="type"></bo-event-type-selector>
+			</ion-item>
+		</ion-list>
+	</form>
+	<ion-buttons slot="buttons">
+		<ion-button (click)="close.emit()" color="secondary">Zrušit</ion-button>
+		<ion-button (click)="createEvent()" color="primary">Vytvořit</ion-button>
+	</ion-buttons>
 </bo-modal-layout>

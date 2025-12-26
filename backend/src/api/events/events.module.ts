@@ -25,6 +25,5 @@ import { EventsController } from "./controllers/events.controller";
 		EventsAnnouncementController,
 		EventsAccountingController,
 	],
-	providers: [],
 })
 export class EventsModule {}

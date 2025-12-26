@@ -14,15 +14,15 @@ import { ProgramWorkflowComponent } from "./pages/program-workflow/program-workf
 import { ProgramComponent } from "./program.component";
 
 @NgModule({
-  imports: [CommonModule, ProgramRoutingModule, SharedModule],
-  declarations: [
-    ProgramPlanningComponent,
-    ProgramWorkflowComponent,
-    ProgramPrintComponent,
-    TrimesterSelectorComponent,
-    ProgramCalendarComponent,
-    ProgramComponent,
-    EventStatusLegendComponent,
-  ],
+	imports: [CommonModule, ProgramRoutingModule, SharedModule],
+	declarations: [
+		ProgramPlanningComponent,
+		ProgramWorkflowComponent,
+		ProgramPrintComponent,
+		TrimesterSelectorComponent,
+		ProgramCalendarComponent,
+		ProgramComponent,
+		EventStatusLegendComponent,
+	],
 })
 export class ProgramModule {}

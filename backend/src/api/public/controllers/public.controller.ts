@@ -4,9 +4,9 @@ import { ApiTags } from "@nestjs/swagger";
 @Controller("public")
 @ApiTags("Public")
 export class PublicController {
-  @Get()
-  getProgram() {}
+	@Get()
+	getProgram() {}
 
-  @Get()
-  getGallery() {}
+	@Get()
+	getGallery() {}
 }

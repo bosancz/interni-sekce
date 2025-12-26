@@ -4,10 +4,10 @@ import { TokenData } from "../schema/user-token";
 export {};
 
 declare global {
-  namespace Express {
-    export interface Request {
-      user?: TokenData;
-      token?: string;
-    }
-  }
+	namespace Express {
+		export interface Request {
+			user?: TokenData;
+			token?: string;
+		}
+	}
 }

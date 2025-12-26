@@ -5,24 +5,23 @@ import { SDK } from "src/sdk";
 type AlbumPipeProperty = "status";
 
 @Pipe({
-  name: "album",
-  pure: false,
-  standalone: false,
+	name: "album",
+	standalone: false,
 })
 export class AlbumPipe implements PipeTransform {
-  defaultProperties: { [property: string]: any } = {};
+	defaultProperties: { [property: string]: any } = {};
 
-  constructor() {}
+	constructor() {}
 
-  transform(album: SDK.AlbumResponseWithLinks | undefined, property: AlbumPipeProperty): string {
-    if (!album) return this.defaultProperties[property];
+	transform(album: SDK.AlbumResponseWithLinks | undefined, property: AlbumPipeProperty): string {
+		if (!album) return this.defaultProperties[property];
 
-    switch (property) {
-      case "status":
-        return AlbumStatuses[album.status]?.name || "?";
+		switch (property) {
+			case "status":
+				return AlbumStatuses[album.status]?.name || "?";
 
-      default:
-        return "?";
-    }
-  }
+			default:
+				return "?";
+		}
+	}
 }

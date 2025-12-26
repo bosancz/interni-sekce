@@ -6,7 +6,7 @@ import { AlbumsController } from "./controllers/albums.controller";
 import { PhotosController } from "./controllers/photos.controller";
 
 @Module({
-  imports: [AlbumsModelModule, TypeOrmModule.forFeature([Album])],
-  controllers: [AlbumsController, PhotosController],
+	imports: [AlbumsModelModule, TypeOrmModule.forFeature([Album])],
+	controllers: [AlbumsController, PhotosController],
 })
 export class AlbumsModule {}

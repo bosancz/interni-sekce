@@ -1,27 +1,31 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { SharedModule } from "src/app/shared/shared.module";
+import { AccountMenuModalComponent } from "./components/account-menu-modal/account-menu-modal.component";
 import { HomeCalendarComponent } from "./components/home-calendar/home-calendar.component";
-import { HomeCardMembersComponent } from "./components/home-card-members/home-card-members.component";
 import { HomeCardMyEventsComponent } from "./components/home-card-my-events/home-card-my-events.component";
 import { HomeCardNoleaderEventsComponent } from "./components/home-card-noleader-events/home-card-noleader-events.component";
+import { HomeCardSearchMemberComponent } from "./components/home-card-search-member/home-card-search-member.component";
+import { HomeDashboardComponent } from "./components/home-dashboard/home-dashboard.component";
 import { HomeMemberSearchComponent } from "./components/home-member-search/home-member-search.component";
 import { HomeMenuComponent } from "./components/home-menu/home-menu.component";
+import { HomeMyComponent } from "./components/home-my/home-my.component";
 import { HomeRoutingModule } from "./home-routing.module";
-import { HomeDashboardComponent } from "./pages/home-dashboard/home-dashboard.component";
-import { HomeMyEventsComponent } from "./pages/home-my-events/home-my-events.component";
+import { HomeComponent } from "./pages/home/home.component";
 
 @NgModule({
-  declarations: [
-    HomeDashboardComponent,
-    HomeMyEventsComponent,
-    HomeMenuComponent,
-    HomeCardNoleaderEventsComponent,
-    HomeCalendarComponent,
-    HomeCardMyEventsComponent,
-    HomeCardMembersComponent,
-    HomeMemberSearchComponent,
-  ],
-  imports: [CommonModule, HomeRoutingModule, SharedModule],
+	declarations: [
+		HomeDashboardComponent,
+		HomeMenuComponent,
+		HomeCardNoleaderEventsComponent,
+		HomeCalendarComponent,
+		HomeCardMyEventsComponent,
+		HomeMemberSearchComponent,
+		HomeCardSearchMemberComponent,
+		HomeComponent,
+		HomeMyComponent,
+		AccountMenuModalComponent,
+	],
+	imports: [CommonModule, HomeRoutingModule, SharedModule],
 })
 export class DashboardModule {}

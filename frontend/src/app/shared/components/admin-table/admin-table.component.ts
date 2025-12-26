@@ -1,22 +1,20 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input } from "@angular/core";
 
 @Component({
-    selector: 'admin-table',
-    templateUrl: './admin-table.component.html',
-    styleUrls: ['./admin-table.component.scss'],
-    standalone: false
+	selector: "admin-table",
+	templateUrl: "./admin-table.component.html",
+	styleUrls: ["./admin-table.component.scss"],
+	standalone: false,
 })
 export class AdminTableComponent {
+	defaultTableClass = "table table-hover";
+	tableClass: string;
 
-  defaultTableClass = "table table-hover";
-  tableClass: string;
+	@Input() set class(classNames: string) {
+		this.tableClass = this.defaultTableClass + (classNames ? " " + classNames : "");
+	}
 
-  @Input() set class(classNames: string) {
-    this.tableClass = this.defaultTableClass + (classNames ? " " + classNames : "");
-  }
-
-  constructor() {
-    this.tableClass = this.defaultTableClass;
-  }
-
+	constructor() {
+		this.tableClass = this.defaultTableClass;
+	}
 }

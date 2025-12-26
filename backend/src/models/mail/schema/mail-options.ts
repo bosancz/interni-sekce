@@ -1,5 +1,5 @@
 export interface MailOptions {
-  to: string;
-  subject: string;
-  body: string;
+	to: string;
+	subject: string;
+	body: string;
 }

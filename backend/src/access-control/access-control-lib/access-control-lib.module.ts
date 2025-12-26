@@ -4,11 +4,11 @@ import { AccessControlLibOptions } from "./schema/options";
 
 @Module({})
 export class AccessControlLibModule {
-  static register(options: AccessControlLibOptions): DynamicModule {
-    Object.assign(OptionsStore, options);
+	static register(options: AccessControlLibOptions): DynamicModule {
+		Object.assign(OptionsStore, options);
 
-    return {
-      module: AccessControlLibModule,
-    };
-  }
+		return {
+			module: AccessControlLibModule,
+		};
+	}
 }

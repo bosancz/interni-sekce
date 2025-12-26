@@ -1,6 +1,0 @@
-FROM busybox
-WORKDIR /stuff
-# Just copy everything to the image
-COPY . .
-# Some default CMD is usually a good idea
-CMD du -m | sort -n
