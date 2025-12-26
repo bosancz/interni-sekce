@@ -57,3 +57,8 @@ jobs:
     uses: ./.github/workflows/tag.yml
     with:
       tag: dev
+
+  cleanup:
+    name: Cleanup
+    needs: [deploy]
+    uses: ./.github/workflows/cleanup.yml

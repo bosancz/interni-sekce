@@ -78,3 +78,8 @@ jobs:
     with:
       tag: production
       version: ${{ needs.version.outputs.new_tag }}
+
+  cleanup:
+    name: Cleanup
+    needs: [deploy]
+    uses: ./.github/workflows/cleanup.yml
