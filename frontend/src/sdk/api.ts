@@ -54,6 +54,76 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface AcLink
+     */
+    export interface AcLink {
+        /**
+         * 
+         * @type {boolean}
+         * @memberof AcLink
+         */
+        'allowed': boolean;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof AcLink
+         */
+        'applicable': boolean;
+        /**
+         * 
+         * @type {string}
+         * @memberof AcLink
+         */
+        'href': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof AcLink
+         */
+        'method': string;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface AccountResponseLinks
+     */
+    export interface AccountResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AccountResponseLinks
+         */
+        'getUser': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AccountResponseLinks
+         */
+        'updateUser': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AccountResponseLinks
+         */
+        'deleteUser': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AccountResponseLinks
+         */
+        'setUserPassword': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AccountResponseLinks
+         */
+        'impersonateUser': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface Album
      */
     export interface Album {
@@ -221,16 +291,16 @@ export namespace SDK {
         'eventId'?: number | null;
         /**
          * 
-         * @type {object}
+         * @type {EventResponseWithLinks}
          * @memberof AlbumResponse
          */
-        'event'?: object;
+        'event'?: EventResponseWithLinks;
         /**
          * 
-         * @type {Array<object>}
+         * @type {Array<PhotoResponseWithLinks>}
          * @memberof AlbumResponse
          */
-        'photos'?: Array<object>;
+        'photos'?: Array<PhotoResponseWithLinks>;
     }
     
     export const AlbumResponseStatusEnum = {
@@ -239,6 +309,132 @@ export namespace SDK {
     } as const;
     
     export type AlbumResponseStatusEnum = typeof AlbumResponseStatusEnum[keyof typeof AlbumResponseStatusEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @interface AlbumResponseLinks
+     */
+    export interface AlbumResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
+        'getAlbum': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
+        'updateAlbum': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
+        'deleteAlbum': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
+        'publishAlbum': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
+        'unpublishAlbum': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
+        'getAlbumPhotos': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface AlbumResponseWithLinks
+     */
+    export interface AlbumResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof AlbumResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof AlbumResponseWithLinks
+         */
+        'status': AlbumResponseWithLinksStatusEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof AlbumResponseWithLinks
+         */
+        'name': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof AlbumResponseWithLinks
+         */
+        'description'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof AlbumResponseWithLinks
+         */
+        'datePublished'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof AlbumResponseWithLinks
+         */
+        'dateFrom'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof AlbumResponseWithLinks
+         */
+        'dateTill'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof AlbumResponseWithLinks
+         */
+        'eventId'?: number | null;
+        /**
+         * 
+         * @type {EventResponseWithLinks}
+         * @memberof AlbumResponseWithLinks
+         */
+        'event'?: EventResponseWithLinks;
+        /**
+         * 
+         * @type {Array<PhotoResponseWithLinks>}
+         * @memberof AlbumResponseWithLinks
+         */
+        'photos'?: Array<PhotoResponseWithLinks>;
+        /**
+         * 
+         * @type {AlbumResponseLinks}
+         * @memberof AlbumResponseWithLinks
+         */
+        '_links': AlbumResponseLinks;
+    }
+    
+    export const AlbumResponseWithLinksStatusEnum = {
+        Public: 'public',
+        Draft: 'draft'
+    } as const;
+    
+    export type AlbumResponseWithLinksStatusEnum = typeof AlbumResponseWithLinksStatusEnum[keyof typeof AlbumResponseWithLinksStatusEnum];
     
     
         /**
@@ -283,6 +479,50 @@ export namespace SDK {
          * @memberof AlbumUpdateBody
          */
         'eventId'?: number | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface CPVEventResponseWithLinks
+     */
+    export interface CPVEventResponseWithLinks {
+        /**
+         * 
+         * @type {string}
+         * @memberof CPVEventResponseWithLinks
+         */
+        'name': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof CPVEventResponseWithLinks
+         */
+        'dateFrom': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof CPVEventResponseWithLinks
+         */
+        'dateTill': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof CPVEventResponseWithLinks
+         */
+        'description'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof CPVEventResponseWithLinks
+         */
+        'link'?: string;
+        /**
+         * 
+         * @type {object}
+         * @memberof CPVEventResponseWithLinks
+         */
+        '_links': object;
     }
     
         /**
@@ -622,6 +862,78 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface EventAttendeeResponseLinks
+     */
+    export interface EventAttendeeResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventAttendeeResponseLinks
+         */
+        'updateEventAttendee': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventAttendeeResponseLinks
+         */
+        'deleteEventAttendee': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface EventAttendeeResponseWithLinks
+     */
+    export interface EventAttendeeResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof EventAttendeeResponseWithLinks
+         */
+        'eventId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventAttendeeResponseWithLinks
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventAttendeeResponseWithLinks
+         */
+        'type': EventAttendeeResponseWithLinksTypeEnum;
+        /**
+         * 
+         * @type {Event}
+         * @memberof EventAttendeeResponseWithLinks
+         */
+        'event'?: Event;
+        /**
+         * 
+         * @type {MemberResponse}
+         * @memberof EventAttendeeResponseWithLinks
+         */
+        'member'?: MemberResponse;
+        /**
+         * 
+         * @type {EventAttendeeResponseLinks}
+         * @memberof EventAttendeeResponseWithLinks
+         */
+        '_links': EventAttendeeResponseLinks;
+    }
+    
+    export const EventAttendeeResponseWithLinksTypeEnum = {
+        Attendee: 'attendee',
+        Leader: 'leader'
+    } as const;
+    
+    export type EventAttendeeResponseWithLinksTypeEnum = typeof EventAttendeeResponseWithLinksTypeEnum[keyof typeof EventAttendeeResponseWithLinksTypeEnum];
+    
+    
+        /**
+     * 
+     * @export
      * @interface EventAttendeeUpdateBody
      */
     export interface EventAttendeeUpdateBody {
@@ -831,6 +1143,84 @@ export namespace SDK {
          * @memberof EventExpenseResponse
          */
         'event'?: Event;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @interface EventExpenseResponseLinks
+     */
+    export interface EventExpenseResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventExpenseResponseLinks
+         */
+        'updateEventExpense': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventExpenseResponseLinks
+         */
+        'deleteEventExpense': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface EventExpenseResponseWithLinks
+     */
+    export interface EventExpenseResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof EventExpenseResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventExpenseResponseWithLinks
+         */
+        'eventId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventExpenseResponseWithLinks
+         */
+        'receiptNumber'?: string;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventExpenseResponseWithLinks
+         */
+        'amount'?: number;
+        /**
+         * 
+         * @type {EventExpenseTypesEnum}
+         * @memberof EventExpenseResponseWithLinks
+         */
+        'type'?: EventExpenseTypesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventExpenseResponseWithLinks
+         */
+        'description'?: string;
+        /**
+         * 
+         * @type {Event}
+         * @memberof EventExpenseResponseWithLinks
+         */
+        'event'?: Event;
+        /**
+         * 
+         * @type {EventExpenseResponseLinks}
+         * @memberof EventExpenseResponseWithLinks
+         */
+        '_links': EventExpenseResponseLinks;
     }
     
     
@@ -1051,6 +1441,312 @@ export namespace SDK {
          * @memberof EventResponse
          */
         'leaders'?: Array<MemberResponse>;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @interface EventResponseLinks
+     */
+    export interface EventResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'getEventAccounting': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'getEventAnnouncement': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'listEventAttendees': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'addEventAttendee': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'listEventExpenses': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'addEventExpense': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'getEventRegistration': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'saveEventRegistration': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'deleteEventRegistration': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'getEventReport': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'getEventsYears': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'getEvent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'updateEvent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'deleteEvent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'restoreEvent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'leadEvent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'submitEvent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'rejectEvent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'publishEvent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'unpublishEvent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'cancelEvent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'uncancelEvent': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface EventResponseWithLinks
+     */
+    export interface EventResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof EventResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'name': string;
+        /**
+         * 
+         * @type {EventStatesEnum}
+         * @memberof EventResponseWithLinks
+         */
+        'status': EventStatesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'dateFrom': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'dateTill': string;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof EventResponseWithLinks
+         */
+        'leadersEvent': boolean;
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof EventResponseWithLinks
+         */
+        'groupsIds': Array<number>;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof EventResponseWithLinks
+         */
+        'hasRegistration': boolean;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'type'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'statusNote'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'place'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'description'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'timeFrom'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'timeTill'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'meetingPlaceStart'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'meetingPlaceEnd'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventResponseWithLinks
+         */
+        'waterKm'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'river'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'deletedAt'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'report'?: string | null;
+        /**
+         * 
+         * @type {Album}
+         * @memberof EventResponseWithLinks
+         */
+        'album'?: Album;
+        /**
+         * 
+         * @type {Array<GroupResponse>}
+         * @memberof EventResponseWithLinks
+         */
+        'groups'?: Array<GroupResponse>;
+        /**
+         * 
+         * @type {Array<EventAttendeeResponse>}
+         * @memberof EventResponseWithLinks
+         */
+        'attendees'?: Array<EventAttendeeResponse>;
+        /**
+         * 
+         * @type {Array<EventExpenseResponse>}
+         * @memberof EventResponseWithLinks
+         */
+        'expenses'?: Array<EventExpenseResponse>;
+        /**
+         * 
+         * @type {Array<MemberResponse>}
+         * @memberof EventResponseWithLinks
+         */
+        'leaders'?: Array<MemberResponse>;
+        /**
+         * 
+         * @type {EventResponseLinks}
+         * @memberof EventResponseWithLinks
+         */
+        '_links': EventResponseLinks;
     }
     
     
@@ -1500,6 +2196,94 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface GroupResponseLinks
+     */
+    export interface GroupResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof GroupResponseLinks
+         */
+        'getGroup': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof GroupResponseLinks
+         */
+        'updateGroup': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof GroupResponseLinks
+         */
+        'deleteGroup': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface GroupResponseWithLinks
+     */
+    export interface GroupResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof GroupResponseWithLinks
+         */
+        'active': boolean;
+        /**
+         * 
+         * @type {string}
+         * @memberof GroupResponseWithLinks
+         */
+        'shortName': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof GroupResponseWithLinks
+         */
+        'color': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof GroupResponseWithLinks
+         */
+        'darkColor': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof GroupResponseWithLinks
+         */
+        'name': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof GroupResponseWithLinks
+         */
+        'deletedAt': string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupResponseWithLinks
+         */
+        'memberCount'?: number;
+        /**
+         * 
+         * @type {GroupResponseLinks}
+         * @memberof GroupResponseWithLinks
+         */
+        '_links': GroupResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface LoginCredentialsBody
      */
     export interface LoginCredentialsBody {
@@ -1888,6 +2672,70 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface MemberContactResponseLinks
+     */
+    export interface MemberContactResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberContactResponseLinks
+         */
+        'deleteContact': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MemberContactResponseWithLinks
+     */
+    export interface MemberContactResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberContactResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberContactResponseWithLinks
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberContactResponseWithLinks
+         */
+        'title': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberContactResponseWithLinks
+         */
+        'mobile'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberContactResponseWithLinks
+         */
+        'email'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberContactResponseWithLinks
+         */
+        'other'?: string;
+        /**
+         * 
+         * @type {MemberContactResponseLinks}
+         * @memberof MemberContactResponseWithLinks
+         */
+        '_links': MemberContactResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface MemberCreateBody
      */
     export interface MemberCreateBody {
@@ -2081,10 +2929,10 @@ export namespace SDK {
         'insuranceCardFile'?: string | null;
         /**
          * 
-         * @type {object}
+         * @type {GroupResponseWithLinks}
          * @memberof MemberResponse
          */
-        'group'?: object;
+        'group'?: GroupResponseWithLinks;
         /**
          * 
          * @type {Array<MemberContact>}
@@ -2097,6 +2945,228 @@ export namespace SDK {
          * @memberof MemberResponse
          */
         'achievements'?: Array<MemberAchievement>;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @interface MemberResponseLinks
+     */
+    export interface MemberResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'listContacts': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'createContact': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'updateContact': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'getInsuranceCard': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'uploadInsuranceCard': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'deleteInsuranceCard': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'getMember': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'updateMember': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'deleteMember': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MemberResponseWithLinks
+     */
+    export interface MemberResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberResponseWithLinks
+         */
+        'groupId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'nickname': string;
+        /**
+         * 
+         * @type {MemberRolesEnum}
+         * @memberof MemberResponseWithLinks
+         */
+        'role': MemberRolesEnum;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MemberResponseWithLinks
+         */
+        'active': boolean;
+        /**
+         * 
+         * @type {MembershipStatesEnum}
+         * @memberof MemberResponseWithLinks
+         */
+        'membership': MembershipStatesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'function'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'firstName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'lastName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'birthday'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'addressStreet'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'addressStreetNo'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'addressCity'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'addressPostalCode'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'addressCountry'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'mobile'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'email'?: string | null;
+        /**
+         * 
+         * @type {MemberRanksEnum}
+         * @memberof MemberResponseWithLinks
+         */
+        'rank'?: MemberRanksEnum | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'knownProblems'?: string | null;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof MemberResponseWithLinks
+         */
+        'allergies'?: Array<string> | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'insuranceCardFile'?: string | null;
+        /**
+         * 
+         * @type {GroupResponseWithLinks}
+         * @memberof MemberResponseWithLinks
+         */
+        'group'?: GroupResponseWithLinks;
+        /**
+         * 
+         * @type {Array<MemberContact>}
+         * @memberof MemberResponseWithLinks
+         */
+        'contacts'?: Array<MemberContact>;
+        /**
+         * 
+         * @type {Array<MemberAchievement>}
+         * @memberof MemberResponseWithLinks
+         */
+        'achievements'?: Array<MemberAchievement>;
+        /**
+         * 
+         * @type {MemberResponseLinks}
+         * @memberof MemberResponseWithLinks
+         */
+        '_links': MemberResponseLinks;
     }
     
     
@@ -2510,6 +3580,130 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface PhotoResponseLinks
+     */
+    export interface PhotoResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoResponseLinks
+         */
+        'getPhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoResponseLinks
+         */
+        'updatePhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoResponseLinks
+         */
+        'deletePhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoResponseLinks
+         */
+        'getPhotoImage': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoResponseWithLinks
+     */
+    export interface PhotoResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponseWithLinks
+         */
+        'albumId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoResponseWithLinks
+         */
+        'timestamp': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoResponseWithLinks
+         */
+        'name': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponseWithLinks
+         */
+        'width'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponseWithLinks
+         */
+        'height'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponseWithLinks
+         */
+        'uploadedById'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoResponseWithLinks
+         */
+        'title'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoResponseWithLinks
+         */
+        'caption'?: string | null;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof PhotoResponseWithLinks
+         */
+        'tags'?: Array<string> | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoResponseWithLinks
+         */
+        'bg'?: string | null;
+        /**
+         * 
+         * @type {AlbumResponseWithLinks}
+         * @memberof PhotoResponseWithLinks
+         */
+        'album'?: AlbumResponseWithLinks;
+        /**
+         * 
+         * @type {UserResponseWithLinks}
+         * @memberof PhotoResponseWithLinks
+         */
+        'uploadedBy'?: UserResponseWithLinks | null;
+        /**
+         * 
+         * @type {PhotoResponseLinks}
+         * @memberof PhotoResponseWithLinks
+         */
+        '_links': PhotoResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface PhotoUpdateBody
      */
     export interface PhotoUpdateBody {
@@ -2531,6 +3725,136 @@ export namespace SDK {
          * @memberof PhotoUpdateBody
          */
         'tags'?: Array<string> | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface RootResponseLinks
+     */
+    export interface RootResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listAlbums': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'createAlbum': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getAlbumsYears': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listPhotos': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'createPhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getCPVEvents': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listEvents': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'createEvent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listGroups': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'createGroup': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listMembers': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'createMember': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'exportMembersXlsx': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listUsers': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'createUser': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface RootResponseWithLinks
+     */
+    export interface RootResponseWithLinks {
+        /**
+         * 
+         * @type {string}
+         * @memberof RootResponseWithLinks
+         */
+        'version': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof RootResponseWithLinks
+         */
+        'environmentTitle': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof RootResponseWithLinks
+         */
+        'googleClientId'?: string;
+        /**
+         * 
+         * @type {RootResponseLinks}
+         * @memberof RootResponseWithLinks
+         */
+        '_links': RootResponseLinks;
     }
     
         /**
@@ -2726,10 +4050,116 @@ export namespace SDK {
         'roles'?: Array<UserRolesEnum> | null;
         /**
          * 
-         * @type {object}
+         * @type {MemberResponseWithLinks}
          * @memberof UserResponse
          */
-        'member'?: object | null;
+        'member'?: MemberResponseWithLinks | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface UserResponseLinks
+     */
+    export interface UserResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof UserResponseLinks
+         */
+        'getUser': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof UserResponseLinks
+         */
+        'updateUser': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof UserResponseLinks
+         */
+        'deleteUser': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof UserResponseLinks
+         */
+        'setUserPassword': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof UserResponseLinks
+         */
+        'impersonateUser': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface UserResponseWithLinks
+     */
+    export interface UserResponseWithLinks {
+        /**
+         * 
+         * @type {Array<UserRolesEnum>}
+         * @memberof UserResponseWithLinks
+         */
+        'roles': Array<UserRolesEnum> | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof UserResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof UserResponseWithLinks
+         */
+        'memberId': number | null;
+        /**
+         * 
+         * @type {Member}
+         * @memberof UserResponseWithLinks
+         */
+        'member'?: Member | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof UserResponseWithLinks
+         */
+        'login': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof UserResponseWithLinks
+         */
+        'password': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof UserResponseWithLinks
+         */
+        'email': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof UserResponseWithLinks
+         */
+        'loginCode': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof UserResponseWithLinks
+         */
+        'loginCodeExp': string | null;
+        /**
+         * 
+         * @type {AccountResponseLinks}
+         * @memberof UserResponseWithLinks
+         */
+        '_links': AccountResponseLinks;
     }
     
         /**
@@ -2889,7 +4319,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<object>(axiosRequestConfig);
+            return this.axios.request<UserResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -3414,7 +4844,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<object>(axiosRequestConfig);
+            return this.axios.request<EventExpenseResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -3728,7 +5158,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<Array<object>>(axiosRequestConfig);
+            return this.axios.request<Array<CPVEventResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**
@@ -3770,7 +5200,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<object>(axiosRequestConfig);
+            return this.axios.request<EventResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -4058,7 +5488,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<Array<object>>(axiosRequestConfig);
+            return this.axios.request<Array<EventAttendeeResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**
@@ -4100,7 +5530,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<Array<object>>(axiosRequestConfig);
+            return this.axios.request<Array<EventExpenseResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**
@@ -4170,7 +5600,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<Array<object>>(axiosRequestConfig);
+            return this.axios.request<Array<EventResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**
@@ -5024,7 +6454,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<object>(axiosRequestConfig);
+            return this.axios.request<GroupResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -5067,7 +6497,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<object>(axiosRequestConfig);
+            return this.axios.request<MemberResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -5347,7 +6777,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<object>(axiosRequestConfig);
+            return this.axios.request<GroupResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -5431,7 +6861,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<object>(axiosRequestConfig);
+            return this.axios.request<MemberResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -5473,7 +6903,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<Array<object>>(axiosRequestConfig);
+            return this.axios.request<Array<MemberContactResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**
@@ -5519,7 +6949,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<Array<object>>(axiosRequestConfig);
+            return this.axios.request<Array<GroupResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**
@@ -5581,7 +7011,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<Array<object>>(axiosRequestConfig);
+            return this.axios.request<Array<MemberResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**
@@ -5969,7 +7399,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<object>(axiosRequestConfig);
+            return this.axios.request<AlbumResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -6138,7 +7568,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<object>(axiosRequestConfig);
+            return this.axios.request<AlbumResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -6180,7 +7610,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<Array<object>>(axiosRequestConfig);
+            return this.axios.request<Array<PhotoResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**
@@ -6258,7 +7688,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<object>(axiosRequestConfig);
+            return this.axios.request<PhotoResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -6366,7 +7796,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<Array<object>>(axiosRequestConfig);
+            return this.axios.request<Array<AlbumResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**
@@ -6402,7 +7832,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<Array<object>>(axiosRequestConfig);
+            return this.axios.request<Array<PhotoResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**
@@ -6712,7 +8142,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<object>(axiosRequestConfig);
+            return this.axios.request<RootResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -7356,7 +8786,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<object>(axiosRequestConfig);
+            return this.axios.request<UserResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -7452,7 +8882,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<Array<object>>(axiosRequestConfig);
+            return this.axios.request<Array<UserResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**

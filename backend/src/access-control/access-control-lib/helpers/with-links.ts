@@ -13,8 +13,9 @@ export function WithLinks<E extends EntityType, T extends Type>(
 	contains: E | (() => E),
 	type: T | (() => T),
 ): () => TypeWithLinks<T>;
-export function WithLinks<T extends Type, E extends EntityType>(contains: E | (() => E), type?: T | (() => T)) {
-	function typeWithLinks() {
+export function WithLinks<T extends Type, E extends EntityType>(contains: E | (() => E), overrideType?: T | (() => T)) {
+	// the function must be named 'type' to make NestJS Swagger work properly
+	function type() {
 		class ResponseLinksObject {
 			constructor() {}
 		}
@@ -25,7 +26,7 @@ export function WithLinks<T extends Type, E extends EntityType>(contains: E | ((
 		}
 
 		const entity = resolveEntity(contains);
-		const responseType = type ? resolveEntity(type) : entity;
+		const responseType = overrideType ? resolveEntity(overrideType) : entity;
 
 		if (!entity)
 			throw new Error(
@@ -54,5 +55,5 @@ export function WithLinks<T extends Type, E extends EntityType>(contains: E | ((
 		return EntityWithLinks;
 	}
 
-	return typeWithLinks;
+	return type;
 }
