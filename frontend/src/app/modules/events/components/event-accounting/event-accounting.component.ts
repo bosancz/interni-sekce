@@ -95,9 +95,7 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 	async removeExpense(expense: SDK.EventExpenseResponseWithLinks) {
 		if (!this.event) return;
 
-		const confirmation = await this.modalService.deleteConfirmationModal(
-			`Opravdu chceš smazat účtenku?`,
-		);
+		const confirmation = await this.modalService.deleteConfirmationModal(`Opravdu chceš smazat účtenku?`);
 
 		if (confirmation) {
 			const i = this.expenses.indexOf(expense);
@@ -105,7 +103,7 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 
 			await this.api.EventsApi.deleteEventExpense(this.event.id, expense.id);
 			await this.loadExpenses();
-			
+
 			this.toastService.toast("Smazáno");
 		}
 	}
@@ -113,34 +111,8 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 	async getAccounting(event: SDK.EventResponseWithLinks) {
 		if (!event) return;
 
-			let fileName = `accounting.xlsx`;
-
-			const response: any = await this.api.EventsApi.getEventAccounting(event.id)
-			const contentDisposition = response.headers['content-disposition'];
-
-			if (contentDisposition) {
-				const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
-				if (fileNameMatch && fileNameMatch[1]) {
-					fileName = fileNameMatch[1];
-				}
-			}
-			
-			const blob = new Blob([response.data], {
-				type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-			});
-			
-			const url = window.URL.createObjectURL(blob);
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = fileName;
-			document.body.appendChild(link);
-			link.click();
-			
-			// Cleanup
-			document.body.removeChild(link);
-			window.URL.revokeObjectURL(url);
+		window.open(event._links.getEventAccounting.href, "_blank");
 	}
-	
 
 	private getNextExpenseId() {
 		const re = /\d+/;

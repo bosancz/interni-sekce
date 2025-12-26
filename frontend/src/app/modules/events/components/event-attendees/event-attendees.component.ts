@@ -133,35 +133,10 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
 		});
 	}
 
-    async getAnnouncement(event: SDK.EventResponseWithLinks) {
+	async getAnnouncement(event: SDK.EventResponseWithLinks) {
 		if (!event) return;
 
-			let fileName = `announcement.xlsx`;
-
-			const response: any = await this.api.EventsApi.getEventAnnouncement(event.id)
-			const contentDisposition = response.headers['content-disposition'];
-
-			if (contentDisposition) {
-				const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
-				if (fileNameMatch && fileNameMatch[1]) {
-					fileName = fileNameMatch[1];
-				}
-			}
-			
-			const blob = new Blob([response.data], {
-				type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-			});
-			
-			const url = window.URL.createObjectURL(blob);
-			const link = document.createElement('a');
-			link.href = url;
-			link.download = fileName;
-			document.body.appendChild(link);
-			link.click();
-			
-			// Cleanup
-			document.body.removeChild(link);
-			window.URL.revokeObjectURL(url);
+		window.open(event._links.getEventAnnouncement.href, "_blank");
 	}
 
 	private setActions(event?: SDK.EventResponseWithLinks) {
