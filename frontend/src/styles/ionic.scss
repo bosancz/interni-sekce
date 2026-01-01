@@ -76,3 +76,13 @@ ion-modal.dialog {
 ion-popover.transparent {
 	--background: transparent;
 }
+
+.alert-wide {
+    --width: 80vw;
+    --max-width: 800px;
+
+	textarea {
+        min-height: 40vh !important;
+    }
+
+}
