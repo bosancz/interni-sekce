@@ -27,7 +27,7 @@ jobs:
     steps:
       - name: Set short SHA
         id: set_short_sha
-        run: echo "::set-output name=short_sha::${GITHUB_SHA::7}"
+        run: echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
   build:
     name: Build
