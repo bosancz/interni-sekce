@@ -1,4 +1,4 @@
-name: Release to PRODUCTION
+name: Release to PROD
 
 on:
   workflow_dispatch:
@@ -75,7 +75,7 @@ jobs:
       - deploy
     uses: ./.github/workflows/tag.yml
     with:
-      tag: production
+      tag: PROD
       version: ${{ needs.version.outputs.new_tag }}
 
   cleanup:

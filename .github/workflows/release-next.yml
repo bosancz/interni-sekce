@@ -66,7 +66,7 @@ jobs:
     needs: deploy
     uses: ./.github/workflows/tag.yml
     with:
-      tag: next
+      tag: NEXT
 
   cleanup:
     name: Cleanup
