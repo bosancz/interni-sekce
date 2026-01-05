@@ -18,7 +18,7 @@
 
 Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a otevřel vývojový NodeJS kontejner.
 
-⚠️ Spouštění devcontaineru na Windows a na Macu vyžaduje poměrně dost paměti (doporučuji 16GB RAM).
+⚠️ Spouštění devcontaineru na Windows a na Macu vyžaduje poměrně dost paměti (doporučuji 16GB RAM).  
 💡 Lze použít i jiné editory, ale instalace je složitější. Např. u Cursoru je nutné spouštět devcontainer přes DevPod.
 
 1. Nainstaluj
