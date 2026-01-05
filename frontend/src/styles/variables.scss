@@ -20,6 +20,11 @@ $blue: #006fff;
 $lightBlue: rgba(0, 111, 255, 0.05);
 $linkBlue: #00bfff;
 
+$sanblue: hsl(232, 48%, 32%);
+$sangreen: hsl(83, 45%, 43%);
+$sanyellow: hsl(34, 76%, 52%);
+$sanred: hsl(358, 65%, 45%);
+
 $font-small: 0.8rem;
 $font-basic: 1rem;
 $font-medium: 1.5rem;
@@ -37,3 +42,11 @@ $font-regular: "Roboto Condensed", Helvetica, Verdana, sans-serif;
 $font-san: SanGrotesk, "Roboto Condensed", Helvetica, Verdana, sans-serif;
 
 $circle-size: 2rem;
+
+// css variables
+:root {
+	--san-blue: hsl(232, 48%, 32%);
+	--san-green: hsl(83, 45%, 43%);
+	--san-yellow: hsl(34, 76%, 52%);
+	--san-red: hsl(358, 65%, 45%);
+}

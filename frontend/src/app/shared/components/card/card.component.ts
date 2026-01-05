@@ -5,9 +5,13 @@ import { Component, Input, OnInit } from "@angular/core";
 	templateUrl: "./card.component.html",
 	styleUrls: ["./card.component.scss"],
 	standalone: false,
+	host: {
+		"[style]": "'--card-color: ' + (color || 'black')",
+	},
 })
 export class CardComponent implements OnInit {
 	@Input() title?: string;
+	@Input() color?: string;
 
 	constructor() {}
 

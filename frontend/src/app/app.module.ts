@@ -8,19 +8,30 @@ import { IonicModule, IonicRouteStrategy, isPlatform } from "@ionic/angular";
 import { environment } from "src/environments/environment";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
+import { AccountMenuModalComponent } from "./components/account-menu-modal/account-menu-modal.component";
+import { AccountMenuComponent } from "./components/account-menu/account-menu.component";
 import { AppLoadingComponent } from "./components/app-loading/app-loading.component";
+import { HeaderComponent } from "./components/header/header.component";
 import { LoginComponent } from "./components/login/login.component";
 import { SidebarComponent } from "./components/sidebar/sidebar.component";
 import { MainErrorHandler } from "./error-handlers/main.error-handler";
 import { NotFoundComponent } from "./pages/not-found/not-found.component";
 import { TitleService } from "./services/title.service";
 import { SharedModule } from "./shared/shared.module";
-import { HeaderComponent } from './components/header/header.component';
 
 registerLocaleData(localeCs);
 
 @NgModule({
-	declarations: [AppComponent, AppLoadingComponent, LoginComponent, NotFoundComponent, SidebarComponent, HeaderComponent],
+	declarations: [
+		AppComponent,
+		AppLoadingComponent,
+		LoginComponent,
+		NotFoundComponent,
+		SidebarComponent,
+		HeaderComponent,
+		AccountMenuComponent,
+		AccountMenuModalComponent,
+	],
 	imports: [
 		IonicModule.forRoot({
 			backButtonText: isPlatform("ios") ? "Zpět" : "",

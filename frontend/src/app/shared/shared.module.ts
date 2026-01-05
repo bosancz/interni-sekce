@@ -5,7 +5,6 @@ import { RouterModule } from "@angular/router";
 import { IonicModule } from "@ionic/angular";
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from "ng2-charts";
 import { register } from "swiper/element/bundle";
-import { AccountMenuComponent } from "./components/account-menu/account-menu.component";
 import { ActionButtonsModalComponent } from "./components/action-buttons-modal/action-buttons-modal.component";
 import { ActionButtonsComponent } from "./components/action-buttons/action-buttons.component";
 import { AddButtonComponent } from "./components/add-button/add-button.component";
@@ -123,7 +122,6 @@ register();
 		EditButtonSelectComponent,
 		AvatarComponent,
 		ButtonComponent,
-		AccountMenuComponent,
 		VersionComponent,
 		DarkModeToggleComponent,
 		ActionButtonsModalComponent,
@@ -187,7 +185,6 @@ register();
 		EditButtonSelectComponent,
 		AvatarComponent,
 		ButtonComponent,
-		AccountMenuComponent,
 		VersionComponent,
 		DarkModeToggleComponent,
 	],

@@ -1,7 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { SharedModule } from "src/app/shared/shared.module";
-import { AccountMenuModalComponent } from "./components/account-menu-modal/account-menu-modal.component";
 import { HomeCalendarComponent } from "./components/home-calendar/home-calendar.component";
 import { HomeCardMyEventsComponent } from "./components/home-card-my-events/home-card-my-events.component";
 import { HomeCardNoleaderEventsComponent } from "./components/home-card-noleader-events/home-card-noleader-events.component";
@@ -24,7 +23,6 @@ import { HomeComponent } from "./pages/home/home.component";
 		HomeCardSearchMemberComponent,
 		HomeComponent,
 		HomeMyComponent,
-		AccountMenuModalComponent,
 	],
 	imports: [CommonModule, HomeRoutingModule, SharedModule],
 })

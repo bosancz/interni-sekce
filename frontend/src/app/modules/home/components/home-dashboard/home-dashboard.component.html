@@ -4,31 +4,44 @@
 			<div class="col-lg-6 col-xl-8 pr-lg-2">
 				<div class="row">
 					<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
-						<bo-card routerLink="/akce">
+						<bo-card routerLink="/akce" color="var(--san-blue)">
 							<bo-card-header class="p-3">
 								<bo-card-title>Akce</bo-card-title>
 							</bo-card-header>
+							<bo-card-content>
+								<img src="assets/img/button-akce.svg" alt="Akce" class="img-fluid" />
+							</bo-card-content>
 						</bo-card>
 					</div>
 					<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
-						<bo-card routerLink="/program">
+						<bo-card routerLink="/program" color="var(--san-green)">
 							<bo-card-header class="p-3">
 								<bo-card-title>Program</bo-card-title>
 							</bo-card-header>
+							<bo-card-content>
+								<img src="assets/img/button-program.svg" alt="Akce" class="img-fluid" />
+							</bo-card-content>
 						</bo-card>
 					</div>
 					<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
-						<bo-card routerLink="/galerie">
+						<bo-card routerLink="/galerie" color="var(--san-yellow)">
 							<bo-card-header class="p-3">
 								<bo-card-title>Galerie</bo-card-title>
 							</bo-card-header>
+							<bo-card-content>
+								<img src="assets/img/button-galerie.svg" alt="Akce" class="img-fluid" />
+							</bo-card-content>
 						</bo-card>
 					</div>
 					<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
-						<bo-card routerLink="/databaze">
+						<bo-card routerLink="/databaze" color="var(--san-red)">
 							<bo-card-header class="p-3">
 								<bo-card-title>Databáze</bo-card-title>
 							</bo-card-header>
+
+							<bo-card-content>
+								<img src="assets/img/button-databaze.svg" alt="Akce" class="img-fluid" />
+							</bo-card-content>
 						</bo-card>
 					</div>
 				</div>
@@ -45,8 +58,6 @@
 				</div>
 			</div>
 			<div class="col-lg-6 col-xl-4 pl-lg-2">
-				<bo-home-card-search-member class="d-none d-lg-block mb-3 mb-lg-3"></bo-home-card-search-member>
-
 				<bo-event-calendar
 					[dateFrom]="dateFrom"
 					[dateTill]="dateTill"

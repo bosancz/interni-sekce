@@ -59,6 +59,12 @@ body.dark {
 }
 
 ion-list {
+	ion-item {
+		--ion-item-background: transparent;
+		--border-color: black;
+		--detail-icon-color: black;
+		--detail-icon-opacity: 1;
+	}
 	ion-item:last-child {
 		--border-width: 0 !important;
 	}
