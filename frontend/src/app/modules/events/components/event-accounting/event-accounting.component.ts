@@ -61,7 +61,6 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 		if (expense === null) return;
 
 		try {
-			console.log("Adding expense:", expense);
 			const newExpense = await this.api.EventsApi.addEventExpense(this.event.id, expense).then((res) => res.data);
 			this.expenses.push(newExpense);
 
@@ -100,24 +99,23 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 	async removeExpense(expense: SDK.EventExpenseResponseWithLinks) {
 		if (!this.event) return;
 
-		const confirmation = await this.modalService.deleteConfirmationModal(
-			`Opravdu chceš smazat účtenku ${expense.id}?`,
-		);
+		const confirmation = await this.modalService.deleteConfirmationModal(`Opravdu chceš smazat účtenku?`);
 
 		if (confirmation) {
 			const i = this.expenses.indexOf(expense);
 			this.expenses.splice(i, 1, expense);
 
 			await this.api.EventsApi.deleteEventExpense(this.event.id, expense.id);
+			await this.loadExpenses();
+
+			this.toastService.toast("Smazáno");
 		}
 	}
 
-	private async exportExcel(event: SDK.EventResponseWithLinks) {
-		// TODO:
-		// if (event._links.["accounting-template"]) {
-		//   const url = environment.apiRoot + event._links.["accounting-template"].href;
-		//   window.open(url);
-		// }
+	async getAccounting(event: SDK.EventResponseWithLinks) {
+		if (!event) return;
+
+		window.open(event._links.getEventAccounting.href, "_blank");
 	}
 
 	private getNextExpenseId() {

@@ -1,57 +1,63 @@
+
+## FRONTEND BUILD ##
 FROM node:20-alpine AS build-frontend
 
 ARG NG_CONFIGURATION=production
 
-WORKDIR /app
+WORKDIR /app/frontend
 
-# INSTALL DEPENDENCIES
+# install dependencies
 COPY ./frontend/package.json ./frontend/package-lock.json ./
 RUN npm ci
 
-# BUILD
+# build
 COPY ./frontend .
-RUN npx ng build --configuration="${NG_CONFIGURATION}"
+RUN npm run build
 
 
 
-
+## BACKEND BUILD ##
 FROM node:20-alpine AS build-backend
 
-WORKDIR /app
+WORKDIR /app/backend
 
-# INSTALL DEPENDENCIES
+# install dependencies
 COPY ./backend/package.json ./backend/package-lock.json ./
 RUN npm ci
 
-# BUILD
+# build
 COPY ./backend .
 RUN npm run build
 
-# CLEANUP
+# cleanup
 RUN npm prune --omit=dev
 
 
 
-
+## RUNNER ##
 FROM node:20-alpine
+
+ARG VERSION
 
 WORKDIR /app
 
-# COPY BACKEND FILES
-COPY --from=build-backend /app/node_modules ./backend/node_modules
-COPY --from=build-backend /app/dist ./backend/dist
-COPY --from=build-backend /app/package.json ./backend/
+# copy backend files
+COPY --from=build-backend /app/backend/node_modules /app/backend/node_modules
+COPY --from=build-backend /app/backend/dist /app/backend/dist
+COPY --from=build-backend /app/backend/assets /app/backend/assets
+COPY --from=build-backend /app/backend/package.json /app/backend/
 
-# COPY FRONTEND FILES
-COPY --from=build-frontend /app/dist ./frontend/dist
-COPY --from=build-frontend /app/package.json ./frontend/
+# copy frontend files
+COPY --from=build-frontend /app/frontend/dist /app/frontend/dist
 
-# COPY ROOT FILES
-RUN apk add --no-cache bash
-COPY package.json entrypoint.sh ./
+# run
+WORKDIR /app/backend
 
-# RUN
 ENV NODE_ENV=production
-EXPOSE 80
-ENTRYPOINT [ "./entrypoint.sh" ]
-CMD [ "start" ]
+ENV VERSION=$VERSION
+ENV HOST=0.0.0.0
+ENV PORT=3000
+
+EXPOSE 3000
+
+CMD [ "npm","start" ]

@@ -1,3 +1,4 @@
+import { ApiHideProperty } from "@nestjs/swagger";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { User } from "src/models/users/entities/user.entity";
 import {
@@ -65,6 +66,7 @@ export class Member {
 
 	@ManyToOne(() => Group, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
 	@JoinColumn({ name: "group_id" })
+	@ApiHideProperty()
 	group?: Group;
 
 	@OneToMany(() => MemberContact, (mb) => mb.member)

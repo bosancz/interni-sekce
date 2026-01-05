@@ -1,3 +1,4 @@
+import { ApiHideProperty } from "@nestjs/swagger";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Member } from "./member.entity";
 
@@ -11,6 +12,7 @@ export class MemberContact {
 
 	@ManyToOne(() => Member, { onDelete: "CASCADE", onUpdate: "CASCADE" })
 	@JoinColumn({ name: "member_id" })
+	@ApiHideProperty()
 	member?: Member;
 
 	@Column({ type: "varchar", nullable: false }) title!: string;

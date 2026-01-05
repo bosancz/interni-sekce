@@ -8,7 +8,7 @@
 				Upravit uživatele
 				{{ user.login }}
 				<ng-container *ngIf="user.member">
-					&nbsp;({{ user.member.nickname }}, {{ user.member.group?.name }})
+					&nbsp;({{ user.member.nickname }}, {{ user.member.groupId | group: "name" }})
 				</ng-container>
 				<ng-container *ngIf="!user.member && user.email">&nbsp;({{ user.email }})</ng-container>
 			</ng-container>
@@ -46,7 +46,7 @@
 				</ion-select-option>
 				<ion-select-option *ngFor="let member of members" [value]="member.id">
 					{{ member.nickname || member.firstName }}
-					({{ member.group?.name }}, {{ member.firstName }} {{ member.firstName }})
+					({{ member.groupId | group: "name" }}, {{ member.firstName }} {{ member.firstName }})
 				</ion-select-option>
 			</ion-select>
 		</ion-item>

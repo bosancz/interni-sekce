@@ -18,7 +18,8 @@
 
 Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a otevřel vývojový NodeJS kontejner.
 
-⚠️ Spouštění devcontaineru na Windows a na Macu vyžaduje poměrně dost paměti (doporučuji 16GB RAM).
+⚠️ Spouštění devcontaineru na Windows a na Macu vyžaduje poměrně dost paměti (doporučuji 16GB RAM).  
+💡 Lze použít i jiné editory, ale instalace je složitější. Např. u Cursoru je nutné spouštět devcontainer přes DevPod.
 
 1. Nainstaluj
 
@@ -37,8 +38,8 @@ Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a 
 
    - [NodeJS](https://nodejs.org/) (verze 22 nebo vyšší)
    - [PostgreSQL](https://www.postgresql.org/download/) (verze 15)
-   - Editor dle volby (doporučuji [VSCode](https://code.visualstudio.com/))
-   - Správce databáze PostgreSQL dle volby
+   - Editor dle volby (doporučujeme [VSCode](https://code.visualstudio.com/))
+   - Správce databáze PostgreSQL dle volby (pgAdmin, DBeaver, HeidiSQL, ...)
 
 2. Naklonuj si repozitář
 
@@ -55,7 +56,6 @@ Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a 
    DB_DATABASE=postgres
    DB_SCHEMA=public
    ```
-5. Nainstaluj závislosti (viz níže)
 
 ### Instalace závislostí
 
@@ -82,7 +82,7 @@ npm run dev
 
 Tím se spustí backend (BE) na [http://localhost:3000](http://localhost:3000) a frontend (FE) na [http://localhost:4200](http://localhost:4200). Oboje ve vývojovém režimu, kdy se při změně kódu stránka automaticky aktualizuje.
 
-Pokud jsi použil devcontainer, bude ještě na [http://localhost:8081](http://localhost:8081) dostupný pgweb pro prohlížení databáze. Samotná databáze pak bude na `localhost:5432`.
+💡 Pokud jsi použil devcontainer, bude ještě na [http://localhost:8081](http://localhost:8081) dostupný pgweb pro prohlížení databáze. Samotná databáze pak bude na `localhost:5432`.
 
 ## Vývoj
 
@@ -92,7 +92,7 @@ Pokud jsi použil devcontainer, bude ještě na [http://localhost:8081](http://l
 interni-sekce/
 ├── !old/                  # Starý kód interní sekce (ExpressJS + MongoDB)
 ├── backend/               # Kód backendu (NestJS + PostgreSQL)
-├── frontend/               # Kód frontendu (Angular)
+├── frontend/              # Kód frontendu (Angular)
 ├── scripts/               # Skripty pro vývoj a nasazení
 └── package.json           # Kořenové NPM skripty a závislosti
 ```
@@ -142,7 +142,7 @@ interni-sekce/frontend/
 
 ### Sdílení typů mezi frontendem a backendem
 
-Veškeré sdílení typů probíhá pomocí OpenAPI. Backend definuje API pomocí typů a dekorátorů (`@nestjs/swagger`), následně se pomocí nástroje `openapi-generator-cli` vygenerují typy a klient pro frontend. Ten je umístěn ve složce `frontend/src/sdk`.
+Veškeré sdílení typů probíhá pomocí OpenAPI. Backend definuje API v kódu jako metody kontrolerů pomocí TypeScript typů a dekorátorů ([@nestjs/swagger](https://docs.nestjs.com/openapi/introduction)), z těchto typů se automaticky vytvoří OpenAPI definice a z té se následně pomocí nástroje [openapi-generator](https://openapi-generator.tech/) vygenerují typy a klient pro frontend do složky `frontend/src/sdk`.
 
 Pro aktualizaci vygenerovaného SDK musíš mít **spuštěný backend** a následně spusť ve `frontend/` příkaz:
 
@@ -152,9 +152,9 @@ npm run generate:sdk
 
 ### Nastavení oprávnění
 
-Oprávnění se definují v backendu ve složkách `acl`. Tato oprávnění se následně přiřadí k metodám v kontrolerech pomocí dekorátoru `@AcLinks(NázevOprávnění)` a uvnitř metody se oprávnění ověří pomocí volání `NázevOprávnění.canOrThrow(user, document)`.
+Oprávnění se definují v backendu ve složkách `acl`. Tato oprávnění se následně přiřadí k metodám v kontrolerech pomocí dekorátoru `@AcLinks(NázevOprávnění)` a uvnitř metody konkrtoleru se oprávnění ověří pomocí volání `NázevOprávnění.canOrThrow(user, document)`.
 
-Pomocí dekorátoru `@AcLinks` se frontendu předávají informace o oprávněních, které uživatel nad konkrétnimi dokumenty má, aby se podle toho uživateli zobrazily nebo skryly určité funkce a prvky UI.
+Pomocí dekorátoru `@AcLinks` se také frontendu předávají informace o oprávněních, které uživatel nad konkrétnimi dokumenty má, aby se podle toho uživateli zobrazily nebo skryly určité funkce a prvky UI.
 
 Rozdělují se dva typy oprávnění:
 
@@ -237,7 +237,7 @@ Vzor pro nastavení oprávnění:
 
 #### Vytvoření nové migrace
 
-Migrace databáze se tvoří pomocí TypeORM. Pro vytvoření nové migrace spusť v terminálu v složce `backend`:
+Struktura databáze je definávána TypeORM entitami v souborech `*.entity.ts`. Tato struktura se následně aplikuje na databázi pomocí migrací (skriptů, které mění strukturu databáze). Pro vytvoření nové migrace spusť v terminálu v složce `backend`:
 
 ```bash
 npm run migrations:generate --name=nazev-migrace
@@ -262,3 +262,14 @@ Pro vrácení **jedné** předchozí migrace spusť v terminálu v složce `back
 ```bash
 npm run migrations:revert
 ```
+
+#### Reset databáze
+
+Pro kompletní reset databáze spusť v terminálu v složce `backend`:
+
+```bash
+npm run migrations:reset
+```
+
+Po tomto resetu bude databáze prázdná a budeš muset znovu vytvořit prvotního uživatele a jakákoliv data potřebná pro vývoj.
+

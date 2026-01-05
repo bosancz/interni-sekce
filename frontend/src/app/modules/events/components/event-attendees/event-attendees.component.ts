@@ -133,12 +133,10 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
 		});
 	}
 
-	private async exportExcel(event: SDK.EventResponseWithLinks) {
-		// TODO:
-		// if (event._links.["announcement-template"]) {
-		//   const url = environment.apiRoot + event._links.["announcement-template"].href;
-		//   window.open(url);
-		// }
+	async getAnnouncement(event: SDK.EventResponseWithLinks) {
+		if (!event) return;
+
+		window.open(event._links.getEventAnnouncement.href, "_blank");
 	}
 
 	private setActions(event?: SDK.EventResponseWithLinks) {
@@ -146,8 +144,8 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
 			{
 				text: "Stáhnout ohlášku",
 				icon: "download-outline",
-				// hidden: !event?._links.self.allowed.GET, // TODO:
-				handler: () => this.exportExcel(event!),
+				//hidden: !event?._links.self.allowed.GET, // TODO:
+				handler: () => this.getAnnouncement(event!),
 			},
 		];
 	}

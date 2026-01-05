@@ -29,7 +29,6 @@ jobs:
       retention-days: 1
       build-args: |
         VERSION=${{ github.ref }}-${{ github.sha }}
-        NG_CONFIGURATION=production
 
   publish:
     name: Publish
@@ -57,4 +56,9 @@ jobs:
     needs: deploy
     uses: ./.github/workflows/tag.yml
     with:
-      tag: test
+      tag: TEST
+
+  cleanup:
+    name: Cleanup
+    needs: [deploy]
+    uses: ./.github/workflows/cleanup.yml

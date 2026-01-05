@@ -86,6 +86,112 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface AccountResponseLinks
+     */
+    export interface AccountResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AccountResponseLinks
+         */
+        'getUser': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AccountResponseLinks
+         */
+        'updateUser': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AccountResponseLinks
+         */
+        'deleteUser': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AccountResponseLinks
+         */
+        'setUserPassword': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AccountResponseLinks
+         */
+        'impersonateUser': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface AccountResponseWithLinks
+     */
+    export interface AccountResponseWithLinks {
+        /**
+         * 
+         * @type {Array<UserRolesEnum>}
+         * @memberof AccountResponseWithLinks
+         */
+        'roles': Array<UserRolesEnum> | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof AccountResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof AccountResponseWithLinks
+         */
+        'memberId': number | null;
+        /**
+         * 
+         * @type {Member}
+         * @memberof AccountResponseWithLinks
+         */
+        'member'?: Member | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof AccountResponseWithLinks
+         */
+        'login': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof AccountResponseWithLinks
+         */
+        'password': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof AccountResponseWithLinks
+         */
+        'email': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof AccountResponseWithLinks
+         */
+        'loginCode': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof AccountResponseWithLinks
+         */
+        'loginCodeExp': string | null;
+        /**
+         * 
+         * @type {AccountResponseLinks}
+         * @memberof AccountResponseWithLinks
+         */
+        '_links': AccountResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface Album
      */
     export interface Album {
@@ -671,6 +777,18 @@ export namespace SDK {
          * @memberof Event
          */
         'leadersEvent': boolean;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof Event
+         */
+        'hasRegistration': boolean;
+        /**
+         * 
+         * @type {string}
+         * @memberof Event
+         */
+        'report': string | null;
         /**
          * 
          * @type {string}
@@ -1285,6 +1403,12 @@ export namespace SDK {
         'groupsIds': Array<number>;
         /**
          * 
+         * @type {boolean}
+         * @memberof EventResponse
+         */
+        'hasRegistration': boolean;
+        /**
+         * 
          * @type {string}
          * @memberof EventResponse
          */
@@ -1351,6 +1475,12 @@ export namespace SDK {
         'deletedAt'?: string | null;
         /**
          * 
+         * @type {string}
+         * @memberof EventResponse
+         */
+        'report'?: string | null;
+        /**
+         * 
          * @type {Album}
          * @memberof EventResponse
          */
@@ -1389,6 +1519,18 @@ export namespace SDK {
      * @interface EventResponseLinks
      */
     export interface EventResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'getEventAccounting': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'getEventAnnouncement': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -1561,6 +1703,12 @@ export namespace SDK {
         'groupsIds': Array<number>;
         /**
          * 
+         * @type {boolean}
+         * @memberof EventResponseWithLinks
+         */
+        'hasRegistration': boolean;
+        /**
+         * 
          * @type {string}
          * @memberof EventResponseWithLinks
          */
@@ -1625,6 +1773,12 @@ export namespace SDK {
          * @memberof EventResponseWithLinks
          */
         'deletedAt'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'report'?: string | null;
         /**
          * 
          * @type {Album}
@@ -1733,6 +1887,12 @@ export namespace SDK {
         'leadersEvent'?: boolean;
         /**
          * 
+         * @type {boolean}
+         * @memberof EventUpdateBody
+         */
+        'hasRegistration'?: boolean;
+        /**
+         * 
          * @type {Array<number>}
          * @memberof EventUpdateBody
          */
@@ -1797,6 +1957,12 @@ export namespace SDK {
          * @memberof EventUpdateBody
          */
         'river'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventUpdateBody
+         */
+        'report'?: string | null;
     }
     
     export const EventUpdateBodyStatusEnum = {
@@ -2371,12 +2537,6 @@ export namespace SDK {
         'deletedAt'?: string;
         /**
          * 
-         * @type {Group}
-         * @memberof Member
-         */
-        'group'?: Group;
-        /**
-         * 
          * @type {Array<MemberContact>}
          * @memberof Member
          */
@@ -2444,12 +2604,6 @@ export namespace SDK {
         'memberId': number;
         /**
          * 
-         * @type {Member}
-         * @memberof MemberAchievement
-         */
-        'member'?: Member;
-        /**
-         * 
          * @type {string}
          * @memberof MemberAchievement
          */
@@ -2495,12 +2649,6 @@ export namespace SDK {
          * @memberof MemberContact
          */
         'memberId': number;
-        /**
-         * 
-         * @type {Member}
-         * @memberof MemberContact
-         */
-        'member'?: Member;
         /**
          * 
          * @type {string}
@@ -2831,12 +2979,6 @@ export namespace SDK {
         'insuranceCardFile'?: string | null;
         /**
          * 
-         * @type {GroupResponseWithLinks}
-         * @memberof MemberResponse
-         */
-        'group'?: GroupResponseWithLinks;
-        /**
-         * 
          * @type {Array<MemberContact>}
          * @memberof MemberResponse
          */
@@ -3045,12 +3187,6 @@ export namespace SDK {
          * @memberof MemberResponseWithLinks
          */
         'insuranceCardFile'?: string | null;
-        /**
-         * 
-         * @type {GroupResponseWithLinks}
-         * @memberof MemberResponseWithLinks
-         */
-        'group'?: GroupResponseWithLinks;
         /**
          * 
          * @type {Array<MemberContact>}
@@ -4221,7 +4357,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<UserResponseWithLinks>(axiosRequestConfig);
+            return this.axios.request<AccountResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -4437,6 +4573,14 @@ export namespace SDK {
     
         
         
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -5095,6 +5239,90 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<EventResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async getEventAccounting(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getEventAccounting', 'id', id)
+            
+            const localVarPath = `/api/events/{id}/accounting`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async getEventAnnouncement(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getEventAnnouncement', 'id', id)
+            
+            const localVarPath = `/api/events/{id}/announcement`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
         }
     
         /**

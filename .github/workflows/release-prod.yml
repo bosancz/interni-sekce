@@ -1,10 +1,18 @@
-name: Deploy to DEV environment
+name: Release to PROD
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - next
+    inputs:
+      semver:
+        description: "Version bump"
+        required: true
+        type: choice
+        default: none
+        options:
+          - none
+          - patch
+          - minor
+          - major
 
 concurrency:
   group: ${{ github.workflow }}
@@ -19,26 +27,35 @@ jobs:
   #     - name: Tests not implemented yet
   #       run: echo "No tests implemented yet"
 
+  version:
+    name: Resolve version
+    uses: ./.github/workflows/version.yml
+    with:
+      semver: ${{ github.event.inputs.semver }}
+
   build:
     name: Build
+    needs: version
     uses: ./.github/workflows/build.yml
     with:
       context: .
       image-name: interni-sekce
       retention-days: 1
       build-args: |
-        VERSION=NEXT-${{ github.sha }}
-        NG_CONFIGURATION=production
+        VERSION=${{ needs.version.outputs.new_tag }}
 
   publish:
     name: Publish
-    needs: build
+    needs:
+      - build
+      - version
     uses: ./.github/workflows/publish.yml
     with:
       source-image-name: interni-sekce
       publish-image-name: bosancz/interni-sekce
       registry: ghcr.io
-      tag: next
+      tag: latest
+      version: ${{ needs.version.outputs.new_tag }}
     secrets:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
@@ -53,7 +70,15 @@ jobs:
 
   tag:
     name: Tag release
-    needs: deploy
+    needs:
+      - version
+      - deploy
     uses: ./.github/workflows/tag.yml
     with:
-      tag: dev
+      tag: PROD
+      version: ${{ needs.version.outputs.new_tag }}
+
+  cleanup:
+    name: Cleanup
+    needs: [deploy]
+    uses: ./.github/workflows/cleanup.yml

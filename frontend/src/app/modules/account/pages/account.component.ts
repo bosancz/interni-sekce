@@ -9,7 +9,7 @@ import { SDK } from "src/sdk";
 	standalone: false,
 })
 export class AccountComponent {
-	user?: SDK.UserResponseWithLinks;
+	user?: SDK.AccountResponseWithLinks;
 
 	modal?: HTMLIonModalElement;
 

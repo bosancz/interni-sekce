@@ -25,3 +25,9 @@
 <div *ngIf="event?._links?.addEventAttendee?.allowed" class="text-center">
 	<bo-add-button (click)="addAttendee('attendee')">Přidat účastníka</bo-add-button>
 </div>
+
+<div *ngIf="event && event._links.getEventAnnouncement.allowed" class="text-center">
+	<ion-button (click)="getAnnouncement(event)" expand="block" fill="outline">
+        Stáhnout ohlášku
+    </ion-button>
+</div>

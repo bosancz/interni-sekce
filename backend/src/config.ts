@@ -1,6 +1,5 @@
 import { Global, Injectable, Logger, LogLevel, Module } from "@nestjs/common";
 import { config } from "dotenv";
-import { readFileSync } from "fs";
 import * as path from "path";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
@@ -23,8 +22,8 @@ const production = ["production", "staging"].includes(environment);
  * @property basePath - Server base directory
  */
 const server = {
-	host: process.env.HOST || production ? "0.0.0.0" : "127.0.0.1",
-	port: process.env.PORT ? parseInt(process.env.PORT, 10) : production ? 80 : 3000,
+	host: process.env.HOST || "127.0.0.1",
+	port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
 	basePath: process.env.BASE_PATH || "",
 	staticRoot: process.env.STATIC_ROOT || path.join(__dirname, "../../frontend/dist/browser"),
 	globalPrefix: process.env.GLOBAL_PREFIX ?? "api",
@@ -48,16 +47,9 @@ const app = {
 	name: "Bošán - Interní sekce",
 	baseUrl:
 		process.env["BASE_URL"] || `http://${server.host}${server.port ? ":" + server.port : ""}${server.basePath}`,
-	version: "0.0.0",
+	version: process.env["VERSION"] || "DEV",
 	environmentTitle: process.env["ENV_TITLE"] ?? (environment === "production" ? "" : environment.toUpperCase()),
 };
-
-try {
-	app.version = JSON.parse(readFileSync(path.join(__dirname, "../../package.json")).toString()).version;
-} catch (err) {
-	app.version = "ERR";
-	logger.error(err);
-}
 
 const jwt = {
 	secret: process.env["JWT_SECRET"] ?? "secret",
@@ -86,11 +78,11 @@ const dataDir = process.env["DATA_DIR"] ?? "../data";
 
 const fs = {
 	dataDir,
-	keysDir: process.env["KEYS_DIR"] ?? "../keys",
-	photosDir: process.env["PHOTOS_DIR"] ?? path.join(dataDir, "photos"),
-	thumbnailsDir: process.env["THUMBNAILS_DIR"] ?? path.join(dataDir, "thumbnails"),
-	eventsDir: process.env["EVENTS_DIR"] ?? path.join(dataDir, "events"),
-	membersDir: process.env["MEMBERS_DIR"] ?? path.join(dataDir, "members"),
+	keysDir: path.resolve(process.env["KEYS_DIR"] ?? "../keys"),
+	photosDir: path.resolve(process.env["PHOTOS_DIR"] ?? path.join(dataDir, "photos")),
+	thumbnailsDir: path.resolve(process.env["THUMBNAILS_DIR"] ?? path.join(dataDir, "thumbnails")),
+	eventsDir: path.resolve(process.env["EVENTS_DIR"] ?? path.join(dataDir, "events")),
+	membersDir: path.resolve(process.env["MEMBERS_DIR"] ?? path.join(dataDir, "members")),
 };
 
 const google = {

@@ -1,18 +1,10 @@
-name: Release to PRODUCTION
+name: Release to NEXT
 
 on:
   workflow_dispatch:
-    inputs:
-      semver:
-        description: "Version bump"
-        required: true
-        type: choice
-        default: none
-        options:
-          - none
-          - patch
-          - minor
-          - major
+  push:
+    branches:
+      - next
 
 concurrency:
   group: ${{ github.workflow }}
@@ -28,10 +20,14 @@ jobs:
   #       run: echo "No tests implemented yet"
 
   version:
-    name: Resolve version
-    uses: ./.github/workflows/version.yml
-    with:
-      semver: ${{ github.event.inputs.semver }}
+    name: Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set_short_sha.outputs.short_sha }}
+    steps:
+      - name: Set short SHA
+        id: set_short_sha
+        run: echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
   build:
     name: Build
@@ -42,21 +38,17 @@ jobs:
       image-name: interni-sekce
       retention-days: 1
       build-args: |
-        VERSION=${{ needs.version.outputs.new_tag }}
-        NG_CONFIGURATION=production
+        VERSION=NEXT-${{ needs.version.outputs.version }}
 
   publish:
     name: Publish
-    needs:
-      - build
-      - version
+    needs: build
     uses: ./.github/workflows/publish.yml
     with:
       source-image-name: interni-sekce
       publish-image-name: bosancz/interni-sekce
       registry: ghcr.io
-      tag: latest
-      version: ${{ needs.version.outputs.new_tag }}
+      tag: next
     secrets:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
@@ -71,10 +63,12 @@ jobs:
 
   tag:
     name: Tag release
-    needs:
-      - version
-      - deploy
+    needs: deploy
     uses: ./.github/workflows/tag.yml
     with:
-      tag: production
-      version: ${{ needs.version.outputs.new_tag }}
+      tag: NEXT
+
+  cleanup:
+    name: Cleanup
+    needs: [deploy]
+    uses: ./.github/workflows/cleanup.yml
