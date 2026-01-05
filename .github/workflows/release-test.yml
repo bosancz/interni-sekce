@@ -29,7 +29,6 @@ jobs:
       retention-days: 1
       build-args: |
         VERSION=${{ github.ref }}-${{ github.sha }}
-        NG_CONFIGURATION=production
 
   publish:
     name: Publish

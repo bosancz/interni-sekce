@@ -43,7 +43,6 @@ jobs:
       retention-days: 1
       build-args: |
         VERSION=${{ needs.version.outputs.new_tag }}
-        NG_CONFIGURATION=production
 
   publish:
     name: Publish

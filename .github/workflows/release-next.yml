@@ -19,16 +19,26 @@ jobs:
   #     - name: Tests not implemented yet
   #       run: echo "No tests implemented yet"
 
+  version:
+    name: Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set_short_sha.outputs.short_sha }}
+    steps:
+      - name: Set short SHA
+        id: set_short_sha
+        run: echo "::set-output name=short_sha::${GITHUB_SHA::7}"
+
   build:
     name: Build
+    needs: short_sha
     uses: ./.github/workflows/build.yml
     with:
       context: .
       image-name: interni-sekce
       retention-days: 1
       build-args: |
-        VERSION=NEXT-${{ github.sha }}
-        NG_CONFIGURATION=production
+        VERSION=NEXT-${{ needs.short_sha.outputs.short_sha }}
 
   publish:
     name: Publish
