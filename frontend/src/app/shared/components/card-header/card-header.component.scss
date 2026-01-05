@@ -1,7 +1,8 @@
 :host {
+	color: var(--card-color);
 	padding: 0.4em;
 	padding-left: 1em;
-	background-color: var(--darkShade);
+	// border-bottom: 2px solid var(--lightGrey);
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
