@@ -31,14 +31,14 @@ jobs:
 
   build:
     name: Build
-    needs: short_sha
+    needs: version
     uses: ./.github/workflows/build.yml
     with:
       context: .
       image-name: interni-sekce
       retention-days: 1
       build-args: |
-        VERSION=NEXT-${{ needs.short_sha.outputs.short_sha }}
+        VERSION=NEXT-${{ needs.version.outputs.version }}
 
   publish:
     name: Publish
