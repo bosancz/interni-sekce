@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { MemberRoleMetadata, MemberRoles } from "src/app/config/member-roles";
+import { MemberRoleMetadata, MemberRoles } from "src/app/core/config/member-roles";
 import { SDK } from "src/sdk";
 
 type RolePipeProperty = "code";

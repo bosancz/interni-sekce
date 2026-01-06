@@ -3,33 +3,9 @@ import { RouteReuseStrategy, TitleStrategy } from "@angular/router";
 import { provideServiceWorker } from "@angular/service-worker";
 import { IonicRouteStrategy, isPlatform } from "@ionic/angular";
 import { provideIonicAngular } from "@ionic/angular/standalone";
-import { MainErrorHandler } from "./error-handlers/main.error-handler";
-import { TitleService } from "./services/title.service";
+import { MainErrorHandler } from "./core/error-handlers/main.error-handler";
+import { TitleService } from "./core/services/title.service";
 
-// @NgModule({
-// 	declarations: [
-// 		AppComponent,
-// 		AppLoadingComponent,
-// 		LoginComponent,
-// 		NotFoundComponent,
-// 		SidebarComponent,
-// 		HeaderComponent,
-// 		AccountMenuComponent,
-// 		AccountMenuModalComponent,
-// 	],
-// 	imports: [
-
-// 		ServiceWorkerModule.register("ngsw-worker.js", { enabled: environment.production }),
-// 		BrowserAnimationsModule,
-
-// 		AppRoutingModule,
-// 	],
-// 	providers: [
-
-// 	],
-// 	bootstrap: [AppComponent],
-// })
-// export class AppModule {}
 
 export const appConfig: ApplicationConfig = {
 	providers: [

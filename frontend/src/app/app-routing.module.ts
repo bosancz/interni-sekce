@@ -1,59 +1,59 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 
-import { NotFoundComponent } from "./pages/not-found/not-found.component";
+import { NotFoundComponent } from "./core/pages/not-found/not-found.component";
 
 const routes: Routes = [
 	{
 		path: "",
 		title: "Přehled",
-		loadChildren: () => import("./modules/home/home.module").then((m) => m.DashboardModule),
+		loadChildren: () => import("./features/home/home.module").then((m) => m.DashboardModule),
 	},
 
 	{
 		path: "akce",
 		title: "Akce",
-		loadChildren: () => import("./modules/events/events.module").then((m) => m.EventsModule),
+		loadChildren: () => import("./features/events/events.module").then((m) => m.EventsModule),
 	},
 
 	{
 		path: "galerie",
 		title: "Galerie",
-		loadChildren: () => import("./modules/albums/albums.module").then((m) => m.AlbumsModule),
+		loadChildren: () => import("./features/albums/albums.module").then((m) => m.AlbumsModule),
 	},
 
 	{
 		path: "databaze",
 		title: "Databáze",
-		loadChildren: () => import("./modules/members/members.module").then((m) => m.MembersModule),
+		loadChildren: () => import("./features/members/members.module").then((m) => m.MembersModule),
 	},
 
 	{
 		path: "program",
 		title: "Program",
 		data: { permission: "program" },
-		loadChildren: () => import("./modules/program/program.module").then((m) => m.ProgramModule),
+		loadChildren: () => import("./features/program/program.module").then((m) => m.ProgramModule),
 	},
 
 	{
 		path: "statistiky",
 		title: "Statistiky",
 		data: { permission: "statistics" },
-		loadChildren: () => import("./modules/statistics/statistics.module").then((m) => m.StatisticsModule),
+		loadChildren: () => import("./features/statistics/statistics.module").then((m) => m.StatisticsModule),
 	},
 
 	{
 		path: "ucet",
 		title: "Účet",
 		data: { permission: "account" },
-		loadChildren: () => import("./modules/account/account.module").then((m) => m.AccountModule),
+		loadChildren: () => import("./features/account/account.module").then((m) => m.AccountModule),
 	},
 
 	{
 		path: "admin",
 		title: "Administrace",
 		data: { permission: "admin" },
-		loadChildren: () => import("./modules/admin/admin.module").then((m) => m.AdminModule),
+		loadChildren: () => import("./features/admin/admin.module").then((m) => m.AdminModule),
 	},
 
 	{ path: "**", component: NotFoundComponent },

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { EventStatus, EventStatusID, EventStatuses } from "src/app/config/event-statuses";
+import { EventStatus, EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
 
 @Pipe({
 	name: "eventStatus",

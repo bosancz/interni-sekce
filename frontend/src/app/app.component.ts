@@ -4,10 +4,10 @@ import { MenuController } from "@ionic/angular";
 import { IonApp, IonRouterOutlet } from "@ionic/angular/standalone";
 import { LoginService } from "src/app/services/login.service";
 import { UserService } from "src/app/services/user.service";
-import { HeaderComponent } from "./components/header/header.component";
-import { SidebarComponent } from "./components/sidebar/sidebar.component";
-import { LoginComponent } from "./components/login/login.component";
-import { AppLoadingComponent } from "./components/app-loading/app-loading.component";
+import { HeaderComponent } from "./core/components/header/header.component";
+import { SidebarComponent } from "./core/components/sidebar/sidebar.component";
+import { LoginComponent } from "./core/components/login/login.component";
+import { AppLoadingComponent } from "./core/components/app-loading/app-loading.component";
 import { ApiService } from "./services/api.service";
 import { PlatformService } from "./services/platform.service";
 
