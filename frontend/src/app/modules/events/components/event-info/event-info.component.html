@@ -75,18 +75,16 @@
 		></bo-group-select>
 	</bo-item>
 </ion-list>
-<!--
-TODO update popisu akce v tak malém okénku je naprd chtělo by to psát rovnou zároveň ten textbox na ten popis by měl být větší atd-->
-<h3 class="mt-5">
-	Popis
-	<bo-edit-button-markdown
-		slot="end"
-		label="Popis"
-		[disabled]="!event?._links?.updateEvent?.allowed"
-		[value]="event?.description"
-		(update)="update.emit({ description: $event })"
-	/>
-</h3>
+
+
+<bo-edit-button-markdown
+	label="Popis"
+	[disabled]="!event?._links?.updateEvent?.allowed"
+	[value]="event?.description"
+	(update)="update.emit({ description: $event })"
+>
+</bo-edit-button-markdown>
+
 <bo-card>
 	<bo-card-content>
 		<bo-item lines="none" [loading]="!event">
