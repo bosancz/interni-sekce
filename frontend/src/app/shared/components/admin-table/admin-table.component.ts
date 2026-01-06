@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, effect, input } from "@angular/core";
 
 @Component({
 	selector: "admin-table",
@@ -10,11 +10,13 @@ export class AdminTableComponent {
 	defaultTableClass = "table table-hover";
 	tableClass: string;
 
-	@Input() set class(classNames: string) {
-		this.tableClass = this.defaultTableClass + (classNames ? " " + classNames : "");
-	}
+	class = input<string>("");
 
 	constructor() {
 		this.tableClass = this.defaultTableClass;
+		effect(() => {
+			const classNames = this.class();
+			this.tableClass = this.defaultTableClass + (classNames ? " " + classNames : "");
+		});
 	}
 }

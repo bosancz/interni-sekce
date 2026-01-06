@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
+import { Component, effect, input, output } from "@angular/core";
 import {
 	AlertButton,
 	AlertController,
@@ -43,9 +43,9 @@ import { SDK } from "src/sdk";
 		EditButtonComponent,
 	],
 })
-export default class MemberContactsComponent implements OnChanges {
-	@Input() member?: SDK.MemberResponseWithLinks | null;
-	@Output() update = new EventEmitter<Partial<SDK.MemberResponse>>();
+export default class MemberContactsComponent {
+	member = input<SDK.MemberResponseWithLinks | null | undefined>();
+	update = output<Partial<SDK.MemberResponse>>();
 
 	contacts?: SDK.MemberContactResponseWithLinks[];
 
@@ -54,10 +54,11 @@ export default class MemberContactsComponent implements OnChanges {
 		private api: ApiService,
 		private alertController: AlertController,
 		private modalService: ModalService,
-	) {}
-
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes["member"]) this.loadContacts(this.member?.id ?? null);
+	) {
+		effect(() => {
+			const member = this.member();
+			this.loadContacts(member?.id ?? null);
+		});
 	}
 
 	async loadContacts(memberId: number | null) {
@@ -69,33 +70,34 @@ export default class MemberContactsComponent implements OnChanges {
 	}
 
 	async editAddress() {
+		const member = this.member();
 		const data = await this.modalService.inputModal({
 			header: "Upravit adresu",
 			inputs: {
 				addressStreet: {
 					type: "text",
 					placeholder: "Ulice",
-					value: this.member?.addressStreet,
+					value: member?.addressStreet,
 				},
 				addressStreetNo: {
 					type: "text",
 					placeholder: "Číslo popisné",
-					value: this.member?.addressStreetNo,
+					value: member?.addressStreetNo,
 				},
 				addressCity: {
 					type: "text",
 					placeholder: "Město",
-					value: this.member?.addressCity,
+					value: member?.addressCity,
 				},
 				addressPostalCode: {
 					type: "text",
 					placeholder: "PSČ",
-					value: this.member?.addressPostalCode,
+					value: member?.addressPostalCode,
 				},
 				addressCountry: {
 					type: "text",
 					placeholder: "Země",
-					value: this.member?.addressCountry,
+					value: member?.addressCountry,
 				},
 			},
 		});
@@ -117,10 +119,11 @@ export default class MemberContactsComponent implements OnChanges {
 	}
 
 	async editMobile() {
+		const member = this.member();
 		const data = await this.modalService.inputModal({
 			header: "Upravit telefonní číslo",
 			inputs: {
-				mobile: { type: "tel", placeholder: "Telefonní číslo", value: this.member?.mobile },
+				mobile: { type: "tel", placeholder: "Telefonní číslo", value: member?.mobile },
 			},
 		});
 
@@ -128,10 +131,11 @@ export default class MemberContactsComponent implements OnChanges {
 	}
 
 	async editEmail() {
+		const member = this.member();
 		const data = await this.modalService.inputModal({
 			header: "Upravit email",
 			inputs: {
-				email: { type: "email", placeholder: "Email", value: this.member?.email },
+				email: { type: "email", placeholder: "Email", value: member?.email },
 			},
 		});
 
@@ -213,29 +217,31 @@ export default class MemberContactsComponent implements OnChanges {
 		contactId: number | null,
 		data: { title: string; email?: string; mobile?: string; other?: string },
 	) {
-		if (!this.member) return;
+		const member = this.member();
+		if (!member) return;
 
 		if (contactId) {
-			await this.api.MembersApi.updateContact(this.member.id, contactId, data);
+			await this.api.MembersApi.updateContact(member.id, contactId, data);
 		} else {
-			await this.api.MembersApi.createContact(this.member.id, data);
+			await this.api.MembersApi.createContact(member.id, data);
 		}
 
-		await this.loadContacts(this.member.id);
+		await this.loadContacts(member.id);
 
 		await this.toastService.toast(contactId ? "Kontakt byl upraven" : "Kontakt byl přidán");
 	}
 
 	async deleteContact(contact: SDK.MemberContactResponseWithLinks) {
-		if (!this.member) return;
+		const member = this.member();
+		if (!member) return;
 
 		const confirmation = await this.modalService.deleteConfirmationModal(
 			`Opravdu chcete smazat kontakt ${contact.title}?`,
 		);
 
-		await this.api.MembersApi.deleteContact(this.member.id, contact.id);
+		await this.api.MembersApi.deleteContact(member.id, contact.id);
 
-		await this.loadContacts(this.member.id);
+		await this.loadContacts(member.id);
 
 		await this.toastService.toast("Kontakt byl smazán", { color: "danger" });
 	}

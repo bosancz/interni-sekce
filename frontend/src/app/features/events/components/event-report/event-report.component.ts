@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, input, output } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
@@ -16,6 +16,6 @@ import { SDK } from "src/sdk";
 	imports: [CommonModule, EditButtonMarkdownComponent, CardComponent, CardContentComponent, ItemComponent],
 })
 export class EventReportComponent {
-	@Input() event?: SDK.EventResponseWithLinks;
-	@Output() update = new EventEmitter<SDK.EventUpdateBody>();
+	event = input<SDK.EventResponseWithLinks | undefined>();
+	update = output<SDK.EventUpdateBody>();
 }

@@ -1,7 +1,7 @@
 <h3>Účtování</h3>
 
 <!-- @if (expenses.length > 0) {
-	<bo-event-expenses-chart [event]="event" [expenses]="expenses" class="mb-5"></bo-event-expenses-chart>
+	<bo-event-expenses-chart [event]="event()" [expenses]="expenses" class="mb-5"></bo-event-expenses-chart>
 } -->
 
 <ion-list>
@@ -23,11 +23,11 @@
 	}
 </ion-list>
 
-<div *ngIf="event?._links?.addEventExpense?.allowed" class="text-center">
+<div *ngIf="event()?._links?.addEventExpense?.allowed" class="text-center">
 	<bo-add-button (click)="addExpense()">Přidat účtenku</bo-add-button>
 </div>
-@if (event && event._links.getEventAccounting.allowed) {
+@if (event() && event()!._links.getEventAccounting.allowed) {
 	<div class="text-center">
-		<ion-button (click)="getAccounting(event)" expand="block" fill="outline"> Stáhnout účtování </ion-button>
+		<ion-button (click)="getAccounting(event()!)" expand="block" fill="outline"> Stáhnout účtování </ion-button>
 	</div>
 }

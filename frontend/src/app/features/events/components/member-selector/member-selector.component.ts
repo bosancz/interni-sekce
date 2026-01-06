@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { AfterViewInit, Component, ElementRef, forwardRef, Input, OnDestroy, OnInit } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, forwardRef, input, OnDestroy, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { IonChip, IonIcon, ModalController } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
@@ -28,10 +28,9 @@ export type MemberSelectorType = SDK.MemberResponse | SDK.MemberResponse[] | nul
 export class MemberSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {
 	value: SDK.MemberResponse[] = [];
 
-	@Input() members!: SDK.MemberResponse[];
-
-	@Input() placeholder?: string;
-	@Input() multiple: boolean | string = false;
+	members = input.required<SDK.MemberResponse[]>();
+	placeholder = input<string | undefined>();
+	multiple = input<boolean | string>(false);
 
 	modal?: HTMLIonModalElement;
 
@@ -81,7 +80,8 @@ export class MemberSelectorComponent implements OnInit, ControlValueAccessor, Af
 	}
 
 	async openModal() {
-		if (!(this.multiple || this.multiple === "") && this.value.length >= 1) return;
+		const multiple = this.multiple();
+		if (!(multiple || multiple === "") && this.value.length >= 1) return;
 
 		this.focused = true;
 		this.emitIonStyle();
@@ -89,7 +89,7 @@ export class MemberSelectorComponent implements OnInit, ControlValueAccessor, Af
 		this.modal = await this.modalController.create({
 			component: MemberSelectorModalComponent,
 			componentProps: {
-				members: this.members,
+				members: this.members(),
 			},
 		});
 
@@ -125,7 +125,8 @@ export class MemberSelectorComponent implements OnInit, ControlValueAccessor, Af
 
 		this.value = value;
 
-		if (this.multiple || this.multiple === "") this.onChange?.(this.value);
+		const multiple = this.multiple();
+		if (multiple || multiple === "") this.onChange?.(this.value);
 		else this.onChange?.(this.value[0] || null);
 
 		this.emitIonStyle();

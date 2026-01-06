@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, input, OnInit, output } from "@angular/core";
 import {
 	AlertController,
 	IonButton,
@@ -35,14 +35,15 @@ import { CardInsuranceCardComponent } from "../card-insurance-card/card-insuranc
 	],
 })
 export class MemberHealthComponent implements OnInit {
-	@Input() member?: SDK.MemberResponseWithLinks | null;
-	@Output() update = new EventEmitter<Partial<SDK.MemberResponseWithLinks>>();
+	member = input<SDK.MemberResponseWithLinks | null | undefined>();
+	update = output<Partial<SDK.MemberResponseWithLinks>>();
 
 	constructor(private alertController: AlertController) {}
 
 	ngOnInit(): void {}
 
 	async openKnownProblemsForm() {
+		const member = this.member();
 		const alert = await this.alertController.create({
 			header: "Upravit známé problémy",
 			inputs: [
@@ -50,7 +51,7 @@ export class MemberHealthComponent implements OnInit {
 					name: "knownProblems",
 					type: "textarea",
 					placeholder: "Přehled známých zdravotních a jiných problémů",
-					value: this.member?.knownProblems,
+					value: member?.knownProblems,
 				},
 			],
 			buttons: [
@@ -69,6 +70,7 @@ export class MemberHealthComponent implements OnInit {
 	}
 
 	async openAllergiesForm() {
+		const member = this.member();
 		const alert = await this.alertController.create({
 			header: "Přidat alergii",
 			inputs: [
@@ -86,7 +88,7 @@ export class MemberHealthComponent implements OnInit {
 				{
 					text: "Uložit",
 					handler: async (data) =>
-						this.update.emit({ allergies: [...(this.member!.allergies || []), data.allergy] }),
+						this.update.emit({ allergies: [...(member!.allergies || []), data.allergy] }),
 				},
 			],
 		});
@@ -95,6 +97,7 @@ export class MemberHealthComponent implements OnInit {
 	}
 
 	deleteAllergy(index: number) {
-		this.update.emit({ allergies: this.member!.allergies!.filter((_, i) => i !== index) });
+		const member = this.member();
+		this.update.emit({ allergies: member!.allergies!.filter((_, i) => i !== index) });
 	}
 }

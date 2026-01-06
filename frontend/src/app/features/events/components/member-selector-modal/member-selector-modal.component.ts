@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { Component, input, OnInit, ViewChild } from "@angular/core";
 import {
 	IonBadge,
 	IonButton,
@@ -42,11 +42,12 @@ export class MemberSelectorModalComponent
 	extends AbstractModalComponent<SDK.MemberResponse>
 	implements OnInit, ViewDidEnter
 {
-	@Input() members: SDK.MemberResponse[] = [];
+	members = input<SDK.MemberResponse[]>([]);
 
 	membersIndex: string[] = [];
 
 	filteredMembers: SDK.MemberResponse[] = [];
+	private _members: SDK.MemberResponse[] = [];
 
 	@ViewChild("searchBar") searchBar!: IonSearchbar;
 
@@ -61,7 +62,12 @@ export class MemberSelectorModalComponent
 		this.loadMembers();
 	}
 	private async loadMembers() {
-		if (this.members) this.members = await this.api.MembersApi.listMembers({ limit: 1000 }).then((res) => res.data);
+		const inputMembers = this.members();
+		if (inputMembers && inputMembers.length === 0) {
+			this._members = await this.api.MembersApi.listMembers({ limit: 1000 }).then((res) => res.data);
+		} else {
+			this._members = inputMembers || [];
+		}
 
 		this.sortMembers();
 
@@ -81,7 +87,7 @@ export class MemberSelectorModalComponent
 	searchMembers(searchString?: string) {
 		if (!searchString) {
 			//NOTE: Chceme zobrazit vsechny cleny, pokud neni nic zadano do vyhledavani stejne tak nikdo nebude vyhledavat ne?
-			this.filteredMembers = this.members;
+			this.filteredMembers = this._members;
 			return;
 		}
 
@@ -90,17 +96,17 @@ export class MemberSelectorModalComponent
 
 		console.log("Searching members for:", searchString, this.membersIndex, this.filteredMembers);
 
-		this.filteredMembers = this.members.filter((member, i) => re.test(this.membersIndex[i]));
+		this.filteredMembers = this._members.filter((member, i) => re.test(this.membersIndex[i]));
 	}
 
 	private createIndex() {
-		this.membersIndex = this.members.map((member) => {
+		this.membersIndex = this._members.map((member) => {
 			return [member.nickname, member.firstName, member.lastName].filter((value) => !!value).join(" ");
 		});
 	}
 
 	private sortMembers() {
-		this.members.sort((a, b) => {
+		this._members.sort((a, b) => {
 			const aString = a.nickname || a.firstName || a.lastName || "";
 			const bString = b.nickname || b.firstName || b.lastName || "";
 			return aString.localeCompare(bString);

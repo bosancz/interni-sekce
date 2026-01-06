@@ -1,5 +1,5 @@
-<span>{{ member.groupId | group: "name" }}</span>
-<span>, {{ member.firstName }}&nbsp;{{ member.lastName }}</span>
-@if (member.birthday) {
-	<span>, {{ (member | member: "age") || "?" }}&nbsp;let</span>
+<span>{{ member().groupId | group: "name" }}</span>
+<span>, {{ member().firstName }}&nbsp;{{ member().lastName }}</span>
+@if (member().birthday) {
+	<span>, {{ (member() | member: "age") || "?" }}&nbsp;let</span>
 }

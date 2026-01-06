@@ -3,16 +3,16 @@
 	<bo-edit-button-markdown
 		slot="end"
 		label="Report"
-		[disabled]="!event?._links?.updateEvent?.allowed"
-		[value]="event?.report"
+		[disabled]="!event()?._links?.updateEvent?.allowed"
+		[value]="event()?.report"
 		(update)="update.emit({ report: $event })"
 	/>
 </h3>
 <bo-card>
 	<bo-card-content>
-		<bo-item lines="none" [loading]="!event">
-			@if (event) {
-				<p>{{ event.report }}</p>
+		<bo-item lines="none" [loading]="!event()">
+			@if (event()) {
+				<p>{{ event()!.report }}</p>
 			}
 		</bo-item>
 	</bo-card-content>

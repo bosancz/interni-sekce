@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import { IonFooter, IonToolbar } from "@ionic/angular/standalone";
 
 @Component({
@@ -9,5 +9,5 @@ import { IonFooter, IonToolbar } from "@ionic/angular/standalone";
 	imports: [IonFooter, IonToolbar],
 })
 export class PageFooterComponent {
-	@Input() padding?: boolean;
+	padding = input<boolean | undefined>();
 }

@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 
 @Component({
@@ -9,6 +9,6 @@ import { IonButton, IonIcon } from "@ionic/angular/standalone";
 	imports: [IonButton, IonIcon],
 })
 export class EditButtonComponent {
-	@Input() label?: string;
-	@Input() disabled?: boolean;
+	label = input<string | undefined>();
+	disabled = input<boolean | undefined>();
 }

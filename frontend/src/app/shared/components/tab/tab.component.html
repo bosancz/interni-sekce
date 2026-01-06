@@ -1,9 +1,9 @@
 <ion-tab-button (click)="openTab()" [class.tab-selected]="active">
-	@if (icon) {
-		<ion-icon [name]="icon"></ion-icon>
+	@if (icon()) {
+		<ion-icon [name]="icon()"></ion-icon>
 	}
-	<ion-label>{{ label }}</ion-label>
-	@if (badge || badgeColor) {
-		<ion-badge [color]="badgeColor">{{ badge || "&nbsp;&nbsp;" }}</ion-badge>
+	<ion-label>{{ label() }}</ion-label>
+	@if (badge() || badgeColor()) {
+		<ion-badge [color]="badgeColor()">{{ badge() || "&nbsp;&nbsp;" }}</ion-badge>
 	}
 </ion-tab-button>

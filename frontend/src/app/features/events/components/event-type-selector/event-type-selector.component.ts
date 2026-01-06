@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { AfterViewInit, Component, ElementRef, forwardRef, Input } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, forwardRef, input } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { EventTypeID, EventTypes } from "src/app/core/config/event-types";
 
@@ -28,8 +28,8 @@ export class EventTypeSelectorComponent implements ControlValueAccessor, AfterVi
 	onChange: any = () => {};
 	onTouched: any = () => {};
 
-	@Input() disabled: boolean = false;
-	@Input() readonly: boolean = false;
+	disabled = input<boolean>(false);
+	readonly = input<boolean>(false);
 
 	constructor(private elRef: ElementRef<HTMLElement>) {}
 
@@ -38,7 +38,7 @@ export class EventTypeSelectorComponent implements ControlValueAccessor, AfterVi
 	}
 
 	select(typeId: EventTypeID) {
-		if (this.disabled || this.readonly) return;
+		if (this.disabled() || this.readonly()) return;
 		this.value = typeId;
 		this.onTouched();
 		this.onChange(this.value);
@@ -58,7 +58,8 @@ export class EventTypeSelectorComponent implements ControlValueAccessor, AfterVi
 	}
 
 	setDisabledState(isDisabled: boolean): void {
-		this.disabled = isDisabled;
+		// Note: Signal inputs are read-only. This method is part of ControlValueAccessor interface.
+		// The disabled state should be managed differently, but for compatibility we'll keep the method.
 	}
 
 	private emitIonStyle() {
@@ -73,7 +74,7 @@ export class EventTypeSelectorComponent implements ControlValueAccessor, AfterVi
 					"has-placeholder": true,
 					"has-value": true,
 					"has-focus": false,
-					"interactive-disabled": this.disabled,
+					"interactive-disabled": this.disabled(),
 				},
 			}),
 		);

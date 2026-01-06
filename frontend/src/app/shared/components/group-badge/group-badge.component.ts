@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import { IonBadge } from "@ionic/angular/standalone";
 import { SDK } from "src/sdk";
 import { GroupPipe } from "../../pipes/group.pipe";
@@ -11,6 +11,6 @@ import { GroupPipe } from "../../pipes/group.pipe";
 	imports: [IonBadge, GroupPipe],
 })
 export class GroupBadgeComponent {
-	@Input() groupId!: SDK.GroupResponse["id"];
-	@Input() short = false;
+	groupId = input.required<SDK.GroupResponse["id"]>();
+	short = input<boolean>(false);
 }

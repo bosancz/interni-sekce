@@ -1,5 +1,5 @@
 <ion-list>
-	@for (attendee of attendees; track attendee.eventId + "-" + attendee.memberId) {
+	@for (attendee of attendees(); track attendee.eventId + "-" + attendee.memberId) {
 		<bo-item
 			[label]="attendee.member | member: 'nickname'"
 			[routerLink]="'/databaze/' + attendee.memberId"
@@ -39,7 +39,7 @@
 		</bo-item>
 	}
 
-	@if (attendees === undefined) {
+	@if (attendees() === undefined) {
 		@for (item of loadingArray; track $index) {
 			<bo-item>
 				<ion-skeleton-text [animated]="true"></ion-skeleton-text>

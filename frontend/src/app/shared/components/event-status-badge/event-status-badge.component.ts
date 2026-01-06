@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, input } from "@angular/core";
 import { IonBadge } from "@ionic/angular/standalone";
 import { SDK } from "src/sdk";
 import { EventStatusPipe } from "../../pipes/event-status.pipe";
@@ -12,7 +12,7 @@ import { EventStatusPipe } from "../../pipes/event-status.pipe";
 	imports: [IonBadge, EventStatusPipe],
 })
 export class EventStatusBadgeComponent {
-	@Input() event!: SDK.EventResponseWithLinks;
+	event = input.required<SDK.EventResponseWithLinks>();
 
 	constructor() {}
 }

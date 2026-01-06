@@ -1,5 +1,5 @@
 import { DatePipe } from "@angular/common";
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, input, output } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonBadge, IonList, IonSkeletonText } from "@ionic/angular/standalone";
 import { DateTime } from "luxon";
@@ -31,19 +31,20 @@ import { RolePipe } from "../../../../shared/pipes/role.pipe";
 	],
 })
 export class EventAttendeesListComponent {
-	@Input() event?: SDK.EventResponseWithLinks | null;
-	@Input() attendees?: SDK.EventAttendeeResponseWithLinks[];
+	event = input<SDK.EventResponseWithLinks | null | undefined>();
+	attendees = input<SDK.EventAttendeeResponseWithLinks[] | undefined>();
 
-	@Output() remove = new EventEmitter<SDK.EventAttendeeResponseWithLinks>();
-	@Output() add = new EventEmitter<void>();
+	remove = output<SDK.EventAttendeeResponseWithLinks>();
+	add = output<void>();
 
 	loadingArray = new Array(10).fill(null);
 
 	hasBirthday(attendee: SDK.EventAttendeeResponseWithLinks) {
-		if (!attendee.member?.birthday || !this.event?.dateFrom || !this.event?.dateTill) return false;
+		const event = this.event();
+		if (!attendee.member?.birthday || !event?.dateFrom || !event?.dateTill) return false;
 
-		const eventFrom = DateTime.fromISO(this.event?.dateFrom);
-		const eventTill = DateTime.fromISO(this.event?.dateTill);
+		const eventFrom = DateTime.fromISO(event.dateFrom);
+		const eventTill = DateTime.fromISO(event.dateTill);
 
 		let birthday = DateTime.fromISO(attendee.member.birthday).set({ year: eventFrom.year });
 		if (birthday < eventFrom) birthday = birthday.plus({ years: 1 });

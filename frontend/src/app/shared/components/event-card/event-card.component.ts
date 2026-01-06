@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from "@angular/common";
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, effect, input, OnInit, output } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonButton, IonButtons, IonCard, IonCardContent, IonItem, IonLabel } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
@@ -13,7 +13,7 @@ import { JoinLeadersPipe } from "../../pipes/join-leaders.pipe";
 	selector: "event-card",
 	templateUrl: "./event-card.component.html",
 	styleUrls: ["./event-card.component.scss"],
-	
+
 	imports: [
 		NgTemplateOutlet,
 		RouterLink,
@@ -30,30 +30,35 @@ import { JoinLeadersPipe } from "../../pipes/join-leaders.pipe";
 	],
 })
 export class EventCardComponent implements OnInit {
-	@Input()
-	event?: SDK.EventResponseWithLinks;
+	event = input<SDK.EventResponseWithLinks | undefined>();
+	eventId = input<number | undefined>();
+	actions = input<boolean>(false);
+	open = input<boolean>(false);
 
-	@Input()
-	set eventId(eventId: number) {
-		this.loadEvent(eventId);
+	change = output<SDK.EventResponseWithLinks>();
+
+	private _loadedEvent?: SDK.EventResponseWithLinks;
+
+	constructor(private api: ApiService) {
+		effect(() => {
+			const eventId = this.eventId();
+			if (eventId) this.loadEvent(eventId);
+		});
 	}
-
-	@Input() actions: boolean = false;
-	@Input() open: boolean = false;
-
-	@Output()
-	change = new EventEmitter<SDK.EventResponseWithLinks>();
-
-	constructor(private api: ApiService) {}
 
 	ngOnInit() {}
 
 	async loadEvent(eventId: number) {
-		this.event = await this.api.EventsApi.getEvent(eventId).then((res) => res.data);
+		this._loadedEvent = await this.api.EventsApi.getEvent(eventId).then((res) => res.data);
+	}
+
+	getEvent(): SDK.EventResponseWithLinks | undefined {
+		return this.event() || this._loadedEvent;
 	}
 
 	async reload() {
-		if (this.event && this.event.id) return this.loadEvent(this.event.id);
+		const event = this.getEvent();
+		if (event && event.id) return this.loadEvent(event.id);
 	}
 
 	async eventAction(
@@ -66,7 +71,8 @@ export class EventCardComponent implements OnInit {
 		await this.api.EventsApi[action](event.id, { statusNote });
 
 		await this.reload();
-		this.change.emit(this.event);
+		const updatedEvent = this.getEvent();
+		if (updatedEvent) this.change.emit(updatedEvent);
 	}
 
 	async rejectEvent(event: SDK.EventResponseWithLinks) {
@@ -76,6 +82,7 @@ export class EventCardComponent implements OnInit {
 		await this.api.EventsApi.rejectEvent(event.id, { statusNote });
 
 		await this.reload();
-		this.change.emit(this.event);
+		const updatedEvent = this.getEvent();
+		if (updatedEvent) this.change.emit(updatedEvent);
 	}
 }

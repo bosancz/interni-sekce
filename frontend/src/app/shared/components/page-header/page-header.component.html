@@ -3,14 +3,14 @@
 } -->
 <ng-content select="[slot=start]"></ng-content>
 
-<h2 class="ms-3">{{ title }}</h2>
+<h2 class="ms-3">{{ title() }}</h2>
 
 <div class="spacer"></div>
 
-@if (actions) {
+@if (actions()) {
 	<div class="actions" slot="end">
 		<ion-buttons slot="end">
-			<bo-action-buttons [actions]="actions" [header]="title"></bo-action-buttons>
+			<bo-action-buttons [actions]="actions()!" [header]="title()"></bo-action-buttons>
 		</ion-buttons>
 		<ng-content></ng-content>
 	</div>

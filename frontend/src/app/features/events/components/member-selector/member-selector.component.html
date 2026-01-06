@@ -5,7 +5,7 @@
 	</ion-chip>
 }
 
-@if ((multiple || multiple === "") && value.length) {
+@if ((multiple() || multiple() === "") && value.length) {
 	<ion-chip (click)="openModal(); $event.stopPropagation()" color="success">
 		přidat <ion-icon name="add-circle"></ion-icon>
 	</ion-chip>

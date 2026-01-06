@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, input, output } from "@angular/core";
 import { IonButton, IonButtons } from "@ionic/angular/standalone";
 
 @Component({
@@ -9,20 +9,23 @@ import { IonButton, IonButtons } from "@ionic/angular/standalone";
 	imports: [IonButtons, IonButton],
 })
 export class PaginationComponent {
-	@Input() page?: number;
-	@Input() pages?: number;
+	page = input<number | undefined>();
+	pages = input<number | undefined>();
 
-	@Output() previous = new EventEmitter<void>();
-	@Output() next = new EventEmitter<void>();
+	previous = output<void>();
+	next = output<void>();
 
 	onPrevious() {
-		if (this.page && this.page > 1) {
+		const page = this.page();
+		if (page && page > 1) {
 			this.previous.emit();
 		}
 	}
 
 	onNext() {
-		if (this.page && (!this.pages || this.page < this.pages)) {
+		const page = this.page();
+		const pages = this.pages();
+		if (page && (!pages || page < pages)) {
 			this.next.emit();
 		}
 	}

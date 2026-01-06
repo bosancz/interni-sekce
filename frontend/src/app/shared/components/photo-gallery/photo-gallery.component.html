@@ -1,7 +1,7 @@
 @for (row of rows; track row) {
 	<div class="photo-row">
 		@for (item of row.photos; track item.photo.id) {
-			<div class="photo" (click)="onPhotoClick($event, item.photo)" [class.clickable]="clickable">
+			<div class="photo" (click)="onPhotoClick($event, item.photo)" [class.clickable]="clickable()">
 				<img
 					[src]="item.photo._links.getPhotoImage.href"
 					[style.height]="row.height + 'px'"

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { Component, input, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { IonContent } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -12,7 +12,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 	imports: [IonContent],
 })
 export class PageContentComponent implements OnInit {
-	@Input() padding?: boolean;
+	padding = input<boolean | undefined>();
 
 	@ViewChild(IonContent) contentEl!: IonContent;
 

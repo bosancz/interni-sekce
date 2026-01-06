@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 
 @Component({
@@ -9,9 +9,9 @@ import { IonButton, IonIcon } from "@ionic/angular/standalone";
 	imports: [IonButton, IonIcon],
 })
 export class IconButtonComponent {
-	@Input() label?: string;
-	@Input() icon?: string;
-	@Input() href?: string;
+	label = input<string | undefined>();
+	icon = input<string | undefined>();
+	href = input<string | undefined>();
 
 	constructor() {}
 
@@ -19,8 +19,9 @@ export class IconButtonComponent {
 		event.preventDefault();
 		event.stopPropagation();
 
-		if (this.href) {
-			window.location.href = this.href;
+		const href = this.href();
+		if (href) {
+			window.location.href = href;
 		}
 	}
 }

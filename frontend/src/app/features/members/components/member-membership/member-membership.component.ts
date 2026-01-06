@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, input, output } from "@angular/core";
 import { IonLabel, IonList } from "@ionic/angular/standalone";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipStates } from "src/app/core/config/membership-states";
@@ -18,8 +18,8 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 	styleUrl: "./member-membership.component.scss",
 })
 export class MemberMembershipComponent {
-	@Input() member?: SDK.MemberResponseWithLinks | null;
-	@Output() update = new EventEmitter<Partial<SDK.MemberResponse>>();
+	member = input<SDK.MemberResponseWithLinks | null | undefined>();
+	update = output<Partial<SDK.MemberResponse>>();
 
 	memberRolesOptions = Object.entries(MemberRoles).map(([id, role]) => ({
 		label: role.title,
@@ -32,6 +32,7 @@ export class MemberMembershipComponent {
 	) {}
 
 	async editActivity() {
+		const member = this.member();
 		const result = await this.modalService.selectModal({
 			header: "Změnit aktivitu",
 			buttonText: "Uložit",
@@ -39,28 +40,30 @@ export class MemberMembershipComponent {
 				{ label: "Aktivní", value: true },
 				{ label: "Neaktivní", value: false },
 			],
-			value: this.member?.active,
+			value: member?.active,
 		});
 
 		if (result !== null) this.update.emit({ active: result });
 	}
 
 	async editRole() {
+		const member = this.member();
 		const role = await this.modalService.selectModal<SDK.MemberRolesEnum>({
 			header: "Změnit roli",
 			buttonText: "Uložit",
 			values: Object.entries(MemberRoles).map(([id, role]) => ({
 				label: role.title,
 				value: id as SDK.MemberRolesEnum,
-				checked: this.member?.role === id,
+				checked: member?.role === id,
 			})),
-			value: this.member?.role,
+			value: member?.role,
 		});
 
 		if (role !== null) this.update.emit({ role });
 	}
 
 	async editGroup() {
+		const member = this.member();
 		const groups = await this.api.MembersApi.listGroups({ active: true }).then((res) => res.data);
 		groups.sort((a, b) => a.shortName.localeCompare(b.shortName, "cs", { numeric: true }));
 
@@ -68,22 +71,23 @@ export class MemberMembershipComponent {
 			header: "Změnit skupinu",
 			buttonText: "Uložit",
 			values: groups.map((g) => ({ label: g.name ?? g.shortName, value: g.id })),
-			value: this.member?.groupId,
+			value: member?.groupId,
 		});
 
 		if (group !== null) this.update.emit({ groupId: group });
 	}
 
 	async editMembership() {
+		const member = this.member();
 		const result = await this.modalService.selectModal({
 			header: "Změnit aktivitu",
 			buttonText: "Uložit",
 			values: Object.entries(MembershipStates).map(([id, role]) => ({
 				label: role.title,
 				value: id as SDK.MembershipStatesEnum,
-				checked: this.member?.role === id,
+				checked: member?.role === id,
 			})),
-			value: this.member?.membership,
+			value: member?.membership,
 		});
 
 		if (result !== null) this.update.emit({ membership: result });

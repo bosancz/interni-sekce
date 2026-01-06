@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, input, output } from "@angular/core";
 import { IonButtons, IonItem, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
 import { ModalService } from "src/app/core/services/modal.service";
 import { SDK } from "src/sdk";
@@ -24,8 +24,8 @@ import { EditButtonComponent } from "../../../../shared/components/edit-button/e
 	styleUrl: "./member-address.component.scss",
 })
 export class MemberAddressComponent {
-	@Input() member?: SDK.MemberResponseWithLinks | null;
-	@Output() update = new EventEmitter<Partial<SDK.MemberResponse>>();
+	member = input<SDK.MemberResponseWithLinks | null | undefined>();
+	update = output<Partial<SDK.MemberResponse>>();
 
 	constructor(private modalService: ModalService) {}
 
@@ -43,33 +43,34 @@ export class MemberAddressComponent {
 	}
 
 	async editAddress() {
+		const member = this.member();
 		const data = await this.modalService.inputModal({
 			header: "Upravit adresu",
 			inputs: {
 				addressStreet: {
 					type: "text",
 					placeholder: "Ulice",
-					value: this.member?.addressStreet,
+					value: member?.addressStreet,
 				},
 				addressStreetNo: {
 					type: "text",
 					placeholder: "Číslo popisné",
-					value: this.member?.addressStreetNo,
+					value: member?.addressStreetNo,
 				},
 				addressCity: {
 					type: "text",
 					placeholder: "Město",
-					value: this.member?.addressCity,
+					value: member?.addressCity,
 				},
 				addressPostalCode: {
 					type: "text",
 					placeholder: "PSČ",
-					value: this.member?.addressPostalCode,
+					value: member?.addressPostalCode,
 				},
 				addressCountry: {
 					type: "text",
 					placeholder: "Země",
-					value: this.member?.addressCountry,
+					value: member?.addressCountry,
 				},
 			},
 		});

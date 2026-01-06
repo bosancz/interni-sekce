@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from "@angular/core";
+import { Component, effect, input, OnDestroy, OnInit, output } from "@angular/core";
 import { IonButton } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/core/services/api.service";
@@ -19,9 +19,9 @@ import { EventAttendeesListComponent } from "../event-attendees-list/event-atten
 
 	imports: [CommonModule, IonButton, EventAttendeesListComponent, AddButtonComponent],
 })
-export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
-	@Input() event?: SDK.EventResponseWithLinks | null;
-	@Output() change = new EventEmitter<void>();
+export class EventAttendeesComponent implements OnInit, OnDestroy {
+	event = input<SDK.EventResponseWithLinks | null | undefined>();
+	change = output<void>();
 
 	attendees: SDK.EventAttendeeResponseWithLinks[] = [];
 	leaders: SDK.EventAttendeeResponseWithLinks[] = [];
@@ -34,16 +34,17 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
 		private api: ApiService,
 		private toastService: ToastService,
 		private modalService: ModalService,
-	) {}
+	) {
+		effect(() => {
+			const event = this.event();
+			this.loadAttendees(event);
+		});
+	}
 
 	ngOnInit(): void {}
 
 	ngOnDestroy() {
 		this.modal?.dismiss();
-	}
-
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes.event) this.loadAttendees(this.event);
 	}
 
 	private async loadAttendees(event?: SDK.EventResponseWithLinks | null) {
@@ -74,7 +75,8 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
 	}
 
 	async addAttendee(type: SDK.EventAttendeeCreateBodyTypeEnum) {
-		if (!this.event) return;
+		const event = this.event();
+		if (!event) return;
 
 		const member = await this.modalService.componentModal(MemberSelectorModalComponent, {});
 
@@ -89,9 +91,9 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
 				}
 
 				if (existingAttendee) {
-					await this.api.EventsApi.updateEventAttendee(this.event.id, member.id, { type });
+					await this.api.EventsApi.updateEventAttendee(event.id, member.id, { type });
 				} else {
-					await this.api.EventsApi.addEventAttendee(this.event.id, member.id, { type });
+					await this.api.EventsApi.addEventAttendee(event.id, member.id, { type });
 				}
 
 				this.toastService.toast("Účastník přidán.");
@@ -99,14 +101,15 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
 				this.toastService.toast("Nepodařilo se přidat účastníka.");
 			}
 
-			await this.loadAttendees(this.event);
+			await this.loadAttendees(event);
 
 			this.change.emit();
 		}
 	}
 
 	async removeAttendee(attendee: SDK.EventAttendeeResponseWithLinks) {
-		if (!this.event) return;
+		const event = this.event();
+		if (!event) return;
 
 		if (attendee.type === "leader") {
 			const confirmation = await this.modalService.deleteConfirmationModal(
@@ -119,7 +122,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
 			// optimistic update
 			this.attendees.filter((item) => item.memberId !== attendee.memberId);
 
-			await this.api.EventsApi.deleteEventAttendee(this.event.id, attendee.memberId);
+			await this.api.EventsApi.deleteEventAttendee(event.id, attendee.memberId);
 
 			if (attendee.type === "leader") this.toastService.toast("Vedoucí odebrán.");
 			else this.toastService.toast("Účastník odebrán.");

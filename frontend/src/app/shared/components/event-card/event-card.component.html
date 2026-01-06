@@ -1,4 +1,5 @@
-@if (event) {
+@if (getEvent()) {
+	@let event = getEvent()!;
 	<ion-card class="event">
 		<ion-card-content class="statusNote" [style.background-color]="event.status | eventStatus: 'color'">
 			<p>
@@ -9,7 +10,7 @@
 			</p>
 		</ion-card-content>
 
-		@if (open) {
+		@if (open()) {
 			<ion-item lines="none" [detail]="true" [routerLink]="'/akce/' + event.id" class="mt-3 event-heading">
 				<ng-container *ngTemplateOutlet="itemContent"></ng-container>
 			</ion-item>
@@ -70,7 +71,7 @@
 			</p>
 		</ion-card-content>
 
-		@if (actions) {
+		@if (actions()) {
 			<ion-card-content class="text-right buttons">
 				<ion-buttons class="d-block">
 					@if (event._links.submitEvent.applicable) {

@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, Input } from "@angular/core";
+import { Component, effect, input } from "@angular/core";
 import { DateTime } from "luxon";
 import { SDK } from "src/sdk";
 
@@ -11,13 +11,14 @@ import { SDK } from "src/sdk";
 	imports: [CommonModule],
 })
 export class EventBirthdayListComponent {
+	event = input.required<SDK.EventResponseWithLinks>();
 	birthdays: Array<{ age: number; date: string; member: SDK.MemberResponse }> = [];
 
-	constructor() {}
-
-	@Input()
-	set event(event: SDK.EventResponseWithLinks) {
-		this.updateBirthdays(event);
+	constructor() {
+		effect(() => {
+			const event = this.event();
+			this.updateBirthdays(event);
+		});
 	}
 
 	updateBirthdays(event: SDK.EventResponseWithLinks) {

@@ -1,33 +1,33 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, input, output } from "@angular/core";
 import { ModalService } from "src/app/core/services/modal.service";
 import { EditButtonComponent } from "../edit-button/edit-button.component";
 
 @Component({
 	selector: "bo-edit-button-text",
-	
+
 	imports: [EditButtonComponent],
 	templateUrl: "./edit-button-text.component.html",
 	styleUrl: "./edit-button-text.component.scss",
 })
 export class EditButtonTextComponent {
-	@Input() type?: "text" | "email" | "password" | "tel" | "url" = "text";
-	@Input() label?: string;
-	@Input() placeholder?: string;
-	@Input() value?: string | null;
-	@Input() disabled?: boolean;
+	type = input<"text" | "email" | "password" | "tel" | "url">("text");
+	label = input<string | undefined>();
+	placeholder = input<string | undefined>();
+	value = input<string | null | undefined>();
+	disabled = input<boolean | undefined>();
 
-	@Output() update = new EventEmitter<string | null>();
+	update = output<string | null>();
 
 	constructor(private readonly modalService: ModalService) {}
 
 	async openEdit() {
 		const result = await this.modalService.inputModal({
-			header: this.label,
+			header: this.label(),
 			inputs: {
 				value: {
-					placeholder: this.placeholder,
-					type: this.type,
-					value: this.value,
+					placeholder: this.placeholder(),
+					type: this.type(),
+					value: this.value(),
 				},
 			},
 		});

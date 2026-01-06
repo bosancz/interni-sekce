@@ -1,11 +1,13 @@
 <ion-buttons slot="end">
-	<ion-button fill="solid" color="primary" (click)="onPrevious()" [disabled]="!page || page === 1">&lt;</ion-button>
+	<ion-button fill="solid" color="primary" (click)="onPrevious()" [disabled]="!page() || page() === 1"
+		>&lt;</ion-button
+	>
 
-	@if (pages) {
-		<ion-button>{{ page ?? "?" }}/{{ pages }}</ion-button>
+	@if (pages()) {
+		<ion-button>{{ page() ?? "?" }}/{{ pages() }}</ion-button>
 	} @else {
-		<ion-button>{{ page ?? "?" }}</ion-button>
+		<ion-button>{{ page() ?? "?" }}</ion-button>
 	}
 
-	<ion-button fill="solid" color="primary" (click)="onNext()" [disabled]="page === pages">&gt;</ion-button>
+	<ion-button fill="solid" color="primary" (click)="onNext()" [disabled]="page() === pages()">&gt;</ion-button>
 </ion-buttons>

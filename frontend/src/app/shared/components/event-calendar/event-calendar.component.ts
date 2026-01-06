@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
+import { Component, effect, HostListener, input, OnInit, output } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonBadge } from "@ionic/angular/standalone";
 import { CzechHolidays } from "czech-holidays";
@@ -75,23 +75,28 @@ class CalendarEvent<T extends SDK.CPVEventResponseWithLinks | SDK.EventResponseW
 
 	imports: [RouterLink, IonBadge, EventStatusPipe],
 })
-export class EventCalendarComponent implements OnInit, OnChanges {
-	@Input("dateFrom") set dateFromString(value: DateTime | string) {
-		this.dateFrom = typeof value === "string" ? DateTime.fromISO(value) : value;
-		this.dateFrom.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-	}
-	@Input("dateTill") set dateTillString(value: DateTime | string) {
-		this.dateTill = typeof value === "string" ? DateTime.fromISO(value) : value;
-		this.dateTill.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-	}
+export class EventCalendarComponent implements OnInit {
+	dateFromString = input.required<DateTime | string, DateTime>({
+		alias: "dateFrom",
+		transform: (value: DateTime | string): DateTime => {
+			const date = typeof value === "string" ? DateTime.fromISO(value) : value;
+			return date.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+		},
+	});
+	dateTillString = input.required<DateTime | string, DateTime>({
+		alias: "dateTill",
+		transform: (value: DateTime | string): DateTime => {
+			const date = typeof value === "string" ? DateTime.fromISO(value) : value;
+			return date.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+		},
+	});
 
-	@Input() events: SDK.EventResponseWithLinks[] = [];
+	events = input<SDK.EventResponseWithLinks[]>([]);
+	cpv = input<boolean>(false);
+	selection = input<boolean>(false);
+	headingLevel = input<number>(3);
 
-	@Input() cpv: boolean = false;
-	@Input() selection: boolean = false;
-	@Input() headingLevel: number = 3;
-
-	@Output() select = new EventEmitter<[DateTime, DateTime]>();
+	select = output<[DateTime, DateTime]>();
 
 	calendar: CalendarRow[] = [];
 
@@ -105,26 +110,33 @@ export class EventCalendarComponent implements OnInit, OnChanges {
 
 	eventHeight = 22;
 
-	constructor(private api: ApiService) {}
+	constructor(private api: ApiService) {
+		effect(() => {
+			const dateFrom = this.dateFromString() as DateTime;
+			const dateTill = this.dateTillString() as DateTime;
+			const cpv = this.cpv();
+			const events = this.events();
+
+			this.dateFrom = dateFrom;
+			this.dateTill = dateTill;
+			this.createCalendar();
+			if (events) this.assignEvents(events, "own");
+			if (this.eventsCPV) this.assignEvents(this.eventsCPV, "cpv");
+
+			if (cpv) {
+				this.loadEventsCPV();
+			} else {
+				this.eventsCPV = [];
+			}
+		});
+
+		effect(() => {
+			const events = this.events();
+			if (events) this.assignEvents(events, "own");
+		});
+	}
 
 	ngOnInit() {}
-
-	ngOnChanges(changes: SimpleChanges) {
-		if (changes.cpv) {
-			if (this.cpv) this.loadEventsCPV();
-			else this.eventsCPV = [];
-		}
-
-		if (changes.dateFromString || changes.dateFromString) {
-			this.createCalendar();
-			if (this.events) this.assignEvents(this.events, "own");
-			if (this.eventsCPV) this.assignEvents(this.eventsCPV, "cpv");
-		}
-
-		if (changes.events) {
-			this.assignEvents(this.events, "own");
-		}
-	}
 
 	createCalendar() {
 		let currentDate = this.dateFrom.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
@@ -231,7 +243,7 @@ export class EventCalendarComponent implements OnInit, OnChanges {
 	}
 
 	setSelection(day: CalendarDay) {
-		if (!this.selection) return;
+		if (!this.selection()) return;
 
 		if (this.selectedDate) {
 			const range: [DateTime, DateTime] = [this.selectedDate, day.date];

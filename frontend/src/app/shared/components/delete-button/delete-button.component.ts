@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 
 @Component({
@@ -9,5 +9,5 @@ import { IonButton, IonIcon } from "@ionic/angular/standalone";
 	imports: [IonButton, IonIcon],
 })
 export class DeleteButtonComponent {
-	@Input() label?: string;
+	label = input<string | undefined>();
 }

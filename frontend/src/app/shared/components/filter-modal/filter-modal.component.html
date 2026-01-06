@@ -1,5 +1,5 @@
 <bo-modal-layout>
-	<ng-container [ngTemplateOutlet]="content"></ng-container>
+	<ng-container [ngTemplateOutlet]="content()"></ng-container>
 
 	<ion-buttons slot="buttons">
 		<ion-button color="secondary" (click)="submit.emit(false)">Vymazat</ion-button>

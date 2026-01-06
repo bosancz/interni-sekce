@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from "@angular/core";
+import { Component, effect, input, OnDestroy, OnInit } from "@angular/core";
 import { IonBadge, IonButton, IonLabel, IonList } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/core/services/api.service";
@@ -33,8 +33,8 @@ import { SDK } from "src/sdk";
 		EventExpensePipe,
 	],
 })
-export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
-	@Input() event?: SDK.EventResponseWithLinks;
+export class EventAccountingComponent implements OnInit, OnDestroy {
+	event = input<SDK.EventResponseWithLinks | undefined>();
 
 	expenses: SDK.EventExpenseResponseWithLinks[] = [];
 
@@ -47,13 +47,14 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 		private toastService: ToastService,
 		private api: ApiService,
 		private modalService: ModalService,
-	) {}
+	) {
+		effect(() => {
+			const event = this.event();
+			if (event) this.loadExpenses();
+		});
+	}
 
 	ngOnInit(): void {}
-
-	ngOnChanges(changes: SimpleChanges): void {
-		if (changes.event) this.loadExpenses();
-	}
 
 	ngOnDestroy() {
 		this.modal?.dismiss();
@@ -61,8 +62,9 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 	}
 
 	private async loadExpenses() {
-		if (!this.event) return;
-		this.expenses = await this.api.EventsApi.listEventExpenses(this.event?.id).then((res) => res.data);
+		const event = this.event();
+		if (!event) return;
+		this.expenses = await this.api.EventsApi.listEventExpenses(event.id).then((res) => res.data);
 		this.expenses.sort((a, b) =>
 			a.receiptNumber && b.receiptNumber
 				? a.receiptNumber.localeCompare(b.receiptNumber, "cs", { numeric: true })
@@ -71,7 +73,8 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 	}
 
 	async addExpense() {
-		if (!this.event) return;
+		const event = this.event();
+		if (!event) return;
 
 		const expense = await this.modalService.componentModal(EventExpenseModalComponent, {
 			expense: { receiptNumber: this.getNextExpenseId() },
@@ -80,7 +83,7 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 		if (expense === null) return;
 
 		try {
-			const newExpense = await this.api.EventsApi.addEventExpense(this.event.id, expense).then((res) => res.data);
+			const newExpense = await this.api.EventsApi.addEventExpense(event.id, expense).then((res) => res.data);
 			this.expenses.push(newExpense);
 
 			this.toastService.toast("Uloženo");
@@ -91,7 +94,8 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 	}
 
 	async editExpense(expense: SDK.EventExpenseResponseWithLinks) {
-		if (!this.event) return;
+		const event = this.event();
+		if (!event) return;
 
 		const data = await this.modalService.componentModal(EventExpenseModalComponent, {
 			expense: expense,
@@ -105,7 +109,7 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 			const i = this.expenses.indexOf(expense);
 			this.expenses.splice(i, 1, expense);
 
-			await this.api.EventsApi.updateEventExpense(this.event.id, expense.id, data);
+			await this.api.EventsApi.updateEventExpense(event.id, expense.id, data);
 			await this.loadExpenses();
 
 			this.toastService.toast("Uloženo");
@@ -116,7 +120,8 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 	}
 
 	async removeExpense(expense: SDK.EventExpenseResponseWithLinks) {
-		if (!this.event) return;
+		const event = this.event();
+		if (!event) return;
 
 		const confirmation = await this.modalService.deleteConfirmationModal(`Opravdu chceš smazat účtenku?`);
 
@@ -124,7 +129,7 @@ export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 			const i = this.expenses.indexOf(expense);
 			this.expenses.splice(i, 1, expense);
 
-			await this.api.EventsApi.deleteEventExpense(this.event.id, expense.id);
+			await this.api.EventsApi.deleteEventExpense(event.id, expense.id);
 			await this.loadExpenses();
 
 			this.toastService.toast("Smazáno");

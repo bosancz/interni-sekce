@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, input, OnInit } from "@angular/core";
 import { SDK } from "src/sdk";
 import { GroupPipe } from "../../pipes/group.pipe";
 import { MemberPipe } from "../../pipes/member.pipe";
@@ -11,7 +11,7 @@ import { MemberPipe } from "../../pipes/member.pipe";
 	imports: [GroupPipe, MemberPipe],
 })
 export class MemberItemDetailComponent implements OnInit {
-	@Input() member!: SDK.MemberResponse;
+	member = input.required<SDK.MemberResponse>();
 
 	constructor() {}
 

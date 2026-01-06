@@ -5,7 +5,7 @@
 }
 
 <bo-event-attendees-list
-	[event]="event"
+	[event]="event()"
 	[attendees]="leaders"
 	(remove)="removeAttendee($event)"
 ></bo-event-attendees-list>
@@ -21,19 +21,19 @@
 }
 
 <bo-event-attendees-list
-	[event]="event"
+	[event]="event()"
 	[attendees]="attendees"
 	(remove)="removeAttendee($event)"
 ></bo-event-attendees-list>
 
-@if (event?._links?.addEventAttendee?.allowed) {
+@if (event()?._links?.addEventAttendee?.allowed) {
 	<div class="text-center">
 		<bo-add-button (click)="addAttendee('attendee')">Přidat účastníka</bo-add-button>
 	</div>
 }
 
-@if (event && event._links.getEventAnnouncement.allowed) {
+@if (event() && event()!._links.getEventAnnouncement.allowed) {
 	<div class="text-center">
-		<ion-button (click)="getAnnouncement(event)" expand="block" fill="outline"> Stáhnout ohlášku </ion-button>
+		<ion-button (click)="getAnnouncement(event()!)" expand="block" fill="outline"> Stáhnout ohlášku </ion-button>
 	</div>
 }

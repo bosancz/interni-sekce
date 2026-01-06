@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import { Color } from "@ionic/core";
 
 @Component({
@@ -8,5 +8,5 @@ import { Color } from "@ionic/core";
 	styleUrl: "./button.component.scss",
 })
 export class ButtonComponent {
-	@Input() color: Color = "primary";
+	color = input<Color>("primary");
 }

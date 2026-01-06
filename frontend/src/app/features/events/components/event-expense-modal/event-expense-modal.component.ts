@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, input, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import {
 	IonButton,
@@ -33,7 +33,7 @@ import { SDK } from "src/sdk";
 	],
 })
 export class EventExpenseModalComponent extends AbstractModalComponent<SDK.EventExpenseResponse> implements OnInit {
-	@Input() expense!: SDK.EventExpenseResponse;
+	expense = input.required<SDK.EventExpenseResponse>();
 
 	types = EventExpenseTypes;
 

@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { ToastService } from "src/app/core/services/toast.service";
 
@@ -6,19 +6,20 @@ import { ToastService } from "src/app/core/services/toast.service";
 	selector: "bo-copy-button",
 	templateUrl: "./copy-button.component.html",
 	styleUrl: "./copy-button.component.scss",
-	
+
 	imports: [IonButton, IonIcon],
 })
 export class CopyButtonComponent {
-	@Input() text?: string | null;
-	@Input() label?: string;
+	text = input<string | null | undefined>();
+	label = input<string | undefined>();
 
 	constructor(private toastService: ToastService) {}
 
 	async copy() {
-		if (!this.text) return;
+		const text = this.text();
+		if (!text) return;
 		if ("clipboard" in navigator) {
-			await navigator.clipboard.writeText(this.text);
+			await navigator.clipboard.writeText(text);
 			await this.toastService.toast("Zkopírováno do schránky.");
 		} else {
 			await this.toastService.toast("Kopírování do schránky není podporováno.", { color: "warning" });

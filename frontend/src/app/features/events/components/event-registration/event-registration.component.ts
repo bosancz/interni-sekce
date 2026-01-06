@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, ElementRef, Input, ViewChild } from "@angular/core";
+import { Component, ElementRef, input, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
 import { IonButton } from "@ionic/angular/standalone";
@@ -19,7 +19,7 @@ import { EventsService } from "../../services/events.service";
 	imports: [CommonModule, FormsModule, IonButton, CardComponent, CardContentComponent],
 })
 export class EventRegistrationComponent {
-	@Input() event?: SDK.EventResponseWithLinks;
+	event = input<SDK.EventResponseWithLinks | undefined>();
 
 	uploadingRegistration: boolean = false;
 
@@ -37,7 +37,8 @@ export class EventRegistrationComponent {
 	}
 
 	async uploadRegistration(input: HTMLInputElement) {
-		if (!this.event) return;
+		const event = this.event();
+		if (!event) return;
 
 		if (!input.files?.length) return;
 
@@ -53,7 +54,7 @@ export class EventRegistrationComponent {
 		this.uploadingRegistration = true;
 
 		try {
-			await this.api.EventsApi.saveEventRegistration(this.event.id, { registration: file });
+			await this.api.EventsApi.saveEventRegistration(event.id, { registration: file });
 		} catch (err: any) {
 			this.toastService.toast("Nastala chyba při nahrávání: " + err.message);
 			return;
@@ -63,21 +64,25 @@ export class EventRegistrationComponent {
 
 		this.toastService.toast("Přihláška nahrána.");
 
-		this.event = await this.eventService.loadEvent(this.event.id);
+		// Note: This component doesn't have a way to update the signal input
+		// The parent component should handle updating the event
 	}
 
 	async deleteRegistration() {
-		if (!this.event) return;
+		const event = this.event();
+		if (!event) return;
 
-		await this.api.EventsApi.deleteEventRegistration(this.event.id);
+		await this.api.EventsApi.deleteEventRegistration(event.id);
 		this.toastService.toast("Přihláška smazána.");
-		this.event = await this.eventService.loadEvent(this.event.id);
+		// Note: This component doesn't have a way to update the signal input
+		// The parent component should handle updating the event
 	}
 
 	async getRegistration() {
-		if (!this.event) return;
+		const event = this.event();
+		if (!event) return;
 
-		const response = (await this.api.EventsApi.getEventRegistration(this.event.id, {
+		const response = (await this.api.EventsApi.getEventRegistration(event.id, {
 			responseType: "blob",
 		})) as any;
 

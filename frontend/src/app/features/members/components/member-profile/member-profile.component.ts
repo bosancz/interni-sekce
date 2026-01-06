@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import { IonAvatar } from "@ionic/angular/standalone";
 import { SDK } from "src/sdk";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
@@ -10,5 +10,5 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 	imports: [IonAvatar, MemberPipe],
 })
 export class MemberProfileComponent {
-	@Input() member?: SDK.MemberResponseWithLinks | null;
+	member = input<SDK.MemberResponseWithLinks | null | undefined>();
 }

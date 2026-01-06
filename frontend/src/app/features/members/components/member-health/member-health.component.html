@@ -1,16 +1,16 @@
 <h3>Alergie</h3>
 
-@if (member === undefined) {
+@if (member() === undefined) {
 	<ion-skeleton-text [animated]="true"></ion-skeleton-text>
 }
 
-@if (member && !member.allergies?.length) {
+@if (member() && !member()!.allergies?.length) {
 	<p><i>Žádné alergie</i></p>
 }
 
-@if (member?.allergies?.length) {
+@if (member()?.allergies?.length) {
 	<ion-list>
-		@for (allergy of member?.allergies; track $index; let i = $index) {
+		@for (allergy of member()!.allergies; track $index; let i = $index) {
 			<bo-item>
 				<ion-label>{{ allergy }}</ion-label>
 				<ion-button slot="end" fill="clear" color="danger" (click)="deleteAllergy(i)">
@@ -26,17 +26,17 @@
 </ion-buttons>
 
 <h3 class="mt-5">Jiné známé problémy</h3>
-@if (member === undefined) {
+@if (member() === undefined) {
 	<ion-skeleton-text [animated]="true"></ion-skeleton-text>
 }
-@if (member?.knownProblems) {
-	<p [innerHtml]="member!.knownProblems | markdown" class="selectable"></p>
+@if (member()?.knownProblems) {
+	<p [innerHtml]="member()!.knownProblems | markdown" class="selectable"></p>
 }
-@if (member && !member.knownProblems) {
+@if (member() && !member()!.knownProblems) {
 	<p><i>Žádné známé problémy</i></p>
 }
 
 <bo-edit-button (click)="openKnownProblemsForm()">Upravit</bo-edit-button>
 
 <h3 class="mt-5">Kartička pojištěnce</h3>
-<bo-card-insurance-card [member]="member" (update)="this.update.emit()"></bo-card-insurance-card>
+<bo-card-insurance-card [member]="member()" (update)="update.emit({})"></bo-card-insurance-card>
