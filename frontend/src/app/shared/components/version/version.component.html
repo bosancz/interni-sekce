@@ -1,1 +1,13 @@
-<p class="version">Verze {{ version() }}</p>
+<p class="version">
+	@switch (updateStatus()) {
+		@case ("checking") {
+			<ion-spinner></ion-spinner>
+		}
+		@case ("available") {
+			<a (click)="doUpdate()" class="clickable">Aktualizovat</a>
+		}
+		@default {
+			Verze {{ version() }}
+		}
+	}
+</p>
