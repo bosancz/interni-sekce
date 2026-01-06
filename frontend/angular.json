@@ -10,7 +10,7 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist",
             "index": "src/index.html",
@@ -114,27 +114,38 @@
     "@schematics/angular:component": {
       "skipTests": true,
       "style": "scss",
-      "standalone": false
+      "standalone": false,
+      "type": "component"
     },
     "@schematics/angular:directive": {
       "prefix": "",
-      "skipTests": true
+      "skipTests": true,
+      "type": "directive"
     },
     "@schematics/angular:guard": {
-      "skipTests": true
+      "skipTests": true,
+      "typeSeparator": "."
     },
     "@schematics/angular:interceptor": {
-      "skipTests": true
+      "skipTests": true,
+      "typeSeparator": "."
     },
-    "@schematics/angular:module": {},
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
     "@schematics/angular:pipe": {
-      "skipTests": true
+      "skipTests": true,
+      "typeSeparator": "."
     },
     "@schematics/angular:service": {
-      "skipTests": true
+      "skipTests": true,
+      "type": "service"
     },
     "@schematics/angular:application": {
       "strict": true
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
     }
   },
   "cli": {
