@@ -7,6 +7,7 @@ import { UsersCreateComponent } from "./pages/users-create/users-create.componen
 import { UsersEditComponent } from "./pages/users-edit/users-edit.component";
 import { UsersListComponent } from "./pages/users-list/users-list.component";
 import { UsersViewComponent } from "./pages/users-view/users-view.component";
+import { AdminHomeComponent } from './pages/admin-home/admin-home.component';
 
 @NgModule({
 	declarations: [
@@ -15,6 +16,7 @@ import { UsersViewComponent } from "./pages/users-view/users-view.component";
 		UsersEditComponent,
 		UsersViewComponent,
 		UsersEditAccountComponent,
+  AdminHomeComponent,
 	],
 	imports: [CommonModule, AdminRoutingModule, SharedModule],
 })

@@ -1,3 +1,7 @@
+:host {
+	position: relative;
+	overflow: hidden;
+}
 :host ::ng-deep ion-item {
 	--inner-padding-end: 0;
 }
