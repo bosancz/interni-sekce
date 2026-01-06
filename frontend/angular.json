@@ -114,7 +114,6 @@
     "@schematics/angular:component": {
       "skipTests": true,
       "style": "scss",
-      "standalone": false,
       "type": "component"
     },
     "@schematics/angular:directive": {
