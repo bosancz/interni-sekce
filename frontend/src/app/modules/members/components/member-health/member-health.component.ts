@@ -1,13 +1,32 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { AlertController } from "@ionic/angular";
+import { IonButton, IonButtons, IonIcon, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { SDK } from "src/sdk";
+import { AddButtonComponent } from "../../../../shared/components/add-button/add-button.component";
+import { EditButtonComponent } from "../../../../shared/components/edit-button/edit-button.component";
+import { ItemComponent } from "../../../../shared/components/item/item.component";
+import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
+import { CardInsuranceCardComponent } from "../card-insurance-card/card-insurance-card.component";
 @UntilDestroy()
 @Component({
 	selector: "bo-member-health",
 	templateUrl: "./member-health.component.html",
 	styleUrls: ["./member-health.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		IonSkeletonText,
+		IonList,
+		IonLabel,
+		IonButton,
+		IonIcon,
+		IonButtons,
+		ItemComponent,
+		AddButtonComponent,
+		EditButtonComponent,
+		MarkdownPipe,
+		CardInsuranceCardComponent,
+	],
 })
 export class MemberHealthComponent implements OnInit {
 	@Input() member?: SDK.MemberResponseWithLinks | null;

@@ -4,7 +4,7 @@ import { FormatPhonePipe } from "./format-phone.pipe";
 
 @Pipe({
 	name: "joinLeaders",
-	standalone: false,
+	standalone: true,
 })
 export class JoinLeadersPipe implements PipeTransform {
 	transform(value: any[], showPhone: boolean = true, html: boolean = true): string {

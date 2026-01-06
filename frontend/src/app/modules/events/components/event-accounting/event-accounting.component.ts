@@ -1,4 +1,6 @@
+import { CommonModule } from "@angular/common";
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from "@angular/core";
+import { IonBadge, IonButton, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { EventExpenseModalComponent } from "src/app/modules/events/components/event-expense-modal/event-expense-modal.component";
 import { ApiService } from "src/app/services/api.service";
@@ -12,7 +14,8 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-accounting",
 	templateUrl: "./event-accounting.component.html",
 	styleUrls: ["./event-accounting.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [CommonModule, IonList, IonItem, IonLabel, IonBadge, IonButton],
 })
 export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 	@Input() event?: SDK.EventResponseWithLinks;

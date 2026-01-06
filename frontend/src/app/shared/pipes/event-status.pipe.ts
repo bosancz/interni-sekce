@@ -3,7 +3,7 @@ import { EventStatus, EventStatusID, EventStatuses } from "src/app/config/event-
 
 @Pipe({
 	name: "eventStatus",
-	standalone: false,
+	standalone: true,
 })
 export class EventStatusPipe implements PipeTransform {
 	statuses = EventStatuses;

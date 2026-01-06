@@ -1,3 +1,4 @@
+import { CommonModule } from "@angular/common";
 import { Component, Input } from "@angular/core";
 import { DateTime } from "luxon";
 import { SDK } from "src/sdk";
@@ -6,7 +7,8 @@ import { SDK } from "src/sdk";
 	selector: "event-age-histogram",
 	templateUrl: "./event-age-histogram.component.html",
 	styleUrls: ["./event-age-histogram.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [CommonModule],
 })
 export class EventAgeHistogramComponent {
 	@Input() min: number = 7;

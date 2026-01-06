@@ -1,47 +1,64 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
+import { Component, effect, input, OnChanges, output, signal, SimpleChanges } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { IonButton, IonButtons, IonSkeletonText } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
 import { SDK } from "src/sdk";
+import { CardContentComponent } from "../../../../shared/components/card-content/card-content.component";
+import { CardFooterComponent } from "../../../../shared/components/card-footer/card-footer.component";
+import { CardComponent } from "../../../../shared/components/card/card.component";
 
 @Component({
 	selector: "bo-card-insurance-card",
 	templateUrl: "./card-insurance-card.component.html",
 	styleUrls: ["./card-insurance-card.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		CardComponent,
+		CardContentComponent,
+		CardFooterComponent,
+		IonSkeletonText,
+		IonButton,
+		IonButtons,
+	],
 })
 export class CardInsuranceCardComponent implements OnChanges {
-	@Input() member?: SDK.MemberResponseWithLinks | null;
-	@Output() update = new EventEmitter<void>();
+	member = input<SDK.MemberResponseWithLinks | null | undefined>();
+	update = output<void>();
 
-	insuranceCardUrl?: string | null;
-	insuranceCardSafeUrl?: SafeResourceUrl | null;
+	insuranceCardUrl = signal<string | null | undefined>(undefined);
+	insuranceCardSafeUrl = signal<SafeResourceUrl | null | undefined>(undefined);
 
 	constructor(
 		private api: ApiService,
 		private toastService: ToastService,
 		private sanitizer: DomSanitizer,
 		private modalService: ModalService,
-	) {}
+	) {
+		effect(() => {
+			this.setInsuranceCardUrl(this.member());
+		});
+	}
 
 	ngOnChanges(changes: SimpleChanges): void {
-		if (changes.member) this.setInsuranceCardUrl(this.member);
+		// Effect handles member changes now
 	}
 
 	private setInsuranceCardUrl(member?: SDK.MemberResponseWithLinks | null) {
 		if (member) {
-			this.insuranceCardUrl =
+			const url =
 				member?._links?.getInsuranceCard.applicable && member?._links?.getInsuranceCard.applicable
 					? member._links.getInsuranceCard.href
 					: null;
 
-			this.insuranceCardSafeUrl = this.insuranceCardUrl
-				? this.sanitizer.bypassSecurityTrustResourceUrl(this.insuranceCardUrl)
-				: undefined;
+			this.insuranceCardUrl.set(url);
+			this.insuranceCardSafeUrl.set(
+				url ? this.sanitizer.bypassSecurityTrustResourceUrl(url) : null,
+			);
 		} else {
-			this.insuranceCardUrl = null;
-			this.insuranceCardSafeUrl = null;
+			this.insuranceCardUrl.set(null);
+			this.insuranceCardSafeUrl.set(null);
 		}
 	}
 
@@ -62,12 +79,15 @@ export class CardInsuranceCardComponent implements OnChanges {
 	}
 
 	private async uploadCard(file: File) {
+		const member = this.member();
+		if (!member) return;
+
 		const uploadToast = await this.toastService.toast("Nahrávám kartičku pojištěnce...");
 
 		try {
-			await this.api.MembersApi.uploadInsuranceCard(this.member!.id, file);
+			await this.api.MembersApi.uploadInsuranceCard(member.id, file);
 
-			this.setInsuranceCardUrl(this.member);
+			this.setInsuranceCardUrl(member);
 
 			this.toastService.toast("Karta byla nahrána", { color: "success" });
 		} catch (e) {
@@ -78,11 +98,14 @@ export class CardInsuranceCardComponent implements OnChanges {
 	}
 
 	async deleteCard() {
+		const member = this.member();
+		if (!member) return;
+
 		const confirmation = await this.modalService.deleteConfirmationModal(
 			"Opravdu chcete smazat tuto kartu pojištěnce?",
 		);
 		if (confirmation) {
-			await this.api.MembersApi.deleteInsuranceCard(this.member!.id);
+			await this.api.MembersApi.deleteInsuranceCard(member.id);
 
 			this.setInsuranceCardUrl(null);
 

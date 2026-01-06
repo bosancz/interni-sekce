@@ -1,19 +1,36 @@
-import { Component, Injector, OnInit } from "@angular/core";
+import { Component, Injector, OnInit, signal } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonButton } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { TrimesterDateRange } from "../../components/trimester-selector/trimester-selector.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { ActionButtonsComponent } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { TrimesterSelectorComponent, TrimesterDateRange } from "../../components/trimester-selector/trimester-selector.component";
 
 @Component({
 	selector: "bo-program-print",
 	templateUrl: "./program-print.component.html",
 	styleUrls: ["./program-print.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		FormsModule,
+		IonContent,
+		IonHeader,
+		IonToolbar,
+		IonButtons,
+		IonBackButton,
+		IonTitle,
+		IonButton,
+		PageHeaderComponent,
+		ActionButtonsComponent,
+		TrimesterSelectorComponent,
+	],
 })
 export class ProgramPrintComponent implements OnInit {
-	dateRange?: TrimesterDateRange;
+	dateRange = signal<TrimesterDateRange | undefined>(undefined);
 
-	actions: Action[] = [];
+	actions = signal<Action[]>([]);
 
 	constructor(
 		private api: ApiService,
@@ -24,15 +41,16 @@ export class ProgramPrintComponent implements OnInit {
 	ngOnInit(): void {}
 
 	async exportProgram() {
-		if (!this.dateRange) {
+		const dateRange = this.dateRange();
+		if (!dateRange) {
 			this.toasts.toast("Nelze vygenerovat program, neplatné rozmezí.");
 			return;
 		}
 
 		const requestOptions = {
 			filter: {
-				dateFrom: { $lte: this.dateRange[1] },
-				dateTill: { $gte: this.dateRange[0] },
+				dateFrom: { $lte: dateRange[1] },
+				dateTill: { $gte: dateRange[0] },
 				status: "public",
 			},
 			select: "_id name description dateFrom dateTill leaders",

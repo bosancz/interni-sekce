@@ -25,7 +25,7 @@ class PhotoRow {
 	selector: "bo-photo-gallery",
 	templateUrl: "./photo-gallery.component.html",
 	styleUrls: ["./photo-gallery.component.scss"],
-	standalone: false,
+	standalone: true,
 })
 export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChanges {
 	@Input() photos: SDK.PhotoResponseWithLinks[] = [];

@@ -14,7 +14,7 @@ import { SDK } from "src/sdk";
 			multi: true,
 		},
 	],
-	standalone: false,
+	standalone: true,
 })
 export class MemberSelectComponent implements ControlValueAccessor {
 	@Input() multiple: boolean = false;

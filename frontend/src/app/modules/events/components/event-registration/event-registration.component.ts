@@ -1,5 +1,8 @@
+import { CommonModule } from "@angular/common";
 import { Component, ElementRef, Input, ViewChild } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
+import { IonButton } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
@@ -11,7 +14,8 @@ import { EventsService } from "../../services/events.service";
 	selector: "bo-event-registration",
 	templateUrl: "./event-registration.component.html",
 	styleUrls: ["./event-registration.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [CommonModule, FormsModule, IonButton],
 })
 export class EventRegistrationComponent {
 	@Input() event?: SDK.EventResponseWithLinks;

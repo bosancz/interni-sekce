@@ -7,7 +7,7 @@ import { Component, Input, OnInit } from "@angular/core";
 	host: {
 		"[style.background-color]": "color",
 	},
-	standalone: false,
+	standalone: true,
 })
 export class DotComponent implements OnInit {
 	@Input() color: string = "#000";

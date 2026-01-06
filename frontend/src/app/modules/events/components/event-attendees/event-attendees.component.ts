@@ -1,4 +1,6 @@
+import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from "@angular/core";
+import { IonButton } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { MemberSelectorModalComponent } from "src/app/modules/events/components/member-selector-modal/member-selector-modal.component";
 import { ApiService } from "src/app/services/api.service";
@@ -12,7 +14,8 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-attendees",
 	templateUrl: "./event-attendees.component.html",
 	styleUrls: ["./event-attendees.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [CommonModule, IonButton],
 })
 export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
 	@Input() event?: SDK.EventResponseWithLinks | null;

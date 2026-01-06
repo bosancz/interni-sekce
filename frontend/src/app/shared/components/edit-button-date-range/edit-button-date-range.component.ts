@@ -1,9 +1,11 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { ModalService } from "src/app/services/modal.service";
+import { EditButtonComponent } from "../edit-button/edit-button.component";
 
 @Component({
 	selector: "bo-edit-button-date-range",
-	standalone: false,
+	standalone: true,
+	imports: [EditButtonComponent],
 	templateUrl: "./edit-button-date-range.component.html",
 	styleUrl: "./edit-button-date-range.component.scss",
 })

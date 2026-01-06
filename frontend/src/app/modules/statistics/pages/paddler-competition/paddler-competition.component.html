@@ -1,7 +1,7 @@
 <div class="container">
 	<list-slider
-		[items]="years"
-		[ngModel]="year | async"
+		[items]="years()"
+		[ngModel]="year()"
 		(ngModelChange)="setYear($event)"
 		[itemWidth]="60"
 	></list-slider>
@@ -21,16 +21,18 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr *ngFor="let ranking of rankings">
-							<td>
-								{{ ranking.rank }}.
-								<ng-container *ngIf="ranking.rankTo !== ranking.rank">
-									- {{ ranking.rankTo }}.</ng-container
-								>
-							</td>
-							<td>{{ ranking.nickname }} ({{ ranking.groupId | group: "name" }})</td>
-							<td>{{ ranking.waterKm }}&nbsp;km</td>
-						</tr>
+						@for (ranking of rankings(); track ranking.nickname + ranking.waterKm) {
+							<tr>
+								<td>
+									{{ ranking.rank }}.
+									@if (ranking.rankTo !== ranking.rank) {
+										- {{ ranking.rankTo }}.
+									}
+								</td>
+								<td>{{ ranking.nickname }} ({{ ranking.groupId | group: "name" }})</td>
+								<td>{{ ranking.waterKm }}&nbsp;km</td>
+							</tr>
+						}
 					</tbody>
 				</table>
 			</div>
@@ -46,16 +48,18 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr *ngFor="let ranking of groups; let i = index">
-						<td>
-							{{ ranking.rank }}.
-							<ng-container *ngIf="ranking.rankTo !== ranking.rank">
-								- {{ ranking.rankTo }}.</ng-container
-							>
-						</td>
-						<td>{{ ranking.groupId | group: "name" }}</td>
-						<td>{{ ranking.waterKm }}&nbsp;km</td>
-					</tr>
+					@for (ranking of groups(); track ranking.groupId; let i = $index) {
+						<tr>
+							<td>
+								{{ ranking.rank }}.
+								@if (ranking.rankTo !== ranking.rank) {
+									- {{ ranking.rankTo }}.
+								}
+							</td>
+							<td>{{ ranking.groupId | group: "name" }}</td>
+							<td>{{ ranking.waterKm }}&nbsp;km</td>
+						</tr>
+					}
 				</tbody>
 			</table>
 		</div>

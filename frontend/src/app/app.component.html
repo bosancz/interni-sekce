@@ -16,8 +16,8 @@
 			</div>
 		</div>
 	} @else if (user() === null) {
-		<bo-login *ngIf="user() === null"></bo-login>
+		<bo-login></bo-login>
 	} @else {
-		<bo-app-loading *ngIf="user() === undefined"></bo-app-loading>
+		<bo-app-loading></bo-app-loading>
 	}
 </ion-app>

@@ -13,7 +13,7 @@
 			<div class="px-lg-3 py-lg-3 pb-3">
 				<bo-trimester-selector
 					labelPosition="floating"
-					[ngModel]="[this.dateFrom?.toISODate(), this.dateTill?.toISODate()]"
+					[ngModel]="[dateFrom()?.toISODate(), dateTill()?.toISODate()]"
 					(ngModelChange)="setPeriod($event)"
 				></bo-trimester-selector>
 
@@ -23,15 +23,16 @@
 
 		<div class="col-lg-9">
 			<div class="p-lg-3">
-				<bo-event-calendar
-					*ngIf="dateFrom && dateTill"
-					(select)="createEvent($event)"
-					[dateFrom]="dateFrom"
-					[dateTill]="dateTill"
-					[events]="events"
-					[cpv]="true"
-					[selection]="true"
-				></bo-event-calendar>
+				@if (dateFrom() && dateTill()) {
+					<bo-event-calendar
+						(select)="createEvent($event)"
+						[dateFrom]="dateFrom()!"
+						[dateTill]="dateTill()!"
+						[events]="events()"
+						[cpv]="true"
+						[selection]="true"
+					></bo-event-calendar>
+				}
 			</div>
 		</div>
 	</div>

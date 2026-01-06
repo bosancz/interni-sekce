@@ -1,3 +1,4 @@
+import { CommonModule } from "@angular/common";
 import { AfterViewInit, Component, ElementRef, forwardRef, Input } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { EventTypeID, EventTypes } from "src/app/config/event-types";
@@ -17,7 +18,8 @@ import { EventTypeID, EventTypes } from "src/app/config/event-types";
 		"[class.disabled]": "disabled",
 		"[class.readonly]": "readonly",
 	},
-	standalone: false,
+	standalone: true,
+	imports: [CommonModule],
 })
 export class EventTypeSelectorComponent implements ControlValueAccessor, AfterViewInit {
 	value?: EventTypeID;

@@ -1,6 +1,7 @@
-<bo-page-header [title]="user ? user.login + ', ' + user.email : '...'" backUrl="/uzivatele" [actions]="actions" />
+<bo-page-header [title]="user() ? user()!.login + ', ' + user()!.email : '...'" backUrl="/uzivatele" [actions]="actions()" />
 
-<bo-page-content [padding]="true" *ngIf="user">
+@if (user()) {
+	<bo-page-content [padding]="true">
 	<div class="row">
 		<div class="col-lg-4 mb-3">
 			<bo-card>
@@ -12,16 +13,18 @@
 					<table class="table">
 						<tr>
 							<th>Login</th>
-							<td>{{ user.login }}</td>
+							<td>{{ user()!.login }}</td>
 						</tr>
 						<tr>
 							<th>E-mail</th>
-							<td>{{ user.email }}</td>
+							<td>{{ user()!.email }}</td>
 						</tr>
 						<tr>
 							<th>Role</th>
 							<td>
-								<ion-badge *ngFor="let role of user.roles">{{ role }}</ion-badge>
+								@for (role of user()!.roles; track role) {
+									<ion-badge>{{ role }}</ion-badge>
+								}
 							</td>
 						</tr>
 					</table>
@@ -34,26 +37,28 @@
 					<bo-card-title> Propojený člen </bo-card-title>
 					<ion-buttons slot="end">
 						<bo-edit-button><bo-users-edit-account></bo-users-edit-account></bo-edit-button>
-						<ion-button color="primary" [routerLink]="['/databaze', user.member?.id]">
-							<ion-icon name="arrow-forward"></ion-icon>
-						</ion-button>
+					<ion-button color="primary" [routerLink]="['/databaze', user()!.member?.id]">
+						<ion-icon name="arrow-forward"></ion-icon>
+					</ion-button>
 					</ion-buttons>
 				</bo-card-header>
 				<bo-card-content>
-					<table *ngIf="user.member" class="table">
-						<tr>
-							<th>Přezdívka</th>
-							<td>{{ user.member.nickname }}</td>
-						</tr>
-						<tr>
-							<th>Jméno</th>
-							<td>{{ user.member.firstName }} {{ user.member.lastName }}</td>
-						</tr>
-						<tr>
-							<th>Datum narození</th>
-							<td>{{ user.member.birthday | date }}</td>
-						</tr>
-					</table>
+					@if (user()!.member) {
+						<table class="table">
+							<tr>
+								<th>Přezdívka</th>
+								<td>{{ user()!.member!.nickname }}</td>
+							</tr>
+							<tr>
+								<th>Jméno</th>
+								<td>{{ user()!.member!.firstName }} {{ user()!.member!.lastName }}</td>
+							</tr>
+							<tr>
+								<th>Datum narození</th>
+								<td>{{ user()!.member!.birthday | date }}</td>
+							</tr>
+						</table>
+					}
 				</bo-card-content>
 			</bo-card>
 		</div>

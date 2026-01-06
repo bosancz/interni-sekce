@@ -1,15 +1,42 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
+import { RouterLink } from "@angular/router";
+import { DatePipe, SlicePipe } from "@angular/common";
 import { ApiService } from "src/app/services/api.service";
+import {
+	IonItem,
+	IonLabel,
+	IonList,
+	IonSkeletonText,
+} from "@ionic/angular/standalone";
+import { CardComponent } from "src/app/shared/components/card/card.component";
+import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
+import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
+import { CardOpenButtonComponent } from "src/app/shared/components/card-open-button/card-open-button.component";
+import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-home-card-my-events",
 	templateUrl: "./home-card-my-events.component.html",
 	styleUrls: ["./home-card-my-events.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		RouterLink,
+		DatePipe,
+		SlicePipe,
+		IonList,
+		IonItem,
+		IonLabel,
+		IonSkeletonText,
+		CardComponent,
+		CardHeaderComponent,
+		CardTitleComponent,
+		CardOpenButtonComponent,
+		CardContentComponent,
+	],
 })
 export class HomeCardMyEventsComponent implements OnInit {
-	myEvents?: SDK.EventResponseWithLinks[];
+	myEvents = signal<SDK.EventResponseWithLinks[] | undefined>(undefined);
 
 	constructor(private api: ApiService) {}
 
@@ -19,7 +46,8 @@ export class HomeCardMyEventsComponent implements OnInit {
 
 	async loadMyEvents() {
 		// TODO: list only my events
-		this.myEvents = await this.api.EventsApi.listEvents({ my: true }).then((res) => res.data);
-		this.myEvents.sort((a, b) => b.dateFrom.localeCompare(a.dateFrom));
+		const events = await this.api.EventsApi.listEvents({ my: true }).then((res) => res.data);
+		events.sort((a, b) => b.dateFrom.localeCompare(a.dateFrom));
+		this.myEvents.set(events);
 	}
 }

@@ -4,6 +4,10 @@ import { UntilDestroy } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
 import { ApiService } from "src/app/services/api.service";
 import { UserService } from "src/app/services/user.service";
+import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
+import { HomeCardMyEventsComponent } from "../home-card-my-events/home-card-my-events.component";
+import { HomeCardNoleaderEventsComponent } from "../home-card-noleader-events/home-card-noleader-events.component";
+import { HomeCardSearchMemberComponent } from "../home-card-search-member/home-card-search-member.component";
 import { SDK } from "src/sdk";
 
 @UntilDestroy()
@@ -11,7 +15,13 @@ import { SDK } from "src/sdk";
 	selector: "bo-home-dashboard",
 	templateUrl: "./home-dashboard.component.html",
 	styleUrls: ["./home-dashboard.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		EventCalendarComponent,
+		HomeCardMyEventsComponent,
+		HomeCardNoleaderEventsComponent,
+		HomeCardSearchMemberComponent,
+	],
 })
 export class HomeDashboardComponent implements OnInit {
 	view = signal("home");
@@ -19,7 +29,7 @@ export class HomeDashboardComponent implements OnInit {
 	dateFrom = DateTime.local();
 	dateTill = DateTime.local().plus({ months: 1 });
 
-	events: SDK.EventResponseWithLinks[] = [];
+	events = signal<SDK.EventResponseWithLinks[]>([]);
 
 	user = this.userService.user;
 
@@ -46,6 +56,7 @@ export class HomeDashboardComponent implements OnInit {
 		};
 
 		// TODO: use options above
-		this.events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		const events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		this.events.set(events);
 	}
 }

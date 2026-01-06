@@ -1,4 +1,4 @@
-import { Component, Input, signal } from "@angular/core";
+import { Component, input, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute } from "@angular/router";
 import { PopoverController } from "@ionic/angular";
@@ -10,12 +10,13 @@ import { AccountMenuModalComponent } from "../../../../components/account-menu-m
 
 @Component({
 	selector: "bo-home",
-	standalone: false,
+	standalone: true,
 	templateUrl: "./home.component.html",
 	styleUrl: "./home.component.scss",
+	imports: [],
 })
 export class HomeComponent {
-	@Input() months: number = 1;
+	months = input<number>(1);
 
 	view = signal("dashboard");
 

@@ -1,11 +1,13 @@
 import { Component, Input } from "@angular/core";
+import { IonLabel, IonRippleEffect, IonSkeletonText } from "@ionic/angular/standalone";
 
 @Component({
 	selector: "bo-item",
 	templateUrl: "./item.component.html",
 	styleUrl: "./item.component.scss",
 	host: { "[class.ion-activatable]": "button", "[class.clickable]": "button || !!routerLink" },
-	standalone: false,
+	standalone: true,
+	imports: [IonLabel, IonSkeletonText, IonRippleEffect],
 })
 export class ItemComponent {
 	@Input() label?: string;

@@ -1,25 +1,28 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, input, OnInit } from "@angular/core";
 import { NavController } from "@ionic/angular";
+import { IonBadge, IonIcon, IonLabel, IonTabBar, IonTabButton } from "@ionic/angular/standalone";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-albums-tabs",
 	templateUrl: "./albums-tabs.component.html",
 	styleUrls: ["./albums-tabs.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge],
 })
 export class AlbumsTabsComponent implements OnInit {
-	@Input() album?: SDK.AlbumResponseWithLinks;
-	@Input() selected?: "info" | "fotky";
+	album = input<SDK.AlbumResponseWithLinks | undefined>();
+	selected = input<"info" | "fotky" | undefined>();
 
 	constructor(private navController: NavController) {}
 
 	ngOnInit(): void {}
 
 	openTab(id: string) {
-		if (!this.album) return;
+		const album = this.album();
+		if (!album) return;
 
-		const path = `/galerie/${this.album.id}/${id}`;
+		const path = `/galerie/${album.id}/${id}`;
 
 		this.navController.navigateForward(path, { animated: false, replaceUrl: true });
 	}

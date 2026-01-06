@@ -1,33 +1,58 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, input, OnInit, output, signal } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { DatePipe } from "@angular/common";
 import { ItemReorderEventDetail } from "@ionic/core";
+import {
+	IonAvatar,
+	IonCheckbox,
+	IonItem,
+	IonLabel,
+	IonReorder,
+	IonReorderGroup,
+	IonRippleEffect,
+	IonSkeletonText,
+} from "@ionic/angular/standalone";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-photo-list",
 	templateUrl: "./photo-list.component.html",
 	styleUrls: ["./photo-list.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		FormsModule,
+		DatePipe,
+		IonReorderGroup,
+		IonItem,
+		IonCheckbox,
+		IonAvatar,
+		IonLabel,
+		IonReorder,
+		IonSkeletonText,
+		IonRippleEffect,
+	],
 })
 export class PhotoListComponent implements OnInit {
-	@Input() photos?: SDK.PhotoResponseWithLinks[];
-	@Input() view: "list" | "grid" = "grid";
+	photos = input<SDK.PhotoResponseWithLinks[] | undefined>();
+	view = input<"list" | "grid">("grid");
+	selectable = input<boolean>(false);
+	sortable = input<boolean>(false);
+	selected = input<SDK.PhotoResponseWithLinks[]>([]);
 
-	@Input() selectable: boolean = false;
-	@Input() sortable: boolean = false;
+	selectedChange = output<SDK.PhotoResponseWithLinks[]>();
+	click = output<CustomEvent<SDK.PhotoResponseWithLinks | undefined>>();
 
-	@Input() selected: SDK.PhotoResponseWithLinks[] = [];
-	@Output() selectedChange = new EventEmitter<SDK.PhotoResponseWithLinks[]>();
-
-	@Output() click = new EventEmitter<CustomEvent<SDK.PhotoResponseWithLinks | undefined>>();
-
-	loadingPhotos?: any[] = Array(5).fill(true);
+	loadingPhotos = signal<any[]>(Array(5).fill(true));
 
 	constructor() {}
 
 	ngOnInit(): void {}
 
 	onReorder(ev: CustomEvent<ItemReorderEventDetail>) {
-		this.photos?.splice(ev.detail.to, 0, this.photos?.splice(ev.detail.from, 1)[0]);
+		const photos = this.photos();
+		if (photos) {
+			photos.splice(ev.detail.to, 0, photos.splice(ev.detail.from, 1)[0]);
+		}
 		ev.detail.complete();
 	}
 
@@ -39,9 +64,9 @@ export class PhotoListComponent implements OnInit {
 		event.preventDefault();
 		event.stopPropagation();
 
-		if (this.selectable) {
+		if (this.selectable()) {
 			this.onPhotoCheck(photo, !this.isPhotoChecked(photo));
-		} else if (this.sortable) {
+		} else if (this.sortable()) {
 			return;
 		} else {
 			this.click.emit(new CustomEvent("click", { detail: photo }));
@@ -49,16 +74,23 @@ export class PhotoListComponent implements OnInit {
 	}
 
 	isPhotoChecked(photo: SDK.PhotoResponseWithLinks) {
-		return this.selected.indexOf(photo) !== -1;
+		return this.selected().indexOf(photo) !== -1;
 	}
 
 	onPhotoCheck(photo: SDK.PhotoResponseWithLinks, isChecked: boolean) {
 		console.log("onPhotoCheck", isChecked);
-		const i = this.selected.indexOf(photo);
+		const selected = [...this.selected()];
+		const i = selected.indexOf(photo);
 
 		// if checked, but not in list, add photo
-		if (isChecked && i === -1) this.selected.push(photo);
+		if (isChecked && i === -1) {
+			selected.push(photo);
+		}
 		// if not checked, but in list, remove photo
-		else if (!isChecked && i !== -1) this.selected.splice(i, 1);
+		else if (!isChecked && i !== -1) {
+			selected.splice(i, 1);
+		}
+
+		this.selectedChange.emit(selected);
 	}
 }

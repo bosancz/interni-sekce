@@ -1,6 +1,7 @@
-import { Component } from "@angular/core";
-import { FormControl, FormGroup } from "@angular/forms";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Component, signal } from "@angular/core";
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { DatePipe, KeyValuePipe } from "@angular/common";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import {
 	AlertController,
 	InfiniteScrollCustomEvent,
@@ -8,12 +9,26 @@ import {
 	ViewWillEnter,
 	ViewWillLeave,
 } from "@ionic/angular";
+import {
+	IonInfiniteScroll,
+	IonInfiniteScrollContent,
+	IonItem,
+	IonSelect,
+	IonSelectOption,
+	IonSkeletonText,
+} from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { AlbumStatuses } from "src/app/config/album-statuses";
 import { ApiService } from "src/app/services/api.service";
 import { PlatformService } from "src/app/services/platform.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
+import { FilterComponent } from "src/app/shared/components/filter/filter.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { AlbumPipe } from "src/app/shared/pipes/album.pipe";
 
 import { UrlParams } from "src/helpers/typings";
 import { SDK } from "src/sdk";
@@ -23,22 +38,40 @@ import { SDK } from "src/sdk";
 	selector: "albums-list",
 	templateUrl: "./albums-list.component.html",
 	styleUrls: ["./albums-list.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		FormsModule,
+		ReactiveFormsModule,
+		RouterLink,
+		DatePipe,
+		KeyValuePipe,
+		IonItem,
+		IonSelect,
+		IonSelectOption,
+		IonSkeletonText,
+		IonInfiniteScroll,
+		IonInfiniteScrollContent,
+		PageHeaderComponent,
+		PageContentComponent,
+		FilterComponent,
+		AdminTableComponent,
+		AlbumPipe,
+	],
 })
 export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
-	years: string[] = [];
-	albums?: SDK.AlbumResponseWithLinks[];
+	years = signal<string[]>([]);
+	albums = signal<SDK.AlbumResponseWithLinks[] | undefined>(undefined);
 
-	view: "table" | "grid" = this.platformService.isPortrait.value ? "grid" : "table";
+	view = signal<"table" | "grid">(this.platformService.isPortrait.value ? "grid" : "table");
 
-	page = 1;
+	page = signal(1);
 	readonly pageSize = 50;
 
 	statuses = AlbumStatuses;
 
 	loadingArray = Array(5).fill(null);
 
-	actions: Action[] = [];
+	actions = signal<Action[]>([]);
 
 	alert?: HTMLIonAlertElement;
 
@@ -66,6 +99,12 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 		this.api.rootLinks
 			.pipe(untilDestroyed(this, "ionViewWillLeave"))
 			.subscribe((endpoints) => this.setActions(endpoints));
+
+		this.platformService.isPortrait
+			.pipe(untilDestroyed(this, "ionViewWillLeave"))
+			.subscribe((isPortrait) => {
+				this.view.set(isPortrait ? "grid" : "table");
+			});
 	}
 
 	ionViewWillLeave(): void {
@@ -78,14 +117,14 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 	}
 
 	setActions(endpoints: SDK.RootResponseLinks | null) {
-		this.actions = [
+		this.actions.set([
 			{
 				text: "Přidat",
 				handler: () => this.createAlbumModal(),
 				disabled: !endpoints?.createAlbum.allowed,
 				hidden: !endpoints?.createAlbum.applicable,
 			},
-		];
+		]);
 	}
 
 	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
@@ -94,17 +133,19 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 	}
 
 	private async loadYears() {
-		this.years = await this.api.PhotoGalleryApi.getAlbumsYears().then((res) => res.data.map((y) => String(y)));
-		this.years.sort((a, b) => b.localeCompare(a));
+		const years = await this.api.PhotoGalleryApi.getAlbumsYears().then((res) => res.data.map((y) => String(y)));
+		years.sort((a, b) => b.localeCompare(a));
+		this.years.set(years);
 	}
 
 	private async loadAlbums(filter: UrlParams, loadMore = false) {
 		if (loadMore) {
-			if (this.albums && this.albums.length < this.page * this.pageSize) return;
-			this.page++;
+			const currentAlbums = this.albums();
+			if (currentAlbums && currentAlbums.length < this.page() * this.pageSize) return;
+			this.page.set(this.page() + 1);
 		} else {
-			this.page = 1;
-			this.albums = undefined;
+			this.page.set(1);
+			this.albums.set(undefined);
 		}
 
 		// TODO: validate SDK.ListAlbumsStatusEnum
@@ -112,14 +153,18 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 			search: filter.search || undefined,
 			status: (filter.status as SDK.ListAlbumsStatusEnum) || undefined,
 			year: filter.year ? String(filter.year) : undefined,
-			offset: (this.page - 1) * this.pageSize,
+			offset: (this.page() - 1) * this.pageSize,
 			limit: this.pageSize,
 		};
 
-		const albums = await this.api.PhotoGalleryApi.listAlbums(params).then((res) => res.data);
+		const newAlbums = await this.api.PhotoGalleryApi.listAlbums(params).then((res) => res.data);
 
-		if (!this.albums) this.albums = [];
-		this.albums.push(...albums);
+		const currentAlbums = this.albums();
+		if (!currentAlbums) {
+			this.albums.set(newAlbums);
+		} else {
+			this.albums.set([...currentAlbums, ...newAlbums]);
+		}
 	}
 
 	// TODO: move to own page

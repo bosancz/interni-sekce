@@ -1,6 +1,8 @@
 <h3>Vedoucí</h3>
 
-<p *ngIf="leaders && !leaders.length"><em>Žádní účastníci</em></p>
+@if (leaders && !leaders.length) {
+	<p><em>Žádní účastníci</em></p>
+}
 
 <bo-event-attendees-list
 	[event]="event"
@@ -14,7 +16,9 @@
 
 <h3>Účastníci</h3>
 
-<p *ngIf="attendees && !attendees.length"><em>Žádní účastníci</em></p>
+@if (attendees && !attendees.length) {
+	<p><em>Žádní účastníci</em></p>
+}
 
 <bo-event-attendees-list
 	[event]="event"
@@ -22,12 +26,14 @@
 	(remove)="removeAttendee($event)"
 ></bo-event-attendees-list>
 
-<div *ngIf="event?._links?.addEventAttendee?.allowed" class="text-center">
-	<bo-add-button (click)="addAttendee('attendee')">Přidat účastníka</bo-add-button>
-</div>
+@if (event?._links?.addEventAttendee?.allowed) {
+	<div class="text-center">
+		<bo-add-button (click)="addAttendee('attendee')">Přidat účastníka</bo-add-button>
+	</div>
+}
 
-<div *ngIf="event && event._links.getEventAnnouncement.allowed" class="text-center">
-	<ion-button (click)="getAnnouncement(event)" expand="block" fill="outline">
-        Stáhnout ohlášku
-    </ion-button>
-</div>
+@if (event && event._links.getEventAnnouncement.allowed) {
+	<div class="text-center">
+		<ion-button (click)="getAnnouncement(event)" expand="block" fill="outline"> Stáhnout ohlášku </ion-button>
+	</div>
+}

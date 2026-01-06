@@ -9,17 +9,19 @@
 	</bo-card>
 
 	<div class="row mt-4">
-		<div *ngFor="let group of groups" class="col-6 col-lg-6 col-xl-4 mb-4">
+		@for (group of groups; track group.id) {
+			<div class="col-6 col-lg-6 col-xl-4 mb-4">
 			<bo-card [routerLink]="['/databaze/clenove']" [queryParams]="{ groups: group.id }" class="group">
 				<bo-card-header>
 					<bo-card-title>{{ group.name }}</bo-card-title>
 				</bo-card-header>
 				<bo-card-content> {{ group.memberCount }} členů </bo-card-content>
 			</bo-card>
-		</div>
+			</div>
+		}
 	</div>
 
-	<p *ngIf="groups !== undefined && !groups.length" class="ion-padding">
+	@if (groups !== undefined && !groups.length) {
 		Žádné oddíly zatím nejsou vytvořeny. Chceš <a routerLink="/oddily/vytvorit">vytvořit první oddíl</a>?
 	</p>
 </bo-page-content>

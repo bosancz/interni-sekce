@@ -1,4 +1,6 @@
 import { Component, OnInit } from "@angular/core";
+import { RouterLink, RouterLinkActive } from "@angular/router";
+import { IonCard, IonCardContent } from "@ionic/angular/standalone";
 
 interface HomeMenuItem {
 	title: string;
@@ -10,7 +12,8 @@ interface HomeMenuItem {
 	selector: "bo-home-menu",
 	templateUrl: "./home-menu.component.html",
 	styleUrls: ["./home-menu.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [RouterLink, RouterLinkActive, IonCard, IonCardContent],
 })
 export class HomeMenuComponent implements OnInit {
 	items: HomeMenuItem[] = [

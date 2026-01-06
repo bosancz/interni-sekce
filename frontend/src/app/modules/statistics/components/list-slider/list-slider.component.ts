@@ -1,10 +1,12 @@
-import { Component, Input, forwardRef } from "@angular/core";
+import { Component, input, forwardRef, signal } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 
 @Component({
 	selector: "list-slider",
 	templateUrl: "./list-slider.component.html",
 	styleUrls: ["./list-slider.component.scss"],
+	standalone: true,
+	imports: [],
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,
@@ -12,18 +14,17 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 			useExisting: forwardRef(() => ListSliderComponent),
 		},
 	],
-	standalone: false,
 })
 export class ListSliderComponent implements ControlValueAccessor {
-	@Input() items: any[] = [];
-	@Input() visible: number = 3;
-	@Input() itemWidth = 40;
+	items = input<any[]>([]);
+	visible = input<number>(3);
+	itemWidth = input<number>(40);
 
-	@Input() arrows = true;
+	arrows = input<boolean>(true);
 
-	value: any;
+	value = signal<any>(undefined);
 
-	disabled: boolean = false;
+	disabled = signal(false);
 
 	onChange = (value: any) => {};
 	onTouched = () => {};
@@ -31,24 +32,28 @@ export class ListSliderComponent implements ControlValueAccessor {
 	constructor() {}
 
 	getI(): number {
-		return this.items.indexOf(this.value);
+		return this.items().indexOf(this.value());
 	}
 	getLeft() {
-		return (this.getI() + 0.5) * this.itemWidth;
+		return (this.getI() + 0.5) * this.itemWidth();
 	}
 
 	getOpacity(i: number) {
-		return Math.max(1 - (1 / this.visible) * Math.abs(this.getI() - i), 0);
+		return Math.max(1 - (1 / this.visible()) * Math.abs(this.getI() - i), 0);
 	}
 
 	nextItem() {
+		const items = this.items();
 		const i = this.getI();
-		if (i + 1 < this.items.length) this.setValue(this.items[i + 1]);
+		if (i + 1 < items.length) this.setValue(items[i + 1]);
 	}
 
 	prevItem() {
 		const i = this.getI();
-		if (i - 1 >= 0) this.setValue(this.items[i - 1]);
+		if (i - 1 >= 0) {
+			const items = this.items();
+			this.setValue(items[i - 1]);
+		}
 	}
 
 	/* NgModel (ControlValueAccessor) */

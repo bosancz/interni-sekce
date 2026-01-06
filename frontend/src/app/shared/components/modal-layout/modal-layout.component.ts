@@ -4,6 +4,6 @@ import { Component } from "@angular/core";
 	selector: "bo-modal-layout",
 	templateUrl: "./modal-layout.component.html",
 	styleUrl: "./modal-layout.component.scss",
-	standalone: false,
+	standalone: true,
 })
 export class ModalLayoutComponent {}

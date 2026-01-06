@@ -1,4 +1,6 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
+import { KeyValuePipe } from "@angular/common";
+import { BaseChartDirective } from "ng2-charts";
 import { MemberRoles } from "src/app/config/member-roles";
 import { ApiService } from "src/app/services/api.service";
 import { SDK } from "src/sdk";
@@ -12,16 +14,17 @@ interface ChartData {
 	selector: "members-dashboard",
 	templateUrl: "./members-dashboard.component.html",
 	styleUrls: ["./members-dashboard.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [KeyValuePipe, BaseChartDirective],
 })
 export class MembersDashboardComponent implements OnInit {
-	report?: SDK.MembersReportResponse;
+	report = signal<SDK.MembersReportResponse | undefined>(undefined);
 
-	cities?: string[];
+	cities = signal<string[] | undefined>(undefined);
 
 	roles = MemberRoles;
 
-	agesData?: ChartData;
+	agesData = signal<ChartData | undefined>(undefined);
 
 	agesOptions = {
 		scales: {
@@ -45,7 +48,8 @@ export class MembersDashboardComponent implements OnInit {
 	}
 
 	async loadReport() {
-		this.report = await this.api.StatisticsApi.getMembersReport().then((res) => res.data);
+		const report = await this.api.StatisticsApi.getMembersReport().then((res) => res.data);
+		this.report.set(report);
 
 		this.updateAgesData();
 	}
@@ -55,15 +59,19 @@ export class MembersDashboardComponent implements OnInit {
 	}
 
 	updateAgesData() {
-		if (!this.report || !this.report.ages) return (this.agesData = undefined);
+		const report = this.report();
+		if (!report || !report.ages) {
+			this.agesData.set(undefined);
+			return;
+		}
 
 		const min = Math.min(
-			...Object.values(this.report.ages).map((roleAges) =>
+			...Object.values(report.ages).map((roleAges) =>
 				Math.min(...Object.keys(roleAges).map((age) => Number(age))),
 			),
 		);
 		const max = Math.max(
-			...Object.values(this.report.ages).map((roleAges) =>
+			...Object.values(report.ages).map((roleAges) =>
 				Math.max(...Object.keys(roleAges).map((age) => Number(age))),
 			),
 		);
@@ -75,14 +83,14 @@ export class MembersDashboardComponent implements OnInit {
 
 		for (let i = min; i <= max; i++) agesData.labels.push(String(i));
 
-		for (let role of Object.entries(this.report.ages)) {
+		for (let role of Object.entries(report.ages)) {
 			for (let i = min; i <= max; i++) role[1][i] = role[1][i] || 0;
 			agesData.datasets.push({ data: Object.values(role[1]), label: role[0] });
 		}
 
 		agesData.datasets.sort((a, b) => (a.label && b.label ? a.label.localeCompare(b.label) : 0));
 
-		this.agesData = agesData;
+		this.agesData.set(agesData);
 	}
 
 	getRolesColClass(rolesCount: number): string {
@@ -90,6 +98,6 @@ export class MembersDashboardComponent implements OnInit {
 	}
 
 	getRoleValue(id: string) {
-		return this.report?.rolesCount?.[id] || "-";
+		return this.report()?.rolesCount?.[id] || "-";
 	}
 }

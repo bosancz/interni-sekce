@@ -4,6 +4,7 @@ import { Component } from "@angular/core";
 	selector: "bo-users-edit-account",
 	templateUrl: "./users-edit-account.component.html",
 	styleUrl: "./users-edit-account.component.scss",
-	standalone: false,
+	standalone: true,
+	imports: [],
 })
 export class UsersEditAccountComponent {}

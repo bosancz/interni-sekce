@@ -1,10 +1,16 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, NavController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
+import { AlbumsTabsComponent } from "../components/albums-tabs/albums-tabs.component";
+import { DatePipe } from "@angular/common";
+import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
 
 @UntilDestroy()
@@ -12,12 +18,20 @@ import { SDK } from "src/sdk";
 	selector: "bo-albums-view-info",
 	templateUrl: "./albums-view-info.component.html",
 	styleUrls: ["./albums-view-info.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		PageHeaderComponent,
+		PageContentComponent,
+		PhotoGalleryComponent,
+		AlbumsTabsComponent,
+		DatePipe,
+		DateRangePipe,
+	],
 })
 export class AlbumsViewInfoComponent implements OnInit {
-	album?: SDK.AlbumResponseWithLinks;
+	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
 
-	actions: Action[] = [];
+	actions = signal<Action[]>([]);
 
 	alert?: HTMLIonAlertElement;
 
@@ -39,27 +53,31 @@ export class AlbumsViewInfoComponent implements OnInit {
 	}
 
 	async loadAlbum(albumId: number) {
-		this.album = await this.api.PhotoGalleryApi.getAlbum(albumId).then((res) => res.data);
-		this.updateActions(this.album);
+		const album = await this.api.PhotoGalleryApi.getAlbum(albumId).then((res) => res.data);
+		this.album.set(album);
+		this.updateActions(album);
 	}
 
 	private async publish() {
-		if (!this.album?._links.unpublishAlbum.allowed) return;
-		await this.api.PhotoGalleryApi.unpublishAlbum(this.album.id);
-		await this.loadAlbum(this.album.id);
+		const album = this.album();
+		if (!album?._links.unpublishAlbum.allowed) return;
+		await this.api.PhotoGalleryApi.unpublishAlbum(album.id);
+		await this.loadAlbum(album.id);
 		this.toastService.toast("Publikováno.");
 	}
 
 	private async unpublish() {
-		if (!this.album?._links.publishAlbum.allowed) return;
-		await this.api.PhotoGalleryApi.publishAlbum(this.album.id);
-		await this.loadAlbum(this.album.id);
+		const album = this.album();
+		if (!album?._links.publishAlbum.allowed) return;
+		await this.api.PhotoGalleryApi.publishAlbum(album.id);
+		await this.loadAlbum(album.id);
 		this.toastService.toast("Publikováno.");
 	}
 
 	private async delete() {
+		const album = this.album();
 		this.alert = await this.alertController.create({
-			message: `Opravdu chcete smazat album ${this.album?.name}?`,
+			message: `Opravdu chcete smazat album ${album?.name}?`,
 			buttons: [
 				{ text: "Zrušit", role: "cancel" },
 				{ text: "Smazat", handler: () => this.deleteConfirmed() },
@@ -70,29 +88,32 @@ export class AlbumsViewInfoComponent implements OnInit {
 	}
 
 	private async deleteConfirmed() {
-		if (!this.album) return;
+		const album = this.album();
+		if (!album) return;
 
-		await this.api.PhotoGalleryApi.deleteAlbum(this.album.id);
+		await this.api.PhotoGalleryApi.deleteAlbum(album.id);
 
 		this.toastService.toast("Smazáno.");
 		this.router.navigate(["/galerie"], { relativeTo: this.route, replaceUrl: true });
 	}
 
 	private open() {
-		if (!this.album) return;
-		window.open("https://bosan.cz/fotogalerie/" + this.album.id);
+		const album = this.album();
+		if (!album) return;
+		window.open("https://bosan.cz/fotogalerie/" + album.id);
 	}
 
 	onPhotoClick(event: SDK.PhotoResponseWithLinks) {
-		if (this.album) {
-			this.navController.navigateForward(`/galerie/${this.album.id}/fotky`, {
+		const album = this.album();
+		if (album) {
+			this.navController.navigateForward(`/galerie/${album.id}/fotky`, {
 				queryParams: { photo: event.id },
 			});
 		}
 	}
 
 	private updateActions(album: SDK.AlbumResponseWithLinks) {
-		this.actions = [
+		this.actions.set([
 			{
 				text: "Upravit",
 				icon: "create-outline",
@@ -125,6 +146,6 @@ export class AlbumsViewInfoComponent implements OnInit {
 				color: "danger",
 				handler: () => this.delete(),
 			},
-		];
+		]);
 	}
 }

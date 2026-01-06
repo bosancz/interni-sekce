@@ -1,6 +1,8 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, signal } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { ViewWillEnter } from "@ionic/angular";
+import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle } from "@ionic/angular/standalone";
 import { DateTime } from "luxon";
 import { Subscription } from "rxjs";
 import { EventStatuses } from "src/app/config/event-statuses";
@@ -8,19 +10,36 @@ import { EventCreateModalComponent } from "src/app/modules/events/components/eve
 import { ApiService } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
 import { ToastService } from "src/app/services/toast.service";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
+import { TrimesterSelectorComponent } from "../../components/trimester-selector/trimester-selector.component";
+import { EventStatusLegendComponent } from "../../components/event-status-legend/event-status-legend.component";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "program-planning",
 	templateUrl: "./program-planning.component.html",
 	styleUrls: ["./program-planning.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		FormsModule,
+		IonContent,
+		IonHeader,
+		IonToolbar,
+		IonButtons,
+		IonBackButton,
+		IonTitle,
+		PageHeaderComponent,
+		EventCalendarComponent,
+		TrimesterSelectorComponent,
+		EventStatusLegendComponent,
+	],
 })
 export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnter {
-	dateFrom?: DateTime;
-	dateTill?: DateTime;
+	dateFrom = signal<DateTime | undefined>(undefined);
+	dateTill = signal<DateTime | undefined>(undefined);
 
-	events: SDK.EventResponseWithLinks[] = [];
+	events = signal<SDK.EventResponseWithLinks[]>([]);
 
 	statuses = EventStatuses;
 
@@ -37,8 +56,8 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
 	ngOnInit() {
 		this.paramsSubscription = this.route.queryParams.subscribe((params: Params) => {
 			if (params.dateFrom && params.dateTill) {
-				this.dateFrom = DateTime.fromISO(params.dateFrom);
-				this.dateTill = DateTime.fromISO(params.dateTill);
+				this.dateFrom.set(DateTime.fromISO(params.dateFrom));
+				this.dateTill.set(DateTime.fromISO(params.dateTill));
 
 				this.loadEvents();
 			}
@@ -54,18 +73,21 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
 	}
 
 	async loadEvents() {
-		if (!this.dateTill || !this.dateFrom) return;
+		const dateTill = this.dateTill();
+		const dateFrom = this.dateFrom();
+		if (!dateTill || !dateFrom) return;
 
 		const requestOptions = {
 			filter: {
-				dateFrom: { $lte: this.dateTill.toISODate() },
-				dateTill: { $gte: this.dateFrom.toISODate() },
+				dateFrom: { $lte: dateTill.toISODate() },
+				dateTill: { $gte: dateFrom.toISODate() },
 			},
 			select: "_id name status type dateFrom dateTill timeFrom timeTill",
 		};
 
 		// TODO: use options above
-		this.events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		const events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		this.events.set(events);
 	}
 
 	setPeriod(period: [string, string]) {

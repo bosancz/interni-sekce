@@ -4,7 +4,7 @@ import { Component, Input } from "@angular/core";
 	selector: "admin-table",
 	templateUrl: "./admin-table.component.html",
 	styleUrls: ["./admin-table.component.scss"],
-	standalone: false,
+	standalone: true,
 })
 export class AdminTableComponent {
 	defaultTableClass = "table table-hover";

@@ -2,23 +2,28 @@ import {
 	AfterViewInit,
 	Component,
 	ElementRef,
-	EventEmitter,
 	forwardRef,
-	Input,
+	input,
 	OnDestroy,
 	OnInit,
-	Output,
+	output,
+	signal,
 } from "@angular/core";
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { DatePipe } from "@angular/common";
 import { ModalController } from "@ionic/angular";
+import { IonInput } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/services/api.service";
 import { SDK } from "src/sdk";
 import { EventSelectorModalComponent } from "../event-selector-modal/event-selector-modal.component";
+import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 
 @Component({
 	selector: "bo-event-selector",
 	templateUrl: "./event-selector.component.html",
 	styleUrls: ["./event-selector.component.scss"],
+	standalone: true,
+	imports: [IonInput, FormsModule, DateRangePipe, DatePipe],
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,
@@ -26,14 +31,13 @@ import { EventSelectorModalComponent } from "../event-selector-modal/event-selec
 			useExisting: forwardRef(() => EventSelectorComponent),
 		},
 	],
-	standalone: false,
 })
 export class EventSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {
-	value?: SDK.EventResponseWithLinks["id"] | null;
-	event?: SDK.EventResponseWithLinks;
+	value = signal<SDK.EventResponseWithLinks["id"] | null | undefined>(undefined);
+	event = signal<SDK.EventResponseWithLinks | undefined>(undefined);
 
-	@Input() placeholder?: string;
-	@Output("event") eventOutput = new EventEmitter<SDK.EventResponseWithLinks>();
+	placeholder = input<string>();
+	eventOutput = output<SDK.EventResponseWithLinks>("event");
 
 	modal?: HTMLIonModalElement;
 
@@ -41,8 +45,8 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 	onChange?: (value: SDK.EventResponseWithLinks["id"] | null) => void;
 	onTouched?: () => void;
 
-	focused = false;
-	disabled = false;
+	focused = signal(false);
+	disabled = signal(false);
 
 	constructor(
 		private modalController: ModalController,
@@ -70,9 +74,9 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 					interactive: true,
 					input: true,
 					"has-placeholder": true,
-					"has-value": !!this.value,
-					"has-focus": this.focused,
-					"interactive-disabled": this.disabled,
+					"has-value": !!this.value(),
+					"has-focus": this.focused(),
+					"interactive-disabled": this.disabled(),
 				},
 			}),
 		);
@@ -95,13 +99,16 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 	}
 
 	private async updateValue(value: SDK.EventResponseWithLinks["id"] | null) {
-		if (value === this.value) return;
+		if (value === this.value()) return;
 
-		this.value = value;
-		this.event = value ? await this.loadEvent(value) : undefined;
+		this.value.set(value);
+		const event = value ? await this.loadEvent(value) : undefined;
+		this.event.set(event);
 
 		this.onChange?.(value);
-		this.eventOutput.emit(this.event);
+		if (event) {
+			this.eventOutput.emit(event);
+		}
 		this.emitIonStyle();
 	}
 
@@ -123,6 +130,6 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 	}
 
 	setDisabledState(isDisabled: boolean) {
-		this.disabled = isDisabled;
+		this.disabled.set(isDisabled);
 	}
 }

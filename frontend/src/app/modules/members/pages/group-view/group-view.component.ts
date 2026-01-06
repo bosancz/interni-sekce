@@ -12,7 +12,8 @@ import { GroupsService } from "../../services/groups.service";
 	selector: "bo-group-view",
 	templateUrl: "./group-view.component.html",
 	styleUrls: ["./group-view.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [],
 })
 export class GroupViewComponent implements OnInit {
 	group?: SDK.GroupResponseWithLinks | null;

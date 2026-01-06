@@ -4,19 +4,23 @@
 		<bo-card-open-button routerLink="/akce" [queryParams]="{ noleader: true }"></bo-card-open-button>
 	</bo-card-header>
 	<bo-card-content>
-		<ion-list *ngIf="events.length" lines="full">
-			<ion-item *ngFor="let event of events" [detail]="true" [routerLink]="'/akce/' + event.id">
-				<ion-label>
-					<h4>
-						<strong>{{ event.name }}</strong>
-					</h4>
-					<p>{{ event.dateFrom | date: "d. M. Y" }} ~ {{ event.dateTill | date: "d. M. Y" }}</p>
-					<p>{{ event.description }}</p>
-				</ion-label>
-			</ion-item>
-		</ion-list>
+		@if (events().length) {
+			<ion-list lines="full">
+				@for (event of events(); track event.id) {
+					<ion-item [detail]="true" [routerLink]="'/akce/' + event.id">
+						<ion-label>
+							<h4>
+								<strong>{{ event.name }}</strong>
+							</h4>
+							<p>{{ event.dateFrom | date: "d. M. Y" }} ~ {{ event.dateTill | date: "d. M. Y" }}</p>
+							<p>{{ event.description }}</p>
+						</ion-label>
+					</ion-item>
+				}
+			</ion-list>
+		}
 		<div class="showMore">
-			@if (hasMore) {
+			@if (hasMore()) {
 				<bo-button
 					color="light"
 					routerLink="/akce"
@@ -27,7 +31,7 @@
 			}
 		</div>
 
-		@if (!events.length) {
+		@if (!events().length) {
 			<p class="m-0 mt-2 mb-3 text-center">Žádné volné akce.</p>
 		}
 	</bo-card-content>

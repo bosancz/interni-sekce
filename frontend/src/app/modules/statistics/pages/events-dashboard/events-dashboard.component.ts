@@ -1,7 +1,11 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { DateTime } from "luxon";
 import { debounceTime } from "rxjs/operators";
+import { BaseChartDirective } from "ng2-charts";
+import { ChartConfiguration } from "chart.js";
+import { ListSliderComponent } from "../../components/list-slider/list-slider.component";
 
 import { ApiService } from "src/app/services/api.service";
 import { SDK } from "src/sdk";
@@ -16,22 +20,23 @@ class ChartData {
 	selector: "events-dashboard",
 	templateUrl: "./events-dashboard.component.html",
 	styleUrls: ["./events-dashboard.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [FormsModule, BaseChartDirective, ListSliderComponent],
 })
 export class EventsDashboardComponent implements OnInit {
-	eventsReport?: SDK.EventsReportResponse;
-	leadersReport?: SDK.EventsLeadersReportResponse;
-	attendeesReport?: SDK.EventsAttendeesReportResponse;
+	eventsReport = signal<SDK.EventsReportResponse | undefined>(undefined);
+	leadersReport = signal<SDK.EventsLeadersReportResponse | undefined>(undefined);
+	attendeesReport = signal<SDK.EventsAttendeesReportResponse | undefined>(undefined);
 
-	minYear?: number;
-	maxYear?: number;
-	years: number[] = [];
-	year?: number;
+	minYear = signal<number | undefined>(undefined);
+	maxYear = signal<number | undefined>(undefined);
+	years = signal<number[]>([]);
+	year = signal<number | undefined>(undefined);
 
-	chartData = {
+	chartData = signal({
 		leaders: new ChartData(),
 		attendees: new ChartData(),
-	};
+	});
 
 	constructor(
 		private api: ApiService,
@@ -41,7 +46,7 @@ export class EventsDashboardComponent implements OnInit {
 	ngOnInit() {
 		this.route.params.pipe(debounceTime(500)).subscribe((params: Params) => {
 			if (params.year) {
-				this.year = Number(params.year) || undefined;
+				this.year.set(Number(params.year) || undefined);
 				this.loadData(params.year);
 			} else {
 				this.setYear(DateTime.local().year);
@@ -52,24 +57,31 @@ export class EventsDashboardComponent implements OnInit {
 	}
 
 	async loadEventYears() {
-		this.years = await this.api.StatisticsApi.getEventsReportYears().then((res) => res.data);
-		this.years.sort();
+		const years = await this.api.StatisticsApi.getEventsReportYears().then((res) => res.data);
+		years.sort();
+		this.years.set(years);
 	}
 
 	async loadData(year: number) {
-		this.eventsReport = await this.api.StatisticsApi.getEventsReport().then((res) => res.data);
+		const eventsReport = await this.api.StatisticsApi.getEventsReport().then((res) => res.data);
+		this.eventsReport.set(eventsReport);
 
-		this.leadersReport = await this.api.StatisticsApi.getEventsLeadersReport().then((res) => res.data);
-		this.attendeesReport = await this.api.StatisticsApi.getEventsAttendeesReport().then((res) => res.data);
+		const leadersReport = await this.api.StatisticsApi.getEventsLeadersReport().then((res) => res.data);
+		this.leadersReport.set(leadersReport);
 
-		this.chartData.leaders = {
-			data: [{ data: Object.values(this.leadersReport.age) }],
-			labels: Object.keys(this.leadersReport.age),
-		};
-		this.chartData.attendees = {
-			data: [{ data: Object.values(this.attendeesReport.age) }],
-			labels: Object.keys(this.attendeesReport.age),
-		};
+		const attendeesReport = await this.api.StatisticsApi.getEventsAttendeesReport().then((res) => res.data);
+		this.attendeesReport.set(attendeesReport);
+
+		this.chartData.set({
+			leaders: {
+				data: [{ data: Object.values(leadersReport.age) }],
+				labels: Object.keys(leadersReport.age),
+			},
+			attendees: {
+				data: [{ data: Object.values(attendeesReport.age) }],
+				labels: Object.keys(attendeesReport.age),
+			},
+		});
 	}
 
 	setYear(year: number) {

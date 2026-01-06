@@ -1,10 +1,26 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { IonButtons, IonItem, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
 import { ModalService } from "src/app/services/modal.service";
 import { SDK } from "src/sdk";
+import { CardContentComponent } from "../../../../shared/components/card-content/card-content.component";
+import { CardComponent } from "../../../../shared/components/card/card.component";
+import { CopyButtonComponent } from "../../../../shared/components/copy-button/copy-button.component";
+import { EditButtonComponent } from "../../../../shared/components/edit-button/edit-button.component";
 
 @Component({
 	selector: "bo-member-address",
-	standalone: false,
+	standalone: true,
+	imports: [
+		CardComponent,
+		CardContentComponent,
+		IonSkeletonText,
+		IonList,
+		IonItem,
+		IonLabel,
+		IonButtons,
+		CopyButtonComponent,
+		EditButtonComponent,
+	],
 	templateUrl: "./member-address.component.html",
 	styleUrl: "./member-address.component.scss",
 })

@@ -1,11 +1,14 @@
-import { Component, ViewChild } from "@angular/core";
-import { NgForm } from "@angular/forms";
+import { Component, signal, ViewChild } from "@angular/core";
+import { FormsModule, NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { NavController } from "@ionic/angular";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { EventSelectorComponent } from "../../components/event-selector/event-selector.component";
 import { SDK } from "src/sdk";
 
 @UntilDestroy()
@@ -13,17 +16,18 @@ import { SDK } from "src/sdk";
 	selector: "albums-edit",
 	templateUrl: "./albums-edit.component.html",
 	styleUrls: ["./albums-edit.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [FormsModule, PageHeaderComponent, PageContentComponent, EventSelectorComponent],
 })
 export class AlbumsEditComponent {
-	album?: SDK.AlbumResponseWithLinks;
+	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
 
-	actions: Action[] = [
+	actions = signal<Action[]>([
 		{
 			text: "Uložit",
 			handler: () => this.saveAlbum(),
 		},
-	];
+	]);
 
 	@ViewChild("albumForm") albumForm!: NgForm;
 
@@ -40,18 +44,21 @@ export class AlbumsEditComponent {
 	}
 
 	private async loadAlbum(albumId: number) {
-		this.album = await this.api.PhotoGalleryApi.getAlbum(albumId).then((res) => res.data);
+		const album = await this.api.PhotoGalleryApi.getAlbum(albumId).then((res) => res.data);
+		this.album.set(album);
 	}
 
 	eventUpdated(event: SDK.EventResponseWithLinks) {
-		if (!this.album || !event) return;
+		const album = this.album();
+		if (!album || !event) return;
 
-		this.album.dateFrom = event.dateFrom;
-		this.album.dateTill = event.dateTill;
+		const updatedAlbum = { ...album, dateFrom: event.dateFrom, dateTill: event.dateTill };
+		this.album.set(updatedAlbum);
 	}
 
 	private async saveAlbum() {
-		if (!this.album) return;
+		const album = this.album();
+		if (!album) return;
 
 		if (this.albumForm.invalid) {
 			this.toastService.toast("Nelze uložit, zkontrolujte údaje.");
@@ -68,10 +75,10 @@ export class AlbumsEditComponent {
 			albumData.dateTill = dates[1];
 		}
 
-		await this.api.PhotoGalleryApi.updateAlbum(this.album.id, albumData);
+		await this.api.PhotoGalleryApi.updateAlbum(album.id, albumData);
 
 		this.toastService.toast("Uloženo.");
 
-		this.navController.navigateBack(["/galerie", this.album.id]);
+		this.navController.navigateBack(["/galerie", album.id]);
 	}
 }

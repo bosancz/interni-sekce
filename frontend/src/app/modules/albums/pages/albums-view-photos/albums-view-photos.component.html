@@ -1,39 +1,33 @@
-<ion-header>
-	<ion-toolbar>
-		<ion-buttons slot="start">
-			<ion-back-button defaultHref="/galerie"></ion-back-button>
-		</ion-buttons>
-		<ion-title pageTitle>{{ album?.name }}</ion-title>
-		<ion-buttons slot="end">
-			<bo-action-buttons [actions]="actions" header="Album"></bo-action-buttons>
-		</ion-buttons>
-	</ion-toolbar>
-</ion-header>
+<bo-page-header [title]="album()?.name" backUrl="/galerie" [actions]="actions()" actionsHeader="Album">
+	<bo-page-content>
+		<div class="buttons">
+			@if (photosView() === 'grid') {
+				<ion-button (click)="photosView.set('list')" fill="clear" slot="end">
+					<ion-icon slot="start" name="list-outline"></ion-icon> Zobrazit seznam
+				</ion-button>
+			}
+			@if (photosView() === 'list') {
+				<ion-button
+					[disabled]="enableOrdering()"
+					(click)="photosView.set('grid')"
+					fill="clear"
+					slot="end"
+				>
+					<ion-icon slot="start" name="grid-outline"></ion-icon> Zobrazit čtverečky
+				</ion-button>
+			}
+		</div>
 
-<ion-content>
-	<div class="buttons">
-		<ion-button *ngIf="photosView === 'grid'" (click)="photosView = 'list'" fill="clear" slot="end">
-			<ion-icon slot="start" name="list-outline"></ion-icon> Zobrazit seznam
-		</ion-button>
-		<ion-button
-			*ngIf="photosView === 'list'"
-			[disabled]="enableOrdering"
-			(click)="photosView = 'grid'"
-			fill="clear"
-			slot="end"
-		>
-			<ion-icon slot="start" name="grid-outline"></ion-icon> Zobrazit čtverečky
-		</ion-button>
-	</div>
+		<bo-photo-list
+			[photos]="photos()"
+			[view]="photosView()"
+			[sortable]="enableOrdering()"
+			[selectable]="enableDeleting()"
+			[selected]="selectedPhotos()"
+			(selectedChange)="selectedPhotos.set($event)"
+			(click)="onPhotoClick($event)"
+		></bo-photo-list>
+	</bo-page-content>
 
-	<bo-photo-list
-		[photos]="photos"
-		[view]="photosView"
-		[sortable]="enableOrdering"
-		[selectable]="enableDeleting"
-		[(selected)]="selectedPhotos"
-		(click)="onPhotoClick($event)"
-	></bo-photo-list>
-</ion-content>
-
-<bo-albums-tabs [album]="album" selected="fotky"></bo-albums-tabs>
+	<bo-albums-tabs [album]="album()" selected="fotky"></bo-albums-tabs>
+</bo-page-header>

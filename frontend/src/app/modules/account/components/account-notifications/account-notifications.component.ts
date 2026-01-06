@@ -11,7 +11,7 @@ declare const Notification: any;
 	selector: "bo-account-notifications",
 	templateUrl: "./account-notifications.component.html",
 	styleUrls: ["./account-notifications.component.scss"],
-	standalone: false,
+	standalone: true,
 })
 export class AccountNotificationsComponent implements OnInit {
 	user?: SDK.AccountResponseWithLinks;

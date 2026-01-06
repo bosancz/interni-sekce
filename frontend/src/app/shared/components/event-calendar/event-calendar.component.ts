@@ -1,8 +1,11 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
+import { RouterLink } from "@angular/router";
+import { IonBadge } from "@ionic/angular/standalone";
 import { CzechHolidays } from "czech-holidays";
 import { DateTime } from "luxon";
 import { ApiService } from "src/app/services/api.service";
 import { SDK } from "src/sdk";
+import { EventStatusPipe } from "../../pipes/event-status.pipe";
 
 const months = [
 	"Leden",
@@ -69,7 +72,8 @@ class CalendarEvent<T extends SDK.CPVEventResponseWithLinks | SDK.EventResponseW
 	selector: "bo-event-calendar",
 	templateUrl: "./event-calendar.component.html",
 	styleUrls: ["./event-calendar.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [RouterLink, IonBadge, EventStatusPipe],
 })
 export class EventCalendarComponent implements OnInit, OnChanges {
 	@Input("dateFrom") set dateFromString(value: DateTime | string) {

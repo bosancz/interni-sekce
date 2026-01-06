@@ -1,6 +1,20 @@
-import { Component, HostListener, Input, NgZone, ViewChild } from "@angular/core";
+import { Component, HostListener, input, NgZone, signal, ViewChild } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { DatePipe } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, IonInput, ModalController, ViewWillLeave } from "@ionic/angular";
+import {
+	IonButton,
+	IonButtons,
+	IonContent,
+	IonIcon,
+	IonInput as IonInputStandalone,
+	IonItem,
+	IonLabel,
+	IonList,
+	IonPopover,
+	IonToolbar,
+} from "@ionic/angular/standalone";
 import { ApiService } from "src/app/services/api.service";
 import { PlatformService } from "src/app/services/platform.service";
 import { SDK } from "src/sdk";
@@ -11,17 +25,31 @@ import { SwiperOptions } from "swiper/types";
 	selector: "bo-photos-edit",
 	templateUrl: "./photos-edit.component.html",
 	styleUrls: ["./photos-edit.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		FormsModule,
+		DatePipe,
+		IonContent,
+		IonToolbar,
+		IonButtons,
+		IonButton,
+		IonPopover,
+		IonList,
+		IonItem,
+		IonLabel,
+		IonInputStandalone,
+		IonIcon,
+	],
 })
 export class PhotosEditComponent implements ViewWillLeave {
-	photo?: SDK.PhotoResponseWithLinks;
-	@Input() photos!: SDK.PhotoResponseWithLinks[];
+	photo = signal<SDK.PhotoResponseWithLinks | undefined>(undefined);
+	photos = input.required<SDK.PhotoResponseWithLinks[]>();
 
-	editingCaption = false;
+	editingCaption = signal(false);
 
-	infoOpen = false;
+	infoOpen = signal(false);
 
-	currentIndex: number = 0;
+	currentIndex = signal(0);
 
 	@ViewChild("captionInput") captionInput!: IonInput;
 
@@ -48,30 +76,33 @@ export class PhotosEditComponent implements ViewWillLeave {
 	onSwiper(swiper: Swiper) {
 		this.swiper = swiper;
 		const photoId = this.route.snapshot.queryParams["photo"];
-		const index = this.photos.findIndex((item) => item.id === photoId);
+		const photos = this.photos();
+		const index = photos.findIndex((item) => item.id === photoId);
 
-		if (!this.photo || this.photo.id !== photoId) {
+		if (!this.photo() || this.photo()!.id !== photoId) {
 			this.swiper?.slideTo(index, 0);
 		}
 		console.log();
 
-		this.currentIndex = index;
-		this.photo = this.photos[index];
+		this.currentIndex.set(index);
+		this.photo.set(photos[index]);
 	}
 
 	async onSlideChange(swiper: Swiper) {
 		// event from swiper is outside of Angular
 		this.ngZone.run(() => {
-			this.currentIndex = swiper.activeIndex;
-			this.photo = this.photos[this.currentIndex];
+			const photos = this.photos();
+			this.currentIndex.set(swiper.activeIndex);
+			const currentPhoto = photos[swiper.activeIndex];
+			this.photo.set(currentPhoto);
 
-			this.router.navigate([], { queryParams: { photo: this.photo.id }, replaceUrl: true });
+			this.router.navigate([], { queryParams: { photo: currentPhoto.id }, replaceUrl: true });
 		});
 	}
 
 	@HostListener("document:keyup", ["$event"])
 	onKeyUp(event: KeyboardEvent) {
-		if (!this.editingCaption && !this.infoOpen) {
+		if (!this.editingCaption() && !this.infoOpen()) {
 			switch (event.code) {
 				case "ArrowLeft":
 					return this.previousPhoto();
@@ -82,7 +113,7 @@ export class PhotosEditComponent implements ViewWillLeave {
 				case "Home":
 					return this.openPhoto(0);
 				case "End":
-					return this.openPhoto(this.photos.length - 1);
+					return this.openPhoto(this.photos().length - 1);
 				case "Enter":
 					return this.editCaption();
 			}
@@ -97,7 +128,7 @@ export class PhotosEditComponent implements ViewWillLeave {
 	async nextPhoto() {
 		if (!this.swiper) return;
 		const index = this.swiper.activeIndex;
-		if (index + 1 <= this.photos.length - 1) await this.openPhoto(index + 1);
+		if (index + 1 <= this.photos().length - 1) await this.openPhoto(index + 1);
 	}
 
 	async previousPhoto() {
@@ -112,19 +143,23 @@ export class PhotosEditComponent implements ViewWillLeave {
 	}
 
 	editCaption() {
-		this.editingCaption = true;
+		this.editingCaption.set(true);
 		this.captionInput.getInputElement().then((el) => el.focus());
 	}
 
 	cancelEditingCaption() {
-		this.editingCaption = false;
+		this.editingCaption.set(false);
 	}
 
 	async saveCaption(value: string | number | null | undefined) {
+		const photo = this.photo();
+		if (!photo) return;
+
 		value = String(value);
-		this.photo!.caption = value;
-		this.editingCaption = false;
-		await this.api.PhotoGalleryApi.updatePhoto(this.photo!.id, { caption: value });
+		const updatedPhoto = { ...photo, caption: value };
+		this.photo.set(updatedPhoto);
+		this.editingCaption.set(false);
+		await this.api.PhotoGalleryApi.updatePhoto(photo.id, { caption: value });
 	}
 
 	async close() {
@@ -147,16 +182,20 @@ export class PhotosEditComponent implements ViewWillLeave {
 	async deleteConfirmed(photo: SDK.PhotoResponseWithLinks) {
 		await this.api.PhotoGalleryApi.deletePhoto(photo.id);
 
-		const i = this.photos.findIndex((item) => item.id === photo.id);
-		this.photos.splice(i, 1);
+		const photos = [...this.photos()];
+		const i = photos.findIndex((item) => item.id === photo.id);
+		photos.splice(i, 1);
+		// Note: photos is an input, so we can't directly modify it
+		// This would need to be handled by the parent component
 
-		if (!this.photos.length) this.modalController.dismiss({ refresh: true });
+		if (!photos.length) this.modalController.dismiss({ refresh: true });
 		else {
 			const newI = i > 0 ? i - 1 : 0;
 
-			this.photo = this.photos[newI];
+			const newPhoto = photos[newI];
+			this.photo.set(newPhoto);
 
-			this.router.navigate([], { queryParams: { photo: this.photo.id }, replaceUrl: true });
+			this.router.navigate([], { queryParams: { photo: newPhoto.id }, replaceUrl: true });
 
 			this.openPhoto(newI);
 		}

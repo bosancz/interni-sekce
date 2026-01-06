@@ -1,28 +1,41 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, signal } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ModalController, ViewWillEnter } from "@ionic/angular";
+import { IonContent } from "@ionic/angular/standalone";
 import { EventsService } from "src/app/modules/events/services/events.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
+import { TrimesterSelectorComponent, TrimesterDateRange } from "../../components/trimester-selector/trimester-selector.component";
+import { EventStatusLegendComponent } from "../../components/event-status-legend/event-status-legend.component";
 import { SDK } from "src/sdk";
-import { TrimesterDateRange } from "../../components/trimester-selector/trimester-selector.component";
 
 @Component({
 	selector: "bo-program-calendar",
 	templateUrl: "./program-calendar.component.html",
 	styleUrls: ["./program-calendar.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		FormsModule,
+		IonContent,
+		PageHeaderComponent,
+		EventCalendarComponent,
+		TrimesterSelectorComponent,
+		EventStatusLegendComponent,
+	],
 })
 export class ProgramCalendarComponent implements OnInit, OnDestroy, ViewWillEnter {
-	dateFrom?: string;
-	dateTill?: string;
+	dateFrom = signal<string | undefined>(undefined);
+	dateTill = signal<string | undefined>(undefined);
 
-	calendarEvents: SDK.EventResponseWithLinks[] = [];
+	calendarEvents = signal<SDK.EventResponseWithLinks[]>([]);
 
-	showFilter: boolean = true;
+	showFilter = signal(true);
 
-	actions: Action[] = [];
+	actions = signal<Action[]>([]);
 
-	view: "list" | "calendar" = "calendar";
+	view = signal<"list" | "calendar">("calendar");
 
 	modal?: HTMLIonModalElement;
 
@@ -47,17 +60,21 @@ export class ProgramCalendarComponent implements OnInit, OnDestroy, ViewWillEnte
 		});
 
 		this.route.queryParams.subscribe((params) => {
-			this.dateFrom = params["from"];
-			this.dateTill = params["till"];
-			if (this.dateFrom && this.dateTill) {
-				this.loadCalendarEvents(this.dateFrom, this.dateTill);
+			const from = params["from"];
+			const till = params["till"];
+			this.dateFrom.set(from);
+			this.dateTill.set(till);
+			if (from && till) {
+				this.loadCalendarEvents(from, till);
 			}
 		});
 	}
 
 	ionViewWillEnter() {
-		if (this.dateFrom && this.dateTill) {
-			this.loadCalendarEvents(this.dateFrom, this.dateTill);
+		const from = this.dateFrom();
+		const till = this.dateTill();
+		if (from && till) {
+			this.loadCalendarEvents(from, till);
 		}
 	}
 
@@ -82,7 +99,8 @@ export class ProgramCalendarComponent implements OnInit, OnDestroy, ViewWillEnte
 			},
 		};
 
-		this.calendarEvents = await this.eventsService.listEvents(options).then((res) => res.data);
+		const events = await this.eventsService.listEvents(options).then((res) => res.data);
+		this.calendarEvents.set(events);
 	}
 
 	// setView(view: "list" | "calendar") {
@@ -91,7 +109,7 @@ export class ProgramCalendarComponent implements OnInit, OnDestroy, ViewWillEnte
 	// }
 
 	setActions() {
-		this.actions = [
+		this.actions.set([
 			// {
 			//   text: "Kalendář",
 			//   icon: "calendar-outline",
@@ -106,6 +124,6 @@ export class ProgramCalendarComponent implements OnInit, OnDestroy, ViewWillEnte
 			//   hidden: this.lg || this.view === "list",
 			//   handler: () => this.setView("list"),
 			// }
-		];
+		]);
 	}
 }

@@ -1,8 +1,18 @@
-import { Component } from "@angular/core";
-import { ActivatedRoute, Params } from "@angular/router";
+import { Component, signal } from "@angular/core";
+import { DatePipe } from "@angular/common";
+import { ActivatedRoute, Params, RouterLink } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { IonBadge, IonButton, IonButtons, IonIcon } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { CardComponent } from "src/app/shared/components/card/card.component";
+import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
+import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
+import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
+import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
+import { UsersEditAccountComponent } from "../../components/users-edit-account/users-edit-account.component";
 import { SDK } from "src/sdk";
 
 @UntilDestroy()
@@ -10,12 +20,28 @@ import { SDK } from "src/sdk";
 	selector: "bo-users-view",
 	templateUrl: "./users-view.component.html",
 	styleUrl: "./users-view.component.scss",
-	standalone: false,
+	standalone: true,
+	imports: [
+		DatePipe,
+		RouterLink,
+		IonBadge,
+		IonButton,
+		IonButtons,
+		IonIcon,
+		PageHeaderComponent,
+		PageContentComponent,
+		CardComponent,
+		CardHeaderComponent,
+		CardTitleComponent,
+		CardContentComponent,
+		EditButtonComponent,
+		UsersEditAccountComponent,
+	],
 })
 export class UsersViewComponent {
-	user?: SDK.UserResponseWithLinks;
+	user = signal<SDK.UserResponseWithLinks | undefined>(undefined);
 
-	actions: Action[] = [];
+	actions = signal<Action[]>([]);
 
 	constructor(
 		private route: ActivatedRoute,
@@ -29,8 +55,9 @@ export class UsersViewComponent {
 	}
 
 	private async loadUser(id: number) {
-		this.user = await this.api.UsersApi.getUser(id, { includeMember: true }).then((res) => res.data);
-		this.setActions(this.user);
+		const user = await this.api.UsersApi.getUser(id, { includeMember: true }).then((res) => res.data);
+		this.user.set(user);
+		this.setActions(user);
 	}
 
 	private impersonateUser(user: SDK.UserResponseWithLinks) {}
@@ -38,7 +65,7 @@ export class UsersViewComponent {
 	private deleteUser(user: SDK.UserResponseWithLinks) {}
 
 	private setActions(user: SDK.UserResponseWithLinks) {
-		this.actions = [
+		this.actions.set([
 			{
 				text: "Přihlásit se jako",
 				icon: "person-circle-outline",
@@ -54,6 +81,6 @@ export class UsersViewComponent {
 				disabled: !user._links.deleteUser.allowed,
 				handler: () => this.deleteUser(user),
 			},
-		];
+		]);
 	}
 }

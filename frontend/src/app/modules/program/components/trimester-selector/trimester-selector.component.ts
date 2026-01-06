@@ -1,6 +1,7 @@
-import { Component, forwardRef, Input, OnInit } from "@angular/core";
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { Component, forwardRef, input, OnInit } from "@angular/core";
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { DateTime } from "luxon";
+import { IonItem, IonLabel, IonInput, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
 
 export type TrimesterDateRange = [string, string];
 
@@ -8,6 +9,8 @@ export type TrimesterDateRange = [string, string];
 	selector: "bo-trimester-selector",
 	templateUrl: "./trimester-selector.component.html",
 	styleUrls: ["./trimester-selector.component.scss"],
+	standalone: true,
+	imports: [FormsModule, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption],
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,
@@ -15,11 +18,10 @@ export type TrimesterDateRange = [string, string];
 			multi: true,
 		},
 	],
-	standalone: false,
 })
 export class TrimesterSelectorComponent implements OnInit, ControlValueAccessor {
-	@Input() lines?: string;
-	@Input() labelPosition?: string;
+	lines = input<string | undefined>(undefined);
+	labelPosition = input<string | undefined>(undefined);
 
 	trimester?: number;
 	year?: number;

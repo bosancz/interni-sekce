@@ -10,9 +10,9 @@ import {
 	TemplateRef,
 	ViewChild,
 } from "@angular/core";
-import { NgModel } from "@angular/forms";
+import { FormsModule, NgModel } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { IonModal, IonSearchbar } from "@ionic/angular";
+import { IonBadge, IonButton, IonIcon, IonModal, IonSearchbar, IonToolbar } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ModalService } from "src/app/services/modal.service";
 import { UrlParams } from "src/helpers/typings";
@@ -25,7 +25,8 @@ export type FilterData = any;
 	selector: "bo-filter",
 	templateUrl: "./filter.component.html",
 	styleUrls: ["./filter.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [IonToolbar, IonSearchbar, IonButton, IonIcon, IonBadge, FormsModule],
 })
 export class FilterComponent implements AfterContentInit, AfterViewInit {
 	@Input() search: boolean = false;

@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { CommonModule, Component, EventEmitter, Input, Output } from "@angular/core";
+import { RouterLink } from "@angular/router";
+import { IonBadge, IonIcon, IonItem, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
 import { DateTime } from "luxon";
 import { SDK } from "src/sdk";
 
@@ -6,7 +8,8 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-attendees-list",
 	templateUrl: "./event-attendees-list.component.html",
 	styleUrl: "./event-attendees-list.component.scss",
-	standalone: false,
+	standalone: true,
+	imports: [CommonModule, RouterLink, IonList, IonItem, IonLabel, IonBadge, IonIcon, IonSkeletonText],
 })
 export class EventAttendeesListComponent {
 	@Input() event?: SDK.EventResponseWithLinks | null;

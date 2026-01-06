@@ -1,12 +1,33 @@
+import { NgTemplateOutlet } from "@angular/common";
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { RouterLink } from "@angular/router";
+import { IonButton, IonButtons, IonCard, IonCardContent, IonItem, IonLabel } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/services/api.service";
 import { SDK } from "src/sdk";
+import { DateRangePipe } from "../../pipes/date-range.pipe";
+import { EventStatusPipe } from "../../pipes/event-status.pipe";
+import { EventPipe } from "../../pipes/event.pipe";
+import { JoinLeadersPipe } from "../../pipes/join-leaders.pipe";
 
 @Component({
 	selector: "event-card",
 	templateUrl: "./event-card.component.html",
 	styleUrls: ["./event-card.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		NgTemplateOutlet,
+		RouterLink,
+		IonCard,
+		IonCardContent,
+		IonItem,
+		IonLabel,
+		IonButton,
+		IonButtons,
+		DateRangePipe,
+		EventPipe,
+		EventStatusPipe,
+		JoinLeadersPipe,
+	],
 })
 export class EventCardComponent implements OnInit {
 	@Input()

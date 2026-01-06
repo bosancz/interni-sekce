@@ -1,19 +1,21 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { DateTime } from "luxon";
 import { ApiService } from "src/app/services/api.service";
+import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-home-calendar",
 	templateUrl: "./home-calendar.component.html",
 	styleUrls: ["./home-calendar.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [EventCalendarComponent],
 })
 export class HomeCalendarComponent implements OnInit {
 	dateFrom = DateTime.local().minus({ weeks: 2 });
 	dateTill = DateTime.local().plus({ years: 1 });
 
-	events: SDK.EventResponseWithLinks[] = [];
+	events = signal<SDK.EventResponseWithLinks[]>([]);
 
 	constructor(private api: ApiService) {}
 
@@ -32,6 +34,7 @@ export class HomeCalendarComponent implements OnInit {
 		};
 
 		// TODO: use options above
-		this.events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		const events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		this.events.set(events);
 	}
 }

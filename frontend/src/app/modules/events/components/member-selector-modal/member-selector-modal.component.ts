@@ -1,5 +1,15 @@
+import { CommonModule } from "@angular/common";
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
-import { IonSearchbar, ModalController, ViewDidEnter } from "@ionic/angular";
+import {
+	IonBadge,
+	IonButton,
+	IonButtons,
+	IonItem,
+	IonLabel,
+	IonList,
+	IonSearchbar,
+	IonToolbar,
+} from "@ionic/angular/standalone";
 import { ApiService } from "src/app/services/api.service";
 import { AbstractModalComponent } from "src/app/services/modal.service";
 import { SDK } from "src/sdk";
@@ -8,7 +18,8 @@ import { SDK } from "src/sdk";
 	selector: "bo-member-selector-modal",
 	templateUrl: "./member-selector-modal.component.html",
 	styleUrls: ["./member-selector-modal.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [CommonModule, IonSearchbar, IonToolbar, IonButtons, IonButton, IonList, IonItem, IonLabel, IonBadge],
 })
 export class MemberSelectorModalComponent
 	extends AbstractModalComponent<SDK.MemberResponse>

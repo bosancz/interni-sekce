@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
+import { IonTabBar } from "@ionic/angular/standalone";
 
 export const TABS_QUERY_PARAM = "tab";
 
@@ -7,7 +8,8 @@ export const TABS_QUERY_PARAM = "tab";
 	selector: "bo-tabs",
 	templateUrl: "./tabs.component.html",
 	styleUrl: "./tabs.component.scss",
-	standalone: false,
+	standalone: true,
+	imports: [IonTabBar],
 })
 export class TabsComponent implements OnInit {
 	@Input() defaultTab?: string;

@@ -1,3 +1,4 @@
+import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { SDK } from "src/sdk";
@@ -7,7 +8,8 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-report",
 	templateUrl: "./event-report.component.html",
 	styleUrls: ["./event-report.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [CommonModule],
 })
 export class EventReportComponent {
 	@Input() event?: SDK.EventResponseWithLinks;

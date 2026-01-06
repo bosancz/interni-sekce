@@ -1,6 +1,10 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { debounceTime, filter, map } from "rxjs/operators";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { GroupPipe } from "src/app/shared/pipes/group.pipe";
+import { ListSliderComponent } from "../../components/list-slider/list-slider.component";
 
 import { ApiService } from "src/app/services/api.service";
 
@@ -23,27 +27,32 @@ export interface PaddlerCompetitionGroup {
 	selector: "paddler-competition",
 	templateUrl: "./paddler-competition.component.html",
 	styleUrls: ["./paddler-competition.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [FormsModule, ListSliderComponent, GroupPipe],
 })
 export class PaddlerCompetitionComponent implements OnInit {
-	years: number[] = [];
-	year = this.route.params.pipe(map((params: Params) => Number(params.year) || null));
-	currentYear?: number;
+	years = signal<number[]>([]);
+	year = toSignal(
+		this.route.params.pipe(map((params: Params) => Number(params.year) || null)),
+		{ initialValue: null },
+	);
+	currentYear = signal<number | undefined>(undefined);
 
-	rankings: Ranked<PaddlerCompetitionMember>[] = [];
-	groups: Ranked<PaddlerCompetitionGroup>[] = [];
+	rankings = signal<Ranked<PaddlerCompetitionMember>[]>([]);
+	groups = signal<Ranked<PaddlerCompetitionGroup>[]>([]);
 
 	constructor(
 		private api: ApiService,
 		private router: Router,
 		private route: ActivatedRoute,
 	) {
-		this.year
+		this.route.params
+			.pipe(map((params: Params) => Number(params.year) || null))
 			.pipe(filter((year): year is Exclude<typeof year, null> => !!year))
 			.pipe(debounceTime(500))
 			.subscribe((year) => {
 				this.loadRanking(year);
-				this.currentYear = Number(year);
+				this.currentYear.set(Number(year));
 			});
 	}
 
@@ -53,15 +62,16 @@ export class PaddlerCompetitionComponent implements OnInit {
 
 	async loadYears() {
 		const totals = await this.api.StatisticsApi.getPaddlersTotals().then((res) => res.data);
-		this.years = totals.years;
-		this.years.sort();
-		if (!this.currentYear) this.setYear(this.years[this.years.length - 1]);
+		const years = totals.years;
+		years.sort();
+		this.years.set(years);
+		if (!this.currentYear()) this.setYear(years[years.length - 1]);
 	}
 
 	async loadRanking(year: number) {
 		const rankings = await this.api.StatisticsApi.getPaddlersRanking(year).then((res) => res.data);
 
-		this.rankings = this.setRanks(rankings);
+		this.rankings.set(this.setRanks(rankings));
 
 		const groups: { [key: string]: PaddlerCompetitionGroup } = {};
 
@@ -73,7 +83,7 @@ export class PaddlerCompetitionComponent implements OnInit {
 			groups[item.groupId].waterKm += item.waterKm;
 		});
 
-		this.groups = this.setRanks(Object.values(groups));
+		this.groups.set(this.setRanks(Object.values(groups)));
 	}
 
 	setYear(year: number) {

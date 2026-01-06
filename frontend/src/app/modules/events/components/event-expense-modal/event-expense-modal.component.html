@@ -20,9 +20,9 @@
 				name="type"
 				[ngModel]="expense.type"
 			>
-				<ion-select-option *ngFor="let type of types | keyvalue" [value]="type.key" required>{{
-					type.value.title
-				}}</ion-select-option>
+				@for (type of types | keyvalue; track type.key) {
+					<ion-select-option [value]="type.key" required>{{ type.value.title }}</ion-select-option>
+				}
 			</ion-select>
 		</ion-item>
 		<ion-item>

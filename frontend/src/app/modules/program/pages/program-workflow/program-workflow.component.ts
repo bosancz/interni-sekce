@@ -1,12 +1,14 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { BehaviorSubject } from "rxjs";
 import { filter, map } from "rxjs/operators";
-
 import { DateTime } from "luxon";
-
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-
+import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonTabBar, IonTabButton, IonText, IonLabel, IonItem, IonButton } from "@ionic/angular/standalone";
+import { NgTemplateOutlet } from "@angular/common";
 import { ApiService } from "src/app/services/api.service";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
 import { SDK } from "src/sdk";
 import { ProgramService } from "../../services/program.service";
 
@@ -15,34 +17,63 @@ import { ProgramService } from "../../services/program.service";
 	selector: "program-workflow",
 	templateUrl: "./program-workflow.component.html",
 	styleUrls: ["./program-workflow.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		NgTemplateOutlet,
+		IonContent,
+		IonHeader,
+		IonToolbar,
+		IonButtons,
+		IonBackButton,
+		IonTitle,
+		IonTabBar,
+		IonTabButton,
+		IonText,
+		IonLabel,
+		IonItem,
+		IonButton,
+		PageHeaderComponent,
+		EventCardComponent,
+	],
 })
 export class ProgramWorkflowComponent implements OnInit {
-	selectedColumn = "pending";
+	selectedColumn = signal("pending");
 
 	events = new BehaviorSubject<undefined | SDK.EventResponseWithLinks[]>([]);
 
-	noLeaderEvents = this.events.pipe(
-		map((events) =>
-			events?.filter(
-				(event) =>
-					["draft", "rejected"].indexOf(event.status) !== -1 && (!event.leaders || !event.leaders.length),
+	noLeaderEvents = toSignal(
+		this.events.pipe(
+			map((events) =>
+				events?.filter(
+					(event) =>
+						["draft", "rejected"].indexOf(event.status) !== -1 && (!event.leaders || !event.leaders.length),
+				),
 			),
 		),
+		{ initialValue: [] },
 	);
-	draftEvents = this.events.pipe(
-		map((events) =>
-			events?.filter(
-				(event) => ["draft", "rejected"].indexOf(event.status) !== -1 && event.leaders && event.leaders.length,
+	draftEvents = toSignal(
+		this.events.pipe(
+			map((events) =>
+				events?.filter(
+					(event) => ["draft", "rejected"].indexOf(event.status) !== -1 && event.leaders && event.leaders.length,
+				),
 			),
 		),
+		{ initialValue: [] },
 	);
-	pendingEvents = this.events.pipe(map((events) => events?.filter((event) => event.status === "pending")));
-	publicEvents = this.events.pipe(
-		map((events) => events?.filter((event) => ["public", "cancelled"].indexOf(event.status) !== -1)),
+	pendingEvents = toSignal(
+		this.events.pipe(map((events) => events?.filter((event) => event.status === "pending"))),
+		{ initialValue: [] },
+	);
+	publicEvents = toSignal(
+		this.events.pipe(
+			map((events) => events?.filter((event) => ["public", "cancelled"].indexOf(event.status) !== -1)),
+		),
+		{ initialValue: [] },
 	);
 
-	loading: boolean = true;
+	loading = signal(true);
 
 	constructor(
 		private api: ApiService,
@@ -58,7 +89,7 @@ export class ProgramWorkflowComponent implements OnInit {
 	}
 
 	async loadEvents() {
-		this.loading = true;
+		this.loading.set(true);
 
 		const options = {
 			limit: 100,
@@ -74,7 +105,7 @@ export class ProgramWorkflowComponent implements OnInit {
 
 		this.events.next(events);
 
-		this.loading = false;
+		this.loading.set(false);
 	}
 
 	eventChanged(newEvent: SDK.EventResponseWithLinks) {

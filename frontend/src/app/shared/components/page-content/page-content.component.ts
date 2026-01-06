@@ -1,6 +1,6 @@
-import { Component, Input, ViewChild } from "@angular/core";
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { IonContent } from "@ionic/angular";
+import { IonContent } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
 @UntilDestroy()
@@ -8,9 +8,10 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 	selector: "bo-page-content",
 	templateUrl: "./page-content.component.html",
 	styleUrls: ["./page-content.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [IonContent],
 })
-export class PageContentComponent {
+export class PageContentComponent implements OnInit {
 	@Input() padding?: boolean;
 
 	@ViewChild(IonContent) contentEl!: IonContent;

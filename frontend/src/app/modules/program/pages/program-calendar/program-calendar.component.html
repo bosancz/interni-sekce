@@ -6,7 +6,7 @@
 			<div class="px-lg-3 py-lg-3 pb-3">
 				<bo-trimester-selector
 					labelPosition="floating"
-					[ngModel]="[dateFrom, dateTill]"
+					[ngModel]="[dateFrom(), dateTill()]"
 					(ngModelChange)="setTrimester($event)"
 				></bo-trimester-selector>
 
@@ -29,15 +29,16 @@
     </ion-content>
   </div> -->
 
-		<div class="d-none d-lg-block col-12 col-lg-9" [class.d-block]="view === 'calendar'">
+		<div class="d-none d-lg-block col-12 col-lg-9" [class.d-block]="view() === 'calendar'">
 			<div class="p-lg-3">
-				<bo-event-calendar
-					*ngIf="dateFrom && dateTill"
-					[dateFrom]="dateFrom"
-					[dateTill]="dateTill"
-					[events]="calendarEvents"
-					[cpv]="true"
-				></bo-event-calendar>
+				@if (dateFrom() && dateTill()) {
+					<bo-event-calendar
+						[dateFrom]="dateFrom()!"
+						[dateTill]="dateTill()!"
+						[events]="calendarEvents()"
+						[cpv]="true"
+					></bo-event-calendar>
+				}
 			</div>
 		</div>
 	</div>

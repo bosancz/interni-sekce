@@ -11,7 +11,8 @@ import { SDK } from "src/sdk";
 	selector: "members-create",
 	templateUrl: "./members-create.component.html",
 	styleUrls: ["./members-create.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [],
 })
 export class MembersCreateComponent implements ViewWillEnter {
 	groups?: SDK.GroupResponseWithLinks[];

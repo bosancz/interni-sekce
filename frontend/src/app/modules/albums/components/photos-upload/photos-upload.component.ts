@@ -4,15 +4,30 @@ import {
 	ChangeDetectorRef,
 	Component,
 	ElementRef,
-	Input,
+	input,
 	OnDestroy,
 	OnInit,
+	signal,
 	ViewChild,
 } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import { ModalController } from "@ionic/angular";
+import {
+	IonButton,
+	IonButtons,
+	IonContent,
+	IonFooter,
+	IonIcon,
+	IonItem,
+	IonLabel,
+	IonList,
+	IonToolbar,
+} from "@ionic/angular/standalone";
 import { ApiService } from "src/app/services/api.service";
 import { PlatformService } from "src/app/services/platform.service";
 import { SDK } from "src/sdk";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { PrettyBytesPipe } from "src/app/shared/pipes/pretty-bytes.pipe";
 
 interface PhotoUploadItem {
 	file: File;
@@ -25,23 +40,36 @@ interface PhotoUploadItem {
 	selector: "photos-upload",
 	templateUrl: "./photos-upload.component.html",
 	styleUrls: ["./photos-upload.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		CommonModule,
+		IonContent,
+		IonList,
+		IonItem,
+		IonLabel,
+		IonButton,
+		IonIcon,
+		IonFooter,
+		IonToolbar,
+		IonButtons,
+		PrettyBytesPipe,
+	],
 })
 export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
-	@Input() album!: SDK.AlbumResponseWithLinks;
+	album = input.required<SDK.AlbumResponseWithLinks>();
 
-	tags: string[] = [];
-	selectedTags: string[] = [];
+	tags = signal<string[]>([]);
+	selectedTags = signal<string[]>([]);
 
-	uploading: boolean = false;
+	uploading = signal(false);
 
-	photoUploadQueue: PhotoUploadItem[] = [];
+	photoUploadQueue = signal<PhotoUploadItem[]>([]);
 
 	allowedFiles_re = /\.(jpg|jpeg|png|gif)$/i;
 
 	@ViewChild("photoInput") photoInput!: ElementRef<HTMLInputElement>;
 
-	isMobile: boolean = false;
+	isMobile = signal(false);
 
 	private preventExitListener = (event: BeforeUnloadEvent) => {
 		event.preventDefault();
@@ -61,35 +89,39 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.updateTags();
 	}
 	ngOnDestroy() {
-		this.uploading = false;
+		this.uploading.set(false);
 		this.allowExit();
 	}
 
 	ngAfterViewInit() {
 		if (this.platformService.isMobile.value) {
-			this.isMobile = true;
+			this.isMobile.set(true);
 			this.photoInput.nativeElement.click();
 		}
 	}
 
 	updateTags() {
-		this.tags = [];
+		const tags: string[] = [];
+		const album = this.album();
 		// TODO: check photos populater, if it is not populated, get tags from photos
-		this.album.photos!.forEach((photo) => {
-			photo.tags?.filter((tag) => this.tags.indexOf(tag) === -1).forEach((tag) => this.tags.push(tag));
+		album.photos!.forEach((photo) => {
+			photo.tags?.filter((tag) => tags.indexOf(tag) === -1).forEach((tag) => tags.push(tag));
 		});
+		this.tags.set(tags);
 	}
 
 	addPhotosByInput(photoInput: HTMLInputElement) {
 		if (!photoInput.files?.length) return;
 
+		const queue = [...this.photoUploadQueue()];
 		for (let i = 0; i < photoInput.files.length; i++) {
-			this.photoUploadQueue.push({
+			queue.push({
 				file: photoInput.files[i],
 				progress: 0,
 				status: "pending",
 			});
 		}
+		this.photoUploadQueue.set(queue);
 	}
 
 	addPhotosByDropzone(event: DragEvent, dropZone: HTMLDivElement) {
@@ -97,13 +129,15 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 
 		if (!event.dataTransfer?.files) return;
 
+		const queue = [...this.photoUploadQueue()];
 		for (let i = 0; i < event.dataTransfer.files.length; i++) {
-			this.photoUploadQueue.push({
+			queue.push({
 				file: event.dataTransfer.files[i],
 				progress: 0,
 				status: "pending",
 			});
 		}
+		this.photoUploadQueue.set(queue);
 	}
 
 	onDragOver(event: DragEvent) {
@@ -112,8 +146,13 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	removeFromQueue(uploadItem: PhotoUploadItem) {
-		let i = this.photoUploadQueue.indexOf(uploadItem);
-		if (i !== -1) this.photoUploadQueue.splice(i, 1);
+		const queue = this.photoUploadQueue();
+		const i = queue.indexOf(uploadItem);
+		if (i !== -1) {
+			const newQueue = [...queue];
+			newQueue.splice(i, 1);
+			this.photoUploadQueue.set(newQueue);
+		}
 	}
 
 	close() {
@@ -121,26 +160,30 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	async uploadPhotos(album: SDK.AlbumResponseWithLinks) {
-		this.uploading = true;
+		this.uploading.set(true);
 		this.preventExit();
 
-		let uploadItem: PhotoUploadItem;
-		for (uploadItem of this.photoUploadQueue) {
-			if (!this.uploading) break;
+		const queue = [...this.photoUploadQueue()];
+		for (let i = 0; i < queue.length; i++) {
+			if (!this.uploading()) break;
 
+			const uploadItem = queue[i];
 			if (uploadItem.status === "finished") continue;
 
 			try {
 				uploadItem.status = "uploading";
+				this.photoUploadQueue.set([...queue]);
 				await this.uploadPhoto(album, uploadItem);
 				uploadItem.status = "finished";
+				this.photoUploadQueue.set([...queue]);
 			} catch (err: any) {
 				uploadItem.status = "error";
 				uploadItem.error = err;
+				this.photoUploadQueue.set([...queue]);
 			}
 		}
 
-		this.uploading = false;
+		this.uploading.set(false);
 		this.allowExit();
 
 		this.modalController.dismiss(true);
@@ -154,7 +197,7 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 		let formData: FormData = new FormData();
 
 		formData.set("album", String(album.id));
-		formData.set("tags", this.selectedTags.join(","));
+		formData.set("tags", this.selectedTags().join(","));
 		formData.set("photo", uploadItem.file, uploadItem.file.name);
 		if (uploadItem.file.lastModified)
 			formData.set("lastModified", new Date(uploadItem.file.lastModified).toISOString());

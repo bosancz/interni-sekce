@@ -1,6 +1,22 @@
+import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
-import { InfiniteScrollCustomEvent } from "@ionic/angular";
+import { FormsModule } from "@angular/forms";
+import { Router, RouterLink } from "@angular/router";
+import {
+	InfiniteScrollCustomEvent,
+	IonAvatar,
+	IonButton,
+	IonButtons,
+	IonCheckbox,
+	IonInfiniteScroll,
+	IonInfiniteScrollContent,
+	IonItem,
+	IonLabel,
+	IonList,
+	IonSelect,
+	IonSelectOption,
+	IonSkeletonText,
+} from "@ionic/angular/standalone";
 import { EventStatuses } from "src/app/config/event-statuses";
 import { ApiService, RootLinks } from "src/app/services/api.service";
 import { ModalService } from "src/app/services/modal.service";
@@ -15,7 +31,24 @@ import { EventCreateModalComponent } from "../../components/event-create-modal/e
 	selector: "bo-events-list",
 	templateUrl: "./events-list.component.html",
 	styleUrls: ["./events-list.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [
+		CommonModule,
+		RouterLink,
+		FormsModule,
+		IonList,
+		IonItem,
+		IonSkeletonText,
+		IonLabel,
+		IonAvatar,
+		IonInfiniteScroll,
+		IonInfiniteScrollContent,
+		IonButton,
+		IonButtons,
+		IonSelect,
+		IonSelectOption,
+		IonCheckbox,
+	],
 })
 export class EventsListComponent implements OnInit {
 	events?: SDK.EventResponseWithLinks[];

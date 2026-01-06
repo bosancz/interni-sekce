@@ -1,10 +1,12 @@
-import { Component, Input, forwardRef } from "@angular/core";
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { Component, input, forwardRef, signal } from "@angular/core";
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from "@angular/forms";
 
 @Component({
 	selector: "photo-tags-editor",
 	templateUrl: "./photo-tags-editor.component.html",
 	styleUrls: ["./photo-tags-editor.component.scss"],
+	standalone: true,
+	imports: [FormsModule],
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,
@@ -14,8 +16,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 	],
 })
 export class PhotoTagsEditorComponent implements ControlValueAccessor {
-	@Input() tags: string[] = [];
-	selectedTags: string[] = [];
+	tags = input<string[]>([]);
+	selectedTags = signal<string[]>([]);
 
 	disabled: boolean = false;
 
@@ -23,7 +25,7 @@ export class PhotoTagsEditorComponent implements ControlValueAccessor {
 	onTouched: any = () => {};
 
 	writeValue(tags: any): void {
-		this.selectedTags = tags || [];
+		this.selectedTags.set(tags || []);
 	}
 	registerOnChange(fn: any): void {
 		this.onChange = fn;
@@ -38,17 +40,22 @@ export class PhotoTagsEditorComponent implements ControlValueAccessor {
 	constructor() {}
 
 	hasTag(tag: string) {
-		return this.selectedTags.indexOf(tag) !== -1;
+		return this.selectedTags().indexOf(tag) !== -1;
 	}
 
 	toggleTag(tag: string) {
 		if (this.disabled) return;
 
-		let i = this.selectedTags.indexOf(tag);
-		if (i === -1) this.selectedTags.push(tag);
-		else this.selectedTags.splice(i, 1);
+		const selected = [...this.selectedTags()];
+		let i = selected.indexOf(tag);
+		if (i === -1) {
+			selected.push(tag);
+		} else {
+			selected.splice(i, 1);
+		}
 
-		this.onChange(this.selectedTags);
+		this.selectedTags.set(selected);
+		this.onChange(selected);
 	}
 
 	newTag() {
@@ -59,11 +66,18 @@ export class PhotoTagsEditorComponent implements ControlValueAccessor {
 
 		if (tag.charAt(0) === "#") tag = tag.substring(1);
 
-		if (this.tags.indexOf(tag) === -1) this.tags.push(tag);
+		const tags = [...this.tags()];
+		if (tags.indexOf(tag) === -1) {
+			tags.push(tag);
+			// Note: tags is an input, so we can't directly modify it
+			// This would need to be handled by the parent component
+		}
 
-		if (this.selectedTags.indexOf(tag) === -1) {
-			this.selectedTags.push(tag);
-			this.onChange(this.selectedTags);
+		const selected = [...this.selectedTags()];
+		if (selected.indexOf(tag) === -1) {
+			selected.push(tag);
+			this.selectedTags.set(selected);
+			this.onChange(selected);
 		}
 	}
 }

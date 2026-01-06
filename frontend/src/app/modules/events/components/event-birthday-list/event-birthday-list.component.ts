@@ -1,3 +1,4 @@
+import { CommonModule } from "@angular/common";
 import { Component, Input } from "@angular/core";
 import { DateTime } from "luxon";
 import { SDK } from "src/sdk";
@@ -6,7 +7,8 @@ import { SDK } from "src/sdk";
 	selector: "event-birthday-list",
 	templateUrl: "./event-birthday-list.component.html",
 	styleUrls: ["./event-birthday-list.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [CommonModule],
 })
 export class EventBirthdayListComponent {
 	birthdays: Array<{ age: number; date: string; member: SDK.MemberResponse }> = [];

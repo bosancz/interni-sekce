@@ -3,7 +3,9 @@
 		<img src="assets/img/san_logo_barva.png" alt="Logo" class="logo" />
 
 		<h1 class="text-center mb-5">Bošán interní</h1>
-		<p *ngIf="expired | async" class="text-danger">Přihlášení vypršelo, přihlas se znovu.</p>
+		@if (expired()) {
+			<p class="text-danger">Přihlášení vypršelo, přihlas se znovu.</p>
+		}
 
 		<div class="status">
 			@switch (status) {

@@ -9,7 +9,8 @@ import { GroupsService } from "../../services/groups.service";
 	selector: "bo-group-members",
 	templateUrl: "./group-members.component.html",
 	styleUrls: ["./group-members.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [],
 })
 export class GroupMembersComponent implements OnInit {
 	members?: (SDK.MemberResponseWithLinks & { searchString?: string })[];

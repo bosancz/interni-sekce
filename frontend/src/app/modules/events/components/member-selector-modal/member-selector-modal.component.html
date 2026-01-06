@@ -11,14 +11,16 @@
 
 <div class="member-selector-scrollable">
 	<ion-list>
-		<ion-item *ngFor="let member of filteredMembers" [button]="true" (click)="selectMember(member)">
-			<ion-label>
-				<h3>{{ member | member: "nickname" }}</h3>
-				<p><bo-member-item-detail [member]="member"></bo-member-item-detail></p>
-			</ion-label>
-			<ion-badge mode="ios" [style.background-color]="member.groupId | group: 'color'">
-				{{ member.groupId | group: "name" }}
-			</ion-badge>
-		</ion-item>
+		@for (member of filteredMembers; track member.id) {
+			<ion-item [button]="true" (click)="selectMember(member)">
+				<ion-label>
+					<h3>{{ member | member: "nickname" }}</h3>
+					<p><bo-member-item-detail [member]="member"></bo-member-item-detail></p>
+				</ion-label>
+				<ion-badge mode="ios" [style.background-color]="member.groupId | group: 'color'">
+					{{ member.groupId | group: "name" }}
+				</ion-badge>
+			</ion-item>
+		}
 	</ion-list>
 </div>

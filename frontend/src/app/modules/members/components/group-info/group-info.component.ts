@@ -4,6 +4,7 @@ import { Component } from "@angular/core";
 	selector: "bo-group-info",
 	templateUrl: "./group-info.component.html",
 	styleUrls: ["./group-info.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [],
 })
 export class GroupInfoComponent {}

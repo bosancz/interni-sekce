@@ -1,10 +1,14 @@
 import { Component, OnInit } from "@angular/core";
+import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 
 @Component({
 	selector: "statistics",
 	templateUrl: "./statistics.component.html",
 	styleUrls: ["./statistics.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [RouterOutlet, RouterLink, RouterLinkActive, PageHeaderComponent, PageContentComponent],
 })
 export class StatisticsComponent implements OnInit {
 	constructor() {}

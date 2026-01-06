@@ -3,6 +3,7 @@ import { FormsModule, NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { NavController } from "@ionic/angular";
 import { IonButton, IonContent, IonInput, IonItem, IonLabel } from "@ionic/angular/standalone";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { map } from "rxjs/operators";
 import { LoginError, LoginErrorCode, LoginService } from "src/app/services/login.service";
 
@@ -10,10 +11,11 @@ import { LoginError, LoginErrorCode, LoginService } from "src/app/services/login
 	selector: "bo-login",
 	templateUrl: "./login.component.html",
 	styleUrls: ["./login.component.scss"],
+	standalone: true,
 	imports: [IonContent, IonItem, IonInput, IonButton, IonLabel, FormsModule],
 })
 export class LoginComponent implements OnInit {
-	expired = this.route.params.pipe(map((params) => params.expired));
+	expired = toSignal(this.route.params.pipe(map((params) => params.expired)), { initialValue: false });
 
 	status?: "linkSending" | "linkSent" | "userNotFound";
 	error?: LoginErrorCode | "linkSendFailed" | "unknownError";

@@ -1,4 +1,6 @@
-<ion-label *ngIf="label" class="label">{{ label }}</ion-label>
+@if (label) {
+	<ion-label class="label">{{ label }}</ion-label>
+}
 
 <div class="start">
 	<ng-content select="[slot=start]"></ng-content>
@@ -6,7 +8,9 @@
 
 <ng-content></ng-content>
 
-<ion-label *ngIf="loading"><ion-skeleton-text [animated]="true"></ion-skeleton-text></ion-label>
+@if (loading) {
+	<ion-label><ion-skeleton-text [animated]="true"></ion-skeleton-text></ion-label>
+}
 
 <div class="spacer"></div>
 

@@ -1,11 +1,10 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
-  selector: 'bo-admin-home',
-  standalone: false,
-  templateUrl: './admin-home.component.html',
-  styleUrl: './admin-home.component.scss'
+	selector: "bo-admin-home",
+	standalone: true,
+	templateUrl: "./admin-home.component.html",
+	styleUrl: "./admin-home.component.scss",
+	imports: [],
 })
-export class AdminHomeComponent {
-
-}
+export class AdminHomeComponent {}

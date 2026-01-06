@@ -15,8 +15,8 @@
 		<ion-tab-button tab="schvalovani">
 			<ion-icon name="checkmark-done-outline"></ion-icon>
 			<ion-label>Schvalování</ion-label>
-			<ion-badge [color]="(programService.pendingEventsCount | async) ? 'danger' : 'dark'">
-				{{ programService.pendingEventsCount | async }}
+			<ion-badge [color]="pendingEventsCount() ? 'danger' : 'dark'">
+				{{ pendingEventsCount() }}
 			</ion-badge>
 		</ion-tab-button>
 	</ion-tab-bar>

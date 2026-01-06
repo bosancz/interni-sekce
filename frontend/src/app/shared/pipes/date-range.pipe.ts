@@ -4,7 +4,7 @@ import { Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
 	name: "dateRange",
-	standalone: false,
+	standalone: true,
 })
 export class DateRangePipe implements PipeTransform {
 	transform(

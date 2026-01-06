@@ -1,11 +1,9 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
-  selector: 'bo-action-buttons-modal',
-  standalone: false,
-  templateUrl: './action-buttons-modal.component.html',
-  styleUrl: './action-buttons-modal.component.scss'
+	selector: "bo-action-buttons-modal",
+	standalone: true,
+	templateUrl: "./action-buttons-modal.component.html",
+	styleUrl: "./action-buttons-modal.component.scss",
 })
-export class ActionButtonsModalComponent {
-
-}
+export class ActionButtonsModalComponent {}

@@ -1,10 +1,12 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { IonButton, IonButtons } from "@ionic/angular/standalone";
 
 @Component({
 	selector: "bo-pagination",
 	templateUrl: "./pagination.component.html",
 	styleUrls: ["./pagination.component.scss"],
-	standalone: false,
+	standalone: true,
+	imports: [IonButtons, IonButton],
 })
 export class PaginationComponent {
 	@Input() page?: number;
