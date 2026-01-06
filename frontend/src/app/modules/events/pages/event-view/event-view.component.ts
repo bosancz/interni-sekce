@@ -141,14 +141,14 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 				handler: () => this.eventStatusAction(event, "rejectEvent"),
 			},
 			{
-				text: "Odebrat z programu",
+				text: "Z programu",
 				icon: "arrow-back-outline",
-				color: "danger",
+				color: "secondary",
 				hidden: !event?._links.unpublishEvent.allowed,
 				handler: () => this.eventStatusAction(event, "unpublishEvent"),
 			},
 			{
-				text: "Označit jako zrušenou",
+				text: "Zrušit akci",
 				color: "danger",
 				icon: "arrow-back-outline",
 				hidden: !event?._links.cancelEvent.allowed,
