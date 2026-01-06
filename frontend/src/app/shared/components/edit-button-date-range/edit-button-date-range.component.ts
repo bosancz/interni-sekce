@@ -1,34 +1,37 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { ModalService } from "src/app/services/modal.service";
+import { Component, input, output } from "@angular/core";
+import { ModalService } from "src/app/core/services/modal.service";
+import { EditButtonComponent } from "../edit-button/edit-button.component";
 
 @Component({
 	selector: "bo-edit-button-date-range",
-	standalone: false,
+
+	imports: [EditButtonComponent],
 	templateUrl: "./edit-button-date-range.component.html",
 	styleUrl: "./edit-button-date-range.component.scss",
 })
 export class EditButtonDateRangeComponent {
-	@Input() label?: string;
-	@Input() value?: [string | undefined, string | undefined];
-	@Input() disabled?: boolean;
+	label = input<string | undefined>();
+	value = input<[string | undefined, string | undefined] | undefined>();
+	disabled = input<boolean | undefined>();
 
-	@Output() update = new EventEmitter<[string, string]>();
+	update = output<[string, string]>();
 
 	constructor(private readonly modalService: ModalService) {}
 
 	async openEdit() {
+		const value = this.value();
 		const result = await this.modalService.inputModal({
-			header: this.label,
+			header: this.label(),
 			inputs: {
 				dateFrom: {
 					placeholder: "Datum od",
 					type: "date",
-					value: this.value?.[0],
+					value: value?.[0],
 				},
 				dateTill: {
 					placeholder: "Datum do",
 					type: "date",
-					value: this.value?.[1],
+					value: value?.[1],
 				},
 			},
 		});

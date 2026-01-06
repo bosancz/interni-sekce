@@ -1,7 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { ActionSheetController } from "@ionic/angular";
+import { Component, effect, input, OnInit, output } from "@angular/core";
+import { ActionSheetController, IonButton, IonIcon, IonText } from "@ionic/angular/standalone";
 import { ActionSheetButton, PredefinedColors } from "@ionic/core";
-import { PlatformService } from "src/app/services/platform.service";
+import { addIcons } from "ionicons";
+import { ellipsisVertical } from "ionicons/icons";
+import { PlatformService } from "src/app/core/services/platform.service";
 
 export interface Action extends ActionSheetButton {
 	disabled?: boolean;
@@ -14,49 +16,20 @@ export interface Action extends ActionSheetButton {
 	selector: "bo-action-buttons",
 	templateUrl: "./action-buttons.component.html",
 	styleUrls: ["./action-buttons.component.scss"],
-	standalone: false,
+
+	imports: [IonButton, IonIcon, IonText],
 })
 export class ActionButtonsComponent implements OnInit {
-	@Input() set actions(actions: Action[]) {
-		actions = this.filterActions(actions);
+	actions = input<Action[]>([]);
+	header = input<string | null | undefined>();
+	subHeader = input<string | null | undefined>();
 
-		if (actions.length === 1) {
-			this.single = actions[0];
-			this.pinned = [];
-			this.buttons = [];
-			this.menu = [];
-		} else {
-			this.single = undefined;
-
-			this.pinned = actions.filter((item) => item.pinned);
-
-			this.buttons = actions.filter((item) => !item.pinned);
-
-			if (actions.filter((item) => !item.pinned).length) {
-				this.menu = actions.filter((item) => item.text && !item.disabled && !item.pinned);
-
-				if (!this.menu.some((item) => item.role === "cancel") && this.platformService.isIos.value) {
-					this.menu.push({
-						text: "Zrušit",
-						role: "cancel",
-						icon: "close-outline",
-					});
-				}
-			} else {
-				this.menu = [];
-			}
-		}
-	}
+	close = output<void>();
 
 	single?: Action;
 	pinned: Action[] = [];
 	buttons: Action[] = [];
 	menu: Action[] = [];
-
-	@Input() header?: string | null;
-	@Input() subHeader?: string | null;
-
-	@Output() close = new EventEmitter<void>();
 
 	desktop = true;
 	ios = this.platformService.isIos.value;
@@ -66,7 +39,40 @@ export class ActionButtonsComponent implements OnInit {
 	constructor(
 		private platformService: PlatformService,
 		private actionsController: ActionSheetController,
-	) {}
+	) {
+		addIcons({ ellipsisVertical });
+		effect(() => {
+			let actions = this.actions();
+			actions = this.filterActions(actions);
+
+			if (actions.length === 1) {
+				this.single = actions[0];
+				this.pinned = [];
+				this.buttons = [];
+				this.menu = [];
+			} else {
+				this.single = undefined;
+
+				this.pinned = actions.filter((item) => item.pinned);
+
+				this.buttons = actions.filter((item) => !item.pinned);
+
+				if (actions.filter((item) => !item.pinned).length) {
+					this.menu = actions.filter((item) => item.text && !item.disabled && !item.pinned);
+
+					if (!this.menu.some((item) => item.role === "cancel") && this.platformService.isIos.value) {
+						this.menu.push({
+							text: "Zrušit",
+							role: "cancel",
+							icon: "close-outline",
+						});
+					}
+				} else {
+					this.menu = [];
+				}
+			}
+		});
+	}
 
 	ngOnInit(): void {}
 
@@ -83,8 +89,8 @@ export class ActionButtonsComponent implements OnInit {
 
 		const actionSheet = await this.actionsController.create({
 			buttons: buttons,
-			header: this.header ?? undefined,
-			subHeader: this.subHeader ?? undefined,
+			header: this.header() ?? undefined,
+			subHeader: this.subHeader() ?? undefined,
 		});
 
 		actionSheet.present();

@@ -1,0 +1,15 @@
+@for (type of types | keyvalue; track type.key) {
+	<span
+		(click)="select($any(type.key))"
+		[class.selected]="type.key === value"
+		placement="bottom"
+		class="type me-2 my-2"
+	>
+		@if (type.value.image) {
+			<img [src]="type.value.image" class="align-middle" />
+		}
+		@if (!type.value.image) {
+			<span class="circle align-middle" [style.background-color]="type.value.color || '#ccc'"></span>
+		}
+	</span>
+}

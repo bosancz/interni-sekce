@@ -1,15 +1,18 @@
-import { Component, Input, TemplateRef } from "@angular/core";
-import { ModalController } from "@ionic/angular";
-import { AbstractModalComponent } from "src/app/services/modal.service";
+import { NgTemplateOutlet } from "@angular/common";
+import { Component, input, TemplateRef } from "@angular/core";
+import { IonButton, IonButtons, ModalController } from "@ionic/angular/standalone";
+import { AbstractModalComponent } from "src/app/core/services/modal.service";
+import { ModalLayoutComponent } from "../modal-layout/modal-layout.component";
 
 @Component({
 	selector: "bo-filter-modal",
 	templateUrl: "./filter-modal.component.html",
 	styleUrl: "./filter-modal.component.scss",
-	standalone: false,
+
+	imports: [ModalLayoutComponent, NgTemplateOutlet, IonButtons, IonButton],
 })
 export class FilterModalComponent extends AbstractModalComponent<boolean> {
-	@Input() content!: TemplateRef<any>;
+	content = input.required<TemplateRef<any>>();
 
 	constructor(modalCtrl: ModalController) {
 		super(modalCtrl);

@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, ElementRef, forwardRef, Input, OnInit } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, forwardRef, input, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 
 @Component({
@@ -18,7 +18,6 @@ import { SDK } from "src/sdk";
 		"[class.disabled]": "disabled",
 		"[class.readonly]": "readonly",
 	},
-	standalone: false,
 })
 export class GroupsSelectComponent implements OnInit, ControlValueAccessor, AfterViewInit {
 	groups?: SDK.GroupResponseWithLinks[];
@@ -26,9 +25,9 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	selectedGroups: number[] = [];
 
 	disabled: boolean = false;
-	@Input() readonly: boolean = false;
-	@Input() multiple: boolean = false;
-	@Input() required: boolean = false;
+	readonly = input<boolean>(false);
+	multiple = input<boolean>(false);
+	required = input<boolean>(false);
 
 	onChange: (value: number | number[]) => void = () => {};
 	onTouched: () => void = () => {};
@@ -51,7 +50,7 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	}
 
 	emitChange() {
-		if (this.multiple) this.onChange(this.selectedGroups);
+		if (this.multiple()) this.onChange(this.selectedGroups);
 		else this.onChange(this.selectedGroups[0]);
 	}
 
@@ -60,7 +59,7 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	}
 
 	selectAll(checked: boolean): void {
-		if (this.disabled || this.readonly || !this.multiple) return;
+		if (this.disabled || this.readonly() || !this.multiple()) return;
 
 		if (checked) {
 			this.selectedGroups = this.groups?.map((group) => group.id) ?? [];
@@ -76,16 +75,16 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	}
 
 	toggleGroup(groupId: number) {
-		if (this.disabled || this.readonly) return;
+		if (this.disabled || this.readonly()) return;
 
 		let i = this.selectedGroups.indexOf(groupId);
 
 		if (i === -1) {
-			if (!this.multiple) this.selectedGroups = [];
+			if (!this.multiple()) this.selectedGroups = [];
 			this.selectedGroups.push(groupId);
 		} else {
-			if (this.required && this.selectedGroups.length === 1) return;
-			if (!this.multiple) this.selectedGroups = [];
+			if (this.required() && this.selectedGroups.length === 1) return;
+			if (!this.multiple()) this.selectedGroups = [];
 			else this.selectedGroups.splice(i, 1);
 		}
 
@@ -112,7 +111,7 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 
 	// ControlValueAccessor
 	writeValue(groups: number | number[] | undefined): void {
-		if (this.multiple) {
+		if (this.multiple()) {
 			this.selectedGroups = Array.isArray(groups) ? groups : (this.groups?.map((group) => group.id) ?? []);
 		} else {
 			this.selectedGroups = groups ? (Array.isArray(groups) ? groups : [groups]) : [];

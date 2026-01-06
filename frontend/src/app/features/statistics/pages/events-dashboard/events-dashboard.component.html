@@ -1,0 +1,86 @@
+<list-slider [items]="years()" [ngModel]="year()" (ngModelChange)="setYear($event)" [itemWidth]="60"></list-slider>
+
+<div class="row numbers text-center my-5">
+	<div class="col-4">
+		<span class="number">{{ eventsReport()?.count || "-" }}</span>
+		akcí
+	</div>
+	<div class="col-4">
+		<span class="number">{{ eventsReport()?.days || "-" }}</span>
+		dní
+	</div>
+	<div class="col-4">
+		<span class="number">{{ eventsReport()?.mandays || "-" }}</span>
+		člověkodnů
+	</div>
+</div>
+<div class="row numbers text-center my-5">
+	<div class="col-6">
+		<span class="number">{{ leadersReport()?.count || "-" }}</span>
+		vedoucích
+	</div>
+	<div class="col-6">
+		<span class="number">{{ attendeesReport()?.count || "-" }}</span>
+		účastníků
+	</div>
+</div>
+
+<div class="row my-5 charts">
+	<div class="col-md-6">
+		<h4>Věk vedoucích</h4>
+
+		@if (chartData().leaders) {
+		<canvas baseChart chartType="bar" width="400" height="200" [datasets]="chartData().leaders.data"
+			[labels]="chartData().leaders.labels" [legend]="false"></canvas>
+		}
+	</div>
+
+	<div class="col-md-6">
+		<h4>Věk účastníků</h4>
+
+		@if (chartData().attendees) {
+		<canvas baseChart chartType="bar" width="400" height="200" [datasets]="chartData().attendees.data"
+			[labels]="chartData().attendees.labels" [legend]="false"></canvas>
+		}
+	</div>
+</div>
+
+<div class="row mt-5 top">
+	<div class="col-md-6">
+		<h3>Top 10 vedoucích</h3>
+		<table class="table">
+			<tbody>
+				@if (leadersReport()?.top) {
+				@for (leader of leadersReport()!.top; track leader.member.nickname || $index) {
+				<tr>
+					<td>{{ leader.member.nickname }}</td>
+					<td>
+						<ul>
+							@for (event of leader.events; track event.id) {
+							<li>{{ event.name }}</li>
+							}
+						</ul>
+					</td>
+				</tr>
+				}
+				}
+			</tbody>
+		</table>
+	</div>
+	<div class="col-md-6">
+		<h3>Top 10 akcí</h3>
+		<table class="table">
+			<tbody>
+				@if (eventsReport()?.top) {
+				@for (event of eventsReport()!.top; track event.name || $index) {
+				<tr>
+					<td>{{ event.name }}</td>
+					<td>{{ event.count }}</td>
+					<td>{{ joinMembers(event.leaders) }}</td>
+				</tr>
+				}
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

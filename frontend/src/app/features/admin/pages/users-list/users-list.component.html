@@ -1,0 +1,103 @@
+<bo-page-header title="Uživatelské účty" backUrl="/" [actions]="actions()" />
+
+<bo-filter [search]="true" (change)="onFilterChange($event)">
+	<ion-item>
+		<ion-label position="stacked">Role</ion-label>
+		<ion-select multiple name="roles" ngModel placeholder="Vyber role">
+			@for (role of userRoles | keyvalue; track role.key) {
+				<ion-select-option [value]="role.key">
+					{{ role.value.title }}
+				</ion-select-option>
+			}
+		</ion-select>
+	</ion-item>
+</bo-filter>
+
+<ion-content>
+	@switch (view()) {
+		@case ("list") {
+			<ion-list>
+				@if (users()) {
+					@for (user of users()!; track user.id) {
+						<ion-item
+							[routerLink]="['/admin/uzivatele', user.id]"
+							[button]="true"
+							[detail]="true"
+						>
+							<ion-label>
+								<h3>{{ user.login }}</h3>
+								@if (user.email) {
+									<p>{{ user.email }}</p>
+								}
+								@if (user.member) {
+									<p class="d-lg-none">
+										{{ user.member.nickname || "-" }} ({{ user.member.firstName }} {{ user.member.lastName }})
+									</p>
+								}
+								<p class="d-lg-none">
+									@for (role of user.roles; track role) {
+										<ion-badge>{{ userRoles[role].title }}</ion-badge>
+									}
+								</p>
+							</ion-label>
+
+							<ion-label class="d-none d-lg-block">
+								@if (user.member) {
+									<h3>{{ user.member.nickname || "-" }}</h3>
+									<p>{{ user.member.firstName }} {{ user.member.lastName }}</p>
+								}
+								@if (!user.member) {
+									<p><i>bez člena</i></p>
+								}
+							</ion-label>
+
+							<ion-label class="d-none d-lg-block">
+								@for (role of user.roles; track role) {
+									<ion-badge class="me-1">{{ userRoles[role].title }}</ion-badge>
+								}
+							</ion-label>
+						</ion-item>
+					}
+				}
+			</ion-list>
+		}
+		@case ("table") {
+			<admin-table>
+				<thead>
+					<tr>
+						<th>Login</th>
+						<th>Email</th>
+						<th>Člen</th>
+						<th>Role</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					@if (users()) {
+						@for (user of users()!; track user.id) {
+							<tr [routerLink]="['/uzivatele', user.id]">
+								<td>{{ user.login }}</td>
+								<td>{{ user.email }}</td>
+								<td>
+									{{ user.member?.nickname || "-" }} ({{ user.member?.firstName }}
+									{{ user.member?.lastName }})
+								</td>
+								<td>
+									@for (role of user.roles; track role) {
+										<ion-badge class="me-1">{{
+											userRoles[role].title
+										}}</ion-badge>
+									}
+								</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</admin-table>
+		}
+	}
+
+	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
+</ion-content>

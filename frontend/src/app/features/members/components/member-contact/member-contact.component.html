@@ -1,0 +1,34 @@
+<h3>Kontakt</h3>
+
+@if (member()) {
+	@let memberValue = member()!;
+	<ion-list class="selectable">
+		<bo-item label="Mobil">
+			<ion-label>{{ memberValue.mobile || "-" }}</ion-label>
+			<bo-icon-button icon="call-outline" [href]="'tel:' + memberValue.mobile" slot="end"></bo-icon-button>
+			<bo-edit-button-text
+				slot="end"
+				type="tel"
+				label="Mobil"
+				placeholder="777 123 456"
+				[disabled]="!memberValue._links.updateMember.allowed"
+				[value]="memberValue.mobile"
+				(update)="update.emit({ mobile: $event })"
+			></bo-edit-button-text>
+		</bo-item>
+
+		<bo-item label="Email">
+			<ion-label>{{ memberValue.email || "-" }}</ion-label>
+			<bo-icon-button icon="mail-outline" [href]="'mailto:' + memberValue.email" slot="end"></bo-icon-button>
+			<bo-edit-button-text
+				slot="end"
+				type="email"
+				label="Email"
+				placeholder="bilbo@bosan.cz"
+				[disabled]="!memberValue._links.updateMember.allowed"
+				[value]="memberValue.email"
+				(update)="update.emit({ email: $event })"
+			></bo-edit-button-text>
+		</bo-item>
+	</ion-list>
+}

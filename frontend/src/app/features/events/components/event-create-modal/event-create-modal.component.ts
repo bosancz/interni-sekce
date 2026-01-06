@@ -1,0 +1,84 @@
+import { CommonModule } from "@angular/common";
+import { Component, input, OnInit } from "@angular/core";
+import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
+import {
+	IonButton,
+	IonButtons,
+	IonInput,
+	IonItem,
+	IonLabel,
+	IonList,
+	IonTextarea,
+	ModalController,
+} from "@ionic/angular/standalone";
+import { AbstractModalComponent } from "src/app/core/services/modal.service";
+import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
+import { SDK } from "src/sdk";
+
+@Component({
+	selector: "bo-event-create-modal",
+	templateUrl: "./event-create-modal.component.html",
+	styleUrls: ["./event-create-modal.component.scss"],
+
+	imports: [
+		CommonModule,
+		ReactiveFormsModule,
+		IonList,
+		IonItem,
+		IonInput,
+		IonTextarea,
+		IonButtons,
+		IonButton,
+		IonLabel,
+		ModalLayoutComponent,
+	],
+})
+export class EventCreateModalComponent extends AbstractModalComponent<SDK.EventCreateBody> implements OnInit {
+	data = input<Partial<SDK.EventCreateBody>>({});
+
+	showValidationErrors = false;
+
+	constructor(modalController: ModalController) {
+		super(modalController);
+	}
+
+	form = new FormGroup({
+		name: new FormControl<string>("", { nonNullable: true }),
+		dateFrom: new FormControl<string>("", { nonNullable: true }),
+		dateTill: new FormControl<string>("", { nonNullable: true }),
+		description: new FormControl<string>("", { nonNullable: true }),
+		type: new FormControl<string>("", { nonNullable: true }),
+	});
+
+	ngOnInit() {
+		const data = this.data();
+		this.form.patchValue({
+			dateFrom: data.dateFrom,
+			dateTill: data.dateTill,
+			name: data.name,
+			description: data.description ?? undefined,
+			type: data.type ?? undefined,
+		});
+	}
+
+	async createEvent() {
+		this.form.markAllAsTouched();
+
+		this.showValidationErrors = true;
+		if (!this.form.valid) return;
+
+		// get data from form
+		// TODO: create a typed form
+		let eventData = this.form.getRawValue();
+
+		// prevent switched date order
+		if (eventData.dateFrom && eventData.dateTill) {
+			const dates = [eventData.dateFrom, eventData.dateTill];
+			dates.sort();
+			eventData.dateFrom = dates[0];
+			eventData.dateTill = dates[1];
+		}
+
+		this.submit.emit(eventData);
+	}
+}

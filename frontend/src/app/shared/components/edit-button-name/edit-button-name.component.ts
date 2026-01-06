@@ -1,35 +1,38 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { ModalService } from "src/app/services/modal.service";
+import { Component, input, output } from "@angular/core";
+import { ModalService } from "src/app/core/services/modal.service";
+import { EditButtonComponent } from "../edit-button/edit-button.component";
 
 @Component({
 	selector: "bo-edit-button-name",
-	standalone: false,
+
+	imports: [EditButtonComponent],
 	templateUrl: "./edit-button-name.component.html",
 	styleUrl: "./edit-button-name.component.scss",
 })
 export class EditButtonNameComponent {
-	@Input() label?: string;
-	@Input() placeholder?: string;
-	@Input() value?: { firstName?: string | null; lastName?: string | null };
-	@Input() disabled?: boolean;
+	label = input<string | undefined>();
+	placeholder = input<string | undefined>();
+	value = input<{ firstName?: string | null; lastName?: string | null } | undefined>();
+	disabled = input<boolean | undefined>();
 
-	@Output() update = new EventEmitter<{ firstName?: string; lastName?: string }>();
+	update = output<{ firstName?: string; lastName?: string }>();
 
 	constructor(private readonly modalService: ModalService) {}
 
 	async openEdit() {
+		const value = this.value();
 		const result = await this.modalService.inputModal({
-			header: this.label,
+			header: this.label(),
 			inputs: {
 				firstName: {
-					placeholder: this.placeholder,
+					placeholder: this.placeholder(),
 					type: "text",
-					value: this.value?.firstName,
+					value: value?.firstName,
 				},
 				lastName: {
-					placeholder: this.placeholder,
+					placeholder: this.placeholder(),
 					type: "text",
-					value: this.value?.lastName,
+					value: value?.lastName,
 				},
 			},
 		});

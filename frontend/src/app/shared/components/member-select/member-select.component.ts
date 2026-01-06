@@ -1,6 +1,6 @@
-import { Component, Input, forwardRef } from "@angular/core";
+import { Component, forwardRef, input } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 
 @Component({
@@ -14,10 +14,9 @@ import { SDK } from "src/sdk";
 			multi: true,
 		},
 	],
-	standalone: false,
 })
 export class MemberSelectComponent implements ControlValueAccessor {
-	@Input() multiple: boolean = false;
+	multiple = input<boolean>(false);
 
 	members?: SDK.MemberResponseWithLinks[];
 	selectedMembers: number[] = [];
@@ -32,8 +31,8 @@ export class MemberSelectComponent implements ControlValueAccessor {
 	onTouched: () => void = () => {};
 
 	writeValue(obj: number | number[] | undefined): void {
-		if (this.multiple && Array.isArray(obj)) this.selectedMembers = obj;
-		else if (!this.multiple && !Array.isArray(obj)) this.selectedMembers = obj ? [obj] : [];
+		if (this.multiple() && Array.isArray(obj)) this.selectedMembers = obj;
+		else if (!this.multiple() && !Array.isArray(obj)) this.selectedMembers = obj ? [obj] : [];
 	}
 	registerOnChange(fn: (value: number | number[] | undefined) => void): void {
 		this.onChange = fn;

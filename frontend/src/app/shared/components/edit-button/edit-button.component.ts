@@ -1,12 +1,20 @@
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
+import { IonButton, IonIcon } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { createOutline } from "ionicons/icons";
 
 @Component({
 	selector: "bo-edit-button",
 	templateUrl: "./edit-button.component.html",
 	styleUrls: ["./edit-button.component.scss"],
-	standalone: false,
+	
+	imports: [IonButton, IonIcon],
 })
 export class EditButtonComponent {
-	@Input() label?: string;
-	@Input() disabled?: boolean;
+	label = input<string | undefined>();
+	disabled = input<boolean | undefined>();
+
+	constructor() {
+		addIcons({ createOutline });
+	}
 }

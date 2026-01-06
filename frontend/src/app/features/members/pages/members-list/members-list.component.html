@@ -1,0 +1,102 @@
+<bo-page-header title="Členská databáze" [actions]="actions" />
+
+<bo-filter [search]="true" (change)="onFilterChange($event)">
+	<ion-item lines="none">
+		<ion-select multiple name="groups" ngModel label="Oddíl" placeholder="všechny">
+			@for (group of groups; track group.id) {
+				<ion-select-option [value]="'' + group.id">
+					{{ group.name }}
+				</ion-select-option>
+			}
+		</ion-select>
+	</ion-item>
+	<ion-item lines="none">
+		<ion-select multiple name="roles" ngModel label="Role" placeholder="všechny">
+			@for (role of roles | keyvalue; track role.key) {
+				<ion-select-option [value]="role.key">
+					{{ role.value.title }}
+				</ion-select-option>
+			}
+		</ion-select>
+	</ion-item>
+	<ion-item lines="none">
+		<ion-select multiple name="membership" ngModel label="Členství" placeholder="všechny">
+			@for (state of membershipStates | keyvalue; track state.key) {
+				<ion-select-option [value]="state.key">{{ state.value.title }}</ion-select-option>
+			}
+		</ion-select>
+	</ion-item>
+</bo-filter>
+
+<ion-content>
+	@switch (view) {
+		@case ("list") {
+			<ion-list>
+				@if (members === undefined) {
+					@for (item of loadingItems; track $index) {
+						<ion-item>
+							<ion-label><ion-skeleton-text></ion-skeleton-text></ion-label>
+						</ion-item>
+					}
+				}
+
+				@for (member of members; track member.id) {
+					<ion-item>
+						<ion-label>
+							<h2>{{ member.nickname || member.firstName || member.lastName }}</h2>
+							<p>
+								<span [style.color]="member.groupId | group: 'color'">{{
+									member.groupId | group: "name"
+								}}</span
+								>,
+								<span>{{ member | member: "age" }}</span>
+							</p>
+						</ion-label>
+					</ion-item>
+				}
+			</ion-list>
+		}
+		@case ("table") {
+			<admin-table>
+				<thead>
+					<tr>
+						<th>Přezdívka</th>
+						<th>Jméno</th>
+						<th>Oddíl</th>
+						<th>Role</th>
+						<th>Věk</th>
+					</tr>
+				</thead>
+				<tbody>
+					@if (members) {
+						@for (member of members; track member.id) {
+							<tr
+								[routerLink]="'' + member.id"
+								[class.member-inactive]="member.membership === 'neclen'"
+								[class.member-paused]="member.membership === 'pozastaveno'"
+							>
+								<td>{{ member.nickname }}</td>
+								<td>{{ member.firstName }} {{ member.lastName }}</td>
+								<td>
+									<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
+								</td>
+								<td>{{ member | member: "role" }}</td>
+								<td>{{ member | member: "age" }}</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</admin-table>
+		}
+	}
+
+	@if (members && !members.length) {
+		<p class="ion-padding">
+			Členská databáze je prázdná. Chceš <a routerLink="/databaze/pridat">přidat prvního člena</a>?
+		</p>
+	}
+
+	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
+</ion-content>

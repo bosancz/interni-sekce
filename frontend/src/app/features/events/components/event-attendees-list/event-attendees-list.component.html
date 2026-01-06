@@ -1,0 +1,49 @@
+<ion-list>
+	@for (attendee of attendees(); track attendee.eventId + "-" + attendee.memberId) {
+		<bo-item
+			[label]="attendee.member | member: 'nickname'"
+			[routerLink]="'/databaze/' + attendee.memberId"
+			[button]="true"
+		>
+			<p class="text-muted">
+				@if (attendee.member) {
+					<bo-member-item-detail [member]="attendee.member"></bo-member-item-detail>
+				}
+			</p>
+
+			@if (attendee.member?.birthday && hasBirthday(attendee)) {
+				<span class="birthday" slot="end"> 🎉 {{ attendee.member?.birthday | date: "d. M." }} </span>
+			}
+
+			@if (attendee.member) {
+				<bo-group-badge
+					class="group"
+					[short]="true"
+					slot="end"
+					[groupId]="attendee.member.groupId"
+				></bo-group-badge>
+			}
+
+			<div class="role" slot="end">
+				<ion-badge mode="ios">
+					{{ attendee.member?.role | role: "code" }}
+				</ion-badge>
+			</div>
+
+			@if (attendee._links.deleteEventAttendee.allowed) {
+				<bo-delete-button
+					(click)="remove.emit(attendee); $event.preventDefault(); $event.stopPropagation()"
+					slot="end"
+				></bo-delete-button>
+			}
+		</bo-item>
+	}
+
+	@if (attendees() === undefined) {
+		@for (item of loadingArray; track $index) {
+			<bo-item>
+				<ion-skeleton-text [animated]="true"></ion-skeleton-text>
+			</bo-item>
+		}
+	}
+</ion-list>

@@ -1,0 +1,33 @@
+<bo-page-header [title]="album()?.name" backUrl="/galerie" [actions]="actions()" actionsHeader="Album">
+	<bo-page-content>
+		<div class="buttons">
+			@if (photosView() === 'grid') {
+				<ion-button (click)="photosView.set('list')" fill="clear" slot="end">
+					<ion-icon slot="start" name="list-outline"></ion-icon> Zobrazit seznam
+				</ion-button>
+			}
+			@if (photosView() === 'list') {
+				<ion-button
+					[disabled]="enableOrdering()"
+					(click)="photosView.set('grid')"
+					fill="clear"
+					slot="end"
+				>
+					<ion-icon slot="start" name="grid-outline"></ion-icon> Zobrazit čtverečky
+				</ion-button>
+			}
+		</div>
+
+		<bo-photo-list
+			[photos]="photos()"
+			[view]="photosView()"
+			[sortable]="enableOrdering()"
+			[selectable]="enableDeleting()"
+			[selected]="selectedPhotos()"
+			(selectedChange)="selectedPhotos.set($event)"
+			(click)="onPhotoClick($event)"
+		></bo-photo-list>
+	</bo-page-content>
+
+	<bo-albums-tabs [album]="album()" selected="fotky"></bo-albums-tabs>
+</bo-page-header>

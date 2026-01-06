@@ -1,0 +1,57 @@
+@let expenseValue = expense();
+<bo-modal-layout>
+	<h4 slot="title">Účtenka {{ expenseValue.receiptNumber }}</h4>
+
+	<form #expenseForm="ngForm">
+		<ion-item>
+			<ion-input
+				label="ID"
+				labelPlacement="floating"
+				placeholder="V12"
+				name="receiptNumber"
+				[ngModel]="expenseValue.receiptNumber"
+				required
+			></ion-input>
+		</ion-item>
+		<ion-item>
+			<ion-select
+				label="Typ"
+				labelPlacement="floating"
+				placeholder="Potraviny"
+				name="type"
+				[ngModel]="expenseValue.type"
+			>
+				@for (type of types | keyvalue; track type.key) {
+					<ion-select-option [value]="type.key" required>{{ type.value.title }}</ion-select-option>
+				}
+			</ion-select>
+		</ion-item>
+		<ion-item>
+			<ion-input
+				label="Popis"
+				labelPlacement="floating"
+				placeholder="Tabák do Gandalfovy dýmky"
+				name="description"
+				[ngModel]="expenseValue.description"
+				required
+			></ion-input>
+		</ion-item>
+
+		<ion-item>
+			<ion-input
+				label="Částka"
+				labelPlacement="floating"
+				type="number"
+				placeholder="1000"
+				name="amount"
+				[ngModel]="expenseValue.amount"
+				required
+			></ion-input>
+		</ion-item>
+	</form>
+
+	<ion-buttons slot="buttons">
+		<ion-button (click)="close.emit()">Zrušit</ion-button>
+		<ion-button fill="clear" color="primary" (click)="submit.emit(expenseForm.value)">Uložit</ion-button>
+	</ion-buttons>
+</bo-modal-layout>
