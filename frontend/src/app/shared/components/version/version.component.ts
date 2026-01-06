@@ -15,7 +15,7 @@ export class VersionComponent {
 	private readonly logger = new Logger("VersionComponent");
 
 	version = toSignal(this.api.info.pipe(map((info) => info.version)));
-	updateStatus = signal<"checking" | "available" | "unavailable" | "error">("available");
+	updateStatus = signal<"checking" | "available" | "unavailable" | "error">("unavailable");
 
 	constructor(
 		private readonly api: ApiService,
