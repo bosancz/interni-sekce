@@ -8,6 +8,8 @@ import {
 	IonList,
 	IonSkeletonText,
 } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { trashOutline } from "ionicons/icons";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { SDK } from "src/sdk";
 import { AddButtonComponent } from "../../../../shared/components/add-button/add-button.component";
@@ -38,7 +40,9 @@ export class MemberHealthComponent implements OnInit {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
 	update = output<Partial<SDK.MemberResponseWithLinks>>();
 
-	constructor(private alertController: AlertController) {}
+	constructor(private alertController: AlertController) {
+		addIcons({ trashOutline });
+	}
 
 	ngOnInit(): void {}
 

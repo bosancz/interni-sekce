@@ -1,5 +1,7 @@
 import { Component, input, OnInit } from "@angular/core";
 import { IonBadge, IonIcon, IonLabel, IonTabBar, IonTabButton, NavController } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { bookOutline, imagesOutline } from "ionicons/icons";
 import { SDK } from "src/sdk";
 
 @Component({
@@ -13,7 +15,9 @@ export class AlbumsTabsComponent implements OnInit {
 	album = input<SDK.AlbumResponseWithLinks | undefined>();
 	selected = input<"info" | "fotky" | undefined>();
 
-	constructor(private navController: NavController) {}
+	constructor(private navController: NavController) {
+		addIcons({ bookOutline, imagesOutline });
+	}
 
 	ngOnInit(): void {}
 

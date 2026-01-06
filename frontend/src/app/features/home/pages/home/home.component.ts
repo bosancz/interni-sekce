@@ -2,6 +2,8 @@ import { Component, input, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute } from "@angular/router";
 import { PopoverController } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { calendarSharp, heartSharp, homeSharp } from "ionicons/icons";
 import { map } from "rxjs";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
@@ -51,6 +53,8 @@ export class HomeComponent {
 		private readonly route: ActivatedRoute,
 	) {
 		route.queryParams.subscribe((params) => this.view.set(params["tab"] || "dashboard"));
+
+		addIcons({ homeSharp, calendarSharp, heartSharp });
 	}
 
 	async openAccountMenu(e: Event) {

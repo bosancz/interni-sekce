@@ -2,6 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, RouterLink, RouterOutlet } from "@angular/router";
 import { IonIcon, IonTabBar, IonTabButton, IonToolbar, NavController } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { informationCircleOutline, peopleOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
@@ -51,7 +53,9 @@ export class GroupViewComponent implements OnInit {
 		private api: ApiService,
 		private navController: NavController,
 		private groupsService: GroupsService,
-	) {}
+	) {
+		addIcons({ informationCircleOutline, peopleOutline });
+	}
 
 	ngOnInit(): void {
 		this.route.params.subscribe((params) => {

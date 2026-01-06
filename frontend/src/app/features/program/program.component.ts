@@ -9,6 +9,8 @@ import {
 	IonTabs,
 	ViewWillEnter,
 } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { calendarOutline, checkmarkDoneOutline, createOutline, printOutline } from "ionicons/icons";
 import { ProgramService } from "./services/program.service";
 
 @Component({
@@ -21,7 +23,9 @@ import { ProgramService } from "./services/program.service";
 export class ProgramComponent implements OnInit, ViewWillEnter {
 	pendingEventsCount = toSignal(this.programService.pendingEventsCount, { initialValue: 0 });
 
-	constructor(public programService: ProgramService) {}
+	constructor(public programService: ProgramService) {
+		addIcons({ calendarOutline, printOutline, createOutline, checkmarkDoneOutline });
+	}
 
 	ngOnInit(): void {}
 

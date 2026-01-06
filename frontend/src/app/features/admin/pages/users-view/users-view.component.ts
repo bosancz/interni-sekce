@@ -3,6 +3,8 @@ import { Component, signal } from "@angular/core";
 import { ActivatedRoute, Params, RouterLink } from "@angular/router";
 import { IonBadge, IonButton, IonButtons, IonIcon } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { arrowForward } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
@@ -20,7 +22,7 @@ import { UsersEditAccountComponent } from "../../components/users-edit-account/u
 	selector: "bo-users-view",
 	templateUrl: "./users-view.component.html",
 	styleUrl: "./users-view.component.scss",
-	
+
 	imports: [
 		DatePipe,
 		RouterLink,
@@ -46,7 +48,9 @@ export class UsersViewComponent {
 	constructor(
 		private route: ActivatedRoute,
 		private api: ApiService,
-	) {}
+	) {
+		addIcons({ arrowForward });
+	}
 
 	ngOnInit() {
 		this.route.params

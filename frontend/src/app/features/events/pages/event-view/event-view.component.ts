@@ -2,6 +2,8 @@ import { Component } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { calendar, cashOutline, documentOutline, peopleOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -58,7 +60,9 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 		private readonly router: Router,
 		private readonly toastService: ToastService,
 		private readonly modalService: ModalService,
-	) {}
+	) {
+		addIcons({ calendar, peopleOutline, cashOutline, documentOutline });
+	}
 
 	ionViewWillEnter(): void {
 		this.route.params

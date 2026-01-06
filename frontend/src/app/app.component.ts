@@ -1,6 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { IonApp, IonRouterOutlet, MenuController } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { calendarSharp, heartSharp, homeSharp } from "ionicons/icons";
 import { LoginService } from "src/app/core/services/login.service";
 import { UserService } from "src/app/core/services/user.service";
 import { AppLoadingComponent } from "./core/components/app-loading/app-loading.component";
@@ -28,7 +30,9 @@ export class AppComponent implements OnInit {
 		private menuController: MenuController,
 		private api: ApiService,
 		private readonly platformService: PlatformService,
-	) {}
+	) {
+		addIcons({ homeSharp, calendarSharp, heartSharp });
+	}
 
 	ngOnInit() {
 		this.userService.user.subscribe((user) => {

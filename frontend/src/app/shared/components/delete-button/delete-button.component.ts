@@ -1,5 +1,7 @@
 import { Component, input } from "@angular/core";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { trashOutline } from "ionicons/icons";
 
 @Component({
 	selector: "bo-delete-button",
@@ -10,4 +12,8 @@ import { IonButton, IonIcon } from "@ionic/angular/standalone";
 })
 export class DeleteButtonComponent {
 	label = input<string | undefined>();
+
+	constructor() {
+		addIcons({ trashOutline });
+	}
 }

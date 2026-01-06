@@ -1,6 +1,8 @@
 import { Component, effect, input, OnInit, output } from "@angular/core";
 import { ActionSheetController, IonButton, IonIcon, IonText } from "@ionic/angular/standalone";
 import { ActionSheetButton, PredefinedColors } from "@ionic/core";
+import { addIcons } from "ionicons";
+import { ellipsisVertical } from "ionicons/icons";
 import { PlatformService } from "src/app/core/services/platform.service";
 
 export interface Action extends ActionSheetButton {
@@ -38,6 +40,7 @@ export class ActionButtonsComponent implements OnInit {
 		private platformService: PlatformService,
 		private actionsController: ActionSheetController,
 	) {
+		addIcons({ ellipsisVertical });
 		effect(() => {
 			let actions = this.actions();
 			actions = this.filterActions(actions);

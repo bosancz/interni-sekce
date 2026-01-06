@@ -1,4 +1,5 @@
 import { Component, OnInit, signal } from "@angular/core";
+import { RouterLink } from "@angular/router";
 import { PopoverController } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
@@ -17,7 +18,6 @@ import { HomeCardSearchMemberComponent } from "../home-card-search-member/home-c
 	selector: "bo-home-dashboard",
 	templateUrl: "./home-dashboard.component.html",
 	styleUrls: ["./home-dashboard.component.scss"],
-
 	imports: [
 		EventCalendarComponent,
 		HomeCardMyEventsComponent,
@@ -25,6 +25,7 @@ import { HomeCardSearchMemberComponent } from "../home-card-search-member/home-c
 		HomeCardSearchMemberComponent,
 		PageContentComponent,
 		ButtonSquareComponent,
+		RouterLink,
 	],
 })
 export class HomeDashboardComponent implements OnInit {

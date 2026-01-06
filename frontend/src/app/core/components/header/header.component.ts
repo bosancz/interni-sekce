@@ -3,14 +3,16 @@ import { Component, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { RouterLink } from "@angular/router";
 import {
-    IonButton,
-    IonButtons,
-    IonHeader,
-    IonIcon,
-    IonSearchbar,
-    IonToolbar,
-    PopoverController,
+	IonButton,
+	IonButtons,
+	IonHeader,
+	IonIcon,
+	IonSearchbar,
+	IonToolbar,
+	PopoverController,
 } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { searchSharp } from "ionicons/icons";
 import { map } from "rxjs";
 import { AccountMenuModalComponent } from "src/app/core/components/account-menu-modal/account-menu-modal.component";
 import { ApiService } from "src/app/core/services/api.service";
@@ -52,7 +54,9 @@ export class HeaderComponent {
 		private readonly userService: UserService,
 		public readonly popoverController: PopoverController,
 		private readonly platformService: PlatformService,
-	) {}
+	) {
+		addIcons({ searchSharp });
+	}
 
 	async openAccountMenu(e: Event) {
 		const popover = await this.popoverController.create({

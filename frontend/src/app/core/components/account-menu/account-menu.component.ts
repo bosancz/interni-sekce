@@ -1,5 +1,8 @@
 import { Component } from "@angular/core";
+import { RouterLink } from "@angular/router";
 import { IonIcon, IonItem, IonLabel, IonList, NavController, PopoverController } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { logOut, person, settings } from "ionicons/icons";
 import { LoginService } from "src/app/core/services/login.service";
 import { UserService } from "src/app/core/services/user.service";
 
@@ -7,7 +10,7 @@ import { UserService } from "src/app/core/services/user.service";
 	selector: "bo-account-menu",
 	templateUrl: "./account-menu.component.html",
 	styleUrl: "./account-menu.component.scss",
-	imports: [IonList, IonItem, IonIcon, IonLabel],
+	imports: [IonList, IonItem, IonIcon, IonLabel, RouterLink],
 })
 export class AccountMenuComponent {
 	user = this.userService.user;
@@ -17,7 +20,9 @@ export class AccountMenuComponent {
 		private readonly loginService: LoginService,
 		private readonly popoverController: PopoverController,
 		private readonly navController: NavController,
-	) {}
+	) {
+		addIcons({ person, settings, logOut });
+	}
 
 	async navigate(path: string) {
 		await this.navController.navigateRoot([path]);

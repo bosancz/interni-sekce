@@ -23,6 +23,8 @@ import {
 	IonToolbar,
 	ModalController,
 } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { PrettyBytesPipe } from "src/app/shared/pipes/pretty-bytes.pipe";
@@ -82,7 +84,9 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 		private modalController: ModalController,
 		private platformService: PlatformService,
 		private cdRef: ChangeDetectorRef,
-	) {}
+	) {
+		addIcons({ trashOutline });
+	}
 
 	ngOnInit() {
 		this.updateTags();

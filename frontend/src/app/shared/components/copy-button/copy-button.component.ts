@@ -1,5 +1,7 @@
 import { Component, input } from "@angular/core";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { copyOutline } from "ionicons/icons";
 import { ToastService } from "src/app/core/services/toast.service";
 
 @Component({
@@ -13,7 +15,9 @@ export class CopyButtonComponent {
 	text = input<string | null | undefined>();
 	label = input<string | undefined>();
 
-	constructor(private toastService: ToastService) {}
+	constructor(private toastService: ToastService) {
+		addIcons({ copyOutline });
+	}
 
 	async copy() {
 		const text = this.text();

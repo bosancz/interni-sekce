@@ -2,6 +2,8 @@ import { Component, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { IonButton, IonIcon, ModalController, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { gridOutline, listOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -49,7 +51,9 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
 		private toastService: ToastService,
 		private route: ActivatedRoute,
 		private router: Router,
-	) {}
+	) {
+		addIcons({ listOutline, gridOutline });
+	}
 
 	ngOnInit(): void {
 		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {

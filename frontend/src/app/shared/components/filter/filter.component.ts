@@ -13,6 +13,8 @@ import { FormsModule, NgModel } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { IonBadge, IonButton, IonIcon, IonModal, IonSearchbar, IonToolbar } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { filterOutline } from "ionicons/icons";
 import { ModalService } from "src/app/core/services/modal.service";
 import { UrlParams } from "src/helpers/typings";
 import { FilterModalComponent } from "../filter-modal/filter-modal.component";
@@ -50,7 +52,9 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 		private router: Router,
 		private route: ActivatedRoute,
 		private modalService: ModalService,
-	) {}
+	) {
+		addIcons({ filterOutline });
+	}
 
 	public ngAfterContentInit() {
 		setTimeout(() => {

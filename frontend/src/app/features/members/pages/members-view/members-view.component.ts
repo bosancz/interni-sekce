@@ -10,6 +10,8 @@ import {
 	ViewWillLeave,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { callOutline, heartOutline, personCircleOutline } from "ionicons/icons";
 import { MembershipStates } from "src/app/core/config/membership-states";
 import { ApiService } from "src/app/core/services/api.service";
 import { TitleService } from "src/app/core/services/title.service";
@@ -74,7 +76,9 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		private router: Router,
 		private alertController: AlertController,
 		private titleService: TitleService,
-	) {}
+	) {
+		addIcons({ personCircleOutline, heartOutline, callOutline });
+	}
 
 	ngOnInit() {
 		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {

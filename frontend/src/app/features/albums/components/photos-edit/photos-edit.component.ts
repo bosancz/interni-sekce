@@ -18,6 +18,8 @@ import {
 	ModalController,
 	ViewWillLeave,
 } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { checkmarkOutline, createOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { SDK } from "src/sdk";
@@ -70,7 +72,9 @@ export class PhotosEditComponent implements ViewWillLeave {
 		private router: Router,
 		private platformService: PlatformService,
 		private ngZone: NgZone,
-	) {}
+	) {
+		addIcons({ createOutline, checkmarkOutline });
+	}
 
 	ionViewWillLeave(): void {
 		this.router.navigate([], { queryParams: { photo: undefined }, replaceUrl: true });

@@ -10,6 +10,8 @@ import {
 	IonSkeletonText,
 } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { callOutline, informationCircleOutline, mailOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -55,6 +57,7 @@ export default class MemberContactsComponent {
 		private alertController: AlertController,
 		private modalService: ModalService,
 	) {
+		addIcons({ callOutline, mailOutline, informationCircleOutline });
 		effect(() => {
 			const member = this.member();
 			this.loadContacts(member?.id ?? null);

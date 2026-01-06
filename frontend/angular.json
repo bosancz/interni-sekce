@@ -25,12 +25,7 @@
             "assets": [
               "src/assets",
               "src/manifest.json",
-              "src/config.json",
-              {
-                "glob": "**/*.svg",
-                "input": "node_modules/ionicons/dist/ionicons/svg",
-                "output": "./svg"
-              }
+              "src/config.json"
             ],
             "scripts": [],
             "browser": "src/main.ts",

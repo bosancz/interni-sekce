@@ -2,6 +2,8 @@ import { CommonModule } from "@angular/common";
 import { AfterViewInit, Component, ElementRef, forwardRef, input, OnDestroy, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { IonChip, IonIcon, ModalController } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { addCircle, closeCircle } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 import { MemberSelectorModalComponent } from "../member-selector-modal/member-selector-modal.component";
@@ -45,7 +47,9 @@ export class MemberSelectorComponent implements OnInit, ControlValueAccessor, Af
 		private modalController: ModalController,
 		private api: ApiService,
 		private elRef: ElementRef<HTMLElement>,
-	) {}
+	) {
+		addIcons({ closeCircle, addCircle });
+	}
 
 	ngOnInit(): void {}
 
