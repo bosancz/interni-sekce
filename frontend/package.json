@@ -9,6 +9,7 @@
     "generate:sdk": "openapi-sdk -i http://127.0.0.1:3000/api/openapi-json -o src/sdk"
   },
   "dependencies": {
+    "@angular/cdk": "^21.0.5",
     "@angular/common": "^21.0.6",
     "@angular/compiler": "^21.0.6",
     "@angular/core": "^21.0.6",
