@@ -6,7 +6,7 @@ import { DomSanitizer, SafeStyle } from "@angular/platform-browser";
 	selector: "photo-face",
 	templateUrl: "./photo-face.component.html",
 	styleUrls: ["./photo-face.component.scss"],
-	standalone: true,
+	
 	imports: [NgStyle],
 })
 export class PhotoFaceComponent implements OnChanges {

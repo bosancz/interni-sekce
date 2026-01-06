@@ -1,26 +1,26 @@
-import { Component, signal } from "@angular/core";
 import { DatePipe } from "@angular/common";
+import { Component, signal } from "@angular/core";
 import { ActivatedRoute, Params, RouterLink } from "@angular/router";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IonBadge, IonButton, IonButtons, IonIcon } from "@ionic/angular/standalone";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
-import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
-import { CardComponent } from "src/app/shared/components/card/card.component";
+import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
-import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
+import { CardComponent } from "src/app/shared/components/card/card.component";
 import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
-import { UsersEditAccountComponent } from "../../components/users-edit-account/users-edit-account.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
+import { UsersEditAccountComponent } from "../../components/users-edit-account/users-edit-account.component";
 
 @UntilDestroy()
 @Component({
 	selector: "bo-users-view",
 	templateUrl: "./users-view.component.html",
 	styleUrl: "./users-view.component.scss",
-	standalone: true,
+	
 	imports: [
 		DatePipe,
 		RouterLink,

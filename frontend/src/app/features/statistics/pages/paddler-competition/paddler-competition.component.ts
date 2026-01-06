@@ -1,8 +1,8 @@
 import { Component, OnInit, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { debounceTime, filter, map } from "rxjs/operators";
-import { toSignal } from "@angular/core/rxjs-interop";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { ListSliderComponent } from "../../components/list-slider/list-slider.component";
 
@@ -27,7 +27,7 @@ export interface PaddlerCompetitionGroup {
 	selector: "paddler-competition",
 	templateUrl: "./paddler-competition.component.html",
 	styleUrls: ["./paddler-competition.component.scss"],
-	standalone: true,
+	
 	imports: [FormsModule, ListSliderComponent, GroupPipe],
 })
 export class PaddlerCompetitionComponent implements OnInit {

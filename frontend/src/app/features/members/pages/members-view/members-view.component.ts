@@ -16,7 +16,7 @@ import { MemberStoreService } from "../../services/member-store.service";
 	templateUrl: "./members-view.component.html",
 	styleUrls: ["./members-view.component.scss"],
 	providers: [MemberStoreService],
-	standalone: true,
+	
 	imports: [],
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeave {

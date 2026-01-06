@@ -35,7 +35,7 @@ type UsersFilter = {
 	selector: "users-list",
 	templateUrl: "./users-list.component.html",
 	styleUrls: ["./users-list.component.scss"],
-	standalone: true,
+	
 	imports: [
 		FormsModule,
 		RouterLink,

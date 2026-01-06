@@ -6,17 +6,17 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/services/api.service";
 import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
-import { EventSelectorComponent } from "../../components/event-selector/event-selector.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
+import { EventSelectorComponent } from "../../components/event-selector/event-selector.component";
 
 @UntilDestroy()
 @Component({
 	selector: "albums-edit",
 	templateUrl: "./albums-edit.component.html",
 	styleUrls: ["./albums-edit.component.scss"],
-	standalone: true,
+	
 	imports: [FormsModule, PageHeaderComponent, PageContentComponent, EventSelectorComponent],
 })
 export class AlbumsEditComponent {

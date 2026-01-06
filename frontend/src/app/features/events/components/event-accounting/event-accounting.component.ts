@@ -14,7 +14,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-accounting",
 	templateUrl: "./event-accounting.component.html",
 	styleUrls: ["./event-accounting.component.scss"],
-	standalone: true,
+	
 	imports: [CommonModule, IonList, IonItem, IonLabel, IonBadge, IonButton],
 })
 export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {

@@ -15,7 +15,7 @@ import { TrimesterDateRange, TrimesterSelectorComponent } from "../../components
 	selector: "bo-program-calendar",
 	templateUrl: "./program-calendar.component.html",
 	styleUrls: ["./program-calendar.component.scss"],
-	standalone: true,
+	
 	imports: [
 		FormsModule,
 		IonContent,

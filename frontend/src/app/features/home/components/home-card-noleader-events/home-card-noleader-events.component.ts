@@ -1,21 +1,21 @@
+import { DatePipe } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { DatePipe } from "@angular/common";
-import { ApiService } from "src/app/services/api.service";
 import { IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
-import { CardComponent } from "src/app/shared/components/card/card.component";
-import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
-import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
-import { CardOpenButtonComponent } from "src/app/shared/components/card-open-button/card-open-button.component";
-import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
+import { ApiService } from "src/app/services/api.service";
 import { ButtonComponent } from "src/app/shared/components/button/button.component";
+import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
+import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
+import { CardOpenButtonComponent } from "src/app/shared/components/card-open-button/card-open-button.component";
+import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
+import { CardComponent } from "src/app/shared/components/card/card.component";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-home-card-noleader-events",
 	templateUrl: "./home-card-noleader-events.component.html",
 	styleUrls: ["./home-card-noleader-events.component.scss"],
-	standalone: true,
+	
 	imports: [
 		RouterLink,
 		DatePipe,

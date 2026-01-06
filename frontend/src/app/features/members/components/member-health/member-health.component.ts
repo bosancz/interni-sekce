@@ -13,7 +13,7 @@ import { CardInsuranceCardComponent } from "../card-insurance-card/card-insuranc
 	selector: "bo-member-health",
 	templateUrl: "./member-health.component.html",
 	styleUrls: ["./member-health.component.scss"],
-	standalone: true,
+	
 	imports: [
 		IonSkeletonText,
 		IonList,

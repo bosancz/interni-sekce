@@ -5,7 +5,7 @@ import { IonButton, IonIcon } from "@ionic/angular/standalone";
 	selector: "bo-edit-button",
 	templateUrl: "./edit-button.component.html",
 	styleUrls: ["./edit-button.component.scss"],
-	standalone: true,
+	
 	imports: [IonButton, IonIcon],
 })
 export class EditButtonComponent {

@@ -8,7 +8,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-report",
 	templateUrl: "./event-report.component.html",
 	styleUrls: ["./event-report.component.scss"],
-	standalone: true,
+	
 	imports: [CommonModule],
 })
 export class EventReportComponent {

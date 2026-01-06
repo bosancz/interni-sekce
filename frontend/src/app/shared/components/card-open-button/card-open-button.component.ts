@@ -5,7 +5,7 @@ import { IonButton, IonIcon } from "@ionic/angular/standalone";
 	selector: "bo-card-open-button",
 	templateUrl: "./card-open-button.component.html",
 	styleUrl: "./card-open-button.component.scss",
-	standalone: true,
+	
 	imports: [IonButton, IonIcon],
 })
 export class CardOpenButtonComponent {}

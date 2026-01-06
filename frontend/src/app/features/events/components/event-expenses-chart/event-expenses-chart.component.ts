@@ -11,7 +11,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-expenses-chart",
 	templateUrl: "./event-expenses-chart.component.html",
 	styleUrls: ["./event-expenses-chart.component.scss"],
-	standalone: true,
+	
 	imports: [CommonModule, NgChartsModule],
 })
 export class EventExpensesChartComponent implements OnInit, OnChanges {

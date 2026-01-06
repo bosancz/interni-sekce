@@ -1,5 +1,4 @@
-import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
+import { Routes } from "@angular/router";
 
 import { StatisticsComponent } from "./statistics.component";
 
@@ -7,7 +6,7 @@ import { EventsDashboardComponent } from "./pages/events-dashboard/events-dashbo
 import { MembersDashboardComponent } from "./pages/members-dashboard/members-dashboard.component";
 import { PaddlerCompetitionComponent } from "./pages/paddler-competition/paddler-competition.component";
 
-const routes: Routes = [
+export const statisticsRoutes: Routes = [
 	{
 		path: "",
 		component: StatisticsComponent,
@@ -22,9 +21,3 @@ const routes: Routes = [
 		],
 	},
 ];
-
-@NgModule({
-	imports: [RouterModule.forChild(routes)],
-	exports: [RouterModule],
-})
-export class StatisticsRoutingModule {}

@@ -19,7 +19,7 @@ export type EventStatusActions = ExtractExisting<
 	selector: "bo-event-view",
 	templateUrl: "./event-view.component.html",
 	styleUrl: "./event-view.component.scss",
-	standalone: true,
+	
 	imports: [],
 })
 export class EventViewComponent implements ViewWillEnter, ViewWillLeave {

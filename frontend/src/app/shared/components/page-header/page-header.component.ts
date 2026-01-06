@@ -8,7 +8,7 @@ import { Action, ActionButtonsComponent } from "../action-buttons/action-buttons
 	selector: "bo-page-header",
 	templateUrl: "./page-header.component.html",
 	styleUrls: ["./page-header.component.scss"],
-	standalone: true,
+	
 	imports: [IonButtons, ActionButtonsComponent],
 })
 export class PageHeaderComponent {

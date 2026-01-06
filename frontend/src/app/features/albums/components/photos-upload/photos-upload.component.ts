@@ -1,33 +1,32 @@
+import { CommonModule } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import {
-	AfterViewInit,
-	ChangeDetectorRef,
-	Component,
-	ElementRef,
-	input,
-	OnDestroy,
-	OnInit,
-	signal,
-	ViewChild,
+    AfterViewInit,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    input,
+    OnDestroy,
+    OnInit,
+    signal,
+    ViewChild,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
 import { ModalController } from "@ionic/angular";
 import {
-	IonButton,
-	IonButtons,
-	IonContent,
-	IonFooter,
-	IonIcon,
-	IonItem,
-	IonLabel,
-	IonList,
-	IonToolbar,
+    IonButton,
+    IonButtons,
+    IonContent,
+    IonFooter,
+    IonIcon,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonToolbar,
 } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/services/api.service";
 import { PlatformService } from "src/app/services/platform.service";
-import { SDK } from "src/sdk";
-import { toSignal } from "@angular/core/rxjs-interop";
 import { PrettyBytesPipe } from "src/app/shared/pipes/pretty-bytes.pipe";
+import { SDK } from "src/sdk";
 
 interface PhotoUploadItem {
 	file: File;
@@ -40,7 +39,7 @@ interface PhotoUploadItem {
 	selector: "photos-upload",
 	templateUrl: "./photos-upload.component.html",
 	styleUrls: ["./photos-upload.component.scss"],
-	standalone: true,
+	
 	imports: [
 		CommonModule,
 		IonContent,

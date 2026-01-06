@@ -8,7 +8,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-home-calendar",
 	templateUrl: "./home-calendar.component.html",
 	styleUrls: ["./home-calendar.component.scss"],
-	standalone: true,
+	
 	imports: [EventCalendarComponent],
 })
 export class HomeCalendarComponent implements OnInit {

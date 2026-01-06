@@ -10,7 +10,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-group-edit",
 	templateUrl: "./group-edit.component.html",
 	styleUrls: ["./group-edit.component.scss"],
-	standalone: true,
+	
 	imports: [],
 })
 export class GroupEditComponent implements OnInit {

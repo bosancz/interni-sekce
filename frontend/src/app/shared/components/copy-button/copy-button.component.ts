@@ -6,7 +6,7 @@ import { ToastService } from "src/app/services/toast.service";
 	selector: "bo-copy-button",
 	templateUrl: "./copy-button.component.html",
 	styleUrl: "./copy-button.component.scss",
-	standalone: true,
+	
 	imports: [IonButton, IonIcon],
 })
 export class CopyButtonComponent {

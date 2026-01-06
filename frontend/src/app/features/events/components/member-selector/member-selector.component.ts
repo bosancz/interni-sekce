@@ -23,7 +23,7 @@ export type MemberSelectorType = SDK.MemberResponse | SDK.MemberResponse[] | nul
 	host: {
 		"(click)": "openModal(); $event.stopPropagation()",
 	},
-	standalone: true,
+	
 	imports: [CommonModule, IonChip, IonIcon],
 })
 export class MemberSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {

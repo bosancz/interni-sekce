@@ -1,25 +1,25 @@
+import { DatePipe, SlicePipe } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { DatePipe, SlicePipe } from "@angular/common";
-import { ApiService } from "src/app/services/api.service";
 import {
-	IonItem,
-	IonLabel,
-	IonList,
-	IonSkeletonText,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonSkeletonText,
 } from "@ionic/angular/standalone";
-import { CardComponent } from "src/app/shared/components/card/card.component";
-import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
-import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
-import { CardOpenButtonComponent } from "src/app/shared/components/card-open-button/card-open-button.component";
+import { ApiService } from "src/app/services/api.service";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
+import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
+import { CardOpenButtonComponent } from "src/app/shared/components/card-open-button/card-open-button.component";
+import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
+import { CardComponent } from "src/app/shared/components/card/card.component";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-home-card-my-events",
 	templateUrl: "./home-card-my-events.component.html",
 	styleUrls: ["./home-card-my-events.component.scss"],
-	standalone: true,
+	
 	imports: [
 		RouterLink,
 		DatePipe,

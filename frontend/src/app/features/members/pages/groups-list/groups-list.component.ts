@@ -16,7 +16,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-groups-list",
 	templateUrl: "./groups-list.component.html",
 	styleUrls: ["./groups-list.component.scss"],
-	standalone: true,
+	
 	imports: [
 		PageHeaderComponent,
 		PageContentComponent,

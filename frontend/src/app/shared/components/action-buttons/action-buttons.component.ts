@@ -15,7 +15,7 @@ export interface Action extends ActionSheetButton {
 	selector: "bo-action-buttons",
 	templateUrl: "./action-buttons.component.html",
 	styleUrls: ["./action-buttons.component.scss"],
-	standalone: true,
+	
 	imports: [IonButton, IonIcon, IonText],
 })
 export class ActionButtonsComponent implements OnInit {

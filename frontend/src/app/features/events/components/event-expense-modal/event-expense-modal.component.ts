@@ -11,7 +11,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-expense-modal",
 	templateUrl: "./event-expense-modal.component.html",
 	styleUrls: ["./event-expense-modal.component.scss"],
-	standalone: true,
+	
 	imports: [CommonModule, FormsModule, IonItem, IonInput, IonSelect, IonSelectOption, IonButtons, IonButton],
 })
 export class EventExpenseModalComponent extends AbstractModalComponent<SDK.EventExpenseResponse> implements OnInit {

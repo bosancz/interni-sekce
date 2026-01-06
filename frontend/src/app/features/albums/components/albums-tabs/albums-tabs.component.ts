@@ -7,7 +7,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-albums-tabs",
 	templateUrl: "./albums-tabs.component.html",
 	styleUrls: ["./albums-tabs.component.scss"],
-	standalone: true,
+	
 	imports: [IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge],
 })
 export class AlbumsTabsComponent implements OnInit {

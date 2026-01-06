@@ -1,5 +1,4 @@
-import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
+import { Routes } from "@angular/router";
 import { GroupInfoComponent } from "./components/group-info/group-info.component";
 import { GroupMembersComponent } from "./components/group-members/group-members.component";
 import { GroupEditComponent } from "./pages/group-edit/group-edit.component";
@@ -10,7 +9,7 @@ import { MembersCreateComponent } from "./pages/members-create/members-create.co
 import { MembersListComponent } from "./pages/members-list/members-list.component";
 import { MembersViewComponent } from "./pages/members-view/members-view.component";
 
-const routes: Routes = [
+export const membersRoutes: Routes = [
 	{ path: "vytvorit", component: GroupsCreateComponent },
 
 	{ path: "oddily/:id/upravit", component: GroupEditComponent },
@@ -31,9 +30,3 @@ const routes: Routes = [
 
 	{ path: "", component: GroupsListComponent },
 ];
-
-@NgModule({
-	imports: [RouterModule.forChild(routes)],
-	exports: [RouterModule],
-})
-export class MembersRoutingModule {}

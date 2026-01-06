@@ -72,7 +72,7 @@ class CalendarEvent<T extends SDK.CPVEventResponseWithLinks | SDK.EventResponseW
 	selector: "bo-event-calendar",
 	templateUrl: "./event-calendar.component.html",
 	styleUrls: ["./event-calendar.component.scss"],
-	standalone: true,
+	
 	imports: [RouterLink, IonBadge, EventStatusPipe],
 })
 export class EventCalendarComponent implements OnInit, OnChanges {

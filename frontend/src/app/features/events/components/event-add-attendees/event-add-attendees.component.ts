@@ -4,7 +4,7 @@ import { Component, OnInit } from "@angular/core";
 	selector: "bo-event-add-attendees",
 	templateUrl: "./event-add-attendees.component.html",
 	styleUrls: ["./event-add-attendees.component.scss"],
-	standalone: true,
+	
 	imports: [],
 })
 export class EventAddAttendeesComponent implements OnInit {

@@ -11,7 +11,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-create-modal",
 	templateUrl: "./event-create-modal.component.html",
 	styleUrls: ["./event-create-modal.component.scss"],
-	standalone: true,
+	
 	imports: [
 		CommonModule,
 		ReactiveFormsModule,

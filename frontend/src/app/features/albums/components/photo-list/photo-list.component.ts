@@ -1,24 +1,24 @@
+import { DatePipe } from "@angular/common";
 import { Component, input, OnInit, output, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { DatePipe } from "@angular/common";
-import { ItemReorderEventDetail } from "@ionic/core";
 import {
-	IonAvatar,
-	IonCheckbox,
-	IonItem,
-	IonLabel,
-	IonReorder,
-	IonReorderGroup,
-	IonRippleEffect,
-	IonSkeletonText,
+    IonAvatar,
+    IonCheckbox,
+    IonItem,
+    IonLabel,
+    IonReorder,
+    IonReorderGroup,
+    IonRippleEffect,
+    IonSkeletonText,
 } from "@ionic/angular/standalone";
+import { ItemReorderEventDetail } from "@ionic/core";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-photo-list",
 	templateUrl: "./photo-list.component.html",
 	styleUrls: ["./photo-list.component.scss"],
-	standalone: true,
+	
 	imports: [
 		FormsModule,
 		DatePipe,

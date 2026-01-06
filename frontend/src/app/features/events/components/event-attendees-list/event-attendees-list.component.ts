@@ -8,7 +8,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-attendees-list",
 	templateUrl: "./event-attendees-list.component.html",
 	styleUrl: "./event-attendees-list.component.scss",
-	standalone: true,
+	
 	imports: [CommonModule, RouterLink, IonList, IonItem, IonLabel, IonBadge, IonIcon, IonSkeletonText],
 })
 export class EventAttendeesListComponent {

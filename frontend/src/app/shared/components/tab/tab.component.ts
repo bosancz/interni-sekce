@@ -7,7 +7,7 @@ import { TABS_QUERY_PARAM } from "../tabs/tabs.component";
 	selector: "bo-tab",
 	templateUrl: "./tab.component.html",
 	styleUrl: "./tab.component.scss",
-	standalone: true,
+	
 	imports: [IonTabButton, IonIcon, IonLabel, IonBadge],
 })
 export class TabComponent implements OnInit {

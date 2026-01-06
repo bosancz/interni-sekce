@@ -1,28 +1,28 @@
+import { DatePipe } from "@angular/common";
 import {
-	AfterViewInit,
-	Component,
-	ElementRef,
-	forwardRef,
-	input,
-	OnDestroy,
-	OnInit,
-	output,
-	signal,
+    AfterViewInit,
+    Component,
+    ElementRef,
+    forwardRef,
+    input,
+    OnDestroy,
+    OnInit,
+    output,
+    signal,
 } from "@angular/core";
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { DatePipe } from "@angular/common";
 import { ModalController } from "@ionic/angular";
 import { IonInput } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/services/api.service";
+import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
 import { EventSelectorModalComponent } from "../event-selector-modal/event-selector-modal.component";
-import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 
 @Component({
 	selector: "bo-event-selector",
 	templateUrl: "./event-selector.component.html",
 	styleUrls: ["./event-selector.component.scss"],
-	standalone: true,
+	
 	imports: [IonInput, FormsModule, DateRangePipe, DatePipe],
 	providers: [
 		{

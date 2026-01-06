@@ -4,7 +4,7 @@ import { EditButtonComponent } from "../edit-button/edit-button.component";
 
 @Component({
 	selector: "bo-edit-button-date",
-	standalone: true,
+	
 	imports: [EditButtonComponent],
 	templateUrl: "./edit-button-date.component.html",
 	styleUrl: "./edit-button-date.component.scss",

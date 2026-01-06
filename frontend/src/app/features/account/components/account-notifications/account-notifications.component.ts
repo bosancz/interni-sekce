@@ -1,8 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { SwPush } from "@angular/service-worker";
-
-import { ApiService } from "src/app/services/api.service";
-import { ToastService } from "src/app/services/toast.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { SDK } from "src/sdk";
 
 declare const Notification: any;
@@ -11,7 +10,7 @@ declare const Notification: any;
 	selector: "bo-account-notifications",
 	templateUrl: "./account-notifications.component.html",
 	styleUrls: ["./account-notifications.component.scss"],
-	standalone: true,
+	imports: [],
 })
 export class AccountNotificationsComponent implements OnInit {
 	user?: SDK.AccountResponseWithLinks;

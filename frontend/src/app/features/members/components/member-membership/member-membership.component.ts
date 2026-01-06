@@ -12,7 +12,7 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 
 @Component({
 	selector: "bo-member-membership",
-	standalone: true,
+	
 	imports: [IonList, IonLabel, ItemComponent, EditButtonSelectComponent, GroupBadgeComponent, MemberPipe],
 	templateUrl: "./member-membership.component.html",
 	styleUrl: "./member-membership.component.scss",

@@ -7,7 +7,7 @@ import { ItemComponent } from "../../../../shared/components/item/item.component
 
 @Component({
 	selector: "bo-member-contact",
-	standalone: true,
+	
 	imports: [IonList, IonLabel, ItemComponent, IconButtonComponent, EditButtonTextComponent],
 	templateUrl: "./member-contact.component.html",
 	styleUrl: "./member-contact.component.scss",

@@ -23,7 +23,7 @@ import { PhotoListComponent } from "../components/photo-list/photo-list.componen
 	selector: "bo-albums-view-photos",
 	templateUrl: "./albums-view-photos.component.html",
 	styleUrls: ["./albums-view-photos.component.scss"],
-	standalone: true,
+	
 	imports: [
 		PageHeaderComponent,
 		PageContentComponent,

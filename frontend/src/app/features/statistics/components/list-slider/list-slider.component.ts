@@ -1,11 +1,11 @@
-import { Component, input, forwardRef, signal } from "@angular/core";
+import { Component, forwardRef, input, signal } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 
 @Component({
 	selector: "list-slider",
 	templateUrl: "./list-slider.component.html",
 	styleUrls: ["./list-slider.component.scss"],
-	standalone: true,
+	
 	imports: [],
 	providers: [
 		{

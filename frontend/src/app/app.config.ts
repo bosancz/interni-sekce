@@ -1,8 +1,9 @@
 import { ApplicationConfig, ErrorHandler, isDevMode, LOCALE_ID } from "@angular/core";
-import { RouteReuseStrategy, TitleStrategy } from "@angular/router";
+import { provideRouter, RouteReuseStrategy, TitleStrategy, withComponentInputBinding, withInMemoryScrolling } from "@angular/router";
 import { provideServiceWorker } from "@angular/service-worker";
 import { IonicRouteStrategy, isPlatform } from "@ionic/angular";
 import { provideIonicAngular } from "@ionic/angular/standalone";
+import { appRoutes } from "./app.routing";
 import { MainErrorHandler } from "./core/error-handlers/main.error-handler";
 import { TitleService } from "./core/services/title.service";
 
@@ -12,6 +13,13 @@ export const appConfig: ApplicationConfig = {
 		provideIonicAngular({
 			backButtonText: isPlatform("ios") ? "Zpět" : "",
 		}),
+		provideRouter(
+			appRoutes,
+			withComponentInputBinding(),
+			withInMemoryScrolling({
+				anchorScrolling: "enabled",
+			}),
+		),
 		provideServiceWorker("ngsw-worker.js", {
 			enabled: !isDevMode(), // Disable in development, enable in production
 		}),

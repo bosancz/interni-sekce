@@ -9,7 +9,7 @@ import { EditButtonComponent } from "../../../../shared/components/edit-button/e
 
 @Component({
 	selector: "bo-member-address",
-	standalone: true,
+	
 	imports: [
 		CardComponent,
 		CardContentComponent,

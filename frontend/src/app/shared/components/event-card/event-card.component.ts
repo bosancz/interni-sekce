@@ -13,7 +13,7 @@ import { JoinLeadersPipe } from "../../pipes/join-leaders.pipe";
 	selector: "event-card",
 	templateUrl: "./event-card.component.html",
 	styleUrls: ["./event-card.component.scss"],
-	standalone: true,
+	
 	imports: [
 		NgTemplateOutlet,
 		RouterLink,

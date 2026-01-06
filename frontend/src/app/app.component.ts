@@ -15,7 +15,7 @@ import { PlatformService } from "./services/platform.service";
 	selector: "bo-app",
 	templateUrl: "./app.component.html",
 	styleUrls: ["./app.component.scss"],
-	standalone: true,
+	
 	imports: [
 		IonApp,
 		IonRouterOutlet,

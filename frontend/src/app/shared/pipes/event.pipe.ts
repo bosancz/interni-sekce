@@ -6,7 +6,7 @@ type EventPipeProperty = "image" | "color" | "class";
 
 @Pipe({
 	name: "event",
-	standalone: true,
+	
 })
 export class EventPipe implements PipeTransform {
 	eventTypes = EventTypes;

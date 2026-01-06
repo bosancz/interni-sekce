@@ -10,7 +10,7 @@ import { AccountMenuModalComponent } from "../../../../core/components/account-m
 
 @Component({
 	selector: "bo-home",
-	standalone: true,
+	
 	templateUrl: "./home.component.html",
 	styleUrl: "./home.component.scss",
 	imports: [],

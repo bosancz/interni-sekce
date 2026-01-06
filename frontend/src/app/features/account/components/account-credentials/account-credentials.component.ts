@@ -9,7 +9,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-account-credentials",
 	templateUrl: "./account-credentials.component.html",
 	styleUrls: ["./account-credentials.component.scss"],
-	standalone: true,
+	
 	imports: [IonList, IonItem, IonLabel, IonText],
 })
 export class AccountCredentialsComponent implements OnInit {

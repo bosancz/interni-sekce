@@ -7,7 +7,7 @@ import { SDK } from "src/sdk";
 	selector: "event-age-histogram",
 	templateUrl: "./event-age-histogram.component.html",
 	styleUrls: ["./event-age-histogram.component.scss"],
-	standalone: true,
+	
 	imports: [CommonModule],
 })
 export class EventAgeHistogramComponent {

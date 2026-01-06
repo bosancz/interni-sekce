@@ -8,7 +8,7 @@ export const TABS_QUERY_PARAM = "tab";
 	selector: "bo-tabs",
 	templateUrl: "./tabs.component.html",
 	styleUrl: "./tabs.component.scss",
-	standalone: true,
+	
 	imports: [IonTabBar],
 })
 export class TabsComponent implements OnInit {

@@ -14,7 +14,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-attendees",
 	templateUrl: "./event-attendees.component.html",
 	styleUrls: ["./event-attendees.component.scss"],
-	standalone: true,
+	
 	imports: [CommonModule, IonButton],
 })
 export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {

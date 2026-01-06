@@ -20,7 +20,7 @@ import { TrimesterSelectorComponent } from "../../components/trimester-selector/
 	selector: "program-planning",
 	templateUrl: "./program-planning.component.html",
 	styleUrls: ["./program-planning.component.scss"],
-	standalone: true,
+	
 	imports: [
 		FormsModule,
 		IonContent,

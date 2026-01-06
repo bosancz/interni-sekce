@@ -1,14 +1,14 @@
+import { NgTemplateOutlet } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
+import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonItem, IonLabel, IonTabBar, IonTabButton, IonText, IonTitle, IonToolbar } from "@ionic/angular/standalone";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { DateTime } from "luxon";
 import { BehaviorSubject } from "rxjs";
 import { filter, map } from "rxjs/operators";
-import { DateTime } from "luxon";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { IonContent, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonTabBar, IonTabButton, IonText, IonLabel, IonItem, IonButton } from "@ionic/angular/standalone";
-import { NgTemplateOutlet } from "@angular/common";
 import { ApiService } from "src/app/services/api.service";
-import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
 import { ProgramService } from "../../services/program.service";
 
@@ -17,7 +17,7 @@ import { ProgramService } from "../../services/program.service";
 	selector: "program-workflow",
 	templateUrl: "./program-workflow.component.html",
 	styleUrls: ["./program-workflow.component.scss"],
-	standalone: true,
+	
 	imports: [
 		NgTemplateOutlet,
 		IonContent,

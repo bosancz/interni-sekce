@@ -1,7 +1,7 @@
 import { Component, forwardRef, input, OnInit } from "@angular/core";
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { IonInput, IonItem, IonLabel, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
 import { DateTime } from "luxon";
-import { IonItem, IonLabel, IonInput, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
 
 export type TrimesterDateRange = [string, string];
 
@@ -9,7 +9,7 @@ export type TrimesterDateRange = [string, string];
 	selector: "bo-trimester-selector",
 	templateUrl: "./trimester-selector.component.html",
 	styleUrls: ["./trimester-selector.component.scss"],
-	standalone: true,
+	
 	imports: [FormsModule, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption],
 	providers: [
 		{

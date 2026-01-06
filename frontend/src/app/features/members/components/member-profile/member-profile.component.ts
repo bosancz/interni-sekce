@@ -5,7 +5,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-member-profile",
 	templateUrl: "./member-profile.component.html",
 	styleUrl: "./member-profile.component.scss",
-	standalone: true,
+	
 	imports: [],
 })
 export class MemberProfileComponent {

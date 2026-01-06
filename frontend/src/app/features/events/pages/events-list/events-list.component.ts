@@ -31,7 +31,7 @@ import { EventCreateModalComponent } from "../../components/event-create-modal/e
 	selector: "bo-events-list",
 	templateUrl: "./events-list.component.html",
 	styleUrls: ["./events-list.component.scss"],
-	standalone: true,
+	
 	imports: [
 		CommonModule,
 		RouterLink,

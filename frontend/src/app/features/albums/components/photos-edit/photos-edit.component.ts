@@ -1,19 +1,19 @@
+import { DatePipe } from "@angular/common";
 import { Component, HostListener, input, NgZone, signal, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { DatePipe } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, IonInput, ModalController, ViewWillLeave } from "@ionic/angular";
 import {
-	IonButton,
-	IonButtons,
-	IonContent,
-	IonIcon,
-	IonInput as IonInputStandalone,
-	IonItem,
-	IonLabel,
-	IonList,
-	IonPopover,
-	IonToolbar,
+    IonButton,
+    IonButtons,
+    IonContent,
+    IonIcon,
+    IonInput as IonInputStandalone,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonPopover,
+    IonToolbar,
 } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/services/api.service";
 import { PlatformService } from "src/app/services/platform.service";
@@ -25,7 +25,7 @@ import { SwiperOptions } from "swiper/types";
 	selector: "bo-photos-edit",
 	templateUrl: "./photos-edit.component.html",
 	styleUrls: ["./photos-edit.component.scss"],
-	standalone: true,
+	
 	imports: [
 		FormsModule,
 		DatePipe,

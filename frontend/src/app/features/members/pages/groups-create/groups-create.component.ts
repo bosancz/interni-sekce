@@ -8,7 +8,7 @@ import { ApiService } from "src/app/services/api.service";
 	selector: "bo-groups-create",
 	templateUrl: "./groups-create.component.html",
 	styleUrls: ["./groups-create.component.scss"],
-	standalone: true,
+	
 	imports: [],
 })
 export class GroupsCreateComponent {

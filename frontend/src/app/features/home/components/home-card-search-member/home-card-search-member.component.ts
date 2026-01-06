@@ -1,12 +1,12 @@
 import { Component, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { RouterLink } from "@angular/router";
+import { IonItem, IonLabel, IonList, IonSearchbar } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Subject, debounceTime, tap } from "rxjs";
-import { IonInput, IonItem, IonLabel, IonList, IonSearchbar } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/services/api.service";
-import { CardComponent } from "src/app/shared/components/card/card.component";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
+import { CardComponent } from "src/app/shared/components/card/card.component";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
@@ -14,7 +14,7 @@ import { SDK } from "src/sdk";
 @UntilDestroy()
 @Component({
 	selector: "bo-home-card-search-member",
-	standalone: true,
+	
 	templateUrl: "./home-card-search-member.component.html",
 	styleUrl: "./home-card-search-member.component.scss",
 	imports: [

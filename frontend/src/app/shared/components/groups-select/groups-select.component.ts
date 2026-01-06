@@ -18,7 +18,7 @@ import { SDK } from "src/sdk";
 		"[class.disabled]": "disabled",
 		"[class.readonly]": "readonly",
 	},
-	standalone: true,
+	
 })
 export class GroupsSelectComponent implements OnInit, ControlValueAccessor, AfterViewInit {
 	groups?: SDK.GroupResponseWithLinks[];

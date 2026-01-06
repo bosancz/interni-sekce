@@ -5,7 +5,7 @@ import { IonButton, IonIcon } from "@ionic/angular/standalone";
 	selector: "bo-delete-button",
 	templateUrl: "./delete-button.component.html",
 	styleUrl: "./delete-button.component.scss",
-	standalone: true,
+	
 	imports: [IonButton, IonIcon],
 })
 export class DeleteButtonComponent {

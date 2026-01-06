@@ -1,13 +1,13 @@
 import {
-	AfterViewChecked,
-	Component,
-	ElementRef,
-	EventEmitter,
-	Input,
-	OnChanges,
-	OnInit,
-	Output,
-	SimpleChanges,
+    AfterViewChecked,
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnInit,
+    Output,
+    SimpleChanges,
 } from "@angular/core";
 import { SDK } from "src/sdk";
 
@@ -25,7 +25,7 @@ class PhotoRow {
 	selector: "bo-photo-gallery",
 	templateUrl: "./photo-gallery.component.html",
 	styleUrls: ["./photo-gallery.component.scss"],
-	standalone: true,
+	
 })
 export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChanges {
 	@Input() photos: SDK.PhotoResponseWithLinks[] = [];

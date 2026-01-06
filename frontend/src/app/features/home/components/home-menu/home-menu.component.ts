@@ -12,7 +12,7 @@ interface HomeMenuItem {
 	selector: "bo-home-menu",
 	templateUrl: "./home-menu.component.html",
 	styleUrls: ["./home-menu.component.scss"],
-	standalone: true,
+	
 	imports: [RouterLink, RouterLinkActive, IonCard, IonCardContent],
 })
 export class HomeMenuComponent implements OnInit {

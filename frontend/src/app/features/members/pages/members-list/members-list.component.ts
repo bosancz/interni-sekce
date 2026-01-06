@@ -32,7 +32,7 @@ import { MembershipStates } from "../../../../core/config/membership-states";
 	selector: "members-list",
 	templateUrl: "./members-list.component.html",
 	styleUrls: ["./members-list.component.scss"],
-	standalone: true,
+	
 	imports: [
 		PageHeaderComponent,
 		FilterComponent,

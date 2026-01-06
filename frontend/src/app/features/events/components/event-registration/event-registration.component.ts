@@ -14,7 +14,7 @@ import { EventsService } from "../../services/events.service";
 	selector: "bo-event-registration",
 	templateUrl: "./event-registration.component.html",
 	styleUrls: ["./event-registration.component.scss"],
-	standalone: true,
+	
 	imports: [CommonModule, FormsModule, IonButton],
 })
 export class EventRegistrationComponent {

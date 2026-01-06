@@ -2,9 +2,8 @@ import { Component, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import { DateTime } from "luxon";
-import { debounceTime } from "rxjs/operators";
 import { BaseChartDirective } from "ng2-charts";
-import { ChartConfiguration } from "chart.js";
+import { debounceTime } from "rxjs/operators";
 import { ListSliderComponent } from "../../components/list-slider/list-slider.component";
 
 import { ApiService } from "src/app/services/api.service";
@@ -20,7 +19,7 @@ class ChartData {
 	selector: "events-dashboard",
 	templateUrl: "./events-dashboard.component.html",
 	styleUrls: ["./events-dashboard.component.scss"],
-	standalone: true,
+	
 	imports: [FormsModule, BaseChartDirective, ListSliderComponent],
 })
 export class EventsDashboardComponent implements OnInit {

@@ -8,7 +8,7 @@ import { EventStatusPipe } from "../../pipes/event-status.pipe";
 	templateUrl: "./event-status-badge.component.html",
 	styleUrls: ["./event-status-badge.component.scss"],
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	standalone: true,
+	
 	imports: [IonBadge, EventStatusPipe],
 })
 export class EventStatusBadgeComponent {

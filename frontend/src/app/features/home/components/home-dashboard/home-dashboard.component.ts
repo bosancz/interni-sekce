@@ -5,17 +5,17 @@ import { DateTime } from "luxon";
 import { ApiService } from "src/app/services/api.service";
 import { UserService } from "src/app/services/user.service";
 import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
+import { SDK } from "src/sdk";
 import { HomeCardMyEventsComponent } from "../home-card-my-events/home-card-my-events.component";
 import { HomeCardNoleaderEventsComponent } from "../home-card-noleader-events/home-card-noleader-events.component";
 import { HomeCardSearchMemberComponent } from "../home-card-search-member/home-card-search-member.component";
-import { SDK } from "src/sdk";
 
 @UntilDestroy()
 @Component({
 	selector: "bo-home-dashboard",
 	templateUrl: "./home-dashboard.component.html",
 	styleUrls: ["./home-dashboard.component.scss"],
-	standalone: true,
+	
 	imports: [
 		EventCalendarComponent,
 		HomeCardMyEventsComponent,

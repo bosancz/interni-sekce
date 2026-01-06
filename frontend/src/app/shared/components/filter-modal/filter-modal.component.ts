@@ -9,7 +9,7 @@ import { ModalLayoutComponent } from "../modal-layout/modal-layout.component";
 	selector: "bo-filter-modal",
 	templateUrl: "./filter-modal.component.html",
 	styleUrl: "./filter-modal.component.scss",
-	standalone: true,
+	
 	imports: [ModalLayoutComponent, NgTemplateOutlet, IonButtons, IonButton],
 })
 export class FilterModalComponent extends AbstractModalComponent<boolean> {

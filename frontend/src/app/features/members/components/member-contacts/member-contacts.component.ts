@@ -11,7 +11,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-member-contacts",
 	templateUrl: "./member-contacts.component.html",
 	styleUrls: ["./member-contacts.component.scss"],
-	standalone: true,
+	
 	imports: [],
 })
 export default class MemberContactsComponent implements OnChanges {

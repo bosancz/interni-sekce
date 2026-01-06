@@ -7,7 +7,7 @@ import { Component, OnInit } from "@angular/core";
 	host: {
 		class: "p-3",
 	},
-	standalone: true,
+	
 })
 export class CardContentComponent implements OnInit {
 	constructor() {}

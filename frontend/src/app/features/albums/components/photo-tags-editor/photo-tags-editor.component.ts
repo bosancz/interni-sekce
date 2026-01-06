@@ -1,11 +1,11 @@
-import { Component, input, forwardRef, signal } from "@angular/core";
+import { Component, forwardRef, input, signal } from "@angular/core";
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from "@angular/forms";
 
 @Component({
 	selector: "photo-tags-editor",
 	templateUrl: "./photo-tags-editor.component.html",
 	styleUrls: ["./photo-tags-editor.component.scss"],
-	standalone: true,
+	
 	imports: [FormsModule],
 	providers: [
 		{

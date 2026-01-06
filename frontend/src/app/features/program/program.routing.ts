@@ -1,5 +1,4 @@
-import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
+import { Routes } from "@angular/router";
 
 import { ProgramCalendarComponent } from "./pages/program-calendar/program-calendar.component";
 import { ProgramPlanningComponent } from "./pages/program-planning/program-planning.component";
@@ -7,7 +6,7 @@ import { ProgramPrintComponent } from "./pages/program-print/program-print.compo
 import { ProgramWorkflowComponent } from "./pages/program-workflow/program-workflow.component";
 import { ProgramComponent } from "./program.component";
 
-const routes: Routes = [
+export const programRoutes: Routes = [
 	{
 		path: "",
 		component: ProgramComponent,
@@ -20,9 +19,3 @@ const routes: Routes = [
 		],
 	},
 ];
-
-@NgModule({
-	imports: [RouterModule.forChild(routes)],
-	exports: [RouterModule],
-})
-export class ProgramRoutingModule {}

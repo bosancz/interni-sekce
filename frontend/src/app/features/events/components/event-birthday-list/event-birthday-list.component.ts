@@ -7,7 +7,7 @@ import { SDK } from "src/sdk";
 	selector: "event-birthday-list",
 	templateUrl: "./event-birthday-list.component.html",
 	styleUrls: ["./event-birthday-list.component.scss"],
-	standalone: true,
+	
 	imports: [CommonModule],
 })
 export class EventBirthdayListComponent {

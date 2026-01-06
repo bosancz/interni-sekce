@@ -18,7 +18,7 @@ import { EventTypeID, EventTypes } from "src/app/core/config/event-types";
 		"[class.disabled]": "disabled",
 		"[class.readonly]": "readonly",
 	},
-	standalone: true,
+	
 	imports: [CommonModule],
 })
 export class EventTypeSelectorComponent implements ControlValueAccessor, AfterViewInit {

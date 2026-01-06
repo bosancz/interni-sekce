@@ -37,7 +37,7 @@ import { SDK } from "src/sdk";
 	selector: "albums-list",
 	templateUrl: "./albums-list.component.html",
 	styleUrls: ["./albums-list.component.scss"],
-	standalone: true,
+	
 	imports: [
 		FormsModule,
 		ReactiveFormsModule,

@@ -6,7 +6,7 @@ import { CardComponent } from "../card/card.component";
 
 @Component({
 	selector: "bo-button-square",
-	standalone: true,
+	
 	imports: [CardComponent, CardHeaderComponent, CardTitleComponent, CardContentComponent],
 	templateUrl: "./button-square.component.html",
 	styleUrl: "./button-square.component.scss",

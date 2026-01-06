@@ -8,7 +8,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 	selector: "bo-page-content",
 	templateUrl: "./page-content.component.html",
 	styleUrls: ["./page-content.component.scss"],
-	standalone: true,
+	
 	imports: [IonContent],
 })
 export class PageContentComponent implements OnInit {

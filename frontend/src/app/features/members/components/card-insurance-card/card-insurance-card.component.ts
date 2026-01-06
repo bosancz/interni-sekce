@@ -13,7 +13,7 @@ import { CardComponent } from "../../../../shared/components/card/card.component
 	selector: "bo-card-insurance-card",
 	templateUrl: "./card-insurance-card.component.html",
 	styleUrls: ["./card-insurance-card.component.scss"],
-	standalone: true,
+	
 	imports: [
 		CardComponent,
 		CardContentComponent,

@@ -16,7 +16,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-users-edit",
 	templateUrl: "./users-edit.component.html",
 	styleUrls: ["./users-edit.component.scss"],
-	standalone: true,
+	
 	imports: [
 		FormsModule,
 		KeyValuePipe,

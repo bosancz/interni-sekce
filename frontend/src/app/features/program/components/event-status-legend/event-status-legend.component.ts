@@ -8,7 +8,7 @@ import { DotComponent } from "src/app/shared/components/dot/dot.component";
 	selector: "bo-event-status-legend",
 	templateUrl: "./event-status-legend.component.html",
 	styleUrls: ["./event-status-legend.component.scss"],
-	standalone: true,
+	
 	imports: [KeyValuePipe, IonList, IonItem, IonLabel, DotComponent],
 })
 export class EventStatusLegendComponent implements OnInit {

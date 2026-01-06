@@ -1,14 +1,14 @@
 import {
-	AfterContentInit,
-	AfterViewInit,
-	Component,
-	ContentChildren,
-	EventEmitter,
-	Input,
-	Output,
-	QueryList,
-	TemplateRef,
-	ViewChild,
+    AfterContentInit,
+    AfterViewInit,
+    Component,
+    ContentChildren,
+    EventEmitter,
+    Input,
+    Output,
+    QueryList,
+    TemplateRef,
+    ViewChild,
 } from "@angular/core";
 import { FormsModule, NgModel } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -25,7 +25,7 @@ export type FilterData = any;
 	selector: "bo-filter",
 	templateUrl: "./filter.component.html",
 	styleUrls: ["./filter.component.scss"],
-	standalone: true,
+	
 	imports: [IonToolbar, IonSearchbar, IonButton, IonIcon, IonBadge, FormsModule],
 })
 export class FilterComponent implements AfterContentInit, AfterViewInit {
