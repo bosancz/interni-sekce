@@ -3,7 +3,7 @@ import { RouterLink } from "@angular/router";
 import { IonBadge } from "@ionic/angular/standalone";
 import { CzechHolidays } from "czech-holidays";
 import { DateTime } from "luxon";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 import { EventStatusPipe } from "../../pipes/event-status.pipe";
 
@@ -72,7 +72,7 @@ class CalendarEvent<T extends SDK.CPVEventResponseWithLinks | SDK.EventResponseW
 	selector: "bo-event-calendar",
 	templateUrl: "./event-calendar.component.html",
 	styleUrls: ["./event-calendar.component.scss"],
-	
+
 	imports: [RouterLink, IonBadge, EventStatusPipe],
 })
 export class EventCalendarComponent implements OnInit, OnChanges {

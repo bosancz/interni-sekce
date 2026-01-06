@@ -1,9 +1,12 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
-import { NavController } from "@ionic/angular";
+import { ActivatedRoute, RouterLink, RouterOutlet } from "@angular/router";
+import { IonIcon, IonTabBar, IonTabButton, IonToolbar, NavController } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
 import { GroupsService } from "../../services/groups.service";
 
@@ -12,8 +15,17 @@ import { GroupsService } from "../../services/groups.service";
 	selector: "bo-group-view",
 	templateUrl: "./group-view.component.html",
 	styleUrls: ["./group-view.component.scss"],
-	
-	imports: [],
+	imports: [
+		RouterLink,
+		IonToolbar,
+		IonTabBar,
+		IonTabButton,
+		IonIcon,
+		PageHeaderComponent,
+		PageContentComponent,
+		RouterOutlet,
+		PageFooterComponent,
+	],
 })
 export class GroupViewComponent implements OnInit {
 	group?: SDK.GroupResponseWithLinks | null;

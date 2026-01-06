@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from "@angular/core";
 import { DateTime } from "luxon";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
 import { SDK } from "src/sdk";
 

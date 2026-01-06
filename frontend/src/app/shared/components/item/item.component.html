@@ -1,5 +1,5 @@
-@if (label) {
-	<ion-label class="label">{{ label }}</ion-label>
+@if (label()) {
+	<ion-label class="label">{{ label() }}</ion-label>
 }
 
 <div class="start">
@@ -8,7 +8,7 @@
 
 <ng-content></ng-content>
 
-@if (loading) {
+@if (loading()) {
 	<ion-label><ion-skeleton-text [animated]="true"></ion-skeleton-text></ion-label>
 }
 

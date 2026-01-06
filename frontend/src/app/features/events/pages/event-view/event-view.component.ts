@@ -1,13 +1,24 @@
 import { Component } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ViewWillEnter, ViewWillLeave } from "@ionic/angular";
+import { ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { ApiService } from "src/app/services/api.service";
-import { ModalService } from "src/app/services/modal.service";
-import { ToastService } from "src/app/services/toast.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { TabComponent } from "src/app/shared/components/tab/tab.component";
+import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { ExtractExisting } from "src/helpers/typings";
 import { SDK } from "src/sdk";
+import { EventAccountingComponent } from "../../components/event-accounting/event-accounting.component";
+import { EventAttendeesComponent } from "../../components/event-attendees/event-attendees.component";
+import { EventInfoComponent } from "../../components/event-info/event-info.component";
+import { EventRegistrationComponent } from "../../components/event-registration/event-registration.component";
+import { EventReportComponent } from "../../components/event-report/event-report.component";
 
 export type EventStatusActions = ExtractExisting<
 	keyof SDK.EventResponseWithLinks["_links"],
@@ -19,8 +30,20 @@ export type EventStatusActions = ExtractExisting<
 	selector: "bo-event-view",
 	templateUrl: "./event-view.component.html",
 	styleUrl: "./event-view.component.scss",
-	
-	imports: [],
+
+	imports: [
+		EventAttendeesComponent,
+		EventRegistrationComponent,
+		EventAccountingComponent,
+		EventReportComponent,
+		PageFooterComponent,
+		TabsComponent,
+		TabComponent,
+		PageHeaderComponent,
+		PageContentComponent,
+		EventCardComponent,
+		EventInfoComponent,
+	],
 })
 export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 	event: any;

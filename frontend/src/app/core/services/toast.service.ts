@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { ToastController } from "@ionic/angular";
+import { ToastController } from "@ionic/angular/standalone";
 import { ToastOptions } from "@ionic/core";
 import { Observable } from "rxjs";
 

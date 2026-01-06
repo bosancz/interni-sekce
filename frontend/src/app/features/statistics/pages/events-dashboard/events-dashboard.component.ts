@@ -6,7 +6,7 @@ import { BaseChartDirective } from "ng2-charts";
 import { debounceTime } from "rxjs/operators";
 import { ListSliderComponent } from "../../components/list-slider/list-slider.component";
 
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 
 class ChartData {

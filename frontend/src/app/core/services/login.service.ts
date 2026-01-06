@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from "@angular/core";
 
-import { ApiService } from "src/app/services/api.service";
-import { GoogleService } from "src/app/services/google.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { GoogleService } from "src/app/core/services/google.service";
 import { ToastService } from "./toast.service";
 import { UserService } from "./user.service";
 

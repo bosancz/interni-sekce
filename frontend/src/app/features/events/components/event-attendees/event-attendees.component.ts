@@ -2,20 +2,22 @@ import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from "@angular/core";
 import { IonButton } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
+import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { MemberSelectorModalComponent } from "src/app/features/events/components/member-selector-modal/member-selector-modal.component";
-import { ApiService } from "src/app/services/api.service";
-import { ModalService } from "src/app/services/modal.service";
-import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { AddButtonComponent } from "src/app/shared/components/add-button/add-button.component";
 import { SDK } from "src/sdk";
+import { EventAttendeesListComponent } from "../event-attendees-list/event-attendees-list.component";
 
 @UntilDestroy()
 @Component({
 	selector: "bo-event-attendees",
 	templateUrl: "./event-attendees.component.html",
 	styleUrls: ["./event-attendees.component.scss"],
-	
-	imports: [CommonModule, IonButton],
+
+	imports: [CommonModule, IonButton, EventAttendeesListComponent, AddButtonComponent],
 })
 export class EventAttendeesComponent implements OnInit, OnDestroy, OnChanges {
 	@Input() event?: SDK.EventResponseWithLinks | null;

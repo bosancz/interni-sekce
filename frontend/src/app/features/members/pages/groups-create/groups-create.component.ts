@@ -1,21 +1,48 @@
 import { Component } from "@angular/core";
-import { NgForm } from "@angular/forms";
-import { ActivatedRoute } from "@angular/router";
-import { NavController } from "@ionic/angular";
-import { ApiService } from "src/app/services/api.service";
+import { FormsModule, NgForm } from "@angular/forms";
+import {
+	IonBackButton,
+	IonButton,
+	IonButtons,
+	IonContent,
+	IonFooter,
+	IonHeader,
+	IonInput,
+	IonItem,
+	IonLabel,
+	IonList,
+	IonTitle,
+	IonToolbar,
+	NavController,
+} from "@ionic/angular/standalone";
+import { ApiService } from "src/app/core/services/api.service";
+import { PageTitleDirective } from "src/app/shared/directives/page-title.directive";
 
 @Component({
 	selector: "bo-groups-create",
 	templateUrl: "./groups-create.component.html",
 	styleUrls: ["./groups-create.component.scss"],
-	
-	imports: [],
+	imports: [
+		FormsModule,
+		IonHeader,
+		IonToolbar,
+		IonButtons,
+		IonBackButton,
+		IonTitle,
+		IonContent,
+		IonList,
+		IonItem,
+		IonLabel,
+		IonInput,
+		IonFooter,
+		IonButton,
+		PageTitleDirective,
+	],
 })
 export class GroupsCreateComponent {
 	constructor(
 		private api: ApiService,
 		private navController: NavController,
-		private route: ActivatedRoute,
 	) {}
 	async createGroup(form: NgForm) {
 		if (form.invalid) return;

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { ErrorHandler, Injectable, Injector } from "@angular/core";
-import { NavController } from "@ionic/angular";
-import { ToastService } from "src/app/services/toast.service";
+import { NavController } from "@ionic/angular/standalone";
+import { ToastService } from "src/app/core/services/toast.service";
 
 @Injectable()
 export class MainErrorHandler implements ErrorHandler {

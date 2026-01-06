@@ -2,8 +2,8 @@ import { Component, OnInit, signal, ViewChild } from "@angular/core";
 import { FormsModule, NgForm } from "@angular/forms";
 import { Router } from "@angular/router";
 import { IonBackButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonTitle, IonToolbar } from "@ionic/angular/standalone";
-import { ApiService } from "src/app/services/api.service";
-import { ToastService } from "src/app/services/toast.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { Action, ActionButtonsComponent } from "src/app/shared/components/action-buttons/action-buttons.component";
 
 @Component({

@@ -1,14 +1,11 @@
-<bo-page-header title="Program" [actions]="actions" />
+<bo-page-header title="Program" [actions]="actions()" />
 
 <ion-content>
 	<div class="row no-gutters">
 		<div class="col-lg-3">
 			<div class="px-lg-3 py-lg-3 pb-3">
-				<bo-trimester-selector
-					labelPosition="floating"
-					[ngModel]="[dateFrom(), dateTill()]"
-					(ngModelChange)="setTrimester($event)"
-				></bo-trimester-selector>
+				<bo-trimester-selector labelPosition="floating" [ngModel]="[dateFrom(), dateTill()]"
+					(ngModelChange)="setTrimester($event)"></bo-trimester-selector>
 
 				<bo-event-status-legend></bo-event-status-legend>
 			</div>
@@ -32,12 +29,8 @@
 		<div class="d-none d-lg-block col-12 col-lg-9" [class.d-block]="view() === 'calendar'">
 			<div class="p-lg-3">
 				@if (dateFrom() && dateTill()) {
-					<bo-event-calendar
-						[dateFrom]="dateFrom()!"
-						[dateTill]="dateTill()!"
-						[events]="calendarEvents()"
-						[cpv]="true"
-					></bo-event-calendar>
+				<bo-event-calendar [dateFrom]="dateFrom()!" [dateTill]="dateTill()!" [events]="calendarEvents()"
+					[cpv]="true"></bo-event-calendar>
 				}
 			</div>
 		</div>

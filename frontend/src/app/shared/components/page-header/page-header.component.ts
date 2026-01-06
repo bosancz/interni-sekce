@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { IonButtons } from "@ionic/angular/standalone";
-import { PlatformService } from "src/app/services/platform.service";
+import { PlatformService } from "src/app/core/services/platform.service";
 import { Action, ActionButtonsComponent } from "../action-buttons/action-buttons.component";
 
 @Component({

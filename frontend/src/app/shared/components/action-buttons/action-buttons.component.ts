@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { ActionSheetController } from "@ionic/angular";
-import { IonButton, IonIcon, IonText } from "@ionic/angular/standalone";
+import { ActionSheetController, IonButton, IonIcon, IonText } from "@ionic/angular/standalone";
 import { ActionSheetButton, PredefinedColors } from "@ionic/core";
-import { PlatformService } from "src/app/services/platform.service";
+import { PlatformService } from "src/app/core/services/platform.service";
 
 export interface Action extends ActionSheetButton {
 	disabled?: boolean;
@@ -15,7 +14,7 @@ export interface Action extends ActionSheetButton {
 	selector: "bo-action-buttons",
 	templateUrl: "./action-buttons.component.html",
 	styleUrls: ["./action-buttons.component.scss"],
-	
+
 	imports: [IonButton, IonIcon, IonText],
 })
 export class ActionButtonsComponent implements OnInit {

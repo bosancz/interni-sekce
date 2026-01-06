@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { IonLabel, IonList } from "@ionic/angular/standalone";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipStates } from "src/app/core/config/membership-states";
-import { ApiService } from "src/app/services/api.service";
-import { ModalService } from "src/app/services/modal.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { SDK } from "src/sdk";
 import { EditButtonSelectComponent } from "../../../../shared/components/edit-button-select/edit-button-select.component";
 import { GroupBadgeComponent } from "../../../../shared/components/group-badge/group-badge.component";
@@ -12,7 +12,7 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 
 @Component({
 	selector: "bo-member-membership",
-	
+
 	imports: [IonList, IonLabel, ItemComponent, EditButtonSelectComponent, GroupBadgeComponent, MemberPipe],
 	templateUrl: "./member-membership.component.html",
 	styleUrl: "./member-membership.component.scss",

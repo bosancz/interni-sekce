@@ -2,16 +2,15 @@ import { Component, OnInit } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule, NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { NavController } from "@ionic/angular";
-import { IonButton, IonContent, IonInput, IonItem, IonLabel } from "@ionic/angular/standalone";
+import { IonButton, IonContent, IonInput, IonItem, IonLabel, NavController } from "@ionic/angular/standalone";
 import { map } from "rxjs/operators";
-import { LoginError, LoginErrorCode, LoginService } from "src/app/services/login.service";
+import { LoginError, LoginErrorCode, LoginService } from "src/app/core/services/login.service";
 
 @Component({
 	selector: "bo-login",
 	templateUrl: "./login.component.html",
 	styleUrls: ["./login.component.scss"],
-	
+
 	imports: [IonContent, IonItem, IonInput, IonButton, IonLabel, FormsModule],
 })
 export class LoginComponent implements OnInit {

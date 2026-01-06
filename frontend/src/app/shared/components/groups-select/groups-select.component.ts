@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, forwardRef, Input, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 
 @Component({

@@ -2,17 +2,17 @@ import { CommonModule } from "@angular/common";
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import { ChartData, ChartOptions } from "chart.js";
 import { DateTime } from "luxon";
-import { NgChartsModule } from "ng2-charts";
+import { BaseChartDirective } from "ng2-charts";
 import { EventExpenseTypes } from "src/app/core/config/event-expense-types";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-event-expenses-chart",
 	templateUrl: "./event-expenses-chart.component.html",
 	styleUrls: ["./event-expenses-chart.component.scss"],
-	
-	imports: [CommonModule, NgChartsModule],
+
+	imports: [CommonModule, BaseChartDirective],
 })
 export class EventExpensesChartComponent implements OnInit, OnChanges {
 	@Input() event?: SDK.EventResponseWithLinks;

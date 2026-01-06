@@ -1,6 +1,12 @@
+import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { RouterLink } from "@angular/router";
+import { IonItem, IonLabel, IonList, IonSelect, IonSelectOption, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { FilterComponent } from "src/app/shared/components/filter/filter.component";
+import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 import { GroupsService } from "../../services/groups.service";
 
@@ -9,8 +15,19 @@ import { GroupsService } from "../../services/groups.service";
 	selector: "bo-group-members",
 	templateUrl: "./group-members.component.html",
 	styleUrls: ["./group-members.component.scss"],
-	
-	imports: [],
+	imports: [
+		CommonModule,
+		FilterComponent,
+		IonItem,
+		IonLabel,
+		IonSelect,
+		IonSelectOption,
+		IonList,
+		IonSkeletonText,
+		FormsModule,
+		RouterLink,
+		MemberPipe,
+	],
 })
 export class GroupMembersComponent implements OnInit {
 	members?: (SDK.MemberResponseWithLinks & { searchString?: string })[];

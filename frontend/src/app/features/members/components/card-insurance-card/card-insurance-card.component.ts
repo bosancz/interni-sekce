@@ -1,9 +1,9 @@
 import { Component, effect, input, OnChanges, output, signal, SimpleChanges } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { IonButton, IonButtons, IonSkeletonText } from "@ionic/angular/standalone";
-import { ApiService } from "src/app/services/api.service";
-import { ModalService } from "src/app/services/modal.service";
-import { ToastService } from "src/app/services/toast.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { SDK } from "src/sdk";
 import { CardContentComponent } from "../../../../shared/components/card-content/card-content.component";
 import { CardFooterComponent } from "../../../../shared/components/card-footer/card-footer.component";

@@ -1,12 +1,17 @@
 import { CommonModule } from "@angular/common";
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from "@angular/core";
-import { IonBadge, IonButton, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
+import { IonBadge, IonButton, IonLabel, IonList } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
+import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { EventExpenseModalComponent } from "src/app/features/events/components/event-expense-modal/event-expense-modal.component";
-import { ApiService } from "src/app/services/api.service";
-import { ModalService } from "src/app/services/modal.service";
-import { ToastService } from "src/app/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { AddButtonComponent } from "src/app/shared/components/add-button/add-button.component";
+import { DeleteButtonComponent } from "src/app/shared/components/delete-button/delete-button.component";
+import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
+import { ItemComponent } from "src/app/shared/components/item/item.component";
+import { EventExpensePipe } from "src/app/shared/pipes/event-expense.pipe";
 import { SDK } from "src/sdk";
 
 @UntilDestroy()
@@ -14,8 +19,19 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-accounting",
 	templateUrl: "./event-accounting.component.html",
 	styleUrls: ["./event-accounting.component.scss"],
-	
-	imports: [CommonModule, IonList, IonItem, IonLabel, IonBadge, IonButton],
+
+	imports: [
+		CommonModule,
+		IonList,
+		IonLabel,
+		IonBadge,
+		IonButton,
+		ItemComponent,
+		EditButtonComponent,
+		DeleteButtonComponent,
+		AddButtonComponent,
+		EventExpensePipe,
+	],
 })
 export class EventAccountingComponent implements OnInit, OnChanges, OnDestroy {
 	@Input() event?: SDK.EventResponseWithLinks;

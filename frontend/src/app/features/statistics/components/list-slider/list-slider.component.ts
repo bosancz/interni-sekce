@@ -59,12 +59,12 @@ export class ListSliderComponent implements ControlValueAccessor {
 	/* NgModel (ControlValueAccessor) */
 
 	setValue(value: any) {
-		this.value = value;
-		this.onChange(this.value);
+		this.value.set(value);
+		this.onChange(this.value());
 	}
 
 	writeValue(value: any): void {
-		this.value = value;
+		this.value.set(value);
 	}
 
 	registerOnChange(fn: (value: any) => void): void {
@@ -76,6 +76,6 @@ export class ListSliderComponent implements ControlValueAccessor {
 	}
 
 	setDisabledState(isDisabled: boolean): void {
-		this.disabled = isDisabled;
+		this.disabled.set(isDisabled);
 	}
 }

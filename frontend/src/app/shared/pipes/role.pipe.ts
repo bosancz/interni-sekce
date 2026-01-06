@@ -6,7 +6,6 @@ type RolePipeProperty = "code";
 
 @Pipe({
 	name: "role",
-	standalone: false,
 })
 export class RolePipe implements PipeTransform {
 	roles = MemberRoles;

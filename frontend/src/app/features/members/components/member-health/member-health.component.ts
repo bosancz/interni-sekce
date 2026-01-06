@@ -1,6 +1,13 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { AlertController } from "@ionic/angular";
-import { IonButton, IonButtons, IonIcon, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
+import {
+	AlertController,
+	IonButton,
+	IonButtons,
+	IonIcon,
+	IonLabel,
+	IonList,
+	IonSkeletonText,
+} from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { SDK } from "src/sdk";
 import { AddButtonComponent } from "../../../../shared/components/add-button/add-button.component";
@@ -13,7 +20,6 @@ import { CardInsuranceCardComponent } from "../card-insurance-card/card-insuranc
 	selector: "bo-member-health",
 	templateUrl: "./member-health.component.html",
 	styleUrls: ["./member-health.component.scss"],
-	
 	imports: [
 		IonSkeletonText,
 		IonList,

@@ -1,14 +1,26 @@
 import { NgTemplateOutlet } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonItem, IonLabel, IonTabBar, IonTabButton, IonText, IonTitle, IonToolbar } from "@ionic/angular/standalone";
+import {
+	IonBackButton,
+	IonButton,
+	IonButtons,
+	IonContent,
+	IonHeader,
+	IonItem,
+	IonLabel,
+	IonTabBar,
+	IonTabButton,
+	IonText,
+	IonTitle,
+	IonToolbar,
+} from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
 import { BehaviorSubject } from "rxjs";
 import { filter, map } from "rxjs/operators";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
-import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
 import { ProgramService } from "../../services/program.service";
 
@@ -17,7 +29,7 @@ import { ProgramService } from "../../services/program.service";
 	selector: "program-workflow",
 	templateUrl: "./program-workflow.component.html",
 	styleUrls: ["./program-workflow.component.scss"],
-	
+
 	imports: [
 		NgTemplateOutlet,
 		IonContent,
@@ -32,7 +44,6 @@ import { ProgramService } from "../../services/program.service";
 		IonLabel,
 		IonItem,
 		IonButton,
-		PageHeaderComponent,
 		EventCardComponent,
 	],
 })
@@ -56,16 +67,16 @@ export class ProgramWorkflowComponent implements OnInit {
 		this.events.pipe(
 			map((events) =>
 				events?.filter(
-					(event) => ["draft", "rejected"].indexOf(event.status) !== -1 && event.leaders && event.leaders.length,
+					(event) =>
+						["draft", "rejected"].indexOf(event.status) !== -1 && event.leaders && event.leaders.length,
 				),
 			),
 		),
 		{ initialValue: [] },
 	);
-	pendingEvents = toSignal(
-		this.events.pipe(map((events) => events?.filter((event) => event.status === "pending"))),
-		{ initialValue: [] },
-	);
+	pendingEvents = toSignal(this.events.pipe(map((events) => events?.filter((event) => event.status === "pending"))), {
+		initialValue: [],
+	});
 	publicEvents = toSignal(
 		this.events.pipe(
 			map((events) => events?.filter((event) => ["public", "cancelled"].indexOf(event.status) !== -1)),
@@ -82,10 +93,16 @@ export class ProgramWorkflowComponent implements OnInit {
 
 	ngOnInit() {
 		this.loadEvents();
-		this.pendingEvents
+		// Subscribe to the BehaviorSubject instead of the signal
+		this.events
 			.pipe(untilDestroyed(this))
-			.pipe(filter((events) => events !== undefined))
-			.subscribe((events) => this.programService.pendingEventsCount.next(events!.length));
+			.pipe(
+				map((events) => events?.filter((event) => event.status === "pending")),
+				filter((events) => events !== undefined),
+			)
+			.subscribe((events: SDK.EventResponseWithLinks[]) =>
+				this.programService.pendingEventsCount.next(events.length),
+			);
 	}
 
 	async loadEvents() {

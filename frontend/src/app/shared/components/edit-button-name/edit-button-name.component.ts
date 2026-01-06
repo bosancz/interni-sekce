@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { ModalService } from "src/app/services/modal.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { EditButtonComponent } from "../edit-button/edit-button.component";
 
 @Component({

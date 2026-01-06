@@ -1,21 +1,23 @@
 import { Component, OnDestroy, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ModalController, ViewWillEnter } from "@ionic/angular";
-import { IonContent } from "@ionic/angular/standalone";
+import { IonContent, ModalController, ViewWillEnter } from "@ionic/angular/standalone";
 import { EventsService } from "src/app/features/events/services/events.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
 import { EventStatusLegendComponent } from "../../components/event-status-legend/event-status-legend.component";
-import { TrimesterDateRange, TrimesterSelectorComponent } from "../../components/trimester-selector/trimester-selector.component";
+import {
+	TrimesterDateRange,
+	TrimesterSelectorComponent,
+} from "../../components/trimester-selector/trimester-selector.component";
 
 @Component({
 	selector: "bo-program-calendar",
 	templateUrl: "./program-calendar.component.html",
 	styleUrls: ["./program-calendar.component.scss"],
-	
+
 	imports: [
 		FormsModule,
 		IonContent,

@@ -13,7 +13,6 @@ import { ItemComponent } from "../../../../shared/components/item/item.component
 	selector: "bo-member-info",
 	templateUrl: "./member-info.component.html",
 	styleUrls: ["./member-info.component.scss"],
-	
 	imports: [
 		IonList,
 		IonLabel,

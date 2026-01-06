@@ -1,9 +1,25 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
-import { AlertButton, AlertController } from "@ionic/angular";
+import {
+	AlertButton,
+	AlertController,
+	IonButtons,
+	IonIcon,
+	IonItem,
+	IonLabel,
+	IonList,
+	IonSkeletonText,
+} from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
-import { ApiService } from "src/app/services/api.service";
-import { ModalService } from "src/app/services/modal.service";
-import { ToastService } from "src/app/services/toast.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
+import { ToastService } from "src/app/core/services/toast.service";
+import { AddButtonComponent } from "src/app/shared/components/add-button/add-button.component";
+import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
+import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
+import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
+import { CardComponent } from "src/app/shared/components/card/card.component";
+import { CopyButtonComponent } from "src/app/shared/components/copy-button/copy-button.component";
+import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
 import { SDK } from "src/sdk";
 
 @UntilDestroy()
@@ -11,8 +27,21 @@ import { SDK } from "src/sdk";
 	selector: "bo-member-contacts",
 	templateUrl: "./member-contacts.component.html",
 	styleUrls: ["./member-contacts.component.scss"],
-	
-	imports: [],
+	imports: [
+		CardComponent,
+		CardHeaderComponent,
+		CardTitleComponent,
+		CardContentComponent,
+		IonList,
+		IonItem,
+		IonIcon,
+		IonLabel,
+		IonSkeletonText,
+		IonButtons,
+		AddButtonComponent,
+		CopyButtonComponent,
+		EditButtonComponent,
+	],
 })
 export default class MemberContactsComponent implements OnChanges {
 	@Input() member?: SDK.MemberResponseWithLinks | null;

@@ -22,7 +22,7 @@
 	<ion-item lines="none">
 		<ion-select multiple name="membership" ngModel label="Členství" placeholder="všechny">
 			@for (state of membershipStates | keyvalue; track state.key) {
-				<ion-select-option [value]="state.key">{{state.value.title}}</ion-select-option>
+				<ion-select-option [value]="state.key">{{ state.value.title }}</ion-select-option>
 			}
 		</ion-select>
 	</ion-item>
@@ -41,14 +41,15 @@
 				}
 
 				@for (member of members; track member.id) {
-					<ion-label>
-						<h2>{{ member.nickname || member.firstName || member.lastName }}</h2>
-						<p>
-							<span [style.color]="member.groupId | group: 'color'">{{
-								member.groupId | group: "name"
-							}}</span
-							>,
-							<span>{{ member | member: "age" }}</span>
+					<ion-item>
+						<ion-label>
+							<h2>{{ member.nickname || member.firstName || member.lastName }}</h2>
+							<p>
+								<span [style.color]="member.groupId | group: 'color'">{{
+									member.groupId | group: "name"
+								}}</span
+								>,
+								<span>{{ member | member: "age" }}</span>
 							</p>
 						</ion-label>
 					</ion-item>

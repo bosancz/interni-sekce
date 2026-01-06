@@ -1,17 +1,25 @@
-import { Component, input, OnInit } from "@angular/core";
-
 import { CommonModule } from "@angular/common";
+import { Component, input, OnInit } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
-import { ModalController } from "@ionic/angular";
-import { IonButton, IonButtons, IonInput, IonItem, IonLabel, IonList, IonTextarea } from "@ionic/angular/standalone";
-import { AbstractModalComponent } from "src/app/services/modal.service";
+import {
+	IonButton,
+	IonButtons,
+	IonInput,
+	IonItem,
+	IonLabel,
+	IonList,
+	IonTextarea,
+	ModalController,
+} from "@ionic/angular/standalone";
+import { AbstractModalComponent } from "src/app/core/services/modal.service";
+import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-event-create-modal",
 	templateUrl: "./event-create-modal.component.html",
 	styleUrls: ["./event-create-modal.component.scss"],
-	
+
 	imports: [
 		CommonModule,
 		ReactiveFormsModule,
@@ -22,6 +30,7 @@ import { SDK } from "src/sdk";
 		IonButtons,
 		IonButton,
 		IonLabel,
+		ModalLayoutComponent,
 	],
 })
 export class EventCreateModalComponent extends AbstractModalComponent<SDK.EventCreateBody> implements OnInit {

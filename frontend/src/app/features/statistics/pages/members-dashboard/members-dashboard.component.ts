@@ -2,7 +2,7 @@ import { KeyValuePipe } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { BaseChartDirective } from "ng2-charts";
 import { MemberRoles } from "src/app/core/config/member-roles";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 
 interface ChartData {

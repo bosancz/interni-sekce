@@ -1,12 +1,16 @@
 import { ApplicationConfig, ErrorHandler, isDevMode, LOCALE_ID } from "@angular/core";
-import { provideRouter, RouteReuseStrategy, TitleStrategy, withComponentInputBinding, withInMemoryScrolling } from "@angular/router";
+import {
+	provideRouter,
+	RouteReuseStrategy,
+	TitleStrategy,
+	withComponentInputBinding,
+	withInMemoryScrolling,
+} from "@angular/router";
 import { provideServiceWorker } from "@angular/service-worker";
-import { IonicRouteStrategy, isPlatform } from "@ionic/angular";
-import { provideIonicAngular } from "@ionic/angular/standalone";
+import { IonicRouteStrategy, isPlatform, provideIonicAngular } from "@ionic/angular/standalone";
 import { appRoutes } from "./app.routing";
 import { MainErrorHandler } from "./core/error-handlers/main.error-handler";
 import { TitleService } from "./core/services/title.service";
-
 
 export const appConfig: ApplicationConfig = {
 	providers: [

@@ -2,25 +2,29 @@ import { KeyValuePipe } from "@angular/common";
 import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
-import { InfiniteScrollCustomEvent, ViewWillEnter } from "@ionic/angular";
 import {
-    IonContent,
-    IonItem,
-    IonLabel,
-    IonList,
-    IonSelect,
-    IonSelectOption,
-    IonSkeletonText,
+	InfiniteScrollCustomEvent,
+	IonContent,
+	IonInfiniteScroll,
+	IonInfiniteScrollContent,
+	IonItem,
+	IonLabel,
+	IonList,
+	IonSelect,
+	IonSelectOption,
+	IonSkeletonText,
+	ViewWillEnter,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/core/config/member-roles";
-import { ApiService } from "src/app/services/api.service";
-import { PlatformService } from "src/app/services/platform.service";
-import { ToastService } from "src/app/services/toast.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { PlatformService } from "src/app/core/services/platform.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
+import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
@@ -32,7 +36,7 @@ import { MembershipStates } from "../../../../core/config/membership-states";
 	selector: "members-list",
 	templateUrl: "./members-list.component.html",
 	styleUrls: ["./members-list.component.scss"],
-	
+
 	imports: [
 		PageHeaderComponent,
 		FilterComponent,
@@ -49,6 +53,9 @@ import { MembershipStates } from "../../../../core/config/membership-states";
 		KeyValuePipe,
 		GroupPipe,
 		MemberPipe,
+		GroupBadgeComponent,
+		IonInfiniteScroll,
+		IonInfiniteScrollContent,
 	],
 })
 export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnter {

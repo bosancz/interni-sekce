@@ -3,25 +3,23 @@ import { Component, signal } from "@angular/core";
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import {
-    AlertController,
-    InfiniteScrollCustomEvent,
-    NavController,
-    ViewWillEnter,
-    ViewWillLeave,
-} from "@ionic/angular";
-import {
-    IonInfiniteScroll,
-    IonInfiniteScrollContent,
-    IonItem,
-    IonSelect,
-    IonSelectOption,
-    IonSkeletonText,
+	AlertController,
+	InfiniteScrollCustomEvent,
+	IonInfiniteScroll,
+	IonInfiniteScrollContent,
+	IonItem,
+	IonSelect,
+	IonSelectOption,
+	IonSkeletonText,
+	NavController,
+	ViewWillEnter,
+	ViewWillLeave,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { AlbumStatuses } from "src/app/core/config/album-statuses";
-import { ApiService } from "src/app/services/api.service";
-import { PlatformService } from "src/app/services/platform.service";
-import { ToastService } from "src/app/services/toast.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { PlatformService } from "src/app/core/services/platform.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
@@ -37,7 +35,7 @@ import { SDK } from "src/sdk";
 	selector: "albums-list",
 	templateUrl: "./albums-list.component.html",
 	styleUrls: ["./albums-list.component.scss"],
-	
+
 	imports: [
 		FormsModule,
 		ReactiveFormsModule,
@@ -99,11 +97,9 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 			.pipe(untilDestroyed(this, "ionViewWillLeave"))
 			.subscribe((endpoints) => this.setActions(endpoints));
 
-		this.platformService.isPortrait
-			.pipe(untilDestroyed(this, "ionViewWillLeave"))
-			.subscribe((isPortrait) => {
-				this.view.set(isPortrait ? "grid" : "table");
-			});
+		this.platformService.isPortrait.pipe(untilDestroyed(this, "ionViewWillLeave")).subscribe((isPortrait) => {
+			this.view.set(isPortrait ? "grid" : "table");
+		});
 	}
 
 	ionViewWillLeave(): void {

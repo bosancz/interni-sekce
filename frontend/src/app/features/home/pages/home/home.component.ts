@@ -1,19 +1,34 @@
 import { Component, input, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute } from "@angular/router";
-import { PopoverController } from "@ionic/angular";
+import { PopoverController } from "@ionic/angular/standalone";
 import { map } from "rxjs";
-import { ApiService } from "src/app/services/api.service";
-import { PlatformService } from "src/app/services/platform.service";
-import { UserService } from "src/app/services/user.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { PlatformService } from "src/app/core/services/platform.service";
+import { UserService } from "src/app/core/services/user.service";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
+import { TabComponent } from "src/app/shared/components/tab/tab.component";
+import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { AccountMenuModalComponent } from "../../../../core/components/account-menu-modal/account-menu-modal.component";
+import { HomeCalendarComponent } from "../../components/home-calendar/home-calendar.component";
+import { HomeDashboardComponent } from "../../components/home-dashboard/home-dashboard.component";
+import { HomeMyComponent } from "../../components/home-my/home-my.component";
 
 @Component({
 	selector: "bo-home",
-	
+
 	templateUrl: "./home.component.html",
 	styleUrl: "./home.component.scss",
-	imports: [],
+	imports: [
+		PageContentComponent,
+		HomeDashboardComponent,
+		HomeCalendarComponent,
+		HomeMyComponent,
+		PageFooterComponent,
+		TabsComponent,
+		TabComponent,
+	],
 })
 export class HomeComponent {
 	months = input<number>(1);

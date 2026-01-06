@@ -1,18 +1,17 @@
-import { DatePipe } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { ModalController } from "@ionic/angular";
 import {
-    IonButton,
-    IonButtons,
-    IonContent,
-    IonItem,
-    IonLabel,
-    IonList,
-    IonSearchbar,
-    IonToolbar,
+	IonButton,
+	IonButtons,
+	IonContent,
+	IonItem,
+	IonLabel,
+	IonList,
+	IonSearchbar,
+	IonToolbar,
+	ModalController,
 } from "@ionic/angular/standalone";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
 
@@ -20,7 +19,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-selector-modal",
 	templateUrl: "./event-selector-modal.component.html",
 	styleUrls: ["./event-selector-modal.component.scss"],
-	
+
 	imports: [
 		IonToolbar,
 		IonSearchbar,
@@ -32,7 +31,6 @@ import { SDK } from "src/sdk";
 		IonLabel,
 		FormsModule,
 		DateRangePipe,
-		DatePipe,
 	],
 })
 export class EventSelectorModalComponent implements OnInit {

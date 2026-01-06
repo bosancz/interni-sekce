@@ -1,15 +1,14 @@
 import { Component, OnInit } from "@angular/core";
-import { AlertController } from "@ionic/angular";
-import { IonItem, IonLabel, IonList, IonText } from "@ionic/angular/standalone";
-import { ApiService } from "src/app/services/api.service";
-import { ToastService } from "src/app/services/toast.service";
+import { AlertController, IonItem, IonLabel, IonList, IonText } from "@ionic/angular/standalone";
+import { ApiService } from "src/app/core/services/api.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-account-credentials",
 	templateUrl: "./account-credentials.component.html",
 	styleUrls: ["./account-credentials.component.scss"],
-	
+
 	imports: [IonList, IonItem, IonLabel, IonText],
 })
 export class AccountCredentialsComponent implements OnInit {

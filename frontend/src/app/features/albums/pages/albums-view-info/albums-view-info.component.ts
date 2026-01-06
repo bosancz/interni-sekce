@@ -1,24 +1,24 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { AlertController, NavController } from "@ionic/angular";
+import { AlertController, NavController } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { ApiService } from "src/app/services/api.service";
-import { ToastService } from "src/app/services/toast.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
-import { AlbumsTabsComponent } from "../components/albums-tabs/albums-tabs.component";
+import { AlbumsTabsComponent } from "../../components/albums-tabs/albums-tabs.component";
 
 @UntilDestroy()
 @Component({
 	selector: "bo-albums-view-info",
 	templateUrl: "./albums-view-info.component.html",
 	styleUrls: ["./albums-view-info.component.scss"],
-	
+
 	imports: [
 		PageHeaderComponent,
 		PageContentComponent,

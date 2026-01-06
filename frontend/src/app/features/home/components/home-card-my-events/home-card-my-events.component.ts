@@ -1,13 +1,8 @@
 import { DatePipe, SlicePipe } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import {
-    IonItem,
-    IonLabel,
-    IonList,
-    IonSkeletonText,
-} from "@ionic/angular/standalone";
-import { ApiService } from "src/app/services/api.service";
+import { IonItem, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
+import { ApiService } from "src/app/core/services/api.service";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardOpenButtonComponent } from "src/app/shared/components/card-open-button/card-open-button.component";
@@ -19,7 +14,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-home-card-my-events",
 	templateUrl: "./home-card-my-events.component.html",
 	styleUrls: ["./home-card-my-events.component.scss"],
-	
+
 	imports: [
 		RouterLink,
 		DatePipe,

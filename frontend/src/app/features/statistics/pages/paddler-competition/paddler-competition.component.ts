@@ -6,7 +6,7 @@ import { debounceTime, filter, map } from "rxjs/operators";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { ListSliderComponent } from "../../components/list-slider/list-slider.component";
 
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 
 export type Ranked<T> = T & { rank?: number; rankTo?: number };
 

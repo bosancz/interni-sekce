@@ -13,9 +13,9 @@ import {
 } from "@ionic/angular/standalone";
 import { map } from "rxjs";
 import { AccountMenuModalComponent } from "src/app/core/components/account-menu-modal/account-menu-modal.component";
-import { ApiService } from "src/app/services/api.service";
-import { PlatformService } from "src/app/services/platform.service";
-import { UserService } from "src/app/services/user.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { PlatformService } from "src/app/core/services/platform.service";
+import { UserService } from "src/app/core/services/user.service";
 import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";

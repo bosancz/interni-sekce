@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
-import { ToastService } from "src/app/services/toast.service";
+import { ToastService } from "src/app/core/services/toast.service";
 
 @Component({
 	selector: "bo-copy-button",

@@ -1,28 +1,28 @@
+import { KeyValuePipe } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
-import { InfiniteScrollCustomEvent, ViewWillEnter } from "@ionic/angular";
-import { KeyValuePipe } from "@angular/common";
 import {
+	InfiniteScrollCustomEvent,
+	IonBadge,
 	IonContent,
+	IonInfiniteScroll,
+	IonInfiniteScrollContent,
 	IonItem,
 	IonLabel,
 	IonList,
 	IonSelect,
 	IonSelectOption,
-	IonSkeletonText,
-	IonInfiniteScroll,
-	IonInfiniteScrollContent,
-	IonBadge,
+	ViewWillEnter,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UserRoles } from "src/app/core/config/user-roles";
-import { ApiService } from "src/app/services/api.service";
-import { PlatformService } from "src/app/services/platform.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { PlatformService } from "src/app/core/services/platform.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
-import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { SDK } from "src/sdk";
 
 type UsersFilter = {
@@ -35,7 +35,7 @@ type UsersFilter = {
 	selector: "users-list",
 	templateUrl: "./users-list.component.html",
 	styleUrls: ["./users-list.component.scss"],
-	
+
 	imports: [
 		FormsModule,
 		RouterLink,
@@ -44,11 +44,11 @@ type UsersFilter = {
 		IonList,
 		IonItem,
 		IonLabel,
-		IonSkeletonText,
 		IonSelect,
 		IonSelectOption,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
+		IonBadge,
 		PageHeaderComponent,
 		FilterComponent,
 		AdminTableComponent,
@@ -98,10 +98,10 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
 	}
 
 	private async loadUsers(filter: FilterData, loadMore: boolean = false) {
-		const users = this.users();
+		const currentUsers = this.users();
 		const currentPage = this.page();
 		if (loadMore) {
-			if (users && users.length < currentPage * this.pageSize) return;
+			if (currentUsers && currentUsers.length < currentPage * this.pageSize) return;
 			this.page.set(currentPage + 1);
 		} else {
 			this.page.set(1);
@@ -115,10 +115,10 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
 			offset: (this.page() - 1) * this.pageSize,
 		};
 
-		const users = await this.api.UsersApi.listUsers(params).then((res) => res.data);
+		const newUsers = await this.api.UsersApi.listUsers(params).then((res: any) => res.data);
 
-		if (!this.users) this.users = [];
-		this.users.push(...users);
+		const existingUsers = this.users() || [];
+		this.users.set([...existingUsers, ...newUsers]);
 	}
 
 	getRoleName(roleId: SDK.UserRolesEnum) {
@@ -127,7 +127,7 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
 
 	private setActions(): void {
 		// TODO: check permissions
-		this.actions = [
+		this.actions.set([
 			{
 				text: "Přidat",
 				icon: "add-outline",

@@ -1,8 +1,7 @@
 import { Component } from "@angular/core";
-import { NavController, PopoverController } from "@ionic/angular";
-import { IonIcon, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
-import { LoginService } from "src/app/services/login.service";
-import { UserService } from "src/app/services/user.service";
+import { IonIcon, IonItem, IonLabel, IonList, NavController, PopoverController } from "@ionic/angular/standalone";
+import { LoginService } from "src/app/core/services/login.service";
+import { UserService } from "src/app/core/services/user.service";
 
 @Component({
 	selector: "bo-account-menu",

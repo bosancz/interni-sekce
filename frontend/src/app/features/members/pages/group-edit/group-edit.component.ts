@@ -1,17 +1,29 @@
 import { Component, OnInit } from "@angular/core";
-import { NgForm } from "@angular/forms";
+import { FormsModule, NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { NavController } from "@ionic/angular";
-import { ApiService } from "src/app/services/api.service";
-import { ToastService } from "src/app/services/toast.service";
+import { IonButton, IonInput, IonItem, IonLabel, IonList, NavController } from "@ionic/angular/standalone";
+import { ApiService } from "src/app/core/services/api.service";
+import { ToastService } from "src/app/core/services/toast.service";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-group-edit",
 	templateUrl: "./group-edit.component.html",
 	styleUrls: ["./group-edit.component.scss"],
-	
-	imports: [],
+	imports: [
+		FormsModule,
+		IonList,
+		IonItem,
+		IonLabel,
+		IonInput,
+		IonButton,
+		PageHeaderComponent,
+		PageContentComponent,
+		PageFooterComponent,
+	],
 })
 export class GroupEditComponent implements OnInit {
 	group?: SDK.GroupResponseWithLinks;

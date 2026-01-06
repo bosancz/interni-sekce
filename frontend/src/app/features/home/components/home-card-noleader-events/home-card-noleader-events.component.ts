@@ -2,7 +2,7 @@ import { DatePipe } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { ButtonComponent } from "src/app/shared/components/button/button.component";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
@@ -15,7 +15,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-home-card-noleader-events",
 	templateUrl: "./home-card-noleader-events.component.html",
 	styleUrls: ["./home-card-noleader-events.component.scss"],
-	
+
 	imports: [
 		RouterLink,
 		DatePipe,

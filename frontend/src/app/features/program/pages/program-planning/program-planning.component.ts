@@ -1,17 +1,23 @@
 import { Component, OnDestroy, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
-import { ViewWillEnter } from "@ionic/angular";
-import { IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar } from "@ionic/angular/standalone";
+import {
+	IonBackButton,
+	IonButtons,
+	IonContent,
+	IonHeader,
+	IonTitle,
+	IonToolbar,
+	ViewWillEnter,
+} from "@ionic/angular/standalone";
 import { DateTime } from "luxon";
 import { Subscription } from "rxjs";
 import { EventStatuses } from "src/app/core/config/event-statuses";
+import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { EventCreateModalComponent } from "src/app/features/events/components/event-create-modal/event-create-modal.component";
-import { ApiService } from "src/app/services/api.service";
-import { ModalService } from "src/app/services/modal.service";
-import { ToastService } from "src/app/services/toast.service";
 import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
-import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
 import { EventStatusLegendComponent } from "../../components/event-status-legend/event-status-legend.component";
 import { TrimesterSelectorComponent } from "../../components/trimester-selector/trimester-selector.component";
@@ -20,7 +26,7 @@ import { TrimesterSelectorComponent } from "../../components/trimester-selector/
 	selector: "program-planning",
 	templateUrl: "./program-planning.component.html",
 	styleUrls: ["./program-planning.component.scss"],
-	
+
 	imports: [
 		FormsModule,
 		IonContent,
@@ -29,7 +35,6 @@ import { TrimesterSelectorComponent } from "../../components/trimester-selector/
 		IonButtons,
 		IonBackButton,
 		IonTitle,
-		PageHeaderComponent,
 		EventCalendarComponent,
 		TrimesterSelectorComponent,
 		EventStatusLegendComponent,
@@ -86,7 +91,7 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
 		};
 
 		// TODO: use options above
-		const events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		const events = await this.api.EventsApi.listEvents().then((res: any) => res.data);
 		this.events.set(events);
 	}
 

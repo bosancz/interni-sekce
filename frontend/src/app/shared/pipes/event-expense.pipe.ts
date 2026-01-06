@@ -8,7 +8,6 @@ type EventExpensePipeProperty = "type" | "color";
 @Pipe({
 	name: "eventExpense",
 	pure: true,
-	standalone: false,
 })
 export class EventExpensePipe implements PipeTransform {
 	eventTypes = EventTypes;

@@ -1,38 +1,26 @@
 import { Component, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ModalController, ViewWillLeave } from "@ionic/angular";
-import {
-    IonButton,
-    IonIcon
-} from "@ionic/angular/standalone";
+import { IonButton, IonIcon, ModalController, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { ApiService } from "src/app/core/services/api.service";
+import { PlatformService } from "src/app/core/services/platform.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { PhotosEditComponent } from "src/app/features/albums/components/photos-edit/photos-edit.component";
 import { PhotosUploadComponent } from "src/app/features/albums/components/photos-upload/photos-upload.component";
-import { ApiService } from "src/app/services/api.service";
-import { PlatformService } from "src/app/services/platform.service";
-import { ToastService } from "src/app/services/toast.service";
-import { Action, ActionButtonsComponent } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
-import { AlbumsTabsComponent } from "../components/albums-tabs/albums-tabs.component";
-import { PhotoListComponent } from "../components/photo-list/photo-list.component";
+import { AlbumsTabsComponent } from "../../components/albums-tabs/albums-tabs.component";
+import { PhotoListComponent } from "../../components/photo-list/photo-list.component";
 
 @UntilDestroy()
 @Component({
 	selector: "bo-albums-view-photos",
 	templateUrl: "./albums-view-photos.component.html",
 	styleUrls: ["./albums-view-photos.component.scss"],
-	
-	imports: [
-		PageHeaderComponent,
-		PageContentComponent,
-		ActionButtonsComponent,
-		PhotoListComponent,
-		AlbumsTabsComponent,
-		IonButton,
-		IonIcon,
-	],
+
+	imports: [PageHeaderComponent, PageContentComponent, PhotoListComponent, AlbumsTabsComponent, IonButton, IonIcon],
 })
 export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
 	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
@@ -65,12 +53,12 @@ export class AlbumsViewPhotosComponent implements OnInit, ViewWillLeave {
 
 	ngOnInit(): void {
 		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {
-			if (this.album?.id !== params["album"]) this.loadPhotos(params["album"]);
+			if (this.album()?.id !== params["album"]) this.loadPhotos(params["album"]);
 		});
 
 		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => {
 			if (params.photo && !this.photosModal) {
-				const photo = this.photos?.find((item) => item.id);
+				const photo = this.photos()?.find((item) => item.id);
 				if (photo) this.openPhoto(photo);
 			}
 			if (!params.photo && this.photosModal) {

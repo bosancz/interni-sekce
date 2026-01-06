@@ -3,9 +3,7 @@
 		<ion-buttons slot="end">
 			@if (photo()) {
 				<ion-button color="danger" fill="clear" (click)="delete(photo()!)">Smazat</ion-button>
-				<ion-button fill="clear" id="info-trigger" (keydown.enter)="$event.preventDefault()"
-					>Info</ion-button
-				>
+				<ion-button fill="clear" id="info-trigger" (keydown.enter)="$event.preventDefault()">Info</ion-button>
 			}
 			<ion-button fill="clear" (click)="close()">Zavřít</ion-button>
 		</ion-buttons>
@@ -18,47 +16,49 @@
 			(didDismiss)="infoOpen.set(false)"
 			(willPresent)="infoOpen.set(true)"
 		>
-		<ng-template>
-			<ion-content class="ion-padding">
-				<ion-list>
-					<ion-item>
-						<ion-label>
-							<h3>Datum</h3>
-							<p>{{ photo()!.timestamp | date: "d. M. y H:mm:ss" }}</p>
-						</ion-label>
-					</ion-item>
-					<ion-item>
-						<ion-label>
-							<h3>Velikost</h3>
-							@if (photo()!.width && photo()!.height) {
-								<p>
-									{{ photo()!.width }}×{{ photo()!.height }} ({{ getMpix(photo()!.width, photo()!.height) }}
-									MP)
-								</p>
-							}
-							@if (!photo()!.width || !photo()!.height) {
-								<p>neznámá</p>
-							}
-						</ion-label>
-					</ion-item>
-					<ion-item [title]="photo()!.name">
-						<ion-label>
-							<h3>Název</h3>
-							<p>{{ photo()!.name }}</p>
-						</ion-label>
-					</ion-item>
-					@if (photo()!.uploadedBy) {
+			<ng-template>
+				<ion-content class="ion-padding">
+					<ion-list>
 						<ion-item>
 							<ion-label>
-								<h3>Nahrál/a</h3>
-								<p>{{ photo()!.uploadedBy!.member!.nickname || photo()!.uploadedBy!.login }}</p>
+								<h3>Datum</h3>
+								<p>{{ photo()!.timestamp | date: "d. M. y H:mm:ss" }}</p>
 							</ion-label>
 						</ion-item>
-					}
-				</ion-list>
-			</ion-content>
-		</ng-template>
-	</ion-popover>
+						<ion-item>
+							<ion-label>
+								<h3>Velikost</h3>
+								@if (photo()!.width && photo()!.height) {
+									<p>
+										{{ photo()!.width }}×{{ photo()!.height }} ({{
+											getMpix(photo()!.width!, photo()!.height!)
+										}}
+										MP)
+									</p>
+								}
+								@if (!photo()!.width || !photo()!.height) {
+									<p>neznámá</p>
+								}
+							</ion-label>
+						</ion-item>
+						<ion-item [title]="photo()!.name">
+							<ion-label>
+								<h3>Název</h3>
+								<p>{{ photo()!.name }}</p>
+							</ion-label>
+						</ion-item>
+						@if (photo()!.uploadedBy) {
+							<ion-item>
+								<ion-label>
+									<h3>Nahrál/a</h3>
+									<p>{{ photo()!.uploadedBy!.member!.nickname || photo()!.uploadedBy!.login }}</p>
+								</ion-label>
+							</ion-item>
+						}
+					</ion-list>
+				</ion-content>
+			</ng-template>
+		</ion-popover>
 	}
 	<!-- 
   <swiper-container
@@ -82,7 +82,9 @@
 					<ion-label [class.nocaption]="!photo()!.caption" (dblclick)="editCaption()">
 						{{ photo()!.caption || "Bez popisku" }}
 					</ion-label>
-					<ion-button (click)="editCaption()" fill="clear"><ion-icon name="create-outline"></ion-icon></ion-button>
+					<ion-button (click)="editCaption()" fill="clear"
+						><ion-icon name="create-outline"></ion-icon
+					></ion-button>
 				</ion-item>
 			}
 			@if (editingCaption()) {

@@ -1,13 +1,12 @@
 import { Component, input, OnInit } from "@angular/core";
-import { NavController } from "@ionic/angular";
-import { IonBadge, IonIcon, IonLabel, IonTabBar, IonTabButton } from "@ionic/angular/standalone";
+import { IonBadge, IonIcon, IonLabel, IonTabBar, IonTabButton, NavController } from "@ionic/angular/standalone";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "bo-albums-tabs",
 	templateUrl: "./albums-tabs.component.html",
 	styleUrls: ["./albums-tabs.component.scss"],
-	
+
 	imports: [IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge],
 })
 export class AlbumsTabsComponent implements OnInit {

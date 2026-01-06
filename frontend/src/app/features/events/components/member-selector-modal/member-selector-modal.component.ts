@@ -1,25 +1,42 @@
 import { CommonModule } from "@angular/common";
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import {
-    IonBadge,
-    IonButton,
-    IonButtons,
-    IonItem,
-    IonLabel,
-    IonList,
-    IonSearchbar,
-    IonToolbar,
+	IonBadge,
+	IonButton,
+	IonButtons,
+	IonItem,
+	IonLabel,
+	IonList,
+	IonSearchbar,
+	IonToolbar,
+	ModalController,
+	ViewDidEnter,
 } from "@ionic/angular/standalone";
-import { ApiService } from "src/app/services/api.service";
-import { AbstractModalComponent } from "src/app/services/modal.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { AbstractModalComponent } from "src/app/core/services/modal.service";
+import { MemberItemDetailComponent } from "src/app/shared/components/member-item-detail/member-item-detail.component";
 import { SDK } from "src/sdk";
+import { GroupPipe } from "../../../../shared/pipes/group.pipe";
+import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 
 @Component({
 	selector: "bo-member-selector-modal",
 	templateUrl: "./member-selector-modal.component.html",
 	styleUrls: ["./member-selector-modal.component.scss"],
-	
-	imports: [CommonModule, IonSearchbar, IonToolbar, IonButtons, IonButton, IonList, IonItem, IonLabel, IonBadge],
+	imports: [
+		CommonModule,
+		IonSearchbar,
+		IonToolbar,
+		IonButtons,
+		IonButton,
+		IonList,
+		IonItem,
+		IonLabel,
+		IonBadge,
+		MemberItemDetailComponent,
+		GroupPipe,
+		MemberPipe,
+	],
 })
 export class MemberSelectorModalComponent
 	extends AbstractModalComponent<SDK.MemberResponse>

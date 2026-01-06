@@ -1,18 +1,47 @@
+import { CommonModule, KeyValuePipe } from "@angular/common";
 import { Component } from "@angular/core";
-import { NgForm } from "@angular/forms";
+import { FormsModule, NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ViewWillEnter } from "@ionic/angular";
+import {
+	IonButton,
+	IonButtons,
+	IonInput,
+	IonItem,
+	IonLabel,
+	IonSelect,
+	IonSelectOption,
+	ViewWillEnter,
+} from "@ionic/angular/standalone";
 import { MemberRoles } from "src/app/core/config/member-roles";
-import { ApiService } from "src/app/services/api.service";
-import { ToastService } from "src/app/services/toast.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { ToastService } from "src/app/core/services/toast.service";
+import { GroupsSelectComponent } from "src/app/shared/components/groups-select/groups-select.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
 
 @Component({
 	selector: "members-create",
 	templateUrl: "./members-create.component.html",
 	styleUrls: ["./members-create.component.scss"],
-	
-	imports: [],
+
+	imports: [
+		CommonModule,
+		FormsModule,
+		KeyValuePipe,
+		PageHeaderComponent,
+		PageContentComponent,
+		PageFooterComponent,
+		GroupsSelectComponent,
+		IonItem,
+		IonLabel,
+		IonInput,
+		IonSelect,
+		IonSelectOption,
+		IonButton,
+		IonButtons,
+	],
 })
 export class MembersCreateComponent implements ViewWillEnter {
 	groups?: SDK.GroupResponseWithLinks[];

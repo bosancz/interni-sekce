@@ -1,23 +1,55 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
-import { AlertController, ViewWillEnter, ViewWillLeave } from "@ionic/angular";
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from "@angular/router";
+import {
+	AlertController,
+	IonIcon,
+	IonTabBar,
+	IonTabButton,
+	IonToolbar,
+	ViewWillEnter,
+	ViewWillLeave,
+} from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MembershipStates } from "src/app/core/config/membership-states";
-import { ApiService } from "src/app/services/api.service";
-import { TitleService } from "src/app/services/title.service";
-import { ToastService } from "src/app/services/toast.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { TitleService } from "src/app/core/services/title.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
-import { MemberStoreService } from "../../services/member-store.service";
+import { MemberAddressComponent } from "../../components/member-address/member-address.component";
+import { MemberContactComponent } from "../../components/member-contact/member-contact.component";
+import MemberContactsComponent from "../../components/member-contacts/member-contacts.component";
+import { MemberHealthComponent } from "../../components/member-health/member-health.component";
+import { MemberInfoComponent } from "../../components/member-info/member-info.component";
+import { MemberMembershipComponent } from "../../components/member-membership/member-membership.component";
+import { MemberProfileComponent } from "../../components/member-profile/member-profile.component";
 
 @UntilDestroy()
 @Component({
 	selector: "members-view",
 	templateUrl: "./members-view.component.html",
 	styleUrls: ["./members-view.component.scss"],
-	providers: [MemberStoreService],
-	
-	imports: [],
+	imports: [
+		IonToolbar,
+		IonTabBar,
+		IonTabButton,
+		IonIcon,
+		RouterLink,
+		RouterLinkActive,
+		PageHeaderComponent,
+		PageContentComponent,
+		PageFooterComponent,
+		MemberProfileComponent,
+		MemberInfoComponent,
+		MemberContactComponent,
+		MemberAddressComponent,
+		MemberMembershipComponent,
+		MemberHealthComponent,
+		MemberContactsComponent,
+	],
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeave {
 	member?: SDK.MemberResponseWithLinks | null;

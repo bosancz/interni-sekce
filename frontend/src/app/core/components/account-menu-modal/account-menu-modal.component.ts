@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { PlatformService } from "src/app/services/platform.service";
+import { PlatformService } from "src/app/core/services/platform.service";
 import { DarkModeToggleComponent } from "src/app/shared/components/dark-mode-toggle/dark-mode-toggle.component";
 import { VersionComponent } from "src/app/shared/components/version/version.component";
 import { AccountMenuComponent } from "../account-menu/account-menu.component";

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { DateTime } from "luxon";
 import { Subject } from "rxjs";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 
 @Injectable({
 	providedIn: "root",

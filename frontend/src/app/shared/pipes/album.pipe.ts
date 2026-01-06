@@ -6,7 +6,6 @@ type AlbumPipeProperty = "status";
 
 @Pipe({
 	name: "album",
-	standalone: false,
 })
 export class AlbumPipe implements PipeTransform {
 	defaultProperties: { [property: string]: any } = {};

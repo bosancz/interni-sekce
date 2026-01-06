@@ -1,17 +1,27 @@
 import { Component, Injector, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar } from "@ionic/angular/standalone";
-import { ApiService } from "src/app/services/api.service";
-import { ToastService } from "src/app/services/toast.service";
+import {
+	IonBackButton,
+	IonButton,
+	IonButtons,
+	IonContent,
+	IonHeader,
+	IonTitle,
+	IonToolbar,
+} from "@ionic/angular/standalone";
+import { ApiService } from "src/app/core/services/api.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { Action, ActionButtonsComponent } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
-import { TrimesterDateRange, TrimesterSelectorComponent } from "../../components/trimester-selector/trimester-selector.component";
+import {
+	TrimesterDateRange,
+	TrimesterSelectorComponent,
+} from "../../components/trimester-selector/trimester-selector.component";
 
 @Component({
 	selector: "bo-program-print",
 	templateUrl: "./program-print.component.html",
 	styleUrls: ["./program-print.component.scss"],
-	
+
 	imports: [
 		FormsModule,
 		IonContent,
@@ -21,7 +31,6 @@ import { TrimesterDateRange, TrimesterSelectorComponent } from "../../components
 		IonBackButton,
 		IonTitle,
 		IonButton,
-		PageHeaderComponent,
 		ActionButtonsComponent,
 		TrimesterSelectorComponent,
 	],

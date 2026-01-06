@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Platform } from "@ionic/angular";
+import { Platform } from "@ionic/angular/standalone";
 import { BehaviorSubject, Observable } from "rxjs";
 import { Logger } from "src/logger";
 

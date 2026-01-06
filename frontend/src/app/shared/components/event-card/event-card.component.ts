@@ -2,7 +2,7 @@ import { NgTemplateOutlet } from "@angular/common";
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonButton, IonButtons, IonCard, IonCardContent, IonItem, IonLabel } from "@ionic/angular/standalone";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 import { DateRangePipe } from "../../pipes/date-range.pipe";
 import { EventStatusPipe } from "../../pipes/event-status.pipe";

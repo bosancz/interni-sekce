@@ -33,13 +33,13 @@
 			<ion-label>
 				<h3>{{ event.name }}</h3>
 				<p>
-					@if (event?.dateFrom) {
+					@if (event.dateFrom) {
 						{{ [event.dateFrom, event.dateTill] | dateRange }}
 					}
-					@if (event?.dateFrom && event?.place) {
+					@if (event.dateFrom && event.place) {
 						,
 					}
-					@if (event?.place) {
+					@if (event.place) {
 						{{ event.place }}
 					}
 				</p>
@@ -47,7 +47,7 @@
 		</ng-template>
 
 		<ion-card-content>
-			@if (event?.description) {
+			@if (event.description) {
 				<p class="description mb-3">{{ event.description }}</p>
 			}
 

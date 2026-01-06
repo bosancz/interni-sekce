@@ -1,5 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, Input, OnChanges, OnDestroy } from "@angular/core";
-import { TitleService } from "src/app/services/title.service";
+import { TitleService } from "src/app/core/services/title.service";
 
 @Directive({
 	selector: "[pageTitle]",

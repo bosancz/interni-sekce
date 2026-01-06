@@ -1,8 +1,8 @@
 import { Component } from "@angular/core";
 import { ActivatedRoute, RouterLink } from "@angular/router";
-import { ActionSheetController, AlertController, NavController, ViewWillEnter } from "@ionic/angular";
-import { ApiService } from "src/app/services/api.service";
-import { ToastService } from "src/app/services/toast.service";
+import { ActionSheetController, AlertController, NavController, ViewWillEnter } from "@ionic/angular/standalone";
+import { ApiService } from "src/app/core/services/api.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
@@ -16,7 +16,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-groups-list",
 	templateUrl: "./groups-list.component.html",
 	styleUrls: ["./groups-list.component.scss"],
-	
+
 	imports: [
 		PageHeaderComponent,
 		PageContentComponent,

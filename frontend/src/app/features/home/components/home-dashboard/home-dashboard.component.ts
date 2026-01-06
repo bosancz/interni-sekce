@@ -1,10 +1,12 @@
 import { Component, OnInit, signal } from "@angular/core";
-import { PopoverController } from "@ionic/angular";
+import { PopoverController } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
-import { ApiService } from "src/app/services/api.service";
-import { UserService } from "src/app/services/user.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { UserService } from "src/app/core/services/user.service";
+import { ButtonSquareComponent } from "src/app/shared/components/button-square/button-square.component";
 import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { SDK } from "src/sdk";
 import { HomeCardMyEventsComponent } from "../home-card-my-events/home-card-my-events.component";
 import { HomeCardNoleaderEventsComponent } from "../home-card-noleader-events/home-card-noleader-events.component";
@@ -15,12 +17,14 @@ import { HomeCardSearchMemberComponent } from "../home-card-search-member/home-c
 	selector: "bo-home-dashboard",
 	templateUrl: "./home-dashboard.component.html",
 	styleUrls: ["./home-dashboard.component.scss"],
-	
+
 	imports: [
 		EventCalendarComponent,
 		HomeCardMyEventsComponent,
 		HomeCardNoleaderEventsComponent,
 		HomeCardSearchMemberComponent,
+		PageContentComponent,
+		ButtonSquareComponent,
 	],
 })
 export class HomeDashboardComponent implements OnInit {
@@ -56,7 +60,7 @@ export class HomeDashboardComponent implements OnInit {
 		};
 
 		// TODO: use options above
-		const events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		const events = await this.api.EventsApi.listEvents().then((res: any) => res.data);
 		this.events.set(events);
 	}
 }

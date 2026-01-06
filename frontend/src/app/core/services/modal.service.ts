@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable, TemplateRef } from "@angular/core";
-import { AlertController, ModalController, ModalOptions } from "@ionic/angular";
+import { AlertController, ModalController, ModalOptions } from "@ionic/angular/standalone";
 import { ComponentProps, TextFieldTypes } from "@ionic/core";
-import { ModalTemplateComponent } from "../shared/components/modal-template/modal-template.component";
+import { ModalTemplateComponent } from "../../shared/components/modal-template/modal-template.component";
 
 interface BaseModalOptions {
 	header?: string;

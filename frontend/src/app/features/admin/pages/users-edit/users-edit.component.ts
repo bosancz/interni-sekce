@@ -5,8 +5,8 @@ import { ActivatedRoute, Params, Router } from "@angular/router";
 import { IonBackButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonSelect, IonSelectOption, IonTitle, IonToolbar } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UserRoles } from "src/app/core/config/user-roles";
-import { ApiService } from "src/app/services/api.service";
-import { ToastService } from "src/app/services/toast.service";
+import { ApiService } from "src/app/core/services/api.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { Action, ActionButtonsComponent } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { SDK } from "src/sdk";
@@ -73,13 +73,13 @@ export class UsersEditComponent implements OnInit {
 
 	// DB interaction
 	async loadUser(userId: number) {
-		const user = await this.api.UsersApi.getUser(userId, {}).then((res) => res.data);
+		const user = await this.api.UsersApi.getUser(userId, {}).then((res: any) => res.data);
 		this.user.set(user);
 	}
 
 	async loadMembers() {
-		let members = await this.api.MembersApi.listMembers().then((res) => res.data);
-		members.sort((a, b) => (a.nickname || "").localeCompare(b.nickname || ""));
+		let members = await this.api.MembersApi.listMembers().then((res: any) => res.data);
+		members.sort((a: any, b: any) => (a.nickname || "").localeCompare(b.nickname || ""));
 		this.members.set(members);
 	}
 

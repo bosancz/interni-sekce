@@ -1,9 +1,8 @@
 import { CommonModule } from "@angular/common";
 import { AfterViewInit, Component, ElementRef, forwardRef, Input, OnDestroy, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { ModalController } from "@ionic/angular";
-import { IonChip, IonIcon } from "@ionic/angular/standalone";
-import { ApiService } from "src/app/services/api.service";
+import { IonChip, IonIcon, ModalController } from "@ionic/angular/standalone";
+import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 import { MemberSelectorModalComponent } from "../member-selector-modal/member-selector-modal.component";
 
@@ -23,7 +22,7 @@ export type MemberSelectorType = SDK.MemberResponse | SDK.MemberResponse[] | nul
 	host: {
 		"(click)": "openModal(); $event.stopPropagation()",
 	},
-	
+
 	imports: [CommonModule, IonChip, IonIcon],
 })
 export class MemberSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {

@@ -3,7 +3,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { SwUpdate } from "@angular/service-worker";
 import { IonSpinner } from "@ionic/angular/standalone";
 import { map } from "rxjs";
-import { ApiService } from "src/app/services/api.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { Logger } from "src/logger";
 
 @Component({
