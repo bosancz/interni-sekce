@@ -97,7 +97,7 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
 				text: "Přidat",
 				icon: "add-outline",
 				pinned: true,
-				handler: () => this.router.navigate(["vytvorit"], { relativeTo: this.route }),
+				handler: () => this.router.navigate(["/admin/uzivatele/vytvorit"], { relativeTo: this.route }),
 			},
 		];
 	}

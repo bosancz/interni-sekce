@@ -1,0 +1,12 @@
+bo-card {
+	aspect-ratio: 1/1;
+	overflow: hidden;
+
+	bo-card-content {
+		padding-top: 0 !important;
+	}
+
+	img {
+		width: 100%;
+	}
+}

@@ -10,6 +10,7 @@ import { ActionButtonsComponent } from "./components/action-buttons/action-butto
 import { AddButtonComponent } from "./components/add-button/add-button.component";
 import { AdminTableComponent } from "./components/admin-table/admin-table.component";
 import { AvatarComponent } from "./components/avatar/avatar.component";
+import { ButtonSquareComponent } from "./components/button-square/button-square.component";
 import { ButtonComponent } from "./components/button/button.component";
 import { CardContentComponent } from "./components/card-content/card-content.component";
 import { CardFooterComponent } from "./components/card-footer/card-footer.component";
@@ -125,6 +126,7 @@ register();
 		VersionComponent,
 		DarkModeToggleComponent,
 		ActionButtonsModalComponent,
+		ButtonSquareComponent,
 	],
 	exports: [
 		FormsModule,
@@ -187,6 +189,7 @@ register();
 		ButtonComponent,
 		VersionComponent,
 		DarkModeToggleComponent,
+		ButtonSquareComponent,
 	],
 	providers: [DatePipe, provideCharts(withDefaultRegisterables())],
 })

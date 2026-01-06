@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, input, OnInit, Optional, signal } from "@angular/core";
+import { RouterLink } from "@angular/router";
 
 @Component({
 	selector: "bo-card",
@@ -6,14 +7,24 @@ import { Component, Input, OnInit } from "@angular/core";
 	styleUrls: ["./card.component.scss"],
 	standalone: false,
 	host: {
-		"[style]": "'--card-color: ' + (color || 'black')",
+		"[style]": "'--card-color: ' + (color() || 'black')",
+		"[class.clickable]": "hasRouterLink()",
+		"[class.mousedown]": "mouseDown()",
+		"(mousedown)": "mouseDown.set(true)",
+		"(mouseup)": "mouseDown.set(false)",
+		"(mouseleave)": "mouseDown.set(false)",
 	},
 })
 export class CardComponent implements OnInit {
-	@Input() title?: string;
-	@Input() color?: string;
+	title = input<string>();
+	color = input<string>();
 
-	constructor() {}
+	hasRouterLink = signal<boolean>(false);
+	mouseDown = signal<boolean>(false);
+
+	constructor(@Optional() routerLink?: RouterLink) {
+		this.hasRouterLink.set(!!routerLink);
+	}
 
 	ngOnInit(): void {}
 }

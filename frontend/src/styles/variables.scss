@@ -46,7 +46,17 @@ $circle-size: 2rem;
 // css variables
 :root {
 	--san-blue: hsl(232, 48%, 32%);
+	--san-blue-rgb: 54, 81, 145;
+
 	--san-green: hsl(83, 45%, 43%);
+	--san-green-rgb: 101, 145, 63;
+
 	--san-yellow: hsl(34, 76%, 52%);
+	--san-yellow-rgb: 255, 179, 64;
+
 	--san-red: hsl(358, 65%, 45%);
+	--san-red-rgb: 231, 76, 60;
+
+	--bo-shadow: rgba(0, 0, 0, 0.35) 0px 0 12px;
+	--bo-shadow-small: rgba(0, 0, 0, 0.35) 0px 0 5px;
 }
