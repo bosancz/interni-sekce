@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, input, OnInit, output } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
+import { IonTabBar } from "@ionic/angular/standalone";
 
 export const TABS_QUERY_PARAM = "tab";
 
@@ -7,12 +8,13 @@ export const TABS_QUERY_PARAM = "tab";
 	selector: "bo-tabs",
 	templateUrl: "./tabs.component.html",
 	styleUrl: "./tabs.component.scss",
-	standalone: false,
+	
+	imports: [IonTabBar],
 })
 export class TabsComponent implements OnInit {
-	@Input() defaultTab?: string;
+	defaultTab = input<string | undefined>();
 
-	@Output() change = new EventEmitter<string>();
+	change = output<string>();
 
 	constructor(
 		private router: Router,
@@ -24,7 +26,10 @@ export class TabsComponent implements OnInit {
 			const name = params[TABS_QUERY_PARAM];
 
 			if (name) this.change.emit(name);
-			else if (this.defaultTab) this.openTab(this.defaultTab);
+			else {
+				const defaultTab = this.defaultTab();
+				if (defaultTab) this.openTab(defaultTab);
+			}
 		});
 	}
 

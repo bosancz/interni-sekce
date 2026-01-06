@@ -3,7 +3,6 @@ import { ControlValueAccessor } from "@angular/forms";
 
 @Component({
 	selector: "bo-markdown-editor",
-	standalone: false,
 	templateUrl: "./markdown-editor.component.html",
 	styleUrl: "./markdown-editor.component.scss",
 })

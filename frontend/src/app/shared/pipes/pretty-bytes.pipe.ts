@@ -3,7 +3,6 @@ import prettyBytes, { Options } from "pretty-bytes";
 
 @Pipe({
 	name: "prettyBytes",
-	standalone: false,
 })
 export class PrettyBytesPipe implements PipeTransform {
 	transform(value: number, options?: Options) {

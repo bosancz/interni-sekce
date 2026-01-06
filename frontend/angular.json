@@ -10,7 +10,7 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist",
             "index": "src/index.html",
@@ -25,12 +25,7 @@
             "assets": [
               "src/assets",
               "src/manifest.json",
-              "src/config.json",
-              {
-                "glob": "**/*.svg",
-                "input": "node_modules/ionicons/dist/ionicons/svg",
-                "output": "./svg"
-              }
+              "src/config.json"
             ],
             "scripts": [],
             "browser": "src/main.ts",
@@ -114,27 +109,37 @@
     "@schematics/angular:component": {
       "skipTests": true,
       "style": "scss",
-      "standalone": false
+      "type": "component"
     },
     "@schematics/angular:directive": {
       "prefix": "",
-      "skipTests": true
+      "skipTests": true,
+      "type": "directive"
     },
     "@schematics/angular:guard": {
-      "skipTests": true
+      "skipTests": true,
+      "typeSeparator": "."
     },
     "@schematics/angular:interceptor": {
-      "skipTests": true
+      "skipTests": true,
+      "typeSeparator": "."
     },
-    "@schematics/angular:module": {},
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
     "@schematics/angular:pipe": {
-      "skipTests": true
+      "skipTests": true,
+      "typeSeparator": "."
     },
     "@schematics/angular:service": {
-      "skipTests": true
+      "skipTests": true,
+      "type": "service"
     },
     "@schematics/angular:application": {
       "strict": true
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
     }
   },
   "cli": {

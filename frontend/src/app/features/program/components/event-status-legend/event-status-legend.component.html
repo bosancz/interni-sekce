@@ -1,0 +1,14 @@
+<div class="legend d-none d-lg-block">
+	<ion-list lines="none">
+		@for (status of statuses | keyvalue; track status.key) {
+			<ion-item>
+				<ion-label
+					><bo-dot [color]="status.value.color" class="me-1"></bo-dot>&nbsp;{{ status.value.name || status.key }}
+				</ion-label>
+			</ion-item>
+		}
+		<ion-item class="text-dark">
+			<ion-label><bo-dot class="me-1"></bo-dot>&nbsp;ČPV</ion-label>
+		</ion-item>
+	</ion-list>
+</div>

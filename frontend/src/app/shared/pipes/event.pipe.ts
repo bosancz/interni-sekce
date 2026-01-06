@@ -1,12 +1,12 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { EventTypes } from "src/app/config/event-types";
+import { EventTypes } from "src/app/core/config/event-types";
 import { SDK } from "src/sdk";
 
 type EventPipeProperty = "image" | "color" | "class";
 
 @Pipe({
 	name: "event",
-	standalone: false,
+	
 })
 export class EventPipe implements PipeTransform {
 	eventTypes = EventTypes;

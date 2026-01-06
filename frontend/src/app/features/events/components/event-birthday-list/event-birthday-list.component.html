@@ -1,0 +1,9 @@
+@if (birthdays.length) {
+	<ul>
+		@for (birthday of birthdays; track birthday.member.id) {
+			<li>{{ birthday.member.nickname }} ({{ birthday.date | date: "d. M." }}, {{ birthday.age }} let)</li>
+		}
+	</ul>
+} @else {
+	<ng-container>Žádné narozeniny v době konání akce</ng-container>
+}

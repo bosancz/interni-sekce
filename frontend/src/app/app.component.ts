@@ -1,16 +1,23 @@
 import { Component, OnInit } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { MenuController } from "@ionic/angular";
-import { LoginService } from "src/app/services/login.service";
-import { UserService } from "src/app/services/user.service";
-import { ApiService } from "./services/api.service";
-import { PlatformService } from "./services/platform.service";
+import { IonApp, IonRouterOutlet, MenuController } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { calendarSharp, heartSharp, homeSharp } from "ionicons/icons";
+import { LoginService } from "src/app/core/services/login.service";
+import { UserService } from "src/app/core/services/user.service";
+import { AppLoadingComponent } from "./core/components/app-loading/app-loading.component";
+import { HeaderComponent } from "./core/components/header/header.component";
+import { LoginComponent } from "./core/components/login/login.component";
+import { SidebarComponent } from "./core/components/sidebar/sidebar.component";
+import { ApiService } from "./core/services/api.service";
+import { PlatformService } from "./core/services/platform.service";
 
 @Component({
 	selector: "bo-app",
 	templateUrl: "./app.component.html",
 	styleUrls: ["./app.component.scss"],
-	standalone: false,
+
+	imports: [IonApp, IonRouterOutlet, HeaderComponent, SidebarComponent, LoginComponent, AppLoadingComponent],
 })
 export class AppComponent implements OnInit {
 	user = toSignal(this.userService.user);
@@ -23,7 +30,9 @@ export class AppComponent implements OnInit {
 		private menuController: MenuController,
 		private api: ApiService,
 		private readonly platformService: PlatformService,
-	) {}
+	) {
+		addIcons({ homeSharp, calendarSharp, heartSharp });
+	}
 
 	ngOnInit() {
 		this.userService.user.subscribe((user) => {

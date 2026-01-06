@@ -1,12 +1,11 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { AlbumStatuses } from "src/app/config/album-statuses";
+import { AlbumStatuses } from "src/app/core/config/album-statuses";
 import { SDK } from "src/sdk";
 
 type AlbumPipeProperty = "status";
 
 @Pipe({
 	name: "album",
-	standalone: false,
 })
 export class AlbumPipe implements PipeTransform {
 	defaultProperties: { [property: string]: any } = {};

@@ -1,0 +1,11 @@
+<ion-avatar class="avatar">
+	@if (member()) {
+		<span>{{ member()! | member: "initials" }}</span>
+	}
+</ion-avatar>
+
+@if (member()?.nickname || member()?.firstName) {
+	<h2 class="mt-3 d-none d-xl-block selectable">
+		{{ member()?.nickname || member()?.firstName }}
+	</h2>
+}

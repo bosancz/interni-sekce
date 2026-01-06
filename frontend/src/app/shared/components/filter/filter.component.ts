@@ -3,18 +3,19 @@ import {
 	AfterViewInit,
 	Component,
 	ContentChildren,
-	EventEmitter,
-	Input,
-	Output,
+	input,
+	output,
 	QueryList,
 	TemplateRef,
 	ViewChild,
 } from "@angular/core";
-import { NgModel } from "@angular/forms";
+import { FormsModule, NgModel } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { IonModal, IonSearchbar } from "@ionic/angular";
+import { IonBadge, IonButton, IonIcon, IonModal, IonSearchbar, IonToolbar } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { ModalService } from "src/app/services/modal.service";
+import { addIcons } from "ionicons";
+import { filterOutline } from "ionicons/icons";
+import { ModalService } from "src/app/core/services/modal.service";
 import { UrlParams } from "src/helpers/typings";
 import { FilterModalComponent } from "../filter-modal/filter-modal.component";
 
@@ -25,12 +26,13 @@ export type FilterData = any;
 	selector: "bo-filter",
 	templateUrl: "./filter.component.html",
 	styleUrls: ["./filter.component.scss"],
-	standalone: false,
+
+	imports: [IonToolbar, IonSearchbar, IonButton, IonIcon, IonBadge, FormsModule],
 })
 export class FilterComponent implements AfterContentInit, AfterViewInit {
-	@Input() search: boolean = false;
-	@Input() paramsSeparator: string = ",";
-	@Output() change = new EventEmitter<FilterData>();
+	search = input<boolean>(false);
+	paramsSeparator = input<string>(",");
+	change = output<FilterData>();
 
 	@ViewChild(IonModal) modal?: IonModal;
 	@ViewChild(IonSearchbar) searchbar?: IonSearchbar;
@@ -50,7 +52,9 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 		private router: Router,
 		private route: ActivatedRoute,
 		private modalService: ModalService,
-	) {}
+	) {
+		addIcons({ filterOutline });
+	}
 
 	public ngAfterContentInit() {
 		setTimeout(() => {
@@ -89,12 +93,13 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 	public setParams() {
 		const queryParams: UrlParams = { ...this.route.snapshot.queryParams };
 
+		const paramsSeparator = this.paramsSeparator();
 		this.controls.forEach((item) => {
 			if (Array.isArray(item.value)) {
 				queryParams[item.name] = item.value
 					.filter((i) => !!i)
 					.map((i) => String(i))
-					.join(this.paramsSeparator);
+					.join(paramsSeparator);
 			} else {
 				queryParams[item.name] = item.value ? String(item.value) : undefined;
 			}
@@ -102,7 +107,7 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 			if (!queryParams[item.name]) delete queryParams[item.name];
 		});
 
-		if (this.search) {
+		if (this.search()) {
 			if (this.searchString) queryParams.search = this.searchString;
 			else delete queryParams.search;
 		}
@@ -112,13 +117,14 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 
 	emitValue() {
 		const value: FilterData = this.controls.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value || null }), {});
-		if (this.search && this.searchString) value["search"] = this.searchString;
+		if (this.search() && this.searchString) value["search"] = this.searchString;
 		this.change.emit(value);
 	}
 
 	setControls(params: UrlParams) {
+		const paramsSeparator = this.paramsSeparator();
 		for (const item of this.controls) {
-			let value: any = params[item.name]?.split(this.paramsSeparator);
+			let value: any = params[item.name]?.split(paramsSeparator);
 			if (Array.isArray(value) && value.length === 1) value = value[0];
 
 			item.control.setValue(value || null);
@@ -126,6 +132,6 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 
 		this.filterCount = this.controls.reduce((acc, cur) => acc + (cur.value ? 1 : 0), 0);
 
-		if (this.search && params["search"]) this.searchString = params["search"];
+		if (this.search() && params["search"]) this.searchString = params["search"];
 	}
 }

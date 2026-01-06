@@ -3,10 +3,6 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist",
-    "lib": [
-      "es2018",
-      "dom"
-    ],
     "typeRoots": [
       "node_modules/@types",
       "node_modules/@types/google.account/index.d.ts"
@@ -14,7 +10,7 @@
     "esModuleInterop": true,
     "module": "es2020",
     "target": "ES2022",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "sourceMap": true,
     "declaration": false,

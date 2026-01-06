@@ -1,4 +1,7 @@
-<bo-edit-button [disabled]="disabled" (click)="openEdit(editorTemplate)" />
+<div class="mt-5, component">
+	<h3 class="label">{{ label() }}</h3>
+	<bo-edit-button [disabled]="disabled()" (click)="openEdit()" />
+</div>
 
 <ng-template #editorTemplate>
 	<bo-markdown-editor></bo-markdown-editor>

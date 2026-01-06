@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Injectable, Pipe, PipeTransform } from "@angular/core";
-import { GroupsService } from "src/app/services/groups.service";
+import { GroupsService } from "src/app/core/services/groups.service";
 import { SDK } from "src/sdk";
 
 export type GroupPipeProperty = "name" | "color" | "code";
@@ -9,7 +9,6 @@ type GroupPipeData = { color: string; name: string; code: string };
 @Pipe({
 	name: "group",
 	pure: false,
-	standalone: false,
 })
 @Injectable({
 	providedIn: "root",

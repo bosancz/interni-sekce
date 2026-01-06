@@ -1,0 +1,24 @@
+@if (arrows()) {
+	<div class="float-left">
+		<a class="btn btn-light" (click)="prevItem()"><i class="fas fa-arrow-left"></i></a>
+	</div>
+}
+@if (arrows()) {
+	<div class="float-right text-right">
+		<a class="btn btn-light" (click)="nextItem()"><i class="fas fa-arrow-right"></i></a>
+	</div>
+}
+<h3 class="slider">
+	<div class="items" [style.margin-left]="-1 * getLeft() + 'px'">
+		@for (item of items(); track $index; let i = $index) {
+			<a
+				(click)="setValue(item)"
+				class="item"
+				[style.width]="itemWidth() + 'px'"
+				[style.opacity]="getOpacity(i)"
+				[class.current]="value() == item"
+				>{{ item }}</a
+			>
+		}
+	</div>
+</h3>

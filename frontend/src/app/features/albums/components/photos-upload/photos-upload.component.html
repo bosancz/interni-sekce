@@ -1,0 +1,75 @@
+@if (photoUploadQueue().length === 0) {
+	<div class="upload ion-padding">
+		<div
+			class="dropzone"
+			#photoDropzone
+			(drop)="addPhotosByDropzone($event, photoDropzone)"
+			(dragover)="onDragOver($event)"
+			(click)="photoInput.click()"
+		>
+			@if (!isMobile()) {
+				<p>Přetáhnout fotografie sem, nebo kliknout pro výběr</p>
+			}
+			@if (isMobile()) {
+				<p>Klikni pro výběr fotek</p>
+			}
+		</div>
+
+		<input
+			class="photoInput"
+			type="file"
+			accept="image/jpeg,image/png,image/gif"
+			name="photo"
+			#photoInput
+			(change)="addPhotosByInput(photoInput)"
+			multiple
+		/>
+	</div>
+}
+
+<ion-content>
+	@if (photoUploadQueue().length > 0) {
+		<ion-list class="queue">
+			@for (uploadItem of photoUploadQueue(); track uploadItem.file.name + uploadItem.file.size) {
+				<ion-item>
+					<ion-label>
+						<h3>{{ uploadItem.file.name }}</h3>
+						<p>{{ uploadItem.file.size | prettyBytes }}</p>
+						<p>
+							@switch (uploadItem.status) {
+								@case ('pending') {
+									Připraven
+								}
+								@case ('uploading') {
+									Nahrávám... {{ uploadItem.progress }} %
+								}
+								@case ('processing') {
+									Zpracovávám...
+								}
+								@case ('finished') {
+									Hotovo
+								}
+								@case ('error') {
+									Chyba: {{ uploadItem.error?.message || "Neznámá chyba." }}
+								}
+							}
+						</p>
+					</ion-label>
+
+					<ion-button fill="clear" color="danger" (click)="removeFromQueue(uploadItem)">
+						<ion-icon name="trash-outline"></ion-icon>
+					</ion-button>
+				</ion-item>
+			}
+		</ion-list>
+	}
+</ion-content>
+
+<ion-footer>
+	<ion-toolbar>
+		<ion-buttons slot="end">
+			<ion-button (click)="close()">Zrušit</ion-button>
+			<ion-button color="primary" (click)="uploadPhotos(album())">Nahrát</ion-button>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-footer>

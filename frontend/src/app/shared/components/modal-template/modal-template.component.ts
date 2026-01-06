@@ -1,11 +1,13 @@
-import { Component, Input, TemplateRef } from "@angular/core";
+import { NgTemplateOutlet } from "@angular/common";
+import { Component, input, TemplateRef } from "@angular/core";
 
 @Component({
 	selector: "bo-modal-template",
 	templateUrl: "./modal-template.component.html",
 	styleUrl: "./modal-template.component.scss",
-	standalone: false,
+	
+	imports: [NgTemplateOutlet],
 })
 export class ModalTemplateComponent {
-	@Input() template!: TemplateRef<any>;
+	template = input.required<TemplateRef<any>>();
 }

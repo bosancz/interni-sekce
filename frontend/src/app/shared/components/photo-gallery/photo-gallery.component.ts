@@ -1,13 +1,11 @@
 import {
-	AfterViewChecked,
-	Component,
-	ElementRef,
-	EventEmitter,
-	Input,
-	OnChanges,
-	OnInit,
-	Output,
-	SimpleChanges,
+    AfterViewChecked,
+    Component,
+    effect,
+    ElementRef,
+    input,
+    OnInit,
+    output,
 } from "@angular/core";
 import { SDK } from "src/sdk";
 
@@ -25,22 +23,27 @@ class PhotoRow {
 	selector: "bo-photo-gallery",
 	templateUrl: "./photo-gallery.component.html",
 	styleUrls: ["./photo-gallery.component.scss"],
-	standalone: false,
+	
 })
-export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChanges {
-	@Input() photos: SDK.PhotoResponseWithLinks[] = [];
-	@Input() maxHeight: number = 200;
-	@Input() clickable: boolean = false;
+export class PhotoGalleryComponent implements OnInit, AfterViewChecked {
+	photos = input<SDK.PhotoResponseWithLinks[]>([]);
+	maxHeight = input<number>(200);
+	clickable = input<boolean>(false);
 
 	margin: number = 5;
 
-	@Output() click = new EventEmitter<SDK.PhotoResponseWithLinks>();
+	click = output<SDK.PhotoResponseWithLinks>();
 
 	rows: PhotoRow[] = [];
 
 	width!: number;
 
-	constructor(private elRef: ElementRef<HTMLElement>) {}
+	constructor(private elRef: ElementRef<HTMLElement>) {
+		effect(() => {
+			const photos = this.photos();
+			if (photos) this.createRows();
+		});
+	}
 
 	ngOnInit(): void {}
 
@@ -53,16 +56,13 @@ export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChange
 		}
 	}
 
-	ngOnChanges(changes: SimpleChanges) {
-		this.createRows();
-	}
-
 	createRows() {
 		if (!this.width) return;
 
 		this.rows = [];
 
-		const photos = this.photos.slice();
+		const photos = this.photos().slice();
+		const maxHeight = this.maxHeight();
 
 		const rows: PhotoRow[] = [];
 
@@ -74,20 +74,20 @@ export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChange
 			// add photos to row, stop when first photo over limit
 			while (rowWidth <= this.width && (photo = photos.shift())) {
 				const ratio = photo.width && photo.height ? photo.width / photo.height : 3 / 2;
-				rowWidth += this.maxHeight * ratio;
+				rowWidth += maxHeight * ratio;
 				if (row.photos.length) rowWidth += this.margin;
 				row.photos.push({ photo, ratio });
 			}
 
 			const totalMaxWidth = row.photos.reduce((acc, cur) => {
-				return acc + this.maxHeight * cur.ratio;
+				return acc + maxHeight * cur.ratio;
 			}, 0);
 
 			const availableWidth = this.width - (row.photos.length - 1) * this.margin;
 
 			const ratio = availableWidth / totalMaxWidth;
 
-			row.height = this.maxHeight * ratio;
+			row.height = maxHeight * ratio;
 
 			if (!photos.length) {
 				const rowHeightAvg = rows.reduce((acc, cur) => acc + cur.height, 0) / rows.length;
@@ -101,7 +101,7 @@ export class PhotoGalleryComponent implements OnInit, AfterViewChecked, OnChange
 	}
 
 	onPhotoClick(event: MouseEvent, photo: SDK.PhotoResponseWithLinks) {
-		if (!this.clickable) return;
+		if (!this.clickable()) return;
 
 		event.preventDefault();
 		event.stopPropagation();

@@ -1,12 +1,11 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { DateTime } from "luxon";
-import { MemberRoles } from "src/app/config/member-roles";
-import { MembershipStates } from "src/app/config/membership-states";
+import { MemberRoles } from "src/app/core/config/member-roles";
+import { MembershipStates } from "src/app/core/config/membership-states";
 import { SDK } from "src/sdk";
 
 @Pipe({
 	name: "member",
-	standalone: false,
 })
 export class MemberPipe implements PipeTransform {
 	transform(

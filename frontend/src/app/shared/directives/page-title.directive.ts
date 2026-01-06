@@ -1,21 +1,25 @@
-import { AfterViewInit, Directive, ElementRef, Input, OnChanges, OnDestroy } from "@angular/core";
-import { TitleService } from "src/app/services/title.service";
+import { AfterViewInit, Directive, effect, ElementRef, input, OnDestroy } from "@angular/core";
+import { TitleService } from "src/app/core/services/title.service";
 
 @Directive({
 	selector: "[pageTitle]",
 })
-export class PageTitleDirective implements AfterViewInit, OnChanges, OnDestroy {
-	@Input() pageTitle!: string;
+export class PageTitleDirective implements AfterViewInit, OnDestroy {
+	pageTitle = input.required<string>();
 
 	observer?: MutationObserver;
 
 	constructor(
 		private el: ElementRef<HTMLElement>,
 		private titleService: TitleService,
-	) {}
+	) {
+		effect(() => {
+			this.updateTitle();
+		});
+	}
 
 	updateTitle() {
-		this.titleService.setTitle(this.pageTitle || this.el.nativeElement.textContent);
+		this.titleService.setTitle(this.pageTitle() || this.el.nativeElement.textContent);
 	}
 
 	ngAfterViewInit() {
@@ -24,10 +28,6 @@ export class PageTitleDirective implements AfterViewInit, OnChanges, OnDestroy {
 		});
 
 		this.observer.observe(this.el.nativeElement, { characterData: true, subtree: true });
-	}
-
-	ngOnChanges() {
-		this.updateTitle();
 	}
 
 	ngOnDestroy() {

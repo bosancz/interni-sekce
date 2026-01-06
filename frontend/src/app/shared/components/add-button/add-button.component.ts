@@ -1,9 +1,17 @@
 import { Component } from "@angular/core";
+import { IonButton, IonIcon } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { addCircleOutline } from "ionicons/icons";
 
 @Component({
 	selector: "bo-add-button",
 	templateUrl: "./add-button.component.html",
 	styleUrl: "./add-button.component.scss",
-	standalone: false,
+	
+	imports: [IonButton, IonIcon],
 })
-export class AddButtonComponent {}
+export class AddButtonComponent {
+	constructor() {
+		addIcons({ addCircleOutline });
+	}
+}
