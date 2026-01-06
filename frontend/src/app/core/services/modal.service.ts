@@ -98,6 +98,28 @@ export class ModalService {
 		});
 	}
 
+	async wideInputModal<D extends Record<string, any>>(options: InputModalOptions<D>) {
+    return new Promise<D | null>(async (resolve, reject) => {
+        const alert = await this.alertController.create({
+            header: options.header,
+            cssClass: 'alert-wide', // <--- Automatically applies the wide style
+            inputs: Object.entries(options.inputs).map(([name, input]) => ({ ...input, name })),
+            buttons: [
+                {
+                    text: "Zrušit",
+                    role: "cancel",
+                },
+                {
+                    text: options.buttonText ?? "Uložit",
+                    handler: (data) => resolve(data),
+                },
+            ],
+        });
+
+        await alert.present();
+    	});
+	}
+
 	async selectModal<D>(options: SelectModalOptions<D>) {
 		return new Promise<D | null>(async (resolve, reject) => {
 			const alert = await this.alertController.create({

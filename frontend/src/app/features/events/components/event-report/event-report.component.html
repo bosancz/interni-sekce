@@ -1,13 +1,11 @@
-<h3>
-	Report
-	<bo-edit-button-markdown
-		slot="end"
-		label="Report"
-		[disabled]="!event()?._links?.updateEvent?.allowed"
-		[value]="event()?.report"
-		(update)="update.emit({ report: $event })"
-	/>
-</h3>
+<bo-edit-button-markdown
+	slot="end"
+	label="Report"
+	[disabled]="!event()?._links?.updateEvent?.allowed"
+	[value]="event()?.report"
+	(update)="update.emit({ report: $event })"
+/>
+
 <bo-card>
 	<bo-card-content>
 		<bo-item lines="none" [loading]="!event()">

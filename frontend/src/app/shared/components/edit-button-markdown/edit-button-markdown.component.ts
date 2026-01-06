@@ -20,7 +20,7 @@ export class EditButtonMarkdownComponent {
 	constructor(private readonly modalService: ModalService) {}
 
 	async openEdit() {
-		const result = await this.modalService.inputModal({
+		const result = await this.modalService.wideInputModal({
 			header: this.label(),
 			inputs: {
 				value: {

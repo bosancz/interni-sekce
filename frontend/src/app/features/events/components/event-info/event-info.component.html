@@ -1,15 +1,15 @@
 <ion-list class="selectable">
-		<bo-item [label]="'Název'" [loading]="!event()">
-			<p>{{ event()?.name }}</p>
-			<bo-edit-button-text
-				slot="end"
-				[label]="'Název akce'"
-				placeholder="Neočekávaný dýchánek"
-				[disabled]="!event()?._links?.updateEvent?.allowed"
-				[value]="event()?.name"
-				(update)="update.emit({ name: $event ?? '' })"
-			/>
-		</bo-item>
+	<bo-item [label]="'Název'" [loading]="!event()">
+		<p>{{ event()?.name }}</p>
+		<bo-edit-button-text
+			slot="end"
+			[label]="'Název akce'"
+			placeholder="Neočekávaný dýchánek"
+			[disabled]="!event()?._links?.updateEvent?.allowed"
+			[value]="event()?.name"
+			(update)="update.emit({ name: $event ?? '' })"
+		/>
+	</bo-item>
 
 	<bo-item label="Termín" [loading]="!event()">
 		<p>{{ [event()?.dateFrom, event()?.dateTill] | dateRange }}</p>
@@ -75,18 +75,16 @@
 		></bo-group-select>
 	</bo-item>
 </ion-list>
-<!--
-TODO update popisu akce v tak malém okénku je naprd chtělo by to psát rovnou zároveň ten textbox na ten popis by měl být větší atd-->
-<h3 class="mt-5">
-	Popis
-	<bo-edit-button-markdown
-		slot="end"
-		label="Popis"
-		[disabled]="!event()?._links?.updateEvent?.allowed"
-		[value]="event()?.description"
-		(update)="update.emit({ description: $event })"
-	/>
-</h3>
+
+<!-- TODO: ten label bych dal mimo ten edit button, ale stejně to chci trochu předělat, aby se třeba na mobilu ten markdown editova na celou obrazovku a na PC třeba i inline -->
+<bo-edit-button-markdown
+	label="Popis"
+	[disabled]="!event()?._links?.updateEvent?.allowed"
+	[value]="event()?.description"
+	(update)="update.emit({ description: $event })"
+>
+</bo-edit-button-markdown>
+
 <bo-card>
 	<bo-card-content>
 		<bo-item lines="none" [loading]="!event()">
