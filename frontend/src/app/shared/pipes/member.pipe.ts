@@ -6,7 +6,6 @@ import { SDK } from "src/sdk";
 
 @Pipe({
 	name: "member",
-	standalone: false,
 })
 export class MemberPipe implements PipeTransform {
 	transform(

@@ -1,12 +1,13 @@
 import { Component } from "@angular/core";
 import { ToggleCustomEvent } from "@ionic/angular";
+import { IonIcon, IonToggle } from "@ionic/angular/standalone";
 import { DarkModeService } from "src/app/services/dark-mode.service";
 
 @Component({
 	selector: "bo-dark-mode-toggle",
 	templateUrl: "./dark-mode-toggle.component.html",
 	styleUrls: ["./dark-mode-toggle.component.scss"],
-	standalone: false,
+	imports: [IonIcon, IonToggle],
 })
 export class DarkModeToggleComponent {
 	status?: boolean;

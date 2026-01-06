@@ -1,13 +1,14 @@
 import { Component } from "@angular/core";
 import { NavController, PopoverController } from "@ionic/angular";
+import { IonIcon, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 import { LoginService } from "src/app/services/login.service";
 import { UserService } from "src/app/services/user.service";
 
 @Component({
 	selector: "bo-account-menu",
-	standalone: false,
 	templateUrl: "./account-menu.component.html",
 	styleUrl: "./account-menu.component.scss",
+	imports: [IonList, IonItem, IonIcon, IonLabel],
 })
 export class AccountMenuComponent {
 	user = this.userService.user;

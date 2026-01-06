@@ -4,6 +4,5 @@ import { Component } from "@angular/core";
 	selector: "bo-app-loading",
 	templateUrl: "./app-loading.component.html",
 	styleUrls: ["./app-loading.component.scss"],
-	standalone: false,
 })
 export class AppLoadingComponent {}

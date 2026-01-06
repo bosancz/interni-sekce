@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { IonText } from "@ionic/angular/standalone";
 
 // from https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent
 interface BeforeInstallPromptEvent {
@@ -11,7 +12,7 @@ interface BeforeInstallPromptEvent {
 	selector: "bo-account-app",
 	templateUrl: "./account-app.component.html",
 	styleUrls: ["./account-app.component.scss"],
-	standalone: false,
+	imports: [IonText],
 })
 export class AccountAppComponent implements OnInit {
 	beforeinstallprompt?: BeforeInstallPromptEvent;

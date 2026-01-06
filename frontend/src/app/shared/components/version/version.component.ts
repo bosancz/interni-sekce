@@ -1,15 +1,16 @@
 import { Component, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { SwUpdate } from "@angular/service-worker";
+import { IonSpinner } from "@ionic/angular/standalone";
 import { map } from "rxjs";
 import { ApiService } from "src/app/services/api.service";
 import { Logger } from "src/logger";
 
 @Component({
 	selector: "bo-version",
-	standalone: false,
 	templateUrl: "./version.component.html",
 	styleUrl: "./version.component.scss",
+	imports: [IonSpinner],
 })
 export class VersionComponent {
 	private readonly logger = new Logger("VersionComponent");

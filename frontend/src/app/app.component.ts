@@ -3,6 +3,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { MenuController } from "@ionic/angular";
 import { LoginService } from "src/app/services/login.service";
 import { UserService } from "src/app/services/user.service";
+import { HeaderComponent } from "./components/header/header.component";
 import { ApiService } from "./services/api.service";
 import { PlatformService } from "./services/platform.service";
 
@@ -10,7 +11,7 @@ import { PlatformService } from "./services/platform.service";
 	selector: "bo-app",
 	templateUrl: "./app.component.html",
 	styleUrls: ["./app.component.scss"],
-	standalone: false,
+	imports: [HeaderComponent],
 })
 export class AppComponent implements OnInit {
 	user = toSignal(this.userService.user);

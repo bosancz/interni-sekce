@@ -9,7 +9,6 @@ type GroupPipeData = { color: string; name: string; code: string };
 @Pipe({
 	name: "group",
 	pure: false,
-	standalone: false,
 })
 @Injectable({
 	providedIn: "root",
