@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { IonicModule } from "@ionic/angular";
 import { BaseChartDirective, provideCharts, withDefaultRegisterables } from "ng2-charts";
-import { register } from "swiper/element/bundle";
+import { register as swiperRegister } from "swiper/element/bundle";
 import { ActionButtonsModalComponent } from "./components/action-buttons-modal/action-buttons-modal.component";
 import { ActionButtonsComponent } from "./components/action-buttons/action-buttons.component";
 import { AddButtonComponent } from "./components/add-button/add-button.component";
@@ -38,6 +38,7 @@ import { GroupBadgeComponent } from "./components/group-badge/group-badge.compon
 import { GroupsSelectComponent } from "./components/groups-select/groups-select.component";
 import { IconButtonComponent } from "./components/icon-button/icon-button.component";
 import { ItemComponent } from "./components/item/item.component";
+import { MarkdownEditorComponent } from "./components/markdown-editor/markdown-editor.component";
 import { MemberItemDetailComponent } from "./components/member-item-detail/member-item-detail.component";
 import { MemberSelectComponent } from "./components/member-select/member-select.component";
 import { ModalLayoutComponent } from "./components/modal-layout/modal-layout.component";
@@ -63,8 +64,9 @@ import { MarkdownPipe } from "./pipes/markdown.pipe";
 import { MemberPipe } from "./pipes/member.pipe";
 import { PrettyBytesPipe } from "./pipes/pretty-bytes.pipe";
 import { RolePipe } from "./pipes/role.pipe";
+
 // register Swiper custom elements
-register();
+swiperRegister();
 
 @NgModule({
 	imports: [CommonModule, FormsModule, RouterModule, IonicModule, BaseChartDirective],
@@ -127,6 +129,7 @@ register();
 		DarkModeToggleComponent,
 		ActionButtonsModalComponent,
 		ButtonSquareComponent,
+		MarkdownEditorComponent,
 	],
 	exports: [
 		FormsModule,
@@ -134,7 +137,6 @@ register();
 		IonicModule,
 		RouterModule,
 		BaseChartDirective,
-
 		ActionButtonsComponent,
 		AdminTableComponent,
 		AlbumPipe,
@@ -190,6 +192,7 @@ register();
 		VersionComponent,
 		DarkModeToggleComponent,
 		ButtonSquareComponent,
+		MarkdownEditorComponent,
 	],
 	providers: [DatePipe, provideCharts(withDefaultRegisterables())],
 })

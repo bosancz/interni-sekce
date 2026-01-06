@@ -1,1 +1,5 @@
-<bo-edit-button [disabled]="disabled" (click)="openEdit()" />
+<bo-edit-button [disabled]="disabled" (click)="openEdit(editorTemplate)" />
+
+<ng-template #editorTemplate>
+	<bo-markdown-editor></bo-markdown-editor>
+</ng-template>

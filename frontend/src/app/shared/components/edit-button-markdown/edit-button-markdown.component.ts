@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, EventEmitter, Input, Output, TemplateRef } from "@angular/core";
 import { ModalService } from "src/app/services/modal.service";
 
 @Component({
@@ -17,18 +17,9 @@ export class EditButtonMarkdownComponent {
 
 	constructor(private readonly modalService: ModalService) {}
 
-	async openEdit() {
-		const result = await this.modalService.inputModal({
-			header: this.label,
-			inputs: {
-				value: {
-					placeholder: this.placeholder,
-					type: "textarea",
-					value: this.value,
-				},
-			},
-		});
+	async openEdit(template: TemplateRef<any>) {
+		const result = await this.modalService.templateModal(template);
 
-		if (result) this.update.emit(result.value ?? null);
+		// if (result) this.update.emit(result.value ?? null);
 	}
 }
