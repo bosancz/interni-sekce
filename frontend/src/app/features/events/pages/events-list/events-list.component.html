@@ -50,7 +50,7 @@
 					<ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
 				}
 
-				@for (event of events; track event.id) {
+				@for (event of events(); track event.id) {
 					<ion-item [routerLink]="'' + event.id">
 						<ion-avatar
 							aria-hidden="true"
@@ -99,7 +99,7 @@
 				</thead>
 
 				<tbody>
-					@for (event of events; track event.id) {
+					@for (event of events(); track event.id) {
 						<tr [routerLink]="'' + event.id">
 							<td>{{ event.name }}</td>
 							<td>

@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router, RouterLink } from "@angular/router";
 import {
@@ -63,7 +63,7 @@ import { EventCreateModalComponent } from "../../components/event-create-modal/e
 	],
 })
 export class EventsListComponent implements OnInit {
-	events?: SDK.EventResponseWithLinks[];
+	events = signal<SDK.EventResponseWithLinks[]>([]);
 
 	years: number[] = [];
 	statuses = EventStatuses;
@@ -88,7 +88,7 @@ export class EventsListComponent implements OnInit {
 	ngOnInit(): void {
 		this.loadYears();
 
-		this.api.rootLinks.subscribe((endpoints: RootLinks | null) => this.setActions(endpoints));
+		this.api.rootLinks.subscribe((rootLinks: RootLinks | null) => this.setActions(rootLinks));
 
 		this.platformService.isPortrait.subscribe((isPortrait: boolean) => {
 			this.view = isPortrait ? "list" : "table";
@@ -96,6 +96,7 @@ export class EventsListComponent implements OnInit {
 	}
 
 	onFilterChange(filter: UrlParams) {
+		console.log("onFilterChange", filter);
 		this.filter = filter;
 		this.loadEvents(filter);
 	}
@@ -105,22 +106,25 @@ export class EventsListComponent implements OnInit {
 	}
 
 	private async loadYears() {
+		console.log("loadYears");
 		this.years = await this.api.EventsApi.getEventsYears().then((res) => res.data);
 		this.years.sort((a, b) => b - a);
 	}
 
 	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
+		
 		await this.loadEvents(this.filter, true);
 		e.target.complete();
 	}
 
 	private async loadEvents(filter: UrlParams, loadMore: boolean = false) {
+		console.log("loadEvents", filter, loadMore);
 		if (loadMore) {
 			if (this.events && this.events.length < this.page * this.pageSize) return;
 			this.page++;
 		} else {
 			this.page = 1;
-			this.events = undefined;
+			this.events.set([]);
 		}
 
 		const params: SDK.EventsApiListEventsQueryParams = {
@@ -134,10 +138,10 @@ export class EventsListComponent implements OnInit {
 			limit: this.pageSize,
 		};
 
+		console.log("params", params);
 		const events = await this.api.EventsApi.listEvents(params).then((res: any) => res.data);
 
-		if (!this.events) this.events = [];
-		this.events.push(...events);
+		this.events.set([...this.events(), ...events]);
 	}
 
 	private async createEvent() {
@@ -153,14 +157,14 @@ export class EventsListComponent implements OnInit {
 		this.router.navigate(["/akce/" + event.id]);
 	}
 
-	private setActions(endpoints: RootLinks | null) {
-		console.log(endpoints);
+	private setActions(rootLinks: RootLinks | null) {
 		this.actions = [
 			{
 				icon: "add-outline",
 				pinned: true,
 				text: "Přidat",
-				hidden: !endpoints?.createEvent.allowed,
+				disabled: !rootLinks?.createEvent.allowed, 
+				hidden: !rootLinks?.createEvent.applicable,
 				handler: () => this.createEvent(),
 			},
 		];
