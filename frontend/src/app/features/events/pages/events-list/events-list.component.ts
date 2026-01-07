@@ -64,11 +64,10 @@ import { EventCreateModalComponent } from "../../components/event-create-modal/e
 })
 export class EventsListComponent implements OnInit {
 	events = signal<SDK.EventResponseWithLinks[]>([]);
+	years = signal<number[]>([]);
+	actions = signal<Action[]>([]);
 
-	years: number[] = [];
 	statuses = EventStatuses;
-
-	actions: Action[] = [];
 
 	page = 1;
 	readonly pageSize = 50;
@@ -96,7 +95,6 @@ export class EventsListComponent implements OnInit {
 	}
 
 	onFilterChange(filter: UrlParams) {
-		console.log("onFilterChange", filter);
 		this.filter = filter;
 		this.loadEvents(filter);
 	}
@@ -106,9 +104,10 @@ export class EventsListComponent implements OnInit {
 	}
 
 	private async loadYears() {
-		console.log("loadYears");
-		this.years = await this.api.EventsApi.getEventsYears().then((res) => res.data);
-		this.years.sort((a, b) => b - a);
+		const years = await this.api.EventsApi.getEventsYears().then((res) => res.data);
+		years.sort((a, b) => b - a);
+		
+		this.years.set(years);
 	}
 
 	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
@@ -118,7 +117,6 @@ export class EventsListComponent implements OnInit {
 	}
 
 	private async loadEvents(filter: UrlParams, loadMore: boolean = false) {
-		console.log("loadEvents", filter, loadMore);
 		if (loadMore) {
 			if (this.events && this.events.length < this.page * this.pageSize) return;
 			this.page++;
@@ -138,7 +136,6 @@ export class EventsListComponent implements OnInit {
 			limit: this.pageSize,
 		};
 
-		console.log("params", params);
 		const events = await this.api.EventsApi.listEvents(params).then((res: any) => res.data);
 
 		this.events.set([...this.events(), ...events]);
@@ -158,7 +155,7 @@ export class EventsListComponent implements OnInit {
 	}
 
 	private setActions(rootLinks: RootLinks | null) {
-		this.actions = [
+		this.actions.set([
 			{
 				icon: "add-outline",
 				pinned: true,
@@ -167,6 +164,6 @@ export class EventsListComponent implements OnInit {
 				hidden: !rootLinks?.createEvent.applicable,
 				handler: () => this.createEvent(),
 			},
-		];
+		]);
 	}
 }
