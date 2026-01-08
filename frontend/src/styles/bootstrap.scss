@@ -4,5 +4,8 @@
 @use "bootstrap/scss/bootstrap.scss";
 
 .table {
-	color: var(--colorDark);
+	color: var(--bo-black);
+	--bs-table-bg: var(--bo-white);
+	--bs-table-color: var(--bo-black);
+	--bs-table-hover-color: var(--bo-dark);
 }
