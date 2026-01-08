@@ -3,7 +3,7 @@
 <bo-filter [search]="true" (change)="onFilterChange($event)">
 	<ion-item lines="none">
 		<ion-select multiple name="groups" ngModel label="Oddíl" placeholder="všechny">
-			@for (group of groups; track group.id) {
+			@for (group of groups(); track group.id) {
 				<ion-select-option [value]="'' + group.id">
 					{{ group.name }}
 				</ion-select-option>
@@ -40,7 +40,7 @@
 					}
 				}
 
-				@for (member of members; track member.id) {
+				@for (member of members(); track member.id) {
 					<ion-item>
 						<ion-label>
 							<h2>{{ member.nickname || member.firstName || member.lastName }}</h2>
@@ -68,9 +68,10 @@
 					</tr>
 				</thead>
 				<tbody>
-					@if (members) {
-						@for (member of members; track member.id) {
+					@if (members()) {
+						@for (member of members()!; track member.id) {
 							<tr
+								class="clickable"
 								[routerLink]="'' + member.id"
 								[class.member-inactive]="member.membership === 'neclen'"
 								[class.member-paused]="member.membership === 'pozastaveno'"
@@ -90,7 +91,7 @@
 		}
 	}
 
-	@if (members && !members.length) {
+	@if (members() && !members.length) {
 		<p class="ion-padding">
 			Členská databáze je prázdná. Chceš <a routerLink="/databaze/pridat">přidat prvního člena</a>?
 		</p>

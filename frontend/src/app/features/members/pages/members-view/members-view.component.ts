@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from "@angular/router";
 import {
 	AlertController,
@@ -54,7 +54,7 @@ import { MemberProfileComponent } from "../../components/member-profile/member-p
 	],
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeave {
-	member?: SDK.MemberResponseWithLinks | null;
+	member = signal<SDK.MemberResponseWithLinks | undefined>(undefined);
 	view?: "info" | "health" | "contacts" | "profile" = "info";
 
 	membershipStates = MembershipStates;
@@ -82,7 +82,7 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 	ngOnInit() {
 		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {
-			if (this.member?.id !== parseInt(params.member)) this.loadMember(parseInt(params.member));
+			if (this.member()?.id !== parseInt(params.member)) this.loadMember(parseInt(params.member));
 		});
 
 		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => {
@@ -103,19 +103,21 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	ionViewWillLeave(): void {}
 
 	async loadMember(id: number) {
-		this.member = await this.api.MembersApi.getMember(id).then((res) => res.data);
-		this.titleService.setTitle(this.member?.nickname ?? null);
+		const member = await this.api.MembersApi.getMember(id).then((res) => res.data);
+		this.titleService.setTitle(member?.nickname ?? null);
+
+		this.member.set(member);
 	}
 
 	async updateMember(data: SDK.MemberUpdateBody) {
-		if (!this.member) return;
+		if (!this.member()) return;
 
 		const toast = await this.toastService.toast("Ukládám...");
 
-		this.member = { ...this.member, ...data };
+		this.member.set({ ...this.member()!, ...data });
 
 		try {
-			await this.api.MembersApi.updateMember(this.member.id, data);
+			await this.api.MembersApi.updateMember(this.member()!.id, data);
 
 			toast.dismiss();
 			this.toastService.toast("Uloženo.");
@@ -124,15 +126,15 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			this.toastService.toast("Chyba při ukládání.", { color: "danger" });
 		}
 
-		await this.loadMember(this.member.id);
+		await this.loadMember(this.member()!.id);
 	}
 
 	async delete() {
-		if (!this.member) return;
+		if (!this.member()) return;
 
 		const alert = await this.alertController.create({
 			header: "Smazat člena?",
-			message: `Opravdu chcete smazat člena „<strong>${this.getFullName(this.member)}</strong>“?`,
+			message: `Opravdu chcete smazat člena „<strong>${this.getFullName(this.member()!)}</strong>“?`,
 			buttons: [{ text: "Zrušit" }, { text: "Smazat", handler: () => this.deleteConfirmed() }],
 		});
 
@@ -140,11 +142,11 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	}
 
 	async deleteConfirmed() {
-		if (!this.member) return;
+		if (!this.member()) return;
 
-		await this.api.MembersApi.deleteMember(this.member?.id);
+		await this.api.MembersApi.deleteMember(this.member()!.id);
 
-		this.toastService.toast(`Člen ${this.member?.nickname} smazán.`);
+		this.toastService.toast(`Člen ${this.member()!.nickname} smazán.`);
 
 		this.router.navigate(["../"], { relativeTo: this.route, replaceUrl: true });
 	}

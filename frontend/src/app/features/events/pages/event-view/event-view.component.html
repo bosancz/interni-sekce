@@ -1,42 +1,47 @@
-<bo-page-header [title]="event?.name" backUrl="/akce" [actions]="actions" />
+<bo-page-header [title]="event()?.name" backUrl="/akce" [actions]="actions" />
 
 <bo-page-content [padding]="true">
 	<div class="row layout">
 		<div class="col-12 col-xl-4 offset-xxl-1 col-xxl-3">
-			<event-card [event]="event" [actions]="false" class="d-none d-lg-block mb-5" [actions]="true"></event-card>
+			<event-card
+				[event]="event()"
+				[actions]="false"
+				class="d-none d-lg-block mb-5"
+				[actions]="true"
+			></event-card>
 		</div>
 		<div class="col-12 col-xl-8 col-xxl-7">
 			<div class="p-xl-3">
 				<bo-event-info
-					[event]="event"
+					[event]="event()"
 					class="d-lg-block mb-5"
 					[class.d-none]="view !== 'info'"
 					(update)="updateEvent($event)"
 				></bo-event-info>
 
 				<bo-event-registration
-					[event]="event"
+					[event]="event()"
 					class="d-lg-block mb-5"
 					[class.d-none]="view !== 'info'"
 					(change)="reloadEvent()"
 				></bo-event-registration>
 
 				<bo-event-attendees
-					[event]="event"
+					[event]="event()"
 					class="d-lg-block mb-5"
 					[class.d-none]="view !== 'attendees'"
 					(change)="reloadEvent()"
 				></bo-event-attendees>
 
 				<bo-event-accounting
-					[event]="event"
+					[event]="event()"
 					class="d-lg-block mb-5"
 					[class.d-none]="view !== 'accounting'"
 					(change)="reloadEvent()"
 				></bo-event-accounting>
 
 				<bo-event-report
-					[event]="event"
+					[event]="event()"
 					class="d-lg-block mb-5"
 					[class.d-none]="view !== 'report'"
 					(update)="updateEvent($event)"

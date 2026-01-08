@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -48,7 +48,7 @@ export type EventStatusActions = ExtractExisting<
 	],
 })
 export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
-	event: any;
+	event = signal<SDK.EventResponseWithLinks | undefined>(undefined);
 
 	actions: Action[] = [];
 
@@ -73,27 +73,28 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 	ionViewWillLeave(): void {}
 
 	async updateEvent(data: Partial<SDK.EventUpdateBody>) {
-		if (!this.event) return;
+		if (!this.event()) return;
 
 		try {
-			Object.assign(this.event, data);
-			await this.api.EventsApi.updateEvent(this.event.id, data);
+			this.event.set({ ...this.event()!, ...data });
+			await this.api.EventsApi.updateEvent(this.event()!.id, data);
 			this.toastService.toast("Uloženo.");
 		} catch (e) {
 			this.toastService.toast("Nepodařilo se uložit změny.", { color: "warning" });
 		}
 
-		await this.loadEvent(this.event.id);
+		await this.loadEvent(this.event()!.id);
 	}
 
 	private async loadEvent(eventId: number) {
-		this.event = await this.api.EventsApi.getEvent(eventId).then((res) => res.data);
+		const event = await this.api.EventsApi.getEvent(eventId).then((res) => res.data);
+		this.event.set(event);
 
-		this.setActions(this.event);
+		this.setActions(this.event()!);
 	}
 
 	async reloadEvent() {
-		await this.loadEvent(this.event.id);
+		await this.loadEvent(this.event()!.id);
 	}
 
 	async leadEvent(event: SDK.EventResponseWithLinks) {

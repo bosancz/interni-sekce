@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, signal } from "@angular/core";
 import { ActivatedRoute, RouterLink } from "@angular/router";
 import { ActionSheetController, AlertController, NavController, ViewWillEnter } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
@@ -28,9 +28,9 @@ import { SDK } from "src/sdk";
 	],
 })
 export class GroupsListComponent implements ViewWillEnter {
-	groups?: SDK.GroupResponseWithLinks[];
+	groups = signal<SDK.GroupResponseWithLinks[]>([]);
 
-	totalMemberCount: number = 0;
+	totalMemberCount = signal<number>(0);
 
 	actions: Action[] = [
 		{
@@ -55,14 +55,16 @@ export class GroupsListComponent implements ViewWillEnter {
 	}
 
 	private async loadGroups() {
-		this.groups = await this.api.MembersApi.listGroups({ includeMemberCounts: true, active: true }).then(
+		const groups = await this.api.MembersApi.listGroups({ includeMemberCounts: true, active: true }).then(
 			(res) => res.data,
 		);
-		this.groups.sort((a, b) =>
+		groups.sort((a, b) =>
 			(a.name ?? a.shortName).localeCompare(b.name ?? b.shortName, undefined, { numeric: true }),
 		);
 
-		this.totalMemberCount = this.groups.reduce((sum, group) => sum + (group.memberCount ?? 0), 0);
+		this.groups.set(groups);
+
+		this.totalMemberCount.set(groups.reduce((sum, group) => sum + (group.memberCount ?? 0), 0));
 	}
 
 	async deleteGroup(group: SDK.GroupResponseWithLinks) {
