@@ -1,39 +1,56 @@
-<h3>Vedoucí</h3>
+<div class="row">
+	<div class="order-2 order-lg-1 col-12 col-xl-8">
+		<p>[[TODO: sloučit do jedný tabulky s dropdownem jestli je účastník/vedoucí]]</p>
+		<h3>Vedoucí</h3>
 
-@if (leaders && !leaders.length) {
-	<p><em>Žádní účastníci</em></p>
-}
+		@if (leaders() && leaders()?.length === 0) {
+			<p><em>Žádní účastníci</em></p>
+		}
 
-<bo-event-attendees-list
-	[event]="event()"
-	[attendees]="leaders"
-	(remove)="removeAttendee($event)"
-></bo-event-attendees-list>
+		<bo-event-attendees-list
+			[event]="event()"
+			[attendees]="leaders()"
+			(remove)="removeAttendee($event)"
+		></bo-event-attendees-list>
 
-<div class="text-center">
-	<bo-add-button (click)="addAttendee('leader')">Přidat vedoucí</bo-add-button>
+		<div class="text-center">
+			<bo-add-button (click)="addAttendee('leader')">Přidat vedoucí</bo-add-button>
+		</div>
+
+		<h3>Účastníci</h3>
+
+		@if (attendees() && attendees()!.length === 0) {
+			<p><em>Žádní účastníci</em></p>
+		}
+
+		<bo-event-attendees-list
+			[event]="event()"
+			[attendees]="attendees()"
+			(remove)="removeAttendee($event)"
+		></bo-event-attendees-list>
+
+		@if (event()?._links?.addEventAttendee?.allowed) {
+			<div class="text-center">
+				<bo-add-button (click)="addAttendee('attendee')">Přidat účastníka</bo-add-button>
+			</div>
+		}
+	</div>
+	<div class="order-1 order-lg-2 col-12 col-xl-4">
+		<div class="d-none d-lg-block">
+			<p>[[TODO: seznam narozenin během akce]]</p>
+		</div>
+
+		<div class="d-none d-lg-block">
+			<p>[[TODO: graf věku účastníků]]</p>
+		</div>
+
+		<p>[[TODO: stáhnout ohlášku jen když jsou účastníci]]</p>
+		@if (event() && event()!._links.getEventAnnouncement.allowed) {
+			<div class="text-center">
+				<ion-button (click)="getAnnouncement(event()!)" expand="block" fill="outline">
+					Stáhnout ohlášku
+				</ion-button>
+			</div>
+		}
+	</div>
 </div>
-
-<h3>Účastníci</h3>
-
-@if (attendees && !attendees.length) {
-	<p><em>Žádní účastníci</em></p>
-}
-
-<bo-event-attendees-list
-	[event]="event()"
-	[attendees]="attendees"
-	(remove)="removeAttendee($event)"
-></bo-event-attendees-list>
-
-@if (event()?._links?.addEventAttendee?.allowed) {
-	<div class="text-center">
-		<bo-add-button (click)="addAttendee('attendee')">Přidat účastníka</bo-add-button>
-	</div>
-}
-
-@if (event() && event()!._links.getEventAnnouncement.allowed) {
-	<div class="text-center">
-		<ion-button (click)="getAnnouncement(event()!)" expand="block" fill="outline"> Stáhnout ohlášku </ion-button>
-	</div>
-}

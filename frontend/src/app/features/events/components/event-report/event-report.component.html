@@ -1,17 +1,24 @@
-<bo-edit-button-markdown
-	slot="end"
-	label="Report"
-	[disabled]="!event()?._links?.updateEvent?.allowed"
-	[value]="event()?.report"
-	(update)="update.emit({ report: $event })"
-/>
+<h3>
+	Kronika akce
+	<bo-edit-button-markdown
+		slot="end"
+		label="Report"
+		[disabled]="!event()?._links?.updateEvent?.allowed"
+		[value]="event()?.report"
+		(update)="update.emit({ report: $event })"
+	/>
+</h3>
 
-<bo-card>
-	<bo-card-content>
-		<bo-item lines="none" [loading]="!event()">
-			@if (event()) {
-				<p>{{ event()!.report }}</p>
-			}
-		</bo-item>
-	</bo-card-content>
-</bo-card>
+@if (event() && event()!.report) {
+	<div [innerHTML]="event()!.report | markdown"></div>
+} @else if (event()) {
+	<p><em>Report je prázdný.</em></p>
+} @else {
+	<p><ion-skeleton-text animated></ion-skeleton-text></p>
+}
+
+<h3 class="mt-5">Fotogalerie</h3>
+
+<p>[[TODO: tlačítko na vytvoření alba]]</p>
+<p>[[TODO: zobrazení fotogalerie]]</p>
+<p>[[TODO: tlačítko na úpravu otevře album galerii]]</p>

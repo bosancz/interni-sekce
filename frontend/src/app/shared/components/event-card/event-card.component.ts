@@ -8,6 +8,7 @@ import { DateRangePipe } from "../../pipes/date-range.pipe";
 import { EventStatusPipe } from "../../pipes/event-status.pipe";
 import { EventPipe } from "../../pipes/event.pipe";
 import { JoinLeadersPipe } from "../../pipes/join-leaders.pipe";
+import { MarkdownPipe } from "../../pipes/markdown.pipe";
 
 @Component({
 	selector: "event-card",
@@ -27,6 +28,7 @@ import { JoinLeadersPipe } from "../../pipes/join-leaders.pipe";
 		EventPipe,
 		EventStatusPipe,
 		JoinLeadersPipe,
+		MarkdownPipe,
 	],
 })
 export class EventCardComponent implements OnInit {

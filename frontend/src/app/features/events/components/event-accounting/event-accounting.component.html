@@ -1,33 +1,46 @@
-<h3>Účtování</h3>
+<div class="row">
+	<div class="order-2 order-lg-1 col-12 col-xl-8">
+		<ion-list>
+			@for (expense of expenses; track expense.id) {
+				<bo-item [label]="expense.receiptNumber">
+					<p>{{ expense.description }}</p>
 
-<!-- @if (expenses.length > 0) {
-	<bo-event-expenses-chart [event]="event()" [expenses]="expenses" class="mb-5"></bo-event-expenses-chart>
-} -->
+					<div slot="end" class="type flex-shrink-0">
+						<ion-badge mode="ios" [style.background-color]="expense | eventExpense: 'color'">
+							{{ expense | eventExpense: "type" }}
+						</ion-badge>
+					</div>
+					<div slot="end">
+						<ion-label class="amount"> {{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč </ion-label>
+						<bo-edit-button (click)="editExpense(expense)" />
+						<bo-delete-button (click)="removeExpense(expense)" />
+					</div>
+				</bo-item>
+			}
+		</ion-list>
 
-<ion-list>
-	@for (expense of expenses; track expense.id) {
-		<bo-item [label]="expense.receiptNumber">
-			<p>{{ expense.description }}</p>
-
-			<div slot="end" class="type flex-shrink-0">
-				<ion-badge mode="ios" [style.background-color]="expense | eventExpense: 'color'">
-					{{ expense | eventExpense: "type" }}
-				</ion-badge>
-			</div>
-			<div slot="end">
-				<ion-label class="amount"> {{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč </ion-label>
-				<bo-edit-button (click)="editExpense(expense)" />
-				<bo-delete-button (click)="removeExpense(expense)" />
-			</div>
-		</bo-item>
-	}
-</ion-list>
-
-<div *ngIf="event()?._links?.addEventExpense?.allowed" class="text-center">
-	<bo-add-button (click)="addExpense()">Přidat účtenku</bo-add-button>
-</div>
-@if (event() && event()!._links.getEventAccounting.allowed) {
-	<div class="text-center">
-		<ion-button (click)="getAccounting(event()!)" expand="block" fill="outline"> Stáhnout účtování </ion-button>
+		<div *ngIf="event()?._links?.addEventExpense?.allowed" class="text-center">
+			<bo-add-button (click)="addExpense()">Přidat účtenku</bo-add-button>
+		</div>
 	</div>
-}
+	<div class="order-1 order-lg-2 col-12 col-xl-4">
+		<p class="d-none d-lg-block">[[TODO: graf výdajů podle typu]]</p>
+		<p class="d-none d-lg-block">[[TODO: cena na osobu/den]]</p>
+
+		@if (expenses.length > 0) {
+			<bo-event-expenses-chart
+				[event]="event()"
+				[expenses]="expenses"
+				class="mb-5 d-lg-block"
+			></bo-event-expenses-chart>
+		}
+
+		@if (event() && event()!._links.getEventAccounting.allowed) {
+			<div class="text-center">
+				<ion-button (click)="getAccounting(event()!)" expand="block" fill="outline">
+					Stáhnout účtování
+				</ion-button>
+			</div>
+		}
+	</div>
+</div>

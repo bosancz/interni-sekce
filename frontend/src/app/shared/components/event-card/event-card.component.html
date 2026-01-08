@@ -49,7 +49,7 @@
 
 		<ion-card-content>
 			@if (event.description) {
-				<p class="description mb-3">{{ event.description }}</p>
+				<div class="description mb-3" [innerHTML]="event.description | markdown"></div>
 			}
 
 			@if (event.meetingPlaceStart || event.meetingPlaceEnd) {

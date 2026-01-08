@@ -8,7 +8,6 @@ import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
@@ -16,10 +15,10 @@ import { TabComponent } from "src/app/shared/components/tab/tab.component";
 import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { ExtractExisting } from "src/helpers/typings";
 import { SDK } from "src/sdk";
+import { EventPipe } from "../../../../shared/pipes/event.pipe";
 import { EventAccountingComponent } from "../../components/event-accounting/event-accounting.component";
 import { EventAttendeesComponent } from "../../components/event-attendees/event-attendees.component";
 import { EventInfoComponent } from "../../components/event-info/event-info.component";
-import { EventRegistrationComponent } from "../../components/event-registration/event-registration.component";
 import { EventReportComponent } from "../../components/event-report/event-report.component";
 
 export type EventStatusActions = ExtractExisting<
@@ -35,7 +34,6 @@ export type EventStatusActions = ExtractExisting<
 
 	imports: [
 		EventAttendeesComponent,
-		EventRegistrationComponent,
 		EventAccountingComponent,
 		EventReportComponent,
 		PageFooterComponent,
@@ -43,7 +41,7 @@ export type EventStatusActions = ExtractExisting<
 		TabComponent,
 		PageHeaderComponent,
 		PageContentComponent,
-		EventCardComponent,
+		EventPipe,
 		EventInfoComponent,
 	],
 })
@@ -52,7 +50,7 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 
 	actions: Action[] = [];
 
-	view?: "info" | "attendees" | "accounting" | "registration" | "report";
+	view = signal<"info" | "attendees" | "accounting" | "registration" | "report">("info");
 
 	constructor(
 		private readonly api: ApiService,
