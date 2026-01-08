@@ -1,5 +1,5 @@
 <div class="group-badges">
-	@for (group of groups; track group.id; let isLast = $last) {
+	@for (group of groups(); track group.id; let isLast = $last) {
 		<span
 			(click)="toggleGroup(group.id)"
 			[class.active]="isSelected(group.id)"

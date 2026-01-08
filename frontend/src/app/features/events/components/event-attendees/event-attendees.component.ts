@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, effect, input, OnDestroy, OnInit, output } from "@angular/core";
+import { Component, effect, input, OnDestroy, OnInit, output, signal } from "@angular/core";
 import { IonButton } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/core/services/api.service";
@@ -23,8 +23,8 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 	event = input<SDK.EventResponseWithLinks | null | undefined>();
 	change = output<void>();
 
-	attendees: SDK.EventAttendeeResponseWithLinks[] = [];
-	leaders: SDK.EventAttendeeResponseWithLinks[] = [];
+	attendees = signal<SDK.EventAttendeeResponseWithLinks[] | undefined>(undefined);
+	leaders = signal<SDK.EventAttendeeResponseWithLinks[] | undefined>(undefined);
 
 	actions: Action[] = [];
 
@@ -49,22 +49,14 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 	private async loadAttendees(event?: SDK.EventResponseWithLinks | null) {
 		if (!event) {
-			this.attendees = [];
-			this.leaders = [];
+			this.attendees.set(undefined);
+			this.leaders.set(undefined);
 			return;
 		}
 
 		const attendees = await this.api.EventsApi.listEventAttendees(event.id).then((res) => res.data);
 
-		this.attendees = attendees.filter((a) => a.type === "attendee");
-		this.sortAttendees(this.attendees);
-
-		this.leaders = attendees.filter((a) => a.type === "leader");
-		this.sortAttendees(this.leaders);
-	}
-
-	private sortAttendees(members: SDK.EventAttendeeResponseWithLinks[]) {
-		members.sort((a, b) => {
+		attendees.sort((a, b) => {
 			if (!a.member || !b.member) return 0;
 
 			const aString = [a.member.nickname, a.member.firstName, a.member.lastName].join(" ");
@@ -72,6 +64,9 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 			return b.member.role.localeCompare(a.member.role) || aString.localeCompare(bString);
 		});
+
+		this.attendees.set(attendees.filter((a) => a.type === "attendee"));
+		this.leaders.set(attendees.filter((a) => a.type === "leader"));
 	}
 
 	async addAttendee(type: SDK.EventAttendeeCreateBodyTypeEnum) {
@@ -82,7 +77,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 		if (member) {
 			try {
-				const existingAttendee = [...this.attendees, ...this.leaders].find(
+				const existingAttendee = [...(this.attendees() ?? []), ...(this.leaders() ?? [])].find(
 					(item) => item.member && item.member.id === member.id,
 				);
 				if (existingAttendee && existingAttendee.type === type) {
@@ -120,7 +115,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 		try {
 			// optimistic update
-			this.attendees.filter((item) => item.memberId !== attendee.memberId);
+			this.attendees.set(this.attendees()?.filter((item) => item.memberId !== attendee.memberId));
 
 			await this.api.EventsApi.deleteEventAttendee(event.id, attendee.memberId);
 
@@ -130,7 +125,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			this.change.emit();
 		} catch (e) {
 			this.toastService.toast("Nepodařilo se odebrat účastníka.");
-			this.attendees.push(attendee); // rollback
+			this.attendees.set([...(this.attendees() ?? []), attendee]); // rollback
 		}
 	}
 
@@ -145,16 +140,5 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		if (!event) return;
 
 		window.open(event._links.getEventAnnouncement.href, "_blank");
-	}
-
-	private setActions(event?: SDK.EventResponseWithLinks) {
-		this.actions = [
-			{
-				text: "Stáhnout ohlášku",
-				icon: "download-outline",
-				//hidden: !event?._links.self.allowed.GET, // TODO:
-				handler: () => this.getAnnouncement(event!),
-			},
-		];
 	}
 }

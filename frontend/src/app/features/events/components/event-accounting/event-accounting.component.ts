@@ -13,6 +13,7 @@ import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-
 import { ItemComponent } from "src/app/shared/components/item/item.component";
 import { EventExpensePipe } from "src/app/shared/pipes/event-expense.pipe";
 import { SDK } from "src/sdk";
+import { EventExpensesChartComponent } from "../event-expenses-chart/event-expenses-chart.component";
 
 @UntilDestroy()
 @Component({
@@ -31,6 +32,7 @@ import { SDK } from "src/sdk";
 		DeleteButtonComponent,
 		AddButtonComponent,
 		EventExpensePipe,
+		EventExpensesChartComponent,
 	],
 })
 export class EventAccountingComponent implements OnInit, OnDestroy {

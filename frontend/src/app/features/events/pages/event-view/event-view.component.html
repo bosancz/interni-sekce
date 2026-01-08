@@ -1,58 +1,77 @@
-<bo-page-header [title]="event()?.name" backUrl="/akce" [actions]="actions" />
+<bo-page-header [title]="event()?.name" backUrl="/akce" [actions]="actions">
+	<div
+		slot="start"
+		class="icon"
+		[style.background-color]="(event() | event: 'image') ? 'transparent' : (event() | event: 'color') || '#ccc'"
+	>
+		@if (event() | event: "image") {
+			<img style="height: 2em" class="img-fluid" [src]="event() | event: 'image'" />
+		}
+	</div>
+</bo-page-header>
 
 <bo-page-content [padding]="true">
-	<div class="row layout">
-		<div class="col-12 col-xl-4 offset-xxl-1 col-xxl-3">
-			<event-card
-				[event]="event()"
-				[actions]="false"
-				class="d-none d-lg-block mb-5"
-				[actions]="true"
-			></event-card>
-		</div>
-		<div class="col-12 col-xl-8 col-xxl-7">
-			<div class="p-xl-3">
-				<bo-event-info
-					[event]="event()"
-					class="d-lg-block mb-5"
-					[class.d-none]="view !== 'info'"
-					(update)="updateEvent($event)"
-				></bo-event-info>
+	<!-- <ion-segment value="info" class="mb-4 d-none d-lg-grid">
+		<ion-segment-button value="info" (click)="view.set('info')">
+			<ion-label>Info</ion-label>
+		</ion-segment-button>
 
-				<bo-event-registration
-					[event]="event()"
-					class="d-lg-block mb-5"
-					[class.d-none]="view !== 'info'"
-					(change)="reloadEvent()"
-				></bo-event-registration>
+		<ion-segment-button value="attendees" (click)="view.set('attendees')"
+			><ion-label>Účastníci</ion-label>
+		</ion-segment-button>
 
-				<bo-event-attendees
-					[event]="event()"
-					class="d-lg-block mb-5"
-					[class.d-none]="view !== 'attendees'"
-					(change)="reloadEvent()"
-				></bo-event-attendees>
+		<ion-segment-button value="accounting" (click)="view.set('accounting')"
+			><ion-label>Účtování</ion-label>
+		</ion-segment-button>
 
-				<bo-event-accounting
-					[event]="event()"
-					class="d-lg-block mb-5"
-					[class.d-none]="view !== 'accounting'"
-					(change)="reloadEvent()"
-				></bo-event-accounting>
+		<ion-segment-button value="report" (click)="view.set('report')"
+			><ion-label>Report</ion-label>
+		</ion-segment-button>
+	</ion-segment> -->
 
-				<bo-event-report
-					[event]="event()"
-					class="d-lg-block mb-5"
-					[class.d-none]="view !== 'report'"
-					(update)="updateEvent($event)"
-				></bo-event-report>
-			</div>
-		</div>
+	<p>[[TODO: nastylovat taby na desktopu aby vypadaly líp, třeba jako Ionic Segment]]</p>
+	<div class="mb-4 d-none d-lg-grid">
+		<bo-tabs defaultTab="info" (change)="view.set($any($event))">
+			<bo-tab name="info" label="Info" icon="calendar"></bo-tab>
+			<bo-tab name="attendees" label="Účastníci" icon="people-outline"></bo-tab>
+			<bo-tab name="accounting" label="Účtování" icon="cash-outline"></bo-tab>
+			<bo-tab name="report" label="Report" icon="document-outline"></bo-tab>
+		</bo-tabs>
+	</div>
+
+	<div>
+		<bo-event-info
+			[event]="event()"
+			class="mb-5"
+			[class.d-none]="view() !== 'info'"
+			(update)="updateEvent($event)"
+		></bo-event-info>
+
+		<bo-event-attendees
+			[event]="event()"
+			class="mb-5"
+			[class.d-none]="view() !== 'attendees'"
+			(change)="reloadEvent()"
+		></bo-event-attendees>
+
+		<bo-event-accounting
+			[event]="event()"
+			class="mb-5"
+			[class.d-none]="view() !== 'accounting'"
+			(change)="reloadEvent()"
+		></bo-event-accounting>
+
+		<bo-event-report
+			[event]="event()"
+			class="mb-5"
+			[class.d-none]="view() !== 'report'"
+			(update)="updateEvent($event)"
+		></bo-event-report>
 	</div>
 </bo-page-content>
 
 <bo-page-footer class="d-lg-none">
-	<bo-tabs defaultTab="info" (change)="view = $any($event)">
+	<bo-tabs defaultTab="info" (change)="view.set($any($event))">
 		<bo-tab name="info" label="Info" icon="calendar"></bo-tab>
 		<bo-tab name="attendees" label="Účastníci" icon="people-outline"></bo-tab>
 		<bo-tab name="accounting" label="Účtování" icon="cash-outline"></bo-tab>

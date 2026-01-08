@@ -57,8 +57,9 @@ body {
 	--san-red: hsl(358, 65%, 45%);
 	--san-red-rgb: 231, 76, 60;
 
-	--bo-shadow: rgba(0, 0, 0, 0.35) 0px 0 12px;
-	--bo-shadow-small: rgba(0, 0, 0, 0.35) 0px 0 5px;
+	// --bo-shadow: rgba(0, 0, 0, 0.35) 0px 0 12px;
+	--bo-shadow: rgba(0, 0, 0, 0.12) 0px 4px 16px;
+	--bo-shadow-small: rgba(0, 0, 0, 0.35) 0px 2px 5px;
 
 	--bo-white: #fff;
 	--bo-black: #000;

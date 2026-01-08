@@ -6,8 +6,6 @@ import { IonButton } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
-import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
-import { CardComponent } from "src/app/shared/components/card/card.component";
 import { SDK } from "src/sdk";
 import { EventsService } from "../../services/events.service";
 
@@ -16,7 +14,7 @@ import { EventsService } from "../../services/events.service";
 	selector: "bo-event-registration",
 	templateUrl: "./event-registration.component.html",
 	styleUrls: ["./event-registration.component.scss"],
-	imports: [CommonModule, FormsModule, IonButton, CardComponent, CardContentComponent],
+	imports: [CommonModule, FormsModule, IonButton],
 })
 export class EventRegistrationComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>();

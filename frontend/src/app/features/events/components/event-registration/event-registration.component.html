@@ -1,36 +1,30 @@
-<h3>Přihláška</h3>
-
-<bo-card>
-	<bo-card-content>
-		<div class="buttons">
-			@if (event()?._links?.saveEventRegistration?.applicable) {
-				<ion-button
-					[disabled]="!event()?._links?.saveEventRegistration?.allowed || uploadingRegistration"
-					fill="clear"
-					(click)="registrationInput.click()"
-					>Nahrát</ion-button
-				>
-			}
-			@if (event()?._links?.getEventRegistration?.applicable) {
-				<ion-button
-					[disabled]="!event()?._links?.getEventRegistration?.allowed || uploadingRegistration"
-					fill="clear"
-					(click)="getRegistration()"
-					>Zobrazit</ion-button
-				>
-			}
-			@if (event()?._links?.deleteEventRegistration?.applicable) {
-				<ion-button
-					[disabled]="!event()?._links?.deleteEventRegistration?.allowed || uploadingRegistration"
-					fill="clear"
-					color="danger"
-					(click)="deleteRegistration()"
-					>Smazat</ion-button
-				>
-			}
-		</div>
-	</bo-card-content>
-</bo-card>
+<div class="buttons">
+	@if (event()?._links?.saveEventRegistration?.applicable) {
+		<ion-button
+			[disabled]="!event()?._links?.saveEventRegistration?.allowed || uploadingRegistration"
+			fill="clear"
+			(click)="registrationInput.click()"
+			>Nahrát</ion-button
+		>
+	}
+	@if (event()?._links?.getEventRegistration?.applicable) {
+		<ion-button
+			[disabled]="!event()?._links?.getEventRegistration?.allowed || uploadingRegistration"
+			fill="clear"
+			(click)="getRegistration()"
+			>Zobrazit</ion-button
+		>
+	}
+	@if (event()?._links?.deleteEventRegistration?.applicable) {
+		<ion-button
+			[disabled]="!event()?._links?.deleteEventRegistration?.allowed || uploadingRegistration"
+			fill="clear"
+			color="danger"
+			(click)="deleteRegistration()"
+			>Smazat</ion-button
+		>
+	}
+</div>
 
 @if (uploadingRegistration) {
 	<p>Nahrávám&hellip;</p>

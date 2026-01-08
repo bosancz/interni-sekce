@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, forwardRef, input, OnInit } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, forwardRef, input, OnInit, signal } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
@@ -20,7 +20,7 @@ import { SDK } from "src/sdk";
 	},
 })
 export class GroupsSelectComponent implements OnInit, ControlValueAccessor, AfterViewInit {
-	groups?: SDK.GroupResponseWithLinks[];
+	groups = signal<SDK.GroupResponseWithLinks[] | undefined>(undefined);
 
 	selectedGroups: number[] = [];
 
@@ -42,7 +42,8 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	ngOnInit() {}
 
 	async loadGroups() {
-		this.groups = await this.api.MembersApi.listGroups({ active: true }).then((res) => res.data);
+		const groups = await this.api.MembersApi.listGroups({ active: true }).then((res) => res.data);
+		this.groups.set(groups);
 	}
 
 	ngAfterViewInit() {
@@ -62,7 +63,7 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 		if (this.disabled || this.readonly() || !this.multiple()) return;
 
 		if (checked) {
-			this.selectedGroups = this.groups?.map((group) => group.id) ?? [];
+			this.selectedGroups = this.groups()?.map((group) => group.id) ?? [];
 		} else {
 			this.selectedGroups = [];
 		}
@@ -71,7 +72,7 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	}
 
 	isSelectedAll(): boolean {
-		return this.groups?.every((group) => this.selectedGroups.includes(group.id)) ?? false;
+		return this.groups()?.every((group) => this.selectedGroups.includes(group.id)) ?? false;
 	}
 
 	toggleGroup(groupId: number) {
@@ -112,7 +113,7 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	// ControlValueAccessor
 	writeValue(groups: number | number[] | undefined): void {
 		if (this.multiple()) {
-			this.selectedGroups = Array.isArray(groups) ? groups : (this.groups?.map((group) => group.id) ?? []);
+			this.selectedGroups = Array.isArray(groups) ? groups : (this.groups()?.map((group) => group.id) ?? []);
 		} else {
 			this.selectedGroups = groups ? (Array.isArray(groups) ? groups : [groups]) : [];
 		}
