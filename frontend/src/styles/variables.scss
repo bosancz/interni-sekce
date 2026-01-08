@@ -44,7 +44,7 @@ $font-san: SanGrotesk, "Roboto Condensed", Helvetica, Verdana, sans-serif;
 $circle-size: 2rem;
 
 // css variables
-:root {
+body {
 	--san-blue: hsl(232, 48%, 32%);
 	--san-blue-rgb: 54, 81, 145;
 
@@ -59,4 +59,19 @@ $circle-size: 2rem;
 
 	--bo-shadow: rgba(0, 0, 0, 0.35) 0px 0 12px;
 	--bo-shadow-small: rgba(0, 0, 0, 0.35) 0px 0 5px;
+
+	--bo-white: #fff;
+	--bo-black: #000;
+
+	--bo-dark: #222;
+	--bo-light: #ddd;
+}
+
+
+body.dark {
+	--bo-white: #000;
+	--bo-black: #fff;
+
+	--bo-dark: #ddd;
+	--bo-light: #222;
 }

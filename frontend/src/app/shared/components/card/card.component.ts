@@ -5,14 +5,18 @@ import { RouterLink } from "@angular/router";
 	selector: "bo-card",
 	templateUrl: "./card.component.html",
 	styleUrls: ["./card.component.scss"],
-	
+
 	host: {
-		"[style]": "'--card-color: ' + (color() || 'black')",
+		"[style]": "'--card-color: ' + (color() || 'var(--bo-black)')",
 		"[class.clickable]": "hasRouterLink()",
 		"[class.mousedown]": "mouseDown()",
 		"(mousedown)": "mouseDown.set(true)",
 		"(mouseup)": "mouseDown.set(false)",
 		"(mouseleave)": "mouseDown.set(false)",
+		"(touchstart)": "mouseDown.set(true)",
+		"(touchend)": "mouseDown.set(false)",
+		"(touchcancel)": "mouseDown.set(false)",
+		"(touchleave)": "mouseDown.set(false)",
 	},
 })
 export class CardComponent implements OnInit {

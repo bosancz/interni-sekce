@@ -1,5 +1,5 @@
 import { KeyValuePipe } from "@angular/common";
-import { AfterViewInit, Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import {
@@ -59,8 +59,8 @@ import { MembershipStates } from "../../../../core/config/membership-states";
 	],
 })
 export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnter {
-	members?: SDK.MemberResponseWithLinks[];
-	groups?: SDK.GroupResponseWithLinks[];
+	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
+	groups = signal<SDK.GroupResponseWithLinks[]>([]);
 	roles = MemberRoles;
 	membershipStates = MembershipStates;
 
@@ -138,7 +138,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			this.page++;
 		} else {
 			this.page = 1;
-			this.members = undefined;
+			this.members.set([]);
 		}
 
 		const params: SDK.MembersApiListMembersQueryParams = {
@@ -152,12 +152,12 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 		const members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
 
-		if (!this.members) this.members = [];
-		this.members.push(...members);
+		this.members.set([...this.members()!, ...members]);
 	}
 
 	private async loadGroups() {
-		this.groups = await this.api.MembersApi.listGroups().then((res) => res.data);
+		const groups = await this.api.MembersApi.listGroups().then((res) => res.data);
+		this.groups.set(groups);
 	}
 
 	private create() {

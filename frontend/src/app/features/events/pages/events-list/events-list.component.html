@@ -1,10 +1,10 @@
-<bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions" actionsHeader="Přehled akcí" />
+<bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions()" actionsHeader="Přehled akcí" />
 
 <bo-filter [search]="true" (change)="onFilterChange($event)">
 	<ion-item>
 		<ion-select name="year" ngModel label="Rok">
 			<ion-select-option [value]="null">všechny</ion-select-option>
-			@for (year of years; track year) {
+			@for (year of years(); track year) {
 				<ion-select-option [value]="year">{{ year }}</ion-select-option>
 			}
 		</ion-select>
