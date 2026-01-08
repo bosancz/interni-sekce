@@ -13,6 +13,10 @@ import { RouterLink } from "@angular/router";
 		"(mousedown)": "mouseDown.set(true)",
 		"(mouseup)": "mouseDown.set(false)",
 		"(mouseleave)": "mouseDown.set(false)",
+		"(touchstart)": "mouseDown.set(true)",
+		"(touchend)": "mouseDown.set(false)",
+		"(touchcancel)": "mouseDown.set(false)",
+		"(touchleave)": "mouseDown.set(false)",
 	},
 })
 export class CardComponent implements OnInit {

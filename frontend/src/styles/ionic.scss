@@ -21,6 +21,7 @@ ion-header.md {
 		--ion-background-color: #333;
 		--ion-toolbar-color: #fff;
 	}
+
 	ion-title {
 		font-family: $font-san;
 	}
@@ -30,6 +31,7 @@ ion-menu {
 	ion-toolbar.md {
 		--ion-background-color: #111;
 	}
+
 	ion-title.ios {
 		padding-left: 0;
 		padding-right: 0;
@@ -53,6 +55,7 @@ ion-menu {
 
 body.dark {
 	--ion-backdrop-color: #fff;
+
 	ion-menu {
 		--ion-background-color: #1e1e1e;
 	}
@@ -65,6 +68,7 @@ ion-list {
 		--detail-icon-color: black;
 		--detail-icon-opacity: 1;
 	}
+
 	ion-item:last-child {
 		--border-width: 0 !important;
 	}
@@ -84,11 +88,15 @@ ion-popover.transparent {
 }
 
 .alert-wide {
-    --width: 80vw;
-    --max-width: 800px;
+	--width: 80vw;
+	--max-width: 800px;
 
 	textarea {
-        min-height: 40vh !important;
-    }
+		min-height: 40vh !important;
+	}
 
+}
+
+.ion-page {
+	background-color: var(--bo-white);
 }

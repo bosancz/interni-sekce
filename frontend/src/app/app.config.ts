@@ -7,7 +7,7 @@ import {
 	withInMemoryScrolling,
 } from "@angular/router";
 import { provideServiceWorker } from "@angular/service-worker";
-import { IonicRouteStrategy, isPlatform, provideIonicAngular } from "@ionic/angular/standalone";
+import { createAnimation, IonicRouteStrategy, isPlatform, provideIonicAngular } from "@ionic/angular/standalone";
 import { appRoutes } from "./app.routing";
 import { MainErrorHandler } from "./core/error-handlers/main.error-handler";
 import { TitleService } from "./core/services/title.service";
@@ -16,6 +16,18 @@ export const appConfig: ApplicationConfig = {
 	providers: [
 		provideIonicAngular({
 			backButtonText: isPlatform("ios") ? "Zpět" : "",
+			navAnimation: (baseEl, opts) =>
+				opts.direction === "forward"
+					? createAnimation()
+							.addElement(opts.enteringEl)
+							.fromTo("opacity", "0", "1")
+							.duration(250)
+							.easing("ease-out")
+					: createAnimation()
+							.addElement(opts.leavingEl)
+							.fromTo("opacity", "1", "0")
+							.duration(150)
+							.easing("ease-out"),
 		}),
 		provideRouter(
 			appRoutes,
