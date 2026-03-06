@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, ElementRef, input, ViewChild } from "@angular/core";
+import { Component, ElementRef, input, output, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
 import { IonButton } from "@ionic/angular/standalone";
@@ -18,6 +18,8 @@ import { EventsService } from "../../services/events.service";
 })
 export class EventRegistrationComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>();
+	update = output<void>();
+
 
 	uploadingRegistration: boolean = false;
 
@@ -73,6 +75,8 @@ async uploadRegistration(input: HTMLInputElement) {
             this.uploadingRegistration = false;
         }
 
+		this.update.emit();
+
         this.toastService.toast("Přihláška nahrána.");
     }
 
@@ -82,8 +86,7 @@ async uploadRegistration(input: HTMLInputElement) {
 
 		await this.api.EventsApi.deleteEventRegistration(event.id);
 		this.toastService.toast("Přihláška smazána.");
-		// Note: This component doesn't have a way to update the signal input
-		// The parent component should handle updating the event
+		this.update.emit();
 	}
 
 	async getRegistration() {

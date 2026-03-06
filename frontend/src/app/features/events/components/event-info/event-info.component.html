@@ -90,7 +90,7 @@
 			</bo-item>
 
 			<bo-item label="Přihláška" [loading]="!event()">
-				<bo-event-registration [event]="event()" (change)="update.emit({})"></bo-event-registration>
+				<bo-event-registration [event]="event()" (update)="update.emit({})"></bo-event-registration>
 			</bo-item>
 		</ion-list>
 
