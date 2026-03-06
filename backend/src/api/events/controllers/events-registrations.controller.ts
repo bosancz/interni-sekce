@@ -14,7 +14,7 @@ import {
 	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response} from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
@@ -68,6 +68,7 @@ export class EventsRegistrationsController {
 	@AcLinks(EventRegistrationEditPermission)
 	@ApiResponse({ status: 204 })
 	@UseInterceptors(FileInterceptor("registration", { dest: './uploads_temp' }))
+	@ApiConsumes('multipart/form-data')
 	@ApiBody({
 		schema: {
 			type: "object",
@@ -89,9 +90,9 @@ export class EventsRegistrationsController {
 			EventRegistrationEditPermission.canOrThrow(req, event);
 			if (!registration) throw new BadRequestException("Registration not provided")
 				
-			const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
-			const registrationFileName = "prihlaska_" +  sanitizeFilename(event.name) + ".pdf"
-			const registrationPath = path.join(registrationFolder, registrationFileName)
+				const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
+				const registrationFileName = "prihlaska_" +  sanitizeFilename(event.name) + ".pdf"
+				const registrationPath = path.join(registrationFolder, registrationFileName)
 			try{
 				await this.fileService.ensureDir(registrationFolder)
 				await this.fileService.deleteFilesByPrefix(registrationFolder, "prihlaska")

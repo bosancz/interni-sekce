@@ -34,37 +34,47 @@ export class EventRegistrationComponent {
 		this.registrationInput.nativeElement.click();
 	}
 
-	async uploadRegistration(input: HTMLInputElement) {
-		const event = this.event();
-		if (!event) return;
+async uploadRegistration(input: HTMLInputElement) {
+        const event = this.event();
+        if (!event) return;
 
-		if (!input.files?.length) return;
+        if (!input.files?.length) return;
 
-		let file = input.files![0];
+        let file = input.files![0];
 
-		if (file.name.split(".").pop()?.toLowerCase() !== "pdf") {
-			this.toastService.toast("Soubor musí být ve formátu PDF");
-			this.uploadingRegistration = false;
+        if (file.name.split(".").pop()?.toLowerCase() !== "pdf") {
+            this.toastService.toast("Soubor musí být ve formátu PDF");
+            this.uploadingRegistration = false;
 
-			return;
-		}
+            return;
+        }
 
-		this.uploadingRegistration = true;
+        this.uploadingRegistration = true;
 
-		try {
-			await this.api.EventsApi.saveEventRegistration(event.id, { registration: file });
-		} catch (err: any) {
-			this.toastService.toast("Nastala chyba při nahrávání: " + err.message);
-			return;
-		} finally {
-			this.uploadingRegistration = false;
-		}
+        try {
+            // 1. Create FormData and append the file
+            const formData = new FormData();
+            formData.append('registration', file);
 
-		this.toastService.toast("Přihláška nahrána.");
+            // 2. Call the API with formData and header override
+            await this.api.EventsApi.saveEventRegistration(
+                event.id, 
+                formData as any, // Cast as any to bypass the generated JSON type
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+        } catch (err: any) {
+            this.toastService.toast("Nastala chyba při nahrávání: " + err.message);
+            return;
+        } finally {
+            this.uploadingRegistration = false;
+        }
 
-		// Note: This component doesn't have a way to update the signal input
-		// The parent component should handle updating the event
-	}
+        this.toastService.toast("Přihláška nahrána.");
+    }
 
 	async deleteRegistration() {
 		const event = this.event();
