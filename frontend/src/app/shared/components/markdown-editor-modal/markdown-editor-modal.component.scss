@@ -1,0 +1,15 @@
+.toolbar {
+	display: flex;
+	gap: 8px;
+	padding: 0 16px 8px;
+}
+
+.help {
+	padding: 0 16px 12px;
+	color: var(--ion-color-medium);
+}
+
+ion-textarea {
+	padding: 0 16px;
+	--min-height: 220px;
+}

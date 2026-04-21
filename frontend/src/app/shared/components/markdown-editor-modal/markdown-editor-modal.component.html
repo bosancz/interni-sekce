@@ -1,0 +1,32 @@
+<bo-modal-layout>
+	<h4 slot="title">{{ header() }}</h4>
+
+	<div class="toolbar">
+		<ion-button color="medium" fill="outline" size="small" (click)="addBold()">
+			<strong>B</strong>
+		</ion-button>
+		<ion-button color="medium" fill="outline" size="small" (click)="addItalic()">
+			<em>I</em>
+		</ion-button>
+		<ion-button color="medium" fill="outline" size="small" (click)="addList()">Seznam</ion-button>
+	</div>
+
+	<div class="help">
+		<small>
+			Markdown nápověda: <strong>**tučně**</strong>, <em>_kurzíva_</em>, seznam pomocí <strong>-</strong>.
+			Zkratky: <strong>Ctrl/Cmd + B</strong> pro tučné, <strong>Ctrl/Cmd + I</strong> pro kurzívu.
+		</small>
+	</div>
+
+	<ion-textarea
+		autoGrow
+		[placeholder]="placeholder()"
+		[(ngModel)]="content"
+		(keydown)="onEditorKeydown($event)"
+	></ion-textarea>
+
+	<ion-buttons slot="buttons">
+		<ion-button (click)="close.emit()" color="secondary">Zrušit</ion-button>
+		<ion-button (click)="save()" color="primary">Uložit</ion-button>
+	</ion-buttons>
+</bo-modal-layout>
