@@ -28,3 +28,26 @@ ion-list {
 .column-filter ion-select {
 	min-width: 7rem;
 }
+
+:host ::ng-deep .events-table {
+	table-layout: fixed;
+	width: 100%;
+}
+
+:host ::ng-deep .events-table .events-name-column {
+	width: 32%;
+	white-space: normal;
+}
+
+:host ::ng-deep .events-table .events-date-column {
+	width: 24%;
+}
+
+:host ::ng-deep .events-table .events-status-column {
+	width: 16%;
+}
+
+:host ::ng-deep .events-table .events-leaders-column {
+	width: 28%;
+	white-space: normal;
+}
