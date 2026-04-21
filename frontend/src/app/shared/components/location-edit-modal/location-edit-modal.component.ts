@@ -9,8 +9,6 @@ import {
 	IonItem,
 	IonLabel,
 	IonList,
-	IonSegment,
-	IonSegmentButton,
 	ModalController,
 } from "@ionic/angular/standalone";
 import * as L from "leaflet";
@@ -36,8 +34,6 @@ export interface LocationData {
 		IonButtons,
 		IonButton,
 		IonLabel,
-		IonSegment,
-		IonSegmentButton,
 		IonIcon,
 		ModalLayoutComponent,
 	],
@@ -52,8 +48,6 @@ export class LocationEditModalComponent
 	private map?: L.Map;
 	private marker?: L.Marker;
 	private mapyCzApiKey = "";
-
-	inputMode: "text" | "map" = "text";
 
 	form = new FormGroup({
 		place: new FormControl<string | null>(null),
@@ -79,22 +73,13 @@ export class LocationEditModalComponent
 	}
 
 	ngAfterViewInit() {
-		// Initialize map when in map mode
-		if (this.inputMode === "map") {
-			setTimeout(() => this.initMap(), 100);
-		}
+		// Always initialize map
+		setTimeout(() => this.initMap(), 100);
 	}
 
 	ngOnDestroy() {
 		if (this.map) {
 			this.map.remove();
-		}
-	}
-
-	onModeChange(event: any) {
-		this.inputMode = event.detail.value;
-		if (this.inputMode === "map") {
-			setTimeout(() => this.initMap(), 100);
 		}
 	}
 
@@ -206,8 +191,8 @@ export class LocationEditModalComponent
 		const place = this.form.value.place || undefined;
 		let placeCoordinates: { lat: number; lng: number } | undefined = undefined;
 
-		// Get coordinates from marker if in map mode
-		if (this.inputMode === "map" && this.marker) {
+		// Get coordinates from marker if it exists
+		if (this.marker) {
 			const latLng = this.marker.getLatLng();
 			placeCoordinates = { lat: latLng.lat, lng: latLng.lng };
 		}
