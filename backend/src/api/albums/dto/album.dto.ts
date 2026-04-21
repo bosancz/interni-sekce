@@ -16,7 +16,10 @@ export class AlbumResponse {
 	@ApiPropertyOptional({ type: "string" }) dateFrom!: string | null;
 	@ApiPropertyOptional({ type: "string" }) dateTill!: string | null;
 	@ApiPropertyOptional({ type: "number" }) eventId!: number | null;
-	@ApiPropertyOptional({ type: WithLinks(EventResponse) }) event?: Event | undefined;
+
+	@AcEntity(EventResponse)
+	@ApiPropertyOptional({ type: WithLinks(EventResponse) })
+	event?: Event | undefined;
 
 	@AcEntity(PhotoResponse)
 	@ApiPropertyOptional({ type: WithLinks(() => PhotoResponse), isArray: true })

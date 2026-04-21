@@ -26,10 +26,10 @@
 
 			<bo-item label="Místo">
 				<p>{{ event()?.place ?? "-" }}</p>
-				@if (event()?.placeCoordinates) {
+				@if (placeCoordinates()) {
 					<p class="coordinates">
-						{{ event()?.placeCoordinates.lat | number: '1.0-6' }},
-						{{ event()?.placeCoordinates.lng | number: '1.0-6' }}
+						{{ placeCoordinates()!.lat | number: "1.0-6" }},
+						{{ placeCoordinates()!.lng | number: "1.0-6" }}
 					</p>
 				}
 				<bo-edit-button-location
@@ -37,7 +37,7 @@
 					label="Místo akce"
 					[disabled]="!event()?._links?.updateEvent?.allowed"
 					[place]="event()?.place"
-					[placeCoordinates]="event()?.placeCoordinates"
+					[placeCoordinates]="placeCoordinates()"
 					(update)="update.emit({ place: $event.place, placeCoordinates: $event.placeCoordinates })"
 				/>
 			</bo-item>

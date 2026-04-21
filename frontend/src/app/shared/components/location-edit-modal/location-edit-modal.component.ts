@@ -1,26 +1,26 @@
 import { CommonModule } from "@angular/common";
-import { Component, input, OnInit, AfterViewInit, OnDestroy, inject } from "@angular/core";
+import { AfterViewInit, Component, inject, input, OnDestroy, OnInit } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import {
 	IonButton,
 	IonButtons,
+	IonIcon,
 	IonInput,
 	IonItem,
 	IonLabel,
 	IonList,
 	IonSegment,
 	IonSegmentButton,
-	IonIcon,
 	ModalController,
 } from "@ionic/angular/standalone";
 import * as L from "leaflet";
+import { ApiService } from "src/app/core/services/api.service";
 import { AbstractModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
-import { ApiService } from "src/app/core/services/api.service";
 
 export interface LocationData {
-	place: string | null;
-	placeCoordinates: { lat: number; lng: number } | null;
+	place: string | undefined;
+	placeCoordinates: { lat: number; lng: number } | undefined;
 }
 
 @Component({
@@ -42,8 +42,11 @@ export interface LocationData {
 		ModalLayoutComponent,
 	],
 })
-export class LocationEditModalComponent extends AbstractModalComponent<LocationData> implements OnInit, AfterViewInit, OnDestroy {
-	data = input<LocationData>({ place: null, placeCoordinates: null });
+export class LocationEditModalComponent
+	extends AbstractModalComponent<LocationData>
+	implements OnInit, AfterViewInit, OnDestroy
+{
+	data = input<LocationData>({ place: undefined, placeCoordinates: undefined });
 
 	private api = inject(ApiService);
 	private map?: L.Map;
@@ -69,7 +72,7 @@ export class LocationEditModalComponent extends AbstractModalComponent<LocationD
 		// Load Mapy.cz API key from root endpoint
 		try {
 			const rootInfo = await this.api.RootApi.getApiInfo();
-			this.mapyCzApiKey = rootInfo.mapyCzApiKey || "";
+			this.mapyCzApiKey = rootInfo.data.mapyCzApiKey || "";
 		} catch (error) {
 			console.error("Failed to load Mapy.cz API key:", error);
 		}
@@ -112,14 +115,16 @@ export class LocationEditModalComponent extends AbstractModalComponent<LocationD
 			{
 				attribution: '&copy; <a href="https://www.mapy.cz/">Mapy.cz</a>',
 				maxZoom: 19,
-			}
+			},
 		);
 
 		mapyCzTileLayer.addTo(this.map);
 
 		// Add marker if coordinates exist
 		if (locationData.placeCoordinates) {
-			this.marker = L.marker([locationData.placeCoordinates.lat, locationData.placeCoordinates.lng]).addTo(this.map);
+			this.marker = L.marker([locationData.placeCoordinates.lat, locationData.placeCoordinates.lng]).addTo(
+				this.map,
+			);
 		}
 
 		// Add click handler to map
@@ -143,7 +148,7 @@ export class LocationEditModalComponent extends AbstractModalComponent<LocationD
 			// Use Mapy.cz Geocoding API
 			// Reference: https://api.mapy.cz/view?page=geocode
 			const response = await fetch(
-				`https://api.mapy.cz/v1/geocode/reverse?lat=${lat}&lon=${lng}&lang=cs&apikey=${this.mapyCzApiKey}`
+				`https://api.mapy.cz/v1/geocode/reverse?lat=${lat}&lon=${lng}&lang=cs&apikey=${this.mapyCzApiKey}`,
 			);
 
 			if (response.ok) {
@@ -170,7 +175,7 @@ export class LocationEditModalComponent extends AbstractModalComponent<LocationD
 			// Use Mapy.cz Suggest API for location search
 			// Reference: https://api.mapy.cz/view?page=suggest
 			const response = await fetch(
-				`https://api.mapy.cz/v1/suggest?lang=cs&limit=1&type=regional&query=${encodeURIComponent(query)}&apikey=${this.mapyCzApiKey}`
+				`https://api.mapy.cz/v1/suggest?lang=cs&limit=1&type=regional&query=${encodeURIComponent(query)}&apikey=${this.mapyCzApiKey}`,
 			);
 
 			if (response.ok) {
@@ -198,8 +203,8 @@ export class LocationEditModalComponent extends AbstractModalComponent<LocationD
 	}
 
 	saveLocation() {
-		const place = this.form.value.place || null;
-		let placeCoordinates: { lat: number; lng: number } | null = null;
+		const place = this.form.value.place || undefined;
+		let placeCoordinates: { lat: number; lng: number } | undefined = undefined;
 
 		// Get coordinates from marker if in map mode
 		if (this.inputMode === "map" && this.marker) {
