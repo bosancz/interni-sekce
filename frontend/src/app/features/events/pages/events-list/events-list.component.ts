@@ -66,7 +66,7 @@ export class EventsListComponent implements OnInit {
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 	years = signal<number[]>([]);
 	actions = signal<Action[]>([]);
-	currentYear = String(new Date().getFullYear());
+	currentYearString = String(new Date().getFullYear());
 
 	statuses = EventStatuses;
 
@@ -103,8 +103,8 @@ export class EventsListComponent implements OnInit {
 
 	setFilterParam(name: string, value: string | null) {
 		const queryParams: UrlParams = { ...this.route.snapshot.queryParams };
-		queryParams[name] = value || undefined;
-		if (!queryParams[name]) delete queryParams[name];
+		if (value) queryParams[name] = value;
+		else delete queryParams[name];
 		this.router.navigate([], { queryParams, replaceUrl: true });
 	}
 
@@ -113,7 +113,7 @@ export class EventsListComponent implements OnInit {
 	}
 
 	toggleCurrentYear() {
-		this.setFilterParam("year", this.filter["year"] === this.currentYear ? null : this.currentYear);
+		this.setFilterParam("year", this.filter["year"] === this.currentYearString ? null : this.currentYearString);
 	}
 
 	getLeadersString(event: SDK.EventResponseWithLinks) {
