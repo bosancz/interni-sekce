@@ -90,12 +90,15 @@ export class HeaderComponent {
 		if (results && results.query) this.resultsOpen.set(true);
 	}
 
+	// Delay closing the dropdown on blur so that click events on result items
+	// are processed before the dropdown disappears.
+	private static readonly BLUR_CLOSE_DELAY_MS = 200;
+
 	onSearchBlur() {
-		// Delay so that click events on result items are processed first.
 		setTimeout(() => {
 			this.resultsOpen.set(false);
 			if (!this.isLg()) this.showSearch.set(false);
-		}, 200);
+		}, HeaderComponent.BLUR_CLOSE_DELAY_MS);
 	}
 
 	onSearchClear() {
@@ -105,7 +108,7 @@ export class HeaderComponent {
 		this.showSearch.set(false);
 	}
 
-	async navigate(commands: any[]) {
+	async navigate(commands: unknown[]) {
 		this.resultsOpen.set(false);
 		this.showSearch.set(false);
 		await this.router.navigate(commands);
