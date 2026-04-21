@@ -5,6 +5,7 @@ import { MembershipStates } from "src/app/core/config/membership-states";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { SDK } from "src/sdk";
+import { EditButtonComponent } from "../../../../shared/components/edit-button/edit-button.component";
 import { EditButtonSelectComponent } from "../../../../shared/components/edit-button-select/edit-button-select.component";
 import { GroupBadgeComponent } from "../../../../shared/components/group-badge/group-badge.component";
 import { ItemComponent } from "../../../../shared/components/item/item.component";
@@ -13,7 +14,7 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 @Component({
 	selector: "bo-member-membership",
 
-	imports: [IonList, IonLabel, ItemComponent, EditButtonSelectComponent, GroupBadgeComponent, MemberPipe],
+	imports: [IonList, IonLabel, ItemComponent, EditButtonComponent, EditButtonSelectComponent, GroupBadgeComponent, MemberPipe],
 	templateUrl: "./member-membership.component.html",
 	styleUrl: "./member-membership.component.scss",
 })
