@@ -29,14 +29,13 @@
 		</ion-segment-button>
 	</ion-segment> -->
 
-	<p>[[TODO: nastylovat taby na desktopu aby vypadaly líp, třeba jako Ionic Segment]]</p>
 	<div class="mb-4 d-none d-lg-grid">
-		<bo-tabs defaultTab="info" (change)="view.set($any($event))">
-			<bo-tab name="info" label="Info" icon="calendar"></bo-tab>
-			<bo-tab name="attendees" label="Účastníci" icon="people-outline"></bo-tab>
-			<bo-tab name="accounting" label="Účtování" icon="cash-outline"></bo-tab>
-			<bo-tab name="report" label="Report" icon="document-outline"></bo-tab>
-		</bo-tabs>
+		<bo-segment defaultTab="info" (change)="view.set($any($event))">
+			<bo-segment-item name="info" label="Info"></bo-segment-item>
+			<bo-segment-item name="attendees" label="Účastníci"></bo-segment-item>
+			<bo-segment-item name="accounting" label="Účtování"></bo-segment-item>
+			<bo-segment-item name="report" label="Report"></bo-segment-item>
+		</bo-segment>
 	</div>
 
 	<div>
