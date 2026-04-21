@@ -16,10 +16,43 @@ h1 {
 .search {
 	max-width: 500px;
 	margin: 0 auto;
+	position: relative;
 	ion-searchbar {
 		--box-shadow: none;
 		--ion-background-color: var(--darkShade);
 	}
+}
+
+.search-results {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	background: var(--ion-background-color, #fff);
+	color: var(--ion-text-color, #000);
+	border-radius: 8px;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+	max-height: 70vh;
+	overflow-y: auto;
+	margin-top: 4px;
+
+	ion-list {
+		background: transparent;
+		padding: 0;
+	}
+
+	ion-list-header {
+		font-weight: bold;
+		font-size: 0.9em;
+		min-height: 32px;
+	}
+}
+
+.search-empty {
+	padding: 1rem;
+	text-align: center;
+	color: var(--ion-color-medium);
 }
 
 .environment {

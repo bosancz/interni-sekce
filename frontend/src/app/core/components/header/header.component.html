@@ -13,11 +13,77 @@
 			@if (isLg() || showSearch()) {
 				<ion-searchbar
 					placeholder="Hledej&hellip;"
-					(ionClear)="showSearch.set(false)"
-					(ionBlur)="showSearch.set(false)"
+					debounce="0"
 					showClearButton="focus"
 					[showCancelButton]="!isLg() ? 'always' : 'never'"
+					(ionInput)="onSearchInput($any($event).detail.value)"
+					(ionFocus)="onSearchFocus()"
+					(ionBlur)="onSearchBlur()"
+					(ionClear)="onSearchClear()"
+					(ionCancel)="onSearchClear()"
 				/>
+
+				@if (resultsOpen() && searchResults(); as results) {
+					<div class="search-results">
+						@if (results.members.length) {
+							<ion-list lines="full">
+								<ion-list-header>Členové</ion-list-header>
+								@for (member of results.members; track member.id) {
+									<ion-item button (click)="navigate(['/databaze/clenove', member.id])" [detail]="true">
+										<ion-label>
+											<h3>{{ member.nickname || member.firstName || "?" }}</h3>
+											<p>
+												{{ member.firstName }} {{ member.lastName }}
+												<span [style.color]="member.groupId | group: 'color'">
+													&middot; {{ member.groupId | group: "name" }}
+												</span>
+											</p>
+										</ion-label>
+									</ion-item>
+								}
+							</ion-list>
+						}
+
+						@if (results.events.length) {
+							<ion-list lines="full">
+								<ion-list-header>Akce</ion-list-header>
+								@for (event of results.events; track event.id) {
+									<ion-item button (click)="navigate(['/akce', event.id])" [detail]="true">
+										<ion-label>
+											<h3>{{ event.name }}</h3>
+											<p>
+												{{ event.dateFrom | date: "d. M. yyyy" }}
+												@if (event.dateTill && event.dateTill !== event.dateFrom) {
+													&ndash; {{ event.dateTill | date: "d. M. yyyy" }}
+												}
+											</p>
+										</ion-label>
+									</ion-item>
+								}
+							</ion-list>
+						}
+
+						@if (results.albums.length) {
+							<ion-list lines="full">
+								<ion-list-header>Alba</ion-list-header>
+								@for (album of results.albums; track album.id) {
+									<ion-item button (click)="navigate(['/galerie', album.id])" [detail]="true">
+										<ion-label>
+											<h3>{{ album.name }}</h3>
+											@if (album.dateFrom) {
+												<p>{{ album.dateFrom | date: "d. M. yyyy" }}</p>
+											}
+										</ion-label>
+									</ion-item>
+								}
+							</ion-list>
+						}
+
+						@if (!hasResults() && !!results.query) {
+							<div class="search-empty">Nic nenalezeno.</div>
+						}
+					</div>
+				}
 			}
 		</div>
 
@@ -38,3 +104,4 @@
 		</ion-buttons>
 	</ion-toolbar>
 </ion-header>
+
