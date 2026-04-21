@@ -27,6 +27,6 @@ export class EditButtonMarkdownComponent {
 			value: this.value(),
 		});
 
-		if (result !== null) this.update.emit(result || null);
+		if (result !== null) this.update.emit(result);
 	}
 }

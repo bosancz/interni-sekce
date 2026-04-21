@@ -47,16 +47,28 @@ export class MarkdownEditorModalComponent extends AbstractModalComponent<string 
 		}
 	}
 
-	addBold() {
-		return this.wrapSelection("**");
+	onAddBold() {
+		void this.addBold();
 	}
 
-	addItalic() {
-		return this.wrapSelection("_");
+	onAddItalic() {
+		void this.addItalic();
 	}
 
-	addList() {
-		return this.transformSelection((selected) => {
+	onAddList() {
+		void this.addList();
+	}
+
+	async addBold() {
+		await this.wrapSelection("**");
+	}
+
+	async addItalic() {
+		await this.wrapSelection("_");
+	}
+
+	async addList() {
+		await this.transformSelection((selected) => {
 			if (!selected.length) return "- ";
 
 			return selected
@@ -98,7 +110,7 @@ export class MarkdownEditorModalComponent extends AbstractModalComponent<string 
 
 		this.content = newValue;
 
-		await new Promise((resolve) => setTimeout(resolve));
+		await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 		input.setSelectionRange(newCursorPosition, newCursorPosition);
 		input.focus();
 	}
