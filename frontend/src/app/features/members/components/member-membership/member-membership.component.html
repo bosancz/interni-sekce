@@ -9,14 +9,8 @@
 
 		<bo-item label="Role">
 			<ion-label>{{ (memberValue | member: "role") || "-" }}</ion-label>
-			<bo-edit-button-select
-				slot="end"
-				[required]="true"
-				[disabled]="!memberValue._links.updateMember.allowed"
-				[values]="memberRolesOptions"
-				[value]="memberValue.role"
-				(update)="update.emit({ role: $any($event) })"
-			/>
+			<bo-edit-button slot="end" [disabled]="!memberValue._links.updateMember.allowed" (click)="editRole()" />
+
 		</bo-item>
 
 		<bo-item label="Oddíl">
@@ -26,14 +20,8 @@
 
 		<bo-item label="Stav členství" (edit)="editMembership()">
 			<ion-label>{{ (memberValue | member: "membership") || "-" }}</ion-label>
-			<bo-edit-button-select
-				slot="end"
-				[required]="true"
-				[disabled]="!memberValue._links.updateMember.allowed"
-				[values]="memberMembershipOptions"
-				[value]="memberValue.membership"
-				(update)="update.emit({ membership: $any($event) })"
-			/>
+			<bo-edit-button slot="end" [disabled]="!memberValue._links.updateMember.allowed" (click)="editMembership()" />
+
 		</bo-item>
 	</ion-list>
 }

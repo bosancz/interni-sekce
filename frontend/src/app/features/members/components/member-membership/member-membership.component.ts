@@ -74,7 +74,7 @@ export class MemberMembershipComponent {
 		groups.sort((a, b) => a.shortName.localeCompare(b.shortName, "cs", { numeric: true }));
 
 		const group = await this.modalService.selectModal({
-			header: "Změnit skupinu",
+			header: "Změnit oddíl",
 			buttonText: "Uložit",
 			values: groups.map((g) => ({ label: g.name ?? g.shortName, value: g.id })),
 			value: member?.groupId,
@@ -86,7 +86,7 @@ export class MemberMembershipComponent {
 	async editMembership() {
 		const member = this.member();
 		const result = await this.modalService.selectModal({
-			header: "Změnit aktivitu",
+			header: "Změnit stav členství",
 			buttonText: "Uložit",
 			values: Object.entries(MembershipStates).map(([id, role]) => ({
 				label: role.title,
