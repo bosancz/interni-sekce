@@ -25,6 +25,7 @@ export class EventResponse implements Omit<Event, "setLeaders"> {
 	@ApiPropertyOptional({ type: "string" }) type!: string | null;
 	@ApiPropertyOptional({ type: "string" }) statusNote!: string | null;
 	@ApiPropertyOptional({ type: "string" }) place!: string | null;
+	@ApiPropertyOptional({ type: "object" }) placeCoordinates!: { lat: number; lng: number } | null;
 	@ApiPropertyOptional({ type: "string" }) description!: string | null;
 	@ApiPropertyOptional({ type: "string" }) timeFrom!: string | null;
 	@ApiPropertyOptional({ type: "string" }) timeTill!: string | null;
@@ -67,6 +68,7 @@ export class EventUpdateBody {
 	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() description?: string | null;
 	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() statusNote?: string | null;
 	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() place?: string | null;
+	@ApiPropertyOptional({ type: "object" }) @IsOptional() placeCoordinates?: { lat: number; lng: number } | null;
 	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() timeFrom?: string | null;
 	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() timeTill?: string | null;
 	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() meetingPlaceStart?: string | null;

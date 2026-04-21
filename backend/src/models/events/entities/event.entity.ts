@@ -48,6 +48,7 @@ export class Event {
 	@Column({ type: "enum", nullable: false, enum: EventStates, default: EventStates.draft }) status!: EventStates;
 	@Column({ type: "text", nullable: true }) statusNote!: string | null;
 	@Column({ type: "text", nullable: true }) place!: string | null;
+	@Column({ type: "jsonb", nullable: true }) placeCoordinates!: { lat: number; lng: number } | null;
 	@Column({ type: "text", nullable: true }) description!: string | null;
 	@Column({ type: "date", nullable: false }) dateFrom!: string;
 	@Column({ type: "date", nullable: false }) dateTill!: string;

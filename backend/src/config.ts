@@ -92,6 +92,10 @@ const google = {
 	clientSecret: process.env["GOOGLE_CLIENT_SECRET"],
 };
 
+const mapy = {
+	apiKey: process.env["MAPY_CZ_API_KEY"] ?? "",
+};
+
 @Injectable()
 export class Config {
 	app = app;
@@ -104,6 +108,7 @@ export class Config {
 	production = production;
 	server = server;
 	fs = fs;
+	mapy = mapy;
 }
 
 @Global()

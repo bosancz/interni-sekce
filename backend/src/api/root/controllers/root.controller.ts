@@ -19,6 +19,7 @@ export class RootController {
 			version: this.config.app.version,
 			environmentTitle: this.config.app.environmentTitle,
 			googleClientId: this.config.google.clientId,
+			mapyCzApiKey: this.config.mapy.apiKey,
 		};
 	}
 }
