@@ -7,6 +7,7 @@
 		</bo-item>
 
 		<bo-item label="Role">
+			<ion-label>{{ (memberValue | member: "role") || "-" }}</ion-label>
 			<bo-edit-button-select
 				slot="end"
 				[required]="true"
@@ -15,21 +16,22 @@
 				[value]="memberValue.role"
 				(update)="update.emit({ role: $any($event) })"
 			/>
-			<ion-label>{{ (memberValue | member: "role") || "-" }}</ion-label>
 		</bo-item>
 
 		<bo-item label="Oddíl">
 			<bo-group-badge [groupId]="memberValue.groupId"></bo-group-badge>
-			<!-- <bo-group-select
-			[required]="true"
-			[disabled]="!memberValue._links.updateMember.allowed"
-			[ngModel]="memberValue.groupId"
-			(ngModelChange)="update.emit({ groupId: $event })"
-		></bo-group-select> -->
 		</bo-item>
 
 		<bo-item label="Stav členství" (edit)="editMembership()">
 			<ion-label>{{ (memberValue | member: "membership") || "-" }}</ion-label>
+			<bo-edit-button-select
+				slot="end"
+				[required]="true"
+				[disabled]="!memberValue._links.updateMember.allowed"
+				[values]="memberMembershipOptions"
+				[value]="memberValue.membership"
+				(update)="update.emit({ membership: $any($event) })"
+			/>
 		</bo-item>
 	</ion-list>
 }

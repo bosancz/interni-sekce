@@ -26,6 +26,11 @@ export class MemberMembershipComponent {
 		value: id as SDK.MemberRolesEnum,
 	}));
 
+	memberMembershipOptions = Object.entries(MembershipStates).map(([id, state]) => ({
+		label: state.title,
+		value: id as SDK.MembershipStatesEnum,
+	}));
+
 	constructor(
 		private readonly api: ApiService,
 		private readonly modalService: ModalService,
