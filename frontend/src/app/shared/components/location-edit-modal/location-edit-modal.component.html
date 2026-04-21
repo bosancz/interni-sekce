@@ -1,0 +1,53 @@
+<bo-modal-layout>
+	<h4 slot="title">Upravit místo</h4>
+
+	<ion-segment [value]="inputMode" (ionChange)="onModeChange($event)">
+		<ion-segment-button value="text">
+			<ion-label>Text</ion-label>
+		</ion-segment-button>
+		<ion-segment-button value="map">
+			<ion-label>Mapa</ion-label>
+		</ion-segment-button>
+	</ion-segment>
+
+	<form [formGroup]="form">
+		@if (inputMode === 'text') {
+			<ion-list>
+				<ion-item>
+					<ion-input
+						label="Místo"
+						labelPlacement="stacked"
+						type="text"
+						formControlName="place"
+						placeholder="Dno pytle (u Bilba doma)"
+					></ion-input>
+				</ion-item>
+			</ion-list>
+		}
+
+		@if (inputMode === 'map') {
+			<div class="map-container">
+				<ion-item>
+					<ion-input
+						label="Hledat místo"
+						labelPlacement="stacked"
+						type="text"
+						formControlName="place"
+						placeholder="Zadejte název místa"
+						(ionBlur)="searchLocation()"
+					></ion-input>
+					<ion-button slot="end" (click)="searchLocation()" fill="clear">
+						<ion-icon name="search"></ion-icon>
+					</ion-button>
+				</ion-item>
+				<div id="location-map" class="map"></div>
+				<p class="map-hint">Kliknutím na mapu vyberte místo</p>
+			</div>
+		}
+	</form>
+
+	<ion-buttons slot="buttons">
+		<ion-button (click)="close.emit()" color="secondary">Zrušit</ion-button>
+		<ion-button (click)="saveLocation()" color="primary">Uložit</ion-button>
+	</ion-buttons>
+</bo-modal-layout>

@@ -7,6 +7,7 @@ import { EventTypeSelectorComponent } from "src/app/features/events/components/e
 import { EditButtonDateRangeComponent } from "src/app/shared/components/edit-button-date-range/edit-button-date-range.component";
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
 import { EditButtonTextComponent } from "src/app/shared/components/edit-button-text/edit-button-text.component";
+import { EditButtonLocationComponent } from "src/app/shared/components/edit-button-location/edit-button-location.component";
 import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
 import { GroupsSelectComponent } from "src/app/shared/components/groups-select/groups-select.component";
 import { ItemComponent } from "src/app/shared/components/item/item.component";
@@ -29,6 +30,7 @@ import { EventRegistrationComponent } from "../event-registration/event-registra
 		EditButtonTextComponent,
 		EditButtonDateRangeComponent,
 		EditButtonMarkdownComponent,
+		EditButtonLocationComponent,
 		GroupsSelectComponent,
 		EventTypeSelectorComponent,
 		DateRangePipe,

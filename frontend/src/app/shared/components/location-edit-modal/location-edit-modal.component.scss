@@ -1,0 +1,24 @@
+@import "leaflet/dist/leaflet.css";
+
+.map-container {
+	padding: 1rem 0;
+
+	.map {
+		height: 400px;
+		width: 100%;
+		margin-top: 1rem;
+		border-radius: 8px;
+		overflow: hidden;
+	}
+
+	.map-hint {
+		margin-top: 0.5rem;
+		font-size: 0.875rem;
+		color: var(--ion-color-medium);
+		text-align: center;
+	}
+}
+
+ion-segment {
+	margin-bottom: 1rem;
+}
