@@ -14,6 +14,7 @@
 	<ion-button
 		color="primary"
 		fill="none"
+		[class.d-lg-none]="showButtonMobileOnly()"
 		[id]="'filter-modal-' + filterId"
 		[disabled]="disabled"
 		(click)="openFilter(filterContent)"

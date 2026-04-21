@@ -1,6 +1,6 @@
 <bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions()" actionsHeader="Přehled akcí" />
 
-<bo-filter [search]="true" (change)="onFilterChange($event)">
+<bo-filter [search]="true" [showButtonMobileOnly]="true" (change)="onFilterChange($event)">
 	<ion-item>
 		<ion-select name="year" ngModel label="Rok">
 			<ion-select-option [value]="null">všechny</ion-select-option>
@@ -37,6 +37,26 @@
 		</ion-checkbox>
 	</ion-item>
 </bo-filter>
+
+<div class="quick-filters d-none d-lg-flex">
+	<button class="btn btn-outline-primary btn-sm me-2" [class.active]="!!filter.my" (click)="toggleBooleanFilter('my')">
+		Moje akce
+	</button>
+	<button
+		class="btn btn-outline-primary btn-sm me-2"
+		[class.active]="filter.year === currentYear"
+		(click)="toggleCurrentYear()"
+	>
+		Aktuální rok
+	</button>
+	<button
+		class="btn btn-outline-primary btn-sm me-2"
+		[class.active]="!!filter.noleader"
+		(click)="toggleBooleanFilter('noleader')"
+	>
+		Bez vedoucího
+	</button>
+</div>
 
 <bo-page-content>
 	@switch (view) {
@@ -92,8 +112,40 @@
 				<thead>
 					<tr>
 						<th>Název</th>
-						<th>Datum</th>
-						<th>Stav</th>
+						<th>
+							<div class="column-filter">
+								<span>Datum</span>
+								<ion-select
+									interface="popover"
+									[ngModel]="filter.year || null"
+									(ngModelChange)="setFilterParam('year', $event)"
+									placeholder="rok"
+								>
+									<ion-select-option [value]="null">všechny</ion-select-option>
+									@for (year of years(); track year) {
+										<ion-select-option [value]="'' + year">{{ year }}</ion-select-option>
+									}
+								</ion-select>
+							</div>
+						</th>
+						<th>
+							<div class="column-filter">
+								<span>Stav</span>
+								<ion-select
+									interface="popover"
+									[ngModel]="filter.status || null"
+									(ngModelChange)="setFilterParam('status', $event)"
+									placeholder="stav"
+								>
+									<ion-select-option [value]="null">všechny</ion-select-option>
+									@for (status of statuses | keyvalue; track status.key) {
+										<ion-select-option [value]="status.key">
+											{{ status.value.name }}
+										</ion-select-option>
+									}
+								</ion-select>
+							</div>
+						</th>
 						<th>Vede</th>
 					</tr>
 				</thead>
