@@ -1,14 +1,4 @@
-<ion-header>
-	<ion-toolbar>
-		<ion-buttons slot="start">
-			<ion-back-button [defaultHref]="album() ? '/galerie/' + album()!.id : undefined"></ion-back-button>
-		</ion-buttons>
-		<ion-title pageTitle>Upravit: {{ album()?.name }}</ion-title>
-		<ion-buttons slot="end">
-			<bo-action-buttons [actions]="actions()" header="Členská databáze"></bo-action-buttons>
-		</ion-buttons>
-	</ion-toolbar>
-</ion-header>
+<bo-page-header [title]="'Upravit: ' + (album()?.name ?? '')" [actions]="actions()" actionsHeader="Upravit galerii" />
 
 <ion-content>
 	<form #albumForm="ngForm">
