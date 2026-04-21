@@ -5800,11 +5800,6 @@ export namespace SDK {
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('saveEventRegistration', 'id', id)
-            assertParamExists('saveEventRegistration', 'saveEventRegistrationRequest', body)
-            
-            // verify required parameter 'saveEventRegistrationRequest' is not null or undefined
             assertParamExists('saveEventRegistration', 'id', id)
             assertParamExists('saveEventRegistration', 'saveEventRegistrationRequest', body)
             

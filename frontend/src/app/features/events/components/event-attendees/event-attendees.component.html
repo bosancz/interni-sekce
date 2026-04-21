@@ -6,7 +6,7 @@
 		@if (leaders() && leaders()?.length === 0) {
 			<p><em>Žádní účastníci</em></p>
 		}
-
+		
 		<bo-event-attendees-list
 			[event]="event()"
 			[attendees]="leaders()"
