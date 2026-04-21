@@ -9,6 +9,7 @@
     "generate:sdk": "openapi-sdk -i http://127.0.0.1:3000/api/openapi-json -o src/sdk"
   },
   "dependencies": {
+    "@angular/animations": "^21.0.6",
     "@angular/cdk": "^21.0.5",
     "@angular/common": "^21.0.6",
     "@angular/compiler": "^21.0.6",
@@ -36,6 +37,7 @@
     "inflected": "^2.1.0",
     "luxon": "^3.5.0",
     "marked": "^15.0.7",
+    "ng-zorro-antd": "^21.2.2",
     "ng2-charts": "^8.0.0",
     "pretty-bytes": "^6.1.1",
     "rxjs": "^7.8.1",

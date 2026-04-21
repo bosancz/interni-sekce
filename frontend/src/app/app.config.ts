@@ -11,6 +11,8 @@ import { createAnimation, IonicRouteStrategy, isPlatform, provideIonicAngular } 
 import { appRoutes } from "./app.routing";
 import { MainErrorHandler } from "./core/error-handlers/main.error-handler";
 import { TitleService } from "./core/services/title.service";
+import { provideNzI18n, cs_CZ } from "ng-zorro-antd/i18n";
+import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -43,5 +45,7 @@ export const appConfig: ApplicationConfig = {
 		{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
 		{ provide: ErrorHandler, useClass: MainErrorHandler },
 		{ provide: LOCALE_ID, useValue: "cs" },
+		provideAnimationsAsync(),
+		provideNzI18n(cs_CZ),
 	],
 };
