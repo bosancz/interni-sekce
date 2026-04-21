@@ -1,11 +1,11 @@
 <nz-table
-	[nzData]="data()"
-	[nzLoading]="loading()"
-	[nzPageSize]="pageSize()"
-	[nzPageIndex]="pageIndex()"
-	[nzShowPagination]="showPagination()"
-	[nzScroll]="scrollConfig() || {}"
+	#basicTable
+	[nzData]="[]"
+	[nzFrontPagination]="false"
+	[nzShowPagination]="false"
+	[nzScroll]="scrollConfig()"
 	[nzBordered]="false"
+	[nzSize]="'middle'"
 	[class]="tableClass()"
 >
 	<ng-content></ng-content>

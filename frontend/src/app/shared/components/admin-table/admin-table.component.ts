@@ -9,30 +9,23 @@ import { CommonModule } from "@angular/common";
 	standalone: true,
 	imports: [NzTableModule, CommonModule],
 })
-export class AdminTableComponent<T = any> {
+export class AdminTableComponent {
 	// Input for custom CSS classes
 	class = input<string>("");
 
-	// Input for data source
-	data = input<readonly T[]>([]);
-
-	// Input for loading state
-	loading = input<boolean>(false);
-
 	// Pagination settings
-	pageSize = input<number>(10);
-	pageIndex = input<number>(1);
+	pageSize = input<number>(20);
 	showPagination = input<boolean>(true);
 
 	// Virtual scroll settings
-	virtualScroll = input<boolean>(false);
+	enableVirtualScroll = input<boolean>(false);
 	virtualItemSize = input<number>(54);
-	virtualMaxBufferPx = input<number>(200);
-	virtualMinBufferPx = input<number>(100);
+	virtualMaxBufferPx = input<number>(400);
+	virtualMinBufferPx = input<number>(200);
 
 	// Scroll settings
 	scrollX = input<string | null>(null);
-	scrollY = input<string | null>(null);
+	scrollY = input<string | null>("400px");
 
 	// Computed class names
 	tableClass = computed(() => {
@@ -41,7 +34,7 @@ export class AdminTableComponent<T = any> {
 		return customClasses ? `${baseClasses} ${customClasses}` : baseClasses;
 	});
 
-	// Compute scroll configuration for virtual scroll or regular scroll
+	// Compute scroll configuration
 	scrollConfig = computed(() => {
 		const config: { x?: string | null; y?: string | null } = {};
 		const scrollX = this.scrollX();
@@ -50,18 +43,6 @@ export class AdminTableComponent<T = any> {
 		if (scrollX) config.x = scrollX;
 		if (scrollY) config.y = scrollY;
 
-		return Object.keys(config).length > 0 ? config : undefined;
-	});
-
-	// Compute virtual scroll configuration
-	virtualScrollConfig = computed(() => {
-		if (!this.virtualScroll()) {
-			return null;
-		}
-		return {
-			itemSize: this.virtualItemSize(),
-			maxBufferPx: this.virtualMaxBufferPx(),
-			minBufferPx: this.virtualMinBufferPx(),
-		};
+		return Object.keys(config).length > 0 ? config : {};
 	});
 }
