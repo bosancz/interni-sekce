@@ -47,6 +47,7 @@
 	@if (insuranceCardUrl()) {
 		<bo-card-footer>
 			<ion-buttons>
+				<ion-button (click)="openCard()" color="primary">Zobrazit</ion-button>
 				<ion-button [href]="insuranceCardUrl()!" color="primary" target="_blank" download>Stáhnout</ion-button>
 
 				@if (member()?._links?.deleteInsuranceCard?.applicable) {

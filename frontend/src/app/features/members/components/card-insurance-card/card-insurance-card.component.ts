@@ -97,6 +97,20 @@ export class CardInsuranceCardComponent implements OnChanges {
 		}
 	}
 
+	openCard() {
+		const insuranceCardUrl = this.insuranceCardUrl();
+		if (!insuranceCardUrl) return;
+
+		const link = document.createElement("a");
+		link.href = insuranceCardUrl;
+		link.target = "_blank";
+		link.rel = "noopener noreferrer";
+
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	}
+
 	async deleteCard() {
 		const member = this.member();
 		if (!member) return;
