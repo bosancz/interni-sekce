@@ -2,8 +2,9 @@
 @if (member()) {
 	@let memberValue = member()!;
 	<ion-list class="selectable">
-		<bo-item label="Aktivní" (edit)="editActivity()">
+		<bo-item label="Aktivní">
 			<ion-label>{{ memberValue.active === undefined ? "-" : memberValue.active ? "Ano" : "Ne" }}</ion-label>
+			<bo-edit-button slot="end" [disabled]="!memberValue._links.updateMember.allowed" (click)="editActivity()" />
 		</bo-item>
 
 		<bo-item label="Role">
@@ -20,6 +21,7 @@
 
 		<bo-item label="Oddíl">
 			<bo-group-badge [groupId]="memberValue.groupId"></bo-group-badge>
+			<bo-edit-button slot="end" [disabled]="!memberValue._links.updateMember.allowed" (click)="editGroup()" />
 		</bo-item>
 
 		<bo-item label="Stav členství" (edit)="editMembership()">
