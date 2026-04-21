@@ -8,6 +8,7 @@ import { SDK } from "src/sdk";
 import { CardContentComponent } from "../../../../shared/components/card-content/card-content.component";
 import { CardFooterComponent } from "../../../../shared/components/card-footer/card-footer.component";
 import { CardComponent } from "../../../../shared/components/card/card.component";
+import { Platform } from "@ionic/angular";
 
 @Component({
 	selector: "bo-card-insurance-card",
@@ -29,16 +30,27 @@ export class CardInsuranceCardComponent implements OnChanges {
 
 	insuranceCardUrl = signal<string | null | undefined>(undefined);
 	insuranceCardSafeUrl = signal<SafeResourceUrl | null | undefined>(undefined);
+	
+	public isCameraCapable = false;
 
 	constructor(
 		private api: ApiService,
 		private toastService: ToastService,
 		private sanitizer: DomSanitizer,
 		private modalService: ModalService,
+		private platform: Platform,
 	) {
 		effect(() => {
 			this.setInsuranceCardUrl(this.member());
 		});
+	}
+
+	public ngOnInit() {
+		this.isCameraCapable = this.checkCapabilities();
+	}
+	
+	private checkCapabilities(){
+		return this.platform.is("mobile") || this.platform.is("mobileweb") || this.platform.is("tablet");
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {
