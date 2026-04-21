@@ -1,6 +1,6 @@
 <bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions()" actionsHeader="Přehled akcí" />
 
-<bo-filter [search]="true" (change)="onFilterChange($event)">
+<bo-filter [search]="true" [showButtonMobileOnly]="true" (change)="onFilterChange($event)">
 	<ion-item>
 		<ion-select name="year" ngModel label="Rok">
 			<ion-select-option [value]="null">všechny</ion-select-option>
@@ -37,6 +37,7 @@
 		</ion-checkbox>
 	</ion-item>
 </bo-filter>
+
 
 <bo-page-content>
 	@switch (view) {
@@ -90,11 +91,56 @@
 		@case ("table") {
 			<admin-table>
 				<thead>
-					<tr>
-						<th>Název</th>
-						<th>Datum</th>
-						<th>Stav</th>
-						<th>Vede</th>
+					<tr >
+						<th class="align-middle" >Název</th>					
+						<th>
+							<div class="column-filter">
+								<ion-select
+									interface="popover"
+									[ngModel]="filter.year || null"
+									(ngModelChange)="setFilterParam('year', $event)"
+									placeholder="rok"
+								>
+									<ion-select-option [value]="null">Rok</ion-select-option>
+									@for (year of years(); track year) {
+										<ion-select-option [value]="'' + year">{{ year }}</ion-select-option>
+									}
+								</ion-select>
+							</div>
+						</th>
+						<th>
+							<div class="column-filter">
+								<ion-select
+									interface="popover"
+									[ngModel]="filter.status || null"
+									(ngModelChange)="setFilterParam('status', $event)"
+									placeholder="stav"
+								>
+									<ion-select-option [value]="null">Stav</ion-select-option>
+									@for (status of statuses | keyvalue; track status.key) {
+										<ion-select-option [value]="status.key">
+											{{ status.value.name }}
+										</ion-select-option>
+									}
+								</ion-select>
+							</div>
+						</th>
+						<th>
+							<div class="column-filter">
+								<ion-select
+									interface="popover"
+									[ngModel]="filter.my ? 'my' : (filter.noleader ? 'noleader' : null)"
+									(ngModelChange)="toggleBooleanFilter($event)"
+									placeholder="Vedoucí"
+								>
+									<ion-select-option [value]="null">Vedoucí</ion-select-option>
+									<ion-select-option value='my'>Vedu já</ion-select-option>
+									<ion-select-option value='noleader'>Volné akce</ion-select-option>
+
+
+								</ion-select>
+							</div>
+						</th>					
 					</tr>
 				</thead>
 

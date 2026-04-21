@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { Router, RouterLink } from "@angular/router";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
 	IonAvatar,
@@ -66,6 +66,7 @@ export class EventsListComponent implements OnInit {
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 	years = signal<number[]>([]);
 	actions = signal<Action[]>([]);
+	currentYearString = String(new Date().getFullYear());
 
 	statuses = EventStatuses;
 
@@ -82,6 +83,7 @@ export class EventsListComponent implements OnInit {
 		private modalService: ModalService,
 		private toastService: ToastService,
 		private router: Router,
+		private route: ActivatedRoute,
 	) {}
 
 	ngOnInit(): void {
@@ -97,6 +99,21 @@ export class EventsListComponent implements OnInit {
 	onFilterChange(filter: UrlParams) {
 		this.filter = filter;
 		this.loadEvents(filter);
+	}
+
+	setFilterParam(name: string, value: string | null) {
+		const queryParams: UrlParams = { ...this.route.snapshot.queryParams };
+		if (value) queryParams[name] = value;
+		else delete queryParams[name];
+		this.router.navigate([], { queryParams, replaceUrl: true });
+	}
+
+	toggleBooleanFilter(name: string) {
+		this.setFilterParam(name, this.filter[name] ? null : "1");
+	}
+
+	toggleCurrentYear() {
+		this.setFilterParam("year", this.filter["year"] === this.currentYearString ? null : this.currentYearString);
 	}
 
 	getLeadersString(event: SDK.EventResponseWithLinks) {

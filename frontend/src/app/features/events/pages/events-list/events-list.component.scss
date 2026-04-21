@@ -13,6 +13,18 @@ tr.event-small {
 	opacity: 0.8;
 }
 
+
 ion-list {
 	flex-grow: 1;
+}
+
+
+.column-filter {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.column-filter ion-select {
+	min-width: 7rem;
 }
