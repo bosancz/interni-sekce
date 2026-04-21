@@ -1,50 +1,39 @@
 import { Component, Injector, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import {
-	IonBackButton,
-	IonButton,
-	IonButtons,
-	IonContent,
-	IonHeader,
-	IonTitle,
-	IonToolbar,
-} from "@ionic/angular/standalone";
+import { IonButton, IonButtons, ModalController } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
+import { AbstractModalComponent } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
-import { Action, ActionButtonsComponent } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import {
 	TrimesterDateRange,
 	TrimesterSelectorComponent,
 } from "../../components/trimester-selector/trimester-selector.component";
 
 @Component({
-	selector: "bo-program-print",
-	templateUrl: "./program-print.component.html",
-	styleUrls: ["./program-print.component.scss"],
+	selector: "bo-program-print-modal",
+	templateUrl: "./program-print-modal.component.html",
+	styleUrls: ["./program-print-modal.component.scss"],
 
 	imports: [
 		FormsModule,
-		IonContent,
-		IonHeader,
-		IonToolbar,
 		IonButtons,
-		IonBackButton,
-		IonTitle,
 		IonButton,
-		ActionButtonsComponent,
+		ModalLayoutComponent,
 		TrimesterSelectorComponent,
 	],
 })
-export class ProgramPrintComponent implements OnInit {
+export class ProgramPrintModalComponent extends AbstractModalComponent implements OnInit {
 	dateRange = signal<TrimesterDateRange | undefined>(undefined);
 
-	actions = signal<Action[]>([]);
-
 	constructor(
+		modalController: ModalController,
 		private api: ApiService,
 		private toasts: ToastService,
 		private injector: Injector,
-	) {}
+	) {
+		super(modalController);
+	}
 
 	ngOnInit(): void {}
 
@@ -79,5 +68,8 @@ export class ProgramPrintComponent implements OnInit {
 		const programExport = this.injector.get(ProgramExportService);
 
 		programExport.export(events);
+
+		// Close modal after successful export
+		this.close.emit();
 	}
 }

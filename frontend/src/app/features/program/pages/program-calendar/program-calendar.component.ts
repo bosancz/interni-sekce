@@ -2,12 +2,14 @@ import { Component, OnDestroy, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { IonContent, ModalController, ViewWillEnter } from "@ionic/angular/standalone";
+import { ModalService } from "src/app/core/services/modal.service";
 import { EventsService } from "src/app/features/events/services/events.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
 import { EventStatusLegendComponent } from "../../components/event-status-legend/event-status-legend.component";
+import { ProgramPrintModalComponent } from "../../components/program-print-modal/program-print-modal.component";
 import {
 	TrimesterDateRange,
 	TrimesterSelectorComponent,
@@ -45,6 +47,7 @@ export class ProgramCalendarComponent implements OnInit, OnDestroy, ViewWillEnte
 
 	constructor(
 		private modalController: ModalController,
+		private modalService: ModalService,
 		private eventsService: EventsService,
 		private route: ActivatedRoute,
 		private router: Router,
@@ -110,8 +113,18 @@ export class ProgramCalendarComponent implements OnInit, OnDestroy, ViewWillEnte
 	//   this.setActions();
 	// }
 
+	async openPrintModal() {
+		await this.modalService.componentModal(ProgramPrintModalComponent);
+	}
+
 	setActions() {
 		this.actions.set([
+			{
+				text: "Tisk programu",
+				icon: "print-outline",
+				pinned: true,
+				handler: () => this.openPrintModal(),
+			},
 			// {
 			//   text: "Kalendář",
 			//   icon: "calendar-outline",

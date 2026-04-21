@@ -1,0 +1,14 @@
+<bo-modal-layout>
+	<h4 slot="title">Tisk programu</h4>
+	<div class="mb-3">
+		<bo-trimester-selector
+			labelPosition="floating"
+			[ngModel]="dateRange()"
+			(ngModelChange)="dateRange.set($event)"
+		></bo-trimester-selector>
+	</div>
+	<ion-buttons slot="buttons">
+		<ion-button (click)="close.emit()" color="secondary">Zrušit</ion-button>
+		<ion-button (click)="exportProgram()" color="primary">Stáhnout program v DOCX</ion-button>
+	</ion-buttons>
+</bo-modal-layout>
