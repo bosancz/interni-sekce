@@ -2,7 +2,12 @@
 	#basicTable
 	[nzData]="[]"
 	[nzFrontPagination]="false"
-	[nzShowPagination]="false"
+	[nzShowPagination]="showPagination()"
+	[nzPageSize]="pageSize()"
+	[nzPageIndex]="pageIndex()"
+	[nzPageSizeOptions]="pageSizeOptions()"
+	(nzPageIndexChange)="onPageIndexChange($event)"
+	(nzPageSizeChange)="onPageSizeChange($event)"
 	[nzScroll]="scrollConfig()"
 	[nzBordered]="false"
 	[nzSize]="'middle'"

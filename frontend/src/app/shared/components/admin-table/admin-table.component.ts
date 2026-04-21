@@ -1,4 +1,4 @@
-import { Component, computed, input } from "@angular/core";
+import { Component, computed, input, output } from "@angular/core";
 import { NzTableModule } from "ng-zorro-antd/table";
 import { CommonModule } from "@angular/common";
 
@@ -15,7 +15,13 @@ export class AdminTableComponent {
 
 	// Pagination settings
 	pageSize = input<number>(20);
-	showPagination = input<boolean>(true);
+	pageIndex = input<number>(1);
+	showPagination = input<boolean>(false);
+	pageSizeOptions = input<number[]>([10, 20, 50, 100]);
+
+	// Pagination events
+	pageIndexChange = output<number>();
+	pageSizeChange = output<number>();
 
 	// Virtual scroll settings
 	enableVirtualScroll = input<boolean>(false);
@@ -25,7 +31,7 @@ export class AdminTableComponent {
 
 	// Scroll settings
 	scrollX = input<string | null>(null);
-	scrollY = input<string | null>("400px");
+	scrollY = input<string | null>("500px");
 
 	// Computed class names
 	tableClass = computed(() => {
@@ -45,4 +51,13 @@ export class AdminTableComponent {
 
 		return Object.keys(config).length > 0 ? config : {};
 	});
+
+	// Handle pagination changes
+	onPageIndexChange(index: number): void {
+		this.pageIndexChange.emit(index);
+	}
+
+	onPageSizeChange(size: number): void {
+		this.pageSizeChange.emit(size);
+	}
 }

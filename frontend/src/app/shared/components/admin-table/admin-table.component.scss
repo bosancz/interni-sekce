@@ -6,24 +6,51 @@
 }
 
 .admin-table {
-	// Maintain the table-responsive behavior from Bootstrap
+	// Ensure table is responsive
 	::ng-deep .ant-table {
-		overflow-x: auto;
+		background: transparent;
+	}
+
+	// Maintain table styling consistent with Bootstrap
+	::ng-deep .ant-table-thead > tr > th {
+		background-color: var(--bo-white, #fff);
+		font-weight: 500;
+		border-bottom: 2px solid #dee2e6;
+	}
+
+	::ng-deep .ant-table-tbody > tr > td {
+		border-bottom: 1px solid #dee2e6;
 	}
 
 	// Ensure table rows are clickable when they have routerLink
-	::ng-deep tr[ng-reflect-router-link],
-	::ng-deep tr.clickable {
+	::ng-deep .ant-table-tbody > tr[ng-reflect-router-link],
+	::ng-deep .ant-table-tbody > tr.clickable {
 		cursor: pointer;
 		transition: background-color 0.2s;
 
-		&:hover {
-			background-color: rgba(0, 0, 0, 0.02);
+		&:hover > td {
+			background-color: rgba(0, 0, 0, 0.04) !important;
 		}
 	}
 
 	// Maintain existing skeleton loading styles
 	::ng-deep ion-skeleton-text {
 		line-height: 1;
+	}
+
+	// Ensure scroll viewport has proper height
+	::ng-deep .ant-table-body {
+		overflow: auto !important;
+	}
+
+	// Style pagination if needed
+	::ng-deep .ant-pagination {
+		margin-top: 16px;
+		text-align: right;
+	}
+
+	// Virtual scroll support
+	::ng-deep .cdk-virtual-scroll-viewport {
+		height: 400px;
 	}
 }
