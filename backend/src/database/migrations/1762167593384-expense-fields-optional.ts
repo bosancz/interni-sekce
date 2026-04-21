@@ -11,6 +11,11 @@ export class ExpenseFieldsOptional1762167593384 implements MigrationInterface {
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
+		await queryRunner.query(`UPDATE "events_expenses" SET "description" = '' WHERE "description" IS NULL`);
+		await queryRunner.query(`UPDATE "events_expenses" SET "type" = 'other' WHERE "type" IS NULL`);
+		await queryRunner.query(`UPDATE "events_expenses" SET "amount" = 0 WHERE "amount" IS NULL`);
+		await queryRunner.query(`UPDATE "events_expenses" SET "receipt_number" = '' WHERE "receipt_number" IS NULL`);
+
 		await queryRunner.query(`ALTER TABLE "events_expenses" ALTER COLUMN "description" SET NOT NULL`);
 		await queryRunner.query(`ALTER TABLE "events_expenses" ALTER COLUMN "type" SET NOT NULL`);
 		await queryRunner.query(`ALTER TABLE "events_expenses" ALTER COLUMN "amount" SET NOT NULL`);
