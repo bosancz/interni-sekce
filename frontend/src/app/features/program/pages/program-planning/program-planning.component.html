@@ -1,21 +1,14 @@
-<ion-header>
-	<ion-toolbar>
-		<ion-buttons slot="start">
-			<ion-back-button defaultHref="/"></ion-back-button>
-		</ion-buttons>
-		<ion-title pageTitle>Plánování akcí</ion-title>
-	</ion-toolbar>
-</ion-header>
+<bo-page-header title="Plánování akcí" />
 
 <ion-content>
 	<div class="row no-gutters">
 		<div class="col-lg-3">
 			<div class="px-lg-3 py-lg-3 pb-3">
-				<bo-trimester-selector
+				<bo-school-year-selector
 					labelPosition="floating"
 					[ngModel]="[dateFrom()?.toISODate(), dateTill()?.toISODate()]"
 					(ngModelChange)="setPeriod($event)"
-				></bo-trimester-selector>
+				></bo-school-year-selector>
 
 				<bo-event-status-legend></bo-event-status-legend>
 			</div>

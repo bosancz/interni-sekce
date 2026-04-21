@@ -1,15 +1,7 @@
 import { Component, OnDestroy, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
-import {
-	IonBackButton,
-	IonButtons,
-	IonContent,
-	IonHeader,
-	IonTitle,
-	IonToolbar,
-	ViewWillEnter,
-} from "@ionic/angular/standalone";
+import { IonContent, ViewWillEnter } from "@ionic/angular/standalone";
 import { DateTime } from "luxon";
 import { Subscription } from "rxjs";
 import { EventStatuses } from "src/app/core/config/event-statuses";
@@ -18,9 +10,10 @@ import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { EventCreateModalComponent } from "src/app/features/events/components/event-create-modal/event-create-modal.component";
 import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
 import { EventStatusLegendComponent } from "../../components/event-status-legend/event-status-legend.component";
-import { TrimesterSelectorComponent } from "../../components/trimester-selector/trimester-selector.component";
+import { SchoolYearSelectorComponent } from "../../components/school-year-selector/school-year-selector.component";
 
 @Component({
 	selector: "program-planning",
@@ -30,14 +23,10 @@ import { TrimesterSelectorComponent } from "../../components/trimester-selector/
 	imports: [
 		FormsModule,
 		IonContent,
-		IonHeader,
-		IonToolbar,
-		IonButtons,
-		IonBackButton,
-		IonTitle,
 		EventCalendarComponent,
-		TrimesterSelectorComponent,
+		SchoolYearSelectorComponent,
 		EventStatusLegendComponent,
+		PageHeaderComponent,
 	],
 })
 export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnter {
