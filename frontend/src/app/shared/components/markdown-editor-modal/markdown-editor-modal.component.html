@@ -1,22 +1,34 @@
 <bo-modal-layout>
 	<h4 slot="title">{{ header() }}</h4>
 
-	<div class="toolbar">
-		<ion-button color="medium" fill="outline" size="small" (click)="onAddBold()">
-			<strong>B</strong>
-		</ion-button>
-		<ion-button color="medium" fill="outline" size="small" (click)="onAddItalic()">
-			<em>I</em>
-		</ion-button>
-		<ion-button color="medium" fill="outline" size="small" (click)="onAddList()">Seznam</ion-button>
+	<div class="toolbar-wrap" role="toolbar" aria-label="Formátování markdownu">
+		<div class="toolbar">
+			<ion-button color="dark" fill="clear" size="small" (click)="onAddBold()">
+				<strong>B</strong>
+			</ion-button>
+			<ion-button color="dark" fill="clear" size="small" (click)="onAddItalic()">
+				<em>I</em>
+			</ion-button>
+			<div class="toolbar-separator"></div>
+			<ion-button color="dark" fill="clear" size="small" (click)="onAddList()">• Seznam</ion-button>
+		</div>
 	</div>
 
-	<div class="help">
-		<small>
-			Markdown nápověda: <strong>**tučně**</strong>, <em>_kurzíva_</em>, seznam pomocí <strong>-</strong>.
-			Zkratky: <strong>Ctrl/Cmd + B</strong> pro tučné, <strong>Ctrl/Cmd + I</strong> pro kurzívu.
-		</small>
-	</div>
+	<details class="help">
+		<summary>Nápověda k formátování</summary>
+		<div class="help-content">
+			<p>Používej markdown zápis přímo v textu:</p>
+			<ul>
+				<li><strong>Tučné:</strong> <code>**text**</code></li>
+				<li><strong>Kurzíva:</strong> <code>_text_</code></li>
+				<li><strong>Seznam:</strong> každý řádek začni <code>- </code></li>
+			</ul>
+			<p>
+				Klávesové zkratky: <strong>Ctrl/Cmd + B</strong> pro tučné a
+				<strong>Ctrl/Cmd + I</strong> pro kurzívu.
+			</p>
+		</div>
+	</details>
 
 	<ion-textarea
 		autoGrow
