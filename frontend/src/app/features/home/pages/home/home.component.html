@@ -1,3 +1,7 @@
+@if (view() === "calendar") {
+	<bo-page-header title="Kalendář" [actions]="actions()" />
+}
+
 <bo-page-content class="col">
 	@switch (view()) {
 		@case ("dashboard") {
