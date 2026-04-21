@@ -3,14 +3,37 @@
 
 	<div class="toolbar-wrap" role="toolbar" aria-label="Formátování markdownu">
 		<div class="toolbar">
-			<ion-button color="dark" fill="clear" size="small" (click)="onAddBold()">
+			<ion-button
+				color="dark"
+				fill="clear"
+				size="small"
+				(click)="onAddBold()"
+				aria-label="Přidat tučné formátování"
+				title="Tučné (Ctrl/Cmd + B)"
+			>
 				<strong>B</strong>
 			</ion-button>
-			<ion-button color="dark" fill="clear" size="small" (click)="onAddItalic()">
+			<ion-button
+				color="dark"
+				fill="clear"
+				size="small"
+				(click)="onAddItalic()"
+				aria-label="Přidat kurzívu"
+				title="Kurzíva (Ctrl/Cmd + I)"
+			>
 				<em>I</em>
 			</ion-button>
 			<div class="toolbar-separator"></div>
-			<ion-button color="dark" fill="clear" size="small" (click)="onAddList()">• Seznam</ion-button>
+			<ion-button
+				color="dark"
+				fill="clear"
+				size="small"
+				(click)="onAddList()"
+				aria-label="Přidat odrážkový seznam"
+				title="Odrážkový seznam"
+			>
+				• Seznam
+			</ion-button>
 		</div>
 	</div>
 
