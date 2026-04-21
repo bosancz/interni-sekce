@@ -1,5 +1,12 @@
-<div class="table-responsive">
-	<table [class]="tableClass">
-		<ng-content></ng-content>
-	</table>
-</div>
+<nz-table
+	[nzData]="data()"
+	[nzLoading]="loading()"
+	[nzPageSize]="pageSize()"
+	[nzPageIndex]="pageIndex()"
+	[nzShowPagination]="showPagination()"
+	[nzScroll]="scrollConfig() || {}"
+	[nzBordered]="false"
+	[class]="tableClass()"
+>
+	<ng-content></ng-content>
+</nz-table>

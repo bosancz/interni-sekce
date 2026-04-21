@@ -5,6 +5,25 @@
 	white-space: nowrap;
 }
 
-table {
-	// background-color: #fff;
+.admin-table {
+	// Maintain the table-responsive behavior from Bootstrap
+	::ng-deep .ant-table {
+		overflow-x: auto;
+	}
+
+	// Ensure table rows are clickable when they have routerLink
+	::ng-deep tr[ng-reflect-router-link],
+	::ng-deep tr.clickable {
+		cursor: pointer;
+		transition: background-color 0.2s;
+
+		&:hover {
+			background-color: rgba(0, 0, 0, 0.02);
+		}
+	}
+
+	// Maintain existing skeleton loading styles
+	::ng-deep ion-skeleton-text {
+		line-height: 1;
+	}
 }
