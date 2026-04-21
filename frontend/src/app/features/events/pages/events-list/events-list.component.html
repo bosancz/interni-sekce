@@ -89,11 +89,11 @@
 		}
 
 		@case ("table") {
-			<admin-table>
+			<admin-table [class]="'events-table'">
 				<thead>
 					<tr >
-						<th class="align-middle" >Název</th>					
-						<th>
+						<th class="align-middle events-name-column" >Název</th>					
+						<th class="events-date-column">
 							<div class="column-filter">
 								<ion-select
 									interface="popover"
@@ -108,7 +108,7 @@
 								</ion-select>
 							</div>
 						</th>
-						<th>
+						<th class="events-status-column">
 							<div class="column-filter">
 								<ion-select
 									interface="popover"
@@ -125,12 +125,12 @@
 								</ion-select>
 							</div>
 						</th>
-						<th>
+						<th class="events-leaders-column">
 							<div class="column-filter">
 								<ion-select
 									interface="popover"
 									[ngModel]="filter.my ? 'my' : (filter.noleader ? 'noleader' : null)"
-									(ngModelChange)="toggleBooleanFilter($event)"
+									(ngModelChange)="setLeaderFilter($event)"
 									placeholder="Vedoucí"
 								>
 									<ion-select-option [value]="null">Vedoucí</ion-select-option>
@@ -147,15 +147,15 @@
 				<tbody>
 					@for (event of events(); track event.id) {
 						<tr [routerLink]="'' + event.id">
-							<td>{{ event.name }}</td>
-							<td>
+							<td class="events-name-column">{{ event.name }}</td>
+							<td class="events-date-column">
 								{{ event.dateFrom | date: "EEEEEE d. M." }} -
 								{{ event.dateTill | date: "EEEEEE d. M. y" }}
 							</td>
-							<td>
+							<td class="events-status-column">
 								<bo-event-status-badge [event]="event"></bo-event-status-badge>
 							</td>
-							<td>
+							<td class="events-leaders-column">
 								@for (leader of event.leaders; track leader.id; let isFirst = $first) {
 									@if (!isFirst) {
 										<ng-container>, </ng-container>
