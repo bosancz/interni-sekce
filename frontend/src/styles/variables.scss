@@ -66,8 +66,10 @@ body {
 
 	--bo-dark: #222;
 	--bo-light: #ddd;
-}
 
+	--font-regular: "Roboto Condensed", Helvetica, Verdana, sans-serif;
+	--font-san: SanGrotesk, "Roboto Condensed", Helvetica, Verdana;
+}
 
 body.dark {
 	--bo-white: #000;

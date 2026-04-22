@@ -5,14 +5,11 @@ import { Router, RouterLink } from "@angular/router";
 import {
 	IonButton,
 	IonButtons,
-	IonHeader,
 	IonIcon,
 	IonItem,
 	IonLabel,
 	IonList,
-	IonListHeader,
 	IonSearchbar,
-	IonToolbar,
 	PopoverController,
 } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
@@ -35,13 +32,10 @@ import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 		AvatarComponent,
 		RouterLink,
 		IonSearchbar,
-		IonHeader,
-		IonToolbar,
 		IonButtons,
 		IonButton,
 		IonIcon,
 		IonList,
-		IonListHeader,
 		IonItem,
 		IonLabel,
 		MemberPipe,
@@ -129,4 +123,3 @@ export class HeaderComponent {
 		await popover.present();
 	}
 }
-

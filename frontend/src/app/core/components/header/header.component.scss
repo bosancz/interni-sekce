@@ -1,12 +1,11 @@
 @use "src/styles/variables";
 
-ion-header {
-	box-shadow: none;
-	ion-toolbar {
-		--background: var(--ion-color-light);
-		--color: var(--ion-color-dark);
-		--ion-toolbar-color: var(--ion-color-dark);
-	}
+:host {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	background-color: var(--ion-color-light, #f4f5f8);
 }
 
 h1 {
@@ -14,6 +13,7 @@ h1 {
 }
 
 .search {
+	flex-grow: 1;
 	max-width: 500px;
 	margin: 0 auto;
 	position: relative;
@@ -46,6 +46,10 @@ h1 {
 		font-weight: bold;
 		font-size: 0.9em;
 		min-height: 32px;
+		font-family: var(--font-san);
+	}
+	ion-item {
+		// --padding-start: 0;
 	}
 }
 
