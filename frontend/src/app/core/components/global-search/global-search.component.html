@@ -1,0 +1,90 @@
+<div class="search">
+	<ion-searchbar
+		placeholder="Hledej&hellip;"
+		showClearButton="focus"
+		[showCancelButton]="showCancelButton() ? 'always' : 'never'"
+		(ionInput)="query.next($event.target.value || '')"
+		[value]="query | async"
+		(ionBlur)="onSearchBlur()"
+		(ionCancel)="closeSearch()"
+	/>
+
+	@if (query | async) {
+		<div class="p-3 search-results">
+			<h3>Členové</h3>
+			<ion-list lines="full">
+				@if (membersSearchResults.value() === null) {
+					<ion-item>
+						<ion-label>
+							<h4><ion-skeleton-text></ion-skeleton-text></h4>
+							<p><ion-skeleton-text></ion-skeleton-text></p>
+						</ion-label>
+					</ion-item>
+				} @else {
+					@for (member of membersSearchResults.value(); track member.id) {
+						<ion-item button (click)="navigate(['/databaze/clenove', member.id])" [detail]="true">
+							<ion-label>
+								<h4>{{ member.nickname || member.firstName || "?" }}</h4>
+								<p>
+									{{ member.firstName }} {{ member.lastName }}
+									<span [style.color]="member.groupId | group: 'color'">
+										&middot; {{ member.groupId | group: "name" }}
+									</span>
+								</p>
+							</ion-label>
+						</ion-item>
+					}
+				}
+			</ion-list>
+
+			<h3>Akce</h3>
+			<ion-list lines="full">
+				@if (eventsSearchResults.value() === null) {
+					<ion-item>
+						<ion-label>
+							<h4><ion-skeleton-text></ion-skeleton-text></h4>
+							<p><ion-skeleton-text></ion-skeleton-text></p>
+						</ion-label>
+					</ion-item>
+				} @else {
+					@for (event of eventsSearchResults.value(); track event.id) {
+						<ion-item button (click)="navigate(['/akce', event.id])" [detail]="true">
+							<ion-label>
+								<h4>{{ event.name }}</h4>
+								<p>
+									{{ event.dateFrom | date: "d. M. yyyy" }}
+									@if (event.dateTill && event.dateTill !== event.dateFrom) {
+										&ndash; {{ event.dateTill | date: "d. M. yyyy" }}
+									}
+								</p>
+							</ion-label>
+						</ion-item>
+					}
+				}
+			</ion-list>
+
+			<h3>Galerie</h3>
+			<ion-list lines="full">
+				@if (albumsSearchResults.value() === null) {
+					<ion-item>
+						<ion-label>
+							<h4><ion-skeleton-text></ion-skeleton-text></h4>
+							<p><ion-skeleton-text></ion-skeleton-text></p>
+						</ion-label>
+					</ion-item>
+				} @else {
+					@for (album of albumsSearchResults.value(); track album.id) {
+						<ion-item button (click)="navigate(['/galerie', album.id])" [detail]="true">
+							<ion-label>
+								<h4>{{ album.name }}</h4>
+								@if (album.dateFrom) {
+									<p>{{ album.dateFrom | date: "d. M. yyyy" }}</p>
+								}
+							</ion-label>
+						</ion-item>
+					}
+				}
+			</ion-list>
+		</div>
+	}
+</div>
