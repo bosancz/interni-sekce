@@ -21,7 +21,7 @@
 		}
 	</div>
 
-	@if (groups !== undefined && !groups.length) {
+	@if (groups() !== undefined && !groups().length) {
 		<p>Žádné oddíly zatím nejsou vytvořeny. Chceš <a routerLink="/oddily/vytvorit">vytvořit první oddíl</a>?</p>
 	}
 </bo-page-content>

@@ -91,7 +91,7 @@
 		}
 	}
 
-	@if (members() && !members.length) {
+	@if (!members()) {
 		<p class="ion-padding">
 			Členská databáze je prázdná. Chceš <a routerLink="/databaze/pridat">přidat prvního člena</a>?
 		</p>
