@@ -8,84 +8,9 @@
 	</h1>
 }
 
-<div class="search">
-	@if (isLg() || showSearch()) {
-		<ion-searchbar
-
-			placeholder="Hledej&hellip;"
-			debounce="200"
-			showClearButton="focus"
-			[showCancelButton]="!isLg() ? 'always' : 'never'"
-			(ionInput)="onSearchInput($any($event).detail.value)"
-			(ionFocus)="onSearchFocus()"
-			(ionBlur)="onSearchBlur()"
-			(ionClear)="onSearchClear()"
-			(ionCancel)="onSearchClear()"
-		/>
-
-		@if (resultsOpen() && searchResults(); as results) {
-			<div class="p-3 search-results">
-				@if (results.members.length) {
-					<h3>Členové</h3>
-					<ion-list lines="full">
-						@for (member of results.members; track member.id) {
-							<ion-item button [routerLink]="['/databaze/clenove', member.id]" (click)="[detail]="true">
-								<ion-label>
-									<h4>{{ member.nickname || member.firstName || "?" }}</h4>
-									<p>
-										{{ member.firstName }} {{ member.lastName }}
-										<span [style.color]="member.groupId | group: 'color'">
-											&middot; {{ member.groupId | group: "name" }}
-										</span>
-									</p>
-								</ion-label>
-							</ion-item>
-						}
-					</ion-list>
-				}
-
-				@if (results.events.length) {
-					<h3>Galerie</h3>
-					<ion-list lines="full">
-						@for (event of results.events; track event.id) {
-							<ion-item button (click)="navigate(['/akce', event.id])" [detail]="true">
-								<ion-label>
-									<h4>{{ event.name }}</h4>
-									<p>
-										{{ event.dateFrom | date: "d. M. yyyy" }}
-										@if (event.dateTill && event.dateTill !== event.dateFrom) {
-											&ndash; {{ event.dateTill | date: "d. M. yyyy" }}
-										}
-									</p>
-								</ion-label>
-							</ion-item>
-						}
-					</ion-list>
-				}
-
-				@if (results.albums.length) {
-					<h3>Alba</h3>
-					<ion-list lines="full">
-						@for (album of results.albums; track album.id) {
-							<ion-item button (click)="navigate(['/galerie', album.id])" [detail]="true">
-								<ion-label>
-									<h4>{{ album.name }}</h4>
-									@if (album.dateFrom) {
-										<p>{{ album.dateFrom | date: "d. M. yyyy" }}</p>
-									}
-								</ion-label>
-							</ion-item>
-						}
-					</ion-list>
-				}
-
-				@if (!hasResults() && !!results.query) {
-					<div class="search-empty">Nic nenalezeno.</div>
-				}
-			</div>
-		}
-	}
-</div>
+@if (isLg() || showSearch()) {
+	<bo-global-search [showCancelButton]="!isLg()" (close)="showSearch.set(false)" />
+}
 
 <ion-buttons slot="end">
 	@if (!isLg() && !showSearch()) {
@@ -94,11 +19,5 @@
 		</ion-button>
 	}
 
-	@if (user | async; as user) {
-		<bo-avatar
-			[initials]="user.member! | member: 'initials'"
-			[color]="user.member?.groupId | group: 'color'"
-			(click)="openAccountMenu($event)"
-		/>
-	}
+	<bo-account-menu />
 </ion-buttons>
