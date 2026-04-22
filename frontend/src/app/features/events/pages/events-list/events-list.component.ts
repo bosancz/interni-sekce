@@ -102,14 +102,22 @@ export class EventsListComponent implements OnInit {
 	}
 
 	setFilterParam(name: string, value: string | null) {
-		const queryParams: UrlParams = { ...this.route.snapshot.queryParams };
-		if (value) queryParams[name] = value;
-		else delete queryParams[name];
-		this.router.navigate([], { queryParams, replaceUrl: true });
+		this.router.navigate([], {
+			queryParams: { [name]: value || null },
+			queryParamsHandling: "merge",
+			replaceUrl: true,
+		});
 	}
 
-	toggleBooleanFilter(name: string) {
-		this.setFilterParam(name, this.filter[name] ? null : "1");
+	setLeaderFilter(value: "my" | "noleader" | null) {
+		this.router.navigate([], {
+			queryParams: {
+				my: value === "my" ? "1" : null,
+				noleader: value === "noleader" ? "1" : null,
+			},
+			queryParamsHandling: "merge",
+			replaceUrl: true,
+		});
 	}
 
 	toggleCurrentYear() {
