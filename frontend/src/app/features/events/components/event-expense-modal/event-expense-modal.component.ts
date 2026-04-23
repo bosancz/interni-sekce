@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, input, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import {
 	IonButton,
@@ -11,7 +11,7 @@ import {
 	ModalController,
 } from "@ionic/angular/standalone";
 import { EventExpenseTypes } from "src/app/core/config/event-expense-types";
-import { AbstractModalComponent } from "src/app/core/services/modal.service";
+import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { SDK } from "src/sdk";
 
@@ -32,8 +32,8 @@ import { SDK } from "src/sdk";
 		ModalLayoutComponent,
 	],
 })
-export class EventExpenseModalComponent extends AbstractModalComponent<SDK.EventExpenseResponse> implements OnInit {
-	expense = input.required<SDK.EventExpenseResponse>();
+export class EventExpenseModalComponent extends InputModalComponent<SDK.EventExpenseResponse> implements OnInit {
+	expense?: Partial<SDK.EventExpenseResponse>;
 
 	types = EventExpenseTypes;
 

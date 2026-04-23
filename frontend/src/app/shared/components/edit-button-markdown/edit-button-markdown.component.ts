@@ -21,10 +21,11 @@ export class EditButtonMarkdownComponent {
 	constructor(private readonly modalService: ModalService) {}
 
 	async openEdit() {
+		console.log("Opening MarkdownEditorModalComponent with value:", this.label());
 		const result = await this.modalService.componentModal(MarkdownEditorModalComponent, {
 			header: this.label(),
-			placeholder: this.placeholder(),
 			value: this.value(),
+			placeholder: this.placeholder(),
 		});
 
 		if (result !== null) this.update.emit(result);

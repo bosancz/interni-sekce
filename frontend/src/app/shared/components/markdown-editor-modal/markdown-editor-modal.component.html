@@ -1,5 +1,5 @@
 <bo-modal-layout>
-	<h4 slot="title">{{ header() }}</h4>
+	<h4 slot="title">{{ header }}</h4>
 
 	<div class="toolbar-wrap" role="toolbar" aria-label="Formátování markdownu">
 		<div class="toolbar">
@@ -47,15 +47,14 @@
 				<li><strong>Seznam:</strong> každý řádek začni <code>- </code></li>
 			</ul>
 			<p>
-				Klávesové zkratky: <strong>Ctrl/Cmd + B</strong> pro tučné a
-				<strong>Ctrl/Cmd + I</strong> pro kurzívu.
+				Klávesové zkratky: <strong>Ctrl/Cmd + B</strong> pro tučné a <strong>Ctrl/Cmd + I</strong> pro kurzívu.
 			</p>
 		</div>
 	</details>
 
 	<ion-textarea
 		autoGrow
-		[placeholder]="placeholder()"
+		[placeholder]="placeholder"
 		[(ngModel)]="content"
 		(keydown)="onEditorKeydown($event)"
 	></ion-textarea>

@@ -1,12 +1,7 @@
-import { Component, input, viewChild } from "@angular/core";
+import { Component, model, viewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import {
-	IonButton,
-	IonButtons,
-	IonTextarea,
-	ModalController,
-} from "@ionic/angular/standalone";
-import { AbstractModalComponent } from "src/app/core/services/modal.service";
+import { IonButton, IonButtons, IonTextarea, ModalController } from "@ionic/angular/standalone";
+import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "../modal-layout/modal-layout.component";
 
 @Component({
@@ -16,21 +11,22 @@ import { ModalLayoutComponent } from "../modal-layout/modal-layout.component";
 
 	imports: [ModalLayoutComponent, FormsModule, IonButtons, IonButton, IonTextarea],
 })
-export class MarkdownEditorModalComponent extends AbstractModalComponent<string | null> {
-	header = input<string | undefined>();
-	placeholder = input<string | undefined>();
-	value = input<string | null | undefined>();
+export class MarkdownEditorModalComponent extends InputModalComponent<string | null> {
+	header?: string;
+	placeholder?: string;
+	value?: string | null;
 
 	editor = viewChild(IonTextarea);
 
-	content = "";
+	content = model<string>("");
 
 	constructor(modalController: ModalController) {
 		super(modalController);
 	}
 
 	ngOnInit() {
-		this.content = this.value() ?? "";
+		this.content.set(this.value ?? "");
+		console.log("MarkdownEditorModalComponent initialized with value:", this.value);
 	}
 
 	onEditorKeydown(event: KeyboardEvent) {
@@ -79,15 +75,11 @@ export class MarkdownEditorModalComponent extends AbstractModalComponent<string 
 	}
 
 	save() {
-		this.submit.emit(this.content.trim() ? this.content : null);
+		this.submit.emit(this.content().trim() ? this.content() : null);
 	}
 
 	private wrapSelection(wrapper: string) {
-		return this.transformSelection(
-			(selected) => `${wrapper}${selected}${wrapper}`,
-			wrapper.length,
-			wrapper.length,
-		);
+		return this.transformSelection((selected) => `${wrapper}${selected}${wrapper}`, wrapper.length, wrapper.length);
 	}
 
 	private async transformSelection(
@@ -98,7 +90,7 @@ export class MarkdownEditorModalComponent extends AbstractModalComponent<string 
 		const input = await this.editor()?.getInputElement();
 		if (!input) return;
 
-		const value = this.content;
+		const value = this.content();
 		const selectionStart = input.selectionStart ?? value.length;
 		const selectionEnd = input.selectionEnd ?? value.length;
 		const selectedText = value.slice(selectionStart, selectionEnd);
@@ -108,7 +100,7 @@ export class MarkdownEditorModalComponent extends AbstractModalComponent<string 
 			? selectionStart + transformed.length - cursorOffsetWithSelection
 			: selectionStart + transformed.length - cursorOffsetWithoutSelection;
 
-		this.content = newValue;
+		this.content.set(newValue);
 
 		await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 		input.setSelectionRange(newCursorPosition, newCursorPosition);

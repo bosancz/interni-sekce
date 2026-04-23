@@ -13,7 +13,7 @@ import {
 	ViewDidEnter,
 } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
-import { AbstractModalComponent } from "src/app/core/services/modal.service";
+import { InputModalComponent } from "src/app/core/services/modal.service";
 import { MemberItemDetailComponent } from "src/app/shared/components/member-item-detail/member-item-detail.component";
 import { SDK } from "src/sdk";
 import { GroupPipe } from "../../../../shared/pipes/group.pipe";
@@ -39,7 +39,7 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 	],
 })
 export class MemberSelectorModalComponent
-	extends AbstractModalComponent<SDK.MemberResponse>
+	extends InputModalComponent<SDK.MemberResponse>
 	implements OnInit, ViewDidEnter
 {
 	members = input<SDK.MemberResponse[]>([]);

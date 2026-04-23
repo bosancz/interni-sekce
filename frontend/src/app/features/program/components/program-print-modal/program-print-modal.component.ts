@@ -2,7 +2,7 @@ import { Component, Injector, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { IonButton, IonButtons, ModalController } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
-import { AbstractModalComponent } from "src/app/core/services/modal.service";
+import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import {
@@ -15,15 +15,9 @@ import {
 	templateUrl: "./program-print-modal.component.html",
 	styleUrls: ["./program-print-modal.component.scss"],
 
-	imports: [
-		FormsModule,
-		IonButtons,
-		IonButton,
-		ModalLayoutComponent,
-		TrimesterSelectorComponent,
-	],
+	imports: [FormsModule, IonButtons, IonButton, ModalLayoutComponent, TrimesterSelectorComponent],
 })
-export class ProgramPrintModalComponent extends AbstractModalComponent implements OnInit {
+export class ProgramPrintModalComponent extends InputModalComponent implements OnInit {
 	dateRange = signal<TrimesterDateRange | undefined>(undefined);
 
 	constructor(
