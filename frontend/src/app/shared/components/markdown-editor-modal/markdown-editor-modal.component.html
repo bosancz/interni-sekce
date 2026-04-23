@@ -1,0 +1,10 @@
+<bo-modal-layout>
+	<h4 slot="title">{{ header }}</h4>
+
+	<bo-markdown-editor [(content)]="content" [placeholder]="placeholder" />
+
+	<ion-buttons slot="buttons">
+		<ion-button (click)="close.emit()" color="secondary">Zrušit</ion-button>
+		<ion-button (click)="save()" color="primary">Uložit</ion-button>
+	</ion-buttons>
+</bo-modal-layout>

@@ -1,6 +1,5 @@
-@let expenseValue = expense();
 <bo-modal-layout>
-	<h4 slot="title">Účtenka {{ expenseValue.receiptNumber }}</h4>
+	<h4 slot="title">Účtenka {{ expense?.receiptNumber }}</h4>
 
 	<form #expenseForm="ngForm">
 		<ion-item>
@@ -9,7 +8,7 @@
 				labelPlacement="floating"
 				placeholder="V12"
 				name="receiptNumber"
-				[ngModel]="expenseValue.receiptNumber"
+				[ngModel]="expense?.receiptNumber"
 				required
 			></ion-input>
 		</ion-item>
@@ -19,7 +18,7 @@
 				labelPlacement="floating"
 				placeholder="Potraviny"
 				name="type"
-				[ngModel]="expenseValue.type"
+				[ngModel]="expense?.type"
 			>
 				@for (type of types | keyvalue; track type.key) {
 					<ion-select-option [value]="type.key" required>{{ type.value.title }}</ion-select-option>
@@ -32,7 +31,7 @@
 				labelPlacement="floating"
 				placeholder="Tabák do Gandalfovy dýmky"
 				name="description"
-				[ngModel]="expenseValue.description"
+				[ngModel]="expense?.description"
 				required
 			></ion-input>
 		</ion-item>
@@ -44,7 +43,7 @@
 				type="number"
 				placeholder="1000"
 				name="amount"
-				[ngModel]="expenseValue.amount"
+				[ngModel]="expense?.amount"
 				required
 			></ion-input>
 		</ion-item>
