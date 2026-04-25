@@ -43,6 +43,8 @@ export class MemberSelectorModalComponent
 	implements OnInit, ViewDidEnter
 {
 	members = input<SDK.MemberResponse[]>([]);
+	keepOpenAfterSelect = false;
+	onSelect?: (member: SDK.MemberResponse) => void;
 
 	membersIndex: string[] = [];
 
@@ -81,6 +83,9 @@ export class MemberSelectorModalComponent
 	}
 
 	selectMember(member: SDK.MemberResponse) {
+		this.onSelect?.(member);
+		if (this.keepOpenAfterSelect) return;
+
 		this.submit.emit(member);
 	}
 
