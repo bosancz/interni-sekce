@@ -5,7 +5,6 @@ import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
 	IonAvatar,
-	IonCheckbox,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
 	IonItem,
@@ -51,7 +50,6 @@ import { EventCreateModalComponent } from "../../components/event-create-modal/e
 		IonInfiniteScrollContent,
 		IonSelect,
 		IonSelectOption,
-		IonCheckbox,
 		EventStatusBadgeComponent,
 		GroupPipe,
 		MemberPipe,
