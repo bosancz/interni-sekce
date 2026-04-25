@@ -73,9 +73,9 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		const event = this.event();
 		if (!event) return;
 
-		const member = await this.modalService.componentModal(MemberSelectorModalComponent, {});
+		const addSelectedMember = async (member?: SDK.MemberResponse | null) => {
+			if (!member?.id) return;
 
-		if (member) {
 			try {
 				const existingAttendee = [...(this.attendees() ?? []), ...(this.leaders() ?? [])].find(
 					(item) => item.member && item.member.id === member.id,
@@ -93,13 +93,18 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 				this.toastService.toast("Účastník přidán.");
 			} catch (e) {
-				this.toastService.toast("Nepodařilo se přidat účastníka.");
+				this.toastService.toast("Nepodařilo se přidat účastníka." + e);
 			}
 
 			await this.loadAttendees(event);
 
 			this.change.emit();
-		}
+		};
+
+		await this.modalService.componentModal(MemberSelectorModalComponent, {
+			keepOpenAfterSelect: true,
+			onSelect: (member: SDK.MemberResponse) => void addSelectedMember(member),
+		});
 	}
 
 	async removeAttendee(attendee: SDK.EventAttendeeResponseWithLinks) {
