@@ -51,3 +51,7 @@ ion-list {
 	width: 28%;
 	white-space: normal;
 }
+
+ion-select::part(text) {
+  font-weight: normal;
+}

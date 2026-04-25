@@ -5,7 +5,6 @@ import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
 	IonAvatar,
-	IonCheckbox,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
 	IonItem,
@@ -15,7 +14,7 @@ import {
 	IonSelectOption,
 	IonSkeletonText,
 } from "@ionic/angular/standalone";
-import { EventStatuses } from "src/app/core/config/event-statuses";
+import { EventStatus, EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
 import { ApiService, RootLinks } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
@@ -51,7 +50,6 @@ import { EventCreateModalComponent } from "../../components/event-create-modal/e
 		IonInfiniteScrollContent,
 		IonSelect,
 		IonSelectOption,
-		IonCheckbox,
 		EventStatusBadgeComponent,
 		GroupPipe,
 		MemberPipe,
@@ -67,8 +65,11 @@ export class EventsListComponent implements OnInit {
 	years = signal<number[]>([]);
 	actions = signal<Action[]>([]);
 	currentYearString = String(new Date().getFullYear());
+	selectedYears: string[] = [];
+	selectedStatuses: string[] = [];
+	selectedLeaderFilters: string[] = [];
 
-	statuses = EventStatuses;
+	statuses = signal<Record<string, EventStatus>>({});
 
 	page = 1;
 	readonly pageSize = 50;
@@ -88,6 +89,7 @@ export class EventsListComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.loadYears();
+		this.loadStatuses();
 
 		this.api.rootLinks.subscribe((rootLinks: RootLinks | null) => this.setActions(rootLinks));
 
@@ -98,22 +100,46 @@ export class EventsListComponent implements OnInit {
 
 	onFilterChange(filter: UrlParams) {
 		this.filter = filter;
+		this.selectedYears = this.normalizeFilterValueToArray((filter as any)["year"]);
+		this.selectedStatuses = this.normalizeFilterValueToArray((filter as any)["status"]);
+		this.selectedLeaderFilters = [
+			...(filter.my ? ["my"] : []),
+			...(filter.noleader ? ["noleader"] : []),
+		];
 		this.loadEvents(filter);
 	}
 
-	setFilterParam(name: string, value: string | null) {
+	setFilterParam(name: string, value: string | string[] | null) {
+
+		let formattedValue = value;
+
+		// If the value is an array from your multi-select, format it for the URL
+		if (Array.isArray(value)) {
+			// Join it into a string like "2024,2025", or set to null if the array is empty
+			formattedValue = value.length > 0 ? value.join(",") : null;
+		}
+
 		this.router.navigate([], {
-			queryParams: { [name]: value || null },
+			queryParams: { [name]: formattedValue || null },
 			queryParamsHandling: "merge",
 			replaceUrl: true,
 		});
 	}
 
-	setLeaderFilter(value: "my" | "noleader" | null) {
+	setLeaderFilter(selectedValues: string[] | string | null) {
+		const values = Array.isArray(selectedValues)
+			? selectedValues
+			: selectedValues
+				? [selectedValues]
+				: [];
+
+		const isMySelected = values.includes("my");
+		const isNoLeaderSelected = values.includes("noleader");
+
 		this.router.navigate([], {
 			queryParams: {
-				my: value === "my" ? "1" : null,
-				noleader: value === "noleader" ? "1" : null,
+				my: isMySelected ? "1" : null,
+				noleader: isNoLeaderSelected ? "1" : null,
 			},
 			queryParamsHandling: "merge",
 			replaceUrl: true,
@@ -121,7 +147,15 @@ export class EventsListComponent implements OnInit {
 	}
 
 	toggleCurrentYear() {
-		this.setFilterParam("year", this.filter["year"] === this.currentYearString ? null : this.currentYearString);
+		const selectedYears = this.normalizeFilterValueToArray((this.filter as any)["year"]);
+		const hasCurrentYear = selectedYears.includes(this.currentYearString);
+
+		this.setFilterParam(
+			"year",
+			hasCurrentYear
+				? selectedYears.filter((year) => year !== this.currentYearString)
+				: [...selectedYears, this.currentYearString],
+		);
 	}
 
 	getLeadersString(event: SDK.EventResponseWithLinks) {
@@ -133,6 +167,21 @@ export class EventsListComponent implements OnInit {
 		years.sort((a, b) => b - a);
 		
 		this.years.set(years);
+	}
+
+	private async loadStatuses() {
+		const statuses = await this.api.EventsApi.getEventsStatuses().then((res) => res.data);
+		const statusMap = Object.fromEntries(
+			statuses.map((status) => [
+				status,
+				EventStatuses[status as EventStatusID] || {
+					name: status,
+					color: "#ccc",
+				},
+			]),
+		);
+
+		this.statuses.set(statusMap);
 	}
 
 	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
@@ -150,10 +199,10 @@ export class EventsListComponent implements OnInit {
 			this.events.set([]);
 		}
 
-		const params: SDK.EventsApiListEventsQueryParams = {
+		const params: SDK.SDKEventsApiListEventsQueryMultipleParams = {
 			search: filter.search || undefined,
-			status: filter.status || undefined,
-			year: filter.year ? parseInt(filter.year) : undefined,
+			status: this.normalizeFilterValueToArray((filter as any)["status"]),
+			year: this.normalizeFilterValueToArray((filter as any)["year"]).map((year) => parseInt(year, 10)),
 			my: !!filter.my,
 			noleader: !!filter.noleader,
 			deleted: !!filter.deleted,
@@ -165,6 +214,17 @@ export class EventsListComponent implements OnInit {
 
 		this.events.set([...this.events(), ...events]);
 	}
+
+	private normalizeFilterValueToArray(value: string | string[] | null | undefined): string[] {
+		if (Array.isArray(value)) return value.filter((item) => !!item).map((item) => String(item));
+		if (!value) return [];
+
+		return String(value)
+			.split(",")
+			.map((item) => item.trim())
+			.filter((item) => !!item);
+	}
+
 
 	private async createEvent() {
 		const data = await this.modalService.componentModal(EventCreateModalComponent);

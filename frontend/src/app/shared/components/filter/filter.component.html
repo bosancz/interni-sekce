@@ -25,8 +25,10 @@
 			<ion-badge color="warning">{{ filterCount }}</ion-badge>
 		}
 	</ion-button>
+
+	<ng-content select="[toolbar-actions]"></ng-content>
 </ion-toolbar>
 
 <ng-template #filterContent>
-	<ng-content></ng-content>
+	<ng-content select=":not([toolbar-actions])"></ng-content>
 </ng-template>

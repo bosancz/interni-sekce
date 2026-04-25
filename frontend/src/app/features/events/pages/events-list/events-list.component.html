@@ -2,18 +2,30 @@
 
 <bo-filter [search]="true" [showButtonMobileOnly]="true" (change)="onFilterChange($event)">
 	<ion-item>
-		<ion-select name="year" ngModel label="Rok">
-			<ion-select-option [value]="null">všechny</ion-select-option>
+		<ion-select
+			name="year"
+			label="Rok"
+			[ngModel]="selectedYears"
+			(ngModelChange)="setFilterParam('year', $event)"
+			placeholder=""
+			[multiple]="true"
+		>
 			@for (year of years(); track year) {
-				<ion-select-option [value]="year">{{ year }}</ion-select-option>
+				<ion-select-option [value]="'' + year">{{ year }}</ion-select-option>
 			}
 		</ion-select>
 	</ion-item>
 
 	<ion-item>
-		<ion-select name="status" ngModel label="Stav akce v programu">
-			<ion-select-option [value]="null">všechny</ion-select-option>
-			@for (status of statuses | keyvalue; track status.key) {
+		<ion-select
+			name="status"
+			label ="Stav"
+			[ngModel]="selectedStatuses"
+			(ngModelChange)="setFilterParam('status', $event)"
+			[multiple]="true"
+
+		>
+			@for (status of statuses() | keyvalue; track status.key) {
 				<ion-select-option [value]="status.key">
 					{{ status.value.name }}
 				</ion-select-option>
@@ -22,22 +34,22 @@
 	</ion-item>
 
 	<ion-item>
-		<ion-checkbox name="my" ngModel value="1" labelPlacement="start">Zobrazit pouze moje akce</ion-checkbox>
+		<ion-select
+			name="leaderFilters"
+			label="Vedoucí"
+			[ngModel]="selectedLeaderFilters"
+			(ngModelChange)="setLeaderFilter($event)"
+			[multiple]="true"
+
+		>
+			<ion-select-option value="my">Moje akce</ion-select-option>
+			<ion-select-option value="noleader">Akce bez vedoucího</ion-select-option>
+
+		</ion-select>
 	</ion-item>
 
-	<ion-item>
-		<ion-checkbox name="noleader" ngModel value="1" labelPlacement="start">
-			Zobrazit pouze akce bez vedoucího
-		</ion-checkbox>
-	</ion-item>
 
-	<ion-item>
-		<ion-checkbox name="deleted" ngModel value="1" labelPlacement="start">
-			Zobrazit pouze smazané akce
-		</ion-checkbox>
-	</ion-item>
 </bo-filter>
-
 
 <bo-page-content>
 	@switch (view) {
@@ -96,12 +108,14 @@
 						<th class="events-date-column">
 							<div class="column-filter">
 								<ion-select
+									label="Rok"
 									interface="popover"
-									[ngModel]="filter.year || null"
+									justify="start"
+									[ngModel]="selectedYears"
 									(ngModelChange)="setFilterParam('year', $event)"
-									placeholder="rok"
+									placeholder=""
+									[multiple]="true"
 								>
-									<ion-select-option [value]="null">Rok</ion-select-option>
 									@for (year of years(); track year) {
 										<ion-select-option [value]="'' + year">{{ year }}</ion-select-option>
 									}
@@ -111,13 +125,15 @@
 						<th class="events-status-column">
 							<div class="column-filter">
 								<ion-select
+									label ="Stav"
 									interface="popover"
-									[ngModel]="filter.status || null"
+									justify="start"
+									[ngModel]="selectedStatuses"
 									(ngModelChange)="setFilterParam('status', $event)"
-									placeholder="stav"
+									[multiple]="true"
+
 								>
-									<ion-select-option [value]="null">Stav</ion-select-option>
-									@for (status of statuses | keyvalue; track status.key) {
+									@for (status of statuses() | keyvalue; track status.key) {
 										<ion-select-option [value]="status.key">
 											{{ status.value.name }}
 										</ion-select-option>
@@ -128,19 +144,20 @@
 						<th class="events-leaders-column">
 							<div class="column-filter">
 								<ion-select
+									label="Vedoucí"
 									interface="popover"
-									[ngModel]="filter.my ? 'my' : (filter.noleader ? 'noleader' : null)"
+									justify="start"
+									[ngModel]="selectedLeaderFilters"
 									(ngModelChange)="setLeaderFilter($event)"
-									placeholder="Vedoucí"
-								>
-									<ion-select-option [value]="null">Vedoucí</ion-select-option>
-									<ion-select-option value='my'>Vedu já</ion-select-option>
-									<ion-select-option value='noleader'>Volné akce</ion-select-option>
+									[multiple]="true"
 
+								>
+									<ion-select-option value="my">Moje akce</ion-select-option>
+									<ion-select-option value="noleader">Akce bez vedoucího</ion-select-option>
 
 								</ion-select>
 							</div>
-						</th>					
+						</th>					 
 					</tr>
 				</thead>
 
