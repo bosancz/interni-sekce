@@ -6424,6 +6424,30 @@ export namespace SDK {
          */
         membership?: ListMembersMembershipEnum
     }
+
+    /**
+     * Query parameters for listMembers operation in MembersApi with multi-value filters.
+     * @export
+     * @interface MembersApiListMembersQueryMultipleParams
+     */
+    export interface MembersApiListMembersQueryMultipleParams
+        extends Omit<MembersApiListMembersQueryParams, "membership"> {
+        //membership
+        /**
+         *
+         * @type {Array<'clen' | 'neclen' | 'pozastaveno'>}
+         * @memberof MembersApiListMembersQueryMultipleParams
+         */
+        membership?: Array<ListMembersMembershipEnum>
+
+        //age
+        /**
+         *
+         * @type {Array<number>}
+         * @memberof MembersApiListMembersQueryMultipleParams
+         */
+        age?: Array<number>
+    }
     
     
     
@@ -7048,14 +7072,14 @@ export namespace SDK {
         /**
          * 
     
-         * @param {MembersApiListMembersQueryParams} queryParams Query parameters.
+         * @param {MembersApiListMembersQueryParams | MembersApiListMembersQueryMultipleParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async listMembers(
-            queryParams: MembersApiListMembersQueryParams = {},
+            queryParams: MembersApiListMembersQueryParams | MembersApiListMembersQueryMultipleParams = {},
             options: AxiosRequestConfig = {}
         ) {
     
@@ -7093,6 +7117,10 @@ export namespace SDK {
     
             if (queryParams.membership !== undefined) {
                 requestQueryParameter['membership'] = queryParams.membership;
+            }
+
+            if ('age' in queryParams && queryParams.age !== undefined) {
+                requestQueryParameter['age'] = queryParams.age;
             }
     
     

@@ -9,7 +9,8 @@ export interface GetMembersOptions extends PaginationOptions {
 	groups?: number[];
 	search?: string;
 	roles?: string[];
-	membership?: string;
+	membership?: string[];
+	age?: number[];
 }
 
 @Injectable()
@@ -38,7 +39,13 @@ export class MembersRepository {
 
 		if (options.roles) q.andWhere("members.role IN (:...roles)", { roles: options.roles });
 
-		if (options.membership) q.andWhere("members.membership = :membership", { membership: options.membership });
+		if (options.membership?.length) q.andWhere("members.membership IN (:...membership)", { membership: options.membership });
+
+		if (options.age?.length)
+			q.andWhere(
+				"members.birthday IS NOT NULL AND DATE_PART('year', AGE(CURRENT_DATE, members.birthday))::int IN (:...ages)",
+				{ ages: options.age },
+			);
 
 		return q.getMany();
 	}

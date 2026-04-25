@@ -1,8 +1,16 @@
 <bo-page-header title="Členská databáze" [actions]="actions" />
 
-<bo-filter [search]="true" (change)="onFilterChange($event)">
+
+<bo-filter [search]="true" [showButtonMobileOnly]="true" (change)="onFilterChange($event)">
 	<ion-item lines="none">
-		<ion-select multiple name="groups" ngModel label="Oddíl" placeholder="všechny">
+		<ion-select
+			multiple
+			name="groups"
+			[ngModel]="selectedGroups"
+			(ngModelChange)="setFilterParam('groups', $event)"
+			label="Oddíl"
+			placeholder="všechny"
+		>
 			@for (group of groups(); track group.id) {
 				<ion-select-option [value]="'' + group.id">
 					{{ group.name }}
@@ -11,7 +19,14 @@
 		</ion-select>
 	</ion-item>
 	<ion-item lines="none">
-		<ion-select multiple name="roles" ngModel label="Role" placeholder="všechny">
+		<ion-select
+			multiple
+			name="roles"
+			[ngModel]="selectedRoles"
+			(ngModelChange)="setFilterParam('roles', $event)"
+			label="Role"
+			placeholder="všechny"
+		>
 			@for (role of roles | keyvalue; track role.key) {
 				<ion-select-option [value]="role.key">
 					{{ role.value.title }}
@@ -20,9 +35,30 @@
 		</ion-select>
 	</ion-item>
 	<ion-item lines="none">
-		<ion-select multiple name="membership" ngModel label="Členství" placeholder="všechny">
+		<ion-select
+			multiple
+			name="membership"
+			[ngModel]="selectedMembership"
+			(ngModelChange)="setFilterParam('membership', $event)"
+			label="Členství"
+			placeholder="všechny"
+		>
 			@for (state of membershipStates | keyvalue; track state.key) {
 				<ion-select-option [value]="state.key">{{ state.value.title }}</ion-select-option>
+			}
+		</ion-select>
+	</ion-item>
+	<ion-item lines="none">
+		<ion-select
+			multiple
+			name="age"
+			[ngModel]="selectedAges"
+			(ngModelChange)="setFilterParam('age', $event)"
+			label="Věk"
+			placeholder="všechny"
+		>
+			@for (age of availableAges; track age) {
+				<ion-select-option [value]="'' + age">{{ age }}</ion-select-option>
 			}
 		</ion-select>
 	</ion-item>
@@ -57,14 +93,63 @@
 			</ion-list>
 		}
 		@case ("table") {
-			<admin-table>
+			<admin-table [class]="'members-table'">
 				<thead>
 					<tr>
 						<th>Přezdívka</th>
 						<th>Jméno</th>
-						<th>Oddíl</th>
-						<th>Role</th>
-						<th>Věk</th>
+						<th>
+							<div class="column-filter">
+								<ion-select
+									label="Oddíl"
+									interface="popover"
+									justify="start"
+									[ngModel]="selectedGroups"
+									(ngModelChange)="setFilterParam('groups', $event)"
+									[multiple]="true"
+								>
+									@for (group of groups(); track group.id) {
+										<ion-select-option [value]="'' + group.id">
+											{{ group.name }}
+										</ion-select-option>
+									}
+								</ion-select>
+							</div>
+						</th>
+						<th>
+							<div class="column-filter">
+								<ion-select
+									label="Role"
+									interface="popover"
+									justify="start"
+									[ngModel]="selectedRoles"
+									(ngModelChange)="setFilterParam('roles', $event)"
+									[multiple]="true"
+								>
+									@for (role of roles | keyvalue; track role.key) {
+										<ion-select-option [value]="role.key">
+											{{ role.value.title }}
+										</ion-select-option>
+									}
+								</ion-select>
+							</div>
+						</th>
+						<th>
+							<div class="column-filter">
+								<ion-select
+									label="Věk"
+									interface="popover"
+									justify="start"
+									[ngModel]="selectedAges"
+									(ngModelChange)="setFilterParam('age', $event)"
+									[multiple]="true"
+								>
+									@for (age of availableAges; track age) {
+										<ion-select-option [value]="'' + age">{{ age }}</ion-select-option>
+									}
+								</ion-select>
+							</div>
+						</th>
 					</tr>
 				</thead>
 				<tbody>

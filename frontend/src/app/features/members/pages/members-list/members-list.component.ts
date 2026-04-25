@@ -63,6 +63,11 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	groups = signal<SDK.GroupResponseWithLinks[]>([]);
 	roles = MemberRoles;
 	membershipStates = MembershipStates;
+	allMemberAges = signal<number[]>([]);
+	selectedGroups: string[] = [];
+	selectedRoles: string[] = [];
+	selectedMembership: string[] = [];
+	selectedAges: string[] = [];
 
 	loadingItems = new Array(10).fill(null);
 
@@ -97,6 +102,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	ionViewWillEnter() {
 		this.loadGroups();
+		this.loadAllAges();
 	}
 
 	export() {
@@ -124,7 +130,25 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	onFilterChange(filter: FilterData) {
 		this.filter = filter;
+		this.selectedGroups = this.normalizeFilterValueToArray((filter as any)["groups"]);
+		this.selectedRoles = this.normalizeFilterValueToArray((filter as any)["roles"]);
+		this.selectedMembership = this.normalizeFilterValueToArray((filter as any)["membership"]);
+		this.selectedAges = this.normalizeFilterValueToArray((filter as any)["age"]);
 		this.loadMembers(filter);
+	}
+
+	setFilterParam(name: string, value: string | string[] | null) {
+		let formattedValue = value;
+
+		if (Array.isArray(value)) {
+			formattedValue = value.length > 0 ? value.join(",") : null;
+		}
+
+		this.router.navigate([], {
+			queryParams: { [name]: formattedValue || null },
+			queryParamsHandling: "merge",
+			replaceUrl: true,
+		});
 	}
 
 	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
@@ -134,20 +158,22 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	private async loadMembers(filter: FilterData, loadMore: boolean = false) {
 		if (loadMore) {
-			if (this.members && this.members.length < this.page * this.pageSize) return;
+			const memberList = this.members();
+			if (!memberList || memberList.length < this.page * this.pageSize) return;
 			this.page++;
 		} else {
 			this.page = 1;
 			this.members.set([]);
 		}
 
-		const params: SDK.MembersApiListMembersQueryParams = {
+		const params: SDK.MembersApiListMembersQueryMultipleParams = {
 			search: filter.search || undefined,
 			offset: (this.page - 1) * this.pageSize,
-			roles: filter.roles || undefined,
-			membership: filter.membership || undefined,
+			roles: this.normalizeFilterValueToArray((filter as any)["roles"]),
+			membership: this.normalizeFilterValueToArray((filter as any)["membership"]) as SDK.ListMembersMembershipEnum[],
+			age: this.normalizeFilterValueToArray((filter as any)["age"]).map((age) => parseInt(age, 10)),
 			limit: this.pageSize,
-			groups: filter.groups || undefined,
+			groups: this.normalizeFilterValueToArray((filter as any)["groups"]).map((group) => parseInt(group, 10)),
 		};
 
 		const members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
@@ -155,9 +181,45 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		this.members.set([...this.members()!, ...members]);
 	}
 
+	private normalizeFilterValueToArray(value: string | string[] | null | undefined): string[] {
+		if (Array.isArray(value)) return value.filter((item) => !!item).map((item) => String(item));
+		if (!value) return [];
+
+		return String(value)
+			.split(",")
+			.map((item) => item.trim())
+			.filter((item) => !!item);
+	}
+
 	private async loadGroups() {
 		const groups = await this.api.MembersApi.listGroups().then((res) => res.data);
 		this.groups.set(groups);
+	}
+
+	private async loadAllAges() {
+		const pageSize = 500;
+		let page = 1;
+		let allMembers: SDK.MemberResponseWithLinks[] = [];
+
+		while (true) {
+			const members = await this.api.MembersApi.listMembers({
+				limit: pageSize,
+				offset: (page - 1) * pageSize,
+			}).then((res) => res.data);
+
+			allMembers = [...allMembers, ...members];
+
+			if (members.length < pageSize) break;
+			page++;
+		}
+
+		const ages = allMembers
+			.map((member) => member.birthday)
+			.filter((birthday): birthday is string => !!birthday)
+			.map((birthday) => Number(this.getAge(birthday)))
+			.filter((age) => Number.isFinite(age));
+
+		this.allMemberAges.set([...new Set(ages)].sort((a, b) => a - b));
 	}
 
 	private create() {
@@ -166,6 +228,10 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	getAge(birthday: string) {
 		return Math.floor(-1 * DateTime.fromISO(birthday).diffNow("years").years).toFixed(0);
+	}
+
+	get availableAges(): number[] {
+		return this.allMemberAges();
 	}
 
 	private setActions() {
