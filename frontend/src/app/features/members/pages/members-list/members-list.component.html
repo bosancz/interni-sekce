@@ -2,6 +2,13 @@
 
 
 <bo-filter [search]="true" [showButtonMobileOnly]="true" (change)="onFilterChange($event)">
+	<ion-button toolbar-actions class="d-lg-none" fill="clear" size="small" (click)="create()" slot="end">
+		<ion-icon slot="icon-only" name="add-outline"></ion-icon>
+	</ion-button>
+	<ion-button toolbar-actions class="d-lg-none" fill="clear" size="small" (click)="export()" slot="end">
+		<ion-icon slot="icon-only" name="download-outline"></ion-icon>
+	</ion-button>
+
 	<ion-item lines="none">
 		<ion-select
 			multiple
@@ -64,6 +71,8 @@
 	</ion-item>
 </bo-filter>
 
+
+
 <ion-content>
 	@switch (view) {
 		@case ("list") {
@@ -93,63 +102,134 @@
 			</ion-list>
 		}
 		@case ("table") {
+			<div class="table-controls">
+				<ion-button id="checkbox-popover-trigger" fill="outline" class="view-select-button">
+					Vyber zobrazení
+				</ion-button>
+
+				<ion-button (click)="export()" fill="outline">
+					Stáhnout XLSX
+				</ion-button>
+				
+				<ion-button (click)="create()" color="primary" fill="solid">
+					Přidat člena
+				</ion-button>
+
+			</div>
+
+			<ion-popover trigger="checkbox-popover-trigger" triggerAction="click">
+			<ng-template>
+				<ion-content>
+					@for (selection of viewSelections| keyvalue: originalViewOrder; track selection.key) {
+						<ion-item>
+							<ion-checkbox [(ngModel)]="viewSelections[selection.key]" justify="space-between">
+								{{ getViewSelectionLabel(selection.key) }}
+							</ion-checkbox>
+						</ion-item>
+					}
+				</ion-content>
+			</ng-template>
+			</ion-popover>
+
 			<admin-table [class]="'members-table'">
 				<thead>
 					<tr>
-						<th>Přezdívka</th>
-						<th>Jméno</th>
-						<th>
-							<div class="column-filter">
-								<ion-select
-									label="Oddíl"
-									interface="popover"
-									justify="start"
-									[ngModel]="selectedGroups"
-									(ngModelChange)="setFilterParam('groups', $event)"
-									[multiple]="true"
-								>
-									@for (group of groups(); track group.id) {
-										<ion-select-option [value]="'' + group.id">
-											{{ group.name }}
-										</ion-select-option>
-									}
-								</ion-select>
-							</div>
-						</th>
-						<th>
-							<div class="column-filter">
-								<ion-select
-									label="Role"
-									interface="popover"
-									justify="start"
-									[ngModel]="selectedRoles"
-									(ngModelChange)="setFilterParam('roles', $event)"
-									[multiple]="true"
-								>
-									@for (role of roles | keyvalue; track role.key) {
-										<ion-select-option [value]="role.key">
-											{{ role.value.title }}
-										</ion-select-option>
-									}
-								</ion-select>
-							</div>
-						</th>
-						<th>
-							<div class="column-filter">
-								<ion-select
-									label="Věk"
-									interface="popover"
-									justify="start"
-									[ngModel]="selectedAges"
-									(ngModelChange)="setFilterParam('age', $event)"
-									[multiple]="true"
-								>
-									@for (age of availableAges; track age) {
-										<ion-select-option [value]="'' + age">{{ age }}</ion-select-option>
-									}
-								</ion-select>
-							</div>
-						</th>
+						@if (viewSelections.nickname){
+							<th class="align-middle members-nickname-column" >Přezdívka</th>					
+						}
+						@if (viewSelections.name){
+							<th class="align-middle members-name-column" >Jméno</th>					
+						}
+						@if (viewSelections.group){
+							<th>
+								<div class="column-filter">
+									<ion-select
+										label="Oddíl"
+										interface="popover"
+										justify="start"
+										[ngModel]="selectedGroups"
+										(ngModelChange)="setFilterParam('groups', $event)"
+										[multiple]="true"
+									>
+										@for (group of groups(); track group.id) {
+											<ion-select-option [value]="'' + group.id">
+												{{ group.name }}
+											</ion-select-option>
+										}
+									</ion-select>
+								</div>
+							</th>
+						}			
+
+						@if (viewSelections.role){
+							<th>
+								<div class="column-filter">
+									<ion-select
+										label="Role"
+										interface="popover"
+										justify="start"
+										[ngModel]="selectedRoles"
+										(ngModelChange)="setFilterParam('roles', $event)"
+										[multiple]="true"
+									>
+										@for (role of roles | keyvalue; track role.key) {
+											<ion-select-option [value]="role.key">
+												{{ role.value.title }}
+											</ion-select-option>
+										}
+									</ion-select>
+								</div>
+							</th>
+						}
+
+						@if (viewSelections.age){
+							<th>
+								<div class="column-filter">
+									<ion-select
+										label="Věk"
+										interface="popover"
+										justify="start"
+										[ngModel]="selectedAges"
+										(ngModelChange)="setFilterParam('age', $event)"
+										[multiple]="true"
+									>
+										@for (age of availableAges; track age) {
+											<ion-select-option [value]="'' + age">{{ age }}</ion-select-option>
+										}
+									</ion-select>
+								</div>
+							</th>
+						}
+
+						@if (viewSelections.membership){
+							<th>
+								<div class="column-filter">
+									<ion-select
+										label="Členství"
+										interface="popover"
+										justify="start"
+										[ngModel]="selectedMembership"
+										(ngModelChange)="setFilterParam('membership', $event)"
+										[multiple]="true"
+									>
+										@for (state of membershipStates | keyvalue; track state.key) {
+											<ion-select-option [value]="state.key">
+												{{ state.value.title }}
+											</ion-select-option>
+										}
+									</ion-select>
+								</div>
+							</th>					
+						}
+						@if (viewSelections.birthday){
+							<th class="align-middle events-name-column" >Datum narození</th>					
+						}
+						@if (viewSelections.addressCity){
+							<th class="align-middle events-name-column" >Město</th>					
+						}
+						@if (viewSelections.addressStreet){
+							<th class="align-middle events-name-column" >Ulice</th>					
+						}
 					</tr>
 				</thead>
 				<tbody>
@@ -160,14 +240,44 @@
 								[routerLink]="'' + member.id"
 								[class.member-inactive]="member.membership === 'neclen'"
 								[class.member-paused]="member.membership === 'pozastaveno'"
-							>
-								<td>{{ member.nickname }}</td>
-								<td>{{ member.firstName }} {{ member.lastName }}</td>
-								<td>
-									<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
-								</td>
-								<td>{{ member | member: "role" }}</td>
-								<td>{{ member | member: "age" }}</td>
+							>	
+								@if (viewSelections.nickname){
+									<td>{{ member.nickname }}</td>
+								}
+
+								@if (viewSelections.name){
+									<td>{{ member.firstName }} {{ member.lastName }}</td>
+								}
+
+								@if (viewSelections.group){
+									<td>
+										<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
+									</td>
+								}
+								@if (viewSelections.role){
+									<td>{{ member | member: "role" }}</td>
+								}
+
+								@if (viewSelections.age){
+									<td>{{ member | member: "age" }}</td>
+								}
+
+								@if (viewSelections.membership){
+									<td>{{ member | member: "membership" }}</td>
+								}
+
+								@if (viewSelections.birthday){
+									<td>{{ member.birthday ? (member.birthday | date: "d. M. y") : "" }}</td>
+								}
+								
+								@if (viewSelections.addressCity) {
+								<td> {{ member.addressCity}} </td>
+								}
+
+								@if (viewSelections.addressStreet) {
+								<td> {{ member.addressStreet}} </td>
+								}							
+
 							</tr>
 						}
 					}

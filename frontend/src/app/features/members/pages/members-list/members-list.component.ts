@@ -14,8 +14,14 @@ import {
 	IonSelectOption,
 	IonSkeletonText,
 	ViewWillEnter,
+	IonButton, 
+	IonPopover, 
+	IonCheckbox,
+	IonIcon,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { addOutline, downloadOutline } from "ionicons/icons";
 import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { ApiService } from "src/app/core/services/api.service";
@@ -30,6 +36,8 @@ import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 import { MembershipStates } from "../../../../core/config/membership-states";
+import { DatePipe } from '@angular/common';
+import { KeyValue } from '@angular/common';
 
 @UntilDestroy()
 @Component({
@@ -47,6 +55,10 @@ import { MembershipStates } from "../../../../core/config/membership-states";
 		IonSkeletonText,
 		IonSelect,
 		IonSelectOption,
+		IonButton,
+		IonPopover,
+		IonCheckbox,
+		IonIcon,
 		AdminTableComponent,
 		FormsModule,
 		RouterLink,
@@ -56,6 +68,7 @@ import { MembershipStates } from "../../../../core/config/membership-states";
 		GroupBadgeComponent,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
+		DatePipe,
 	],
 })
 export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnter {
@@ -80,15 +93,21 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	page = 1;
 	pageSize = 100;
 
+	viewSelections: { [key: string]: boolean } = {};
+
+
 	constructor(
 		private api: ApiService,
 		private route: ActivatedRoute,
 		private router: Router,
 		private toasts: ToastService,
 		private platformService: PlatformService,
-	) {}
+	) {
+		addIcons({ addOutline, downloadOutline });
+	}
 
 	ngOnInit() {}
+
 
 	ngAfterViewInit(): void {
 		this.api.rootLinks.pipe(untilDestroyed(this)).subscribe(() => {
@@ -98,6 +117,8 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		this.platformService.isPortrait.subscribe((isPortrait) => {
 			this.view = isPortrait ? "list" : "table";
 		});
+
+		this.loadViewSelections();
 	}
 
 	ionViewWillEnter() {
@@ -106,7 +127,14 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	}
 
 	export() {
-		this.api.MembersApi.exportMembersXlsx({}, { responseType: "blob" }).then((res) => {
+		const params: SDK.MembersApiExportMembersXlsxQueryParams = {
+			search: this.filter.search || undefined,
+			roles: this.normalizeFilterValueToArray((this.filter as any)["roles"]),
+			membership: this.normalizeFilterValueToArray((this.filter as any)["membership"])?.[0] as SDK.ExportMembersXlsxMembershipEnum,
+			groups: this.normalizeFilterValueToArray((this.filter as any)["groups"]).map((group) => parseInt(group, 10)),
+		};
+
+		this.api.MembersApi.exportMembersXlsx(params, { responseType: "blob" }).then((res) => {
 			const blob = new Blob([res.data], {
 				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			});
@@ -222,7 +250,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		this.allMemberAges.set([...new Set(ages)].sort((a, b) => a - b));
 	}
 
-	private create() {
+	create() {
 		this.router.navigate(["pridat"], { relativeTo: this.route });
 	}
 
@@ -232,6 +260,45 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	get availableAges(): number[] {
 		return this.allMemberAges();
+	}
+
+	originalViewOrder = (a: KeyValue<string, boolean>, b: KeyValue<string, boolean>): number => {
+        return 0;
+    }
+
+	private loadViewSelections(){
+		this.viewSelections = {
+			nickname : true,
+			name : true,
+			group: true,
+			role: true,
+			age: false,
+			membership: false,
+			birthday: false,
+			addressCity: false,
+			addressStreet: false,
+
+		}
+	}
+
+	public getViewSelectionLabel(key: string): string {
+		const labels: { [key: string]: string } = {
+			nickname: "Přezdívka",
+			name: "Jméno",
+			group: "Oddíl",
+			role: "Role",
+			age: "Věk",
+			membership: "Členství",
+			birthday: "Narozeniny",
+			addressCity: "Město",
+			addressStreet: "Ulice",
+		};
+
+		return labels[key] || key;
+	}
+
+	getFirstPhoneNumber(member: SDK.MemberResponseWithLinks): string {
+		return member.contacts?.find((contact) => !!contact.mobile)?.mobile || "";
 	}
 
 	private setActions() {
