@@ -6312,6 +6312,15 @@ export namespace SDK {
          * @memberof MembersApiExportMembersXlsx
          */
         membership?: ExportMembersXlsxMembershipEnum
+
+        //ages
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        age?: Array<number>
+        
     }
     
     
@@ -6841,6 +6850,10 @@ export namespace SDK {
     
             if (queryParams.membership !== undefined) {
                 requestQueryParameter['membership'] = queryParams.membership;
+            }
+
+            if (queryParams.age) {
+                requestQueryParameter['age'] = queryParams.age;
             }
     
     

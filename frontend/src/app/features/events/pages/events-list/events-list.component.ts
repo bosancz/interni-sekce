@@ -72,7 +72,7 @@ export class EventsListComponent implements OnInit {
 	statuses = signal<Record<string, EventStatus>>({});
 
 	page = 1;
-	readonly pageSize = 50;
+	readonly pageSize = 100;
 
 	filter: UrlParams = {};
 
@@ -185,17 +185,19 @@ export class EventsListComponent implements OnInit {
 	}
 
 	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
-		
 		await this.loadEvents(this.filter, true);
 		e.target.complete();
 	}
 
 	private async loadEvents(filter: UrlParams, loadMore: boolean = false) {
 		if (loadMore) {
+			console.log("trying to load more")
+			console.log("current events count", this.events()?.length, "page", this.page, "pageSize", this.pageSize)
 			if (this.events && this.events.length < this.page * this.pageSize) return;
 			this.page++;
+			console.log("Loading page", this.page);
 		} else {
-			this.page = 1;
+			this.page = 1;	
 			this.events.set([]);
 		}
 
