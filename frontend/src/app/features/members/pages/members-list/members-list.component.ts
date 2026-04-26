@@ -132,6 +132,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			roles: this.normalizeFilterValueToArray((this.filter as any)["roles"]),
 			membership: this.normalizeFilterValueToArray((this.filter as any)["membership"])?.[0] as SDK.ExportMembersXlsxMembershipEnum,
 			groups: this.normalizeFilterValueToArray((this.filter as any)["groups"]).map((group) => parseInt(group, 10)),
+			age: this.normalizeFilterValueToArray((this.filter as any)["age"]).map((age) => parseInt(age, 10)),
 		};
 
 		this.api.MembersApi.exportMembersXlsx(params, { responseType: "blob" }).then((res) => {
@@ -225,19 +226,18 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	}
 
 	private async loadAllAges() {
-		const pageSize = 500;
 		let page = 1;
 		let allMembers: SDK.MemberResponseWithLinks[] = [];
 
 		while (true) {
 			const members = await this.api.MembersApi.listMembers({
-				limit: pageSize,
-				offset: (page - 1) * pageSize,
+				limit: this.pageSize,
+				offset: (page - 1) * this.pageSize,
 			}).then((res) => res.data);
 
 			allMembers = [...allMembers, ...members];
 
-			if (members.length < pageSize) break;
+			if (members.length < this.pageSize) break;
 			page++;
 		}
 
