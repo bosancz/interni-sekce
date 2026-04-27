@@ -22,7 +22,6 @@ Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a 
 💡 Lze použít i jiné editory, ale instalace je složitější. Např. u Cursoru je nutné spouštět devcontainer přes DevPod.
 
 1. Nainstaluj
-
    - [Docker](https://www.docker.com/get-started/)
    - [VSCode](https://code.visualstudio.com/) s [rozšířením Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
@@ -35,7 +34,6 @@ Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a 
 #### Klasická instalace
 
 1. Nainstaluj
-
    - [NodeJS](https://nodejs.org/) (verze 22 nebo vyšší)
    - [PostgreSQL](https://www.postgresql.org/download/) (verze 15)
    - Editor dle volby (doporučujeme [VSCode](https://code.visualstudio.com/))
@@ -67,10 +65,10 @@ npm install
 
 Tím se spustí skript, který:
 
- - nainstaluje kořenové závislosti
- - nainstaluje závislosti frontendu
- - nainstaluje závislosti backendu
- - spustí migrace databáze
+- nainstaluje kořenové závislosti
+- nainstaluje závislosti frontendu
+- nainstaluje závislosti backendu
+- spustí migrace databáze
 
 ### Spuštění pro vývoj
 
@@ -131,12 +129,15 @@ interni-sekce/frontend/
 │   │   ├── app.component.ts    # Kořenová komponenta aplikace
 │   │   ├── app.component.html  # HTML šablona kořenové komponenty
 │   │   ├── app.component.scss  # Styly kořenové komponenty
+│   │   ├── app.routing.ts      # Definice routingu aplikace
 │   │   └── app.module.ts       # Kořenový modul aplikace
 │   ├── assets/                 # Statické soubory (obrázky, ikony, atd.)
-│   ├── environments/           # Konfigurační soubory pro prostředí
 │   ├── helpers/                # Pomocné funkce a utility
+│   ├── index.html              # HTML vstupní stránka aplikace
+│   ├── main.ts                 # Vstupní bod Angular aplikace
 │   ├── sdk/                    # Vygenerovaný API klient
-│   └── styles/                 # Globální styly
+│   ├── styles/                 # Globální styly
+│   └── config.ts               # Konfigurace frontendu
 └── package.json                # NPM skripty a závislosti
 ```
 
@@ -272,4 +273,3 @@ npm run migrations:reset
 ```
 
 Po tomto resetu bude databáze prázdná a budeš muset znovu vytvořit prvotního uživatele a jakákoliv data potřebná pro vývoj.
-
