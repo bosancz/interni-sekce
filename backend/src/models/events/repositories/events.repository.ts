@@ -14,6 +14,8 @@ export interface GetEventsOptions extends PaginationOptions {
 	memberId?: number;
 	noleader?: boolean;
 	deleted?: boolean;
+	dateFrom?: string;
+	dateTill?: string;
 }
 
 @Injectable()
@@ -29,9 +31,15 @@ export class EventsRepository {
 			.createQueryBuilder("events")
 			.select(["events.id", "events.name", "events.status", "events.dateFrom", "events.dateTill", "events.type"])
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
-			.orderBy("events.dateFrom", "DESC")
-			.take(options.limit ?? 25)
-			.skip(options.offset ?? 0);
+			.orderBy("events.dateFrom", "DESC");
+
+		if (options.limit) {
+			q.take(options.limit ?? 25);
+		}
+
+		if (options.offset) {
+			q.skip(options.offset ?? 0);
+		}
 
 		if (options.year?.length) {
 			q.andWhere(
@@ -45,6 +53,9 @@ export class EventsRepository {
 				}),
 			);
 		}
+
+		if (options.dateFrom) q.andWhere("events.dateTill >= :dateFrom", { dateFrom: options.dateFrom });
+		if (options.dateTill) q.andWhere("events.dateFrom <= :dateTill", { dateTill: options.dateTill });
 
 		if (options.status?.length) q.andWhere("events.status IN (:...statuses)", { statuses: options.status });
 

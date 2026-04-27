@@ -1,26 +1,15 @@
 import { NgTemplateOutlet } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import {
-	IonBackButton,
-	IonButton,
-	IonButtons,
-	IonContent,
-	IonHeader,
-	IonItem,
-	IonLabel,
-	IonTabBar,
-	IonTabButton,
-	IonText,
-	IonTitle,
-	IonToolbar,
-} from "@ionic/angular/standalone";
+import { IonButton, IonItem, IonLabel, IonTabBar, IonTabButton, IonText } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
 import { BehaviorSubject } from "rxjs";
 import { filter, map } from "rxjs/operators";
 import { ApiService } from "src/app/core/services/api.service";
 import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
 import { ProgramService } from "../../services/program.service";
 
@@ -32,12 +21,6 @@ import { ProgramService } from "../../services/program.service";
 
 	imports: [
 		NgTemplateOutlet,
-		IonContent,
-		IonHeader,
-		IonToolbar,
-		IonButtons,
-		IonBackButton,
-		IonTitle,
 		IonTabBar,
 		IonTabButton,
 		IonText,
@@ -45,6 +28,8 @@ import { ProgramService } from "../../services/program.service";
 		IonItem,
 		IonButton,
 		EventCardComponent,
+		PageHeaderComponent,
+		PageContentComponent,
 	],
 })
 export class ProgramWorkflowComponent implements OnInit {

@@ -1,23 +1,23 @@
-import { KeyValuePipe } from "@angular/common";
+import { DatePipe, KeyValue, KeyValuePipe } from "@angular/common";
 import { AfterViewInit, Component, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
+	IonButton,
+	IonCheckbox,
 	IonContent,
+	IonIcon,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
 	IonItem,
 	IonLabel,
 	IonList,
+	IonPopover,
 	IonSelect,
 	IonSelectOption,
 	IonSkeletonText,
 	ViewWillEnter,
-	IonButton, 
-	IonPopover, 
-	IonCheckbox,
-	IonIcon,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
@@ -36,9 +36,6 @@ import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 import { MembershipStates } from "../../../../core/config/membership-states";
-import { DatePipe } from '@angular/common';
-import { KeyValue } from '@angular/common';
-import { first } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -96,7 +93,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	viewSelections: { [key: string]: boolean } = {};
 
-
 	constructor(
 		private api: ApiService,
 		private route: ActivatedRoute,
@@ -108,7 +104,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	}
 
 	ngOnInit() {}
-
 
 	ngAfterViewInit(): void {
 		this.api.rootLinks.pipe(untilDestroyed(this)).subscribe(() => {
@@ -128,11 +123,16 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	}
 
 	export() {
+		// FIXME: do not use as any
 		const params: SDK.MembersApiExportMembersXlsxQueryParams = {
 			search: this.filter.search || undefined,
-			roles: this.normalizeFilterValueToArray((this.filter as any)["roles"]),
-			membership: this.normalizeFilterValueToArray((this.filter as any)["membership"])?.[0] as SDK.ExportMembersXlsxMembershipEnum,
-			groups: this.normalizeFilterValueToArray((this.filter as any)["groups"]).map((group) => parseInt(group, 10)),
+			roles: this.normalizeFilterValueToArray((this.filter as any)["roles"]) as SDK.ExportMembersXlsxRolesEnum[],
+			membership: this.normalizeFilterValueToArray(
+				(this.filter as any)["membership"],
+			) as SDK.ExportMembersXlsxMembershipEnum[],
+			groups: this.normalizeFilterValueToArray((this.filter as any)["groups"]).map((group) =>
+				parseInt(group, 10),
+			),
 			age: this.normalizeFilterValueToArray((this.filter as any)["age"]).map((age) => parseInt(age, 10)),
 		};
 
@@ -159,6 +159,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	}
 
 	onFilterChange(filter: FilterData) {
+		// FIXME: do not use as any
 		this.filter = filter;
 		this.selectedGroups = this.normalizeFilterValueToArray((filter as any)["groups"]);
 		this.selectedRoles = this.normalizeFilterValueToArray((filter as any)["roles"]);
@@ -196,14 +197,14 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			this.members.set([]);
 		}
 
-		const params: SDK.MembersApiListMembersQueryMultipleParams = {
+		const params: SDK.MembersApiListMembersQueryParams = {
 			search: filter.search || undefined,
 			offset: (this.page - 1) * this.pageSize,
-			roles: this.normalizeFilterValueToArray((filter as any)["roles"]),
-			membership: this.normalizeFilterValueToArray((filter as any)["membership"]) as SDK.ListMembersMembershipEnum[],
-			age: this.normalizeFilterValueToArray((filter as any)["age"]).map((age) => parseInt(age, 10)),
+			roles: this.normalizeFilterValueToArray(filter["roles"]) as SDK.ListMembersRolesEnum[],
+			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.ListMembersMembershipEnum[],
+			age: this.normalizeFilterValueToArray(filter["age"]).map((age) => parseInt(age, 10)),
 			limit: this.pageSize,
-			groups: this.normalizeFilterValueToArray((filter as any)["groups"]).map((group) => parseInt(group, 10)),
+			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
 		};
 
 		var members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
@@ -214,16 +215,15 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 				members.map(async (member) => {
 					try {
 						const contacts = await this.api.MembersApi.listContacts(member.id).then((res) => res.data);
-						
-						return { ...member, contacts: contacts }; 
+
+						return { ...member, contacts: contacts };
 					} catch (error) {
 						console.error(`Failed to load contacts for member ${member.id}`, error);
 						return { ...member, contacts: [] }; // Fallback to empty array on failure
 					}
-				})
+				}),
 			);
 		}
-		
 
 		const currentMembers = this.members() || [];
 		this.members.set([...currentMembers, ...members]);
@@ -282,13 +282,13 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	}
 
 	originalViewOrder = (a: KeyValue<string, boolean>, b: KeyValue<string, boolean>): number => {
-        return 0;
-    }
+		return 0;
+	};
 
-	private loadViewSelections(){
+	private loadViewSelections() {
 		this.viewSelections = {
-			nickname : true,
-			name : true,
+			nickname: true,
+			name: true,
 			group: true,
 			role: true,
 			age: false,
@@ -297,9 +297,8 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			addressCity: false,
 			addressStreet: false,
 			firstTelephone: false,
-			firstEmail: false,	
-
-		}
+			firstEmail: false,
+		};
 	}
 
 	public getViewSelectionLabel(key: string): string {
@@ -319,7 +318,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 		return labels[key] || key;
 	}
-
 
 	private setActions() {
 		this.actions = [

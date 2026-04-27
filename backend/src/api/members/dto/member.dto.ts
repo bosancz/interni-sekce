@@ -43,9 +43,10 @@ export class MemberResponse implements Member {
 	achievements?: MemberAchievement[] | undefined;
 }
 
-export class MemberCreateBody
-	implements Pick<MemberResponse, "nickname" | "firstName" | "lastName" | "groupId" | "role">
-{
+export class MemberCreateBody implements Pick<
+	MemberResponse,
+	"nickname" | "firstName" | "lastName" | "groupId" | "role"
+> {
 	@ApiProperty() @Type(() => Number) @IsNumber() groupId!: number;
 	@ApiProperty() @IsString() nickname!: string;
 	@ApiProperty() @IsString() role!: MemberRoles;
@@ -56,27 +57,23 @@ export class MemberCreateBody
 export class MemberUpdateBody extends PartialType(OmitType(MemberResponse, ["contacts", "achievements", "id"])) {}
 
 export class MembersListQuery extends PaginationQuery {
-	@ApiPropertyOptional({ type: "number", isArray: true })
 	@EnsureArray({ split: "," })
 	@Type(() => Number, {})
 	@IsNumber({}, { each: true })
 	@IsOptional()
 	groups?: number[];
 
-	@ApiPropertyOptional() @IsString() @IsOptional() search?: string;
-	@ApiPropertyOptional({ type: "string", isArray: true })
+	@IsString() @IsOptional() search?: string;
 	@EnsureArray({ split: "," })
 	@IsEnum(MemberRoles, { each: true })
 	@IsOptional()
 	roles?: MemberRoles[];
 
-	@ApiPropertyOptional({ enum: MembershipStates, enumName: "MembershipStatesEnum", isArray: true })
 	@EnsureArray({ split: "," })
 	@IsEnum(MembershipStates, { each: true })
 	@IsOptional()
 	membership?: MembershipStates[];
 
-	@ApiPropertyOptional({ type: "number", isArray: true })
 	@EnsureArray({ split: "," })
 	@Type(() => Number, {})
 	@IsNumber({}, { each: true })

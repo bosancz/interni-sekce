@@ -1,7 +1,14 @@
 :host {
-	display: block;
+	display: flex;
+	flex-direction: column;
 }
 
-bo-event-calendar {
-	background-color: #fff;
+bo-page-content {
+	flex-grow: 1;
+}
+
+.load-previous-link {
+	a {
+		color: var(--bo-dark);
+	}
 }
