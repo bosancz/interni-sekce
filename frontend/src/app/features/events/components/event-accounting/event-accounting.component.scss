@@ -11,3 +11,71 @@ bo-item {
 	flex: 0 0 100px;
 	text-align: end;
 }
+
+.expense-grid {
+    display: grid;
+    align-items: center; 
+    width: 100%;
+    gap: 4px 12px; 
+    padding: 8px 0;
+
+    /* --- MOBILE DEFAULT (2 Rows) --- */
+    /* We "draw" the layout: ID, Badge, Amount, Action on top. Desc takes the whole bottom row. */
+    grid-template-areas: 
+        "id badge amount action"
+        "desc desc desc desc";
+    
+    /* ID takes leftover space, the rest are fixed */
+    grid-template-columns: 1fr 90px 95px 30px; 
+}
+
+/* --- Assign Grid Areas --- */
+.id-cell {
+    grid-area: id;
+    font-weight: bold;
+}
+
+.desc-cell {
+    grid-area: desc;
+    margin: 0;
+    color: #444;
+    padding-top: 4px;
+    
+    /* Good practice for single-line layouts: add ellipses if text gets too long */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.badge-cell {
+    grid-area: badge;
+    display: flex;
+    justify-content: center;
+}
+
+.amount-cell {
+    grid-area: amount;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.action-cell {
+    grid-area: action;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* --- DESKTOP WIDE SCREEN (1 Row) --- */
+@media (min-width: 768px) {
+    .expense-grid {
+        /* Everything on one line! */
+        grid-template-areas: "id desc badge amount action";
+        
+        grid-template-columns: 50px 1fr 90px 95px 30px;
+        align-items: center;
+    }
+
+    .desc-cell {
+        padding-top: 0; /* Remove the top padding used for the mobile 2nd row */
+    }
+}

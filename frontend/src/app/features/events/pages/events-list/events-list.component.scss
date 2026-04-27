@@ -13,6 +13,45 @@ tr.event-small {
 	opacity: 0.8;
 }
 
+
 ion-list {
 	flex-grow: 1;
+}
+
+
+.column-filter {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.column-filter ion-select {
+	min-width: 7rem;
+}
+
+:host ::ng-deep .events-table {
+	table-layout: fixed;
+	width: 100%;
+}
+
+:host ::ng-deep .events-table .events-name-column {
+	width: 32%;
+	white-space: normal;
+}
+
+:host ::ng-deep .events-table .events-date-column {
+	width: 24%;
+}
+
+:host ::ng-deep .events-table .events-status-column {
+	width: 16%;
+}
+
+:host ::ng-deep .events-table .events-leaders-column {
+	width: 28%;
+	white-space: normal;
+}
+
+ion-select::part(text) {
+  font-weight: normal;
 }

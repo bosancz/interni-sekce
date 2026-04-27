@@ -1,40 +1,23 @@
-<ion-header>
-	<ion-toolbar>
-		@if (!showSearch()) {
-			<a routerLink="/" slot="start"><img src="assets/img/logo.svg" alt="Logo" height="56" /></a>
-			<h1 slot="start">
-				Bošán
-				@if (environment()) {
-					<span class="environment">{{ environment() }}</span>
-				}
-			</h1>
+@if (!showSearch()) {
+	<a routerLink="/" slot="start"><img src="assets/img/logo.svg" alt="Logo" height="56" /></a>
+	<h1 slot="start">
+		Bošán
+		@if (environment()) {
+			<span class="environment">{{ environment() }}</span>
 		}
-		<div class="search">
-			@if (isLg() || showSearch()) {
-				<ion-searchbar
-					placeholder="Hledej&hellip;"
-					(ionClear)="showSearch.set(false)"
-					(ionBlur)="showSearch.set(false)"
-					showClearButton="focus"
-					[showCancelButton]="!isLg() ? 'always' : 'never'"
-				/>
-			}
-		</div>
+	</h1>
+}
 
-		<ion-buttons slot="end">
-			@if (!isLg() && !showSearch()) {
-				<ion-button fill="clear" size="large" (click)="showSearch.set(true)">
-					<ion-icon name="search-sharp"></ion-icon>
-				</ion-button>
-			}
+@if (isLg() || showSearch()) {
+	<bo-global-search [showCancelButton]="!isLg()" (close)="showSearch.set(false)" />
+}
 
-			@if (user | async; as user) {
-				<bo-avatar
-					[initials]="user.member! | member: 'initials'"
-					[color]="user.member?.groupId | group: 'color'"
-					(click)="openAccountMenu($event)"
-				/>
-			}
-		</ion-buttons>
-	</ion-toolbar>
-</ion-header>
+<ion-buttons slot="end">
+	@if (!isLg() && !showSearch()) {
+		<ion-button fill="clear" size="large" (click)="showSearch.set(true)">
+			<ion-icon name="search-sharp"></ion-icon>
+		</ion-button>
+	}
+
+	<bo-account-menu />
+</ion-buttons>

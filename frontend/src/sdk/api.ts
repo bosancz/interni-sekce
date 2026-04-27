@@ -4717,6 +4717,30 @@ export namespace SDK {
          */
         deleted?: boolean
     }
+
+    /**
+     * Query parameters for listEvents operation in EventsApi with multi-value filters.
+     * @export
+     * @interface SDKEventsApiListEventsQueryMultipleParams
+     */
+    export interface SDKEventsApiListEventsQueryMultipleParams
+        extends Omit<EventsApiListEventsQueryParams, "year" | "status"> {
+        //year
+        /**
+         *
+         * @type {Array<number>}
+         * @memberof SDKEventsApiListEventsQueryMultipleParams
+         */
+        year?: Array<number>
+
+        //status
+        /**
+         *
+         * @type {Array<string>}
+         * @memberof SDKEventsApiListEventsQueryMultipleParams
+         */
+        status?: Array<string>
+    }
     
     
     
@@ -5444,6 +5468,42 @@ export namespace SDK {
             
             return this.axios.request<Array<number>>(axiosRequestConfig);
         }
+
+        /**
+         *
+     
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async getEventsStatuses(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/events/statuses`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<string>>(axiosRequestConfig);
+        }
     
         /**
          * 
@@ -5581,7 +5641,7 @@ export namespace SDK {
          */
         
         public async listEvents(
-            queryParams: EventsApiListEventsQueryParams = {},
+            queryParams: EventsApiListEventsQueryParams | SDKEventsApiListEventsQueryMultipleParams = {},
             options: AxiosRequestConfig = {}
         ) {
     
@@ -6252,6 +6312,15 @@ export namespace SDK {
          * @memberof MembersApiExportMembersXlsx
          */
         membership?: ExportMembersXlsxMembershipEnum
+
+        //ages
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        age?: Array<number>
+        
     }
     
     
@@ -6363,6 +6432,30 @@ export namespace SDK {
          * @memberof MembersApiListMembers
          */
         membership?: ListMembersMembershipEnum
+    }
+
+    /**
+     * Query parameters for listMembers operation in MembersApi with multi-value filters.
+     * @export
+     * @interface MembersApiListMembersQueryMultipleParams
+     */
+    export interface MembersApiListMembersQueryMultipleParams
+        extends Omit<MembersApiListMembersQueryParams, "membership"> {
+        //membership
+        /**
+         *
+         * @type {Array<'clen' | 'neclen' | 'pozastaveno'>}
+         * @memberof MembersApiListMembersQueryMultipleParams
+         */
+        membership?: Array<ListMembersMembershipEnum>
+
+        //age
+        /**
+         *
+         * @type {Array<number>}
+         * @memberof MembersApiListMembersQueryMultipleParams
+         */
+        age?: Array<number>
     }
     
     
@@ -6758,6 +6851,10 @@ export namespace SDK {
             if (queryParams.membership !== undefined) {
                 requestQueryParameter['membership'] = queryParams.membership;
             }
+
+            if (queryParams.age) {
+                requestQueryParameter['age'] = queryParams.age;
+            }
     
     
     
@@ -6988,14 +7085,14 @@ export namespace SDK {
         /**
          * 
     
-         * @param {MembersApiListMembersQueryParams} queryParams Query parameters.
+         * @param {MembersApiListMembersQueryParams | MembersApiListMembersQueryMultipleParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async listMembers(
-            queryParams: MembersApiListMembersQueryParams = {},
+            queryParams: MembersApiListMembersQueryParams | MembersApiListMembersQueryMultipleParams = {},
             options: AxiosRequestConfig = {}
         ) {
     
@@ -7033,6 +7130,10 @@ export namespace SDK {
     
             if (queryParams.membership !== undefined) {
                 requestQueryParameter['membership'] = queryParams.membership;
+            }
+
+            if ('age' in queryParams && queryParams.age !== undefined) {
+                requestQueryParameter['age'] = queryParams.age;
             }
     
     

@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, TemplateRef } from "@angular/core";
+import { EventEmitter, Injectable, TemplateRef, Type } from "@angular/core";
 import { AlertController, ModalController, ModalOptions } from "@ionic/angular/standalone";
 import { ComponentProps, TextFieldTypes } from "@ionic/core";
 import { ModalTemplateComponent } from "../../shared/components/modal-template/modal-template.component";
@@ -30,7 +30,7 @@ interface SelectModalOptions<D> extends BaseModalOptions {
 	value?: D;
 }
 
-export class AbstractModalComponent<D = any> {
+export class InputModalComponent<D = any> {
 	submit = new EventEmitter<D>();
 	close = new EventEmitter<void>();
 
@@ -40,10 +40,7 @@ export class AbstractModalComponent<D = any> {
 	}
 }
 
-type ModalComponentRef = { new (...args: any): AbstractModalComponent };
-
-type ModalComponentData<C extends ModalComponentRef> =
-	InstanceType<C> extends { submit: EventEmitter<infer D> } ? D : never;
+type ModalComponentData<C extends InputModalComponent> = C extends { submit: EventEmitter<infer D> } ? D : never;
 
 @Injectable({
 	providedIn: "root",
@@ -145,10 +142,10 @@ export class ModalService {
 		});
 	}
 
-	async componentModal<C extends ModalComponentRef>(
-		component: C,
+	async componentModal<C extends InputModalComponent>(
+		component: Type<C>,
 		componentProps?: ComponentProps<C>,
-		options: Omit<ModalOptions<C>, "component" | "componentProps"> = {},
+		options: Omit<ModalOptions<Type<C>>, "component" | "componentProps"> = {},
 	) {
 		const classes = ["dialog"];
 

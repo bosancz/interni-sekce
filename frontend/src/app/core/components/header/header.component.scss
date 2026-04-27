@@ -1,25 +1,15 @@
 @use "src/styles/variables";
 
-ion-header {
-	box-shadow: none;
-	ion-toolbar {
-		--background: var(--ion-color-light);
-		--color: var(--ion-color-dark);
-		--ion-toolbar-color: var(--ion-color-dark);
-	}
+:host {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	background-color: var(--ion-color-light, #f4f5f8);
 }
 
 h1 {
 	margin: 0;
-}
-
-.search {
-	max-width: 500px;
-	margin: 0 auto;
-	ion-searchbar {
-		--box-shadow: none;
-		--ion-background-color: var(--darkShade);
-	}
 }
 
 .environment {

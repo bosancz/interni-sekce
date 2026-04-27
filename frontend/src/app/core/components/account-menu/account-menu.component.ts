@@ -1,39 +1,33 @@
+import { AsyncPipe } from "@angular/common";
 import { Component } from "@angular/core";
-import { RouterLink } from "@angular/router";
-import { IonIcon, IonItem, IonLabel, IonList, NavController, PopoverController } from "@ionic/angular/standalone";
-import { addIcons } from "ionicons";
-import { logOut, person, settings } from "ionicons/icons";
-import { LoginService } from "src/app/core/services/login.service";
+import { PopoverController } from "@ionic/angular/standalone";
+import { AccountMenuModalComponent } from "src/app/core/components/account-menu-modal/account-menu-modal.component";
 import { UserService } from "src/app/core/services/user.service";
+import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
+import { GroupPipe } from "src/app/shared/pipes/group.pipe";
+import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 
 @Component({
 	selector: "bo-account-menu",
 	templateUrl: "./account-menu.component.html",
 	styleUrl: "./account-menu.component.scss",
-	imports: [IonList, IonItem, IonIcon, IonLabel, RouterLink],
+	imports: [AvatarComponent, MemberPipe, GroupPipe, AsyncPipe],
 })
 export class AccountMenuComponent {
 	user = this.userService.user;
 
 	constructor(
 		private readonly userService: UserService,
-		private readonly loginService: LoginService,
 		private readonly popoverController: PopoverController,
-		private readonly navController: NavController,
-	) {
-		addIcons({ person, settings, logOut });
-	}
+	) {}
 
-	async navigate(path: string) {
-		await this.navController.navigateRoot([path]);
-		this.close();
-	}
+	async openAccountMenu(e: Event) {
+		const popover = await this.popoverController.create({
+			translucent: true,
+			component: AccountMenuModalComponent,
+			event: e,
+		});
 
-	async logout() {
-		await this.loginService.logout();
-	}
-
-	async close() {
-		return this.popoverController.dismiss();
+		await popover.present();
 	}
 }

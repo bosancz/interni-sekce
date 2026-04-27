@@ -95,8 +95,8 @@ export class ProgramPlanningComponent implements OnInit, OnDestroy, ViewWillEnte
 	async createEvent([dateFrom, dateTill]: [DateTime, DateTime]) {
 		const eventData = await this.modalService.componentModal(EventCreateModalComponent, {
 			data: {
-				dateFrom: dateFrom.toISODate(),
-				dateTill: dateTill.toISODate(),
+				dateFrom: dateFrom.toISODate() ?? undefined,
+				dateTill: dateTill.toISODate() ?? undefined,
 			},
 		});
 

@@ -32,6 +32,7 @@ export type FilterData = any;
 export class FilterComponent implements AfterContentInit, AfterViewInit {
 	search = input<boolean>(false);
 	paramsSeparator = input<string>(",");
+	showButtonMobileOnly = input<boolean>(false);
 	change = output<FilterData>();
 
 	@ViewChild(IonModal) modal?: IonModal;
