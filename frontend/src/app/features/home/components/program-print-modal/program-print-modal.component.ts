@@ -8,7 +8,7 @@ import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/mod
 import {
 	TrimesterDateRange,
 	TrimesterSelectorComponent,
-} from "../../components/trimester-selector/trimester-selector.component";
+} from "../../../program/components/trimester-selector/trimester-selector.component";
 
 @Component({
 	selector: "bo-program-print-modal",
@@ -56,7 +56,7 @@ export class ProgramPrintModalComponent extends InputModalComponent implements O
 		}
 
 		// lazy načítání ProgramExportService, je totiž závislá na obrovské (700k) docx knihovně
-		const ProgramExportService = await import("../../services/program-export.service").then(
+		const ProgramExportService = await import("../../../program/services/program-export.service").then(
 			(f) => f.ProgramExportService,
 		);
 		const programExport = this.injector.get(ProgramExportService);

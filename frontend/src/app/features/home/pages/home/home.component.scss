@@ -3,6 +3,12 @@ bo-avatar {
 	margin-right: 1em;
 }
 
+bo-home-calendar,
+bo-home-dashboard,
+bo-home-my {
+	flex-grow: 1;
+}
+
 .sidebar {
 	ion-label {
 		font-family: SanGrotesk;

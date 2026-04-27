@@ -102,15 +102,11 @@ export class EventsListComponent implements OnInit {
 		this.filter = filter;
 		this.selectedYears = this.normalizeFilterValueToArray((filter as any)["year"]);
 		this.selectedStatuses = this.normalizeFilterValueToArray((filter as any)["status"]);
-		this.selectedLeaderFilters = [
-			...(filter.my ? ["my"] : []),
-			...(filter.noleader ? ["noleader"] : []),
-		];
+		this.selectedLeaderFilters = [...(filter.my ? ["my"] : []), ...(filter.noleader ? ["noleader"] : [])];
 		this.loadEvents(filter);
 	}
 
 	setFilterParam(name: string, value: string | string[] | null) {
-
 		let formattedValue = value;
 
 		// If the value is an array from your multi-select, format it for the URL
@@ -127,11 +123,7 @@ export class EventsListComponent implements OnInit {
 	}
 
 	setLeaderFilter(selectedValues: string[] | string | null) {
-		const values = Array.isArray(selectedValues)
-			? selectedValues
-			: selectedValues
-				? [selectedValues]
-				: [];
+		const values = Array.isArray(selectedValues) ? selectedValues : selectedValues ? [selectedValues] : [];
 
 		const isMySelected = values.includes("my");
 		const isNoLeaderSelected = values.includes("noleader");
@@ -165,7 +157,7 @@ export class EventsListComponent implements OnInit {
 	private async loadYears() {
 		const years = await this.api.EventsApi.getEventsYears().then((res) => res.data);
 		years.sort((a, b) => b - a);
-		
+
 		this.years.set(years);
 	}
 
@@ -194,11 +186,11 @@ export class EventsListComponent implements OnInit {
 			if (this.events && this.events.length < this.page * this.pageSize) return;
 			this.page++;
 		} else {
-			this.page = 1;	
+			this.page = 1;
 			this.events.set([]);
 		}
 
-		const params: SDK.SDKEventsApiListEventsQueryMultipleParams = {
+		const params: SDK.EventsApiListEventsQueryParams = {
 			search: filter.search || undefined,
 			status: this.normalizeFilterValueToArray((filter as any)["status"]),
 			year: this.normalizeFilterValueToArray((filter as any)["year"]).map((year) => parseInt(year, 10)),
@@ -224,7 +216,6 @@ export class EventsListComponent implements OnInit {
 			.filter((item) => !!item);
 	}
 
-
 	private async createEvent() {
 		const data = await this.modalService.componentModal(EventCreateModalComponent);
 
@@ -244,7 +235,7 @@ export class EventsListComponent implements OnInit {
 				icon: "add-outline",
 				pinned: true,
 				text: "Přidat",
-				disabled: !rootLinks?.createEvent.allowed, 
+				disabled: !rootLinks?.createEvent.allowed,
 				hidden: !rootLinks?.createEvent.applicable,
 				handler: () => this.createEvent(),
 			},

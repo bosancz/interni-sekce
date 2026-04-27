@@ -8,6 +8,7 @@ import {
 } from "@angular/router";
 import { provideServiceWorker } from "@angular/service-worker";
 import { createAnimation, IonicRouteStrategy, isPlatform, provideIonicAngular } from "@ionic/angular/standalone";
+import { Config } from "src/config";
 import { appRoutes } from "./app.routing";
 import { MainErrorHandler } from "./core/error-handlers/main.error-handler";
 import { TitleService } from "./core/services/title.service";
@@ -43,5 +44,6 @@ export const appConfig: ApplicationConfig = {
 		{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
 		{ provide: ErrorHandler, useClass: MainErrorHandler },
 		{ provide: LOCALE_ID, useValue: "cs" },
+		Config,
 	],
 };

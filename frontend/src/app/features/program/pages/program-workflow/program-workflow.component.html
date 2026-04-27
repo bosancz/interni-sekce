@@ -1,44 +1,36 @@
-<ion-header>
-	<ion-toolbar>
-		<ion-buttons slot="start">
-			<ion-back-button defaultHref="/"></ion-back-button>
-		</ion-buttons>
-		<ion-title pageTitle>Schvalování akcí</ion-title>
-	</ion-toolbar>
-</ion-header>
+<bo-page-header title="Schvalování akcí" />
+<bo-page-content>
+	<ion-tab-bar slot="top" class="d-xl-none top-tabs">
+		<ion-tab-button (click)="selectedColumn.set('noLeader')" [selected]="selectedColumn() === 'noLeader'">
+			<ion-text class="event-count">
+				{{ noLeaderEvents()?.length || 0 }}
+			</ion-text>
+			<!-- <ion-icon name="calendar"></ion-icon> -->
+			<ion-label>Pan NIKDO</ion-label>
+		</ion-tab-button>
+		<ion-tab-button (click)="selectedColumn.set('draft')" [selected]="selectedColumn() === 'draft'">
+			<!-- <ion-icon name="calendar"></ion-icon> -->
+			<ion-text class="event-count">
+				{{ draftEvents()?.length || 0 }}
+			</ion-text>
+			<ion-label>V přípravě</ion-label>
+		</ion-tab-button>
+		<ion-tab-button (click)="selectedColumn.set('pending')" [selected]="selectedColumn() === 'pending'">
+			<!-- <ion-icon name="calendar"></ion-icon> -->
+			<ion-text class="event-count">
+				{{ pendingEvents()?.length || 0 }}
+			</ion-text>
+			<ion-label>Ke schválení</ion-label>
+		</ion-tab-button>
+		<ion-tab-button (click)="selectedColumn.set('public')" [selected]="selectedColumn() === 'public'">
+			<!-- <ion-icon name="calendar"></ion-icon> -->
+			<ion-text class="event-count">
+				{{ publicEvents()?.length || 0 }}
+			</ion-text>
+			<ion-label>V programu</ion-label>
+		</ion-tab-button>
+	</ion-tab-bar>
 
-<ion-tab-bar slot="top" class="d-xl-none top-tabs">
-	<ion-tab-button (click)="selectedColumn.set('noLeader')" [selected]="selectedColumn() === 'noLeader'">
-		<ion-text class="event-count">
-			{{ noLeaderEvents()?.length || 0 }}
-		</ion-text>
-		<!-- <ion-icon name="calendar"></ion-icon> -->
-		<ion-label>Pan NIKDO</ion-label>
-	</ion-tab-button>
-	<ion-tab-button (click)="selectedColumn.set('draft')" [selected]="selectedColumn() === 'draft'">
-		<!-- <ion-icon name="calendar"></ion-icon> -->
-		<ion-text class="event-count">
-			{{ draftEvents()?.length || 0 }}
-		</ion-text>
-		<ion-label>V přípravě</ion-label>
-	</ion-tab-button>
-	<ion-tab-button (click)="selectedColumn.set('pending')" [selected]="selectedColumn() === 'pending'">
-		<!-- <ion-icon name="calendar"></ion-icon> -->
-		<ion-text class="event-count">
-			{{ pendingEvents()?.length || 0 }}
-		</ion-text>
-		<ion-label>Ke schválení</ion-label>
-	</ion-tab-button>
-	<ion-tab-button (click)="selectedColumn.set('public')" [selected]="selectedColumn() === 'public'">
-		<!-- <ion-icon name="calendar"></ion-icon> -->
-		<ion-text class="event-count">
-			{{ publicEvents()?.length || 0 }}
-		</ion-text>
-		<ion-label>V programu</ion-label>
-	</ion-tab-button>
-</ion-tab-bar>
-
-<ion-content>
 	<ng-template #eventsColumn let-events>
 		@for (event of events; track event.id) {
 			<event-card
@@ -61,9 +53,7 @@
 				<ion-button color="primary">{{ noLeaderEvents()?.length }}</ion-button>
 			</ion-item>
 			<div class="column py-1 mx-xl-1">
-				<ng-container
-					*ngTemplateOutlet="eventsColumn; context: { $implicit: noLeaderEvents() }"
-				></ng-container>
+				<ng-container *ngTemplateOutlet="eventsColumn; context: { $implicit: noLeaderEvents() }"></ng-container>
 			</div>
 		</div>
 
@@ -73,9 +63,7 @@
 				<ion-button color="primary">{{ draftEvents()?.length }}</ion-button>
 			</ion-item>
 			<div class="column py-1 mx-xl-1">
-				<ng-container
-					*ngTemplateOutlet="eventsColumn; context: { $implicit: draftEvents() }"
-				></ng-container>
+				<ng-container *ngTemplateOutlet="eventsColumn; context: { $implicit: draftEvents() }"></ng-container>
 			</div>
 		</div>
 
@@ -87,9 +75,7 @@
 				<ion-button color="primary">{{ pendingEvents()?.length }}</ion-button>
 			</ion-item>
 			<div class="column py-1 mx-xl-1">
-				<ng-container
-					*ngTemplateOutlet="eventsColumn; context: { $implicit: pendingEvents() }"
-				></ng-container>
+				<ng-container *ngTemplateOutlet="eventsColumn; context: { $implicit: pendingEvents() }"></ng-container>
 			</div>
 		</div>
 
@@ -99,10 +85,8 @@
 				<ion-button color="primary">{{ publicEvents()?.length }}</ion-button>
 			</ion-item>
 			<div class="column py-1 mx-xl-1">
-				<ng-container
-					*ngTemplateOutlet="eventsColumn; context: { $implicit: publicEvents() }"
-				></ng-container>
+				<ng-container *ngTemplateOutlet="eventsColumn; context: { $implicit: publicEvents() }"></ng-container>
 			</div>
 		</div>
 	</div>
-</ion-content>
+</bo-page-content>

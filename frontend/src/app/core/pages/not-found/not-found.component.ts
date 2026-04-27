@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Meta } from "@angular/platform-browser";
-import { IonBackButton, IonButtons, IonContent, IonHeader, IonToolbar } from "@ionic/angular/standalone";
 import { TitleService } from "src/app/core/services/title.service";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 
 @Component({
 	selector: "not-found",
 	templateUrl: "./not-found.component.html",
 	styleUrls: ["./not-found.component.scss"],
-	imports: [IonHeader, IonToolbar, IonButtons, IonBackButton, IonContent],
+	imports: [PageContentComponent],
 })
 export class NotFoundComponent implements OnInit, OnDestroy {
 	url?: string;
