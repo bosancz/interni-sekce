@@ -86,7 +86,7 @@
 				}
 
 				@for (member of members(); track member.id) {
-					<ion-item>
+					<ion-item class="clickable"[routerLink]="'' + member.id">
 						<ion-label>
 							<h2>{{ member.nickname || member.firstName || member.lastName }}</h2>
 							<p>
