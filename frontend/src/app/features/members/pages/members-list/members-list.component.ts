@@ -38,6 +38,7 @@ import { SDK } from "src/sdk";
 import { MembershipStates } from "../../../../core/config/membership-states";
 import { DatePipe } from '@angular/common';
 import { KeyValue } from '@angular/common';
+import { first } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -205,9 +206,24 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			groups: this.normalizeFilterValueToArray((filter as any)["groups"]).map((group) => parseInt(group, 10)),
 		};
 
-		const members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
+		var members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
 
-		this.members.set([...this.members()!, ...members]);
+		members = await Promise.all(
+			members.map(async (member) => {
+				try {
+					const contacts = await this.api.MembersApi.listContacts(member.id).then((res) => res.data);
+					
+					return { ...member, contacts: contacts }; 
+				} catch (error) {
+					console.error(`Failed to load contacts for member ${member.id}`, error);
+					return { ...member, contacts: [] }; // Fallback to empty array on failure
+				}
+			})
+		);
+		
+
+		const currentMembers = this.members() || [];
+		this.members.set([...currentMembers, ...members]);
 	}
 
 	private normalizeFilterValueToArray(value: string | string[] | null | undefined): string[] {
@@ -277,6 +293,8 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			birthday: false,
 			addressCity: false,
 			addressStreet: false,
+			firstTelephone: false,
+			firstEmail: false,	
 
 		}
 	}
@@ -292,14 +310,13 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			birthday: "Narozeniny",
 			addressCity: "Město",
 			addressStreet: "Ulice",
+			firstTelephone: "První telefon",
+			firstEmail: "První email",
 		};
 
 		return labels[key] || key;
 	}
 
-	getFirstPhoneNumber(member: SDK.MemberResponseWithLinks): string {
-		return member.contacts?.find((contact) => !!contact.mobile)?.mobile || "";
-	}
 
 	private setActions() {
 		this.actions = [

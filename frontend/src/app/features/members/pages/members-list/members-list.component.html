@@ -230,6 +230,13 @@
 						@if (viewSelections.addressStreet){
 							<th class="align-middle events-name-column" >Ulice</th>					
 						}
+						@if (viewSelections.firstTelephone){
+							<th class="align-middle events-name-column" >Telefon</th>					
+						}
+						@if (viewSelections.firstEmail){	
+							<th class="align-middle events-name-column" >E-mail</th>					
+						}
+
 					</tr>
 				</thead>
 				<tbody>
@@ -276,7 +283,15 @@
 
 								@if (viewSelections.addressStreet) {
 								<td> {{ member.addressStreet}} </td>
-								}							
+								}
+								
+								@if (viewSelections.firstTelephone) {
+								<td> <strong> {{ member.contacts?.[0]?.title || "" }} </strong> {{ member.contacts?.[0]?.mobile || "" }} </td>							
+								}
+
+								@if (viewSelections.firstEmail) {
+								<td> <strong> {{ member.contacts?.[0]?.title || "" }} </strong> {{ member.contacts?.[0]?.email || "" }} </td>
+								}
 
 							</tr>
 						}
