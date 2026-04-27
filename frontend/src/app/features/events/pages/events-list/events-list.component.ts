@@ -191,11 +191,8 @@ export class EventsListComponent implements OnInit {
 
 	private async loadEvents(filter: UrlParams, loadMore: boolean = false) {
 		if (loadMore) {
-			console.log("trying to load more")
-			console.log("current events count", this.events()?.length, "page", this.page, "pageSize", this.pageSize)
 			if (this.events && this.events.length < this.page * this.pageSize) return;
 			this.page++;
-			console.log("Loading page", this.page);
 		} else {
 			this.page = 1;	
 			this.events.set([]);
