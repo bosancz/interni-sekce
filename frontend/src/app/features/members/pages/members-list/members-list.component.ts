@@ -208,18 +208,21 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 		var members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
 
-		members = await Promise.all(
-			members.map(async (member) => {
-				try {
-					const contacts = await this.api.MembersApi.listContacts(member.id).then((res) => res.data);
-					
-					return { ...member, contacts: contacts }; 
-				} catch (error) {
-					console.error(`Failed to load contacts for member ${member.id}`, error);
-					return { ...member, contacts: [] }; // Fallback to empty array on failure
-				}
-			})
-		);
+		if (this.view == "table") {
+			console.log("Loading contacts for members in table view...");
+			members = await Promise.all(
+				members.map(async (member) => {
+					try {
+						const contacts = await this.api.MembersApi.listContacts(member.id).then((res) => res.data);
+						
+						return { ...member, contacts: contacts }; 
+					} catch (error) {
+						console.error(`Failed to load contacts for member ${member.id}`, error);
+						return { ...member, contacts: [] }; // Fallback to empty array on failure
+					}
+				})
+			);
+		}
 		
 
 		const currentMembers = this.members() || [];
