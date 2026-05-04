@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, effect, input, OnDestroy, OnInit } from "@angular/core";
-import { IonBadge, IonButton, IonLabel, IonList } from "@ionic/angular/standalone";
+import { IonBadge, IonButton, IonList } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -9,7 +9,6 @@ import { EventExpenseModalComponent } from "src/app/features/events/components/e
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AddButtonComponent } from "src/app/shared/components/add-button/add-button.component";
 import { DeleteButtonComponent } from "src/app/shared/components/delete-button/delete-button.component";
-import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
 import { ItemComponent } from "src/app/shared/components/item/item.component";
 import { EventExpensePipe } from "src/app/shared/pipes/event-expense.pipe";
 import { SDK } from "src/sdk";
@@ -24,11 +23,9 @@ import { EventExpensesChartComponent } from "../event-expenses-chart/event-expen
 	imports: [
 		CommonModule,
 		IonList,
-		IonLabel,
 		IonBadge,
 		IonButton,
 		ItemComponent,
-		EditButtonComponent,
 		DeleteButtonComponent,
 		AddButtonComponent,
 		EventExpensePipe,

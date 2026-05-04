@@ -6,9 +6,9 @@ import { addIcons } from "ionicons";
 import { calendarSharp, heartSharp, homeSharp } from "ionicons/icons";
 import { map } from "rxjs";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { UserService } from "src/app/core/services/user.service";
-import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { TabComponent } from "src/app/shared/components/tab/tab.component";
 import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
@@ -23,7 +23,6 @@ import { HomeMyComponent } from "../../components/home-my/home-my.component";
 	templateUrl: "./home.component.html",
 	styleUrl: "./home.component.scss",
 	imports: [
-		PageContentComponent,
 		HomeDashboardComponent,
 		HomeCalendarComponent,
 		HomeMyComponent,
@@ -51,6 +50,7 @@ export class HomeComponent {
 		public readonly popoverController: PopoverController,
 		private readonly platformService: PlatformService,
 		private readonly route: ActivatedRoute,
+		private readonly modalService: ModalService,
 	) {
 		route.queryParams.subscribe((params) => this.view.set(params["tab"] || "dashboard"));
 

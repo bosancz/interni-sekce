@@ -1,7 +1,27 @@
-<bo-event-calendar
-	[dateFrom]="dateFrom"
-	[dateTill]="dateTill"
-	[events]="events()"
-	[cpv]="true"
-	[headingLevel]="3"
-></bo-event-calendar>
+<bo-page-header title="Kalendář" [actions]="actions()" />
+
+<bo-page-content>
+	<ion-refresher slot="fixed" (ionRefresh)="loadMorePrevious($event)">
+		<ion-refresher-content></ion-refresher-content>
+	</ion-refresher>
+
+	@if (platformService.isLandscape | async) {
+		<div class="p-3 text-center load-previous-link">
+			<a class="clickable" (click)="loadMorePrevious()">Načíst předchozí měsíc</a>
+		</div>
+	}
+
+	<bo-event-calendar
+		[dateFrom]="dateFrom"
+		[dateTill]="dateTill"
+		[events]="events()"
+		[cpv]="true"
+		[headingLevel]="3"
+		[selection]="addEventEnabled()"
+		(select)="createEvent($event)"
+	></bo-event-calendar>
+
+	<ion-infinite-scroll (ionInfinite)="loadMoreFuture($event)">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
+</bo-page-content>

@@ -1,13 +1,13 @@
-export const environment = {
-	production: true,
+export class Config {
+	production = true;
 
-	apiRoot: "/",
+	apiRoot = "/";
 
-	jwtDomains: ["bosan.cz"],
+	jwtDomains = ["bosan.cz"];
 
-	gapi: {
+	gapi = {
 		client_id: "249555539983-j8rvff7bovgnecsmjffe0a3dj55j33hh.apps.googleusercontent.com",
 		cookiepolicy: "single_host_origin",
 		scope: "profile email",
-	},
-};
+	};
+}

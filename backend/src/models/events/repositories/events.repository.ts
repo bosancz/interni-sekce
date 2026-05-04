@@ -2,18 +2,20 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationOptions } from "src/helpers/pagination";
 import { Group } from "src/models/members/entities/group.entity";
-import { FindOptionsSelect, Repository } from "typeorm";
+import { Brackets, FindOptionsSelect, Repository } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "../entities/event-attendee.entity";
 import { EventExpense } from "../entities/event-expense.entity";
 import { Event } from "../entities/event.entity";
 
 export interface GetEventsOptions extends PaginationOptions {
-	year?: number;
-	status?: string;
+	year?: number[];
+	status?: string[];
 	search?: string;
 	memberId?: number;
 	noleader?: boolean;
 	deleted?: boolean;
+	dateFrom?: string;
+	dateTill?: string;
 }
 
 @Injectable()
@@ -29,18 +31,33 @@ export class EventsRepository {
 			.createQueryBuilder("events")
 			.select(["events.id", "events.name", "events.status", "events.dateFrom", "events.dateTill", "events.type"])
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
-			.orderBy("events.dateFrom", "DESC")
-			.take(options.limit ?? 25)
-			.skip(options.offset ?? 0);
+			.orderBy("events.dateFrom", "DESC");
 
-		if (options.year) {
-			q.andWhere("date_till >= :yearStart AND date_from <= :yearEnd", {
-				yearStart: `${options.year}-01-01`,
-				yearEnd: `${options.year}-12-31`,
-			});
+		if (options.limit) {
+			q.take(options.limit ?? 25);
 		}
 
-		if (options.status) q.andWhere("status = :status", { status: options.status });
+		if (options.offset) {
+			q.skip(options.offset ?? 0);
+		}
+
+		if (options.year?.length) {
+			q.andWhere(
+				new Brackets((qb) => {
+					for (const [index, year] of options.year!.entries()) {
+						qb.orWhere(`events.date_till >= :yearStart${index} AND events.date_from <= :yearEnd${index}`, {
+							[`yearStart${index}`]: `${year}-01-01`,
+							[`yearEnd${index}`]: `${year}-12-31`,
+						});
+					}
+				}),
+			);
+		}
+
+		if (options.dateFrom) q.andWhere("events.dateTill >= :dateFrom", { dateFrom: options.dateFrom });
+		if (options.dateTill) q.andWhere("events.dateFrom <= :dateTill", { dateTill: options.dateTill });
+
+		if (options.status?.length) q.andWhere("events.status IN (:...statuses)", { statuses: options.status });
 
 		if (options.search) q.andWhere("name ILIKE :search", { search: `%${options.search}%` });
 
@@ -93,6 +110,16 @@ export class EventsRepository {
 			.withDeleted();
 
 		return q.getRawMany<{ year: number }>().then((res) => res.map((r) => r.year));
+	}
+
+	async getEventsStatuses() {
+		const q = this.eventsRepository
+			.createQueryBuilder("events")
+			.distinct(true)
+			.select("events.status", "status")
+			.withDeleted();
+
+		return q.getRawMany<{ status: string }>().then((res) => res.map((r) => r.status));
 	}
 
 	async getEventLeaders(id: number) {

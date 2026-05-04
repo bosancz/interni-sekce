@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, input, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import {
 	IonButton,
@@ -11,7 +11,7 @@ import {
 	IonTextarea,
 	ModalController,
 } from "@ionic/angular/standalone";
-import { AbstractModalComponent } from "src/app/core/services/modal.service";
+import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { SDK } from "src/sdk";
 
@@ -33,8 +33,8 @@ import { SDK } from "src/sdk";
 		ModalLayoutComponent,
 	],
 })
-export class EventCreateModalComponent extends AbstractModalComponent<SDK.EventCreateBody> implements OnInit {
-	data = input<Partial<SDK.EventCreateBody>>({});
+export class EventCreateModalComponent extends InputModalComponent<SDK.EventCreateBody> implements OnInit {
+	data: Partial<SDK.EventCreateBody> = {};
 
 	showValidationErrors = false;
 
@@ -51,13 +51,12 @@ export class EventCreateModalComponent extends AbstractModalComponent<SDK.EventC
 	});
 
 	ngOnInit() {
-		const data = this.data();
 		this.form.patchValue({
-			dateFrom: data.dateFrom,
-			dateTill: data.dateTill,
-			name: data.name,
-			description: data.description ?? undefined,
-			type: data.type ?? undefined,
+			dateFrom: this.data.dateFrom,
+			dateTill: this.data.dateTill,
+			name: this.data.name,
+			description: this.data.description ?? undefined,
+			type: this.data.type ?? undefined,
 		});
 	}
 

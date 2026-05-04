@@ -26,7 +26,13 @@
 			class="upload"
 			#dropzone
 			>
-				<ion-button fill="clear" color="primary" (click)="fileInput.click()">Nahrát kartičku</ion-button>
+				<ion-button fill="clear" color="primary" (click)="fileInput.click()">Nahrát ze souboru </ion-button>
+				
+				@if (isCameraCapable) {
+					<ion-button fill="clear" color="primary" (click)="cameraInput.click()">Vyfotit</ion-button>
+				}
+
+
 			</div>
 		}
 
@@ -38,6 +44,16 @@
 			#fileInput
 			(change)="onFileOpen(fileInput)"
 		/>
+		<input 
+			class="file-input"
+			type="file" 
+			accept="image/jpeg,image/png,image/gif,application/pdf"
+			name="insuranceCard"
+			capture="environment" 
+			#cameraInput 
+			(change)="onFileOpen(cameraInput)" 
+		>
+
 
 		@if (insuranceCardUrl() === undefined) {
 			<div class="loading"><ion-skeleton-text></ion-skeleton-text></div>
@@ -47,7 +63,12 @@
 	@if (insuranceCardUrl()) {
 		<bo-card-footer>
 			<ion-buttons>
-				<ion-button [href]="insuranceCardUrl()!" color="primary" target="_blank" download>Stáhnout</ion-button>
+				<ion-button (click)="openCard()" color="primary" aria-label="Zobrazit kartičku pojištěnce"
+					>Zobrazit</ion-button
+				>
+				<ion-button [href]="insuranceCardUrl()!" color="primary" download aria-label="Stáhnout kartičku pojištěnce"
+					>Stáhnout</ion-button
+				>
 
 				@if (member()?._links?.deleteInsuranceCard?.applicable) {
 					<ion-button

@@ -27,12 +27,6 @@
 					},
 					"configurations": {
 						"production": {
-							"fileReplacements": [
-								{
-									"replace": "src/environments/environment.ts",
-									"with": "src/environments/environment.prod.ts"
-								}
-							],
 							"budgets": [
 								{
 									"type": "initial",
@@ -58,13 +52,7 @@
 							"optimization": false,
 							"extractLicenses": false,
 							"sourceMap": true,
-							"namedChunks": true,
-							"fileReplacements": [
-								{
-									"replace": "src/environments/environment.ts",
-									"with": "src/environments/environment.test-server.ts"
-								}
-							]
+							"namedChunks": true
 						}
 					},
 					"defaultConfiguration": "production"
@@ -74,7 +62,8 @@
 					"options": {
 						"host": "127.0.0.1",
 						"port": 4200,
-						"buildTarget": "bosancz:build"
+						"buildTarget": "bosancz:build",
+						"proxyConfig": "proxy.conf.json"
 					},
 					"configurations": {
 						"development": {

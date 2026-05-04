@@ -1,16 +1,14 @@
-<bo-page-content class="col">
-	@switch (view()) {
-		@case ("dashboard") {
-			<bo-home-dashboard></bo-home-dashboard>
-		}
-		@case ("calendar") {
-			<bo-home-calendar></bo-home-calendar>
-		}
-		@case ("my") {
-			<bo-home-my></bo-home-my>
-		}
+@switch (view()) {
+	@case ("dashboard") {
+		<bo-home-dashboard></bo-home-dashboard>
 	}
-</bo-page-content>
+	@case ("calendar") {
+		<bo-home-calendar></bo-home-calendar>
+	}
+	@case ("my") {
+		<bo-home-my></bo-home-my>
+	}
+}
 
 @if (!isLg()) {
 	<bo-page-footer>

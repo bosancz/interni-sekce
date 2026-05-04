@@ -14,3 +14,22 @@ tr.mmber-paused {
 td ion-badge {
 	vertical-align: text-top;
 }
+
+.column-filter {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.column-filter ion-select {
+	min-width: 7rem;
+}
+
+:host ::ng-deep .members-table {
+	table-layout: fixed;
+	width: 100%;
+}
+
+ion-select::part(text) {
+	font-weight: normal;
+}

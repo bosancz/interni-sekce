@@ -25,6 +25,13 @@ export const EventsYearsPermission = new Permission<void>({
 	},
 });
 
+export const EventsStatusesPermission = new Permission<void>({
+	linkTo: EventResponse,
+	allowed: {
+		vedouci: true,
+	},
+});
+
 export const EventReadPermission = new Permission({
 	linkTo: EventResponse,
 	contains: EventResponse,

@@ -33,6 +33,7 @@ import {
 	EventRejectPermission,
 	EventRestorePermission,
 	EventsListPermission,
+	EventsStatusesPermission,
 	EventSubmitPermission,
 	EventsYearsPermission,
 	EventUncancelPermission,
@@ -92,6 +93,15 @@ export class EventsController {
 		EventsYearsPermission.canOrThrow(req);
 
 		return this.events.getEventsYears();
+	}
+
+	@Get("statuses")
+	@AcLinks(EventsStatusesPermission)
+	@ApiResponse({ status: 200, schema: { type: "array", items: { type: "string" } } })
+	async getEventsStatuses(@Req() req: Request): Promise<string[]> {
+		EventsStatusesPermission.canOrThrow(req);
+
+		return this.events.getEventsStatuses();
 	}
 
 	@Get(":id")

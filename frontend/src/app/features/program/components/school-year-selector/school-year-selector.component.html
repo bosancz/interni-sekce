@@ -1,0 +1,13 @@
+<div class="row">
+	<div class="col">
+		<ion-item [lines]="lines()">
+			<ion-label [position]="labelPosition()">Školní rok</ion-label>
+			<ion-input
+				type="number"
+				inputmode="numeric"
+				[(ngModel)]="year"
+				(ngModelChange)="setSchoolYear()"
+			></ion-input>
+		</ion-item>
+	</div>
+</div>

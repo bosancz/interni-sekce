@@ -1,0 +1,68 @@
+<ion-segment [value]="view()" (ionChange)="view.set($any($event).detail.value)">
+	<ion-segment-button value="edit">Editor</ion-segment-button>
+	<ion-segment-button value="preview">Náhled</ion-segment-button>
+	<ion-segment-button value="help">Nápověda</ion-segment-button>
+</ion-segment>
+
+<div class="editor-pane" [hidden]="view() !== 'edit'">
+	<div class="toolbar-wrap" role="toolbar" aria-label="Formátování markdownu">
+		<div class="toolbar">
+			<ion-button
+				color="light"
+				fill="solid"
+				size="small"
+				(click)="onAddBold()"
+				aria-label="Přidat tučné formátování"
+				title="Tučné (Ctrl/Cmd + B)"
+			>
+				<strong>B</strong>
+			</ion-button>
+			<ion-button
+				color="light"
+				fill="solid"
+				size="small"
+				(click)="onAddItalic()"
+				aria-label="Přidat kurzívu"
+				title="Kurzíva (Ctrl/Cmd + I)"
+			>
+				<em>I</em>
+			</ion-button>
+			<div class="toolbar-separator"></div>
+			<ion-button
+				color="light"
+				fill="solid"
+				size="small"
+				(click)="onAddList()"
+				aria-label="Přidat odrážkový seznam"
+				title="Odrážkový seznam"
+			>
+				• Seznam
+			</ion-button>
+		</div>
+	</div>
+
+	<ion-textarea
+		autoGrow
+		[placeholder]="placeholder()"
+		[(ngModel)]="content"
+		(keydown)="onEditorKeydown($event)"
+	></ion-textarea>
+</div>
+
+<div class="preview-pane" [hidden]="view() !== 'preview'">
+	@if (content()) {
+		<div class="preview" [innerHTML]="content() | markdown"></div>
+	} @else {
+		<div class="preview preview-empty">Náhled se zobrazí zde&hellip;</div>
+	}
+</div>
+
+<div class="help-pane" [hidden]="view() !== 'help'">
+	<p>Používej markdown zápis přímo v textu:</p>
+	<ul>
+		<li><strong>Tučné:</strong> <code>**text**</code></li>
+		<li><strong>Kurzíva:</strong> <code>_text_</code></li>
+		<li><strong>Seznam:</strong> každý řádek začni <code>- </code></li>
+	</ul>
+	<p>Klávesové zkratky: <strong>Ctrl/Cmd + B</strong> pro tučné a <strong>Ctrl/Cmd + I</strong> pro kurzívu.</p>
+</div>

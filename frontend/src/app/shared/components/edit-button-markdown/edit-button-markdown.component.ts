@@ -1,6 +1,7 @@
 import { Component, input, output } from "@angular/core";
 import { ModalService } from "src/app/core/services/modal.service";
 import { EditButtonComponent } from "../edit-button/edit-button.component";
+import { MarkdownEditorModalComponent } from "../markdown-editor-modal/markdown-editor-modal.component";
 
 @Component({
 	selector: "bo-edit-button-markdown",
@@ -20,17 +21,13 @@ export class EditButtonMarkdownComponent {
 	constructor(private readonly modalService: ModalService) {}
 
 	async openEdit() {
-		const result = await this.modalService.wideInputModal({
+		console.log("Opening MarkdownEditorModalComponent with value:", this.label());
+		const result = await this.modalService.componentModal(MarkdownEditorModalComponent, {
 			header: this.label(),
-			inputs: {
-				value: {
-					placeholder: this.placeholder(),
-					type: "textarea",
-					value: this.value(),
-				},
-			},
+			value: this.value(),
+			placeholder: this.placeholder(),
 		});
 
-		if (result) this.update.emit(result.value ?? null);
+		if (result !== null) this.update.emit(result);
 	}
 }

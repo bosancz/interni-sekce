@@ -1622,6 +1622,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof EventResponseLinks
          */
+        'getEventsStatuses': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
         'getEvent': AcLink;
         /**
          * 
@@ -3968,20 +3974,6 @@ export namespace SDK {
         /**
      * 
      * @export
-     * @interface SaveEventRegistrationRequest
-     */
-    export interface SaveEventRegistrationRequest {
-        /**
-         * 
-         * @type {File}
-         * @memberof SaveEventRegistrationRequest
-         */
-        'registration'?: File;
-    }
-    
-        /**
-     * 
-     * @export
      * @interface UpdateGroupBody
      */
     export interface UpdateGroupBody {
@@ -4717,6 +4709,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for listEvents operation in EventsApi.
      * @export
@@ -4742,18 +4738,34 @@ export namespace SDK {
         //year
         /**
          * 
-         * @type {number}
+         * @type {Array<number>}
          * @memberof EventsApiListEvents
          */
-        year?: number
+        year?: Array<number>
     
-        //status
+        //dateFrom
         /**
          * 
          * @type {string}
          * @memberof EventsApiListEvents
          */
-        status?: string
+        dateFrom?: string
+    
+        //dateTill
+        /**
+         * 
+         * @type {string}
+         * @memberof EventsApiListEvents
+         */
+        dateTill?: string
+    
+        //status
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof EventsApiListEvents
+         */
+        status?: Array<string>
     
         //search
         /**
@@ -5487,6 +5499,42 @@ export namespace SDK {
          * @memberof EventsApi
          */
         
+        public async getEventsStatuses(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/events/statuses`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<string>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
         public async getEventsYears(
             options: AxiosRequestConfig = {}
         ) {
@@ -5675,11 +5723,19 @@ export namespace SDK {
                 requestQueryParameter['offset'] = queryParams.offset;
             }
     
-            if (queryParams.year !== undefined) {
+            if (queryParams.year) {
                 requestQueryParameter['year'] = queryParams.year;
             }
     
-            if (queryParams.status !== undefined) {
+            if (queryParams.dateFrom !== undefined) {
+                requestQueryParameter['dateFrom'] = queryParams.dateFrom;
+            }
+    
+            if (queryParams.dateTill !== undefined) {
+                requestQueryParameter['dateTill'] = queryParams.dateTill;
+            }
+    
+            if (queryParams.status) {
                 requestQueryParameter['status'] = queryParams.status;
             }
     
@@ -5866,17 +5922,12 @@ export namespace SDK {
         
         public async saveEventRegistration(
             id: number,
-            body: SaveEventRegistrationRequest,
+            registration: File,
             options: AxiosRequestConfig = {}
         ) {
     
             // verify required parameter 'id' is not null or undefined
             assertParamExists('saveEventRegistration', 'id', id)
-            assertParamExists('saveEventRegistration', 'saveEventRegistrationRequest', body)
-            
-            // verify required parameter 'saveEventRegistrationRequest' is not null or undefined
-            assertParamExists('saveEventRegistration', 'id', id)
-            assertParamExists('saveEventRegistration', 'saveEventRegistrationRequest', body)
             
             const localVarPath = `/api/events/{id}/registration`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
@@ -5890,15 +5941,20 @@ export namespace SDK {
             const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
+            const requestFormParams = new ((this.configuration && this.configuration.formDataCtor) || FormData)();
     
     
+            if (registration !== undefined) { 
+                requestFormParams.append('registration', registration as any);
+            }
     
-            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            requestHeaderParameter['Content-Type'] = 'multipart/form-data';
     
             setSearchParams(requestUrlObj, requestQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+            axiosRequestConfig.data = requestFormParams;
     
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
@@ -6266,6 +6322,15 @@ export namespace SDK {
     /**
      * @export
      */
+    export const ExportMembersXlsxRolesEnum = {
+        Dite: 'dite',
+        Instruktor: 'instruktor',
+        Vedouci: 'vedouci'
+    } as const;
+    export type ExportMembersXlsxRolesEnum = typeof ExportMembersXlsxRolesEnum[keyof typeof ExportMembersXlsxRolesEnum];
+    /**
+     * @export
+     */
     export const ExportMembersXlsxMembershipEnum = {
         Clen: 'clen',
         Neclen: 'neclen',
@@ -6312,21 +6377,29 @@ export namespace SDK {
          */
         search?: string
     
-        //roles
+        //rolesisEnumRolesEnum
         /**
          * 
-         * @type {Array<string>}
+         * @type {Array<'dite' | 'instruktor' | 'vedouci'>}
          * @memberof MembersApiExportMembersXlsx
          */
-        roles?: Array<string>
+        roles?: Array<ExportMembersXlsxRolesEnum>
     
         //membershipisEnumMembershipEnum
         /**
          * 
-         * @type {'clen' | 'neclen' | 'pozastaveno'}
+         * @type {Array<'clen' | 'neclen' | 'pozastaveno'>}
          * @memberof MembersApiExportMembersXlsx
          */
-        membership?: ExportMembersXlsxMembershipEnum
+        membership?: Array<ExportMembersXlsxMembershipEnum>
+    
+        //age
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        age?: Array<number>
     }
     
     
@@ -6377,6 +6450,15 @@ export namespace SDK {
     /**
      * @export
      */
+    export const ListMembersRolesEnum = {
+        Dite: 'dite',
+        Instruktor: 'instruktor',
+        Vedouci: 'vedouci'
+    } as const;
+    export type ListMembersRolesEnum = typeof ListMembersRolesEnum[keyof typeof ListMembersRolesEnum];
+    /**
+     * @export
+     */
     export const ListMembersMembershipEnum = {
         Clen: 'clen',
         Neclen: 'neclen',
@@ -6423,21 +6505,29 @@ export namespace SDK {
          */
         search?: string
     
-        //roles
+        //rolesisEnumRolesEnum
         /**
          * 
-         * @type {Array<string>}
+         * @type {Array<'dite' | 'instruktor' | 'vedouci'>}
          * @memberof MembersApiListMembers
          */
-        roles?: Array<string>
+        roles?: Array<ListMembersRolesEnum>
     
         //membershipisEnumMembershipEnum
         /**
          * 
-         * @type {'clen' | 'neclen' | 'pozastaveno'}
+         * @type {Array<'clen' | 'neclen' | 'pozastaveno'>}
          * @memberof MembersApiListMembers
          */
-        membership?: ListMembersMembershipEnum
+        membership?: Array<ListMembersMembershipEnum>
+    
+        //age
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof MembersApiListMembers
+         */
+        age?: Array<number>
     }
     
     
@@ -6830,8 +6920,12 @@ export namespace SDK {
                 requestQueryParameter['roles'] = queryParams.roles;
             }
     
-            if (queryParams.membership !== undefined) {
+            if (queryParams.membership) {
                 requestQueryParameter['membership'] = queryParams.membership;
+            }
+    
+            if (queryParams.age) {
+                requestQueryParameter['age'] = queryParams.age;
             }
     
     
@@ -7106,8 +7200,12 @@ export namespace SDK {
                 requestQueryParameter['roles'] = queryParams.roles;
             }
     
-            if (queryParams.membership !== undefined) {
+            if (queryParams.membership) {
                 requestQueryParameter['membership'] = queryParams.membership;
+            }
+    
+            if (queryParams.age) {
+                requestQueryParameter['age'] = queryParams.age;
             }
     
     

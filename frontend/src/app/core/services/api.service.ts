@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { Observable, ReplaySubject, Subject, fromEvent } from "rxjs";
 import { filter, map, shareReplay, switchMap } from "rxjs/operators";
-import { environment } from "src/environments/environment";
+import { Config } from "src/config";
 import { Logger } from "src/logger";
 import { SDK } from "src/sdk";
 
@@ -37,9 +37,9 @@ export class ApiService extends SDK {
 	);
 	public rootLinks = new ReplaySubject<SDK.RootResponseLinks>();
 
-	constructor() {
+	constructor(config: Config) {
 		super({
-			basePath: environment.apiRoot,
+			basePath: config.apiRoot,
 		});
 	}
 
