@@ -1,0 +1,18 @@
+ion-list {
+	padding: 0;
+}
+
+ion-item {
+	cursor: pointer;
+	--padding-start: 1rem;
+	--padding-end: 1rem;
+	--inner-padding-end: 0;
+	margin-bottom: 0.25rem;
+	border-radius: 0.5rem;
+
+	&.active {
+		--background: var(--ion-color-primary);
+		--color: var(--ion-color-primary-contrast);
+		font-weight: 600;
+	}
+}

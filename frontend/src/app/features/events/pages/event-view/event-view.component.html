@@ -11,61 +11,47 @@
 </bo-page-header>
 
 <bo-page-content [padding]="true">
-	<!-- <ion-segment value="info" class="mb-4 d-none d-lg-grid">
-		<ion-segment-button value="info" (click)="view.set('info')">
-			<ion-label>Info</ion-label>
-		</ion-segment-button>
+	<div class="d-lg-flex gap-4">
+		<!-- Vertical menu for desktop -->
+		<div class="d-none d-lg-block" style="min-width: 200px;">
+			<bo-vertical-menu defaultTab="info" (change)="view.set($any($event))">
+				<bo-vertical-menu-item name="info" label="Info" icon="calendar"></bo-vertical-menu-item>
+				<bo-vertical-menu-item name="attendees" label="Účastníci" icon="people-outline"></bo-vertical-menu-item>
+				<bo-vertical-menu-item name="accounting" label="Účtování" icon="cash-outline"></bo-vertical-menu-item>
+				<bo-vertical-menu-item name="report" label="Report" icon="document-outline"></bo-vertical-menu-item>
+			</bo-vertical-menu>
+		</div>
 
-		<ion-segment-button value="attendees" (click)="view.set('attendees')"
-			><ion-label>Účastníci</ion-label>
-		</ion-segment-button>
+		<!-- Content area -->
+		<div class="flex-grow-1">
+			<bo-event-info
+				[event]="event()"
+				class="mb-5"
+				[class.d-none]="view() !== 'info'"
+				(update)="updateEvent($event)"
+			></bo-event-info>
 
-		<ion-segment-button value="accounting" (click)="view.set('accounting')"
-			><ion-label>Účtování</ion-label>
-		</ion-segment-button>
+			<bo-event-attendees
+				[event]="event()"
+				class="mb-5"
+				[class.d-none]="view() !== 'attendees'"
+				(change)="reloadEvent()"
+			></bo-event-attendees>
 
-		<ion-segment-button value="report" (click)="view.set('report')"
-			><ion-label>Report</ion-label>
-		</ion-segment-button>
-	</ion-segment> -->
+			<bo-event-accounting
+				[event]="event()"
+				class="mb-5"
+				[class.d-none]="view() !== 'accounting'"
+				(change)="reloadEvent()"
+			></bo-event-accounting>
 
-	<div class="mb-4 d-none d-lg-grid">
-		<bo-segment defaultTab="info" (change)="view.set($any($event))">
-			<bo-segment-item name="info" label="Info"></bo-segment-item>
-			<bo-segment-item name="attendees" label="Účastníci"></bo-segment-item>
-			<bo-segment-item name="accounting" label="Účtování"></bo-segment-item>
-			<bo-segment-item name="report" label="Report"></bo-segment-item>
-		</bo-segment>
-	</div>
-
-	<div>
-		<bo-event-info
-			[event]="event()"
-			class="mb-5"
-			[class.d-none]="view() !== 'info'"
-			(update)="updateEvent($event)"
-		></bo-event-info>
-
-		<bo-event-attendees
-			[event]="event()"
-			class="mb-5"
-			[class.d-none]="view() !== 'attendees'"
-			(change)="reloadEvent()"
-		></bo-event-attendees>
-
-		<bo-event-accounting
-			[event]="event()"
-			class="mb-5"
-			[class.d-none]="view() !== 'accounting'"
-			(change)="reloadEvent()"
-		></bo-event-accounting>
-
-		<bo-event-report
-			[event]="event()"
-			class="mb-5"
-			[class.d-none]="view() !== 'report'"
-			(update)="updateEvent($event)"
-		></bo-event-report>
+			<bo-event-report
+				[event]="event()"
+				class="mb-5"
+				[class.d-none]="view() !== 'report'"
+				(update)="updateEvent($event)"
+			></bo-event-report>
+		</div>
 	</div>
 </bo-page-content>
 

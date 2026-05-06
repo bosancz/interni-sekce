@@ -15,6 +15,8 @@ import { SegmentItemComponent } from "src/app/shared/components/segment-item/seg
 import { SegmentComponent } from "src/app/shared/components/segment/segment.component";
 import { TabComponent } from "src/app/shared/components/tab/tab.component";
 import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
+import { VerticalMenuComponent } from "src/app/shared/components/vertical-menu/vertical-menu.component";
+import { VerticalMenuItemComponent } from "src/app/shared/components/vertical-menu-item/vertical-menu-item.component";
 import { ExtractExisting } from "src/helpers/typings";
 import { SDK } from "src/sdk";
 import { EventPipe } from "../../../../shared/pipes/event.pipe";
@@ -47,6 +49,8 @@ export type EventStatusActions = ExtractExisting<
 		EventInfoComponent,
 		SegmentComponent,
 		SegmentItemComponent,
+		VerticalMenuComponent,
+		VerticalMenuItemComponent,
 	],
 })
 export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
