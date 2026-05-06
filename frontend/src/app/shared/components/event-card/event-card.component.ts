@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from "@angular/common";
 import { Component, effect, input, OnInit, output } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { IonButton, IonButtons, IonCard, IonCardContent, IonItem, IonLabel } from "@ionic/angular/standalone";
+import { IonButton, IonButtons, IonItem, IonLabel } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 import { DateRangePipe } from "../../pipes/date-range.pipe";
@@ -9,6 +9,12 @@ import { EventStatusPipe } from "../../pipes/event-status.pipe";
 import { EventPipe } from "../../pipes/event.pipe";
 import { JoinLeadersPipe } from "../../pipes/join-leaders.pipe";
 import { MarkdownPipe } from "../../pipes/markdown.pipe";
+import { CardContentComponent } from "../card-content/card-content.component";
+import { CardFooterComponent } from "../card-footer/card-footer.component";
+import { CardHeaderComponent } from "../card-header/card-header.component";
+import { CardStatusBarComponent } from "../card-status-bar/card-status-bar.component";
+import { CardTitleComponent } from "../card-title/card-title.component";
+import { CardComponent } from "../card/card.component";
 
 @Component({
 	selector: "event-card",
@@ -18,8 +24,6 @@ import { MarkdownPipe } from "../../pipes/markdown.pipe";
 	imports: [
 		NgTemplateOutlet,
 		RouterLink,
-		IonCard,
-		IonCardContent,
 		IonItem,
 		IonLabel,
 		IonButton,
@@ -29,6 +33,12 @@ import { MarkdownPipe } from "../../pipes/markdown.pipe";
 		EventStatusPipe,
 		JoinLeadersPipe,
 		MarkdownPipe,
+		CardComponent,
+		CardContentComponent,
+		CardHeaderComponent,
+		CardStatusBarComponent,
+		CardTitleComponent,
+		CardFooterComponent,
 	],
 })
 export class EventCardComponent implements OnInit {

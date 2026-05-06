@@ -5,6 +5,17 @@
 	// border-bottom: 2px solid var(--lightGrey);
 	display: flex;
 	flex-direction: row;
+	align-items: center;
+}
+
+.title {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
+}
+
+::ng-deep .title > * {
+	flex-grow: 1;
 }

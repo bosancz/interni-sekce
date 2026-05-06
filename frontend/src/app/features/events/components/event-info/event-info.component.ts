@@ -11,6 +11,7 @@ import { EditButtonTextComponent } from "src/app/shared/components/edit-button-t
 import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
 import { GroupsSelectComponent } from "src/app/shared/components/groups-select/groups-select.component";
 import { ItemComponent } from "src/app/shared/components/item/item.component";
+import { LocationMapComponent } from "src/app/shared/components/location-map/location-map.component";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
 import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
@@ -37,6 +38,7 @@ import { EventRegistrationComponent } from "../event-registration/event-registra
 		MarkdownPipe,
 		EventRegistrationComponent,
 		EventCardComponent,
+		LocationMapComponent,
 	],
 })
 export class EventInfoComponent {
