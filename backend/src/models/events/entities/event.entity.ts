@@ -1,3 +1,4 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { Member } from "src/models/members/entities/member.entity";
@@ -21,6 +22,12 @@ export enum EventStates {
 	"pending" = "pending",
 	"public" = "public",
 	"cancelled" = "cancelled",
+}
+
+export class EventPlaceGeometry {
+	type!: "Point";
+	@ApiProperty({ type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 })
+	coordinates!: [number, number];
 }
 
 @Entity("events")
@@ -48,6 +55,8 @@ export class Event {
 	@Column({ type: "enum", nullable: false, enum: EventStates, default: EventStates.draft }) status!: EventStates;
 	@Column({ type: "text", nullable: true }) statusNote!: string | null;
 	@Column({ type: "text", nullable: true }) place!: string | null;
+	@Column({ type: "geometry", spatialFeatureType: "Point", srid: 4326, nullable: true })
+	placeGeometry!: EventPlaceGeometry | null;
 	@Column({ type: "text", nullable: true }) description!: string | null;
 	@Column({ type: "date", nullable: false }) dateFrom!: string;
 	@Column({ type: "date", nullable: false }) dateTill!: string;

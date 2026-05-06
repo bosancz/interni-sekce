@@ -1,0 +1,66 @@
+<bo-modal-layout>
+	<h4 slot="title">Upravit místo</h4>
+
+	<form [formGroup]="form">
+		<div class="location-container">
+			<ion-item>
+				<ion-input
+					label="Místo"
+					labelPlacement="stacked"
+					type="text"
+					formControlName="place"
+					placeholder="Zadejte název místa"
+				></ion-input>
+				<ion-icon
+					slot="end"
+					class="search-icon"
+					[name]="searchEnabled() ? 'search' : 'search-outline'"
+					[color]="searchEnabled() ? 'primary' : 'medium'"
+				></ion-icon>
+				<ion-toggle
+					slot="end"
+					[checked]="searchEnabled()"
+					(ionChange)="onSearchEnabledChange($event.detail.checked)"
+					aria-label="Vyhledávání míst"
+				></ion-toggle>
+			</ion-item>
+			@if (searchResults().length > 0) {
+				<ion-list class="search-results" lines="full">
+					@for (result of searchResults(); track result.label) {
+						<ion-item button (click)="selectSearchResult(result)">
+							<ion-label>
+								<h4>{{ result.name }}</h4>
+								@if (result.label && result.label !== result.name) {
+									<p>{{ result.label }}</p>
+								}
+							</ion-label>
+						</ion-item>
+					}
+					<ion-button
+						class="search-results-close"
+						fill="clear"
+						size="small"
+						aria-label="Zavřít výsledky"
+						(click)="searchResults.set([])"
+					>
+						<ion-icon slot="icon-only" name="close"></ion-icon>
+					</ion-button>
+				</ion-list>
+			}
+			<p class="map-heading">
+				@if (selectedCoords(); as coords) {
+					Vybrané místo: N&nbsp;{{ coords.lat | number: "1.5-5" }} E&nbsp;{{ coords.lng | number: "1.5-5" }}
+					<a href="javascript:void(0)" (click)="clearSelectedLocation()">Smazat polohu</a>
+				} @else {
+					Kliknutím na mapu vyberte místo
+				}
+			</p>
+			<div id="location-map" class="map"></div>
+		</div>
+	</form>
+
+	<ion-buttons slot="buttons">
+		<ion-button (click)="close.emit()" color="secondary">Zrušit</ion-button>
+		<ion-button (click)="saveLocation()" color="primary">Uložit</ion-button>
+	</ion-buttons>
+</bo-modal-layout>

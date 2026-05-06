@@ -16,7 +16,7 @@ services:
       CORS_ORIGINS: "http://localhost:4200,http://localhost:4300"
 
   postgres:
-    image: postgres:15
+    image: postgis/postgis:15-3.5
     environment:
       POSTGRES_PASSWORD: password
 

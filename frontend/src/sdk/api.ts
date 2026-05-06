@@ -713,6 +713,12 @@ export namespace SDK {
         'place': string | null;
         /**
          * 
+         * @type {EventPlaceGeometry}
+         * @memberof Event
+         */
+        'placeGeometry': EventPlaceGeometry | null;
+        /**
+         * 
          * @type {string}
          * @memberof Event
          */
@@ -907,16 +913,16 @@ export namespace SDK {
         'type': EventAttendeeResponseTypeEnum;
         /**
          * 
-         * @type {Event}
-         * @memberof EventAttendeeResponse
-         */
-        'event'?: Event;
-        /**
-         * 
          * @type {MemberResponse}
          * @memberof EventAttendeeResponse
          */
         'member'?: MemberResponse;
+        /**
+         * 
+         * @type {EventResponse}
+         * @memberof EventAttendeeResponse
+         */
+        'event'?: EventResponse;
     }
     
     export const EventAttendeeResponseTypeEnum = {
@@ -973,16 +979,16 @@ export namespace SDK {
         'type': EventAttendeeResponseWithLinksTypeEnum;
         /**
          * 
-         * @type {Event}
-         * @memberof EventAttendeeResponseWithLinks
-         */
-        'event'?: Event;
-        /**
-         * 
          * @type {MemberResponse}
          * @memberof EventAttendeeResponseWithLinks
          */
         'member'?: MemberResponse;
+        /**
+         * 
+         * @type {EventResponse}
+         * @memberof EventAttendeeResponseWithLinks
+         */
+        'event'?: EventResponse;
         /**
          * 
          * @type {EventAttendeeResponseLinks}
@@ -1050,13 +1056,13 @@ export namespace SDK {
          * @type {string}
          * @memberof EventCreateBody
          */
-        'description'?: string | null;
+        'description': string | null;
         /**
          * 
          * @type {string}
          * @memberof EventCreateBody
          */
-        'type'?: string | null;
+        'type': string | null;
     }
     
         /**
@@ -1356,9 +1362,65 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface EventPlaceGeometry
+     */
+    export interface EventPlaceGeometry {
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof EventPlaceGeometry
+         */
+        'coordinates': Array<number>;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventPlaceGeometry
+         */
+        'type': string;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface EventResponse
      */
     export interface EventResponse {
+        /**
+         * 
+         * @type {EventStatesEnum}
+         * @memberof EventResponse
+         */
+        'status': EventStatesEnum;
+        /**
+         * 
+         * @type {Album}
+         * @memberof EventResponse
+         */
+        'album'?: Album;
+        /**
+         * 
+         * @type {Array<GroupResponse>}
+         * @memberof EventResponse
+         */
+        'groups'?: Array<GroupResponse>;
+        /**
+         * 
+         * @type {Array<EventAttendeeResponse>}
+         * @memberof EventResponse
+         */
+        'attendees'?: Array<EventAttendeeResponse>;
+        /**
+         * 
+         * @type {Array<EventExpenseResponse>}
+         * @memberof EventResponse
+         */
+        'expenses'?: Array<EventExpenseResponse>;
+        /**
+         * 
+         * @type {Array<MemberResponse>}
+         * @memberof EventResponse
+         */
+        'leaders'?: Array<MemberResponse>;
         /**
          * 
          * @type {number}
@@ -1371,12 +1433,6 @@ export namespace SDK {
          * @memberof EventResponse
          */
         'name': string;
-        /**
-         * 
-         * @type {EventStatesEnum}
-         * @memberof EventResponse
-         */
-        'status': EventStatesEnum;
         /**
          * 
          * @type {string}
@@ -1412,61 +1468,67 @@ export namespace SDK {
          * @type {string}
          * @memberof EventResponse
          */
-        'type'?: string | null;
+        'type': string | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponse
          */
-        'statusNote'?: string | null;
+        'statusNote': string | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponse
          */
-        'place'?: string | null;
+        'place': string | null;
+        /**
+         * 
+         * @type {EventPlaceGeometry}
+         * @memberof EventResponse
+         */
+        'placeGeometry': EventPlaceGeometry | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponse
          */
-        'description'?: string | null;
+        'description': string | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponse
          */
-        'timeFrom'?: string | null;
+        'timeFrom': string | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponse
          */
-        'timeTill'?: string | null;
+        'timeTill': string | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponse
          */
-        'meetingPlaceStart'?: string | null;
+        'meetingPlaceStart': string | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponse
          */
-        'meetingPlaceEnd'?: string | null;
+        'meetingPlaceEnd': string | null;
         /**
          * 
          * @type {number}
          * @memberof EventResponse
          */
-        'waterKm'?: number | null;
+        'waterKm': number | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponse
          */
-        'river'?: string | null;
+        'river': string | null;
         /**
          * 
          * @type {string}
@@ -1478,37 +1540,7 @@ export namespace SDK {
          * @type {string}
          * @memberof EventResponse
          */
-        'report'?: string | null;
-        /**
-         * 
-         * @type {Album}
-         * @memberof EventResponse
-         */
-        'album'?: Album;
-        /**
-         * 
-         * @type {Array<GroupResponse>}
-         * @memberof EventResponse
-         */
-        'groups'?: Array<GroupResponse>;
-        /**
-         * 
-         * @type {Array<EventAttendeeResponse>}
-         * @memberof EventResponse
-         */
-        'attendees'?: Array<EventAttendeeResponse>;
-        /**
-         * 
-         * @type {Array<EventExpenseResponse>}
-         * @memberof EventResponse
-         */
-        'expenses'?: Array<EventExpenseResponse>;
-        /**
-         * 
-         * @type {Array<MemberResponse>}
-         * @memberof EventResponse
-         */
-        'leaders'?: Array<MemberResponse>;
+        'report': string | null;
     }
     
     
@@ -1667,6 +1699,42 @@ export namespace SDK {
     export interface EventResponseWithLinks {
         /**
          * 
+         * @type {EventStatesEnum}
+         * @memberof EventResponseWithLinks
+         */
+        'status': EventStatesEnum;
+        /**
+         * 
+         * @type {Album}
+         * @memberof EventResponseWithLinks
+         */
+        'album'?: Album;
+        /**
+         * 
+         * @type {Array<GroupResponse>}
+         * @memberof EventResponseWithLinks
+         */
+        'groups'?: Array<GroupResponse>;
+        /**
+         * 
+         * @type {Array<EventAttendeeResponse>}
+         * @memberof EventResponseWithLinks
+         */
+        'attendees'?: Array<EventAttendeeResponse>;
+        /**
+         * 
+         * @type {Array<EventExpenseResponse>}
+         * @memberof EventResponseWithLinks
+         */
+        'expenses'?: Array<EventExpenseResponse>;
+        /**
+         * 
+         * @type {Array<MemberResponse>}
+         * @memberof EventResponseWithLinks
+         */
+        'leaders'?: Array<MemberResponse>;
+        /**
+         * 
          * @type {number}
          * @memberof EventResponseWithLinks
          */
@@ -1677,12 +1745,6 @@ export namespace SDK {
          * @memberof EventResponseWithLinks
          */
         'name': string;
-        /**
-         * 
-         * @type {EventStatesEnum}
-         * @memberof EventResponseWithLinks
-         */
-        'status': EventStatesEnum;
         /**
          * 
          * @type {string}
@@ -1718,61 +1780,67 @@ export namespace SDK {
          * @type {string}
          * @memberof EventResponseWithLinks
          */
-        'type'?: string | null;
+        'type': string | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponseWithLinks
          */
-        'statusNote'?: string | null;
+        'statusNote': string | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponseWithLinks
          */
-        'place'?: string | null;
+        'place': string | null;
+        /**
+         * 
+         * @type {EventPlaceGeometry}
+         * @memberof EventResponseWithLinks
+         */
+        'placeGeometry': EventPlaceGeometry | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponseWithLinks
          */
-        'description'?: string | null;
+        'description': string | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponseWithLinks
          */
-        'timeFrom'?: string | null;
+        'timeFrom': string | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponseWithLinks
          */
-        'timeTill'?: string | null;
+        'timeTill': string | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponseWithLinks
          */
-        'meetingPlaceStart'?: string | null;
+        'meetingPlaceStart': string | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponseWithLinks
          */
-        'meetingPlaceEnd'?: string | null;
+        'meetingPlaceEnd': string | null;
         /**
          * 
          * @type {number}
          * @memberof EventResponseWithLinks
          */
-        'waterKm'?: number | null;
+        'waterKm': number | null;
         /**
          * 
          * @type {string}
          * @memberof EventResponseWithLinks
          */
-        'river'?: string | null;
+        'river': string | null;
         /**
          * 
          * @type {string}
@@ -1784,37 +1852,7 @@ export namespace SDK {
          * @type {string}
          * @memberof EventResponseWithLinks
          */
-        'report'?: string | null;
-        /**
-         * 
-         * @type {Album}
-         * @memberof EventResponseWithLinks
-         */
-        'album'?: Album;
-        /**
-         * 
-         * @type {Array<GroupResponse>}
-         * @memberof EventResponseWithLinks
-         */
-        'groups'?: Array<GroupResponse>;
-        /**
-         * 
-         * @type {Array<EventAttendeeResponse>}
-         * @memberof EventResponseWithLinks
-         */
-        'attendees'?: Array<EventAttendeeResponse>;
-        /**
-         * 
-         * @type {Array<EventExpenseResponse>}
-         * @memberof EventResponseWithLinks
-         */
-        'expenses'?: Array<EventExpenseResponse>;
-        /**
-         * 
-         * @type {Array<MemberResponse>}
-         * @memberof EventResponseWithLinks
-         */
-        'leaders'?: Array<MemberResponse>;
+        'report': string | null;
         /**
          * 
          * @type {EventResponseLinks}
@@ -1863,6 +1901,18 @@ export namespace SDK {
     export interface EventUpdateBody {
         /**
          * 
+         * @type {Array<number>}
+         * @memberof EventUpdateBody
+         */
+        'groupsIds'?: Array<number>;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventUpdateBody
+         */
+        'waterKm'?: number | null;
+        /**
+         * 
          * @type {string}
          * @memberof EventUpdateBody
          */
@@ -1899,12 +1949,6 @@ export namespace SDK {
         'hasRegistration'?: boolean;
         /**
          * 
-         * @type {Array<number>}
-         * @memberof EventUpdateBody
-         */
-        'groupsIds'?: Array<number>;
-        /**
-         * 
          * @type {string}
          * @memberof EventUpdateBody
          */
@@ -1927,6 +1971,12 @@ export namespace SDK {
          * @memberof EventUpdateBody
          */
         'place'?: string | null;
+        /**
+         * 
+         * @type {EventUpdateBodyPlaceCoordinates}
+         * @memberof EventUpdateBody
+         */
+        'placeCoordinates'?: EventUpdateBodyPlaceCoordinates;
         /**
          * 
          * @type {string}
@@ -1953,12 +2003,6 @@ export namespace SDK {
         'meetingPlaceEnd'?: string | null;
         /**
          * 
-         * @type {number}
-         * @memberof EventUpdateBody
-         */
-        'waterKm'?: number | null;
-        /**
-         * 
          * @type {string}
          * @memberof EventUpdateBody
          */
@@ -1980,6 +2024,26 @@ export namespace SDK {
     
     export type EventUpdateBodyStatusEnum = typeof EventUpdateBodyStatusEnum[keyof typeof EventUpdateBodyStatusEnum];
     
+    
+        /**
+     * 
+     * @export
+     * @interface EventUpdateBodyPlaceCoordinates
+     */
+    export interface EventUpdateBodyPlaceCoordinates {
+        /**
+         * 
+         * @type {number}
+         * @memberof EventUpdateBodyPlaceCoordinates
+         */
+        'lat': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventUpdateBodyPlaceCoordinates
+         */
+        'lng': number;
+    }
     
         /**
      * 
@@ -3893,6 +3957,12 @@ export namespace SDK {
          * @memberof RootResponseWithLinks
          */
         'googleClientId'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof RootResponseWithLinks
+         */
+        'mapyCzApiKey'?: string;
         /**
          * 
          * @type {RootResponseLinks}

@@ -1,0 +1,54 @@
+.location-container {
+	padding: 1rem 0;
+	width: 700px;
+	max-width: 100%;
+
+	.search-icon {
+		font-size: 1.25rem;
+		margin-inline-end: 0.5rem;
+	}
+
+	.search-results {
+		max-height: 240px;
+		overflow-y: auto;
+		margin: 0.5rem 1rem 0;
+		border: 1px solid var(--ion-color-light-shade);
+		border-radius: 6px;
+		padding: 0;
+		background: var(--ion-background-color);
+		position: relative;
+
+		.search-results-close {
+			position: absolute;
+			top: 0;
+			right: 0;
+			z-index: 2;
+			--padding-start: 6px;
+			--padding-end: 6px;
+		}
+	}
+
+	.map {
+		height: 400px;
+		width: calc(100% - 2rem);
+		margin: 0.25rem 1rem 0;
+		border-radius: 8px;
+		overflow: hidden;
+	}
+
+	.map-heading {
+		margin: 1.5rem 1rem 0;
+		font-size: 0.875rem;
+		color: var(--ion-color-medium);
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 0.75rem;
+
+		a {
+			color: var(--ion-color-primary);
+			text-decoration: underline;
+			cursor: pointer;
+		}
+	}
+}

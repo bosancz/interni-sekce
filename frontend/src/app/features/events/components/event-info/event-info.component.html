@@ -26,14 +26,14 @@
 
 			<bo-item label="Místo">
 				<p>{{ event()?.place ?? "-" }}</p>
-				<p>[[TODO: přidat souřadnice]]</p>
-				<bo-edit-button-text
+
+				<bo-edit-button-location
 					slot="end"
 					label="Místo akce"
-					placeholder="Dno pytle (u Bilba doma)"
 					[disabled]="!event()?._links?.updateEvent?.allowed"
-					[value]="event()?.place"
-					(update)="update.emit({ place: $event })"
+					[place]="event()?.place"
+					[placeCoordinates]="placeCoordinates()"
+					(update)="update.emit({ place: $event.place, placeCoordinates: $event.placeCoordinates })"
 				/>
 			</bo-item>
 
@@ -115,7 +115,5 @@
 	</div>
 	<div class="col-12 col-xl-4 d-none d-lg-block">
 		<event-card [event]="event()" class="mb-5" [actions]="false"></event-card>
-
-		<p>[[TODO: mapa]]</p>
 	</div>
 </div>

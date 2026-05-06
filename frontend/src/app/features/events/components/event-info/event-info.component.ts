@@ -1,10 +1,11 @@
 import { CommonModule } from "@angular/common";
-import { Component, input, output } from "@angular/core";
+import { Component, computed, input, output } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { IonList } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { EventTypeSelectorComponent } from "src/app/features/events/components/event-type-selector/event-type-selector.component";
 import { EditButtonDateRangeComponent } from "src/app/shared/components/edit-button-date-range/edit-button-date-range.component";
+import { EditButtonLocationComponent } from "src/app/shared/components/edit-button-location/edit-button-location.component";
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
 import { EditButtonTextComponent } from "src/app/shared/components/edit-button-text/edit-button-text.component";
 import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
@@ -29,6 +30,7 @@ import { EventRegistrationComponent } from "../event-registration/event-registra
 		EditButtonTextComponent,
 		EditButtonDateRangeComponent,
 		EditButtonMarkdownComponent,
+		EditButtonLocationComponent,
 		GroupsSelectComponent,
 		EventTypeSelectorComponent,
 		DateRangePipe,
@@ -40,4 +42,10 @@ import { EventRegistrationComponent } from "../event-registration/event-registra
 export class EventInfoComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>(undefined);
 	update = output<SDK.EventUpdateBody>();
+
+	placeCoordinates = computed(() => {
+		const geom = this.event()?.placeGeometry;
+		if (!geom) return null;
+		return { lat: geom.coordinates[1], lng: geom.coordinates[0] };
+	});
 }

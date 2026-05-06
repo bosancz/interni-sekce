@@ -4,4 +4,5 @@ export class RootResponse {
 	@ApiProperty() version!: string;
 	@ApiProperty() environmentTitle!: string;
 	@ApiPropertyOptional() googleClientId?: string;
+	@ApiPropertyOptional() mapyCzApiKey?: string;
 }

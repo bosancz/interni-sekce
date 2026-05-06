@@ -6,34 +6,35 @@ import { MemberResponse } from "src/api/members/dto/member.dto";
 import { Album } from "src/models/albums/entities/album.entity";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";
-import { Event, EventStates } from "src/models/events/entities/event.entity";
+import { Event, EventPlaceGeometry, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { EventAttendeeResponse } from "./event-attendee.dto";
 import { EventExpenseResponse } from "./event-expense.dto";
 
 export class EventResponse implements Omit<Event, "setLeaders"> {
-	@ApiProperty() id!: number;
-	@ApiProperty() name!: string;
+	id!: number;
+	name!: string;
 	@ApiProperty({ enum: EventStates, enumName: "EventStatesEnum" }) status!: EventStates;
-	@ApiProperty() dateFrom!: string;
-	@ApiProperty() dateTill!: string;
-	@ApiProperty() leadersEvent!: boolean;
-	@ApiProperty() groupsIds!: number[];
-	@ApiProperty() hasRegistration!: boolean;
+	dateFrom!: string;
+	dateTill!: string;
+	leadersEvent!: boolean;
+	groupsIds!: number[];
+	hasRegistration!: boolean;
 
-	@ApiPropertyOptional({ type: "string" }) type!: string | null;
-	@ApiPropertyOptional({ type: "string" }) statusNote!: string | null;
-	@ApiPropertyOptional({ type: "string" }) place!: string | null;
-	@ApiPropertyOptional({ type: "string" }) description!: string | null;
-	@ApiPropertyOptional({ type: "string" }) timeFrom!: string | null;
-	@ApiPropertyOptional({ type: "string" }) timeTill!: string | null;
-	@ApiPropertyOptional({ type: "string" }) meetingPlaceStart!: string | null;
-	@ApiPropertyOptional({ type: "string" }) meetingPlaceEnd!: string | null;
-	@ApiPropertyOptional({ type: "number" }) waterKm!: number | null;
-	@ApiPropertyOptional({ type: "string" }) river!: string | null;
-	@ApiPropertyOptional({ type: "string" }) deletedAt?: Date | null;
-	@ApiPropertyOptional({ type: "string" }) report!: string | null;
+	type!: string | null;
+	statusNote!: string | null;
+	place!: string | null;
+	placeGeometry!: EventPlaceGeometry | null;
+	description!: string | null;
+	timeFrom!: string | null;
+	timeTill!: string | null;
+	meetingPlaceStart!: string | null;
+	meetingPlaceEnd!: string | null;
+	waterKm!: number | null;
+	river!: string | null;
+	deletedAt?: Date | null;
+	report!: string | null;
 
 	@ApiPropertyOptional({ type: AlbumResponse }) album?: Album | undefined;
 	@ApiPropertyOptional({ type: GroupResponse, isArray: true }) groups?: Group[] | undefined;
@@ -43,39 +44,40 @@ export class EventResponse implements Omit<Event, "setLeaders"> {
 }
 
 export class EventCreateBody implements Pick<Event, "name" | "description" | "dateFrom" | "dateTill"> {
-	@ApiProperty() @IsString() name!: string;
-	@ApiProperty() @IsString() dateFrom!: string;
-	@ApiProperty() @IsString() dateTill!: string;
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() description!: string | null;
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() type!: string | null;
+	@IsString() name!: string;
+	@IsString() dateFrom!: string;
+	@IsString() dateTill!: string;
+	@IsOptional() @IsString() description!: string | null;
+	@IsOptional() @IsString() type!: string | null;
 }
 
 export class EventUpdateBody {
-	@ApiPropertyOptional() @IsOptional() @IsString() name?: string;
-	@ApiPropertyOptional() @IsOptional() @IsEnum(EventStates) status?: EventStates;
-	@ApiPropertyOptional() @IsOptional() @IsString() dateFrom?: string;
-	@ApiPropertyOptional() @IsOptional() @IsString() dateTill?: string;
-	@ApiPropertyOptional() @IsOptional() @IsBoolean() leadersEvent?: boolean;
-	@ApiPropertyOptional() @IsOptional() @IsBoolean() hasRegistration?: boolean;
+	@IsOptional() @IsString() name?: string;
+	@IsOptional() @IsEnum(EventStates) status?: EventStates;
+	@IsOptional() @IsString() dateFrom?: string;
+	@IsOptional() @IsString() dateTill?: string;
+	@IsOptional() @IsBoolean() leadersEvent?: boolean;
+	@IsOptional() @IsBoolean() hasRegistration?: boolean;
 
 	@ApiPropertyOptional({ type: "number", isArray: true })
 	@IsOptional()
 	@IsNumber({}, { each: true })
 	groupsIds?: number[];
 
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() type?: string | null;
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() description?: string | null;
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() statusNote?: string | null;
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() place?: string | null;
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() timeFrom?: string | null;
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() timeTill?: string | null;
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() meetingPlaceStart?: string | null;
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() meetingPlaceEnd?: string | null;
+	@IsOptional() @IsString() type?: string | null;
+	@IsOptional() @IsString() description?: string | null;
+	@IsOptional() @IsString() statusNote?: string | null;
+	@IsOptional() @IsString() place?: string | null;
+	@IsOptional() placeCoordinates?: { lat: number; lng: number } | null;
+	@IsOptional() @IsString() timeFrom?: string | null;
+	@IsOptional() @IsString() timeTill?: string | null;
+	@IsOptional() @IsString() meetingPlaceStart?: string | null;
+	@IsOptional() @IsString() meetingPlaceEnd?: string | null;
 	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsString() waterKm?: number | null;
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() river?: string | null;
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() report?: string | null;
+	@IsOptional() @IsString() river?: string | null;
+	@IsOptional() @IsString() report?: string | null;
 }
 
 export class EventStatusChangeBody {
-	@ApiPropertyOptional() @IsString() @IsOptional() statusNote?: string;
+	@IsString() @IsOptional() statusNote?: string;
 }

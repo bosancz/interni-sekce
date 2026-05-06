@@ -18,7 +18,16 @@
 						"tsConfig": "tsconfig.app.json",
 						"styles": ["src/styles.scss"],
 						"inlineStyleLanguage": "scss",
-						"assets": ["src/assets", "src/manifest.json", "src/config.json"],
+						"assets": [
+							"src/assets",
+							"src/manifest.json",
+							"src/config.json",
+							{
+								"glob": "*.png",
+								"input": "node_modules/leaflet/dist/images",
+								"output": "assets/leaflet"
+							}
+						],
 						"scripts": [],
 						"browser": "src/main.ts",
 						"stylePreprocessorOptions": {
@@ -35,8 +44,8 @@
 								},
 								{
 									"type": "anyComponentStyle",
-									"maximumWarning": "6kb",
-									"maximumError": "10kb"
+									"maximumWarning": "12kb",
+									"maximumError": "20kb"
 								}
 							],
 							"serviceWorker": "ngsw-config.json",

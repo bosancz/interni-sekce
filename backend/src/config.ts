@@ -65,7 +65,7 @@ const db: PostgresConnectionOptions = {
 	schema: process.env["DB_SCHEMA"] ?? "public",
 	entities: [path.join(__dirname, "**/*.entity.{js,ts}")],
 	migrationsRun: production ? true : false,
-	migrations: [path.join(__dirname, "database/migrations/**/*{.ts,.js}")],
+	migrations: [path.join(__dirname, "database/migrations/**/*.ts")],
 	logging: logging.query,
 	namingStrategy: new SnakeNamingStrategy(),
 };
@@ -92,6 +92,10 @@ const google = {
 	clientSecret: process.env["GOOGLE_CLIENT_SECRET"],
 };
 
+const mapy = {
+	apiKey: process.env["MAPY_CZ_API_KEY"] ?? "",
+};
+
 @Injectable()
 export class Config {
 	app = app;
@@ -104,6 +108,7 @@ export class Config {
 	production = production;
 	server = server;
 	fs = fs;
+	mapy = mapy;
 }
 
 @Global()

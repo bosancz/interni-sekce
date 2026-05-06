@@ -20,7 +20,7 @@ import { AcController, AcLinks, WithLinks } from "src/access-control/access-cont
 import { Token } from "src/auth/decorators/token.decorator";
 import { TokenData } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
-import { EventStates } from "src/models/events/entities/event.entity";
+import { EventPlaceGeometry, EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository, GetEventsOptions } from "src/models/events/repositories/events.repository";
 import {
 	EventCancelPermission,
@@ -126,7 +126,18 @@ export class EventsController {
 
 		EventEditPermission.canOrThrow(req, event);
 
-		await this.events.updateEvent(id, body);
+		const { placeCoordinates, ...eventData } = body;
+
+		const placeGeometry: EventPlaceGeometry | null = placeCoordinates
+			? { type: "Point", coordinates: [placeCoordinates.lng, placeCoordinates.lat] }
+			: null;
+
+		const updateData = {
+			...eventData,
+			placeGeometry,
+		};
+
+		await this.events.updateEvent(id, updateData);
 	}
 
 	@Delete(":id")
