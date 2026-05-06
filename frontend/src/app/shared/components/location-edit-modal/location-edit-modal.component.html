@@ -49,8 +49,15 @@
 			}
 			<p class="map-heading">
 				@if (selectedCoords(); as coords) {
-					Vybrané místo: N&nbsp;{{ coords.lat | number: "1.5-5" }} E&nbsp;{{ coords.lng | number: "1.5-5" }}
-					<a href="javascript:void(0)" (click)="clearSelectedLocation()">Smazat polohu</a>
+					<span>
+						<span class="d-none d-sm-inline">Vybrané místo:</span> N&nbsp;{{
+							coords.lat | number: "1.5-5"
+						}}
+						E&nbsp;{{ coords.lng | number: "1.5-5" }}
+					</span>
+					<a href="javascript:void(0)" (click)="clearSelectedLocation()"
+						>Smazat<span class="d-none d-sm-inline">&nbsp;polohu</span></a
+					>
 				} @else {
 					Kliknutím na mapu vyberte místo
 				}
