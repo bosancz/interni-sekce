@@ -114,6 +114,9 @@
 </bo-card> -->
 	</div>
 	<div class="col-12 col-xl-4 d-none d-lg-block">
-		<event-card [event]="event()" class="mb-5" [actions]="false"></event-card>
+		<event-card [event]="event()" class="mb-3" [actions]="false"></event-card>
+		@if (placeCoordinates(); as coords) {
+			<bo-location-map [coordinates]="coords" class="event-map mb-5"></bo-location-map>
+		}
 	</div>
 </div>
