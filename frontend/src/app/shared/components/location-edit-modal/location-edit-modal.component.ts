@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { AfterViewInit, Component, inject, input, OnDestroy, OnInit } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, signal } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import {
 	IonButton,
@@ -9,17 +9,35 @@ import {
 	IonItem,
 	IonLabel,
 	IonList,
+	IonToggle,
 	ModalController,
 } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { close, search, searchOutline } from "ionicons/icons";
 import * as L from "leaflet";
+import { debounceTime, Subscription } from "rxjs";
 import { ApiService } from "src/app/core/services/api.service";
-import { AbstractModalComponent } from "src/app/core/services/modal.service";
+import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 
 export interface LocationData {
 	place: string | undefined;
 	placeCoordinates: { lat: number; lng: number } | undefined;
 }
+
+// Leaflet's default marker icon URLs are resolved relative to its CSS file at runtime,
+// which breaks under bundlers (it auto-detects an `imagePath` and prepends it).
+// Override _getIconUrl on the default icon so it returns our copied assets directly.
+const leafletIconUrls: Record<string, string> = {
+	icon: "/assets/leaflet/marker-icon.png",
+	iconRetina: "/assets/leaflet/marker-icon-2x.png",
+	shadow: "/assets/leaflet/marker-shadow.png",
+};
+(L.Icon.Default.prototype as any)._getIconUrl = function (name: string) {
+	return leafletIconUrls[name] ?? "";
+};
+
+addIcons({ search, "search-outline": searchOutline, close });
 
 @Component({
 	selector: "bo-location-edit-modal",
@@ -28,56 +46,88 @@ export interface LocationData {
 	imports: [
 		CommonModule,
 		ReactiveFormsModule,
-		IonList,
 		IonItem,
 		IonInput,
 		IonButtons,
 		IonButton,
-		IonLabel,
 		IonIcon,
+		IonList,
+		IonLabel,
+		IonToggle,
 		ModalLayoutComponent,
 	],
 })
 export class LocationEditModalComponent
-	extends AbstractModalComponent<LocationData>
+	extends InputModalComponent<LocationData>
 	implements OnInit, AfterViewInit, OnDestroy
 {
-	data = input<LocationData>({ place: undefined, placeCoordinates: undefined });
+	data: LocationData = { place: undefined, placeCoordinates: undefined };
 
 	private api = inject(ApiService);
+	private hostEl = inject(ElementRef<HTMLElement>);
 	private map?: L.Map;
 	private marker?: L.Marker;
 	private mapyCzApiKey = "";
+	private apiKeyReady!: Promise<void>;
+	private resizeObserver?: ResizeObserver;
+	private placeChangesSub?: Subscription;
+	private suppressNextSearch = false;
 
 	form = new FormGroup({
 		place: new FormControl<string | null>(null),
 	});
+
+	searchResults = signal<{ name: string; label: string; lat: number; lng: number }[]>([]);
+	selectedCoords = signal<{ lat: number; lng: number } | undefined>(undefined);
+	searchEnabled = signal(true);
 
 	constructor(modalController: ModalController) {
 		super(modalController);
 	}
 
 	async ngOnInit() {
-		const locationData = this.data();
 		this.form.patchValue({
-			place: locationData.place,
+			place: this.data.place,
+		});
+
+		this.placeChangesSub = this.form.controls.place.valueChanges.pipe(debounceTime(300)).subscribe(() => {
+			if (this.suppressNextSearch) {
+				this.suppressNextSearch = false;
+				return;
+			}
+			if (!this.searchEnabled()) return;
+			this.searchLocation();
 		});
 
 		// Load Mapy.cz API key from root endpoint
-		try {
-			const rootInfo = await this.api.RootApi.getApiInfo();
-			this.mapyCzApiKey = rootInfo.data.mapyCzApiKey || "";
-		} catch (error) {
-			console.error("Failed to load Mapy.cz API key:", error);
-		}
+		this.apiKeyReady = this.api.RootApi.getApiInfo()
+			.then((rootInfo) => {
+				this.mapyCzApiKey = rootInfo.data.mapyCzApiKey || "";
+			})
+			.catch((error) => {
+				console.error("Failed to load Mapy.cz API key:", error);
+			});
+
+		await this.apiKeyReady;
 	}
 
 	ngAfterViewInit() {
-		// Always initialize map
-		setTimeout(() => this.initMap(), 100);
+		// Wait for the modal animation to finish AND the API key to load before
+		// initializing the map. Initializing earlier causes Leaflet to compute tile
+		// positions from the still-animating (transformed) container, leaving gaps.
+		const ionModal = this.hostEl.nativeElement.closest("ion-modal");
+		const presented = ionModal
+			? new Promise<void>((resolve) =>
+					ionModal.addEventListener("ionModalDidPresent", () => resolve(), { once: true }),
+				)
+			: Promise.resolve();
+
+		Promise.all([presented, this.apiKeyReady]).then(() => this.initMap());
 	}
 
 	ngOnDestroy() {
+		this.placeChangesSub?.unsubscribe();
+		this.resizeObserver?.disconnect();
 		if (this.map) {
 			this.map.remove();
 		}
@@ -86,12 +136,11 @@ export class LocationEditModalComponent
 	private initMap() {
 		if (this.map) return; // Already initialized
 
-		const locationData = this.data();
-		const defaultCenter: L.LatLngExpression = locationData.placeCoordinates
-			? [locationData.placeCoordinates.lat, locationData.placeCoordinates.lng]
+		const defaultCenter: L.LatLngExpression = this.data.placeCoordinates
+			? [this.data.placeCoordinates.lat, this.data.placeCoordinates.lng]
 			: [49.8175, 15.473]; // Center of Czech Republic
 
-		this.map = L.map("location-map").setView(defaultCenter, locationData.placeCoordinates ? 13 : 7);
+		this.map = L.map("location-map").setView(defaultCenter, this.data.placeCoordinates ? 13 : 7);
 
 		// Use Mapy.cz tourist map as base layer
 		// Reference: https://api.mapy.cz/view?page=tiles
@@ -105,11 +154,17 @@ export class LocationEditModalComponent
 
 		mapyCzTileLayer.addTo(this.map);
 
+		// Recompute size when the container resizes (modal animation, layout shifts)
+		const mapEl = document.getElementById("location-map");
+		if (mapEl) {
+			this.resizeObserver = new ResizeObserver(() => this.map?.invalidateSize());
+			this.resizeObserver.observe(mapEl);
+		}
+
 		// Add marker if coordinates exist
-		if (locationData.placeCoordinates) {
-			this.marker = L.marker([locationData.placeCoordinates.lat, locationData.placeCoordinates.lng]).addTo(
-				this.map,
-			);
+		if (this.data.placeCoordinates) {
+			this.marker = L.marker([this.data.placeCoordinates.lat, this.data.placeCoordinates.lng]).addTo(this.map);
+			this.selectedCoords.set({ ...this.data.placeCoordinates });
 		}
 
 		// Add click handler to map
@@ -122,6 +177,7 @@ export class LocationEditModalComponent
 			} else {
 				this.marker = L.marker([lat, lng]).addTo(this.map!);
 			}
+			this.selectedCoords.set({ lat, lng });
 
 			// Reverse geocode to get place name
 			this.reverseGeocode(lat, lng);
@@ -143,6 +199,7 @@ export class LocationEditModalComponent
 					const placeName = data.items[0].name || data.items[0].label;
 					// Only update place field if it's empty
 					if (!this.form.value.place) {
+						this.suppressNextSearch = true;
 						this.form.patchValue({ place: placeName });
 					}
 				}
@@ -152,39 +209,69 @@ export class LocationEditModalComponent
 		}
 	}
 
+	onSearchEnabledChange(enabled: boolean) {
+		this.searchEnabled.set(enabled);
+		if (enabled) {
+			if (this.form.value.place) {
+				this.searchLocation();
+			}
+		} else {
+			this.searchResults.set([]);
+		}
+	}
+
 	async searchLocation() {
 		const query = this.form.value.place;
-		if (!query) return;
+		if (!query) {
+			this.searchResults.set([]);
+			return;
+		}
 
 		try {
 			// Use Mapy.cz Suggest API for location search
 			// Reference: https://api.mapy.cz/view?page=suggest
 			const response = await fetch(
-				`https://api.mapy.cz/v1/suggest?lang=cs&limit=1&type=regional&query=${encodeURIComponent(query)}&apikey=${this.mapyCzApiKey}`,
+				`https://api.mapy.cz/v1/suggest?lang=cs&limit=5&type=regional&query=${encodeURIComponent(query)}&apikey=${this.mapyCzApiKey}`,
 			);
 
 			if (response.ok) {
 				const data = await response.json();
-				if (data.items && data.items.length > 0) {
-					const result = data.items[0];
-					const lat = result.position.lat;
-					const lng = result.position.lon;
-
-					// Update map view and marker
-					if (this.map) {
-						this.map.setView([lat, lng], 13);
-
-						if (this.marker) {
-							this.marker.setLatLng([lat, lng]);
-						} else {
-							this.marker = L.marker([lat, lng]).addTo(this.map);
-						}
-					}
-				}
+				const items = (data.items ?? []).map((item: any) => ({
+					name: item.name ?? item.label,
+					label: item.label ?? item.name,
+					lat: item.position.lat,
+					lng: item.position.lon,
+				}));
+				this.searchResults.set(items);
 			}
 		} catch (error) {
 			console.error("Location search failed:", error);
 		}
+	}
+
+	selectSearchResult(result: { name: string; lat: number; lng: number }) {
+		this.suppressNextSearch = true;
+		this.form.patchValue({ place: result.name });
+		this.searchResults.set([]);
+
+		if (this.map) {
+			this.map.setView([result.lat, result.lng], 13);
+
+			if (this.marker) {
+				this.marker.setLatLng([result.lat, result.lng]);
+			} else {
+				this.marker = L.marker([result.lat, result.lng]).addTo(this.map);
+			}
+			this.selectedCoords.set({ lat: result.lat, lng: result.lng });
+		}
+	}
+
+	clearSelectedLocation() {
+		if (this.marker) {
+			this.marker.remove();
+			this.marker = undefined;
+		}
+		this.selectedCoords.set(undefined);
 	}
 
 	saveLocation() {

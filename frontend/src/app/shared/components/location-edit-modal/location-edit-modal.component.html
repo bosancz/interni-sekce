@@ -10,14 +10,52 @@
 					type="text"
 					formControlName="place"
 					placeholder="Zadejte název místa"
-					(ionBlur)="searchLocation()"
 				></ion-input>
-				<ion-button slot="end" (click)="searchLocation()" fill="clear">
-					<ion-icon name="search"></ion-icon>
-				</ion-button>
+				<ion-icon
+					slot="end"
+					class="search-icon"
+					[name]="searchEnabled() ? 'search' : 'search-outline'"
+					[color]="searchEnabled() ? 'primary' : 'medium'"
+				></ion-icon>
+				<ion-toggle
+					slot="end"
+					[checked]="searchEnabled()"
+					(ionChange)="onSearchEnabledChange($event.detail.checked)"
+					aria-label="Vyhledávání míst"
+				></ion-toggle>
 			</ion-item>
+			@if (searchResults().length > 0) {
+				<ion-list class="search-results" lines="full">
+					@for (result of searchResults(); track result.label) {
+						<ion-item button (click)="selectSearchResult(result)">
+							<ion-label>
+								<h4>{{ result.name }}</h4>
+								@if (result.label && result.label !== result.name) {
+									<p>{{ result.label }}</p>
+								}
+							</ion-label>
+						</ion-item>
+					}
+					<ion-button
+						class="search-results-close"
+						fill="clear"
+						size="small"
+						aria-label="Zavřít výsledky"
+						(click)="searchResults.set([])"
+					>
+						<ion-icon slot="icon-only" name="close"></ion-icon>
+					</ion-button>
+				</ion-list>
+			}
+			<p class="map-heading">
+				@if (selectedCoords(); as coords) {
+					Vybrané místo: N&nbsp;{{ coords.lat | number: "1.5-5" }} E&nbsp;{{ coords.lng | number: "1.5-5" }}
+					<a href="javascript:void(0)" (click)="clearSelectedLocation()">Smazat polohu</a>
+				} @else {
+					Kliknutím na mapu vyberte místo
+				}
+			</p>
 			<div id="location-map" class="map"></div>
-			<p class="map-hint">Kliknutím na mapu vyberte místo</p>
 		</div>
 	</form>
 

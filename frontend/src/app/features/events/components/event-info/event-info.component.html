@@ -26,12 +26,7 @@
 
 			<bo-item label="Místo">
 				<p>{{ event()?.place ?? "-" }}</p>
-				@if (placeCoordinates()) {
-					<p class="coordinates">
-						{{ placeCoordinates()!.lat | number: "1.0-6" }},
-						{{ placeCoordinates()!.lng | number: "1.0-6" }}
-					</p>
-				}
+
 				<bo-edit-button-location
 					slot="end"
 					label="Místo akce"
