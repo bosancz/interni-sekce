@@ -1,0 +1,6 @@
+<ion-item [button]="true" [class.active]="isActive" (click)="onClick()">
+	@if (icon()) {
+		<ion-icon [name]="icon()!" class="me-3"></ion-icon>
+	}
+	<ion-label>{{ label() }}</ion-label>
+</ion-item>
