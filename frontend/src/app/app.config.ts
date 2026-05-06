@@ -39,6 +39,10 @@ export const appConfig: ApplicationConfig = {
 		),
 		provideServiceWorker("ngsw-worker.js", {
 			enabled: !isDevMode(), // Disable in development, enable in production
+			// Don't wait for ApplicationRef.isStable — Ionic + observers can keep the
+			// zone busy long enough that the default `registerWhenStable:30000` makes
+			// SwUpdate.checkForUpdate() hang until the 30s fallback fires.
+			registrationStrategy: "registerImmediately",
 		}),
 		{ provide: TitleStrategy, useClass: TitleService },
 		{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

@@ -26,21 +26,20 @@ export class VersionComponent {
 	}
 
 	private async checkForUpdates(): Promise<void> {
-		if (this.swUpdate.isEnabled) {
-			this.updateStatus.set("checking");
-			this.logger.debug("Checking for updates...");
+		if (!this.swUpdate.isEnabled) return;
 
-			try {
-				const updateAvailable = await this.swUpdate.checkForUpdate();
-				this.updateStatus.set(updateAvailable ? "available" : "unavailable");
+		this.updateStatus.set("checking");
+		this.logger.debug("Checking for updates...");
 
-				this.logger.log("Update available:", updateAvailable);
-			} catch {
-				this.updateStatus.set("error");
-				this.logger.error("Error while checking for updates");
-			} finally {
-				this.logger.debug("Update check completed");
-			}
+		try {
+			const updateAvailable = await this.swUpdate.checkForUpdate();
+			this.updateStatus.set(updateAvailable ? "available" : "unavailable");
+			this.logger.log("Update available:", updateAvailable);
+		} catch {
+			this.updateStatus.set("error");
+			this.logger.error("Error while checking for updates");
+		} finally {
+			this.logger.debug("Update check completed");
 		}
 	}
 
