@@ -1,7 +1,7 @@
 import { Component, input, output } from "@angular/core";
 import { ModalService } from "src/app/core/services/modal.service";
 import { EditButtonComponent } from "../edit-button/edit-button.component";
-import { LocationEditModalComponent, LocationData } from "../location-edit-modal/location-edit-modal.component";
+import { LocationData, LocationEditModalComponent } from "../location-edit-modal/location-edit-modal.component";
 
 @Component({
 	selector: "bo-edit-button-location",
@@ -21,6 +21,7 @@ export class EditButtonLocationComponent {
 
 	async openEdit() {
 		const result = await this.modalService.componentModal(LocationEditModalComponent, {
+			header: this.label(),
 			data: {
 				place: this.place() || null,
 				placeCoordinates: this.placeCoordinates() || null,

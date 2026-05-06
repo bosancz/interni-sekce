@@ -62,6 +62,7 @@ export class LocationEditModalComponent
 	implements OnInit, AfterViewInit, OnDestroy
 {
 	data: LocationData = { place: undefined, placeCoordinates: undefined };
+	header: string = "Místo";
 
 	private api = inject(ApiService);
 	private hostEl = inject(ElementRef<HTMLElement>);
