@@ -4,20 +4,8 @@ import { ApiService } from "src/app/core/services/api.service";
 
 @Component({
 	selector: "bo-location-map",
-	template: `<div #mapEl class="map"></div>`,
-	styles: [
-		`
-			:host {
-				display: block;
-			}
-			.map {
-				width: 100%;
-				height: 100%;
-				border-radius: 8px;
-				overflow: hidden;
-			}
-		`,
-	],
+	templateUrl: "./location-map.component.html",
+	styleUrls: ["./location-map.component.scss"],
 })
 export class LocationMapComponent implements AfterViewInit, OnDestroy {
 	coordinates = input.required<{ lat: number; lng: number }>();
@@ -60,10 +48,9 @@ export class LocationMapComponent implements AfterViewInit, OnDestroy {
 			keyboard: false,
 		}).setView([c.lat, c.lng], this.zoom());
 
-		L.tileLayer(
-			`https://api.mapy.cz/v1/maptiles/outdoor/256/{z}/{x}/{y}?apikey=${this.mapyCzApiKey}`,
-			{ maxZoom: 19 },
-		).addTo(this.map);
+		L.tileLayer(`https://api.mapy.cz/v1/maptiles/outdoor/256/{z}/{x}/{y}?apikey=${this.mapyCzApiKey}`, {
+			maxZoom: 19,
+		}).addTo(this.map);
 
 		this.marker = L.marker([c.lat, c.lng]).addTo(this.map);
 	}
