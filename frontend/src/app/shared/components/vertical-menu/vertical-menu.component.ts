@@ -1,6 +1,6 @@
 import { Component, input, output, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { IonIcon, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
+import { IonList } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
 export const VERTICAL_MENU_QUERY_PARAM = "tab";
@@ -10,7 +10,7 @@ export const VERTICAL_MENU_QUERY_PARAM = "tab";
 	selector: "bo-vertical-menu",
 	templateUrl: "./vertical-menu.component.html",
 	styleUrls: ["./vertical-menu.component.scss"],
-	imports: [IonList, IonItem, IonLabel, IonIcon],
+	imports: [IonList],
 })
 export class VerticalMenuComponent {
 	defaultTab = input<string>();
@@ -28,11 +28,11 @@ export class VerticalMenuComponent {
 	}
 
 	ngOnInit(): void {
-		if (!this.currentTab()) {
+		if (this.currentTab()) {
+			this.change.emit(this.currentTab()!);
+		} else if (this.defaultTab()) {
 			this.currentTab.set(this.defaultTab());
-			this.change.emit(this.defaultTab());
-		} else {
-			this.change.emit(this.currentTab());
+			this.change.emit(this.defaultTab()!);
 		}
 	}
 

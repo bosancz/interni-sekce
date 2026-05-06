@@ -11,12 +11,10 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
-import { SegmentItemComponent } from "src/app/shared/components/segment-item/segment-item.component";
-import { SegmentComponent } from "src/app/shared/components/segment/segment.component";
 import { TabComponent } from "src/app/shared/components/tab/tab.component";
 import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
-import { VerticalMenuComponent } from "src/app/shared/components/vertical-menu/vertical-menu.component";
 import { VerticalMenuItemComponent } from "src/app/shared/components/vertical-menu-item/vertical-menu-item.component";
+import { VerticalMenuComponent } from "src/app/shared/components/vertical-menu/vertical-menu.component";
 import { ExtractExisting } from "src/helpers/typings";
 import { SDK } from "src/sdk";
 import { EventPipe } from "../../../../shared/pipes/event.pipe";
@@ -47,8 +45,6 @@ export type EventStatusActions = ExtractExisting<
 		PageContentComponent,
 		EventPipe,
 		EventInfoComponent,
-		SegmentComponent,
-		SegmentItemComponent,
 		VerticalMenuComponent,
 		VerticalMenuItemComponent,
 	],
