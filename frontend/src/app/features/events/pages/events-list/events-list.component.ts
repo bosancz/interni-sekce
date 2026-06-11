@@ -72,7 +72,7 @@ export class EventsListComponent implements OnInit {
 	statuses = signal<Record<string, EventStatus>>({});
 
 	page = 1;
-	readonly pageSize = 100;
+	readonly pageSize = 50;
 
 	filter: UrlParams = {};
 
