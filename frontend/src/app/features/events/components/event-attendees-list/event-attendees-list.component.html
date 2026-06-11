@@ -2,7 +2,7 @@
 	@for (attendee of attendees(); track attendee.eventId + "-" + attendee.memberId) {
 		<bo-item
 			[label]="attendee.member | member: 'nickname'"
-			[routerLink]="'/databaze/' + attendee.memberId"
+			[routerLink]="'/databaze/clenove/' + attendee.memberId"
 			[button]="true"
 		>
 			<p class="text-muted">
