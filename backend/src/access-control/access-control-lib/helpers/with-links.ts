@@ -8,14 +8,28 @@ import { resolveEntity } from "./resolve-entity";
 
 export type TypeWithLinks<T extends Type<any>> = Type<InstanceType<T> & { _links: { [key: string]: AcLink } }>;
 
+const withLinksCache = new Map<string, Type<any>>();
+
 export function WithLinks<E extends EntityType>(contains: E | (() => E)): () => TypeWithLinks<E>;
 export function WithLinks<E extends EntityType, T extends Type>(
 	contains: E | (() => E),
 	type: T | (() => T),
 ): () => TypeWithLinks<T>;
+
 export function WithLinks<T extends Type, E extends EntityType>(contains: E | (() => E), overrideType?: T | (() => T)) {
 	// the function must be named 'type' to make NestJS Swagger work properly
 	function type() {
+		const entity = resolveEntity(contains);
+		const responseType = overrideType ? resolveEntity(overrideType) : entity;
+
+		if (!entity)
+			throw new Error(
+				`Entity not found, possible problem might be circular depenency. In this case use () => Enitity instead of Entity in the WithLinks helper.`,
+			);
+
+		const cacheKey = `${responseType.name}WithLinks`;
+		if (withLinksCache.has(cacheKey)) return withLinksCache.get(cacheKey)!;
+
 		class ResponseLinksObject {
 			constructor() {}
 		}
@@ -24,14 +38,6 @@ export function WithLinks<T extends Type, E extends EntityType>(contains: E | ((
 			constructor() {}
 			@ApiProperty({ type: ResponseLinksObject }) _links!: ResponseLinksObject;
 		}
-
-		const entity = resolveEntity(contains);
-		const responseType = overrideType ? resolveEntity(overrideType) : entity;
-
-		if (!entity)
-			throw new Error(
-				`Entity not found, possible problem might be circular depenency. In this case use () => Enitity instead of Entity in the WithLinks helper.`,
-			);
 
 		const linkedRoutes = RouteStore.filter((r) => r.acl.options.linkTo === entity);
 
@@ -49,9 +55,10 @@ export function WithLinks<T extends Type, E extends EntityType>(contains: E | ((
 		const ResponseWithLinks = IntersectionType(responseType, ResponseLinksProperty);
 
 		Object.defineProperty(ResponseWithLinks, "name", {
-			value: `${responseType.name}WithLinks`,
+			value: cacheKey,
 		});
 
+		withLinksCache.set(cacheKey, ResponseWithLinks);
 		return ResponseWithLinks;
 	}
 

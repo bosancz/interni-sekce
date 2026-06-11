@@ -99,7 +99,8 @@ export class CardInsuranceCardComponent implements OnChanges {
 		try {
 			await this.api.MembersApi.uploadInsuranceCard(member.id, file);
 
-			this.setInsuranceCardUrl(member);
+			this.insuranceCardUrl.set(undefined);
+			this.update.emit();
 
 			this.toastService.toast("Karta byla nahrána", { color: "success" });
 		} catch (e) {
@@ -126,7 +127,9 @@ export class CardInsuranceCardComponent implements OnChanges {
 		if (confirmation) {
 			await this.api.MembersApi.deleteInsuranceCard(member.id);
 
-			this.setInsuranceCardUrl(null);
+			this.insuranceCardUrl.set(null);
+			this.insuranceCardSafeUrl.set(null);
+			this.update.emit();
 
 			this.toastService.toast("Karta byla smazána", { color: "success" });
 		}

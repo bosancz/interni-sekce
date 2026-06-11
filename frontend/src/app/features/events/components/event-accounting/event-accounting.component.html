@@ -1,12 +1,12 @@
 <div class="row">
 	<div class="order-2 order-lg-1 col-12 col-xl-8">
 		<ion-list>
-			@for (expense of expenses; track expense.id) {
+			@for (expense of expenses(); track expense.id) {
 			<bo-item (click)="editExpense(expense)">
 
-				<div class="expense-grid">					
+				<div class="expense-grid">
 					<span class="id-cell">{{ expense.receiptNumber }}</span>
-					
+
 					<div class="badge-cell">
 						<ion-badge mode="ios" [style.background-color]="expense | eventExpense: 'color'">
 							{{ expense | eventExpense: "type" }}
@@ -22,7 +22,7 @@
 					</div>
 
 					<p class="desc-cell">{{ expense.description }}</p>
-					
+
 				</div>
 			</bo-item>
 			}
@@ -36,10 +36,10 @@
 		<p class="d-none d-lg-block">[[TODO: graf výdajů podle typu]]</p>
 		<p class="d-none d-lg-block">[[TODO: cena na osobu/den]]</p>
 
-		@if (expenses.length > 0) {
+		@if (expenses().length > 0) {
 			<bo-event-expenses-chart
 				[event]="event()"
-				[expenses]="expenses"
+				[expenses]="expenses()"
 				class="mb-5 d-lg-block"
 			></bo-event-expenses-chart>
 		}

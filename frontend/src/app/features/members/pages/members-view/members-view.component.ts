@@ -109,6 +109,11 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		this.member.set(member);
 	}
 
+	async reloadMember() {
+		const member = this.member();
+		if (member) await this.loadMember(member.id);
+	}
+
 	async updateMember(data: SDK.MemberUpdateBody) {
 		if (!this.member()) return;
 

@@ -28,10 +28,6 @@
 			>
 				<ion-button fill="clear" color="primary" (click)="fileInput.click()">Nahrát ze souboru </ion-button>
 				
-				@if (isCameraCapable) {
-					<ion-button fill="clear" color="primary" (click)="cameraInput.click()">Vyfotit</ion-button>
-				}
-
 
 			</div>
 		}
@@ -44,15 +40,6 @@
 			#fileInput
 			(change)="onFileOpen(fileInput)"
 		/>
-		<input 
-			class="file-input"
-			type="file" 
-			accept="image/jpeg,image/png,image/gif,application/pdf"
-			name="insuranceCard"
-			capture="environment" 
-			#cameraInput 
-			(change)="onFileOpen(cameraInput)" 
-		>
 
 
 		@if (insuranceCardUrl() === undefined) {

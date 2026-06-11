@@ -46,20 +46,28 @@ export class EventsRegistrationsController {
 	@Get(":id/registration")
 	@AcLinks(EventRegistrationReadPermission)
 	async getEventRegistration(@Req() req: Request, @Param("id") id: number, @Res() res: Response): Promise<void> {
-		const event = await this.events.getEvent(id);				
+		const event = await this.events.getEvent(id);
 		if (!event) throw new NotFoundException();
 		EventRegistrationReadPermission.canOrThrow(req, event);
 
-		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
-						
-		const matchingFiles = await this.fileService.getFilesByPrefx(registrationFolder, "prihlaska")
+		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString());
 
-		if (matchingFiles.length !=1){
-			throw new InternalServerErrorException("Failed to get registration -  not one registration saved")
+		let matchingFiles: string[];
+		try {
+			matchingFiles = await this.fileService.getFilesByPrefx(registrationFolder, "prihlaska");
+		} catch {
+			throw new NotFoundException("Registration not found");
 		}
-		const registrationFn = matchingFiles[0]
-		const registrationPath = path.join(registrationFolder, registrationFn)
-		res.sendFile(registrationPath);
+
+		if (matchingFiles.length !== 1) {
+			throw new NotFoundException("Registration not found");
+		}
+
+		const registrationPath = path.join(registrationFolder, matchingFiles[0]);
+
+		await new Promise<void>((resolve, reject) => {
+			res.sendFile(registrationPath, (err) => (err ? reject(new InternalServerErrorException(err.message)) : resolve()));
+		});
 	}
 
 
