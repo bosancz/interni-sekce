@@ -43,14 +43,15 @@
 		<div class="d-none d-lg-block">
 			<p>[[TODO: graf věku účastníků]]</p>
 		</div>
-
-		<p>[[TODO: stáhnout ohlášku jen když jsou účastníci]]</p>
+		
 		@if (event() && event()!._links.getEventAnnouncement.allowed) {
-			<div class="text-center">
-				<ion-button (click)="getAnnouncement(event()!)" expand="block" fill="outline">
-					Stáhnout ohlášku
-				</ion-button>
-			</div>
+			@if ((attendees()!.length + leaders()!.length) !=0){
+				<div class="text-center">
+					<ion-button (click)="getAnnouncement(event()!)" expand="block" fill="outline">
+						Stáhnout ohlášku
+					</ion-button>
+				</div>
+			}
 		}
 	</div>
 </div>

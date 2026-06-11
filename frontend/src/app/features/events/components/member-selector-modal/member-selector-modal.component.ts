@@ -99,8 +99,6 @@ export class MemberSelectorModalComponent
 		searchString = searchString.replace(/[.*+?^${}()|[\]\\]/gi, "\\$&"); // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
 		const re = new RegExp("(^| )" + searchString, "i");
 
-		console.log("Searching members for:", searchString, this.membersIndex, this.filteredMembers);
-
 		this.filteredMembers = this._members.filter((member, i) => re.test(this.membersIndex[i]));
 	}
 
