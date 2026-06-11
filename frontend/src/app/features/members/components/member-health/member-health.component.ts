@@ -1,7 +1,6 @@
 import { Component, input, output } from "@angular/core";
 import {
 	AlertController,
-	IonBadge,
 	IonButton,
 	IonButtons,
 	IonIcon,
@@ -33,7 +32,6 @@ import { CardInsuranceCardComponent } from "../card-insurance-card/card-insuranc
 		IonButton,
 		IonButtons,
 		IonIcon,
-		IonBadge,
 		AddButtonComponent,
 		CardInsuranceCardComponent,
 	],

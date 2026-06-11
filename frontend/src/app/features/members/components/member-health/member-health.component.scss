@@ -6,14 +6,9 @@ ion-list {
 	padding: 0;
 }
 
-ion-item ion-icon[slot="start"] {
+.severity-icon {
 	margin-inline-end: 0.75rem;
-	font-size: 1.4rem;
-}
-
-ion-badge {
-	font-weight: 600;
-	white-space: nowrap;
+	font-size: 1.8rem;
 }
 
 ion-buttons.justify-content-center {

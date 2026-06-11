@@ -14,14 +14,12 @@
 			<ion-item [button]="true" [detail]="false" (click)="openAllergyForm(i)">
 				<ion-icon
 					slot="start"
+					class="severity-icon"
 					[name]="severities[allergy.severity].icon"
 					[color]="severities[allergy.severity].color"
 					[attr.aria-label]="severities[allergy.severity].title"
 				></ion-icon>
 				<ion-label>{{ allergy.name }}</ion-label>
-				<ion-badge slot="end" [color]="severities[allergy.severity].color">
-					{{ severities[allergy.severity].title }}
-				</ion-badge>
 				<ion-button
 					slot="end"
 					fill="clear"
@@ -58,14 +56,12 @@
 			<ion-item [button]="true" [detail]="false" (click)="openProblemForm(i)">
 				<ion-icon
 					slot="start"
+					class="severity-icon"
 					[name]="severities[problem.severity].icon"
 					[color]="severities[problem.severity].color"
 					[attr.aria-label]="severities[problem.severity].title"
 				></ion-icon>
 				<ion-label>{{ problem.name }}</ion-label>
-				<ion-badge slot="end" [color]="severities[problem.severity].color">
-					{{ severities[problem.severity].title }}
-				</ion-badge>
 				<ion-button
 					slot="end"
 					fill="clear"
