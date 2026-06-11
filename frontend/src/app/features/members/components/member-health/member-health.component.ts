@@ -58,7 +58,7 @@ export class MemberHealthComponent {
 		const allergies = await this.openEntryAlert(this.member()?.allergies, index, {
 			addHeader: "Přidat alergii",
 			editHeader: "Upravit alergii",
-			namePlaceholder: "mrkev (vařená v pohodě)",
+			namePlaceholder: "Syrová mrkev",
 		});
 		if (allergies) this.update.emit({ allergies });
 	}
