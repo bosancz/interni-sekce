@@ -1,4 +1,6 @@
 import { ApiProperty, ApiPropertyOptional, PickType } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsInt } from "class-validator";
 import { WithLinks } from "src/access-control/access-control-lib";
 import { UserResponse } from "src/api/users/dto/user.dto";
 import { Album } from "src/models/albums/entities/album.entity";
@@ -31,7 +33,13 @@ export class PhotoResponse {
 	@ApiPropertyOptional({ type: () => WithLinks(UserResponse) }) uploadedBy?: User | null;
 }
 
-export class PhotoCreateBody extends PickType(PhotoResponse, ["albumId"]) {
+export class PhotoCreateBody {
+	// multipart sends albumId as a string; @Type converts it and @IsInt whitelists it for the global ValidationPipe
+	@ApiProperty()
+	@Type(() => Number)
+	@IsInt()
+	albumId!: number;
+
 	@ApiProperty({ type: "string", format: "binary" }) file!: any;
 }
 

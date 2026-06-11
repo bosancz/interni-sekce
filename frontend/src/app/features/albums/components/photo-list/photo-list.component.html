@@ -7,8 +7,7 @@
 						<ion-checkbox slot="start" [ngModel]="isPhotoChecked(photo)"> </ion-checkbox>
 					}
 					<ion-avatar slot="start">
-						<!-- TODO: correct photo size -->
-						<img [src]="photo._links.getPhotoImage.href" [style.background-color]="photo.bg" />
+						<img [src]="photo | photoImageUrl: 'small'" [style.background-color]="photo.bg" loading="lazy" />
 					</ion-avatar>
 
 					<ion-label>
@@ -56,8 +55,7 @@
 			@for (photo of photos()!; track photo.id) {
 				<div class="square" [class.checked]="isPhotoChecked(photo)">
 					<div class="photo ion-activatable ripple-parent" (click)="onPhotoClick(photo, $event)">
-						<!-- TODO: correct photo size -->
-						<img [src]="photo._links.getPhotoImage.href" [style.background-color]="photo.bg" />
+						<img [src]="photo | photoImageUrl: 'small'" [style.background-color]="photo.bg" loading="lazy" />
 						<ion-ripple-effect></ion-ripple-effect>
 					</div>
 					<ion-checkbox [ngModel]="isPhotoChecked(photo)" (ngModelChange)="onPhotoCheck(photo, $event)"></ion-checkbox>

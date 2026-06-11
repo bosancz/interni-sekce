@@ -1,34 +1,32 @@
-@if (photoUploadQueue().length === 0) {
-	<div class="upload ion-padding">
-		<div
-			class="dropzone"
-			#photoDropzone
-			(drop)="addPhotosByDropzone($event, photoDropzone)"
-			(dragover)="onDragOver($event)"
-			(click)="photoInput.click()"
-		>
-			@if (!isMobile()) {
-				<p>Přetáhnout fotografie sem, nebo kliknout pro výběr</p>
-			}
-			@if (isMobile()) {
-				<p>Klikni pro výběr fotek</p>
-			}
-		</div>
-
-		<input
-			class="photoInput"
-			type="file"
-			accept="image/jpeg,image/png,image/gif"
-			name="photo"
-			#photoInput
-			(change)="addPhotosByInput(photoInput)"
-			multiple
-		/>
-	</div>
-}
-
 <ion-content>
-	@if (photoUploadQueue().length > 0) {
+	@if (photoUploadQueue().length === 0) {
+		<div class="upload ion-padding">
+			<div
+				class="dropzone"
+				#photoDropzone
+				(drop)="addPhotosByDropzone($event, photoDropzone)"
+				(dragover)="onDragOver($event)"
+				(click)="photoInput.click()"
+			>
+				@if (!isMobile()) {
+					<p>Přetáhnout fotografie sem, nebo kliknout pro výběr</p>
+				}
+				@if (isMobile()) {
+					<p>Klikni pro výběr fotek</p>
+				}
+			</div>
+
+			<input
+				class="photoInput"
+				type="file"
+				accept="image/jpeg,image/png,image/gif"
+				name="photo"
+				#photoInput
+				(change)="addPhotosByInput(photoInput)"
+				multiple
+			/>
+		</div>
+	} @else {
 		<ion-list class="queue">
 			@for (uploadItem of photoUploadQueue(); track uploadItem.file.name + uploadItem.file.size) {
 				<ion-item>
@@ -69,7 +67,7 @@
 	<ion-toolbar>
 		<ion-buttons slot="end">
 			<ion-button (click)="close()">Zrušit</ion-button>
-			<ion-button color="primary" (click)="uploadPhotos(album())">Nahrát</ion-button>
+			<ion-button color="primary" (click)="uploadPhotos(album)">Nahrát</ion-button>
 		</ion-buttons>
 	</ion-toolbar>
 </ion-footer>

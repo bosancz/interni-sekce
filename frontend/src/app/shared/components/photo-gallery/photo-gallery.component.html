@@ -1,9 +1,10 @@
-@for (row of rows; track row) {
+@for (row of rows(); track row) {
 	<div class="photo-row">
 		@for (item of row.photos; track item.photo.id) {
 			<div class="photo" (click)="onPhotoClick($event, item.photo)" [class.clickable]="clickable()">
 				<img
-					[src]="item.photo._links.getPhotoImage.href"
+					[src]="item.photo | photoImageUrl: 'small'"
+					loading="lazy"
 					[style.height]="row.height + 'px'"
 					[style.width]="row.height * item.ratio + 'px'"
 					[style.background-color]="item.photo.bg"

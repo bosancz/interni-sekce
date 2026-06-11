@@ -1,11 +1,11 @@
 import { CommonModule } from "@angular/common";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpEventType } from "@angular/common/http";
 import {
 	AfterViewInit,
 	ChangeDetectorRef,
 	Component,
 	ElementRef,
-	input,
+	Input,
 	OnDestroy,
 	OnInit,
 	signal,
@@ -28,6 +28,7 @@ import { trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { PrettyBytesPipe } from "src/app/shared/pipes/pretty-bytes.pipe";
+import { Config } from "src/config";
 import { SDK } from "src/sdk";
 
 interface PhotoUploadItem {
@@ -57,7 +58,8 @@ interface PhotoUploadItem {
 	],
 })
 export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
-	album = input.required<SDK.AlbumResponseWithLinks>();
+	// Set via Ionic modal componentProps (Object.assign), so it must be a plain property, not a signal input
+	@Input() album!: SDK.AlbumResponseWithLinks;
 
 	tags = signal<string[]>([]);
 	selectedTags = signal<string[]>([]);
@@ -84,6 +86,7 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 		private modalController: ModalController,
 		private platformService: PlatformService,
 		private cdRef: ChangeDetectorRef,
+		private config: Config,
 	) {
 		addIcons({ trashOutline });
 	}
@@ -105,9 +108,9 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	updateTags() {
 		const tags: string[] = [];
-		const album = this.album();
-		// TODO: check photos populater, if it is not populated, get tags from photos
-		album.photos!.forEach((photo) => {
+		const album = this.album;
+		// album.photos may not be populated; collect tags only when present
+		album.photos?.forEach((photo) => {
 			photo.tags?.filter((tag) => tags.indexOf(tag) === -1).forEach((tag) => tags.push(tag));
 		});
 		this.tags.set(tags);
@@ -197,46 +200,34 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 			throw new Error("Unsupported file type.");
 		}
 
-		let formData: FormData = new FormData();
+		// The generated SDK serializes the body as JSON and can't send a file, so we post
+		// the multipart form directly and observe upload progress.
+		const formData = new FormData();
+		formData.set("albumId", String(album.id));
+		formData.set("file", uploadItem.file, uploadItem.file.name);
 
-		formData.set("album", String(album.id));
-		formData.set("tags", this.selectedTags().join(","));
-		formData.set("photo", uploadItem.file, uploadItem.file.name);
-		if (uploadItem.file.lastModified)
-			formData.set("lastModified", new Date(uploadItem.file.lastModified).toISOString());
+		const request = this.http.post(`${this.config.apiRoot}api/photos`, formData, {
+			withCredentials: true,
+			observe: "events",
+			reportProgress: true,
+		});
 
-		const req = await this.api.PhotoGalleryApi.createPhoto({ file: uploadItem.file, albumId: album.id });
-
-		// TODO: monitor upload using axios
-		// return new Promise<void>((resolve, reject) => {
-		//   this.http
-		//     .post(uploadPath, formData, {
-		//       withCredentials: true,
-		//       observe: "events",
-		//       reportProgress: true,
-		//       responseType: "text",
-		//     })
-		//     .subscribe(
-		//       (event: HttpEvent<any>) => {
-		//         switch (event.type) {
-		//           case HttpEventType.Sent:
-		//             break;
-
-		//           case HttpEventType.UploadProgress:
-		//             uploadItem.progress = event.total ? Math.round((event.loaded / event.total) * 100) : 0;
-		//             this.cdRef.markForCheck();
-		//             if (event.loaded === event.total) uploadItem.status = "processing";
-		//             break;
-
-		//           case HttpEventType.Response:
-		//             uploadItem.progress = 100;
-		//             resolve();
-		//             break;
-		//         }
-		//       },
-		//       (err) => reject(err),
-		//     );
-		// });
+		await new Promise<void>((resolve, reject) => {
+			request.subscribe({
+				next: (event) => {
+					if (event.type === HttpEventType.UploadProgress) {
+						uploadItem.progress = event.total ? Math.round((event.loaded / event.total) * 100) : 0;
+						if (event.total && event.loaded === event.total) uploadItem.status = "processing";
+						this.photoUploadQueue.set([...this.photoUploadQueue()]);
+						this.cdRef.markForCheck();
+					} else if (event.type === HttpEventType.Response) {
+						uploadItem.progress = 100;
+						resolve();
+					}
+				},
+				error: (err) => reject(err),
+			});
+		});
 	}
 
 	private preventExit() {

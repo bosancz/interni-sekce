@@ -1,27 +1,27 @@
-<bo-page-header [title]="album()?.name" backUrl="/galerie" [actions]="actions()" actionsHeader="Album">
-	<bo-page-content [padding]="true">
-		<h2>{{ album()?.name }}</h2>
+<bo-page-header [title]="album()?.name" backUrl="/galerie" [actions]="actions()" actionsHeader="Album" />
 
-		@if (album()?.dateFrom && album()?.dateTill) {
-			<p>
-				{{ [album()!.dateFrom!, album()!.dateTill!] | dateRange: "d. M. y" }}, publikováno
-				{{ album()!.datePublished | date: "d. M. y" }}
-			</p>
+<bo-page-content [padding]="true">
+	@if (album()?.dateFrom && album()?.dateTill) {
+		<p>
+			{{ [album()!.dateFrom!, album()!.dateTill!] | dateRange: "d. M. y" }}, publikováno
+			{{ album()!.datePublished | date: "d. M. y" }}
+		</p>
+	}
+
+	<p>{{ album()?.description }}</p>
+
+	<div class="gallery">
+		@if (photos()?.length) {
+			<bo-photo-gallery
+				[photos]="photos()!"
+				[maxHeight]="320"
+				[clickable]="true"
+				(click)="onPhotoClick($event)"
+			></bo-photo-gallery>
+		} @else if (photos()) {
+			<p class="ion-text-center ion-padding">V tomto albu zatím nejsou žádné fotky.</p>
 		}
+	</div>
+</bo-page-content>
 
-		<p>{{ album()?.description }}</p>
-
-		<div class="gallery">
-			@if (album()?.photos) {
-				<bo-photo-gallery
-					[photos]="album()!.photos!"
-					[maxHeight]="320"
-					[clickable]="true"
-					(click)="onPhotoClick($event)"
-				></bo-photo-gallery>
-			}
-		</div>
-	</bo-page-content>
-
-	<bo-albums-tabs [album]="album()" selected="info"></bo-albums-tabs>
-</bo-page-header>
+<bo-albums-tabs [album]="album()" selected="info"></bo-albums-tabs>

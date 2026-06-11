@@ -85,6 +85,14 @@ const fs = {
 	membersDir: path.resolve(process.env["MEMBERS_DIR"] ?? path.join(dataDir, "members")),
 };
 
+const photos = {
+	allowedTypes: ["jpg", "jpeg", "png", "gif"],
+	sizes: {
+		big: { width: 1280, height: 1024 },
+		small: { width: 1024, height: 340 },
+	},
+};
+
 const google = {
 	keyFile: path.join(fs.keysDir, process.env["GOOGLE_KEY_FILE"] ?? "google.json"),
 	impersonate: process.env["GOOGLE_IMPERSONATE"] ?? "interni@bosan.cz",
@@ -109,6 +117,7 @@ export class Config {
 	server = server;
 	fs = fs;
 	mapy = mapy;
+	photos = photos;
 }
 
 @Global()

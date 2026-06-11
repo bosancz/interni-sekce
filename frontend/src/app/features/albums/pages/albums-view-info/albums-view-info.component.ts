@@ -1,8 +1,17 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { AlertController, NavController } from "@ionic/angular/standalone";
+import { AlertController, ModalController, NavController } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import {
+	cloudUploadOutline,
+	createOutline,
+	eyeOffOutline,
+	eyeOutline,
+	openOutline,
+	trash,
+} from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -11,6 +20,7 @@ import { PageHeaderComponent } from "src/app/shared/components/page-header/page-
 import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
+import { PhotosUploadComponent } from "../../components/photos-upload/photos-upload.component";
 import { AlbumsTabsComponent } from "../../components/albums-tabs/albums-tabs.component";
 
 @UntilDestroy()
@@ -31,9 +41,12 @@ import { AlbumsTabsComponent } from "../../components/albums-tabs/albums-tabs.co
 export class AlbumsViewInfoComponent implements OnInit {
 	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
 
+	photos = signal<SDK.PhotoResponseWithLinks[] | undefined>(undefined);
+
 	actions = signal<Action[]>([]);
 
 	alert?: HTMLIonAlertElement;
+	uploadModal?: HTMLIonModalElement;
 
 	constructor(
 		private route: ActivatedRoute,
@@ -41,8 +54,11 @@ export class AlbumsViewInfoComponent implements OnInit {
 		private api: ApiService,
 		private toastService: ToastService,
 		private alertController: AlertController,
+		private modalController: ModalController,
 		private navController: NavController,
-	) {}
+	) {
+		addIcons({ cloudUploadOutline, createOutline, openOutline, eyeOutline, eyeOffOutline, trash });
+	}
 
 	ngOnInit(): void {
 		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => this.loadAlbum(params["album"]));
@@ -50,12 +66,35 @@ export class AlbumsViewInfoComponent implements OnInit {
 
 	ngOnDestroy() {
 		this.alert?.dismiss();
+		this.uploadModal?.dismiss();
+	}
+
+	private async uploadPhotos() {
+		const album = this.album();
+		if (!album) return;
+
+		if (this.uploadModal) this.uploadModal.dismiss();
+
+		this.uploadModal = await this.modalController.create({
+			component: PhotosUploadComponent,
+			componentProps: { album },
+			backdropDismiss: false,
+		});
+
+		this.uploadModal.onDidDismiss().then((event) => {
+			if (event.data) this.loadAlbum(album.id);
+		});
+
+		this.uploadModal.present();
 	}
 
 	async loadAlbum(albumId: number) {
 		const album = await this.api.PhotoGalleryApi.getAlbum(albumId).then((res) => res.data);
 		this.album.set(album);
 		this.updateActions(album);
+
+		const photos = await this.api.PhotoGalleryApi.getAlbumPhotos(albumId).then((res) => res.data);
+		this.photos.set(photos);
 	}
 
 	private async publish() {
@@ -115,9 +154,14 @@ export class AlbumsViewInfoComponent implements OnInit {
 	private updateActions(album: SDK.AlbumResponseWithLinks) {
 		this.actions.set([
 			{
+				text: "Nahrát fotky",
+				icon: "cloud-upload-outline",
+				pinned: true,
+				handler: () => this.uploadPhotos(),
+			},
+			{
 				text: "Upravit",
 				icon: "create-outline",
-				pinned: true,
 				handler: () => this.router.navigate(["../upravit"], { relativeTo: this.route }),
 			},
 			{
