@@ -10,18 +10,48 @@
 
 	<p>{{ album()?.description }}</p>
 
+	@if (photos()?.length) {
+		<div class="buttons">
+			@if (photosView() === 'list') {
+				<ion-button
+					[disabled]="enableOrdering() || enableDeleting()"
+					(click)="photosView.set('gallery')"
+					fill="clear"
+					slot="end"
+				>
+					<ion-icon slot="start" name="images-outline"></ion-icon> Galerie
+				</ion-button>
+			}
+			@if (photosView() === 'gallery') {
+				<ion-button (click)="photosView.set('list')" fill="clear" slot="end">
+					<ion-icon slot="start" name="list-outline"></ion-icon> Seznam
+				</ion-button>
+			}
+		</div>
+	}
+
 	<div class="gallery">
-		@if (photos()?.length) {
-			<bo-photo-gallery
-				[photos]="photos()!"
-				[maxHeight]="320"
-				[clickable]="true"
-				(click)="onPhotoClick($event)"
-			></bo-photo-gallery>
-		} @else if (photos()) {
-			<p class="ion-text-center ion-padding">V tomto albu zatím nejsou žádné fotky.</p>
+		@if (photosView() === 'gallery') {
+			@if (photos()?.length) {
+				<bo-photo-gallery
+					[photos]="photos()!"
+					[maxHeight]="320"
+					[clickable]="true"
+					(click)="onGalleryClick($event)"
+				></bo-photo-gallery>
+			} @else if (photos()) {
+				<p class="ion-text-center ion-padding">V tomto albu zatím nejsou žádné fotky.</p>
+			}
+		} @else {
+			<bo-photo-list
+				[photos]="photos()"
+				view="list"
+				[sortable]="enableOrdering()"
+				[selectable]="enableDeleting()"
+				[selected]="selectedPhotos()"
+				(selectedChange)="selectedPhotos.set($event)"
+				(click)="onListClick($event)"
+			></bo-photo-list>
 		}
 	</div>
 </bo-page-content>
-
-<bo-albums-tabs [album]="album()" selected="info"></bo-albums-tabs>
