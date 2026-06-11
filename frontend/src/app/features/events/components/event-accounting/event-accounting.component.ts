@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, effect, input, OnDestroy, OnInit } from "@angular/core";
+import { Component, effect, input, OnDestroy, OnInit, signal } from "@angular/core";
 import { IonBadge, IonButton, IonList } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/core/services/api.service";
@@ -35,7 +35,7 @@ import { EventExpensesChartComponent } from "../event-expenses-chart/event-expen
 export class EventAccountingComponent implements OnInit, OnDestroy {
 	event = input<SDK.EventResponseWithLinks | undefined>();
 
-	expenses: SDK.EventExpenseResponseWithLinks[] = [];
+	expenses = signal<SDK.EventExpenseResponseWithLinks[]>([]);
 
 	actions: Action[] = [];
 
@@ -63,12 +63,13 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 	private async loadExpenses() {
 		const event = this.event();
 		if (!event) return;
-		this.expenses = await this.api.EventsApi.listEventExpenses(event.id).then((res) => res.data);
-		this.expenses.sort((a, b) =>
+		const data = await this.api.EventsApi.listEventExpenses(event.id).then((res) => res.data);
+		data.sort((a, b) =>
 			a.receiptNumber && b.receiptNumber
 				? a.receiptNumber.localeCompare(b.receiptNumber, "cs", { numeric: true })
 				: 0,
 		);
+		this.expenses.set(data);
 	}
 
 	async addExpense() {
@@ -83,7 +84,7 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 
 		try {
 			const newExpense = await this.api.EventsApi.addEventExpense(event.id, expense).then((res) => res.data);
-			this.expenses.push(newExpense);
+			this.expenses.update((list) => [...list, newExpense]);
 
 			this.toastService.toast("Uloženo");
 		} catch (e) {
@@ -102,18 +103,22 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 
 		if (data === null) return;
 
-		const oldExpenses = this.expenses;
+		const oldExpenses = this.expenses();
 
 		try {
-			const i = this.expenses.indexOf(expense);
-			this.expenses.splice(i, 1, expense);
+			const i = this.expenses().indexOf(expense);
+			this.expenses.update((list) => [
+				...list.slice(0, i),
+				{ ...expense, ...data },
+				...list.slice(i + 1),
+			]);
 
 			await this.api.EventsApi.updateEventExpense(event.id, expense.id, data);
 			await this.loadExpenses();
 
 			this.toastService.toast("Uloženo");
 		} catch (e) {
-			this.expenses = oldExpenses;
+			this.expenses.set(oldExpenses);
 			this.toastService.toast("Nepodařilo se uložit", { color: "danger" });
 		}
 	}
@@ -125,13 +130,20 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 		const confirmation = await this.modalService.deleteConfirmationModal(`Opravdu chceš smazat účtenku?`);
 
 		if (confirmation) {
-			const i = this.expenses.indexOf(expense);
-			this.expenses.splice(i, 1, expense);
+			const oldExpenses = this.expenses();
 
-			await this.api.EventsApi.deleteEventExpense(event.id, expense.id);
-			await this.loadExpenses();
+			try {
+				const i = this.expenses().indexOf(expense);
+				this.expenses.update((list) => [...list.slice(0, i), ...list.slice(i + 1)]);
 
-			this.toastService.toast("Smazáno");
+				await this.api.EventsApi.deleteEventExpense(event.id, expense.id);
+				await this.loadExpenses();
+
+				this.toastService.toast("Smazáno");
+			} catch (e) {
+				this.expenses.set(oldExpenses);
+				this.toastService.toast("Nepodařilo se smazat", { color: "danger" });
+			}
 		}
 	}
 
@@ -144,7 +156,7 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 	private getNextExpenseId() {
 		const re = /\d+/;
 
-		const maxId = this.expenses
+		const maxId = this.expenses()
 			.filter((expense) => !!expense.receiptNumber)
 			.reduce((acc, cur) => {
 				const match = re.exec(cur.receiptNumber!);

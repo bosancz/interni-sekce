@@ -41,6 +41,7 @@
 			<bo-member-health
 				[member]="member()"
 				(update)="updateMember($event)"
+				(reload)="reloadMember()"
 				class="d-lg-block mb-5"
 				[class.d-none]="view !== 'health'"
 			/>

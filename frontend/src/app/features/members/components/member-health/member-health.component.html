@@ -39,4 +39,4 @@
 <bo-edit-button (click)="openKnownProblemsForm()">Upravit</bo-edit-button>
 
 <h3 class="mt-5">Kartička pojištěnce</h3>
-<bo-card-insurance-card [member]="member()" (update)="update.emit({})"></bo-card-insurance-card>
+<bo-card-insurance-card [member]="member()" (update)="reload.emit()"></bo-card-insurance-card>

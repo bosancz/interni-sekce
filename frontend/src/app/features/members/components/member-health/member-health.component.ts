@@ -39,6 +39,7 @@ import { CardInsuranceCardComponent } from "../card-insurance-card/card-insuranc
 export class MemberHealthComponent implements OnInit {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
 	update = output<Partial<SDK.MemberResponseWithLinks>>();
+	reload = output<void>();
 
 	constructor(private alertController: AlertController) {
 		addIcons({ trashOutline });
