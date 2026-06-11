@@ -53,7 +53,11 @@
 				<ion-button (click)="openCard()" color="primary" aria-label="Zobrazit kartičku pojištěnce"
 					>Zobrazit</ion-button
 				>
-				<ion-button [href]="insuranceCardUrl()!" color="primary" download aria-label="Stáhnout kartičku pojištěnce"
+				<ion-button
+					[href]="insuranceCardUrl()!"
+					color="primary"
+					[download]="'insurance_card.' + member()?.insuranceCardFile"
+					aria-label="Stáhnout kartičku pojištěnce"
 					>Stáhnout</ion-button
 				>
 

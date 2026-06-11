@@ -1,11 +1,25 @@
 import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
 import { PaginationQuery } from "src/api/helpers/dto";
 import { EnsureArray } from "src/helpers/validation";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
-import { Member, MemberRanks, MemberRoles, MembershipStates } from "src/models/members/entities/member.entity";
+import {
+	HealthEntry,
+	HealthSeverity,
+	Member,
+	MemberRanks,
+	MemberRoles,
+	MembershipStates,
+} from "src/models/members/entities/member.entity";
+
+export class HealthEntryDto implements HealthEntry {
+	@ApiProperty({ type: "string" }) @IsString() name!: string;
+	@ApiProperty({ type: "string", enum: HealthSeverity, enumName: "HealthSeverityEnum" })
+	@IsEnum(HealthSeverity)
+	severity!: HealthSeverity;
+}
 
 export class MemberResponse implements Member {
 	@ApiProperty() id!: number;
@@ -28,8 +42,19 @@ export class MemberResponse implements Member {
 	@ApiPropertyOptional({ type: "string" }) mobile?: string | null;
 	@ApiPropertyOptional({ type: "string" }) email?: string | null;
 	@ApiPropertyOptional({ type: "string", enum: MemberRanks, enumName: "MemberRanksEnum" }) rank?: MemberRanks | null;
-	@ApiPropertyOptional({ type: "string" }) knownProblems?: string | null;
-	@ApiPropertyOptional({ type: "string", isArray: true }) allergies?: string[] | null;
+	@ApiPropertyOptional({ type: HealthEntryDto, isArray: true })
+	@IsOptional()
+	@IsArray()
+	@ValidateNested({ each: true })
+	@Type(() => HealthEntryDto)
+	knownProblems?: HealthEntryDto[] | null;
+
+	@ApiPropertyOptional({ type: HealthEntryDto, isArray: true })
+	@IsOptional()
+	@IsArray()
+	@ValidateNested({ each: true })
+	@Type(() => HealthEntryDto)
+	allergies?: HealthEntryDto[] | null;
 	@ApiPropertyOptional({ type: "string" }) insuranceCardFile?: string | null;
 
 	// @AcEntity(GroupResponse)

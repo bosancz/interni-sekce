@@ -17,6 +17,7 @@
 			<bo-vertical-menu defaultTab="info" (change)="view.set($any($event))">
 				<bo-vertical-menu-item name="info" label="Info" icon="calendar"></bo-vertical-menu-item>
 				<bo-vertical-menu-item name="attendees" label="Účastníci" icon="people-outline"></bo-vertical-menu-item>
+				<bo-vertical-menu-item name="problems" label="Problémy" icon="medkit-outline"></bo-vertical-menu-item>
 				<bo-vertical-menu-item name="accounting" label="Účtování" icon="cash-outline"></bo-vertical-menu-item>
 				<bo-vertical-menu-item name="report" label="Report" icon="document-outline"></bo-vertical-menu-item>
 			</bo-vertical-menu>
@@ -37,6 +38,12 @@
 				[class.d-none]="view() !== 'attendees'"
 				(change)="reloadEvent()"
 			></bo-event-attendees>
+
+			<bo-event-problems
+				[event]="event()"
+				class="mb-5"
+				[class.d-none]="view() !== 'problems'"
+			></bo-event-problems>
 
 			<bo-event-accounting
 				[event]="event()"
@@ -59,6 +66,7 @@
 	<bo-tabs defaultTab="info" (change)="view.set($any($event))">
 		<bo-tab name="info" label="Info" icon="calendar"></bo-tab>
 		<bo-tab name="attendees" label="Účastníci" icon="people-outline"></bo-tab>
+		<bo-tab name="problems" label="Problémy" icon="medkit-outline"></bo-tab>
 		<bo-tab name="accounting" label="Účtování" icon="cash-outline"></bo-tab>
 		<bo-tab name="report" label="Report" icon="document-outline"></bo-tab>
 	</bo-tabs>

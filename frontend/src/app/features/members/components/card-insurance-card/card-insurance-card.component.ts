@@ -1,5 +1,6 @@
-import { Component, effect, input, OnChanges, output, signal, SimpleChanges } from "@angular/core";
+import { Component, effect, input, OnDestroy, output, signal } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { Platform } from "@ionic/angular";
 import { IonButton, IonButtons, IonSkeletonText } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -8,30 +9,29 @@ import { SDK } from "src/sdk";
 import { CardContentComponent } from "../../../../shared/components/card-content/card-content.component";
 import { CardFooterComponent } from "../../../../shared/components/card-footer/card-footer.component";
 import { CardComponent } from "../../../../shared/components/card/card.component";
-import { Platform } from "@ionic/angular";
 
 @Component({
 	selector: "bo-card-insurance-card",
 	templateUrl: "./card-insurance-card.component.html",
 	styleUrls: ["./card-insurance-card.component.scss"],
-	
-	imports: [
-		CardComponent,
-		CardContentComponent,
-		CardFooterComponent,
-		IonSkeletonText,
-		IonButton,
-		IonButtons,
-	],
+
+	imports: [CardComponent, CardContentComponent, CardFooterComponent, IonSkeletonText, IonButton, IonButtons],
 })
-export class CardInsuranceCardComponent implements OnChanges {
+export class CardInsuranceCardComponent implements OnDestroy {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
 	update = output<void>();
 
 	insuranceCardUrl = signal<string | null | undefined>(undefined);
 	insuranceCardSafeUrl = signal<SafeResourceUrl | null | undefined>(undefined);
-	
+
 	public isCameraCapable = false;
+
+	/** Currently held object URL, kept so it can be revoked. */
+	private objectUrl: string | null = null;
+	/** Key of the card last loaded, to avoid re-fetching on unrelated member updates. */
+	private loadedKey: string | null = null;
+	/** Guards against out-of-order async loads superseding the latest one. */
+	private loadToken = 0;
 
 	constructor(
 		private api: ApiService,
@@ -40,42 +40,75 @@ export class CardInsuranceCardComponent implements OnChanges {
 		private modalService: ModalService,
 		private platform: Platform,
 	) {
+		this.isCameraCapable = this.checkCapabilities();
+
 		effect(() => {
-			this.setInsuranceCardUrl(this.member());
+			this.loadInsuranceCard(this.member());
 		});
 	}
 
-	public ngOnInit() {
-		this.isCameraCapable = this.checkCapabilities();
+	ngOnDestroy(): void {
+		this.revokeObjectUrl();
 	}
-	
-	private checkCapabilities(){
+
+	private checkCapabilities() {
 		return this.platform.is("mobile") || this.platform.is("mobileweb") || this.platform.is("tablet");
 	}
 
-	ngOnChanges(changes: SimpleChanges): void {
-		// Effect handles member changes now
-	}
+	/**
+	 * Loads the insurance card through the authenticated API client and renders it
+	 * from a blob object URL. Using the SDK (instead of pointing an <img> at the
+	 * protected endpoint) ensures the request carries the session credentials and
+	 * always fetches the current file rather than a cached one.
+	 */
+	private async loadInsuranceCard(member?: SDK.MemberResponseWithLinks | null) {
+		const applicable = !!member?._links?.getInsuranceCard?.applicable;
 
-	private setInsuranceCardUrl(member?: SDK.MemberResponseWithLinks | null) {
-		if (member) {
-			const url =
-				member?._links?.getInsuranceCard.applicable && member?._links?.getInsuranceCard.applicable
-					? member._links.getInsuranceCard.href
-					: null;
+		if (!member || !applicable) {
+			this.loadedKey = null;
+			this.revokeObjectUrl();
+			this.insuranceCardUrl.set(null);
+			this.insuranceCardSafeUrl.set(null);
+			return;
+		}
 
-			this.insuranceCardUrl.set(url);
-			this.insuranceCardSafeUrl.set(
-				url ? this.sanitizer.bypassSecurityTrustResourceUrl(url) : null,
-			);
-		} else {
+		const key = `${member.id}:${member.insuranceCardFile}`;
+		// Already showing this exact card – skip refetching on unrelated member changes.
+		if (key === this.loadedKey && this.objectUrl) return;
+
+		const token = ++this.loadToken;
+
+		// Show the loading skeleton while fetching.
+		this.insuranceCardUrl.set(undefined);
+		this.insuranceCardSafeUrl.set(undefined);
+
+		try {
+			const res = await this.api.MembersApi.getInsuranceCard(member.id, { responseType: "blob" });
+			if (token !== this.loadToken) return; // a newer load started
+
+			this.revokeObjectUrl();
+			this.objectUrl = URL.createObjectURL(res.data as unknown as Blob);
+			this.loadedKey = key;
+			this.insuranceCardUrl.set(this.objectUrl);
+			this.insuranceCardSafeUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this.objectUrl));
+		} catch (e) {
+			if (token !== this.loadToken) return;
+
+			this.loadedKey = null;
+			this.revokeObjectUrl();
 			this.insuranceCardUrl.set(null);
 			this.insuranceCardSafeUrl.set(null);
 		}
 	}
 
+	private revokeObjectUrl() {
+		if (this.objectUrl) {
+			URL.revokeObjectURL(this.objectUrl);
+			this.objectUrl = null;
+		}
+	}
+
 	onFileDrop(event: DragEvent, dropzone: HTMLDivElement) {
-		console.log(event, dropzone);
 		event.preventDefault();
 
 		const file = event.dataTransfer?.files[0];
@@ -99,6 +132,8 @@ export class CardInsuranceCardComponent implements OnChanges {
 		try {
 			await this.api.MembersApi.uploadInsuranceCard(member.id, file);
 
+			// Force a reload of the preview even if the file extension is unchanged.
+			this.loadedKey = null;
 			this.insuranceCardUrl.set(undefined);
 			this.update.emit();
 
@@ -127,6 +162,8 @@ export class CardInsuranceCardComponent implements OnChanges {
 		if (confirmation) {
 			await this.api.MembersApi.deleteInsuranceCard(member.id);
 
+			this.loadedKey = null;
+			this.revokeObjectUrl();
 			this.insuranceCardUrl.set(null);
 			this.insuranceCardSafeUrl.set(null);
 			this.update.emit();

@@ -34,6 +34,18 @@ export enum MembershipStates {
 	"pozastaveno" = "pozastaveno",
 }
 
+export enum HealthSeverity {
+	"unknown" = "unknown",
+	"low" = "low",
+	"medium" = "medium",
+	"high" = "high",
+}
+
+export interface HealthEntry {
+	name: string;
+	severity: HealthSeverity;
+}
+
 @Entity("members")
 export class Member {
 	@PrimaryGeneratedColumn()
@@ -58,8 +70,8 @@ export class Member {
 	@Column({ type: "varchar", nullable: true }) addressCountry?: string | null;
 	@Column({ type: "varchar", nullable: true }) mobile?: string | null;
 	@Column({ type: "varchar", nullable: true }) email?: string | null;
-	@Column({ type: "text", nullable: true }) knownProblems?: string | null;
-	@Column({ type: "varchar", array: true, nullable: true }) allergies?: string[] | null;
+	@Column({ type: "jsonb", nullable: true }) knownProblems?: HealthEntry[] | null;
+	@Column({ type: "jsonb", nullable: true }) allergies?: HealthEntry[] | null;
 	@Column({ type: "varchar", nullable: true }) insuranceCardFile?: string | null;
 
 	@DeleteDateColumn() deletedAt?: Date;

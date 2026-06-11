@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { calendar, cashOutline, documentOutline, peopleOutline } from "ionicons/icons";
+import { calendar, cashOutline, documentOutline, medkitOutline, peopleOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -21,6 +21,7 @@ import { EventPipe } from "../../../../shared/pipes/event.pipe";
 import { EventAccountingComponent } from "../../components/event-accounting/event-accounting.component";
 import { EventAttendeesComponent } from "../../components/event-attendees/event-attendees.component";
 import { EventInfoComponent } from "../../components/event-info/event-info.component";
+import { EventProblemsComponent } from "../../components/event-problems/event-problems.component";
 import { EventReportComponent } from "../../components/event-report/event-report.component";
 
 export type EventStatusActions = ExtractExisting<
@@ -36,6 +37,7 @@ export type EventStatusActions = ExtractExisting<
 
 	imports: [
 		EventAttendeesComponent,
+		EventProblemsComponent,
 		EventAccountingComponent,
 		EventReportComponent,
 		PageFooterComponent,
@@ -54,7 +56,7 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 
 	actions: Action[] = [];
 
-	view = signal<"info" | "attendees" | "accounting" | "registration" | "report">("info");
+	view = signal<"info" | "attendees" | "problems" | "accounting" | "registration" | "report">("info");
 
 	constructor(
 		private readonly api: ApiService,
@@ -63,7 +65,7 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 		private readonly toastService: ToastService,
 		private readonly modalService: ModalService,
 	) {
-		addIcons({ calendar, peopleOutline, cashOutline, documentOutline });
+		addIcons({ calendar, peopleOutline, medkitOutline, cashOutline, documentOutline });
 	}
 
 	ionViewWillEnter(): void {

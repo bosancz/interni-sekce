@@ -2466,9 +2466,38 @@ export namespace SDK {
          */
         'login': string;
     }
-    
+
         /**
-     * 
+     *
+     * @export
+     * @interface HealthEntry
+     */
+    export interface HealthEntry {
+        /**
+         *
+         * @type {string}
+         * @memberof HealthEntry
+         */
+        'name': string;
+        /**
+         *
+         * @type {string}
+         * @memberof HealthEntry
+         */
+        'severity': HealthSeverityEnum;
+    }
+
+    export const HealthSeverityEnum = {
+        Unknown: 'unknown',
+        Low: 'low',
+        Medium: 'medium',
+        High: 'high'
+    } as const;
+
+    export type HealthSeverityEnum = typeof HealthSeverityEnum[keyof typeof HealthSeverityEnum];
+
+        /**
+     *
      * @export
      * @interface Member
      */
@@ -2582,17 +2611,17 @@ export namespace SDK {
          */
         'email'?: string | null;
         /**
-         * 
-         * @type {string}
+         *
+         * @type {Array<HealthEntry>}
          * @memberof Member
          */
-        'knownProblems'?: string | null;
+        'knownProblems'?: Array<HealthEntry> | null;
         /**
-         * 
-         * @type {Array<string>}
+         *
+         * @type {Array<HealthEntry>}
          * @memberof Member
          */
-        'allergies'?: Array<string> | null;
+        'allergies'?: Array<HealthEntry> | null;
         /**
          * 
          * @type {string}
@@ -3030,17 +3059,17 @@ export namespace SDK {
          */
         'rank'?: MemberRanksEnum | null;
         /**
-         * 
-         * @type {string}
+         *
+         * @type {Array<HealthEntry>}
          * @memberof MemberResponse
          */
-        'knownProblems'?: string | null;
+        'knownProblems'?: Array<HealthEntry> | null;
         /**
-         * 
-         * @type {Array<string>}
+         *
+         * @type {Array<HealthEntry>}
          * @memberof MemberResponse
          */
-        'allergies'?: Array<string> | null;
+        'allergies'?: Array<HealthEntry> | null;
         /**
          * 
          * @type {string}
@@ -3240,17 +3269,17 @@ export namespace SDK {
          */
         'rank'?: MemberRanksEnum | null;
         /**
-         * 
-         * @type {string}
+         *
+         * @type {Array<HealthEntry>}
          * @memberof MemberResponseWithLinks
          */
-        'knownProblems'?: string | null;
+        'knownProblems'?: Array<HealthEntry> | null;
         /**
-         * 
-         * @type {Array<string>}
+         *
+         * @type {Array<HealthEntry>}
          * @memberof MemberResponseWithLinks
          */
-        'allergies'?: Array<string> | null;
+        'allergies'?: Array<HealthEntry> | null;
         /**
          * 
          * @type {string}
@@ -3403,17 +3432,17 @@ export namespace SDK {
          */
         'rank'?: MemberRanksEnum | null;
         /**
-         * 
-         * @type {string}
+         *
+         * @type {Array<HealthEntry>}
          * @memberof MemberUpdateBody
          */
-        'knownProblems'?: string | null;
+        'knownProblems'?: Array<HealthEntry> | null;
         /**
-         * 
-         * @type {Array<string>}
+         *
+         * @type {Array<HealthEntry>}
          * @memberof MemberUpdateBody
          */
-        'allergies'?: Array<string> | null;
+        'allergies'?: Array<HealthEntry> | null;
         /**
          * 
          * @type {string}

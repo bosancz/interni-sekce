@@ -1,0 +1,57 @@
+<h3>Alergie</h3>
+
+@if (allergies() === undefined) {
+	<ion-list>
+		@for (item of [1, 2, 3]; track $index) {
+			<bo-item>
+				<ion-skeleton-text [animated]="true"></ion-skeleton-text>
+			</bo-item>
+		}
+	</ion-list>
+} @else if (allergies()!.length === 0) {
+	<p><em>Žádné alergie</em></p>
+} @else {
+	<ion-list>
+		@for (row of allergies(); track $index) {
+			<bo-item [label]="row.memberName">
+				<span class="problem">{{ row.problemName }}</span>
+				<ion-icon
+					class="severity-icon"
+					slot="end"
+					[name]="severities[row.severity].icon"
+					[color]="severities[row.severity].color"
+					[attr.aria-label]="severities[row.severity].title"
+				></ion-icon>
+			</bo-item>
+		}
+	</ion-list>
+}
+
+<h3>Další problémy</h3>
+
+@if (problems() === undefined) {
+	<ion-list>
+		@for (item of [1, 2, 3]; track $index) {
+			<bo-item>
+				<ion-skeleton-text [animated]="true"></ion-skeleton-text>
+			</bo-item>
+		}
+	</ion-list>
+} @else if (problems()!.length === 0) {
+	<p><em>Žádné známé problémy</em></p>
+} @else {
+	<ion-list>
+		@for (row of problems(); track $index) {
+			<bo-item [label]="row.memberName">
+				<span class="problem">{{ row.problemName }}</span>
+				<ion-icon
+					class="severity-icon"
+					slot="end"
+					[name]="severities[row.severity].icon"
+					[color]="severities[row.severity].color"
+					[attr.aria-label]="severities[row.severity].title"
+				></ion-icon>
+			</bo-item>
+		}
+	</ion-list>
+}
