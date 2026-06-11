@@ -89,7 +89,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	view?: "table" | "list";
 
 	page = 1;
-	pageSize = 100;
+	pageSize = 20;
 
 	viewSelections: { [key: string]: boolean } = {};
 
