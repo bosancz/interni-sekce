@@ -20,7 +20,6 @@ export class EventRegistrationComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>();
 	update = output<void>();
 
-
 	uploadingRegistration: boolean = false;
 
 	@ViewChild("registrationInput") registrationInput!: ElementRef<HTMLInputElement>;
@@ -36,49 +35,32 @@ export class EventRegistrationComponent {
 		this.registrationInput.nativeElement.click();
 	}
 
-async uploadRegistration(input: HTMLInputElement) {
-        const event = this.event();
-        if (!event) return;
+	async uploadRegistration(input: HTMLInputElement) {
+		const event = this.event();
+		if (!event) return;
 
-        if (!input.files?.length) return;
+		if (!input.files?.length) return;
 
-        let file = input.files![0];
+		const file = input.files[0];
 
-        if (file.name.split(".").pop()?.toLowerCase() !== "pdf") {
-            this.toastService.toast("Soubor musí být ve formátu PDF");
-            this.uploadingRegistration = false;
+		if (file.name.split(".").pop()?.toLowerCase() !== "pdf") {
+			this.toastService.toast("Soubor musí být ve formátu PDF");
+			return;
+		}
 
-            return;
-        }
+		this.uploadingRegistration = true;
 
-        this.uploadingRegistration = true;
-
-        try {
-            // 1. Create FormData and append the file
-            const formData = new FormData();
-            formData.append('registration', file);
-
-            // 2. Call the API with formData and header override
-            await this.api.EventsApi.saveEventRegistration(
-                event.id, 
-                formData as any, // Cast as any to bypass the generated JSON type
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }
-            );
-        } catch (err: any) {
-            this.toastService.toast("Nastala chyba při nahrávání: " + err.message);
-            return;
-        } finally {
-            this.uploadingRegistration = false;
-        }
-
-		this.update.emit();
-
-        this.toastService.toast("Přihláška nahrána.");
-    }
+		try {
+			await this.api.EventsApi.saveEventRegistration(event.id, file);
+			this.update.emit();
+			this.toastService.toast("Přihláška nahrána.");
+		} catch (err: any) {
+			this.toastService.toast("Nastala chyba při nahrávání: " + err.message);
+		} finally {
+			this.uploadingRegistration = false;
+			input.value = "";
+		}
+	}
 
 	async deleteRegistration() {
 		const event = this.event();
@@ -107,7 +89,6 @@ async uploadRegistration(input: HTMLInputElement) {
 		document.body.appendChild(link);
 		link.click();
 
-		// 4. Cleanup
 		document.body.removeChild(link);
 		window.URL.revokeObjectURL(fileUrl);
 	}
