@@ -11,9 +11,10 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { callOutline, heartOutline, personCircleOutline } from "ionicons/icons";
+import { callOutline, heartOutline, personCircleOutline, personAdd } from "ionicons/icons";
 import { MembershipStates } from "src/app/core/config/membership-states";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { TitleService } from "src/app/core/services/title.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -21,6 +22,7 @@ import { PageContentComponent } from "src/app/shared/components/page-content/pag
 import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
+import { UserCreateModalComponent } from "../../components/user-create-modal/user-create-modal.component";
 import { MemberAddressComponent } from "../../components/member-address/member-address.component";
 import { MemberContactComponent } from "../../components/member-contact/member-contact.component";
 import MemberContactsComponent from "../../components/member-contacts/member-contacts.component";
@@ -61,6 +63,11 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 	actions: Action[] = [
 		{
+			text: "Vytvořit uživatelský účet",
+			icon: "person-add",
+			handler: () => this.createUser(),
+		},
+		{
 			text: "Smazat",
 			role: "destructive",
 			icon: "trash",
@@ -72,12 +79,13 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	constructor(
 		private api: ApiService,
 		private toastService: ToastService,
+		private modalService: ModalService,
 		private route: ActivatedRoute,
 		private router: Router,
 		private alertController: AlertController,
 		private titleService: TitleService,
 	) {
-		addIcons({ personCircleOutline, heartOutline, callOutline });
+		addIcons({ personCircleOutline, heartOutline, callOutline, personAdd });
 	}
 
 	ngOnInit() {
@@ -134,12 +142,30 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		await this.loadMember(this.member()!.id);
 	}
 
+	async createUser() {
+		if (!this.member()) return;
+
+		const userData = await this.modalService.componentModal(UserCreateModalComponent, {
+			data: { memberId: this.member()!.id },
+		});
+
+		if (!userData) return;
+
+		try {
+			const user = await this.api.UsersApi.createUser(userData).then((res) => res.data);
+			this.toastService.toast("Uživatelský účet vytvořen.");
+			this.router.navigate(["/uzivatele", user.id], { replaceUrl: true });
+		} catch (e) {
+			this.toastService.toast("Chyba při vytváření uživatele.", { color: "danger" });
+		}
+	}
+
 	async delete() {
 		if (!this.member()) return;
 
 		const alert = await this.alertController.create({
 			header: "Smazat člena?",
-			message: `Opravdu chcete smazat člena „<strong>${this.getFullName(this.member()!)}</strong>“?`,
+			message: `Opravdu chcete smazat člena „<strong>${this.getFullName(this.member()!)}</strong>"?`,
 			buttons: [{ text: "Zrušit" }, { text: "Smazat", handler: () => this.deleteConfirmed() }],
 		});
 
