@@ -10,3 +10,17 @@
 .actions {
 	white-space: nowrap;
 }
+
+.column-filter {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.column-filter ion-select {
+	min-width: 7rem;
+}
+
+ion-select::part(text) {
+	font-weight: normal;
+}

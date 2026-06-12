@@ -1,13 +1,17 @@
 import { DatePipe, KeyValuePipe } from "@angular/common";
 import { Component, signal } from "@angular/core";
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import {
 	AlertController,
 	InfiniteScrollCustomEvent,
+	IonButton,
+	IonIcon,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
 	IonItem,
+	IonLabel,
+	IonList,
 	IonSelect,
 	IonSelectOption,
 	IonSkeletonText,
@@ -16,6 +20,8 @@ import {
 	ViewWillLeave,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { addOutline } from "ionicons/icons";
 import { AlbumStatuses } from "src/app/core/config/album-statuses";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
@@ -38,11 +44,14 @@ import { SDK } from "src/sdk";
 
 	imports: [
 		FormsModule,
-		ReactiveFormsModule,
 		RouterLink,
 		DatePipe,
 		KeyValuePipe,
+		IonButton,
+		IonIcon,
 		IonItem,
+		IonLabel,
+		IonList,
 		IonSelect,
 		IonSelectOption,
 		IonSkeletonText,
@@ -74,11 +83,8 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 
 	filter: UrlParams = {};
 
-	readonly filterForm = new FormGroup({
-		search: new FormControl<string | null>(null),
-		status: new FormControl<string | null>(null),
-		year: new FormControl<number | null>(null),
-	});
+	selectedYear: string | null = null;
+	selectedStatus: string | null = null;
 
 	constructor(
 		private api: ApiService,
@@ -88,7 +94,9 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 		private platformService: PlatformService,
 		private route: ActivatedRoute,
 		private router: Router,
-	) {}
+	) {
+		addIcons({ addOutline });
+	}
 
 	ionViewWillEnter() {
 		this.loadYears();
@@ -108,7 +116,21 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 
 	onFilterChange(filter: UrlParams) {
 		this.filter = filter;
+		this.selectedYear = filter.year ? String(filter.year) : null;
+		this.selectedStatus = filter.status || null;
 		this.loadAlbums(filter);
+	}
+
+	setFilterParam(name: string, value: string | null) {
+		this.router.navigate([], {
+			queryParams: { [name]: value || null },
+			queryParamsHandling: "merge",
+			replaceUrl: true,
+		});
+	}
+
+	create() {
+		this.createAlbumModal();
 	}
 
 	setActions(endpoints: SDK.RootResponseLinks | null) {
