@@ -1,0 +1,77 @@
+@if (photos()?.length) {
+	<!-- on mobile these options are in the page header actions menu -->
+	<div class="buttons d-none d-lg-block">
+		@if (view() === 'gallery') {
+			<ion-button (click)="viewChange.emit('manage')" fill="clear" slot="end">
+				<ion-icon slot="start" name="create-outline"></ion-icon> Upravit
+			</ion-button>
+		} @else {
+			<ion-button (click)="viewChange.emit('gallery'); selectingCancel.emit()" fill="clear" slot="end">
+				<ion-icon slot="start" name="eye-outline"></ion-icon> Prohlížet 
+			</ion-button>
+
+			<ion-button (click)="sortDate.emit()" fill="clear" slot="end">
+				<ion-icon slot="start" name="calendar-outline"></ion-icon> Podle data
+			</ion-button>
+
+			<ion-button (click)="sortName.emit()" fill="clear" slot="end">
+				<ion-icon slot="start" name="text-outline"></ion-icon> Podle jména
+			</ion-button>
+
+			@if (!selecting()) {
+				<!-- on mobile selection is started by a long touch on a photo -->
+				@if (!platformService.isMobile.value) {
+					<ion-button (click)="selectingStart.emit()" fill="clear" slot="end">
+						<ion-icon slot="start" name="checkbox-outline"></ion-icon> Vybrat
+					</ion-button>
+				}
+			} @else {
+				<ion-button
+					(click)="deleteSelected.emit()"
+					[disabled]="!selectedPhotos().length"
+					fill="clear"
+					color="danger"
+					slot="end"
+				>
+					<ion-icon slot="start" name="trash-outline"></ion-icon> Smazat ({{ selectedPhotos().length }})
+				</ion-button>
+
+				<ion-button (click)="selectingCancel.emit()" fill="clear" slot="end">
+					<ion-icon slot="start" name="close-outline"></ion-icon> Zrušit
+				</ion-button>
+			}
+		}
+	</div>
+}
+
+<div class="gallery">
+	@if (view() === 'gallery') {
+		@if (photos()?.length) {
+			<bo-photo-gallery
+				[photos]="photos()!"
+				[maxHeight]="320"
+				[clickable]="true"
+				(click)="photoClick.emit($event)"
+			></bo-photo-gallery>
+		} @else if (photos()) {
+			<p class="ion-text-center ion-padding">V tomto albu zatím nejsou žádné fotky.</p>
+			<div class="ion-text-center">
+				<ion-button (click)="upload.emit()">
+					<ion-icon slot="start" name="cloud-upload-outline"></ion-icon> Nahrát fotky
+				</ion-button>
+			</div>
+		}
+	} @else {
+		<bo-photo-list
+			[photos]="photos()"
+			view="list"
+			[sortable]="true"
+			[selectable]="selecting()"
+			[selected]="selectedPhotos()"
+			(selectedChange)="selectedPhotosChange.emit($event)"
+			(reorderChange)="reorder.emit($event)"
+			(longPress)="longPress.emit($event)"
+			(click)="listClick.emit($event)"
+		></bo-photo-list>
+	}
+</div>

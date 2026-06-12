@@ -82,7 +82,7 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 	}
 
 	ionViewWillLeave(): void {
-		this.router.navigate([], { queryParams: { photo: undefined }, replaceUrl: true });
+		this.router.navigate([], { queryParams: { photo: undefined }, queryParamsHandling: "merge", replaceUrl: true });
 	}
 
 	@HostListener("document:keyup", ["$event"])
@@ -126,7 +126,7 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 		this.currentIndex.set(index);
 		this.photo.set(photo);
 
-		this.router.navigate([], { queryParams: { photo: photo.id }, replaceUrl: true });
+		this.router.navigate([], { queryParams: { photo: photo.id }, queryParamsHandling: "merge", replaceUrl: true });
 	}
 
 	editCaption() {
