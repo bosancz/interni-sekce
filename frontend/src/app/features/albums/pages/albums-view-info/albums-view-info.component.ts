@@ -1,10 +1,12 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
 	AlertController,
 	IonButton,
 	IonIcon,
+	IonList,
 	ModalController,
 	ViewWillLeave,
 } from "@ionic/angular/standalone";
@@ -12,7 +14,6 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
 	cloudUploadOutline,
-	createOutline,
 	eyeOffOutline,
 	eyeOutline,
 	imagesOutline,
@@ -31,9 +32,15 @@ import { PageHeaderComponent } from "src/app/shared/components/page-header/page-
 import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
+import { EventSelectorComponent } from "../../components/event-selector/event-selector.component";
 import { PhotoListComponent } from "../../components/photo-list/photo-list.component";
 import { PhotosEditComponent } from "../../components/photos-edit/photos-edit.component";
 import { PhotosUploadComponent } from "../../components/photos-upload/photos-upload.component";
+import { ItemComponent } from "../../../../shared/components/item/item.component";
+import { EditButtonDateRangeComponent } from "../../../../shared/components/edit-button-date-range/edit-button-date-range.component";
+import { EditButtonTextComponent } from "../../../../shared/components/edit-button-text/edit-button-text.component";
+import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
+import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 
 @UntilDestroy()
 @Component({
@@ -42,14 +49,22 @@ import { PhotosUploadComponent } from "../../components/photos-upload/photos-upl
 	styleUrls: ["./albums-view-info.component.scss"],
 
 	imports: [
+		FormsModule,
 		PageHeaderComponent,
 		PageContentComponent,
 		PhotoGalleryComponent,
 		PhotoListComponent,
 		IonButton,
 		IonIcon,
+		IonList,
 		DatePipe,
 		DateRangePipe,
+		ItemComponent,
+		EventSelectorComponent,
+		EditButtonDateRangeComponent,
+		EditButtonTextComponent,
+		EditButtonMarkdownComponent,
+		MarkdownPipe,
 	],
 })
 export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
@@ -83,7 +98,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	) {
 		addIcons({
 			cloudUploadOutline,
-			createOutline,
 			openOutline,
 			eyeOutline,
 			eyeOffOutline,
@@ -115,6 +129,20 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		this.alert?.dismiss();
 		this.uploadModal?.dismiss();
 		this.photosModal?.dismiss();
+	}
+
+	async updateAlbum(data: SDK.AlbumUpdateBody) {
+		const album = this.album();
+		if (!album) return;
+
+		try {
+			await this.api.PhotoGalleryApi.updateAlbum(album.id, data);
+			this.toastService.toast("Uloženo.");
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit změny.", { color: "warning" });
+		}
+
+		await this.loadAlbum(album.id);
 	}
 
 	async loadAlbum(albumId: number) {
@@ -191,7 +219,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 	startOrdering() {
 		this.enableOrdering.set(true);
-		this.photosView.set("list");
 		const photos = this.photos();
 		this.oldOrder.set(photos ? [...photos] : undefined);
 		this.actions.set([
@@ -351,7 +378,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 			{
 				text: "Nahrát fotky",
 				icon: "cloud-upload-outline",
-				pinned: true,
 				handler: () => this.uploadPhotos(),
 			},
 			{
@@ -360,9 +386,10 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 				handler: () => this.startOrdering(),
 			},
 			{
-				text: "Upravit",
-				icon: "create-outline",
-				handler: () => this.router.navigate(["../upravit"], { relativeTo: this.route }),
+				text: "Publikovat",
+				icon: "eye-outline",
+				hidden: album.status !== "draft",
+				handler: () => this.publish(),
 			},
 			{
 				text: "Otevřít na webu",
@@ -370,12 +397,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 				color: "success",
 				hidden: album.status !== "public",
 				handler: () => this.open(),
-			},
-			{
-				text: "Publikovat",
-				icon: "eye-outline",
-				hidden: album.status !== "draft",
-				handler: () => this.publish(),
 			},
 			{
 				text: "Zrušit publikaci",

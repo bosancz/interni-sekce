@@ -1,24 +1,60 @@
 <bo-page-header [title]="album()?.name" backUrl="/galerie" [actions]="actions()" actionsHeader="Album" />
 
 <bo-page-content [padding]="true">
-	@if (album()?.dateFrom && album()?.dateTill) {
-		<p>
-			{{ [album()!.dateFrom!, album()!.dateTill!] | dateRange: "d. M. y" }}, publikováno
-			{{ album()!.datePublished | date: "d. M. y" }}
-		</p>
-	}
+	<ion-list class="selectable">
+		<bo-item label="Název" [loading]="!album()">
+			<p>{{ album()?.name }}</p>
+			<bo-edit-button-text
+				slot="end"
+				label="Název alba"
+				placeholder="Neočekávaný dýchánek"
+				[disabled]="!album()?._links?.updateAlbum?.allowed"
+				[value]="album()?.name"
+				(update)="updateAlbum({ name: $event ?? '' })"
+			/>
+		</bo-item>
 
-	<p>{{ album()?.description }}</p>
+		<bo-item label="Termín" [loading]="!album()">
+			<p>{{ [album()?.dateFrom ?? undefined, album()?.dateTill ?? undefined] | dateRange: "d. M. y" }}</p>
+			<bo-edit-button-date-range
+				slot="end"
+				label="Datum od - do"
+				[disabled]="!album()?._links?.updateAlbum?.allowed"
+				[value]="[album()?.dateFrom ?? undefined, album()?.dateTill ?? undefined]"
+				(update)="updateAlbum({ dateFrom: $event[0], dateTill: $event[1] })"
+			/>
+		</bo-item>
+
+		<bo-item label="Publikováno" [loading]="!album()">
+			<p>{{ (album()?.datePublished | date: "d. M. y") ?? "-" }}</p>
+		</bo-item>
+
+		<bo-item label="Akce" [loading]="!album()" lines="inset">
+			<bo-event-selector
+				placeholder="Vyberte akci v programu"
+				[ngModel]="album()?.eventId"
+				(ngModelChange)="updateAlbum({ eventId: $event })"
+			></bo-event-selector>
+		</bo-item>
+
+		<bo-item label="Popis" [loading]="!album()">
+			<div [innerHTML]="album()?.description | markdown"></div>
+			<bo-edit-button-markdown
+				slot="end"
+				label="Popis"
+				placeholder="Zadejte popis alba..."
+				[disabled]="!album()?._links?.updateAlbum?.allowed"
+				[value]="album()?.description"
+				(update)="updateAlbum({ description: $event })"
+			/>
+		</bo-item>
+	</ion-list>
+
 
 	@if (photos()?.length) {
 		<div class="buttons">
 			@if (photosView() === 'list') {
-				<ion-button
-					[disabled]="enableOrdering() || enableDeleting()"
-					(click)="photosView.set('gallery')"
-					fill="clear"
-					slot="end"
-				>
+				<ion-button (click)="photosView.set('gallery')" fill="clear" slot="end">
 					<ion-icon slot="start" name="images-outline"></ion-icon> Galerie
 				</ion-button>
 			}
@@ -27,7 +63,12 @@
 					<ion-icon slot="start" name="list-outline"></ion-icon> Seznam
 				</ion-button>
 			}
+			
+			<ion-button (click)="startOrdering()" fill="clear" slot="end">
+				<ion-icon slot="start" name="sort"></ion-icon> Seřadit
+			</ion-button>
 		</div>
+		
 	}
 
 	<div class="gallery">

@@ -21,7 +21,6 @@ export class EditButtonMarkdownComponent {
 	constructor(private readonly modalService: ModalService) {}
 
 	async openEdit() {
-		console.log("Opening MarkdownEditorModalComponent with value:", this.label());
 		const result = await this.modalService.componentModal(MarkdownEditorModalComponent, {
 			header: this.label(),
 			value: this.value(),

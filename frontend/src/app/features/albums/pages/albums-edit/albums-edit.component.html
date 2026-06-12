@@ -1,5 +1,6 @@
 <bo-page-header [title]="'Upravit: ' + (album()?.name ?? '')" [actions]="actions()" actionsHeader="Upravit galerii" />
-
+	<p> hello </p>
+	<p> {{ album()?.description }} </p>
 <ion-content>
 	<form #albumForm="ngForm">
 		<div class="row">
@@ -22,8 +23,8 @@
 					<bo-event-selector
 						name="event"
 						placeholder="Neočekávaný dýchánek"
-						[ngModel]="album()?.event"
-						(ngModelChange)="eventUpdated($event)"
+						[ngModel]="album()?.eventId"
+						(eventOutput)="eventUpdated($event)"
 					></bo-event-selector>
 				</ion-item>
 			</div>
@@ -33,7 +34,7 @@
 					<ion-label position="stacked">Datum od</ion-label>
 					<ion-input
 						type="date"
-						[ngModel]="album()?.dateFrom | date: 'yyyy-MM-dd'"
+						[ngModel]="album()?.dateFrom"
 						name="dateFrom"
 						placeholder="Začátek"
 						required
