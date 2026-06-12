@@ -1,4 +1,6 @@
-import { ApiProperty, ApiPropertyOptional, PickType } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsInt, IsOptional, IsString } from "class-validator";
 import { WithLinks } from "src/access-control/access-control-lib";
 import { UserResponse } from "src/api/users/dto/user.dto";
 import { Album } from "src/models/albums/entities/album.entity";
@@ -18,6 +20,7 @@ export class PhotoResponse {
 	@ApiProperty({ type: "string" }) timestamp!: string | Date;
 	@ApiProperty() name!: string;
 
+	@ApiPropertyOptional({ type: "number" }) order!: number | null;
 	@ApiPropertyOptional({ type: "number" }) width!: number | null;
 	@ApiPropertyOptional({ type: "number" }) height!: number | null;
 	@ApiPropertyOptional({ type: "number" }) uploadedById!: number | null;
@@ -31,8 +34,28 @@ export class PhotoResponse {
 	@ApiPropertyOptional({ type: () => WithLinks(UserResponse) }) uploadedBy?: User | null;
 }
 
-export class PhotoCreateBody extends PickType(PhotoResponse, ["albumId"]) {
+export class PhotoCreateBody {
+	// multipart sends albumId as a string; @Type converts it and @IsInt whitelists it for the global ValidationPipe
+	@ApiProperty()
+	@Type(() => Number)
+	@IsInt()
+	albumId!: number;
+
 	@ApiProperty({ type: "string", format: "binary" }) file!: any;
 }
 
-export class PhotoUpdateBody extends PickType(PhotoResponse, ["caption", "tags", "title"]) {}
+// explicit validators: the global ValidationPipe (whitelist + forbidNonWhitelisted)
+// rejects any property that has no class-validator decorator
+export class PhotoUpdateBody {
+	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() title?: string | null;
+	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() caption?: string | null;
+	@ApiPropertyOptional({ type: "string", isArray: true }) @IsOptional() @IsString({ each: true }) tags?:
+		| string[]
+		| null;
+}
+
+export class AlbumPhotosOrderBody {
+	@ApiProperty({ type: "number", isArray: true })
+	@IsInt({ each: true })
+	photoIds!: number[];
+}

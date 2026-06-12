@@ -1,3 +1,4 @@
+import { provideHttpClient } from "@angular/common/http";
 import { ApplicationConfig, ErrorHandler, isDevMode, LOCALE_ID } from "@angular/core";
 import {
 	provideRouter,
@@ -48,6 +49,7 @@ export const appConfig: ApplicationConfig = {
 		{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
 		{ provide: ErrorHandler, useClass: MainErrorHandler },
 		{ provide: LOCALE_ID, useValue: "cs" },
+		provideHttpClient(),
 		Config,
 	],
 };

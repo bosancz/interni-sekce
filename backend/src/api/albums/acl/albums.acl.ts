@@ -59,6 +59,11 @@ export const AlbumUnpublishPermission = new Permission({
 	applicable: ({ doc }) => doc.status === "public",
 });
 
+export const AlbumReorderPhotosPermission = new Permission({
+	linkTo: AlbumResponse,
+	inherit: AlbumEditPermission,
+});
+
 export const AlbumPhotosPermission = new Permission({
 	linkTo: AlbumResponse,
 	contains: PhotoResponse,

@@ -80,7 +80,7 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 	}
 
 	inputValueChanged(value: string) {
-		if (value === "") this.updateValue(null);
+		if (value === "") this.selectEvent(null);
 	}
 
 	async openModal() {
@@ -89,20 +89,22 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 		});
 
 		this.modal.onDidDismiss().then((result) => {
-			if (result.data?.event !== undefined) this.updateValue(result.data?.event);
+			if (result.data?.event !== undefined) this.selectEvent(result.data?.event ?? null);
 		});
 
 		this.modal.present();
 	}
 
-	private async updateValue(value: SDK.EventResponseWithLinks["id"] | null) {
-		if (value === this.value()) return;
+	// user-initiated selection: update the displayed event AND notify the form / parent
+	private selectEvent(event: SDK.EventResponseWithLinks | null) {
+		const id = event?.id ?? null;
+		if (id === this.value()) return;
 
-		this.value.set(value);
-		const event = value ? await this.loadEvent(value) : undefined;
-		this.event.set(event);
+		this.value.set(id);
+		this.event.set(event ?? undefined);
 
-		this.onChange?.(value);
+		this.onChange?.(id);
+		if (event) this.eventOutput.emit(event);
 		this.emitIonStyle();
 	}
 
@@ -111,8 +113,14 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 	}
 
 	/* ControlValueAccessor */
-	writeValue(obj?: SDK.EventResponseWithLinks["id"] | null): void {
-		this.updateValue(obj || null);
+	// model -> view only: load the event for display, never call onChange here
+	async writeValue(eventId?: SDK.EventResponseWithLinks["id"] | null): Promise<void> {
+		const value = eventId ?? null;
+		if (value === this.value()) return;
+
+		this.value.set(value);
+		this.event.set(value ? await this.loadEvent(value) : undefined);
+		this.emitIonStyle();
 	}
 
 	registerOnChange(fn: (value: SDK.EventResponseWithLinks["id"] | null) => void): void {

@@ -27,6 +27,7 @@ export class Photo {
 
 	@Column({ type: "text", nullable: false }) name!: string;
 	@Column({ type: "timestamp with time zone", nullable: false }) timestamp!: Date;
+	@Column({ type: "integer", nullable: true }) order!: number | null;
 	@Column({ type: "integer", nullable: true }) width!: number | null;
 	@Column({ type: "integer", nullable: true }) height!: number | null;
 	@Column({ type: "text", nullable: true }) title!: string | null;

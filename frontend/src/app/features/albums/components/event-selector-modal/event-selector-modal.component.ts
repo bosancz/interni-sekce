@@ -1,9 +1,12 @@
 import { Component, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import {
+	InfiniteScrollCustomEvent,
 	IonButton,
 	IonButtons,
 	IonContent,
+	IonInfiniteScroll,
+	IonInfiniteScrollContent,
 	IonItem,
 	IonLabel,
 	IonList,
@@ -29,12 +32,18 @@ import { SDK } from "src/sdk";
 		IonList,
 		IonItem,
 		IonLabel,
+		IonInfiniteScroll,
+		IonInfiniteScrollContent,
 		FormsModule,
 		DateRangePipe,
 	],
 })
 export class EventSelectorModalComponent implements OnInit {
-	events = signal<SDK.EventResponseWithLinks[]>([]);
+	events = signal<SDK.EventResponseWithLinks[] | undefined>(undefined);
+
+	pageSize = 20;
+	page = signal(1);
+	searchString = signal<string | undefined>(undefined);
 
 	constructor(
 		private api: ApiService,
@@ -42,22 +51,42 @@ export class EventSelectorModalComponent implements OnInit {
 	) {}
 
 	ngOnInit(): void {
-		this.searchEvents();
+		this.loadEvents();
 	}
 
 	async searchEvents(searchString?: string) {
-		const params = {
-			search: searchString || undefined,
-			sort: "-dateFrom",
-			limit: 20,
-		};
-
-		// TODO: use params
-		const events = await this.api.EventsApi.listEvents().then((res) => res.data);
-		this.events.set(events);
+		this.searchString.set(searchString || undefined);
+		await this.loadEvents();
 	}
 
-	close(eventId?: SDK.EventResponseWithLinks["id"]) {
-		this.modalController.dismiss({ event: eventId });
+	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
+		await this.loadEvents(true);
+		e.target.complete();
+	}
+
+	private async loadEvents(loadMore = false) {
+		if (loadMore) {
+			const currentEvents = this.events();
+			if (currentEvents && currentEvents.length < this.page() * this.pageSize) return;
+			this.page.set(this.page() + 1);
+		} else {
+			this.page.set(1);
+			this.events.set(undefined);
+		}
+
+		const params: SDK.EventsApiListEventsQueryParams = {
+			search: this.searchString(),
+			offset: (this.page() - 1) * this.pageSize,
+			limit: this.pageSize,
+		};
+
+		const newEvents = await this.api.EventsApi.listEvents(params).then((res) => res.data);
+
+		const currentEvents = this.events();
+		this.events.set(currentEvents ? [...currentEvents, ...newEvents] : newEvents);
+	}
+
+	close(event?: SDK.EventResponseWithLinks) {
+		this.modalController.dismiss(event ? { event } : undefined);
 	}
 }

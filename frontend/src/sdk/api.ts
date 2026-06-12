@@ -416,11 +416,31 @@ export namespace SDK {
          */
         'unpublishAlbum': AcLink;
         /**
-         * 
+         *
          * @type {AcLink}
          * @memberof AlbumResponseLinks
          */
         'getAlbumPhotos': AcLink;
+        /**
+         *
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
+        'reorderAlbumPhotos': AcLink;
+    }
+
+        /**
+     *
+     * @export
+     * @interface AlbumPhotosOrderBody
+     */
+    export interface AlbumPhotosOrderBody {
+        /**
+         *
+         * @type {Array<number>}
+         * @memberof AlbumPhotosOrderBody
+         */
+        'photoIds': Array<number>;
     }
     
         /**
@@ -3777,7 +3797,13 @@ export namespace SDK {
          */
         'name': string;
         /**
-         * 
+         *
+         * @type {number}
+         * @memberof PhotoResponseWithLinks
+         */
+        'order'?: number | null;
+        /**
+         *
          * @type {number}
          * @memberof PhotoResponseWithLinks
          */
@@ -8155,14 +8181,61 @@ export namespace SDK {
         }
     
         /**
-         * 
-    
-         * @param {number} id 
+         *
+
+         * @param {number} id
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
          */
-        
+
+        public async reorderAlbumPhotos(
+            id: number,
+            body: AlbumPhotosOrderBody,
+            options: AxiosRequestConfig = {}
+        ) {
+
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('reorderAlbumPhotos', 'id', id)
+            assertParamExists('reorderAlbumPhotos', 'albumPhotosOrderBody', body)
+
+            const localVarPath = `/api/albums/{id}/photos/order`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+
+
+
+            requestHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+
+        /**
+         *
+
+         * @param {number} id
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+
         public async updateAlbum(
             id: number,
             body: AlbumUpdateBody,

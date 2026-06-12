@@ -1,12 +1,16 @@
 import {
-    AfterViewChecked,
+    AfterViewInit,
     Component,
     effect,
     ElementRef,
     input,
+    NgZone,
+    OnDestroy,
     OnInit,
     output,
+    signal,
 } from "@angular/core";
+import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 
 interface PhotoRowItem {
@@ -23,9 +27,9 @@ class PhotoRow {
 	selector: "bo-photo-gallery",
 	templateUrl: "./photo-gallery.component.html",
 	styleUrls: ["./photo-gallery.component.scss"],
-	
+	imports: [PhotoImageUrlPipe],
 })
-export class PhotoGalleryComponent implements OnInit, AfterViewChecked {
+export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 	photos = input<SDK.PhotoResponseWithLinks[]>([]);
 	maxHeight = input<number>(200);
 	clickable = input<boolean>(false);
@@ -34,11 +38,16 @@ export class PhotoGalleryComponent implements OnInit, AfterViewChecked {
 
 	click = output<SDK.PhotoResponseWithLinks>();
 
-	rows: PhotoRow[] = [];
+	rows = signal<PhotoRow[]>([]);
 
 	width!: number;
 
-	constructor(private elRef: ElementRef<HTMLElement>) {
+	private resizeObserver?: ResizeObserver;
+
+	constructor(
+		private elRef: ElementRef<HTMLElement>,
+		private ngZone: NgZone,
+	) {
 		effect(() => {
 			const photos = this.photos();
 			if (photos) this.createRows();
@@ -47,19 +56,26 @@ export class PhotoGalleryComponent implements OnInit, AfterViewChecked {
 
 	ngOnInit(): void {}
 
-	ngAfterViewChecked() {
-		const width = this.elRef.nativeElement.offsetWidth;
+	ngAfterViewInit() {
+		this.resizeObserver = new ResizeObserver(() => {
+			const width = this.elRef.nativeElement.offsetWidth;
+			if (width === this.width) return;
 
-		if (width !== this.width) {
-			this.width = width;
-			setTimeout(() => this.createRows(), 0);
-		}
+			this.ngZone.run(() => {
+				this.width = width;
+				this.createRows();
+			});
+		});
+
+		this.resizeObserver.observe(this.elRef.nativeElement);
+	}
+
+	ngOnDestroy() {
+		this.resizeObserver?.disconnect();
 	}
 
 	createRows() {
 		if (!this.width) return;
-
-		this.rows = [];
 
 		const photos = this.photos().slice();
 		const maxHeight = this.maxHeight();
@@ -97,7 +113,7 @@ export class PhotoGalleryComponent implements OnInit, AfterViewChecked {
 			rows.push(row);
 		}
 
-		this.rows = rows;
+		this.rows.set(rows);
 	}
 
 	onPhotoClick(event: MouseEvent, photo: SDK.PhotoResponseWithLinks) {

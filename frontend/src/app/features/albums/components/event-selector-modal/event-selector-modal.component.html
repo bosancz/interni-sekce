@@ -1,5 +1,9 @@
 <ion-toolbar>
-	<ion-searchbar enterkeyhint="search" (ionChange)="searchEvents($any($event).detail.value)"></ion-searchbar>
+	<ion-searchbar
+		enterkeyhint="search"
+		[debounce]="300"
+		(ionInput)="searchEvents($any($event).detail.value)"
+	></ion-searchbar>
 	<ion-buttons slot="end">
 		<ion-button (click)="close()">Zrušit</ion-button>
 	</ion-buttons>
@@ -7,8 +11,8 @@
 
 <ion-content>
 	<ion-list>
-		@for (event of events(); track event.id) {
-			<ion-item [button]="true" (click)="close(event.id)">
+		@for (event of events() ?? []; track event.id) {
+			<ion-item [button]="true" (click)="close(event)">
 				<ion-label>
 					<h3>{{ event.name }}</h3>
 					<p>{{ [event.dateFrom, event.dateTill] | dateRange }}</p>
@@ -16,4 +20,8 @@
 			</ion-item>
 		}
 	</ion-list>
+
+	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
 </ion-content>

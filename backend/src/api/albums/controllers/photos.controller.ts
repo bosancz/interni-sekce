@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Delete,
@@ -8,13 +9,18 @@ import {
 	Patch,
 	Post,
 	Req,
+	Res,
 	UploadedFile,
 	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
+import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { Request, Response } from "express";
+import { createReadStream } from "fs";
+import { contentType } from "mime-types";
+import { extname } from "path";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
+import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import {
 	PhotoCreatePermission,
@@ -30,7 +36,10 @@ import { PhotoCreateBody, PhotoResponse, PhotoSizes, PhotoUpdateBody } from "../
 @AcController()
 @ApiTags("Photo gallery")
 export class PhotosController {
-	constructor(private photos: PhotosRepository) {}
+	constructor(
+		private photos: PhotosRepository,
+		private photosFiles: PhotosFilesService,
+	) {}
 
 	@Get()
 	@AcLinks(PhotosListPermission)
@@ -42,9 +51,22 @@ export class PhotosController {
 	@Post()
 	@AcLinks(PhotoCreatePermission)
 	@UseInterceptors(FileInterceptor("file"))
+	@ApiConsumes("multipart/form-data")
 	@ApiBody({ type: PhotoCreateBody })
-	createPhoto(@UploadedFile() file: Express.Multer.File, @Body() body: PhotoCreateBody) {
-		//TODO:
+	@ApiResponse({ status: 201, type: WithLinks(PhotoResponse) })
+	async createPhoto(
+		@Req() req: Request,
+		@UploadedFile() file: Express.Multer.File,
+		@Body() body: PhotoCreateBody,
+	): Promise<PhotoResponse> {
+		PhotoCreatePermission.canOrThrow(req);
+
+		if (!file) throw new BadRequestException("Missing file.");
+
+		const ext = extname(file.originalname).slice(1).toLowerCase();
+		if (!this.photosFiles.isAllowedType(ext)) throw new BadRequestException("Unsupported file type.");
+
+		return this.photos.createPhoto(body.albumId, file, req.user?.userId ?? null);
 	}
 
 	@Get(":id")
@@ -78,19 +100,36 @@ export class PhotosController {
 		const photo = await this.photos.getPhoto(id);
 		if (!photo) throw new NotFoundException();
 
-		PhotoEditPermission.canOrThrow(req, photo);
+		PhotoDeletePermission.canOrThrow(req, photo);
 
 		await this.photos.deletePhoto(photo.id);
 	}
 
 	@Get(":id/image/:size")
 	@AcLinks(PhotoReadFilePermission)
-	async getPhotoImage(@Param("id") id: number, @Param("size") size: PhotoSizes, @Req() req: Request): Promise<void> {
+	async getPhotoImage(
+		@Param("id") id: number,
+		@Param("size") size: PhotoSizes,
+		@Req() req: Request,
+		@Res() res: Response,
+	): Promise<void> {
+		if (!Object.values(PhotoSizes).includes(size)) throw new BadRequestException("Unknown image size.");
+
 		const photo = await this.photos.getPhoto(id);
 		if (!photo) throw new NotFoundException();
 
 		PhotoReadFilePermission.canOrThrow(req, photo);
 
-		//TODO: return photo file
+		const ext = extname(photo.name);
+		const path = this.photosFiles.getImagePath(photo.albumId, photo.id, size, ext);
+
+		try {
+			await this.photosFiles.fileExists(path);
+		} catch {
+			throw new NotFoundException("Image file not found.");
+		}
+
+		res.setHeader("Content-Type", contentType(ext) || "application/octet-stream");
+		createReadStream(path).pipe(res);
 	}
 }

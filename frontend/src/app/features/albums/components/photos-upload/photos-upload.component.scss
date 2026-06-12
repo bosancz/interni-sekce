@@ -2,12 +2,17 @@
 	display: none;
 }
 .upload {
-	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	min-height: 100%;
+	box-sizing: border-box;
 }
 
 .dropzone {
-	height: 100%;
+	flex: 1;
+	min-height: 200px;
 	background-color: var(--ion-color-light);
+	border: 2px dashed var(--ion-color-medium);
 	border-radius: 5px;
 	cursor: pointer;
 	display: flex;

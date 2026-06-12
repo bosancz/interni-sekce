@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsEnum, IsNumberString, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { EventResponse } from "src/api/events/dto/event.dto";
 import { PaginationQuery } from "src/api/helpers/dto";
@@ -33,13 +33,13 @@ export class AlbumListQuery extends PaginationQuery {
 }
 
 export class AlbumCreateBody {
-	@ApiPropertyOptional() name?: string;
-	@ApiPropertyOptional() description?: string | null;
-	@ApiPropertyOptional() datePublished?: string | null;
-	@ApiPropertyOptional() dateFrom?: string | null;
-	@ApiPropertyOptional() dateTill?: string | null;
+	@ApiPropertyOptional() @IsOptional() @IsString() name?: string;
+	@ApiPropertyOptional() @IsOptional() @IsString() description?: string | null;
+	@ApiPropertyOptional() @IsOptional() @IsString() datePublished?: string | null;
+	@ApiPropertyOptional() @IsOptional() @IsString() dateFrom?: string | null;
+	@ApiPropertyOptional() @IsOptional() @IsString() dateTill?: string | null;
 }
 
 export class AlbumUpdateBody extends AlbumCreateBody {
-	@ApiPropertyOptional() eventId?: number | null;
+	@ApiPropertyOptional() @IsOptional() @IsNumber() eventId?: number | null;
 }

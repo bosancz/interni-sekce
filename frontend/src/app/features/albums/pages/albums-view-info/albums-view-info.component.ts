@@ -1,9 +1,34 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { AlertController, NavController } from "@ionic/angular/standalone";
+import {
+	AlertController,
+	IonButton,
+	IonIcon,
+	IonList,
+	ModalController,
+	ViewWillLeave,
+} from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import {
+	calendarOutline,
+	checkboxOutline,
+	closeOutline,
+	cloudUploadOutline,
+	eyeOffOutline,
+	eyeOutline,
+	imagesOutline,
+	openOutline,
+	save,
+	swapVerticalOutline,
+	textOutline,
+	trash,
+	trashOutline,
+} from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
@@ -11,7 +36,15 @@ import { PageHeaderComponent } from "src/app/shared/components/page-header/page-
 import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
-import { AlbumsTabsComponent } from "../../components/albums-tabs/albums-tabs.component";
+import { EventSelectorComponent } from "../../components/event-selector/event-selector.component";
+import { PhotoListComponent } from "../../components/photo-list/photo-list.component";
+import { PhotosEditComponent } from "../../components/photos-edit/photos-edit.component";
+import { PhotosUploadComponent } from "../../components/photos-upload/photos-upload.component";
+import { ItemComponent } from "../../../../shared/components/item/item.component";
+import { EditButtonDateRangeComponent } from "../../../../shared/components/edit-button-date-range/edit-button-date-range.component";
+import { EditButtonTextComponent } from "../../../../shared/components/edit-button-text/edit-button-text.component";
+import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
+import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 
 @UntilDestroy()
 @Component({
@@ -20,20 +53,40 @@ import { AlbumsTabsComponent } from "../../components/albums-tabs/albums-tabs.co
 	styleUrls: ["./albums-view-info.component.scss"],
 
 	imports: [
+		FormsModule,
 		PageHeaderComponent,
 		PageContentComponent,
 		PhotoGalleryComponent,
-		AlbumsTabsComponent,
+		PhotoListComponent,
+		IonButton,
+		IonIcon,
+		IonList,
 		DatePipe,
 		DateRangePipe,
+		ItemComponent,
+		EventSelectorComponent,
+		EditButtonDateRangeComponent,
+		EditButtonTextComponent,
+		EditButtonMarkdownComponent,
+		MarkdownPipe,
 	],
 })
-export class AlbumsViewInfoComponent implements OnInit {
+export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
+
+	photos = signal<SDK.PhotoResponseWithLinks[] | undefined>(undefined);
 
 	actions = signal<Action[]>([]);
 
+	photosView = signal<"gallery" | "manage">("gallery");
+
+	selecting = signal(false);
+
+	selectedPhotos = signal<SDK.PhotoResponseWithLinks[]>([]);
+
 	alert?: HTMLIonAlertElement;
+	uploadModal?: HTMLIonModalElement;
+	photosModal?: HTMLIonModalElement;
 
 	constructor(
 		private route: ActivatedRoute,
@@ -41,21 +94,216 @@ export class AlbumsViewInfoComponent implements OnInit {
 		private api: ApiService,
 		private toastService: ToastService,
 		private alertController: AlertController,
-		private navController: NavController,
-	) {}
-
-	ngOnInit(): void {
-		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => this.loadAlbum(params["album"]));
+		private modalController: ModalController,
+		public platformService: PlatformService,
+	) {
+		addIcons({
+			cloudUploadOutline,
+			openOutline,
+			eyeOutline,
+			eyeOffOutline,
+			trash,
+			trashOutline,
+			save,
+			swapVerticalOutline,
+			imagesOutline,
+			checkboxOutline,
+			closeOutline,
+			calendarOutline,
+			textOutline,
+		});
 	}
 
-	ngOnDestroy() {
+	ngOnInit(): void {
+		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {
+			if (this.album()?.id !== params["album"]) this.loadAlbum(params["album"]);
+		});
+
+		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => {
+			if (params.photo && !this.photosModal) {
+				const photo = this.photos()?.find((item) => String(item.id) === String(params.photo));
+				if (photo) this.openPhoto(photo);
+			}
+			if (!params.photo && this.photosModal) {
+				this.photosModal.dismiss();
+			}
+		});
+	}
+
+	ionViewWillLeave() {
 		this.alert?.dismiss();
+		this.uploadModal?.dismiss();
+		this.photosModal?.dismiss();
+	}
+
+	async updateAlbum(data: SDK.AlbumUpdateBody) {
+		const album = this.album();
+		if (!album) return;
+
+		try {
+			await this.api.PhotoGalleryApi.updateAlbum(album.id, data);
+			this.toastService.toast("Uloženo.");
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit změny.", { color: "warning" });
+		}
+
+		await this.loadAlbum(album.id);
 	}
 
 	async loadAlbum(albumId: number) {
 		const album = await this.api.PhotoGalleryApi.getAlbum(albumId).then((res) => res.data);
 		this.album.set(album);
-		this.updateActions(album);
+		this.actions.set(this.getActions(album));
+
+		const photos = await this.api.PhotoGalleryApi.getAlbumPhotos(albumId).then((res) => res.data);
+		this.photos.set(photos);
+
+		const photoId = this.route.snapshot.queryParams["photo"];
+		if (photoId && !this.photosModal) {
+			const photo = photos?.find((item) => String(item.id) === String(photoId));
+			if (photo) this.openPhoto(photo);
+		}
+	}
+
+	onGalleryClick(photo: SDK.PhotoResponseWithLinks) {
+		this.router.navigate([], { queryParams: { photo: photo.id } });
+	}
+
+	onListClick(event: CustomEvent<SDK.PhotoResponseWithLinks | undefined>) {
+		if (this.selecting()) return;
+		if (!event.detail) return;
+		this.router.navigate([], { queryParams: { photo: event.detail.id } });
+	}
+
+	async openPhoto(photo: SDK.PhotoResponseWithLinks) {
+		if (this.photosModal) this.photosModal.dismiss();
+
+		const photos = this.photos();
+		const originalCount = photos?.length;
+
+		this.photosModal = await this.modalController.create({
+			component: PhotosEditComponent,
+			componentProps: {
+				photos: photos,
+			},
+			backdropDismiss: false,
+			cssClass: "ion-modal-lg",
+		});
+
+		this.photosModal.onWillDismiss().then(() => {
+			this.photosModal = undefined;
+
+			const album = this.album();
+			const photos = this.photos();
+			if (photos?.length !== originalCount && album) {
+				this.loadAlbum(album.id); // album must be present when closing modal
+			}
+		});
+
+		this.photosModal.present();
+	}
+
+	// --- Ordering -----------------------------------------------------------
+
+	async onReorder(photos: SDK.PhotoResponseWithLinks[]) {
+		this.photos.set(photos);
+		await this.persistOrder(photos);
+	}
+
+	async sortByDate() {
+		const photos = [...(this.photos() ?? [])].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+		this.photos.set(photos);
+		await this.persistOrder(photos);
+	}
+
+	async sortByName() {
+		const photos = [...(this.photos() ?? [])].sort((a, b) => a.name.localeCompare(b.name));
+		this.photos.set(photos);
+		await this.persistOrder(photos);
+	}
+
+	private async persistOrder(photos: SDK.PhotoResponseWithLinks[]) {
+		const album = this.album();
+		if (!album) return;
+
+		try {
+			await this.api.PhotoGalleryApi.reorderAlbumPhotos(album.id, { photoIds: photos.map((photo) => photo.id) });
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit pořadí fotek.", { color: "warning" });
+			await this.loadAlbum(album.id);
+		}
+	}
+
+	// --- Selecting & deleting -------------------------------------------------
+
+	startSelecting() {
+		this.selecting.set(true);
+		this.selectedPhotos.set([]);
+	}
+
+	cancelSelecting() {
+		this.selecting.set(false);
+		this.selectedPhotos.set([]);
+	}
+
+	onLongPress(photo: SDK.PhotoResponseWithLinks) {
+		if (this.selecting()) return;
+		this.selecting.set(true);
+		this.selectedPhotos.set([photo]);
+	}
+
+	async deleteSelected() {
+		const selected = this.selectedPhotos();
+		if (!selected.length) return;
+
+		this.alert = await this.alertController.create({
+			message: `Opravdu chcete smazat vybrané fotky (${selected.length})?`,
+			buttons: [
+				{ text: "Zrušit", role: "cancel" },
+				{ text: "Smazat", handler: () => this.deleteSelectedConfirmed() },
+			],
+		});
+
+		this.alert.present();
+	}
+
+	private async deleteSelectedConfirmed() {
+		const toast = await this.toastService.toast("Mažu fotky...");
+
+		const selected = this.selectedPhotos();
+		for (let photo of selected) {
+			await this.api.PhotoGalleryApi.deletePhoto(photo.id);
+		}
+
+		const album = this.album();
+		if (album) {
+			await this.loadAlbum(album.id); // wouldnt be able to delete photos if no album was present
+		}
+
+		toast.dismiss();
+		this.toastService.toast("Fotky smazány");
+		this.cancelSelecting();
+	}
+
+	// --- Album actions ------------------------------------------------------
+
+	private async uploadPhotos() {
+		const album = this.album();
+		if (!album) return;
+
+		if (this.uploadModal) this.uploadModal.dismiss();
+
+		this.uploadModal = await this.modalController.create({
+			component: PhotosUploadComponent,
+			componentProps: { album },
+			backdropDismiss: false,
+		});
+
+		this.uploadModal.onDidDismiss().then((event) => {
+			if (event.data) this.loadAlbum(album.id);
+		});
+
+		this.uploadModal.present();
 	}
 
 	private async publish() {
@@ -103,22 +351,18 @@ export class AlbumsViewInfoComponent implements OnInit {
 		window.open("https://bosan.cz/fotogalerie/" + album.id);
 	}
 
-	onPhotoClick(event: SDK.PhotoResponseWithLinks) {
-		const album = this.album();
-		if (album) {
-			this.navController.navigateForward(`/galerie/${album.id}/fotky`, {
-				queryParams: { photo: event.id },
-			});
-		}
-	}
-
-	private updateActions(album: SDK.AlbumResponseWithLinks) {
-		this.actions.set([
+	private getActions(album: SDK.AlbumResponseWithLinks): Action[] {
+		return [
 			{
-				text: "Upravit",
-				icon: "create-outline",
-				pinned: true,
-				handler: () => this.router.navigate(["../upravit"], { relativeTo: this.route }),
+				text: "Nahrát fotky",
+				icon: "cloud-upload-outline",
+				handler: () => this.uploadPhotos(),
+			},
+			{
+				text: "Publikovat",
+				icon: "eye-outline",
+				hidden: album.status !== "draft",
+				handler: () => this.publish(),
 			},
 			{
 				text: "Otevřít na webu",
@@ -128,24 +372,18 @@ export class AlbumsViewInfoComponent implements OnInit {
 				handler: () => this.open(),
 			},
 			{
-				text: "Publikovat",
-				icon: "eye-outline",
-				hidden: album.status !== "draft",
-				handler: () => this.publish(),
-			},
-			{
 				text: "Zrušit publikaci",
 				icon: "eye-off-outline",
 				hidden: album.status !== "public",
 				handler: () => this.unpublish(),
 			},
 			{
-				text: "Smazat",
+				text: "Smazat album",
 				role: "destructive",
 				icon: "trash",
 				color: "danger",
 				handler: () => this.delete(),
 			},
-		]);
+		];
 	}
 }

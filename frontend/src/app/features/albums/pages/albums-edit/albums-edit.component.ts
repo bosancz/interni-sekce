@@ -2,7 +2,7 @@ import { DatePipe } from "@angular/common";
 import { Component, signal, ViewChild } from "@angular/core";
 import { FormsModule, NgForm } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { IonContent, IonItem, IonLabel, NavController } from "@ionic/angular/standalone";
+import { IonContent, IonInput, IonItem, IonLabel, IonTextarea, NavController } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -17,7 +17,17 @@ import { EventSelectorComponent } from "../../components/event-selector/event-se
 	templateUrl: "./albums-edit.component.html",
 	styleUrls: ["./albums-edit.component.scss"],
 
-	imports: [FormsModule, EventSelectorComponent, PageHeaderComponent, IonContent, IonItem, IonLabel, DatePipe],
+	imports: [
+		FormsModule,
+		EventSelectorComponent,
+		PageHeaderComponent,
+		IonContent,
+		IonInput,
+		IonTextarea,
+		IonItem,
+		IonLabel,
+		DatePipe,
+	],
 })
 export class AlbumsEditComponent {
 	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
@@ -65,7 +75,17 @@ export class AlbumsEditComponent {
 			return;
 		}
 
-		let albumData: SDK.AlbumUpdateBody = this.albumForm.value;
+		const formValue = this.albumForm.value;
+
+		// the "event" control holds the selected event id (or null)
+		const albumData: SDK.AlbumUpdateBody = {
+			name: formValue.name,
+			description: formValue.description,
+			dateFrom: formValue.dateFrom,
+			dateTill: formValue.dateTill,
+			datePublished: formValue.datePublished,
+			eventId: formValue.event ?? null,
+		};
 
 		// prevent switched date order
 		if (albumData.dateFrom && albumData.dateTill) {
