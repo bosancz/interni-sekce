@@ -1,0 +1,48 @@
+<ion-list class="selectable">
+	<bo-item label="Název" [loading]="!album()">
+		<p>{{ album()?.name }}</p>
+		<bo-edit-button-text
+			slot="end"
+			label="Název alba"
+			placeholder="Neočekávaný dýchánek"
+			[disabled]="!album()?._links?.updateAlbum?.allowed"
+			[value]="album()?.name"
+			(update)="update.emit({ name: $event ?? '' })"
+		/>
+	</bo-item>
+
+	<bo-item label="Termín" [loading]="!album()">
+		<p>{{ [album()?.dateFrom ?? undefined, album()?.dateTill ?? undefined] | dateRange: "d. M. y" }}</p>
+		<bo-edit-button-date-range
+			slot="end"
+			label="Datum od - do"
+			[disabled]="!album()?._links?.updateAlbum?.allowed"
+			[value]="[album()?.dateFrom ?? undefined, album()?.dateTill ?? undefined]"
+			(update)="update.emit({ dateFrom: $event[0], dateTill: $event[1] })"
+		/>
+	</bo-item>
+
+	<bo-item label="Publikováno" [loading]="!album()">
+		<p>{{ (album()?.datePublished | date: "d. M. y") ?? "-" }}</p>
+	</bo-item>
+
+	<bo-item label="Akce" [loading]="!album()" lines="inset">
+		<bo-event-selector
+			placeholder="Vyberte akci v programu"
+			[ngModel]="album()?.eventId"
+			(ngModelChange)="update.emit({ eventId: $event })"
+		></bo-event-selector>
+	</bo-item>
+
+	<bo-item label="Popis" [loading]="!album()">
+		<div [innerHTML]="album()?.description | markdown"></div>
+		<bo-edit-button-markdown
+			slot="end"
+			label="Popis"
+			placeholder="Zadejte popis alba..."
+			[disabled]="!album()?._links?.updateAlbum?.allowed"
+			[value]="album()?.description"
+			(update)="update.emit({ description: $event })"
+		/>
+	</bo-item>
+</ion-list>

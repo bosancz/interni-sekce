@@ -1,25 +1,18 @@
-import { DatePipe } from "@angular/common";
-import { Component, OnInit, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import { Component, computed, OnInit, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute, Router } from "@angular/router";
-import {
-	AlertController,
-	IonButton,
-	IonIcon,
-	IonList,
-	ModalController,
-	ViewWillLeave,
-} from "@ionic/angular/standalone";
+import { AlertController, ModalController, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
 	calendarOutline,
-	checkboxOutline,
 	closeOutline,
 	cloudUploadOutline,
+	createOutline, 
 	eyeOffOutline,
 	eyeOutline,
 	imagesOutline,
+	informationCircleOutline,
 	openOutline,
 	save,
 	swapVerticalOutline,
@@ -32,19 +25,15 @@ import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
-import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
-import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
+import { TabComponent } from "src/app/shared/components/tab/tab.component";
+import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { SDK } from "src/sdk";
-import { EventSelectorComponent } from "../../components/event-selector/event-selector.component";
-import { PhotoListComponent } from "../../components/photo-list/photo-list.component";
+import { AlbumGalleryComponent } from "../../components/album-gallery/album-gallery.component";
+import { AlbumInfoComponent } from "../../components/album-info/album-info.component";
 import { PhotosEditComponent } from "../../components/photos-edit/photos-edit.component";
 import { PhotosUploadComponent } from "../../components/photos-upload/photos-upload.component";
-import { ItemComponent } from "../../../../shared/components/item/item.component";
-import { EditButtonDateRangeComponent } from "../../../../shared/components/edit-button-date-range/edit-button-date-range.component";
-import { EditButtonTextComponent } from "../../../../shared/components/edit-button-text/edit-button-text.component";
-import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
-import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 
 @UntilDestroy()
 @Component({
@@ -53,22 +42,13 @@ import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 	styleUrls: ["./albums-view-info.component.scss"],
 
 	imports: [
-		FormsModule,
 		PageHeaderComponent,
 		PageContentComponent,
-		PhotoGalleryComponent,
-		PhotoListComponent,
-		IonButton,
-		IonIcon,
-		IonList,
-		DatePipe,
-		DateRangePipe,
-		ItemComponent,
-		EventSelectorComponent,
-		EditButtonDateRangeComponent,
-		EditButtonTextComponent,
-		EditButtonMarkdownComponent,
-		MarkdownPipe,
+		PageFooterComponent,
+		TabsComponent,
+		TabComponent,
+		AlbumInfoComponent,
+		AlbumGalleryComponent,
 	],
 })
 export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
@@ -76,13 +56,22 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 	photos = signal<SDK.PhotoResponseWithLinks[] | undefined>(undefined);
 
-	actions = signal<Action[]>([]);
+	view = signal<"info" | "gallery">("info");
 
 	photosView = signal<"gallery" | "manage">("gallery");
 
 	selecting = signal(false);
 
 	selectedPhotos = signal<SDK.PhotoResponseWithLinks[]>([]);
+
+	private isDesktop = toSignal(this.platformService.isLg, { initialValue: this.platformService.isLg.value });
+
+	headerActions = computed<Action[]>(() => {
+		const album = this.album();
+		if (!album) return [];
+		if (this.isDesktop() || this.view() === "info") return this.getAlbumActions(album);
+		return this.getGalleryActions();
+	});
 
 	alert?: HTMLIonAlertElement;
 	uploadModal?: HTMLIonModalElement;
@@ -104,10 +93,11 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 			eyeOffOutline,
 			trash,
 			trashOutline,
+			createOutline, 
 			save,
 			swapVerticalOutline,
 			imagesOutline,
-			checkboxOutline,
+			informationCircleOutline,
 			closeOutline,
 			calendarOutline,
 			textOutline,
@@ -153,7 +143,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	async loadAlbum(albumId: number) {
 		const album = await this.api.PhotoGalleryApi.getAlbum(albumId).then((res) => res.data);
 		this.album.set(album);
-		this.actions.set(this.getActions(album));
 
 		const photos = await this.api.PhotoGalleryApi.getAlbumPhotos(albumId).then((res) => res.data);
 		this.photos.set(photos);
@@ -166,13 +155,13 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	}
 
 	onGalleryClick(photo: SDK.PhotoResponseWithLinks) {
-		this.router.navigate([], { queryParams: { photo: photo.id } });
+		this.router.navigate([], { queryParams: { photo: photo.id }, queryParamsHandling: "merge" });
 	}
 
 	onListClick(event: CustomEvent<SDK.PhotoResponseWithLinks | undefined>) {
 		if (this.selecting()) return;
 		if (!event.detail) return;
-		this.router.navigate([], { queryParams: { photo: event.detail.id } });
+		this.router.navigate([], { queryParams: { photo: event.detail.id }, queryParamsHandling: "merge" });
 	}
 
 	async openPhoto(photo: SDK.PhotoResponseWithLinks) {
@@ -287,7 +276,7 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 	// --- Album actions ------------------------------------------------------
 
-	private async uploadPhotos() {
+	async uploadPhotos() {
 		const album = this.album();
 		if (!album) return;
 
@@ -351,13 +340,8 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		window.open("https://bosan.cz/fotogalerie/" + album.id);
 	}
 
-	private getActions(album: SDK.AlbumResponseWithLinks): Action[] {
+	private getAlbumActions(album: SDK.AlbumResponseWithLinks): Action[] {
 		return [
-			{
-				text: "Nahrát fotky",
-				icon: "cloud-upload-outline",
-				handler: () => this.uploadPhotos(),
-			},
 			{
 				text: "Publikovat",
 				icon: "eye-outline",
@@ -383,6 +367,66 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 				icon: "trash",
 				color: "danger",
 				handler: () => this.delete(),
+			},
+		];
+	}
+
+	// photo edit options shown in the header on mobile instead of the inline buttons row
+	private getGalleryActions(): Action[] {
+		const manage = this.photosView() === "manage";
+		const selecting = this.selecting();
+
+		return [
+			{
+				text: "Nahrát fotky",
+				icon: "cloud-upload-outline",
+				// the empty state shows its own upload button
+				hidden: !this.photos()?.length,
+				handler: () => this.uploadPhotos(),
+			},
+			{
+				text: "Upravit",
+				icon: "create-outline",
+				hidden: manage || !this.photos()?.length,
+				handler: () => this.photosView.set("manage"),
+			},
+			{
+				text: "Prohlížet",
+				icon: "eye-outline",
+				hidden: !manage,
+				handler: () => {
+					this.photosView.set("gallery");
+					this.cancelSelecting();
+				},
+			},
+			{
+				text: "Podle data",
+				icon: "calendar-outline",
+				hidden: !manage,
+				handler: () => this.sortByDate(),
+			},
+			{
+				text: "Podle jména",
+				icon: "text-outline",
+				hidden: !manage,
+				handler: () => this.sortByName(),
+			},
+			{
+				text: `Smazat (${this.selectedPhotos().length})`,
+				icon: "trash-outline",
+				color: "danger",
+				role: "destructive",
+				pinned: true,
+				hidden: !selecting,
+				disabled: !this.selectedPhotos().length,
+				handler: () => this.deleteSelected(),
+			},
+			{
+				text: "Zrušit",
+				icon: "close-outline",
+				pinned: true,
+				hidden: !selecting,
+				handler: () => this.cancelSelecting(),
 			},
 		];
 	}

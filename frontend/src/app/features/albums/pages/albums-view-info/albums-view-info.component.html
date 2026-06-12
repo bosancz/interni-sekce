@@ -1,124 +1,37 @@
-<bo-page-header [title]="album()?.name" backUrl="/galerie" [actions]="actions()" actionsHeader="Album" />
+<bo-page-header [title]="album()?.name" backUrl="/galerie" [actions]="headerActions()" actionsHeader="Album" />
 
 <bo-page-content [padding]="true">
-	<ion-list class="selectable">
-		<bo-item label="Název" [loading]="!album()">
-			<p>{{ album()?.name }}</p>
-			<bo-edit-button-text
-				slot="end"
-				label="Název alba"
-				placeholder="Neočekávaný dýchánek"
-				[disabled]="!album()?._links?.updateAlbum?.allowed"
-				[value]="album()?.name"
-				(update)="updateAlbum({ name: $event ?? '' })"
-			/>
-		</bo-item>
+	<div [class.d-none]="view() !== 'info'" class="d-lg-block">
+		<bo-album-info [album]="album()" (update)="updateAlbum($event)" />
+	</div>
 
-		<bo-item label="Termín" [loading]="!album()">
-			<p>{{ [album()?.dateFrom ?? undefined, album()?.dateTill ?? undefined] | dateRange: "d. M. y" }}</p>
-			<bo-edit-button-date-range
-				slot="end"
-				label="Datum od - do"
-				[disabled]="!album()?._links?.updateAlbum?.allowed"
-				[value]="[album()?.dateFrom ?? undefined, album()?.dateTill ?? undefined]"
-				(update)="updateAlbum({ dateFrom: $event[0], dateTill: $event[1] })"
-			/>
-		</bo-item>
+	<div [class.d-none]="view() !== 'gallery'" class="d-lg-block">
+		<h2 class="d-none d-lg-block">Galerie</h2>
 
-		<bo-item label="Publikováno" [loading]="!album()">
-			<p>{{ (album()?.datePublished | date: "d. M. y") ?? "-" }}</p>
-		</bo-item>
-
-		<bo-item label="Akce" [loading]="!album()" lines="inset">
-			<bo-event-selector
-				placeholder="Vyberte akci v programu"
-				[ngModel]="album()?.eventId"
-				(ngModelChange)="updateAlbum({ eventId: $event })"
-			></bo-event-selector>
-		</bo-item>
-
-		<bo-item label="Popis" [loading]="!album()">
-			<div [innerHTML]="album()?.description | markdown"></div>
-			<bo-edit-button-markdown
-				slot="end"
-				label="Popis"
-				placeholder="Zadejte popis alba..."
-				[disabled]="!album()?._links?.updateAlbum?.allowed"
-				[value]="album()?.description"
-				(update)="updateAlbum({ description: $event })"
-			/>
-		</bo-item>
-	</ion-list>
-
-	@if (photos()?.length) {
-		<div class="buttons">
-			@if (photosView() === 'gallery') {
-				<ion-button (click)="photosView.set('manage')" fill="clear" slot="end">
-					<ion-icon slot="start" name="swap-vertical-outline"></ion-icon> Uspořádat
-				</ion-button>
-			} @else {
-				<ion-button (click)="photosView.set('gallery'); cancelSelecting()" fill="clear" slot="end">
-					<ion-icon slot="start" name="save"></ion-icon> Uložit
-				</ion-button>
-
-				<ion-button (click)="sortByDate()" fill="clear" slot="end">
-					<ion-icon slot="start" name="calendar-outline"></ion-icon> Podle data
-				</ion-button>
-
-				<ion-button (click)="sortByName()" fill="clear" slot="end">
-					<ion-icon slot="start" name="text-outline"></ion-icon> Podle jména
-				</ion-button>
-
-				@if (!selecting()) {
-					<!-- on mobile selection is started by a long touch on a photo -->
-					@if (!platformService.isMobile.value) {
-						<ion-button (click)="startSelecting()" fill="clear" slot="end">
-							<ion-icon slot="start" name="checkbox-outline"></ion-icon> Vybrat
-						</ion-button>
-					}
-				} @else {
-					<ion-button
-						(click)="deleteSelected()"
-						[disabled]="!selectedPhotos().length"
-						fill="clear"
-						color="danger"
-						slot="end"
-					>
-						<ion-icon slot="start" name="trash-outline"></ion-icon> Smazat ({{ selectedPhotos().length }})
-					</ion-button>
-
-					<ion-button (click)="cancelSelecting()" fill="clear" slot="end">
-						<ion-icon slot="start" name="close-outline"></ion-icon> Zrušit
-					</ion-button>
-				}
-			}
-		</div>
-	}
-
-	<div class="gallery">
-		@if (photosView() === 'gallery') {
-			@if (photos()?.length) {
-				<bo-photo-gallery
-					[photos]="photos()!"
-					[maxHeight]="320"
-					[clickable]="true"
-					(click)="onGalleryClick($event)"
-				></bo-photo-gallery>
-			} @else if (photos()) {
-				<p class="ion-text-center ion-padding">V tomto albu zatím nejsou žádné fotky.</p>
-			}
-		} @else {
-			<bo-photo-list
-				[photos]="photos()"
-				view="list"
-				[sortable]="true"
-				[selectable]="selecting()"
-				[selected]="selectedPhotos()"
-				(selectedChange)="selectedPhotos.set($event)"
-				(reorderChange)="onReorder($event)"
-				(longPress)="onLongPress($event)"
-				(click)="onListClick($event)"
-			></bo-photo-list>
-		}
+		<bo-album-gallery
+			[photos]="photos()"
+			[view]="photosView()"
+			[selecting]="selecting()"
+			[selectedPhotos]="selectedPhotos()"
+			(upload)="uploadPhotos()"
+			(viewChange)="photosView.set($event)"
+			(sortDate)="sortByDate()"
+			(sortName)="sortByName()"
+			(selectingStart)="startSelecting()"
+			(selectingCancel)="cancelSelecting()"
+			(deleteSelected)="deleteSelected()"
+			(selectedPhotosChange)="selectedPhotos.set($event)"
+			(reorder)="onReorder($event)"
+			(photoClick)="onGalleryClick($event)"
+			(listClick)="onListClick($event)"
+			(longPress)="onLongPress($event)"
+		/>
 	</div>
 </bo-page-content>
+
+<bo-page-footer class="d-lg-none">
+	<bo-tabs defaultTab="info" (change)="view.set($any($event))">
+		<bo-tab name="info" label="Info" icon="information-circle-outline"></bo-tab>
+		<bo-tab name="gallery" label="Galerie" icon="images-outline"></bo-tab>
+	</bo-tabs>
+</bo-page-footer>
