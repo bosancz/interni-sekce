@@ -378,15 +378,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 				handler: () => this.unpublish(),
 			},
 			{
-				text: "Smazat fotky",
-				icon: "trash-outline",
-				color: "danger",
-				handler: () => {
-					this.photosView.set("manage");
-					this.startSelecting();
-				},
-			},
-			{
 				text: "Smazat album",
 				role: "destructive",
 				icon: "trash",

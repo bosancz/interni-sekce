@@ -21,6 +21,7 @@ import {
 import { addIcons } from "ionicons";
 import { checkmarkOutline, chevronBackOutline, chevronForwardOutline, createOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 
@@ -61,6 +62,7 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 	constructor(
 		private modalController: ModalController,
 		private api: ApiService,
+		private toastService: ToastService,
 		private alertController: AlertController,
 		private route: ActivatedRoute,
 		private router: Router,
@@ -129,7 +131,8 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 
 	editCaption() {
 		this.editingCaption.set(true);
-		this.captionInput.getInputElement().then((el) => el.focus());
+		// the input only renders after change detection, the ViewChild is not available yet
+		setTimeout(() => this.captionInput?.getInputElement().then((el) => el.focus()));
 	}
 
 	cancelEditingCaption() {
@@ -140,11 +143,19 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 		const photo = this.photo();
 		if (!photo) return;
 
-		value = String(value);
-		const updatedPhoto = { ...photo, caption: value };
-		this.photo.set(updatedPhoto);
+		const caption = value == null || value === "" ? null : String(value);
+
+		try {
+			await this.api.PhotoGalleryApi.updatePhoto(photo.id, { caption });
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit popisek.", { color: "warning" });
+			return; // keep editing so the user can retry
+		}
+
+		// mutate the shared object in place so the parent's photo list shows the new caption too
+		photo.caption = caption;
+		this.photo.set({ ...photo });
 		this.editingCaption.set(false);
-		await this.api.PhotoGalleryApi.updatePhoto(photo.id, { caption: value });
 	}
 
 	async close() {
