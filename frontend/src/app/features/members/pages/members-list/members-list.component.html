@@ -2,10 +2,13 @@
 
 
 <bo-filter [search]="true" [showButtonMobileOnly]="true" (change)="onFilterChange($event)">
-	<ion-button toolbar-actions class="d-lg-none" fill="clear" size="small" (click)="create()" slot="end">
+	<ion-button toolbar-actions class="d-none d-lg-block" fill="clear" size="small" id="checkbox-popover-trigger" slot="end">
+		<ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+	</ion-button>
+	<ion-button toolbar-actions fill="clear" size="small" (click)="create()" slot="end">
 		<ion-icon slot="icon-only" name="add-outline"></ion-icon>
 	</ion-button>
-	<ion-button toolbar-actions class="d-lg-none" fill="clear" size="small" (click)="export()" slot="end">
+	<ion-button toolbar-actions fill="clear" size="small" (click)="export()" slot="end">
 		<ion-icon slot="icon-only" name="download-outline"></ion-icon>
 	</ion-button>
 
@@ -102,21 +105,6 @@
 			</ion-list>
 		}
 		@case ("table") {
-			<div class="table-controls">
-				<ion-button id="checkbox-popover-trigger" fill="outline" class="view-select-button">
-					Vyber zobrazení
-				</ion-button>
-
-				<ion-button (click)="export()" fill="outline">
-					Stáhnout XLSX
-				</ion-button>
-				
-				<ion-button (click)="create()" color="primary" fill="solid">
-					Přidat člena
-				</ion-button>
-
-			</div>
-
 			<ion-popover trigger="checkbox-popover-trigger" triggerAction="click">
 			<ng-template>
 				<ion-content>

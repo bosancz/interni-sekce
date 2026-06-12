@@ -21,7 +21,7 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline, downloadOutline } from "ionicons/icons";
+import { addOutline, downloadOutline, eyeOutline } from "ionicons/icons";
 import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { ApiService } from "src/app/core/services/api.service";
@@ -100,7 +100,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		private toasts: ToastService,
 		private platformService: PlatformService,
 	) {
-		addIcons({ addOutline, downloadOutline });
+		addIcons({ addOutline, downloadOutline, eyeOutline });
 	}
 
 	ngOnInit() {}

@@ -2,7 +2,7 @@
 
 <bo-page-content>
 	<bo-filter [search]="true" [showButtonMobileOnly]="true" (change)="onFilterChange($event)">
-		<ion-button toolbar-actions class="d-lg-none" fill="clear" size="small" (click)="create()" slot="end">
+		<ion-button toolbar-actions fill="clear" size="small" (click)="create()" slot="end">
 			<ion-icon slot="icon-only" name="add-outline"></ion-icon>
 		</ion-button>
 
@@ -28,10 +28,6 @@
 	</bo-filter>
 
 	@if (view() === 'table') {
-		<div class="table-controls">
-			<ion-button (click)="create()" color="primary" fill="solid">Přidat album</ion-button>
-		</div>
-
 		<admin-table>
 			<thead>
 				<tr>
