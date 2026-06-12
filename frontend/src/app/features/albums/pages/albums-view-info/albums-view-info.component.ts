@@ -1,5 +1,5 @@
 import { DatePipe } from "@angular/common";
-import { Component, OnInit, signal } from "@angular/core";
+import { Component, OnInit, signal, computed } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -79,14 +79,28 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	enableOrdering = signal(false);
 	enableDeleting = signal(false);
 
-	oldOrder = signal<SDK.PhotoResponseWithLinks[] | undefined>(undefined);
-
 	selectedPhotos = signal<SDK.PhotoResponseWithLinks[]>([]);
 
 	alert?: HTMLIonAlertElement;
 	uploadModal?: HTMLIonModalElement;
 	photosModal?: HTMLIonModalElement;
+	order = signal<"name" | "date">("date");
 
+	sortedPhotos = computed(() => {
+        const currentPhotos = this.photos();
+        if (!currentPhotos) return undefined;
+
+        const copy = [...currentPhotos]; // Prevent mutating the base signal data
+
+        if (this.order() === "date") {
+            return copy.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+        } 
+		else if (this.order() === "name") {
+            return copy.sort((a, b) => a.name.localeCompare(b.name));
+        }
+	});
+
+	
 	constructor(
 		private route: ActivatedRoute,
 		private router: Router,
@@ -202,61 +216,11 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	// --- Ordering -----------------------------------------------------------
 
 	orderByDate() {
-		const photos = this.photos();
-		if (photos) {
-			const sorted = [...photos].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
-			this.photos.set(sorted);
-		}
+		this.order.set("date")
 	}
 
 	orderByName() {
-		const photos = this.photos();
-		if (photos) {
-			const sorted = [...photos].sort((a, b) => a.name.localeCompare(b.name));
-			this.photos.set(sorted);
-		}
-	}
-
-	startOrdering() {
-		this.enableOrdering.set(true);
-		const photos = this.photos();
-		this.oldOrder.set(photos ? [...photos] : undefined);
-		this.actions.set([
-			{
-				text: "Uložit",
-				color: "primary",
-				pinned: true,
-				handler: () => this.saveOrdering().then(() => this.endOrdering()),
-			},
-			{ text: "Podle data", handler: () => this.orderByDate() },
-			{ text: "Podle jména", handler: () => this.orderByName() },
-			{
-				text: "Zrušit",
-				hidden: this.platformService.isIos.value,
-				handler: () => this.endOrdering(),
-			},
-		]);
-	}
-
-	endOrdering() {
-		const oldOrder = this.oldOrder();
-		if (oldOrder) {
-			this.photos.set([...oldOrder]);
-			this.oldOrder.set(undefined);
-		}
-		const album = this.album();
-		if (album) {
-			this.actions.set(this.getActions(album));
-		}
-		this.enableOrdering.set(false);
-	}
-
-	private async saveOrdering() {
-		const album = this.album();
-		const photos = this.photos();
-		if (!album || !photos) return;
-
-		// TODO: vymyslet jak se bude ukládat řazení fotek!!!
+		this.order.set("name")
 	}
 
 	// --- Deleting -----------------------------------------------------------
@@ -379,11 +343,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 				text: "Nahrát fotky",
 				icon: "cloud-upload-outline",
 				handler: () => this.uploadPhotos(),
-			},
-			{
-				text: "Seřadit",
-				icon: "swap-vertical-outline",
-				handler: () => this.startOrdering(),
 			},
 			{
 				text: "Publikovat",

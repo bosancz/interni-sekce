@@ -63,19 +63,27 @@
 					<ion-icon slot="start" name="list-outline"></ion-icon> Seznam
 				</ion-button>
 			}
-			
-			<ion-button (click)="startOrdering()" fill="clear" slot="end">
-				<ion-icon slot="start" name="sort"></ion-icon> Seřadit
-			</ion-button>
+
+			@if (order() === "date"){
+				<ion-button (click)="orderByName()" fill="clear" slot="end">
+					<ion-icon slot="start" name="swap-vertical-outline"></ion-icon> Podle jména
+				</ion-button>
+			}
+
+			@if (order() === "name"){
+				<ion-button (click)="orderByDate()" fill="clear" slot="end">
+					<ion-icon slot="start" name="swap-vertical-outline"></ion-icon> Podle data
+				</ion-button>
+			}
 		</div>
-		
+
 	}
 
 	<div class="gallery">
 		@if (photosView() === 'gallery') {
 			@if (photos()?.length) {
 				<bo-photo-gallery
-					[photos]="photos()!"
+					[photos]="sortedPhotos()!"
 					[maxHeight]="320"
 					[clickable]="true"
 					(click)="onGalleryClick($event)"
@@ -85,7 +93,7 @@
 			}
 		} @else {
 			<bo-photo-list
-				[photos]="photos()"
+				[photos]="sortedPhotos()"
 				view="list"
 				[sortable]="enableOrdering()"
 				[selectable]="enableDeleting()"
