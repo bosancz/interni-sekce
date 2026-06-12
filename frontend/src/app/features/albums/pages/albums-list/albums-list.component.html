@@ -1,7 +1,11 @@
 <bo-page-header title="Galerie" backUrl="/" [actions]="actions()" actionsHeader="Galerie" />
 
 <bo-page-content>
-	<bo-filter [search]="true" (change)="onFilterChange($event)">
+	<bo-filter [search]="true" [showButtonMobileOnly]="true" (change)="onFilterChange($event)">
+		<ion-button toolbar-actions fill="clear" size="small" (click)="create()" slot="end">
+			<ion-icon slot="icon-only" name="add-outline"></ion-icon>
+		</ion-button>
+
 		<ion-item>
 			<ion-select name="year" ngModel label="Rok">
 				<ion-select-option [value]="null">všechny</ion-select-option>
@@ -27,10 +31,42 @@
 		<admin-table>
 			<thead>
 				<tr>
-					<th>Název alba</th>
-					<th>Datum</th>
-					<th>Stav</th>
-					<th>Publikováno</th>
+					<th class="align-middle">Název alba</th>
+					<th>
+						<div class="column-filter">
+							<ion-select
+								label="Datum"
+								interface="popover"
+								justify="start"
+								[ngModel]="selectedYear"
+								(ngModelChange)="setFilterParam('year', $event)"
+							>
+								<ion-select-option [value]="null">všechny</ion-select-option>
+								@for (year of years(); track year) {
+									<ion-select-option [value]="year">{{ year }}</ion-select-option>
+								}
+							</ion-select>
+						</div>
+					</th>
+					<th>
+						<div class="column-filter">
+							<ion-select
+								label="Stav"
+								interface="popover"
+								justify="start"
+								[ngModel]="selectedStatus"
+								(ngModelChange)="setFilterParam('status', $event)"
+							>
+								<ion-select-option [value]="null">všechny</ion-select-option>
+								@for (status of statuses | keyvalue; track status.key) {
+									<ion-select-option [value]="status.key">
+										{{ status.value.name }}
+									</ion-select-option>
+								}
+							</ion-select>
+						</div>
+					</th>
+					<th class="align-middle">Publikováno</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -55,6 +91,30 @@
 				}
 			</tbody>
 		</admin-table>
+	}
+
+	@if (view() === 'grid') {
+		<ion-list>
+			@if (albums() === undefined) {
+				@for (item of loadingArray; track $index) {
+					<ion-item>
+						<ion-label><ion-skeleton-text animated></ion-skeleton-text></ion-label>
+					</ion-item>
+				}
+			}
+
+			@for (album of albums(); track album.id) {
+				<ion-item class="clickable" [routerLink]="'' + album.id">
+					<ion-label>
+						<h2>{{ album.name }}</h2>
+						<p>
+							{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }},
+							{{ album | album: "status" }}
+						</p>
+					</ion-label>
+				</ion-item>
+			}
+		</ion-list>
 	}
 
 	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
