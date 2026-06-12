@@ -15,7 +15,7 @@ export class Album {
 	@Column({ type: "integer", nullable: true })
 	eventId!: number | null;
 
-	@OneToOne(() => Event, { onDelete: "SET NULL", onUpdate: "CASCADE" })
+	@OneToOne(() => Event, (event) => event.album, { onDelete: "SET NULL", onUpdate: "CASCADE" })
 	@JoinColumn({ name: "event_id" })
 	event?: Event;
 

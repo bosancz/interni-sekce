@@ -19,6 +19,25 @@
 
 <h3 class="mt-5">Fotogalerie</h3>
 
-<p>[[TODO: tlačítko na vytvoření alba]]</p>
-<p>[[TODO: zobrazení fotogalerie]]</p>
-<p>[[TODO: tlačítko na úpravu otevře album galerii]]</p>
+@if (event()?.album; as album) {
+	<ion-item button [detail]="true" [routerLink]="['/galerie', album.id]" lines="none" class="album-link">
+		<ion-icon name="images-outline" slot="start"></ion-icon>
+		<ion-label>
+			<h2>{{ album.name }}</h2>
+			<p>{{ album.dateFrom | date: "d. M. y" }} – {{ album.dateTill | date: "d. M. y" }}</p>
+		</ion-label>
+	</ion-item>
+} @else if (event()) {
+	<p><em>Akce zatím nemá připojené album.</em></p>
+	<ion-button
+		size="small"
+		fill="outline"
+		[disabled]="!event()?._links?.updateEvent?.allowed || creatingAlbum()"
+		(click)="createAlbum()"
+	>
+		<ion-icon slot="start" name="add-outline"></ion-icon>
+		Vytvořit album
+	</ion-button>
+} @else {
+	<p><ion-skeleton-text animated></ion-skeleton-text></p>
+}

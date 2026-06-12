@@ -13,7 +13,7 @@
 <bo-page-content [padding]="true">
 	<div class="d-lg-flex gap-4">
 		<!-- Vertical menu for desktop -->
-		<div class="d-none d-lg-block" style="min-width: 200px;">
+		<div class="d-none d-lg-block" style="min-width: 200px">
 			<bo-vertical-menu defaultTab="info" (change)="view.set($any($event))">
 				<bo-vertical-menu-item name="info" label="Info" icon="calendar"></bo-vertical-menu-item>
 				<bo-vertical-menu-item name="attendees" label="Účastníci" icon="people-outline"></bo-vertical-menu-item>
@@ -57,6 +57,7 @@
 				class="mb-5"
 				[class.d-none]="view() !== 'report'"
 				(update)="updateEvent($event)"
+				(change)="reloadEvent()"
 			></bo-event-report>
 		</div>
 	</div>

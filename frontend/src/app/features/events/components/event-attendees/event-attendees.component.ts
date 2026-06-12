@@ -144,6 +144,23 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 	async getAnnouncement(event: SDK.EventResponseWithLinks) {
 		if (!event) return;
 
-		window.open(event._links.getEventAnnouncement.href, "_blank");
+		try {
+			const res = (await this.api.EventsApi.getEventAnnouncement(event.id, { responseType: "blob" })) as any;
+
+			const blob = new Blob([res.data], {
+				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			});
+
+			const fileName = res.headers["content-disposition"]?.match(/filename="?([^";]+)"?/)?.[1] ?? "ohlaska.xlsx";
+
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = fileName;
+			a.click();
+			URL.revokeObjectURL(url);
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se stáhnout ohlášku.", { color: "danger" });
+		}
 	}
 }
