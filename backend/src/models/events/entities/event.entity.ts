@@ -35,7 +35,7 @@ export class Event {
 	@PrimaryGeneratedColumn()
 	id!: number;
 
-	@OneToOne(() => Album)
+	@OneToOne(() => Album, (album) => album.event)
 	album?: Album;
 
 	@RelationId((event: Event) => event.groups)

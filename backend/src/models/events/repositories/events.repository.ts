@@ -71,7 +71,12 @@ export class EventsRepository {
 	}
 
 	async getEvent(id: number, options: { select?: FindOptionsSelect<Event>; leaders?: boolean } = {}) {
-		const event = await this.eventsRepository.findOne({ where: { id }, select: options.select, withDeleted: true });
+		const event = await this.eventsRepository.findOne({
+			where: { id },
+			select: options.select,
+			relations: { album: true },
+			withDeleted: true,
+		});
 		if (!event) return null;
 
 		event.leaders = await this.getEventLeaders(id);
