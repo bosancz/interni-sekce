@@ -50,40 +50,56 @@
 		</bo-item>
 	</ion-list>
 
-
 	@if (photos()?.length) {
 		<div class="buttons">
-			@if (photosView() === 'list') {
-				<ion-button (click)="photosView.set('gallery')" fill="clear" slot="end">
-					<ion-icon slot="start" name="images-outline"></ion-icon> Galerie
-				</ion-button>
-			}
 			@if (photosView() === 'gallery') {
-				<ion-button (click)="photosView.set('list')" fill="clear" slot="end">
-					<ion-icon slot="start" name="list-outline"></ion-icon> Seznam
+				<ion-button (click)="photosView.set('manage')" fill="clear" slot="end">
+					<ion-icon slot="start" name="swap-vertical-outline"></ion-icon> Uspořádat
 				</ion-button>
-			}
+			} @else {
+				<ion-button (click)="photosView.set('gallery'); cancelSelecting()" fill="clear" slot="end">
+					<ion-icon slot="start" name="save"></ion-icon> Uložit
+				</ion-button>
 
-			@if (order() === "date"){
-				<ion-button (click)="orderByName()" fill="clear" slot="end">
-					<ion-icon slot="start" name="swap-vertical-outline"></ion-icon> Podle jména
+				<ion-button (click)="sortByDate()" fill="clear" slot="end">
+					<ion-icon slot="start" name="calendar-outline"></ion-icon> Podle data
 				</ion-button>
-			}
 
-			@if (order() === "name"){
-				<ion-button (click)="orderByDate()" fill="clear" slot="end">
-					<ion-icon slot="start" name="swap-vertical-outline"></ion-icon> Podle data
+				<ion-button (click)="sortByName()" fill="clear" slot="end">
+					<ion-icon slot="start" name="text-outline"></ion-icon> Podle jména
 				</ion-button>
+
+				@if (!selecting()) {
+					<!-- on mobile selection is started by a long touch on a photo -->
+					@if (!platformService.isMobile.value) {
+						<ion-button (click)="startSelecting()" fill="clear" slot="end">
+							<ion-icon slot="start" name="checkbox-outline"></ion-icon> Vybrat
+						</ion-button>
+					}
+				} @else {
+					<ion-button
+						(click)="deleteSelected()"
+						[disabled]="!selectedPhotos().length"
+						fill="clear"
+						color="danger"
+						slot="end"
+					>
+						<ion-icon slot="start" name="trash-outline"></ion-icon> Smazat ({{ selectedPhotos().length }})
+					</ion-button>
+
+					<ion-button (click)="cancelSelecting()" fill="clear" slot="end">
+						<ion-icon slot="start" name="close-outline"></ion-icon> Zrušit
+					</ion-button>
+				}
 			}
 		</div>
-
 	}
 
 	<div class="gallery">
 		@if (photosView() === 'gallery') {
 			@if (photos()?.length) {
 				<bo-photo-gallery
-					[photos]="sortedPhotos()!"
+					[photos]="photos()!"
 					[maxHeight]="320"
 					[clickable]="true"
 					(click)="onGalleryClick($event)"
@@ -93,12 +109,14 @@
 			}
 		} @else {
 			<bo-photo-list
-				[photos]="sortedPhotos()"
+				[photos]="photos()"
 				view="list"
-				[sortable]="enableOrdering()"
-				[selectable]="enableDeleting()"
+				[sortable]="true"
+				[selectable]="selecting()"
 				[selected]="selectedPhotos()"
 				(selectedChange)="selectedPhotos.set($event)"
+				(reorderChange)="onReorder($event)"
+				(longPress)="onLongPress($event)"
 				(click)="onListClick($event)"
 			></bo-photo-list>
 		}

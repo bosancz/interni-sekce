@@ -20,7 +20,10 @@ export class PhotosRepository {
 	) {}
 
 	getPhotos(options: GetPhotosOptions = {}) {
-		const q = this.repository.createQueryBuilder("photos").orderBy("photos.timestamp", "ASC");
+		const q = this.repository
+			.createQueryBuilder("photos")
+			.orderBy("photos.order", "ASC", "NULLS LAST")
+			.addOrderBy("photos.timestamp", "ASC");
 
 		if (options.album) q.where("photos.album_id = :album", { album: options.album });
 
@@ -53,11 +56,19 @@ export class PhotosRepository {
 		const ext = extname(file.originalname);
 		const metadata = await this.photosFiles.extractMetadata(file.buffer);
 
+		// new photos go to the end of the album's custom order
+		const { max } = await this.repository
+			.createQueryBuilder("photos")
+			.select("MAX(photos.order)", "max")
+			.where("photos.album_id = :albumId", { albumId })
+			.getRawOne();
+
 		const photo = await this.repository.save({
 			albumId,
 			uploadedById,
 			name: file.originalname,
 			timestamp: metadata.timestamp,
+			order: (max ?? 0) + 1,
 			width: metadata.width,
 			height: metadata.height,
 			bg: metadata.bg,
@@ -76,6 +87,16 @@ export class PhotosRepository {
 
 	async updatePhoto(id: Photo["id"], photo: Partial<Photo>) {
 		return this.repository.save({ ...photo, id });
+	}
+
+	/** Persist a custom photo order: each photo gets the position of its id in the array. Ids from other albums are ignored. */
+	async reorderPhotos(albumId: Photo["albumId"], photoIds: number[]) {
+		await this.repository.query(
+			`UPDATE "photos" SET "order" = u.ord
+			 FROM unnest($1::int[]) WITH ORDINALITY AS u(id, ord)
+			 WHERE "photos".id = u.id AND "photos".album_id = $2`,
+			[photoIds, albumId],
+		);
 	}
 
 	async deletePhoto(id: Photo["id"]) {

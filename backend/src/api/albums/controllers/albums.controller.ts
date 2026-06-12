@@ -12,12 +12,13 @@ import {
 	AlbumPhotosPermission,
 	AlbumPublishPermission,
 	AlbumReadPermission,
+	AlbumReorderPhotosPermission,
 	AlbumsListPermission,
 	AlbumsYearsPermission,
 	AlbumUnpublishPermission,
 } from "../acl/albums.acl";
 import { AlbumCreateBody, AlbumListQuery, AlbumResponse, AlbumUpdateBody } from "../dto/album.dto";
-import { PhotoResponse } from "../dto/photo.dto";
+import { AlbumPhotosOrderBody, PhotoResponse } from "../dto/photo.dto";
 
 @Controller("albums")
 @AcController()
@@ -126,5 +127,21 @@ export class AlbumsController {
 	@ApiResponse({ status: 200, type: WithLinks(PhotoResponse), isArray: true })
 	async getAlbumPhotos(@Param("id") id: number, @Req() req: Request): Promise<PhotoResponse[]> {
 		return this.photos.getPhotos({ album: id });
+	}
+
+	@Patch(":id/photos/order")
+	@AcLinks(AlbumReorderPhotosPermission)
+	@ApiResponse({ status: 204 })
+	async reorderAlbumPhotos(
+		@Param("id") id: number,
+		@Req() req: Request,
+		@Body() body: AlbumPhotosOrderBody,
+	): Promise<void> {
+		const album = await this.albums.getAlbum(id);
+		if (!album) throw new NotFoundException();
+
+		AlbumReorderPhotosPermission.canOrThrow(req, album);
+
+		await this.photos.reorderPhotos(album.id, body.photoIds);
 	}
 }

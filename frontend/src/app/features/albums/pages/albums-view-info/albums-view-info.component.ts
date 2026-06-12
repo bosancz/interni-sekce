@@ -1,5 +1,5 @@
 import { DatePipe } from "@angular/common";
-import { Component, OnInit, signal, computed } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -13,13 +13,17 @@ import {
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
+	calendarOutline,
+	checkboxOutline,
+	closeOutline,
 	cloudUploadOutline,
 	eyeOffOutline,
 	eyeOutline,
 	imagesOutline,
-	listOutline,
 	openOutline,
+	save,
 	swapVerticalOutline,
+	textOutline,
 	trash,
 	trashOutline,
 } from "ionicons/icons";
@@ -74,33 +78,16 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 	actions = signal<Action[]>([]);
 
-	photosView = signal<"gallery" | "list">("gallery");
+	photosView = signal<"gallery" | "manage">("gallery");
 
-	enableOrdering = signal(false);
-	enableDeleting = signal(false);
+	selecting = signal(false);
 
 	selectedPhotos = signal<SDK.PhotoResponseWithLinks[]>([]);
 
 	alert?: HTMLIonAlertElement;
 	uploadModal?: HTMLIonModalElement;
 	photosModal?: HTMLIonModalElement;
-	order = signal<"name" | "date">("date");
 
-	sortedPhotos = computed(() => {
-        const currentPhotos = this.photos();
-        if (!currentPhotos) return undefined;
-
-        const copy = [...currentPhotos]; // Prevent mutating the base signal data
-
-        if (this.order() === "date") {
-            return copy.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
-        } 
-		else if (this.order() === "name") {
-            return copy.sort((a, b) => a.name.localeCompare(b.name));
-        }
-	});
-
-	
 	constructor(
 		private route: ActivatedRoute,
 		private router: Router,
@@ -117,9 +104,13 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 			eyeOffOutline,
 			trash,
 			trashOutline,
+			save,
 			swapVerticalOutline,
-			listOutline,
 			imagesOutline,
+			checkboxOutline,
+			closeOutline,
+			calendarOutline,
+			textOutline,
 		});
 	}
 
@@ -175,12 +166,11 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	}
 
 	onGalleryClick(photo: SDK.PhotoResponseWithLinks) {
-		if (this.enableDeleting() || this.enableOrdering()) return;
 		this.router.navigate([], { queryParams: { photo: photo.id } });
 	}
 
 	onListClick(event: CustomEvent<SDK.PhotoResponseWithLinks | undefined>) {
-		if (this.enableDeleting() || this.enableOrdering()) return;
+		if (this.selecting()) return;
 		if (!event.detail) return;
 		this.router.navigate([], { queryParams: { photo: event.detail.id } });
 	}
@@ -215,46 +205,69 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 	// --- Ordering -----------------------------------------------------------
 
-	orderByDate() {
-		this.order.set("date")
+	async onReorder(photos: SDK.PhotoResponseWithLinks[]) {
+		this.photos.set(photos);
+		await this.persistOrder(photos);
 	}
 
-	orderByName() {
-		this.order.set("name")
+	async sortByDate() {
+		const photos = [...(this.photos() ?? [])].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+		this.photos.set(photos);
+		await this.persistOrder(photos);
 	}
 
-	// --- Deleting -----------------------------------------------------------
-
-	startDeleting() {
-		this.enableDeleting.set(true);
-		this.photosView.set("list");
-		this.selectedPhotos.set([]);
-		this.actions.set([
-			{
-				text: "Smazat",
-				role: "destructive",
-				color: "danger",
-				pinned: true,
-				handler: () => this.deletePhotos().then(() => this.endDeleting()),
-			},
-			{
-				text: "Zrušit",
-				hidden: this.platformService.isIos.value,
-				handler: () => this.endDeleting(),
-			},
-		]);
+	async sortByName() {
+		const photos = [...(this.photos() ?? [])].sort((a, b) => a.name.localeCompare(b.name));
+		this.photos.set(photos);
+		await this.persistOrder(photos);
 	}
 
-	endDeleting() {
-		this.enableDeleting.set(false);
-		this.selectedPhotos.set([]);
+	private async persistOrder(photos: SDK.PhotoResponseWithLinks[]) {
 		const album = this.album();
-		if (album) {
-			this.actions.set(this.getActions(album));
+		if (!album) return;
+
+		try {
+			await this.api.PhotoGalleryApi.reorderAlbumPhotos(album.id, { photoIds: photos.map((photo) => photo.id) });
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit pořadí fotek.", { color: "warning" });
+			await this.loadAlbum(album.id);
 		}
 	}
 
-	private async deletePhotos() {
+	// --- Selecting & deleting -------------------------------------------------
+
+	startSelecting() {
+		this.selecting.set(true);
+		this.selectedPhotos.set([]);
+	}
+
+	cancelSelecting() {
+		this.selecting.set(false);
+		this.selectedPhotos.set([]);
+	}
+
+	onLongPress(photo: SDK.PhotoResponseWithLinks) {
+		if (this.selecting()) return;
+		this.selecting.set(true);
+		this.selectedPhotos.set([photo]);
+	}
+
+	async deleteSelected() {
+		const selected = this.selectedPhotos();
+		if (!selected.length) return;
+
+		this.alert = await this.alertController.create({
+			message: `Opravdu chcete smazat vybrané fotky (${selected.length})?`,
+			buttons: [
+				{ text: "Zrušit", role: "cancel" },
+				{ text: "Smazat", handler: () => this.deleteSelectedConfirmed() },
+			],
+		});
+
+		this.alert.present();
+	}
+
+	private async deleteSelectedConfirmed() {
 		const toast = await this.toastService.toast("Mažu fotky...");
 
 		const selected = this.selectedPhotos();
@@ -269,6 +282,7 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 		toast.dismiss();
 		this.toastService.toast("Fotky smazány");
+		this.cancelSelecting();
 	}
 
 	// --- Album actions ------------------------------------------------------
@@ -367,7 +381,10 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 				text: "Smazat fotky",
 				icon: "trash-outline",
 				color: "danger",
-				handler: () => this.startDeleting(),
+				handler: () => {
+					this.photosView.set("manage");
+					this.startSelecting();
+				},
 			},
 			{
 				text: "Smazat album",

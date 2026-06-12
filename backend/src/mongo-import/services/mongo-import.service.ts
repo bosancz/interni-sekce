@@ -360,6 +360,7 @@ export class MongoImportService {
 				name: mongoPhoto.name ?? "",
 				tags: mongoPhoto.tags ?? null,
 				timestamp: mongoPhoto.date ?? new Date(),
+				order: null, // imported photos fall back to timestamp ordering
 				title: mongoPhoto.title ?? null,
 				uploadedById: mongoPhoto.uploadedBy ? userIds[mongoPhoto.uploadedBy.toString()] : null,
 				width: mongoPhoto.sizes?.original.width ?? null,

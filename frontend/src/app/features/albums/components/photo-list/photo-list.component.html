@@ -2,7 +2,16 @@
 	<ion-reorder-group (ionItemReorder)="onReorder($any($event))" [disabled]="!sortable()">
 		@if (photos() !== undefined) {
 			@for (photo of photos(); track photo.id) {
-				<ion-item [button]="true" [detail]="false" (click)="onPhotoClick(photo, $event)">
+				<ion-item
+					[button]="true"
+					[detail]="false"
+					(click)="onPhotoClick(photo, $event)"
+					(pointerdown)="onPointerDown(photo, $event)"
+					(pointermove)="onPointerMove($event)"
+					(pointerup)="cancelLongPress()"
+					(pointercancel)="cancelLongPress()"
+					(pointerleave)="cancelLongPress()"
+				>
 					@if (selectable()) {
 						<ion-checkbox slot="start" [ngModel]="isPhotoChecked(photo)"> </ion-checkbox>
 					}

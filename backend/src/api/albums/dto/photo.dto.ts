@@ -20,6 +20,7 @@ export class PhotoResponse {
 	@ApiProperty({ type: "string" }) timestamp!: string | Date;
 	@ApiProperty() name!: string;
 
+	@ApiPropertyOptional({ type: "number" }) order!: number | null;
 	@ApiPropertyOptional({ type: "number" }) width!: number | null;
 	@ApiPropertyOptional({ type: "number" }) height!: number | null;
 	@ApiPropertyOptional({ type: "number" }) uploadedById!: number | null;
@@ -44,3 +45,9 @@ export class PhotoCreateBody {
 }
 
 export class PhotoUpdateBody extends PickType(PhotoResponse, ["caption", "tags", "title"]) {}
+
+export class AlbumPhotosOrderBody {
+	@ApiProperty({ type: "number", isArray: true })
+	@IsInt({ each: true })
+	photoIds!: number[];
+}
