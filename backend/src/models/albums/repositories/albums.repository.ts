@@ -48,7 +48,7 @@ export class AlbumsRepository {
 
 		if (options.search) {
 			const search = `%${options.search}%`;
-			q.andWhere("albums.name LIKE :search", { search });
+			q.andWhere("albums.name ILIKE :search", { search });
 		}
 
 		return q.getMany();
