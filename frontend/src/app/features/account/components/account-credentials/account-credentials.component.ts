@@ -1,7 +1,8 @@
 import { Component } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { AlertController, IonItem, IonLabel, IonList, IonText } from "@ionic/angular/standalone";
+import { IonItem, IonLabel, IonList, IonText } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { UserService } from "src/app/core/services/user.service";
 
@@ -19,54 +20,48 @@ export class AccountCredentialsComponent {
 		private api: ApiService,
 		private userService: UserService,
 		private toastService: ToastService,
-		private alertController: AlertController,
+		private modalService: ModalService,
 	) {}
 
-	async updateCredentials(credentials: { login: string; password: string }) {
+	async changeLogin() {
 		const user = this.user();
 		if (!user) return;
 
-		await this.api.UsersApi.setUserPassword(user.id, credentials);
+		const result = await this.modalService.inputModal<{ value: string }>({
+			header: "Změnit login",
+			inputs: {
+				value: { placeholder: "Login: bilbo", type: "text", value: user.login },
+			},
+		});
+
+		// login is NOT NULL + unique in the database, never send an empty value
+		if (!result?.value) return;
+
+		await this.api.UsersApi.updateUser(user.id, { login: result.value });
 
 		this.toastService.toast("Uloženo.");
 
 		await this.userService.loadUser();
 	}
 
-	async openChangeCredentials() {
-		const alert = await this.alertController.create({
-			header: "Změna hesla",
-			inputs: [
-				{
-					name: "login",
-					type: "text",
-					placeholder: "Login: bilbo",
-					value: this.user()?.login,
-				},
-				{
-					name: "password",
-					type: "password",
-					placeholder: "Heslo: rekni_pritel_a_vejdi",
-					attributes: {
-						minlength: 8,
-					},
-				},
-			],
-			buttons: [
-				{
-					text: "Zrušit",
-					role: "cancel",
-					cssClass: "secondary",
-				},
-				{
-					text: "Změnit",
-					handler: (credentials) => this.updateCredentials(credentials),
-				},
-			],
+	async changePassword() {
+		const user = this.user();
+		if (!user) return;
+
+		const result = await this.modalService.inputModal<{ value: string }>({
+			header: "Změnit heslo",
+			inputs: {
+				value: { placeholder: "Nové heslo", type: "password" },
+			},
 		});
 
-		await alert.present();
-	}
+		// never send an empty password
+		if (!result?.value) return;
 
-	async saveCredentials() {}
+		await this.api.UsersApi.setUserPassword(user.id, { password: result.value });
+
+		this.toastService.toast("Uloženo.");
+
+		await this.userService.loadUser();
+	}
 }

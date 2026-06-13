@@ -1,8 +1,4 @@
-<bo-page-header
-	[title]="user() ? user()!.login + ', ' + user()!.email : '...'"
-	backUrl="/uzivatele"
-	[actions]="actions()"
-/>
+<bo-page-header [title]="title()" backUrl="/admin/uzivatele" [actions]="actions()" />
 
 @if (user()) {
 	<bo-page-content [padding]="true">
@@ -11,27 +7,13 @@
 				<bo-card>
 					<bo-card-header>
 						<bo-card-title> Uživatelský účet </bo-card-title>
-						<bo-edit-button slot="end"><bo-users-edit-account></bo-users-edit-account></bo-edit-button>
 					</bo-card-header>
 					<bo-card-content>
-						<table class="table">
-							<tr>
-								<th>Login</th>
-								<td>{{ user()!.login }}</td>
-							</tr>
-							<tr>
-								<th>E-mail</th>
-								<td>{{ user()!.email }}</td>
-							</tr>
-							<tr>
-								<th>Role</th>
-								<td>
-									@for (role of user()!.roles; track role) {
-										<ion-badge>{{ role }}</ion-badge>
-									}
-								</td>
-							</tr>
-						</table>
+						<bo-user-info
+							[user]="user()"
+							(update)="updateUser($event)"
+							(setPassword)="setPassword($event)"
+						/>
 					</bo-card-content>
 				</bo-card>
 			</div>
@@ -39,11 +21,23 @@
 				<bo-card>
 					<bo-card-header>
 						<bo-card-title> Propojený člen </bo-card-title>
-						<ion-buttons slot="end">
-							<bo-edit-button><bo-users-edit-account></bo-users-edit-account></bo-edit-button>
-							<ion-button color="primary" [routerLink]="['/databaze', user()!.member?.id]">
-								<ion-icon name="arrow-forward"></ion-icon>
-							</ion-button>
+						<ion-buttons slot="buttons">
+							<bo-edit-button
+								[disabled]="!user()!._links.updateUser.allowed"
+								(click)="changeMember()"
+							></bo-edit-button>
+							@if (user()!.member) {
+								<ion-button
+									color="danger"
+									[disabled]="!user()!._links.updateUser.allowed"
+									(click)="unlinkMember()"
+								>
+									<ion-icon name="close-outline"></ion-icon>
+								</ion-button>
+								<ion-button color="primary" [routerLink]="['/databaze/clenove', user()!.member!.id]">
+									<ion-icon name="arrow-forward"></ion-icon>
+								</ion-button>
+							}
 						</ion-buttons>
 					</bo-card-header>
 					<bo-card-content>
@@ -62,6 +56,8 @@
 									<td>{{ user()!.member!.birthday | date }}</td>
 								</tr>
 							</table>
+						} @else {
+							<p><i>Žádný propojený člen</i></p>
 						}
 					</bo-card-content>
 				</bo-card>
