@@ -94,10 +94,10 @@ export class MemberHealthComponent {
 	 * input kind — it cannot mix a text field with a radio selection.
 	 */
 	private async openEntryAlert(
-		current: SDK.HealthEntry[] | null | undefined,
+		current: SDK.HealthEntryDto[] | null | undefined,
 		index: number | undefined,
 		labels: { addHeader: string; editHeader: string; namePlaceholder: string },
-	): Promise<SDK.HealthEntry[] | null> {
+	): Promise<SDK.HealthEntryDto[] | null> {
 		const editing = index !== undefined;
 		const entry = editing ? current?.[index] : undefined;
 
@@ -112,7 +112,7 @@ export class MemberHealthComponent {
 		if (!severity) return null;
 
 		const entries = [...(current ?? [])];
-		const updated: SDK.HealthEntry = { name, severity };
+		const updated: SDK.HealthEntryDto = { name, severity };
 		if (editing) entries[index] = updated;
 		else entries.push(updated);
 

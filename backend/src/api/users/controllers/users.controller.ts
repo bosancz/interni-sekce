@@ -1,8 +1,22 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, Query, Req } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	NotFoundException,
+	Param,
+	Patch,
+	Post,
+	Put,
+	Query,
+	Req,
+	Res,
+} from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Request } from "express";
+import { Request, Response } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
+import { TokenService } from "src/auth/services/token.service";
 import { User } from "src/models/users/entities/user.entity";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { Repository } from "typeorm";
@@ -27,6 +41,7 @@ import { ListUsersQuery } from "../dto/users.dto";
 export class UsersController {
 	constructor(
 		private userService: UsersRepository,
+		private tokenService: TokenService,
 		@InjectRepository(User) private userRepository: Repository<User>,
 	) {}
 
@@ -130,12 +145,21 @@ export class UsersController {
 
 	@Post(":id/impersonate")
 	@AcLinks(UserImpersonatePermission)
-	async impersonateUser(@Req() req: Request, @Param("id") id: number) {
+	async impersonateUser(
+		@Req() req: Request,
+		@Res({ passthrough: true }) res: Response,
+		@Param("id") id: number,
+	) {
 		const user = await this.userService.getUser(id);
 		if (!user) throw new NotFoundException();
 
 		UserImpersonatePermission.canOrThrow(req, user);
 
-		//TODO: implement
+		// replaces the caller's token cookie; there is no way back to the original identity except logging in again
+		await this.tokenService.setToken(res, {
+			userId: user.id,
+			memberId: user.memberId ?? undefined,
+			roles: user.roles ?? [],
+		});
 	}
 }

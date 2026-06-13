@@ -1,0 +1,43 @@
+@if (user()) {
+	@let userValue = user()!;
+	<ion-list class="selectable">
+		<bo-item label="Login">
+			<ion-label>{{ userValue.login }}</ion-label>
+			<bo-edit-button-text
+				slot="end"
+				label="Login"
+				placeholder="bilbo"
+				[disabled]="!userValue._links.updateUser.allowed"
+				[value]="userValue.login"
+				(update)="updateLogin($event)"
+			/>
+		</bo-item>
+
+		<bo-item label="E-mail">
+			<ion-label>{{ userValue.email || "-" }}</ion-label>
+			<bo-edit-button-text
+				slot="end"
+				type="email"
+				label="E-mail"
+				placeholder="bilbo@bosan.cz"
+				[disabled]="!userValue._links.updateUser.allowed"
+				[value]="userValue.email"
+				(update)="updateEmail($event)"
+			/>
+		</bo-item>
+
+		<bo-item label="Role">
+			<ion-select
+				multiple
+				placeholder="žádné"
+				[value]="userValue.roles ?? []"
+				[disabled]="!userValue._links.updateUser.allowed"
+				(ionChange)="update.emit({ roles: $event.detail.value })"
+			>
+				@for (role of userRoles | keyvalue; track role.key) {
+					<ion-select-option [value]="role.key">{{ role.value.title }}</ion-select-option>
+				}
+			</ion-select>
+		</bo-item>
+	</ion-list>
+}

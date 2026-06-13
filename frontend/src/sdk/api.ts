@@ -135,6 +135,18 @@ export namespace SDK {
         'roles': Array<UserRolesEnum> | null;
         /**
          * 
+         * @type {MemberResponseWithLinks}
+         * @memberof AccountResponseWithLinks
+         */
+        'member'?: MemberResponseWithLinks;
+        /**
+         * 
+         * @type {AccountResponseLinks}
+         * @memberof AccountResponseWithLinks
+         */
+        '_links': AccountResponseLinks;
+        /**
+         * 
          * @type {number}
          * @memberof AccountResponseWithLinks
          */
@@ -145,12 +157,6 @@ export namespace SDK {
          * @memberof AccountResponseWithLinks
          */
         'memberId': number | null;
-        /**
-         * 
-         * @type {Member}
-         * @memberof AccountResponseWithLinks
-         */
-        'member'?: Member | null;
         /**
          * 
          * @type {string}
@@ -181,12 +187,6 @@ export namespace SDK {
          * @memberof AccountResponseWithLinks
          */
         'loginCodeExp': string | null;
-        /**
-         * 
-         * @type {AccountResponseLinks}
-         * @memberof AccountResponseWithLinks
-         */
-        '_links': AccountResponseLinks;
     }
     
         /**
@@ -306,6 +306,20 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface AlbumPhotosOrderBody
+     */
+    export interface AlbumPhotosOrderBody {
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof AlbumPhotosOrderBody
+         */
+        'photoIds': Array<number>;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface AlbumResponse
      */
     export interface AlbumResponse {
@@ -416,31 +430,17 @@ export namespace SDK {
          */
         'unpublishAlbum': AcLink;
         /**
-         *
+         * 
          * @type {AcLink}
          * @memberof AlbumResponseLinks
          */
         'getAlbumPhotos': AcLink;
         /**
-         *
+         * 
          * @type {AcLink}
          * @memberof AlbumResponseLinks
          */
         'reorderAlbumPhotos': AcLink;
-    }
-
-        /**
-     *
-     * @export
-     * @interface AlbumPhotosOrderBody
-     */
-    export interface AlbumPhotosOrderBody {
-        /**
-         *
-         * @type {Array<number>}
-         * @memberof AlbumPhotosOrderBody
-         */
-        'photoIds': Array<number>;
     }
     
         /**
@@ -1755,6 +1755,12 @@ export namespace SDK {
         'leaders'?: Array<MemberResponse>;
         /**
          * 
+         * @type {EventResponseLinks}
+         * @memberof EventResponseWithLinks
+         */
+        '_links': EventResponseLinks;
+        /**
+         * 
          * @type {number}
          * @memberof EventResponseWithLinks
          */
@@ -1873,12 +1879,6 @@ export namespace SDK {
          * @memberof EventResponseWithLinks
          */
         'report': string | null;
-        /**
-         * 
-         * @type {EventResponseLinks}
-         * @memberof EventResponseWithLinks
-         */
-        '_links': EventResponseLinks;
     }
     
     
@@ -2442,6 +2442,44 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface HealthEntryDto
+     */
+    export interface HealthEntryDto {
+        /**
+         * 
+         * @type {string}
+         * @memberof HealthEntryDto
+         */
+        'name': string;
+        /**
+         * 
+         * @type {HealthSeverityEnum}
+         * @memberof HealthEntryDto
+         */
+        'severity': HealthSeverityEnum;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const HealthSeverityEnum = {
+        Unknown: 'unknown',
+        Low: 'low',
+        Medium: 'medium',
+        High: 'high'
+    } as const;
+    
+    export type HealthSeverityEnum = typeof HealthSeverityEnum[keyof typeof HealthSeverityEnum];
+    
+    
+        /**
+     * 
+     * @export
      * @interface LoginCredentialsBody
      */
     export interface LoginCredentialsBody {
@@ -2486,38 +2524,9 @@ export namespace SDK {
          */
         'login': string;
     }
-
+    
         /**
-     *
-     * @export
-     * @interface HealthEntry
-     */
-    export interface HealthEntry {
-        /**
-         *
-         * @type {string}
-         * @memberof HealthEntry
-         */
-        'name': string;
-        /**
-         *
-         * @type {string}
-         * @memberof HealthEntry
-         */
-        'severity': HealthSeverityEnum;
-    }
-
-    export const HealthSeverityEnum = {
-        Unknown: 'unknown',
-        Low: 'low',
-        Medium: 'medium',
-        High: 'high'
-    } as const;
-
-    export type HealthSeverityEnum = typeof HealthSeverityEnum[keyof typeof HealthSeverityEnum];
-
-        /**
-     *
+     * 
      * @export
      * @interface Member
      */
@@ -2631,17 +2640,17 @@ export namespace SDK {
          */
         'email'?: string | null;
         /**
-         *
-         * @type {Array<HealthEntry>}
+         * 
+         * @type {Array<object>}
          * @memberof Member
          */
-        'knownProblems'?: Array<HealthEntry> | null;
+        'knownProblems'?: Array<object> | null;
         /**
-         *
-         * @type {Array<HealthEntry>}
+         * 
+         * @type {Array<object>}
          * @memberof Member
          */
-        'allergies'?: Array<HealthEntry> | null;
+        'allergies'?: Array<object> | null;
         /**
          * 
          * @type {string}
@@ -3079,17 +3088,17 @@ export namespace SDK {
          */
         'rank'?: MemberRanksEnum | null;
         /**
-         *
-         * @type {Array<HealthEntry>}
+         * 
+         * @type {Array<HealthEntryDto>}
          * @memberof MemberResponse
          */
-        'knownProblems'?: Array<HealthEntry> | null;
+        'knownProblems'?: Array<HealthEntryDto> | null;
         /**
-         *
-         * @type {Array<HealthEntry>}
+         * 
+         * @type {Array<HealthEntryDto>}
          * @memberof MemberResponse
          */
-        'allergies'?: Array<HealthEntry> | null;
+        'allergies'?: Array<HealthEntryDto> | null;
         /**
          * 
          * @type {string}
@@ -3289,17 +3298,17 @@ export namespace SDK {
          */
         'rank'?: MemberRanksEnum | null;
         /**
-         *
-         * @type {Array<HealthEntry>}
+         * 
+         * @type {Array<HealthEntryDto>}
          * @memberof MemberResponseWithLinks
          */
-        'knownProblems'?: Array<HealthEntry> | null;
+        'knownProblems'?: Array<HealthEntryDto> | null;
         /**
-         *
-         * @type {Array<HealthEntry>}
+         * 
+         * @type {Array<HealthEntryDto>}
          * @memberof MemberResponseWithLinks
          */
-        'allergies'?: Array<HealthEntry> | null;
+        'allergies'?: Array<HealthEntryDto> | null;
         /**
          * 
          * @type {string}
@@ -3452,17 +3461,17 @@ export namespace SDK {
          */
         'rank'?: MemberRanksEnum | null;
         /**
-         *
-         * @type {Array<HealthEntry>}
+         * 
+         * @type {Array<HealthEntryDto>}
          * @memberof MemberUpdateBody
          */
-        'knownProblems'?: Array<HealthEntry> | null;
+        'knownProblems'?: Array<HealthEntryDto> | null;
         /**
-         *
-         * @type {Array<HealthEntry>}
+         * 
+         * @type {Array<HealthEntryDto>}
          * @memberof MemberUpdateBody
          */
-        'allergies'?: Array<HealthEntry> | null;
+        'allergies'?: Array<HealthEntryDto> | null;
         /**
          * 
          * @type {string}
@@ -3631,6 +3640,12 @@ export namespace SDK {
          * @type {number}
          * @memberof Photo
          */
+        'order': number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof Photo
+         */
         'width': number | null;
         /**
          * 
@@ -3662,26 +3677,6 @@ export namespace SDK {
          * @memberof Photo
          */
         'bg': string | null;
-    }
-    
-        /**
-     * 
-     * @export
-     * @interface PhotoCreateBody
-     */
-    export interface PhotoCreateBody {
-        /**
-         * 
-         * @type {number}
-         * @memberof PhotoCreateBody
-         */
-        'albumId': number;
-        /**
-         * 
-         * @type {File}
-         * @memberof PhotoCreateBody
-         */
-        'file': File;
     }
     
         /**
@@ -3797,13 +3792,13 @@ export namespace SDK {
          */
         'name': string;
         /**
-         *
+         * 
          * @type {number}
          * @memberof PhotoResponseWithLinks
          */
         'order'?: number | null;
         /**
-         *
+         * 
          * @type {number}
          * @memberof PhotoResponseWithLinks
          */
@@ -4357,7 +4352,7 @@ export namespace SDK {
          * @type {number}
          * @memberof UserUpdateBody
          */
-        'memberId'?: number;
+        'memberId'?: number | null;
         /**
          * 
          * @type {string}
@@ -7608,6 +7603,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * PhotoGalleryApi - object-oriented interface
      * @export
@@ -7672,12 +7671,18 @@ export namespace SDK {
          */
         
         public async createPhoto(
-            body: PhotoCreateBody,
+            albumId: number,
+            file: File,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'photoCreateBody' is not null or undefined
-            assertParamExists('createPhoto', 'photoCreateBody', body)
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('createPhoto', 'albumId', albumId)
+            assertParamExists('createPhoto', 'file', file)
+            
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('createPhoto', 'albumId', albumId)
+            assertParamExists('createPhoto', 'file', file)
             
             const localVarPath = `/api/photos`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -7690,20 +7695,29 @@ export namespace SDK {
             const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
+            const requestFormParams = new ((this.configuration && this.configuration.formDataCtor) || FormData)();
     
     
+            if (albumId !== undefined) { 
+                requestFormParams.append('albumId', albumId as any);
+            }
     
-            requestHeaderParameter['Content-Type'] = 'application/json';
+            if (file !== undefined) { 
+                requestFormParams.append('file', file as any);
+            }
+    
+    
+            requestHeaderParameter['Content-Type'] = 'multipart/form-data';
     
             setSearchParams(requestUrlObj, requestQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+            axiosRequestConfig.data = requestFormParams;
     
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<void>(axiosRequestConfig);
+            return this.axios.request<PhotoResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -8147,6 +8161,57 @@ export namespace SDK {
          * @memberof PhotoGalleryApi
          */
         
+        public async reorderAlbumPhotos(
+            id: number,
+            body: AlbumPhotosOrderBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('reorderAlbumPhotos', 'id', id)
+            assertParamExists('reorderAlbumPhotos', 'albumPhotosOrderBody', body)
+            
+            // verify required parameter 'albumPhotosOrderBody' is not null or undefined
+            assertParamExists('reorderAlbumPhotos', 'id', id)
+            assertParamExists('reorderAlbumPhotos', 'albumPhotosOrderBody', body)
+            
+            const localVarPath = `/api/albums/{id}/photos/order`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
         public async unpublishAlbum(
             id: number,
             options: AxiosRequestConfig = {}
@@ -8181,61 +8246,14 @@ export namespace SDK {
         }
     
         /**
-         *
-
-         * @param {number} id
+         * 
+    
+         * @param {number} id 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
          */
-
-        public async reorderAlbumPhotos(
-            id: number,
-            body: AlbumPhotosOrderBody,
-            options: AxiosRequestConfig = {}
-        ) {
-
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('reorderAlbumPhotos', 'id', id)
-            assertParamExists('reorderAlbumPhotos', 'albumPhotosOrderBody', body)
-
-            const localVarPath = `/api/albums/{id}/photos/order`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (this.configuration) {
-                baseOptions = this.configuration.baseOptions;
-            }
-
-            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
-            const requestHeaderParameter = {} as any;
-            const requestQueryParameter = {} as any;
-
-
-
-            requestHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(requestUrlObj, requestQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
-
-            axiosRequestConfig["url"] = toPathString(requestUrlObj);
-            axiosRequestConfig["baseURL"] = this.configuration.basePath;
-
-            return this.axios.request<void>(axiosRequestConfig);
-        }
-
-        /**
-         *
-
-         * @param {number} id
-         * @param {AxiosRequestConfig} [options] Override http request option.
-         * @throws {RequiredError}
-         * @memberof PhotoGalleryApi
-         */
-
+        
         public async updateAlbum(
             id: number,
             body: AlbumUpdateBody,

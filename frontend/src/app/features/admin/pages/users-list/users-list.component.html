@@ -75,7 +75,7 @@
 				<tbody>
 					@if (users()) {
 						@for (user of users()!; track user.id) {
-							<tr [routerLink]="['/uzivatele', user.id]">
+							<tr [routerLink]="['/admin/uzivatele', user.id]">
 								<td>{{ user.login }}</td>
 								<td>{{ user.email }}</td>
 								<td>
