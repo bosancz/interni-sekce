@@ -1,11 +1,14 @@
 import { KeyValuePipe } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import {
+	AlertController,
 	InfiniteScrollCustomEvent,
 	IonBadge,
+	IonButton,
 	IonContent,
+	IonIcon,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
 	IonItem,
@@ -16,9 +19,12 @@ import {
 	ViewWillEnter,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { addOutline } from "ionicons/icons";
 import { UserRoles } from "src/app/core/config/user-roles";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
@@ -49,6 +55,8 @@ type UsersFilter = {
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
 		IonBadge,
+		IonButton,
+		IonIcon,
 		PageHeaderComponent,
 		FilterComponent,
 		AdminTableComponent,
@@ -68,16 +76,19 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
 
 	view = signal<"table" | "list" | undefined>(undefined);
 
+	alert?: HTMLIonAlertElement;
+
 	constructor(
 		private api: ApiService,
-		private route: ActivatedRoute,
 		private router: Router,
 		private platformService: PlatformService,
-	) {}
+		private alertController: AlertController,
+		private toastService: ToastService,
+	) {
+		addIcons({ addOutline });
+	}
 
 	ngOnInit(): void {
-		this.setActions();
-
 		this.platformService.isPortrait.pipe(untilDestroyed(this)).subscribe((isPortrait) => {
 			this.view.set(isPortrait ? "list" : "table");
 		});
@@ -125,15 +136,43 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
 		return UserRoles[roleId];
 	}
 
-	private setActions(): void {
-		// TODO: check permissions
-		this.actions.set([
-			{
-				text: "Přidat",
-				icon: "add-outline",
-				pinned: true,
-				handler: () => this.router.navigate(["/admin/uzivatele/vytvorit"], { relativeTo: this.route }),
-			},
-		]);
+	create() {
+		this.createUserModal();
+	}
+
+	private async createUserModal() {
+		this.alert = await this.alertController.create({
+			header: "Vytvořit uživatelský účet",
+			inputs: [
+				{ name: "login", type: "text", placeholder: "Login", attributes: { required: true } },
+				{ name: "email", type: "email", placeholder: "E-mail (nepovinný)" },
+			],
+			buttons: [
+				{ role: "cancel", text: "Zrušit" },
+				{
+					text: "Vytvořit",
+					handler: (data: SDK.UserCreateBody) => this.onCreateUser(data),
+				},
+			],
+		});
+
+		await this.alert.present();
+	}
+
+	private onCreateUser(userData: SDK.UserCreateBody) {
+		if (!userData.login) {
+			this.toastService.toast("Musíš vyplnit login.");
+			return false;
+		}
+
+		this.createUser(userData);
+	}
+
+	private async createUser(userData: SDK.UserCreateBody) {
+		const user = await this.api.UsersApi.createUser(userData).then((res) => res.data);
+
+		this.toastService.toast("Uživatel vytvořen.");
+
+		await this.router.navigate(["/admin/uzivatele", user.id]);
 	}
 }

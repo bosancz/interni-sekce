@@ -1,6 +1,10 @@
 <bo-page-header title="Uživatelské účty" backUrl="/" [actions]="actions()" />
 
 <bo-filter [search]="true" (change)="onFilterChange($event)">
+	<ion-button toolbar-actions fill="clear" size="small" (click)="create()" slot="end">
+		<ion-icon slot="icon-only" name="add-outline"></ion-icon>
+	</ion-button>
+
 	<ion-item>
 		<ion-label position="stacked">Role</ion-label>
 		<ion-select multiple name="roles" ngModel placeholder="Vyber role">

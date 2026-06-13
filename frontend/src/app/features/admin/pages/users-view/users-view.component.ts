@@ -94,6 +94,23 @@ export class UsersViewComponent {
 		await this.loadUser(user.id);
 	}
 
+	async setPassword(password: string) {
+		const user = this.user();
+		if (!user || !password) return;
+
+		const toast = await this.toastService.toast("Ukládám...");
+
+		try {
+			await this.api.UsersApi.setUserPassword(user.id, { password });
+
+			toast.dismiss();
+			this.toastService.toast("Heslo změněno.");
+		} catch (e) {
+			toast.dismiss();
+			this.toastService.toast("Chyba při ukládání.", { color: "danger" });
+		}
+	}
+
 	async changeMember() {
 		const user = this.user();
 		if (!user?._links.updateUser.allowed) return;

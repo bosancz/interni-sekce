@@ -16,6 +16,7 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
+import { HashService } from "src/auth/services/hash.service";
 import { TokenService } from "src/auth/services/token.service";
 import { User } from "src/models/users/entities/user.entity";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
@@ -42,6 +43,7 @@ export class UsersController {
 	constructor(
 		private userService: UsersRepository,
 		private tokenService: TokenService,
+		private hashService: HashService,
 		@InjectRepository(User) private userRepository: Repository<User>,
 	) {}
 
@@ -140,7 +142,9 @@ export class UsersController {
 
 		UserSetPassword.canOrThrow(req, user);
 
-		await this.userService.updateUser(id, body);
+		// the password column stores a bcrypt hash, never the plaintext
+		const password = await this.hashService.generateHash(body.password);
+		await this.userService.updateUser(id, { password });
 	}
 
 	@Post(":id/impersonate")

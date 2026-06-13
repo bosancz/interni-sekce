@@ -9,7 +9,11 @@
 						<bo-card-title> Uživatelský účet </bo-card-title>
 					</bo-card-header>
 					<bo-card-content>
-						<bo-user-info [user]="user()" (update)="updateUser($event)" />
+						<bo-user-info
+							[user]="user()"
+							(update)="updateUser($event)"
+							(setPassword)="setPassword($event)"
+						/>
 					</bo-card-content>
 				</bo-card>
 			</div>
@@ -17,7 +21,7 @@
 				<bo-card>
 					<bo-card-header>
 						<bo-card-title> Propojený člen </bo-card-title>
-						<ion-buttons slot="end">
+						<ion-buttons slot="buttons">
 							<bo-edit-button
 								[disabled]="!user()!._links.updateUser.allowed"
 								(click)="changeMember()"
@@ -30,7 +34,7 @@
 								>
 									<ion-icon name="close-outline"></ion-icon>
 								</ion-button>
-								<ion-button color="primary" [routerLink]="['/databaze', user()!.member!.id]">
+								<ion-button color="primary" [routerLink]="['/databaze/clenove', user()!.member!.id]">
 									<ion-icon name="arrow-forward"></ion-icon>
 								</ion-button>
 							}
