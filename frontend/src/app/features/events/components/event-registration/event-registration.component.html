@@ -7,6 +7,14 @@
 			>Nahrát</ion-button
 		>
 	}
+	@if (event()?._links?.generateEventRegistration?.applicable) {
+		<ion-button
+			[disabled]="!event()?._links?.generateEventRegistration?.allowed || uploadingRegistration"
+			fill="clear"
+			(click)="generateRegistration()"
+			>Generovat</ion-button
+		>
+	}
 	@if (event()?._links?.getEventRegistration?.applicable) {
 		<ion-button
 			[disabled]="!event()?._links?.getEventRegistration?.allowed || uploadingRegistration"

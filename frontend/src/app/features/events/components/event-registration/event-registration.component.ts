@@ -62,6 +62,24 @@ export class EventRegistrationComponent {
 		}
 	}
 
+	async generateRegistration() {
+		const event = this.event();
+		if (!event) return;
+
+		this.uploadingRegistration = true;
+
+		try {
+			await this.api.EventsApi.generateEventRegistration(event.id);
+			this.update.emit();
+			this.toastService.toast("Přihláška vygenerována.");
+		} catch (err: any) {
+			const message = err?.response?.data?.message ?? err.message;
+			this.toastService.toast("Nastala chyba při generování: " + message);
+		} finally {
+			this.uploadingRegistration = false;
+		}
+	}
+
 	async deleteRegistration() {
 		const event = this.event();
 		if (!event) return;

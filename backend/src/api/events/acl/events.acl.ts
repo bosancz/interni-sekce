@@ -160,6 +160,12 @@ export const EventRegistrationEditPermission = new Permission({
 	inherit: EventEditPermission,
 });
 
+export const EventRegistrationGeneratePermission = new Permission({
+	linkTo: EventResponse,
+
+	inherit: EventEditPermission,
+});
+
 export const EventRegistrationDeletePermission = new Permission({
 	linkTo: EventResponse,
 
