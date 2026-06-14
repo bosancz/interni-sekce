@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="cs">
+	<head>
+		<meta charset="utf-8" />
+		<style>
+			/* Brand headline font (sdílené fonty leží v ../../fonts) */
+			@font-face {
+				font-family: "SanGrotesk";
+				src: url("../../fonts/SanGrotesk-Regular.otf");
+			}
+
+			/* --- barva šablony: stačí změnit tuto jednu hodnotu --- */
+			:root {
+				--accent: #e28f26;
+			}
+
+			@page {
+				size: A4 landscape;
+				margin: 1.2cm;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: "Helvetica Neue", Arial, sans-serif;
+				font-size: 11px;
+				line-height: 1.35;
+				color: #1a1a1a;
+				margin: 0;
+			}
+
+			.page {
+				display: flex;
+				gap: 28px;
+			}
+
+			.col {
+				flex: 1 1 0;
+				min-width: 0;
+			}
+
+			h1 {
+				font-family: "SanGrotesk", sans-serif;
+				font-size: 26px;
+				text-align: center;
+				margin: 0 0 10px;
+			}
+
+			.title-accent {
+				color: var(--accent);
+			}
+
+			.info-box {
+				border: 1px solid #aaa;
+				background: #f6f6f6;
+				border-radius: 4px;
+				padding: 10px 12px;
+				margin-top: 8px;
+			}
+
+			.info-box p {
+				margin: 3px 0;
+			}
+
+			.label {
+				font-weight: 700;
+			}
+
+			.blank {
+				display: inline-block;
+				border-bottom: 1px solid #999;
+				min-width: 180px;
+				height: 1em;
+				vertical-align: bottom;
+			}
+
+			/* registrační formulář */
+			.rule {
+				border: none;
+				border-top: 1px solid #999;
+				margin: 6px 0 16px;
+			}
+
+			.field {
+				display: flex;
+				align-items: flex-end;
+				gap: 8px;
+				margin-bottom: 16px;
+			}
+
+			.field .label {
+				white-space: nowrap;
+			}
+
+			.field .line {
+				flex: 1;
+				border-bottom: 1px solid #999;
+				height: 1em;
+			}
+
+			/* rámeček na kartičku pojištěnce – velikost platební karty */
+			.card-box {
+				width: 85.6mm;
+				height: 53.98mm;
+				border: 1px solid #aaa;
+				border-radius: 4px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #999;
+				margin: 16px auto;
+			}
+
+			.declaration {
+				margin: 14px 0;
+			}
+
+			.signature {
+				display: flex;
+				gap: 24px;
+				margin-top: 18px;
+			}
+
+			.signature > div {
+				flex: 1;
+				display: flex;
+				align-items: flex-end;
+				gap: 8px;
+			}
+
+			.signature .line {
+				flex: 1;
+				border-bottom: 1px solid #999;
+				height: 1em;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page">
+			<!-- LEVÝ SLOUPEC: info o akci -->
+			<div class="col">
+				<h1 class="title-accent">{{name}}</h1>
+
+				<div class="description">{{{descriptionHtml}}}</div>
+
+				<div class="info-box">
+					<p><span class="label">Místo:</span> {{place}}</p>
+					<p><span class="label">Odjezd:</span> {{departure}}</p>
+					<p><span class="label">Příjezd:</span> {{arrival}}</p>
+					<p><span class="label">Cena:</span> <span class="blank"></span></p>
+					<p><span class="label">Co s sebou:</span> <span class="blank"></span></p>
+					<p><span class="label">Kontakt:</span> {{contactsLine}}</p>
+				</div>
+			</div>
+
+			<!-- PRAVÝ SLOUPEC: přihláška k vyplnění -->
+			<div class="col">
+				<h1>Přihláška</h1>
+				<hr class="rule" />
+
+				<div class="field"><span class="label">Jméno a příjmení dítěte:</span><span class="line"></span></div>
+				<div class="field"><span class="label">Datum narození:</span><span class="line"></span></div>
+				<div class="field"><span class="label">Kontakt rodiče (mobil):</span><span class="line"></span></div>
+				<div class="field"><span class="label">Kontakt rodiče (e-mail):</span><span class="line"></span></div>
+				<div class="field"><span class="label">Bydliště:</span><span class="line"></span></div>
+				<div class="field"><span class="label">Zdravotní komplikace:</span><span class="line"></span></div>
+
+				<div class="card-box">(Kopie kartičky pojištěnce)</div>
+
+				<p class="declaration">
+					Podpisem prohlašuji, že lékař dítěti nenařídil změnu režimu, dítě nejeví známky akutního
+					onemocnění. Dítě je schopno zúčastnit se akce.
+				</p>
+
+				<div class="signature">
+					<div><span class="label">Podpis:</span><span class="line"></span></div>
+					<div><span class="label">Datum:</span><span class="line"></span></div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,65 +1,62 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { marked, Token, Tokens } from "marked";
+import * as Handlebars from "handlebars";
+import { marked } from "marked";
+import { existsSync } from "fs";
+import { readdir, readFile, unlink, writeFile } from "fs/promises";
 import * as path from "path";
-import type { Content, TableCell, TDocumentDefinitions } from "pdfmake/interfaces";
-import { LeadersDeleteColumn1690377300739 } from "src/database/migrations/1690377300739-leaders-delete-column";
+import * as puppeteer from "puppeteer";
+import { pathToFileURL } from "url";
 import { string2Date } from "src/helpers/string2date";
 import { Event } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
 
-// pdfmake's server-side printer is not typed by @types/pdfmake (which only covers the browser build).
-/* eslint-disable @typescript-eslint/no-var-requires */
-const PdfPrinter = require("pdfmake/js/Printer").default;
-const URLResolver = require("pdfmake/js/URLResolver").default;
-const virtualFs = require("pdfmake/js/virtual-fs").default;
-/* eslint-enable @typescript-eslint/no-var-requires */
+const TEMPLATES_DIR = path.resolve("assets/registration-templates");
+const TEMPLATE_FILE = "template.html";
+const META_FILE = "meta.json";
 
-const FONTS_DIR = path.resolve("assets/fonts");
-
-const fonts = {
-	// Body font (Czech diacritics supported), bundled with pdfmake.
-	Roboto: {
-		normal: path.join(FONTS_DIR, "Roboto-Regular.ttf"),
-		bold: path.join(FONTS_DIR, "Roboto-Medium.ttf"),
-		italics: path.join(FONTS_DIR, "Roboto-Italic.ttf"),
-		bolditalics: path.join(FONTS_DIR, "Roboto-MediumItalic.ttf"),
-	},
-	// Brand headline font (regular weight only).
-	SanGrotesk: {
-		normal: path.join(FONTS_DIR, "SanGrotesk-Regular.otf"),
-		bold: path.join(FONTS_DIR, "SanGrotesk-Regular.otf"),
-		italics: path.join(FONTS_DIR, "SanGrotesk-Regular.otf"),
-		bolditalics: path.join(FONTS_DIR, "SanGrotesk-Regular.otf"),
-	},
-};
-
-// Colors taken from the LaTeX template.
-const PASTEL_ORANGE = "#E28F26";
-const PASTEL_BLUE = "#2A3478";
-const BORDER_GRAY = "#a0a0a0";
-const BOX_FILL = "#f5f5f5";
-
-// Standard credit card (ISO/IEC 7810 ID-1): 85.6 mm × 53.98 mm, in PDF points (1 mm ≈ 2.83465 pt).
-const MM_TO_PT = 2.83465;
-const CARD_WIDTH = Math.round(85.6 * MM_TO_PT); // ≈ 243
-const CARD_HEIGHT = Math.round(53.98 * MM_TO_PT); // ≈ 153
+export interface RegistrationTemplate {
+	id: string;
+	name: string;
+}
 
 @Injectable()
 export class EventRegistrationService {
-	async generateRegistration(event: Event): Promise<Buffer> {
+	/** Lists the available templates by scanning the templates directory (drop a folder, it appears). */
+	async listTemplates(): Promise<RegistrationTemplate[]> {
+		let entries: string[] = [];
+		try {
+			entries = await readdir(TEMPLATES_DIR);
+		} catch {
+			return [];
+		}
+
+		const templates: RegistrationTemplate[] = [];
+		for (const id of entries) {
+			if (!/^[a-z0-9_-]+$/i.test(id)) continue;
+			const dir = path.join(TEMPLATES_DIR, id);
+			if (!existsSync(path.join(dir, TEMPLATE_FILE))) continue;
+
+			let name = id;
+			try {
+				const meta = JSON.parse(await readFile(path.join(dir, META_FILE), "utf-8"));
+				if (typeof meta?.name === "string" && meta.name.trim()) name = meta.name.trim();
+			} catch {
+				// no/invalid meta.json — fall back to the folder name
+			}
+			templates.push({ id, name });
+		}
+
+		return templates.sort((a, b) => a.name.localeCompare(b.name, "cs"));
+	}
+
+	async generateRegistration(event: Event, templateId: string): Promise<Buffer> {
 		this.assertGeneratable(event);
+		const templateDir = await this.resolveTemplateDir(templateId);
 
-		const urlResolver = new URLResolver(virtualFs);
-		const printer = new PdfPrinter(fonts, virtualFs, urlResolver, () => true);
-		const pdfDoc = await printer.createPdfKitDocument(this.buildDocDefinition(event));
+		const source = await readFile(path.join(templateDir, TEMPLATE_FILE), "utf-8");
+		const html = Handlebars.compile(source)(this.buildContext(event));
 
-		return await new Promise<Buffer>((resolve, reject) => {
-			const chunks: Buffer[] = [];
-			pdfDoc.on("data", (chunk: Buffer) => chunks.push(chunk));
-			pdfDoc.on("end", () => resolve(Buffer.concat(chunks)));
-			pdfDoc.on("error", reject);
-			pdfDoc.end();
-		});
+		return this.htmlToPdf(html, templateDir);
 	}
 
 	/** Refuses generation when the data the form relies on is missing, listing exactly what. */
@@ -72,261 +69,83 @@ export class EventRegistrationService {
 		if (!event.leaders?.[0]?.mobile?.trim()) missing.push("mobil na vedoucího");
 		if (!event.leaders?.[0]?.email?.trim()) missing.push("email na vedoucího");
 
-
 		if (missing.length) {
 			throw new BadRequestException(`Nelze vygenerovat přihlášku, chybí: ${missing.join(", ")}.`);
 		}
 	}
 
-	private buildDocDefinition(event: Event): TDocumentDefinitions {
-		return {
-			pageSize: "A4",
-			pageOrientation: "landscape",
-			pageMargins: [40, 36, 40, 40],
-			defaultStyle: { font: "Roboto", fontSize: 10, lineHeight: 1.15 },
-			content: [
-				{
-					columns: [
-						{ width: "*", stack: this.buildInfoColumn(event) },
-						{ width: 24, text: "" },
-						{ width: "*", stack: this.buildFormColumn() },
-					],
-				},
-			],
-		};
-	}
-
-	private buildInfoColumn(event: Event): Content[] {
-		return [
-			{
-				text: event.name || "",
-				font: "SanGrotesk",
-				fontSize: 22,
-				color: PASTEL_ORANGE,
-				alignment: "center",
-				margin: [0, 0, 0, 10],
-			},
-			...(event.description ? this.markdownToContent(event.description) : []),
-			{
-				table: {
-					widths: ["*"],
-					body: [[{ stack: this.buildInfoLines(event), fillColor: BOX_FILL, margin: [6, 6, 6, 6] }]],
-				},
-				layout: {
-					hLineWidth: () => 0.5,
-					vLineWidth: () => 0.5,
-					hLineColor: () => BORDER_GRAY,
-					vLineColor: () => BORDER_GRAY,
-				},
-				margin: [0, 4, 0, 0],
-			},
-		];
-	}
-
-	private buildInfoLines(event: Event): Content[] {
-		return [
-			this.infoLine("Místo:", event.place || ""),
-			this.infoLine("Odjezd:", this.formatDeparture(event.dateFrom, event.timeFrom, event.meetingPlaceStart)),
-			this.infoLine("Příjezd:", this.formatDeparture(event.dateTill, event.timeTill, event.meetingPlaceEnd)),
-			this.infoLineBlank("Cena:"),
-			this.infoLineBlank("Co s sebou:"),
-			this.infoLine("Kontakt:", this.formatContacts(event.leaders)),
-		];
-	}
-
-	private infoLine(label: string, value: string): Content {
-		return {
-			text: [{ text: `${label} `, bold: true }, value],
-			margin: [0, 1, 0, 1],
-		};
-	}
-
-	private infoLineBlank(label: string): Content {
-		return {
-			text: [{ text: `${label} `, bold: true }, this.blankLine(95)],
-			margin: [0, 1, 0, 1],
-		};
-	}
-
-	private buildFormColumn(): Content[] {
-		return [
-			{
-				text: "Přihláška",
-				font: "SanGrotesk",
-				fontSize: 22,
-				alignment: "center",
-				margin: [0, 0, 0, 4],
-			},
-			{
-				canvas: [{ type: "line", x1: 0, y1: 0, x2: 360, y2: 0, lineWidth: 0.5, lineColor: BORDER_GRAY }],
-				margin: [0, 0, 0, 12],
-			},
-			this.buildFormFields(),
-			this.buildInsuranceCardBox(),
-			{
-				text:
-					"Podpisem prohlašuji, že lékař dítěti nenařídil změnu režimu, dítě nejeví známky akutního " +
-					"onemocnění. Dítě je schopno zúčastnit se akce.",
-				margin: [0, 0, 0, 16],
-			},
-			this.buildSignatureRow(),
-		];
-	}
-
-	/** Form fields whose answer is a full-width line (drawn as a bottom cell border) for hand fill-in. */
-	private buildFormFields(): Content {
-		const lineCell = (): TableCell => ({ text: " ", border: [false, false, false, true] });
-		const labelCell = (label: string): TableCell => ({ text: label, bold: true, border: [false, false, false, false] });
-		const row = (label: string): TableCell[] => [labelCell(label), lineCell()];
-
-		return {
-			table: {
-				widths: ["auto", "*"],
-				body: [
-					row("Jméno a příjmení dítěte:"),
-					row("Datum narození:"),
-					row("Kontakt rodiče (mobil):"),
-					row("Kontakt rodiče (e-mail):"),
-					row("Bydliště:"),
-					row("Zdravotní komplikace:"),
-				],
-			},
-			layout: {
-				defaultBorder: false,
-				hLineWidth: () => 0.6,
-				hLineColor: () => BORDER_GRAY,
-				vLineWidth: () => 0,
-				paddingTop: () => 8,
-				paddingBottom: () => 4,
-			},
-		};
-	}
-
-	/** Empty box sized like a standard credit card, centered, for the insurance card copy. */
-	private buildInsuranceCardBox(): Content {
-		const box: Content = {
-			table: {
-				widths: [CARD_WIDTH],
-				heights: [CARD_HEIGHT],
-				body: [
-					[
-						{
-							text: "(Kopie kartičky pojištěnce)",
-							alignment: "center",
-							color: BORDER_GRAY,
-							margin: [0, CARD_HEIGHT / 2 - 8, 0, 0],
-						},
-					],
-				],
-			},
-			layout: {
-				hLineWidth: () => 0.5,
-				vLineWidth: () => 0.5,
-				hLineColor: () => BORDER_GRAY,
-				vLineColor: () => BORDER_GRAY,
-			},
-		};
-
-		return {
-			columns: [{ width: "*", text: "" }, { width: CARD_WIDTH, stack: [box] }, { width: "*", text: "" }],
-			margin: [0, 18, 0, 18],
-		};
-	}
-
-	private buildSignatureRow(): Content {
-		const lineCell = (): TableCell => ({ text: " ", border: [false, false, false, true] });
-		const labelCell = (label: string): TableCell => ({ text: label, bold: true, border: [false, false, false, false] });
-
-		return {
-			table: {
-				widths: ["auto", "*", "auto", "*"],
-				body: [[labelCell("Podpis:"), lineCell(), labelCell("Datum:"), lineCell()]],
-			},
-			layout: {
-				defaultBorder: false,
-				hLineWidth: () => 0.6,
-				hLineColor: () => BORDER_GRAY,
-				vLineWidth: () => 0,
-				paddingTop: () => 6,
-			},
-		};
-	}
-
-	/** An empty underlined run, used as a hand fill-in line inside flowing text. */
-	private blankLine(length: number): Content {
-		return { text: " ".repeat(length), decoration: "underline", decorationColor: BORDER_GRAY };
-	}
-
-	// ---- Markdown rendering ----------------------------------------------------
-
-	private markdownToContent(md: string): Content[] {
-		const content: Content[] = [];
-
-		for (const token of marked.lexer(md)) {
-			switch (token.type) {
-				case "heading":
-					content.push({
-						text: this.inlineToContent((token as Tokens.Heading).tokens),
-						bold: true,
-						fontSize: token.depth <= 2 ? 13 : 11,
-						margin: [0, 4, 0, 2],
-					});
-					break;
-				case "paragraph":
-					content.push({ text: this.inlineToContent((token as Tokens.Paragraph).tokens), margin: [0, 0, 0, 6] });
-					break;
-				case "blockquote":
-					content.push({
-						text: this.inlineToContent((token as Tokens.Blockquote).tokens),
-						italics: true,
-						margin: [8, 0, 0, 6],
-					});
-					break;
-				case "list": {
-					const items = (token as Tokens.List).items.map((item) => ({ text: this.inlineToContent(item.tokens) }));
-					content.push((token as Tokens.List).ordered ? { ol: items, margin: [0, 0, 0, 6] } : { ul: items, margin: [0, 0, 0, 6] });
-					break;
-				}
-				case "space":
-					break;
-				default: {
-					const text = (token as Tokens.Generic).text;
-					if (text) content.push({ text, margin: [0, 0, 0, 6] });
-				}
-			}
+	/** Validates the requested template id and returns its directory (guards against path traversal). */
+	private async resolveTemplateDir(templateId: string): Promise<string> {
+		if (!templateId || !/^[a-z0-9_-]+$/i.test(templateId)) {
+			throw new BadRequestException("Neplatná šablona.");
 		}
-
-		return content;
+		const dir = path.join(TEMPLATES_DIR, templateId);
+		if (!existsSync(path.join(dir, TEMPLATE_FILE))) {
+			throw new BadRequestException(`Šablona "${templateId}" neexistuje.`);
+		}
+		return dir;
 	}
 
-	private inlineToContent(tokens: Token[] | undefined): Content {
-		if (!tokens) return "";
+	/** Renders HTML to a PDF buffer with headless Chromium. Writes a temp file in the template dir so relative images/fonts/CSS resolve. */
+	private async htmlToPdf(html: string, templateDir: string): Promise<Buffer> {
+		const tempFile = path.join(templateDir, `.render-${Date.now()}-${Math.random().toString(36).slice(2)}.html`);
+		let browser: puppeteer.Browser | undefined;
 
-		return tokens.map((token): Content => {
-			switch (token.type) {
-				case "strong":
-					return { text: this.inlineToContent((token as Tokens.Strong).tokens), bold: true };
-				case "em":
-					return { text: this.inlineToContent((token as Tokens.Em).tokens), italics: true };
-				case "del":
-					return { text: this.inlineToContent((token as Tokens.Del).tokens), decoration: "lineThrough" };
-				case "link":
-					return { text: this.inlineToContent((token as Tokens.Link).tokens), color: PASTEL_BLUE, decoration: "underline" };
-				case "codespan":
-					return (token as Tokens.Codespan).text;
-				case "br":
-					return "\n";
-				case "text": {
-					const t = token as Tokens.Text;
-					return t.tokens ? { text: this.inlineToContent(t.tokens) } : t.text;
-				}
-				default:
-					return (token as Tokens.Generic).text ?? "";
-			}
+		try {
+			await writeFile(tempFile, html, "utf-8");
+
+			browser = await puppeteer.launch({
+				executablePath: this.resolveChromiumPath(),
+				args: ["--no-sandbox", "--disable-setuid-sandbox"],
+			});
+
+			const page = await browser.newPage();
+			await page.goto(pathToFileURL(tempFile).href, { waitUntil: "networkidle0" });
+			const pdf = await page.pdf({
+				format: "A4",
+				landscape: true,
+				printBackground: true,
+				preferCSSPageSize: true,
+			});
+			return Buffer.from(pdf);
+		} finally {
+			await browser?.close().catch(() => undefined);
+			await unlink(tempFile).catch(() => undefined);
+		}
+	}
+
+	/** Picks the Chromium binary: explicit env (prod), then a system install, then Puppeteer's bundled download. */
+	private resolveChromiumPath(): string | undefined {
+		const fromEnv = process.env["PUPPETEER_EXECUTABLE_PATH"];
+		if (fromEnv) return fromEnv;
+
+		const candidates = ["/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome"];
+		const systemChromium = candidates.find((candidate) => existsSync(candidate));
+		if (systemChromium) return systemChromium;
+
+		return undefined; // fall back to Puppeteer's bundled Chromium
+	}
+
+	private buildContext(event: Event) {
+		const contacts = (event.leaders || []).map((member) => {
+			const name = [member.firstName, member.lastName].filter(Boolean).join(" ") || member.nickname || "";
+			const phone = member.contacts?.[0]?.mobile || member.mobile || "";
+			const email = member.contacts?.[0]?.email || member.email || "";
+			return { name, phone, email, line: [name, [phone, email].filter(Boolean).join(", ")].filter(Boolean).join(" – ") };
 		});
-	}
 
-	// ---- Value formatting ------------------------------------------------------
+		return {
+			name: event.name || "",
+			place: event.place || "",
+			dateFrom: this.formatDate(event.dateFrom),
+			dateTill: this.formatDate(event.dateTill),
+			departure: this.formatDeparture(event.dateFrom, event.timeFrom, event.meetingPlaceStart),
+			arrival: this.formatDeparture(event.dateTill, event.timeTill, event.meetingPlaceEnd),
+			descriptionHtml: event.description ? marked.parse(event.description, { async: false }) : "",
+			contacts,
+			contactsLine: contacts.map((c) => c.line).filter(Boolean).join("; "),
+		};
+	}
 
 	private formatDate(date: string | null | undefined): string {
 		const d = string2Date(date);
@@ -335,18 +154,5 @@ export class EventRegistrationService {
 
 	private formatDeparture(date: string | null, time: string | null, place: string | null): string {
 		return [this.formatDate(date), time, place].filter(Boolean).join(" ");
-	}
-
-	private formatContacts(leaders: Member[] | undefined): string {
-		return (leaders || [])
-			.map((member) => {
-				const name = [member.firstName,( "\"" + member.nickname +  "\""|| ""), member.lastName].filter(Boolean).join(" ");
-				const phone = member.mobile;
-				const email =  member.email;
-				const contact = [phone, email].filter(Boolean).join(", ");
-				return [name, contact].filter(Boolean).join(" – ");
-			})
-			.filter(Boolean)
-			.join("\n");
 	}
 }

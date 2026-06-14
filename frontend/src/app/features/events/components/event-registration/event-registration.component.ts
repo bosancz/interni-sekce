@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component, ElementRef, input, output, signal, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
-import { IonButton } from "@ionic/angular/standalone";
+import { ActionSheetController, IonButton } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -29,6 +29,7 @@ export class EventRegistrationComponent {
 		private toastService: ToastService,
 		private eventService: EventsService,
 		private sanitizer: DomSanitizer,
+		private actionSheetController: ActionSheetController,
 	) {}
 
 	uploadRegistrationSelect() {
@@ -66,10 +67,37 @@ export class EventRegistrationComponent {
 		const event = this.event();
 		if (!event) return;
 
+		let templates: SDK.RegistrationTemplateResponse[];
+		try {
+			templates = (await this.api.EventsApi.getEventRegistrationTemplates(event.id)).data;
+		} catch {
+			this.toastService.toast("Nepodařilo se načíst šablony přihlášky.");
+			return;
+		}
+
+		if (!templates.length) {
+			this.toastService.toast("Nejsou k dispozici žádné šablony přihlášky.");
+			return;
+		}
+
+		const actionSheet = await this.actionSheetController.create({
+			header: "Vyber šablonu přihlášky",
+			buttons: [
+				...templates.map((template) => ({
+					text: template.name,
+					handler: () => void this.generateWithTemplate(event.id, template.id),
+				})),
+				{ text: "Zrušit", role: "cancel" },
+			],
+		});
+		await actionSheet.present();
+	}
+
+	private async generateWithTemplate(eventId: number, template: string) {
 		this.uploadingRegistration.set(true);
 
 		try {
-			await this.api.EventsApi.generateEventRegistration(event.id);
+			await this.api.EventsApi.generateEventRegistration(eventId, { template });
 			this.update.emit();
 			this.toastService.toast("Přihláška vygenerována.");
 		} catch (err: any) {

@@ -9,13 +9,15 @@ import {
 	Param,
 	Post,
 	Put,
+	Query,
 	Req,
 	Res,
 	UploadedFile,
 	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiConsumes, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { RegistrationTemplateResponse } from "../dto/registration-template.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response} from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
@@ -131,11 +133,28 @@ export class EventsRegistrationsController {
 			await this.storeRegistration(event, data);
 		}
 
+	@Get(":id/registration/templates")
+	@AcLinks(EventRegistrationGeneratePermission)
+	@ApiResponse({ status: 200, type: [RegistrationTemplateResponse] })
+	async getEventRegistrationTemplates(@Req() req: Request, @Param("id") id: number): Promise<RegistrationTemplateResponse[]> {
+		const event = await this.events.getEvent(id);
+		if (!event) throw new NotFoundException();
+
+		EventRegistrationGeneratePermission.canOrThrow(req, event);
+
+		return this.eventRegistrationService.listTemplates();
+	}
+
 	@Post(":id/registration/generate")
 	@HttpCode(204)
 	@AcLinks(EventRegistrationGeneratePermission)
 	@ApiResponse({ status: 204 })
-	async generateEventRegistration(@Req() req: Request, @Param("id") id: number): Promise<void> {
+	@ApiQuery({ name: "template", required: true })
+	async generateEventRegistration(
+		@Req() req: Request,
+		@Param("id") id: number,
+		@Query("template") template: string,
+	): Promise<void> {
 		// Load attendees with member contacts so the generated form can list organisers and their contacts.
 		const event = await this.eventsRepository.findOne({
 			where: { id },
@@ -145,7 +164,7 @@ export class EventsRegistrationsController {
 
 		EventRegistrationGeneratePermission.canOrThrow(req, event);
 
-		const data = await this.eventRegistrationService.generateRegistration(event);
+		const data = await this.eventRegistrationService.generateRegistration(event, template);
 		await this.storeRegistration(event, data);
 	}
 

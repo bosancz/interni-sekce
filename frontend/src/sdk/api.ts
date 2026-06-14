@@ -1624,6 +1624,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof EventResponseLinks
          */
+        'getEventRegistrationTemplates': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
         'generateEventRegistration': AcLink;
         /**
          * 
@@ -3894,6 +3900,26 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface RegistrationTemplateResponse
+     */
+    export interface RegistrationTemplateResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof RegistrationTemplateResponse
+         */
+        'id': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof RegistrationTemplateResponse
+         */
+        'name': string;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface RootResponseLinks
      */
     export interface RootResponseLinks {
@@ -4725,6 +4751,25 @@ export namespace SDK {
     
     
     
+    /**
+     * Query parameters for generateEventRegistration operation in EventsApi.
+     * @export
+     * @interface EventsApiGenerateEventRegistrationQueryParams
+     */
+    export interface EventsApiGenerateEventRegistrationQueryParams {
+        //template
+        /**
+         * 
+         * @type {string}
+         * @memberof EventsApiGenerateEventRegistration
+         */
+        template: string
+    }
+    
+    
+    
+    
+    
     
     
     
@@ -5309,6 +5354,7 @@ export namespace SDK {
          * 
     
          * @param {number} id 
+         * @param {EventsApiGenerateEventRegistrationQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
@@ -5316,11 +5362,17 @@ export namespace SDK {
         
         public async generateEventRegistration(
             id: number,
+            queryParams: EventsApiGenerateEventRegistrationQueryParams,
             options: AxiosRequestConfig = {}
         ) {
     
             // verify required parameter 'id' is not null or undefined
             assertParamExists('generateEventRegistration', 'id', id)
+            assertParamExists('generateEventRegistration', 'template', queryParams.template)
+            
+            // verify required parameter 'template' is not null or undefined
+            assertParamExists('generateEventRegistration', 'id', id)
+            assertParamExists('generateEventRegistration', 'template', queryParams.template)
             
             const localVarPath = `/api/events/{id}/registration/generate`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
@@ -5334,6 +5386,10 @@ export namespace SDK {
             const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
+    
+            if (queryParams.template !== undefined) {
+                requestQueryParameter['template'] = queryParams.template;
+            }
     
     
     
@@ -5549,6 +5605,48 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async getEventRegistrationTemplates(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getEventRegistrationTemplates', 'id', id)
+            
+            const localVarPath = `/api/events/{id}/registration/templates`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<RegistrationTemplateResponse>>(axiosRequestConfig);
         }
     
         /**
