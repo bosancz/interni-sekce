@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, ElementRef, input, output, ViewChild } from "@angular/core";
+import { Component, ElementRef, input, output, signal, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
 import { IonButton } from "@ionic/angular/standalone";
@@ -20,7 +20,7 @@ export class EventRegistrationComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>();
 	update = output<void>();
 
-	uploadingRegistration: boolean = false;
+	uploadingRegistration = signal(false);
 
 	@ViewChild("registrationInput") registrationInput!: ElementRef<HTMLInputElement>;
 
@@ -48,7 +48,7 @@ export class EventRegistrationComponent {
 			return;
 		}
 
-		this.uploadingRegistration = true;
+		this.uploadingRegistration.set(true);
 
 		try {
 			await this.api.EventsApi.saveEventRegistration(event.id, file);
@@ -57,7 +57,7 @@ export class EventRegistrationComponent {
 		} catch (err: any) {
 			this.toastService.toast("Nastala chyba při nahrávání: " + err.message);
 		} finally {
-			this.uploadingRegistration = false;
+			this.uploadingRegistration.set(false);
 			input.value = "";
 		}
 	}
@@ -66,7 +66,7 @@ export class EventRegistrationComponent {
 		const event = this.event();
 		if (!event) return;
 
-		this.uploadingRegistration = true;
+		this.uploadingRegistration.set(true);
 
 		try {
 			await this.api.EventsApi.generateEventRegistration(event.id);
@@ -76,7 +76,7 @@ export class EventRegistrationComponent {
 			const message = err?.response?.data?.message ?? err.message;
 			this.toastService.toast("Nastala chyba při generování: " + message);
 		} finally {
-			this.uploadingRegistration = false;
+			this.uploadingRegistration.set(false);
 		}
 	}
 
