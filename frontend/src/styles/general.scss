@@ -46,9 +46,9 @@ a[href] {
 	&::before {
 		content: "";
 		display: inline-block;
-		width: 16px;
-		height: 16px;
-		margin-right: 10px;
+		width: 20px;
+		height: 20px;
+		margin-right: 12px;
 		border-radius: 50%;
 		border: 1px solid rgba(0, 0, 0, 0.2);
 		flex: 0 0 auto;
@@ -62,11 +62,11 @@ a[href] {
 	background: #2a3478;
 }
 .color-green .alert-radio-label::before {
-	background: #2e7d32;
+	background: #799f3d;
 }
 .color-red .alert-radio-label::before {
-	background: #c62828;
+	background: #d2232a;
 }
-.color-yellow .alert-radio-label::before {
-	background: #e2a426;
+.color-orange .alert-radio-label::before {
+	background: #e28f26;
 }

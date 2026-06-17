@@ -20,9 +20,9 @@ const IMG_DIR = path.resolve("assets/img");
 const PALETTES: Record<string, string> = {
 	black: "#1a1a1a",
 	blue: "#2a3478",
-	green: "#2e7d32",
-	red: "#c62828",
-	yellow: "#e2a426",
+	green: "#799f3d",
+	red: "#d2232a",
+	orange: "#e28f26",
 };
 
 export interface RegistrationTemplate {
