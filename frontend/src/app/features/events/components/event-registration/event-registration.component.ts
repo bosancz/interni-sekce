@@ -2,8 +2,10 @@ import { CommonModule } from "@angular/common";
 import { Component, ElementRef, input, output, signal, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
-import { ActionSheetController, IonButton } from "@ionic/angular/standalone";
+import { AlertController, IonButton, IonIcon } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { cloudUploadOutline, colorWandOutline, eyeOutline, trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { SDK } from "src/sdk";
@@ -14,13 +16,21 @@ import { EventsService } from "../../services/events.service";
 	selector: "bo-event-registration",
 	templateUrl: "./event-registration.component.html",
 	styleUrls: ["./event-registration.component.scss"],
-	imports: [CommonModule, FormsModule, IonButton],
+	imports: [CommonModule, FormsModule, IonButton, IonIcon],
 })
 export class EventRegistrationComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>();
 	update = output<void>();
 
 	uploadingRegistration = signal(false);
+
+	private readonly colors = [
+		{ id: "black", name: "Černá" },
+		{ id: "blue", name: "Modrá" },
+		{ id: "green", name: "Zelená" },
+		{ id: "red", name: "Červená" },
+		{ id: "yellow", name: "Žlutá" },
+	];
 
 	@ViewChild("registrationInput") registrationInput!: ElementRef<HTMLInputElement>;
 
@@ -29,8 +39,10 @@ export class EventRegistrationComponent {
 		private toastService: ToastService,
 		private eventService: EventsService,
 		private sanitizer: DomSanitizer,
-		private actionSheetController: ActionSheetController,
-	) {}
+		private alertController: AlertController,
+	) {
+		addIcons({ cloudUploadOutline, colorWandOutline, eyeOutline, trashOutline });
+	}
 
 	uploadRegistrationSelect() {
 		this.registrationInput.nativeElement.click();
@@ -80,24 +92,45 @@ export class EventRegistrationComponent {
 			return;
 		}
 
-		const actionSheet = await this.actionSheetController.create({
-			header: "Vyber šablonu přihlášky",
+		const colorAlert = await this.alertController.create({
+			header: "Vyber barvu",
+			inputs: this.colors.map((color, i) => ({
+				type: "radio" as const,
+				label: color.name,
+				value: color.id,
+				cssClass: `color-radio color-${color.id}`,
+				checked: i === 0,
+			})),
 			buttons: [
-				...templates.map((template) => ({
-					text: template.name,
-					handler: () => void this.generateWithTemplate(event.id, template.id),
-				})),
 				{ text: "Zrušit", role: "cancel" },
+				{ text: "Dál", handler: (color: string) => void this.selectTemplate(event.id, color, templates) },
 			],
 		});
-		await actionSheet.present();
+		await colorAlert.present();
 	}
 
-	private async generateWithTemplate(eventId: number, template: string) {
+	private async selectTemplate(eventId: number, color: string, templates: SDK.RegistrationTemplateResponse[]) {
+		const templateAlert = await this.alertController.create({
+			header: "Vyber šablonu přihlášky",
+			inputs: templates.map((template, i) => ({
+				type: "radio" as const,
+				label: template.name,
+				value: template.id,
+				checked: i === 0,
+			})),
+			buttons: [
+				{ text: "Zrušit", role: "cancel" },
+				{ text: "Generovat", handler: (templateId: string) => void this.generateWithTemplate(eventId, templateId, color) },
+			],
+		});
+		await templateAlert.present();
+	}
+
+	private async generateWithTemplate(eventId: number, template: string, color: string) {
 		this.uploadingRegistration.set(true);
 
 		try {
-			await this.api.EventsApi.generateEventRegistration(eventId, { template });
+			await this.api.EventsApi.generateEventRegistration(eventId, { template, color });
 			this.update.emit();
 			this.toastService.toast("Přihláška vygenerována.");
 		} catch (err: any) {

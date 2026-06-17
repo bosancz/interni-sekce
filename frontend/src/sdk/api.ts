@@ -4764,6 +4764,14 @@ export namespace SDK {
          * @memberof EventsApiGenerateEventRegistration
          */
         template: string
+    
+        //color
+        /**
+         * 
+         * @type {string}
+         * @memberof EventsApiGenerateEventRegistration
+         */
+        color: string
     }
     
     
@@ -5369,10 +5377,17 @@ export namespace SDK {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('generateEventRegistration', 'id', id)
             assertParamExists('generateEventRegistration', 'template', queryParams.template)
+            assertParamExists('generateEventRegistration', 'color', queryParams.color)
             
             // verify required parameter 'template' is not null or undefined
             assertParamExists('generateEventRegistration', 'id', id)
             assertParamExists('generateEventRegistration', 'template', queryParams.template)
+            assertParamExists('generateEventRegistration', 'color', queryParams.color)
+            
+            // verify required parameter 'color' is not null or undefined
+            assertParamExists('generateEventRegistration', 'id', id)
+            assertParamExists('generateEventRegistration', 'template', queryParams.template)
+            assertParamExists('generateEventRegistration', 'color', queryParams.color)
             
             const localVarPath = `/api/events/{id}/registration/generate`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
@@ -5389,6 +5404,10 @@ export namespace SDK {
     
             if (queryParams.template !== undefined) {
                 requestQueryParameter['template'] = queryParams.template;
+            }
+    
+            if (queryParams.color !== undefined) {
+                requestQueryParameter['color'] = queryParams.color;
             }
     
     

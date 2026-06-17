@@ -1,2 +1,9 @@
 .buttons {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+
+	ion-icon {
+		font-size: 1.5rem;
+	}
 }

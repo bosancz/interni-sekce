@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import * as Handlebars from "handlebars";
 import { marked } from "marked";
-import { existsSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { readdir, readFile, unlink, writeFile } from "fs/promises";
 import * as path from "path";
 import * as puppeteer from "puppeteer";
@@ -13,6 +13,17 @@ import { Member } from "src/models/members/entities/member.entity";
 const TEMPLATES_DIR = path.resolve("assets/registration-templates");
 const TEMPLATE_FILE = "template.html";
 const META_FILE = "meta.json";
+
+const IMG_DIR = path.resolve("assets/img");
+
+/** Fixed accent palette offered when generating a registration. */
+const PALETTES: Record<string, string> = {
+	black: "#1a1a1a",
+	blue: "#2a3478",
+	green: "#2e7d32",
+	red: "#c62828",
+	yellow: "#e2a426",
+};
 
 export interface RegistrationTemplate {
 	id: string;
@@ -49,14 +60,52 @@ export class EventRegistrationService {
 		return templates.sort((a, b) => a.name.localeCompare(b.name, "cs"));
 	}
 
-	async generateRegistration(event: Event, templateId: string): Promise<Buffer> {
+	async generateRegistration(event: Event, templateId: string, color: string): Promise<Buffer> {
 		this.assertGeneratable(event);
+		const accent = PALETTES[color];
+		if (!accent) throw new BadRequestException("Neplatná barva.");
+
 		const templateDir = await this.resolveTemplateDir(templateId);
 
 		const source = await readFile(path.join(templateDir, TEMPLATE_FILE), "utf-8");
-		const html = Handlebars.compile(source)(this.buildContext(event));
+		const rendered = Handlebars.compile(source)(this.buildContext(event, accent));
+		const html = this.inlineIcons(this.injectAccent(rendered, accent), accent);
 
 		return this.htmlToPdf(html, templateDir);
+	}
+
+	/** Forces the chosen accent onto the template's `--accent` variable, overriding the template's own default. */
+	private injectAccent(html: string, accent: string): string {
+		const override = `<style>:root{--accent:${accent} !important;}</style>`;
+		if (html.includes("</head>")) return html.replace("</head>", `${override}</head>`);
+		if (html.includes("<body")) return html.replace("<body", `${override}<body`);
+		return html + override;
+	}
+
+	/**
+	 * Swaps each decorative `<img class="icon" src="…svg">` for the inline SVG recolored to the accent.
+	 * The SVG paths carry no fill, so a `fill` on the root `<svg>` tints the whole icon. Other images
+	 * (e.g. the brand logo) keep their own colors. Templates keep the `<img>` so they still preview in a browser.
+	 */
+	private inlineIcons(html: string, accent: string): string {
+		return html.replace(/<img\b[^>]*\bclass="[^"]*\bicon\b[^"]*"[^>]*>/g, (tag) => {
+			const src = tag.match(/\bsrc="([^"]+)"/)?.[1];
+			const cls = tag.match(/\bclass="([^"]+)"/)?.[1] ?? "icon";
+			if (!src || !/\.svg$/i.test(src)) return tag;
+
+			const file = path.join(IMG_DIR, path.basename(src));
+			let svg: string;
+			try {
+				svg = readFileSync(file, "utf-8");
+			} catch {
+				return tag;
+			}
+
+			const start = svg.indexOf("<svg");
+			if (start < 0) return tag;
+			svg = svg.slice(start).replace("<svg ", `<svg fill="${accent}" `);
+			return `<span class="${cls}">${svg}</span>`;
+		});
 	}
 
 	/** Refuses generation when the data the form relies on is missing, listing exactly what. */
@@ -126,7 +175,7 @@ export class EventRegistrationService {
 		return undefined; // fall back to Puppeteer's bundled Chromium
 	}
 
-	private buildContext(event: Event) {
+	private buildContext(event: Event, accent: string) {
 		const contacts = (event.leaders || []).map((member) => {
 			const name = [member.firstName, member.lastName].filter(Boolean).join(" ") || member.nickname || "";
 			const phone = member.contacts?.[0]?.mobile || member.mobile || "";
@@ -135,6 +184,7 @@ export class EventRegistrationService {
 		});
 
 		return {
+			accent,
 			name: event.name || "",
 			place: event.place || "",
 			dateFrom: this.formatDate(event.dateFrom),

@@ -150,10 +150,12 @@ export class EventsRegistrationsController {
 	@AcLinks(EventRegistrationGeneratePermission)
 	@ApiResponse({ status: 204 })
 	@ApiQuery({ name: "template", required: true })
+	@ApiQuery({ name: "color", required: true })
 	async generateEventRegistration(
 		@Req() req: Request,
 		@Param("id") id: number,
 		@Query("template") template: string,
+		@Query("color") color: string,
 	): Promise<void> {
 		// Load attendees with member contacts so the generated form can list organisers and their contacts.
 		const event = await this.eventsRepository.findOne({
@@ -164,7 +166,7 @@ export class EventsRegistrationsController {
 
 		EventRegistrationGeneratePermission.canOrThrow(req, event);
 
-		const data = await this.eventRegistrationService.generateRegistration(event, template);
+		const data = await this.eventRegistrationService.generateRegistration(event, template, color);
 		await this.storeRegistration(event, data);
 	}
 

@@ -31,9 +31,31 @@ Použij dvojité složené závorky. Dostupné údaje:
 | `{{{descriptionHtml}}}` | popis akce (psaný v markdownu, vloží se jako HTML – **použij trojité závorky**) |
 | `{{contactsLine}}` | vedoucí a kontakty na jednom řádku |
 | `{{#each contacts}} {{name}} {{phone}} {{email}} {{/each}}` | seznam vedoucích pro vlastní formátování |
+| `{{accent}}` | vybraná barva (hex), kterou se generuje |
 
 Vše, co placeholderem nenahradíš, zůstane v HTML tak, jak to napíšeš (např. prázdné
 linky k vyplnění rukou, rámeček na kartičku pojištěnce apod.).
+
+## Barva přihlášky
+
+Při generování se nejdřív vybere barva (černá, modrá, zelená, červená, žlutá). Ta přepíše
+CSS proměnnou `--accent` v šabloně, takže stačí v šabloně používat `var(--accent)`. Hodnota
+`--accent` zapsaná přímo v šabloně slouží jen jako výchozí náhled v prohlížeči – při generování
+ji nahradí vybraná barva.
+
+## Ikony (obarví se vybranou barvou)
+
+Obrázek s třídou `icon` se při generování nahradí vloženým SVG obarveným vybranou barvou:
+
+```html
+<img class="icon" src="../../img/ilustrace_san-155.svg" alt="" />
+```
+
+Funguje to jen pro SVG ze složky `../../img` (vlnky, loď, kajak, stan, oheň, bota…). V prohlížeči
+se ukáže původní (černý) obrázek, v PDF už obarvená verze. Velikost nastav přes CSS na `.icon`.
+
+Obrázek **bez** třídy `icon` (např. `<img class="sanlogo" src="../../img/sanlogo-07.svg">`) zůstane
+ve svých původních barvách – tak je v šablonách umístěné logo SAN v rohu.
 
 Vzorové šablony najdeš ve složkách vedle tohoto souboru – nejjednodušší je jednu zkopírovat
 a upravit.
