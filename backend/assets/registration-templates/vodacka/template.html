@@ -31,48 +31,48 @@
 				margin: 0;
 			}
 
+			/* výška tisknutelné plochy A4 na šířku minus okraje @page (≈ 210 − 2×1,1 cm) */
 			.page {
 				position: relative;
-				min-height: 100%;
+				min-height: 184mm;
 			}
 
-			/* logo SAN ve vlastních barvách – nenápadný roh */
+			/* logo SAN ve vlastních barvách – roh */
 			.sanlogo {
 				position: absolute;
-				top: -2px;
+				top: -4px;
 				right: 0;
-				width: 62px;
+				width: 96px;
 				height: auto;
 			}
 
-			/* hlavička s názvem akce a tematickými ikonami */
+			/* hlavička s názvem akce */
 			.header {
-				border-bottom: 3px solid var(--accent);
-				padding-bottom: 8px;
-				margin-bottom: 18px;
-				padding-right: 76px;
+				margin-bottom: 20px;
+				padding-right: 110px;
 			}
 
 			.header h1 {
 				font-family: "SanGrotesk", sans-serif;
-				font-size: 30px;
+				font-size: 32px;
 				line-height: 1.1;
 				color: var(--accent);
 				margin: 0;
 			}
 
+			/* tematická ikona – velký dekorativní prvek v levém dolním rohu (obarví se vybranou barvou, viz README) */
 			.icons {
-				display: flex;
-				gap: 12px;
-				margin-top: 8px;
+				position: absolute;
+				left: 0;
+				bottom: 0;
 			}
 
-			/* tematické ikony – při generování se obarví vybranou barvou (viz README) */
 			.icon {
-				display: inline-block;
-				width: 30px;
-				height: 30px;
+				display: block;
+				width: 200px;
+				height: 200px;
 				object-fit: contain;
+				transform: rotate(-8deg);
 			}
 
 			.icon svg {
@@ -188,11 +188,6 @@
 
 			<header class="header">
 				<h1>{{name}}</h1>
-				<div class="icons">
-					<img class="icon" src="../../img/ilustrace_san-155.svg" alt="" />
-					<img class="icon" src="../../img/ilustrace_san-159.svg" alt="" />
-					<img class="icon" src="../../img/ilustrace_san-168.svg" alt="" />
-				</div>
 			</header>
 
 			<div class="columns">
@@ -235,6 +230,10 @@
 						<div><span class="label">Datum:</span><span class="line"></span></div>
 					</div>
 				</div>
+			</div>
+
+			<div class="icons">
+				<img class="icon" src="../../img/ilustrace_san-168.svg" alt="" />
 			</div>
 		</div>
 	</body>
