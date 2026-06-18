@@ -745,6 +745,18 @@ export namespace SDK {
         'description': string | null;
         /**
          * 
+         * @type {number}
+         * @memberof Event
+         */
+        'price': number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Event
+         */
+        'itemList': string | null;
+        /**
+         * 
          * @type {string}
          * @memberof Event
          */
@@ -1515,6 +1527,18 @@ export namespace SDK {
         'description': string | null;
         /**
          * 
+         * @type {number}
+         * @memberof EventResponse
+         */
+        'price': number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponse
+         */
+        'itemList': string | null;
+        /**
+         * 
          * @type {string}
          * @memberof EventResponse
          */
@@ -1845,6 +1869,18 @@ export namespace SDK {
         'description': string | null;
         /**
          * 
+         * @type {number}
+         * @memberof EventResponseWithLinks
+         */
+        'price': number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'itemList': string | null;
+        /**
+         * 
          * @type {string}
          * @memberof EventResponseWithLinks
          */
@@ -1942,6 +1978,12 @@ export namespace SDK {
          * @type {number}
          * @memberof EventUpdateBody
          */
+        'price'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventUpdateBody
+         */
         'waterKm'?: number | null;
         /**
          * 
@@ -1991,6 +2033,12 @@ export namespace SDK {
          * @memberof EventUpdateBody
          */
         'description'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventUpdateBody
+         */
+        'itemList'?: string | null;
         /**
          * 
          * @type {string}

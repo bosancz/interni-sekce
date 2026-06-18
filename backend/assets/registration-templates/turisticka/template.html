@@ -122,6 +122,10 @@
 				margin: 4px 0;
 			}
 
+			.info-box .multiline {
+				white-space: pre-line;
+			}
+
 			.label {
 				font-weight: 700;
 			}
@@ -203,15 +207,15 @@
 				<div class="col">
 					<h2>O akci</h2>
 
-					<div class="description">{{{descriptionHtml}}}</div>
+					{{#if descriptionHtml}}<div class="description">{{{descriptionHtml}}}</div>{{/if}}
 
 					<div class="info-box">
-						<p><span class="label">Místo:</span> {{place}}</p>
-						<p><span class="label">Odjezd:</span> {{departure}}</p>
-						<p><span class="label">Příjezd:</span> {{arrival}}</p>
-						<p><span class="label">Cena:</span> <span class="blank"></span></p>
-						<p><span class="label">Co s sebou:</span> <span class="blank"></span></p>
-						<p><span class="label">Kontakt:</span> {{contactsLine}}</p>
+						{{#if place}}<p><span class="label">Místo:</span> {{place}}</p>{{/if}}
+						{{#if departure}}<p><span class="label">Odjezd:</span> {{departure}}</p>{{/if}}
+						{{#if arrival}}<p><span class="label">Příjezd:</span> {{arrival}}</p>{{/if}}
+						{{#if price}}<p><span class="label">Cena:</span> {{price}}</p>{{/if}}
+						{{#if itemList}}<p class="multiline"><span class="label">Co s sebou:</span> {{itemList}}</p>{{/if}}
+						{{#if contactsLine}}<p><span class="label">Kontakt:</span> {{contactsLine}}</p>{{/if}}
 					</div>
 				</div>
 

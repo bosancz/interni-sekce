@@ -89,6 +89,29 @@
 				/>
 			</bo-item>
 
+			<bo-item label="Cena" [loading]="!event()">
+				<p>{{ event()?.price != null ? event()?.price + " Kč" : "-" }}</p>
+				<bo-edit-button-number
+					slot="end"
+					label="Cena (Kč)"
+					placeholder="350"
+					[disabled]="!event()?._links?.updateEvent?.allowed"
+					[value]="event()?.price"
+					(update)="update.emit({ price: $event })"
+				/>
+			</bo-item>
+
+			<bo-item label="Co s sebou" [loading]="!event()">
+				<div [innerHTML]="event()?.itemList | markdown"></div>
+				<bo-edit-button-markdown
+					slot="end"
+					label="Co s sebou"
+					[disabled]="!event()?._links?.updateEvent?.allowed"
+					[value]="event()?.itemList"
+					(update)="update.emit({ itemList: $event })"
+				/>
+			</bo-item>
+
 			<bo-item label="Přihláška" [loading]="!event()">
 				<bo-event-registration [event]="event()" (update)="update.emit({})"></bo-event-registration>
 			</bo-item>

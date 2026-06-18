@@ -58,6 +58,8 @@ export class Event {
 	@Column({ type: "geometry", spatialFeatureType: "Point", srid: 4326, nullable: true })
 	placeGeometry!: EventPlaceGeometry | null;
 	@Column({ type: "text", nullable: true }) description!: string | null;
+	@Column({ type: "integer", nullable: true }) price!: number | null;
+	@Column({ type: "text", nullable: true }) itemList!: string | null;
 	@Column({ type: "date", nullable: false }) dateFrom!: string;
 	@Column({ type: "date", nullable: false }) dateTill!: string;
 	@Column({ type: "varchar", nullable: true }) timeFrom!: string | null;

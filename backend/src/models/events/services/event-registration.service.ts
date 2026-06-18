@@ -112,9 +112,6 @@ export class EventRegistrationService {
 	private assertGeneratable(event: Event): void {
 		const missing: string[] = [];
 		if (!event.name?.trim()) missing.push("název akce");
-		if (!event.place?.trim()) missing.push("místo");
-		if (!event.meetingPlaceStart?.trim()) missing.push("místo odjezdu");
-		if (!event.meetingPlaceEnd?.trim()) missing.push("místo příjezdu");
 		if (!event.leaders?.[0]?.mobile?.trim()) missing.push("mobil na vedoucího");
 		if (!event.leaders?.[0]?.email?.trim()) missing.push("email na vedoucího");
 
@@ -192,6 +189,8 @@ export class EventRegistrationService {
 			departure: this.formatDeparture(event.dateFrom, event.timeFrom, event.meetingPlaceStart),
 			arrival: this.formatDeparture(event.dateTill, event.timeTill, event.meetingPlaceEnd),
 			descriptionHtml: event.description ? marked.parse(event.description, { async: false }) : "",
+			price: event.price != null ? `${event.price} Kč` : "",
+			itemList: event.itemList || "",
 			contacts,
 			contactsLine: contacts.map((c) => c.line).filter(Boolean).join("; "),
 		};
