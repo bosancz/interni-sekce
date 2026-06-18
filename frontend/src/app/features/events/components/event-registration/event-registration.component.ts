@@ -7,7 +7,9 @@ import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { cloudUploadOutline, colorWandOutline, eyeOutline, trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { MarkdownEditorModalComponent } from "src/app/shared/components/markdown-editor-modal/markdown-editor-modal.component";
 import { SDK } from "src/sdk";
 import { EventsService } from "../../services/events.service";
 
@@ -40,6 +42,7 @@ export class EventRegistrationComponent {
 		private eventService: EventsService,
 		private sanitizer: DomSanitizer,
 		private alertController: AlertController,
+		private modalService: ModalService,
 	) {
 		addIcons({ cloudUploadOutline, colorWandOutline, eyeOutline, trashOutline });
 	}
@@ -120,17 +123,28 @@ export class EventRegistrationComponent {
 			})),
 			buttons: [
 				{ text: "Zrušit", role: "cancel" },
-				{ text: "Generovat", handler: (templateId: string) => void this.generateWithTemplate(eventId, templateId, color) },
+				{ text: "Dál", handler: (templateId: string) => void this.promptNoteAndGenerate(eventId, templateId, color) },
 			],
 		});
 		await templateAlert.present();
 	}
 
-	private async generateWithTemplate(eventId: number, template: string, color: string) {
+	/** Third step: optional ad-hoc note (e.g. payment instructions). Not stored — only injected into this generation. */
+	private async promptNoteAndGenerate(eventId: number, template: string, color: string) {
+		const note = await this.modalService.componentModal(MarkdownEditorModalComponent, {
+			header: "Doplňující informace (nepovinné)",
+			placeholder: "Např. platební instrukce…",
+			value: "",
+		});
+
+		await this.generateWithTemplate(eventId, template, color, note ?? undefined);
+	}
+
+	private async generateWithTemplate(eventId: number, template: string, color: string, note?: string) {
 		this.uploadingRegistration.set(true);
 
 		try {
-			await this.api.EventsApi.generateEventRegistration(eventId, { template, color });
+			await this.api.EventsApi.generateEventRegistration(eventId, { template, color, note });
 			this.update.emit();
 			this.toastService.toast("Přihláška vygenerována.");
 		} catch (err: any) {

@@ -60,7 +60,7 @@ export class EventRegistrationService {
 		return templates.sort((a, b) => a.name.localeCompare(b.name, "cs"));
 	}
 
-	async generateRegistration(event: Event, templateId: string, color: string): Promise<Buffer> {
+	async generateRegistration(event: Event, templateId: string, color: string, note?: string): Promise<Buffer> {
 		this.assertGeneratable(event);
 		const accent = PALETTES[color];
 		if (!accent) throw new BadRequestException("Neplatná barva.");
@@ -68,7 +68,7 @@ export class EventRegistrationService {
 		const templateDir = await this.resolveTemplateDir(templateId);
 
 		const source = await readFile(path.join(templateDir, TEMPLATE_FILE), "utf-8");
-		const rendered = Handlebars.compile(source)(this.buildContext(event, accent));
+		const rendered = Handlebars.compile(source)(this.buildContext(event, accent, note));
 		const html = this.inlineIcons(this.injectAccent(rendered, accent), accent);
 
 		return this.htmlToPdf(html, templateDir);
@@ -172,7 +172,7 @@ export class EventRegistrationService {
 		return undefined; // fall back to Puppeteer's bundled Chromium
 	}
 
-	private buildContext(event: Event, accent: string) {
+	private buildContext(event: Event, accent: string, note?: string) {
 		const contacts = (event.leaders || []).map((member) => {
 			const name = [member.firstName, member.lastName].filter(Boolean).join(" ") || member.nickname || "";
 			const phone = member.contacts?.[0]?.mobile || member.mobile || "";
@@ -191,6 +191,7 @@ export class EventRegistrationService {
 			descriptionHtml: event.description ? marked.parse(event.description, { async: false }) : "",
 			price: event.price != null ? `${event.price} Kč` : "",
 			itemList: event.itemList || "",
+			noteHtml: note?.trim() ? marked.parse(note, { async: false }) : "",
 			contacts,
 			contactsLine: contacts.map((c) => c.line).filter(Boolean).join("; "),
 		};

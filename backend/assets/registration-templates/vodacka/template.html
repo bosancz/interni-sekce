@@ -118,6 +118,24 @@
 				white-space: pre-line;
 			}
 
+			/* volitelný box s doplňující informací (např. platební instrukce) */
+			.note-box {
+				margin-top: 12px;
+				border: 1px solid #e1e1e6;
+				border-left: 3px solid var(--accent);
+				background: #fafafb;
+				border-radius: 4px;
+				padding: 10px 14px;
+			}
+
+			.note-box > :first-child {
+				margin-top: 0;
+			}
+
+			.note-box > :last-child {
+				margin-bottom: 0;
+			}
+
 			.label {
 				font-weight: 700;
 			}
@@ -209,6 +227,8 @@
 						{{#if itemList}}<p class="multiline"><span class="label">Co s sebou:</span> {{itemList}}</p>{{/if}}
 						{{#if contactsLine}}<p><span class="label">Kontakt:</span> {{contactsLine}}</p>{{/if}}
 					</div>
+
+					{{#if noteHtml}}<div class="note-box">{{{noteHtml}}}</div>{{/if}}
 				</div>
 
 				<!-- PRAVÝ SLOUPEC: přihláška k vyplnění -->

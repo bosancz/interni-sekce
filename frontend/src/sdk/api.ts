@@ -4820,6 +4820,14 @@ export namespace SDK {
          * @memberof EventsApiGenerateEventRegistration
          */
         color: string
+    
+        //note
+        /**
+         * 
+         * @type {string}
+         * @memberof EventsApiGenerateEventRegistration
+         */
+        note?: string
     }
     
     
@@ -5456,6 +5464,10 @@ export namespace SDK {
     
             if (queryParams.color !== undefined) {
                 requestQueryParameter['color'] = queryParams.color;
+            }
+    
+            if (queryParams.note !== undefined) {
+                requestQueryParameter['note'] = queryParams.note;
             }
     
     
