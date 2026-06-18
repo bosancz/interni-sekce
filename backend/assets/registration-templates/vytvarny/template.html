@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="cs">
+	<head>
+		<meta charset="utf-8" />
+		<style>
+			/* Brand headline font (sdílené fonty leží v ../../fonts) */
+			@font-face {
+				font-family: "SanGrotesk";
+				src: url("../../fonts/SanGrotesk-Regular.otf");
+			}
+
+			/* --- barva šablony: stačí změnit tuto jednu hodnotu (při generování ji nahradí vybraná barva) --- */
+			:root {
+				--accent: #d2232a;
+			}
+
+			@page {
+				size: A4 landscape;
+				margin: 1.1cm;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: "Helvetica Neue", Arial, sans-serif;
+				font-size: 11px;
+				line-height: 1.4;
+				color: #1f2329;
+				margin: 0;
+			}
+
+			.page {
+				position: relative;
+				min-height: 182mm;
+				overflow: hidden;
+			}
+
+
+			/* všechen obsah nad konfetami */
+			.content {
+				position: relative;
+				z-index: 1;
+			}
+
+			.deco-pen {
+				position: absolute;
+				right: 0%;
+				top: 0%;
+				width: 92px;
+				height: 92px;
+				opacity: 0.85;
+				z-index: 1;
+				rotate: -145deg;
+
+
+			}
+			.deco-pen svg {
+				display: block;
+				width: 100%;
+				height: 100%;
+
+			}
+
+
+			.deco-flower {
+				position: absolute;
+				right: 14%;
+				top: 64%;
+				width: 250px;
+				height: 250px;
+				opacity: 0.4;
+				z-index: 1;
+
+
+			}
+			.deco-flower svg {
+				display: block;
+				width: 100%;
+				height: 100%;
+
+			}
+	
+
+			/* hlavička */
+			.header {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				padding-left: 104px;
+				min-height: 60px;
+				margin-bottom: 14px;
+			}
+			.header h1 {
+				font-family: "SanGrotesk", sans-serif;
+				font-size: 30px;
+				line-height: 1.05;
+				color: var(--accent);
+				margin: 0;
+				flex: 1;
+			}
+
+			/* hravý „štítek" jako nadpis sekce (bílý text v barevné bublině) */
+			.section-title {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				font-family: "SanGrotesk", sans-serif;
+				font-size: 15px;
+				color: #fff;
+				background: var(--accent);
+				padding: 5px 16px;
+				border-radius: 999px;
+				margin: 0 0 12px;
+			}
+
+			.info-box {
+				border: 2px solid var(--accent);
+				background: #fff;
+				border-radius: 12px;
+				padding: 10px 14px;
+			}
+			.info-box p {
+				margin: 4px 0;
+			}
+			.info-box .multiline {
+				white-space: pre-line;
+			}
+			.note-box {
+				margin-top: 10px;
+				border: 1px dashed var(--accent);
+				background: #fff;
+				border-radius: 10px;
+				padding: 8px 12px;
+			}
+			.note-box > :first-child {
+				margin-top: 0;
+			}
+			.note-box > :last-child {
+				margin-bottom: 0;
+			}
+			.label {
+				font-weight: 700;
+			}
+
+			/* ---- horní polovina: O akci ---- */
+			.about {
+				display: flex;
+				gap: 22px;
+				align-items: flex-start;
+			}
+			.about .description {
+				flex: 1.1;
+			}
+			.about .info {
+				flex: 1;
+			}
+
+			/* ---- dělicí linka (na rozstřižení) ---- */
+			.cutline {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				color: #b6b6bd;
+				margin: 14px 0;
+			}
+			.cutline::before,
+			.cutline::after {
+				content: "";
+				flex: 1;
+				border-top: 1px dashed #c4c4cc;
+			}
+			.cutline .scissors {
+				font-size: 14px;
+				line-height: 1;
+			}
+
+			/* ---- dolní polovina: Přihláška ---- */
+			.form-row {
+				display: flex;
+				gap: 24px;
+				align-items: flex-start;
+			}
+			.fields {
+				flex: 1;
+				display: flex;
+				flex-wrap: wrap;
+				column-gap: 26px;
+			}
+			.field {
+				display: flex;
+				align-items: flex-end;
+				gap: 8px;
+				margin-bottom: 13px;
+				flex: 1 1 42%;
+			}
+			.field.wide {
+				flex-basis: 100%;
+			}
+			.field .label {
+				white-space: nowrap;
+			}
+			.field .line {
+				flex: 1;
+				border-bottom: 1px solid #b6b6bd;
+				height: 1em;
+			}
+
+			.card-box {
+				flex: none;
+				width: 85.6mm;
+				height: 53.98mm;
+				border: 2px dashed var(--accent);
+				border-radius: 10px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				text-align: center;
+				color: #9a9aa2;
+			}
+			.declaration {
+				margin: 12px 0 0;
+				color: #44474d;
+			}
+			.signature {
+				display: flex;
+				gap: 24px;
+				margin-top: 16px;
+			}
+			.signature > div {
+				flex: 1;
+				display: flex;
+				align-items: flex-end;
+				gap: 8px;
+			}
+			.signature .line {
+				flex: 1;
+				border-bottom: 1px solid #b6b6bd;
+				height: 1em;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page">
+
+			<div class="content">
+				<header class="header">
+					<h1>{{name}}</h1>
+					<img class="icon deco-pen" src="../../img/pastelka.svg" alt="" />
+				</header>
+
+				<!-- ====== HORNÍ ČÁST: O AKCI ====== -->
+				<section class="about">
+					<div class="description">
+						<h2 class="section-title">O akci</h2>
+						{{#if descriptionHtml}}{{{descriptionHtml}}}{{else}}<p>Tvoříme, malujeme a hrajeme si!</p>{{/if}}
+						{{#if noteHtml}}<div class="note-box">{{{noteHtml}}}</div>{{/if}}
+					</div>
+
+					<div class="info">
+						<h2 class="section-title">Kdy a kde</h2>
+						<div class="info-box">
+							{{#if place}}<p><span class="label">Místo:</span> {{place}}</p>{{/if}}
+							{{#if departure}}<p><span class="label">Začátek:</span> {{departure}}</p>{{/if}}
+							{{#if arrival}}<p><span class="label">Konec:</span> {{arrival}}</p>{{/if}}
+							{{#if price}}<p><span class="label">Cena:</span> {{price}}</p>{{/if}}
+							{{#if itemList}}<p class="multiline"><span class="label">Co s sebou:</span> {{itemList}}</p>{{/if}}
+							{{#if contactsLine}}<p><span class="label">Kontakt:</span> {{contactsLine}}</p>{{/if}}
+						</div>
+					</div>
+				</section>
+
+				<div class="cutline"><span class="scissors">✁</span></div>
+
+				<!-- ====== DOLNÍ ČÁST: PŘIHLÁŠKA ====== -->
+				<section class="form">
+					<h2 class="section-title">Přihláška</h2>
+
+					<div class="form-row">
+						<div class="fields">
+							<div class="field wide"><span class="label">Jméno a příjmení dítěte:</span><span class="line"></span></div>
+							<div class="field"><span class="label">Datum narození:</span><span class="line"></span></div>
+							<div class="field"><span class="label">Bydliště:</span><span class="line"></span></div>
+							<div class="field"><span class="label">Kontakt rodiče (mobil):</span><span class="line"></span></div>
+							<div class="field"><span class="label">Kontakt rodiče (e-mail):</span><span class="line"></span></div>
+							<div class="field wide"><span class="label">Zdravotní komplikace:</span><span class="line"></span></div>
+						</div>
+
+						<div class="card-box">(Kopie kartičky<br />pojištěnce)</div>
+						<img class="icon deco-flower" src="../../img/kvetina.svg" alt="" />
+
+					</div>
+
+					<p class="declaration">
+						Podpisem prohlašuji, že lékař dítěti nenařídil změnu režimu, dítě nejeví známky akutního
+						onemocnění a je schopno zúčastnit se akce.
+					</p>
+
+					<div class="signature">
+						<div><span class="label">Podpis:</span><span class="line"></span></div>
+						<div><span class="label">Datum:</span><span class="line"></span></div>
+					</div>
+				</section>
+			</div>
+		</div>
+	</body>
+</html>

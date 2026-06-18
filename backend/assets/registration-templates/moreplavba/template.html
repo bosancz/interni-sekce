@@ -11,12 +11,12 @@
 
 			/* --- barva šablony: stačí změnit tuto jednu hodnotu (při generování ji nahradí vybraná barva) --- */
 			:root {
-				--accent: #799f3d;
+				--accent: #2a3478;
 			}
 
 			@page {
 				size: A4 landscape;
-				margin: 1.1cm;
+				margin: 1cm;
 			}
 
 			* {
@@ -31,129 +31,149 @@
 				margin: 0;
 			}
 
-			/* výška tisknutelné plochy A4 na šířku minus okraje @page (≈ 210 − 2×1,1 cm) */
 			.page {
 				position: relative;
-				min-height: 182mm;
+				min-height: 184mm;
+				overflow: hidden;
 			}
 
-			/* logo SAN ve vlastních barvách – roh */
+			/* logo SAN ve vlastních barvách – LEVÝ horní roh */
 			.sanlogo {
 				position: absolute;
-				bottom: 0%;
-				right: 0;
-				width: 126px;
+				top: 91%;
+				left: 0.5%;
+				width: 92px;
 				height: auto;
 			}
 
-			/* hlavička s názvem akce */
-			.header {
-				margin-bottom: 20px;
-				padding-right: 110px;
+			/* ---- barevný „flek" s ikonou (chunk): kaňka ve vybrané barvě + bílý symbol navrch ---- */
+			.chunk {
+				position: relative;
+				display: inline-block;
+				flex: none;
 			}
-
-			.header h1 {
-				font-family: "SanGrotesk", sans-serif;
-				font-size: 32px;
-				line-height: 1.1;
-				color: var(--accent);
-				margin: 0;
-			}
-
-			/* tematické ikony – velký dekorativní shluk v levém dolním rohu (obarví se vybranou barvou, viz README) */
-			.icons {
+			.chunk .flek {
 				position: absolute;
-				left: 0;
-				bottom: 0;
-				width: 320px;
-				height: 240px;
+				inset: 0;
 			}
-
-			.icon {
-				position: absolute;
-				object-fit: contain;
-			}
-
-			.icon svg {
+			.chunk .flek svg {
 				display: block;
 				width: 100%;
 				height: 100%;
 			}
-
-			/* stan – velká ikona zasunutá do rohu */
-			.icons .icon:nth-child(1) {
-				width: 200px;
-				height: 200px;
-				left: -20px;
-				bottom: -8px;
-				transform: rotate(+8deg);
+			.chunk-icon {
+				position: absolute;
+				top: 47%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				object-fit: contain;
+				filter: brightness(0) invert(1);
+			}
+			.chunk.badge {
+				width: 80px;
+				height: 80px;
+			}
+			.chunk.badge .chunk-icon {
+				width: 46px;
+				height: 46px;
 			}
 
-			.columns {
+			/* hlavička */
+			.header {
 				display: flex;
-				gap: 32px;
+				align-items: center;
+				gap: 16px;
+				padding-left: 104px;
+				min-height: 60px;
+				margin-bottom: 18px;
+			}
+			.header h1 {
+				font-family: "SanGrotesk", sans-serif;
+				font-size: 30px;
+				line-height: 1.05;
+				color: var(--accent);
+				margin: 0;
+				flex: 1;
 			}
 
-			.col {
-				flex: 1 1 0;
-				min-width: 0;
-			}
-
-			h2 {
+			h2.section-title {
+				display: flex;
+				align-items: center;
+				gap: 9px;
 				font-family: "SanGrotesk", sans-serif;
 				font-size: 17px;
 				color: var(--accent);
 				margin: 0 0 10px;
 			}
+			.dot {
+				display: inline-block;
+				width: 18px;
+				height: 18px;
+				flex: none;
+			}
+			.dot svg {
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
 
-			.description {
-				margin-bottom: 12px;
+			/* ---- dva sloupce: vlevo O akci, vpravo Přihláška (rozstřižení svisle mezi nimi) ---- */
+			.columns {
+				display: flex;
+				gap: 30px;
+				position: relative;
+				z-index: 1;
+			}
+			.col {
+				flex: 1 1 0;
+				min-width: 0;
+			}
+			/* svislá dělicí linka mezi sloupci */
+			.col.form {
+				border-left: 1px dashed #c4c4cc;
+				padding-left: 30px;
+				position: relative;
+			}
+			.col.form .scissors {
+				position: absolute;
+				top: -2px;
+				left: -8px;
+				font-size: 14px;
+				color: #b6b6bd;
+				background: #fff;
 			}
 
 			.info-box {
 				border: 1px solid #e1e1e6;
 				border-left: 3px solid var(--accent);
 				background: #fafafb;
-				border-radius: 4px;
+				border-radius: 6px;
 				padding: 10px 14px;
 			}
-
 			.info-box p {
 				margin: 4px 0;
 			}
-
 			.info-box .multiline {
 				white-space: pre-line;
 			}
-
-			/* volitelný box s doplňující informací (např. platební instrukce) */
-			.note-box {
-				margin-top: 12px;
-				border: 1px solid #e1e1e6;
-				border-left: 3px solid var(--accent);
-				background: #fafafb;
-				border-radius: 4px;
-				padding: 10px 14px;
+			.description {
+				margin-bottom: 12px;
 			}
-
+			.note-box {
+				margin-top: 10px;
+				border: 1px dashed var(--accent);
+				background: #fff;
+				border-radius: 6px;
+				padding: 8px 12px;
+			}
 			.note-box > :first-child {
 				margin-top: 0;
 			}
-
 			.note-box > :last-child {
 				margin-bottom: 0;
 			}
-
 			.label {
 				font-weight: 700;
-			}
-
-			.blank {
-				display: inline-block;
-				border-bottom: 1px solid #b6b6bd;
-				min-width: 170px;
-				height: 1em;
-				vertical-align: bottom;
 			}
 
 			/* registrační formulář */
@@ -161,20 +181,16 @@
 				display: flex;
 				align-items: flex-end;
 				gap: 8px;
-				margin-bottom: 16px;
+				margin-bottom: 15px;
 			}
-
 			.field .label {
 				white-space: nowrap;
 			}
-
 			.field .line {
 				flex: 1;
 				border-bottom: 1px solid #b6b6bd;
 				height: 1em;
 			}
-
-			/* rámeček na kartičku pojištěnce – velikost platební karty */
 			.card-box {
 				width: 85.6mm;
 				height: 53.98mm;
@@ -183,32 +199,68 @@
 				display: flex;
 				align-items: center;
 				justify-content: center;
+				text-align: center;
 				color: #9a9aa2;
 				margin: 16px auto;
 			}
-
 			.declaration {
 				margin: 14px 0;
 				color: #44474d;
 			}
-
 			.signature {
 				display: flex;
 				gap: 24px;
-				margin-top: 22px;
+				margin-top: 18px;
 			}
-
 			.signature > div {
 				flex: 1;
 				display: flex;
 				align-items: flex-end;
 				gap: 8px;
 			}
-
 			.signature .line {
 				flex: 1;
 				border-bottom: 1px solid #b6b6bd;
 				height: 1em;
+			}
+
+			/* dekorace: vlny obarvené barvou jako proužek u dolního okraje + záchranný kruh v rohu */
+			/* (čtvercový obrázek vln ořízneme úzkým oknem, ať z něj zbyde jen vlnka přes celou šířku) */
+			.waves {
+				position: absolute;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				height: 120px;
+				overflow: hidden;
+				opacity: 0.45;
+				z-index: 0;
+			}
+			.waves .icon {
+				position: absolute;
+				left: 50%;
+				bottom: -600px;
+				transform: translateX(-50%);
+				width: 1500px;
+			}
+			.waves .icon svg {
+				display: block;
+				width: 100%;
+				height: auto;
+			}
+			.deco-buoy {
+				position: absolute;
+				right: 0%;
+				top: 0%;
+				width: 92px;
+				height: 92px;
+				opacity: 0.85;
+				z-index: 1;
+			}
+			.deco-buoy svg {
+				display: block;
+				width: 100%;
+				height: 100%;
 			}
 		</style>
 	</head>
@@ -218,19 +270,22 @@
 
 			<header class="header">
 				<h1>{{name}}</h1>
+
 			</header>
 
 			<div class="columns">
-				<!-- LEVÝ SLOUPEC: info o akci -->
+				<!-- LEVÝ SLOUPEC: O akci (k ponechání) -->
 				<div class="col">
-					<h2>O akci</h2>
+					<h2 class="section-title">
+						O akci
+					</h2>
 
 					{{#if descriptionHtml}}<div class="description">{{{descriptionHtml}}}</div>{{/if}}
 
 					<div class="info-box">
 						{{#if place}}<p><span class="label">Místo:</span> {{place}}</p>{{/if}}
-						{{#if departure}}<p><span class="label">Odjezd:</span> {{departure}}</p>{{/if}}
-						{{#if arrival}}<p><span class="label">Příjezd:</span> {{arrival}}</p>{{/if}}
+						{{#if departure}}<p><span class="label">Začátek:</span> {{departure}}</p>{{/if}}
+						{{#if arrival}}<p><span class="label">Konec:</span> {{arrival}}</p>{{/if}}
 						{{#if price}}<p><span class="label">Cena:</span> {{price}}</p>{{/if}}
 						{{#if itemList}}<p class="multiline"><span class="label">Co s sebou:</span> {{itemList}}</p>{{/if}}
 						{{#if contactsLine}}<p><span class="label">Kontakt:</span> {{contactsLine}}</p>{{/if}}
@@ -239,22 +294,25 @@
 					{{#if noteHtml}}<div class="note-box">{{{noteHtml}}}</div>{{/if}}
 				</div>
 
-				<!-- PRAVÝ SLOUPEC: přihláška k vyplnění -->
-				<div class="col">
-					<h2>Přihláška</h2>
+				<!-- PRAVÝ SLOUPEC: Přihláška (k vyplnění a odevzdání) -->
+				<div class="col form">
+					<span class="scissors">✁</span>
+					<h2 class="section-title">
+						Přihláška
+					</h2>
 
 					<div class="field"><span class="label">Jméno a příjmení dítěte:</span><span class="line"></span></div>
 					<div class="field"><span class="label">Datum narození:</span><span class="line"></span></div>
 					<div class="field"><span class="label">Kontakt rodiče (mobil):</span><span class="line"></span></div>
 					<div class="field"><span class="label">Kontakt rodiče (e-mail):</span><span class="line"></span></div>
 					<div class="field"><span class="label">Bydliště:</span><span class="line"></span></div>
-					<div class="field"><span class="label">Zdravotní komplikace:</span><span class="line"></span></div>
+					<div class="field"><span class="label">Zdravotní komplikace / plavec:</span><span class="line"></span></div>
 
 					<div class="card-box">(Kopie kartičky pojištěnce)</div>
 
 					<p class="declaration">
 						Podpisem prohlašuji, že lékař dítěti nenařídil změnu režimu, dítě nejeví známky akutního
-						onemocnění. Dítě je schopno zúčastnit se akce.
+						onemocnění a je schopno zúčastnit se akce.
 					</p>
 
 					<div class="signature">
@@ -264,9 +322,9 @@
 				</div>
 			</div>
 
-			<div class="icons">
-				<img class="icon" src="../../img/taborak.svg" alt="" />
-			</div>
+			<!-- dekorace: vlny u dolního okraje + záchranný kruh -->
+			<div class="waves"><img class="icon" src="../../img/vlny.svg" alt="" /></div>
+			<img class="icon deco-buoy" src="../../img/zachranny-kruh.svg" alt="" />
 		</div>
 	</body>
 </html>

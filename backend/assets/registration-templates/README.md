@@ -5,13 +5,13 @@ po kliknutí na tlačítko **Generovat**.
 
 ## Jak přidat novou šablonu
 
-1. Vytvoř novou složku, např. `letni-tabor/`.
+1. Vytvoř novou složku, např. `podzimky/`.
 2. Dovnitř dej soubor **`template.html`** – obyčejné HTML, jak bys ho napsal pro web.
    Vykresluje se přesně jako v prohlížeči (Chrome), takže si ho můžeš v prohlížeči otevřít
    a uvidíš, jak bude vypadat.
 3. (Nepovinně) přidej **`meta.json`** s názvem, který se ukáže v nabídce:
    ```json
-   { "name": "Letní tábor" }
+   { "name": "Podzimky" }
    ```
    Bez něj se použije název složky.
 4. Obrázky/loga dej do stejné složky a odkazuj na ně relativně:
@@ -48,14 +48,32 @@ ji nahradí vybraná barva.
 Obrázek s třídou `icon` se při generování nahradí vloženým SVG obarveným vybranou barvou:
 
 ```html
-<img class="icon" src="../../img/ilustrace_san-155.svg" alt="" />
+<img class="icon" src="../../img/vlny.svg" alt="" />
 ```
 
-Funguje to jen pro SVG ze složky `../../img` (vlnky, loď, kajak, stan, oheň, bota…). V prohlížeči
+Funguje to jen pro SVG ze složky `../../img`. Soubory jsou pojmenované podle toho, co je na nich:
+`vlny.svg`, `plachetnice.svg`, `kajak.svg`, `stan.svg`, `taborak.svg`, `bota.svg`,
+`zachranny-kruh.svg`, `pastelka.svg` a barevné fleky `flek-1.svg`–`flek-4.svg`. V prohlížeči
 se ukáže původní (černý) obrázek, v PDF už obarvená verze. Velikost nastav přes CSS na `.icon`.
 
 Obrázek **bez** třídy `icon` (např. `<img class="sanlogo" src="../../img/sanlogo-07.svg">`) zůstane
 ve svých původních barvách – tak je v šablonách umístěné logo SAN v rohu.
+
+## Barevné „fleky" (chunk + ikona)
+
+Fleky (`flek-1.svg`–`flek-4.svg`) jsou plné kaňky. Daš-li jim třídu `icon`, obarví se vybranou
+barvou – a navrch můžeš překrýt tematickou ikonu (obyčejný `<img>` **bez** třídy `icon`, takže
+zůstane černá). Vznikne tak barevná skvrna se symbolem uvnitř:
+
+```html
+<span class="chunk">
+	<img class="icon" src="../../img/flek-3.svg" alt="" />   <!-- kaňka ve vybrané barvě -->
+	<img class="chunk-icon" src="../../img/taborak.svg" alt="" />  <!-- symbol navrch -->
+</span>
+```
+
+Aby byl symbol čitelný i na tmavé kaňce, ve vzorových šablonách ho přebarvujeme na bílo přes CSS
+`filter: brightness(0) invert(1)` na `.chunk-icon`.
 
 Vzorové šablony najdeš ve složkách vedle tohoto souboru – nejjednodušší je jednu zkopírovat
 a upravit.
