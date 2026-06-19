@@ -61,33 +61,39 @@
 			}
 
 			/* tematické ikony – velký dekorativní shluk v levém dolním rohu (obarví se vybranou barvou, viz README) */
-			.icons {
-				position: absolute;
-				left: 0;
-				bottom: 0;
-				width: 320px;
-				height: 240px;
-			}
+
 
 			.icon {
 				position: absolute;
-				object-fit: contain;
+				filter: brightness(0) invert(0.5);
+				top: 69%;
+				left: 2%;
+				width: 160px;
+
 			}
 
 			.icon svg {
 				display: block;
 				width: 100%;
 				height: 100%;
+
 			}
 
-			/* stan – velká ikona zasunutá do rohu */
-			.icons .icon:nth-child(1) {
-				width: 200px;
-				height: 200px;
-				left: -20px;
-				bottom: -8px;
-				transform: rotate(+8deg);
+			.flek-icon {
+				position: absolute;
+				top: 54%;
+				left: -12%;
+				width: 400px;
 			}
+
+			.flek-icon svg {
+				display: block;
+				width: 100%;
+				height: 100%;
+
+			}
+
+
 
 			.columns {
 				display: flex;
@@ -265,7 +271,9 @@
 			</div>
 
 			<div class="icons">
+				<img class="flek-icon" src="../../img/flek-3.svg" alt="" />
 				<img class="icon" src="../../img/taborak.svg" alt="" />
+
 			</div>
 		</div>
 	</body>
