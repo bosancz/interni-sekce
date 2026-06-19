@@ -229,6 +229,8 @@ export class MongoImportService {
 				place: mongoEvent.place ?? null,
 				placeGeometry: null,
 				description: mongoEvent.description ?? null,
+				price: null,
+				itemList: null,
 				dateFrom: DateTime.fromJSDate(mongoEvent.dateFrom).toISODate()!,
 				dateTill: DateTime.fromJSDate(mongoEvent.dateTill).toISODate()!,
 				timeFrom: mongoEvent.timeFrom ?? null,

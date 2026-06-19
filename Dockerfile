@@ -21,6 +21,9 @@ FROM node:20-alpine AS build-backend
 
 WORKDIR /app/backend
 
+# Puppeteer bundles a glibc Chromium that can't run on Alpine; use the system one instead (installed in the runner).
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+
 # install dependencies
 COPY ./backend/package.json ./backend/package-lock.json ./
 RUN npm ci
@@ -38,6 +41,11 @@ RUN npm prune --omit=dev
 FROM node:20-alpine
 
 ARG VERSION
+
+# Chromium used by Puppeteer to render registration PDFs from HTML templates.
+RUN apk add --no-cache chromium nss freetype harfbuzz ca-certificates ttf-freefont
+ENV PUPPETEER_SKIP_DOWNLOAD=true \
+	PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 WORKDIR /app
 

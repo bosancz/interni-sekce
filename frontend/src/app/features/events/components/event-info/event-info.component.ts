@@ -7,6 +7,7 @@ import { EventTypeSelectorComponent } from "src/app/features/events/components/e
 import { EditButtonDateRangeComponent } from "src/app/shared/components/edit-button-date-range/edit-button-date-range.component";
 import { EditButtonLocationComponent } from "src/app/shared/components/edit-button-location/edit-button-location.component";
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
+import { EditButtonNumberComponent } from "src/app/shared/components/edit-button-number/edit-button-number.component";
 import { EditButtonTextComponent } from "src/app/shared/components/edit-button-text/edit-button-text.component";
 import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
 import { GroupsSelectComponent } from "src/app/shared/components/groups-select/groups-select.component";
@@ -29,6 +30,7 @@ import { EventRegistrationComponent } from "../event-registration/event-registra
 		IonList,
 		ItemComponent,
 		EditButtonTextComponent,
+		EditButtonNumberComponent,
 		EditButtonDateRangeComponent,
 		EditButtonMarkdownComponent,
 		EditButtonLocationComponent,

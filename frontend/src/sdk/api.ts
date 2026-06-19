@@ -745,6 +745,18 @@ export namespace SDK {
         'description': string | null;
         /**
          * 
+         * @type {number}
+         * @memberof Event
+         */
+        'price': number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Event
+         */
+        'itemList': string | null;
+        /**
+         * 
          * @type {string}
          * @memberof Event
          */
@@ -1515,6 +1527,18 @@ export namespace SDK {
         'description': string | null;
         /**
          * 
+         * @type {number}
+         * @memberof EventResponse
+         */
+        'price': number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponse
+         */
+        'itemList': string | null;
+        /**
+         * 
          * @type {string}
          * @memberof EventResponse
          */
@@ -1619,6 +1643,18 @@ export namespace SDK {
          * @memberof EventResponseLinks
          */
         'saveEventRegistration': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'getEventRegistrationTemplates': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'generateEventRegistration': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -1833,6 +1869,18 @@ export namespace SDK {
         'description': string | null;
         /**
          * 
+         * @type {number}
+         * @memberof EventResponseWithLinks
+         */
+        'price': number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'itemList': string | null;
+        /**
+         * 
          * @type {string}
          * @memberof EventResponseWithLinks
          */
@@ -1930,6 +1978,12 @@ export namespace SDK {
          * @type {number}
          * @memberof EventUpdateBody
          */
+        'price'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventUpdateBody
+         */
         'waterKm'?: number | null;
         /**
          * 
@@ -1979,6 +2033,12 @@ export namespace SDK {
          * @memberof EventUpdateBody
          */
         'description'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventUpdateBody
+         */
+        'itemList'?: string | null;
         /**
          * 
          * @type {string}
@@ -3888,6 +3948,26 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface RegistrationTemplateResponse
+     */
+    export interface RegistrationTemplateResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof RegistrationTemplateResponse
+         */
+        'id': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof RegistrationTemplateResponse
+         */
+        'name': string;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface RootResponseLinks
      */
     export interface RootResponseLinks {
@@ -4719,6 +4799,45 @@ export namespace SDK {
     
     
     
+    /**
+     * Query parameters for generateEventRegistration operation in EventsApi.
+     * @export
+     * @interface EventsApiGenerateEventRegistrationQueryParams
+     */
+    export interface EventsApiGenerateEventRegistrationQueryParams {
+        //template
+        /**
+         * 
+         * @type {string}
+         * @memberof EventsApiGenerateEventRegistration
+         */
+        template: string
+    
+        //color
+        /**
+         * 
+         * @type {string}
+         * @memberof EventsApiGenerateEventRegistration
+         */
+        color: string
+    
+        //note
+        /**
+         * 
+         * @type {string}
+         * @memberof EventsApiGenerateEventRegistration
+         */
+        note?: string
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -5298,6 +5417,74 @@ export namespace SDK {
         /**
          * 
     
+         * @param {number} id 
+         * @param {EventsApiGenerateEventRegistrationQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async generateEventRegistration(
+            id: number,
+            queryParams: EventsApiGenerateEventRegistrationQueryParams,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('generateEventRegistration', 'id', id)
+            assertParamExists('generateEventRegistration', 'template', queryParams.template)
+            assertParamExists('generateEventRegistration', 'color', queryParams.color)
+            
+            // verify required parameter 'template' is not null or undefined
+            assertParamExists('generateEventRegistration', 'id', id)
+            assertParamExists('generateEventRegistration', 'template', queryParams.template)
+            assertParamExists('generateEventRegistration', 'color', queryParams.color)
+            
+            // verify required parameter 'color' is not null or undefined
+            assertParamExists('generateEventRegistration', 'id', id)
+            assertParamExists('generateEventRegistration', 'template', queryParams.template)
+            assertParamExists('generateEventRegistration', 'color', queryParams.color)
+            
+            const localVarPath = `/api/events/{id}/registration/generate`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            if (queryParams.template !== undefined) {
+                requestQueryParameter['template'] = queryParams.template;
+            }
+    
+            if (queryParams.color !== undefined) {
+                requestQueryParameter['color'] = queryParams.color;
+            }
+    
+            if (queryParams.note !== undefined) {
+                requestQueryParameter['note'] = queryParams.note;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
@@ -5497,6 +5684,48 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async getEventRegistrationTemplates(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getEventRegistrationTemplates', 'id', id)
+            
+            const localVarPath = `/api/events/{id}/registration/templates`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<RegistrationTemplateResponse>>(axiosRequestConfig);
         }
     
         /**

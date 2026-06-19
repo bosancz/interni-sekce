@@ -37,3 +37,36 @@ a[href] {
 .selectable {
 	user-select: text !important;
 }
+
+/* Barevný puntík u výběru barvy přihlášky (ion-alert s radio inputy) */
+.color-radio .alert-radio-label {
+	display: flex;
+	align-items: center;
+
+	&::before {
+		content: "";
+		display: inline-block;
+		width: 20px;
+		height: 20px;
+		margin-right: 12px;
+		border-radius: 50%;
+		border: 1px solid rgba(0, 0, 0, 0.2);
+		flex: 0 0 auto;
+	}
+}
+
+.color-black .alert-radio-label::before {
+	background: #1a1a1a;
+}
+.color-blue .alert-radio-label::before {
+	background: #2a3478;
+}
+.color-green .alert-radio-label::before {
+	background: #799f3d;
+}
+.color-red .alert-radio-label::before {
+	background: #d2232a;
+}
+.color-orange .alert-radio-label::before {
+	background: #e28f26;
+}

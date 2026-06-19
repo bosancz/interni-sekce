@@ -7,28 +7,34 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 	Param,
+	Post,
 	Put,
+	Query,
 	Req,
 	Res,
 	UploadedFile,
 	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiConsumes, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { RegistrationTemplateResponse } from "../dto/registration-template.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response} from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
+import { EventRegistrationService } from "src/models/events/services/event-registration.service";
 import { Repository } from "typeorm";
 import {
 	EventRegistrationDeletePermission,
 	EventRegistrationEditPermission,
+	EventRegistrationGeneratePermission,
 	EventRegistrationReadPermission,
 } from "../acl/events.acl";
 import { FilesService } from "../../../models/files/services/files.service";
 import { Config } from "src/config";
 import * as path from 'path';
+import { readFile, unlink } from "fs/promises";
 import {sanitizeFilename} from '../../../helpers/sanitizefilename'
 
 
@@ -40,8 +46,27 @@ export class EventsRegistrationsController {
 		private events: EventsRepository,
 		private fileService: FilesService,
 		private config: Config,
+		private eventRegistrationService: EventRegistrationService,
 		@InjectRepository(Event) private eventsRepository: Repository<Event>,
 	) {}
+
+	/** Replaces any existing "prihlaska" file for the event with the given PDF and flags the event. */
+	private async storeRegistration(event: Event, data: Buffer): Promise<void> {
+		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString());
+		const registrationFileName = "prihlaska_" + sanitizeFilename(event.name) + ".pdf";
+		const registrationPath = path.join(registrationFolder, registrationFileName);
+
+		try {
+			await this.fileService.ensureDir(registrationFolder);
+			await this.fileService.deleteFilesByPrefix(registrationFolder, "prihlaska");
+			await this.fileService.saveFile(registrationPath, data);
+		} catch (err) {
+			throw new InternalServerErrorException("Failed to save registration");
+		}
+
+		event.hasRegistration = true;
+		await this.eventsRepository.save(event);
+	}
 
 	@Get(":id/registration")
 	@AcLinks(EventRegistrationReadPermission)
@@ -94,25 +119,58 @@ export class EventsRegistrationsController {
 		@UploadedFile() registration: Express.Multer.File): Promise<void> {
 			const event = await this.events.getEvent(id);
 			if (!event) throw new NotFoundException();
-			
+
 			EventRegistrationEditPermission.canOrThrow(req, event);
 			if (!registration) throw new BadRequestException("Registration not provided")
-				
-				const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
-				const registrationFileName = "prihlaska_" +  sanitizeFilename(event.name) + ".pdf"
-				const registrationPath = path.join(registrationFolder, registrationFileName)
-			try{
-				await this.fileService.ensureDir(registrationFolder)
-				await this.fileService.deleteFilesByPrefix(registrationFolder, "prihlaska")
-			
-			await this.fileService.moveFile(registration.path, registrationPath)
+
+			let data: Buffer;
+			try {
+				data = await readFile(registration.path);
+			} finally {
+				await unlink(registration.path).catch(() => undefined);
 			}
-			catch(err){
-				throw new InternalServerErrorException("Failed to save registration")
-			}
-			event.hasRegistration = true;
-			await this.eventsRepository.save(event);
+
+			await this.storeRegistration(event, data);
 		}
+
+	@Get(":id/registration/templates")
+	@AcLinks(EventRegistrationGeneratePermission)
+	@ApiResponse({ status: 200, type: [RegistrationTemplateResponse] })
+	async getEventRegistrationTemplates(@Req() req: Request, @Param("id") id: number): Promise<RegistrationTemplateResponse[]> {
+		const event = await this.events.getEvent(id);
+		if (!event) throw new NotFoundException();
+
+		EventRegistrationGeneratePermission.canOrThrow(req, event);
+
+		return this.eventRegistrationService.listTemplates();
+	}
+
+	@Post(":id/registration/generate")
+	@HttpCode(204)
+	@AcLinks(EventRegistrationGeneratePermission)
+	@ApiResponse({ status: 204 })
+	@ApiQuery({ name: "template", required: true })
+	@ApiQuery({ name: "color", required: true })
+	@ApiQuery({ name: "note", required: false })
+	async generateEventRegistration(
+		@Req() req: Request,
+		@Param("id") id: number,
+		@Query("template") template: string,
+		@Query("color") color: string,
+		@Query("note") note?: string,
+	): Promise<void> {
+		// Load attendees with member contacts so the generated form can list organisers and their contacts.
+		const event = await this.eventsRepository.findOne({
+			where: { id },
+			relations: ["attendees", "attendees.member", "attendees.member.contacts"],
+		});
+		if (!event) throw new NotFoundException();
+
+		EventRegistrationGeneratePermission.canOrThrow(req, event);
+
+		const data = await this.eventRegistrationService.generateRegistration(event, template, color, note);
+		await this.storeRegistration(event, data);
+	}
 
 	@Delete(":id/registration")
 	@AcLinks(EventRegistrationDeletePermission)

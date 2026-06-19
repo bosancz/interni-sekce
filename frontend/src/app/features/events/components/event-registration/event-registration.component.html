@@ -1,32 +1,52 @@
 <div class="buttons">
 	@if (event()?._links?.saveEventRegistration?.applicable) {
 		<ion-button
-			[disabled]="!event()?._links?.saveEventRegistration?.allowed || uploadingRegistration"
+			[disabled]="!event()?._links?.saveEventRegistration?.allowed || uploadingRegistration()"
 			fill="clear"
+			title="Nahrát"
 			(click)="registrationInput.click()"
-			>Nahrát</ion-button
 		>
+			<ion-icon class="ion-hide-md-up" name="cloud-upload-outline"></ion-icon>
+			<span class="ion-hide-md-down">Nahrát</span>
+		</ion-button>
+	}
+	@if (event()?._links?.generateEventRegistration?.applicable) {
+		<ion-button
+			[disabled]="!event()?._links?.generateEventRegistration?.allowed || uploadingRegistration()"
+			fill="clear"
+			title="Generovat"
+			(click)="generateRegistration()"
+		>
+			<ion-icon class="ion-hide-md-up" name="color-wand-outline"></ion-icon>
+			<span class="ion-hide-md-down">Generovat</span>
+		</ion-button>
 	}
 	@if (event()?._links?.getEventRegistration?.applicable) {
 		<ion-button
-			[disabled]="!event()?._links?.getEventRegistration?.allowed || uploadingRegistration"
+			[disabled]="!event()?._links?.getEventRegistration?.allowed || uploadingRegistration()"
 			fill="clear"
+			title="Zobrazit"
 			(click)="getRegistration()"
-			>Zobrazit</ion-button
 		>
+			<ion-icon class="ion-hide-md-up" name="eye-outline"></ion-icon>
+			<span class="ion-hide-md-down">Zobrazit</span>
+		</ion-button>
 	}
 	@if (event()?._links?.deleteEventRegistration?.applicable) {
 		<ion-button
-			[disabled]="!event()?._links?.deleteEventRegistration?.allowed || uploadingRegistration"
+			[disabled]="!event()?._links?.deleteEventRegistration?.allowed || uploadingRegistration()"
 			fill="clear"
 			color="danger"
+			title="Smazat"
 			(click)="deleteRegistration()"
-			>Smazat</ion-button
 		>
+			<ion-icon class="ion-hide-md-up" name="trash-outline"></ion-icon>
+			<span class="ion-hide-md-down">Smazat</span>
+		</ion-button>
 	}
 </div>
 
-@if (uploadingRegistration) {
+@if (uploadingRegistration()) {
 	<p>Nahrávám&hellip;</p>
 }
 <input
