@@ -31,6 +31,7 @@ export class EventsRepository {
 			.createQueryBuilder("events")
 			.select(["events.id", "events.name", "events.status", "events.dateFrom", "events.dateTill", "events.type"])
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
+			.leftJoinAndSelect("attendees.member", "leaders")
 			.orderBy("events.dateFrom", "DESC");
 
 		if (options.limit) {
@@ -79,7 +80,13 @@ export class EventsRepository {
 		});
 		if (!event) return null;
 
-		event.leaders = await this.getEventLeaders(id);
+		const leaderAttendees = await this.eventAttendeesRepository.find({
+			where: { eventId: id, type: EventAttendeeType.leader },
+			relations: { member: true },
+			withDeleted: true,
+		});
+		event.attendees = leaderAttendees; // so isMyEvent(doc) works in canOrThrow & _links
+		event.leaders = leaderAttendees.map((ea) => ea.member!);
 
 		return event;
 	}
@@ -125,16 +132,6 @@ export class EventsRepository {
 			.withDeleted();
 
 		return q.getRawMany<{ status: string }>().then((res) => res.map((r) => r.status));
-	}
-
-	async getEventLeaders(id: number) {
-		return this.eventAttendeesRepository
-			.find({
-				where: { eventId: id, type: EventAttendeeType.leader },
-				relations: { member: true },
-				withDeleted: true,
-			})
-			.then((res) => res.map((ea) => ea.member!));
 	}
 
 	async getEventAttendees(id: number) {
