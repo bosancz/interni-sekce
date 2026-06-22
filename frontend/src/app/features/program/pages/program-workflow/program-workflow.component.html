@@ -1,36 +1,5 @@
 <bo-page-header title="Schvalování akcí" />
-<bo-page-content>
-	<ion-tab-bar slot="top" class="d-xl-none top-tabs">
-		<ion-tab-button (click)="selectedColumn.set('noLeader')" [selected]="selectedColumn() === 'noLeader'">
-			<ion-text class="event-count">
-				{{ noLeaderEvents()?.length || 0 }}
-			</ion-text>
-			<!-- <ion-icon name="calendar"></ion-icon> -->
-			<ion-label>Pan NIKDO</ion-label>
-		</ion-tab-button>
-		<ion-tab-button (click)="selectedColumn.set('draft')" [selected]="selectedColumn() === 'draft'">
-			<!-- <ion-icon name="calendar"></ion-icon> -->
-			<ion-text class="event-count">
-				{{ draftEvents()?.length || 0 }}
-			</ion-text>
-			<ion-label>V přípravě</ion-label>
-		</ion-tab-button>
-		<ion-tab-button (click)="selectedColumn.set('pending')" [selected]="selectedColumn() === 'pending'">
-			<!-- <ion-icon name="calendar"></ion-icon> -->
-			<ion-text class="event-count">
-				{{ pendingEvents()?.length || 0 }}
-			</ion-text>
-			<ion-label>Ke schválení</ion-label>
-		</ion-tab-button>
-		<ion-tab-button (click)="selectedColumn.set('public')" [selected]="selectedColumn() === 'public'">
-			<!-- <ion-icon name="calendar"></ion-icon> -->
-			<ion-text class="event-count">
-				{{ publicEvents()?.length || 0 }}
-			</ion-text>
-			<ion-label>V programu</ion-label>
-		</ion-tab-button>
-	</ion-tab-bar>
-
+<bo-page-content [padding]="true">
 	<ng-template #eventsColumn let-events>
 		@for (event of events; track event.id) {
 			<event-card
@@ -89,4 +58,17 @@
 			</div>
 		</div>
 	</div>
+
+	<ion-infinite-scroll [disabled]="reachedEnd()" (ionInfinite)="onInfiniteScroll($any($event))">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
 </bo-page-content>
+
+<bo-page-footer class="d-xl-none">
+	<bo-tabs defaultTab="pending" (change)="selectedColumn.set($event)">
+		<bo-tab name="noLeader" icon="help-circle-outline" label="NIKDO"></bo-tab>
+		<bo-tab name="draft" icon="create-outline" label="V přípravě"></bo-tab>
+		<bo-tab name="pending" icon="hourglass-outline" label="Ke schválení"></bo-tab>
+		<bo-tab name="public" icon="calendar-outline" label="Program"></bo-tab>
+	</bo-tabs>
+</bo-page-footer>

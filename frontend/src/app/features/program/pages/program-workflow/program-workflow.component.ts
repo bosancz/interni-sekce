@@ -1,15 +1,26 @@
 import { NgTemplateOutlet } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { IonButton, IonItem, IonLabel, IonTabBar, IonTabButton, IonText } from "@ionic/angular/standalone";
+import {
+	InfiniteScrollCustomEvent,
+	IonButton,
+	IonInfiniteScroll,
+	IonInfiniteScrollContent,
+	IonItem,
+	IonLabel,
+} from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { DateTime } from "luxon";
+import { addIcons } from "ionicons";
+import { calendarOutline, createOutline, helpCircleOutline, hourglassOutline } from "ionicons/icons";
 import { BehaviorSubject } from "rxjs";
 import { filter, map } from "rxjs/operators";
 import { ApiService } from "src/app/core/services/api.service";
 import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { TabComponent } from "src/app/shared/components/tab/tab.component";
+import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { SDK } from "src/sdk";
 import { ProgramService } from "../../services/program.service";
 
@@ -21,15 +32,17 @@ import { ProgramService } from "../../services/program.service";
 
 	imports: [
 		NgTemplateOutlet,
-		IonTabBar,
-		IonTabButton,
-		IonText,
 		IonLabel,
 		IonItem,
 		IonButton,
+		IonInfiniteScroll,
+		IonInfiniteScrollContent,
 		EventCardComponent,
 		PageHeaderComponent,
 		PageContentComponent,
+		PageFooterComponent,
+		TabsComponent,
+		TabComponent,
 	],
 })
 export class ProgramWorkflowComponent implements OnInit {
@@ -70,11 +83,17 @@ export class ProgramWorkflowComponent implements OnInit {
 	);
 
 	loading = signal(true);
+	reachedEnd = signal(false);
+
+	page = 1;
+	readonly pageSize = 50;
 
 	constructor(
 		private api: ApiService,
 		private programService: ProgramService,
-	) {}
+	) {
+		addIcons({ helpCircleOutline, createOutline, hourglassOutline, calendarOutline });
+	}
 
 	ngOnInit() {
 		this.loadEvents();
@@ -90,24 +109,32 @@ export class ProgramWorkflowComponent implements OnInit {
 			);
 	}
 
-	async loadEvents() {
-		this.loading.set(true);
+	async loadEvents(loadMore = false) {
+		if (loadMore) {
+			if (this.reachedEnd()) return;
+			this.page++;
+		} else {
+			this.page = 1;
+			this.reachedEnd.set(false);
+			this.events.next([]);
+			this.loading.set(true);
+		}
 
-		const options = {
-			limit: 100,
-			filter: {
-				dateFrom: { $gte: DateTime.local().toISODate() },
-			},
-			sort: "dateFrom",
-			select: "_id status statusNote name description dateFrom dateTill leaders subtype",
-		};
+		const events = await this.api.EventsApi.listEvents({
+			offset: (this.page - 1) * this.pageSize,
+			limit: this.pageSize,
+		}).then((res) => res.data);
 
-		// TODO: use options above
-		const events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		if (events.length < this.pageSize) this.reachedEnd.set(true);
 
-		this.events.next(events);
+		this.events.next([...(this.events.value ?? []), ...events]);
 
 		this.loading.set(false);
+	}
+
+	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
+		await this.loadEvents(true);
+		e.target.complete();
 	}
 
 	eventChanged(newEvent: SDK.EventResponseWithLinks) {
