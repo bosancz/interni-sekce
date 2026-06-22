@@ -1,4 +1,8 @@
-<bo-page-header title="Schvalování akcí" />
+<bo-page-header title="Schvalování akcí">
+	<ion-button fill="clear" (click)="createEvent()">
+		<ion-icon slot="icon-only" name="add-outline" size="large"></ion-icon>
+	</ion-button>
+</bo-page-header>
 <bo-page-content [padding]="true">
 	<ng-template #eventsColumn let-events>
 		@for (event of events; track event.id) {

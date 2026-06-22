@@ -7,11 +7,11 @@
 
 <div class="spacer"></div>
 
-@if (actions()) {
-	<div class="actions" slot="end">
+<div class="actions" slot="end">
+	@if (actions()) {
 		<ion-buttons slot="end">
 			<bo-action-buttons [actions]="actions()!" [header]="title()"></bo-action-buttons>
 		</ion-buttons>
-		<ng-content></ng-content>
-	</div>
-}
+	}
+	<ng-content></ng-content>
+</div>
