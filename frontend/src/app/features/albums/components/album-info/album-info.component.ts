@@ -33,6 +33,7 @@ import { EventSelectorComponent } from "../event-selector/event-selector.compone
 export class AlbumInfoComponent {
 	album = input<SDK.AlbumResponseWithLinks | undefined>(undefined);
 	update = output<SDK.AlbumUpdateBody>();
+	
 
 	constructor() {
 		addIcons({ calendarOutline, textOutline });

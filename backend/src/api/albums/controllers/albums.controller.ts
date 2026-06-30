@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
+import { DateTime } from "luxon";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
 import { AlbumsRepository, GetAlbumsOptions } from "src/models/albums/repositories/albums.repository";
@@ -107,7 +108,7 @@ export class AlbumsController {
 
 		AlbumPublishPermission.canOrThrow(req, album);
 
-		await this.albums.updateAlbum(id, { status: AlbumStatus.public });
+		await this.albums.updateAlbum(id, { status: AlbumStatus.public, datePublished: DateTime.local().toISO() });
 	}
 
 	@Post(":id/unpublish")
@@ -119,7 +120,7 @@ export class AlbumsController {
 
 		AlbumUnpublishPermission.canOrThrow(req, album);
 
-		await this.albums.updateAlbum(id, { status: AlbumStatus.draft });
+		await this.albums.updateAlbum(id, { status: AlbumStatus.draft, datePublished: null });
 	}
 
 	@Get(":id/photos")

@@ -297,18 +297,18 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 	private async publish() {
 		const album = this.album();
-		if (!album?._links.unpublishAlbum.allowed) return;
-		await this.api.PhotoGalleryApi.unpublishAlbum(album.id);
+		if (!album?._links.publishAlbum.allowed) return;
+		await this.api.PhotoGalleryApi.publishAlbum(album.id);
 		await this.loadAlbum(album.id);
 		this.toastService.toast("Publikováno.");
 	}
 
 	private async unpublish() {
 		const album = this.album();
-		if (!album?._links.publishAlbum.allowed) return;
-		await this.api.PhotoGalleryApi.publishAlbum(album.id);
+		if (!album?._links.unpublishAlbum.allowed) return;
+		await this.api.PhotoGalleryApi.unpublishAlbum(album.id);
 		await this.loadAlbum(album.id);
-		this.toastService.toast("Publikováno.");
+		this.toastService.toast("Publikace zrušena.");
 	}
 
 	private async delete() {
