@@ -620,13 +620,19 @@ export namespace SDK {
      */
     export interface CreateContactBody {
         /**
-         * 
+         *
          * @type {string}
          * @memberof CreateContactBody
          */
-        'title': string;
+        'relationship': string;
         /**
-         * 
+         *
+         * @type {string}
+         * @memberof CreateContactBody
+         */
+        'name'?: string;
+        /**
+         *
          * @type {string}
          * @memberof CreateContactBody
          */
@@ -2842,9 +2848,15 @@ export namespace SDK {
          * @type {string}
          * @memberof MemberContact
          */
-        'title': string;
+        'relationship': string;
         /**
-         * 
+         *
+         * @type {string}
+         * @memberof MemberContact
+         */
+        'name'?: string;
+        /**
+         *
          * @type {string}
          * @memberof MemberContact
          */
@@ -2886,9 +2898,15 @@ export namespace SDK {
          * @type {string}
          * @memberof MemberContactResponse
          */
-        'title': string;
+        'relationship': string;
         /**
-         * 
+         *
+         * @type {string}
+         * @memberof MemberContactResponse
+         */
+        'name'?: string;
+        /**
+         *
          * @type {string}
          * @memberof MemberContactResponse
          */
@@ -2944,9 +2962,15 @@ export namespace SDK {
          * @type {string}
          * @memberof MemberContactResponseWithLinks
          */
-        'title': string;
+        'relationship': string;
         /**
-         * 
+         *
+         * @type {string}
+         * @memberof MemberContactResponseWithLinks
+         */
+        'name'?: string;
+        /**
+         *
          * @type {string}
          * @memberof MemberContactResponseWithLinks
          */

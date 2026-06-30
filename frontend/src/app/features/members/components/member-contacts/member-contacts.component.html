@@ -3,12 +3,19 @@
 @for (contact of contacts; track $index) {
 	<bo-card class="contact mb-3">
 		<bo-card-header>
-			<bo-card-title>{{ contact.title }}</bo-card-title>
+			<bo-card-title>{{ contact.relationship }}</bo-card-title>
 			<bo-edit-button (click)="openContactForm(contact)" slot="buttons"></bo-edit-button>
 		</bo-card-header>
 
 		<bo-card-content>
 			<ion-list lines="none">
+				@if (contact.name) {
+					<ion-item [detail]="false">
+						<ion-icon name="person-outline" slot="start"></ion-icon>
+						<ion-label>{{ contact.name }}</ion-label>
+						<bo-copy-button [text]="contact.name"></bo-copy-button>
+					</ion-item>
+				}
 				@if (contact.mobile) {
 					<ion-item [button]="true" [detail]="false" [href]="'tel:' + contact.mobile" target="_blank">
 						<ion-icon name="call-outline" slot="start"></ion-icon>

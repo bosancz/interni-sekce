@@ -175,7 +175,7 @@ export class MongoImportService {
 			if (mongoMember.contacts?.father) {
 				const contactData: Omit<MemberContact, "id"> = {
 					memberId: member.id,
-					title: "Otec",
+					relationship: "Otec",
 					mobile: mongoMember.contacts?.father,
 				};
 
@@ -185,7 +185,7 @@ export class MongoImportService {
 			if (mongoMember.contacts?.mother) {
 				const contactData: Omit<MemberContact, "id"> = {
 					memberId: member.id,
-					title: "Matka",
+					relationship: "Matka",
 					mobile: mongoMember.contacts?.mother,
 				};
 
