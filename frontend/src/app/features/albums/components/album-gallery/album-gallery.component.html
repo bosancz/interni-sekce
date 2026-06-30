@@ -1,6 +1,10 @@
 @if (photos()?.length) {
 	<!-- on mobile these options are in the page header actions menu -->
 	<div class="buttons d-none d-lg-block">
+		<ion-button (click)="upload.emit()" fill="clear" slot="end">
+			<ion-icon slot="start" name="cloud-upload-outline"></ion-icon> Nahrát fotky
+		</ion-button>
+
 		@if (view() === 'gallery') {
 			<ion-button (click)="viewChange.emit('manage')" fill="clear" slot="end">
 				<ion-icon slot="start" name="create-outline"></ion-icon> Upravit

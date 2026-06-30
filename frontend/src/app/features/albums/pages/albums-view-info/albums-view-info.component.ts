@@ -1,7 +1,7 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute, Router } from "@angular/router";
-import { AlertController, ModalController, ViewWillLeave } from "@ionic/angular/standalone";
+import { AlertController, IonButton, IonIcon, ModalController, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
@@ -49,6 +49,8 @@ import { PhotosUploadComponent } from "../../components/photos-upload/photos-upl
 		TabComponent,
 		AlbumInfoComponent,
 		AlbumGalleryComponent,
+		IonButton,
+		IonIcon,
 	],
 })
 export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
@@ -374,7 +376,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	// photo edit options shown in the header on mobile instead of the inline buttons row
 	private getGalleryActions(): Action[] {
 		const manage = this.photosView() === "manage";
-		const selecting = this.selecting();
 
 		return [
 			{
@@ -410,23 +411,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 				icon: "text-outline",
 				hidden: !manage,
 				handler: () => this.sortByName(),
-			},
-			{
-				text: `Smazat (${this.selectedPhotos().length})`,
-				icon: "trash-outline",
-				color: "danger",
-				role: "destructive",
-				pinned: true,
-				hidden: !selecting,
-				disabled: !this.selectedPhotos().length,
-				handler: () => this.deleteSelected(),
-			},
-			{
-				text: "Zrušit",
-				icon: "close-outline",
-				pinned: true,
-				hidden: !selecting,
-				handler: () => this.cancelSelecting(),
 			},
 		];
 	}

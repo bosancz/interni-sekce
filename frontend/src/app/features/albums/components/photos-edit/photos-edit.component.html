@@ -1,5 +1,5 @@
 <ion-content class="modal-bg">
-	<ion-toolbar class="top-toolbar">
+	<ion-toolbar class="top-toolbar" [class.controls-hidden]="!controlsVisible()">
 		<ion-buttons slot="end">
 			@if (photo()) {
 				<ion-button color="danger" fill="clear" (click)="delete(photo()!)">Smazat</ion-button>
@@ -61,8 +61,9 @@
 		</ion-popover>
 	}
 	@if (photo()) {
-		<div class="image-viewer">
-			@if (currentIndex() > 0) {
+		<div class="image-viewer" (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
+			<!-- arrows on desktop, swipe left/right on mobile -->
+			@if (isLg() && currentIndex() > 0) {
 				<ion-button class="nav prev" fill="clear" (click)="previousPhoto()">
 					<ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
 				</ion-button>
@@ -75,7 +76,7 @@
 				[alt]="photo()!.caption || photo()!.name"
 			/>
 
-			@if (currentIndex() < photos.length - 1) {
+			@if (isLg() && currentIndex() < photos.length - 1) {
 				<ion-button class="nav next" fill="clear" (click)="nextPhoto()">
 					<ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
 				</ion-button>
@@ -84,7 +85,7 @@
 	}
 
 	@if (photo()) {
-		<ion-toolbar class="bottom-toolbar">
+		<ion-toolbar class="bottom-toolbar" [class.controls-hidden]="!controlsVisible()">
 			@if (!editingCaption()) {
 				<ion-item lines="none">
 					<ion-label [class.nocaption]="!photo()!.caption" (dblclick)="editCaption()">

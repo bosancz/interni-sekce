@@ -24,6 +24,25 @@ ion-toolbar {
 	right: 0;
 }
 
+.top-toolbar,
+.bottom-toolbar {
+	transition:
+		opacity 0.2s ease,
+		transform 0.2s ease;
+}
+
+// tap-to-hide on mobile: slide the bars out of view and let taps fall through to the image
+.top-toolbar.controls-hidden {
+	opacity: 0;
+	pointer-events: none;
+	transform: translateY(-100%);
+}
+.bottom-toolbar.controls-hidden {
+	opacity: 0;
+	pointer-events: none;
+	transform: translateY(100%);
+}
+
 .top-toolbar ion-item,
 .bottom-toolbar ion-item {
 	--ion-background-color: transparent;
@@ -50,6 +69,9 @@ ion-toolbar {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	// let horizontal swipes reach our pointer handlers instead of being
+	// consumed by the browser (which would fire pointercancel, not pointerup)
+	touch-action: none;
 }
 
 .image {

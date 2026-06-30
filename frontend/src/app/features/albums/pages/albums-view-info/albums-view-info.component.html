@@ -1,5 +1,17 @@
 <bo-page-header [title]="album()?.name" backUrl="/galerie" [actions]="headerActions()" actionsHeader="Album" />
 
+@if (selecting()) {
+	<div class="selection-bar d-lg-none">
+		<ion-button (click)="deleteSelected()" [disabled]="!selectedPhotos().length" fill="clear" color="danger">
+			<ion-icon slot="start" name="trash-outline"></ion-icon> Smazat ({{ selectedPhotos().length }})
+		</ion-button>
+
+		<ion-button (click)="cancelSelecting()" fill="clear">
+			<ion-icon slot="start" name="close-outline"></ion-icon> Zrušit
+		</ion-button>
+	</div>
+}
+
 <bo-page-content [padding]="true">
 	<div [class.d-none]="view() !== 'info'" class="d-lg-block">
 		<bo-album-info [album]="album()" (update)="updateAlbum($event)" />
