@@ -177,6 +177,7 @@ export class EventsRepository {
 	async getEventExpense(eventId: number, expenseId: number) {
 		return this.eventExpensesRepository.findOne({
 			where: { eventId, id: expenseId },
+			relations: { event: { attendees: true } }, // so isMyEvent(doc.event) works in canOrThrow
 			withDeleted: true,
 		});
 	}
