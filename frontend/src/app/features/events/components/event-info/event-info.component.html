@@ -94,7 +94,7 @@
 				<bo-edit-button-number
 					slot="end"
 					label="Cena (Kč)"
-					placeholder="350"
+					placeholder="2000"
 					[disabled]="!event()?._links?.updateEvent?.allowed"
 					[value]="event()?.price"
 					(update)="update.emit({ price: $event })"
