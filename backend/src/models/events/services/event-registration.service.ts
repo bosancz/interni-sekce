@@ -173,11 +173,16 @@ export class EventRegistrationService {
 	}
 
 	private buildContext(event: Event, accent: string, note?: string) {
-		const contacts = (event.leaders || []).map((member) => {
-			const name = [member.firstName, member.lastName].filter(Boolean).join(" ") || member.nickname || "";
-			const phone = member.contacts?.[0]?.mobile || member.mobile || "";
-			const email = member.contacts?.[0]?.email || member.email || "";
-			return { name, phone, email, line: [name, [phone, email].filter(Boolean).join(", ")].filter(Boolean).join(" – ") };
+		const contactsLine = (event.leaders || []).map((member) => {
+			const fullName = [member.firstName, member.lastName].filter(Boolean).join(" ");
+			const name = member.nickname
+				? `${member.firstName} "${member.nickname}" ${member.lastName}`
+				: fullName;
+
+			const phone = member.mobile ? `(${member.mobile})` : "";
+			const email = member.email || "";
+
+			return [name, phone, email].filter(Boolean).join(" ");
 		});
 
 		return {
@@ -192,8 +197,7 @@ export class EventRegistrationService {
 			price: event.price != null ? `${event.price} Kč` : "",
 			itemList: event.itemList || "",
 			noteHtml: note?.trim() ? marked.parse(note, { async: false }) : "",
-			contacts,
-			contactsLine: contacts.map((c) => c.line).filter(Boolean).join("; "),
+			contactsLine: contactsLine.filter(Boolean).join(", "),
 		};
 	}
 

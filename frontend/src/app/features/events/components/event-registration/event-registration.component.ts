@@ -31,7 +31,7 @@ export class EventRegistrationComponent {
 		{ id: "blue", name: "Modrá" },
 		{ id: "green", name: "Zelená" },
 		{ id: "red", name: "Červená" },
-		{ id: "orange", name: "Oranžová" },
+		{ id: "orange", name: "Žlutá" },
 	];
 
 	@ViewChild("registrationInput") registrationInput!: ElementRef<HTMLInputElement>;

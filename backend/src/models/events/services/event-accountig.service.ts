@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common"; // <-- ADD THIS LINE
 import { Event } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import * as xlsxPopulate from "xlsx-populate";
+import { markdownToRichText } from "../../../helpers/markdown2richtext";
 import { sanitizeFilename } from "../../../helpers/sanitizefilename";
 import { string2Date } from "../../../helpers/string2date";
 @Injectable() // <-- Now this will work
@@ -88,7 +89,8 @@ export class EventAccountingService {
 			expenseSheet.range(`${startCol}${startRow}:${endCol}${endRow}`).value(expensesString);
 		}
 
-		reportSheet.cell("A10").value(event.report);
+		// range().value() accepts the RichText object (untyped `any`), unlike the stricter cell().value()
+		reportSheet.range("A10:A10").value(markdownToRichText(event.report));
 
 		const fileBuffer = (await xlsx.outputAsync("buffer")) as Buffer;
 		return { fileBuffer, fileName };
