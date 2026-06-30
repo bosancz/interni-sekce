@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, effect, input, OnDestroy, OnInit, output, signal } from "@angular/core";
+import { Component, computed, effect, input, OnDestroy, OnInit, output, signal } from "@angular/core";
 import { IonButton } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/core/services/api.service";
@@ -8,8 +8,14 @@ import { ToastService } from "src/app/core/services/toast.service";
 import { MemberSelectorModalComponent } from "src/app/features/events/components/member-selector-modal/member-selector-modal.component";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AddButtonComponent } from "src/app/shared/components/add-button/add-button.component";
+import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
+import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
+import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
+import { CardComponent } from "src/app/shared/components/card/card.component";
 import { SDK } from "src/sdk";
+import { EventAgeHistogramComponent } from "../event-age-histogram/event-age-histogram.component";
 import { EventAttendeesListComponent } from "../event-attendees-list/event-attendees-list.component";
+import { EventBirthdayListComponent } from "../event-birthday-list/event-birthday-list.component";
 
 @UntilDestroy()
 @Component({
@@ -17,7 +23,18 @@ import { EventAttendeesListComponent } from "../event-attendees-list/event-atten
 	templateUrl: "./event-attendees.component.html",
 	styleUrls: ["./event-attendees.component.scss"],
 
-	imports: [CommonModule, IonButton, EventAttendeesListComponent, AddButtonComponent],
+	imports: [
+		CommonModule,
+		IonButton,
+		EventAttendeesListComponent,
+		AddButtonComponent,
+		EventAgeHistogramComponent,
+		EventBirthdayListComponent,
+		CardComponent,
+		CardHeaderComponent,
+		CardTitleComponent,
+		CardContentComponent,
+	],
 })
 export class EventAttendeesComponent implements OnInit, OnDestroy {
 	event = input<SDK.EventResponseWithLinks | null | undefined>();
@@ -25,6 +42,12 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 	attendees = signal<SDK.EventAttendeeResponseWithLinks[] | undefined>(undefined);
 	leaders = signal<SDK.EventAttendeeResponseWithLinks[] | undefined>(undefined);
+
+	allMembers = computed(() =>
+		[...(this.leaders() ?? []), ...(this.attendees() ?? [])]
+			.map((a) => a.member)
+			.filter((m): m is SDK.MemberResponse => !!m),
+	);
 
 	actions: Action[] = [];
 

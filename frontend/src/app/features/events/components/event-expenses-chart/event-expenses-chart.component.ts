@@ -34,6 +34,8 @@ export class EventExpensesChartComponent implements OnInit {
 	chartData?: ChartData<"doughnut">;
 
 	chartOptions: ChartOptions<"doughnut"> = {
+		responsive: true,
+		maintainAspectRatio: false,
 		cutout: "60%",
 		plugins: {
 			legend: {
@@ -77,28 +79,32 @@ export class EventExpensesChartComponent implements OnInit {
 
 		this.persons = attendees?.length || 1;
 
-		const data: ChartData<"doughnut">["datasets"][0]["data"] = Object.keys(EventExpenseTypes).map((type) => {
-			return this.getTotalExpenseByType(expenses, type as SDK.EventExpenseTypesEnum) / this.persons / this.days;
-		});
+		// only include expense types that actually have an expense, so the
+		// legend doesn't list empty categories
+		const usedTypes = (Object.keys(EventExpenseTypes) as SDK.EventExpenseTypesEnum[])
+			.map((type) => ({ type, total: this.getTotalExpenseByType(expenses, type) }))
+			.filter((entry) => entry.total > 0);
 
 		this.chartData = {
-			labels: Object.values(EventExpenseTypes).map((t) => t.title),
+			labels: usedTypes.map((entry) => EventExpenseTypes[entry.type].title),
 			datasets: [
 				{
-					// backgroundColor: EventExpenseTypes[type as EventExpenseTypesEnum].color,
-					// tooltip: Math.round(value * 100) / 100 + "/os/den",
-					data,
+					data: usedTypes.map((entry) => entry.total / this.persons / this.days),
 					borderRadius: 4,
-
-					backgroundColor: Object.values(EventExpenseTypes).map((t) => t.color),
+					backgroundColor: usedTypes.map((entry) => EventExpenseTypes[entry.type].color),
 				},
 			],
 		};
 
-		this.total = expenses.reduce((acc, e) => acc + parseFloat(e.amount as any), 0);
+		this.total = expenses.reduce((acc, e) => acc + this.parseAmount(e), 0);
 	}
 
 	private getTotalExpenseByType(expenses: SDK.EventExpenseResponseWithLinks[], type: SDK.EventExpenseTypesEnum) {
-		return expenses.filter((e) => e.type === type).reduce((acc, e) => acc + parseFloat(e.amount as any), 0);
+		return expenses.filter((e) => e.type === type).reduce((acc, e) => acc + this.parseAmount(e), 0);
+	}
+
+	private parseAmount(expense: SDK.EventExpenseResponseWithLinks): number {
+		const amount = parseFloat(expense.amount as any);
+		return isNaN(amount) ? 0 : amount;
 	}
 }

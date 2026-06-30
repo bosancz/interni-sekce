@@ -36,14 +36,28 @@
 		}
 	</div>
 	<div class="order-1 order-lg-2 col-12 col-xl-4">
-		<div class="d-none d-lg-block">
-			<p>[[TODO: seznam narozenin během akce]]</p>
-		</div>
+		@if (event()) {
+			<bo-card class="mb-3">
+				<bo-card-header>
+					<bo-card-title>Narozeniny během akce</bo-card-title>
+				</bo-card-header>
+				<bo-card-content>
+					<event-birthday-list [event]="event()!" [members]="allMembers()"></event-birthday-list>
+				</bo-card-content>
+			</bo-card>
 
-		<div class="d-none d-lg-block">
-			<p>[[TODO: graf věku účastníků]]</p>
-		</div>
-		
+			<div class="d-none d-lg-block">
+				<bo-card class="mb-3">
+					<bo-card-header>
+						<bo-card-title>Věk účastníků</bo-card-title>
+					</bo-card-header>
+					<bo-card-content>
+						<event-age-histogram [event]="event()!" [members]="allMembers()"></event-age-histogram>
+					</bo-card-content>
+				</bo-card>
+			</div>
+		}
+
 		@if (event() && event()!._links.getEventAnnouncement.allowed) {
 			@if ((attendees()!.length + leaders()!.length) !=0){
 				<div class="text-center">

@@ -12,46 +12,58 @@ import { SDK } from "src/sdk";
 })
 export class EventAgeHistogramComponent {
 	event = input.required<SDK.EventResponseWithLinks>();
-	min = input<number>(7);
-	max = input<number>(18);
+	members = input.required<SDK.MemberResponse[]>();
 
 	countMax?: number;
 
-	histogram: Array<{ age: number; count: number }> = [];
+	histogram: Array<{ label: string; count: number }> = [];
 
 	constructor() {
 		effect(() => {
 			const event = this.event();
+			this.members();
 			this.updateAges(event);
 		});
 	}
 
 	updateAges(event: SDK.EventResponseWithLinks): void {
-		const members = event.attendees?.map((ea) => ea.member!) || [];
-
-		const ages: { [age: string]: number } = {};
-		var countMax = 0;
-
+		const members = this.members();
 		const dateFrom = DateTime.fromISO(event.dateFrom).set({ hour: 0 });
-		const dateTill = DateTime.fromISO(event.dateTill).set({ hour: 23, minute: 59 });
 
-		const min = this.min();
-		const max = this.max();
-
+		const ages: number[] = [];
 		members.forEach((member) => {
 			if (!member.birthday) return;
-
-			var age = Math.floor(-1 * DateTime.fromISO(member.birthday).diff(dateFrom, "years").toObject().years!);
-
-			age = Math.max(min, Math.min(max, age));
-
-			ages[age] = ages[age] ? ages[age] + 1 : 1;
-			countMax = Math.max(countMax, ages[age]);
+			ages.push(Math.floor(-1 * DateTime.fromISO(member.birthday).diff(dateFrom, "years").toObject().years!));
 		});
 
-		this.countMax = countMax;
-
 		this.histogram = [];
-		for (let i = min; i <= max; i++) this.histogram.push({ age: i, count: ages[i] || 0 });
+		this.countMax = 0;
+		if (!ages.length) return; // no members with a birthday yet
+
+		const min = Math.min(...ages);
+		const max = Math.max(...ages);
+
+		// pick a "nice" bucket width so the number of bars stays readable
+		// no matter how wide the actual age range is
+		const binSize = this.getBinSize(max - min + 1);
+
+		// align bucket boundaries to multiples of the bin size for tidy labels
+		const first = Math.floor(min / binSize) * binSize;
+		const last = Math.floor(max / binSize) * binSize;
+
+		let countMax = 0;
+		for (let from = first; from <= last; from += binSize) {
+			const to = from + binSize - 1;
+			const count = ages.filter((age) => age >= from && age <= to).length;
+			countMax = Math.max(countMax, count);
+			this.histogram.push({ label: binSize === 1 ? `${from}` : `${from}–${to}`, count });
+		}
+
+		this.countMax = countMax;
+	}
+
+	private getBinSize(range: number, targetBins = 10): number {
+		const niceSizes = [1, 2, 5, 10, 20, 25, 50];
+		return niceSizes.find((size) => range / size <= targetBins) ?? 100;
 	}
 }

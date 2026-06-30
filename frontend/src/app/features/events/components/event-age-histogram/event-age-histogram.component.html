@@ -1,18 +1,22 @@
-<div class="histogram">
-	<div class="chart">
-		@for (bar of histogram; track $index; let i = $index) {
-			<div
-				class="bar"
-				[style.left]="(i / histogram.length) * 100 + '%'"
-				[style.right]="(1 - (i + 1) / histogram.length) * 100 + '%'"
-			>
-				<div class="full" [style.height]="countMax ? (bar.count / countMax) * 100 + '%' : '0%'">
-					<span class="label">{{ bar.age }}</span>
-					@if (bar.count > 0) {
-						<span class="count">{{ bar.count }}</span>
-					}
+@if (histogram.length) {
+	<div class="histogram">
+		<div class="chart">
+			@for (bar of histogram; track $index; let i = $index) {
+				<div
+					class="bar"
+					[style.left]="(i / histogram.length) * 100 + '%'"
+					[style.right]="(1 - (i + 1) / histogram.length) * 100 + '%'"
+				>
+					<div class="full" [style.height]="countMax ? (bar.count / countMax) * 100 + '%' : '0%'">
+						<span class="label">{{ bar.label }}</span>
+						@if (bar.count > 0) {
+							<span class="count">{{ bar.count }}</span>
+						}
+					</div>
 				</div>
-			</div>
-		}
+			}
+		</div>
 	</div>
-</div>
+} @else {
+	<p><em>Žádná data o věku účastníků</em></p>
+}

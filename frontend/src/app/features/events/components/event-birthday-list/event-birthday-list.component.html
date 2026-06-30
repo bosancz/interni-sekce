@@ -1,9 +1,14 @@
 @if (birthdays.length) {
-	<ul>
+	<ion-list lines="full">
 		@for (birthday of birthdays; track birthday.member.id) {
-			<li>{{ birthday.member.nickname }} ({{ birthday.date | date: "d. M." }}, {{ birthday.age }} let)</li>
+			<ion-item>
+				<ion-label>
+					<h4><strong>{{ birthday.member.nickname }}</strong></h4>
+					<p>{{ birthday.date | date: "d. M." }} ({{ birthday.age }} let)</p>
+				</ion-label>
+			</ion-item>
 		}
-	</ul>
+	</ion-list>
 } @else {
-	<ng-container>Žádné narozeniny v době konání akce</ng-container>
+	<p><em>Žádné narozeniny v době konání akce</em></p>
 }
