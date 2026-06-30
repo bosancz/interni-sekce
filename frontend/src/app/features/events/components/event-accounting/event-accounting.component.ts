@@ -8,6 +8,10 @@ import { ToastService } from "src/app/core/services/toast.service";
 import { EventExpenseModalComponent } from "src/app/features/events/components/event-expense-modal/event-expense-modal.component";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AddButtonComponent } from "src/app/shared/components/add-button/add-button.component";
+import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
+import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
+import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
+import { CardComponent } from "src/app/shared/components/card/card.component";
 import { DeleteButtonComponent } from "src/app/shared/components/delete-button/delete-button.component";
 import { ItemComponent } from "src/app/shared/components/item/item.component";
 import { EventExpensePipe } from "src/app/shared/pipes/event-expense.pipe";
@@ -30,6 +34,10 @@ import { EventExpensesChartComponent } from "../event-expenses-chart/event-expen
 		AddButtonComponent,
 		EventExpensePipe,
 		EventExpensesChartComponent,
+		CardComponent,
+		CardHeaderComponent,
+		CardTitleComponent,
+		CardContentComponent,
 	],
 })
 export class EventAccountingComponent implements OnInit, OnDestroy {

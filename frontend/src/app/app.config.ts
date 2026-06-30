@@ -9,6 +9,7 @@ import {
 } from "@angular/router";
 import { provideServiceWorker } from "@angular/service-worker";
 import { createAnimation, IonicRouteStrategy, isPlatform, provideIonicAngular } from "@ionic/angular/standalone";
+import { provideCharts, withDefaultRegisterables } from "ng2-charts";
 import { Config } from "src/config";
 import { appRoutes } from "./app.routing";
 import { MainErrorHandler } from "./core/error-handlers/main.error-handler";
@@ -50,6 +51,7 @@ export const appConfig: ApplicationConfig = {
 		{ provide: ErrorHandler, useClass: MainErrorHandler },
 		{ provide: LOCALE_ID, useValue: "cs" },
 		provideHttpClient(),
+		provideCharts(withDefaultRegisterables()),
 		Config,
 	],
 };

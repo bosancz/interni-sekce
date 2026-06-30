@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, effect, input } from "@angular/core";
+import { IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 import { DateTime } from "luxon";
 import { SDK } from "src/sdk";
 
@@ -7,24 +8,24 @@ import { SDK } from "src/sdk";
 	selector: "event-birthday-list",
 	templateUrl: "./event-birthday-list.component.html",
 	styleUrls: ["./event-birthday-list.component.scss"],
-	
-	imports: [CommonModule],
+
+	imports: [CommonModule, IonList, IonItem, IonLabel],
 })
 export class EventBirthdayListComponent {
 	event = input.required<SDK.EventResponseWithLinks>();
+	members = input.required<SDK.MemberResponse[]>();
 	birthdays: Array<{ age: number; date: string; member: SDK.MemberResponse }> = [];
 
 	constructor() {
 		effect(() => {
 			const event = this.event();
+			this.members();
 			this.updateBirthdays(event);
 		});
 	}
 
 	updateBirthdays(event: SDK.EventResponseWithLinks) {
-		const members = [];
-		if (event.leaders) members.push(...event.leaders);
-		if (event.attendees) members.push(...event.attendees.map((ea) => ea.member!));
+		const members = this.members();
 
 		this.birthdays = [];
 

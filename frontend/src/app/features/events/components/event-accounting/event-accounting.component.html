@@ -33,15 +33,17 @@
 		</div>
 	</div>
 	<div class="order-1 order-lg-2 col-12 col-xl-4">
-		<p class="d-none d-lg-block">[[TODO: graf výdajů podle typu]]</p>
-		<p class="d-none d-lg-block">[[TODO: cena na osobu/den]]</p>
-
 		@if (expenses().length > 0) {
-			<bo-event-expenses-chart
-				[event]="event()"
-				[expenses]="expenses()"
-				class="mb-5 d-lg-block"
-			></bo-event-expenses-chart>
+			<div class="d-none d-lg-block">
+				<bo-card class="mb-3">
+					<bo-card-header>
+						<bo-card-title>Výdaje podle typu</bo-card-title>
+					</bo-card-header>
+					<bo-card-content>
+						<bo-event-expenses-chart [event]="event()" [expenses]="expenses()"></bo-event-expenses-chart>
+					</bo-card-content>
+				</bo-card>
+			</div>
 		}
 
 		@if (event() && event()!._links.getEventAccounting.allowed) {

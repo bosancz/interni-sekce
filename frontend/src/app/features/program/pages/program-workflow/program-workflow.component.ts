@@ -1,16 +1,32 @@
 import { NgTemplateOutlet } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { IonButton, IonItem, IonLabel, IonTabBar, IonTabButton, IonText } from "@ionic/angular/standalone";
+import {
+	InfiniteScrollCustomEvent,
+	IonButton,
+	IonIcon,
+	IonInfiniteScroll,
+	IonInfiniteScrollContent,
+	IonItem,
+	IonLabel,
+} from "@ionic/angular/standalone";
+import { Router } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { DateTime } from "luxon";
+import { addIcons } from "ionicons";
+import { addOutline, calendarOutline, createOutline, helpCircleOutline, hourglassOutline } from "ionicons/icons";
 import { BehaviorSubject } from "rxjs";
 import { filter, map } from "rxjs/operators";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { TabComponent } from "src/app/shared/components/tab/tab.component";
+import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { SDK } from "src/sdk";
+import { EventCreateModalComponent } from "../../../events/components/event-create-modal/event-create-modal.component";
 import { ProgramService } from "../../services/program.service";
 
 @UntilDestroy()
@@ -21,15 +37,18 @@ import { ProgramService } from "../../services/program.service";
 
 	imports: [
 		NgTemplateOutlet,
-		IonTabBar,
-		IonTabButton,
-		IonText,
 		IonLabel,
 		IonItem,
 		IonButton,
+		IonIcon,
+		IonInfiniteScroll,
+		IonInfiniteScrollContent,
 		EventCardComponent,
 		PageHeaderComponent,
 		PageContentComponent,
+		PageFooterComponent,
+		TabsComponent,
+		TabComponent,
 	],
 })
 export class ProgramWorkflowComponent implements OnInit {
@@ -70,14 +89,24 @@ export class ProgramWorkflowComponent implements OnInit {
 	);
 
 	loading = signal(true);
+	reachedEnd = signal(false);
+
+	page = 1;
+	readonly pageSize = 50;
 
 	constructor(
 		private api: ApiService,
 		private programService: ProgramService,
-	) {}
+		private modalService: ModalService,
+		private toastService: ToastService,
+		private router: Router,
+	) {
+		addIcons({ helpCircleOutline, createOutline, hourglassOutline, calendarOutline, addOutline });
+	}
 
 	ngOnInit() {
 		this.loadEvents();
+
 		// Subscribe to the BehaviorSubject instead of the signal
 		this.events
 			.pipe(untilDestroyed(this))
@@ -90,24 +119,32 @@ export class ProgramWorkflowComponent implements OnInit {
 			);
 	}
 
-	async loadEvents() {
-		this.loading.set(true);
+	async loadEvents(loadMore = false) {
+		if (loadMore) {
+			if (this.reachedEnd()) return;
+			this.page++;
+		} else {
+			this.page = 1;
+			this.reachedEnd.set(false);
+			this.events.next([]);
+			this.loading.set(true);
+		}
 
-		const options = {
-			limit: 100,
-			filter: {
-				dateFrom: { $gte: DateTime.local().toISODate() },
-			},
-			sort: "dateFrom",
-			select: "_id status statusNote name description dateFrom dateTill leaders subtype",
-		};
+		const events = await this.api.EventsApi.listEvents({
+			offset: (this.page - 1) * this.pageSize,
+			limit: this.pageSize,
+		}).then((res) => res.data);
 
-		// TODO: use options above
-		const events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		if (events.length < this.pageSize) this.reachedEnd.set(true);
 
-		this.events.next(events);
+		this.events.next([...(this.events.value ?? []), ...events]);
 
 		this.loading.set(false);
+	}
+
+	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
+		await this.loadEvents(true);
+		e.target.complete();
 	}
 
 	eventChanged(newEvent: SDK.EventResponseWithLinks) {
@@ -119,5 +156,14 @@ export class ProgramWorkflowComponent implements OnInit {
 			events.push(newEvent);
 		}
 		this.events.next(events);
+	}
+
+	async createEvent() {
+		const data = await this.modalService.componentModal(EventCreateModalComponent);
+		if (!data) return;
+
+		const event = await this.api.EventsApi.createEvent(data).then((res: any) => res.data);
+		this.toastService.toast("Akce vytvořena a uložena.");
+		this.router.navigate(["/akce/" + event.id]);
 	}
 }
