@@ -93,6 +93,8 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	page = 1;
 	pageSize = 50;
 
+	private latestLoadId = 0;
+
 	viewSelections: { [key: string]: boolean } = {};
 
 	constructor(
@@ -200,6 +202,11 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			this.members.set([]);
 		}
 
+		// Each load gets a unique id so out-of-order responses from rapid filter
+		// changes (e.g. unchecking one role then checking another) can be discarded
+		// and only the latest request is allowed to update the list.
+		const loadId = ++this.latestLoadId;
+
 		const params: SDK.MembersApiListMembersQueryParams = {
 			search: filter.search || undefined,
 			offset: (this.page - 1) * this.pageSize,
@@ -211,6 +218,8 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		};
 
 		var members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
+
+		if (loadId !== this.latestLoadId) return;
 
 		if (this.view == "table") {
 			console.log("Loading contacts for members in table view...");
@@ -226,6 +235,8 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 					}
 				}),
 			);
+
+			if (loadId !== this.latestLoadId) return;
 		}
 
 		const currentMembers = this.members() || [];
