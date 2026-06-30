@@ -25,6 +25,28 @@ ion-select::part(text) {
 	font-weight: normal;
 }
 
+:host ::ng-deep .albums-table {
+	table-layout: fixed;
+	width: 100%;
+}
+
+:host ::ng-deep .albums-table .albums-name-column {
+	width: 34%;
+	white-space: normal;
+}
+
+:host ::ng-deep .albums-table .albums-date-column {
+	width: 30%;
+}
+
+:host ::ng-deep .albums-table .albums-status-column {
+	width: 18%;
+}
+
+:host ::ng-deep .albums-table .albums-published-column {
+	width: 18%;
+}
+
 ion-button[toolbar-actions] ion-icon {
 	font-size: 22px;
 }

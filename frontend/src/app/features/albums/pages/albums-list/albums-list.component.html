@@ -28,11 +28,11 @@
 	</bo-filter>
 
 	@if (view() === 'table') {
-		<admin-table>
+		<admin-table [class]="'albums-table'">
 			<thead>
 				<tr>
-					<th class="align-middle">Název alba</th>
-					<th>
+					<th class="align-middle albums-name-column">Název alba</th>
+					<th class="albums-date-column">
 						<div class="column-filter">
 							<ion-select
 								label="Datum"
@@ -48,7 +48,7 @@
 							</ion-select>
 						</div>
 					</th>
-					<th>
+					<th class="albums-status-column">
 						<div class="column-filter">
 							<ion-select
 								label="Stav"
@@ -66,17 +66,17 @@
 							</ion-select>
 						</div>
 					</th>
-					<th class="align-middle">Publikováno</th>
+					<th class="align-middle albums-published-column">Publikováno</th>
 				</tr>
 			</thead>
 			<tbody>
 				@if (albums() !== undefined) {
 					@for (album of albums()!; track album.id) {
 						<tr [routerLink]="'' + album.id">
-							<td>{{ album.name }}</td>
-							<td class="date">{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }}</td>
-							<td>{{ album | album: "status" }}</td>
-							<td>{{ album.datePublished | date: "d. M. y" }}</td>
+							<td class="albums-name-column">{{ album.name }}</td>
+							<td class="date albums-date-column">{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }}</td>
+							<td class="albums-status-column">{{ album | album: "status" }}</td>
+							<td class="albums-published-column">{{ album.datePublished | date: "d. M. y" }}</td>
 						</tr>
 					}
 				} @else {

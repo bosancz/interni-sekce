@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { calendar, cashOutline, documentOutline, medkitOutline, peopleOutline } from "ionicons/icons";
+import { arrowBackOutline, arrowForwardOutline, arrowUndoOutline, calendar, cashOutline, closeOutline, documentOutline, eyeOffOutline, eyeOutline, handLeftOutline, medkitOutline, peopleOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -65,7 +65,8 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 		private readonly toastService: ToastService,
 		private readonly modalService: ModalService,
 	) {
-		addIcons({ calendar, peopleOutline, medkitOutline, cashOutline, documentOutline });
+		addIcons({ calendar, peopleOutline, medkitOutline, cashOutline, documentOutline, handLeftOutline,
+			 arrowForwardOutline, arrowBackOutline, arrowUndoOutline, eyeOutline,  eyeOffOutline,  closeOutline });
 	}
 
 	ionViewWillEnter(): void {
@@ -148,34 +149,36 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 			{
 				text: "Vést akci",
 				color: "success",
-				icon: "hand-left-outline",
+				icon:  handLeftOutline,
 				hidden: !event._links.leadEvent.allowed,
 				handler: () => this.leadEvent(event),
 			},
 			{
 				text: "Ke schválení",
-				icon: "arrow-forward-outline",
+				icon: arrowForwardOutline,
 				color: "primary",
 				hidden: !event?._links.submitEvent.allowed,
+				
 				handler: () => this.eventStatusAction(event, "submitEvent"),
 			},
 			{
 				text: "Do programu",
-				icon: "arrow-forward-outline",
+				icon: eyeOutline,
 				color: "primary",
 				hidden: !event?._links.publishEvent.allowed,
 				handler: () => this.eventStatusAction(event, "publishEvent"),
 			},
 			{
 				text: "Vrátit k úpravám",
-				icon: "arrow-back-outline",
+				icon: arrowBackOutline,
 				color: "danger",
 				hidden: !event?._links.rejectEvent.allowed,
+				
 				handler: () => this.eventStatusAction(event, "rejectEvent"),
 			},
 			{
 				text: "Odebrat z programu",
-				icon: "arrow-back-outline",
+				icon: eyeOffOutline,
 				color: "danger",
 				hidden: !event?._links.unpublishEvent.allowed,
 				handler: () => this.eventStatusAction(event, "unpublishEvent"),
@@ -183,13 +186,13 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 			{
 				text: "Označit jako zrušenou",
 				color: "danger",
-				icon: "arrow-back-outline",
+				icon: closeOutline,
 				hidden: !event?._links.cancelEvent.allowed,
 				handler: () => this.eventStatusAction(event, "cancelEvent"),
 			},
 			{
 				text: "Odzrušit",
-				icon: "arrow-forward-outline",
+				icon: arrowUndoOutline,
 				hidden: !event?._links.uncancelEvent.allowed,
 				handler: () => this.eventStatusAction(event, "uncancelEvent"),
 			},

@@ -19,6 +19,8 @@ export const AlbumsYearsPermission = new Permission<void>({
 
 export const AlbumReadPermission = new Permission({
 	linkTo: AlbumResponse,
+	contains: AlbumResponse,
+
 	allowed: {
 		vedouci: true,
 	},
