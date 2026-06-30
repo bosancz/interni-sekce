@@ -18,6 +18,7 @@ import { TitleService } from "./core/services/title.service";
 export const appConfig: ApplicationConfig = {
 	providers: [
 		provideIonicAngular({
+			innerHTMLTemplatesEnabled: true,
 			backButtonText: isPlatform("ios") ? "Zpět" : "",
 			navAnimation: (baseEl, opts) =>
 				opts.direction === "forward"

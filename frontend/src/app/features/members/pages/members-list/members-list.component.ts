@@ -25,6 +25,7 @@ import { addOutline, downloadOutline, eyeOutline } from "ionicons/icons";
 import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -36,6 +37,7 @@ import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 import { MembershipStates } from "../../../../core/config/membership-states";
+import { MemberCreateModalComponent } from "../../components/member-create-modal/member-create-modal.component";
 
 @UntilDestroy()
 @Component({
@@ -99,6 +101,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		private router: Router,
 		private toasts: ToastService,
 		private platformService: PlatformService,
+		private modalService: ModalService,
 	) {
 		addIcons({ addOutline, downloadOutline, eyeOutline });
 	}
@@ -269,8 +272,14 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		this.allMemberAges.set([...new Set(ages)].sort((a, b) => a - b));
 	}
 
-	create() {
-		this.router.navigate(["pridat"], { relativeTo: this.route });
+	async create() {
+		const memberData = await this.modalService.componentModal(MemberCreateModalComponent);
+		if (!memberData) return;
+
+		const member = await this.api.MembersApi.createMember(memberData).then((res) => res.data);
+		this.toasts.toast("Člen uložen.");
+
+		this.router.navigate([member.id], { relativeTo: this.route });
 	}
 
 	getAge(birthday: string) {
@@ -318,7 +327,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 		return labels[key] || key;
 	}
-
+	
 	private setActions() {
 		this.actions = [
 			{
