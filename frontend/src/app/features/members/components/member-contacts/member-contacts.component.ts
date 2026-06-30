@@ -11,7 +11,7 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { callOutline, informationCircleOutline, mailOutline } from "ionicons/icons";
+import { callOutline, informationCircleOutline, mailOutline, personOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -57,7 +57,7 @@ export default class MemberContactsComponent {
 		private alertController: AlertController,
 		private modalService: ModalService,
 	) {
-		addIcons({ callOutline, mailOutline, informationCircleOutline });
+		addIcons({ callOutline, mailOutline, informationCircleOutline, personOutline });
 		effect(() => {
 			const member = this.member();
 			this.loadContacts(member?.id ?? null);
@@ -150,8 +150,8 @@ export default class MemberContactsComponent {
 			{
 				text: contact ? "Uložit" : "Přidat",
 				handler: async (data) => {
-					if (!data.title) {
-						this.toastService.toast("Chybí název kontaktu", { color: "danger" });
+					if (!data.relationship) {
+						this.toastService.toast("Chybí vztah", { color: "danger" });
 						return false;
 					} else if (!data.email && !data.mobile && !data.other) {
 						this.toastService.toast("Musí být vyplněn alespoň jeden kontakt", { color: "danger" });
@@ -183,13 +183,19 @@ export default class MemberContactsComponent {
 			header: contact ? "Upravit kontakt" : "Přidat kontakt",
 			inputs: [
 				{
-					name: "title",
+					name: "relationship",
 					type: "text",
 					attributes: {
 						required: true,
 					},
-					placeholder: "Název kontaktu",
-					value: contact?.title,
+					placeholder: "Vztah",
+					value: contact?.relationship,
+				},
+				{
+					name: "name",
+					type: "text",
+					placeholder: "Jméno",
+					value: contact?.name,
 				},
 				{
 					name: "email",
@@ -218,7 +224,7 @@ export default class MemberContactsComponent {
 
 	private async saveContact(
 		contactId: number | null,
-		data: { title: string; email?: string; mobile?: string; other?: string },
+		data: { relationship: string; name?: string; email?: string; mobile?: string; other?: string },
 	) {
 		const member = this.member();
 		if (!member) return;
@@ -239,7 +245,7 @@ export default class MemberContactsComponent {
 		if (!member) return;
 
 		const confirmation = await this.modalService.deleteConfirmationModal(
-			`Opravdu chcete smazat kontakt ${contact.title}?`,
+			`Opravdu chcete smazat kontakt ${contact.relationship}?`,
 		);
 
 		await this.api.MembersApi.deleteContact(member.id, contact.id);

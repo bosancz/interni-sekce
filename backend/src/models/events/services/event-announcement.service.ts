@@ -49,7 +49,7 @@ export class EventAnnouncementService {
 					ea?.member?.addressPostalCode || missing,
 					(ea?.member?.contacts?.[0]?.mobile || missing) +
 						" " +
-						(ea?.member?.contacts?.[0]?.title ? ` (${ea.member.contacts[0].title})` : ""),
+						(ea?.member?.contacts?.[0]?.relationship ? ` (${ea.member.contacts[0].relationship})` : ""),
 				];
 			}) || [];
 

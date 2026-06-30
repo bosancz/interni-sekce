@@ -274,11 +274,11 @@
 								}
 								
 								@if (viewSelections.firstTelephone) {
-								<td> <strong> {{ member.contacts?.[0]?.title || "" }} </strong> {{ member.contacts?.[0]?.mobile || "" }} </td>							
+								<td> <strong> {{ member.contacts?.[0]?.relationship || "" }} </strong> {{ member.contacts?.[0]?.mobile || "" }} </td>							
 								}
 
 								@if (viewSelections.firstEmail) {
-								<td> <strong> {{ member.contacts?.[0]?.title || "" }} </strong> {{ member.contacts?.[0]?.email || "" }} </td>
+								<td> <strong> {{ member.contacts?.[0]?.relationship || "" }} </strong> {{ member.contacts?.[0]?.email || "" }} </td>
 								}
 
 							</tr>

@@ -15,7 +15,8 @@ export class MemberContact {
 	@ApiHideProperty()
 	member?: Member;
 
-	@Column({ type: "varchar", nullable: false }) title!: string;
+	@Column({ type: "varchar", nullable: false }) relationship!: string;
+	@Column({ type: "varchar", nullable: true }) name?: string;
 	@Column({ type: "varchar", nullable: true }) mobile?: string;
 	@Column({ type: "varchar", nullable: true }) email?: string;
 	@Column({ type: "text", nullable: true }) other?: string;
