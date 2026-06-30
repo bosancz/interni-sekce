@@ -4,7 +4,7 @@ import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
 import { IonButton, IonButtons, IonIcon } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { arrowForward, closeOutline } from "ionicons/icons";
+import { arrowForward, closeOutline, personCircleOutline, trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { LoginService } from "src/app/core/services/login.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -64,7 +64,7 @@ export class UsersViewComponent {
 		private loginService: LoginService,
 		private userService: UserService,
 	) {
-		addIcons({ arrowForward, closeOutline });
+		addIcons({ arrowForward, closeOutline, personCircleOutline, trashOutline });
 	}
 
 	ngOnInit() {

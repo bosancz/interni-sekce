@@ -1,5 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, HostListener, Input, OnInit, signal, ViewChild } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -21,6 +22,7 @@ import {
 import { addIcons } from "ionicons";
 import { checkmarkOutline, chevronBackOutline, chevronForwardOutline, createOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
@@ -57,6 +59,14 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 
 	currentIndex = signal(0);
 
+	// tapping the photo on mobile hides/shows the top info bar and bottom caption bar
+	controlsVisible = signal(true);
+
+	// arrows are shown on the desktop (wide) layout; narrow/mobile navigates by swiping (see onPointerDown/onPointerUp)
+	isLg = toSignal(this.platformService.isLg, { initialValue: this.platformService.isLg.value });
+
+	private swipeStart?: { x: number; y: number };
+
 	@ViewChild("captionInput") captionInput!: IonInput;
 
 	constructor(
@@ -66,6 +76,7 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 		private alertController: AlertController,
 		private route: ActivatedRoute,
 		private router: Router,
+		private platformService: PlatformService,
 	) {
 		addIcons({ createOutline, checkmarkOutline, chevronBackOutline, chevronForwardOutline });
 	}
@@ -116,6 +127,32 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 
 	previousPhoto() {
 		this.openPhoto(this.currentIndex() - 1);
+	}
+
+	onPointerDown(event: PointerEvent) {
+		// navigate by swipe on touch devices only; desktop uses the arrows
+		if (event.pointerType !== "touch") return;
+		this.swipeStart = { x: event.clientX, y: event.clientY };
+	}
+
+	onPointerUp(event: PointerEvent) {
+		if (!this.swipeStart) return;
+		const dx = event.clientX - this.swipeStart.x;
+		const dy = event.clientY - this.swipeStart.y;
+		this.swipeStart = undefined;
+
+		// a mostly-horizontal drag past the threshold navigates between photos
+		if (Math.abs(dx) >= 50 && Math.abs(dx) > Math.abs(dy)) {
+			if (dx < 0) this.nextPhoto();
+			else this.previousPhoto();
+			return;
+		}
+
+		// a clear vertical scroll is ignored
+		if (Math.abs(dy) >= 50) return;
+
+		// anything else is a tap → toggle the info and caption bars
+		if (!this.editingCaption()) this.controlsVisible.update((visible) => !visible);
 	}
 
 	openPhoto(index: number) {
