@@ -26,7 +26,6 @@ export class ActionButtonsComponent implements OnInit {
 
 	close = output<void>();
 
-	single?: Action;
 	pinned: Action[] = [];
 	buttons: Action[] = [];
 	menu: Action[] = [];
@@ -45,31 +44,22 @@ export class ActionButtonsComponent implements OnInit {
 			let actions = this.actions();
 			actions = this.filterActions(actions);
 
-			if (actions.length === 1) {
-				this.single = actions[0];
-				this.pinned = [];
-				this.buttons = [];
-				this.menu = [];
-			} else {
-				this.single = undefined;
+			this.pinned = actions.filter((item) => item.pinned);
 
-				this.pinned = actions.filter((item) => item.pinned);
+			this.buttons = actions.filter((item) => !item.pinned);
 
-				this.buttons = actions.filter((item) => !item.pinned);
+			if (actions.filter((item) => !item.pinned).length) {
+				this.menu = actions.filter((item) => item.text && !item.disabled && !item.pinned);
 
-				if (actions.filter((item) => !item.pinned).length) {
-					this.menu = actions.filter((item) => item.text && !item.disabled && !item.pinned);
-
-					if (!this.menu.some((item) => item.role === "cancel") && this.platformService.isIos.value) {
-						this.menu.push({
-							text: "Zrušit",
-							role: "cancel",
-							icon: "close-outline",
-						});
-					}
-				} else {
-					this.menu = [];
+				if (!this.menu.some((item) => item.role === "cancel") && this.platformService.isIos.value) {
+					this.menu.push({
+						text: "Zrušit",
+						role: "cancel",
+						icon: "close-outline",
+					});
 				}
+			} else {
+				this.menu = [];
 			}
 		});
 	}
