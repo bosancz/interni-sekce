@@ -6,9 +6,7 @@ import {
 	IonButtons,
 	IonInput,
 	IonItem,
-	IonLabel,
 	IonList,
-	IonTextarea,
 	ModalController,
 } from "@ionic/angular/standalone";
 import { InputModalComponent } from "src/app/core/services/modal.service";
@@ -26,10 +24,8 @@ import { SDK } from "src/sdk";
 		IonList,
 		IonItem,
 		IonInput,
-		IonTextarea,
 		IonButtons,
 		IonButton,
-		IonLabel,
 		ModalLayoutComponent,
 	],
 })
@@ -46,8 +42,6 @@ export class EventCreateModalComponent extends InputModalComponent<SDK.EventCrea
 		name: new FormControl<string>("", { nonNullable: true }),
 		dateFrom: new FormControl<string>("", { nonNullable: true }),
 		dateTill: new FormControl<string>("", { nonNullable: true }),
-		description: new FormControl<string>("", { nonNullable: true }),
-		type: new FormControl<string>("", { nonNullable: true }),
 	});
 
 	ngOnInit() {
@@ -55,8 +49,6 @@ export class EventCreateModalComponent extends InputModalComponent<SDK.EventCrea
 			dateFrom: this.data.dateFrom,
 			dateTill: this.data.dateTill,
 			name: this.data.name,
-			description: this.data.description ?? undefined,
-			type: this.data.type ?? undefined,
 		});
 	}
 
@@ -78,6 +70,6 @@ export class EventCreateModalComponent extends InputModalComponent<SDK.EventCrea
 			eventData.dateTill = dates[1];
 		}
 
-		this.submit.emit(eventData);
+		this.submit.emit({ ...eventData, description: null, type: null });
 	}
 }
