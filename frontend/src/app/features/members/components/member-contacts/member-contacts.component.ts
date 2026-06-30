@@ -21,7 +21,7 @@ import { CardHeaderComponent } from "src/app/shared/components/card-header/card-
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { CopyButtonComponent } from "src/app/shared/components/copy-button/copy-button.component";
-import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
+import { DeleteButtonComponent } from "src/app/shared/components/delete-button/delete-button.component";
 import { SDK } from "src/sdk";
 
 @UntilDestroy()
@@ -42,7 +42,7 @@ import { SDK } from "src/sdk";
 		IonButtons,
 		AddButtonComponent,
 		CopyButtonComponent,
-		EditButtonComponent,
+		DeleteButtonComponent,
 	],
 })
 export default class MemberContactsComponent {
@@ -148,6 +148,10 @@ export default class MemberContactsComponent {
 	async openContactForm(contact: SDK.MemberContactResponseWithLinks | null) {
 		const buttons: AlertButton[] = [
 			{
+				text: "Zrušit",
+				role: "cancel",
+			},
+			{
 				text: contact ? "Uložit" : "Přidat",
 				handler: async (data) => {
 					if (!data.relationship) {
@@ -162,22 +166,6 @@ export default class MemberContactsComponent {
 				},
 			},
 		];
-
-		if (contact) {
-			buttons.unshift({
-				text: "Smazat",
-				role: "destructive",
-				handler: () => {
-					alert.dismiss();
-					if (contact) this.deleteContact(contact);
-				},
-			});
-		} else {
-			buttons.unshift({
-				text: "Zrušit",
-				role: "cancel",
-			});
-		}
 
 		const alert = await this.alertController.create({
 			header: contact ? "Upravit kontakt" : "Přidat kontakt",
@@ -230,12 +218,14 @@ export default class MemberContactsComponent {
 		if (!member) return;
 
 		if (contactId) {
-			await this.api.MembersApi.updateContact(member.id, contactId, data);
+			const { data: updated } = await this.api.MembersApi.updateContact(member.id, contactId, data);
+			this.contacts = (this.contacts ?? []).map((c) =>
+				c.id === contactId ? (updated as SDK.MemberContactResponseWithLinks) : c,
+			);
 		} else {
-			await this.api.MembersApi.createContact(member.id, data);
+			const { data: created } = await this.api.MembersApi.createContact(member.id, data);
+			this.contacts = [...(this.contacts ?? []), created as SDK.MemberContactResponseWithLinks];
 		}
-
-		await this.loadContacts(member.id);
 
 		await this.toastService.toast(contactId ? "Kontakt byl upraven" : "Kontakt byl přidán");
 	}
@@ -247,10 +237,11 @@ export default class MemberContactsComponent {
 		const confirmation = await this.modalService.deleteConfirmationModal(
 			`Opravdu chcete smazat kontakt ${contact.relationship}?`,
 		);
+		if (!confirmation) return;
 
 		await this.api.MembersApi.deleteContact(member.id, contact.id);
 
-		await this.loadContacts(member.id);
+		this.contacts = (this.contacts ?? []).filter((c) => c.id !== contact.id);
 
 		await this.toastService.toast("Kontakt byl smazán", { color: "danger" });
 	}
