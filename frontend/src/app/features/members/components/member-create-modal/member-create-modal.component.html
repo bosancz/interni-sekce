@@ -1,0 +1,61 @@
+<bo-modal-layout>
+	<h4 slot="title">Přidat člena</h4>
+
+	<form [formGroup]="form" [class.was-validated]="showValidationErrors">
+		<ion-list>
+			<ion-item>
+				<ion-input
+					label="Přezdívka"
+					labelPlacement="stacked"
+					type="text"
+					formControlName="nickname"
+					placeholder="Pulčík"
+					required
+				></ion-input>
+			</ion-item>
+
+			<ion-item>
+				<ion-input
+					label="Jméno"
+					labelPlacement="stacked"
+					type="text"
+					formControlName="firstName"
+					placeholder="Bilbo"
+				></ion-input>
+			</ion-item>
+
+			<ion-item>
+				<ion-input
+					label="Příjmení"
+					labelPlacement="stacked"
+					type="text"
+					formControlName="lastName"
+					placeholder="Pytlík"
+				></ion-input>
+			</ion-item>
+
+			<ion-item>
+				<ion-label position="stacked">Oddíl</ion-label>
+				<bo-group-select formControlName="groupId" [required]="true"></bo-group-select>
+			</ion-item>
+
+			<ion-item>
+				<ion-select
+					label="Role"
+					labelPlacement="stacked"
+					formControlName="role"
+					placeholder="nositel prstenu"
+				>
+					@for (role of roles | keyvalue; track role.key) {
+						<ion-select-option [value]="role.key">{{ role.value.title }}</ion-select-option>
+					}
+				</ion-select>
+			</ion-item>
+		</ion-list>
+	</form>
+
+	<ion-buttons slot="buttons">
+		<ion-button (click)="close.emit()" color="secondary">Zrušit</ion-button>
+		<ion-button (click)="createMember()" color="primary">Vytvořit</ion-button>
+	</ion-buttons>
+</bo-modal-layout>

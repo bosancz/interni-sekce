@@ -291,7 +291,7 @@
 
 	@if (!members()) {
 		<p class="ion-padding">
-			Členská databáze je prázdná. Chceš <a routerLink="/databaze/pridat">přidat prvního člena</a>?
+			Členská databáze je prázdná. Chceš <a class="clickable" (click)="create()">přidat prvního člena</a>?
 		</p>
 	}
 
