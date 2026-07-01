@@ -13,9 +13,11 @@
 			(remove)="removeAttendee($event)"
 		></bo-event-attendees-list>
 
-		<div class="text-center">
-			<bo-add-button (click)="addAttendee('leader')">Přidat vedoucí</bo-add-button>
-		</div>
+		@if (event()?._links?.addEventAttendee?.allowed) {
+			<div class="text-center">
+				<bo-add-button (click)="addAttendee('leader')">Přidat vedoucí</bo-add-button>
+			</div>
+		}
 
 		<h3>Účastníci</h3>
 

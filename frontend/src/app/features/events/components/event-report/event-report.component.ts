@@ -1,12 +1,13 @@
 import { CommonModule } from "@angular/common";
 import { Component, input, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { IonButton, IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline, chevronForwardOutline, imagesOutline } from "ionicons/icons";
+import { chevronForwardOutline, imagesOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { AddButtonComponent } from "src/app/shared/components/add-button/add-button.component";
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
 import { SDK } from "src/sdk";
 import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
@@ -22,7 +23,7 @@ import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 		RouterLink,
 		EditButtonMarkdownComponent,
 		MarkdownPipe,
-		IonButton,
+		AddButtonComponent,
 		IonIcon,
 		IonItem,
 		IonLabel,
@@ -40,7 +41,7 @@ export class EventReportComponent {
 		private readonly api: ApiService,
 		private readonly toastService: ToastService,
 	) {
-		addIcons({ addOutline, imagesOutline, chevronForwardOutline });
+		addIcons({ imagesOutline, chevronForwardOutline });
 	}
 
 	async createAlbum() {

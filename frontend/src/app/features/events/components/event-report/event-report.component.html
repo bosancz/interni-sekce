@@ -1,12 +1,13 @@
 <h3>
 	Report z akce
-	<bo-edit-button-markdown
-		slot="end"
-		label="Report"
-		[disabled]="!event()?._links?.updateEvent?.allowed"
-		[value]="event()?.report"
-		(update)="update.emit({ report: $event })"
-	/>
+	@if (event()?._links?.updateEvent?.allowed) {
+		<bo-edit-button-markdown
+			slot="end"
+			label="Report"
+			[value]="event()?.report"
+		    (update)="update.emit({ report: $event })"
+		/>
+	}
 </h3>
 
 @if (event() && event()!.report) {
@@ -27,17 +28,10 @@
 			<p>{{ album.dateFrom | date: "d. M. y" }} – {{ album.dateTill | date: "d. M. y" }}</p>
 		</ion-label>
 	</ion-item>
-} @else if (event()) {
-	<p><em>Akce zatím nemá připojené album.</em></p>
-	<ion-button
-		size="small"
-		fill="outline"
-		[disabled]="!event()?._links?.updateEvent?.allowed || creatingAlbum()"
-		(click)="createAlbum()"
-	>
-		<ion-icon slot="start" name="add-outline"></ion-icon>
-		Vytvořit album
-	</ion-button>
-} @else {
+} @else if (!event()) {
 	<p><ion-skeleton-text animated></ion-skeleton-text></p>
+} @else if (event()?._links?.updateEvent?.allowed) {
+	<div class="text-center">
+		<bo-add-button [disabled]="creatingAlbum()" (click)="createAlbum()">Vytvořit album</bo-add-button>
+	</div>
 }
