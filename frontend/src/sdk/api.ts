@@ -26,6 +26,7 @@ export { ConfigurationParameters as SDKConfiguration } from './configuration';
 export class SDK {
         AccountApi: SDK.AccountApi;
         EventsApi: SDK.EventsApi;
+        FeedbackApi: SDK.FeedbackApi;
         MembersApi: SDK.MembersApi;
         PhotoGalleryApi: SDK.PhotoGalleryApi;
         PublicApi: SDK.PublicApi;
@@ -40,6 +41,7 @@ export class SDK {
 
             this.AccountApi = new SDK.AccountApi(configuration, axios!);
             this.EventsApi = new SDK.EventsApi(configuration, axios!);
+            this.FeedbackApi = new SDK.FeedbackApi(configuration, axios!);
             this.MembersApi = new SDK.MembersApi(configuration, axios!);
             this.PhotoGalleryApi = new SDK.PhotoGalleryApi(configuration, axios!);
             this.PublicApi = new SDK.PublicApi(configuration, axios!);
@@ -572,6 +574,20 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface BugReportBody
+     */
+    export interface BugReportBody {
+        /**
+         * Popis chyby, který uživatel zadal.
+         * @type {string}
+         * @memberof BugReportBody
+         */
+        'description': string;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface CPVEventResponseWithLinks
      */
     export interface CPVEventResponseWithLinks {
@@ -620,19 +636,19 @@ export namespace SDK {
      */
     export interface CreateContactBody {
         /**
-         *
+         * 
          * @type {string}
          * @memberof CreateContactBody
          */
         'relationship': string;
         /**
-         *
+         * 
          * @type {string}
          * @memberof CreateContactBody
          */
         'name'?: string;
         /**
-         *
+         * 
          * @type {string}
          * @memberof CreateContactBody
          */
@@ -2850,13 +2866,13 @@ export namespace SDK {
          */
         'relationship': string;
         /**
-         *
+         * 
          * @type {string}
          * @memberof MemberContact
          */
         'name'?: string;
         /**
-         *
+         * 
          * @type {string}
          * @memberof MemberContact
          */
@@ -2900,13 +2916,13 @@ export namespace SDK {
          */
         'relationship': string;
         /**
-         *
+         * 
          * @type {string}
          * @memberof MemberContactResponse
          */
         'name'?: string;
         /**
-         *
+         * 
          * @type {string}
          * @memberof MemberContactResponse
          */
@@ -2964,13 +2980,13 @@ export namespace SDK {
          */
         'relationship': string;
         /**
-         *
+         * 
          * @type {string}
          * @memberof MemberContactResponseWithLinks
          */
         'name'?: string;
         /**
-         *
+         * 
          * @type {string}
          * @memberof MemberContactResponseWithLinks
          */
@@ -6573,6 +6589,69 @@ export namespace SDK {
             }
     
             const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    }
+    
+        
+        
+    
+    
+    
+    
+    
+    /**
+     * FeedbackApi - object-oriented interface
+     * @export
+     * @class FeedbackApi
+     * @extends {BaseAPI}
+     */
+    export class FeedbackApi extends BaseAPI {
+    
+        constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
+            super(configuration, configuration.basePath, axios);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof FeedbackApi
+         */
+        
+        public async sendBugReport(
+            body: BugReportBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'bugReportBody' is not null or undefined
+            assertParamExists('sendBugReport', 'bugReportBody', body)
+            
+            const localVarPath = `/api/feedback/bug`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
     

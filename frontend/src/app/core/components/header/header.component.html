@@ -3,7 +3,10 @@
 	<h1 slot="start">
 		Bošán
 		@if (environment()) {
-			<span class="environment">{{ environment() }}</span>
+			<span class="environment">{{ environment()?.slice(0, 3) }}</span>
+			<ion-button fill="clear" size="small" class="bug-report" title="Nahlásit chybu" (click)="reportBug()">
+				<ion-icon slot="icon-only" name="bug-outline"></ion-icon>
+			</ion-button>
 		}
 	</h1>
 }

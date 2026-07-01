@@ -10,6 +10,9 @@
 
 h1 {
 	margin: 0;
+	display: flex;
+	align-items: center;
+	gap: 0.4em;
 }
 
 .environment {
@@ -19,6 +22,14 @@ h1 {
 	padding: 0.2em 0.4em;
 	font-size: 0.6em;
 	border-radius: 4px;
-	vertical-align: 4px;
 	color: #fff;
+}
+
+.bug-report {
+	--padding-start: 6px;
+	--padding-end: 6px;
+	height: auto;
+	margin: 0;
+	font-size: 1em;
+	color: variables.$colorWarning;
 }

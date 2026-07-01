@@ -105,6 +105,14 @@ const mapy = {
 };
 
 /**
+ * Feedback / bug reports
+ */
+const feedback = {
+	// Recipient of the in-app bug reports (see FeedbackController).
+	bugReportRecipient: process.env["BUG_REPORT_RECIPIENT"] ?? "lef@bosan.cz",
+};
+
+/**
  * OAuth2 identity-provider settings.
  *
  * The backend acts as an OAuth2 provider (authorization-code flow) so external
@@ -126,6 +134,7 @@ export class Config {
 	app = app;
 	db = db;
 	environment = environment;
+	feedback = feedback;
 	google = google;
 	jwt = jwt;
 	logging = logging;
