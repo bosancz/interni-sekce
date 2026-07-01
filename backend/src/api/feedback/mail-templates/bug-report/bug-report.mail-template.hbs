@@ -6,6 +6,10 @@
 
 <p><strong>Prostředí:</strong> {{environment}}</p>
 
+{{#if url}}
+<p><strong>Stránka:</strong> <a href="{{url}}">{{url}}</a></p>
+{{/if}}
+
 <p><strong>Popis chyby:</strong></p>
 
 <blockquote style="white-space: pre-wrap;">{{description}}</blockquote>

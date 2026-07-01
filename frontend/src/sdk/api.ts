@@ -583,6 +583,12 @@ export namespace SDK {
          * @memberof BugReportBody
          */
         'description': string;
+        /**
+         * Adresa stránky, na které se uživatel nacházel.
+         * @type {string}
+         * @memberof BugReportBody
+         */
+        'url'?: string;
     }
     
         /**

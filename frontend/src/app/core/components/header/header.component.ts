@@ -36,7 +36,9 @@ export class HeaderComponent {
 	}
 
 	async reportBug() {
-		const result = await this.modalService.inputModal<{ description: string }>({
+		const url = window.location.href;
+
+		const result = await this.modalService.wideInputModal<{ description: string }>({
 			header: "Nahlásit chybu",
 			buttonText: "Odeslat",
 			inputs: {
@@ -51,7 +53,7 @@ export class HeaderComponent {
 		if (!description) return;
 
 		try {
-			await this.api.FeedbackApi.sendBugReport({ description });
+			await this.api.FeedbackApi.sendBugReport({ description, url });
 			await this.toastService.toast("Díky! Chyba byla odeslána.");
 		} catch {
 			await this.toastService.toast("Chybu se nepodařilo odeslat.");

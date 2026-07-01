@@ -3,6 +3,7 @@ import { createMailTemplate } from "src/models/mail/functions/create-mail-templa
 export const BugReportMailTemplate = createMailTemplate<{
 	reporter: string;
 	environment: string;
+	url?: string;
 	description: string;
 }>({
 	filePath: __dirname + "/bug-report.mail-template.hbs",
