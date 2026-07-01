@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
 	IonAvatar,
@@ -14,6 +14,7 @@ import {
 	IonSelectOption,
 	IonSkeletonText,
 } from "@ionic/angular/standalone";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { EventStatus, EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
 import { ApiService, RootLinks } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -32,6 +33,7 @@ import { GroupPipe } from "../../../../shared/pipes/group.pipe";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 import { EventCreateModalComponent } from "../../components/event-create-modal/event-create-modal.component";
 
+@UntilDestroy()
 @Component({
 	selector: "bo-events-list",
 	templateUrl: "./events-list.component.html",
@@ -73,6 +75,7 @@ export class EventsListComponent implements OnInit {
 
 	page = 1;
 	readonly pageSize = 50;
+	private loadToken = 0;
 
 	filter: UrlParams = {};
 
@@ -96,14 +99,19 @@ export class EventsListComponent implements OnInit {
 		this.platformService.isPortrait.subscribe((isPortrait: boolean) => {
 			this.view = isPortrait ? "list" : "table";
 		});
+
+		// All filter state (year/status/search/leaders) is written to the URL, so drive loading
+		// from the query params directly rather than the FilterComponent's `(change)` output
+		// (which only emits its own projected controls, and only while the mobile modal is open).
+		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onFilterChange(params));
 	}
 
-	onFilterChange(filter: UrlParams) {
-		this.filter = filter;
-		this.selectedYears = this.normalizeFilterValueToArray((filter as any)["year"]);
-		this.selectedStatuses = this.normalizeFilterValueToArray((filter as any)["status"]);
-		this.selectedLeaderFilters = [...(filter.my ? ["my"] : []), ...(filter.noleader ? ["noleader"] : [])];
-		this.loadEvents(filter);
+	onFilterChange(params: Params) {
+		this.filter = { ...params };
+		this.selectedYears = this.normalizeFilterValueToArray(params["year"]);
+		this.selectedStatuses = this.normalizeFilterValueToArray(params["status"]);
+		this.selectedLeaderFilters = this.normalizeFilterValueToArray(params["leaders"]);
+		this.loadEvents(this.filter);
 	}
 
 	setFilterParam(name: string, value: string | string[] | null) {
@@ -117,22 +125,6 @@ export class EventsListComponent implements OnInit {
 
 		this.router.navigate([], {
 			queryParams: { [name]: formattedValue || null },
-			queryParamsHandling: "merge",
-			replaceUrl: true,
-		});
-	}
-
-	setLeaderFilter(selectedValues: string[] | string | null) {
-		const values = Array.isArray(selectedValues) ? selectedValues : selectedValues ? [selectedValues] : [];
-
-		const isMySelected = values.includes("my");
-		const isNoLeaderSelected = values.includes("noleader");
-
-		this.router.navigate([], {
-			queryParams: {
-				my: isMySelected ? "1" : null,
-				noleader: isNoLeaderSelected ? "1" : null,
-			},
 			queryParamsHandling: "merge",
 			replaceUrl: true,
 		});
@@ -183,27 +175,35 @@ export class EventsListComponent implements OnInit {
 
 	private async loadEvents(filter: UrlParams, loadMore: boolean = false) {
 		if (loadMore) {
-			if (this.events && this.events.length < this.page * this.pageSize) return;
+			if (this.events().length < this.page * this.pageSize) return;
 			this.page++;
 		} else {
 			this.page = 1;
 			this.events.set([]);
 		}
 
+		const leaders = this.normalizeFilterValueToArray((filter as any)["leaders"]);
+
 		const params: SDK.EventsApiListEventsQueryParams = {
 			search: filter.search || undefined,
 			status: this.normalizeFilterValueToArray((filter as any)["status"]),
 			year: this.normalizeFilterValueToArray((filter as any)["year"]).map((year) => parseInt(year, 10)),
-			my: !!filter.my,
-			noleader: !!filter.noleader,
+			my: leaders.includes("my"),
+			noleader: leaders.includes("noleader"),
 			deleted: !!filter.deleted,
 			offset: (this.page - 1) * this.pageSize,
 			limit: this.pageSize,
 		};
 
+		// Guard against out-of-order responses: a slower earlier request (e.g. the initial
+		// unfiltered load) must not append its rows on top of a newer filtered result.
+		const token = ++this.loadToken;
+
 		const events = await this.api.EventsApi.listEvents(params).then((res: any) => res.data);
 
-		this.events.set([...this.events(), ...events]);
+		if (token !== this.loadToken) return;
+
+		this.events.set(loadMore ? [...this.events(), ...events] : events);
 	}
 
 	private normalizeFilterValueToArray(value: string | string[] | null | undefined): string[] {
