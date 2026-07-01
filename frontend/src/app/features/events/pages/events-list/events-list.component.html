@@ -1,6 +1,6 @@
 <bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions()" actionsHeader="Přehled akcí" />
 
-<bo-filter [search]="true" [showButtonMobileOnly]="true" (change)="onFilterChange($event)">
+<bo-filter [search]="true" [showButtonMobileOnly]="true">
 	<ion-item>
 		<ion-select
 			name="year"
@@ -35,10 +35,10 @@
 
 	<ion-item>
 		<ion-select
-			name="leaderFilters"
+			name="leaders"
 			label="Vedoucí"
 			[ngModel]="selectedLeaderFilters"
-			(ngModelChange)="setLeaderFilter($event)"
+			(ngModelChange)="setFilterParam('leaders', $event)"
 			[multiple]="true"
 
 		>
@@ -148,7 +148,7 @@
 									interface="popover"
 									justify="start"
 									[ngModel]="selectedLeaderFilters"
-									(ngModelChange)="setLeaderFilter($event)"
+									(ngModelChange)="setFilterParam('leaders', $event)"
 									[multiple]="true"
 
 								>
