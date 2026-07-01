@@ -3,14 +3,26 @@
 <bo-page-content [padding]="true">
 	<div class="p-1 p-lg-3">
 		<div class="row nav-buttons">
-			<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
-				<bo-button-square
-					routerLink="/admin/uzivatele"
-					label="Uživatelé"
-					color="var(--san-red)"
-					image="assets/img/button-databaze.svg"
-				></bo-button-square>
-			</div>
+			@if (canManageUsers()) {
+				<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
+					<bo-button-square
+						routerLink="/admin/uzivatele"
+						label="Uživatelé"
+						color="var(--san-red)"
+						image="assets/img/button-databaze.svg"
+					></bo-button-square>
+				</div>
+			}
+			@if (canManagePrograms()) {
+				<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
+					<bo-button-square
+						routerLink="/program"
+						label="Program"
+						color="var(--san-green)"
+						image="assets/img/button-program.svg"
+					></bo-button-square>
+				</div>
+			}
 		</div>
 	</div>
 </bo-page-content>
