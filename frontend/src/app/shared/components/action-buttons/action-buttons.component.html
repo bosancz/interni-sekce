@@ -1,17 +1,3 @@
-<!-- SINGLE -->
-@if (single) {
-	<ion-button [color]="single.color" [disabled]="single.disabled" (click)="onClick(single)">
-		@if (!single.text && single.icon) {
-			<ion-icon [name]="single.icon"></ion-icon>
-		}
-		@if (single.text) {
-			<span>
-				<ion-text [color]="single.color">{{ single.text }}</ion-text>
-			</span>
-		}
-	</ion-button>
-}
-
 <!-- PINNED -->
 @for (action of pinned; track action) {
 	<ion-button [disabled]="action.disabled" (click)="onClick(action)">

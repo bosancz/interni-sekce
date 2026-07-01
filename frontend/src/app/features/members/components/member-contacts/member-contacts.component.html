@@ -3,8 +3,8 @@
 @for (contact of contacts; track $index) {
 	<bo-card class="contact mb-3">
 		<bo-card-header>
-			<bo-card-title>{{ contact.relationship }}</bo-card-title>
-			<bo-edit-button (click)="openContactForm(contact)" slot="buttons"></bo-edit-button>
+			<bo-card-title class="editable" (click)="openContactForm(contact)">{{ contact.relationship }}</bo-card-title>
+			<bo-delete-button (click)="deleteContact(contact)" slot="buttons"></bo-delete-button>
 		</bo-card-header>
 
 		<bo-card-content>

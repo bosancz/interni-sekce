@@ -47,6 +47,8 @@ export class EventInfoComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>(undefined);
 	update = output<SDK.EventUpdateBody>();
 
+	canEdit = computed(() => this.event()?._links?.updateEvent?.allowed ?? false);
+
 	placeCoordinates = computed(() => {
 		const geom = this.event()?.placeGeometry;
 		if (!geom) return null;

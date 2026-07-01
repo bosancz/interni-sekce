@@ -3,67 +3,72 @@
 		<ion-list class="selectable">
 			<bo-item [label]="'Název'" [loading]="!event()">
 				<p>{{ event()?.name }}</p>
-				<bo-edit-button-text
-					slot="end"
-					[label]="'Název akce'"
-					placeholder="Neočekávaný dýchánek"
-					[disabled]="!event()?._links?.updateEvent?.allowed"
-					[value]="event()?.name"
-					(update)="update.emit({ name: $event ?? '' })"
-				/>
+				@if (canEdit()) {
+					<bo-edit-button-text
+						slot="end"
+						[label]="'Název akce'"
+						placeholder="Neočekávaný dýchánek"
+						[value]="event()?.name"
+						(update)="update.emit({ name: $event ?? '' })"
+					/>
+				}
 			</bo-item>
 
 			<bo-item label="Termín" [loading]="!event()">
 				<p>{{ [event()?.dateFrom, event()?.dateTill] | dateRange }}</p>
-				<bo-edit-button-date-range
-					slot="end"
-					label="Datum od - do"
-					[disabled]="!event()?._links?.updateEvent?.allowed"
-					[value]="[event()?.dateFrom, event()?.dateTill]"
-					(update)="update.emit({ dateFrom: $event[0], dateTill: $event[1] })"
-				/>
+				@if (canEdit()) {
+					<bo-edit-button-date-range
+						slot="end"
+						label="Datum od - do"
+						[value]="[event()?.dateFrom, event()?.dateTill]"
+						(update)="update.emit({ dateFrom: $event[0], dateTill: $event[1] })"
+					/>
+				}
 			</bo-item>
 
 			<bo-item label="Místo">
 				<p>{{ event()?.place ?? "-" }}</p>
 
-				<bo-edit-button-location
-					slot="end"
-					label="Místo akce"
-					[disabled]="!event()?._links?.updateEvent?.allowed"
-					[place]="event()?.place"
-					[placeCoordinates]="placeCoordinates()"
-					(update)="update.emit({ place: $event.place, placeCoordinates: $event.placeCoordinates })"
-				/>
+				@if (canEdit()) {
+					<bo-edit-button-location
+						slot="end"
+						label="Místo akce"
+						[place]="event()?.place"
+						[placeCoordinates]="placeCoordinates()"
+						(update)="update.emit({ place: $event.place, placeCoordinates: $event.placeCoordinates })"
+					/>
+				}
 			</bo-item>
 
 			<bo-item label="Sraz" [loading]="!event()">
 				<p>{{ event()?.meetingPlaceStart ?? "-" }}</p>
-				<bo-edit-button-text
-					slot="end"
-					label="Místo srazu"
-					placeholder="Dno pytle, 8:00"
-					[disabled]="!event()?._links?.updateEvent?.allowed"
-					[value]="event()?.meetingPlaceStart"
-					(update)="update.emit({ meetingPlaceStart: $event })"
-				/>
+				@if (canEdit()) {
+					<bo-edit-button-text
+						slot="end"
+						label="Místo srazu"
+						placeholder="Dno pytle, 8:00"
+						[value]="event()?.meetingPlaceStart"
+						(update)="update.emit({ meetingPlaceStart: $event })"
+					/>
+				}
 			</bo-item>
 
 			<bo-item label="Konec" [loading]="!event()">
 				<p>{{ event()?.meetingPlaceEnd ?? "-" }}</p>
-				<bo-edit-button-text
-					slot="end"
-					label="Místo konce"
-					placeholder="Dno pytle, 18:30"
-					[disabled]="!event()?._links?.updateEvent?.allowed"
-					[value]="event()?.meetingPlaceEnd"
-					(update)="update.emit({ meetingPlaceEnd: $event })"
-				/>
+				@if (canEdit()) {
+					<bo-edit-button-text
+						slot="end"
+						label="Místo konce"
+						placeholder="Dno pytle, 18:30"
+						[value]="event()?.meetingPlaceEnd"
+						(update)="update.emit({ meetingPlaceEnd: $event })"
+					/>
+				}
 			</bo-item>
 
 			<bo-item label="Typ" [loading]="!event()" lines="inset">
 				<bo-event-type-selector
-					[disabled]="!event()?._links?.updateEvent?.allowed"
+					[disabled]="!canEdit()"
 					[ngModel]="event()?.type"
 					(ngModelChange)="update.emit({ type: $event })"
 				></bo-event-type-selector>
@@ -71,7 +76,7 @@
 
 			<bo-item label="Oddíl" [loading]="!event()">
 				<bo-group-select
-					[disabled]="!event()?._links?.updateEvent?.allowed"
+					[disabled]="!canEdit()"
 					[ngModel]="event()?.groupsIds ?? []"
 					(ngModelChange)="update.emit({ groupsIds: $event })"
 					[multiple]="true"
@@ -80,36 +85,39 @@
 
 			<bo-item label="Popis" [loading]="!event()">
 				<div [innerHTML]="event()?.description | markdown"></div>
-				<bo-edit-button-markdown
-					slot="end"
-					label="Popis"
-					[disabled]="!event()?._links?.updateEvent?.allowed"
-					[value]="event()?.description"
-					(update)="update.emit({ description: $event })"
-				/>
+				@if (canEdit()) {
+					<bo-edit-button-markdown
+						slot="end"
+						label="Popis"
+						[value]="event()?.description"
+						(update)="update.emit({ description: $event })"
+					/>
+				}
 			</bo-item>
 
 			<bo-item label="Cena" [loading]="!event()">
 				<p>{{ event()?.price != null ? event()?.price + " Kč" : "-" }}</p>
-				<bo-edit-button-number
-					slot="end"
-					label="Cena (Kč)"
-					placeholder="2000"
-					[disabled]="!event()?._links?.updateEvent?.allowed"
-					[value]="event()?.price"
-					(update)="update.emit({ price: $event })"
-				/>
+				@if (canEdit()) {
+					<bo-edit-button-number
+						slot="end"
+						label="Cena (Kč)"
+						placeholder="2000"
+						[value]="event()?.price"
+						(update)="update.emit({ price: $event })"
+					/>
+				}
 			</bo-item>
 
 			<bo-item label="Co s sebou" [loading]="!event()">
 				<div [innerHTML]="event()?.itemList | markdown"></div>
-				<bo-edit-button-markdown
-					slot="end"
-					label="Co s sebou"
-					[disabled]="!event()?._links?.updateEvent?.allowed"
-					[value]="event()?.itemList"
-					(update)="update.emit({ itemList: $event })"
-				/>
+				@if (canEdit()) {
+					<bo-edit-button-markdown
+						slot="end"
+						label="Co s sebou"
+						[value]="event()?.itemList"
+						(update)="update.emit({ itemList: $event })"
+					/>
+				}
 			</bo-item>
 
 			<bo-item label="Přihláška" [loading]="!event()">
