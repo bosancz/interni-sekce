@@ -19,6 +19,8 @@ import { VersionComponent } from "src/app/shared/components/version/version.comp
 export class AccountMenuModalComponent {
 	user = this.userService.user;
 
+	canAccessAdmin = this.userService.canAccessAdmin;
+
 	isLg = toSignal(this.platformService.isLg);
 
 	constructor(

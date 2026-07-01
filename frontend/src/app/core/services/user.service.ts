@@ -1,4 +1,5 @@
-import { Injectable } from "@angular/core";
+import { computed, Injectable } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { BehaviorSubject } from "rxjs";
 
 import { ApiService } from "src/app/core/services/api.service";
@@ -14,6 +15,24 @@ import { ToastService } from "./toast.service";
 })
 export class UserService {
 	user = new BehaviorSubject<SDK.AccountResponseWithLinks | null | undefined>(undefined);
+
+	/** Signal mirror of the current user, for reactive role checks. */
+	readonly currentUser = toSignal(this.user);
+
+	/** May manage the program (program managers, reviewers and admins). */
+	readonly canManagePrograms = computed(() => this.hasRole("program", "revizor", "admin"));
+
+	/** May manage users (reviewers and admins). */
+	readonly canManageUsers = computed(() => this.hasRole("revizor", "admin"));
+
+	/** Whether the administration section should be visible at all. */
+	readonly canAccessAdmin = computed(() => this.canManagePrograms() || this.canManageUsers());
+
+	/** True if the current user has at least one of the given roles. */
+	hasRole(...roles: SDK.UserRolesEnum[]): boolean {
+		const userRoles = this.currentUser()?.roles ?? [];
+		return roles.some((role) => userRoles.includes(role));
+	}
 
 	constructor(
 		private api: ApiService,

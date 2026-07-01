@@ -6,6 +6,7 @@ import { AccountModule } from "./api/account/account.module";
 import { AlbumsModule } from "./api/albums/albums.module";
 import { EventsModule } from "./api/events/events.module";
 import { MembersModule } from "./api/members/members.module";
+import { OauthModule } from "./api/oauth/oauth.module";
 import { PublicModule } from "./api/public/public.module";
 import { RootModule } from "./api/root/root.module";
 import { StatisticsModule } from "./api/statistics/statistics.module";
@@ -47,6 +48,7 @@ import { UsersModelModule } from "./models/users/users-model.module";
 		AlbumsModule,
 		AccessControlModule,
 		AccountModule,
+		OauthModule,
 		StatisticsModule,
 		RootModule,
 		StatisticsModelModule,

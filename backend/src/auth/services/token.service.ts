@@ -33,6 +33,23 @@ export class TokenService {
 		return this.jwtService.signAsync(userData, { expiresIn: "30d", ...options });
 	}
 
+	/**
+	 * Sign an arbitrary payload as a JWT. Used for short-lived OAuth codes and
+	 * access tokens, which have a different shape than the user session token.
+	 */
+	async signToken(payload: object, options: JwtSignOptions = {}) {
+		return this.jwtService.signAsync(payload as Buffer | object, options);
+	}
+
+	/** Verify a JWT and return its payload, or undefined if invalid/expired. */
+	async verifyToken<T extends object = JwtPayload>(tokenString: string): Promise<T | undefined> {
+		try {
+			return await this.jwtService.verifyAsync<T>(tokenString, {});
+		} catch {
+			return undefined;
+		}
+	}
+
 	async setToken(res: Response, userData: UserData) {
 		const token = await this.createToken(userData);
 

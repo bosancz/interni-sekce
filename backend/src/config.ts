@@ -104,6 +104,23 @@ const mapy = {
 	apiKey: process.env["MAPY_CZ_API_KEY"] ?? "",
 };
 
+/**
+ * OAuth2 identity-provider settings.
+ *
+ * The backend acts as an OAuth2 provider (authorization-code flow) so external
+ * first-party apps – currently the Wiki.js wiki – can log users in via SSO
+ * without a second login. See WIKI-SSO.md for the Wiki.js configuration.
+ */
+const oauth = {
+	wiki: {
+		clientId: process.env["OAUTH_WIKI_CLIENT_ID"] ?? "",
+		clientSecret: process.env["OAUTH_WIKI_CLIENT_SECRET"] ?? "",
+		// Exact callback URL registered in the Wiki.js strategy, e.g.
+		// https://wiki.bosan.cz/login/<strategyKey>/callback
+		redirectUri: process.env["OAUTH_WIKI_REDIRECT_URI"] ?? "",
+	},
+};
+
 @Injectable()
 export class Config {
 	app = app;
@@ -113,6 +130,7 @@ export class Config {
 	jwt = jwt;
 	logging = logging;
 	mongoDb = mongoDb;
+	oauth = oauth;
 	production = production;
 	server = server;
 	fs = fs;
