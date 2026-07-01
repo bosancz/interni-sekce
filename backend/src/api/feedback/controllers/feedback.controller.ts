@@ -34,6 +34,7 @@ export class FeedbackController {
 		const mail = BugReportMailTemplate(this.config.feedback.bugReportRecipient, {
 			reporter,
 			environment: this.config.app.environmentTitle || this.config.environment,
+			url: body.url,
 			description: body.description,
 		});
 
