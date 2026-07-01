@@ -5,6 +5,7 @@ import { AccessControlModule } from "./access-control/access-control.module";
 import { AccountModule } from "./api/account/account.module";
 import { AlbumsModule } from "./api/albums/albums.module";
 import { EventsModule } from "./api/events/events.module";
+import { FeedbackModule } from "./api/feedback/feedback.module";
 import { MembersModule } from "./api/members/members.module";
 import { OauthModule } from "./api/oauth/oauth.module";
 import { PublicModule } from "./api/public/public.module";
@@ -38,6 +39,7 @@ import { UsersModelModule } from "./models/users/users-model.module";
 		}),
 		EventsModule,
 		EventsModule,
+		FeedbackModule,
 		PublicModule,
 		MembersModule,
 		AuthModule,
