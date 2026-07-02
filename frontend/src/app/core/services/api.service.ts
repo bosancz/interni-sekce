@@ -35,12 +35,14 @@ export class ApiService extends SDK {
 		map((res) => res.data),
 		shareReplay(1),
 	);
-	public rootLinks = new ReplaySubject<SDK.RootResponseLinks>();
+	public rootLinks = new ReplaySubject<SDK.RootResponseLinks>(1);
 
 	constructor(config: Config) {
 		super({
 			basePath: config.apiRoot,
 		});
+
+		this.info.subscribe((info) => this.rootLinks.next(info._links));
 	}
 
 	async reloadApi() {

@@ -17,11 +17,8 @@ import {
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
 import { EventStatus, EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
-import { ApiService, RootLinks } from "src/app/core/services/api.service";
-import { ModalService } from "src/app/core/services/modal.service";
+import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
-import { ToastService } from "src/app/core/services/toast.service";
-import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { EventStatusBadgeComponent } from "src/app/shared/components/event-status-badge/event-status-badge.component";
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
@@ -32,7 +29,6 @@ import { SDK } from "src/sdk";
 import { EventPipe } from "../../../../shared/pipes/event.pipe";
 import { GroupPipe } from "../../../../shared/pipes/group.pipe";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
-import { EventCreateModalComponent } from "../../components/event-create-modal/event-create-modal.component";
 
 @UntilDestroy()
 @Component({
@@ -66,7 +62,6 @@ import { EventCreateModalComponent } from "../../components/event-create-modal/e
 export class EventsListComponent implements OnInit {
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 	years = signal<number[]>([]);
-	actions = signal<Action[]>([]);
 	currentYearString = String(new Date().getFullYear());
 	selectedYears: string[] = [];
 	selectedStatuses: string[] = [];
@@ -86,8 +81,6 @@ export class EventsListComponent implements OnInit {
 	constructor(
 		private api: ApiService,
 		private platformService: PlatformService,
-		private modalService: ModalService,
-		private toastService: ToastService,
 		private router: Router,
 		private route: ActivatedRoute,
 		private injector: Injector,
@@ -96,8 +89,6 @@ export class EventsListComponent implements OnInit {
 	ngOnInit(): void {
 		this.loadYears();
 		this.loadStatuses();
-
-		this.api.rootLinks.subscribe((rootLinks: RootLinks | null) => this.setActions(rootLinks));
 
 		this.platformService.isPortrait.subscribe((isPortrait: boolean) => {
 			this.view = isPortrait ? "list" : "table";
@@ -268,29 +259,4 @@ export class EventsListComponent implements OnInit {
 			.filter((item) => !!item);
 	}
 
-	private async createEvent() {
-		const data = await this.modalService.componentModal(EventCreateModalComponent);
-
-		if (!data) return;
-
-		// create the event and wait for confirmation
-		let event = await this.api.EventsApi.createEvent(data).then((res: any) => res.data);
-		// show the confrmation
-		this.toastService.toast("Akce vytvořena a uložena.");
-		// open the event
-		this.router.navigate(["/akce/" + event.id]);
-	}
-
-	private setActions(rootLinks: RootLinks | null) {
-		this.actions.set([
-			{
-				icon: "add-outline",
-				pinned: true,
-				text: "Přidat",
-				disabled: !rootLinks?.createEvent.allowed,
-				hidden: !rootLinks?.createEvent.applicable,
-				handler: () => this.createEvent(),
-			},
-		]);
-	}
 }

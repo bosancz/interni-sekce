@@ -1,4 +1,4 @@
-<bo-page-header title="Oddíly" backUrl="/" [actions]="actions" />
+<bo-page-header title="Oddíly" backUrl="/" [actions]="actions()" />
 
 <bo-page-content [padding]="true">
 	<bo-card [routerLink]="['/databaze/clenove']" class="group">
@@ -22,6 +22,10 @@
 	</div>
 
 	@if (groups() !== undefined && !groups().length) {
-		<p>Žádné oddíly zatím nejsou vytvořeny. Chceš <a routerLink="/oddily/vytvorit">vytvořit první oddíl</a>?</p>
+		@if (createGroupLink()?.allowed) {
+			<p>Žádné oddíly zatím nejsou vytvořeny. Chceš <a class="clickable" (click)="createGroup()">vytvořit první oddíl</a>?</p>
+		} @else {
+			<p>Žádné oddíly zatím nejsou vytvořeny.</p>
+		}
 	}
 </bo-page-content>
