@@ -26,7 +26,6 @@ import { AlbumStatuses } from "src/app/core/config/album-statuses";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
-import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
@@ -77,8 +76,6 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 
 	loadingArray = Array(5).fill(null);
 
-	actions = signal<Action[]>([]);
-
 	alert?: HTMLIonAlertElement;
 
 	filter: UrlParams = {};
@@ -100,10 +97,6 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 
 	ionViewWillEnter() {
 		this.loadYears();
-
-		this.api.rootLinks
-			.pipe(untilDestroyed(this, "ionViewWillLeave"))
-			.subscribe((endpoints) => this.setActions(endpoints));
 
 		this.platformService.isPortrait.pipe(untilDestroyed(this, "ionViewWillLeave")).subscribe((isPortrait) => {
 			this.view.set(isPortrait ? "grid" : "table");
@@ -131,17 +124,6 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 
 	create() {
 		this.createAlbumModal();
-	}
-
-	setActions(endpoints: SDK.RootResponseLinks | null) {
-		this.actions.set([
-			{
-				text: "Přidat",
-				handler: () => this.createAlbumModal(),
-				disabled: !endpoints?.createAlbum.allowed,
-				hidden: !endpoints?.createAlbum.applicable,
-			},
-		]);
 	}
 
 	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {

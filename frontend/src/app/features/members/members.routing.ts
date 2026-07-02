@@ -3,14 +3,11 @@ import { GroupInfoComponent } from "./components/group-info/group-info.component
 import { GroupMembersComponent } from "./components/group-members/group-members.component";
 import { GroupEditComponent } from "./pages/group-edit/group-edit.component";
 import { GroupViewComponent } from "./pages/group-view/group-view.component";
-import { GroupsCreateComponent } from "./pages/groups-create/groups-create.component";
 import { GroupsListComponent } from "./pages/groups-list/groups-list.component";
 import { MembersListComponent } from "./pages/members-list/members-list.component";
 import { MembersViewComponent } from "./pages/members-view/members-view.component";
 
 export const membersRoutes: Routes = [
-	{ path: "vytvorit", component: GroupsCreateComponent },
-
 	{ path: "oddily/:id/upravit", component: GroupEditComponent },
 	{
 		path: "oddily/:id",

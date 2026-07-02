@@ -19,7 +19,7 @@ import {
 	IonSkeletonText,
 	ViewWillEnter,
 } from "@ionic/angular/standalone";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { addOutline, downloadOutline, eyeOutline } from "ionicons/icons";
 import { DateTime } from "luxon";
@@ -28,7 +28,6 @@ import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
-import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
 import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
@@ -86,7 +85,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	filter: FilterData = {};
 
-	actions: Action[] = [];
 
 	view?: "table" | "list";
 
@@ -111,10 +109,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	ngOnInit() {}
 
 	ngAfterViewInit(): void {
-		this.api.rootLinks.pipe(untilDestroyed(this)).subscribe(() => {
-			this.setActions();
-		});
-
 		this.platformService.isPortrait.subscribe((isPortrait) => {
 			this.view = isPortrait ? "list" : "table";
 		});
@@ -339,20 +333,4 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		return labels[key] || key;
 	}
 	
-	private setActions() {
-		this.actions = [
-			{
-				icon: "add-outline",
-				pinned: true,
-				text: "Přidat",
-				handler: () => this.create(),
-			},
-			{
-				icon: "download-outline",
-				pinned: true,
-				text: "Stáhnout XLSX",
-				handler: () => this.export(),
-			},
-		];
-	}
 }
