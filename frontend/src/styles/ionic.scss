@@ -64,8 +64,8 @@ body.dark {
 ion-list {
 	ion-item {
 		--ion-item-background: transparent;
-		--border-color: black;
-		--detail-icon-color: black;
+		--border-color: var(--bo-black);
+		--detail-icon-color: var(--bo-black);
 		--detail-icon-opacity: 1;
 	}
 

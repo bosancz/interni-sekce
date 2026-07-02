@@ -87,9 +87,11 @@ $eventHeight: 20px;
 	.date.selectedRange {
 		background-color: yellow;
 		border-color: #fff;
+		color: #000;
 	}
 	.date.selected {
 		background-color: #f00;
 		border-color: #fff;
+		color: #fff;
 	}
 }
