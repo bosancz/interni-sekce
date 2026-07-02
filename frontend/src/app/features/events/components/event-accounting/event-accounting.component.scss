@@ -38,7 +38,7 @@ bo-item {
 .desc-cell {
     grid-area: desc;
     margin: 0;
-    color: #444;
+    color: var(--ion-color-medium);
     padding-top: 4px;
     
     /* Good practice for single-line layouts: add ellipses if text gets too long */
