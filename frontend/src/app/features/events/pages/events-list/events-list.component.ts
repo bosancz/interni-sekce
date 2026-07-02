@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit, signal } from "@angular/core";
+import { afterNextRender, Component, Injector, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
 import {
@@ -15,6 +15,7 @@ import {
 	IonSkeletonText,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { DateTime } from "luxon";
 import { EventStatus, EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
 import { ApiService, RootLinks } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -76,6 +77,7 @@ export class EventsListComponent implements OnInit {
 	page = 1;
 	readonly pageSize = 50;
 	private loadToken = 0;
+	private hasAutoScrolled = false;
 
 	filter: UrlParams = {};
 
@@ -88,6 +90,7 @@ export class EventsListComponent implements OnInit {
 		private toastService: ToastService,
 		private router: Router,
 		private route: ActivatedRoute,
+		private injector: Injector,
 	) {}
 
 	ngOnInit(): void {
@@ -204,6 +207,55 @@ export class EventsListComponent implements OnInit {
 		if (token !== this.loadToken) return;
 
 		this.events.set(loadMore ? [...this.events(), ...events] : events);
+
+		if (!loadMore) this.scrollToCurrentDate();
+	}
+
+	// On the first load, position the list at the current date, so upcoming events sit above
+	// the viewport and past events below. Runs only once per page open so later filter
+	// changes don't yank the scroll position.
+	private async scrollToCurrentDate() {
+		if (this.hasAutoScrolled || this.route.snapshot.fragment) {
+			this.hasAutoScrolled = true;
+			return;
+		}
+
+		const today = DateTime.now().startOf("day");
+		const isPastOrToday = (event: SDK.EventResponseWithLinks) => DateTime.fromISO(event.dateFrom) <= today;
+
+		// If the whole first page is future events, keep loading until today appears (capped).
+		const maxAutoLoadPages = 5;
+		while (this.events().length > 0 && !this.events().some(isPastOrToday) && this.page < maxAutoLoadPages) {
+			const lengthBefore = this.events().length;
+			await this.loadEvents(this.filter, true);
+			if (this.events().length === lengthBefore) break;
+		}
+
+		this.hasAutoScrolled = true;
+
+		const boundaryIndex = this.events().findIndex(isPastOrToday);
+
+		// index 0 means there are no future events above, so there is nothing to scroll past
+		if (boundaryIndex <= 0) return;
+
+		// Position the scroll in the same render pass that first paints the rows (before the
+		// browser paint), so the list appears already scrolled instead of jumping after load.
+		const elementId = "event-" + this.events()[boundaryIndex].id;
+		afterNextRender(() => this.applyInitialScroll(elementId), { injector: this.injector });
+	}
+
+	private applyInitialScroll(elementId: string, framesLeft = 120) {
+		const element = document.getElementById(elementId);
+		if (!element || !framesLeft) return;
+
+		// Ionic components hydrate asynchronously; until then ion-items have no layout and
+		// the target sits collapsed at the top of the list, so scrolling would be a no-op.
+		const hydrating =
+			element.getBoundingClientRect().height === 0 ||
+			(element.tagName.startsWith("ION-") && !element.classList.contains("hydrated"));
+
+		if (hydrating) requestAnimationFrame(() => this.applyInitialScroll(elementId, framesLeft - 1));
+		else element.scrollIntoView({ behavior: "instant", block: "center" });
 	}
 
 	private normalizeFilterValueToArray(value: string | string[] | null | undefined): string[] {

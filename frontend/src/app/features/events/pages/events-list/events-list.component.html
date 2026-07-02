@@ -64,7 +64,7 @@
 				}
 
 				@for (event of events(); track event.id) {
-					<ion-item [routerLink]="'' + event.id">
+					<ion-item [routerLink]="'' + event.id" [attr.id]="'event-' + event.id">
 						<ion-avatar
 							aria-hidden="true"
 							slot="start"
@@ -163,7 +163,7 @@
 
 				<tbody>
 					@for (event of events(); track event.id) {
-						<tr [routerLink]="'' + event.id">
+						<tr [routerLink]="'' + event.id" [attr.id]="'event-' + event.id">
 							<td class="events-name-column">{{ event.name }}</td>
 							<td class="events-date-column">
 								{{ event.dateFrom | date: "EEEEEE d. M." }} -
