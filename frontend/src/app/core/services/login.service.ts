@@ -48,11 +48,13 @@ export class LoginService {
 			if (this.api.isApiError(err)) {
 				switch (err.response?.status) {
 					case 401:
+					case 403:
 						throw new LoginError("invalidCredentials", err);
 						break;
 					case 404:
 						throw new LoginError("userNotFound", err);
 						break;
+					case 409:
 					case 503:
 						throw new LoginError("credentialsLoginNotAvalible", err);
 						break;

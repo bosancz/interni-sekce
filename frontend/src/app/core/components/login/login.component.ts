@@ -16,7 +16,7 @@ import { LoginError, LoginErrorCode, LoginService } from "src/app/core/services/
 export class LoginComponent implements OnInit {
 	expired = toSignal(this.route.params.pipe(map((params) => params.expired)), { initialValue: false });
 
-	status?: "linkSending" | "linkSent" | "userNotFound";
+	status?: "linkSending" | "linkSent";
 	error?: LoginErrorCode | "linkSendFailed" | "unknownError";
 
 	view: string = "login";
@@ -33,6 +33,7 @@ export class LoginComponent implements OnInit {
 
 	async loginCredentials(loginForm: NgForm) {
 		try {
+			this.error = undefined;
 			await this.loginService.loginCredentials(loginForm.value);
 			this.loginSuccess();
 		} catch (err: any) {
@@ -42,6 +43,7 @@ export class LoginComponent implements OnInit {
 
 	async loginGoogle() {
 		try {
+			this.error = undefined;
 			await this.loginService.loginGoogle();
 
 			this.loginSuccess();
@@ -52,6 +54,7 @@ export class LoginComponent implements OnInit {
 
 	async sendLoginLink(linkForm: NgForm) {
 		try {
+			this.error = undefined;
 			this.status = "linkSending";
 
 			const formData = linkForm.value;

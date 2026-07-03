@@ -1,5 +1,5 @@
 import { provideHttpClient } from "@angular/common/http";
-import { ApplicationConfig, ErrorHandler, isDevMode, LOCALE_ID } from "@angular/core";
+import { ApplicationConfig, ErrorHandler, isDevMode, LOCALE_ID, provideZoneChangeDetection } from "@angular/core";
 import {
 	provideRouter,
 	RouteReuseStrategy,
@@ -17,6 +17,9 @@ import { TitleService } from "./core/services/title.service";
 
 export const appConfig: ApplicationConfig = {
 	providers: [
+		// Angular 21 defaults to zoneless change detection; large parts of this app
+		// still mutate plain properties after `await`, which zoneless never picks up.
+		provideZoneChangeDetection(),
 		provideIonicAngular({
 			innerHTMLTemplatesEnabled: true,
 			backButtonText: isPlatform("ios") ? "Zpět" : "",

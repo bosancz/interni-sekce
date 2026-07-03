@@ -108,7 +108,6 @@ export class LoginController {
 		@Res({ passthrough: true }) res: Response,
 		@Query() query: LoginLinkQuery,
 	) {
-		console.log(query.code);
 		const user = await this.users.findUser({ loginCode: query.code }, { credentials: true });
 		if (!user || !user.loginCodeExp) throw new NotFoundException();
 

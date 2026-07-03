@@ -54,7 +54,7 @@ export class EventAnnouncementService {
 			}) || [];
 
 		attendeesString.sort((a, b) => {
-			const dateA = a[2] !== missing ? new Date(String(b[2])).getTime() : 0;
+			const dateA = a[2] !== missing ? new Date(String(a[2])).getTime() : 0;
 			const dateB = b[2] !== missing ? new Date(String(b[2])).getTime() : 0;
 			return dateA - dateB;
 		});
