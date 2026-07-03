@@ -6,6 +6,9 @@ import sharp = require("sharp");
 import { FilesService } from "src/models/files/services/files.service";
 import { PhotoSizes } from "src/api/albums/dto/photo.dto";
 
+// Cap decoded image size to guard against decompression-bomb uploads (roughly 24k x 24k).
+const MAX_INPUT_PIXELS = 24000 * 24000;
+
 export interface PhotoMetadata {
 	width: number | null;
 	height: number | null;
@@ -42,7 +45,7 @@ export class PhotosFilesService {
 
 	/** Read image dimensions, dominant background color and capture date from the buffer. */
 	async extractMetadata(buffer: Buffer): Promise<PhotoMetadata> {
-		const image = sharp(buffer);
+		const image = sharp(buffer, { limitInputPixels: MAX_INPUT_PIXELS });
 		const [metadata, stats] = await Promise.all([image.metadata(), image.stats()]);
 
 		const bg =
@@ -66,10 +69,10 @@ export class PhotosFilesService {
 		await this.files.saveFile(this.getImagePath(albumId, photoId, PhotoSizes.original, ext), buffer);
 
 		for (const [name, size] of Object.entries(this.config.photos.sizes)) {
-			const resized = await sharp(buffer)
+			const resized = await sharp(buffer, { limitInputPixels: MAX_INPUT_PIXELS })
 				.rotate()
 				.resize(size.width, size.height, { fit: "inside" })
-				.withMetadata()
+				// intentionally drop EXIF (incl. GPS) from the derived variants that are served to clients
 				.toBuffer();
 
 			await this.files.saveFile(this.getImagePath(albumId, photoId, name as PhotoSizes, ext), resized);

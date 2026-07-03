@@ -34,6 +34,8 @@ export class AlbumsController {
 	@AcLinks(AlbumsListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(AlbumResponse), isArray: true })
 	async listAlbums(@Req() req: Request, @Query() query: AlbumListQuery): Promise<AlbumResponse[]> {
+		AlbumsListPermission.canOrThrow(req);
+
 		const options: GetAlbumsOptions = {
 			limit: query.limit,
 			offset: query.offset,
@@ -127,6 +129,11 @@ export class AlbumsController {
 	@AcLinks(AlbumPhotosPermission)
 	@ApiResponse({ status: 200, type: WithLinks(PhotoResponse), isArray: true })
 	async getAlbumPhotos(@Param("id") id: number, @Req() req: Request): Promise<PhotoResponse[]> {
+		const album = await this.albums.getAlbum(id);
+		if (!album) throw new NotFoundException();
+
+		AlbumPhotosPermission.canOrThrow(req, album);
+
 		return this.photos.getPhotos({ album: id });
 	}
 

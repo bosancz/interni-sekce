@@ -45,6 +45,8 @@ export class PhotosController {
 	@AcLinks(PhotosListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(PhotoResponse), isArray: true })
 	async listPhotos(@Req() req: Request) {
+		PhotosListPermission.canOrThrow(req);
+
 		return this.photos.getPhotos();
 	}
 

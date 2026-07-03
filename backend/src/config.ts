@@ -28,6 +28,12 @@ const server = {
 	staticRoot: process.env.STATIC_ROOT || path.join(__dirname, "../../frontend/dist/browser"),
 	globalPrefix: process.env.GLOBAL_PREFIX ?? "api",
 	cors: environment === "development",
+	// Cross-origin allow-list for first-party sites that consume the public API from a
+	// different origin (the bosan.cz website). In development any origin is reflected.
+	corsOrigins: (process.env["CORS_ORIGINS"] ?? "https://bosan.cz,https://www.bosan.cz")
+		.split(",")
+		.map((origin) => origin.trim())
+		.filter(Boolean),
 };
 
 const logging: { level: LogLevel[]; query: boolean } = {
@@ -51,14 +57,22 @@ const app = {
 	environmentTitle: process.env["ENV_TITLE"] ?? (environment === "production" ? "" : environment.toUpperCase()),
 };
 
+const jwtSecret = process.env["JWT_SECRET"];
+
+// A predictable secret lets anyone forge admin session cookies, so never allow the
+// insecure development fallback outside of local development.
+if (production && (!jwtSecret || jwtSecret.length < 32)) {
+	throw new Error("JWT_SECRET environment variable must be set to a strong (>=32 char) value in production.");
+}
+
 const jwt = {
-	secret: process.env["JWT_SECRET"] ?? "secret",
+	secret: jwtSecret ?? "secret",
 };
 
 const db: PostgresConnectionOptions = {
 	type: "postgres",
 	host: process.env["DB_HOST"] ?? "localhost",
-	port: process.env["DB_HOST"] ? parseInt(process.env["DB_HOST"]) : 5432,
+	port: process.env["DB_PORT"] ? parseInt(process.env["DB_PORT"]) : 5432,
 	username: process.env["DB_USER"] ?? "postgres",
 	password: process.env["DB_PASSWORD"],
 	database: process.env.DB_DATABASE_NAME ?? "postgres",
