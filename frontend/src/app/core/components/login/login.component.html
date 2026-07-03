@@ -9,8 +9,20 @@
 
 		<div class="status">
 			@switch (status) {
-				<!-- @case ("invalidCredentials") {
-					<p class="text-danger">Chybné uživatelské jméno nebo heslo.</p>
+				@case ("linkSending") {
+					<p class="text-warning">Odesílám odkaz na email...</p>
+				}
+				@case ("linkSent") {
+					<p class="text-success">Odkaz odeslán na email.</p>
+				}
+			}
+
+			@switch (error) {
+				@case ("invalidCredentials") {
+					<p class="text-danger">Špatné heslo.</p>
+				}
+				@case ("userNotFound") {
+					<p class="text-danger">Uživatel nenalezen.</p>
 				}
 				@case ("credentialsLoginNotAvalible") {
 					<p class="text-danger">
@@ -20,15 +32,12 @@
 				}
 				@case ("googleFailed") {
 					<p class="text-danger">Přihlášení přes Google se nezdařilo.</p>
-				} -->
-				@case ("linkSending") {
-					<p class="text-warning">Odesílám odkaz na email...</p>
 				}
-				@case ("linkSent") {
-					<p class="text-success">Odkaz odeslán na email.</p>
+				@case ("linkSendFailed") {
+					<p class="text-danger">Odkaz se nepodařilo odeslat.</p>
 				}
-				@case ("userNotFound") {
-					<p class="text-danger">Uživatel nenalezen.</p>
+				@case ("unknownError") {
+					<p class="text-danger">Přihlášení se nezdařilo.</p>
 				}
 			}
 		</div>
