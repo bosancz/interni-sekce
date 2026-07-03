@@ -8,6 +8,7 @@ export class TokenMiddleware implements NestMiddleware {
 
 	async use(req: Request, res: Response, next: () => void) {
 		await this.tokenService.parseToken(req);
+		await this.tokenService.renewTokenIfNeeded(req, res);
 		next();
 	}
 }
