@@ -3,13 +3,23 @@ import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { validateSync } from "class-validator";
 import { Request, Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
+import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { TokenData, UserData } from "../schema/user-token";
 
 @Injectable()
 export class TokenService {
 	private readonly cookieName = "token";
 
-	constructor(private jwtService: JwtService) {}
+	/** How long a session survives without any visit; every visit extends it again (see renewTokenIfNeeded) */
+	private readonly tokenLifetimeDays = 90;
+
+	/** Tokens older than this get re-issued, so the cookie is not rewritten on every request */
+	private readonly tokenRenewalAgeSeconds = 24 * 60 * 60;
+
+	constructor(
+		private jwtService: JwtService,
+		private usersRepository: UsersRepository,
+	) {}
 
 	async parseToken(req: Request) {
 		const tokenString = req.cookies?.[this.cookieName];
@@ -30,7 +40,7 @@ export class TokenService {
 	}
 
 	async createToken(userData: UserData, options: JwtSignOptions = {}) {
-		return this.jwtService.signAsync(userData, { expiresIn: "30d", ...options });
+		return this.jwtService.signAsync(userData, { expiresIn: `${this.tokenLifetimeDays}d`, ...options });
 	}
 
 	/**
@@ -53,7 +63,40 @@ export class TokenService {
 	async setToken(res: Response, userData: UserData) {
 		const token = await this.createToken(userData);
 
-		res.cookie(this.cookieName, token, { sameSite: "none", secure: true, httpOnly: true });
+		// maxAge makes the cookie survive browser restarts; without it the session ends when the browser closes
+		res.cookie(this.cookieName, token, {
+			sameSite: "none",
+			secure: true,
+			httpOnly: true,
+			maxAge: this.tokenLifetimeDays * 24 * 60 * 60 * 1000,
+		});
+	}
+
+	/**
+	 * Sliding session renewal: once a day, a valid token gets re-issued with a fresh
+	 * expiration, so users who visit at least once per tokenLifetimeDays stay logged
+	 * in indefinitely. User data is reloaded from the database so that role changes
+	 * propagate and deleted accounts cannot keep extending their session.
+	 */
+	async renewTokenIfNeeded(req: Request, res: Response) {
+		const tokenData = req.user;
+		if (!tokenData?.iat) return;
+
+		const tokenAgeSeconds = Math.floor(Date.now() / 1000) - tokenData.iat;
+		if (tokenAgeSeconds < this.tokenRenewalAgeSeconds) return;
+
+		const user = await this.usersRepository.getUser(tokenData.userId);
+
+		if (!user) {
+			this.clearToken(res);
+			return;
+		}
+
+		await this.setToken(res, {
+			userId: user.id,
+			memberId: user.memberId ?? undefined,
+			roles: user.roles ?? [],
+		});
 	}
 
 	clearToken(res: Response) {
