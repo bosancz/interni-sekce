@@ -8,7 +8,7 @@ import {
 	Req,
 	Res,
 } from "@nestjs/common";
-import { ApiExcludeController } from "@nestjs/swagger";
+import { ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { createReadStream } from "fs";
 import { contentType } from "mime-types";
@@ -33,13 +33,10 @@ import { PublicService } from "../services/public.service";
  * Unauthenticated public API consumed by the bosan.cz website. Returns the legacy
  * response shapes (string `_id`s, photo `sizes`, `_links`) so the existing website
  * frontend keeps working against the rewritten backend without changes on its side.
- *
- * Excluded from the internal OpenAPI docs — it is a stable external contract, not
- * part of the HATEOAS/AC-lib surface the internal SDK is generated from.
  */
 @Controller("public")
 @AcController()
-@ApiExcludeController()
+@ApiTags("Public API")
 export class PublicController {
 	constructor(
 		private readonly publicService: PublicService,

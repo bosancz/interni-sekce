@@ -6,12 +6,20 @@ import { Config } from "./config";
 // import metadata from "./metadata";
 
 const ROOT_TAG = "Root" as const;
+const PUBLIC_TAG = "Public API" as const;
 
 export function generateOpenAPI(path: string, app: INestApplication, config: Config) {
 	const builder = new DocumentBuilder()
 		.setTitle(config.app.name)
 		.setVersion(config.app.version)
 		.addServer(config.app.baseUrl)
+		.addTag(
+			PUBLIC_TAG,
+			"Unauthenticated public API consumed by the public bosan.cz website frontend. " +
+				"Exposes only published events (program) and published photo galleries, in the " +
+				"legacy response shape the website expects (string `_id`s, photo `sizes`, `_links`). " +
+				"These endpoints require no login and are safe to call cross-origin from the website.",
+		)
 		.build();
 
 	// uncomment if using SWC compiler
