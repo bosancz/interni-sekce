@@ -1,11 +1,16 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { extname, join } from "path";
 import { Config } from "src/config";
+import { sanitizeFilename } from "src/helpers/sanitizefilename";
+import { PhotoSizes } from "src/api/albums/dto/photo.dto";
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
 import { AlbumsRepository } from "src/models/albums/repositories/albums.repository";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
-import { Event } from "src/models/events/entities/event.entity";
+import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
+import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
+import { FilesService } from "src/models/files/services/files.service";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
 
 /**
@@ -20,11 +25,79 @@ export class PublicService {
 		private readonly events: EventsRepository,
 		private readonly albums: AlbumsRepository,
 		private readonly photos: PhotosRepository,
+		private readonly photosFiles: PhotosFilesService,
+		private readonly files: FilesService,
 		private readonly groups: GroupsRepository,
 	) {}
 
 	private get apiBase() {
 		return `${this.config.app.baseUrl}/api`;
+	}
+
+	// ---- Downloads (registration PDF / album ZIP) ----
+
+	/**
+	 * Resolves the registration PDF for a publicly visible event. Mirrors the internal
+	 * storage layout used by EventsRegistrationsController (a single `prihlaska*` file
+	 * per event). Throws NotFound when the event is not public, has no registration, or
+	 * the file is missing on disk.
+	 */
+	async getRegistrationFile(eventId: number): Promise<{ path: string; filename: string }> {
+		const event = await this.events.getEvent(eventId);
+		if (!event || !this.isPubliclyVisible(event) || !event.hasRegistration) throw new NotFoundException();
+
+		const folder = join(this.config.fs.eventsDir, String(event.id));
+
+		let matches: string[];
+		try {
+			matches = await this.files.getFilesByPrefx(folder, "prihlaska");
+		} catch {
+			throw new NotFoundException("Registration not found");
+		}
+		if (matches.length !== 1) throw new NotFoundException("Registration not found");
+
+		return { path: join(folder, matches[0]), filename: matches[0] };
+	}
+
+	/**
+	 * Collects the original image files of a published album for a ZIP download.
+	 * Missing files on disk are skipped; unique names are enforced so photos sharing
+	 * an original filename don't overwrite each other inside the archive.
+	 */
+	async getAlbumDownload(albumId: number): Promise<{ filename: string; files: { path: string; name: string }[] }> {
+		const album = await this.albums.getAlbum(albumId);
+		if (!album || album.status !== AlbumStatus.public) throw new NotFoundException();
+
+		const photos = await this.photos.getPhotos({ album: album.id });
+
+		const files: { path: string; name: string }[] = [];
+		const usedNames = new Set<string>();
+
+		for (const photo of photos) {
+			const ext = extname(photo.name);
+			const path = this.photosFiles.getImagePath(photo.albumId, photo.id, PhotoSizes.original, ext);
+
+			try {
+				await this.photosFiles.fileExists(path);
+			} catch {
+				continue;
+			}
+
+			let name = sanitizeFilename(photo.name) || `${photo.id}${ext}`;
+			if (usedNames.has(name)) name = `${photo.id}_${name}`;
+			usedNames.add(name);
+
+			files.push({ path, name });
+		}
+
+		if (!files.length) throw new NotFoundException("Album has no downloadable photos.");
+
+		const albumName = sanitizeFilename(album.name) || String(album.id);
+		return { filename: `${albumName}.zip`, files };
+	}
+
+	private isPubliclyVisible(event: Event): boolean {
+		return event.status === EventStates.public || event.status === EventStates.cancelled;
 	}
 
 	// ---- Program (events) ----

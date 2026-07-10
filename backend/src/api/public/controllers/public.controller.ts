@@ -1,14 +1,16 @@
 import {
 	Controller,
 	Get,
+	InternalServerErrorException,
+	Logger,
 	NotFoundException,
-	NotImplementedException,
 	Param,
 	Query,
 	Req,
 	Res,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
+import archiver = require("archiver");
 import { Request, Response } from "express";
 import { createReadStream } from "fs";
 import { contentType } from "mime-types";
@@ -38,6 +40,8 @@ import { PublicService } from "../services/public.service";
 @AcController()
 @ApiTags("Public API")
 export class PublicController {
+	private readonly logger = new Logger(PublicController.name);
+
 	constructor(
 		private readonly publicService: PublicService,
 		private readonly albums: AlbumsRepository,
@@ -56,10 +60,17 @@ export class PublicController {
 	}
 
 	@Get("program/:id/registration")
-	async getProgramRegistration() {
-		// The internal registration PDF lives behind auth; a dedicated public download can be
-		// wired here once the storage location for public registrations is confirmed.
-		throw new NotImplementedException("Public registration download is not available yet.");
+	async getProgramRegistration(@Param("id") id: number, @Res() res: Response): Promise<void> {
+		const { path, filename } = await this.publicService.getRegistrationFile(id);
+
+		res.setHeader("Content-Type", "application/pdf");
+		res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+
+		await new Promise<void>((resolve, reject) => {
+			res.sendFile(path, (err) =>
+				err ? reject(new InternalServerErrorException(err.message)) : resolve(),
+			);
+		});
 	}
 
 	@Get("gallery")
@@ -87,10 +98,25 @@ export class PublicController {
 	}
 
 	@Get("gallery/:id/download")
-	async downloadAlbum() {
-		// bosan.cz always renders the album download link, so the route must exist; ZIP
-		// streaming needs an archiver dependency which is a follow-up decision.
-		throw new NotImplementedException("Album ZIP download is not available yet.");
+	async downloadAlbum(@Param("id") id: number, @Res() res: Response): Promise<void> {
+		const { filename, files } = await this.publicService.getAlbumDownload(id);
+
+		const archive = archiver("zip", { store: true }); // photos are already compressed; store to save CPU
+
+		// Surface archiver problems: soft warnings are logged, hard errors abort the stream.
+		archive.on("warning", (err) => this.logger.warn(`Album ${id} ZIP warning: ${err.message}`));
+		archive.on("error", (err) => {
+			this.logger.error(`Album ${id} ZIP failed: ${err.message}`);
+			res.destroy(err);
+		});
+
+		res.setHeader("Content-Type", "application/zip");
+		res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+
+		archive.pipe(res);
+		for (const file of files) archive.file(file.path, { name: file.name });
+
+		await archive.finalize();
 	}
 
 	@Get("photos/:id/image/:size")
