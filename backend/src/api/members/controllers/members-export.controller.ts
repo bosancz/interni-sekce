@@ -6,7 +6,7 @@ import { UserGuard } from "src/auth/guards/user.guard";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
 import { MembersExportService } from "src/models/members/services/members-export.service";
 import { pipeline } from "stream/promises";
-import { MembersExportPermission, MembersListPermission } from "../acl/members.acl";
+import { MembersExportPermission } from "../acl/members.acl";
 import { MembersListQuery } from "../dto/member.dto";
 
 @Controller("members/export")
@@ -31,9 +31,9 @@ export class MembersExportController {
 		},
 	})
 	async exportMembersXlsx(@Req() req: Request, @Query() query: MembersListQuery, @Res() res: Response) {
-		const members = await this.members.getMembers(query);
-		MembersListPermission.canOrThrow(req);
+		MembersExportPermission.canOrThrow(req);
 
+		const members = await this.members.getMembers(query);
 		const xlsx = await this.membersExportService.exportXlsx(members);
 
 		res.setHeader("Content-Disposition", "attachment; filename=" + "bo-databaze.xlsx");

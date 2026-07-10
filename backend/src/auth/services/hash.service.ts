@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { compare, hash } from "bcryptjs";
+import { randomBytes } from "crypto";
 
 @Injectable()
 export class HashService {
@@ -11,7 +12,8 @@ export class HashService {
 		return compare(s, hash);
 	}
 
-	generateRandomString() {
-		return Math.random().toString(36).slice(2);
+	/** Cryptographically secure random token (URL-safe). Used for e.g. e-mailed login codes. */
+	generateRandomString(bytes = 32) {
+		return randomBytes(bytes).toString("base64url");
 	}
 }

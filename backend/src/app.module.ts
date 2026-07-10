@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { MulterModule } from "@nestjs/platform-express";
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { memoryStorage } from "multer";
 import { AccessControlModule } from "./access-control/access-control.module";
 import { AccountModule } from "./api/account/account.module";
 import { AlbumsModule } from "./api/albums/albums.module";
@@ -32,7 +33,9 @@ import { UsersModelModule } from "./models/users/users-model.module";
 			useFactory: (config: Config) => [{ rootPath: config.server.staticRoot }],
 		}),
 		MulterModule.register({
-			dest: "/tmp/uploads",
+			// in-memory storage so handlers that read file.buffer (photos, insurance cards) work;
+			// handlers that need a file on disk (event registration) set their own dest per-route
+			storage: memoryStorage(),
 			limits: {
 				fileSize: 1024 * 1024 * 100, // 100 MB
 			},

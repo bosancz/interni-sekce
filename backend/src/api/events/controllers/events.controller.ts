@@ -58,6 +58,8 @@ export class EventsController {
 		@Token() token: TokenData,
 		@Query() query: ListEventsQuery,
 	): Promise<EventResponse[]> {
+		EventsListPermission.canOrThrow(req);
+
 		const options: GetEventsOptions = {
 			...query,
 		};
@@ -66,8 +68,6 @@ export class EventsController {
 			if (!token.memberId) throw new ConflictException("Cannot show my events, user is not linked to a member.");
 			options.memberId = token.memberId;
 		}
-
-		// FIXME: add ACL logic - filter evens based on role
 
 		return this.events.getEvents(options);
 	}

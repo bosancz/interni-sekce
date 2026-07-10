@@ -9,7 +9,7 @@ import { EventResponse } from "../dto/event.dto";
 export const isMyEvent = (doc: Pick<Event, "attendees"> | undefined, req: Request) =>
 	doc?.attendees?.some((l) => l.memberId === req.user?.memberId && l.type === "leader") ?? false;
 
-export const EventsListPermission = new Permission({
+export const EventsListPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: EventResponse,
 

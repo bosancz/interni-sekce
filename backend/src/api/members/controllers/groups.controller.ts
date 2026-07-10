@@ -37,6 +37,8 @@ export class GroupsController {
 	@AcLinks(GroupListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(GroupResponse), isArray: true })
 	async listGroups(@Req() req: Request, @Query() query: ListGroupsQuery): Promise<GroupResponse[]> {
+		GroupListPermission.canOrThrow(req);
+
 		return this.groups.getGroups(query);
 	}
 
@@ -69,7 +71,7 @@ export class GroupsController {
 
 		GroupEditPermission.canOrThrow(req, group);
 
-		await this.groups.updateGroup(id, req.body);
+		await this.groups.updateGroup(id, body);
 	}
 
 	@Delete(":id")

@@ -90,9 +90,9 @@ export class LoginController {
 
 		const loginCode = this.hashService.generateRandomString();
 
-		this.users.updateUser(user.id, {
+		await this.users.updateUser(user.id, {
 			loginCode: loginCode,
-			loginCodeExp: DateTime.local().toISO(),
+			loginCodeExp: DateTime.local().plus({ minutes: 30 }).toISO(),
 		});
 
 		const mail = SendLoginLinkMailTemplate(user.email, {
@@ -113,14 +113,15 @@ export class LoginController {
 
 		LoginLinkPermission.canOrThrow(req);
 
-		if (DateTime.fromISO(user.loginCodeExp).diffNow().milliseconds < 0) {
-			throw new ForbiddenException("Login code expired");
-		}
-
-		this.users.updateUser(user.id, {
+		// invalidate the code first so it is strictly single-use even if issuing the session below fails
+		await this.users.updateUser(user.id, {
 			loginCode: null,
 			loginCodeExp: null,
 		});
+
+		if (DateTime.fromISO(user.loginCodeExp).diffNow().milliseconds < 0) {
+			throw new ForbiddenException("Login code expired");
+		}
 
 		await this.setLoginToken(res, user);
 

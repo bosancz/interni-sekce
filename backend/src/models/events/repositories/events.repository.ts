@@ -5,7 +5,7 @@ import { Group } from "src/models/members/entities/group.entity";
 import { Brackets, FindOptionsSelect, Repository } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "../entities/event-attendee.entity";
 import { EventExpense } from "../entities/event-expense.entity";
-import { Event } from "../entities/event.entity";
+import { Event, EventStates } from "../entities/event.entity";
 
 export interface GetEventsOptions extends PaginationOptions {
 	year?: number[];
@@ -29,7 +29,19 @@ export class EventsRepository {
 	async getEvents(options: GetEventsOptions = {}) {
 		const q = this.eventsRepository
 			.createQueryBuilder("events")
-			.select(["events.id", "events.name", "events.status", "events.dateFrom", "events.dateTill", "events.type"])
+			.select([
+				"events.id",
+				"events.name",
+				"events.status",
+				"events.statusNote",
+				"events.dateFrom",
+				"events.dateTill",
+				"events.type",
+				"events.place",
+				"events.description",
+				"events.meetingPlaceStart",
+				"events.meetingPlaceEnd",
+			])
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
 			.leftJoinAndSelect("attendees.member", "leaders")
 			.orderBy("events.dateFrom", "DESC");
@@ -68,7 +80,70 @@ export class EventsRepository {
 
 		if (options.deleted) q.withDeleted().andWhere("events.deleted_at IS NOT NULL");
 
-		return q.getMany();
+		const events = await q.getMany();
+
+		// populate `leaders` from the joined leader attendees so list consumers (cards, exports)
+		// get the same shape as getEvent() — the @AfterLoad hook only covers already-loaded attendees
+		for (const event of events) {
+			event.leaders = (event.attendees ?? [])
+				.filter((a) => a.member && a.type === EventAttendeeType.leader)
+				.map((a) => a.member!);
+		}
+
+		return events;
+	}
+
+	/**
+	 * Public program for the bosan.cz website: only published/cancelled events, with
+	 * leader members and groups loaded. `dateFrom` defaults to a few days back so the
+	 * currently-running events stay visible.
+	 */
+	async getPublicProgram(options: { dateFrom?: string; dateTill?: string; limit?: number } = {}) {
+		const q = this.eventsRepository
+			.createQueryBuilder("events")
+			.select([
+				"events.id",
+				"events.name",
+				"events.status",
+				"events.dateFrom",
+				"events.dateTill",
+				"events.timeFrom",
+				"events.timeTill",
+				"events.type",
+				"events.place",
+				"events.description",
+				"events.meetingPlaceStart",
+				"events.meetingPlaceEnd",
+				"events.leadersEvent",
+				"events.hasRegistration",
+			])
+			.leftJoinAndSelect("events.groups", "groups")
+			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
+			.leftJoinAndSelect("attendees.member", "leaders")
+			.where("events.status IN (:...statuses)", { statuses: [EventStates.public, EventStates.cancelled] })
+			.andWhere("events.dateTill >= :dateFrom", { dateFrom: options.dateFrom ?? this.defaultProgramFrom() })
+			.orderBy("events.dateFrom", "ASC")
+			.addOrderBy("events.timeFrom", "ASC", "NULLS FIRST")
+			.take(Math.min(options.limit ?? 100, 100));
+
+		if (options.dateTill) q.andWhere("events.dateFrom <= :dateTill", { dateTill: options.dateTill });
+
+		const events = await q.getMany();
+
+		for (const event of events) {
+			event.leaders = (event.attendees ?? [])
+				.filter((a) => a.member && a.type === EventAttendeeType.leader)
+				.map((a) => a.member!);
+		}
+
+		return events;
+	}
+
+	/** Three days back, so events that are currently under way are still shown. */
+	private defaultProgramFrom() {
+		const from = new Date();
+		from.setDate(from.getDate() - 3);
+		return from.toISOString().slice(0, 10);
 	}
 
 	async getEvent(id: number, options: { select?: FindOptionsSelect<Event>; leaders?: boolean } = {}) {
@@ -145,7 +220,8 @@ export class EventsRepository {
 	async getEventAttendee(eventId: number, memberId: number) {
 		return this.eventAttendeesRepository.findOne({
 			where: { eventId, memberId },
-			relations: { member: true, event: true },
+			// event.attendees is needed so isMyEvent(doc.event) works in the edit/delete permission checks
+			relations: { member: true, event: { attendees: true } },
 			withDeleted: true,
 		});
 	}
