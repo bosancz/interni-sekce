@@ -12,6 +12,7 @@ bo-login {
 	flex-grow: 1;
 	display: flex;
 	flex-direction: row;
+	background-color: var(--bo-paper);
 }
 
 .sidebar {
@@ -21,4 +22,5 @@ bo-login {
 main {
 	flex-grow: 1;
 	position: relative;
+	background-color: var(--bo-paper);
 }

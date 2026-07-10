@@ -13,6 +13,19 @@
 	font-size: 1.5em;
 	display: flex;
 	align-items: center;
+
+	// prominent totals in brand blue
+	div span:last-child {
+		color: var(--bo-heading);
+		font-weight: 800;
+		font-family: var(--font-san);
+	}
+
+	div span:first-child {
+		font-size: 0.65em;
+		color: var(--bo-muted);
+		font-weight: 600;
+	}
 }
 
 @media (max-width: 1200px) {

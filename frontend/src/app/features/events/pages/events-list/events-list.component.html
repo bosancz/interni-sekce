@@ -84,12 +84,16 @@
 									@if (!isFirst) {
 										<ng-container>, </ng-container>
 									}
-									<span [style.color]="leader.groupId | group: 'color'">{{
-										leader | member: "nickname"
-									}}</span>
+									<span class="leader">
+										<span
+											class="leader-avatar"
+											[style.background-color]="leader.groupId | group: 'color'"
+											>{{ (leader | member: "nickname")?.charAt(0) }}</span
+										>{{ leader | member: "nickname" }}
+									</span>
 								}
 								@if (!event.leaders?.length) {
-									<strong class="text-danger">Pan NIKDO</strong>
+									<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
 								}
 							</p>
 						</ion-label>
@@ -177,12 +181,16 @@
 									@if (!isFirst) {
 										<ng-container>, </ng-container>
 									}
-									<span [style.color]="leader.groupId | group: 'color'">{{
-										leader | member: "nickname"
-									}}</span>
+									<span class="leader">
+										<span
+											class="leader-avatar"
+											[style.background-color]="leader.groupId | group: 'color'"
+											>{{ (leader | member: "nickname")?.charAt(0) }}</span
+										>{{ leader | member: "nickname" }}
+									</span>
 								}
 								@if (!event.leaders?.length) {
-									<strong class="text-danger">Pan NIKDO</strong>
+									<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
 								}
 							</td>
 						</tr>

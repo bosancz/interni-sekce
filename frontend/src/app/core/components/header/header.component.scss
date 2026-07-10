@@ -1,11 +1,14 @@
 @use "src/styles/variables";
 
+// "žlutá na modré" — brand blue app bar with white/yellow content
 :host {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
-	background-color: var(--ion-color-light, #f4f5f8);
+	background-color: var(--san-blue);
+	color: #fff;
+	--ion-toolbar-color: #fff;
 }
 
 h1 {
@@ -13,15 +16,18 @@ h1 {
 	display: flex;
 	align-items: center;
 	gap: 0.4em;
+	color: #fff;
+	font-size: 1.5rem;
 }
 
 .environment {
 	text-transform: uppercase;
-	background: variables.$colorWarning;
-	font-family: Roboto, "Helvetica Neue", sans-serif;
-	padding: 0.2em 0.4em;
-	font-size: 0.6em;
-	border-radius: 4px;
+	background: var(--san-yellow);
+	font-family: var(--font-regular);
+	padding: 0.2em 0.5em;
+	font-size: 0.55em;
+	font-weight: 800;
+	border-radius: 8px;
 	color: #fff;
 }
 
@@ -31,5 +37,28 @@ h1 {
 	height: auto;
 	margin: 0;
 	font-size: 1em;
-	color: variables.$colorWarning;
+	color: var(--san-yellow);
+}
+
+// white rounded search pill on the blue bar
+::ng-deep bo-global-search .search ion-searchbar {
+	--background: #fff;
+	--ion-background-color: #fff;
+	--color: #1f2430;
+	--placeholder-color: #6b7185;
+	--icon-color: #6b7185;
+	--clear-button-color: #6b7185;
+}
+
+// yellow avatar disc in the app bar
+::ng-deep bo-account-menu bo-avatar {
+	background-color: var(--san-yellow) !important;
+
+	h3 {
+		color: #fff !important;
+	}
+}
+
+ion-buttons ion-button {
+	--color: #fff;
 }

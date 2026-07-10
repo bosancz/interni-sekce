@@ -18,7 +18,7 @@
 
 ion-header.md {
 	ion-toolbar {
-		--ion-background-color: #333;
+		--ion-background-color: var(--san-blue);
 		--ion-toolbar-color: #fff;
 	}
 
@@ -29,7 +29,7 @@ ion-header.md {
 
 ion-menu {
 	ion-toolbar.md {
-		--ion-background-color: #111;
+		--ion-background-color: var(--san-blue);
 	}
 
 	ion-title.ios {
@@ -64,8 +64,8 @@ body.dark {
 ion-list {
 	ion-item {
 		--ion-item-background: transparent;
-		--border-color: var(--bo-black);
-		--detail-icon-color: var(--bo-black);
+		--border-color: var(--bo-line);
+		--detail-icon-color: var(--bo-muted);
 		--detail-icon-opacity: 1;
 	}
 
@@ -79,12 +79,24 @@ ion-modal.dialog {
 	--min-width: 250px;
 	--max-width: 95vw;
 	--height: fit-content;
-	--border-radius: 6px;
+	--border-radius: var(--bo-radius-card);
 	--box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
 }
 
 ion-popover.transparent {
 	--background: transparent;
+}
+
+/* rounded brand buttons */
+ion-button {
+	--border-radius: var(--bo-radius-btn);
+	text-transform: none;
+	letter-spacing: normal;
+	font-weight: 600;
+}
+
+ion-searchbar {
+	--border-radius: var(--bo-radius-pill) !important;
 }
 
 .alert-wide {
@@ -98,5 +110,9 @@ ion-popover.transparent {
 }
 
 .ion-page {
-	background-color: var(--bo-white);
+	background-color: var(--bo-paper);
+}
+
+ion-content {
+	--ion-background-color: var(--bo-paper);
 }

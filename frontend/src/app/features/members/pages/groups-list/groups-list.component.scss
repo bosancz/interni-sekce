@@ -1,8 +1,110 @@
-.group {
+// blue hero card with yellow title and a faint yellow circle bleed
+.hero {
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	background-color: var(--san-blue);
+	border-radius: 18px;
+	box-shadow: var(--bo-shadow-hero-blue);
+	padding: 1.1rem 1.4rem;
 	cursor: pointer;
+
+	&::after {
+		content: "";
+		position: absolute;
+		right: 12%;
+		top: -110%;
+		width: 150px;
+		aspect-ratio: 1 / 1;
+		border-radius: 50%;
+		background-color: var(--san-yellow);
+		opacity: 0.22;
+		pointer-events: none;
+	}
 }
 
-.group:hover {
-	opacity: 0.8;
-	// transition: opacity 250ms ease-in-out;
+.hero-title {
+	margin: 0;
+	color: var(--san-yellow);
+	font-size: 1.4rem;
+}
+
+.hero-subtitle {
+	margin: 0;
+	color: rgba(255, 255, 255, 0.75);
+	font-size: 0.9rem;
+}
+
+.hero-count {
+	position: relative;
+	z-index: 1;
+	text-align: right;
+	color: #fff;
+	line-height: 1.1;
+
+	strong {
+		display: block;
+		font-family: var(--font-san);
+		font-size: 2.2rem;
+	}
+
+	span {
+		font-size: 0.85rem;
+		opacity: 0.85;
+	}
+}
+
+// team cards — colour = team identity
+.group {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 1rem;
+	background-color: var(--bo-white);
+	border-radius: var(--bo-radius-card);
+	box-shadow: var(--bo-shadow-card);
+	padding: 1rem 1.2rem;
+	height: 100%;
+	cursor: pointer;
+	transition: box-shadow 0.1s ease-in-out;
+
+	&:hover {
+		box-shadow: var(--bo-shadow);
+	}
+}
+
+.group-badge {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.6rem;
+	height: 2.6rem;
+	border-radius: 12px;
+	color: #fff;
+	font-family: var(--font-san);
+	font-weight: 800;
+	font-size: 1.1rem;
+}
+
+.group-info {
+	min-width: 0;
+}
+
+.group-name {
+	margin: 0;
+	font-size: 1.05rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.group-count {
+	margin: 0;
+	color: var(--bo-muted);
+	font-size: 0.85rem;
 }

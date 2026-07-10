@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from "@angular/core";
 import { MemberRoleMetadata, MemberRoles } from "src/app/core/config/member-roles";
 import { SDK } from "src/sdk";
 
-type RolePipeProperty = "code";
+type RolePipeProperty = "code" | "title";
 
 @Pipe({
 	name: "role",
@@ -24,6 +24,9 @@ export class RolePipe implements PipeTransform {
 
 		switch (property) {
 			case "code":
+				return this.roles[roleId][property] ?? "";
+
+			case "title":
 				return this.roles[roleId][property] ?? "";
 
 			default:

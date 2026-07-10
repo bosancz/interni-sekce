@@ -1,8 +1,5 @@
-<bo-card [color]="color()">
+<bo-card [color]="color()" [style.--tile-tint]="tint() || 'var(--bo-paper)'">
 	<bo-card-header class="p-3">
 		<bo-card-title>{{ label() }}</bo-card-title>
 	</bo-card-header>
-	<bo-card-content>
-		<img [src]="image()" [alt]="label()" />
-	</bo-card-content>
 </bo-card>

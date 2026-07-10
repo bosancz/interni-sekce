@@ -1,7 +1,58 @@
+// problem rows live in soft white cards
+ion-list {
+	background-color: var(--bo-white);
+	border-radius: var(--bo-radius-card);
+	box-shadow: var(--bo-shadow-card);
+	padding: 0.25rem 0.75rem;
+}
+
 bo-item {
 	--label-width: 100px;
 }
 
 .severity-icon {
 	font-size: 1.8rem;
+}
+
+// summary card with counts
+.summary {
+	background-color: var(--bo-white);
+	border-radius: var(--bo-radius-card);
+	box-shadow: var(--bo-shadow-card);
+	padding: 1rem 1.2rem;
+}
+
+.summary-title {
+	margin: 0 0 0.75rem;
+	font-family: var(--font-san);
+	color: var(--bo-ink);
+	font-size: 1rem;
+}
+
+.summary-row {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.25rem 0;
+	color: var(--bo-muted);
+	font-size: 0.9rem;
+}
+
+.summary-dot {
+	width: 0.6em;
+	height: 0.6em;
+	border-radius: 50%;
+
+	&.dot-yellow {
+		background-color: var(--san-yellow);
+	}
+
+	&.dot-neutral {
+		background-color: var(--bo-neutral-badge);
+	}
+}
+
+.summary-count {
+	margin-left: auto;
+	color: var(--bo-ink);
 }

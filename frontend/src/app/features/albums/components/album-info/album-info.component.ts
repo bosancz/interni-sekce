@@ -16,6 +16,7 @@ import { EventSelectorComponent } from "../event-selector/event-selector.compone
 @Component({
 	selector: "bo-album-info",
 	templateUrl: "./album-info.component.html",
+	styleUrl: "./album-info.component.scss",
 
 	imports: [
 		FormsModule,

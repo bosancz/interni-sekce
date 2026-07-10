@@ -3,7 +3,11 @@
 	transition: background-color 1000ms;
 }
 
+// status pill — colour by meaning (blue = in preparation, yellow = needs attention)
 ion-badge {
 	font-size: 0.75em;
-	line-height: 1.1em;
+	line-height: 1.4em;
+	font-weight: 700;
+	border-radius: var(--bo-radius-pill);
+	padding: 0.35em 1em;
 }

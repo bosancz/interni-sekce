@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { RouterLink } from "@angular/router";
+import { IsActiveMatchOptions, RouterLink, RouterLinkActive } from "@angular/router";
 import { IonIcon, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
@@ -24,10 +24,18 @@ import { VersionComponent } from "src/app/shared/components/version/version.comp
 	selector: "bo-sidebar",
 	templateUrl: "./sidebar.component.html",
 	styleUrl: "./sidebar.component.scss",
-	imports: [RouterLink, IonList, IonItem, IonIcon, IonLabel, DarkModeToggleComponent, VersionComponent],
+	imports: [RouterLink, RouterLinkActive, IonList, IonItem, IonIcon, IonLabel, DarkModeToggleComponent, VersionComponent],
 })
 export class SidebarComponent {
 	title = this.api.info.pipe(map((info) => "Bošán" + (info.environmentTitle ? ` ${info.environmentTitle}` : "")));
+
+	// exact matching for home tabs (they differ only in the ?tab= query param)
+	readonly tabLinkActiveOptions: IsActiveMatchOptions = {
+		paths: "exact",
+		queryParams: "exact",
+		matrixParams: "ignored",
+		fragment: "ignored",
+	};
 
 	canAccessAdmin = this.userService.canAccessAdmin;
 

@@ -11,11 +11,11 @@
 }
 
 :host:not(:last-child) {
-	border-bottom: 1px solid var(--grey);
+	border-bottom: 1px solid var(--bo-line);
 }
 
 :host.clickable:hover {
-	background-color: var(--lightGrey);
+	background-color: var(--bo-paper);
 }
 
 @media (max-width: 1200px) {
@@ -32,6 +32,7 @@
 
 .label {
 	font-weight: bold;
+	color: var(--bo-heading);
 	flex: 0 0 var(--label-width, 100px);
 
 	margin-right: 1em;

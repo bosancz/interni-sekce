@@ -1,3 +1,14 @@
 ion-label {
-	font-family: SanGrotesk;
+	font-family: var(--font-san);
+}
+
+ion-tab-button {
+	--color: var(--bo-muted);
+	--color-selected: var(--bo-nav-active-fg);
+	--background: transparent;
+
+	&.tab-selected {
+		color: var(--bo-nav-active-fg);
+		font-weight: 700;
+	}
 }

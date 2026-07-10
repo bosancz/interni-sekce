@@ -23,7 +23,11 @@
 	</bo-item>
 
 	<bo-item label="Publikováno" [loading]="!album()">
-		<p>{{ (album()?.datePublished | date: "d. M. y") ?? "-" }}</p>
+		@if (album()?.datePublished) {
+			<p>{{ album()?.datePublished | date: "d. M. y" }}</p>
+		} @else {
+			<p><span class="bo-pill">Nepublikováno</span></p>
+		}
 	</bo-item>
 
 	<bo-item label="Akce" [loading]="!album()" lines="inset">

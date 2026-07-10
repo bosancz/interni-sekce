@@ -7,10 +7,6 @@ import { addOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
-import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
-import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
-import { CardComponent } from "src/app/shared/components/card/card.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
@@ -21,15 +17,7 @@ import { SDK } from "src/sdk";
 	templateUrl: "./groups-list.component.html",
 	styleUrls: ["./groups-list.component.scss"],
 
-	imports: [
-		PageHeaderComponent,
-		PageContentComponent,
-		CardComponent,
-		CardHeaderComponent,
-		CardTitleComponent,
-		CardContentComponent,
-		RouterLink,
-	],
+	imports: [PageHeaderComponent, PageContentComponent, RouterLink],
 })
 export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 	groups = signal<SDK.GroupResponseWithLinks[]>([]);

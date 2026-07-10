@@ -3,3 +3,13 @@
 	display: inline-block;
 	text-align: left;
 }
+
+// team badge — the team's colour identifies the team (oddíl)
+ion-badge {
+	border-radius: var(--bo-radius-pill);
+	font-weight: 800;
+	color: #fff;
+	min-width: 1.9em;
+	padding: 0.45em 0.5em;
+	text-align: center;
+}

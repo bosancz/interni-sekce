@@ -1,22 +1,30 @@
 <bo-page-header title="Oddíly" backUrl="/" [actions]="actions()" />
 
 <bo-page-content [padding]="true">
-	<bo-card [routerLink]="['/databaze/clenove']" class="group">
-		<bo-card-header>
-			<bo-card-title>Celá databáze</bo-card-title>
-		</bo-card-header>
-		<bo-card-content> {{ totalMemberCount() }} členů </bo-card-content>
-	</bo-card>
+	<!-- hero card — "žlutá na modré" core identity -->
+	<div class="hero" [routerLink]="['/databaze/clenove']">
+		<div class="hero-text">
+			<h3 class="hero-title">Celá databáze</h3>
+			<p class="hero-subtitle">všichni členové skupiny</p>
+		</div>
+		<div class="hero-count">
+			<strong>{{ totalMemberCount() }}</strong>
+			<span>členů</span>
+		</div>
+	</div>
 
 	<div class="row mt-4">
 		@for (group of groups(); track group.id) {
 			<div class="col-6 col-lg-6 col-xl-4 mb-4">
-				<bo-card [routerLink]="['/databaze/clenove']" [queryParams]="{ groups: group.id }" class="group">
-					<bo-card-header>
-						<bo-card-title>{{ group.name }}</bo-card-title>
-					</bo-card-header>
-					<bo-card-content> {{ group.memberCount }} členů </bo-card-content>
-				</bo-card>
+				<div class="group" [routerLink]="['/databaze/clenove']" [queryParams]="{ groups: group.id }">
+					<span class="group-badge" [style.background-color]="group.color || 'var(--bo-neutral-badge)'">
+						{{ group.shortName }}
+					</span>
+					<div class="group-info">
+						<h3 class="group-name">{{ group.name ?? group.shortName }}</h3>
+						<p class="group-count">{{ group.memberCount }} členů</p>
+					</div>
+				</div>
 			</div>
 		}
 	</div>

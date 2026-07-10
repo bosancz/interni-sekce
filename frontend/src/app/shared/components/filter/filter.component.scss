@@ -6,6 +6,16 @@
 ion-toolbar {
 	padding-top: 0.25rem;
 	padding-bottom: 0.25rem;
+	--background: transparent;
+	--ion-toolbar-background: transparent;
+}
+
+// search input as a white rounded pill on the paper background
+ion-searchbar {
+	--background: var(--bo-white);
+	--box-shadow: var(--bo-shadow-card);
+	--placeholder-color: var(--bo-muted);
+	--icon-color: var(--bo-muted);
 }
 
 ion-badge {

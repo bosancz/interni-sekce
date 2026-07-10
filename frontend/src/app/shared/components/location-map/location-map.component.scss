@@ -1,7 +1,7 @@
 :host {
 	display: block;
-	border: 2px solid var(--bo-black);
-	border-radius: 8px;
+	border-radius: var(--bo-radius-card);
+	box-shadow: var(--bo-shadow-card);
 	overflow: hidden;
 }
 

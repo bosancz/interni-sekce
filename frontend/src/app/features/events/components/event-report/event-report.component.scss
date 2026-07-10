@@ -1,5 +1,15 @@
+// photo gallery link — clickable soft card
 .album-link {
-	--background: var(--ion-color-light);
-	border-radius: 8px;
+	--background: var(--bo-white);
+	border-radius: var(--bo-radius-card);
+	box-shadow: var(--bo-shadow-card);
 	max-width: 30rem;
+
+	ion-icon[slot="start"] {
+		background-color: var(--bo-blue-tint);
+		color: var(--bo-heading);
+		border-radius: 10px;
+		padding: 8px;
+		font-size: 1.2rem;
+	}
 }

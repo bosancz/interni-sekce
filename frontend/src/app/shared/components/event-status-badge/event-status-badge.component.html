@@ -1,11 +1,7 @@
-<!-- <ion-chip [color]="event.status | eventStatus: 'color'">
-  <ion-label>
-    <strong>Stav akce:</strong> {{ event.status | eventStatus: "name" }}
-    <ng-container *ngIf="event.statusNote">| <strong>Poznámka:</strong> {{ event.statusNote }}</ng-container>
-  </ion-label>
-</ion-chip> -->
-
-<ion-badge [style.background-color]="event().status | eventStatus: 'color'">
+<ion-badge
+	[style.background-color]="event().status | eventStatus: 'background'"
+	[style.color]="event().status | eventStatus: 'foreground'"
+>
 	{{ event().status | eventStatus: "name" }}
 	@if (event().statusNote) {
 		: {{ event().statusNote }}

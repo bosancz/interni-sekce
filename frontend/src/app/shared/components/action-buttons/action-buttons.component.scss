@@ -1,0 +1,15 @@
+// pinned = the screen's primary affirmative action → yellow brand button
+ion-button.pinned {
+	--background: var(--san-yellow);
+	--background-hover: var(--san-yellow);
+	--background-activated: var(--san-yellow);
+	--color: #fff;
+	--border-radius: var(--bo-radius-btn);
+	--padding-start: 1em;
+	--padding-end: 1em;
+	font-weight: 700;
+
+	ion-text {
+		color: #fff;
+	}
+}

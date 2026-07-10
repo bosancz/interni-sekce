@@ -75,8 +75,12 @@
 				</p>
 			}
 			<p class="mb-0">
-				Vede
-				<strong [innerHTML]="event.leaders?.length ? (event.leaders! | joinLeaders) : 'pan NIKDO'"></strong>
+				@if (event.leaders?.length) {
+					Vede
+					<strong [innerHTML]="event.leaders! | joinLeaders"></strong>
+				} @else {
+					<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
+				}
 			</p>
 		</bo-card-content>
 
@@ -86,7 +90,8 @@
 					<ion-buttons class="d-block">
 						@if (event._links.submitEvent.applicable) {
 							<ion-button
-								color="primary"
+								fill="solid"
+								color="warning"
 								[disabled]="!event._links.submitEvent.allowed"
 								(click)="eventAction(event, 'submitEvent')"
 							>
@@ -105,6 +110,7 @@
 
 						@if (event._links.publishEvent.applicable) {
 							<ion-button
+								fill="outline"
 								color="primary"
 								[disabled]="!event._links!.publishEvent.allowed"
 								(click)="eventAction(event, 'publishEvent')"

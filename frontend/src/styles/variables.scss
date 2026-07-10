@@ -1,29 +1,30 @@
-$colorPrimary: #3880ff;
-$colorSecondary: #3dc2ff;
+$colorPrimary: #2a3478;
+$colorSecondary: #4a58b0;
 $colorTertiary: #5260ff;
-$colorSuccess: #2dd36f;
-$colorWarning: #ffc409;
-$colorDanger: #eb445a;
-$colorMedium: #92949c;
+$colorSuccess: #799f3d;
+$colorWarning: #e28f26;
+$colorDanger: #d2232a;
+$colorMedium: #6b7185;
 
-$colorDark: #222;
-$colorLight: #f4f5f8;
+$colorDark: #1f2430;
+$colorLight: #f6f7fb;
 
 $black: #000;
 $black70: #3e3e3e;
 $darkGrey: $colorDark;
-$grey: #eee;
+$grey: #e6e8f0;
 $lightGrey: #f2f2f2;
 $white: #fff;
 
-$blue: #006fff;
-$lightBlue: rgba(0, 111, 255, 0.05);
-$linkBlue: #00bfff;
+$blue: #2a3478;
+$lightBlue: #eef1fb;
+$linkBlue: #4a58b0;
 
-$sanblue: hsl(232, 48%, 32%);
-$sangreen: hsl(83, 45%, 43%);
-$sanyellow: hsl(34, 76%, 52%);
-$sanred: hsl(358, 65%, 45%);
+// brand colours ("žlutá na modré" identity + team colours)
+$sanblue: #2a3478;
+$sangreen: #799f3d;
+$sanyellow: #e28f26;
+$sanred: #d2232a;
 
 $font-small: 0.8rem;
 $font-basic: 1rem;
@@ -32,49 +33,112 @@ $font-large: 2rem;
 $font-super-large: 3.5rem;
 
 $lightShade: rgba(255, 255, 255, 0.2);
-$darkShade: rgba(0, 0, 0, 0.05);
+$darkShade: rgba(31, 36, 48, 0.05);
 
-$shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+$shadow: 0 4px 16px rgba(31, 36, 48, 0.08);
 $photo-height: 30vh;
 $photo-max-height: 200px;
 
-$font-regular: "Roboto Condensed", Helvetica, Verdana, sans-serif;
-$font-san: SanGrotesk, "Roboto Condensed", Helvetica, Verdana, sans-serif;
+$font-regular: "Nunito Sans", "Roboto Condensed", Helvetica, Verdana, sans-serif;
+$font-san: SanGrotesk, "Baloo 2", "Roboto Condensed", Helvetica, Verdana, sans-serif;
 
 $circle-size: 2rem;
 
 // css variables
 body {
-	--san-blue: hsl(232, 48%, 32%);
-	--san-blue-rgb: 54, 81, 145;
+	--san-blue: #2a3478;
+	--san-blue-rgb: 42, 52, 120;
 
-	--san-green: hsl(83, 45%, 43%);
-	--san-green-rgb: 101, 145, 63;
+	--san-green: #799f3d;
+	--san-green-rgb: 121, 159, 61;
 
-	--san-yellow: hsl(34, 76%, 52%);
-	--san-yellow-rgb: 255, 179, 64;
+	--san-yellow: #e28f26;
+	--san-yellow-rgb: 226, 143, 38;
 
-	--san-red: hsl(358, 65%, 45%);
-	--san-red-rgb: 231, 76, 60;
+	--san-red: #d2232a;
+	--san-red-rgb: 210, 35, 42;
 
-	// --bo-shadow: rgba(0, 0, 0, 0.35) 0px 0 12px;
-	--bo-shadow: rgba(0, 0, 0, 0.12) 0px 4px 16px;
-	--bo-shadow-small: rgba(0, 0, 0, 0.35) 0px 2px 5px;
+	// brand accents & tints
+	--bo-blue: #2a3478;
+	--bo-blue-mid: #4a58b0;
+	--bo-blue-tint: #eef1fb;
+	--bo-blue-tint-2: #e3e8fa;
+	--bo-yellow: #e28f26;
+	--bo-yellow-tint: #fdf1de;
+	--bo-yellow-deep: #b9720f;
+	--bo-green: #799f3d;
+	--bo-green-tint: #eef4e4;
+	--bo-red: #d2232a;
+	--bo-red-tint: #fbe7e7;
+
+	--bo-ink: #1f2430;
+	--bo-muted: #6b7185;
+	--bo-line: #e6e8f0;
+	--bo-neutral-badge: #d7dbe6;
+	--bo-neutral-badge-text: #6b7185;
+	--bo-neutral-pill: #eef1f6;
+	--bo-neutral-pill-text: #6b7185;
+	--bo-paper: #f6f7fb;
+
+	// semantic
+	--bo-heading: var(--bo-blue);
+	--bo-link: var(--bo-blue);
+	--bo-link-hover: var(--bo-yellow);
+	--bo-nav-active-bg: var(--bo-yellow-tint);
+	--bo-nav-active-fg: var(--bo-blue);
+
+	// shape
+	--bo-radius-card: 16px;
+	--bo-radius-btn: 10px;
+	--bo-radius-pill: 999px;
+
+	--bo-shadow: 0 4px 16px rgba(31, 36, 48, 0.08);
+	--bo-shadow-small: 0 3px 12px rgba(31, 36, 48, 0.12);
+	--bo-shadow-card: 0 4px 16px rgba(31, 36, 48, 0.05);
+	--bo-shadow-hero: 0 6px 22px rgba(31, 36, 48, 0.06);
+	--bo-shadow-hero-blue: 0 6px 22px rgba(42, 52, 120, 0.22);
 
 	--bo-white: #fff;
 	--bo-black: #000;
 
-	--bo-dark: #222;
-	--bo-light: #f4f5f8;
+	--bo-dark: #1f2430;
+	--bo-light: #f6f7fb;
 
-	--font-regular: "Roboto Condensed", Helvetica, Verdana, sans-serif;
-	--font-san: SanGrotesk, "Roboto Condensed", Helvetica, Verdana;
+	--font-regular: "Nunito Sans", "Roboto Condensed", Helvetica, Verdana, sans-serif;
+	--font-san: SanGrotesk, "Baloo 2", "Roboto Condensed", Helvetica, Verdana;
 }
 
 body.dark {
 	--bo-white: #000;
 	--bo-black: #fff;
 
-	--bo-dark: #f4f5f8;
-	--bo-light: #222;
+	--bo-dark: #f6f7fb;
+	--bo-light: #1f2430;
+
+	// tints become translucent brand washes on dark backgrounds
+	--bo-blue-tint: rgba(74, 88, 176, 0.18);
+	--bo-blue-tint-2: rgba(74, 88, 176, 0.28);
+	--bo-yellow-tint: rgba(226, 143, 38, 0.16);
+	--bo-yellow-deep: #eba33f;
+	--bo-green-tint: rgba(121, 159, 61, 0.18);
+	--bo-red-tint: rgba(210, 35, 42, 0.18);
+
+	--bo-ink: #f2f3f7;
+	--bo-muted: #9aa0b5;
+	--bo-line: #2a2d3a;
+	--bo-neutral-badge: #3a3e4d;
+	--bo-neutral-badge-text: #c3c8d8;
+	--bo-neutral-pill: #2a2d3a;
+	--bo-neutral-pill-text: #aab0c2;
+	--bo-paper: #16181f;
+
+	--bo-heading: #aeb7f0;
+	--bo-link: #aeb7f0;
+	--bo-link-hover: var(--bo-yellow);
+	--bo-nav-active-fg: #aeb7f0;
+
+	--bo-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+	--bo-shadow-small: 0 3px 12px rgba(0, 0, 0, 0.5);
+	--bo-shadow-card: 0 4px 16px rgba(0, 0, 0, 0.25);
+	--bo-shadow-hero: 0 6px 22px rgba(0, 0, 0, 0.3);
 }
