@@ -1,11 +1,11 @@
 <h3>
 	Report z akce
-	@if (event()?._links?.updateEvent?.allowed) {
+	@if (event()?._links?.updateEvent?.allowed && event()?.report) {
 		<bo-edit-button-markdown
 			slot="end"
 			label="Report"
 			[value]="event()?.report"
-		    (update)="update.emit({ report: $event })"
+			(update)="update.emit({ report: $event })"
 		/>
 	}
 </h3>
@@ -13,7 +13,14 @@
 @if (event() && event()!.report) {
 	<div [innerHTML]="event()!.report | markdown"></div>
 } @else if (event()) {
-	<p><em>Report je prázdný.</em></p>
+	<div class="bo-empty-state">
+		<ion-icon name="document-text-outline"></ion-icon>
+		<strong>Report je zatím prázdný</strong>
+		<p>Sepište, jak akce proběhla.</p>
+		@if (event()?._links?.updateEvent?.allowed) {
+			<ion-button fill="solid" color="warning" (click)="writeReport()">Napsat report</ion-button>
+		}
+	</div>
 } @else {
 	<p><ion-skeleton-text animated></ion-skeleton-text></p>
 }

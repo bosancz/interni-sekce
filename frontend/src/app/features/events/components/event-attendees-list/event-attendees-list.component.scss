@@ -1,5 +1,13 @@
 @use "src/styles/variables" as *;
 
+// person rows live in a soft white card
+ion-list {
+	background-color: var(--bo-white);
+	border-radius: var(--bo-radius-card);
+	box-shadow: var(--bo-shadow-card);
+	padding: 0.25rem 0.75rem;
+}
+
 bo-item {
 	--label-width: 80px;
 }
@@ -13,11 +21,17 @@ bo-item {
 	white-space: nowrap;
 }
 
+// roles are NOT teams → neutral grey pill, spelled out
 .role {
-	flex: 0 0 20px;
+	flex: 0 0 auto;
 	text-align: center;
 	line-height: 0;
 	ion-badge {
-		background-color: $colorMedium;
+		background-color: var(--bo-neutral-pill);
+		color: var(--bo-neutral-pill-text);
+		border-radius: var(--bo-radius-pill);
+		font-weight: 700;
+		padding: 0.45em 0.9em;
+		text-transform: capitalize;
 	}
 }

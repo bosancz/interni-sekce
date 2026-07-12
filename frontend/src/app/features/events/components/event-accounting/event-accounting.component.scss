@@ -1,5 +1,22 @@
+// receipt rows live in a soft white card
+ion-list {
+	background-color: var(--bo-white);
+	border-radius: var(--bo-radius-card);
+	box-shadow: var(--bo-shadow-card);
+	padding: 0.25rem 0.75rem;
+	display: block;
+}
+
+// named expense category chip
+ion-badge {
+	border-radius: var(--bo-radius-pill);
+	font-weight: 700;
+	padding: 0.4em 0.9em;
+}
+
 bo-item {
 	--label-width: 50px;
+	cursor: pointer;
 }
 
 .type {

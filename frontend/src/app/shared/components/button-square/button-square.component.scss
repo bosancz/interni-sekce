@@ -1,12 +1,28 @@
+// quick-access tile — soft tinted background in the section colour,
+// large display-font label and a faint circle bleeding off the corner
 bo-card {
-	aspect-ratio: 1/1;
+	aspect-ratio: 3 / 2;
 	overflow: hidden;
+	background-color: var(--tile-tint);
+	box-shadow: none;
+	position: relative;
+	cursor: pointer;
+	transition: box-shadow 0.1s ease-in-out;
 
-	bo-card-content {
-		padding-top: 0 !important;
+	&:hover {
+		box-shadow: var(--bo-shadow-card);
 	}
 
-	img {
-		width: 100%;
+	&::after {
+		content: "";
+		position: absolute;
+		right: -18%;
+		bottom: -35%;
+		width: 65%;
+		aspect-ratio: 1 / 1;
+		border-radius: 50%;
+		background-color: var(--card-color);
+		opacity: 0.14;
+		pointer-events: none;
 	}
 }

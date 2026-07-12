@@ -1,7 +1,17 @@
+// yellow primary action pill (brand accent)
 button {
-	border: 2px solid #ccc;
-	border-radius: 8px;
-	padding: 0.7em 1em;
-	background: transparent;
-	color: inherit;
+	border: none;
+	border-radius: var(--bo-radius-btn);
+	padding: 0.5em 1.2em;
+	background: var(--san-yellow);
+	color: #fff;
+	font-family: inherit;
+	font-size: 0.9em;
+	font-weight: 700;
+	cursor: pointer;
+	transition: box-shadow 0.1s ease-in-out;
+
+	&:hover {
+		box-shadow: var(--bo-shadow-small);
+	}
 }

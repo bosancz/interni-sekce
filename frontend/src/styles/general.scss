@@ -27,7 +27,75 @@ h2 {
 }
 
 a[href] {
-	color: $blue;
+	color: var(--bo-link);
+}
+
+a[href]:hover {
+	color: var(--bo-link-hover);
+}
+
+h1,
+h2,
+h3 {
+	color: var(--bo-heading);
+}
+
+/* brand pills — status / role / team chips */
+.bo-pill {
+	display: inline-block;
+	padding: 0.25em 0.9em;
+	border-radius: 999px;
+	font-size: 0.8em;
+	font-weight: 700;
+	line-height: 1.4;
+	white-space: nowrap;
+	background: var(--bo-neutral-pill);
+	color: var(--bo-neutral-pill-text);
+
+	&.bo-pill-blue {
+		background: var(--bo-blue-tint-2);
+		color: var(--bo-heading);
+	}
+
+	&.bo-pill-yellow {
+		background: var(--bo-yellow-tint);
+		color: var(--bo-yellow-deep);
+	}
+
+	&.bo-pill-green {
+		background: var(--bo-green-tint);
+		color: var(--bo-green);
+	}
+
+	&.bo-pill-danger-dashed {
+		background: transparent;
+		border: 1px dashed var(--bo-red);
+		color: var(--bo-red);
+	}
+}
+
+/* brand empty state — dashed rounded container + icon + message + CTA */
+.bo-empty-state {
+	border: 1px dashed var(--bo-neutral-badge);
+	border-radius: var(--bo-radius-card);
+	padding: 2rem 1.5rem;
+	text-align: center;
+	color: var(--bo-muted);
+
+	ion-icon {
+		font-size: 2rem;
+		color: var(--bo-muted);
+	}
+
+	strong {
+		display: block;
+		color: var(--bo-ink);
+		margin-top: 0.5rem;
+	}
+
+	p {
+		margin: 0.25rem 0 1rem;
+	}
 }
 
 .clickable {

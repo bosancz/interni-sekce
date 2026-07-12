@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { google } from "googleapis";
+import { TokenPayload } from "google-auth-library";
 import { Config } from "src/config";
 
 @Injectable()
@@ -30,11 +31,11 @@ export class GoogleService {
 		google.options({ auth });
 	}
 
-	async validateOauthToken(code: string) {
+	async validateOauthToken(code: string): Promise<TokenPayload> {
 		const tokens = await this.oauth.getToken(code).then((res) => res.tokens);
 		if (!tokens.id_token) throw new Error("No id_token in Google response");
 
-		const tokenData = this.oauth
+		const tokenData = await this.oauth
 			.verifyIdToken({
 				idToken: tokens.id_token,
 				audience: this.config.google.clientId,

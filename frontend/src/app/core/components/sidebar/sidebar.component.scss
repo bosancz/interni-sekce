@@ -4,6 +4,9 @@
 	height: 100%;
 	--ion-item-background: transparent;
 	position: relative;
+	background-color: var(--bo-white);
+	border-right: 1px solid var(--bo-line);
+	padding: 0.5rem;
 }
 
 ion-header {
@@ -15,9 +18,32 @@ ion-header {
 	}
 }
 
+ion-item {
+	--border-radius: var(--bo-radius-btn);
+	border-radius: var(--bo-radius-btn);
+	margin-bottom: 2px;
+	--color: var(--bo-muted);
+	font-weight: 600;
+
+	ion-icon {
+		color: var(--bo-muted);
+	}
+
+	// active nav item — yellow tint background + blue bold text
+	&.active {
+		--background: var(--bo-nav-active-bg);
+		--color: var(--bo-nav-active-fg);
+		font-weight: 800;
+
+		ion-icon {
+			color: var(--bo-nav-active-fg);
+		}
+	}
+}
+
 hr {
-	background-color: rgba(204, 204, 204, 0.25);
-	margin: 0 2em;
+	background-color: var(--bo-line);
+	margin: 0.25rem 2em;
 	opacity: 1;
 }
 
@@ -27,14 +53,3 @@ hr {
 	width: 100%;
 	text-align: center;
 }
-// :host::after {
-// 	content: "";
-// 	position: absolute;
-// 	top: 50%;
-// 	right: 0;
-// 	display: block;
-// 	height: 50px;
-// 	width: 1px;
-// 	background-color: rgba(204, 204, 204, 0.25);
-// 	transform: translateY(-50%);
-// }

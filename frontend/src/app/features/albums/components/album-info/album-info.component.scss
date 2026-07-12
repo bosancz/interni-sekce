@@ -1,22 +1,7 @@
-:host {
-	display: block;
-}
-
 // label/value rows sit inside a soft white card
 ion-list {
 	background-color: var(--bo-white);
 	border-radius: var(--bo-radius-card);
 	box-shadow: var(--bo-shadow-card);
 	padding: 0.5rem 1rem;
-}
-
-.event-map {
-	display: block;
-	height: 240px;
-}
-
-.attendees {
-	ion-chip {
-		color: #fff;
-	}
 }

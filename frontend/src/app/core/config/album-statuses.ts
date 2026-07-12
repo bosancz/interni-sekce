@@ -8,11 +8,11 @@ export interface AlbumStatusInfo {
 export const AlbumStatuses: { [key in SDK.AlbumResponseWithLinksStatusEnum]: AlbumStatusInfo } = {
 	draft: {
 		name: "Připravované",
-		color: "#92949c",
+		color: "#6b7185",
 	},
 
 	public: {
 		name: "Veřejné",
-		color: "#2dd36f",
+		color: "#799f3d",
 	},
 };

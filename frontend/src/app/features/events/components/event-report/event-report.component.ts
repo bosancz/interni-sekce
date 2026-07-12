@@ -1,14 +1,16 @@
 import { CommonModule } from "@angular/common";
 import { Component, input, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonButton, IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { chevronForwardOutline, imagesOutline } from "ionicons/icons";
+import { chevronForwardOutline, documentTextOutline, imagesOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { AddButtonComponent } from "src/app/shared/components/add-button/add-button.component";
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
+import { MarkdownEditorModalComponent } from "src/app/shared/components/markdown-editor-modal/markdown-editor-modal.component";
 import { SDK } from "src/sdk";
 import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 
@@ -24,6 +26,7 @@ import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 		EditButtonMarkdownComponent,
 		MarkdownPipe,
 		AddButtonComponent,
+		IonButton,
 		IonIcon,
 		IonItem,
 		IonLabel,
@@ -40,8 +43,19 @@ export class EventReportComponent {
 	constructor(
 		private readonly api: ApiService,
 		private readonly toastService: ToastService,
+		private readonly modalService: ModalService,
 	) {
-		addIcons({ imagesOutline, chevronForwardOutline });
+		addIcons({ imagesOutline, chevronForwardOutline, documentTextOutline });
+	}
+
+	/** opens the same markdown editor as the pencil edit button */
+	async writeReport() {
+		const result = await this.modalService.componentModal(MarkdownEditorModalComponent, {
+			header: "Report",
+			value: this.event()?.report,
+		});
+
+		if (result !== null) this.update.emit({ report: result });
 	}
 
 	async createAlbum() {

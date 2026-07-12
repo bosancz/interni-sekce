@@ -5,6 +5,7 @@ import {
 	calendarOutline,
 	eyeOutline, 
 	checkboxOutline,
+	imageOutline,
 	closeOutline,
 	cloudUploadOutline,
 	save,
@@ -54,6 +55,7 @@ export class AlbumGalleryComponent {
 			calendarOutline,
 			textOutline,
 			eyeOutline,
+			imageOutline,
 		});
 	}
 }

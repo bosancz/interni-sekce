@@ -5,6 +5,56 @@
 	white-space: nowrap;
 }
 
-table {
-	// background-color: #fff;
+// branded table card — blue-tint header, zebra rows, hairline dividers
+.table-responsive {
+	background-color: var(--bo-white);
+	border-radius: var(--bo-radius-card);
+	box-shadow: var(--bo-shadow-card);
+}
+
+table.table {
+	margin-bottom: 0;
+	--bs-table-bg: transparent;
+	--bs-table-striped-bg: var(--bo-paper);
+
+	::ng-deep {
+		thead th {
+			background-color: var(--bo-blue-tint);
+			color: var(--bo-heading);
+			text-transform: uppercase;
+			font-size: 0.75rem;
+			letter-spacing: 0.04em;
+			font-weight: 800;
+			border-bottom: none;
+			padding: 0.8rem 1rem;
+
+			&:first-child {
+				border-top-left-radius: var(--bo-radius-card);
+			}
+			&:last-child {
+				border-top-right-radius: var(--bo-radius-card);
+			}
+		}
+
+		tbody td {
+			border-bottom: 1px solid var(--bo-line);
+			padding: 0.7rem 1rem;
+			vertical-align: middle;
+		}
+
+		tbody tr:nth-child(even) {
+			background-color: var(--bo-paper);
+		}
+
+		tbody tr:last-child td {
+			border-bottom: none;
+
+			&:first-child {
+				border-bottom-left-radius: var(--bo-radius-card);
+			}
+			&:last-child {
+				border-bottom-right-radius: var(--bo-radius-card);
+			}
+		}
+	}
 }

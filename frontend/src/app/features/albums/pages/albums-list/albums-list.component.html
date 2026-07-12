@@ -75,7 +75,11 @@
 						<tr [routerLink]="'' + album.id">
 							<td class="albums-name-column">{{ album.name }}</td>
 							<td class="date albums-date-column">{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }}</td>
-							<td class="albums-status-column">{{ album | album: "status" }}</td>
+							<td class="albums-status-column">
+								<span class="bo-pill" [class.bo-pill-green]="album.status === 'public'">
+									{{ album | album: "status" }}
+								</span>
+							</td>
 							<td class="albums-published-column">{{ album.datePublished | date: "d. M. y" }}</td>
 						</tr>
 					}

@@ -1,7 +1,8 @@
+// soft rounded brand card — no hard borders
 :host {
 	background-color: var(--bo-white);
-	border: 2px solid var(--card-color);
-	border-radius: 0.5em;
+	border-radius: var(--bo-radius-card);
+	box-shadow: var(--bo-shadow-card);
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;

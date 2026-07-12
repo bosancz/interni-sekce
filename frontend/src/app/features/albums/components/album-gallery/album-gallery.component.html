@@ -58,9 +58,11 @@
 				(click)="photoClick.emit($event)"
 			></bo-photo-gallery>
 		} @else if (photos()) {
-			<p class="ion-text-center ion-padding">V tomto albu zatím nejsou žádné fotky.</p>
-			<div class="ion-text-center">
-				<ion-button (click)="upload.emit()">
+			<div class="bo-empty-state">
+				<ion-icon name="image-outline"></ion-icon>
+				<strong>V tomto albu zatím nejsou žádné fotky</strong>
+				<p>Přetáhněte fotky sem nebo je nahrajte.</p>
+				<ion-button fill="solid" color="warning" (click)="upload.emit()">
 					<ion-icon slot="start" name="cloud-upload-outline"></ion-icon> Nahrát fotky
 				</ion-button>
 			</div>

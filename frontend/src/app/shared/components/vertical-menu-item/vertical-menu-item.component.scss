@@ -1,1 +1,18 @@
-// Component-specific styles can be added here if needed
+ion-item {
+	cursor: pointer;
+	--padding-start: 1rem;
+	--padding-end: 1rem;
+	--inner-padding-end: 0;
+	margin-bottom: 0.25rem;
+	border-radius: var(--bo-radius-btn);
+	--border-radius: var(--bo-radius-btn);
+	--color: var(--bo-muted);
+	font-weight: 600;
+
+	// active subnav item — yellow tint + blue bold
+	&.active {
+		--background: var(--bo-nav-active-bg);
+		--color: var(--bo-nav-active-fg);
+		font-weight: 800;
+	}
+}

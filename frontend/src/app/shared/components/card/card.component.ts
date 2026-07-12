@@ -7,7 +7,7 @@ import { RouterLink } from "@angular/router";
 	styleUrls: ["./card.component.scss"],
 
 	host: {
-		"[style]": "'--card-color: ' + (color() || 'var(--bo-black)')",
+		"[style]": "'--card-color: ' + (color() || 'var(--bo-heading)')",
 		"[class.clickable]": "hasRouterLink()",
 		"[class.mousedown]": "mouseDown()",
 		"(mousedown)": "mouseDown.set(true)",
