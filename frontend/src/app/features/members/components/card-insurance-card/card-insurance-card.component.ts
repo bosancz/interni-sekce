@@ -9,6 +9,7 @@ import { SDK } from "src/sdk";
 import { CardContentComponent } from "../../../../shared/components/card-content/card-content.component";
 import { CardFooterComponent } from "../../../../shared/components/card-footer/card-footer.component";
 import { CardComponent } from "../../../../shared/components/card/card.component";
+import { InsuranceCardCameraModalComponent } from "../insurance-card-camera-modal/insurance-card-camera-modal.component";
 
 @Component({
 	selector: "bo-card-insurance-card",
@@ -121,6 +122,17 @@ export class CardInsuranceCardComponent implements OnDestroy {
 		const file = fileInput.files?.[0];
 		if (file) await this.uploadCard(file);
 		fileInput.value = "";
+	}
+
+	/**
+	 * Opens the camera modal, lets the user frame and photograph the card, then
+	 * uploads the cropped image through the same path as a file upload.
+	 */
+	async captureFromCamera() {
+		const file = await this.modalService.componentModal(InsuranceCardCameraModalComponent, undefined, {
+			cssClass: "insurance-card-camera",
+		});
+		if (file) await this.uploadCard(file);
 	}
 
 	private async uploadCard(file: File) {
