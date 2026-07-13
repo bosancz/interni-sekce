@@ -1,0 +1,81 @@
+<bo-modal-layout>
+	<h4 slot="title">Vyfotit kartičku pojištěnce</h4>
+
+	<div class="camera-stage" [style.aspect-ratio]="cardAspectRatio">
+		<!-- Live camera preview. Kept in the DOM (hidden) during preview so the -->
+		<!-- video element and its ref stay available for a quick retake. -->
+		<video #video class="feed" [class.hidden]="state() !== 'live'" playsinline muted></video>
+
+		@if (state() === "live") {
+			<!-- Card-shaped guide with corner brackets to line the card up against. -->
+			<div class="overlay">
+				<div #frame class="guide" [style.aspect-ratio]="cardAspectRatio">
+					<span class="corner top-left"></span>
+					<span class="corner top-right"></span>
+					<span class="corner bottom-left"></span>
+					<span class="corner bottom-right"></span>
+				</div>
+				<p class="hint">Umístěte kartičku do rámečku a vyplňte co největší plochu</p>
+			</div>
+		}
+
+		@if (state() === "initializing") {
+			<div class="status">
+				<ion-spinner></ion-spinner>
+				<p>Spouštím kameru…</p>
+			</div>
+		}
+
+		@if (state() === "error") {
+			<div class="status error">
+				<p>{{ errorMessage() }}</p>
+			</div>
+		}
+
+		@if (state() === "preview" && previewUrl()) {
+			<img class="feed" [src]="previewUrl()!" alt="Náhled vyfocené kartičky" />
+		}
+
+		@if (state() === "live" && torchAvailable()) {
+			<ion-button
+				class="torch"
+				fill="clear"
+				shape="round"
+				(click)="toggleTorch()"
+				[attr.aria-label]="torchOn() ? 'Vypnout svítilnu' : 'Zapnout svítilnu'"
+			>
+				<ion-icon slot="icon-only" [name]="torchOn() ? 'flash-outline' : 'flash-off-outline'"></ion-icon>
+			</ion-button>
+		}
+	</div>
+
+	<p class="tips">
+		Tipy pro čitelnou fotku: dobré osvětlení bez odlesků, kartička na kontrastním podkladu a rovná, nerozmazaná
+		fotka.
+	</p>
+
+	<ion-buttons slot="buttons">
+		@switch (state()) {
+			@case ("preview") {
+				<ion-button (click)="retake()" color="secondary">
+					<ion-icon slot="start" name="refresh-outline"></ion-icon>
+					Znovu
+				</ion-button>
+				<ion-button (click)="confirm()" color="primary">
+					<ion-icon slot="start" name="checkmark-outline"></ion-icon>
+					Použít
+				</ion-button>
+			}
+			@case ("error") {
+				<ion-button (click)="close.emit()" color="secondary">Zavřít</ion-button>
+			}
+			@default {
+				<ion-button (click)="close.emit()" color="secondary">Zrušit</ion-button>
+				<ion-button (click)="capture()" color="primary" [disabled]="state() !== 'live'">
+					<ion-icon slot="start" name="camera-outline"></ion-icon>
+					Vyfotit
+				</ion-button>
+			}
+		}
+	</ion-buttons>
+</bo-modal-layout>

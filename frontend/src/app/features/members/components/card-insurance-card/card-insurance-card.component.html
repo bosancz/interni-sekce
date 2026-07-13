@@ -26,9 +26,11 @@
 			class="upload"
 			#dropzone
 			>
-				<ion-button fill="clear" color="primary" (click)="fileInput.click()">Nahrát ze souboru </ion-button>
-				
+				<ion-button fill="clear" color="primary" (click)="fileInput.click()">Nahrát ze souboru</ion-button>
 
+				@if (isCameraCapable) {
+					<ion-button fill="clear" color="primary" (click)="captureFromCamera()">Vyfotit kartičku</ion-button>
+				}
 			</div>
 		}
 
