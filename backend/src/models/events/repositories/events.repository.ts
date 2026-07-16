@@ -210,11 +210,17 @@ export class EventsRepository {
 	}
 
 	async getEventAttendees(id: number) {
-		return this.eventAttendeesRepository.find({
-			where: { eventId: id },
-			relations: { member: true, event: true },
-			withDeleted: true,
-		});
+		const q = this.eventAttendeesRepository
+			.createQueryBuilder("attendee")
+			.where("attendee.event_id = :id", { id })
+			.leftJoinAndSelect("attendee.member", "member")
+			.leftJoinAndSelect("attendee.event", "event")
+			// event.attendees is needed so isMyEvent(doc.event) works in the edit/delete permission checks and _links
+			.leftJoinAndSelect("event.attendees", "leaders", "leaders.type = :type", { type: "leader" })
+			.select(["attendee", "member", "event.id", "leaders"])
+			.withDeleted();
+
+		return q.getMany();
 	}
 
 	async getEventAttendee(eventId: number, memberId: number) {
