@@ -2,6 +2,7 @@ import { DatePipe } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
+import { DateTime } from "luxon";
 import { ApiService } from "src/app/core/services/api.service";
 import { ButtonComponent } from "src/app/shared/components/button/button.component";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
@@ -41,8 +42,12 @@ export class HomeCardNoleaderEventsComponent implements OnInit {
 	}
 
 	async loadNoLeaderEvents() {
-		// TODO: list only noleader events
-		const events = await this.api.EventsApi.listEvents({ limit: 6, noleader: true }).then((res) => res.data);
+		// the API returns events ordered by dateFrom descending, so ask for all upcoming
+		// noleader events and sort them nearest-first here
+		const events = await this.api.EventsApi.listEvents({ noleader: true, dateFrom: DateTime.now().toISODate() }).then(
+			(res) => res.data,
+		);
+		events.sort((a, b) => a.dateFrom.localeCompare(b.dateFrom));
 		this.hasMore.set(events.length > 5);
 		this.events.set(events.slice(0, 5));
 	}
