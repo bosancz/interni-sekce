@@ -75,7 +75,7 @@ export class PublicService {
 
 		for (const photo of photos) {
 			const ext = extname(photo.name);
-			const path = this.photosFiles.getImagePath(photo.albumId, photo.id, PhotoSizes.original, ext);
+			const path = this.photosFiles.getPhotoImagePath(photo, PhotoSizes.original);
 
 			try {
 				await this.photosFiles.fileExists(path);

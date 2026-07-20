@@ -80,7 +80,7 @@ export class PhotosRepository {
 			await this.photosFiles.savePhotoFiles(albumId, photo.id, ext, file.buffer);
 		} catch (err) {
 			await this.repository.delete(photo.id);
-			await this.photosFiles.deletePhotoFiles(albumId, photo.id, ext);
+			await this.photosFiles.deletePhotoFiles(photo);
 			throw err;
 		}
 
@@ -106,7 +106,7 @@ export class PhotosRepository {
 		if (!photo) return;
 
 		await this.repository.delete(id);
-		await this.photosFiles.deletePhotoFiles(photo.albumId, photo.id, extname(photo.name));
+		await this.photosFiles.deletePhotoFiles(photo);
 	}
 
 	async deletePhotosByAlbum(albumId: Photo["albumId"]) {

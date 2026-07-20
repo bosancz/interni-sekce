@@ -34,4 +34,11 @@ export class Photo {
 	@Column({ type: "text", nullable: true }) caption!: string | null;
 	@Column({ type: "varchar", array: true, nullable: true }) tags!: string[] | null;
 	@Column({ type: "varchar", nullable: true }) bg!: string | null;
+
+	// Legacy Mongo ObjectIds of the album and photo, set only for photos imported from the
+	// old server (mongo-import). When present, the image files live in the legacy on-disk
+	// layout (keyed by these ObjectIds) rather than the numeric-id layout; see
+	// PhotosFilesService.getPhotoImagePath.
+	@Column({ type: "varchar", nullable: true }) srcAlbumId!: string | null;
+	@Column({ type: "varchar", nullable: true }) srcId!: string | null;
 }
