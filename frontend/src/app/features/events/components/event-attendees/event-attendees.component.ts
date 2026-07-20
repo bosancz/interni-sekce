@@ -141,9 +141,13 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			if (!confirmation) return;
 		}
 
+		// leaders and attendees are held in separate signals; update the one that actually holds this item
+		const list = attendee.type === "leader" ? this.leaders : this.attendees;
+		const previous = list();
+
 		try {
 			// optimistic update
-			this.attendees.set(this.attendees()?.filter((item) => item.memberId !== attendee.memberId));
+			list.set(previous?.filter((item) => item.memberId !== attendee.memberId));
 
 			await this.api.EventsApi.deleteEventAttendee(event.id, attendee.memberId);
 
@@ -153,7 +157,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			this.change.emit();
 		} catch (e) {
 			this.toastService.toast("Nepodařilo se odebrat účastníka.");
-			this.attendees.set([...(this.attendees() ?? []), attendee]); // rollback
+			list.set(previous); // rollback
 		}
 	}
 
