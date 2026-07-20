@@ -2,11 +2,17 @@
 	cursor: pointer;
 }
 
-tr.mmber-inactive {
+tr.member-inactive {
 	text-decoration: line-through;
-}
-tr.mmber-paused {
 	color: var(--bo-muted);
+}
+tr.member-paused {
+	color: var(--bo-muted);
+}
+
+.members-active-toggle {
+	color: var(--bo-muted);
+	font-size: 0.875rem;
 }
 
 td ion-badge {

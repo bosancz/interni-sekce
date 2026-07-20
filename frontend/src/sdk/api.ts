@@ -6783,11 +6783,19 @@ export namespace SDK {
     
         //age
         /**
-         * 
+         *
          * @type {Array<number>}
          * @memberof MembersApiExportMembersXlsx
          */
         age?: Array<number>
+
+        //active
+        /**
+         *
+         * @type {boolean}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        active?: boolean
     }
     
     
@@ -6911,11 +6919,19 @@ export namespace SDK {
     
         //age
         /**
-         * 
+         *
          * @type {Array<number>}
          * @memberof MembersApiListMembers
          */
         age?: Array<number>
+
+        //active
+        /**
+         *
+         * @type {boolean}
+         * @memberof MembersApiListMembers
+         */
+        active?: boolean
     }
     
     
@@ -7316,6 +7332,10 @@ export namespace SDK {
                 requestQueryParameter['age'] = queryParams.age;
             }
     
+            if (queryParams.active !== undefined) {
+                requestQueryParameter['active'] = queryParams.active;
+            }
+    
     
     
             setSearchParams(requestUrlObj, requestQueryParameter);
@@ -7594,6 +7614,10 @@ export namespace SDK {
     
             if (queryParams.age) {
                 requestQueryParameter['age'] = queryParams.age;
+            }
+    
+            if (queryParams.active !== undefined) {
+                requestQueryParameter['active'] = queryParams.active;
             }
     
     

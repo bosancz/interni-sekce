@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from "@nestjs
 import { Type } from "class-transformer";
 import { IsArray, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
 import { PaginationQuery } from "src/api/helpers/dto";
-import { EnsureArray } from "src/helpers/validation";
+import { EnsureArray, EnsureBoolean } from "src/helpers/validation";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import {
@@ -104,4 +104,6 @@ export class MembersListQuery extends PaginationQuery {
 	@IsNumber({}, { each: true })
 	@IsOptional()
 	age?: number[];
+
+	@EnsureBoolean() @IsOptional() active?: boolean;
 }
