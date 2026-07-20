@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, RouterLink, RouterOutlet } from "@angular/router";
 import { IonIcon, IonTabBar, IonTabButton, IonToolbar, NavController } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -30,14 +30,14 @@ import { GroupsService } from "../../services/groups.service";
 	],
 })
 export class GroupViewComponent implements OnInit {
-	group?: SDK.GroupResponseWithLinks | null;
+	group = signal<SDK.GroupResponseWithLinks | null | undefined>(undefined);
 
 	actions: Action[] = [
 		{
 			text: "Upravit",
 			icon: "create",
 			pinned: true,
-			handler: () => this.navController.navigateForward(`/oddily/${this.group?.id}/upravit`),
+			handler: () => this.navController.navigateForward(`/oddily/${this.group()?.id}/upravit`),
 		},
 		{
 			text: "Smazat",
@@ -62,7 +62,7 @@ export class GroupViewComponent implements OnInit {
 			if (params["id"]) this.groupsService.loadGroup(parseInt(params["id"]));
 		});
 
-		this.groupsService.currentGroup.pipe(untilDestroyed(this)).subscribe((group) => (this.group = group));
+		this.groupsService.currentGroup.pipe(untilDestroyed(this)).subscribe((group) => this.group.set(group));
 	}
 
 	private async deleteGroup() {}

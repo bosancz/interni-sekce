@@ -2,7 +2,19 @@ import { KeyValuePipe } from "@angular/common";
 import { Component, OnInit, signal, ViewChild } from "@angular/core";
 import { FormsModule, NgForm } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
-import { IonBackButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonSelect, IonSelectOption, IonTitle, IonToolbar } from "@ionic/angular/standalone";
+import {
+	IonBackButton,
+	IonButtons,
+	IonContent,
+	IonHeader,
+	IonInput,
+	IonItem,
+	IonLabel,
+	IonSelect,
+	IonSelectOption,
+	IonTitle,
+	IonToolbar,
+} from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UserRoles } from "src/app/core/config/user-roles";
 import { ApiService } from "src/app/core/services/api.service";
@@ -16,7 +28,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-users-edit",
 	templateUrl: "./users-edit.component.html",
 	styleUrls: ["./users-edit.component.scss"],
-	
+
 	imports: [
 		FormsModule,
 		KeyValuePipe,

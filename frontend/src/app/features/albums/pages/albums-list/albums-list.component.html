@@ -38,7 +38,7 @@
 								label="Datum"
 								interface="popover"
 								justify="start"
-								[ngModel]="selectedYear"
+								[ngModel]="selectedYear()"
 								(ngModelChange)="setFilterParam('year', $event)"
 							>
 								<ion-select-option [value]="null">všechny</ion-select-option>
@@ -54,7 +54,7 @@
 								label="Stav"
 								interface="popover"
 								justify="start"
-								[ngModel]="selectedStatus"
+								[ngModel]="selectedStatus()"
 								(ngModelChange)="setFilterParam('status', $event)"
 							>
 								<ion-select-option [value]="null">všechny</ion-select-option>

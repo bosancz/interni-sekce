@@ -5,8 +5,8 @@
 			ngModel
 			placeholder="Hledat"
 			[debounce]="500"
-			[(ngModel)]="searchString"
-			(ngModelChange)="onSearchbarUpdate()"
+			[ngModel]="searchString()"
+			(ngModelChange)="searchString.set($event); onSearchbarUpdate()"
 			(change)="$event.stopPropagation()"
 		></ion-searchbar>
 	}
@@ -16,13 +16,13 @@
 		fill="none"
 		[class.d-lg-none]="showButtonMobileOnly()"
 		[id]="'filter-modal-' + filterId"
-		[disabled]="disabled"
+		[disabled]="disabled()"
 		(click)="openFilter(filterContent)"
 		slot="end"
 	>
 		<ion-icon slot="icon-only" name="filter-outline"></ion-icon>
-		@if (filterCount) {
-			<ion-badge color="warning">{{ filterCount }}</ion-badge>
+		@if (filterCount()) {
+			<ion-badge color="warning">{{ filterCount() }}</ion-badge>
 		}
 	</ion-button>
 

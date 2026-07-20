@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { FormsModule, NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { IonButton, IonInput, IonItem, IonLabel, IonList, NavController } from "@ionic/angular/standalone";
@@ -26,7 +26,7 @@ import { SDK } from "src/sdk";
 	],
 })
 export class GroupEditComponent implements OnInit {
-	group?: SDK.GroupResponseWithLinks;
+	group = signal<SDK.GroupResponseWithLinks | undefined>(undefined);
 
 	constructor(
 		private route: ActivatedRoute,
@@ -42,13 +42,13 @@ export class GroupEditComponent implements OnInit {
 	}
 
 	private async loadGroup(groupId: number) {
-		this.group = await this.api.MembersApi.getGroup(groupId).then((res) => res.data);
+		this.group.set(await this.api.MembersApi.getGroup(groupId).then((res) => res.data));
 	}
 
 	async editGroup(form: NgForm) {
 		const groupData = form.value;
 
-		await this.api.MembersApi.updateGroup(this.group!.id, groupData);
+		await this.api.MembersApi.updateGroup(this.group()!.id, groupData);
 
 		this.toastService.toast("Uloženo.", { color: "success" });
 

@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { UserService } from "src/app/core/services/user.service";
 import { ButtonSquareComponent } from "src/app/shared/components/button-square/button-square.component";

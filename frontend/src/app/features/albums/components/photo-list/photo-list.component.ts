@@ -2,14 +2,14 @@ import { DatePipe } from "@angular/common";
 import { Component, input, OnInit, output, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import {
-    IonAvatar,
-    IonCheckbox,
-    IonItem,
-    IonLabel,
-    IonReorder,
-    IonReorderGroup,
-    IonRippleEffect,
-    IonSkeletonText,
+	IonAvatar,
+	IonCheckbox,
+	IonItem,
+	IonLabel,
+	IonReorder,
+	IonReorderGroup,
+	IonRippleEffect,
+	IonSkeletonText,
 } from "@ionic/angular/standalone";
 import { ItemReorderEventDetail } from "@ionic/core";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
@@ -19,7 +19,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-photo-list",
 	templateUrl: "./photo-list.component.html",
 	styleUrls: ["./photo-list.component.scss"],
-	
+
 	imports: [
 		FormsModule,
 		DatePipe,

@@ -1,5 +1,5 @@
 import { KeyValuePipe } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, signal } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import {
 	IonButton,
@@ -41,7 +41,7 @@ import { SDK } from "src/sdk";
 export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCreateBody> {
 	roles = MemberRoles;
 
-	showValidationErrors = false;
+	showValidationErrors = signal(false);
 
 	form = new FormGroup({
 		nickname: new FormControl<string>("", { nonNullable: true, validators: [Validators.required] }),
@@ -57,7 +57,7 @@ export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCr
 
 	createMember() {
 		this.form.markAllAsTouched();
-		this.showValidationErrors = true;
+		this.showValidationErrors.set(true);
 
 		if (!this.form.valid) return;
 

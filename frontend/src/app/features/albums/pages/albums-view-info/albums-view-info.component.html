@@ -1,4 +1,9 @@
-<bo-page-header [title]="album()?.name" backUrl="/galerie" [actions]="headerActions()" actionsHeader="Album" />
+<bo-page-header
+	[title]="album()?.name"
+	backUrl="/galerie"
+	[actions]="headerActions()"
+	actionsHeader="Album"
+/>
 
 @if (selecting()) {
 	<div class="selection-bar d-lg-none">

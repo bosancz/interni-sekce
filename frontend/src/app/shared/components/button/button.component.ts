@@ -3,7 +3,7 @@ import { Color } from "@ionic/core";
 
 @Component({
 	selector: "bo-button",
-	
+
 	templateUrl: "./button.component.html",
 	styleUrl: "./button.component.scss",
 })

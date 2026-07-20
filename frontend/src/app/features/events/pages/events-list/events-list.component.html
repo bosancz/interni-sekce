@@ -5,7 +5,7 @@
 		<ion-select
 			name="year"
 			label="Rok"
-			[ngModel]="selectedYears"
+			[ngModel]="selectedYears()"
 			(ngModelChange)="setFilterParam('year', $event)"
 			placeholder=""
 			[multiple]="true"
@@ -20,7 +20,7 @@
 		<ion-select
 			name="status"
 			label ="Stav"
-			[ngModel]="selectedStatuses"
+			[ngModel]="selectedStatuses()"
 			(ngModelChange)="setFilterParam('status', $event)"
 			[multiple]="true"
 
@@ -37,7 +37,7 @@
 		<ion-select
 			name="leaders"
 			label="Vedoucí"
-			[ngModel]="selectedLeaderFilters"
+			[ngModel]="selectedLeaderFilters()"
 			(ngModelChange)="setFilterParam('leaders', $event)"
 			[multiple]="true"
 
@@ -52,7 +52,7 @@
 </bo-filter>
 
 <bo-page-content>
-	@switch (view) {
+	@switch (view()) {
 		@case ("list") {
 			<ion-list>
 				@if (events === undefined) {
@@ -115,7 +115,7 @@
 									label="Rok"
 									interface="popover"
 									justify="start"
-									[ngModel]="selectedYears"
+									[ngModel]="selectedYears()"
 									(ngModelChange)="setFilterParam('year', $event)"
 									placeholder=""
 									[multiple]="true"
@@ -132,7 +132,7 @@
 									label ="Stav"
 									interface="popover"
 									justify="start"
-									[ngModel]="selectedStatuses"
+									[ngModel]="selectedStatuses()"
 									(ngModelChange)="setFilterParam('status', $event)"
 									[multiple]="true"
 
@@ -151,7 +151,7 @@
 									label="Vedoucí"
 									interface="popover"
 									justify="start"
-									[ngModel]="selectedLeaderFilters"
+									[ngModel]="selectedLeaderFilters()"
 									(ngModelChange)="setFilterParam('leaders', $event)"
 									[multiple]="true"
 

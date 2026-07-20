@@ -1,7 +1,7 @@
 @for (type of types | keyvalue; track type.key) {
 	<span
 		(click)="select($any(type.key))"
-		[class.selected]="type.key === value"
+		[class.selected]="type.key === value()"
 		placement="bottom"
 		class="type me-2 my-2"
 	>

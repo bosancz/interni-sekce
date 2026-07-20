@@ -76,24 +76,24 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	roles = MemberRoles;
 	membershipStates = MembershipStates;
 	allMemberAges = signal<number[]>([]);
-	selectedGroups: string[] = [];
-	selectedRoles: string[] = [];
-	selectedMembership: string[] = [];
-	selectedAges: string[] = [];
+	selectedGroups = signal<string[]>([]);
+	selectedRoles = signal<string[]>([]);
+	selectedMembership = signal<string[]>([]);
+	selectedAges = signal<string[]>([]);
 
 	loadingItems = new Array(10).fill(null);
 
 	filter: FilterData = {};
 
 
-	view?: "table" | "list";
+	view = signal<"table" | "list" | undefined>(undefined);
 
 	page = 1;
 	pageSize = 50;
 
 	private latestLoadId = 0;
 
-	viewSelections: { [key: string]: boolean } = {};
+	viewSelections = signal<{ [key: string]: boolean }>({});
 
 	constructor(
 		private api: ApiService,
@@ -110,7 +110,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	ngAfterViewInit(): void {
 		this.platformService.isPortrait.subscribe((isPortrait) => {
-			this.view = isPortrait ? "list" : "table";
+			this.view.set(isPortrait ? "list" : "table");
 		});
 
 		this.loadViewSelections();
@@ -160,10 +160,10 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	onFilterChange(filter: FilterData) {
 		// FIXME: do not use as any
 		this.filter = filter;
-		this.selectedGroups = this.normalizeFilterValueToArray((filter as any)["groups"]);
-		this.selectedRoles = this.normalizeFilterValueToArray((filter as any)["roles"]);
-		this.selectedMembership = this.normalizeFilterValueToArray((filter as any)["membership"]);
-		this.selectedAges = this.normalizeFilterValueToArray((filter as any)["age"]);
+		this.selectedGroups.set(this.normalizeFilterValueToArray((filter as any)["groups"]));
+		this.selectedRoles.set(this.normalizeFilterValueToArray((filter as any)["roles"]));
+		this.selectedMembership.set(this.normalizeFilterValueToArray((filter as any)["membership"]));
+		this.selectedAges.set(this.normalizeFilterValueToArray((filter as any)["age"]));
 		this.loadMembers(filter);
 	}
 
@@ -215,7 +215,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 		if (loadId !== this.latestLoadId) return;
 
-		if (this.view == "table") {
+		if (this.view() == "table") {
 			console.log("Loading contacts for members in table view...");
 			members = await Promise.all(
 				members.map(async (member) => {
@@ -300,7 +300,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	};
 
 	private loadViewSelections() {
-		this.viewSelections = {
+		this.viewSelections.set({
 			nickname: true,
 			name: true,
 			group: true,
@@ -312,7 +312,11 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			addressStreet: false,
 			firstTelephone: false,
 			firstEmail: false,
-		};
+		});
+	}
+
+	setViewSelection(key: string, value: boolean) {
+		this.viewSelections.update((selections) => ({ ...selections, [key]: value }));
 	}
 
 	public getViewSelectionLabel(key: string): string {

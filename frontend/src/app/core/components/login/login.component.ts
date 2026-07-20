@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule, NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
@@ -16,12 +16,12 @@ import { LoginError, LoginErrorCode, LoginService } from "src/app/core/services/
 export class LoginComponent implements OnInit {
 	expired = toSignal(this.route.params.pipe(map((params) => params.expired)), { initialValue: false });
 
-	status?: "linkSending" | "linkSent";
-	error?: LoginErrorCode | "linkSendFailed" | "unknownError";
+	status = signal<"linkSending" | "linkSent" | undefined>(undefined);
+	error = signal<LoginErrorCode | "linkSendFailed" | "unknownError" | undefined>(undefined);
 
-	view: string = "login";
+	view = signal<string>("login");
 
-	loginValue: string = "";
+	loginValue = signal<string>("");
 
 	constructor(
 		private navController: NavController,
@@ -33,37 +33,37 @@ export class LoginComponent implements OnInit {
 
 	async loginCredentials(loginForm: NgForm) {
 		try {
-			this.error = undefined;
+			this.error.set(undefined);
 			await this.loginService.loginCredentials(loginForm.value);
 			this.loginSuccess();
 		} catch (err: any) {
-			this.error = err instanceof LoginError ? err.code : "unknownError";
+			this.error.set(err instanceof LoginError ? err.code : "unknownError");
 		}
 	}
 
 	async loginGoogle() {
 		try {
-			this.error = undefined;
+			this.error.set(undefined);
 			await this.loginService.loginGoogle();
 
 			this.loginSuccess();
 		} catch (err: any) {
-			this.error = err instanceof LoginError ? err.code : "unknownError";
+			this.error.set(err instanceof LoginError ? err.code : "unknownError");
 		}
 	}
 
 	async sendLoginLink(linkForm: NgForm) {
 		try {
-			this.error = undefined;
-			this.status = "linkSending";
+			this.error.set(undefined);
+			this.status.set("linkSending");
 
 			const formData = linkForm.value;
 			await this.loginService.sendLoginLink(formData.login);
 
-			this.status = "linkSent";
+			this.status.set("linkSent");
 		} catch (err: any) {
-			this.status = undefined;
-			this.error = "linkSendFailed";
+			this.status.set(undefined);
+			this.error.set("linkSendFailed");
 		}
 	}
 

@@ -1,6 +1,6 @@
 <bo-page-header [title]="'Upravit: ' + (album()?.name ?? '')" [actions]="actions()" actionsHeader="Upravit galerii" />
-	<p> hello </p>
-	<p> {{ album()?.description }} </p>
+<p>hello</p>
+<p>{{ album()?.description }}</p>
 <ion-content>
 	<form #albumForm="ngForm">
 		<div class="row">
@@ -71,7 +71,11 @@
 			<div class="col-12">
 				<ion-item>
 					<ion-label position="stacked">Popis</ion-label>
-					<ion-textarea name="description" autoGrow [ngModel]="album()?.description"></ion-textarea>
+					<ion-textarea
+						name="description"
+						autoGrow
+						[ngModel]="album()?.description"
+					></ion-textarea>
 				</ion-item>
 			</div>
 		</div>

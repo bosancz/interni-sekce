@@ -58,7 +58,8 @@ export class EventsController {
 		@Token() token: TokenData,
 		@Query() query: ListEventsQuery,
 	): Promise<EventResponse[]> {
-		EventsListPermission.canOrThrow(req);
+		// canWhere both authorizes (throws if not allowed) and returns the row-level filter
+		const where = EventsListPermission.canWhere(req, "events");
 
 		const options: GetEventsOptions = {
 			...query,
@@ -69,7 +70,7 @@ export class EventsController {
 			options.memberId = token.memberId;
 		}
 
-		return this.events.getEvents(options);
+		return this.events.getEvents(options, where);
 	}
 
 	@Post()

@@ -26,7 +26,7 @@ export class EventsRepository {
 		@InjectRepository(EventExpense) private eventExpensesRepository: Repository<EventExpense>,
 	) {}
 
-	async getEvents(options: GetEventsOptions = {}) {
+	async getEvents(options: GetEventsOptions = {}, where: Brackets | string = "1=1") {
 		const q = this.eventsRepository
 			.createQueryBuilder("events")
 			.select([
@@ -44,6 +44,8 @@ export class EventsRepository {
 			])
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
 			.leftJoinAndSelect("attendees.member", "leaders")
+			// row-level permission filter (see Permission.canWhere)
+			.where(where)
 			.orderBy("events.dateFrom", "DESC");
 
 		if (options.limit) {

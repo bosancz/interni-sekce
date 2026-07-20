@@ -19,7 +19,7 @@ class ChartData {
 	selector: "events-dashboard",
 	templateUrl: "./events-dashboard.component.html",
 	styleUrls: ["./events-dashboard.component.scss"],
-	
+
 	imports: [FormsModule, BaseChartDirective, ListSliderComponent],
 })
 export class EventsDashboardComponent implements OnInit {

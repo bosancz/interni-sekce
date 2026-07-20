@@ -8,7 +8,7 @@ export class UsersRepository {
 	constructor(@InjectRepository(User) private repository: Repository<User>) {}
 
 	async listUsers() {
-		return this.repository.find({ relations: ["member", "member.group"] });
+		return this.repository.find({ relations: { member: { group: true } } });
 	}
 
 	async createUser(data: Partial<User>) {
@@ -18,7 +18,7 @@ export class UsersRepository {
 	async getUser(id: number, options: { includeMember?: boolean } = {}) {
 		return this.repository.findOne({
 			where: { id },
-			relations: options.includeMember ? ["member", "member.group"] : [],
+			relations: options.includeMember ? { member: { group: true } } : {},
 		});
 	}
 

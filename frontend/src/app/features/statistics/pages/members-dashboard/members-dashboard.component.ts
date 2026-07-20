@@ -14,7 +14,7 @@ interface ChartData {
 	selector: "members-dashboard",
 	templateUrl: "./members-dashboard.component.html",
 	styleUrls: ["./members-dashboard.component.scss"],
-	
+
 	imports: [KeyValuePipe, BaseChartDirective],
 })
 export class MembersDashboardComponent implements OnInit {

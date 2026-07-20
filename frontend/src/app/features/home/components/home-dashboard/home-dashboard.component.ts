@@ -31,8 +31,8 @@ import { HomeCardSearchMemberComponent } from "../home-card-search-member/home-c
 export class HomeDashboardComponent implements OnInit {
 	view = signal("home");
 
-	dateFrom = DateTime.local();
-	dateTill = DateTime.local().plus({ months: 1 });
+	dateFrom = signal(DateTime.local());
+	dateTill = signal(DateTime.local().plus({ months: 1 }));
 
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 
@@ -53,11 +53,11 @@ export class HomeDashboardComponent implements OnInit {
 			sort: "dateFrom",
 		};
 
-		this.dateTill = DateTime.local().plus({ months: 1 });
+		this.dateTill.set(DateTime.local().plus({ months: 1 }));
 
 		options.filter = {
-			dateTill: { $gte: this.dateFrom.toISODate() },
-			dateFrom: { $lte: this.dateTill.toISODate() },
+			dateTill: { $gte: this.dateFrom().toISODate() },
+			dateFrom: { $lte: this.dateTill().toISODate() },
 		};
 
 		// TODO: use options above

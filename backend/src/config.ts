@@ -1,8 +1,8 @@
 import { Global, Injectable, Logger, LogLevel, Module } from "@nestjs/common";
 import { config } from "dotenv";
 import * as path from "path";
-import { SnakeNamingStrategy } from "typeorm-naming-strategies";
-import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
+import { DataSourceOptions } from "typeorm";
+import { SnakeNamingStrategy } from "./database/snake-naming.strategy";
 
 config({ override: true, debug: true });
 
@@ -69,7 +69,7 @@ const jwt = {
 	secret: jwtSecret ?? "secret",
 };
 
-const db: PostgresConnectionOptions = {
+const db: DataSourceOptions = {
 	type: "postgres",
 	host: process.env["DB_HOST"] ?? "localhost",
 	port: process.env["DB_PORT"] ? parseInt(process.env["DB_PORT"]) : 5432,

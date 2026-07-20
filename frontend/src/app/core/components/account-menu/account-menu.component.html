@@ -1,4 +1,4 @@
-@if (user | async; as user) {
+@if (user(); as user) {
 	<bo-avatar
 		[initials]="user.member! | member: 'initials'"
 		[color]="user.member?.groupId | group: 'color'"

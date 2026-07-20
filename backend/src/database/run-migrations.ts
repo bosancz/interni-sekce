@@ -16,7 +16,9 @@ export async function runMigrations(config: Config) {
 	await queryRunner.startTransaction();
 
 	// create schema if it doesn't exist
-	await queryRunner.query(`CREATE SCHEMA IF NOT EXISTS ${config.db.schema ?? "public"}`);
+	// `DataSourceOptions` is a union across all drivers; only some declare `schema` (e.g. postgres).
+	const schema = "schema" in config.db ? config.db.schema : undefined;
+	await queryRunner.query(`CREATE SCHEMA IF NOT EXISTS ${schema ?? "public"}`);
 
 	// create migration executor
 	const migrationExecutor = new MigrationExecutor(dataSource, queryRunner);

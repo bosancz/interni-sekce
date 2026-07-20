@@ -1,4 +1,4 @@
-import { Component, effect, HostListener, input, OnInit, output } from "@angular/core";
+import { Component, effect, HostListener, input, OnInit, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonBadge } from "@ionic/angular/standalone";
 import { CzechHolidays } from "czech-holidays";
@@ -98,10 +98,11 @@ export class EventCalendarComponent implements OnInit {
 
 	select = output<[DateTime, DateTime]>();
 
-	calendar: CalendarRow[] = [];
+	private calendarRows: CalendarRow[] = [];
+	calendar = signal<CalendarRow[]>([]);
 
-	selectedDate?: DateTime;
-	hoverDate?: DateTime;
+	selectedDate = signal<DateTime | undefined>(undefined);
+	hoverDate = signal<DateTime | undefined>(undefined);
 
 	dateFrom!: DateTime;
 	dateTill!: DateTime;
@@ -172,7 +173,12 @@ export class EventCalendarComponent implements OnInit {
 			currentDate = currentDate.plus({ days: 1 });
 		}
 
-		this.calendar = calendar;
+		this.calendarRows = calendar;
+		this.syncCalendarSignal();
+	}
+
+	private syncCalendarSignal() {
+		this.calendar.set([...this.calendarRows]);
 	}
 
 	async loadEventsCPV() {
@@ -192,10 +198,10 @@ export class EventCalendarComponent implements OnInit {
 		events: Array<SDK.CPVEventResponseWithLinks> | Array<SDK.EventResponseWithLinks>,
 		type: "own" | "cpv",
 	): void {
-		if (!this.calendar) return;
+		if (!this.calendarRows) return;
 		if (!events) return;
 
-		this.calendar.forEach((row) => {
+		this.calendarRows.forEach((row) => {
 			// get the monthBlock to which we assign
 			const rowBlock = row.blocks[type];
 
@@ -221,6 +227,8 @@ export class EventCalendarComponent implements OnInit {
 
 			rowBlock.levels = Math.max(...eventCounts);
 		});
+
+		this.syncCalendarSignal();
 	}
 
 	private isWeekend(date: DateTime): boolean {
@@ -236,8 +244,10 @@ export class EventCalendarComponent implements OnInit {
 	}
 
 	isSelectedRange(day: CalendarDay) {
-		if (!this.selectedDate || !this.hoverDate) return false;
-		const range: [DateTime, DateTime] = [this.selectedDate, this.hoverDate];
+		const selectedDate = this.selectedDate();
+		const hoverDate = this.hoverDate();
+		if (!selectedDate || !hoverDate) return false;
+		const range: [DateTime, DateTime] = [selectedDate, hoverDate];
 		range.sort();
 		return day.date >= range[0] && day.date <= range[1];
 	}
@@ -245,22 +255,23 @@ export class EventCalendarComponent implements OnInit {
 	setSelection(day: CalendarDay) {
 		if (!this.selection()) return;
 
-		if (this.selectedDate) {
-			const range: [DateTime, DateTime] = [this.selectedDate, day.date];
+		const selectedDate = this.selectedDate();
+		if (selectedDate) {
+			const range: [DateTime, DateTime] = [selectedDate, day.date];
 			range.sort();
 			this.select.emit(range);
-			this.selectedDate = undefined;
-		} else this.selectedDate = day.date;
+			this.selectedDate.set(undefined);
+		} else this.selectedDate.set(day.date);
 	}
 
 	@HostListener("document:keydown.escape")
 	clearSelection(event?: MouseEvent) {
-		if (this.selectedDate) event?.preventDefault();
-		this.selectedDate = undefined;
+		if (this.selectedDate()) event?.preventDefault();
+		this.selectedDate.set(undefined);
 	}
 
 	setSelectionHover(day: CalendarDay) {
-		this.hoverDate = day.date;
+		this.hoverDate.set(day.date);
 	}
 
 	emitSelected() {

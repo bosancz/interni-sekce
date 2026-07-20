@@ -7,7 +7,7 @@ import { GroupPipe } from "../../pipes/group.pipe";
 	selector: "bo-group-badge",
 	templateUrl: "./group-badge.component.html",
 	styleUrl: "./group-badge.component.scss",
-	
+
 	imports: [IonBadge, GroupPipe],
 })
 export class GroupBadgeComponent {

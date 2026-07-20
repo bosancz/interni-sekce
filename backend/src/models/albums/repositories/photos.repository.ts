@@ -4,7 +4,7 @@ import { extname } from "path";
 import { PaginationOptions } from "src/helpers/pagination";
 import { Member } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
-import { Repository } from "typeorm";
+import { Brackets, Repository } from "typeorm";
 import { Photo } from "../entities/photo.entity";
 import { PhotosFilesService } from "../services/photos-files.service";
 
@@ -19,13 +19,15 @@ export class PhotosRepository {
 		private photosFiles: PhotosFilesService,
 	) {}
 
-	getPhotos(options: GetPhotosOptions = {}) {
+	getPhotos(options: GetPhotosOptions = {}, where: Brackets | string = "1=1") {
 		const q = this.repository
 			.createQueryBuilder("photos")
+			// row-level permission filter (see Permission.canWhere)
+			.where(where)
 			.orderBy("photos.order", "ASC", "NULLS LAST")
 			.addOrderBy("photos.timestamp", "ASC");
 
-		if (options.album) q.where("photos.album_id = :album", { album: options.album });
+		if (options.album) q.andWhere("photos.album_id = :album", { album: options.album });
 
 		if (options.offset) q.skip(options.offset);
 

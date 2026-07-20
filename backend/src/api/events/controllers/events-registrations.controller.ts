@@ -162,7 +162,7 @@ export class EventsRegistrationsController {
 		// Load attendees with member contacts so the generated form can list organisers and their contacts.
 		const event = await this.eventsRepository.findOne({
 			where: { id },
-			relations: ["attendees", "attendees.member", "attendees.member.contacts"],
+			relations: { attendees: { member: { contacts: true } } },
 		});
 		if (!event) throw new NotFoundException();
 

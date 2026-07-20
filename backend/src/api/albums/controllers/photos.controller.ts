@@ -45,9 +45,9 @@ export class PhotosController {
 	@AcLinks(PhotosListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(PhotoResponse), isArray: true })
 	async listPhotos(@Req() req: Request) {
-		PhotosListPermission.canOrThrow(req);
+		const where = PhotosListPermission.canWhere(req, "photos");
 
-		return this.photos.getPhotos();
+		return this.photos.getPhotos({}, where);
 	}
 
 	@Post()

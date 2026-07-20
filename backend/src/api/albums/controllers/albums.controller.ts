@@ -34,7 +34,7 @@ export class AlbumsController {
 	@AcLinks(AlbumsListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(AlbumResponse), isArray: true })
 	async listAlbums(@Req() req: Request, @Query() query: AlbumListQuery): Promise<AlbumResponse[]> {
-		AlbumsListPermission.canOrThrow(req);
+		const where = AlbumsListPermission.canWhere(req, "albums");
 
 		const options: GetAlbumsOptions = {
 			limit: query.limit,
@@ -44,7 +44,7 @@ export class AlbumsController {
 			search: query.search,
 		};
 
-		return this.albums.getAlbums(options);
+		return this.albums.getAlbums(options, where);
 	}
 
 	@Post()

@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, signal } from "@angular/core";
 import { IonIcon, IonToggle, ToggleCustomEvent } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { moon, sunny } from "ionicons/icons";
@@ -11,14 +11,14 @@ import { DarkModeService } from "src/app/core/services/dark-mode.service";
 	imports: [IonIcon, IonToggle],
 })
 export class DarkModeToggleComponent {
-	status?: boolean;
+	status = signal<boolean | undefined>(undefined);
 
 	constructor(private darkModeService: DarkModeService) {
 		addIcons({ sunny, moon });
 	}
 
 	ngOnInit(): void {
-		this.darkModeService.status.subscribe((value) => (this.status = value ?? false));
+		this.darkModeService.status.subscribe((value) => this.status.set(value ?? false));
 	}
 
 	setDarkMode(event: ToggleCustomEvent) {
