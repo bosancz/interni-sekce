@@ -1,8 +1,9 @@
 import { Component } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { IonButton, IonIcon } from "@ionic/angular/standalone";
+import { IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { createOutline, mailOutline, peopleOutline } from "ionicons/icons";
+import { mailOutline, peopleOutline } from "ionicons/icons";
+import { UserRoles } from "src/app/core/config/user-roles";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -12,6 +13,8 @@ import { CardContentComponent } from "src/app/shared/components/card-content/car
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
+import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
+import { EditButtonTextComponent } from "src/app/shared/components/edit-button-text/edit-button-text.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
@@ -19,7 +22,6 @@ import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 import { AccountAppComponent } from "../components/account-app/account-app.component";
 import { AccountCredentialsComponent } from "../components/account-credentials/account-credentials.component";
-import { AccountEditModalComponent } from "../components/account-edit-modal/account-edit-modal.component";
 
 @Component({
 	selector: "bo-account",
@@ -29,7 +31,6 @@ import { AccountEditModalComponent } from "../components/account-edit-modal/acco
 		PageHeaderComponent,
 		PageContentComponent,
 		IonIcon,
-		IonButton,
 		AvatarComponent,
 		CardComponent,
 		CardHeaderComponent,
@@ -37,6 +38,8 @@ import { AccountEditModalComponent } from "../components/account-edit-modal/acco
 		CardContentComponent,
 		AccountCredentialsComponent,
 		AccountAppComponent,
+		EditButtonComponent,
+		EditButtonTextComponent,
 		GroupPipe,
 		MemberPipe,
 	],
@@ -44,27 +47,43 @@ import { AccountEditModalComponent } from "../components/account-edit-modal/acco
 export class AccountComponent {
 	user = toSignal(this.userService.user);
 
+	roles = UserRoles;
+
 	constructor(
 		private userService: UserService,
 		private api: ApiService,
 		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
-		addIcons({ mailOutline, peopleOutline, createOutline });
+		addIcons({ mailOutline, peopleOutline });
 	}
 
-	async editAccount() {
+	async updateAccount(data: SDK.UserUpdateBody) {
 		const user = this.user();
 		if (!user?._links.updateUser.allowed) return;
 
-		const data = await this.modalService.componentModal(AccountEditModalComponent, { user });
-
-		if (!data) return;
-
-		await this.api.UsersApi.updateUser(user.id, data satisfies SDK.UserUpdateBody);
+		await this.api.UsersApi.updateUser(user.id, data);
 
 		this.toastService.toast("Uloženo.");
 
 		await this.userService.loadUser();
+	}
+
+	async editRoles() {
+		const user = this.user();
+		if (!user?._links.updateUser.allowed) return;
+
+		const roles = await this.modalService.multiSelectModal<SDK.UserUpdateBodyRolesEnum>({
+			header: "Role",
+			values: Object.entries(this.roles).map(([value, role]) => ({
+				label: role.title,
+				value: value as SDK.UserUpdateBodyRolesEnum,
+			})),
+			value: (user.roles ?? []) as SDK.UserUpdateBodyRolesEnum[],
+		});
+
+		if (!roles) return;
+
+		await this.updateAccount({ roles });
 	}
 }

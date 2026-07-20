@@ -30,6 +30,11 @@ interface SelectModalOptions<D> extends BaseModalOptions {
 	value?: D;
 }
 
+interface MultiSelectModalOptions<D> extends BaseModalOptions {
+	values: { label: string; value: D }[];
+	value?: D[];
+}
+
 export class InputModalComponent<D = any> {
 	submit = new EventEmitter<D>();
 	close = new EventEmitter<void>();
@@ -133,6 +138,31 @@ export class ModalService {
 					},
 					{
 						text: options.buttonText ?? "Vybrat",
+						handler: (data) => resolve(data),
+					},
+				],
+			});
+
+			await alert.present();
+		});
+	}
+
+	async multiSelectModal<D>(options: MultiSelectModalOptions<D>) {
+		return new Promise<D[] | null>(async (resolve, reject) => {
+			const alert = await this.alertController.create({
+				header: options.header,
+				inputs: options.values.map((item) => ({
+					...item,
+					type: "checkbox",
+					checked: options.value?.includes(item.value),
+				})),
+				buttons: [
+					{
+						text: "Zrušit",
+						role: "cancel",
+					},
+					{
+						text: options.buttonText ?? "Uložit",
 						handler: (data) => resolve(data),
 					},
 				],

@@ -48,12 +48,6 @@
 							}
 						</div>
 
-						@if (user._links.updateUser.allowed) {
-							<ion-button class="profile-edit-btn" fill="outline" size="default" (click)="editAccount()">
-								<ion-icon name="create-outline" slot="start" />
-								Upravit
-							</ion-button>
-						}
 					</div>
 				</bo-card-content>
 			</bo-card>
@@ -73,19 +67,35 @@
 						<div class="bo-info-list">
 							<div class="bo-info-row">
 								<span class="bo-info-label">E-mail</span>
-								@if (user.email) {
-									<a class="bo-info-value" [href]="'mailto:' + user.email">{{ user.email }}</a>
-								} @else {
-									<span class="bo-info-value">—</span>
-								}
+								<span class="bo-info-action">
+									@if (user.email) {
+										<a class="bo-info-value" [href]="'mailto:' + user.email">{{ user.email }}</a>
+									} @else {
+										<span class="bo-info-value">—</span>
+									}
+									@if (user._links.updateUser.allowed) {
+										<bo-edit-button-text
+											type="email"
+											label="E-mail"
+											placeholder="bilbo@bosan.cz"
+											[value]="user.email"
+											(update)="updateAccount({ email: $event ?? undefined })"
+										/>
+									}
+								</span>
 							</div>
 							<div class="bo-info-row">
 								<span class="bo-info-label">Role</span>
-								<span class="profile-pills">
-									@for (role of user.roles; track role) {
-										<span class="bo-pill bo-pill-blue">{{ role }}</span>
-									} @empty {
-										<span class="bo-info-value">—</span>
+								<span class="bo-info-action">
+									<span class="profile-pills">
+										@for (role of user.roles; track role) {
+											<span class="bo-pill bo-pill-blue">{{ role }}</span>
+										} @empty {
+											<span class="bo-info-value">—</span>
+										}
+									</span>
+									@if (user._links.updateUser.allowed) {
+										<bo-edit-button (click)="editRoles()" />
 									}
 								</span>
 							</div>
