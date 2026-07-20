@@ -15,8 +15,10 @@ const acOptions: AccessControlLibOptions = {
 
 		// default role for registered users
 		if (req.user) {
-			roles.add(StaticRoles.vedouci);
 			roles.add(StaticRoles.uzivatel);
+
+			// leader role is reserved for users linked to an active member
+			if (req.user.memberActive) roles.add(StaticRoles.vedouci);
 		}
 
 		return Array.from(roles);

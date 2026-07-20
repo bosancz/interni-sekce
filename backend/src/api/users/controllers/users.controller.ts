@@ -160,10 +160,6 @@ export class UsersController {
 		UserImpersonatePermission.canOrThrow(req, user);
 
 		// replaces the caller's token cookie; there is no way back to the original identity except logging in again
-		await this.tokenService.setToken(res, {
-			userId: user.id,
-			memberId: user.memberId ?? undefined,
-			roles: user.roles ?? [],
-		});
+		await this.tokenService.setToken(res, user.id);
 	}
 }
