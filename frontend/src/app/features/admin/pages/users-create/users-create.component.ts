@@ -1,7 +1,17 @@
 import { Component, OnInit, signal, ViewChild } from "@angular/core";
 import { FormsModule, NgForm } from "@angular/forms";
 import { Router } from "@angular/router";
-import { IonBackButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonTitle, IonToolbar } from "@ionic/angular/standalone";
+import {
+	IonBackButton,
+	IonButtons,
+	IonContent,
+	IonHeader,
+	IonInput,
+	IonItem,
+	IonLabel,
+	IonTitle,
+	IonToolbar,
+} from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action, ActionButtonsComponent } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -10,7 +20,7 @@ import { Action, ActionButtonsComponent } from "src/app/shared/components/action
 	selector: "users-create",
 	templateUrl: "./users-create.component.html",
 	styleUrls: ["./users-create.component.scss"],
-	
+
 	imports: [
 		FormsModule,
 		IonHeader,

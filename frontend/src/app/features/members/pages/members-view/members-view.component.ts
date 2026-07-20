@@ -55,7 +55,7 @@ import { MemberProfileComponent } from "../../components/member-profile/member-p
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeave {
 	member = signal<SDK.MemberResponseWithLinks | undefined>(undefined);
-	view?: "info" | "health" | "contacts" | "profile" = "info";
+	view = signal<"info" | "health" | "contacts" | "profile" | undefined>("info");
 
 	membershipStates = MembershipStates;
 
@@ -87,7 +87,7 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => {
 			if (params.view) {
-				this.view = params.view;
+				this.view.set(params.view);
 			} else {
 				this.router.navigate([], {
 					relativeTo: this.route,

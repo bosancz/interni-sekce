@@ -4,6 +4,5 @@ import { Component } from "@angular/core";
 	selector: "bo-card-header",
 	templateUrl: "./card-header.component.html",
 	styleUrl: "./card-header.component.scss",
-	
 })
 export class CardHeaderComponent {}

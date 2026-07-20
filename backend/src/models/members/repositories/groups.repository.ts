@@ -1,23 +1,38 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ListGroupsQuery } from "src/api/members/dto/group.dto";
-import { FindOneOptions, Repository } from "typeorm";
+import { Brackets, FindOneOptions, Repository, SelectQueryBuilder } from "typeorm";
 import { Group } from "../entities/group.entity";
+import { Member } from "../entities/member.entity";
 
 @Injectable()
 export class GroupsRepository {
 	constructor(@InjectRepository(Group) private groupsRepository: Repository<Group>) {}
 
-	async getGroups(options: ListGroupsQuery = {}) {
+	async getGroups(options: ListGroupsQuery = {}, where: Brackets | string = "1=1") {
 		const q = this.groupsRepository.createQueryBuilder("groups");
+
+		// row-level permission filter (see Permission.canWhere)
+		q.where(where);
 
 		q.addOrderBy("short_name", "ASC", "NULLS LAST");
 
-		if (options.active) q.where({ active: options.active });
+		if (options.active) q.andWhere({ active: options.active });
+
 		if (options.includeMemberCounts) {
-			q.loadRelationCountAndMap("groups.memberCount", "groups.members", "members", (qb) =>
-				qb.andWhere("members.deletedAt IS NULL"),
+			q.addSelect(
+				(qb: SelectQueryBuilder<Group>) =>
+					qb
+						.subQuery()
+						.select("COUNT(*)")
+						.from(Member, "members")
+						.where("members.groupId = groups.id")
+						.andWhere("members.deletedAt IS NULL"),
+				"groups_memberCount",
 			);
+
+			const { entities, raw } = await q.getRawAndEntities();
+			return entities.map((entity, i) => Object.assign(entity, { memberCount: Number(raw[i]?.groups_memberCount ?? 0) }));
 		}
 
 		return q.getMany();

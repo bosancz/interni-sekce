@@ -1,6 +1,6 @@
 <h3>Kontakty rodiče</h3>
 
-@for (contact of contacts; track $index) {
+@for (contact of contacts(); track $index) {
 	<bo-card class="contact mb-3">
 		<bo-card-header>
 			<bo-card-title class="editable" (click)="openContactForm(contact)">{{ contact.relationship }}</bo-card-title>
@@ -42,7 +42,7 @@
 	</bo-card>
 }
 
-@if (member === undefined) {
+@if (member() === undefined) {
 	<bo-card class="contact mb-3">
 		<bo-card-header>
 			<bo-card-title><ion-skeleton-text [animated]="true"></ion-skeleton-text></bo-card-title>

@@ -18,10 +18,10 @@
     "update-tags": "git fetch --tags --force origin"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.3.0",
-    "@commitlint/config-conventional": "^17.3.0",
-    "all-contributors-cli": "^6.20.0",
-    "concurrently": "^8.2.2"
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "all-contributors-cli": "^6.26.1",
+    "concurrently": "^10.0.3"
   },
   "repository": {
     "type": "git",

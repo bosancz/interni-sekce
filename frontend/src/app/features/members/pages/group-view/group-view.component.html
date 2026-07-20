@@ -1,4 +1,4 @@
-<bo-page-header [title]="group?.name" backUrl="/oddily" [actions]="actions" actionsHeader="" />
+<bo-page-header [title]="group()?.name" backUrl="/oddily" [actions]="actions" actionsHeader="" />
 
 <bo-page-content>
 	<router-outlet></router-outlet>
@@ -8,14 +8,14 @@
 	<ion-toolbar>
 		<ion-tab-bar>
 			<ion-tab-button
-				[routerLink]="['/oddily', group?.id, 'info']"
+				[routerLink]="['/oddily', group()?.id, 'info']"
 				routerLinkActive="tab-selected"
 				[replaceUrl]="true"
 			>
 				<ion-icon name="information-circle-outline"></ion-icon>
 			</ion-tab-button>
 			<ion-tab-button
-				[routerLink]="['/oddily', group?.id, 'clenove']"
+				[routerLink]="['/oddily', group()?.id, 'clenove']"
 				routerLinkActive="tab-selected"
 				[replaceUrl]="true"
 			>

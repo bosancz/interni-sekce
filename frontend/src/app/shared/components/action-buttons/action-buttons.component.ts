@@ -1,4 +1,4 @@
-import { Component, effect, input, OnInit, output } from "@angular/core";
+import { Component, effect, input, OnInit, output, signal } from "@angular/core";
 import { ActionSheetController, IonButton, IonIcon, IonText } from "@ionic/angular/standalone";
 import { ActionSheetButton, PredefinedColors } from "@ionic/core";
 import { addIcons } from "ionicons";
@@ -26,9 +26,9 @@ export class ActionButtonsComponent implements OnInit {
 
 	close = output<void>();
 
-	pinned: Action[] = [];
-	buttons: Action[] = [];
-	menu: Action[] = [];
+	pinned = signal<Action[]>([]);
+	buttons = signal<Action[]>([]);
+	menu = signal<Action[]>([]);
 
 	desktop = true;
 	ios = this.platformService.isIos.value;
@@ -44,22 +44,24 @@ export class ActionButtonsComponent implements OnInit {
 			let actions = this.actions();
 			actions = this.filterActions(actions);
 
-			this.pinned = actions.filter((item) => item.pinned);
+			this.pinned.set(actions.filter((item) => item.pinned));
 
-			this.buttons = actions.filter((item) => !item.pinned);
+			this.buttons.set(actions.filter((item) => !item.pinned));
 
 			if (actions.filter((item) => !item.pinned).length) {
-				this.menu = actions.filter((item) => item.text && !item.disabled && !item.pinned);
+				const menu = actions.filter((item) => item.text && !item.disabled && !item.pinned);
 
-				if (!this.menu.some((item) => item.role === "cancel") && this.platformService.isIos.value) {
-					this.menu.push({
+				if (!menu.some((item) => item.role === "cancel") && this.platformService.isIos.value) {
+					menu.push({
 						text: "Zrušit",
 						role: "cancel",
 						icon: "close-outline",
 					});
 				}
+
+				this.menu.set(menu);
 			} else {
-				this.menu = [];
+				this.menu.set([]);
 			}
 		});
 	}
@@ -67,7 +69,7 @@ export class ActionButtonsComponent implements OnInit {
 	ngOnInit(): void {}
 
 	async openActions() {
-		let buttons = this.menu;
+		let buttons = this.menu();
 
 		if (this.platformService.isIos.value) buttons = buttons.map((item) => ({ ...item, icon: undefined }));
 

@@ -6,6 +6,7 @@ import {
 	input,
 	output,
 	QueryList,
+	signal,
 	TemplateRef,
 	ViewChild,
 } from "@angular/core";
@@ -42,12 +43,12 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 
 	readonly filterId = String(new Date().getTime());
 
-	searchString?: string;
+	searchString = signal<string | undefined>(undefined);
 
-	filterCount: number = 0;
+	filterCount = signal<number>(0);
 
 	// ControlValueAccessor
-	disabled = false;
+	disabled = signal<boolean>(false);
 
 	constructor(
 		private router: Router,
@@ -109,7 +110,8 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 		});
 
 		if (this.search()) {
-			if (this.searchString) queryParams.search = this.searchString;
+			const searchString = this.searchString();
+			if (searchString) queryParams.search = searchString;
 			else delete queryParams.search;
 		}
 
@@ -118,7 +120,7 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 
 	emitValue() {
 		const value: FilterData = this.controls.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value || null }), {});
-		if (this.search() && this.searchString) value["search"] = this.searchString;
+		if (this.search() && this.searchString()) value["search"] = this.searchString();
 		this.change.emit(value);
 	}
 
@@ -131,8 +133,8 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 			item.control.setValue(value || null);
 		}
 
-		this.filterCount = this.controls.reduce((acc, cur) => acc + (cur.value ? 1 : 0), 0);
+		this.filterCount.set(this.controls.reduce((acc, cur) => acc + (cur.value ? 1 : 0), 0));
 
-		if (this.search() && params["search"]) this.searchString = params["search"];
+		if (this.search() && params["search"]) this.searchString.set(params["search"]);
 	}
 }

@@ -1,5 +1,5 @@
 <div class="calendar" (contextmenu)="clearSelection($event)">
-	@for (row of calendar; track row.from) {
+	@for (row of calendar(); track row.from) {
 		<div class="calendar-row">
 			<div class="days clearfix">
 				@for (day of row.days; track day.date; let i = $index) {
@@ -15,7 +15,7 @@
 					>
 						<div
 							class="date"
-							[class.selected]="selectedDate === day.date || (selectedDate && hoverDate === day.date)"
+							[class.selected]="selectedDate() === day.date || (selectedDate() && hoverDate() === day.date)"
 							[class.selectedRange]="isSelectedRange(day)"
 							[class.empty]="day.properties.empty"
 						>

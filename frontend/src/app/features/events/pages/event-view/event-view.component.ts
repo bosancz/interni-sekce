@@ -3,7 +3,20 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { arrowBackOutline, arrowForwardOutline, arrowUndoOutline, calendar, cashOutline, closeOutline, documentOutline, eyeOffOutline, eyeOutline, handLeftOutline, medkitOutline, peopleOutline } from "ionicons/icons";
+import {
+	arrowBackOutline,
+	arrowForwardOutline,
+	arrowUndoOutline,
+	calendar,
+	cashOutline,
+	closeOutline,
+	documentOutline,
+	eyeOffOutline,
+	eyeOutline,
+	handLeftOutline,
+	medkitOutline,
+	peopleOutline,
+} from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -65,8 +78,20 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 		private readonly toastService: ToastService,
 		private readonly modalService: ModalService,
 	) {
-		addIcons({ calendar, peopleOutline, medkitOutline, cashOutline, documentOutline, handLeftOutline,
-			 arrowForwardOutline, arrowBackOutline, arrowUndoOutline, eyeOutline,  eyeOffOutline,  closeOutline });
+		addIcons({
+			calendar,
+			peopleOutline,
+			medkitOutline,
+			cashOutline,
+			documentOutline,
+			handLeftOutline,
+			arrowForwardOutline,
+			arrowBackOutline,
+			arrowUndoOutline,
+			eyeOutline,
+			eyeOffOutline,
+			closeOutline,
+		});
 	}
 
 	ionViewWillEnter(): void {
@@ -149,7 +174,7 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 			{
 				text: "Vést akci",
 				color: "success",
-				icon:  handLeftOutline,
+				icon: handLeftOutline,
 				hidden: !event._links.leadEvent.allowed,
 				handler: () => this.leadEvent(event),
 			},
@@ -158,7 +183,7 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 				icon: arrowForwardOutline,
 				color: "primary",
 				hidden: !event?._links.submitEvent.allowed,
-				
+
 				handler: () => this.eventStatusAction(event, "submitEvent"),
 			},
 			{
@@ -173,7 +198,7 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 				icon: arrowBackOutline,
 				color: "danger",
 				hidden: !event?._links.rejectEvent.allowed,
-				
+
 				handler: () => this.eventStatusAction(event, "rejectEvent"),
 			},
 			{

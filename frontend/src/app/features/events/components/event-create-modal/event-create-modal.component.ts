@@ -1,14 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
-import {
-	IonButton,
-	IonButtons,
-	IonInput,
-	IonItem,
-	IonList,
-	ModalController,
-} from "@ionic/angular/standalone";
+import { IonButton, IonButtons, IonInput, IonItem, IonList, ModalController } from "@ionic/angular/standalone";
 import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { SDK } from "src/sdk";

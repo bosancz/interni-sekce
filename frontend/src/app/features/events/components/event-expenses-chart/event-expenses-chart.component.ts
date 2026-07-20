@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, effect, input, OnInit } from "@angular/core";
+import { Component, effect, input, OnInit, signal } from "@angular/core";
 import { ChartData, ChartOptions } from "chart.js";
 import { DateTime } from "luxon";
 import { BaseChartDirective } from "ng2-charts";
@@ -18,10 +18,10 @@ export class EventExpensesChartComponent implements OnInit {
 	event = input<SDK.EventResponseWithLinks | undefined>();
 	expenses = input<SDK.EventExpenseResponseWithLinks[] | undefined>();
 
-	days: number = 0;
-	persons: number = 0;
+	days = signal(0);
+	persons = signal(0);
 
-	total: number = 0;
+	total = signal(0);
 
 	totalByType: Record<SDK.EventExpenseTypesEnum, number> = {
 		accommodation: 0,
@@ -31,7 +31,7 @@ export class EventExpensesChartComponent implements OnInit {
 		transport: 0,
 	};
 
-	chartData?: ChartData<"doughnut">;
+	chartData = signal<ChartData<"doughnut"> | undefined>(undefined);
 
 	chartOptions: ChartOptions<"doughnut"> = {
 		responsive: true,
@@ -73,11 +73,13 @@ export class EventExpensesChartComponent implements OnInit {
 			.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
 			.plus({ days: 1 });
 
-		this.days = Math.ceil(dateTill.diff(dateFrom, "days").days);
+		const days = Math.ceil(dateTill.diff(dateFrom, "days").days);
+		this.days.set(days);
 
 		const attendees = await this.api.EventsApi.listEventAttendees(event.id).then((res) => res.data);
 
-		this.persons = attendees?.length || 1;
+		const persons = attendees?.length || 1;
+		this.persons.set(persons);
 
 		// only include expense types that actually have an expense, so the
 		// legend doesn't list empty categories
@@ -85,18 +87,18 @@ export class EventExpensesChartComponent implements OnInit {
 			.map((type) => ({ type, total: this.getTotalExpenseByType(expenses, type) }))
 			.filter((entry) => entry.total > 0);
 
-		this.chartData = {
+		this.chartData.set({
 			labels: usedTypes.map((entry) => EventExpenseTypes[entry.type].title),
 			datasets: [
 				{
-					data: usedTypes.map((entry) => entry.total / this.persons / this.days),
+					data: usedTypes.map((entry) => entry.total / persons / days),
 					borderRadius: 4,
 					backgroundColor: usedTypes.map((entry) => EventExpenseTypes[entry.type].color),
 				},
 			],
-		};
+		});
 
-		this.total = expenses.reduce((acc, e) => acc + this.parseAmount(e), 0);
+		this.total.set(expenses.reduce((acc, e) => acc + this.parseAmount(e), 0));
 	}
 
 	private getTotalExpenseByType(expenses: SDK.EventExpenseResponseWithLinks[], type: SDK.EventExpenseTypesEnum) {

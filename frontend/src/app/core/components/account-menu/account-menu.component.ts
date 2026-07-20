@@ -1,4 +1,3 @@
-import { AsyncPipe } from "@angular/common";
 import { Component } from "@angular/core";
 import { PopoverController } from "@ionic/angular/standalone";
 import { AccountMenuModalComponent } from "src/app/core/components/account-menu-modal/account-menu-modal.component";
@@ -11,10 +10,10 @@ import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 	selector: "bo-account-menu",
 	templateUrl: "./account-menu.component.html",
 	styleUrl: "./account-menu.component.scss",
-	imports: [AvatarComponent, MemberPipe, GroupPipe, AsyncPipe],
+	imports: [AvatarComponent, MemberPipe, GroupPipe],
 })
 export class AccountMenuComponent {
-	user = this.userService.user;
+	user = this.userService.currentUser;
 
 	constructor(
 		private readonly userService: UserService,

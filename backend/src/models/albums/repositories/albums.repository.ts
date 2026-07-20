@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationOptions } from "src/helpers/pagination";
-import { Repository } from "typeorm";
+import { Brackets, Repository } from "typeorm";
 import { Album } from "../entities/album.entity";
 import { PhotosRepository } from "./photos.repository";
 
@@ -22,7 +22,7 @@ export class AlbumsRepository {
 		return this.repository.createQueryBuilder(alias);
 	}
 
-	async getAlbums(options: GetAlbumsOptions = {}) {
+	async getAlbums(options: GetAlbumsOptions = {}, where: Brackets | string = "1=1") {
 		const q = this.repository
 			.createQueryBuilder("albums")
 			.select([
@@ -33,6 +33,8 @@ export class AlbumsRepository {
 				"albums.dateTill",
 				"albums.datePublished",
 			])
+			// row-level permission filter (see Permission.canWhere)
+			.where(where)
 			.orderBy("albums.dateFrom", "DESC")
 			.take(options.limit || 25)
 			.skip(options.offset || 0);

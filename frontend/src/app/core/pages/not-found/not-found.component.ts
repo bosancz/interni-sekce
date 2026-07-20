@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { Meta } from "@angular/platform-browser";
 import { TitleService } from "src/app/core/services/title.service";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";

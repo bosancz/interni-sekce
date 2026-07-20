@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationOptions } from "src/helpers/pagination";
-import { FindOneOptions, Repository } from "typeorm";
+import { Brackets, FindOneOptions, Repository } from "typeorm";
 import { MemberContact } from "../entities/member-contact.entity";
 import { Member } from "../entities/member.entity";
 
@@ -20,9 +20,11 @@ export class MembersRepository {
 		@InjectRepository(MemberContact) private membersContactsRepository: Repository<MemberContact>,
 	) {}
 
-	async getMembers(options: GetMembersOptions = {}) {
+	async getMembers(options: GetMembersOptions = {}, where: Brackets | string = "1=1") {
 		const q = this.membersRepository
 			.createQueryBuilder("members")
+			// row-level permission filter (see Permission.canWhere)
+			.where(where)
 			.orderBy("CONCAT(members.nickname,members.first_name,members.last_name)", "ASC")
 			.take(options.limit)
 			.skip(options.offset);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { IonText } from "@ionic/angular/standalone";
 
 // from https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent
@@ -15,11 +15,11 @@ interface BeforeInstallPromptEvent {
 	imports: [IonText],
 })
 export class AccountAppComponent implements OnInit {
-	beforeinstallprompt?: BeforeInstallPromptEvent;
+	beforeinstallprompt = signal<BeforeInstallPromptEvent | undefined>(undefined);
 
-	installed: boolean = false;
+	installed = signal(false);
 
-	promptShown: boolean = false;
+	promptShown = signal(false);
 
 	constructor() {}
 
@@ -28,27 +28,29 @@ export class AccountAppComponent implements OnInit {
 			// Prevent Chrome 67 and earlier from automatically showing the prompt
 			event.preventDefault();
 			// Stash the event so it can be triggered later.
-			this.beforeinstallprompt = <BeforeInstallPromptEvent>event;
+			this.beforeinstallprompt.set(<BeforeInstallPromptEvent>event);
 		});
 
 		window.addEventListener("appinstalled", (event) => {
-			this.installed = true;
+			this.installed.set(true);
 		});
 	}
 
 	install() {
-		this.promptShown = true;
+		this.promptShown.set(true);
 
-		this.beforeinstallprompt?.prompt();
+		const beforeinstallprompt = this.beforeinstallprompt();
+
+		beforeinstallprompt?.prompt();
 
 		// Wait for the user to respond to the prompt
-		this.beforeinstallprompt?.userChoice.then((choiceResult) => {
+		beforeinstallprompt?.userChoice.then((choiceResult) => {
 			if (choiceResult.outcome === "accepted") {
 				console.log("User accepted the A2HS prompt");
 			} else {
 				console.log("User dismissed the A2HS prompt");
 			}
-			this.beforeinstallprompt = undefined;
+			this.beforeinstallprompt.set(undefined);
 		});
 	}
 }

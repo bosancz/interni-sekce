@@ -7,7 +7,7 @@ import { trashOutline } from "ionicons/icons";
 	selector: "bo-delete-button",
 	templateUrl: "./delete-button.component.html",
 	styleUrl: "./delete-button.component.scss",
-	
+
 	imports: [IonButton, IonIcon],
 })
 export class DeleteButtonComponent {

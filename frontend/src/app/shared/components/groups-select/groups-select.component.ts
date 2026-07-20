@@ -15,16 +15,16 @@ import { SDK } from "src/sdk";
 		},
 	],
 	host: {
-		"[class.disabled]": "disabled",
-		"[class.readonly]": "readonly",
+		"[class.disabled]": "disabled()",
+		"[class.readonly]": "readonly()",
 	},
 })
 export class GroupsSelectComponent implements OnInit, ControlValueAccessor, AfterViewInit {
 	groups = signal<SDK.GroupResponseWithLinks[] | undefined>(undefined);
 
-	selectedGroups: number[] = [];
+	selectedGroups = signal<number[]>([]);
 
-	disabled: boolean = false;
+	disabled = signal<boolean>(false);
 	readonly = input<boolean>(false);
 	multiple = input<boolean>(false);
 	required = input<boolean>(false);
@@ -51,42 +51,42 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	}
 
 	emitChange() {
-		if (this.multiple()) this.onChange(this.selectedGroups);
-		else this.onChange(this.selectedGroups[0]);
+		if (this.multiple()) this.onChange(this.selectedGroups());
+		else this.onChange(this.selectedGroups()[0]);
 	}
 
 	isSelected(groupId: number) {
-		return this.selectedGroups.indexOf(groupId) !== -1;
+		return this.selectedGroups().indexOf(groupId) !== -1;
 	}
 
 	selectAll(checked: boolean): void {
-		if (this.disabled || this.readonly() || !this.multiple()) return;
+		if (this.disabled() || this.readonly() || !this.multiple()) return;
 
 		if (checked) {
-			this.selectedGroups = this.groups()?.map((group) => group.id) ?? [];
+			this.selectedGroups.set(this.groups()?.map((group) => group.id) ?? []);
 		} else {
-			this.selectedGroups = [];
+			this.selectedGroups.set([]);
 		}
 
 		this.emitChange();
 	}
 
 	isSelectedAll(): boolean {
-		return this.groups()?.every((group) => this.selectedGroups.includes(group.id)) ?? false;
+		return this.groups()?.every((group) => this.selectedGroups().includes(group.id)) ?? false;
 	}
 
 	toggleGroup(groupId: number) {
-		if (this.disabled || this.readonly()) return;
+		if (this.disabled() || this.readonly()) return;
 
-		let i = this.selectedGroups.indexOf(groupId);
+		const current = this.selectedGroups();
+		let i = current.indexOf(groupId);
 
 		if (i === -1) {
-			if (!this.multiple()) this.selectedGroups = [];
-			this.selectedGroups.push(groupId);
+			this.selectedGroups.set(this.multiple() ? [...current, groupId] : [groupId]);
 		} else {
-			if (this.required() && this.selectedGroups.length === 1) return;
-			if (!this.multiple()) this.selectedGroups = [];
-			else this.selectedGroups.splice(i, 1);
+			if (this.required() && current.length === 1) return;
+			if (!this.multiple()) this.selectedGroups.set([]);
+			else this.selectedGroups.update((groups) => groups.filter((_, idx) => idx !== i));
 		}
 
 		this.emitChange();
@@ -104,7 +104,7 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 					"has-placeholder": true,
 					"has-value": true,
 					"has-focus": false,
-					"interactive-disabled": this.disabled,
+					"interactive-disabled": this.disabled(),
 				},
 			}),
 		);
@@ -113,9 +113,9 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	// ControlValueAccessor
 	writeValue(groups: number | number[] | undefined): void {
 		if (this.multiple()) {
-			this.selectedGroups = Array.isArray(groups) ? groups : (this.groups()?.map((group) => group.id) ?? []);
+			this.selectedGroups.set(Array.isArray(groups) ? groups : (this.groups()?.map((group) => group.id) ?? []));
 		} else {
-			this.selectedGroups = groups ? (Array.isArray(groups) ? groups : [groups]) : [];
+			this.selectedGroups.set(groups ? (Array.isArray(groups) ? groups : [groups]) : []);
 		}
 	}
 	registerOnChange(fn: any): void {
@@ -125,7 +125,7 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 		this.onTouched = fn;
 	}
 	setDisabledState(isDisabled: boolean): void {
-		this.disabled = isDisabled;
-		this.selectedGroups = [];
+		this.disabled.set(isDisabled);
+		this.selectedGroups.set([]);
 	}
 }

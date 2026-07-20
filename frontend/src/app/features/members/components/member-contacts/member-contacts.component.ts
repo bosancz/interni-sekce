@@ -1,4 +1,4 @@
-import { Component, effect, input, output } from "@angular/core";
+import { Component, effect, input, output, signal } from "@angular/core";
 import {
 	AlertButton,
 	AlertController,
@@ -49,7 +49,7 @@ export default class MemberContactsComponent {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
 	update = output<Partial<SDK.MemberResponse>>();
 
-	contacts?: SDK.MemberContactResponseWithLinks[];
+	contacts = signal<SDK.MemberContactResponseWithLinks[] | undefined>(undefined);
 
 	constructor(
 		private toastService: ToastService,
@@ -66,9 +66,9 @@ export default class MemberContactsComponent {
 
 	async loadContacts(memberId: number | null) {
 		if (!memberId) {
-			this.contacts = [];
+			this.contacts.set([]);
 		} else {
-			this.contacts = await this.api.MembersApi.listContacts(memberId).then((res) => res.data);
+			this.contacts.set(await this.api.MembersApi.listContacts(memberId).then((res) => res.data));
 		}
 	}
 
@@ -219,12 +219,12 @@ export default class MemberContactsComponent {
 
 		if (contactId) {
 			const { data: updated } = await this.api.MembersApi.updateContact(member.id, contactId, data);
-			this.contacts = (this.contacts ?? []).map((c) =>
-				c.id === contactId ? (updated as SDK.MemberContactResponseWithLinks) : c,
+			this.contacts.set(
+				(this.contacts() ?? []).map((c) => (c.id === contactId ? (updated as SDK.MemberContactResponseWithLinks) : c)),
 			);
 		} else {
 			const { data: created } = await this.api.MembersApi.createContact(member.id, data);
-			this.contacts = [...(this.contacts ?? []), created as SDK.MemberContactResponseWithLinks];
+			this.contacts.set([...(this.contacts() ?? []), created as SDK.MemberContactResponseWithLinks]);
 		}
 
 		await this.toastService.toast(contactId ? "Kontakt byl upraven" : "Kontakt byl přidán");
@@ -241,7 +241,7 @@ export default class MemberContactsComponent {
 
 		await this.api.MembersApi.deleteContact(member.id, contact.id);
 
-		this.contacts = (this.contacts ?? []).filter((c) => c.id !== contact.id);
+		this.contacts.set((this.contacts() ?? []).filter((c) => c.id !== contact.id));
 
 		await this.toastService.toast("Kontakt byl smazán", { color: "danger" });
 	}

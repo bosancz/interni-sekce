@@ -41,9 +41,7 @@ export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 	ionViewWillEnter(): void {
 		this.loadGroups();
 
-		this.api.rootLinks
-			.pipe(untilDestroyed(this, "ionViewWillLeave"))
-			.subscribe((links) => this.setActions(links));
+		this.api.rootLinks.pipe(untilDestroyed(this, "ionViewWillLeave")).subscribe((links) => this.setActions(links));
 	}
 
 	ionViewWillLeave(): void {

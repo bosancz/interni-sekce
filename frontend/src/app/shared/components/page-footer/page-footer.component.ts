@@ -5,7 +5,7 @@ import { IonFooter, IonToolbar } from "@ionic/angular/standalone";
 	selector: "bo-page-footer",
 	templateUrl: "./page-footer.component.html",
 	styleUrls: ["./page-footer.component.scss"],
-	
+
 	imports: [IonFooter, IonToolbar],
 })
 export class PageFooterComponent {

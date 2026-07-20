@@ -1,4 +1,4 @@
-<ion-tab-button (click)="openTab()" [class.tab-selected]="active">
+<ion-tab-button (click)="openTab()" [class.tab-selected]="active()">
 	@if (icon()) {
 		<ion-icon [name]="icon()"></ion-icon>
 	}

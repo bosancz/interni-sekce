@@ -1,13 +1,13 @@
-@if (histogram.length) {
+@if (histogram().length) {
 	<div class="histogram">
 		<div class="chart">
-			@for (bar of histogram; track $index; let i = $index) {
+			@for (bar of histogram(); track $index; let i = $index) {
 				<div
 					class="bar"
-					[style.left]="(i / histogram.length) * 100 + '%'"
-					[style.right]="(1 - (i + 1) / histogram.length) * 100 + '%'"
+					[style.left]="(i / histogram().length) * 100 + '%'"
+					[style.right]="(1 - (i + 1) / histogram().length) * 100 + '%'"
 				>
-					<div class="full" [style.height]="countMax ? (bar.count / countMax) * 100 + '%' : '0%'">
+					<div class="full" [style.height]="countMax() ? (bar.count / countMax()!) * 100 + '%' : '0%'">
 						<span class="label">{{ bar.label }}</span>
 						@if (bar.count > 0) {
 							<span class="count">{{ bar.count }}</span>

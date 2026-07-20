@@ -1,4 +1,4 @@
-import { Component, input, OnInit } from "@angular/core";
+import { Component, input, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { IonBadge, IonIcon, IonLabel, IonTabButton } from "@ionic/angular/standalone";
 import { TABS_QUERY_PARAM } from "../tabs/tabs.component";
@@ -7,7 +7,7 @@ import { TABS_QUERY_PARAM } from "../tabs/tabs.component";
 	selector: "bo-tab",
 	templateUrl: "./tab.component.html",
 	styleUrl: "./tab.component.scss",
-	
+
 	imports: [IonTabButton, IonIcon, IonLabel, IonBadge],
 })
 export class TabComponent implements OnInit {
@@ -20,7 +20,7 @@ export class TabComponent implements OnInit {
 	badge = input<string | number | undefined>();
 	badgeColor = input<string | undefined>();
 
-	active = false;
+	active = signal(false);
 
 	constructor(
 		private readonly route: ActivatedRoute,
@@ -29,7 +29,7 @@ export class TabComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.route.queryParams.subscribe((params) => {
-			this.active = params[TABS_QUERY_PARAM] === this.name();
+			this.active.set(params[TABS_QUERY_PARAM] === this.name());
 		});
 	}
 

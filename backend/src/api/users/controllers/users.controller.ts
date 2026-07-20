@@ -64,7 +64,7 @@ export class UsersController {
 				"member.lastName",
 			])
 			.leftJoin("user.member", "member")
-			.where(UsersListPermission.canWhere(req))
+			.where(UsersListPermission.canWhere(req, "user"))
 			.orderBy("user.login", "ASC")
 			.take(query.limit || 25)
 			.skip(query.offset || 0);
@@ -96,7 +96,7 @@ export class UsersController {
 	): Promise<UserResponse> {
 		const user = await this.userRepository.findOne({
 			where: { id },
-			relations: query.includeMember ? ["member", "member.group"] : [],
+			relations: query.includeMember ? { member: { group: true } } : {},
 		});
 		if (!user) throw new NotFoundException();
 

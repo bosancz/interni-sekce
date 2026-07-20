@@ -32,7 +32,7 @@ export class EventsAnnouncementController {
 
 		const event = await this.eventsRepository.findOne({
 			where: { id: id },
-			relations: ["attendees", "attendees.member", "attendees.member.contacts"], // Important: load nested member relation
+			relations: { attendees: { member: { contacts: true } } }, // Important: load nested member relation
 		});
 
 		if (!event) throw new NotFoundException();

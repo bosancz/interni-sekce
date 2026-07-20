@@ -115,11 +115,7 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 
 		try {
 			const i = this.expenses().indexOf(expense);
-			this.expenses.update((list) => [
-				...list.slice(0, i),
-				{ ...expense, ...data },
-				...list.slice(i + 1),
-			]);
+			this.expenses.update((list) => [...list.slice(0, i), { ...expense, ...data }, ...list.slice(i + 1)]);
 
 			await this.api.EventsApi.updateEventExpense(event.id, expense.id, data);
 			await this.loadExpenses();

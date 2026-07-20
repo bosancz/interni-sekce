@@ -1,5 +1,5 @@
 import { KeyValuePipe } from "@angular/common";
-import { Component, input, output } from "@angular/core";
+import { Component, input, output, ChangeDetectionStrategy } from "@angular/core";
 import { IonButton, IonLabel, IonList, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
 import { ModalService } from "src/app/core/services/modal.service";
 import { UserRoles } from "src/app/core/config/user-roles";

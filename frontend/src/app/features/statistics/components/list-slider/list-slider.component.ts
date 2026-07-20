@@ -5,7 +5,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 	selector: "list-slider",
 	templateUrl: "./list-slider.component.html",
 	styleUrls: ["./list-slider.component.scss"],
-	
+
 	imports: [],
 	providers: [
 		{

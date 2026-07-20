@@ -1,4 +1,4 @@
-import { Component, forwardRef, input, OnInit } from "@angular/core";
+import { Component, forwardRef, input, OnInit, signal } from "@angular/core";
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { IonInput, IonItem, IonLabel, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
 import { DateTime } from "luxon";
@@ -23,8 +23,8 @@ export class TrimesterSelectorComponent implements OnInit, ControlValueAccessor 
 	lines = input<string | undefined>(undefined);
 	labelPosition = input<string | undefined>(undefined);
 
-	trimester?: number;
-	year?: number;
+	trimester = signal<number | undefined>(undefined);
+	year = signal<number | undefined>(undefined);
 
 	trimesterMonths = [
 		[1, 4],
@@ -35,7 +35,7 @@ export class TrimesterSelectorComponent implements OnInit, ControlValueAccessor 
 	/* ControlValueAccessor, implements the ngModel interface */
 	private onTouched = () => {};
 	private onChange = (value: TrimesterDateRange) => {};
-	disabled: boolean = false;
+	disabled = signal(false);
 
 	constructor() {
 		this.setTrimesterByDate(DateTime.local());
@@ -53,16 +53,18 @@ export class TrimesterSelectorComponent implements OnInit, ControlValueAccessor 
 		this.onTouched = fn;
 	}
 	setDisabledState?(isDisabled: boolean): void {
-		this.disabled = isDisabled;
+		this.disabled.set(isDisabled);
 	}
 
 	ngOnInit(): void {}
 
 	setTrimester() {
-		if (!this.year || this.trimester === undefined) return;
+		const year = this.year();
+		const trimester = this.trimester();
+		if (!year || trimester === undefined) return;
 
-		const dateFrom = DateTime.local(this.year, this.trimesterMonths[this.trimester][0], 1);
-		const dateTill = DateTime.local(this.year, this.trimesterMonths[this.trimester][1], 1)
+		const dateFrom = DateTime.local(year, this.trimesterMonths[trimester][0], 1);
+		const dateTill = DateTime.local(year, this.trimesterMonths[trimester][1], 1)
 			.plus({ months: 1 })
 			.minus({ days: 1 });
 
@@ -75,15 +77,18 @@ export class TrimesterSelectorComponent implements OnInit, ControlValueAccessor 
 	setTrimesterByDate(dateFrom?: DateTime) {
 		if (!dateFrom || !dateFrom.isValid) dateFrom = DateTime.local();
 
-		this.year = dateFrom.year;
-		this.trimester = this.trimesterMonths.findIndex((item) => {
+		let year = dateFrom.year;
+		let trimester = this.trimesterMonths.findIndex((item) => {
 			return item[0] >= dateFrom!.month;
 		});
 
-		if (this.trimester === -1) {
-			this.year++;
-			this.trimester = 0;
+		if (trimester === -1) {
+			year++;
+			trimester = 0;
 		}
+
+		this.year.set(year);
+		this.trimester.set(trimester);
 
 		this.setTrimester();
 	}
