@@ -17,7 +17,7 @@ import {
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
-import { Token } from "src/auth/decorators/token.decorator";
+import { AuthUser } from "src/auth/decorators/auth-user.decorator";
 import { SessionUser } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventPlaceGeometry, EventStates } from "src/models/events/entities/event.entity";
@@ -55,7 +55,7 @@ export class EventsController {
 	@ApiResponse({ status: 200, type: WithLinks(EventResponse), isArray: true })
 	async listEvents(
 		@Req() req: Request,
-		@Token() token: SessionUser,
+		@AuthUser() authUser: SessionUser,
 		@Query() query: ListEventsQuery,
 	): Promise<EventResponse[]> {
 		// canWhere both authorizes (throws if not allowed) and returns the row-level filter
@@ -66,8 +66,9 @@ export class EventsController {
 		};
 
 		if (query.my) {
-			if (!token.memberId) throw new ConflictException("Cannot show my events, user is not linked to a member.");
-			options.memberId = token.memberId;
+			if (!authUser.memberId)
+				throw new ConflictException("Cannot show my events, user is not linked to a member.");
+			options.memberId = authUser.memberId;
 		}
 
 		return this.events.getEvents(options, where);
@@ -171,15 +172,15 @@ export class EventsController {
 	@HttpCode(204)
 	@AcLinks(EventLeadPermission)
 	@ApiResponse({ status: 204 })
-	async leadEvent(@Req() req: Request, @Param("id") id: number, @Token() token: SessionUser): Promise<void> {
-		if (token.memberId === undefined) throw new ConflictException("User is not linked to a member.");
+	async leadEvent(@Req() req: Request, @Param("id") id: number, @AuthUser() authUser: SessionUser): Promise<void> {
+		if (authUser.memberId === undefined) throw new ConflictException("User is not linked to a member.");
 
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
 		EventLeadPermission.canOrThrow(req, event);
 
-		await this.events.createEventAttendee(id, token.memberId, { type: EventAttendeeType.leader });
+		await this.events.createEventAttendee(id, authUser.memberId, { type: EventAttendeeType.leader });
 	}
 
 	@Post(":id/submit")
