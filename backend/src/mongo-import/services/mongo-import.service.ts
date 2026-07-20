@@ -367,6 +367,10 @@ export class MongoImportService {
 				uploadedById: mongoPhoto.uploadedBy ? userIds[mongoPhoto.uploadedBy.toString()] : null,
 				width: mongoPhoto.sizes?.original.width ?? null,
 				height: mongoPhoto.sizes?.original.height ?? null,
+				// Keep the original Mongo ObjectIds so the backend can serve the existing image
+				// files straight from the legacy on-disk layout (they are not moved or copied).
+				srcAlbumId: mongoPhoto.album.toString(),
+				srcId: mongoPhoto._id.toString(),
 			};
 
 			await t.save(Photo, photoData);

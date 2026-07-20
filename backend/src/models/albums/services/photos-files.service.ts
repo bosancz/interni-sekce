@@ -1,10 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { join } from "path";
+import { extname, join } from "path";
 import { Config } from "src/config";
 import exifReader = require("exif-reader");
 import sharp = require("sharp");
 import { FilesService } from "src/models/files/services/files.service";
 import { PhotoSizes } from "src/api/albums/dto/photo.dto";
+import { Photo } from "../entities/photo.entity";
 
 // Cap decoded image size to guard against decompression-bomb uploads (roughly 24k x 24k).
 const MAX_INPUT_PIXELS = 24000 * 24000;
@@ -41,6 +42,24 @@ export class PhotosFilesService {
 			return join(this.config.fs.photosDir, String(albumId), `${photoId}${ext}`);
 		}
 		return join(this.config.fs.thumbnailsDir, String(albumId), `${photoId}_${size}${ext}`);
+	}
+
+	/**
+	 * Resolve the on-disk path for a photo entity. Files live in the same directories the old
+	 * server used; photos imported from the old Mongo server keep their existing files, keyed
+	 * by the original Mongo ObjectIds (album folder + file name), while natively uploaded
+	 * photos are keyed by their numeric ids. The extension is derived from the photo's
+	 * original name, exactly as the old server did.
+	 */
+	getPhotoImagePath(photo: Photo, size: PhotoSizes): string {
+		const ext = extname(photo.name);
+		const albumDir = photo.srcAlbumId ?? String(photo.albumId);
+		const fileId = photo.srcId ?? String(photo.id);
+
+		if (size === PhotoSizes.original) {
+			return join(this.config.fs.photosDir, albumDir, `${fileId}${ext}`);
+		}
+		return join(this.config.fs.thumbnailsDir, albumDir, `${fileId}_${size}${ext}`);
 	}
 
 	/** Read image dimensions, dominant background color and capture date from the buffer. */
@@ -80,13 +99,11 @@ export class PhotosFilesService {
 	}
 
 	/** Remove the original file and all resized variants from disk. Missing files are ignored. */
-	async deletePhotoFiles(albumId: number, photoId: number, ext: string): Promise<void> {
+	async deletePhotoFiles(photo: Photo): Promise<void> {
 		const sizes: PhotoSizes[] = [PhotoSizes.original, ...(Object.keys(this.config.photos.sizes) as PhotoSizes[])];
 
 		await Promise.all(
-			sizes.map((size) =>
-				this.files.deleteFile(this.getImagePath(albumId, photoId, size, ext)).catch(() => {}),
-			),
+			sizes.map((size) => this.files.deleteFile(this.getPhotoImagePath(photo, size)).catch(() => {})),
 		);
 	}
 

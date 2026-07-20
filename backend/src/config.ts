@@ -94,7 +94,10 @@ const fs = {
 	dataDir,
 	keysDir: path.resolve(process.env["KEYS_DIR"] ?? "../keys"),
 	photosDir: path.resolve(process.env["PHOTOS_DIR"] ?? path.join(dataDir, "photos")),
-	thumbnailsDir: path.resolve(process.env["THUMBNAILS_DIR"] ?? path.join(dataDir, "thumbnails")),
+	// Same directories the old server used ("photos" / "thumbs"). Photos imported from the
+	// old server keep their existing files there, keyed by Mongo ObjectId; new uploads are
+	// written alongside them keyed by numeric id (see PhotosFilesService).
+	thumbnailsDir: path.resolve(process.env["THUMBNAILS_DIR"] ?? path.join(dataDir, "thumbs")),
 	eventsDir: path.resolve(process.env["EVENTS_DIR"] ?? path.join(dataDir, "events")),
 	membersDir: path.resolve(process.env["MEMBERS_DIR"] ?? path.join(dataDir, "members")),
 };

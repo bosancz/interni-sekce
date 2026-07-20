@@ -123,7 +123,7 @@ export class PhotosController {
 		PhotoReadFilePermission.canOrThrow(req, photo);
 
 		const ext = extname(photo.name);
-		const path = this.photosFiles.getImagePath(photo.albumId, photo.id, size, ext);
+		const path = this.photosFiles.getPhotoImagePath(photo, size);
 
 		try {
 			await this.photosFiles.fileExists(path);
