@@ -30,35 +30,26 @@ jobs:
         run: echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
   build:
-    name: Build
+    name: Build and publish
     needs: version
     uses: ./.github/workflows/build.yml
     with:
       context: .
-      image-name: interni-sekce
-      retention-days: 1
-      build-args: |
-        VERSION=NEXT-${{ needs.version.outputs.version }}
-
-  publish:
-    name: Publish
-    needs: build
-    uses: ./.github/workflows/publish.yml
-    with:
-      source-image-name: interni-sekce
       publish-image-name: bosancz/interni-sekce
       registry: ghcr.io
       tag: next
+      build-args: |
+        VERSION=NEXT-${{ needs.version.outputs.version }}
     secrets:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
     name: Deploy
-    needs: publish
+    needs: build
     uses: ./.github/workflows/deploy.yml
     with:
-      images: ${{ needs.publish.outputs.images }}
+      images: ${{ needs.build.outputs.images }}
     secrets: inherit
 
   tag:
@@ -67,8 +58,3 @@ jobs:
     uses: ./.github/workflows/tag.yml
     with:
       tag: NEXT
-
-  cleanup:
-    name: Cleanup
-    needs: [deploy]
-    uses: ./.github/workflows/cleanup.yml

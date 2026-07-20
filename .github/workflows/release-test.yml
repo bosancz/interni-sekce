@@ -21,34 +21,25 @@ jobs:
   #       run: echo "No tests implemented yet"
 
   build:
-    name: Build
+    name: Build and publish
     uses: ./.github/workflows/build.yml
     with:
       context: .
-      image-name: interni-sekce
-      retention-days: 1
-      build-args: |
-        VERSION=${{ github.ref }}-${{ github.sha }}
-
-  publish:
-    name: Publish
-    needs: build
-    uses: ./.github/workflows/publish.yml
-    with:
-      source-image-name: interni-sekce
       publish-image-name: bosancz/interni-sekce
       registry: ghcr.io
       tag: test
+      build-args: |
+        VERSION=${{ github.ref }}-${{ github.sha }}
     secrets:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
     name: Deploy
-    needs: publish
+    needs: build
     uses: ./.github/workflows/deploy.yml
     with:
-      images: ${{ needs.publish.outputs.images }}
+      images: ${{ needs.build.outputs.images }}
     secrets: inherit
 
   tag:
@@ -57,8 +48,3 @@ jobs:
     uses: ./.github/workflows/tag.yml
     with:
       tag: TEST
-
-  cleanup:
-    name: Cleanup
-    needs: [deploy]
-    uses: ./.github/workflows/cleanup.yml

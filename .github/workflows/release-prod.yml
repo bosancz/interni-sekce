@@ -34,38 +34,27 @@ jobs:
       semver: ${{ github.event.inputs.semver }}
 
   build:
-    name: Build
+    name: Build and publish
     needs: version
     uses: ./.github/workflows/build.yml
     with:
       context: .
-      image-name: interni-sekce
-      retention-days: 1
-      build-args: |
-        VERSION=${{ needs.version.outputs.new_tag }}
-
-  publish:
-    name: Publish
-    needs:
-      - build
-      - version
-    uses: ./.github/workflows/publish.yml
-    with:
-      source-image-name: interni-sekce
       publish-image-name: bosancz/interni-sekce
       registry: ghcr.io
       tag: latest
       version: ${{ needs.version.outputs.new_tag }}
+      build-args: |
+        VERSION=${{ needs.version.outputs.new_tag }}
     secrets:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
     name: Deploy
-    needs: publish
+    needs: build
     uses: ./.github/workflows/deploy.yml
     with:
-      images: ${{ needs.publish.outputs.images }}
+      images: ${{ needs.build.outputs.images }}
     secrets: inherit
 
   tag:
@@ -77,8 +66,3 @@ jobs:
     with:
       tag: PROD
       version: ${{ needs.version.outputs.new_tag }}
-
-  cleanup:
-    name: Cleanup
-    needs: [deploy]
-    uses: ./.github/workflows/cleanup.yml
