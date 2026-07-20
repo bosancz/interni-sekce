@@ -12,6 +12,8 @@ export interface GetMembersOptions extends PaginationOptions {
 	membership?: string[];
 	age?: number[];
 	active?: boolean;
+	// eagerly load each member's contacts in the same query (avoids N+1 per-member fetches)
+	contacts?: boolean;
 }
 
 @Injectable()
@@ -29,6 +31,10 @@ export class MembersRepository {
 			.orderBy("CONCAT(members.nickname,members.first_name,members.last_name)", "ASC")
 			.take(options.limit)
 			.skip(options.offset);
+
+		// Join contacts up-front only when requested (i.e. the contacts column is visible).
+		// TypeORM keeps pagination correct with a distinct-id subquery despite the one-to-many join.
+		if (options.contacts) q.leftJoinAndSelect("members.contacts", "contacts");
 
 		if (options.groups) q.andWhere("members.groupId IN (:...groupIds)", { groupIds: options.groups });
 
@@ -53,6 +59,20 @@ export class MembersRepository {
 		if (options.active !== undefined) q.andWhere("members.active = :active", { active: options.active });
 
 		return q.getMany();
+	}
+
+	// Distinct ages across all members in a single query, so the age filter no longer
+	// needs to page through the entire members table client-side.
+	async getMemberAges(where: Brackets | string = "1=1"): Promise<number[]> {
+		const rows = await this.membersRepository
+			.createQueryBuilder("members")
+			.select("DISTINCT DATE_PART('year', AGE(CURRENT_DATE, members.birthday))::int", "age")
+			.where(where)
+			.andWhere("members.birthday IS NOT NULL")
+			.orderBy("age", "ASC")
+			.getRawMany<{ age: number }>();
+
+		return rows.map((row) => Number(row.age)).filter((age) => Number.isFinite(age));
 	}
 
 	async getMember(id: number, options?: FindOneOptions<Member>) {

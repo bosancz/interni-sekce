@@ -106,4 +106,9 @@ export class MembersListQuery extends PaginationQuery {
 	age?: number[];
 
 	@EnsureBoolean() @IsOptional() active?: boolean;
+
+	@ApiPropertyOptional({ type: "boolean" })
+	@EnsureBoolean()
+	@IsOptional()
+	contacts?: boolean;
 }

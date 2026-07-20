@@ -49,6 +49,14 @@ export class MembersController {
 		return members;
 	}
 
+	@Get("ages")
+	@ApiResponse({ status: 200, type: Number, isArray: true })
+	async listMemberAges(@Req() req: Request): Promise<number[]> {
+		const where = MembersListPermission.canWhere(req, "members");
+
+		return this.members.getMemberAges(where);
+	}
+
 	@Post()
 	@AcLinks(MemberCreatePermission)
 	@ApiResponse({ status: 200, type: WithLinks(MemberResponse) })

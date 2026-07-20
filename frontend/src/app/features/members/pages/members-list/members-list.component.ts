@@ -212,32 +212,24 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
 			// default: active only; "all" reveals inactive members too
 			active: ((filter["active"] as string) || "active") === "all" ? undefined : true,
+			// Fetch contacts in the same request instead of one call per member,
+			// and only when a contact column is actually visible.
+			contacts: this.needsContacts() || undefined,
 		};
 
-		var members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
+		const members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
 
 		if (loadId !== this.latestLoadId) return;
 
-		if (this.view() == "table") {
-			console.log("Loading contacts for members in table view...");
-			members = await Promise.all(
-				members.map(async (member) => {
-					try {
-						const contacts = await this.api.MembersApi.listContacts(member.id).then((res) => res.data);
-
-						return { ...member, contacts: contacts };
-					} catch (error) {
-						console.error(`Failed to load contacts for member ${member.id}`, error);
-						return { ...member, contacts: [] }; // Fallback to empty array on failure
-					}
-				}),
-			);
-
-			if (loadId !== this.latestLoadId) return;
-		}
-
 		const currentMembers = this.members() || [];
 		this.members.set([...currentMembers, ...members]);
+	}
+
+	// Contacts are only needed when the phone/email columns are shown in the table view.
+	private needsContacts(): boolean {
+		if (this.view() !== "table") return false;
+		const selections = this.viewSelections();
+		return !!selections["firstTelephone"] || !!selections["firstEmail"];
 	}
 
 	private normalizeFilterValueToArray(value: string | string[] | null | undefined): string[] {
@@ -256,28 +248,11 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	}
 
 	private async loadAllAges() {
-		let page = 1;
-		let allMembers: SDK.MemberResponseWithLinks[] = [];
+		// Single aggregated request instead of paging through the whole members table
+		// just to collect the distinct ages for the filter dropdown.
+		const ages = await this.api.MembersApi.listMemberAges().then((res) => res.data);
 
-		while (true) {
-			const members = await this.api.MembersApi.listMembers({
-				limit: this.pageSize,
-				offset: (page - 1) * this.pageSize,
-			}).then((res) => res.data);
-
-			allMembers = [...allMembers, ...members];
-
-			if (members.length < this.pageSize) break;
-			page++;
-		}
-
-		const ages = allMembers
-			.map((member) => member.birthday)
-			.filter((birthday): birthday is string => !!birthday)
-			.map((birthday) => Number(this.getAge(birthday)))
-			.filter((age) => Number.isFinite(age));
-
-		this.allMemberAges.set([...new Set(ages)].sort((a, b) => a - b));
+		this.allMemberAges.set([...new Set(ages)].filter((age) => Number.isFinite(age)).sort((a, b) => a - b));
 	}
 
 	async create() {
@@ -320,6 +295,14 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	setViewSelection(key: string, value: boolean) {
 		this.viewSelections.update((selections) => ({ ...selections, [key]: value }));
+
+		// Enabling a contact column after the list was already loaded without contacts:
+		// re-fetch so the newly visible column has data (still a single request).
+		if (value && (key === "firstTelephone" || key === "firstEmail")) {
+			const members = this.members();
+			const contactsLoaded = !!members?.some((member) => member.contacts !== undefined);
+			if (!contactsLoaded) this.loadMembers(this.filter);
+		}
 	}
 
 	public getViewSelectionLabel(key: string): string {

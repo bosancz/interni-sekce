@@ -6932,6 +6932,14 @@ export namespace SDK {
          * @memberof MembersApiListMembers
          */
         active?: boolean
+
+        //contacts
+        /**
+         *
+         * @type {boolean}
+         * @memberof MembersApiListMembers
+         */
+        contacts?: boolean
     }
     
     
@@ -7619,17 +7627,57 @@ export namespace SDK {
             if (queryParams.active !== undefined) {
                 requestQueryParameter['active'] = queryParams.active;
             }
-    
-    
-    
+
+            if (queryParams.contacts !== undefined) {
+                requestQueryParameter['contacts'] = queryParams.contacts;
+            }
+
+
+
             setSearchParams(requestUrlObj, requestQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-    
+
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
-            
+
             return this.axios.request<Array<MemberResponseWithLinks>>(axiosRequestConfig);
+        }
+
+        /**
+         *
+
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+
+        public async listMemberAges(
+            options: AxiosRequestConfig = {}
+        ) {
+
+            const localVarPath = `/api/members/ages`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+
+
+
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+
+            return this.axios.request<Array<number>>(axiosRequestConfig);
         }
     
         /**
