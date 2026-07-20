@@ -1,5 +1,16 @@
 import { Component, OnInit, signal } from "@angular/core";
-import { IonText } from "@ionic/angular/standalone";
+import { IonButton, IonIcon } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import {
+	checkmarkCircleOutline,
+	downloadOutline,
+	informationCircleOutline,
+	phonePortraitOutline,
+} from "ionicons/icons";
+import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
+import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
+import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
+import { CardComponent } from "src/app/shared/components/card/card.component";
 
 // from https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent
 interface BeforeInstallPromptEvent {
@@ -12,7 +23,14 @@ interface BeforeInstallPromptEvent {
 	selector: "bo-account-app",
 	templateUrl: "./account-app.component.html",
 	styleUrls: ["./account-app.component.scss"],
-	imports: [IonText],
+	imports: [
+		IonButton,
+		IonIcon,
+		CardComponent,
+		CardHeaderComponent,
+		CardTitleComponent,
+		CardContentComponent,
+	],
 })
 export class AccountAppComponent implements OnInit {
 	beforeinstallprompt = signal<BeforeInstallPromptEvent | undefined>(undefined);
@@ -21,7 +39,14 @@ export class AccountAppComponent implements OnInit {
 
 	promptShown = signal(false);
 
-	constructor() {}
+	constructor() {
+		addIcons({
+			phonePortraitOutline,
+			informationCircleOutline,
+			checkmarkCircleOutline,
+			downloadOutline,
+		});
+	}
 
 	ngOnInit() {
 		window.addEventListener("beforeinstallprompt", (event: any) => {

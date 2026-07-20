@@ -1,60 +1,133 @@
 <bo-page-header title="Můj účet" />
 
-<bo-page-content>
-	<h3 class="m-3">Uživatelský účet</h3>
+<bo-page-content [padding]="true">
+	@if (user(); as user) {
+		<div class="account-layout">
+			<!-- profilová hlavička -->
+			<bo-card class="profile-card">
+				<bo-card-content>
+					<div class="profile">
+						<bo-avatar
+							class="profile-avatar"
+							[initials]="user.member! | member: 'initials'"
+							[style.background-color]="user.member?.groupId | group: 'color'"
+						/>
 
-	<ion-list>
-		<ion-item>
-			<ion-label>E-mail:</ion-label>
-			<ion-label>
-				@if (user()?.email) {
-					<a [href]="'mailto:' + user()?.email">{{ user()?.email }}</a>
-				}
-			</ion-label>
-		</ion-item>
+						<div class="profile-info">
+							<div class="profile-name san">
+								@if (user.member; as member) {
+									{{ member.firstName }} {{ member.lastName }}
+								} @else {
+									{{ user.login }}
+								}
+							</div>
 
-		<ion-item>
-			<ion-label>Role:</ion-label>
-			<ion-label>
-				@for (role of user()?.roles; track role) {
-					<ion-badge>{{ role }}</ion-badge>
-				}
-			</ion-label>
-		</ion-item>
-	</ion-list>
+							<div class="profile-sub">
+								@if (user.member?.nickname; as nickname) {
+									„{{ nickname }}"
+									@if (user.email) {
+										·
+									}
+								}
+								@if (user.email) {
+									<a [href]="'mailto:' + user.email">{{ user.email }}</a>
+								}
+							</div>
 
-	<h3 class="m-3">Člen skupiny</h3>
-	@if (!user()?.member) {
-		<p class="ms-3 text-warning">Nespárováno s členským účtem</p>
+							<div class="profile-pills">
+								@for (role of user.roles; track role) {
+									<span class="bo-pill bo-pill-blue">{{ role }}</span>
+								}
+								@if (user.member?.groupId; as groupId) {
+									<span class="bo-pill">{{ groupId | group: "name" }}</span>
+								}
+							</div>
+
+							@if (!user.member) {
+								<div class="profile-unpaired">Nespárováno s členským účtem</div>
+							}
+						</div>
+					</div>
+				</bo-card-content>
+			</bo-card>
+
+			<div class="account-grid">
+				<!-- Uživatelský účet -->
+				<bo-card>
+					<bo-card-header>
+						<bo-card-title>
+							<span class="bo-card-section-title">
+								<ion-icon name="mail-outline" />
+								Uživatelský účet
+							</span>
+						</bo-card-title>
+					</bo-card-header>
+					<bo-card-content>
+						<div class="bo-info-list">
+							<div class="bo-info-row">
+								<span class="bo-info-label">E-mail</span>
+								@if (user.email) {
+									<a class="bo-info-value" [href]="'mailto:' + user.email">{{ user.email }}</a>
+								} @else {
+									<span class="bo-info-value">—</span>
+								}
+							</div>
+							<div class="bo-info-row">
+								<span class="bo-info-label">Role</span>
+								<span class="profile-pills">
+									@for (role of user.roles; track role) {
+										<span class="bo-pill bo-pill-blue">{{ role }}</span>
+									} @empty {
+										<span class="bo-info-value">—</span>
+									}
+								</span>
+							</div>
+						</div>
+					</bo-card-content>
+				</bo-card>
+
+				<!-- Člen skupiny -->
+				<bo-card>
+					<bo-card-header>
+						<bo-card-title>
+							<span class="bo-card-section-title">
+								<ion-icon name="people-outline" />
+								Člen skupiny
+							</span>
+						</bo-card-title>
+					</bo-card-header>
+					<bo-card-content>
+						@if (user.member; as member) {
+							<div class="bo-info-list">
+								<div class="bo-info-row">
+									<span class="bo-info-label">Přezdívka</span>
+									<span class="bo-info-value">{{ member.nickname }}</span>
+								</div>
+								<div class="bo-info-row">
+									<span class="bo-info-label">Jméno</span>
+									<span class="bo-info-value">{{ member.firstName }} {{ member.lastName }}</span>
+								</div>
+								<div class="bo-info-row">
+									<span class="bo-info-label">Oddíl</span>
+									<span class="bo-info-value">{{ member.groupId | group: "name" }}</span>
+								</div>
+							</div>
+						} @else {
+							<div class="bo-info-list">
+								<div class="bo-info-row">
+									<span class="profile-unpaired">Nespárováno s členským účtem</span>
+								</div>
+							</div>
+						}
+					</bo-card-content>
+				</bo-card>
+
+				<!-- Přihlašování -->
+				<bo-account-credentials class="grid-full" />
+
+				<!-- Aplikace -->
+				<bo-account-app class="grid-full" />
+			</div>
+		</div>
 	}
-
-	@if (user()?.member; as member) {
-		<ion-list>
-			<ion-item>
-				<ion-label>Přezdívka:</ion-label>
-				<ion-label>{{ member.nickname }}</ion-label>
-			</ion-item>
-			<ion-item>
-				<ion-label>Jméno:</ion-label>
-				<ion-label>{{ member.firstName }} {{ member.lastName }}</ion-label>
-			</ion-item>
-			<ion-item>
-				<ion-label>Oddíl:</ion-label>
-				<ion-label>{{ member.groupId | group: "name" }}</ion-label>
-			</ion-item>
-		</ion-list>
-	}
-
-	<h3 class="m-3 mt-4">Přihlašování</h3>
-	<bo-account-credentials></bo-account-credentials>
-
-	<h3 class="m-3 mt-4">Aplikace</h3>
-	<div class="ms-3">
-		<bo-account-app></bo-account-app>
-	</div>
-
-	<!-- <h2 class="m-3 mt-4">Notifikace</h2>
-  <div class="ms-3 mb-5">
-    <bo-account-notifications></bo-account-notifications>
-  </div> -->
 </bo-page-content>

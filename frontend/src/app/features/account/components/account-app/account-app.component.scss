@@ -1,0 +1,57 @@
+:host {
+	display: block;
+}
+
+/* řádky mají vlastní odsazení – zrušíme výchozí p-3 z bo-card-content */
+::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+.app-row {
+	align-items: flex-start;
+	gap: 12px;
+	justify-content: flex-start;
+}
+
+.app-icon {
+	font-size: 1.4rem;
+	color: var(--bo-muted);
+	flex: 0 0 auto;
+	margin-top: 1px;
+}
+
+.app-text {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	flex: 1;
+	min-width: 0;
+
+	strong {
+		color: var(--bo-ink);
+	}
+}
+
+.app-muted {
+	color: var(--bo-muted);
+}
+
+ion-button {
+	--border-radius: var(--bo-radius-btn);
+	text-transform: none;
+	letter-spacing: 0;
+	font-weight: 700;
+	margin: 0;
+	flex: 0 0 auto;
+	align-self: center;
+}
+
+@media (max-width: 991.98px) {
+	.app-row {
+		flex-wrap: wrap;
+	}
+
+	ion-button {
+		flex: 0 0 100%;
+	}
+}

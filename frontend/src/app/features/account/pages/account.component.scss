@@ -1,10 +1,133 @@
-ion-content {
-	::ng-deep ion-item ion-label:first-child {
-		flex-grow: 0.5;
-		padding-right: 10px;
+:host {
+	display: block;
+}
+
+.account-layout {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+/* karty používají vlastní odsazení řádků – zrušíme výchozí p-3 z bo-card-content */
+.account-grid ::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+/* ---- profilová hlavička ---- */
+.profile-card {
+	::ng-deep bo-card-content {
+		padding: 18px !important;
 	}
-	::ng-deep ion-label {
-		white-space: normal !important;
-		align-self: flex-start;
+}
+
+.profile {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 6px;
+}
+
+.profile-avatar {
+	width: 76px;
+	height: 76px;
+	flex: 0 0 auto;
+
+	::ng-deep h3 {
+		font-size: 34px;
+		color: #fff;
+	}
+}
+
+.profile-info {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+}
+
+.profile-name {
+	font-size: 23px;
+	line-height: 1.1;
+	color: var(--bo-ink);
+	margin-top: 4px;
+}
+
+.profile-sub {
+	color: var(--bo-muted);
+	font-size: 14px;
+}
+
+.profile-pills {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.profile-unpaired {
+	color: var(--bo-yellow-deep);
+	font-weight: 600;
+}
+
+/* ---- mřížka karet ---- */
+.account-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 14px;
+}
+
+.grid-full {
+	display: block;
+}
+
+/* ---- desktop ≥ 992px ---- */
+@media (min-width: 992px) {
+	.account-layout {
+		gap: 20px;
+	}
+
+	.profile-card ::ng-deep bo-card-content {
+		padding: 24px 26px !important;
+	}
+
+	.profile {
+		flex-direction: row;
+		align-items: center;
+		text-align: left;
+		gap: 24px;
+	}
+
+	.profile-avatar {
+		width: 82px;
+		height: 82px;
+
+		::ng-deep h3 {
+			font-size: 36px;
+		}
+	}
+
+	.profile-info {
+		align-items: flex-start;
+		gap: 3px;
+	}
+
+	.profile-name {
+		font-size: 27px;
+		margin-top: 0;
+	}
+
+	.profile-pills {
+		justify-content: flex-start;
+		margin-top: 11px;
+	}
+
+	.account-grid {
+		grid-template-columns: 1fr 1fr;
+		gap: 20px;
+	}
+
+	.grid-full {
+		grid-column: 1 / -1;
 	}
 }

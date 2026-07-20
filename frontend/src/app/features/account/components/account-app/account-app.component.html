@@ -1,16 +1,45 @@
-@if (!beforeinstallprompt()) {
-	<p class="mb-0">
-		<ion-text color="danger">Aplikaci nelze nainstalovat.</ion-text>
-	</p>
-	<p class="text-muted">Aplikace je buď již nainstalovaná, nebo to ji toto zařízení nepodporuje.</p>
-}
+<bo-card>
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="phone-portrait-outline" />
+				Aplikace
+			</span>
+		</bo-card-title>
+	</bo-card-header>
 
-@if (beforeinstallprompt()) {
-	<div>
-		<button class="btn btn-primary" (click)="install()">Nainstalovat aplikaci</button>
-	</div>
-}
-
-@if (installed()) {
-	<p>Instalace se zdařila!</p>
-}
+	<bo-card-content>
+		<div class="bo-info-list">
+			@if (installed()) {
+				<div class="bo-info-row app-row">
+					<ion-icon class="app-icon" color="success" name="checkmark-circle-outline" />
+					<div class="app-text">
+						<strong>Instalace se zdařila!</strong>
+					</div>
+				</div>
+			} @else if (beforeinstallprompt()) {
+				<div class="bo-info-row app-row">
+					<ion-icon class="app-icon" name="phone-portrait-outline" />
+					<div class="app-text">
+						<strong>Nainstalovat aplikaci</strong>
+						<span class="app-muted">Přidat aplikaci na plochu tohoto zařízení.</span>
+					</div>
+					<ion-button (click)="install()">
+						<ion-icon name="download-outline" slot="start" />
+						Nainstalovat
+					</ion-button>
+				</div>
+			} @else {
+				<div class="bo-info-row app-row">
+					<ion-icon class="app-icon" color="danger" name="information-circle-outline" />
+					<div class="app-text">
+						<strong>Aplikaci nelze nainstalovat.</strong>
+						<span class="app-muted">
+							Aplikace je buď již nainstalovaná, nebo to toto zařízení nepodporuje.
+						</span>
+					</div>
+				</div>
+			}
+		</div>
+	</bo-card-content>
+</bo-card>

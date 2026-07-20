@@ -67,6 +67,11 @@ h3 {
 		color: var(--bo-green);
 	}
 
+	&.bo-pill-red {
+		background: var(--bo-red-tint);
+		color: var(--bo-red);
+	}
+
 	&.bo-pill-danger-dashed {
 		background: transparent;
 		border: 1px dashed var(--bo-red);
@@ -96,6 +101,46 @@ h3 {
 	p {
 		margin: 0.25rem 0 1rem;
 	}
+}
+
+/* card section title with a leading section icon (Můj účet & detail cards) */
+.bo-card-section-title {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+
+	ion-icon {
+		font-size: 1.25rem;
+		color: var(--card-color, var(--bo-heading));
+		flex: 0 0 auto;
+	}
+}
+
+/* label / value rows inside a card, separated by a hairline divider */
+.bo-info-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.bo-info-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 13px 20px;
+	border-top: 1px solid var(--bo-card-line);
+}
+
+.bo-info-label {
+	color: var(--bo-muted);
+	font-weight: 600;
+}
+
+.bo-info-value {
+	color: var(--bo-ink);
+	text-align: right;
+	min-width: 0;
+	word-break: break-word;
 }
 
 .clickable {
