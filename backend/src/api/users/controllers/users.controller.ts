@@ -154,16 +154,12 @@ export class UsersController {
 		@Res({ passthrough: true }) res: Response,
 		@Param("id") id: number,
 	) {
-		const user = await this.userService.getUser(id);
+		const user = await this.userService.getUser(id, { includeMember: true });
 		if (!user) throw new NotFoundException();
 
 		UserImpersonatePermission.canOrThrow(req, user);
 
 		// replaces the caller's token cookie; there is no way back to the original identity except logging in again
-		await this.tokenService.setToken(res, {
-			userId: user.id,
-			memberId: user.memberId ?? undefined,
-			roles: user.roles ?? [],
-		});
+		await this.tokenService.setToken(res, this.tokenService.buildUserData(user));
 	}
 }

@@ -133,11 +133,9 @@ export class LoginController {
 		this.tokenService.clearToken(res);
 	}
 
-	private async setLoginToken(res: Response, user: User, data?: UserData) {
+	private async setLoginToken(res: Response, user: User, data?: Partial<UserData>) {
 		const tokenData: UserData = {
-			roles: user.roles ?? [],
-			userId: user.id,
-			memberId: user.memberId ?? undefined,
+			...this.tokenService.buildUserData(user),
 			...data,
 		};
 

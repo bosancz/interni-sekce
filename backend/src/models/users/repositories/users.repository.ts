@@ -34,8 +34,10 @@ export class UsersRepository {
 						loginCodeExp: true,
 						email: true,
 						memberId: true,
+						member: { id: true, active: true },
 					}
 				: undefined,
+			relations: { member: true },
 			where,
 		});
 	}

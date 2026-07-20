@@ -3,6 +3,7 @@ import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { validateSync } from "class-validator";
 import { Request, Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
+import { User } from "src/models/users/entities/user.entity";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { TokenData, UserData } from "../schema/user-token";
 
@@ -37,6 +38,19 @@ export class TokenService {
 
 	getToken(req: Request) {
 		return req["user"];
+	}
+
+	/**
+	 * Build the session payload from a user. The `member` relation must be loaded
+	 * so that the leader role can be gated on the linked member being active.
+	 */
+	buildUserData(user: User): UserData {
+		return {
+			userId: user.id,
+			memberId: user.memberId ?? undefined,
+			memberActive: user.member?.active ?? false,
+			roles: user.roles ?? [],
+		};
 	}
 
 	async createToken(userData: UserData, options: JwtSignOptions = {}) {
@@ -85,18 +99,14 @@ export class TokenService {
 		const tokenAgeSeconds = Math.floor(Date.now() / 1000) - tokenData.iat;
 		if (tokenAgeSeconds < this.tokenRenewalAgeSeconds) return;
 
-		const user = await this.usersRepository.getUser(tokenData.userId);
+		const user = await this.usersRepository.getUser(tokenData.userId, { includeMember: true });
 
 		if (!user) {
 			this.clearToken(res);
 			return;
 		}
 
-		await this.setToken(res, {
-			userId: user.id,
-			memberId: user.memberId ?? undefined,
-			roles: user.roles ?? [],
-		});
+		await this.setToken(res, this.buildUserData(user));
 	}
 
 	clearToken(res: Response) {
