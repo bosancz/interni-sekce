@@ -5,7 +5,6 @@ import { addIcons } from "ionicons";
 import {
 	calendarSharp,
 	flameSharp,
-	heartSharp,
 	homeSharp,
 	imagesSharp,
 	logOut,
@@ -47,7 +46,6 @@ export class SidebarComponent {
 		addIcons({
 			homeSharp,
 			calendarSharp,
-			heartSharp,
 			flameSharp,
 			imagesSharp,
 			peopleSharp,
