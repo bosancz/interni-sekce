@@ -94,16 +94,12 @@ const fs = {
 	dataDir,
 	keysDir: path.resolve(process.env["KEYS_DIR"] ?? "../keys"),
 	photosDir: path.resolve(process.env["PHOTOS_DIR"] ?? path.join(dataDir, "photos")),
-	thumbnailsDir: path.resolve(process.env["THUMBNAILS_DIR"] ?? path.join(dataDir, "thumbnails")),
+	// Same directories the old server used ("photos" / "thumbs"). Photos imported from the
+	// old server keep their existing files there, keyed by Mongo ObjectId; new uploads are
+	// written alongside them keyed by numeric id (see PhotosFilesService).
+	thumbnailsDir: path.resolve(process.env["THUMBNAILS_DIR"] ?? path.join(dataDir, "thumbs")),
 	eventsDir: path.resolve(process.env["EVENTS_DIR"] ?? path.join(dataDir, "events")),
 	membersDir: path.resolve(process.env["MEMBERS_DIR"] ?? path.join(dataDir, "members")),
-	// Legacy on-disk photo storage from the old (Mongo) server. Those files (gigabytes of
-	// them) are left in place — `mongo-import` records each photo's original Mongo ObjectIds
-	// and the backend serves the files straight from here, keyed by ObjectId, instead of the
-	// numeric-id layout in photosDir / thumbnailsDir. Defaults mirror the old server's
-	// `data/photos` and `data/thumbs` directories.
-	legacyPhotosDir: path.resolve(process.env["LEGACY_PHOTOS_DIR"] ?? path.join(dataDir, "photos")),
-	legacyThumbsDir: path.resolve(process.env["LEGACY_THUMBS_DIR"] ?? path.join(dataDir, "thumbs")),
 };
 
 const photos = {

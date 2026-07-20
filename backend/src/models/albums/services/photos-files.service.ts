@@ -45,23 +45,21 @@ export class PhotosFilesService {
 	}
 
 	/**
-	 * Resolve the on-disk path for a photo entity, honoring the legacy layout for photos
-	 * imported from the old Mongo server. Those files were never moved (there are gigabytes
-	 * of them); they stay keyed by Mongo ObjectId in the legacy directories, whereas natively
-	 * uploaded photos use the numeric-id layout. The file extension is derived from the
-	 * photo's original name, exactly as the old server did.
+	 * Resolve the on-disk path for a photo entity. Files live in the same directories the old
+	 * server used; photos imported from the old Mongo server keep their existing files, keyed
+	 * by the original Mongo ObjectIds (album folder + file name), while natively uploaded
+	 * photos are keyed by their numeric ids. The extension is derived from the photo's
+	 * original name, exactly as the old server did.
 	 */
 	getPhotoImagePath(photo: Photo, size: PhotoSizes): string {
 		const ext = extname(photo.name);
+		const albumDir = photo.srcAlbumId ?? String(photo.albumId);
+		const fileId = photo.srcId ?? String(photo.id);
 
-		if (photo.srcAlbumId && photo.srcId) {
-			if (size === PhotoSizes.original) {
-				return join(this.config.fs.legacyPhotosDir, photo.srcAlbumId, `${photo.srcId}${ext}`);
-			}
-			return join(this.config.fs.legacyThumbsDir, photo.srcAlbumId, `${photo.srcId}_${size}${ext}`);
+		if (size === PhotoSizes.original) {
+			return join(this.config.fs.photosDir, albumDir, `${fileId}${ext}`);
 		}
-
-		return this.getImagePath(photo.albumId, photo.id, size, ext);
+		return join(this.config.fs.thumbnailsDir, albumDir, `${fileId}_${size}${ext}`);
 	}
 
 	/** Read image dimensions, dominant background color and capture date from the buffer. */
