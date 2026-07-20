@@ -11,6 +11,7 @@ export interface GetMembersOptions extends PaginationOptions {
 	roles?: string[];
 	membership?: string[];
 	age?: number[];
+	active?: boolean;
 }
 
 @Injectable()
@@ -48,6 +49,8 @@ export class MembersRepository {
 				"members.birthday IS NOT NULL AND DATE_PART('year', AGE(CURRENT_DATE, members.birthday))::int IN (:...ages)",
 				{ ages: options.age },
 			);
+
+		if (options.active !== undefined) q.andWhere("members.active = :active", { active: options.active });
 
 		return q.getMany();
 	}

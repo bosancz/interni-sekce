@@ -133,6 +133,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 				parseInt(group, 10),
 			),
 			age: this.normalizeFilterValueToArray((this.filter as any)["age"]).map((age) => parseInt(age, 10)),
+			active: (((this.filter as any)["active"] as string) || "active") === "all" ? undefined : true,
 		};
 
 		this.api.MembersApi.exportMembersXlsx(params, { responseType: "blob" }).then((res) => {
@@ -209,6 +210,8 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			age: this.normalizeFilterValueToArray(filter["age"]).map((age) => parseInt(age, 10)),
 			limit: this.pageSize,
 			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
+			// default: active only; "all" reveals inactive members too
+			active: ((filter["active"] as string) || "active") === "all" ? undefined : true,
 		};
 
 		var members = await this.api.MembersApi.listMembers(params).then((res) => res.data);

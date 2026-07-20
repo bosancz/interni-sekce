@@ -119,6 +119,15 @@
 							</ion-checkbox>
 						</ion-item>
 					}
+					<ion-item lines="none">
+						<ion-checkbox
+							justify="space-between"
+							[ngModel]="(filter['active'] || 'active') === 'all'"
+							(ngModelChange)="setFilterParam('active', $event ? 'all' : null)"
+						>
+							Zobrazit i neaktivní
+						</ion-checkbox>
+					</ion-item>
 				</ion-content>
 			</ng-template>
 			</ion-popover>
@@ -237,9 +246,9 @@
 							<tr
 								class="clickable"
 								[routerLink]="'' + member.id"
-								[class.member-inactive]="member.membership === 'neclen'"
+								[class.member-inactive]="!member.active || member.membership === 'neclen'"
 								[class.member-paused]="member.membership === 'pozastaveno'"
-							>	
+							>
 								@if (viewSelections().nickname){
 									<td>{{ member.nickname }}</td>
 								}
@@ -291,6 +300,18 @@
 				</tbody>
 			</admin-table>
 		}
+	}
+
+	@if (members()?.length) {
+		<p class="ion-padding members-active-toggle">
+			@if ((filter['active'] || 'active') !== 'all') {
+				Zobrazeni pouze aktivní členové.
+				<a class="clickable" (click)="setFilterParam('active', 'all')">Zobrazit i neaktivní</a>
+			} @else {
+				Zobrazeni všichni členové.
+				<a class="clickable" (click)="setFilterParam('active', null)">Skrýt neaktivní</a>
+			}
+		</p>
 	}
 
 	@if (!members()) {
