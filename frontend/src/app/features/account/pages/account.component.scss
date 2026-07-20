@@ -70,6 +70,24 @@
 	font-weight: 600;
 }
 
+/* akční tlačítko „Upravit" v profilové hlavičce */
+.profile-edit-btn {
+	--border-radius: var(--bo-radius-btn);
+	--border-color: var(--bo-line);
+	--color: var(--bo-heading);
+	--background: var(--bo-white);
+	--background-hover: var(--bo-paper);
+	--background-hover-opacity: 1;
+	--padding-top: 10px;
+	--padding-bottom: 10px;
+	font-weight: 700;
+	text-transform: none;
+	letter-spacing: 0;
+	margin: 12px 0 0;
+	/* mobil: přes celou šířku pod štítky */
+	width: 100%;
+}
+
 /* ---- mřížka karet ---- */
 .account-grid {
 	display: grid;
@@ -110,11 +128,19 @@
 	.profile-info {
 		align-items: flex-start;
 		gap: 3px;
+		flex: 1;
 	}
 
 	.profile-name {
 		font-size: 27px;
 		margin-top: 0;
+	}
+
+	.profile-edit-btn {
+		width: auto;
+		margin: 0;
+		align-self: center;
+		flex: 0 0 auto;
 	}
 
 	.profile-pills {

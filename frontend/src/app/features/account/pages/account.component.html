@@ -47,6 +47,13 @@
 								<div class="profile-unpaired">Nespárováno s členským účtem</div>
 							}
 						</div>
+
+						@if (user._links.updateUser.allowed) {
+							<ion-button class="profile-edit-btn" fill="outline" size="default" (click)="editAccount()">
+								<ion-icon name="create-outline" slot="start" />
+								Upravit
+							</ion-button>
+						}
 					</div>
 				</bo-card-content>
 			</bo-card>
