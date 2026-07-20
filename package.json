@@ -4,13 +4,18 @@
   "main": "index.js",
   "version": "4.0.0-rc.17",
   "private": true,
+  "packageManager": "npm@10.9.7",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
     "all-contributors:check": "all-contributors check",
     "all-contributors:generate": "all-contributors generate",
     "install": "./scripts/install.sh",
-    "dev": "concurrently -k -n FE,BE --prefix-colors green,yellow \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "turbo run dev",
+    "dev:backend": "turbo run dev --filter=@bosancz/bosancz-interni-backend",
+    "dev:frontend": "turbo run dev --filter=@bosancz/bosancz-interni-frontend",
     "release": "git switch master && git push && git switch release && git merge master --ff-only && git push --follow-tags && git switch master",
     "release:patch": "git switch master && npm version patch && git push && npm run release",
     "release:minor": "git switch master && npm version minor && git push && npm run release",
@@ -21,7 +26,7 @@
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
     "all-contributors-cli": "^6.20.0",
-    "concurrently": "^8.2.2"
+    "turbo": "^2.5.8"
   },
   "repository": {
     "type": "git",

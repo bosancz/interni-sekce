@@ -1,6 +1,9 @@
 # packages
 node_modules
 
+# turborepo
+.turbo
+
 # data storage
 /data
 /db
