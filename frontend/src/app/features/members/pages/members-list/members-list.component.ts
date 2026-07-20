@@ -4,6 +4,7 @@ import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
+	IonBadge,
 	IonButton,
 	IonCheckbox,
 	IonContent,
@@ -11,6 +12,7 @@ import {
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
 	IonItem,
+	IonItemDivider,
 	IonLabel,
 	IonList,
 	IonPopover,
@@ -50,6 +52,8 @@ import { MemberCreateModalComponent } from "../../components/member-create-modal
 		IonContent,
 		IonList,
 		IonItem,
+		IonItemDivider,
+		IonBadge,
 		IonLabel,
 		IonSkeletonText,
 		IonSelect,

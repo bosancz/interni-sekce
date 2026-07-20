@@ -108,6 +108,7 @@
 			<ion-popover trigger="checkbox-popover-trigger" triggerAction="click">
 			<ng-template>
 				<ion-content>
+					<ion-item-divider>SLOUPCE</ion-item-divider>
 					@for (selection of viewSelections()| keyvalue: originalViewOrder; track selection.key) {
 						<ion-item>
 							<ion-checkbox
@@ -119,6 +120,7 @@
 							</ion-checkbox>
 						</ion-item>
 					}
+					<ion-item-divider>FILTR</ion-item-divider>
 					<ion-item lines="none">
 						<ion-checkbox
 							justify="space-between"
@@ -234,9 +236,11 @@
 						@if (viewSelections().firstTelephone){
 							<th class="align-middle events-name-column" >Telefon</th>					
 						}
-						@if (viewSelections().firstEmail){	
-							<th class="align-middle events-name-column" >E-mail</th>					
+						@if (viewSelections().firstEmail){
+							<th class="align-middle events-name-column" >E-mail</th>
 						}
+
+						<th class="align-middle members-status-column">Stav</th>
 
 					</tr>
 				</thead>
@@ -293,6 +297,17 @@
 								@if (viewSelections().firstEmail) {
 								<td> <strong> {{ member.contacts?.[0]?.relationship || "" }} </strong> {{ member.contacts?.[0]?.email || "" }} </td>
 								}
+
+								<td class="members-status-cell">
+									<ion-badge
+										mode="ios"
+										class="status-badge"
+										[class.status-active]="member.active"
+										[class.status-inactive]="!member.active"
+									>
+										{{ member.active ? "Aktivní" : "Neaktivní" }}
+									</ion-badge>
+								</td>
 
 							</tr>
 						}

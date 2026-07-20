@@ -19,6 +19,31 @@ td ion-badge {
 	vertical-align: text-top;
 }
 
+.members-status-column {
+	width: 8rem;
+}
+
+// status chip — active/inactive is a quiet, low-prominence signal, so use the
+// soft tint pills (not the loud solid team badge). Colours are set explicitly
+// so the muted/line-through styling on inactive rows never bleeds into the chip.
+ion-badge.status-badge {
+	border-radius: var(--bo-radius-pill);
+	font-weight: 700;
+	font-size: 0.7rem;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	padding: 0.45em 0.7em;
+	text-decoration: none;
+}
+ion-badge.status-active {
+	background-color: var(--bo-green-tint);
+	color: var(--bo-green);
+}
+ion-badge.status-inactive {
+	background-color: var(--bo-neutral-pill);
+	color: var(--bo-neutral-pill-text);
+}
+
 .column-filter {
 	display: flex;
 	align-items: center;
