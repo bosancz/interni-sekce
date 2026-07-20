@@ -31,9 +31,9 @@ export class MembersExportController {
 		},
 	})
 	async exportMembersXlsx(@Req() req: Request, @Query() query: MembersListQuery, @Res() res: Response) {
-		MembersExportPermission.canOrThrow(req);
+		const where = MembersExportPermission.canWhere(req, "members");
 
-		const members = await this.members.getMembers(query);
+		const members = await this.members.getMembers(query, where);
 		const xlsx = await this.membersExportService.exportXlsx(members);
 
 		res.setHeader("Content-Disposition", "attachment; filename=" + "bo-databaze.xlsx");

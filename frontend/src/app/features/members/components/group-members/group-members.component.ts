@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { RouterLink } from "@angular/router";
 import { IonItem, IonLabel, IonList, IonSelect, IonSelectOption, IonSkeletonText } from "@ionic/angular/standalone";
@@ -30,14 +30,14 @@ import { GroupsService } from "../../services/groups.service";
 	],
 })
 export class GroupMembersComponent implements OnInit {
-	members?: (SDK.MemberResponseWithLinks & { searchString?: string })[];
-	filteredMembers?: SDK.MemberResponseWithLinks[];
+	members = signal<(SDK.MemberResponseWithLinks & { searchString?: string })[] | undefined>(undefined);
+	filteredMembers = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
 
-	sortField: "nickname" | "age" = "nickname";
+	sortField = signal<"nickname" | "age">("nickname");
 
-	filter: { search: string } = {
+	filter = signal<{ search: string }>({
 		search: "",
-	};
+	});
 
 	constructor(
 		private api: ApiService,
@@ -48,43 +48,60 @@ export class GroupMembersComponent implements OnInit {
 		this.groupsService.currentGroup.pipe(untilDestroyed(this)).subscribe((group) => this.loadMembers(group?.id));
 	}
 
+	onSearchChange(search: string) {
+		this.filter.update((filter) => ({ ...filter, search }));
+		this.filterMembers();
+	}
+
 	private async loadMembers(groupId?: number) {
 		if (!groupId) {
-			this.members = undefined;
+			this.members.set(undefined);
 			return;
 		}
 
-		this.members = await this.api.MembersApi.listMembers({ groups: [groupId] }).then((res) => res.data);
+		const members = await this.api.MembersApi.listMembers({ groups: [groupId] }).then((res) => res.data);
 
-		this.members.forEach((member) => {
-			member.searchString = [member.nickname, member.firstName, member.lastName].join(" ");
+		members.forEach((member) => {
+			(member as SDK.MemberResponseWithLinks & { searchString?: string }).searchString = [
+				member.nickname,
+				member.firstName,
+				member.lastName,
+			].join(" ");
 		});
+
+		this.members.set(members);
 
 		this.sortMembers();
 		this.filterMembers();
 	}
 
 	sortMembers() {
-		this.members?.sort((a, b) => {
-			switch (this.sortField) {
-				case "nickname":
-					return a.nickname.localeCompare(b.nickname);
-				case "age":
-					return (a.birthday || "").localeCompare(b.birthday || "");
-				default:
-					return 0;
-			}
+		this.members.update((members) => {
+			members?.sort((a, b) => {
+				switch (this.sortField()) {
+					case "nickname":
+						return a.nickname.localeCompare(b.nickname);
+					case "age":
+						return (a.birthday || "").localeCompare(b.birthday || "");
+					default:
+						return 0;
+				}
+			});
+			return members;
 		});
 	}
 
 	filterMembers() {
-		const search_re = this.filter.search
-			? new RegExp("(^| )" + this.filter.search.replace(/ /g, "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i")
+		const search = this.filter().search;
+		const search_re = search
+			? new RegExp("(^| )" + search.replace(/ /g, "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i")
 			: undefined;
 
-		this.filteredMembers = this.members?.filter((member) => {
-			if (search_re && !search_re.test(member.searchString!)) return false;
-			return true;
-		});
+		this.filteredMembers.set(
+			this.members()?.filter((member) => {
+				if (search_re && !search_re.test(member.searchString!)) return false;
+				return true;
+			}),
+		);
 	}
 }

@@ -123,7 +123,10 @@ export class EventRegistrationComponent {
 			})),
 			buttons: [
 				{ text: "Zrušit", role: "cancel" },
-				{ text: "Dál", handler: (templateId: string) => void this.promptNoteAndGenerate(eventId, templateId, color) },
+				{
+					text: "Dál",
+					handler: (templateId: string) => void this.promptNoteAndGenerate(eventId, templateId, color),
+				},
 			],
 		});
 		await templateAlert.present();

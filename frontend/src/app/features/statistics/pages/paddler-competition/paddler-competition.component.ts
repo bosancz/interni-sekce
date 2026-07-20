@@ -27,15 +27,14 @@ export interface PaddlerCompetitionGroup {
 	selector: "paddler-competition",
 	templateUrl: "./paddler-competition.component.html",
 	styleUrls: ["./paddler-competition.component.scss"],
-	
+
 	imports: [FormsModule, ListSliderComponent, GroupPipe],
 })
 export class PaddlerCompetitionComponent implements OnInit {
 	years = signal<number[]>([]);
-	year = toSignal(
-		this.route.params.pipe(map((params: Params) => Number(params.year) || null)),
-		{ initialValue: null },
-	);
+	year = toSignal(this.route.params.pipe(map((params: Params) => Number(params.year) || null)), {
+		initialValue: null,
+	});
 	currentYear = signal<number | undefined>(undefined);
 
 	rankings = signal<Ranked<PaddlerCompetitionMember>[]>([]);

@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, input, OnInit, ViewChild } from "@angular/core";
+import { Component, input, OnInit, signal, ViewChild } from "@angular/core";
 import {
 	IonBadge,
 	IonButton,
@@ -48,7 +48,7 @@ export class MemberSelectorModalComponent
 
 	membersIndex: string[] = [];
 
-	filteredMembers: SDK.MemberResponse[] = [];
+	filteredMembers = signal<SDK.MemberResponse[]>([]);
 	private _members: SDK.MemberResponse[] = [];
 
 	@ViewChild("searchBar") searchBar!: IonSearchbar;
@@ -92,14 +92,14 @@ export class MemberSelectorModalComponent
 	searchMembers(searchString?: string) {
 		if (!searchString) {
 			//NOTE: Chceme zobrazit vsechny cleny, pokud neni nic zadano do vyhledavani stejne tak nikdo nebude vyhledavat ne?
-			this.filteredMembers = this._members;
+			this.filteredMembers.set(this._members);
 			return;
 		}
 
 		searchString = searchString.replace(/[.*+?^${}()|[\]\\]/gi, "\\$&"); // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
 		const re = new RegExp("(^| )" + searchString, "i");
 
-		this.filteredMembers = this._members.filter((member, i) => re.test(this.membersIndex[i]));
+		this.filteredMembers.set(this._members.filter((member, i) => re.test(this.membersIndex[i])));
 	}
 
 	private createIndex() {

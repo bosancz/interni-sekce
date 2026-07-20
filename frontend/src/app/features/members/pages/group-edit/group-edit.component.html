@@ -1,4 +1,4 @@
-<bo-page-header [title]="'Upravit: ' + group?.name" backUrl="/oddily"></bo-page-header>
+<bo-page-header [title]="'Upravit: ' + group()?.name" backUrl="/oddily"></bo-page-header>
 
 <bo-page-content>
 	<form #createGroupForm="ngForm" id="editGroupForm" (ngSubmit)="editGroup(createGroupForm)">
@@ -9,7 +9,7 @@
 					type="text"
 					name="name"
 					placeholder="Společenstvo prstenu"
-					[ngModel]="group?.name"
+					[ngModel]="group()?.name"
 					required
 				></ion-input>
 			</ion-item>
@@ -20,7 +20,7 @@
 					type="text"
 					name="shortName"
 					placeholder="SP"
-					[ngModel]="group?.shortName"
+					[ngModel]="group()?.shortName"
 					required
 				></ion-input>
 			</ion-item>

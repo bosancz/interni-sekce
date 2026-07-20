@@ -7,7 +7,7 @@ import { createOutline } from "ionicons/icons";
 	selector: "bo-edit-button",
 	templateUrl: "./edit-button.component.html",
 	styleUrls: ["./edit-button.component.scss"],
-	
+
 	imports: [IonButton, IonIcon],
 })
 export class EditButtonComponent {

@@ -6,7 +6,7 @@
 			<bo-member-profile
 				[member]="member()"
 				class="d-lg-block mb-5"
-				[class.d-none]="view !== 'profile'"
+				[class.d-none]="view() !== 'profile'"
 			></bo-member-profile>
 		</div>
 		<div class="col-12 col-xl-8 col-xxl-9">
@@ -14,28 +14,28 @@
 				[member]="member()"
 				(update)="updateMember($event)"
 				class="d-lg-block mb-5"
-				[class.d-none]="view !== 'profile'"
+				[class.d-none]="view() !== 'profile'"
 			/>
 
 			<bo-member-contact
 				[member]="member()"
 				(update)="updateMember($event)"
 				class="d-lg-block mb-5"
-				[class.d-none]="view !== 'profile' && view !== 'contacts'"
+				[class.d-none]="view() !== 'profile' && view() !== 'contacts'"
 			/>
 
 			<bo-member-address
 				[member]="member()"
 				(update)="updateMember($event)"
 				class="d-lg-block mb-5"
-				[class.d-none]="view !== 'profile'"
+				[class.d-none]="view() !== 'profile'"
 			/>
 
 			<bo-member-membership
 				[member]="member()"
 				(update)="updateMember($event)"
 				class="d-lg-block mb-5"
-				[class.d-none]="view !== 'profile'"
+				[class.d-none]="view() !== 'profile'"
 			/>
 
 			<bo-member-health
@@ -43,14 +43,14 @@
 				(update)="updateMember($event)"
 				(reload)="reloadMember()"
 				class="d-lg-block mb-5"
-				[class.d-none]="view !== 'health'"
+				[class.d-none]="view() !== 'health'"
 			/>
 
 			<bo-member-contacts
 				[member]="member()"
 				(update)="updateMember($event)"
 				class="d-lg-block mb-5"
-				[class.d-none]="view !== 'contacts'"
+				[class.d-none]="view() !== 'contacts'"
 			/>
 		</div>
 	</div>

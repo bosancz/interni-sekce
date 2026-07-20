@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { sanitizeFilename } from "src/helpers/sanitizefilename";
 import { Event } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
-import * as xlsxPopulate from "xlsx-populate";
+import xlsxPopulate from "xlsx-populate";
 import { string2Date } from "../../../helpers/string2date";
 
 @Injectable()

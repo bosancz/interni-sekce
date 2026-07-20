@@ -37,9 +37,9 @@ export class GroupsController {
 	@AcLinks(GroupListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(GroupResponse), isArray: true })
 	async listGroups(@Req() req: Request, @Query() query: ListGroupsQuery): Promise<GroupResponse[]> {
-		GroupListPermission.canOrThrow(req);
+		const where = GroupListPermission.canWhere(req, "groups");
 
-		return this.groups.getGroups(query);
+		return this.groups.getGroups(query, where);
 	}
 
 	@Post()

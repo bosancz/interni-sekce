@@ -36,12 +36,15 @@ export class MembersController {
 	@AcLinks(MembersListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(MemberResponse), isArray: true })
 	async listMembers(@Req() req: Request, @Query() query: MembersListQuery): Promise<MemberResponse[]> {
-		MembersListPermission.canOrThrow(req);
+		const where = MembersListPermission.canWhere(req, "members");
 
-		const members = await this.members.getMembers({
-			...query,
-			limit: query.limit ?? 25,
-		});
+		const members = await this.members.getMembers(
+			{
+				...query,
+				limit: query.limit ?? 25,
+			},
+			where,
+		);
 
 		return members;
 	}

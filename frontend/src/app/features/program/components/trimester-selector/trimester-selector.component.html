@@ -5,15 +5,15 @@
 			<ion-input
 				type="number"
 				inputmode="numeric"
-				[(ngModel)]="year"
-				(ngModelChange)="setTrimester()"
+				[ngModel]="year()"
+				(ngModelChange)="year.set($event); setTrimester()"
 			></ion-input>
 		</ion-item>
 	</div>
 	<div class="col">
 		<ion-item [lines]="lines()">
 			<ion-label [position]="labelPosition()">Trimestr</ion-label>
-			<ion-select [(ngModel)]="trimester" (ngModelChange)="setTrimester()">
+			<ion-select [ngModel]="trimester()" (ngModelChange)="trimester.set($event); setTrimester()">
 				<ion-select-option [value]="0">leden - duben</ion-select-option>
 				<ion-select-option [value]="1">květen - srpen</ion-select-option>
 				<ion-select-option [value]="2">září - prosinec</ion-select-option>

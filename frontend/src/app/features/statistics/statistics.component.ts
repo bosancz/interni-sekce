@@ -7,7 +7,7 @@ import { PageHeaderComponent } from "src/app/shared/components/page-header/page-
 	selector: "statistics",
 	templateUrl: "./statistics.component.html",
 	styleUrls: ["./statistics.component.scss"],
-	
+
 	imports: [RouterOutlet, RouterLink, RouterLinkActive, PageHeaderComponent, PageContentComponent],
 })
 export class StatisticsComponent implements OnInit {

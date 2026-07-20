@@ -5,7 +5,7 @@ import { IonButton, IonIcon } from "@ionic/angular/standalone";
 	selector: "bo-icon-button",
 	templateUrl: "./icon-button.component.html",
 	styleUrl: "./icon-button.component.scss",
-	
+
 	imports: [IonButton, IonIcon],
 })
 export class IconButtonComponent {

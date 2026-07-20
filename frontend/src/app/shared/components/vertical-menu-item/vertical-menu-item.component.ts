@@ -1,4 +1,4 @@
-import { Component, inject, input } from "@angular/core";
+import { Component, computed, inject, input } from "@angular/core";
 import { IonIcon, IonItem, IonLabel } from "@ionic/angular/standalone";
 import { VerticalMenuComponent } from "../vertical-menu/vertical-menu.component";
 
@@ -15,9 +15,7 @@ export class VerticalMenuItemComponent {
 
 	menu = inject(VerticalMenuComponent);
 
-	get isActive(): boolean {
-		return this.menu.currentTab() === this.name();
-	}
+	isActive = computed(() => this.menu.currentTab() === this.name());
 
 	onClick(): void {
 		this.menu.onItemClick(this.name());

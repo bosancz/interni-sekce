@@ -7,7 +7,7 @@ import { MemberPipe } from "../../pipes/member.pipe";
 	selector: "bo-member-item-detail",
 	templateUrl: "./member-item-detail.component.html",
 	styleUrls: ["./member-item-detail.component.scss"],
-	
+
 	imports: [GroupPipe, MemberPipe],
 })
 export class MemberItemDetailComponent implements OnInit {

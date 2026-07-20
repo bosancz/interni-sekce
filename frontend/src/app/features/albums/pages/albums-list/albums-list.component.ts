@@ -80,8 +80,8 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 
 	filter: UrlParams = {};
 
-	selectedYear: string | null = null;
-	selectedStatus: string | null = null;
+	selectedYear = signal<string | null>(null);
+	selectedStatus = signal<string | null>(null);
 
 	constructor(
 		private api: ApiService,
@@ -109,8 +109,8 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 
 	onFilterChange(filter: UrlParams) {
 		this.filter = filter;
-		this.selectedYear = filter.year ? String(filter.year) : null;
-		this.selectedStatus = filter.status || null;
+		this.selectedYear.set(filter.year ? String(filter.year) : null);
+		this.selectedStatus.set(filter.status || null);
 		this.loadAlbums(filter);
 	}
 

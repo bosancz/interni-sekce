@@ -1,6 +1,6 @@
-@if (birthdays.length) {
+@if (birthdays().length) {
 	<ion-list lines="full">
-		@for (birthday of birthdays; track birthday.member.id) {
+		@for (birthday of birthdays(); track birthday.member.id) {
 			<ion-item>
 				<ion-label>
 					<h4><strong>{{ birthday.member.nickname }}</strong></h4>

@@ -3,7 +3,7 @@ import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
 	calendarOutline,
-	eyeOutline, 
+	eyeOutline,
 	checkboxOutline,
 	imageOutline,
 	closeOutline,

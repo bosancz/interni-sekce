@@ -6,7 +6,7 @@ import { IonLabel, IonRippleEffect, IonSkeletonText } from "@ionic/angular/stand
 	selector: "bo-item",
 	templateUrl: "./item.component.html",
 	styleUrl: "./item.component.scss",
-	host: { "[class.ion-activatable]": "button", "[class.clickable]": "button || hasRouterLink()" },
+	host: { "[class.ion-activatable]": "button()", "[class.clickable]": "button() || hasRouterLink()" },
 
 	imports: [IonLabel, IonSkeletonText, IonRippleEffect],
 })

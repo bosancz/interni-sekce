@@ -11,7 +11,7 @@
 
 <div class="member-selector-scrollable">
 	<ion-list>
-		@for (member of filteredMembers; track member.id) {
+		@for (member of filteredMembers(); track member.id) {
 			<ion-item [button]="true" (click)="selectMember(member)">
 				<ion-label>
 					<h3>{{ member | member: "nickname" }}</h3>

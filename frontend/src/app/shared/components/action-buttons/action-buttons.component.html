@@ -1,5 +1,5 @@
 <!-- PINNED -->
-@for (action of pinned; track action) {
+@for (action of pinned(); track action) {
 	<ion-button class="pinned" [disabled]="action.disabled" (click)="onClick(action)">
 		@if (action.icon) {
 			<ion-icon [class.d-xl-none]="!ios && action.text" [name]="action.icon"></ion-icon>
@@ -13,7 +13,7 @@
 }
 
 <!-- BUTTONS -->
-@for (action of buttons; track action) {
+@for (action of buttons(); track action) {
 	<ion-button
 		[disabled]="action.disabled"
 		[color]="action.color"
@@ -26,7 +26,7 @@
 }
 
 <!-- DROPDOWN -->
-@if (menu.length > 0) {
+@if (menu().length > 0) {
 	<ion-button [class.d-xl-none]="!ios" (click)="openActions()">
 		<ion-icon name="ellipsis-vertical"></ion-icon>
 	</ion-button>

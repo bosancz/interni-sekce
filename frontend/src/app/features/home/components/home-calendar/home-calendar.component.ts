@@ -40,8 +40,8 @@ import { SDK } from "src/sdk";
 	],
 })
 export class HomeCalendarComponent implements OnInit {
-	dateFrom = DateTime.local().minus({ weeks: 2 });
-	dateTill = DateTime.local().plus({ years: 1 });
+	dateFrom = signal(DateTime.local().minus({ weeks: 2 }));
+	dateTill = signal(DateTime.local().plus({ years: 1 }));
 
 	addEventEnabled = signal(false);
 
@@ -76,23 +76,23 @@ export class HomeCalendarComponent implements OnInit {
 	}
 
 	async loadEvents() {
-		console.log("Loading events from", this.dateFrom.toISODate(), "to", this.dateTill.toISODate());
+		console.log("Loading events from", this.dateFrom().toISODate(), "to", this.dateTill().toISODate());
 		const events = await this.api.EventsApi.listEvents({
-			dateTill: this.dateTill.toISODate(),
-			dateFrom: this.dateFrom.toISODate(),
+			dateTill: this.dateTill().toISODate(),
+			dateFrom: this.dateFrom().toISODate(),
 		}).then((res) => res.data);
 
 		this.events.set(events);
 	}
 
 	async loadMorePrevious(event?: RefresherCustomEvent) {
-		this.dateFrom = this.dateFrom.minus({ months: 1 });
+		this.dateFrom.update((dateFrom) => dateFrom.minus({ months: 1 }));
 		await this.loadEvents();
 		event?.target.complete();
 	}
 
 	async loadMoreFuture(event?: InfiniteScrollCustomEvent) {
-		this.dateTill = this.dateTill.plus({ months: 1 });
+		this.dateTill.update((dateTill) => dateTill.plus({ months: 1 }));
 		await this.loadEvents();
 		event?.target.complete();
 	}

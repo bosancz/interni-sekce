@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, effect, input } from "@angular/core";
+import { Component, effect, input, signal } from "@angular/core";
 import { DateTime } from "luxon";
 import { SDK } from "src/sdk";
 
@@ -7,16 +7,16 @@ import { SDK } from "src/sdk";
 	selector: "event-age-histogram",
 	templateUrl: "./event-age-histogram.component.html",
 	styleUrls: ["./event-age-histogram.component.scss"],
-	
+
 	imports: [CommonModule],
 })
 export class EventAgeHistogramComponent {
 	event = input.required<SDK.EventResponseWithLinks>();
 	members = input.required<SDK.MemberResponse[]>();
 
-	countMax?: number;
+	countMax = signal<number | undefined>(undefined);
 
-	histogram: Array<{ label: string; count: number }> = [];
+	histogram = signal<Array<{ label: string; count: number }>>([]);
 
 	constructor() {
 		effect(() => {
@@ -36,9 +36,11 @@ export class EventAgeHistogramComponent {
 			ages.push(Math.floor(-1 * DateTime.fromISO(member.birthday).diff(dateFrom, "years").toObject().years!));
 		});
 
-		this.histogram = [];
-		this.countMax = 0;
-		if (!ages.length) return; // no members with a birthday yet
+		if (!ages.length) {
+			this.histogram.set([]);
+			this.countMax.set(0);
+			return; // no members with a birthday yet
+		}
 
 		const min = Math.min(...ages);
 		const max = Math.max(...ages);
@@ -52,14 +54,16 @@ export class EventAgeHistogramComponent {
 		const last = Math.floor(max / binSize) * binSize;
 
 		let countMax = 0;
+		const histogram: Array<{ label: string; count: number }> = [];
 		for (let from = first; from <= last; from += binSize) {
 			const to = from + binSize - 1;
 			const count = ages.filter((age) => age >= from && age <= to).length;
 			countMax = Math.max(countMax, count);
-			this.histogram.push({ label: binSize === 1 ? `${from}` : `${from}–${to}`, count });
+			histogram.push({ label: binSize === 1 ? `${from}` : `${from}–${to}`, count });
 		}
 
-		this.countMax = countMax;
+		this.histogram.set(histogram);
+		this.countMax.set(countMax);
 	}
 
 	private getBinSize(range: number, targetBins = 10): number {

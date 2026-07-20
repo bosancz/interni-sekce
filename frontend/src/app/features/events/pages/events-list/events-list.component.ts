@@ -63,9 +63,9 @@ export class EventsListComponent implements OnInit {
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 	years = signal<number[]>([]);
 	currentYearString = String(new Date().getFullYear());
-	selectedYears: string[] = [];
-	selectedStatuses: string[] = [];
-	selectedLeaderFilters: string[] = [];
+	selectedYears = signal<string[]>([]);
+	selectedStatuses = signal<string[]>([]);
+	selectedLeaderFilters = signal<string[]>([]);
 
 	statuses = signal<Record<string, EventStatus>>({});
 
@@ -76,7 +76,7 @@ export class EventsListComponent implements OnInit {
 
 	filter: UrlParams = {};
 
-	view?: "table" | "list";
+	view = signal<"table" | "list" | undefined>(undefined);
 
 	constructor(
 		private api: ApiService,
@@ -91,7 +91,7 @@ export class EventsListComponent implements OnInit {
 		this.loadStatuses();
 
 		this.platformService.isPortrait.subscribe((isPortrait: boolean) => {
-			this.view = isPortrait ? "list" : "table";
+			this.view.set(isPortrait ? "list" : "table");
 		});
 
 		// All filter state (year/status/search/leaders) is written to the URL, so drive loading
@@ -102,9 +102,9 @@ export class EventsListComponent implements OnInit {
 
 	onFilterChange(params: Params) {
 		this.filter = { ...params };
-		this.selectedYears = this.normalizeFilterValueToArray(params["year"]);
-		this.selectedStatuses = this.normalizeFilterValueToArray(params["status"]);
-		this.selectedLeaderFilters = this.normalizeFilterValueToArray(params["leaders"]);
+		this.selectedYears.set(this.normalizeFilterValueToArray(params["year"]));
+		this.selectedStatuses.set(this.normalizeFilterValueToArray(params["status"]));
+		this.selectedLeaderFilters.set(this.normalizeFilterValueToArray(params["leaders"]));
 		this.loadEvents(this.filter);
 	}
 
@@ -258,5 +258,4 @@ export class EventsListComponent implements OnInit {
 			.map((item) => item.trim())
 			.filter((item) => !!item);
 	}
-
 }

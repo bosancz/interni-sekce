@@ -1,14 +1,14 @@
 import {
-    AfterViewInit,
-    Component,
-    effect,
-    ElementRef,
-    input,
-    NgZone,
-    OnDestroy,
-    OnInit,
-    output,
-    signal,
+	AfterViewInit,
+	Component,
+	effect,
+	ElementRef,
+	input,
+	NgZone,
+	OnDestroy,
+	OnInit,
+	output,
+	signal,
 } from "@angular/core";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";

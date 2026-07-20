@@ -1,7 +1,7 @@
 <bo-modal-layout>
 	<h4 slot="title">Přidat člena</h4>
 
-	<form [formGroup]="form" [class.was-validated]="showValidationErrors">
+	<form [formGroup]="form" [class.was-validated]="showValidationErrors()">
 		<ion-list>
 			<ion-item>
 				<ion-input

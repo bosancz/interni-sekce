@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from "@angular/common";
-import { Component, effect, input, OnInit, output } from "@angular/core";
+import { Component, effect, input, OnInit, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonButton, IonButtons, IonItem, IonLabel } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
@@ -49,7 +49,7 @@ export class EventCardComponent implements OnInit {
 
 	change = output<SDK.EventResponseWithLinks>();
 
-	private _loadedEvent?: SDK.EventResponseWithLinks;
+	private _loadedEvent = signal<SDK.EventResponseWithLinks | undefined>(undefined);
 
 	constructor(private api: ApiService) {
 		effect(() => {
@@ -61,7 +61,8 @@ export class EventCardComponent implements OnInit {
 	ngOnInit() {}
 
 	async loadEvent(eventId: number) {
-		this._loadedEvent = await this.api.EventsApi.getEvent(eventId).then((res) => res.data);
+		const event = await this.api.EventsApi.getEvent(eventId).then((res) => res.data);
+		this._loadedEvent.set(event);
 	}
 
 	getEvent(): SDK.EventResponseWithLinks | undefined {
@@ -69,7 +70,7 @@ export class EventCardComponent implements OnInit {
 		// action we reload() into _loadedEvent, and the card (and the event it
 		// emits to the parent) must reflect the new status/_links, otherwise the
 		// stale buttons re-trigger no-longer-applicable actions and 403.
-		return this._loadedEvent ?? this.event();
+		return this._loadedEvent() ?? this.event();
 	}
 
 	async reload() {

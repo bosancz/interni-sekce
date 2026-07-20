@@ -7,7 +7,6 @@ import { Component, OnInit } from "@angular/core";
 	host: {
 		class: "p-3",
 	},
-	
 })
 export class CardContentComponent implements OnInit {
 	constructor() {}

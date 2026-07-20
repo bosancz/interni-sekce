@@ -24,7 +24,6 @@ export class HeaderComponent {
 	isLg = toSignal(this.platformService.isLg);
 
 	environment = toSignal(this.api.info.pipe(map((info) => info.environmentTitle || "")));
-	
 
 	constructor(
 		private readonly api: ApiService,
