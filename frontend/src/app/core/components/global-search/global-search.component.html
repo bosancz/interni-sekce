@@ -33,6 +33,10 @@
 								</p>
 							</ion-label>
 						</ion-item>
+					} @empty {
+						<ion-item lines="none">
+							<ion-label class="search-empty">Žádné výsledky</ion-label>
+						</ion-item>
 					}
 				}
 			</ion-list>
@@ -59,6 +63,10 @@
 								</p>
 							</ion-label>
 						</ion-item>
+					} @empty {
+						<ion-item lines="none">
+							<ion-label class="search-empty">Žádné výsledky</ion-label>
+						</ion-item>
 					}
 				}
 			</ion-list>
@@ -81,6 +89,10 @@
 									<p>{{ album.dateFrom | date: "d. M. yyyy" }}</p>
 								}
 							</ion-label>
+						</ion-item>
+					} @empty {
+						<ion-item lines="none">
+							<ion-label class="search-empty">Žádné výsledky</ion-label>
 						</ion-item>
 					}
 				}
