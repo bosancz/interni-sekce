@@ -1,3 +1,5 @@
+/// <reference types="google.accounts" />
+
 import { Injectable } from "@angular/core";
 import { firstValueFrom } from "rxjs";
 import { ApiService } from "./api.service";

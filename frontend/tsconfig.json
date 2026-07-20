@@ -2,10 +2,10 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
+    "ignoreDeprecations": "6.0",
     "outDir": "./dist",
     "typeRoots": [
-      "node_modules/@types",
-      "node_modules/@types/google.account/index.d.ts"
+      "node_modules/@types"
     ],
     "esModuleInterop": true,
     "module": "es2020",
