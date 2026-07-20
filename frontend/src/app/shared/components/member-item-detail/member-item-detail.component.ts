@@ -1,6 +1,5 @@
 import { Component, input, OnInit } from "@angular/core";
 import { SDK } from "src/sdk";
-import { GroupPipe } from "../../pipes/group.pipe";
 import { MemberPipe } from "../../pipes/member.pipe";
 
 @Component({
@@ -8,7 +7,7 @@ import { MemberPipe } from "../../pipes/member.pipe";
 	templateUrl: "./member-item-detail.component.html",
 	styleUrls: ["./member-item-detail.component.scss"],
 
-	imports: [GroupPipe, MemberPipe],
+	imports: [MemberPipe],
 })
 export class MemberItemDetailComponent implements OnInit {
 	member = input.required<SDK.MemberResponse>();
