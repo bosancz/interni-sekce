@@ -1,6 +1,6 @@
 
 ## FRONTEND BUILD ##
-FROM node:20-alpine AS build-frontend
+FROM node:24-alpine AS build-frontend
 
 ARG NG_CONFIGURATION=production
 
@@ -17,7 +17,7 @@ RUN npm run build
 
 
 ## BACKEND BUILD ##
-FROM node:20-alpine AS build-backend
+FROM node:24-alpine AS build-backend
 
 WORKDIR /app/backend
 
@@ -38,7 +38,7 @@ RUN npm prune --omit=dev
 
 
 ## RUNNER ##
-FROM node:20-alpine
+FROM node:24-alpine
 
 ARG VERSION
 
