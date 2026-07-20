@@ -1,11 +1,14 @@
 :host {
 	display: block;
-	margin-bottom: 0.25rem;
+	margin-bottom: 0.5rem;
 }
 
 ion-toolbar {
 	padding-top: 0.25rem;
 	padding-bottom: 0.25rem;
+	// align the search row to the same 16px page gutter as the table card below
+	--padding-start: 16px;
+	--padding-end: 16px;
 	--background: transparent;
 	--ion-toolbar-background: transparent;
 }

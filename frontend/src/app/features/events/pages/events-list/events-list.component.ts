@@ -5,15 +5,20 @@ import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
 	IonAvatar,
+	IonContent,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
 	IonItem,
 	IonLabel,
+	IonIcon,
 	IonList,
+	IonPopover,
 	IonSelect,
 	IonSelectOption,
 	IonSkeletonText,
 } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { chevronDown } from "ionicons/icons";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { DateTime } from "luxon";
 import { EventStatus, EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
@@ -42,9 +47,12 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 		FormsModule,
 		IonList,
 		IonItem,
+		IonContent,
 		IonSkeletonText,
 		IonLabel,
 		IonAvatar,
+		IonIcon,
+		IonPopover,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
 		IonSelect,
@@ -69,6 +77,9 @@ export class EventsListComponent implements OnInit {
 
 	statuses = signal<Record<string, EventStatus>>({});
 
+	yearPopoverOpen = signal(false);
+	yearPopoverEvent = signal<Event | undefined>(undefined);
+
 	page = 1;
 	readonly pageSize = 50;
 	private loadToken = 0;
@@ -84,7 +95,34 @@ export class EventsListComponent implements OnInit {
 		private router: Router,
 		private route: ActivatedRoute,
 		private injector: Injector,
-	) {}
+	) {
+		addIcons({ chevronDown });
+	}
+
+	openYearPopover(event: Event) {
+		this.yearPopoverEvent.set(event);
+		this.yearPopoverOpen.set(true);
+	}
+
+	isYearSelected(year: number): boolean {
+		return this.selectedYears().includes(String(year));
+	}
+
+	toggleYear(year: number) {
+		const yearString = String(year);
+		const selected = this.selectedYears();
+
+		this.setFilterParam(
+			"year",
+			selected.includes(yearString)
+				? selected.filter((item) => item !== yearString)
+				: [...selected, yearString],
+		);
+	}
+
+	clearYears() {
+		this.setFilterParam("year", null);
+	}
 
 	ngOnInit(): void {
 		this.loadYears();

@@ -2,6 +2,39 @@
 	cursor: pointer;
 }
 
+// year filter pill — styled to match the ion-select filter pills next to the search box
+.year-filter-pill {
+	--highlight-color: transparent;
+	min-height: 42px;
+	padding-inline: 14px 12px;
+	border: 1px solid var(--bo-line);
+	border-radius: var(--bo-radius-pill);
+	background: var(--bo-white);
+	color: var(--bo-muted);
+	font-size: 0.8125rem;
+	font-weight: 700;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-inline: 4px;
+	cursor: pointer;
+
+	ion-icon {
+		font-size: 14px;
+		color: #c3c8d8;
+	}
+
+	&.has-value {
+		background: var(--bo-blue-tint);
+		border-color: var(--bo-blue);
+		color: var(--bo-blue);
+
+		ion-icon {
+			color: var(--bo-blue);
+		}
+	}
+}
+
 .date {
 	white-space: nowrap;
 }
@@ -62,6 +95,11 @@ ion-select::part(text) {
 	align-items: center;
 	gap: 0.4em;
 	white-space: nowrap;
+
+	// keep the space between leaders equal to the avatar↔name gap
+	&:not(:last-child) {
+		margin-right: 0.4em;
+	}
 }
 
 .leader-avatar {
@@ -76,6 +114,15 @@ ion-select::part(text) {
 	font-size: 0.85em;
 	font-weight: 800;
 	text-transform: uppercase;
+	line-height: 1;
+	// nudge uppercase glyphs down — they sit high due to empty descender space
+	padding-top: 0.08em;
+
+	// modern browsers: trim the line box to cap-height/baseline for exact centering
+	@supports (text-box: trim-both cap alphabetic) {
+		padding-top: 0;
+		text-box: trim-both cap alphabetic;
+	}
 }
 
 // rows in table view are clickable

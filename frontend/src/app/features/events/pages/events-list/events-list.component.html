@@ -1,20 +1,48 @@
 <bo-page-header backUrl="/" title="Přehled akcí" />
 
 <bo-filter [search]="true" [showButtonMobileOnly]="true">
-	<ion-item>
-		<ion-select
-			name="year"
-			label="Rok"
-			[ngModel]="selectedYears()"
-			(ngModelChange)="setFilterParam('year', $event)"
-			placeholder=""
-			[multiple]="true"
-		>
-			@for (year of years(); track year) {
-				<ion-select-option [value]="'' + year">{{ year }}</ion-select-option>
-			}
-		</ion-select>
-	</ion-item>
+	<button
+		toolbar-actions
+		slot="end"
+		type="button"
+		class="filter-pill year-filter-pill"
+		[class.has-value]="selectedYears().length > 0"
+		(click)="openYearPopover($event)"
+	>
+		<span>{{ selectedYears().length ? "Rok (" + selectedYears().length + ")" : "Rok" }}</span>
+		<ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+	</button>
+
+	<ion-popover
+		toolbar-actions
+		cssClass="year-filter-popover"
+		[dismissOnSelect]="false"
+		[isOpen]="yearPopoverOpen()"
+		[event]="yearPopoverEvent()"
+		(didDismiss)="yearPopoverOpen.set(false)"
+	>
+		<ng-template>
+			<ion-content>
+				<div class="year-filter-panel">
+					<div class="year-grid">
+						@for (year of years(); track year) {
+							<button
+								type="button"
+								class="year-chip"
+								[class.selected]="isYearSelected(year)"
+								(click)="toggleYear(year)"
+							>
+								{{ year }}
+							</button>
+						}
+					</div>
+					@if (selectedYears().length) {
+						<button type="button" class="year-clear" (click)="clearYears()">Zrušit výběr</button>
+					}
+				</div>
+			</ion-content>
+		</ng-template>
+	</ion-popover>
 
 	<ion-item>
 		<ion-select
@@ -80,17 +108,14 @@
 								{{ event.dateFrom | date: "EEEEEE d. M." }} -
 								{{ event.dateTill | date: "EEEEEE d. M. y" }}
 								<br />
-								@for (leader of event.leaders; track leader.id; let isFirst = $first) {
-									@if (!isFirst) {
-										<ng-container>, </ng-container>
-									}
-									<span class="leader">
-										<span
+								@for (leader of event.leaders; track leader.id; let isLast = $last) {
+									<span class="leader"
+										><span
 											class="leader-avatar"
 											[style.background-color]="leader.groupId | group: 'color'"
 											>{{ (leader | member: "nickname")?.charAt(0) }}</span
-										>{{ leader | member: "nickname" }}
-									</span>
+										>{{ leader | member: "nickname" }}{{ isLast ? "" : "," }}</span
+									>
 								}
 								@if (!event.leaders?.length) {
 									<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
@@ -109,23 +134,7 @@
 				<thead>
 					<tr >
 						<th class="align-middle events-name-column" >Název</th>					
-						<th class="events-date-column">
-							<div class="column-filter">
-								<ion-select
-									label="Rok"
-									interface="popover"
-									justify="start"
-									[ngModel]="selectedYears()"
-									(ngModelChange)="setFilterParam('year', $event)"
-									placeholder=""
-									[multiple]="true"
-								>
-									@for (year of years(); track year) {
-										<ion-select-option [value]="'' + year">{{ year }}</ion-select-option>
-									}
-								</ion-select>
-							</div>
-						</th>
+						<th class="events-date-column align-middle">Datum</th>
 						<th class="events-status-column">
 							<div class="column-filter">
 								<ion-select
@@ -177,17 +186,14 @@
 								<bo-event-status-badge [event]="event"></bo-event-status-badge>
 							</td>
 							<td class="events-leaders-column">
-								@for (leader of event.leaders; track leader.id; let isFirst = $first) {
-									@if (!isFirst) {
-										<ng-container>, </ng-container>
-									}
-									<span class="leader">
-										<span
+								@for (leader of event.leaders; track leader.id; let isLast = $last) {
+									<span class="leader"
+										><span
 											class="leader-avatar"
 											[style.background-color]="leader.groupId | group: 'color'"
 											>{{ (leader | member: "nickname")?.charAt(0) }}</span
-										>{{ leader | member: "nickname" }}
-									</span>
+										>{{ leader | member: "nickname" }}{{ isLast ? "" : "," }}</span
+									>
 								}
 								@if (!event.leaders?.length) {
 									<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>

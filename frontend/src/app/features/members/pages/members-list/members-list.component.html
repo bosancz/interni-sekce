@@ -2,6 +2,43 @@
 
 
 <bo-filter [search]="true" [showButtonMobileOnly]="true" (change)="onFilterChange($event)">
+	<ion-select
+		toolbar-actions
+		slot="end"
+		class="filter-pill"
+		[class.has-value]="selectedGroups().length > 0"
+		interface="popover"
+		[interfaceOptions]="{ cssClass: 'filter-pill-popover' }"
+		[multiple]="true"
+		name="groups"
+		[label]="selectedGroups().length ? 'Oddíl (' + selectedGroups().length + ')' : 'Oddíl'"
+		[selectedText]="' '"
+		[ngModel]="selectedGroups()"
+		(ngModelChange)="setFilterParam('groups', $event)"
+	>
+		@for (group of groups(); track group.id) {
+			<ion-select-option [value]="'' + group.id">{{ group.name }}</ion-select-option>
+		}
+	</ion-select>
+	<ion-select
+		toolbar-actions
+		slot="end"
+		class="filter-pill"
+		[class.has-value]="selectedRoles().length > 0"
+		interface="popover"
+		[interfaceOptions]="{ cssClass: 'filter-pill-popover' }"
+		[multiple]="true"
+		name="roles"
+		[label]="selectedRoles().length ? 'Role (' + selectedRoles().length + ')' : 'Role'"
+		[selectedText]="' '"
+		[ngModel]="selectedRoles()"
+		(ngModelChange)="setFilterParam('roles', $event)"
+	>
+		@for (role of roles | keyvalue; track role.key) {
+			<ion-select-option [value]="role.key">{{ role.value.title }}</ion-select-option>
+		}
+	</ion-select>
+
 	<ion-button toolbar-actions class="d-none d-lg-block" fill="clear" size="small" id="checkbox-popover-trigger" slot="end">
 		<ion-icon slot="icon-only" name="eye-outline"></ion-icon>
 	</ion-button>
@@ -12,38 +49,6 @@
 		<ion-icon slot="icon-only" name="download-outline"></ion-icon>
 	</ion-button>
 
-	<ion-item lines="none">
-		<ion-select
-			multiple
-			name="groups"
-			[ngModel]="selectedGroups()"
-			(ngModelChange)="setFilterParam('groups', $event)"
-			label="Oddíl"
-			placeholder="všechny"
-		>
-			@for (group of groups(); track group.id) {
-				<ion-select-option [value]="'' + group.id">
-					{{ group.name }}
-				</ion-select-option>
-			}
-		</ion-select>
-	</ion-item>
-	<ion-item lines="none">
-		<ion-select
-			multiple
-			name="roles"
-			[ngModel]="selectedRoles()"
-			(ngModelChange)="setFilterParam('roles', $event)"
-			label="Role"
-			placeholder="všechny"
-		>
-			@for (role of roles | keyvalue; track role.key) {
-				<ion-select-option [value]="role.key">
-					{{ role.value.title }}
-				</ion-select-option>
-			}
-		</ion-select>
-	</ion-item>
 	<ion-item lines="none">
 		<ion-select
 			multiple
@@ -105,29 +110,33 @@
 			</ion-list>
 		}
 		@case ("table") {
-			<ion-popover trigger="checkbox-popover-trigger" triggerAction="click">
+			<ion-popover trigger="checkbox-popover-trigger" triggerAction="click" cssClass="view-options-popover" [dismissOnSelect]="false">
 			<ng-template>
 				<ion-content>
-					@for (selection of viewSelections()| keyvalue: originalViewOrder; track selection.key) {
-						<ion-item>
+					<ion-list lines="full">
+						<ion-item-divider>Sloupce</ion-item-divider>
+						@for (selection of viewSelections()| keyvalue: originalViewOrder; track selection.key) {
+							<ion-item>
+								<ion-checkbox
+									[ngModel]="viewSelections()[selection.key]"
+									(ngModelChange)="setViewSelection(selection.key, $event)"
+									justify="space-between"
+								>
+									{{ getViewSelectionLabel(selection.key) }}
+								</ion-checkbox>
+							</ion-item>
+						}
+						<ion-item-divider>Filtr</ion-item-divider>
+						<ion-item lines="none">
 							<ion-checkbox
-								[ngModel]="viewSelections()[selection.key]"
-								(ngModelChange)="setViewSelection(selection.key, $event)"
 								justify="space-between"
+								[ngModel]="(filter['active'] || 'active') === 'all'"
+								(ngModelChange)="setFilterParam('active', $event ? 'all' : null)"
 							>
-								{{ getViewSelectionLabel(selection.key) }}
+								Zobrazit i neaktivní
 							</ion-checkbox>
 						</ion-item>
-					}
-					<ion-item lines="none">
-						<ion-checkbox
-							justify="space-between"
-							[ngModel]="(filter['active'] || 'active') === 'all'"
-							(ngModelChange)="setFilterParam('active', $event ? 'all' : null)"
-						>
-							Zobrazit i neaktivní
-						</ion-checkbox>
-					</ion-item>
+					</ion-list>
 				</ion-content>
 			</ng-template>
 			</ion-popover>
@@ -142,45 +151,11 @@
 							<th class="align-middle members-name-column" >Jméno</th>					
 						}
 						@if (viewSelections().group){
-							<th>
-								<div class="column-filter">
-									<ion-select
-										label="Oddíl"
-										interface="popover"
-										justify="start"
-										[ngModel]="selectedGroups()"
-										(ngModelChange)="setFilterParam('groups', $event)"
-										[multiple]="true"
-									>
-										@for (group of groups(); track group.id) {
-											<ion-select-option [value]="'' + group.id">
-												{{ group.name }}
-											</ion-select-option>
-										}
-									</ion-select>
-								</div>
-							</th>
-						}			
+							<th class="align-middle">Oddíl</th>
+						}
 
 						@if (viewSelections().role){
-							<th>
-								<div class="column-filter">
-									<ion-select
-										label="Role"
-										interface="popover"
-										justify="start"
-										[ngModel]="selectedRoles()"
-										(ngModelChange)="setFilterParam('roles', $event)"
-										[multiple]="true"
-									>
-										@for (role of roles | keyvalue; track role.key) {
-											<ion-select-option [value]="role.key">
-												{{ role.value.title }}
-											</ion-select-option>
-										}
-									</ion-select>
-								</div>
-							</th>
+							<th class="align-middle">Role</th>
 						}
 
 						@if (viewSelections().age){
@@ -234,9 +209,11 @@
 						@if (viewSelections().firstTelephone){
 							<th class="align-middle events-name-column" >Telefon</th>					
 						}
-						@if (viewSelections().firstEmail){	
-							<th class="align-middle events-name-column" >E-mail</th>					
+						@if (viewSelections().firstEmail){
+							<th class="align-middle events-name-column" >E-mail</th>
 						}
+
+						<th class="align-middle members-status-column">Stav</th>
 
 					</tr>
 				</thead>
@@ -293,6 +270,14 @@
 								@if (viewSelections().firstEmail) {
 								<td> <strong> {{ member.contacts?.[0]?.relationship || "" }} </strong> {{ member.contacts?.[0]?.email || "" }} </td>
 								}
+
+								<td class="members-status-column">
+									@if (member.active) {
+										<span class="bo-pill bo-pill-green">AKTIVNÍ</span>
+									} @else {
+										<span class="bo-pill">NEAKTIVNÍ</span>
+									}
+								</td>
 
 							</tr>
 						}

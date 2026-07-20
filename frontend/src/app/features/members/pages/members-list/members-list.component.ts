@@ -11,6 +11,7 @@ import {
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
 	IonItem,
+	IonItemDivider,
 	IonLabel,
 	IonList,
 	IonPopover,
@@ -50,6 +51,7 @@ import { MemberCreateModalComponent } from "../../components/member-create-modal
 		IonContent,
 		IonList,
 		IonItem,
+		IonItemDivider,
 		IonLabel,
 		IonSkeletonText,
 		IonSelect,
@@ -160,12 +162,16 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	onFilterChange(filter: FilterData) {
 		// FIXME: do not use as any
-		this.filter = filter;
+		// `active` is set directly as a URL query param via setFilterParam (the checkbox
+		// lives in the eye popover, outside <bo-filter>), so it is not a bo-filter control
+		// and never comes back through the emitted `filter`. Pull it from the current query
+		// params so the default (active-only) and the show/hide-inactive toggle work.
+		this.filter = { ...filter, active: this.route.snapshot.queryParams["active"] ?? null };
 		this.selectedGroups.set(this.normalizeFilterValueToArray((filter as any)["groups"]));
 		this.selectedRoles.set(this.normalizeFilterValueToArray((filter as any)["roles"]));
 		this.selectedMembership.set(this.normalizeFilterValueToArray((filter as any)["membership"]));
 		this.selectedAges.set(this.normalizeFilterValueToArray((filter as any)["age"]));
-		this.loadMembers(filter);
+		this.loadMembers(this.filter);
 	}
 
 	setFilterParam(name: string, value: string | string[] | null) {

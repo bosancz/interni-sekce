@@ -7,6 +7,8 @@
 
 // branded table card — blue-tint header, zebra rows, hairline dividers
 .table-responsive {
+	// inset from the edges to match the page gutter used on the home page / search box
+	margin-inline: 16px;
 	background-color: var(--bo-white);
 	border-radius: var(--bo-radius-card);
 	box-shadow: var(--bo-shadow-card);
@@ -44,6 +46,12 @@ table.table {
 
 		tbody tr:nth-child(even) {
 			background-color: var(--bo-paper);
+		}
+
+		// clickable rows (routerLink adds tabindex, or explicit .clickable) get a pointer cursor
+		tbody tr[tabindex],
+		tbody tr.clickable {
+			cursor: pointer;
 		}
 
 		tbody tr:last-child td {

@@ -15,6 +15,14 @@
 		align-items: center;
 		justify-content: center;
 		margin: 0;
-		padding-top: 2px;
+		line-height: 1;
+		// nudge uppercase glyphs down — they sit high due to empty descender space
+		padding-top: 0.08em;
+
+		// modern browsers: trim the line box to cap-height/baseline for exact centering
+		@supports (text-box: trim-both cap alphabetic) {
+			padding-top: 0;
+			text-box: trim-both cap alphabetic;
+		}
 	}
 }
