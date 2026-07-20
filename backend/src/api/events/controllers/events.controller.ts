@@ -18,7 +18,7 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Token } from "src/auth/decorators/token.decorator";
-import { TokenData } from "src/auth/schema/user-token";
+import { SessionUser } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventPlaceGeometry, EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository, GetEventsOptions } from "src/models/events/repositories/events.repository";
@@ -55,7 +55,7 @@ export class EventsController {
 	@ApiResponse({ status: 200, type: WithLinks(EventResponse), isArray: true })
 	async listEvents(
 		@Req() req: Request,
-		@Token() token: TokenData,
+		@Token() token: SessionUser,
 		@Query() query: ListEventsQuery,
 	): Promise<EventResponse[]> {
 		// canWhere both authorizes (throws if not allowed) and returns the row-level filter
@@ -171,7 +171,7 @@ export class EventsController {
 	@HttpCode(204)
 	@AcLinks(EventLeadPermission)
 	@ApiResponse({ status: 204 })
-	async leadEvent(@Req() req: Request, @Param("id") id: number, @Token() token: TokenData): Promise<void> {
+	async leadEvent(@Req() req: Request, @Param("id") id: number, @Token() token: SessionUser): Promise<void> {
 		if (token.memberId === undefined) throw new ConflictException("User is not linked to a member.");
 
 		const event = await this.events.getEvent(id, { leaders: true });

@@ -14,6 +14,8 @@ export class User {
 	@PrimaryGeneratedColumn()
 	id!: number;
 
+	// indexed: the linked member is joined on every request to resolve roles
+	@Index("IDX_users_member_id")
 	@Column({ nullable: true })
 	memberId!: number | null;
 

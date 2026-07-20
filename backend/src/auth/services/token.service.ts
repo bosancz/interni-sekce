@@ -1,11 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
-import { validateSync } from "class-validator";
 import { Request, Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
-import { User } from "src/models/users/entities/user.entity";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
-import { TokenData, UserData } from "../schema/user-token";
+import { SignedToken, TokenPayload } from "../schema/user-token";
 
 @Injectable()
 export class TokenService {
@@ -22,39 +20,39 @@ export class TokenService {
 		private usersRepository: UsersRepository,
 	) {}
 
-	async parseToken(req: Request) {
+	/**
+	 * Authorize the request: verify the session cookie, load the current user from
+	 * the database and attach it to `req.user`. Roles and the linked member's state
+	 * are resolved here, per request, so the token never carries authorization data.
+	 */
+	async loadSession(req: Request, res: Response) {
 		const tokenString = req.cookies?.[this.cookieName];
 		if (!tokenString) return;
 
-		try {
-			const tokenData = await this.jwtService.verifyAsync<JwtPayload>(tokenString, {});
+		const payload = await this.verifyToken<SignedToken>(tokenString);
+		if (!payload || typeof payload.userId !== "number") return;
 
-			if (this.validateToken(tokenData)) {
-				req.token = tokenString;
-				req.user = tokenData;
-			}
-		} catch (err) {}
-	}
+		const user = await this.usersRepository.getSessionUser(payload.userId);
 
-	getToken(req: Request) {
-		return req["user"];
-	}
+		// the token points at a user that no longer exists — drop the cookie
+		if (!user) {
+			this.clearToken(res);
+			return;
+		}
 
-	/**
-	 * Build the session payload from a user. The `member` relation must be loaded
-	 * so that the leader role can be gated on the linked member being active.
-	 */
-	buildUserData(user: User): UserData {
-		return {
+		req.token = tokenString;
+		req.user = {
 			userId: user.id,
 			memberId: user.memberId ?? undefined,
 			memberActive: user.member?.active ?? false,
 			roles: user.roles ?? [],
 		};
+
+		await this.renewTokenIfNeeded(res, payload);
 	}
 
-	async createToken(userData: UserData, options: JwtSignOptions = {}) {
-		return this.jwtService.signAsync(userData, { expiresIn: `${this.tokenLifetimeDays}d`, ...options });
+	async createToken(payload: TokenPayload, options: JwtSignOptions = {}) {
+		return this.jwtService.signAsync({ ...payload }, { expiresIn: `${this.tokenLifetimeDays}d`, ...options });
 	}
 
 	/**
@@ -74,8 +72,9 @@ export class TokenService {
 		}
 	}
 
-	async setToken(res: Response, userData: UserData) {
-		const token = await this.createToken(userData);
+	/** Issue a fresh session cookie identifying the given user. */
+	async setToken(res: Response, userId: number) {
+		const token = await this.createToken({ userId });
 
 		// maxAge makes the cookie survive browser restarts; without it the session ends when the browser closes
 		res.cookie(this.cookieName, token, {
@@ -86,38 +85,22 @@ export class TokenService {
 		});
 	}
 
-	/**
-	 * Sliding session renewal: once a day, a valid token gets re-issued with a fresh
-	 * expiration, so users who visit at least once per tokenLifetimeDays stay logged
-	 * in indefinitely. User data is reloaded from the database so that role changes
-	 * propagate and deleted accounts cannot keep extending their session.
-	 */
-	async renewTokenIfNeeded(req: Request, res: Response) {
-		const tokenData = req.user;
-		if (!tokenData?.iat) return;
-
-		const tokenAgeSeconds = Math.floor(Date.now() / 1000) - tokenData.iat;
-		if (tokenAgeSeconds < this.tokenRenewalAgeSeconds) return;
-
-		const user = await this.usersRepository.getUser(tokenData.userId, { includeMember: true });
-
-		if (!user) {
-			this.clearToken(res);
-			return;
-		}
-
-		await this.setToken(res, this.buildUserData(user));
-	}
-
 	clearToken(res: Response) {
 		res.clearCookie(this.cookieName);
 	}
 
-	private validateToken(tokenData: JwtPayload): tokenData is TokenData {
-		let validateData = Object.assign(new UserData(), tokenData);
+	/**
+	 * Sliding session renewal: once a day, a valid token gets re-issued with a fresh
+	 * expiration, so users who visit at least once per tokenLifetimeDays stay logged
+	 * in indefinitely. The token only carries the user id; roles are always loaded
+	 * from the database on the next request.
+	 */
+	private async renewTokenIfNeeded(res: Response, payload: SignedToken) {
+		if (!payload.iat) return;
 
-		const validateErrors = validateSync(validateData, { stopAtFirstError: true });
+		const tokenAgeSeconds = Math.floor(Date.now() / 1000) - payload.iat;
+		if (tokenAgeSeconds < this.tokenRenewalAgeSeconds) return;
 
-		return validateErrors.length === 0;
+		await this.setToken(res, payload.userId);
 	}
 }
