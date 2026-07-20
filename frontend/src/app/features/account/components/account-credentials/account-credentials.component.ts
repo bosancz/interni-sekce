@@ -1,17 +1,30 @@
 import { Component } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { IonItem, IonLabel, IonList, IonText } from "@ionic/angular/standalone";
+import { IonButton, IonIcon } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { createOutline, keyOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { UserService } from "src/app/core/services/user.service";
+import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
+import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
+import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
+import { CardComponent } from "src/app/shared/components/card/card.component";
 
 @Component({
 	selector: "bo-account-credentials",
 	templateUrl: "./account-credentials.component.html",
 	styleUrls: ["./account-credentials.component.scss"],
 
-	imports: [IonList, IonItem, IonLabel, IonText],
+	imports: [
+		IonButton,
+		IonIcon,
+		CardComponent,
+		CardHeaderComponent,
+		CardTitleComponent,
+		CardContentComponent,
+	],
 })
 export class AccountCredentialsComponent {
 	user = toSignal(this.userService.user);
@@ -21,7 +34,9 @@ export class AccountCredentialsComponent {
 		private userService: UserService,
 		private toastService: ToastService,
 		private modalService: ModalService,
-	) {}
+	) {
+		addIcons({ keyOutline, createOutline });
+	}
 
 	async changeLogin() {
 		const user = this.user();

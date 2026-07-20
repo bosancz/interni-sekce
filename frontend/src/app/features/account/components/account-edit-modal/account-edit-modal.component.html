@@ -1,0 +1,37 @@
+<bo-modal-layout>
+	<h4 slot="title">Upravit účet</h4>
+
+	<form [formGroup]="form">
+		<ion-list>
+			<ion-item>
+				<ion-input
+					label="E-mail"
+					labelPlacement="stacked"
+					type="email"
+					formControlName="email"
+					placeholder="bilbo@bosan.cz"
+					autocomplete="email"
+				/>
+			</ion-item>
+
+			<ion-item>
+				<ion-select
+					label="Role"
+					labelPlacement="stacked"
+					multiple
+					formControlName="roles"
+					placeholder="žádné"
+				>
+					@for (role of roles | keyvalue; track role.key) {
+						<ion-select-option [value]="role.key">{{ role.value.title }}</ion-select-option>
+					}
+				</ion-select>
+			</ion-item>
+		</ion-list>
+	</form>
+
+	<ion-buttons slot="buttons">
+		<ion-button (click)="close.emit()" color="secondary">Zrušit</ion-button>
+		<ion-button (click)="save()" color="primary">Uložit</ion-button>
+	</ion-buttons>
+</bo-modal-layout>

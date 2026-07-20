@@ -80,6 +80,9 @@ body {
 	--bo-neutral-pill-text: #6b7185;
 	--bo-paper: #f6f7fb;
 
+	// subtle divider between rows inside a card (lighter than --bo-line)
+	--bo-card-line: #f0f2f7;
+
 	// semantic
 	--bo-heading: var(--bo-blue);
 	--bo-link: var(--bo-blue);
@@ -131,6 +134,8 @@ body.dark {
 	--bo-neutral-pill: #2a2d3a;
 	--bo-neutral-pill-text: #aab0c2;
 	--bo-paper: #16181f;
+
+	--bo-card-line: #23262f;
 
 	--bo-heading: #aeb7f0;
 	--bo-link: #aeb7f0;
