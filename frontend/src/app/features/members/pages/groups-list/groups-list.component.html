@@ -8,21 +8,27 @@
 			<p class="hero-subtitle">všichni členové skupiny</p>
 		</div>
 		<div class="hero-count">
-			<strong>{{ totalMemberCount() }}</strong>
-			<span>členů</span>
+			<div class="hero-stat">
+				<strong>{{ totalChildrenCount() }}</strong>
+				<span>dětí</span>
+			</div>
+			<div class="hero-stat">
+				<strong>{{ totalLeadersCount() }}</strong>
+				<span>vedoucích</span>
+			</div>
 		</div>
 	</div>
 
 	<div class="row mt-4">
 		@for (group of groups(); track group.id) {
 			<div class="col-6 col-lg-6 col-xl-4 mb-4">
-				<div class="group" [routerLink]="['/databaze/clenove']" [queryParams]="{ groups: group.id }">
+				<div class="group clickable" [class.group-inactive]="!group.active" (click)="openGroup(group)">
 					<span class="group-badge" [style.background-color]="group.color || 'var(--bo-neutral-badge)'">
 						{{ group.shortName }}
 					</span>
 					<div class="group-info">
 						<h3 class="group-name">{{ group.name ?? group.shortName }}</h3>
-						<p class="group-count">{{ group.memberCount }} členů</p>
+						<p class="group-count">{{ group.childrenCount }} dětí · {{ group.leadersCount }} vedoucích</p>
 					</div>
 				</div>
 			</div>
@@ -36,4 +42,17 @@
 			<p>Žádné oddíly zatím nejsou vytvořeny.</p>
 		}
 	}
+
+	<p class="ion-padding groups-active-toggle">
+		@if (!showInactive()) {
+			<a class="clickable" (click)="toggleShowInactive()">Zobrazit i neaktivní</a>
+		} @else {
+			<a class="clickable" (click)="toggleShowInactive()">Skrýt neaktivní</a>
+		}
+		<span class="groups-toggle-sep">·</span>
+		<a class="clickable groups-deleted-link" (click)="openDeletedGroups()">
+			<ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+			Smazané oddíly
+		</a>
+	</p>
 </bo-page-content>

@@ -1,82 +1,34 @@
-<bo-page-header backUrl="/" title="Přehled akcí" />
+<bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions()" />
 
 <bo-filter [search]="true" [showButtonMobileOnly]="true">
-	<button
+	<bo-filter-pill
 		toolbar-actions
 		slot="end"
-		type="button"
-		class="filter-pill year-filter-pill"
-		[class.has-value]="selectedYears().length > 0"
-		(click)="openYearPopover($event)"
-	>
-		<span>{{ selectedYears().length ? "Rok (" + selectedYears().length + ")" : "Rok" }}</span>
-		<ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
-	</button>
+		label="Rok"
+		[options]="yearOptions()"
+		[selected]="selectedYears()"
+		(selectedChange)="setFilterParam('year', $event)"
+	/>
 
-	<ion-popover
+	<bo-filter-pill
 		toolbar-actions
-		cssClass="year-filter-popover"
-		[dismissOnSelect]="false"
-		[isOpen]="yearPopoverOpen()"
-		[event]="yearPopoverEvent()"
-		(didDismiss)="yearPopoverOpen.set(false)"
-	>
-		<ng-template>
-			<ion-content>
-				<div class="year-filter-panel">
-					<div class="year-grid">
-						@for (year of years(); track year) {
-							<button
-								type="button"
-								class="year-chip"
-								[class.selected]="isYearSelected(year)"
-								(click)="toggleYear(year)"
-							>
-								{{ year }}
-							</button>
-						}
-					</div>
-					@if (selectedYears().length) {
-						<button type="button" class="year-clear" (click)="clearYears()">Zrušit výběr</button>
-					}
-				</div>
-			</ion-content>
-		</ng-template>
-	</ion-popover>
+		slot="end"
+		label="Stav"
+		[singleColumn]="true"
+		[options]="statusOptions()"
+		[selected]="selectedStatuses()"
+		(selectedChange)="setFilterParam('status', $event)"
+	/>
 
-	<ion-item>
-		<ion-select
-			name="status"
-			label ="Stav"
-			[ngModel]="selectedStatuses()"
-			(ngModelChange)="setFilterParam('status', $event)"
-			[multiple]="true"
-
-		>
-			@for (status of statuses() | keyvalue; track status.key) {
-				<ion-select-option [value]="status.key">
-					{{ status.value.name }}
-				</ion-select-option>
-			}
-		</ion-select>
-	</ion-item>
-
-	<ion-item>
-		<ion-select
-			name="leaders"
-			label="Vedoucí"
-			[ngModel]="selectedLeaderFilters()"
-			(ngModelChange)="setFilterParam('leaders', $event)"
-			[multiple]="true"
-
-		>
-			<ion-select-option value="my">Moje akce</ion-select-option>
-			<ion-select-option value="noleader">Akce bez vedoucího</ion-select-option>
-
-		</ion-select>
-	</ion-item>
-
-
+	<bo-filter-pill
+		toolbar-actions
+		slot="end"
+		label="Vedoucí"
+		[singleColumn]="true"
+		[options]="leaderOptions"
+		[selected]="selectedLeaderFilters()"
+		(selectedChange)="setFilterParam('leaders', $event)"
+	/>
 </bo-filter>
 
 <bo-page-content>

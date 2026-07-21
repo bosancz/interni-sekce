@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsOptional, IsString } from "class-validator";
 import { EnsureBoolean } from "src/helpers/validation";
 import { Group } from "src/models/members/entities/group.entity";
 
@@ -10,12 +10,14 @@ export class GroupResponse implements Omit<Group, "members"> {
 	darkColor!: string | null;
 	name!: string | null;
 	deletedAt!: string | null;
-	memberCount?: number;
+	childrenCount?: number;
+	leadersCount?: number;
 }
 
 export class ListGroupsQuery {
 	@EnsureBoolean() @IsOptional() active?: boolean;
 	@EnsureBoolean() @IsOptional() includeMemberCounts?: boolean;
+	@EnsureBoolean() @IsOptional() includeDeleted?: boolean;
 }
 
 export class CreateGroupBody implements Pick<Group, "shortName" | "name"> {
@@ -23,7 +25,8 @@ export class CreateGroupBody implements Pick<Group, "shortName" | "name"> {
 	@IsString() @IsOptional() name!: string | null;
 }
 
-export class UpdateGroupBody implements Partial<Pick<Group, "shortName" | "name">> {
-	@IsString() shortName!: string;
-	@IsString() @IsOptional() name!: string | null;
+export class UpdateGroupBody implements Partial<Pick<Group, "shortName" | "name" | "active">> {
+	@IsString() @IsOptional() shortName?: string;
+	@IsString() @IsOptional() name?: string | null;
+	@IsBoolean() @IsOptional() active?: boolean;
 }

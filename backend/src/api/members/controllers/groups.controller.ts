@@ -1,19 +1,22 @@
 import {
 	Body,
+	ConflictException,
 	Controller,
 	Delete,
 	Get,
+	HttpCode,
 	HttpStatus,
 	NotFoundException,
 	Param,
+	Patch,
 	Post,
-	Put,
 	Query,
 	Req,
 	UseGuards,
 } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
+import { QueryFailedError } from "typeorm";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { UserGuard } from "src/auth/guards/user.guard";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
@@ -22,7 +25,9 @@ import {
 	GroupDeletePermission,
 	GroupEditPermission,
 	GroupListPermission,
+	GroupPermanentDeletePermission,
 	GroupReadPermission,
+	GroupRestorePermission,
 } from "../acl/groups.acl";
 import { CreateGroupBody, GroupResponse, ListGroupsQuery, UpdateGroupBody } from "../dto/group.dto";
 
@@ -62,7 +67,7 @@ export class GroupsController {
 		return group;
 	}
 
-	@Put(":id")
+	@Patch(":id")
 	@AcLinks(GroupEditPermission)
 	@ApiResponse({ status: HttpStatus.OK })
 	async updateGroup(@Param("id") id: number, @Req() req: Request, @Body() body: UpdateGroupBody) {
@@ -83,5 +88,38 @@ export class GroupsController {
 		GroupDeletePermission.canOrThrow(req, group);
 
 		await this.groups.deleteGroup(id);
+	}
+
+	@Post(":id/restore")
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@AcLinks(GroupRestorePermission)
+	@ApiResponse({ status: HttpStatus.NO_CONTENT })
+	async restoreGroup(@Param("id") id: number, @Req() req: Request): Promise<void> {
+		const group = await this.groups.getGroup(id, { withDeleted: true });
+		if (!group) throw new NotFoundException();
+
+		GroupRestorePermission.canOrThrow(req, group);
+
+		await this.groups.restoreGroup(id);
+	}
+
+	@Delete(":id/permanent")
+	@AcLinks(GroupPermanentDeletePermission)
+	async permanentlyDeleteGroup(@Param("id") id: number, @Req() req: Request): Promise<void> {
+		const group = await this.groups.getGroup(id, { withDeleted: true });
+		if (!group) throw new NotFoundException();
+
+		GroupPermanentDeletePermission.canOrThrow(req, group);
+
+		try {
+			await this.groups.hardDeleteGroup(id);
+		} catch (err) {
+			// Postgres foreign-key violation (23503): the members→groups FK (onDelete RESTRICT)
+			// still references this group, so it can't be permanently removed
+			if (err instanceof QueryFailedError && (err.driverError as { code?: string }).code === "23503") {
+				throw new ConflictException("Oddíl nelze trvale smazat, protože jsou na něj navázané záznamy (např. členové).");
+			}
+			throw err;
+		}
 	}
 }

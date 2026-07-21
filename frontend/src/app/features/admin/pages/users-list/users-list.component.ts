@@ -6,9 +6,7 @@ import {
 	AlertController,
 	InfiniteScrollCustomEvent,
 	IonBadge,
-	IonButton,
 	IonContent,
-	IonIcon,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
 	IonItem,
@@ -55,8 +53,6 @@ type UsersFilter = {
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
 		IonBadge,
-		IonButton,
-		IonIcon,
 		PageHeaderComponent,
 		FilterComponent,
 		AdminTableComponent,
@@ -69,7 +65,14 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
 
 	filter = signal<FilterData>({});
 
-	actions = signal<Action[]>([]);
+	actions = signal<Action[]>([
+		{
+			text: "Nový uživatel",
+			icon: "add-outline",
+			pinned: true,
+			handler: () => this.create(),
+		},
+	]);
 
 	page = signal(1);
 	pageSize = 50;

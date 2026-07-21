@@ -79,6 +79,34 @@ export class MembersRepository {
 		return this.membersRepository.findOne({ where: { id }, ...options });
 	}
 
+	// Soft-deleted members only (deletedAt IS NOT NULL). withDeleted() lifts TypeORM's default
+	// filter that hides them, and the explicit condition keeps the live members out.
+	async getDeletedMembers(where: Brackets | string = "1=1") {
+		return this.membersRepository
+			.createQueryBuilder("members")
+			.withDeleted()
+			.where(where)
+			.andWhere("members.deletedAt IS NOT NULL")
+			.orderBy("members.deletedAt", "DESC")
+			.getMany();
+	}
+
+	// Fetch a single member including soft-deleted ones, so restore/permanent-delete can run their
+	// permission checks against a member the normal (non-deleted) query would no longer return.
+	async getDeletedMember(id: number) {
+		return this.membersRepository.findOne({ where: { id }, withDeleted: true });
+	}
+
+	// Clear deletedAt, bringing a soft-deleted member back to life.
+	async restoreMember(id: number) {
+		return this.membersRepository.restore({ id });
+	}
+
+	// Irreversibly remove the row from the database (as opposed to deleteMember's soft delete).
+	async hardDeleteMember(id: number) {
+		return this.membersRepository.delete({ id });
+	}
+
 	async createMember(memberData: Partial<Omit<Member, "id">>) {
 		return this.membersRepository.save(memberData);
 	}

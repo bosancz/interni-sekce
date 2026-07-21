@@ -1,9 +1,9 @@
 import { Component, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { AlertController, ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
+import { AlertController, IonIcon, NavController, ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline } from "ionicons/icons";
+import { addOutline, trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -17,12 +17,15 @@ import { SDK } from "src/sdk";
 	templateUrl: "./groups-list.component.html",
 	styleUrls: ["./groups-list.component.scss"],
 
-	imports: [PageHeaderComponent, PageContentComponent, RouterLink],
+	imports: [PageHeaderComponent, PageContentComponent, RouterLink, IonIcon],
 })
 export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 	groups = signal<SDK.GroupResponseWithLinks[]>([]);
 
-	totalMemberCount = signal<number>(0);
+	totalChildrenCount = signal<number>(0);
+	totalLeadersCount = signal<number>(0);
+
+	showInactive = signal<boolean>(false);
 
 	actions = signal<Action[]>([]);
 
@@ -34,8 +37,17 @@ export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 		private api: ApiService,
 		private alertController: AlertController,
 		private toastService: ToastService,
+		private navController: NavController,
 	) {
-		addIcons({ addOutline });
+		addIcons({ addOutline, trashOutline });
+	}
+
+	openGroup(group: SDK.GroupResponseWithLinks) {
+		this.navController.navigateForward(["/databaze/oddily", group.id]);
+	}
+
+	openDeletedGroups() {
+		this.navController.navigateForward("/databaze/oddily/smazane");
 	}
 
 	ionViewWillEnter(): void {
@@ -99,17 +111,25 @@ export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 		await this.toastService.toast(`${group.name ?? "Oddíl " + group.id} vytvořen.`);
 	}
 
+	toggleShowInactive() {
+		this.showInactive.update((value) => !value);
+		this.loadGroups();
+	}
+
 	private async loadGroups() {
-		const groups = await this.api.MembersApi.listGroups({ includeMemberCounts: true, active: true }).then(
-			(res) => res.data,
-		);
+		// default: active only; the toggle reveals inactive (deactivated) groups too so they can be re-activated
+		const groups = await this.api.MembersApi.listGroups({
+			includeMemberCounts: true,
+			active: this.showInactive() ? undefined : true,
+		}).then((res) => res.data);
 		groups.sort((a, b) =>
 			(a.name ?? a.shortName).localeCompare(b.name ?? b.shortName, undefined, { numeric: true }),
 		);
 
 		this.groups.set(groups);
 
-		this.totalMemberCount.set(groups.reduce((sum, group) => sum + (group.memberCount ?? 0), 0));
+		this.totalChildrenCount.set(groups.reduce((sum, group) => sum + (group.childrenCount ?? 0), 0));
+		this.totalLeadersCount.set(groups.reduce((sum, group) => sum + (group.leadersCount ?? 0), 0));
 	}
 
 	async deleteGroup(group: SDK.GroupResponseWithLinks) {

@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from "@angular/core";
 import { FormsModule, NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { IonButton, IonInput, IonItem, IonLabel, IonList, NavController } from "@ionic/angular/standalone";
+import { IonButton, IonInput, IonItem, IonLabel, IonList, IonToggle, NavController } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
@@ -20,6 +20,7 @@ import { SDK } from "src/sdk";
 		IonLabel,
 		IonInput,
 		IonButton,
+		IonToggle,
 		PageHeaderComponent,
 		PageContentComponent,
 		PageFooterComponent,

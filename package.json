@@ -8,7 +8,7 @@
     "all-contributors:check": "all-contributors check",
     "all-contributors:generate": "all-contributors generate",
     "install": "./scripts/install.sh",
-    "dev": "concurrently -k -n FE,BE --prefix-colors green,yellow \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev": "FORCE_COLOR=3 concurrently -k -n FE,BE --prefix-colors green,yellow \"npm run dev:frontend\" \"npm run dev:backend\" 2>&1 | tee dev.log",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
     "release": "git switch master && git push && git switch release && git merge master --ff-only && git push --follow-tags && git switch master",

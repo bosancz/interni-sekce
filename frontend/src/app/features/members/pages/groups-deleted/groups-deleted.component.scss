@@ -1,0 +1,19 @@
+.group-badge {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.4rem;
+	height: 2.4rem;
+	margin-inline-end: 0.75rem;
+	border-radius: 12px;
+	color: #fff;
+	font-family: var(--font-san);
+	font-weight: 800;
+	font-size: 1rem;
+}
+
+.groups-empty {
+	color: var(--bo-muted);
+	text-align: center;
+}

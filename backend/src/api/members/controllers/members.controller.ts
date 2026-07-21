@@ -18,10 +18,13 @@ import { UserGuard } from "src/auth/guards/user.guard";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
 import {
 	MemberCreatePermission,
+	MemberDeletePermanentPermission,
 	MemberDeletePermission,
 	MemberReadPermission,
-	MemberUpdatePermission,
+	MemberRestorePermission,
+	MembersDeletedListPermission,
 	MembersListPermission,
+	MemberUpdatePermission,
 } from "../acl/members.acl";
 import { MemberCreateBody, MemberResponse, MemberUpdateBody, MembersListQuery } from "../dto/member.dto";
 
@@ -55,6 +58,17 @@ export class MembersController {
 		const where = MembersListPermission.canWhere(req, "members");
 
 		return this.members.getMemberAges(where);
+	}
+
+	@Get("deleted")
+	@AcLinks(MembersDeletedListPermission)
+	@ApiResponse({ status: 200, type: WithLinks(MemberResponse), isArray: true })
+	async listDeletedMembers(@Req() req: Request): Promise<MemberResponse[]> {
+		MembersDeletedListPermission.canOrThrow(req);
+
+		const where = MembersDeletedListPermission.canWhere(req, "members");
+
+		return this.members.getDeletedMembers(where);
 	}
 
 	@Post()
@@ -100,5 +114,29 @@ export class MembersController {
 		MemberDeletePermission.canOrThrow(req, member);
 
 		await this.members.deleteMember(id);
+	}
+
+	@Post(":id/restore")
+	@AcLinks(MemberRestorePermission)
+	@ApiResponse({ status: 204 })
+	async restoreMember(@Req() req: Request, @Param("id") id: number) {
+		const member = await this.members.getDeletedMember(id);
+		if (!member) throw new NotFoundException();
+
+		MemberRestorePermission.canOrThrow(req, member);
+
+		await this.members.restoreMember(id);
+	}
+
+	@Delete(":id/permanent")
+	@AcLinks(MemberDeletePermanentPermission)
+	@ApiResponse({ status: 204 })
+	async deleteMemberPermanent(@Req() req: Request, @Param("id") id: number) {
+		const member = await this.members.getDeletedMember(id);
+		if (!member) throw new NotFoundException();
+
+		MemberDeletePermanentPermission.canOrThrow(req, member);
+
+		await this.members.hardDeleteMember(id);
 	}
 }

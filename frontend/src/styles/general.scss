@@ -127,8 +127,8 @@ ion-select.filter-pill {
 	}
 }
 
-// year filter popover — compact grid of toggleable year chips
-.year-filter-popover {
+// filter pill popover — compact grid of toggleable chips (bo-filter-pill)
+.filter-pill-chips-popover {
 	--width: 264px;
 	--max-height: 60vh;
 
@@ -138,24 +138,36 @@ ion-select.filter-pill {
 		border: 1px solid var(--bo-line);
 	}
 
-	.year-filter-panel {
+	.filter-pill-panel {
 		padding: 12px;
 	}
 
-	.year-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+	.filter-pill-chips {
+		display: flex;
+		flex-wrap: wrap;
 		gap: 6px;
+
+		&.single-column {
+			flex-direction: column;
+			flex-wrap: nowrap;
+
+			.filter-pill-chip {
+				width: 100%;
+				text-align: left;
+			}
+		}
 	}
 
-	.year-chip {
-		padding: 8px 0;
+	.filter-pill-chip {
+		flex: 1 0 auto;
+		padding: 8px 12px;
 		border: 1px solid var(--bo-line);
 		border-radius: 10px;
 		background: var(--bo-white);
 		color: var(--bo-dark, #1f2430);
 		font-size: 0.8125rem;
 		font-weight: 700;
+		text-align: center;
 		cursor: pointer;
 		transition:
 			background 0.12s ease,
@@ -171,9 +183,42 @@ ion-select.filter-pill {
 			border-color: var(--bo-blue);
 			color: var(--bo-white);
 		}
+
+		// colored chips (e.g. event statuses): tinted while idle, solid in its own colour when selected
+		&.colored {
+			background: var(--chip-bg);
+			border-color: transparent;
+			color: var(--chip-fg);
+
+			&:hover {
+				border-color: var(--chip-fg);
+			}
+
+			&.selected {
+				background: var(--chip-fg);
+				border-color: var(--chip-fg);
+				color: var(--bo-white);
+			}
+
+			// single-colour chips (e.g. group colours): derive the idle tint from the one colour
+			&.single-color {
+				background: color-mix(in srgb, var(--chip-color) 14%, transparent);
+				color: var(--chip-color);
+
+				&:hover {
+					border-color: var(--chip-color);
+				}
+
+				&.selected {
+					background: var(--chip-color);
+					border-color: var(--chip-color);
+					color: var(--bo-white);
+				}
+			}
+		}
 	}
 
-	.year-clear {
+	.filter-pill-clear {
 		width: 100%;
 		margin-top: 10px;
 		padding: 8px 0;

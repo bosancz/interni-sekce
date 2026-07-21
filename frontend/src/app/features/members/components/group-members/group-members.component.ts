@@ -48,8 +48,8 @@ export class GroupMembersComponent implements OnInit {
 		this.groupsService.currentGroup.pipe(untilDestroyed(this)).subscribe((group) => this.loadMembers(group?.id));
 	}
 
-	onSearchChange(search: string) {
-		this.filter.update((filter) => ({ ...filter, search }));
+	onFilterChange(value: { search?: string }) {
+		this.filter.update((filter) => ({ ...filter, search: value.search ?? "" }));
 		this.filterMembers();
 	}
 

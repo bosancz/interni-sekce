@@ -1,0 +1,44 @@
+<bo-page-header title="Smazané oddíly" backUrl="/databaze"></bo-page-header>
+
+<bo-page-content>
+	@if (groups().length) {
+		<ion-list>
+			@for (group of groups(); track group.id) {
+				<ion-item>
+					<span
+						class="group-badge"
+						slot="start"
+						[style.background-color]="group.color || 'var(--bo-neutral-badge)'"
+					>
+						{{ group.shortName }}
+					</span>
+					<ion-label>{{ group.name ?? group.shortName }}</ion-label>
+
+					<ion-button
+						slot="end"
+						fill="clear"
+						color="medium"
+						(click)="restoreGroup(group)"
+						[disabled]="!group._links.restoreGroup.allowed"
+					>
+						<ion-icon slot="start" name="arrow-undo-outline" aria-hidden="true"></ion-icon>
+						Obnovit
+					</ion-button>
+
+					<ion-button
+						slot="end"
+						fill="clear"
+						color="danger"
+						(click)="permanentlyDeleteGroup(group)"
+						[disabled]="!group._links.permanentlyDeleteGroup.allowed"
+					>
+						<ion-icon slot="start" name="trash-outline" aria-hidden="true"></ion-icon>
+						Smazat trvale
+					</ion-button>
+				</ion-item>
+			}
+		</ion-list>
+	} @else {
+		<p class="ion-padding groups-empty">Žádné smazané oddíly.</p>
+	}
+</bo-page-content>

@@ -1,52 +1,49 @@
-<bo-page-header title="Členská databáze" />
+<bo-page-header title="Členská databáze" [actions]="actions()" />
 
 
-<bo-filter [search]="true" [showButtonMobileOnly]="true" (change)="onFilterChange($event)">
-	<ion-select
+<bo-filter [search]="true" [showButtonMobileOnly]="true">
+	<bo-filter-pill
 		toolbar-actions
 		slot="end"
-		class="filter-pill"
-		[class.has-value]="selectedGroups().length > 0"
-		interface="popover"
-		[interfaceOptions]="{ cssClass: 'filter-pill-popover' }"
-		[multiple]="true"
-		name="groups"
-		[label]="selectedGroups().length ? 'Oddíl (' + selectedGroups().length + ')' : 'Oddíl'"
-		[selectedText]="' '"
-		[ngModel]="selectedGroups()"
-		(ngModelChange)="setFilterParam('groups', $event)"
-	>
-		@for (group of groups(); track group.id) {
-			<ion-select-option [value]="'' + group.id">{{ group.name }}</ion-select-option>
-		}
-	</ion-select>
-	<ion-select
+		label="Oddíl"
+		[multiple]="false"
+		[singleColumn]="true"
+		[options]="groupOptions()"
+		[selected]="selectedGroups()"
+		(selectedChange)="setFilterParam('groups', $event)"
+	/>
+	<bo-filter-pill
 		toolbar-actions
 		slot="end"
-		class="filter-pill"
-		[class.has-value]="selectedRoles().length > 0"
-		interface="popover"
-		[interfaceOptions]="{ cssClass: 'filter-pill-popover' }"
-		[multiple]="true"
-		name="roles"
-		[label]="selectedRoles().length ? 'Role (' + selectedRoles().length + ')' : 'Role'"
-		[selectedText]="' '"
-		[ngModel]="selectedRoles()"
-		(ngModelChange)="setFilterParam('roles', $event)"
-	>
-		@for (role of roles | keyvalue; track role.key) {
-			<ion-select-option [value]="role.key">{{ role.value.title }}</ion-select-option>
-		}
-	</ion-select>
+		label="Role"
+		[singleColumn]="true"
+		[options]="roleOptions"
+		[selected]="selectedRoles()"
+		(selectedChange)="setFilterParam('roles', $event)"
+	/>
 
-	<ion-button toolbar-actions class="d-none d-lg-block" fill="clear" size="small" id="checkbox-popover-trigger" slot="end">
+	<ion-button
+		toolbar-actions
+		class="d-none d-lg-block"
+		fill="clear"
+		size="small"
+		id="columns-popover-trigger"
+		slot="end"
+		title="Sloupce"
+	>
+		<ion-icon slot="icon-only" name="columns"></ion-icon>
+	</ion-button>
+
+	<ion-button
+		toolbar-actions
+		class="d-none d-lg-block"
+		fill="clear"
+		size="small"
+		id="inactive-popover-trigger"
+		slot="end"
+		title="Zobrazení"
+	>
 		<ion-icon slot="icon-only" name="eye-outline"></ion-icon>
-	</ion-button>
-	<ion-button toolbar-actions fill="clear" size="small" (click)="create()" slot="end">
-		<ion-icon slot="icon-only" name="add-outline"></ion-icon>
-	</ion-button>
-	<ion-button toolbar-actions fill="clear" size="small" (click)="export()" slot="end">
-		<ion-icon slot="icon-only" name="download-outline"></ion-icon>
 	</ion-button>
 
 	<ion-item lines="none">
@@ -80,6 +77,48 @@
 </bo-filter>
 
 
+<!-- Column picker (desktop table view). Kept at top level so its trigger button works regardless of the active view. -->
+<ion-popover trigger="columns-popover-trigger" triggerAction="click" cssClass="view-options-popover" [dismissOnSelect]="false">
+	<ng-template>
+		<ion-content>
+			<ion-list lines="full">
+				<ion-item-divider>Sloupce</ion-item-divider>
+				@for (selection of viewSelections() | keyvalue: originalViewOrder; track selection.key) {
+					<ion-item>
+						<ion-checkbox
+							[ngModel]="viewSelections()[selection.key]"
+							(ngModelChange)="setViewSelection(selection.key, $event)"
+							justify="space-between"
+						>
+							{{ getViewSelectionLabel(selection.key) }}
+						</ion-checkbox>
+					</ion-item>
+				}
+			</ion-list>
+		</ion-content>
+	</ng-template>
+</ion-popover>
+
+<!-- View options (desktop). Currently just the inactive-members toggle; more display options can be added here. -->
+<ion-popover trigger="inactive-popover-trigger" triggerAction="click" cssClass="view-options-popover" [dismissOnSelect]="false">
+	<ng-template>
+		<ion-content>
+			<ion-list lines="full">
+				<ion-item-divider>Zobrazení</ion-item-divider>
+				<ion-item lines="none">
+					<ion-toggle
+						[checked]="showInactive()"
+						(ionChange)="setFilterParam('active', $event.detail.checked ? 'all' : null)"
+						justify="space-between"
+					>
+						Zobrazit i neaktivní
+					</ion-toggle>
+				</ion-item>
+			</ion-list>
+		</ion-content>
+	</ng-template>
+</ion-popover>
+
 
 <ion-content>
 	@switch (view()) {
@@ -94,7 +133,7 @@
 				}
 
 				@for (member of members(); track member.id) {
-					<ion-item class="clickable"[routerLink]="'' + member.id">
+					<ion-item class="clickable" [class.member-inactive]="!member.active" [routerLink]="'' + member.id">
 						<ion-label>
 							<h2>{{ member.nickname || member.firstName || member.lastName }}</h2>
 							<p>
@@ -110,37 +149,6 @@
 			</ion-list>
 		}
 		@case ("table") {
-			<ion-popover trigger="checkbox-popover-trigger" triggerAction="click" cssClass="view-options-popover" [dismissOnSelect]="false">
-			<ng-template>
-				<ion-content>
-					<ion-list lines="full">
-						<ion-item-divider>Sloupce</ion-item-divider>
-						@for (selection of viewSelections()| keyvalue: originalViewOrder; track selection.key) {
-							<ion-item>
-								<ion-checkbox
-									[ngModel]="viewSelections()[selection.key]"
-									(ngModelChange)="setViewSelection(selection.key, $event)"
-									justify="space-between"
-								>
-									{{ getViewSelectionLabel(selection.key) }}
-								</ion-checkbox>
-							</ion-item>
-						}
-						<ion-item-divider>Filtr</ion-item-divider>
-						<ion-item lines="none">
-							<ion-checkbox
-								justify="space-between"
-								[ngModel]="(filter['active'] || 'active') === 'all'"
-								(ngModelChange)="setFilterParam('active', $event ? 'all' : null)"
-							>
-								Zobrazit i neaktivní
-							</ion-checkbox>
-						</ion-item>
-					</ion-list>
-				</ion-content>
-			</ng-template>
-			</ion-popover>
-
 			<admin-table [class]="'members-table'">
 				<thead>
 					<tr>
@@ -213,7 +221,9 @@
 							<th class="align-middle events-name-column" >E-mail</th>
 						}
 
-						<th class="align-middle members-status-column">Stav</th>
+						@if (viewSelections().status){
+							<th class="align-middle members-status-column">Stav</th>
+						}
 
 					</tr>
 				</thead>
@@ -223,7 +233,7 @@
 							<tr
 								class="clickable"
 								[routerLink]="'' + member.id"
-								[class.member-inactive]="!member.active || member.membership === 'neclen'"
+								[class.member-inactive]="!member.active"
 								[class.member-paused]="member.membership === 'pozastaveno'"
 							>
 								@if (viewSelections().nickname){
@@ -271,13 +281,15 @@
 								<td> <strong> {{ member.contacts?.[0]?.relationship || "" }} </strong> {{ member.contacts?.[0]?.email || "" }} </td>
 								}
 
-								<td class="members-status-column">
-									@if (member.active) {
-										<span class="bo-pill bo-pill-green">AKTIVNÍ</span>
-									} @else {
-										<span class="bo-pill">NEAKTIVNÍ</span>
-									}
-								</td>
+								@if (viewSelections().status){
+									<td class="members-status-column">
+										@if (member.active) {
+											<span class="bo-pill bo-pill-green">AKTIVNÍ</span>
+										} @else {
+											<span class="bo-pill">NEAKTIVNÍ</span>
+										}
+									</td>
+								}
 
 							</tr>
 						}
@@ -296,6 +308,11 @@
 				Zobrazeni všichni členové.
 				<a class="clickable" (click)="setFilterParam('active', null)">Skrýt neaktivní</a>
 			}
+			<span class="members-toggle-sep">·</span>
+			<a class="clickable members-deleted-link" routerLink="smazane">
+				<ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+				Smazaní členové
+			</a>
 		</p>
 	}
 

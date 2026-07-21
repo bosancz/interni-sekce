@@ -57,6 +57,9 @@ export class MemberResponse implements Member {
 	allergies?: HealthEntryDto[] | null;
 	@ApiPropertyOptional({ type: "string" }) insuranceCardFile?: string | null;
 
+	// Soft-delete timestamp: null for live members, set for members shown on the deleted-members page.
+	@ApiPropertyOptional({ type: "string" }) deletedAt?: Date;
+
 	// @AcEntity(GroupResponse)
 	// @ApiPropertyOptional({ type: WithLinks(GroupResponse) })
 	// group?: Group | undefined;

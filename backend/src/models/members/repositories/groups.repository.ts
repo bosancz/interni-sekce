@@ -19,7 +19,12 @@ export class GroupsRepository {
 
 		if (options.active) q.andWhere({ active: options.active });
 
+		// deleted mode lists ONLY soft-deleted groups (so the UI can offer to restore them);
+		// the active filter above does not apply here, mirroring the events "deleted" view
+		if (options.includeDeleted) q.withDeleted().andWhere("groups.deleted_at IS NOT NULL");
+
 		if (options.includeMemberCounts) {
+			// Count active children and active leaders (instruktor + vedouci) separately.
 			q.addSelect(
 				(qb: SelectQueryBuilder<Group>) =>
 					qb
@@ -27,12 +32,32 @@ export class GroupsRepository {
 						.select("COUNT(*)")
 						.from(Member, "members")
 						.where("members.groupId = groups.id")
-						.andWhere("members.deletedAt IS NULL"),
-				"groups_memberCount",
+						.andWhere("members.deletedAt IS NULL")
+						.andWhere("members.active = true")
+						.andWhere("members.role = 'dite'"),
+				"groups_childrenCount",
+			);
+
+			q.addSelect(
+				(qb: SelectQueryBuilder<Group>) =>
+					qb
+						.subQuery()
+						.select("COUNT(*)")
+						.from(Member, "members")
+						.where("members.groupId = groups.id")
+						.andWhere("members.deletedAt IS NULL")
+						.andWhere("members.active = true")
+						.andWhere("members.role IN ('instruktor', 'vedouci')"),
+				"groups_leadersCount",
 			);
 
 			const { entities, raw } = await q.getRawAndEntities();
-			return entities.map((entity, i) => Object.assign(entity, { memberCount: Number(raw[i]?.groups_memberCount ?? 0) }));
+			return entities.map((entity, i) =>
+				Object.assign(entity, {
+					childrenCount: Number(raw[i]?.groups_childrenCount ?? 0),
+					leadersCount: Number(raw[i]?.groups_leadersCount ?? 0),
+				}),
+			);
 		}
 
 		return q.getMany();
@@ -52,5 +77,13 @@ export class GroupsRepository {
 
 	async deleteGroup(id: number) {
 		await this.groupsRepository.softDelete({ id });
+	}
+
+	async restoreGroup(id: number) {
+		await this.groupsRepository.restore({ id });
+	}
+
+	async hardDeleteGroup(id: number) {
+		await this.groupsRepository.delete({ id });
 	}
 }

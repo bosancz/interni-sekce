@@ -39,4 +39,19 @@ export const GroupDeletePermission = new Permission({
 	linkTo: GroupResponse,
 
 	allowed: { admin: true },
+	applicable: ({ doc }) => !doc.deletedAt,
+});
+
+export const GroupRestorePermission = new Permission({
+	linkTo: GroupResponse,
+
+	allowed: { admin: true },
+	applicable: ({ doc }) => !!doc.deletedAt,
+});
+
+export const GroupPermanentDeletePermission = new Permission({
+	linkTo: GroupResponse,
+
+	allowed: { admin: true },
+	applicable: ({ doc }) => !!doc.deletedAt,
 });

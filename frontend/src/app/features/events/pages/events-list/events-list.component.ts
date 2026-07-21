@@ -1,31 +1,32 @@
 import { CommonModule } from "@angular/common";
-import { afterNextRender, Component, Injector, OnInit, signal } from "@angular/core";
+import { afterNextRender, Component, computed, Injector, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
 	IonAvatar,
-	IonContent,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
 	IonItem,
 	IonLabel,
-	IonIcon,
 	IonList,
-	IonPopover,
 	IonSelect,
 	IonSelectOption,
 	IonSkeletonText,
 } from "@ionic/angular/standalone";
-import { addIcons } from "ionicons";
-import { chevronDown } from "ionicons/icons";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { addOutline } from "ionicons/icons";
 import { DateTime } from "luxon";
 import { EventStatus, EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
+import { ToastService } from "src/app/core/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { EventStatusBadgeComponent } from "src/app/shared/components/event-status-badge/event-status-badge.component";
+import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
@@ -34,6 +35,7 @@ import { SDK } from "src/sdk";
 import { EventPipe } from "../../../../shared/pipes/event.pipe";
 import { GroupPipe } from "../../../../shared/pipes/group.pipe";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
+import { EventCreateModalComponent } from "../../components/event-create-modal/event-create-modal.component";
 
 @UntilDestroy()
 @Component({
@@ -47,12 +49,9 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 		FormsModule,
 		IonList,
 		IonItem,
-		IonContent,
 		IonSkeletonText,
 		IonLabel,
 		IonAvatar,
-		IonIcon,
-		IonPopover,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
 		IonSelect,
@@ -65,6 +64,7 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 		PageContentComponent,
 		PageHeaderComponent,
 		FilterComponent,
+		FilterPillComponent,
 	],
 })
 export class EventsListComponent implements OnInit {
@@ -77,8 +77,30 @@ export class EventsListComponent implements OnInit {
 
 	statuses = signal<Record<string, EventStatus>>({});
 
-	yearPopoverOpen = signal(false);
-	yearPopoverEvent = signal<Event | undefined>(undefined);
+	yearOptions = computed<FilterPillOption[]>(() =>
+		this.years().map((year) => ({ value: String(year), label: String(year) })),
+	);
+	statusOptions = computed<FilterPillOption[]>(() =>
+		Object.entries(this.statuses()).map(([key, status]) => ({
+			value: key,
+			label: status.name,
+			background: status.background,
+			foreground: status.foreground,
+		})),
+	);
+	readonly leaderOptions: FilterPillOption[] = [
+		{ value: "my", label: "Moje akce" },
+		{ value: "noleader", label: "Akce bez vedoucího" },
+	];
+
+	actions = signal<Action[]>([
+		{
+			text: "Nová akce",
+			icon: "add-outline",
+			pinned: true,
+			handler: () => this.create(),
+		},
+	]);
 
 	page = 1;
 	readonly pageSize = 50;
@@ -95,33 +117,20 @@ export class EventsListComponent implements OnInit {
 		private router: Router,
 		private route: ActivatedRoute,
 		private injector: Injector,
+		private modalService: ModalService,
+		private toasts: ToastService,
 	) {
-		addIcons({ chevronDown });
+		addIcons({ addOutline });
 	}
 
-	openYearPopover(event: Event) {
-		this.yearPopoverEvent.set(event);
-		this.yearPopoverOpen.set(true);
-	}
+	async create() {
+		const eventData = await this.modalService.componentModal(EventCreateModalComponent);
+		if (!eventData) return;
 
-	isYearSelected(year: number): boolean {
-		return this.selectedYears().includes(String(year));
-	}
+		const event = await this.api.EventsApi.createEvent(eventData).then((res) => res.data);
+		this.toasts.toast("Akce vytvořena.");
 
-	toggleYear(year: number) {
-		const yearString = String(year);
-		const selected = this.selectedYears();
-
-		this.setFilterParam(
-			"year",
-			selected.includes(yearString)
-				? selected.filter((item) => item !== yearString)
-				: [...selected, yearString],
-		);
-	}
-
-	clearYears() {
-		this.setFilterParam("year", null);
+		this.router.navigate([event.id], { relativeTo: this.route });
 	}
 
 	ngOnInit(): void {
@@ -193,6 +202,8 @@ export class EventsListComponent implements OnInit {
 				EventStatuses[status as EventStatusID] || {
 					name: status,
 					color: "#ccc",
+					background: "var(--bo-neutral-pill, #eef1f6)",
+					foreground: "var(--bo-neutral-pill-text, #6b7185)",
 				},
 			]),
 		);

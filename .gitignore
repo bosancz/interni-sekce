@@ -8,3 +8,6 @@ node_modules
 
 # local enviornment settings
 .env
+
+# dev server log (npm run dev tees FE/BE output here)
+dev.log

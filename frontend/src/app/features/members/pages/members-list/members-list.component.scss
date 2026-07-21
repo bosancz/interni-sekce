@@ -2,9 +2,12 @@
 	cursor: pointer;
 }
 
-tr.member-inactive {
-	text-decoration: line-through;
+.member-inactive {
 	color: var(--bo-muted);
+	opacity: 0.65;
+}
+ion-item.member-inactive {
+	--color: var(--bo-muted);
 }
 tr.member-paused {
 	color: var(--bo-muted);

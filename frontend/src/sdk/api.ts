@@ -29,7 +29,7 @@ export class SDK {
         FeedbackApi: SDK.FeedbackApi;
         MembersApi: SDK.MembersApi;
         PhotoGalleryApi: SDK.PhotoGalleryApi;
-        PublicApi: SDK.PublicApi;
+        PublicAPIApi: SDK.PublicAPIApi;
         RootApi: SDK.RootApi;
         StatisticsApi: SDK.StatisticsApi;
         UsersApi: SDK.UsersApi;
@@ -44,7 +44,7 @@ export class SDK {
             this.FeedbackApi = new SDK.FeedbackApi(configuration, axios!);
             this.MembersApi = new SDK.MembersApi(configuration, axios!);
             this.PhotoGalleryApi = new SDK.PhotoGalleryApi(configuration, axios!);
-            this.PublicApi = new SDK.PublicApi(configuration, axios!);
+            this.PublicAPIApi = new SDK.PublicAPIApi(configuration, axios!);
             this.RootApi = new SDK.RootApi(configuration, axios!);
             this.StatisticsApi = new SDK.StatisticsApi(configuration, axios!);
             this.UsersApi = new SDK.UsersApi(configuration, axios!);
@@ -2436,7 +2436,13 @@ export namespace SDK {
          * @type {number}
          * @memberof GroupResponse
          */
-        'memberCount'?: number;
+        'childrenCount'?: number;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupResponse
+         */
+        'leadersCount'?: number;
     }
     
         /**
@@ -2463,6 +2469,18 @@ export namespace SDK {
          * @memberof GroupResponseLinks
          */
         'deleteGroup': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof GroupResponseLinks
+         */
+        'restoreGroup': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof GroupResponseLinks
+         */
+        'permanentlyDeleteGroup': AcLink;
     }
     
         /**
@@ -2518,7 +2536,13 @@ export namespace SDK {
          * @type {number}
          * @memberof GroupResponseWithLinks
          */
-        'memberCount'?: number;
+        'childrenCount'?: number;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupResponseWithLinks
+         */
+        'leadersCount'?: number;
         /**
          * 
          * @type {GroupResponseLinks}
@@ -3213,6 +3237,12 @@ export namespace SDK {
         'insuranceCardFile'?: string | null;
         /**
          * 
+         * @type {string}
+         * @memberof MemberResponse
+         */
+        'deletedAt'?: string;
+        /**
+         * 
          * @type {Array<MemberContact>}
          * @memberof MemberResponse
          */
@@ -3287,6 +3317,18 @@ export namespace SDK {
          * @memberof MemberResponseLinks
          */
         'deleteMember': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'restoreMember': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'deleteMemberPermanent': AcLink;
     }
     
         /**
@@ -3421,6 +3463,12 @@ export namespace SDK {
          * @memberof MemberResponseWithLinks
          */
         'insuranceCardFile'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'deletedAt'?: string;
         /**
          * 
          * @type {Array<MemberContact>}
@@ -3584,6 +3632,12 @@ export namespace SDK {
          * @memberof MemberUpdateBody
          */
         'insuranceCardFile'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberUpdateBody
+         */
+        'deletedAt'?: string;
     }
     
     
@@ -3783,6 +3837,18 @@ export namespace SDK {
          * @memberof Photo
          */
         'bg': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Photo
+         */
+        'srcAlbumId': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Photo
+         */
+        'srcId': string | null;
     }
     
         /**
@@ -4088,6 +4154,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'listDeletedMembers': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'createMember': AcLink;
         /**
          * 
@@ -4095,6 +4167,36 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'exportMembersXlsx': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getProgram': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getGallery': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getGalleryRecent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getGalleryAlbum': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getGalleryAlbumPreview': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -4158,13 +4260,19 @@ export namespace SDK {
          * @type {string}
          * @memberof UpdateGroupBody
          */
-        'shortName': string;
+        'shortName'?: string;
         /**
          * 
          * @type {string}
          * @memberof UpdateGroupBody
          */
-        'name': string | null;
+        'name'?: string | null;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof UpdateGroupBody
+         */
+        'active'?: boolean;
     }
     
         /**
@@ -6707,6 +6815,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * @export
      */
@@ -6749,6 +6861,14 @@ export namespace SDK {
          */
         offset?: number
     
+        //contacts
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        contacts?: boolean
+    
         //groups
         /**
          * 
@@ -6783,20 +6903,24 @@ export namespace SDK {
     
         //age
         /**
-         *
+         * 
          * @type {Array<number>}
          * @memberof MembersApiExportMembersXlsx
          */
         age?: Array<number>
-
+    
         //active
         /**
-         *
+         * 
          * @type {boolean}
          * @memberof MembersApiExportMembersXlsx
          */
         active?: boolean
     }
+    
+    
+    
+    
     
     
     
@@ -6839,7 +6963,19 @@ export namespace SDK {
          * @memberof MembersApiListGroups
          */
         includeMemberCounts?: boolean
+    
+        //includeDeleted
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MembersApiListGroups
+         */
+        includeDeleted?: boolean
     }
+    
+    
+    
+    
     
     
     
@@ -6885,6 +7021,14 @@ export namespace SDK {
          */
         offset?: number
     
+        //contacts
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MembersApiListMembers
+         */
+        contacts?: boolean
+    
         //groups
         /**
          * 
@@ -6919,28 +7063,32 @@ export namespace SDK {
     
         //age
         /**
-         *
+         * 
          * @type {Array<number>}
          * @memberof MembersApiListMembers
          */
         age?: Array<number>
-
+    
         //active
         /**
-         *
+         * 
          * @type {boolean}
          * @memberof MembersApiListMembers
          */
         active?: boolean
-
-        //contacts
-        /**
-         *
-         * @type {boolean}
-         * @memberof MembersApiListMembers
-         */
-        contacts?: boolean
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -7289,6 +7437,48 @@ export namespace SDK {
         /**
          * 
     
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async deleteMemberPermanent(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteMemberPermanent', 'id', id)
+            
+            const localVarPath = `/api/members/{id}/permanent`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {MembersApiExportMembersXlsxQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -7318,6 +7508,10 @@ export namespace SDK {
     
             if (queryParams.offset !== undefined) {
                 requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+            if (queryParams.contacts !== undefined) {
+                requestQueryParameter['contacts'] = queryParams.contacts;
             }
     
             if (queryParams.groups) {
@@ -7527,6 +7721,42 @@ export namespace SDK {
         /**
          * 
     
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async listDeletedMembers(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/members/deleted`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<MemberResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {MembersApiListGroupsQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -7558,6 +7788,10 @@ export namespace SDK {
                 requestQueryParameter['includeMemberCounts'] = queryParams.includeMemberCounts;
             }
     
+            if (queryParams.includeDeleted !== undefined) {
+                requestQueryParameter['includeDeleted'] = queryParams.includeDeleted;
+            }
+    
     
     
             setSearchParams(requestUrlObj, requestQueryParameter);
@@ -7568,6 +7802,42 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<GroupResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async listMemberAges(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/members/ages`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<number>>(axiosRequestConfig);
         }
     
         /**
@@ -7604,6 +7874,10 @@ export namespace SDK {
                 requestQueryParameter['offset'] = queryParams.offset;
             }
     
+            if (queryParams.contacts !== undefined) {
+                requestQueryParameter['contacts'] = queryParams.contacts;
+            }
+    
             if (queryParams.groups) {
                 requestQueryParameter['groups'] = queryParams.groups;
             }
@@ -7627,57 +7901,143 @@ export namespace SDK {
             if (queryParams.active !== undefined) {
                 requestQueryParameter['active'] = queryParams.active;
             }
-
-            if (queryParams.contacts !== undefined) {
-                requestQueryParameter['contacts'] = queryParams.contacts;
-            }
-
-
-
+    
+    
+    
             setSearchParams(requestUrlObj, requestQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
+    
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
-
+            
             return this.axios.request<Array<MemberResponseWithLinks>>(axiosRequestConfig);
         }
-
+    
         /**
-         *
-
+         * 
+    
+         * @param {number} id 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
-
-        public async listMemberAges(
+        
+        public async permanentlyDeleteGroup(
+            id: number,
             options: AxiosRequestConfig = {}
         ) {
-
-            const localVarPath = `/api/members/ages`;
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('permanentlyDeleteGroup', 'id', id)
+            
+            const localVarPath = `/api/groups/{id}/permanent`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
             if (this.configuration) {
                 baseOptions = this.configuration.baseOptions;
             }
-
-            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
-
-
-
+    
+    
+    
             setSearchParams(requestUrlObj, requestQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
+    
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
-
-            return this.axios.request<Array<number>>(axiosRequestConfig);
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async restoreGroup(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('restoreGroup', 'id', id)
+            
+            const localVarPath = `/api/groups/{id}/restore`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async restoreMember(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('restoreMember', 'id', id)
+            
+            const localVarPath = `/api/members/{id}/restore`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
         }
     
         /**
@@ -7773,7 +8133,7 @@ export namespace SDK {
                 baseOptions = this.configuration.baseOptions;
             }
     
-            const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
     
@@ -8765,13 +9125,118 @@ export namespace SDK {
     
     
     
+    
     /**
-     * PublicApi - object-oriented interface
+     * Query parameters for getGallery operation in PublicAPIApi.
      * @export
-     * @class PublicApi
+     * @interface PublicAPIApiGetGalleryQueryParams
+     */
+    export interface PublicAPIApiGetGalleryQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof PublicAPIApiGetGallery
+         */
+        limit?: number
+    
+        //sort
+        /**
+         * 
+         * @type {string}
+         * @memberof PublicAPIApiGetGallery
+         */
+        sort?: string
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for getGalleryRecent operation in PublicAPIApi.
+     * @export
+     * @interface PublicAPIApiGetGalleryRecentQueryParams
+     */
+    export interface PublicAPIApiGetGalleryRecentQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof PublicAPIApiGetGalleryRecent
+         */
+        limit?: number
+    
+        //sort
+        /**
+         * 
+         * @type {string}
+         * @memberof PublicAPIApiGetGalleryRecent
+         */
+        sort?: string
+    }
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for getProgram operation in PublicAPIApi.
+     * @export
+     * @interface PublicAPIApiGetProgramQueryParams
+     */
+    export interface PublicAPIApiGetProgramQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof PublicAPIApiGetProgram
+         */
+        limit?: number
+    
+        //dateFrom
+        /**
+         * 
+         * @type {string}
+         * @memberof PublicAPIApiGetProgram
+         */
+        dateFrom?: string
+    
+        //dateTill
+        /**
+         * 
+         * @type {string}
+         * @memberof PublicAPIApiGetProgram
+         */
+        dateTill?: string
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * PublicAPIApi - object-oriented interface
+     * @export
+     * @class PublicAPIApi
      * @extends {BaseAPI}
      */
-    export class PublicApi extends BaseAPI {
+    export class PublicAPIApi extends BaseAPI {
     
         constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
             super(configuration, configuration.basePath, axios);
@@ -8780,16 +9245,340 @@ export namespace SDK {
         /**
          * 
     
+         * @param {number} id 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
-         * @memberof PublicApi
+         * @memberof PublicAPIApi
          */
         
-        public async getGallery(
+        public async downloadAlbum(
+            id: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            const localVarPath = `/api/public`;
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('downloadAlbum', 'id', id)
+            
+            const localVarPath = `/api/public/gallery/{id}/download`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {PublicAPIApiGetGalleryQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getGallery(
+            queryParams: PublicAPIApiGetGalleryQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/gallery`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.sort !== undefined) {
+                requestQueryParameter['sort'] = queryParams.sort;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getGalleryAlbum(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getGalleryAlbum', 'id', id)
+            
+            const localVarPath = `/api/public/gallery/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getGalleryAlbumPreview(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getGalleryAlbumPreview', 'id', id)
+            
+            const localVarPath = `/api/public/gallery/{id}/preview`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {PublicAPIApiGetGalleryRecentQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getGalleryRecent(
+            queryParams: PublicAPIApiGetGalleryRecentQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/gallery/recent`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.sort !== undefined) {
+                requestQueryParameter['sort'] = queryParams.sort;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {PublicAPIApiGetProgramQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getProgram(
+            queryParams: PublicAPIApiGetProgramQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/program`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.dateFrom !== undefined) {
+                requestQueryParameter['dateFrom'] = queryParams.dateFrom;
+            }
+    
+            if (queryParams.dateTill !== undefined) {
+                requestQueryParameter['dateTill'] = queryParams.dateTill;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getProgramRegistration(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getProgramRegistration', 'id', id)
+            
+            const localVarPath = `/api/public/program/{id}/registration`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {string} size 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getPublicPhotoImage(
+            id: number,
+            size: string,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getPublicPhotoImage', 'id', id)
+            assertParamExists('getPublicPhotoImage', 'size', size)
+            
+            // verify required parameter 'size' is not null or undefined
+            assertParamExists('getPublicPhotoImage', 'id', id)
+            assertParamExists('getPublicPhotoImage', 'size', size)
+            
+            const localVarPath = `/api/public/photos/{id}/image/{size}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"size"}}`, encodeURIComponent(String(size)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

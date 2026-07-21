@@ -42,9 +42,15 @@
 .hero-count {
 	position: relative;
 	z-index: 1;
-	text-align: right;
+	display: flex;
+	flex-direction: row;
+	gap: 1.2rem;
 	color: #fff;
 	line-height: 1.1;
+}
+
+.hero-stat {
+	text-align: right;
 
 	strong {
 		display: block;
@@ -74,6 +80,31 @@
 
 	&:hover {
 		box-shadow: var(--bo-shadow);
+	}
+}
+
+// deactivated teams — dimmed so they read as inactive but stay reachable for re-activation
+.group-inactive {
+	opacity: 0.5;
+}
+
+.groups-active-toggle {
+	text-align: center;
+	color: var(--bo-muted);
+}
+
+.groups-toggle-sep {
+	margin: 0 0.5rem;
+	color: var(--bo-muted);
+}
+
+.groups-deleted-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+
+	ion-icon {
+		font-size: 1rem;
 	}
 }
 

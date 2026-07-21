@@ -5,8 +5,6 @@ import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import {
 	AlertController,
 	InfiniteScrollCustomEvent,
-	IonButton,
-	IonIcon,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
 	IonItem,
@@ -26,6 +24,7 @@ import { AlbumStatuses } from "src/app/core/config/album-statuses";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
@@ -46,8 +45,6 @@ import { SDK } from "src/sdk";
 		RouterLink,
 		DatePipe,
 		KeyValuePipe,
-		IonButton,
-		IonIcon,
 		IonItem,
 		IonLabel,
 		IonList,
@@ -77,6 +74,15 @@ export class AlbumsListComponent implements ViewWillEnter, ViewWillLeave {
 	loadingArray = Array(5).fill(null);
 
 	alert?: HTMLIonAlertElement;
+
+	actions = signal<Action[]>([
+		{
+			text: "Nové album",
+			icon: "add-outline",
+			pinned: true,
+			handler: () => this.create(),
+		},
+	]);
 
 	filter: UrlParams = {};
 

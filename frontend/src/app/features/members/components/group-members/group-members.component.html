@@ -1,4 +1,4 @@
-<bo-filter [ngModel]="filter().search" (ngModelChange)="onSearchChange($event)">
+<bo-filter [search]="true" (change)="onFilterChange($event)">
 	<ion-item>
 		<ion-label>Seřadit podle</ion-label>
 		<ion-select [ngModel]="sortField()" (ngModelChange)="sortField.set($event); sortMembers()" name="sortField">

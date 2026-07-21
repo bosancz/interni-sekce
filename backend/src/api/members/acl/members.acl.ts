@@ -16,6 +16,15 @@ export const MembersExportPermission = new Permission<void>({
 	inherit: MembersListPermission,
 });
 
+export const MembersDeletedListPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: MemberResponse,
+
+	allowed: {
+		vedouci: true,
+	},
+});
+
 export const MemberCreatePermission = new Permission<void>({
 	linkTo: RootResponse,
 	allowed: {
@@ -40,6 +49,20 @@ export const MemberUpdatePermission = new Permission({
 });
 
 export const MemberDeletePermission = new Permission({
+	linkTo: MemberResponse,
+	allowed: {
+		vedouci: true,
+	},
+});
+
+export const MemberRestorePermission = new Permission({
+	linkTo: MemberResponse,
+	allowed: {
+		vedouci: true,
+	},
+});
+
+export const MemberDeletePermanentPermission = new Permission({
 	linkTo: MemberResponse,
 	allowed: {
 		vedouci: true,

@@ -120,7 +120,11 @@ export class PublicController {
 	}
 
 	@Get("photos/:id/image/:size")
-	async getPhotoImage(@Param("id") id: number, @Param("size") size: PhotoSizes, @Res() res: Response): Promise<void> {
+	async getPublicPhotoImage(
+		@Param("id") id: number,
+		@Param("size") size: PhotoSizes,
+		@Res() res: Response,
+	): Promise<void> {
 		if (!Object.values(PhotoSizes).includes(size)) throw new NotFoundException("Unknown image size.");
 
 		const photo = await this.photos.getPhoto(id);

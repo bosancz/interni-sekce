@@ -1,7 +1,7 @@
 import { DatePipe, KeyValue, KeyValuePipe } from "@angular/common";
-import { AfterViewInit, Component, OnInit, signal } from "@angular/core";
+import { AfterViewInit, Component, computed, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
 	IonButton,
@@ -18,18 +18,31 @@ import {
 	IonSelect,
 	IonSelectOption,
 	IonSkeletonText,
+	IonToggle,
 	ViewWillEnter,
 } from "@ionic/angular/standalone";
-import { UntilDestroy } from "@ngneat/until-destroy";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline, downloadOutline, eyeOutline } from "ionicons/icons";
+import { addOutline, downloadOutline, eyeOutline, trashOutline } from "ionicons/icons";
+
+// Custom "columns" glyph (outlined rectangle split into three columns) — Ionicons has no columns icon.
+// Must be a `data:image/svg+xml;utf8,` URI: ionicons parses that via DOMParser, whereas a raw SVG
+// string would be treated as a URL and fetched (failing silently → invisible icon).
+const COLUMNS_ICON =
+	"data:image/svg+xml;utf8," +
+	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
+	'<rect x="64" y="80" width="384" height="352" rx="24" fill="none" stroke="currentColor" stroke-width="32"/>' +
+	'<line x1="192" y1="80" x2="192" y2="432" stroke="currentColor" stroke-width="32"/>' +
+	'<line x1="320" y1="80" x2="320" y2="432" stroke="currentColor" stroke-width="32"/></svg>';
 import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
+import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
 import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
@@ -59,6 +72,7 @@ import { MemberCreateModalComponent } from "../../components/member-create-modal
 		IonButton,
 		IonPopover,
 		IonCheckbox,
+		IonToggle,
 		IonIcon,
 		AdminTableComponent,
 		FormsModule,
@@ -70,6 +84,7 @@ import { MemberCreateModalComponent } from "../../components/member-create-modal
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
 		DatePipe,
+		FilterPillComponent,
 	],
 })
 export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnter {
@@ -83,7 +98,41 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	selectedMembership = signal<string[]>([]);
 	selectedAges = signal<string[]>([]);
 
+	// Only active groups are offered in the Oddíl filter, unless "show inactive" is on. A group that
+	// is already selected stays visible even when inactive, so the pill keeps its label.
+	groupOptions = computed<FilterPillOption[]>(() => {
+		const showInactive = this.showInactive();
+		const selected = this.selectedGroups();
+		return this.groups()
+			.filter((group) => showInactive || group.active || selected.includes(String(group.id)))
+			.map((group) => ({
+				value: String(group.id),
+				label: group.name ?? group.shortName,
+				shortLabel: group.shortName ?? group.name,
+				color: this.groupPipe.transform(group.id, "color"),
+			}));
+	});
+	readonly roleOptions: FilterPillOption[] = Object.entries(MemberRoles).map(([key, role]) => ({
+		value: key,
+		label: role.title,
+	}));
+
 	loadingItems = new Array(10).fill(null);
+
+	actions = signal<Action[]>([
+		{
+			text: "Nový člen",
+			icon: "add-outline",
+			pinned: true,
+			handler: () => this.create(),
+		},
+		{
+			text: "Export",
+			icon: "download-outline",
+			pinned: true,
+			handler: () => this.export(),
+		},
+	]);
 
 	filter: FilterData = {};
 
@@ -104,11 +153,21 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		private toasts: ToastService,
 		private platformService: PlatformService,
 		private modalService: ModalService,
+		private groupPipe: GroupPipe,
 	) {
-		addIcons({ addOutline, downloadOutline, eyeOutline });
+		addIcons({ addOutline, downloadOutline, eyeOutline, trashOutline, columns: COLUMNS_ICON });
 	}
 
-	ngOnInit() {}
+	// True when inactive members (and groups) are currently shown (filter "active" === "all").
+	showInactive = signal(false);
+
+	ngOnInit() {
+		// All filter state (groups/roles/membership/age/search/active) is written to the URL via
+		// setFilterParam, so drive loading from the query params directly rather than the
+		// FilterComponent's `(change)` output (which only reflects its own projected NgModel
+		// controls — the pills are now plain buttons and no longer register there).
+		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onFilterChange(params));
+	}
 
 	ngAfterViewInit(): void {
 		this.platformService.isPortrait.subscribe((isPortrait) => {
@@ -160,17 +219,13 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		this.toasts.toast("Zkopírováno do schránky.");
 	}
 
-	onFilterChange(filter: FilterData) {
-		// FIXME: do not use as any
-		// `active` is set directly as a URL query param via setFilterParam (the checkbox
-		// lives in the eye popover, outside <bo-filter>), so it is not a bo-filter control
-		// and never comes back through the emitted `filter`. Pull it from the current query
-		// params so the default (active-only) and the show/hide-inactive toggle work.
-		this.filter = { ...filter, active: this.route.snapshot.queryParams["active"] ?? null };
-		this.selectedGroups.set(this.normalizeFilterValueToArray((filter as any)["groups"]));
-		this.selectedRoles.set(this.normalizeFilterValueToArray((filter as any)["roles"]));
-		this.selectedMembership.set(this.normalizeFilterValueToArray((filter as any)["membership"]));
-		this.selectedAges.set(this.normalizeFilterValueToArray((filter as any)["age"]));
+	onFilterChange(params: Params) {
+		this.filter = { ...params };
+		this.selectedGroups.set(this.normalizeFilterValueToArray(params["groups"]));
+		this.selectedRoles.set(this.normalizeFilterValueToArray(params["roles"]));
+		this.selectedMembership.set(this.normalizeFilterValueToArray(params["membership"]));
+		this.selectedAges.set(this.normalizeFilterValueToArray(params["age"]));
+		this.showInactive.set(((params["active"] as string) || "active") === "all");
 		this.loadMembers(this.filter);
 	}
 
@@ -250,6 +305,9 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	private async loadGroups() {
 		const groups = await this.api.MembersApi.listGroups().then((res) => res.data);
+		groups.sort((a, b) =>
+			(a.name ?? a.shortName).localeCompare(b.name ?? b.shortName, undefined, { numeric: true }),
+		);
 		this.groups.set(groups);
 	}
 
@@ -289,13 +347,14 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			name: true,
 			group: true,
 			role: true,
-			age: false,
+			age: true,
 			membership: false,
 			birthday: false,
 			addressCity: false,
 			addressStreet: false,
 			firstTelephone: false,
 			firstEmail: false,
+			status: false,
 		});
 	}
 
@@ -324,6 +383,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			addressStreet: "Ulice",
 			firstTelephone: "První telefon",
 			firstEmail: "První email",
+			status: "Stav",
 		};
 
 		return labels[key] || key;

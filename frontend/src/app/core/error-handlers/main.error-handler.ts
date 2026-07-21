@@ -2,12 +2,16 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { ErrorHandler, Injectable, Injector } from "@angular/core";
 import { NavController } from "@ionic/angular/standalone";
 import { ToastService } from "src/app/core/services/toast.service";
+import { Logger } from "src/logger";
 
 @Injectable()
 export class MainErrorHandler implements ErrorHandler {
+	private readonly logger = new Logger("MainErrorHandler");
 	constructor(private injector: Injector) {}
 
 	handleError(err: any) {
+		this.logger.error(err);
+
 		const navController = this.injector.get(NavController);
 		const toastService = this.injector.get(ToastService);
 
@@ -32,8 +36,6 @@ export class MainErrorHandler implements ErrorHandler {
 				propagateError = false;
 			}
 		}
-
-		console.error("Error", err);
 
 		if (propagateError) {
 			// TODO: open modal or page to propagate error to the user and enable reporting
