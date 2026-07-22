@@ -37,6 +37,8 @@
 		[rows]="events()"
 		[rowLink]="rowLink"
 		[rowId]="rowId"
+		[actions]="eventActions"
+		[actionsHeader]="rowActionsHeader"
 	>
 		<admin-table-column header="Název" [primary]="true" cellClass="events-name-column" headerClass="align-middle events-name-column">
 			<ng-container *adminCell="let event">{{ event.name }}</ng-container>
