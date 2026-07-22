@@ -5,6 +5,7 @@ import { PaginationOptions } from "src/helpers/pagination";
 import { Member } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
 import { Brackets, Repository } from "typeorm";
+import { PhotoFace } from "../entities/photo-face.entity";
 import { Photo } from "../entities/photo.entity";
 import { PhotosFilesService } from "../services/photos-files.service";
 
@@ -16,6 +17,7 @@ export interface GetPhotosOptions extends PaginationOptions {
 export class PhotosRepository {
 	constructor(
 		@InjectRepository(Photo) private repository: Repository<Photo>,
+		@InjectRepository(PhotoFace) private facesRepository: Repository<PhotoFace>,
 		private photosFiles: PhotosFilesService,
 	) {}
 
@@ -104,6 +106,9 @@ export class PhotosRepository {
 	async deletePhoto(id: Photo["id"]) {
 		const photo = await this.repository.findOneBy({ id });
 		if (!photo) return;
+
+		// photo_faces.photo_id is ON DELETE RESTRICT, so the tagged faces have to go first
+		await this.facesRepository.delete({ photoId: id });
 
 		await this.repository.delete(id);
 		await this.photosFiles.deletePhotoFiles(photo);
