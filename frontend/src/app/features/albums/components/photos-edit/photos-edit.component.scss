@@ -82,6 +82,31 @@ ion-toolbar {
 	object-fit: contain;
 }
 
+.image-error {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 2rem;
+	text-align: center;
+	color: rgba(255, 255, 255, 0.85);
+
+	ion-icon {
+		font-size: 4rem;
+		opacity: 0.6;
+	}
+
+	strong {
+		font-size: 1.1rem;
+	}
+
+	p {
+		margin: 0;
+		opacity: 0.7;
+	}
+}
+
 .image-viewer .nav {
 	position: absolute;
 	top: 50%;

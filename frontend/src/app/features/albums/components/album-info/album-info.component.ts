@@ -1,9 +1,8 @@
 import { DatePipe } from "@angular/common";
 import { Component, input, output } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { IonList } from "@ionic/angular/standalone";
+import { IonButton, IonIcon, IonList } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { calendarOutline, textOutline } from "ionicons/icons";
+import { calendarOutline, closeOutline, textOutline } from "ionicons/icons";
 import { EditButtonDateRangeComponent } from "src/app/shared/components/edit-button-date-range/edit-button-date-range.component";
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
 import { EditButtonTextComponent } from "src/app/shared/components/edit-button-text/edit-button-text.component";
@@ -11,7 +10,7 @@ import { ItemComponent } from "src/app/shared/components/item/item.component";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { MarkdownPipe } from "src/app/shared/pipes/markdown.pipe";
 import { SDK } from "src/sdk";
-import { EventSelectorComponent } from "../event-selector/event-selector.component";
+import { EditButtonEventComponent } from "../edit-button-event/edit-button-event.component";
 
 @Component({
 	selector: "bo-album-info",
@@ -19,12 +18,13 @@ import { EventSelectorComponent } from "../event-selector/event-selector.compone
 	styleUrl: "./album-info.component.scss",
 
 	imports: [
-		FormsModule,
 		IonList,
+		IonButton,
+		IonIcon,
 		DatePipe,
 		DateRangePipe,
 		ItemComponent,
-		EventSelectorComponent,
+		EditButtonEventComponent,
 		EditButtonDateRangeComponent,
 		EditButtonTextComponent,
 		EditButtonMarkdownComponent,
@@ -36,6 +36,6 @@ export class AlbumInfoComponent {
 	update = output<SDK.AlbumUpdateBody>();
 
 	constructor() {
-		addIcons({ calendarOutline, textOutline });
+		addIcons({ calendarOutline, textOutline, closeOutline });
 	}
 }

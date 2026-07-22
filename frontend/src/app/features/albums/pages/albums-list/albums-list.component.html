@@ -1,95 +1,80 @@
 <bo-page-header title="Galerie" backUrl="/" [actions]="actions()" />
 
 <bo-page-content>
-	<bo-filter [search]="true" [showButtonMobileOnly]="true" (change)="onFilterChange($event)">
-		<ion-item>
-			<ion-select name="year" ngModel label="Rok">
-				<ion-select-option [value]="null">všechny</ion-select-option>
-				@for (year of years(); track year) {
-					<ion-select-option [value]="year">{{ year }}</ion-select-option>
-				}
-			</ion-select>
-		</ion-item>
+	<bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
+		@if (isDesktop()) {
+			<!-- Desktop: filter pills laid out inline in the toolbar. -->
+			<div toolbar-actions slot="end" class="albums-filter-actions">
+				<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+			</div>
+		} @else {
+			<!-- Mobile: the same filter pills collected inside the filter modal, plus a sort control
+			     (the sortable table headers aren't available in the mobile grid view). -->
+			<div class="albums-filter-modal">
+				<div class="albums-filter-modal-pills">
+					<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+				</div>
 
-		<ion-item>
-			<ion-select name="status" ngModel label="Stav zveřejnění">
-				<ion-select-option [value]="null">všechny</ion-select-option>
-				@for (status of statuses | keyvalue; track status.key) {
-					<ion-select-option [value]="status.key">
-						{{ status.value.name }}
-					</ion-select-option>
-				}
-			</ion-select>
-		</ion-item>
+				<bo-sort-select
+					[options]="sortOptions"
+					[sort]="sortColumn()"
+					[order]="sortOrder()"
+					(sortChange)="onSortChange($event)"
+				/>
+			</div>
+		}
 	</bo-filter>
 
+	<!-- Filter pills, shared between the desktop toolbar and the mobile filter modal. -->
+	<ng-template #filterPills>
+		<bo-filter-pill
+			label="Rok"
+			[columns]="3"
+			[options]="yearOptions()"
+			[selected]="selectedYears()"
+			(selectedChange)="setFilterParam('year', $event)"
+		/>
+
+		<bo-filter-pill
+			label="Stav"
+			[options]="statusOptions()"
+			[selected]="selectedStatuses()"
+			(selectedChange)="setFilterParam('status', $event)"
+		/>
+	</ng-template>
+
 	@if (view() === 'table') {
-		<admin-table [class]="'albums-table'">
-			<thead>
-				<tr>
-					<th class="align-middle albums-name-column">Název alba</th>
-					<th class="albums-date-column">
-						<div class="column-filter">
-							<ion-select
-								label="Datum"
-								interface="popover"
-								justify="start"
-								[ngModel]="selectedYear()"
-								(ngModelChange)="setFilterParam('year', $event)"
-							>
-								<ion-select-option [value]="null">všechny</ion-select-option>
-								@for (year of years(); track year) {
-									<ion-select-option [value]="year">{{ year }}</ion-select-option>
-								}
-							</ion-select>
-						</div>
-					</th>
-					<th class="albums-status-column">
-						<div class="column-filter">
-							<ion-select
-								label="Stav"
-								interface="popover"
-								justify="start"
-								[ngModel]="selectedStatus()"
-								(ngModelChange)="setFilterParam('status', $event)"
-							>
-								<ion-select-option [value]="null">všechny</ion-select-option>
-								@for (status of statuses | keyvalue; track status.key) {
-									<ion-select-option [value]="status.key">
-										{{ status.value.name }}
-									</ion-select-option>
-								}
-							</ion-select>
-						</div>
-					</th>
-					<th class="align-middle albums-published-column">Publikováno</th>
-				</tr>
-			</thead>
-			<tbody>
-				@if (albums() !== undefined) {
-					@for (album of albums()!; track album.id) {
-						<tr [routerLink]="'' + album.id">
-							<td class="albums-name-column">{{ album.name }}</td>
-							<td class="date albums-date-column">{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }}</td>
-							<td class="albums-status-column">
-								<span class="bo-pill" [class.bo-pill-green]="album.status === 'public'">
-									{{ album | album: "status" }}
-								</span>
-							</td>
-							<td class="albums-published-column">{{ album.datePublished | date: "d. M. y" }}</td>
-						</tr>
-					}
-				} @else {
-					@for (item of loadingArray; track $index) {
-						<tr>
-							<td><ion-skeleton-text animated></ion-skeleton-text></td>
-							<td><ion-skeleton-text animated style="width: 40%"></ion-skeleton-text></td>
-							<td><ion-skeleton-text animated></ion-skeleton-text></td>
-							<td><ion-skeleton-text animated></ion-skeleton-text></td>
-						</tr>
-					}
-				}
-			</tbody>
+		<admin-table
+			[class]="'albums-table'"
+			[display]="'table'"
+			[rows]="albums()"
+			[loading]="albums() === undefined"
+			[rowLink]="rowLink"
+			[sort]="sortColumn()"
+			[order]="sortOrder()"
+			(sortChange)="onSortChange($event)"
+		>
+			<admin-table-column header="Název alba" sort="name" [primary]="true" cellClass="albums-name-column" headerClass="align-middle albums-name-column">
+				<ng-container *adminCell="let album">{{ album.name }}</ng-container>
+			</admin-table-column>
+
+			<admin-table-column header="Datum" sort="dateFrom" cellClass="date albums-date-column" headerClass="align-middle albums-date-column">
+				<ng-container *adminCell="let album">
+					{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }}
+				</ng-container>
+			</admin-table-column>
+
+			<admin-table-column header="Stav" sort="status" cellClass="albums-status-column" headerClass="align-middle albums-status-column">
+				<ng-container *adminCell="let album">
+					<span class="bo-pill" [class.bo-pill-green]="album.status === 'public'">
+						{{ album | album: "status" }}
+					</span>
+				</ng-container>
+			</admin-table-column>
+
+			<admin-table-column header="Publikováno" sort="datePublished" cellClass="albums-published-column" headerClass="align-middle albums-published-column">
+				<ng-container *adminCell="let album">{{ album.datePublished | date: "d. M. y" }}</ng-container>
+			</admin-table-column>
 		</admin-table>
 	}
 

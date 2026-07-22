@@ -1,7 +1,7 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute, Router } from "@angular/router";
-import { AlertController, IonButton, IonIcon, ModalController, ViewWillLeave } from "@ionic/angular/standalone";
+import { AlertController, IonButton, IonIcon, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
@@ -11,8 +11,6 @@ import {
 	createOutline,
 	eyeOffOutline,
 	eyeOutline,
-	imagesOutline,
-	informationCircleOutline,
 	openOutline,
 	save,
 	swapVerticalOutline,
@@ -21,14 +19,12 @@ import {
 	trashOutline,
 } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
-import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
-import { TabComponent } from "src/app/shared/components/tab/tab.component";
-import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { SDK } from "src/sdk";
 import { AlbumGalleryComponent } from "../../components/album-gallery/album-gallery.component";
 import { AlbumInfoComponent } from "../../components/album-info/album-info.component";
@@ -44,9 +40,6 @@ import { PhotosUploadComponent } from "../../components/photos-upload/photos-upl
 	imports: [
 		PageHeaderComponent,
 		PageContentComponent,
-		PageFooterComponent,
-		TabsComponent,
-		TabComponent,
 		AlbumInfoComponent,
 		AlbumGalleryComponent,
 		IonButton,
@@ -57,8 +50,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
 
 	photos = signal<SDK.PhotoResponseWithLinks[] | undefined>(undefined);
-
-	view = signal<"info" | "gallery">("info");
 
 	photosView = signal<"gallery" | "manage">("gallery");
 
@@ -71,12 +62,13 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	headerActions = computed<Action[]>(() => {
 		const album = this.album();
 		if (!album) return [];
-		if (this.isDesktop() || this.view() === "info") return this.getAlbumActions(album);
-		return this.getGalleryActions();
+		// on desktop the gallery controls live inline above the gallery; on mobile
+		// they are folded into the header actions menu alongside the album actions
+		if (this.isDesktop()) return this.getAlbumActions(album);
+		return [...this.getAlbumActions(album), ...this.getGalleryActions()];
 	});
 
 	alert?: HTMLIonAlertElement;
-	uploadModal?: HTMLIonModalElement;
 	photosModal?: HTMLIonModalElement;
 
 	constructor(
@@ -85,7 +77,7 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		private api: ApiService,
 		private toastService: ToastService,
 		private alertController: AlertController,
-		private modalController: ModalController,
+		private modalService: ModalService,
 		public platformService: PlatformService,
 	) {
 		addIcons({
@@ -98,8 +90,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 			createOutline,
 			save,
 			swapVerticalOutline,
-			imagesOutline,
-			informationCircleOutline,
 			closeOutline,
 			calendarOutline,
 			textOutline,
@@ -110,21 +100,10 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {
 			if (this.album()?.id !== params["album"]) this.loadAlbum(params["album"]);
 		});
-
-		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => {
-			if (params.photo && !this.photosModal) {
-				const photo = this.photos()?.find((item) => String(item.id) === String(params.photo));
-				if (photo) this.openPhoto(photo);
-			}
-			if (!params.photo && this.photosModal) {
-				this.photosModal.dismiss();
-			}
-		});
 	}
 
 	ionViewWillLeave() {
 		this.alert?.dismiss();
-		this.uploadModal?.dismiss();
 		this.photosModal?.dismiss();
 	}
 
@@ -157,29 +136,34 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	}
 
 	onGalleryClick(photo: SDK.PhotoResponseWithLinks) {
-		this.router.navigate([], { queryParams: { photo: photo.id }, queryParamsHandling: "merge" });
+		this.openPhoto(photo);
 	}
 
 	onListClick(event: CustomEvent<SDK.PhotoResponseWithLinks | undefined>) {
 		if (this.selecting()) return;
 		if (!event.detail) return;
-		this.router.navigate([], { queryParams: { photo: event.detail.id }, queryParamsHandling: "merge" });
+		this.openPhoto(event.detail);
 	}
 
 	async openPhoto(photo: SDK.PhotoResponseWithLinks) {
-		if (this.photosModal) this.photosModal.dismiss();
+		if (this.photosModal) return;
 
 		const photos = this.photos();
 		const originalCount = photos?.length;
 
-		this.photosModal = await this.modalController.create({
-			component: PhotosEditComponent,
-			componentProps: {
-				photos: photos,
-			},
-			backdropDismiss: false,
-			cssClass: "ion-modal-lg",
+		// reflect the open photo in the URL for deep-linking, without adding a
+		// history entry — back-to-close is provided by ModalService
+		this.router.navigate([], {
+			queryParams: { photo: photo.id },
+			queryParamsHandling: "merge",
+			replaceUrl: true,
 		});
+
+		this.photosModal = await this.modalService.modal(
+			PhotosEditComponent,
+			{ photos },
+			{ backdropDismiss: false, cssClass: "ion-modal-lg" },
+		);
 
 		this.photosModal.onWillDismiss().then(() => {
 			this.photosModal = undefined;
@@ -190,8 +174,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 				this.loadAlbum(album.id); // album must be present when closing modal
 			}
 		});
-
-		this.photosModal.present();
 	}
 
 	// --- Ordering -----------------------------------------------------------
@@ -282,19 +264,13 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		const album = this.album();
 		if (!album) return;
 
-		if (this.uploadModal) this.uploadModal.dismiss();
+		const uploaded = await this.modalService.componentModal(
+			PhotosUploadComponent,
+			{ album },
+			{ backdropDismiss: false, cssClass: "dialog-list" },
+		);
 
-		this.uploadModal = await this.modalController.create({
-			component: PhotosUploadComponent,
-			componentProps: { album },
-			backdropDismiss: false,
-		});
-
-		this.uploadModal.onDidDismiss().then((event) => {
-			if (event.data) this.loadAlbum(album.id);
-		});
-
-		this.uploadModal.present();
+		if (uploaded) this.loadAlbum(album.id);
 	}
 
 	private async publish() {

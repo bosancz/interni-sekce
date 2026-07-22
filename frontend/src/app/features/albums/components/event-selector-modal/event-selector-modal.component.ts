@@ -15,6 +15,7 @@ import {
 	ModalController,
 } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
+import { InputModalComponent } from "src/app/core/services/modal.service";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
 
@@ -38,7 +39,7 @@ import { SDK } from "src/sdk";
 		DateRangePipe,
 	],
 })
-export class EventSelectorModalComponent implements OnInit {
+export class EventSelectorModalComponent extends InputModalComponent<SDK.EventResponseWithLinks> implements OnInit {
 	events = signal<SDK.EventResponseWithLinks[] | undefined>(undefined);
 
 	pageSize = 20;
@@ -47,8 +48,10 @@ export class EventSelectorModalComponent implements OnInit {
 
 	constructor(
 		private api: ApiService,
-		private modalController: ModalController,
-	) {}
+		modalController: ModalController,
+	) {
+		super(modalController);
+	}
 
 	ngOnInit(): void {
 		this.loadEvents();
@@ -84,9 +87,5 @@ export class EventSelectorModalComponent implements OnInit {
 
 		const currentEvents = this.events();
 		this.events.set(currentEvents ? [...currentEvents, ...newEvents] : newEvents);
-	}
-
-	close(event?: SDK.EventResponseWithLinks) {
-		this.modalController.dismiss(event ? { event } : undefined);
 	}
 }

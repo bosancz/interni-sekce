@@ -20,7 +20,13 @@ import {
 	ViewWillLeave,
 } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { checkmarkOutline, chevronBackOutline, chevronForwardOutline, createOutline } from "ionicons/icons";
+import {
+	checkmarkOutline,
+	chevronBackOutline,
+	chevronForwardOutline,
+	createOutline,
+	imageOutline,
+} from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -53,6 +59,9 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 	// Set via Ionic modal componentProps (Object.assign), so it must be a plain property, not a signal input
 	@Input() photos!: SDK.PhotoResponseWithLinks[];
 
+	// true when the current photo's image failed to load, so we show a message instead
+	imageError = signal(false);
+
 	editingCaption = signal(false);
 
 	infoOpen = signal(false);
@@ -78,7 +87,7 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 		private router: Router,
 		private platformService: PlatformService,
 	) {
-		addIcons({ createOutline, checkmarkOutline, chevronBackOutline, chevronForwardOutline });
+		addIcons({ createOutline, checkmarkOutline, chevronBackOutline, chevronForwardOutline, imageOutline });
 	}
 
 	ngOnInit(): void {
@@ -161,6 +170,7 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 
 		const photo = photos[index];
 		this.currentIndex.set(index);
+		this.imageError.set(false);
 		this.photo.set(photo);
 
 		this.router.navigate([], { queryParams: { photo: photo.id }, queryParamsHandling: "merge", replaceUrl: true });

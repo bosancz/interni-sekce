@@ -69,12 +69,21 @@
 				</ion-button>
 			}
 
-			<img
-				class="image"
-				[src]="photo() | photoImageUrl: 'big'"
-				[style.background-color]="photo()!.bg"
-				[alt]="photo()!.caption || photo()!.name"
-			/>
+			@if (!imageError()) {
+				<img
+					class="image"
+					[src]="photo() | photoImageUrl: 'big'"
+					[style.background-color]="photo()!.bg"
+					[alt]="photo()!.caption || photo()!.name"
+					(error)="imageError.set(true)"
+				/>
+			} @else {
+				<div class="image-error">
+					<ion-icon name="image-outline"></ion-icon>
+					<strong>Fotku se nepodařilo načíst</strong>
+					<p>Zkuste to prosím později.</p>
+				</div>
+			}
 
 			@if (isLg() && currentIndex() < photos.length - 1) {
 				<ion-button class="nav next" fill="clear" (click)="nextPhoto()">

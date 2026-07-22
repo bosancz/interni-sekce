@@ -26,6 +26,7 @@ import {
 import { addIcons } from "ionicons";
 import { trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { InputModalComponent } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { PrettyBytesPipe } from "src/app/shared/pipes/pretty-bytes.pipe";
 import { Config } from "src/config";
@@ -57,7 +58,7 @@ interface PhotoUploadItem {
 		PrettyBytesPipe,
 	],
 })
-export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PhotosUploadComponent extends InputModalComponent<boolean> implements OnInit, AfterViewInit, OnDestroy {
 	// Set via Ionic modal componentProps (Object.assign), so it must be a plain property, not a signal input
 	@Input() album!: SDK.AlbumResponseWithLinks;
 
@@ -83,11 +84,12 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 	constructor(
 		private api: ApiService,
 		private http: HttpClient,
-		private modalController: ModalController,
+		modalController: ModalController,
 		private platformService: PlatformService,
 		private cdRef: ChangeDetectorRef,
 		private config: Config,
 	) {
+		super(modalController);
 		addIcons({ trashOutline });
 	}
 
@@ -161,10 +163,6 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 	}
 
-	close() {
-		this.modalController.dismiss(false);
-	}
-
 	async uploadPhotos(album: SDK.AlbumResponseWithLinks) {
 		this.uploading.set(true);
 		this.preventExit();
@@ -192,7 +190,7 @@ export class PhotosUploadComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.uploading.set(false);
 		this.allowExit();
 
-		this.modalController.dismiss(true);
+		this.submit.emit(true);
 	}
 
 	async uploadPhoto(album: SDK.AlbumResponseWithLinks, uploadItem: PhotoUploadItem): Promise<void> {

@@ -18,37 +18,26 @@
 }
 
 <bo-page-content [padding]="true">
-	<div [class.d-none]="view() !== 'info'" class="d-lg-block">
-		<bo-album-info [album]="album()" (update)="updateAlbum($event)" />
-	</div>
+	<bo-album-info [album]="album()" (update)="updateAlbum($event)" />
 
-	<div [class.d-none]="view() !== 'gallery'" class="d-lg-block">
-		<h2 class="d-none d-lg-block">Galerie</h2>
+	<h2>Galerie</h2>
 
-		<bo-album-gallery
-			[photos]="photos()"
-			[view]="photosView()"
-			[selecting]="selecting()"
-			[selectedPhotos]="selectedPhotos()"
-			(upload)="uploadPhotos()"
-			(viewChange)="photosView.set($event)"
-			(sortDate)="sortByDate()"
-			(sortName)="sortByName()"
-			(selectingStart)="startSelecting()"
-			(selectingCancel)="cancelSelecting()"
-			(deleteSelected)="deleteSelected()"
-			(selectedPhotosChange)="selectedPhotos.set($event)"
-			(reorder)="onReorder($event)"
-			(photoClick)="onGalleryClick($event)"
-			(listClick)="onListClick($event)"
-			(longPress)="onLongPress($event)"
-		/>
-	</div>
+	<bo-album-gallery
+		[photos]="photos()"
+		[view]="photosView()"
+		[selecting]="selecting()"
+		[selectedPhotos]="selectedPhotos()"
+		(upload)="uploadPhotos()"
+		(viewChange)="photosView.set($event)"
+		(sortDate)="sortByDate()"
+		(sortName)="sortByName()"
+		(selectingStart)="startSelecting()"
+		(selectingCancel)="cancelSelecting()"
+		(deleteSelected)="deleteSelected()"
+		(selectedPhotosChange)="selectedPhotos.set($event)"
+		(reorder)="onReorder($event)"
+		(photoClick)="onGalleryClick($event)"
+		(listClick)="onListClick($event)"
+		(longPress)="onLongPress($event)"
+	/>
 </bo-page-content>
-
-<bo-page-footer class="d-lg-none">
-	<bo-tabs defaultTab="info" (change)="view.set($any($event))">
-		<bo-tab name="info" label="Info" icon="information-circle-outline"></bo-tab>
-		<bo-tab name="gallery" label="Galerie" icon="images-outline"></bo-tab>
-	</bo-tabs>
-</bo-page-footer>

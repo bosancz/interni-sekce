@@ -5,14 +5,14 @@
 		(ionInput)="searchEvents($any($event).detail.value)"
 	></ion-searchbar>
 	<ion-buttons slot="end">
-		<ion-button (click)="close()">Zrušit</ion-button>
+		<ion-button (click)="close.emit()">Zrušit</ion-button>
 	</ion-buttons>
 </ion-toolbar>
 
 <ion-content>
 	<ion-list>
 		@for (event of events() ?? []; track event.id) {
-			<ion-item [button]="true" (click)="close(event)">
+			<ion-item [button]="true" (click)="submit.emit(event)">
 				<ion-label>
 					<h3>{{ event.name }}</h3>
 					<p>{{ [event.dateFrom, event.dateTill] | dateRange }}</p>

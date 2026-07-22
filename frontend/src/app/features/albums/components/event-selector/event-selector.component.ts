@@ -1,17 +1,8 @@
-import {
-	AfterViewInit,
-	Component,
-	ElementRef,
-	forwardRef,
-	input,
-	OnDestroy,
-	OnInit,
-	output,
-	signal,
-} from "@angular/core";
+import { AfterViewInit, Component, ElementRef, forwardRef, input, OnInit, output, signal } from "@angular/core";
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { IonInput, ModalController } from "@ionic/angular/standalone";
+import { IonInput } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
 import { EventSelectorModalComponent } from "../event-selector-modal/event-selector-modal.component";
@@ -29,14 +20,12 @@ import { EventSelectorModalComponent } from "../event-selector-modal/event-selec
 		},
 	],
 })
-export class EventSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {
+export class EventSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit {
 	value = signal<SDK.EventResponseWithLinks["id"] | null | undefined>(undefined);
 	event = signal<SDK.EventResponseWithLinks | undefined>(undefined);
 
 	placeholder = input<string>();
 	eventOutput = output<SDK.EventResponseWithLinks>();
-
-	modal?: HTMLIonModalElement;
 
 	/* ControlValueAccessor */
 	onChange?: (value: SDK.EventResponseWithLinks["id"] | null) => void;
@@ -46,7 +35,7 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 	disabled = signal(false);
 
 	constructor(
-		private modalController: ModalController,
+		private modalService: ModalService,
 		private api: ApiService,
 		private elRef: ElementRef<HTMLElement>,
 	) {}
@@ -55,10 +44,6 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 
 	ngAfterViewInit() {
 		this.emitIonStyle();
-	}
-
-	ngOnDestroy() {
-		this.modal?.dismiss();
 	}
 
 	private emitIonStyle() {
@@ -84,15 +69,11 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 	}
 
 	async openModal() {
-		this.modal = await this.modalController.create({
-			component: EventSelectorModalComponent,
+		const event = await this.modalService.componentModal(EventSelectorModalComponent, undefined, {
+			cssClass: "dialog-list",
 		});
 
-		this.modal.onDidDismiss().then((result) => {
-			if (result.data?.event !== undefined) this.selectEvent(result.data?.event ?? null);
-		});
-
-		this.modal.present();
+		if (event) this.selectEvent(event);
 	}
 
 	// user-initiated selection: update the displayed event AND notify the form / parent

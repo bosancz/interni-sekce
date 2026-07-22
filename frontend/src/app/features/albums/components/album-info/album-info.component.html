@@ -31,11 +31,28 @@
 	</bo-item>
 
 	<bo-item label="Akce" [loading]="!album()" lines="inset">
-		<bo-event-selector
-			placeholder="Vyberte akci v programu"
-			[ngModel]="album()?.eventId"
-			(ngModelChange)="update.emit({ eventId: $event })"
-		></bo-event-selector>
+		@if (album()?.event; as event) {
+			<p>{{ event.name }} ({{ [event.dateFrom, event.dateTill] | dateRange }})</p>
+		} @else {
+			<p><span class="bo-pill">Nepřiřazeno</span></p>
+		}
+		@if (album()?.event && album()?._links?.updateAlbum?.allowed) {
+			<ion-button
+				slot="end"
+				fill="clear"
+				color="medium"
+				title="Odpojit akci"
+				(click)="update.emit({ eventId: null })"
+			>
+				<ion-icon name="close-outline" slot="icon-only"></ion-icon>
+			</ion-button>
+		}
+		<bo-edit-button-event
+			slot="end"
+			label="Akce"
+			[disabled]="!album()?._links?.updateAlbum?.allowed"
+			(update)="update.emit({ eventId: $event })"
+		/>
 	</bo-item>
 
 	<bo-item label="Popis" [loading]="!album()">
