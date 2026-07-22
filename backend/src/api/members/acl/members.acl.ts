@@ -53,6 +53,7 @@ export const MemberDeletePermission = new Permission({
 	allowed: {
 		vedouci: true,
 	},
+	applicable: ({ doc }) => !doc.deletedAt,
 });
 
 export const MemberRestorePermission = new Permission({
@@ -60,6 +61,7 @@ export const MemberRestorePermission = new Permission({
 	allowed: {
 		vedouci: true,
 	},
+	applicable: ({ doc }) => !!doc.deletedAt,
 });
 
 export const MemberDeletePermanentPermission = new Permission({
@@ -67,4 +69,5 @@ export const MemberDeletePermanentPermission = new Permission({
 	allowed: {
 		vedouci: true,
 	},
+	applicable: ({ doc }) => !!doc.deletedAt,
 });

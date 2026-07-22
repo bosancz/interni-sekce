@@ -18,6 +18,16 @@ export const EventsListPermission = new Permission<void>({
 	},
 });
 
+export const EventsDeletedListPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: EventResponse,
+
+	allowed: {
+		program: true,
+		admin: true,
+	},
+});
+
 export const EventsYearsPermission = new Permission<void>({
 	linkTo: EventResponse,
 	allowed: {
@@ -72,6 +82,15 @@ export const EventDeletePermission = new Permission({
 });
 
 export const EventRestorePermission = new Permission({
+	linkTo: EventResponse,
+	allowed: {
+		program: true,
+		admin: true,
+	},
+	applicable: ({ doc }) => !!doc.deletedAt,
+});
+
+export const EventDeletePermanentPermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,

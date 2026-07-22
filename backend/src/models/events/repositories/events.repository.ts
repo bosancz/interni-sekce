@@ -175,6 +175,45 @@ export class EventsRepository {
 		return event;
 	}
 
+	// Soft-deleted events only (deleted_at IS NOT NULL). withDeleted() lifts TypeORM's default
+	// filter that hides them, and the explicit condition keeps the live events out.
+	async getDeletedEvents(where: Brackets | string = "1=1") {
+		const q = this.eventsRepository
+			.createQueryBuilder("events")
+			.select([
+				"events.id",
+				"events.name",
+				"events.status",
+				"events.statusNote",
+				"events.dateFrom",
+				"events.dateTill",
+				"events.type",
+				"events.deletedAt",
+			])
+			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
+			.leftJoinAndSelect("attendees.member", "leaders")
+			.withDeleted()
+			.where(where)
+			.andWhere("events.deleted_at IS NOT NULL")
+			.orderBy("events.deletedAt", "DESC");
+
+		const events = await q.getMany();
+
+		// populate `leaders` from the joined leader attendees, matching getEvents()' shape
+		for (const event of events) {
+			event.leaders = (event.attendees ?? [])
+				.filter((a) => a.member && a.type === EventAttendeeType.leader)
+				.map((a) => a.member!);
+		}
+
+		return events;
+	}
+
+	// Irreversibly remove the row from the database (as opposed to deleteEvent's soft delete).
+	async hardDeleteEvent(id: number) {
+		await this.eventsRepository.delete({ id });
+	}
+
 	async createEvent(data: Partial<Event>) {
 		return this.eventsRepository.save(data);
 	}

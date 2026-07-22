@@ -25,6 +25,7 @@ import { EventsRepository, GetEventsOptions } from "src/models/events/repositori
 import {
 	EventCancelPermission,
 	EventCreatePermission,
+	EventDeletePermanentPermission,
 	EventDeletePermission,
 	EventEditPermission,
 	EventLeadPermission,
@@ -32,6 +33,7 @@ import {
 	EventReadPermission,
 	EventRejectPermission,
 	EventRestorePermission,
+	EventsDeletedListPermission,
 	EventsListPermission,
 	EventsStatusesPermission,
 	EventSubmitPermission,
@@ -86,6 +88,17 @@ export class EventsController {
 
 		res.status(201);
 		return this.events.createEvent(body);
+	}
+
+	@Get("deleted")
+	@AcLinks(EventsDeletedListPermission)
+	@ApiResponse({ status: 200, type: WithLinks(EventResponse), isArray: true })
+	async listDeletedEvents(@Req() req: Request): Promise<EventResponse[]> {
+		EventsDeletedListPermission.canOrThrow(req);
+
+		const where = EventsDeletedListPermission.canWhere(req, "events");
+
+		return this.events.getDeletedEvents(where);
 	}
 
 	@Get("years")
@@ -166,6 +179,19 @@ export class EventsController {
 		EventRestorePermission.canOrThrow(req, event);
 
 		return this.events.restoreEvent(id);
+	}
+
+	@Delete(":id/permanent")
+	@HttpCode(204)
+	@AcLinks(EventDeletePermanentPermission)
+	@ApiResponse({ status: 204 })
+	async deleteEventPermanent(@Req() req: Request, @Param("id") id: number): Promise<void> {
+		const event = await this.events.getEvent(id, { leaders: true });
+		if (!event) throw new NotFoundException();
+
+		EventDeletePermanentPermission.canOrThrow(req, event);
+
+		return this.events.hardDeleteEvent(id);
 	}
 
 	@Post(":id/lead")
