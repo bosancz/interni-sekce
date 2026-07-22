@@ -149,13 +149,13 @@ export class PublicService {
 	// ---- Gallery (albums / photos) ----
 
 	async getGallery() {
-		const albums = await this.albums.getAlbums({ status: AlbumStatus.public, limit: 1000 });
+		const albums = await this.albums.getAlbums({ status: [AlbumStatus.public], limit: 1000 });
 		return albums.map((album) => this.serializeAlbum(album));
 	}
 
 	async getRecentGallery(limit = 5) {
 		const albums = await this.albums.getAlbums({
-			status: AlbumStatus.public,
+			status: [AlbumStatus.public],
 			limit: Math.min(limit, 10),
 		});
 

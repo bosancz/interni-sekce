@@ -1,13 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationOptions } from "src/helpers/pagination";
-import { Brackets, Repository } from "typeorm";
+import { applySort } from "src/helpers/sort";
+import { Brackets, FindOptionsRelations, Repository } from "typeorm";
 import { Album } from "../entities/album.entity";
 import { PhotosRepository } from "./photos.repository";
 
 export interface GetAlbumsOptions extends PaginationOptions {
-	year?: number;
-	status?: Album["status"];
+	year?: number[];
+	status?: Album["status"][];
 	search?: string;
 }
 
@@ -35,18 +36,35 @@ export class AlbumsRepository {
 			])
 			// row-level permission filter (see Permission.canWhere)
 			.where(where)
-			.orderBy("albums.dateFrom", "DESC")
 			.take(options.limit || 25)
 			.skip(options.offset || 0);
 
-		if (options.year) {
-			q.andWhere("date_till >= :yearStart AND date_from <= :yearEnd", {
-				yearStart: `${options.year}-01-01`,
-				yearEnd: `${options.year}-12-31`,
-			});
+		applySort(
+			q,
+			options,
+			{
+				name: "albums.name",
+				dateFrom: "albums.dateFrom",
+				status: "albums.status",
+				datePublished: "albums.datePublished",
+			},
+			{ column: "albums.dateFrom", order: "DESC" },
+		);
+
+		if (options.year?.length) {
+			q.andWhere(
+				new Brackets((qb) => {
+					for (const [index, year] of options.year!.entries()) {
+						qb.orWhere(`date_till >= :yearStart${index} AND date_from <= :yearEnd${index}`, {
+							[`yearStart${index}`]: `${year}-01-01`,
+							[`yearEnd${index}`]: `${year}-12-31`,
+						});
+					}
+				}),
+			);
 		}
 
-		if (options.status) q.andWhere("albums.status = :status", { status: options.status });
+		if (options.status?.length) q.andWhere("albums.status IN (:...statuses)", { statuses: options.status });
 
 		if (options.search) {
 			const search = `%${options.search}%`;
@@ -65,8 +83,8 @@ export class AlbumsRepository {
 			.then((years) => years.map((y) => parseInt(y.year)));
 	}
 
-	async getAlbum(id: number) {
-		return this.repository.findOneBy({ id });
+	async getAlbum(id: number, relations: FindOptionsRelations<Album> = {}) {
+		return this.repository.findOne({ where: { id }, relations });
 	}
 
 	async createAlbum(album: Partial<Album>) {

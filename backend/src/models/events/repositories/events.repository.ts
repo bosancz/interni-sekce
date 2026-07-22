@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationOptions } from "src/helpers/pagination";
+import { applySort } from "src/helpers/sort";
 import { Group } from "src/models/members/entities/group.entity";
 import { Brackets, FindOptionsSelect, Repository } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "../entities/event-attendee.entity";
@@ -45,8 +46,14 @@ export class EventsRepository {
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
 			.leftJoinAndSelect("attendees.member", "leaders")
 			// row-level permission filter (see Permission.canWhere)
-			.where(where)
-			.orderBy("events.dateFrom", "DESC");
+			.where(where);
+
+		applySort(
+			q,
+			options,
+			{ name: "events.name", dateFrom: "events.dateFrom", status: "events.status" },
+			{ column: "events.dateFrom", order: "DESC" },
+		);
 
 		if (options.limit) {
 			q.take(options.limit ?? 25);

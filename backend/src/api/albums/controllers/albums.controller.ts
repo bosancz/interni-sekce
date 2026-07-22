@@ -39,9 +39,11 @@ export class AlbumsController {
 		const options: GetAlbumsOptions = {
 			limit: query.limit,
 			offset: query.offset,
-			year: query.year ? parseInt(query.year) : undefined,
+			year: query.year,
 			status: query.status,
 			search: query.search,
+			sort: query.sort,
+			order: query.order,
 		};
 
 		return this.albums.getAlbums(options, where);
@@ -69,7 +71,7 @@ export class AlbumsController {
 	@AcLinks(AlbumReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(AlbumResponse) })
 	async getAlbum(@Param("id") id: number, @Req() req: Request): Promise<AlbumResponse> {
-		const album = await this.albums.getAlbum(id);
+		const album = await this.albums.getAlbum(id, { event: true });
 		if (!album) throw new NotFoundException();
 
 		AlbumReadPermission.canOrThrow(req, album);

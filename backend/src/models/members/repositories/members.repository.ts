@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationOptions } from "src/helpers/pagination";
+import { applySort } from "src/helpers/sort";
 import { Brackets, FindOneOptions, Repository } from "typeorm";
 import { MemberContact } from "../entities/member-contact.entity";
 import { Member } from "../entities/member.entity";
@@ -28,9 +29,35 @@ export class MembersRepository {
 			.createQueryBuilder("members")
 			// row-level permission filter (see Permission.canWhere)
 			.where(where)
-			.orderBy("CONCAT(members.nickname,members.first_name,members.last_name)", "ASC")
 			.take(options.limit)
 			.skip(options.offset);
+
+		applySort(
+			q,
+			options,
+			{
+				nickname: "CONCAT(members.nickname,members.first_name,members.last_name)",
+				name: "CONCAT(members.last_name,members.first_name)",
+				role: "members.role",
+				membership: "members.membership",
+				age: "DATE_PART('year', AGE(CURRENT_DATE, members.birthday))",
+				birthday: "members.birthday",
+				// Sort by the *displayed* group (its name, e.g. "6. oddíl"), not the internal group
+				// id. `groups.name` carries the `natural_numeric` ICU collation (see Group entity),
+				// so embedded numbers order naturally: "3. oddíl" precedes "22. oddíl", and
+				// non-numeric names ("Klub přátel", …) sort after them.
+				group: "(SELECT g.name FROM groups g WHERE g.id = members.group_id)",
+				city: "members.addressCity",
+				street: "members.addressStreet",
+				status: "members.active",
+			},
+			{ column: "CONCAT(members.nickname,members.first_name,members.last_name)", order: "ASC" },
+		);
+
+		// Keep members within the same group in a readable order.
+		if (options.sort === "group") {
+			q.addOrderBy("CONCAT(members.nickname,members.first_name,members.last_name)", "ASC");
+		}
 
 		// Join contacts up-front only when requested (i.e. the contacts column is visible).
 		// TypeORM keeps pagination correct with a distinct-id subquery despite the one-to-many join.

@@ -1,8 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsEnum, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { EventResponse } from "src/api/events/dto/event.dto";
 import { PaginationQuery } from "src/api/helpers/dto";
+import { EnsureArray } from "src/helpers/validation";
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
 import { Event } from "src/models/events/entities/event.entity";
 import { PhotoResponse } from "./photo.dto";
@@ -28,8 +30,19 @@ export class AlbumResponse {
 
 export class AlbumListQuery extends PaginationQuery {
 	@ApiPropertyOptional() @IsString() @IsOptional() search?: string;
-	@ApiPropertyOptional() @IsEnum(AlbumStatus) @IsOptional() status?: AlbumStatus;
-	@ApiPropertyOptional() @IsNumberString() @IsOptional() year?: string;
+
+	@ApiPropertyOptional({ enum: AlbumStatus, isArray: true })
+	@EnsureArray({ split: "," })
+	@IsEnum(AlbumStatus, { each: true })
+	@IsOptional()
+	status?: AlbumStatus[];
+
+	@ApiPropertyOptional({ type: Number, isArray: true })
+	@EnsureArray({ split: "," })
+	@Type(() => Number)
+	@IsNumber({}, { each: true })
+	@IsOptional()
+	year?: number[];
 }
 
 export class AlbumCreateBody {
