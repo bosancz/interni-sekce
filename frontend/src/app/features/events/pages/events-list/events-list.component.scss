@@ -35,21 +35,26 @@ ion-list {
 }
 
 :host ::ng-deep .events-table .events-name-column {
-	width: 32%;
+	width: 30%;
 	white-space: normal;
 }
 
 :host ::ng-deep .events-table .events-date-column {
-	width: 24%;
+	width: 22%;
 }
 
 :host ::ng-deep .events-table .events-status-column {
-	width: 16%;
+	width: 15%;
 }
 
 :host ::ng-deep .events-table .events-leaders-column {
-	width: 28%;
+	width: 27%;
 	white-space: normal;
+}
+
+:host ::ng-deep .events-table .events-actions-column {
+	width: 6%;
+	text-align: center;
 }
 
 ion-select::part(text) {

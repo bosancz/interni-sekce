@@ -122,7 +122,8 @@
 
 								</ion-select>
 							</div>
-						</th>					 
+						</th>
+						<th class="events-actions-column" aria-label="Akce"></th>
 					</tr>
 				</thead>
 
@@ -151,6 +152,7 @@
 									<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
 								}
 							</td>
+							<td class="events-actions-column" admin-table-actions [actions]="eventActions(event)" [header]="event.name"></td>
 						</tr>
 					}
 				</tbody>

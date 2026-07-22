@@ -16,7 +16,17 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline } from "ionicons/icons";
+import {
+	addOutline,
+	arrowBackOutline,
+	arrowForwardOutline,
+	arrowUndoOutline,
+	closeOutline,
+	eyeOffOutline,
+	eyeOutline,
+	handLeftOutline,
+	trashOutline,
+} from "ionicons/icons";
 import { DateTime } from "luxon";
 import { EventStatus, EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
 import { ApiService } from "src/app/core/services/api.service";
@@ -24,18 +34,24 @@ import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { AdminTableActionsComponent } from "src/app/shared/components/admin-table/admin-table-actions.component";
 import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { EventStatusBadgeComponent } from "src/app/shared/components/event-status-badge/event-status-badge.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
-import { UrlParams } from "src/helpers/typings";
+import { ExtractExisting, UrlParams } from "src/helpers/typings";
 import { SDK } from "src/sdk";
 import { EventPipe } from "../../../../shared/pipes/event.pipe";
 import { GroupPipe } from "../../../../shared/pipes/group.pipe";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 import { EventCreateModalComponent } from "../../components/event-create-modal/event-create-modal.component";
+
+type EventStatusActions = ExtractExisting<
+	keyof SDK.EventResponseWithLinks["_links"],
+	"publishEvent" | "unpublishEvent" | "uncancelEvent" | "cancelEvent" | "rejectEvent" | "submitEvent"
+>;
 
 @UntilDestroy()
 @Component({
@@ -60,6 +76,7 @@ import { EventCreateModalComponent } from "../../components/event-create-modal/e
 		GroupPipe,
 		MemberPipe,
 		AdminTableComponent,
+		AdminTableActionsComponent,
 		EventPipe,
 		PageContentComponent,
 		PageHeaderComponent,
@@ -120,7 +137,123 @@ export class EventsListComponent implements OnInit {
 		private modalService: ModalService,
 		private toasts: ToastService,
 	) {
-		addIcons({ addOutline });
+		addIcons({
+			addOutline,
+			handLeftOutline,
+			arrowForwardOutline,
+			eyeOutline,
+			arrowBackOutline,
+			eyeOffOutline,
+			closeOutline,
+			arrowUndoOutline,
+			trashOutline,
+		});
+	}
+
+	eventActions(event: SDK.EventResponseWithLinks): Action[] {
+		return [
+			{
+				text: "Vést akci",
+				color: "success",
+				icon: handLeftOutline,
+				hidden: !event._links.leadEvent.allowed,
+				handler: () => this.leadEvent(event),
+			},
+			{
+				text: "Ke schválení",
+				icon: arrowForwardOutline,
+				color: "primary",
+				hidden: !event._links.submitEvent.allowed,
+				handler: () => this.eventStatusAction(event, "submitEvent"),
+			},
+			{
+				text: "Do programu",
+				icon: eyeOutline,
+				color: "primary",
+				hidden: !event._links.publishEvent.allowed,
+				handler: () => this.eventStatusAction(event, "publishEvent"),
+			},
+			{
+				text: "Vrátit k úpravám",
+				icon: arrowBackOutline,
+				color: "danger",
+				hidden: !event._links.rejectEvent.allowed,
+				handler: () => this.eventStatusAction(event, "rejectEvent"),
+			},
+			{
+				text: "Odebrat z programu",
+				icon: eyeOffOutline,
+				color: "danger",
+				hidden: !event._links.unpublishEvent.allowed,
+				handler: () => this.eventStatusAction(event, "unpublishEvent"),
+			},
+			{
+				text: "Označit jako zrušenou",
+				color: "danger",
+				icon: closeOutline,
+				hidden: !event._links.cancelEvent.allowed,
+				handler: () => this.eventStatusAction(event, "cancelEvent"),
+			},
+			{
+				text: "Odzrušit",
+				icon: arrowUndoOutline,
+				hidden: !event._links.uncancelEvent.allowed,
+				handler: () => this.eventStatusAction(event, "uncancelEvent"),
+			},
+			{
+				text: "Smazat",
+				role: "destructive",
+				color: "danger",
+				icon: trashOutline,
+				hidden: !event._links.deleteEvent.allowed,
+				handler: () => this.deleteEvent(event),
+			},
+			{
+				text: "Obnovit",
+				role: "destructive",
+				color: "success",
+				icon: arrowUndoOutline,
+				hidden: !event._links.restoreEvent.allowed,
+				handler: () => this.restoreEvent(event),
+			},
+		];
+	}
+
+	private async leadEvent(event: SDK.EventResponseWithLinks) {
+		await this.api.EventsApi.leadEvent(event.id);
+		this.toasts.toast("Uloženo");
+		this.loadEvents(this.filter);
+	}
+
+	private async eventStatusAction(event: SDK.EventResponseWithLinks, action: EventStatusActions) {
+		if (!event._links[action].allowed) {
+			this.toasts.toast("K této akci nemáš oprávnění.");
+			return;
+		}
+
+		const statusNote = window.prompt("Poznámka ke změně stavu (můžeš nechat prázdné):");
+		if (statusNote === null) return; // user clicked on cancel
+
+		await this.api.EventsApi[action](event.id, { statusNote });
+		this.toasts.toast("Uloženo");
+		this.loadEvents(this.filter);
+	}
+
+	private async deleteEvent(event: SDK.EventResponseWithLinks) {
+		const confirmation = await this.modalService.deleteConfirmationModal(
+			`Opravdu chcete smazat akci ${event.name}?`,
+		);
+		if (!confirmation) return;
+
+		await this.api.EventsApi.deleteEvent(event.id);
+		this.toasts.toast("Akce smazána");
+		this.loadEvents(this.filter);
+	}
+
+	private async restoreEvent(event: SDK.EventResponseWithLinks) {
+		await this.api.EventsApi.restoreEvent(event.id);
+		this.toasts.toast("Akce obnovena");
+		this.loadEvents(this.filter);
 	}
 
 	async create() {
