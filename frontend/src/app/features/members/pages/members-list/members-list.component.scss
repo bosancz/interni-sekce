@@ -1,15 +1,13 @@
-.member {
-	cursor: pointer;
-}
-
-.member-inactive {
+// Row-state classes are applied by admin-table (rows live in its view), so pierce
+// encapsulation with ::ng-deep to reach them from this page's stylesheet.
+:host ::ng-deep .member-inactive {
 	color: var(--bo-muted);
 	opacity: 0.65;
 }
-ion-item.member-inactive {
+:host ::ng-deep ion-item.member-inactive {
 	--color: var(--bo-muted);
 }
-tr.member-paused {
+:host ::ng-deep tr.member-paused {
 	color: var(--bo-muted);
 }
 

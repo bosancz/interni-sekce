@@ -1,5 +1,136 @@
-<div class="table-responsive">
-	<table [class]="tableClass()">
-		<ng-content></ng-content>
-	</table>
-</div>
+@if (columns().length) {
+	@if (mode() === "table") {
+		<div class="table-responsive">
+			<table [class]="tableClass()">
+				<thead>
+					<tr>
+						@for (column of columns(); track column) {
+							<th [class]="column.headerClass()">
+								@if (column.headerTemplate(); as headerTemplate) {
+									<ng-container [ngTemplateOutlet]="headerTemplate"></ng-container>
+								} @else {
+									{{ column.header() }}
+								}
+							</th>
+						}
+						@if (actions()) {
+							<th class="admin-table-actions-column" aria-label="Akce"></th>
+						}
+					</tr>
+				</thead>
+
+				<tbody>
+					@if (loading()) {
+						@for (skeleton of skeletonArray(); track $index) {
+							<tr>
+								@for (column of columns(); track column) {
+									<td><ion-skeleton-text animated></ion-skeleton-text></td>
+								}
+								@if (actions()) {
+									<td class="admin-table-actions-column"></td>
+								}
+							</tr>
+						}
+					} @else {
+						@for (row of rows() ?? []; track trackRow($index, row)) {
+							<tr
+								[attr.id]="resolveId(row)"
+								[ngClass]="resolveClass(row)"
+								[class.clickable]="!!rowLink()"
+								[routerLink]="resolveLink(row)"
+								(click)="onRowClick(row)"
+							>
+								@for (column of columns(); track column) {
+									<td [class]="column.cellClass()">
+										<ng-container
+											[ngTemplateOutlet]="column.cellTemplate()"
+											[ngTemplateOutletContext]="{ $implicit: row }"
+										></ng-container>
+									</td>
+								}
+								@if (actions()) {
+									<td
+										class="admin-table-actions-column"
+										admin-table-actions
+										[actions]="resolveActions(row)"
+										[header]="resolveActionsHeader(row)"
+									></td>
+								}
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</div>
+	} @else {
+		<ion-list>
+			@if (loading()) {
+				@for (skeleton of skeletonArray(); track $index) {
+					<ion-item>
+						<ion-label><ion-skeleton-text animated></ion-skeleton-text></ion-label>
+					</ion-item>
+				}
+			} @else {
+				@for (row of rows() ?? []; track trackRow($index, row)) {
+					<ion-item
+						[attr.id]="resolveId(row)"
+						[ngClass]="resolveClass(row)"
+						[class.clickable]="!!rowLink()"
+						[routerLink]="resolveLink(row)"
+						(click)="onRowClick(row)"
+					>
+						<ion-label>
+							@for (column of lineColumns(); track column) {
+								@if (column.primary()) {
+									<h3>
+										<ng-container
+											[ngTemplateOutlet]="column.cellTemplate()"
+											[ngTemplateOutletContext]="{ $implicit: row }"
+										></ng-container>
+									</h3>
+								} @else {
+									<p class="admin-table-line">
+										@if (column.header() && !column.hideMobileLabel()) {
+											<span class="admin-table-line-label">{{ column.header() }}:</span>
+										}
+										<span class="admin-table-line-value">
+											<ng-container
+												[ngTemplateOutlet]="column.cellTemplate()"
+												[ngTemplateOutletContext]="{ $implicit: row }"
+											></ng-container>
+										</span>
+									</p>
+								}
+							}
+						</ion-label>
+
+						@if (rightColumn() || actions()) {
+							<div slot="end" class="admin-table-end">
+								@if (rightColumn(); as rightColumn) {
+									<ng-container
+										[ngTemplateOutlet]="rightColumn.cellTemplate()"
+										[ngTemplateOutletContext]="{ $implicit: row }"
+									></ng-container>
+								}
+								@if (actions()) {
+									<div
+										admin-table-actions
+										[actions]="resolveActions(row)"
+										[header]="resolveActionsHeader(row)"
+									></div>
+								}
+							</div>
+						}
+					</ion-item>
+				}
+			}
+		</ion-list>
+	}
+} @else {
+	<!-- Legacy API: no declarative columns, project raw <thead>/<tbody> markup (table only). -->
+	<div class="table-responsive">
+		<table [class]="tableClass()">
+			<ng-content></ng-content>
+		</table>
+	</div>
+}
