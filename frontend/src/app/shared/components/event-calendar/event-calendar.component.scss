@@ -30,7 +30,8 @@ $eventHeight: 20px;
 	position: absolute;
 	height: $eventHeight;
 	margin-top: 1px;
-	white-space: nowrap;
+	display: flex;
+	align-items: center;
 	color: #fff;
 	border: none;
 	border-radius: 6px;
@@ -38,8 +39,13 @@ $eventHeight: 20px;
 	font-weight: 600;
 	padding: 0 6px;
 	overflow: hidden;
-	text-overflow: ellipsis;
 	cursor: pointer;
+
+	.event-label {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 }
 
 .events.own {

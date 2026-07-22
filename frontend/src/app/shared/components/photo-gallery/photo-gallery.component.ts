@@ -116,6 +116,17 @@ export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.rows.set(rows);
 	}
 
+	// transparent 1x1 pixel — replaces a failed image so the browser stops
+	// drawing its broken-image glyph while the placeholder colour stays visible
+	private static readonly TRANSPARENT_PX =
+		"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
+	onImgError(event: Event) {
+		const img = event.target as HTMLImageElement;
+		if (img.src === PhotoGalleryComponent.TRANSPARENT_PX) return;
+		img.src = PhotoGalleryComponent.TRANSPARENT_PX;
+	}
+
 	onPhotoClick(event: MouseEvent, photo: SDK.PhotoResponseWithLinks) {
 		if (!this.clickable()) return;
 

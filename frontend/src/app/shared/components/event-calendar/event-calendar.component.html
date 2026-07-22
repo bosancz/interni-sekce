@@ -43,7 +43,7 @@
 						placement="bottom"
 						[routerLink]="['/akce', calEvent.event.id]"
 					>
-						{{ calEvent.event.name }}
+						<span class="event-label">{{ calEvent.event.name }}</span>
 					</div>
 				}
 			</div>
@@ -59,7 +59,7 @@
 						target="_blank"
 						placement="bottom"
 					>
-						{{ calEvent.event.name }}
+						<span class="event-label">{{ calEvent.event.name }}</span>
 					</a>
 				}
 			</div>

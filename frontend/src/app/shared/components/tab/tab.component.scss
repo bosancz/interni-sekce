@@ -7,8 +7,21 @@ ion-tab-button {
 	--color-selected: var(--bo-nav-active-fg);
 	--background: transparent;
 
+	// inset, rounded highlight that clearly marks the active tab
+	&::part(native) {
+		margin: 6px;
+		border-radius: var(--bo-radius-pill);
+		transition:
+			background-color 0.18s ease,
+			color 0.18s ease;
+	}
+
 	&.tab-selected {
 		color: var(--bo-nav-active-fg);
 		font-weight: 700;
+
+		&::part(native) {
+			background: var(--bo-nav-active-bg);
+		}
 	}
 }

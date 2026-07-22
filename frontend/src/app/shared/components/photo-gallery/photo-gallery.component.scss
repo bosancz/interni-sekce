@@ -20,6 +20,11 @@
 .photo {
 	position: relative;
 
+	img {
+		display: block;
+		border-radius: 8px;
+	}
+
 	.caption {
 		position: absolute;
 		right: 0;
@@ -30,6 +35,8 @@
 		margin: 0;
 		text-align: center;
 		padding: 0 5px;
+		border-bottom-left-radius: 8px;
+		border-bottom-right-radius: 8px;
 	}
 }
 

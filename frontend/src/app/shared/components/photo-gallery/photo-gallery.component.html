@@ -5,6 +5,7 @@
 				<img
 					[src]="item.photo | photoImageUrl: 'small'"
 					loading="lazy"
+					(error)="onImgError($event)"
 					[style.height]="row.height + 'px'"
 					[style.width]="row.height * item.ratio + 'px'"
 					[style.background-color]="item.photo.bg"

@@ -143,23 +143,16 @@ ion-select.filter-pill {
 	}
 
 	.filter-pill-chips {
-		display: flex;
-		flex-wrap: wrap;
+		display: grid;
+		grid-template-columns: repeat(var(--pill-columns, 1), minmax(0, 1fr));
 		gap: 6px;
 
-		&.single-column {
-			flex-direction: column;
-			flex-wrap: nowrap;
-
-			.filter-pill-chip {
-				width: 100%;
-				text-align: left;
-			}
+		&.single-column .filter-pill-chip {
+			text-align: left;
 		}
 	}
 
 	.filter-pill-chip {
-		flex: 1 0 auto;
 		padding: 8px 12px;
 		border: 1px solid var(--bo-line);
 		border-radius: 10px;
@@ -319,6 +312,22 @@ ion-select.filter-pill {
 	text-align: right;
 	min-width: 0;
 	word-break: break-word;
+}
+
+/* value + inline edit button on the right side of a card row */
+.bo-info-action {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	min-width: 0;
+
+	bo-edit-button,
+	bo-edit-button-name,
+	bo-edit-button-text,
+	bo-edit-button-date,
+	bo-icon-button {
+		flex: 0 0 auto;
+	}
 }
 
 .clickable {

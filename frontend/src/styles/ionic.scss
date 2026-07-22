@@ -83,6 +83,13 @@ ion-modal.dialog {
 	--box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
 }
 
+/* search / list dialogs need a bounded height so their scrolling ion-content
+   does not collapse inside the fit-content card */
+ion-modal.dialog.dialog-list {
+	--width: 480px;
+	--height: 70vh;
+}
+
 ion-popover.transparent {
 	--background: transparent;
 }
@@ -100,8 +107,13 @@ ion-searchbar {
 }
 
 .alert-wide {
-	--width: 80vw;
-	--max-width: 800px;
+	--width: 90vw;
+	--max-width: 1100px;
+
+	.alert-wrapper {
+		width: 90vw !important;
+		max-width: 1100px !important;
+	}
 
 	textarea {
 		min-height: 40vh !important;
