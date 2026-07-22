@@ -9,15 +9,15 @@
 		<ion-label>Bošán</ion-label>
 	</ion-item>
 	<ion-item routerLink="akce" routerLinkActive="active">
-		<ion-icon name="flame-sharp" class="me-3"></ion-icon>
+		<span class="nav-icon nav-icon--akce me-3"></span>
 		<ion-label>Akce</ion-label>
 	</ion-item>
 	<ion-item routerLink="galerie" routerLinkActive="active">
-		<ion-icon name="images-sharp" class="me-3"></ion-icon>
+		<span class="nav-icon nav-icon--galerie me-3"></span>
 		<ion-label>Galerie</ion-label>
 	</ion-item>
 	<ion-item routerLink="databaze" routerLinkActive="active">
-		<ion-icon name="people-sharp" class="me-3"></ion-icon>
+		<span class="nav-icon nav-icon--databaze me-3"></span>
 		<ion-label>Databáze</ion-label>
 	</ion-item>
 	<ion-item
@@ -26,7 +26,7 @@
 		routerLinkActive="active"
 		[routerLinkActiveOptions]="tabLinkActiveOptions"
 	>
-		<ion-icon name="calendar-sharp" class="me-3"></ion-icon>
+		<span class="nav-icon nav-icon--program me-3"></span>
 		<ion-label>Kalendář</ion-label>
 	</ion-item>
 </ion-list>
@@ -43,6 +43,11 @@
 			<ion-label>Administrace</ion-label>
 		</ion-item>
 	}
+
+	<ion-item [button]="true" (click)="reportBug()">
+		<ion-icon class="me-3" name="bug-outline"></ion-icon>
+		<ion-label>Nahlásit chybu</ion-label>
+	</ion-item>
 
 	<ion-item [button]="true" (click)="logout()">
 		<ion-icon class="me-3" name="log-out"></ion-icon>

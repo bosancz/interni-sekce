@@ -11,7 +11,6 @@ import { PageContentComponent } from "src/app/shared/components/page-content/pag
 import { SDK } from "src/sdk";
 import { HomeCardMyEventsComponent } from "../home-card-my-events/home-card-my-events.component";
 import { HomeCardNoleaderEventsComponent } from "../home-card-noleader-events/home-card-noleader-events.component";
-import { HomeCardSearchMemberComponent } from "../home-card-search-member/home-card-search-member.component";
 
 @UntilDestroy()
 @Component({
@@ -22,7 +21,6 @@ import { HomeCardSearchMemberComponent } from "../home-card-search-member/home-c
 		EventCalendarComponent,
 		HomeCardMyEventsComponent,
 		HomeCardNoleaderEventsComponent,
-		HomeCardSearchMemberComponent,
 		PageContentComponent,
 		ButtonSquareComponent,
 		RouterLink,

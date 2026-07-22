@@ -31,15 +31,6 @@ h1 {
 	color: #fff;
 }
 
-.bug-report {
-	--padding-start: 6px;
-	--padding-end: 6px;
-	height: auto;
-	margin: 0;
-	font-size: 1em;
-	color: var(--san-yellow);
-}
-
 // white rounded search pill on the blue bar
 ::ng-deep bo-global-search .search ion-searchbar {
 	--background: #fff;

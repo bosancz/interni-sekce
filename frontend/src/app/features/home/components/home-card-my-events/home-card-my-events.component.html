@@ -20,6 +20,17 @@
 						</ion-item>
 					}
 				</ion-list>
+				<div class="showMore">
+					@if (hasMore()) {
+						<bo-button
+							color="light"
+							routerLink="/akce"
+							[queryParams]="{ leaders: 'my' }"
+							class="m-0 mt-2 mb-3 text-center"
+							>Zobrazit vše</bo-button
+						>
+					}
+				</div>
 			}
 			@if (myEvents() === undefined) {
 				<ion-item>
