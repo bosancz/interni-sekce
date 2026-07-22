@@ -32,131 +32,81 @@
 </bo-filter>
 
 <bo-page-content>
-	@switch (view()) {
-		@case ("list") {
-			<ion-list>
-				@if (events === undefined) {
-					<ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
-					<ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
-					<ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
-					<ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
-					<ion-item><ion-skeleton-text animated></ion-skeleton-text></ion-item>
+	<admin-table
+		[class]="'events-table'"
+		[rows]="events()"
+		[rowLink]="rowLink"
+		[rowId]="rowId"
+	>
+		<admin-table-column header="Název" [primary]="true" cellClass="events-name-column" headerClass="align-middle events-name-column">
+			<ng-container *adminCell="let event">{{ event.name }}</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Datum" cellClass="events-date-column" headerClass="events-date-column align-middle">
+			<ng-container *adminCell="let event">
+				{{ event.dateFrom | date: "EEEEEE d. M." }} -
+				{{ event.dateTill | date: "EEEEEE d. M. y" }}
+			</ng-container>
+		</admin-table-column>
+
+		<!-- Stav is placed here so it keeps its column position in the desktop table, but is
+		     flagged [right] so it renders on the right of each item in the mobile list. -->
+		<admin-table-column header="Stav" [right]="true" cellClass="events-status-column" headerClass="events-status-column">
+			<ng-container *adminHeader>
+				<div class="column-filter">
+					<ion-select
+						label="Stav"
+						interface="popover"
+						justify="start"
+						[ngModel]="selectedStatuses()"
+						(ngModelChange)="setFilterParam('status', $event)"
+						[multiple]="true"
+					>
+						@for (status of statuses() | keyvalue; track status.key) {
+							<ion-select-option [value]="status.key">
+								{{ status.value.name }}
+							</ion-select-option>
+						}
+					</ion-select>
+				</div>
+			</ng-container>
+			<ng-container *adminCell="let event">
+				<bo-event-status-badge [event]="event"></bo-event-status-badge>
+			</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Vedoucí" cellClass="events-leaders-column" headerClass="events-leaders-column">
+			<ng-container *adminHeader>
+				<div class="column-filter">
+					<ion-select
+						label="Vedoucí"
+						interface="popover"
+						justify="start"
+						[ngModel]="selectedLeaderFilters()"
+						(ngModelChange)="setFilterParam('leaders', $event)"
+						[multiple]="true"
+					>
+						<ion-select-option value="my">Moje akce</ion-select-option>
+						<ion-select-option value="noleader">Akce bez vedoucího</ion-select-option>
+					</ion-select>
+				</div>
+			</ng-container>
+			<ng-container *adminCell="let event">
+				@for (leader of event.leaders; track leader.id; let isLast = $last) {
+					<span class="leader"
+						><span
+							class="leader-avatar"
+							[style.background-color]="leader.groupId | group: 'color'"
+							>{{ (leader | member: "nickname")?.charAt(0) }}</span
+						>{{ leader | member: "nickname" }}{{ isLast ? "" : "," }}</span
+					>
 				}
-
-				@for (event of events(); track event.id) {
-					<ion-item [routerLink]="'' + event.id" [attr.id]="'event-' + event.id">
-						<ion-avatar
-							aria-hidden="true"
-							slot="start"
-							[style.background-color]="(event | event: 'color') || '#000'"
-						>
-							@if (event | event: "image") {
-								<img class="img-fluid" [src]="event | event: 'image'" />
-							}
-						</ion-avatar>
-						<ion-label>
-							<h3>{{ event.name }}</h3>
-							<p>
-								{{ event.dateFrom | date: "EEEEEE d. M." }} -
-								{{ event.dateTill | date: "EEEEEE d. M. y" }}
-								<br />
-								@for (leader of event.leaders; track leader.id; let isLast = $last) {
-									<span class="leader"
-										><span
-											class="leader-avatar"
-											[style.background-color]="leader.groupId | group: 'color'"
-											>{{ (leader | member: "nickname")?.charAt(0) }}</span
-										>{{ leader | member: "nickname" }}{{ isLast ? "" : "," }}</span
-									>
-								}
-								@if (!event.leaders?.length) {
-									<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
-								}
-							</p>
-						</ion-label>
-
-						<bo-event-status-badge [event]="event"></bo-event-status-badge>
-					</ion-item>
+				@if (!event.leaders?.length) {
+					<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
 				}
-			</ion-list>
-		}
-
-		@case ("table") {
-			<admin-table [class]="'events-table'">
-				<thead>
-					<tr >
-						<th class="align-middle events-name-column" >Název</th>					
-						<th class="events-date-column align-middle">Datum</th>
-						<th class="events-status-column">
-							<div class="column-filter">
-								<ion-select
-									label ="Stav"
-									interface="popover"
-									justify="start"
-									[ngModel]="selectedStatuses()"
-									(ngModelChange)="setFilterParam('status', $event)"
-									[multiple]="true"
-
-								>
-									@for (status of statuses() | keyvalue; track status.key) {
-										<ion-select-option [value]="status.key">
-											{{ status.value.name }}
-										</ion-select-option>
-									}
-								</ion-select>
-							</div>
-						</th>
-						<th class="events-leaders-column">
-							<div class="column-filter">
-								<ion-select
-									label="Vedoucí"
-									interface="popover"
-									justify="start"
-									[ngModel]="selectedLeaderFilters()"
-									(ngModelChange)="setFilterParam('leaders', $event)"
-									[multiple]="true"
-
-								>
-									<ion-select-option value="my">Moje akce</ion-select-option>
-									<ion-select-option value="noleader">Akce bez vedoucího</ion-select-option>
-
-								</ion-select>
-							</div>
-						</th>					 
-					</tr>
-				</thead>
-
-				<tbody>
-					@for (event of events(); track event.id) {
-						<tr [routerLink]="'' + event.id" [attr.id]="'event-' + event.id">
-							<td class="events-name-column">{{ event.name }}</td>
-							<td class="events-date-column">
-								{{ event.dateFrom | date: "EEEEEE d. M." }} -
-								{{ event.dateTill | date: "EEEEEE d. M. y" }}
-							</td>
-							<td class="events-status-column">
-								<bo-event-status-badge [event]="event"></bo-event-status-badge>
-							</td>
-							<td class="events-leaders-column">
-								@for (leader of event.leaders; track leader.id; let isLast = $last) {
-									<span class="leader"
-										><span
-											class="leader-avatar"
-											[style.background-color]="leader.groupId | group: 'color'"
-											>{{ (leader | member: "nickname")?.charAt(0) }}</span
-										>{{ leader | member: "nickname" }}{{ isLast ? "" : "," }}</span
-									>
-								}
-								@if (!event.leaders?.length) {
-									<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
-								}
-							</td>
-						</tr>
-					}
-				</tbody>
-			</admin-table>
-		}
-	}
+			</ng-container>
+		</admin-table-column>
+	</admin-table>
 
 	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
 		<ion-infinite-scroll-content></ion-infinite-scroll-content>

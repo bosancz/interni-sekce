@@ -12,12 +12,10 @@ import {
 	IonInfiniteScrollContent,
 	IonItem,
 	IonItemDivider,
-	IonLabel,
 	IonList,
 	IonPopover,
 	IonSelect,
 	IonSelectOption,
-	IonSkeletonText,
 	IonToggle,
 	ViewWillEnter,
 } from "@ionic/angular/standalone";
@@ -38,9 +36,11 @@ import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
-import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
+import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
+import { AdminTableHeaderDirective } from "src/app/shared/components/admin-table/admin-table-header.directive";
 import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
@@ -65,8 +65,6 @@ import { MemberCreateModalComponent } from "../../components/member-create-modal
 		IonList,
 		IonItem,
 		IonItemDivider,
-		IonLabel,
-		IonSkeletonText,
 		IonSelect,
 		IonSelectOption,
 		IonButton,
@@ -75,10 +73,12 @@ import { MemberCreateModalComponent } from "../../components/member-create-modal
 		IonToggle,
 		IonIcon,
 		AdminTableComponent,
+		AdminTableColumnComponent,
+		AdminTableCellDirective,
+		AdminTableHeaderDirective,
 		FormsModule,
 		RouterLink,
 		KeyValuePipe,
-		GroupPipe,
 		MemberPipe,
 		GroupBadgeComponent,
 		IonInfiniteScroll,
@@ -117,7 +117,12 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		label: role.title,
 	}));
 
-	loadingItems = new Array(10).fill(null);
+	// Row helpers for admin-table (bound as inputs, so keep stable references).
+	rowLink = (member: SDK.MemberResponseWithLinks) => "" + member.id;
+	rowClass = (member: SDK.MemberResponseWithLinks) => ({
+		"member-inactive": !member.active,
+		"member-paused": member.membership === "pozastaveno",
+	});
 
 	actions = signal<Action[]>([
 		{
@@ -136,9 +141,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	filter: FilterData = {};
 
-
-	view = signal<"table" | "list" | undefined>(undefined);
-
 	page = 1;
 	pageSize = 50;
 
@@ -151,7 +153,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		private route: ActivatedRoute,
 		private router: Router,
 		private toasts: ToastService,
-		private platformService: PlatformService,
 		private modalService: ModalService,
 		private groupPipe: GroupPipe,
 	) {
@@ -170,10 +171,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	}
 
 	ngAfterViewInit(): void {
-		this.platformService.isPortrait.subscribe((isPortrait) => {
-			this.view.set(isPortrait ? "list" : "table");
-		});
-
 		this.loadViewSelections();
 	}
 
@@ -286,9 +283,8 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		this.members.set([...currentMembers, ...members]);
 	}
 
-	// Contacts are only needed when the phone/email columns are shown in the table view.
+	// Contacts are only needed when the phone/email columns are shown.
 	private needsContacts(): boolean {
-		if (this.view() !== "table") return false;
 		const selections = this.viewSelections();
 		return !!selections["firstTelephone"] || !!selections["firstEmail"];
 	}

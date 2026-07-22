@@ -121,183 +121,131 @@
 
 
 <ion-content>
-	@switch (view()) {
-		@case ("list") {
-			<ion-list>
-				@if (members() === undefined) {
-					@for (item of loadingItems; track $index) {
-						<ion-item>
-							<ion-label><ion-skeleton-text></ion-skeleton-text></ion-label>
-						</ion-item>
-					}
-				}
-
-				@for (member of members(); track member.id) {
-					<ion-item class="clickable" [class.member-inactive]="!member.active" [routerLink]="'' + member.id">
-						<ion-label>
-							<h2>{{ member.nickname || member.firstName || member.lastName }}</h2>
-							<p>
-								<span [style.color]="member.groupId | group: 'color'">{{
-									member.groupId | group: "name"
-								}}</span
-								>,
-								<span>{{ member | member: "age" }}</span>
-							</p>
-						</ion-label>
-					</ion-item>
-				}
-			</ion-list>
+	<admin-table
+		[class]="'members-table'"
+		[rows]="members()"
+		[loading]="members() === undefined"
+		[rowLink]="rowLink"
+		[rowClass]="rowClass"
+	>
+		@if (viewSelections().nickname) {
+			<admin-table-column header="Přezdívka" [primary]="true" headerClass="align-middle members-nickname-column">
+				<ng-container *adminCell="let member">{{ member.nickname }}</ng-container>
+			</admin-table-column>
 		}
-		@case ("table") {
-			<admin-table [class]="'members-table'">
-				<thead>
-					<tr>
-						@if (viewSelections().nickname){
-							<th class="align-middle members-nickname-column" >Přezdívka</th>					
-						}
-						@if (viewSelections().name){
-							<th class="align-middle members-name-column" >Jméno</th>					
-						}
-						@if (viewSelections().group){
-							<th class="align-middle">Oddíl</th>
-						}
 
-						@if (viewSelections().role){
-							<th class="align-middle">Role</th>
-						}
-
-						@if (viewSelections().age){
-							<th>
-								<div class="column-filter">
-									<ion-select
-										label="Věk"
-										interface="popover"
-										justify="start"
-										[ngModel]="selectedAges()"
-										(ngModelChange)="setFilterParam('age', $event)"
-										[multiple]="true"
-									>
-										@for (age of availableAges; track age) {
-											<ion-select-option [value]="'' + age">{{ age }}</ion-select-option>
-										}
-									</ion-select>
-								</div>
-							</th>
-						}
-
-						@if (viewSelections().membership){
-							<th>
-								<div class="column-filter">
-									<ion-select
-										label="Členství"
-										interface="popover"
-										justify="start"
-										[ngModel]="selectedMembership()"
-										(ngModelChange)="setFilterParam('membership', $event)"
-										[multiple]="true"
-									>
-										@for (state of membershipStates | keyvalue; track state.key) {
-											<ion-select-option [value]="state.key">
-												{{ state.value.title }}
-											</ion-select-option>
-										}
-									</ion-select>
-								</div>
-							</th>					
-						}
-						@if (viewSelections().birthday){
-							<th class="align-middle events-name-column" >Datum narození</th>					
-						}
-						@if (viewSelections().addressCity){
-							<th class="align-middle events-name-column" >Město</th>					
-						}
-						@if (viewSelections().addressStreet){
-							<th class="align-middle events-name-column" >Ulice</th>					
-						}
-						@if (viewSelections().firstTelephone){
-							<th class="align-middle events-name-column" >Telefon</th>					
-						}
-						@if (viewSelections().firstEmail){
-							<th class="align-middle events-name-column" >E-mail</th>
-						}
-
-						@if (viewSelections().status){
-							<th class="align-middle members-status-column">Stav</th>
-						}
-
-					</tr>
-				</thead>
-				<tbody>
-					@if (members()) {
-						@for (member of members()!; track member.id) {
-							<tr
-								class="clickable"
-								[routerLink]="'' + member.id"
-								[class.member-inactive]="!member.active"
-								[class.member-paused]="member.membership === 'pozastaveno'"
-							>
-								@if (viewSelections().nickname){
-									<td>{{ member.nickname }}</td>
-								}
-
-								@if (viewSelections().name){
-									<td>{{ member.firstName }} {{ member.lastName }}</td>
-								}
-
-								@if (viewSelections().group){
-									<td>
-										<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
-									</td>
-								}
-								@if (viewSelections().role){
-									<td>{{ member | member: "role" }}</td>
-								}
-
-								@if (viewSelections().age){
-									<td>{{ member | member: "age" }}</td>
-								}
-
-								@if (viewSelections().membership){
-									<td>{{ member | member: "membership" }}</td>
-								}
-
-								@if (viewSelections().birthday){
-									<td>{{ member.birthday ? (member.birthday | date: "d. M. y") : "" }}</td>
-								}
-								
-								@if (viewSelections().addressCity) {
-								<td> {{ member.addressCity}} </td>
-								}
-
-								@if (viewSelections().addressStreet) {
-								<td> {{ member.addressStreet}} </td>
-								}
-								
-								@if (viewSelections().firstTelephone) {
-								<td> <strong> {{ member.contacts?.[0]?.relationship || "" }} </strong> {{ member.contacts?.[0]?.mobile || "" }} </td>							
-								}
-
-								@if (viewSelections().firstEmail) {
-								<td> <strong> {{ member.contacts?.[0]?.relationship || "" }} </strong> {{ member.contacts?.[0]?.email || "" }} </td>
-								}
-
-								@if (viewSelections().status){
-									<td class="members-status-column">
-										@if (member.active) {
-											<span class="bo-pill bo-pill-green">AKTIVNÍ</span>
-										} @else {
-											<span class="bo-pill">NEAKTIVNÍ</span>
-										}
-									</td>
-								}
-
-							</tr>
-						}
-					}
-				</tbody>
-			</admin-table>
+		@if (viewSelections().name) {
+			<admin-table-column header="Jméno" headerClass="align-middle members-name-column">
+				<ng-container *adminCell="let member">{{ member.firstName }} {{ member.lastName }}</ng-container>
+			</admin-table-column>
 		}
-	}
+
+		@if (viewSelections().group) {
+			<admin-table-column header="Oddíl" headerClass="align-middle">
+				<ng-container *adminCell="let member">
+					<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
+				</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().role) {
+			<admin-table-column header="Role" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{ member | member: "role" }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().age) {
+			<admin-table-column header="Věk">
+				<ng-container *adminHeader>
+					<div class="column-filter">
+						<ion-select
+							label="Věk"
+							interface="popover"
+							justify="start"
+							[ngModel]="selectedAges()"
+							(ngModelChange)="setFilterParam('age', $event)"
+							[multiple]="true"
+						>
+							@for (age of availableAges; track age) {
+								<ion-select-option [value]="'' + age">{{ age }}</ion-select-option>
+							}
+						</ion-select>
+					</div>
+				</ng-container>
+				<ng-container *adminCell="let member">{{ member | member: "age" }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().membership) {
+			<admin-table-column header="Členství">
+				<ng-container *adminHeader>
+					<div class="column-filter">
+						<ion-select
+							label="Členství"
+							interface="popover"
+							justify="start"
+							[ngModel]="selectedMembership()"
+							(ngModelChange)="setFilterParam('membership', $event)"
+							[multiple]="true"
+						>
+							@for (state of membershipStates | keyvalue; track state.key) {
+								<ion-select-option [value]="state.key">
+									{{ state.value.title }}
+								</ion-select-option>
+							}
+						</ion-select>
+					</div>
+				</ng-container>
+				<ng-container *adminCell="let member">{{ member | member: "membership" }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().birthday) {
+			<admin-table-column header="Datum narození" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{ member.birthday ? (member.birthday | date: "d. M. y") : "" }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().addressCity) {
+			<admin-table-column header="Město" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{ member.addressCity }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().addressStreet) {
+			<admin-table-column header="Ulice" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{ member.addressStreet }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().firstTelephone) {
+			<admin-table-column header="Telefon" headerClass="align-middle">
+				<ng-container *adminCell="let member">
+					<strong>{{ member.contacts?.[0]?.relationship || "" }}</strong> {{ member.contacts?.[0]?.mobile || "" }}
+				</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().firstEmail) {
+			<admin-table-column header="E-mail" headerClass="align-middle">
+				<ng-container *adminCell="let member">
+					<strong>{{ member.contacts?.[0]?.relationship || "" }}</strong> {{ member.contacts?.[0]?.email || "" }}
+				</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().status) {
+			<admin-table-column header="Stav" [right]="true" cellClass="members-status-column" headerClass="align-middle members-status-column">
+				<ng-container *adminCell="let member">
+					@if (member.active) {
+						<span class="bo-pill bo-pill-green">AKTIVNÍ</span>
+					} @else {
+						<span class="bo-pill">NEAKTIVNÍ</span>
+					}
+				</ng-container>
+			</admin-table-column>
+		}
+	</admin-table>
 
 	@if (members()?.length) {
 		<p class="ion-padding members-active-toggle">

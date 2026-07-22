@@ -1,18 +1,13 @@
 import { CommonModule } from "@angular/common";
 import { afterNextRender, Component, computed, Injector, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
+import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
-	IonAvatar,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
-	IonItem,
-	IonLabel,
-	IonList,
 	IonSelect,
 	IonSelectOption,
-	IonSkeletonText,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
@@ -21,9 +16,11 @@ import { DateTime } from "luxon";
 import { EventStatus, EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
-import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
+import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
+import { AdminTableHeaderDirective } from "src/app/shared/components/admin-table/admin-table-header.directive";
 import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { EventStatusBadgeComponent } from "src/app/shared/components/event-status-badge/event-status-badge.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
@@ -32,7 +29,6 @@ import { PageContentComponent } from "src/app/shared/components/page-content/pag
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { UrlParams } from "src/helpers/typings";
 import { SDK } from "src/sdk";
-import { EventPipe } from "../../../../shared/pipes/event.pipe";
 import { GroupPipe } from "../../../../shared/pipes/group.pipe";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 import { EventCreateModalComponent } from "../../components/event-create-modal/event-create-modal.component";
@@ -45,13 +41,7 @@ import { EventCreateModalComponent } from "../../components/event-create-modal/e
 
 	imports: [
 		CommonModule,
-		RouterLink,
 		FormsModule,
-		IonList,
-		IonItem,
-		IonSkeletonText,
-		IonLabel,
-		IonAvatar,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
 		IonSelect,
@@ -60,7 +50,9 @@ import { EventCreateModalComponent } from "../../components/event-create-modal/e
 		GroupPipe,
 		MemberPipe,
 		AdminTableComponent,
-		EventPipe,
+		AdminTableColumnComponent,
+		AdminTableCellDirective,
+		AdminTableHeaderDirective,
 		PageContentComponent,
 		PageHeaderComponent,
 		FilterComponent,
@@ -109,11 +101,12 @@ export class EventsListComponent implements OnInit {
 
 	filter: UrlParams = {};
 
-	view = signal<"table" | "list" | undefined>(undefined);
+	// Row helpers for admin-table (bound as inputs, so keep stable references).
+	rowLink = (event: SDK.EventResponseWithLinks) => "" + event.id;
+	rowId = (event: SDK.EventResponseWithLinks) => "event-" + event.id;
 
 	constructor(
 		private api: ApiService,
-		private platformService: PlatformService,
 		private router: Router,
 		private route: ActivatedRoute,
 		private injector: Injector,
@@ -136,10 +129,6 @@ export class EventsListComponent implements OnInit {
 	ngOnInit(): void {
 		this.loadYears();
 		this.loadStatuses();
-
-		this.platformService.isPortrait.subscribe((isPortrait: boolean) => {
-			this.view.set(isPortrait ? "list" : "table");
-		});
 
 		// All filter state (year/status/search/leaders) is written to the URL, so drive loading
 		// from the query params directly rather than the FilterComponent's `(change)` output
