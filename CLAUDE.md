@@ -12,4 +12,11 @@
 
 ## Database migrations
 
-- Generate migrations with the TypeORM script, do not hand-write them. From `backend/`, run `npm run migrations:generate --name=<MigrationName>` (which diffs the entities against the DB). Use `npm run migrations:create --name=<MigrationName>` only when an empty migration is genuinely needed.
+- **Always** produce migrations with `npm run migrations:generate --name=<MigrationName>` (from `backend/`), never by hand and never with `migrations:create`. The generator diffs the entities against the DB, so the migration comes out in TypeORM's own format and naming — hand-written files drift from that shape.
+- This means schema changes are driven **from the entities**: change the `@Column`/`@Entity` definition first (including options like `collation`, `type`, `nullable`, indexes), then generate. If you find yourself wanting to write SQL by hand, model it on the entity instead and let the generator emit it.
+- **Always read and fix up the generated migration before running it** — generation is a starting point, not the finished artifact. Check for all of:
+  - **Unrelated drift.** The diff compares *all* entities against the DB, so it happily sweeps in changes you did not intend — indexes/columns from someone else's in-flight entity edits, or divergence that was already there. Delete those statements (from both `up()` and `down()`) so the migration only contains the change you meant to make.
+  - **Statements TypeORM cannot generate.** A few DB objects have no entity representation (`CREATE COLLATION`, extensions, functions), so the generator emits code that references them without creating them — which fails on a fresh DB or in production. Add those statements by hand, ahead of the statement that depends on them; see `*-GroupNameNaturalNumericCollation.ts`, which creates the `natural_numeric` ICU collation before the column starts using it.
+  - **That `down()` really reverses `up()`**, including any statements you added or removed by hand.
+- Then apply it and confirm it actually works, rather than assuming — run `migrations:run`, and check the resulting schema/data (e.g. query `information_schema.columns`). `migrations:revert` is a cheap way to verify both directions.
+- Migrations auto-run in production only (`migrationsRun` in `config.ts`); in dev, apply them yourself with `npm run migrations:run` (`migrations:revert` undoes the last one).
