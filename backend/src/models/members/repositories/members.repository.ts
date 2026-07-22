@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationOptions } from "src/helpers/pagination";
-import { applySort } from "src/helpers/sort";
-import { Brackets, FindOneOptions, Repository } from "typeorm";
+import { applySort, parseSortKeys } from "src/helpers/sort";
+import { Brackets, FindOneOptions, In, Repository } from "typeorm";
 import { MemberContact } from "../entities/member-contact.entity";
 import { Member } from "../entities/member.entity";
 
@@ -32,36 +32,40 @@ export class MembersRepository {
 			.take(options.limit)
 			.skip(options.offset);
 
-		applySort(
-			q,
-			options,
-			{
-				nickname: "CONCAT(members.nickname,members.first_name,members.last_name)",
-				name: "CONCAT(members.last_name,members.first_name)",
-				role: "members.role",
-				membership: "members.membership",
-				age: "DATE_PART('year', AGE(CURRENT_DATE, members.birthday))",
-				birthday: "members.birthday",
-				// Sort by the *displayed* group (its name, e.g. "6. oddíl"), not the internal group
-				// id. `groups.name` carries the `natural_numeric` ICU collation (see Group entity),
-				// so embedded numbers order naturally: "3. oddíl" precedes "22. oddíl", and
-				// non-numeric names ("Klub přátel", …) sort after them.
-				group: "(SELECT g.name FROM groups g WHERE g.id = members.group_id)",
-				city: "members.addressCity",
-				street: "members.addressStreet",
-				status: "members.active",
-			},
-			{ column: "CONCAT(members.nickname,members.first_name,members.last_name)", order: "ASC" },
-		);
+		// Sort by the *displayed* group (its name, e.g. "6. oddíl"), not the internal group
+		// id. `groups.name` carries the `natural_numeric` ICU collation (see Group entity),
+		// so embedded numbers order naturally: "3. oddíl" precedes "22. oddíl", and
+		// non-numeric names ("Klub přátel", …) sort after them.
+		const GROUP_NAME = "(SELECT g.name FROM groups g WHERE g.id = members.group_id)";
+		const NICKNAME = "CONCAT(members.nickname,members.first_name,members.last_name)";
 
-		// Keep members within the same group in a readable order.
-		if (options.sort === "group") {
-			q.addOrderBy("CONCAT(members.nickname,members.first_name,members.last_name)", "ASC");
+		const sortWhitelist = {
+			nickname: NICKNAME,
+			name: "CONCAT(members.last_name,members.first_name)",
+			role: "members.role",
+			membership: "members.membership",
+			age: "DATE_PART('year', AGE(CURRENT_DATE, members.birthday))",
+			birthday: "members.birthday",
+			group: GROUP_NAME,
+			city: "members.addressCity",
+			street: "members.addressStreet",
+			status: "members.active",
+		};
+
+		applySort(q, options, sortWhitelist, [
+			// Default order: group name ASC, then role. `role` is a Postgres enum declared
+			// `dite, instruktor, vedouci`, so DESC yields vedoucí → instruktor → dítě, matching
+			// the group detail screen.
+			{ column: GROUP_NAME, order: "ASC" },
+			{ column: "members.role", order: "DESC" },
+		]);
+
+		// Keep members within the same (group, role) bucket in a readable order: append a
+		// nickname tie-breaker whenever the client's sort doesn't already order by a name key.
+		const sortKeys = parseSortKeys(options, sortWhitelist);
+		if (!sortKeys.includes("nickname") && !sortKeys.includes("name")) {
+			q.addOrderBy(NICKNAME, "ASC");
 		}
-
-		// Join contacts up-front only when requested (i.e. the contacts column is visible).
-		// TypeORM keeps pagination correct with a distinct-id subquery despite the one-to-many join.
-		if (options.contacts) q.leftJoinAndSelect("members.contacts", "contacts");
 
 		if (options.groups) q.andWhere("members.groupId IN (:...groupIds)", { groupIds: options.groups });
 
@@ -85,7 +89,30 @@ export class MembersRepository {
 
 		if (options.active !== undefined) q.andWhere("members.active = :active", { active: options.active });
 
-		return q.getMany();
+		const members = await q.getMany();
+
+		// Load contacts up-front only when requested (i.e. the contacts column is visible), via a
+		// *separate* batched query rather than a leftJoinAndSelect. A one-to-many join combined with
+		// take/skip forces TypeORM to build a distinct-id pagination subquery, and that subquery
+		// cannot resolve our expression-based ORDER BY keys (the group-name subquery, the nickname
+		// CONCAT) — it throws "alias was not found". A single WHERE-IN query keeps the multi-column
+		// sort and pagination intact while still avoiding an N+1 fetch per member.
+		if (options.contacts && members.length) {
+			const contacts = await this.membersContactsRepository.find({
+				where: { memberId: In(members.map((member) => member.id)) },
+			});
+
+			const contactsByMember = new Map<number, MemberContact[]>();
+			for (const contact of contacts) {
+				const list = contactsByMember.get(contact.memberId) ?? [];
+				list.push(contact);
+				contactsByMember.set(contact.memberId, list);
+			}
+
+			for (const member of members) member.contacts = contactsByMember.get(member.id) ?? [];
+		}
+
+		return members;
 	}
 
 	// Distinct ages across all members in a single query, so the age filter no longer

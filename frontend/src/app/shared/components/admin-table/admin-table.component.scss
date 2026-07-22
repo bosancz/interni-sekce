@@ -80,6 +80,17 @@ table.table {
 			color: var(--bo-blue);
 		}
 
+		// priority badge (1, 2, 3 …) next to the caret, shown only while more than one
+		// column is active — small, muted and non-wrapping so it reads as a superscript
+		.admin-table-sort-index {
+			font-size: 0.7em;
+			font-weight: 700;
+			line-height: 1;
+			color: var(--bo-muted);
+			white-space: nowrap;
+			margin-left: -0.15em;
+		}
+
 		tbody td {
 			border-bottom: 1px solid var(--bo-line);
 			padding: 0.7rem 1rem;

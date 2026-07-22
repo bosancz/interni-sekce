@@ -1,13 +1,13 @@
 <ion-list lines="full">
 	<ion-item-divider>{{ label() }}</ion-item-divider>
 
-	<ion-item [lines]="sort() ? 'full' : 'none'">
+	<ion-item [lines]="primaryKey() ? 'full' : 'none'">
 		<ion-select
 			label="Seřadit podle"
 			interface="popover"
 			justify="start"
 			placeholder="Výchozí"
-			[ngModel]="sort()"
+			[ngModel]="primaryKey()"
 			(ngModelChange)="selectColumn($event)"
 		>
 			<ion-select-option [value]="null">Výchozí</ion-select-option>
@@ -17,9 +17,9 @@
 		</ion-select>
 	</ion-item>
 
-	@if (sort()) {
+	@if (primaryKey()) {
 		<ion-item lines="none">
-			<ion-segment [value]="order()" (ionChange)="selectOrder($any($event.detail.value))">
+			<ion-segment [value]="primaryOrder()" (ionChange)="selectOrder($any($event.detail.value))">
 				<ion-segment-button value="ASC">
 					<ion-label>Vzestupně</ion-label>
 				</ion-segment-button>

@@ -94,7 +94,8 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	selectedMembership = signal<string[]>([]);
 
 	sortColumn = signal<string | null>(null);
-	sortOrder = signal<"ASC" | "DESC">("ASC");
+	// String, not "ASC" | "DESC": a multi-column sort carries a comma-separated list (e.g. "ASC,DESC").
+	sortOrder = signal<string>("ASC");
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "nickname", label: "Přezdívka" },
@@ -275,7 +276,8 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		this.selectedMembership.set(this.normalizeFilterValueToArray(params["membership"]));
 		this.showInactive.set(((params["active"] as string) || "active") === "all");
 		this.sortColumn.set(params["sort"] ?? null);
-		this.sortOrder.set(params["order"] === "DESC" ? "DESC" : "ASC");
+		// Keep the raw param — it may be a comma-separated list of directions for a multi-column sort.
+		this.sortOrder.set(params["order"] ?? "ASC");
 		this.loadMembers(this.filter);
 	}
 
@@ -334,7 +336,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			// and only when a contact column is actually visible.
 			contacts: this.needsContacts() || undefined,
 			sort: (filter["sort"] as string) || undefined,
-			order: (filter["order"] as SDK.ListMembersOrderEnum) || undefined,
+			order: (filter["order"] as string) || undefined,
 		};
 
 		const members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
