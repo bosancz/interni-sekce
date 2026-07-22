@@ -1,32 +1,38 @@
 <ion-toolbar>
-	@if (search()) {
-		<ion-searchbar
-			name="search"
-			ngModel
-			placeholder="Hledat"
-			[debounce]="500"
-			[ngModel]="searchString()"
-			(ngModelChange)="searchString.set($event); onSearchbarUpdate()"
-			(change)="$event.stopPropagation()"
-		></ion-searchbar>
-	}
-
-	<ion-button
-		color="primary"
-		fill="none"
-		[class.d-lg-none]="showButtonMobileOnly()"
-		[id]="'filter-modal-' + filterId"
-		[disabled]="disabled()"
-		(click)="openFilter(filterContent)"
-		slot="end"
-	>
-		<ion-icon slot="icon-only" name="filter-outline"></ion-icon>
-		@if (filterCount()) {
-			<ion-badge color="warning">{{ filterCount() }}</ion-badge>
+	<div class="bo-filter-bar">
+		@if (search()) {
+			<ion-searchbar
+				class="bo-filter-search"
+				name="search"
+				ngModel
+				placeholder="Hledat"
+				[debounce]="500"
+				[ngModel]="searchString()"
+				(ngModelChange)="searchString.set($event); onSearchbarUpdate()"
+				(change)="$event.stopPropagation()"
+			></ion-searchbar>
 		}
-	</ion-button>
 
-	<ng-content select="[toolbar-actions]"></ng-content>
+		<div class="bo-filter-actions">
+			@if (filterModal()) {
+				<ion-button
+					color="primary"
+					fill="none"
+					[class.d-lg-none]="showButtonMobileOnly()"
+					[id]="'filter-modal-' + filterId"
+					[disabled]="disabled()"
+					(click)="openFilter(filterContent)"
+				>
+					<ion-icon slot="icon-only" name="filter-outline"></ion-icon>
+					@if (filterCount()) {
+						<ion-badge color="warning">{{ filterCount() }}</ion-badge>
+					}
+				</ion-button>
+			}
+
+			<ng-content select="[toolbar-actions]"></ng-content>
+		</div>
+	</div>
 </ion-toolbar>
 
 <ng-template #filterContent>

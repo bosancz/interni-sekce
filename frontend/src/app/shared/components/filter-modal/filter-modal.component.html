@@ -2,7 +2,11 @@
 	<ng-container [ngTemplateOutlet]="content"></ng-container>
 
 	<ion-buttons slot="buttons">
-		<ion-button color="secondary" (click)="submit.emit(false)">Vymazat</ion-button>
-		<ion-button color="primary" [strong]="true" (click)="submit.emit(true)">Filtrovat</ion-button>
+		@if (immediate) {
+			<ion-button color="primary" [strong]="true" (click)="close.emit()">Hotovo</ion-button>
+		} @else {
+			<ion-button color="secondary" (click)="submit.emit(false)">Vymazat</ion-button>
+			<ion-button color="primary" [strong]="true" (click)="submit.emit(true)">Filtrovat</ion-button>
+		}
 	</ion-buttons>
 </bo-modal-layout>

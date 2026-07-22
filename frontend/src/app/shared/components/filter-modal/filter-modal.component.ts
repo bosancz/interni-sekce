@@ -13,6 +13,9 @@ import { ModalLayoutComponent } from "../modal-layout/modal-layout.component";
 })
 export class FilterModalComponent extends InputModalComponent<boolean> {
 	content!: TemplateRef<any>; // must be set in the parent component
+	// When true the modal is a plain disclosure sheet: its controls apply immediately (they write
+	// straight to the URL), so the footer is a single "Hotovo" close button instead of Vymazat/Filtrovat.
+	immediate = false;
 
 	constructor(modalCtrl: ModalController) {
 		super(modalCtrl);

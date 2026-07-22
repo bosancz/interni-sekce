@@ -32,8 +32,8 @@ export class FilterPillComponent {
 	selected = input<string[]>([]);
 	// single-select pills replace the value and close on pick; multi-select toggle chips
 	multiple = input<boolean>(true);
-	// stack chips in one column instead of a wrapping grid
-	singleColumn = input<boolean>(false);
+	// number of chip columns in the popover grid (1 = stacked single column)
+	columns = input<number>(1);
 	selectedChange = output<string[]>();
 
 	popoverOpen = signal(false);
@@ -47,7 +47,7 @@ export class FilterPillComponent {
 		const selected = this.selected();
 		if (!selected.length) return this.label();
 
-		if (!this.multiple() && selected.length === 1) {
+		if (selected.length === 1) {
 			const option = this.options().find((item) => item.value === selected[0]);
 			if (option) return `${this.label()}: ${option.shortLabel ?? option.label}`;
 		}

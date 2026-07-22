@@ -34,6 +34,14 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 	search = input<boolean>(false);
 	paramsSeparator = input<string>(",");
 	showButtonMobileOnly = input<boolean>(false);
+	// Whether to render the filter button that opens the modal. Set to false when every filter lives
+	// in the toolbar (pills/popovers) and there is no projected modal content, so mobile and desktop
+	// share the same inline controls instead of a redundant modal.
+	filterModal = input<boolean>(true);
+	// When true the modal is a plain disclosure sheet whose controls (pills/toggles) write straight to
+	// the URL, so there is nothing to submit or revert — used to collect inline controls into a modal
+	// on mobile while keeping them inline on desktop.
+	immediateFilter = input<boolean>(false);
 	change = output<FilterData>();
 
 	@ViewChild(IonModal) modal?: IonModal;
@@ -73,7 +81,16 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 	}
 
 	async openFilter(filterContent: TemplateRef<any>) {
-		const result = await this.modalService.componentModal(FilterModalComponent, { content: filterContent });
+		const immediate = this.immediateFilter();
+		const result = await this.modalService.componentModal(FilterModalComponent, {
+			content: filterContent,
+			immediate,
+		});
+
+		if (immediate) {
+			// Controls inside the sheet already wrote their changes to the URL; nothing to submit/revert.
+			return;
+		}
 
 		if (result === true) {
 			// filter submitted - set new filters
