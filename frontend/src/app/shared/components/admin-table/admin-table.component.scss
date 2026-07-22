@@ -67,9 +67,21 @@ table.table {
 	}
 }
 
+// trailing actions column stays compact and centered
+.admin-table-actions-column {
+	width: 1%;
+	white-space: nowrap;
+	text-align: center;
+}
+
 // mobile list view — each column becomes a line; the [right] column sits at slot="end"
 ion-item.clickable {
 	cursor: pointer;
+}
+
+// keep the right-slot content (right column + actions menu) on one row
+.admin-table-end {
+	gap: 0.25rem;
 }
 
 .admin-table-line {

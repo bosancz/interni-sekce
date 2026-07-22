@@ -4,6 +4,8 @@ import { RouterLink } from "@angular/router";
 import { IonItem, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { PlatformService } from "src/app/core/services/platform.service";
+import { Action } from "../action-buttons/action-buttons.component";
+import { AdminTableActionsComponent } from "./admin-table-actions.component";
 import { AdminTableColumnComponent } from "./admin-table-column.component";
 
 export type AdminTableDisplay = "auto" | "table" | "list";
@@ -26,7 +28,15 @@ type RowFn<T> = ((row: any) => T) | null;
 	selector: "admin-table",
 	templateUrl: "./admin-table.component.html",
 	styleUrls: ["./admin-table.component.scss"],
-	imports: [CommonModule, RouterLink, IonList, IonItem, IonLabel, IonSkeletonText],
+	imports: [
+		CommonModule,
+		RouterLink,
+		IonList,
+		IonItem,
+		IonLabel,
+		IonSkeletonText,
+		AdminTableActionsComponent,
+	],
 })
 export class AdminTableComponent {
 	defaultTableClass = "table table-hover";
@@ -56,6 +66,16 @@ export class AdminTableComponent {
 
 	/** Number of skeleton rows to show while `loading`. */
 	skeletonRows = input<number>(5);
+
+	/**
+	 * `(row) => Action[]` — per-row three-dots menu. Rendered as a trailing cell in
+	 * table mode and inside the item (right side) in list mode, so the actions are
+	 * available on both desktop and mobile.
+	 */
+	actions = input<((row: any) => Action[]) | null>(null);
+
+	/** `(row) => header` — title shown above the actions on the mobile ActionSheet. */
+	actionsHeader = input<((row: any) => string | null | undefined) | null>(null);
 
 	rowClick = output<any>();
 
@@ -98,6 +118,14 @@ export class AdminTableComponent {
 
 	resolveClass(row: any) {
 		return this.rowClass()?.(row) ?? null;
+	}
+
+	resolveActions(row: any) {
+		return this.actions()?.(row) ?? [];
+	}
+
+	resolveActionsHeader(row: any) {
+		return this.actionsHeader()?.(row) ?? null;
 	}
 
 	onRowClick(row: any) {

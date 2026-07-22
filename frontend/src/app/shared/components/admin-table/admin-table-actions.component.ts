@@ -14,17 +14,19 @@ import { PlatformService } from "src/app/core/services/platform.service";
 import { Action } from "../action-buttons/action-buttons.component";
 
 /**
- * Trailing three-dots menu cell for `admin-table` rows. Drop it in as the last
- * `<td>` of a row and pass the row's applicable `actions`; it swallows the click
- * so a row-level `routerLink` doesn't fire. On desktop it opens a dropdown
- * popover, on mobile a native ActionSheet.
+ * Trailing three-dots menu for `admin-table` rows. `admin-table` renders it
+ * automatically (as a trailing `<td>` on desktop and inside the item on mobile)
+ * when given an `[actions]` callback, so both views expose the same row actions.
+ * The attribute selector lets it host on any element (`<td>` or a `<div>`). It
+ * swallows the click so a row-level `routerLink` doesn't fire; on desktop it
+ * opens a dropdown popover, on mobile a native ActionSheet.
  *
  * ```html
  * <td admin-table-actions [actions]="rowActions(item)" [header]="item.name"></td>
  * ```
  */
 @Component({
-	selector: "td[admin-table-actions]",
+	selector: "[admin-table-actions]",
 	template: `
 		@if (visibleActions().length) {
 			<ion-button fill="clear" size="small" (click)="openActions($event)">

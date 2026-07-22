@@ -13,6 +13,9 @@
 								}
 							</th>
 						}
+						@if (actions()) {
+							<th class="admin-table-actions-column" aria-label="Akce"></th>
+						}
 					</tr>
 				</thead>
 
@@ -22,6 +25,9 @@
 							<tr>
 								@for (column of columns(); track column) {
 									<td><ion-skeleton-text animated></ion-skeleton-text></td>
+								}
+								@if (actions()) {
+									<td class="admin-table-actions-column"></td>
 								}
 							</tr>
 						}
@@ -41,6 +47,14 @@
 											[ngTemplateOutletContext]="{ $implicit: row }"
 										></ng-container>
 									</td>
+								}
+								@if (actions()) {
+									<td
+										class="admin-table-actions-column"
+										admin-table-actions
+										[actions]="resolveActions(row)"
+										[header]="resolveActionsHeader(row)"
+									></td>
 								}
 							</tr>
 						}
@@ -90,12 +104,21 @@
 							}
 						</ion-label>
 
-						@if (rightColumn(); as rightColumn) {
+						@if (rightColumn() || actions()) {
 							<div slot="end" class="admin-table-end">
-								<ng-container
-									[ngTemplateOutlet]="rightColumn.cellTemplate()"
-									[ngTemplateOutletContext]="{ $implicit: row }"
-								></ng-container>
+								@if (rightColumn(); as rightColumn) {
+									<ng-container
+										[ngTemplateOutlet]="rightColumn.cellTemplate()"
+										[ngTemplateOutletContext]="{ $implicit: row }"
+									></ng-container>
+								}
+								@if (actions()) {
+									<div
+										admin-table-actions
+										[actions]="resolveActions(row)"
+										[header]="resolveActionsHeader(row)"
+									></div>
+								}
 							</div>
 						}
 					</ion-item>
