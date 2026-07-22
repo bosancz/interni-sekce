@@ -44,7 +44,7 @@ import { Action } from "../action-buttons/action-buttons.component";
 						@for (action of menuActions(); track action.text) {
 							<ion-item button detail="false" [disabled]="action.disabled" (click)="runAction(action)">
 								@if (action.icon) {
-									<ion-icon slot="start" [name]="action.icon" [color]="action.color"></ion-icon>
+									<ion-icon slot="start" [icon]="action.icon" [color]="action.color"></ion-icon>
 								}
 								<ion-label [color]="action.color">{{ action.text }}</ion-label>
 							</ion-item>
@@ -96,6 +96,12 @@ export class AdminTableActionsComponent {
 	}
 
 	async openActions(event: Event) {
+		// Stop the tap here so it can't fall through to the row's routerLink/click
+		// (on mobile the row is an ion-item[routerLink]; without this a tap on the
+		// trigger navigates into the row instead of opening the menu).
+		event.stopPropagation();
+		event.preventDefault();
+
 		if (this.platformService.isLg.value) {
 			this.popoverEvent.set(event);
 			this.popoverOpen.set(true);

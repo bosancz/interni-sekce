@@ -6,8 +6,20 @@
 					<tr>
 						@for (column of columns(); track column) {
 							<th [class]="column.headerClass()">
-								@if (column.headerTemplate(); as headerTemplate) {
-									<ng-container [ngTemplateOutlet]="headerTemplate"></ng-container>
+								@if (column.sort()) {
+									<button
+										type="button"
+										class="admin-table-sort"
+										[class.admin-table-sort-active]="sort() === column.sort()"
+										(click)="onSort(column)"
+									>
+										<span>{{ column.header() }}</span>
+										@if (sort() === column.sort()) {
+											<ion-icon [name]="order() === 'ASC' ? 'caret-up' : 'caret-down'"></ion-icon>
+										} @else {
+											<ion-icon name="swap-vertical" class="admin-table-sort-idle"></ion-icon>
+										}
+									</button>
 								} @else {
 									{{ column.header() }}
 								}

@@ -1,14 +1,21 @@
 import { CommonModule } from "@angular/common";
 import { Component, computed, contentChildren, input, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { IonItem, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonIcon, IonItem, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { caretDown, caretUp, swapVertical } from "ionicons/icons";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { Action } from "../action-buttons/action-buttons.component";
 import { AdminTableActionsComponent } from "./admin-table-actions.component";
 import { AdminTableColumnComponent } from "./admin-table-column.component";
 
 export type AdminTableDisplay = "auto" | "table" | "list";
+export type AdminTableSortOrder = "ASC" | "DESC";
+export interface AdminTableSort {
+	sort: string;
+	order: AdminTableSortOrder;
+}
 
 /** Signature of the per-row callbacks (link / id / class). */
 type RowFn<T> = ((row: any) => T) | null;
@@ -34,6 +41,7 @@ type RowFn<T> = ((row: any) => T) | null;
 		IonList,
 		IonItem,
 		IonLabel,
+		IonIcon,
 		IonSkeletonText,
 		AdminTableActionsComponent,
 	],
@@ -77,7 +85,16 @@ export class AdminTableComponent {
 	/** `(row) => header` — title shown above the actions on the mobile ActionSheet. */
 	actionsHeader = input<((row: any) => string | null | undefined) | null>(null);
 
+	/** Active sort column key (matches a column's `[sort]`), or `null` when unsorted. */
+	sort = input<string | null>(null);
+
+	/** Active sort direction for the `sort` column. */
+	order = input<AdminTableSortOrder>("ASC");
+
 	rowClick = output<any>();
+
+	/** Emitted when a sortable header is clicked, with the next sort key + direction. */
+	sortChange = output<AdminTableSort>();
 
 	readonly columns = contentChildren(AdminTableColumnComponent);
 
@@ -99,7 +116,19 @@ export class AdminTableComponent {
 	readonly skeletonArray = computed(() => Array.from({ length: this.skeletonRows() }));
 
 	constructor(private readonly platformService: PlatformService) {
+		addIcons({ caretUp, caretDown, swapVertical });
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
+	}
+
+	/**
+	 * Toggle sorting for a column header click: switching to a new column starts
+	 * ascending; clicking the active column flips its direction.
+	 */
+	onSort(column: AdminTableColumnComponent) {
+		const key = column.sort();
+		if (!key) return;
+		const order: AdminTableSortOrder = this.sort() === key && this.order() === "ASC" ? "DESC" : "ASC";
+		this.sortChange.emit({ sort: key, order });
 	}
 
 	trackRow = (index: number, row: any) => {

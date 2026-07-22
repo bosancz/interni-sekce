@@ -38,10 +38,65 @@ table.table {
 			}
 		}
 
+		// sortable header toggle — a native button reset to read as a plain header,
+		// inheriting the uppercase/weight/spacing/color from the surrounding th
+		.admin-table-sort {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.3em;
+			appearance: none;
+			background: none;
+			border: none;
+			margin: 0;
+			padding: 0;
+			cursor: pointer;
+			font: inherit;
+			letter-spacing: inherit;
+			text-transform: inherit;
+			color: inherit;
+
+			ion-icon {
+				font-size: 0.95em;
+				flex-shrink: 0;
+			}
+
+			&:hover {
+				color: var(--bo-blue);
+			}
+		}
+
+		// idle up/down hint: hidden until the header is hovered, so unsorted
+		// columns stay clean but still signal they can be sorted
+		.admin-table-sort-idle {
+			opacity: 0;
+			transition: opacity 0.15s ease;
+		}
+
+		.admin-table-sort:hover .admin-table-sort-idle {
+			opacity: 0.45;
+		}
+
+		.admin-table-sort-active {
+			color: var(--bo-blue);
+		}
+
 		tbody td {
 			border-bottom: 1px solid var(--bo-line);
 			padding: 0.7rem 1rem;
 			vertical-align: middle;
+		}
+
+		// Trailing row-actions column. A fixed, compact width (rather than the
+		// shrink-to-content `width: 1%` trick, which only holds under `table-layout:
+		// auto`) guarantees the 3-dots button always fits on the right edge even when
+		// a consumer sets `table-layout: fixed` — otherwise the cell collapses and the
+		// button spills outside the table. Trimmed side padding keeps it snug.
+		th.admin-table-actions-column,
+		td.admin-table-actions-column {
+			width: 2.5rem;
+			padding-inline: 0;
+			text-align: center;
+			white-space: nowrap;
 		}
 
 		tbody tr:nth-child(even) {
@@ -67,16 +122,16 @@ table.table {
 	}
 }
 
-// trailing actions column stays compact and centered
-.admin-table-actions-column {
-	width: 1%;
-	white-space: nowrap;
-	text-align: center;
-}
-
 // mobile list view — each column becomes a line; the [right] column sits at slot="end"
 ion-item.clickable {
 	cursor: pointer;
+}
+
+// primary column renders as the row title — bump it above Ionic's small default
+ion-item ion-label h3 {
+	font-size: 1rem;
+	font-weight: 600;
+	color: var(--bo-heading);
 }
 
 // keep the right-slot content (right column + actions menu) on one row

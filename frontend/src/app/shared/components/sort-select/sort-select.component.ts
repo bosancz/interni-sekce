@@ -1,0 +1,63 @@
+import { Component, input, output } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import {
+	IonItem,
+	IonItemDivider,
+	IonLabel,
+	IonList,
+	IonSegment,
+	IonSegmentButton,
+	IonSelect,
+	IonSelectOption,
+} from "@ionic/angular/standalone";
+import { AdminTableSort, AdminTableSortOrder } from "../admin-table/admin-table.component";
+
+export interface SortOption {
+	/** Backend sort key (matches an `admin-table-column`'s `sort`). */
+	key: string;
+	label: string;
+}
+
+/**
+ * Mobile-friendly sort control for the filter modal: a column dropdown plus an
+ * ascending/descending segment. Mirrors the desktop `admin-table` header sorting,
+ * emitting the same `sortChange` shape so pages reuse their existing handler.
+ * Selecting "Výchozí" emits an empty key to fall back to the default order.
+ */
+@Component({
+	selector: "bo-sort-select",
+	templateUrl: "./sort-select.component.html",
+	imports: [
+		FormsModule,
+		IonList,
+		IonItem,
+		IonItemDivider,
+		IonLabel,
+		IonSegment,
+		IonSegmentButton,
+		IonSelect,
+		IonSelectOption,
+	],
+})
+export class SortSelectComponent {
+	options = input.required<SortOption[]>();
+	sort = input<string | null>(null);
+	order = input<AdminTableSortOrder>("ASC");
+	label = input<string>("Řazení");
+
+	sortChange = output<AdminTableSort>();
+
+	selectColumn(key: string | null) {
+		if (!key) {
+			this.sortChange.emit({ sort: "", order: "ASC" });
+			return;
+		}
+		this.sortChange.emit({ sort: key, order: this.order() ?? "ASC" });
+	}
+
+	selectOrder(order: AdminTableSortOrder) {
+		const key = this.sort();
+		if (!key) return;
+		this.sortChange.emit({ sort: key, order });
+	}
+}

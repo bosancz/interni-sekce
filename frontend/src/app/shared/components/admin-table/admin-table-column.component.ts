@@ -1,6 +1,5 @@
 import { Component, computed, contentChild, input } from "@angular/core";
 import { AdminTableCellDirective } from "./admin-table-cell.directive";
-import { AdminTableHeaderDirective } from "./admin-table-header.directive";
 
 /**
  * Declares one column of an `admin-table`. Renders nothing on its own — it is a
@@ -36,9 +35,13 @@ export class AdminTableColumnComponent {
 	/** Extra class(es) applied to the `<th>` in table view. */
 	headerClass = input<string>("");
 
+	/**
+	 * Backend sort key for this column. When set, the column header becomes a
+	 * clickable sort toggle in table view (see `admin-table` `[sort]`/`(sortChange)`).
+	 */
+	sort = input<string>("");
+
 	private readonly cellDef = contentChild(AdminTableCellDirective);
-	private readonly headerDef = contentChild(AdminTableHeaderDirective);
 
 	readonly cellTemplate = computed(() => this.cellDef()?.template ?? null);
-	readonly headerTemplate = computed(() => this.headerDef()?.template ?? null);
 }
