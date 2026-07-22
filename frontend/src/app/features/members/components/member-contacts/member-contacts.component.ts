@@ -11,7 +11,7 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { callOutline, informationCircleOutline, mailOutline, personOutline } from "ionicons/icons";
+import { callOutline, informationCircleOutline, mailOutline, peopleOutline, personOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -22,6 +22,8 @@ import { CardTitleComponent } from "src/app/shared/components/card-title/card-ti
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { CopyButtonComponent } from "src/app/shared/components/copy-button/copy-button.component";
 import { DeleteButtonComponent } from "src/app/shared/components/delete-button/delete-button.component";
+import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
+import { IconButtonComponent } from "src/app/shared/components/icon-button/icon-button.component";
 import { SDK } from "src/sdk";
 
 @UntilDestroy()
@@ -43,6 +45,8 @@ import { SDK } from "src/sdk";
 		AddButtonComponent,
 		CopyButtonComponent,
 		DeleteButtonComponent,
+		EditButtonComponent,
+		IconButtonComponent,
 	],
 })
 export default class MemberContactsComponent {
@@ -57,7 +61,7 @@ export default class MemberContactsComponent {
 		private alertController: AlertController,
 		private modalService: ModalService,
 	) {
-		addIcons({ callOutline, mailOutline, informationCircleOutline, personOutline });
+		addIcons({ callOutline, mailOutline, informationCircleOutline, personOutline, peopleOutline });
 		effect(() => {
 			const member = this.member();
 			this.loadContacts(member?.id ?? null);

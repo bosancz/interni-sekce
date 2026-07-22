@@ -1,0 +1,74 @@
+// Row-state classes are applied by admin-table (rows live in its view), so pierce
+// encapsulation with ::ng-deep to reach them from this component's stylesheet.
+:host ::ng-deep .member-inactive {
+	color: var(--bo-muted);
+	opacity: 0.65;
+}
+:host ::ng-deep ion-item.member-inactive {
+	--color: var(--bo-muted);
+}
+:host ::ng-deep tr.member-paused {
+	color: var(--bo-muted);
+}
+
+// Highlight leaders and instructors with a light role tint. The table.table +
+// tbody qualifiers are needed to outrank admin-table's zebra striping rule
+// (`table.table tbody tr:nth-child(even)`), which would otherwise grey out
+// every second tinted row.
+:host ::ng-deep table.table tbody tr.member-vedouci {
+	background-color: rgba(var(--ion-color-warning-rgb), 0.1);
+}
+:host ::ng-deep ion-item.member-vedouci {
+	--background: rgba(var(--ion-color-warning-rgb), 0.1);
+}
+:host ::ng-deep table.table tbody tr.member-instruktor {
+	background-color: rgba(var(--ion-color-success-rgb), 0.14);
+}
+:host ::ng-deep ion-item.member-instruktor {
+	--background: rgba(var(--ion-color-success-rgb), 0.14);
+}
+
+:host ::ng-deep .members-table {
+	table-layout: fixed;
+	width: 100%;
+}
+
+ion-select::part(text) {
+	font-weight: normal;
+}
+
+// Desktop: filters, columns and view options laid out inline in the filter toolbar.
+.members-filter-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px;
+
+	ion-button ion-icon {
+		font-size: 28px;
+	}
+}
+
+// Mobile: the same controls collected inside the filter modal.
+.members-filter-modal {
+	.members-filter-modal-pills {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 8px 12px 4px;
+
+		bo-filter-pill {
+			display: block;
+		}
+
+		::ng-deep .filter-pill-button {
+			width: 100%;
+			margin-inline: 0;
+			justify-content: space-between;
+		}
+	}
+
+	ion-list {
+		margin-top: 8px;
+	}
+}

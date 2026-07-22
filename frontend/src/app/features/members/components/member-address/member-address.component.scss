@@ -1,12 +1,19 @@
-ion-list {
-	padding: 0;
-}
-bo-item {
-	--label-width: 120px;
+:host {
+	display: block;
 }
 
-.address {
-	ion-label {
-		white-space: pre-wrap;
-	}
+/* rows provide their own padding – drop the default p-3 from bo-card-content */
+::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+.address-value {
+	white-space: pre-wrap;
+	text-align: left;
+	flex: 1;
+}
+
+.copy-button,
+bo-copy-button {
+	flex: 0 0 auto;
 }

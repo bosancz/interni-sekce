@@ -1,124 +1,128 @@
 <bo-page-header title="Členská databáze" [actions]="actions()" />
 
+<bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
+	@if (isDesktop()) {
+		<!-- Desktop: filters, columns and view options laid out inline in the toolbar. -->
+		<div toolbar-actions slot="end" class="members-filter-actions">
+			<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
 
-<bo-filter [search]="true" [showButtonMobileOnly]="true">
+			<ion-button fill="clear" size="small" id="columns-popover-trigger" title="Sloupce">
+				<ion-icon slot="icon-only" name="columns"></ion-icon>
+			</ion-button>
+
+			<ion-button fill="clear" size="small" id="inactive-popover-trigger" title="Zobrazení">
+				<ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+			</ion-button>
+		</div>
+	} @else {
+		<!-- Mobile: the same filters, columns and view options collected inside the filter modal. -->
+		<div class="members-filter-modal">
+			<div class="members-filter-modal-pills">
+				<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+			</div>
+
+			<bo-sort-select
+				[options]="sortOptions"
+				[sort]="sortColumn()"
+				[order]="sortOrder()"
+				(sortChange)="onSortChange($event)"
+			/>
+
+			<ion-list lines="full">
+				<ng-container [ngTemplateOutlet]="columnsList"></ng-container>
+			</ion-list>
+
+			<ion-list lines="full">
+				<ng-container [ngTemplateOutlet]="viewOptionsList"></ng-container>
+			</ion-list>
+		</div>
+	}
+</bo-filter>
+
+<!-- Filter pills, shared between the desktop toolbar and the mobile filter modal. -->
+<ng-template #filterPills>
 	<bo-filter-pill
-		toolbar-actions
-		slot="end"
 		label="Oddíl"
 		[multiple]="false"
-		[singleColumn]="true"
 		[options]="groupOptions()"
 		[selected]="selectedGroups()"
 		(selectedChange)="setFilterParam('groups', $event)"
 	/>
 	<bo-filter-pill
-		toolbar-actions
-		slot="end"
 		label="Role"
-		[singleColumn]="true"
 		[options]="roleOptions"
 		[selected]="selectedRoles()"
 		(selectedChange)="setFilterParam('roles', $event)"
 	/>
+	<bo-filter-pill
+		label="Členství"
+		[options]="membershipOptions"
+		[selected]="selectedMembership()"
+		(selectedChange)="setFilterParam('membership', $event)"
+	/>
+</ng-template>
 
-	<ion-button
-		toolbar-actions
-		class="d-none d-lg-block"
-		fill="clear"
-		size="small"
-		id="columns-popover-trigger"
-		slot="end"
-		title="Sloupce"
-	>
-		<ion-icon slot="icon-only" name="columns"></ion-icon>
-	</ion-button>
+<!-- Column picker, shared between the desktop popover and the mobile filter modal. -->
+<ng-template #columnsList>
+	<ion-item-divider>Sloupce</ion-item-divider>
+	@for (selection of viewSelections() | keyvalue: originalViewOrder; track selection.key) {
+		<ion-item>
+			<ion-checkbox
+				[checked]="viewSelections()[selection.key]"
+				(ionChange)="setViewSelection(selection.key, $event.detail.checked)"
+				justify="space-between"
+			>
+				{{ getViewSelectionLabel(selection.key) }}
+			</ion-checkbox>
+		</ion-item>
+	}
+</ng-template>
 
-	<ion-button
-		toolbar-actions
-		class="d-none d-lg-block"
-		fill="clear"
-		size="small"
-		id="inactive-popover-trigger"
-		slot="end"
-		title="Zobrazení"
-	>
-		<ion-icon slot="icon-only" name="eye-outline"></ion-icon>
-	</ion-button>
-
+<!-- View options, shared between the desktop popover and the mobile filter modal. -->
+<ng-template #viewOptionsList>
+	<ion-item-divider>Zobrazení</ion-item-divider>
 	<ion-item lines="none">
-		<ion-select
-			multiple
-			name="membership"
-			[ngModel]="selectedMembership()"
-			(ngModelChange)="setFilterParam('membership', $event)"
-			label="Členství"
-			placeholder="všechny"
+		<ion-toggle
+			[checked]="showInactive()"
+			(ionChange)="setFilterParam('active', $event.detail.checked ? 'all' : null)"
+			justify="space-between"
 		>
-			@for (state of membershipStates | keyvalue; track state.key) {
-				<ion-select-option [value]="state.key">{{ state.value.title }}</ion-select-option>
-			}
-		</ion-select>
+			Zobrazit i neaktivní
+		</ion-toggle>
 	</ion-item>
-	<ion-item lines="none">
-		<ion-select
-			multiple
-			name="age"
-			[ngModel]="selectedAges()"
-			(ngModelChange)="setFilterParam('age', $event)"
-			label="Věk"
-			placeholder="všechny"
-		>
-			@for (age of availableAges; track age) {
-				<ion-select-option [value]="'' + age">{{ age }}</ion-select-option>
-			}
-		</ion-select>
-	</ion-item>
-</bo-filter>
+</ng-template>
 
-
-<!-- Column picker (desktop table view). Kept at top level so its trigger button works regardless of the active view. -->
-<ion-popover trigger="columns-popover-trigger" triggerAction="click" cssClass="view-options-popover" [dismissOnSelect]="false">
+<!-- Column picker popover (desktop). Kept at top level so its trigger button works regardless of the active view. -->
+<ion-popover
+	trigger="columns-popover-trigger"
+	triggerAction="click"
+	cssClass="view-options-popover"
+	[dismissOnSelect]="false"
+>
 	<ng-template>
 		<ion-content>
 			<ion-list lines="full">
-				<ion-item-divider>Sloupce</ion-item-divider>
-				@for (selection of viewSelections() | keyvalue: originalViewOrder; track selection.key) {
-					<ion-item>
-						<ion-checkbox
-							[ngModel]="viewSelections()[selection.key]"
-							(ngModelChange)="setViewSelection(selection.key, $event)"
-							justify="space-between"
-						>
-							{{ getViewSelectionLabel(selection.key) }}
-						</ion-checkbox>
-					</ion-item>
-				}
+				<ng-container [ngTemplateOutlet]="columnsList"></ng-container>
 			</ion-list>
 		</ion-content>
 	</ng-template>
 </ion-popover>
 
-<!-- View options (desktop). Currently just the inactive-members toggle; more display options can be added here. -->
-<ion-popover trigger="inactive-popover-trigger" triggerAction="click" cssClass="view-options-popover" [dismissOnSelect]="false">
+<!-- View options popover (desktop). -->
+<ion-popover
+	trigger="inactive-popover-trigger"
+	triggerAction="click"
+	cssClass="view-options-popover"
+	[dismissOnSelect]="false"
+>
 	<ng-template>
 		<ion-content>
 			<ion-list lines="full">
-				<ion-item-divider>Zobrazení</ion-item-divider>
-				<ion-item lines="none">
-					<ion-toggle
-						[checked]="showInactive()"
-						(ionChange)="setFilterParam('active', $event.detail.checked ? 'all' : null)"
-						justify="space-between"
-					>
-						Zobrazit i neaktivní
-					</ion-toggle>
-				</ion-item>
+				<ng-container [ngTemplateOutlet]="viewOptionsList"></ng-container>
 			</ion-list>
 		</ion-content>
 	</ng-template>
 </ion-popover>
-
 
 <ion-content>
 	<admin-table
@@ -127,21 +131,26 @@
 		[loading]="members() === undefined"
 		[rowLink]="rowLink"
 		[rowClass]="rowClass"
+		[actions]="memberActions"
+		[actionsHeader]="rowActionsHeader"
+		[sort]="sortColumn()"
+		[order]="sortOrder()"
+		(sortChange)="onSortChange($event)"
 	>
 		@if (viewSelections().nickname) {
-			<admin-table-column header="Přezdívka" [primary]="true" headerClass="align-middle members-nickname-column">
-				<ng-container *adminCell="let member">{{ member.nickname }}</ng-container>
+			<admin-table-column header="Přezdívka" sort="nickname" [primary]="true" headerClass="align-middle members-nickname-column">
+				<ng-container *adminCell="let member">{{ member.nickname || member.firstName }}</ng-container>
 			</admin-table-column>
 		}
 
 		@if (viewSelections().name) {
-			<admin-table-column header="Jméno" headerClass="align-middle members-name-column">
+			<admin-table-column header="Jméno" sort="name" headerClass="align-middle members-name-column">
 				<ng-container *adminCell="let member">{{ member.firstName }} {{ member.lastName }}</ng-container>
 			</admin-table-column>
 		}
 
 		@if (viewSelections().group) {
-			<admin-table-column header="Oddíl" headerClass="align-middle">
+			<admin-table-column header="Oddíl" sort="group" headerClass="align-middle" [right]="true">
 				<ng-container *adminCell="let member">
 					<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
 				</ng-container>
@@ -149,71 +158,39 @@
 		}
 
 		@if (viewSelections().role) {
-			<admin-table-column header="Role" headerClass="align-middle">
+			<admin-table-column header="Role" sort="role" headerClass="align-middle">
 				<ng-container *adminCell="let member">{{ member | member: "role" }}</ng-container>
 			</admin-table-column>
 		}
 
 		@if (viewSelections().age) {
-			<admin-table-column header="Věk">
-				<ng-container *adminHeader>
-					<div class="column-filter">
-						<ion-select
-							label="Věk"
-							interface="popover"
-							justify="start"
-							[ngModel]="selectedAges()"
-							(ngModelChange)="setFilterParam('age', $event)"
-							[multiple]="true"
-						>
-							@for (age of availableAges; track age) {
-								<ion-select-option [value]="'' + age">{{ age }}</ion-select-option>
-							}
-						</ion-select>
-					</div>
-				</ng-container>
+			<admin-table-column header="Věk" sort="age" headerClass="align-middle">
 				<ng-container *adminCell="let member">{{ member | member: "age" }}</ng-container>
 			</admin-table-column>
 		}
 
 		@if (viewSelections().membership) {
-			<admin-table-column header="Členství">
-				<ng-container *adminHeader>
-					<div class="column-filter">
-						<ion-select
-							label="Členství"
-							interface="popover"
-							justify="start"
-							[ngModel]="selectedMembership()"
-							(ngModelChange)="setFilterParam('membership', $event)"
-							[multiple]="true"
-						>
-							@for (state of membershipStates | keyvalue; track state.key) {
-								<ion-select-option [value]="state.key">
-									{{ state.value.title }}
-								</ion-select-option>
-							}
-						</ion-select>
-					</div>
-				</ng-container>
+			<admin-table-column header="Členství" sort="membership">
 				<ng-container *adminCell="let member">{{ member | member: "membership" }}</ng-container>
 			</admin-table-column>
 		}
 
 		@if (viewSelections().birthday) {
-			<admin-table-column header="Datum narození" headerClass="align-middle">
-				<ng-container *adminCell="let member">{{ member.birthday ? (member.birthday | date: "d. M. y") : "" }}</ng-container>
+			<admin-table-column header="Datum narození" sort="birthday" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{
+					member.birthday ? (member.birthday | date: "d. M. y") : ""
+				}}</ng-container>
 			</admin-table-column>
 		}
 
 		@if (viewSelections().addressCity) {
-			<admin-table-column header="Město" headerClass="align-middle">
+			<admin-table-column header="Město" sort="city" headerClass="align-middle">
 				<ng-container *adminCell="let member">{{ member.addressCity }}</ng-container>
 			</admin-table-column>
 		}
 
 		@if (viewSelections().addressStreet) {
-			<admin-table-column header="Ulice" headerClass="align-middle">
+			<admin-table-column header="Ulice" sort="street" headerClass="align-middle">
 				<ng-container *adminCell="let member">{{ member.addressStreet }}</ng-container>
 			</admin-table-column>
 		}
@@ -221,7 +198,8 @@
 		@if (viewSelections().firstTelephone) {
 			<admin-table-column header="Telefon" headerClass="align-middle">
 				<ng-container *adminCell="let member">
-					<strong>{{ member.contacts?.[0]?.relationship || "" }}</strong> {{ member.contacts?.[0]?.mobile || "" }}
+					<strong>{{ member.contacts?.[0]?.relationship || "" }}</strong>
+					{{ member.contacts?.[0]?.mobile || "" }}
 				</ng-container>
 			</admin-table-column>
 		}
@@ -229,13 +207,20 @@
 		@if (viewSelections().firstEmail) {
 			<admin-table-column header="E-mail" headerClass="align-middle">
 				<ng-container *adminCell="let member">
-					<strong>{{ member.contacts?.[0]?.relationship || "" }}</strong> {{ member.contacts?.[0]?.email || "" }}
+					<strong>{{ member.contacts?.[0]?.relationship || "" }}</strong>
+					{{ member.contacts?.[0]?.email || "" }}
 				</ng-container>
 			</admin-table-column>
 		}
 
 		@if (viewSelections().status) {
-			<admin-table-column header="Stav" [right]="true" cellClass="members-status-column" headerClass="align-middle members-status-column">
+			<admin-table-column
+				header="Stav"
+				sort="status"
+				[right]="true"
+				cellClass="members-status-column"
+				headerClass="align-middle members-status-column"
+			>
 				<ng-container *adminCell="let member">
 					@if (member.active) {
 						<span class="bo-pill bo-pill-green">AKTIVNÍ</span>
@@ -249,7 +234,7 @@
 
 	@if (members()?.length) {
 		<p class="ion-padding members-active-toggle">
-			@if ((filter['active'] || 'active') !== 'all') {
+			@if ((filter["active"] || "active") !== "all") {
 				Zobrazeni pouze aktivní členové.
 				<a class="clickable" (click)="setFilterParam('active', 'all')">Zobrazit i neaktivní</a>
 			} @else {

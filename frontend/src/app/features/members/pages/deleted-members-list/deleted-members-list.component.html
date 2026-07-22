@@ -1,43 +1,30 @@
 <bo-page-header title="Smazaní členové" backUrl="/databaze/clenove"></bo-page-header>
 
 <bo-page-content>
-	@if (members().length) {
-		<ion-list>
-			@for (member of members(); track member.id) {
-				<ion-item>
-					<bo-group-badge slot="start" [groupId]="member.groupId"></bo-group-badge>
-					<ion-label>
-						<h2>{{ memberName(member) }}</h2>
-						@if (member.deletedAt) {
-							<p>Smazáno {{ member.deletedAt | date: "d. M. y H:mm" }}</p>
-						}
-					</ion-label>
+	<admin-table
+		[rows]="members()"
+		[loading]="members() === undefined"
+		[actions]="memberActions"
+		[actionsHeader]="rowActionsHeader"
+	>
+		<admin-table-column header="Člen" [primary]="true" headerClass="align-middle">
+			<ng-container *adminCell="let member">{{ memberName(member) }}</ng-container>
+		</admin-table-column>
 
-					<ion-button
-						slot="end"
-						fill="clear"
-						color="medium"
-						(click)="restoreMember(member)"
-						[disabled]="!member._links.restoreMember.allowed"
-					>
-						<ion-icon slot="start" name="arrow-undo-outline" aria-hidden="true"></ion-icon>
-						Obnovit
-					</ion-button>
+		<admin-table-column header="Oddíl" headerClass="align-middle">
+			<ng-container *adminCell="let member">
+				<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
+			</ng-container>
+		</admin-table-column>
 
-					<ion-button
-						slot="end"
-						fill="clear"
-						color="danger"
-						(click)="permanentlyDeleteMember(member)"
-						[disabled]="!member._links.deleteMemberPermanent.allowed"
-					>
-						<ion-icon slot="start" name="trash-outline" aria-hidden="true"></ion-icon>
-						Smazat trvale
-					</ion-button>
-				</ion-item>
-			}
-		</ion-list>
-	} @else {
+		<admin-table-column header="Smazáno" headerClass="align-middle">
+			<ng-container *adminCell="let member">
+				{{ member.deletedAt ? (member.deletedAt | date: "d. M. y H:mm") : "" }}
+			</ng-container>
+		</admin-table-column>
+	</admin-table>
+
+	@if (members()?.length === 0) {
 		<p class="ion-padding members-empty">Žádní smazaní členové.</p>
 	}
 </bo-page-content>

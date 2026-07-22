@@ -1,18 +1,14 @@
 import { DatePipe } from "@angular/common";
 import { Component, signal } from "@angular/core";
-import {
-	AlertController,
-	IonButton,
-	IonIcon,
-	IonItem,
-	IonLabel,
-	IonList,
-	ViewWillEnter,
-} from "@ionic/angular/standalone";
+import { AlertController, ViewWillEnter } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { arrowUndoOutline, trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
+import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
+import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
 import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
@@ -26,16 +22,37 @@ import { SDK } from "src/sdk";
 		PageHeaderComponent,
 		PageContentComponent,
 		GroupBadgeComponent,
-		IonList,
-		IonItem,
-		IonLabel,
-		IonButton,
-		IonIcon,
+		AdminTableComponent,
+		AdminTableColumnComponent,
+		AdminTableCellDirective,
 		DatePipe,
 	],
 })
 export class DeletedMembersListComponent implements ViewWillEnter {
-	members = signal<SDK.MemberResponseWithLinks[]>([]);
+	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
+
+	// Header shown above the actions on the mobile ActionSheet.
+	rowActionsHeader = (member: SDK.MemberResponseWithLinks) => this.memberName(member);
+
+	// Arrow property (stable reference + bound `this`) so it can be passed as the
+	// admin-table `[actions]` input and invoked from there per row.
+	memberActions = (member: SDK.MemberResponseWithLinks): Action[] => [
+		{
+			text: "Obnovit",
+			color: "success",
+			icon: arrowUndoOutline,
+			hidden: !member._links.restoreMember.allowed,
+			handler: () => this.restoreMember(member),
+		},
+		{
+			text: "Smazat trvale",
+			role: "destructive",
+			color: "danger",
+			icon: trashOutline,
+			hidden: !member._links.deleteMemberPermanent.allowed,
+			handler: () => this.permanentlyDeleteMember(member),
+		},
+	];
 
 	constructor(
 		private api: ApiService,

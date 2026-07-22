@@ -1,26 +1,36 @@
-<h3 class="mt-4">Adresa</h3>
 <bo-card class="address">
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="home-outline" />
+				Adresa
+			</span>
+		</bo-card-title>
+	</bo-card-header>
+
 	<bo-card-content>
 		@if (member() === undefined) {
-			<ion-skeleton-text [animated]="true"></ion-skeleton-text>
+			<div class="bo-info-list">
+				<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+			</div>
 		}
 
 		@if (member()) {
 			@let memberValue = member()!;
-			<ion-list class="selectable" lines="none">
-				<ion-item [button]="true" [detail]="false">
+			<div class="bo-info-list selectable">
+				<div class="bo-info-row">
 					@if (getFullAddress(memberValue)) {
-						<ion-label>{{ getFullAddress(memberValue) }}</ion-label>
+						<span class="bo-info-value address-value">{{ getFullAddress(memberValue) }}</span>
 					} @else {
-						<ion-label><em>Adresa není vyplněna</em></ion-label>
+						<span class="bo-info-value address-value"><em>Adresa není vyplněna</em></span>
 					}
 
-					<ion-buttons slot="end">
+					<span class="bo-info-action">
 						<bo-copy-button [text]="getFullAddress(memberValue)"></bo-copy-button>
 						<bo-edit-button (click)="editAddress()"></bo-edit-button>
-					</ion-buttons>
-				</ion-item>
-			</ion-list>
+					</span>
+				</div>
+			</div>
 		}
 	</bo-card-content>
 </bo-card>

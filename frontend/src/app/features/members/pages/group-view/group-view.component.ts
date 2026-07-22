@@ -39,7 +39,7 @@ import { GroupsService } from "../../services/groups.service";
 export class GroupViewComponent implements OnInit {
 	group = signal<SDK.GroupResponseWithLinks | null | undefined>(undefined);
 
-	view = signal<"info" | "clenove">("info");
+	view = signal<"info" | "clenove">("clenove");
 
 	actions: Action[] = [
 		{

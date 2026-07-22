@@ -1,13 +1,17 @@
 import { Component, effect, input, OnDestroy, output, signal } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { Platform } from "@ionic/angular";
-import { IonButton, IonButtons, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonButton, IonButtons, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { cardOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { SDK } from "src/sdk";
 import { CardContentComponent } from "../../../../shared/components/card-content/card-content.component";
 import { CardFooterComponent } from "../../../../shared/components/card-footer/card-footer.component";
+import { CardHeaderComponent } from "../../../../shared/components/card-header/card-header.component";
+import { CardTitleComponent } from "../../../../shared/components/card-title/card-title.component";
 import { CardComponent } from "../../../../shared/components/card/card.component";
 import { InsuranceCardCameraModalComponent } from "../insurance-card-camera-modal/insurance-card-camera-modal.component";
 
@@ -16,7 +20,17 @@ import { InsuranceCardCameraModalComponent } from "../insurance-card-camera-moda
 	templateUrl: "./card-insurance-card.component.html",
 	styleUrls: ["./card-insurance-card.component.scss"],
 
-	imports: [CardComponent, CardContentComponent, CardFooterComponent, IonSkeletonText, IonButton, IonButtons],
+	imports: [
+		CardComponent,
+		CardHeaderComponent,
+		CardTitleComponent,
+		CardContentComponent,
+		CardFooterComponent,
+		IonIcon,
+		IonSkeletonText,
+		IonButton,
+		IonButtons,
+	],
 })
 export class CardInsuranceCardComponent implements OnDestroy {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
@@ -41,6 +55,7 @@ export class CardInsuranceCardComponent implements OnDestroy {
 		private modalService: ModalService,
 		private platform: Platform,
 	) {
+		addIcons({ cardOutline });
 		this.isCameraCapable = this.checkCapabilities();
 
 		effect(() => {

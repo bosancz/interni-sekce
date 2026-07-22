@@ -10,48 +10,40 @@
 			></bo-member-profile>
 		</div>
 		<div class="col-12 col-xl-8 col-xxl-9">
-			<bo-member-info
-				[member]="member()"
-				(update)="updateMember($event)"
-				class="d-lg-block mb-5"
-				[class.d-none]="view() !== 'profile'"
-			/>
+			<div class="cards">
+				<div class="card-col d-lg-block" [class.d-none]="view() !== 'profile'">
+					<bo-member-info [member]="member()" (update)="updateMember($event)" />
+				</div>
 
-			<bo-member-contact
-				[member]="member()"
-				(update)="updateMember($event)"
-				class="d-lg-block mb-5"
-				[class.d-none]="view() !== 'profile' && view() !== 'contacts'"
-			/>
+				<div
+					class="card-col d-lg-block"
+					[class.d-none]="view() !== 'profile' && view() !== 'contacts'"
+				>
+					<bo-member-contact [member]="member()" (update)="updateMember($event)" />
+				</div>
 
-			<bo-member-address
-				[member]="member()"
-				(update)="updateMember($event)"
-				class="d-lg-block mb-5"
-				[class.d-none]="view() !== 'profile'"
-			/>
+				<div class="card-col d-lg-block" [class.d-none]="view() !== 'profile'">
+					<bo-member-address [member]="member()" (update)="updateMember($event)" />
+				</div>
 
-			<bo-member-membership
-				[member]="member()"
-				(update)="updateMember($event)"
-				class="d-lg-block mb-5"
-				[class.d-none]="view() !== 'profile'"
-			/>
+				<!-- Kontakty rodiče: sits below Adresa in the left desktop column, so break the
+				     masonry column after it to push the remaining cards to the right column -->
+				<div class="card-col card-col--break-after d-lg-block" [class.d-none]="view() !== 'contacts'">
+					<bo-member-contacts [member]="member()" (update)="updateMember($event)" />
+				</div>
 
-			<bo-member-health
-				[member]="member()"
-				(update)="updateMember($event)"
-				(reload)="reloadMember()"
-				class="d-lg-block mb-5"
-				[class.d-none]="view() !== 'health'"
-			/>
+				<div class="card-col d-lg-block" [class.d-none]="view() !== 'profile'">
+					<bo-member-membership [member]="member()" (update)="updateMember($event)" />
+				</div>
 
-			<bo-member-contacts
-				[member]="member()"
-				(update)="updateMember($event)"
-				class="d-lg-block mb-5"
-				[class.d-none]="view() !== 'contacts'"
-			/>
+				<div class="card-col d-lg-block" [class.d-none]="view() !== 'health'">
+					<bo-member-health
+						[member]="member()"
+						(update)="updateMember($event)"
+						(reload)="reloadMember()"
+					/>
+				</div>
+			</div>
 		</div>
 	</div>
 </bo-page-content>

@@ -1,4 +1,4 @@
-import { DatePipe, KeyValue, KeyValuePipe } from "@angular/common";
+import { DatePipe, KeyValue, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
 import { AfterViewInit, Component, computed, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
@@ -14,14 +14,31 @@ import {
 	IonItemDivider,
 	IonList,
 	IonPopover,
-	IonSelect,
-	IonSelectOption,
 	IonToggle,
 	ViewWillEnter,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline, downloadOutline, eyeOutline, trashOutline } from "ionicons/icons";
+import { addOutline, arrowUndoOutline, downloadOutline, eyeOutline, trashOutline } from "ionicons/icons";
+import { MemberRoles } from "src/app/core/config/member-roles";
+import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
+import { PlatformService } from "src/app/core/services/platform.service";
+import { ToastService } from "src/app/core/services/toast.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
+import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
+import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
+import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
+import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
+import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
+import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { GroupPipe } from "src/app/shared/pipes/group.pipe";
+import { MemberPipe } from "src/app/shared/pipes/member.pipe";
+import { SDK } from "src/sdk";
+import { MembershipStates } from "../../../../core/config/membership-states";
+import { MemberCreateModalComponent } from "../../components/member-create-modal/member-create-modal.component";
 
 // Custom "columns" glyph (outlined rectangle split into three columns) — Ionicons has no columns icon.
 // Must be a `data:image/svg+xml;utf8,` URI: ionicons parses that via DOMParser, whereas a raw SVG
@@ -32,25 +49,6 @@ const COLUMNS_ICON =
 	'<rect x="64" y="80" width="384" height="352" rx="24" fill="none" stroke="currentColor" stroke-width="32"/>' +
 	'<line x1="192" y1="80" x2="192" y2="432" stroke="currentColor" stroke-width="32"/>' +
 	'<line x1="320" y1="80" x2="320" y2="432" stroke="currentColor" stroke-width="32"/></svg>';
-import { DateTime } from "luxon";
-import { MemberRoles } from "src/app/core/config/member-roles";
-import { ApiService } from "src/app/core/services/api.service";
-import { ModalService } from "src/app/core/services/modal.service";
-import { ToastService } from "src/app/core/services/toast.service";
-import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
-import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
-import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
-import { AdminTableHeaderDirective } from "src/app/shared/components/admin-table/admin-table-header.directive";
-import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
-import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
-import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
-import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
-import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
-import { GroupPipe } from "src/app/shared/pipes/group.pipe";
-import { MemberPipe } from "src/app/shared/pipes/member.pipe";
-import { SDK } from "src/sdk";
-import { MembershipStates } from "../../../../core/config/membership-states";
-import { MemberCreateModalComponent } from "../../components/member-create-modal/member-create-modal.component";
 
 @UntilDestroy()
 @Component({
@@ -65,8 +63,6 @@ import { MemberCreateModalComponent } from "../../components/member-create-modal
 		IonList,
 		IonItem,
 		IonItemDivider,
-		IonSelect,
-		IonSelectOption,
 		IonButton,
 		IonPopover,
 		IonCheckbox,
@@ -75,7 +71,6 @@ import { MemberCreateModalComponent } from "../../components/member-create-modal
 		AdminTableComponent,
 		AdminTableColumnComponent,
 		AdminTableCellDirective,
-		AdminTableHeaderDirective,
 		FormsModule,
 		RouterLink,
 		KeyValuePipe,
@@ -85,6 +80,8 @@ import { MemberCreateModalComponent } from "../../components/member-create-modal
 		IonInfiniteScrollContent,
 		DatePipe,
 		FilterPillComponent,
+		SortSelectComponent,
+		NgTemplateOutlet,
 	],
 })
 export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnter {
@@ -92,11 +89,25 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	groups = signal<SDK.GroupResponseWithLinks[]>([]);
 	roles = MemberRoles;
 	membershipStates = MembershipStates;
-	allMemberAges = signal<number[]>([]);
 	selectedGroups = signal<string[]>([]);
 	selectedRoles = signal<string[]>([]);
 	selectedMembership = signal<string[]>([]);
-	selectedAges = signal<string[]>([]);
+
+	sortColumn = signal<string | null>(null);
+	sortOrder = signal<"ASC" | "DESC">("ASC");
+
+	readonly sortOptions: SortOption[] = [
+		{ key: "nickname", label: "Přezdívka" },
+		{ key: "name", label: "Jméno" },
+		{ key: "group", label: "Oddíl" },
+		{ key: "role", label: "Role" },
+		{ key: "age", label: "Věk" },
+		{ key: "membership", label: "Členství" },
+		{ key: "birthday", label: "Datum narození" },
+		{ key: "city", label: "Město" },
+		{ key: "street", label: "Ulice" },
+		{ key: "status", label: "Stav" },
+	];
 
 	// Only active groups are offered in the Oddíl filter, unless "show inactive" is on. A group that
 	// is already selected stays visible even when inactive, so the pill keeps its label.
@@ -116,13 +127,43 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		value: key,
 		label: role.title,
 	}));
+	readonly membershipOptions: FilterPillOption[] = Object.entries(MembershipStates).map(([key, state]) => ({
+		value: key,
+		label: state.title,
+	}));
 
 	// Row helpers for admin-table (bound as inputs, so keep stable references).
 	rowLink = (member: SDK.MemberResponseWithLinks) => "" + member.id;
 	rowClass = (member: SDK.MemberResponseWithLinks) => ({
 		"member-inactive": !member.active,
 		"member-paused": member.membership === "pozastaveno",
+		"member-vedouci": member.role === "vedouci",
+		"member-instruktor": member.role === "instruktor",
 	});
+
+	// Header shown above the actions on the mobile ActionSheet.
+	rowActionsHeader = (member: SDK.MemberResponseWithLinks) => member.nickname || member.firstName;
+
+	// Arrow property (stable reference + bound `this`) so it can be passed as the
+	// admin-table `[actions]` input and invoked from there per row.
+	memberActions = (member: SDK.MemberResponseWithLinks): Action[] => [
+		{
+			text: "Smazat",
+			role: "destructive",
+			color: "danger",
+			icon: trashOutline,
+			hidden: !member._links.deleteMember.allowed,
+			handler: () => this.deleteMember(member),
+		},
+		{
+			text: "Obnovit",
+			role: "destructive",
+			color: "success",
+			icon: arrowUndoOutline,
+			hidden: !member._links.restoreMember.allowed,
+			handler: () => this.restoreMember(member),
+		},
+	];
 
 	actions = signal<Action[]>([
 		{
@@ -132,10 +173,16 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			handler: () => this.create(),
 		},
 		{
-			text: "Export",
+			text: "Export do XLSX",
 			icon: "download-outline",
-			pinned: true,
+			pinned: false,
 			handler: () => this.export(),
+		},
+		{
+			text: "Smazaní členové",
+			icon: "trash-outline",
+			pinned: false,
+			handler: () => this.router.navigate(["smazane"], { relativeTo: this.route }),
 		},
 	]);
 
@@ -155,9 +202,16 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		private toasts: ToastService,
 		private modalService: ModalService,
 		private groupPipe: GroupPipe,
+		private platformService: PlatformService,
 	) {
-		addIcons({ addOutline, downloadOutline, eyeOutline, trashOutline, columns: COLUMNS_ICON });
+		addIcons({ addOutline, arrowUndoOutline, downloadOutline, eyeOutline, trashOutline, columns: COLUMNS_ICON });
+		// Filters render inline in the toolbar on desktop and inside the filter modal on mobile;
+		// this tracks the lg breakpoint (992px) so the template can switch between the two.
+		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 	}
+
+	// True when the viewport is at least the lg breakpoint (992px) — filters inline vs. in the modal.
+	isDesktop = signal(true);
 
 	// True when inactive members (and groups) are currently shown (filter "active" === "all").
 	showInactive = signal(false);
@@ -176,7 +230,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	ionViewWillEnter() {
 		this.loadGroups();
-		this.loadAllAges();
 	}
 
 	export() {
@@ -190,7 +243,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			groups: this.normalizeFilterValueToArray((this.filter as any)["groups"]).map((group) =>
 				parseInt(group, 10),
 			),
-			age: this.normalizeFilterValueToArray((this.filter as any)["age"]).map((age) => parseInt(age, 10)),
 			active: (((this.filter as any)["active"] as string) || "active") === "all" ? undefined : true,
 		};
 
@@ -221,9 +273,18 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		this.selectedGroups.set(this.normalizeFilterValueToArray(params["groups"]));
 		this.selectedRoles.set(this.normalizeFilterValueToArray(params["roles"]));
 		this.selectedMembership.set(this.normalizeFilterValueToArray(params["membership"]));
-		this.selectedAges.set(this.normalizeFilterValueToArray(params["age"]));
 		this.showInactive.set(((params["active"] as string) || "active") === "all");
+		this.sortColumn.set(params["sort"] ?? null);
+		this.sortOrder.set(params["order"] === "DESC" ? "DESC" : "ASC");
 		this.loadMembers(this.filter);
+	}
+
+	onSortChange(sort: AdminTableSort) {
+		this.router.navigate([], {
+			queryParams: { sort: sort.sort || null, order: sort.sort ? sort.order : null },
+			queryParamsHandling: "merge",
+			replaceUrl: true,
+		});
 	}
 
 	setFilterParam(name: string, value: string | string[] | null) {
@@ -265,7 +326,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			offset: (this.page - 1) * this.pageSize,
 			roles: this.normalizeFilterValueToArray(filter["roles"]) as SDK.ListMembersRolesEnum[],
 			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.ListMembersMembershipEnum[],
-			age: this.normalizeFilterValueToArray(filter["age"]).map((age) => parseInt(age, 10)),
 			limit: this.pageSize,
 			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
 			// default: active only; "all" reveals inactive members too
@@ -273,6 +333,8 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			// Fetch contacts in the same request instead of one call per member,
 			// and only when a contact column is actually visible.
 			contacts: this.needsContacts() || undefined,
+			sort: (filter["sort"] as string) || undefined,
+			order: (filter["order"] as SDK.ListMembersOrderEnum) || undefined,
 		};
 
 		const members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
@@ -307,12 +369,21 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		this.groups.set(groups);
 	}
 
-	private async loadAllAges() {
-		// Single aggregated request instead of paging through the whole members table
-		// just to collect the distinct ages for the filter dropdown.
-		const ages = await this.api.MembersApi.listMemberAges().then((res) => res.data);
+	private async deleteMember(member: SDK.MemberResponseWithLinks) {
+		const confirmation = await this.modalService.deleteConfirmationModal(
+			`Opravdu chcete smazat člena ${member.nickname}?`,
+		);
+		if (!confirmation) return;
 
-		this.allMemberAges.set([...new Set(ages)].filter((age) => Number.isFinite(age)).sort((a, b) => a - b));
+		await this.api.MembersApi.deleteMember(member.id);
+		this.toasts.toast("Člen smazán.");
+		this.loadMembers(this.filter);
+	}
+
+	private async restoreMember(member: SDK.MemberResponseWithLinks) {
+		await this.api.MembersApi.restoreMember(member.id);
+		this.toasts.toast("Člen obnoven.");
+		this.loadMembers(this.filter);
 	}
 
 	async create() {
@@ -323,14 +394,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		this.toasts.toast("Člen uložen.");
 
 		this.router.navigate([member.id], { relativeTo: this.route });
-	}
-
-	getAge(birthday: string) {
-		return Math.floor(-1 * DateTime.fromISO(birthday).diffNow("years").years).toFixed(0);
-	}
-
-	get availableAges(): number[] {
-		return this.allMemberAges();
 	}
 
 	originalViewOrder = (a: KeyValue<string, boolean>, b: KeyValue<string, boolean>): number => {
@@ -384,5 +447,4 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 		return labels[key] || key;
 	}
-	
 }

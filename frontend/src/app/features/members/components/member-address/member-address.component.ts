@@ -1,8 +1,12 @@
 import { Component, input, output } from "@angular/core";
-import { IonButtons, IonItem, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { homeOutline } from "ionicons/icons";
 import { ModalService } from "src/app/core/services/modal.service";
 import { SDK } from "src/sdk";
 import { CardContentComponent } from "../../../../shared/components/card-content/card-content.component";
+import { CardHeaderComponent } from "../../../../shared/components/card-header/card-header.component";
+import { CardTitleComponent } from "../../../../shared/components/card-title/card-title.component";
 import { CardComponent } from "../../../../shared/components/card/card.component";
 import { CopyButtonComponent } from "../../../../shared/components/copy-button/copy-button.component";
 import { EditButtonComponent } from "../../../../shared/components/edit-button/edit-button.component";
@@ -11,12 +15,11 @@ import { EditButtonComponent } from "../../../../shared/components/edit-button/e
 	selector: "bo-member-address",
 	imports: [
 		CardComponent,
+		CardHeaderComponent,
+		CardTitleComponent,
 		CardContentComponent,
+		IonIcon,
 		IonSkeletonText,
-		IonList,
-		IonItem,
-		IonLabel,
-		IonButtons,
 		CopyButtonComponent,
 		EditButtonComponent,
 	],
@@ -27,7 +30,9 @@ export class MemberAddressComponent {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
 	update = output<Partial<SDK.MemberResponse>>();
 
-	constructor(private modalService: ModalService) {}
+	constructor(private modalService: ModalService) {
+		addIcons({ homeOutline });
+	}
 
 	getFullAddress(member: SDK.MemberResponseWithLinks) {
 		const addressLines = [

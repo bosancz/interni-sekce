@@ -1,1 +1,97 @@
-<p>group-info works!</p>
+<bo-card class="mb-4" [color]="group()?.color || undefined">
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="information-circle-outline" />
+				Informace o oddílu
+			</span>
+		</bo-card-title>
+	</bo-card-header>
+
+	<bo-card-content>
+		@if (group() === undefined) {
+			<div class="bo-info-list">
+				<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+				<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+				<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+			</div>
+		}
+
+		@if (group()) {
+			@let groupValue = group()!;
+			<div class="bo-info-list selectable">
+				<div class="bo-info-row">
+					<span class="bo-info-label">Název</span>
+					<span class="bo-info-value">{{ groupValue.name || "-" }}</span>
+				</div>
+
+				<div class="bo-info-row">
+					<span class="bo-info-label">Zkratka</span>
+					<span class="bo-info-value">
+						<span class="group-badge" [style.background-color]="groupValue.color || 'var(--bo-neutral-badge)'">
+							{{ groupValue.shortName }}
+						</span>
+					</span>
+				</div>
+
+				<div class="bo-info-row">
+					<span class="bo-info-label">Stav</span>
+					<span class="bo-info-value">
+						@if (groupValue.active) {
+							<span class="bo-pill bo-pill-green">AKTIVNÍ</span>
+						} @else {
+							<span class="bo-pill">NEAKTIVNÍ</span>
+						}
+					</span>
+				</div>
+			</div>
+		}
+	</bo-card-content>
+</bo-card>
+
+<bo-card [color]="group()?.color || undefined">
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="stats-chart-outline" />
+				Statistiky
+			</span>
+		</bo-card-title>
+	</bo-card-header>
+
+	<bo-card-content>
+		@if (members() === undefined) {
+			<div class="bo-info-list">
+				<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+				<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+				<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+			</div>
+		} @else {
+			<div class="bo-info-list selectable">
+				<div class="bo-info-row">
+					<span class="bo-info-label">Aktivních členů celkem</span>
+					<span class="bo-info-value">{{ totalActive() }}</span>
+				</div>
+
+				@for (stat of roleStats(); track stat.label) {
+					<div class="bo-info-row">
+						<span class="bo-info-label">{{ stat.label }}</span>
+						<span class="bo-info-value">{{ stat.value }}</span>
+					</div>
+				}
+
+				@for (stat of membershipStats(); track stat.label) {
+					<div class="bo-info-row">
+						<span class="bo-info-label">{{ stat.label }}</span>
+						<span class="bo-info-value">{{ stat.value }}</span>
+					</div>
+				}
+
+				<div class="bo-info-row">
+					<span class="bo-info-label">Neaktivních členů</span>
+					<span class="bo-info-value">{{ inactiveCount() }}</span>
+				</div>
+			</div>
+		}
+	</bo-card-content>
+</bo-card>

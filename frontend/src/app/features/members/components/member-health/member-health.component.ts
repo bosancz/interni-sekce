@@ -11,12 +11,16 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { alertCircle, ellipse, helpCircle, trashOutline, warning } from "ionicons/icons";
+import { alertCircle, alertCircleOutline, ellipse, helpCircle, medkitOutline, trashOutline, warning } from "ionicons/icons";
 import { DefaultHealthSeverity, HealthSeverities, HealthSeverityOrder } from "src/app/core/config/health-severity";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { SDK } from "src/sdk";
 import { AddButtonComponent } from "../../../../shared/components/add-button/add-button.component";
+import { CardContentComponent } from "../../../../shared/components/card-content/card-content.component";
+import { CardHeaderComponent } from "../../../../shared/components/card-header/card-header.component";
+import { CardTitleComponent } from "../../../../shared/components/card-title/card-title.component";
+import { CardComponent } from "../../../../shared/components/card/card.component";
 import { CardInsuranceCardComponent } from "../card-insurance-card/card-insurance-card.component";
 
 @UntilDestroy()
@@ -25,6 +29,10 @@ import { CardInsuranceCardComponent } from "../card-insurance-card/card-insuranc
 	templateUrl: "./member-health.component.html",
 	styleUrls: ["./member-health.component.scss"],
 	imports: [
+		CardComponent,
+		CardHeaderComponent,
+		CardTitleComponent,
+		CardContentComponent,
 		IonSkeletonText,
 		IonList,
 		IonItem,
@@ -49,7 +57,7 @@ export class MemberHealthComponent {
 		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
-		addIcons({ trashOutline, ellipse, alertCircle, warning, helpCircle });
+		addIcons({ trashOutline, ellipse, alertCircle, alertCircleOutline, medkitOutline, warning, helpCircle });
 	}
 
 	async openAllergyForm(index?: number) {

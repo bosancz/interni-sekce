@@ -1,34 +1,55 @@
-<h3>Kontakt</h3>
+<bo-card>
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="call-outline" />
+				Kontakt
+			</span>
+		</bo-card-title>
+	</bo-card-header>
 
-@if (member()) {
-	@let memberValue = member()!;
-	<ion-list class="selectable">
-		<bo-item label="Mobil">
-			<ion-label>{{ memberValue.mobile || "-" }}</ion-label>
-			<bo-icon-button icon="call-outline" [href]="'tel:' + memberValue.mobile" slot="end"></bo-icon-button>
-			<bo-edit-button-text
-				slot="end"
-				type="tel"
-				label="Mobil"
-				placeholder="777 123 456"
-				[disabled]="!memberValue._links.updateMember.allowed"
-				[value]="memberValue.mobile"
-				(update)="update.emit({ mobile: $event })"
-			></bo-edit-button-text>
-		</bo-item>
+	<bo-card-content>
+		@if (member() === undefined) {
+			<div class="bo-info-list">
+				<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+			</div>
+		}
 
-		<bo-item label="Email">
-			<ion-label>{{ memberValue.email || "-" }}</ion-label>
-			<bo-icon-button icon="mail-outline" [href]="'mailto:' + memberValue.email" slot="end"></bo-icon-button>
-			<bo-edit-button-text
-				slot="end"
-				type="email"
-				label="Email"
-				placeholder="bilbo@bosan.cz"
-				[disabled]="!memberValue._links.updateMember.allowed"
-				[value]="memberValue.email"
-				(update)="update.emit({ email: $event })"
-			></bo-edit-button-text>
-		</bo-item>
-	</ion-list>
-}
+		@if (member()) {
+			@let memberValue = member()!;
+			<div class="bo-info-list selectable">
+				<div class="bo-info-row">
+					<span class="bo-info-label">Mobil</span>
+					<span class="bo-info-action">
+						<span class="bo-info-value">{{ memberValue.mobile || "-" }}</span>
+						<bo-icon-button icon="call-outline" [href]="'tel:' + memberValue.mobile"></bo-icon-button>
+						<bo-edit-button-text
+							type="tel"
+							label="Mobil"
+							placeholder="777 123 456"
+							[disabled]="!memberValue._links.updateMember.allowed"
+							[value]="memberValue.mobile"
+							(update)="update.emit({ mobile: $event })"
+						></bo-edit-button-text>
+					</span>
+				</div>
+
+				<div class="bo-info-row">
+					<span class="bo-info-label">Email</span>
+					<span class="bo-info-action">
+						<span class="bo-info-value">{{ memberValue.email || "-" }}</span>
+						<bo-icon-button icon="mail-outline" [href]="'mailto:' + memberValue.email"></bo-icon-button>
+						<bo-edit-button-text
+							type="email"
+							label="Email"
+							placeholder="bilbo@bosan.cz"
+							[disabled]="!memberValue._links.updateMember.allowed"
+							[value]="memberValue.email"
+							(update)="update.emit({ email: $event })"
+						></bo-edit-button-text>
+					</span>
+				</div>
+			</div>
+		}
+	</bo-card-content>
+</bo-card>

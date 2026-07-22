@@ -1,41 +1,64 @@
-<h3>Osobní informace</h3>
+<bo-card>
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="person-outline" />
+				Osobní informace
+			</span>
+		</bo-card-title>
+	</bo-card-header>
 
-@if (member()) {
-	@let memberValue = member()!;
-	<ion-list class="selectable">
-		<bo-item label="Jméno">
-			<ion-label>{{ memberValue.firstName || "-" }} {{ memberValue.lastName || "-" }}</ion-label>
-			<bo-edit-button-name
-				slot="end"
-				label="Jméno"
-				placeholder="Bilbo"
-				[disabled]="!memberValue._links.updateMember.allowed"
-				[value]="{ firstName: memberValue.firstName, lastName: memberValue.lastName }"
-				(update)="update.emit({ firstName: $event.firstName, lastName: $event.lastName })"
-			/>
-		</bo-item>
+	<bo-card-content>
+		@if (member() === undefined) {
+			<div class="bo-info-list">
+				<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+			</div>
+		}
 
-		<bo-item label="Přezdívka">
-			<ion-label>{{ memberValue.nickname || "-" }}</ion-label>
-			<bo-edit-button-text
-				slot="end"
-				label="Přezdívka"
-				placeholder="Bilbo"
-				[disabled]="!memberValue._links.updateMember.allowed"
-				[value]="memberValue.nickname"
-				(update)="update.emit({ nickname: $event ?? undefined })"
-			/>
-		</bo-item>
+		@if (member()) {
+			@let memberValue = member()!;
+			<div class="bo-info-list selectable">
+				<div class="bo-info-row">
+					<span class="bo-info-label">Jméno</span>
+					<span class="bo-info-action">
+						<span class="bo-info-value">{{ memberValue.firstName || "-" }} {{ memberValue.lastName || "-" }}</span>
+						<bo-edit-button-name
+							label="Jméno"
+							placeholder="Bilbo"
+							[disabled]="!memberValue._links.updateMember.allowed"
+							[value]="{ firstName: memberValue.firstName, lastName: memberValue.lastName }"
+							(update)="update.emit({ firstName: $event.firstName, lastName: $event.lastName })"
+						/>
+					</span>
+				</div>
 
-		<bo-item label="Datum narození">
-			<ion-label>{{ memberValue.birthday ? (memberValue.birthday | date: "d. M. y") : "-" }}</ion-label>
-			<bo-edit-button-date
-				slot="end"
-				label="Datum narození"
-				[disabled]="!memberValue._links.updateMember.allowed"
-				[value]="memberValue.birthday"
-				(update)="update.emit({ birthday: $event })"
-			/>
-		</bo-item>
-	</ion-list>
-}
+				<div class="bo-info-row">
+					<span class="bo-info-label">Přezdívka</span>
+					<span class="bo-info-action">
+						<span class="bo-info-value">{{ memberValue.nickname || "-" }}</span>
+						<bo-edit-button-text
+							label="Přezdívka"
+							placeholder="Bilbo"
+							[disabled]="!memberValue._links.updateMember.allowed"
+							[value]="memberValue.nickname"
+							(update)="update.emit({ nickname: $event ?? undefined })"
+						/>
+					</span>
+				</div>
+
+				<div class="bo-info-row">
+					<span class="bo-info-label">Datum narození</span>
+					<span class="bo-info-action">
+						<span class="bo-info-value">{{ memberValue.birthday ? (memberValue.birthday | date: "d. M. y") : "-" }}</span>
+						<bo-edit-button-date
+							label="Datum narození"
+							[disabled]="!memberValue._links.updateMember.allowed"
+							[value]="memberValue.birthday"
+							(update)="update.emit({ birthday: $event })"
+						/>
+					</span>
+				</div>
+			</div>
+		}
+	</bo-card-content>
+</bo-card>

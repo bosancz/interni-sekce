@@ -1,63 +1,73 @@
-<h3>Kontakty rodiče</h3>
+<bo-card>
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="people-outline" />
+				Kontakty rodiče
+			</span>
+		</bo-card-title>
+	</bo-card-header>
 
-@for (contact of contacts(); track $index) {
-	<bo-card class="contact mb-3">
-		<bo-card-header>
-			<bo-card-title class="editable" (click)="openContactForm(contact)">{{ contact.relationship }}</bo-card-title>
-			<bo-delete-button (click)="deleteContact(contact)" slot="buttons"></bo-delete-button>
-		</bo-card-header>
+	<bo-card-content>
+		@for (contact of contacts(); track $index) {
+			<div class="contact">
+				<div class="contact-header">
+					<span class="relationship">
+						{{ contact.relationship }}
+						@if (contact.name) {
+							<span class="name">({{ contact.name }})</span>
+						}
+					</span>
+					<span class="contact-actions">
+						<bo-edit-button (click)="openContactForm(contact)"></bo-edit-button>
+						<bo-delete-button (click)="deleteContact(contact)"></bo-delete-button>
+					</span>
+				</div>
 
-		<bo-card-content>
-			<ion-list lines="none">
-				@if (contact.name) {
-					<ion-item [detail]="false">
-						<ion-icon name="person-outline" slot="start"></ion-icon>
-						<ion-label>{{ contact.name }}</ion-label>
-						<bo-copy-button [text]="contact.name"></bo-copy-button>
-					</ion-item>
-				}
-				@if (contact.mobile) {
-					<ion-item [button]="true" [detail]="false" [href]="'tel:' + contact.mobile" target="_blank">
+				<ion-list lines="none">
+					@if (contact.mobile) {
+						<ion-item [detail]="false">
+							<ion-icon name="call-outline" slot="start"></ion-icon>
+							<ion-label>{{ contact.mobile }}</ion-label>
+							<bo-icon-button icon="call-outline" [href]="'tel:' + contact.mobile"></bo-icon-button>
+							<bo-copy-button [text]="contact.mobile"></bo-copy-button>
+						</ion-item>
+					}
+					@if (contact.email) {
+						<ion-item [detail]="false">
+							<ion-icon name="mail-outline" slot="start"></ion-icon>
+							<ion-label>{{ contact.email }}</ion-label>
+							<bo-icon-button icon="mail-outline" [href]="'mailto:' + contact.email"></bo-icon-button>
+							<bo-copy-button [text]="contact.email"></bo-copy-button>
+						</ion-item>
+					}
+					@if (contact.other) {
+						<ion-item [button]="true" [detail]="false">
+							<ion-icon name="information-circle-outline" slot="start"></ion-icon>
+							<ion-label>{{ contact.other }}</ion-label>
+							<bo-copy-button [text]="contact.other"></bo-copy-button>
+						</ion-item>
+					}
+				</ion-list>
+			</div>
+		}
+
+		@if (member() === undefined) {
+			<div class="contact">
+				<div class="contact-header">
+					<span class="relationship"><ion-skeleton-text [animated]="true"></ion-skeleton-text></span>
+				</div>
+				<ion-list lines="none">
+					<ion-item>
 						<ion-icon name="call-outline" slot="start"></ion-icon>
-						<ion-label>{{ contact.mobile }}</ion-label>
-						<bo-copy-button [text]="contact.mobile"></bo-copy-button>
+						<ion-label><ion-skeleton-text [animated]="true"></ion-skeleton-text></ion-label>
 					</ion-item>
-				}
-				@if (contact.email) {
-					<ion-item [button]="true" [detail]="false" [href]="'mailto:' + contact.email" target="_blank">
-						<ion-icon name="mail-outline" slot="start"></ion-icon>
-						<ion-label>{{ contact.email }}</ion-label>
-						<bo-copy-button [text]="contact.email"></bo-copy-button>
-					</ion-item>
-				}
-				@if (contact.other) {
-					<ion-item [button]="true" [detail]="false">
-						<ion-icon name="information-circle-outline" slot="start"></ion-icon>
-						<ion-label>{{ contact.other }}</ion-label>
-						<bo-copy-button [text]="contact.other"></bo-copy-button>
-					</ion-item>
-				}
-			</ion-list>
-		</bo-card-content>
-	</bo-card>
-}
+				</ion-list>
+			</div>
+		}
 
-@if (member() === undefined) {
-	<bo-card class="contact mb-3">
-		<bo-card-header>
-			<bo-card-title><ion-skeleton-text [animated]="true"></ion-skeleton-text></bo-card-title>
-		</bo-card-header>
-		<bo-card-content>
-			<ion-list lines="none">
-				<ion-item>
-					<ion-icon name="call-outline" slot="start"></ion-icon>
-					<ion-label><ion-skeleton-text [animated]="true"></ion-skeleton-text></ion-label>
-				</ion-item>
-			</ion-list>
-		</bo-card-content>
-	</bo-card>
-}
-
-<ion-buttons class="mt-3 justify-content-center">
-	<bo-add-button (click)="openContactForm(null)">Přidat kontakt</bo-add-button>
-</ion-buttons>
+		<ion-buttons class="mt-3 justify-content-center">
+			<bo-add-button (click)="openContactForm(null)">Přidat kontakt</bo-add-button>
+		</ion-buttons>
+	</bo-card-content>
+</bo-card>
