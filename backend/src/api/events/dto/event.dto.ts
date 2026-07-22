@@ -12,7 +12,8 @@ import { Member } from "src/models/members/entities/member.entity";
 import { EventAttendeeResponse } from "./event-attendee.dto";
 import { EventExpenseResponse } from "./event-expense.dto";
 
-export class EventResponse implements Omit<Event, "setLeaders"> {
+// eventGroups is the raw join-table relation; the response exposes the derived groups/groupsIds instead.
+export class EventResponse implements Omit<Event, "setLeaders" | "setGroups" | "eventGroups"> {
 	id!: number;
 	name!: string;
 	@ApiProperty({ enum: EventStates, enumName: "EventStatesEnum" }) status!: EventStates;

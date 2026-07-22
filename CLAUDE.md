@@ -10,6 +10,14 @@
 
 - The frontend SDK (`frontend/src/sdk`) is generated from the backend's OpenAPI spec — do **not** hand-edit `frontend/src/sdk/api.ts`. After changing a backend controller/DTO, regenerate it: from `frontend/`, run `npm run generate:sdk` (it reads the spec from the running backend at `http://127.0.0.1:3000/api/openapi-json`, so the dev server must be up). Every NestJS route needs a unique `operationId` (method name) or generation fails validation.
 
+## Backend entities
+
+- **One table, one entity mapping.** Never map the same table twice (e.g. an explicit `@Entity("x")` *and* a `@ManyToMany`/`@JoinTable` over `"x"`). TypeORM then builds two metadata objects for it, and the schema builder drops and recreates that table's indexes in **every** generated migration — permanent drift that survives being applied. `events_groups` was in this state for years; it is now mapped only by `EventGroup`.
+- **`Event.groups` / `Event.groupsIds` are derived, not relations.** Because `events_groups` is mapped explicitly, the real relation is `Event.eventGroups` (`@OneToMany` → `EventGroup`) and the two public fields are populated by the `setGroups()` `@AfterLoad` hook. Consequences:
+  - Any **new query returning events must `leftJoinAndSelect("events.eventGroups", "eventGroups")`**, otherwise `groupsIds` comes back `undefined` and the frontend loses group assignments. `groups` additionally needs `eventGroups.group` joined. The hook deliberately leaves both fields untouched when the relation was not loaded, rather than defaulting to `[]` — a missing join shows up as `undefined` instead of silently claiming the event has no groups.
+  - **Writes go through `EventsRepository.setEventGroups()`**, which syncs the join rows in a transaction. Do not expect a cascading `save()` to sync them the way `@JoinTable` used to.
+  - Keep `eventGroups` out of API DTOs (`EventResponse` omits it) so the SDK contract stays `groups` + `groupsIds`.
+
 ## Database migrations
 
 - **Always** produce migrations with `npm run migrations:generate --name=<MigrationName>` (from `backend/`), never by hand and never with `migrations:create`. The generator diffs the entities against the DB, so the migration comes out in TypeORM's own format and naming — hand-written files drift from that shape.

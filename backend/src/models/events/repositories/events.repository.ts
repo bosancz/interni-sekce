@@ -2,10 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationOptions } from "src/helpers/pagination";
 import { applySort } from "src/helpers/sort";
-import { Group } from "src/models/members/entities/group.entity";
-import { Brackets, FindOptionsSelect, Repository } from "typeorm";
+import { Brackets, FindOptionsSelect, In, Not, Repository } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "../entities/event-attendee.entity";
 import { EventExpense } from "../entities/event-expense.entity";
+import { EventGroup } from "../entities/event-group.entity";
 import { Event, EventStates } from "../entities/event.entity";
 
 export interface GetEventsOptions extends PaginationOptions {
@@ -23,6 +23,7 @@ export interface GetEventsOptions extends PaginationOptions {
 export class EventsRepository {
 	constructor(
 		@InjectRepository(Event) private eventsRepository: Repository<Event>,
+		@InjectRepository(EventGroup) private eventGroupsRepository: Repository<EventGroup>,
 		@InjectRepository(EventAttendee) private eventAttendeesRepository: Repository<EventAttendee>,
 		@InjectRepository(EventExpense) private eventExpensesRepository: Repository<EventExpense>,
 	) {}
@@ -43,6 +44,8 @@ export class EventsRepository {
 				"events.meetingPlaceStart",
 				"events.meetingPlaceEnd",
 			])
+			// joined so Event.setGroups() can populate groupsIds, which every list consumer expects
+			.leftJoinAndSelect("events.eventGroups", "eventGroups")
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
 			.leftJoinAndSelect("attendees.member", "leaders")
 			// row-level permission filter (see Permission.canWhere)
@@ -126,7 +129,8 @@ export class EventsRepository {
 				"events.leadersEvent",
 				"events.hasRegistration",
 			])
-			.leftJoinAndSelect("events.groups", "groups")
+			.leftJoinAndSelect("events.eventGroups", "eventGroups")
+			.leftJoinAndSelect("eventGroups.group", "groups")
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
 			.leftJoinAndSelect("attendees.member", "leaders")
 			.where("events.status IN (:...statuses)", { statuses: [EventStates.public, EventStates.cancelled] })
@@ -159,7 +163,7 @@ export class EventsRepository {
 		const event = await this.eventsRepository.findOne({
 			where: { id },
 			select: options.select,
-			relations: { album: true },
+			relations: { album: true, eventGroups: true },
 			withDeleted: true,
 		});
 		if (!event) return null;
@@ -190,6 +194,7 @@ export class EventsRepository {
 				"events.type",
 				"events.deletedAt",
 			])
+			.leftJoinAndSelect("events.eventGroups", "eventGroups")
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
 			.leftJoinAndSelect("attendees.member", "leaders")
 			.withDeleted()
@@ -219,14 +224,39 @@ export class EventsRepository {
 	}
 
 	async updateEvent(id: number, data: Partial<Event>) {
-		if (data.groupsIds) {
-			data.groups = data.groupsIds.map((id) => ({ id }) as Group);
-			delete data.groupsIds;
-		}
+		const groupsIds = data.groupsIds;
+		delete data.groupsIds;
 
 		data.id = id;
 
-		return this.eventsRepository.save(data);
+		const event = await this.eventsRepository.save(data);
+
+		if (groupsIds) await this.setEventGroups(id, groupsIds);
+
+		return event;
+	}
+
+	/**
+	 * Replaces the event's rows in the events_groups join table. The table is mapped explicitly
+	 * (EventGroup) rather than through @JoinTable, so membership is synced here instead of falling
+	 * out of a cascading save. Delete-then-insert is fine at this size and keeps it order-independent.
+	 */
+	private async setEventGroups(eventId: number, groupsIds: number[]) {
+		await this.eventGroupsRepository.manager.transaction(async (manager) => {
+			const eventGroups = manager.getRepository(EventGroup);
+
+			if (groupsIds.length) {
+				await eventGroups.delete({ eventId, groupId: Not(In(groupsIds)) });
+				await eventGroups
+					.createQueryBuilder()
+					.insert()
+					.values(groupsIds.map((groupId) => ({ eventId, groupId })))
+					.orIgnore()
+					.execute();
+			} else {
+				await eventGroups.delete({ eventId });
+			}
+		});
 	}
 
 	async deleteEvent(id: number) {

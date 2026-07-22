@@ -216,13 +216,11 @@ export class MongoImportService {
 			let status = <any>mongoEvent.status ?? EventStates.draft;
 			if (status === "rejected") status = EventStates.pending;
 
-			const groups = await Promise.all(
-				mongoEvent.groups
-					?.filter((g) => g !== "V")
-					.map((g) => this.getGroupId(t, g).then((id) => ({ id }) as Group)) ?? [],
+			const groupsIds = await Promise.all(
+				mongoEvent.groups?.filter((g) => g !== "V").map((g) => this.getGroupId(t, g)) ?? [],
 			);
 
-			const eventData: Omit<Event, "id" | "setLeaders" | "groupsIds"> = {
+			const eventData: Omit<Event, "id" | "setLeaders" | "setGroups" | "groupsIds" | "eventGroups"> = {
 				name: mongoEvent.name,
 				status,
 				statusNote: mongoEvent.statusNote ?? null,
@@ -243,10 +241,19 @@ export class MongoImportService {
 				leadersEvent: mongoEvent.groups?.includes("V") || false,
 				hasRegistration: false, // TODO: migrate registration
 				report: null,
-				groups,
+				groups: undefined,
 			};
 
 			const event = await t.save(Event, eventData);
+
+			// events_groups is mapped explicitly (EventGroup), so the join rows are written directly
+			// instead of cascading out of the event save
+			if (groupsIds.length) {
+				await t.insert(
+					EventGroup,
+					groupsIds.map((groupId) => ({ eventId: event.id, groupId })),
+				);
+			}
 
 			eventIds[mongoEvent._id.toString()] = event.id;
 
