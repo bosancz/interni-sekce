@@ -79,6 +79,11 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 			pinned: true,
 			handler: () => this.create(),
 		},
+		{
+			text: "Smazaná alba",
+			icon: "trash-outline",
+			handler: () => this.router.navigate(["smazane"], { relativeTo: this.route }),
+		},
 	]);
 
 	filter: UrlParams = {};
