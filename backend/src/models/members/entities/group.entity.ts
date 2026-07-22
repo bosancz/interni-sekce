@@ -5,7 +5,10 @@ import { Member } from "./member.entity";
 export class Group {
 	@PrimaryGeneratedColumn() id!: number;
 
-	@Column({ type: "text", nullable: true }) name!: string | null;
+	// `natural_numeric` is an ICU collation with numeric ordering, so group names with
+	// embedded numbers sort naturally ("3. oddíl" before "22. oddíl") wherever the column
+	// is ordered — e.g. sorting members by their group in the members list.
+	@Column({ type: "text", nullable: true, collation: "natural_numeric" }) name!: string | null;
 	@Column({ type: "varchar", nullable: false }) shortName!: string;
 	@Column({ type: "boolean", nullable: false, default: true }) active!: boolean;
 	@Column({ type: "varchar", nullable: true }) color!: string | null;
