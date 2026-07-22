@@ -1,25 +1,22 @@
 import { DatePipe, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
+import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
 	AlertController,
 	InfiniteScrollCustomEvent,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
-	IonItem,
-	IonLabel,
-	IonList,
-	IonSkeletonText,
 	NavController,
 	ViewWillEnter,
 	ViewWillLeave,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline } from "ionicons/icons";
+import { addOutline, eyeOffOutline, eyeOutline, openOutline, trashOutline } from "ionicons/icons";
 import { AlbumStatuses } from "src/app/core/config/album-statuses";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -44,12 +41,7 @@ import { SDK } from "src/sdk";
 
 	imports: [
 		FormsModule,
-		RouterLink,
 		DatePipe,
-		IonItem,
-		IonLabel,
-		IonList,
-		IonSkeletonText,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
 		PageHeaderComponent,
@@ -77,8 +69,6 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	readonly pageSize = 50;
 
 	statuses = AlbumStatuses;
-
-	loadingArray = Array(5).fill(null);
 
 	alert?: HTMLIonAlertElement;
 
@@ -109,6 +99,68 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	// Row link for the declarative admin-table (navigates to the album detail).
 	rowLink = (album: SDK.AlbumResponseWithLinks) => "" + album.id;
 
+	// Header shown above the actions on the mobile ActionSheet.
+	rowActionsHeader = (album: SDK.AlbumResponseWithLinks) => album.name;
+
+	// Arrow property (stable reference + bound `this`) so it can be passed as the
+	// admin-table `[actions]` input and invoked from there per row.
+	albumActions = (album: SDK.AlbumResponseWithLinks): Action[] => [
+		{
+			text: "Publikovat",
+			icon: "eye-outline",
+			color: "primary",
+			hidden: !album._links.publishAlbum.allowed,
+			handler: () => this.publish(album),
+		},
+		{
+			text: "Otevřít na webu",
+			icon: "open-outline",
+			color: "success",
+			hidden: album.status !== "public",
+			handler: () => this.open(album),
+		},
+		{
+			text: "Zrušit publikaci",
+			icon: "eye-off-outline",
+			color: "danger",
+			hidden: !album._links.unpublishAlbum.allowed,
+			handler: () => this.unpublish(album),
+		},
+		{
+			text: "Smazat album",
+			role: "destructive",
+			icon: "trash-outline",
+			color: "danger",
+			hidden: !album._links.deleteAlbum.allowed,
+			handler: () => this.delete(album),
+		},
+	];
+
+	private async publish(album: SDK.AlbumResponseWithLinks) {
+		await this.api.PhotoGalleryApi.publishAlbum(album.id);
+		this.toastService.toast("Publikováno.");
+		this.loadAlbums(this.filter);
+	}
+
+	private async unpublish(album: SDK.AlbumResponseWithLinks) {
+		await this.api.PhotoGalleryApi.unpublishAlbum(album.id);
+		this.toastService.toast("Publikace zrušena.");
+		this.loadAlbums(this.filter);
+	}
+
+	private open(album: SDK.AlbumResponseWithLinks) {
+		window.open("https://bosan.cz/fotogalerie/" + album.id);
+	}
+
+	private async delete(album: SDK.AlbumResponseWithLinks) {
+		const confirmation = await this.modalService.deleteConfirmationModal(`Opravdu chcete smazat album ${album.name}?`);
+		if (!confirmation) return;
+
+		await this.api.PhotoGalleryApi.deleteAlbum(album.id);
+		this.toastService.toast("Smazáno.");
+		this.loadAlbums(this.filter);
+	}
+
 	yearOptions = computed<FilterPillOption[]>(() =>
 		this.years().map((year) => ({ value: year, label: year })),
 	);
@@ -127,11 +179,12 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		private alertController: AlertController,
 		private toastService: ToastService,
 		private navController: NavController,
+		private modalService: ModalService,
 		private platformService: PlatformService,
 		private route: ActivatedRoute,
 		private router: Router,
 	) {
-		addIcons({ addOutline });
+		addIcons({ addOutline, eyeOutline, eyeOffOutline, openOutline, trashOutline });
 
 		// Filters render inline in the toolbar on desktop and inside the filter modal on mobile;
 		// this tracks the lg breakpoint (992px) so the template can switch between the two.
