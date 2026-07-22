@@ -1,13 +1,21 @@
 import { CommonModule } from "@angular/common";
-import { afterNextRender, Component, computed, Injector, OnInit, signal } from "@angular/core";
+import {
+	afterNextRender,
+	Component,
+	computed,
+	ElementRef,
+	Injector,
+	OnDestroy,
+	OnInit,
+	signal,
+	viewChild,
+} from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
-	IonSelect,
-	IonSelectOption,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
@@ -26,14 +34,16 @@ import { DateTime } from "luxon";
 import { EventStatus, EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
+import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
-import { AdminTableHeaderDirective } from "src/app/shared/components/admin-table/admin-table-header.directive";
-import { AdminTableComponent } from "src/app/shared/components/admin-table/admin-table.component";
+import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
+import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
 import { EventStatusBadgeComponent } from "src/app/shared/components/event-status-badge/event-status-badge.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
+import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
@@ -59,22 +69,21 @@ type EventStatusActions = ExtractExisting<
 		FormsModule,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
-		IonSelect,
-		IonSelectOption,
 		EventStatusBadgeComponent,
+		EventCardComponent,
 		GroupPipe,
 		MemberPipe,
 		AdminTableComponent,
 		AdminTableColumnComponent,
 		AdminTableCellDirective,
-		AdminTableHeaderDirective,
 		PageContentComponent,
 		PageHeaderComponent,
 		FilterComponent,
 		FilterPillComponent,
+		SortSelectComponent,
 	],
 })
-export class EventsListComponent implements OnInit {
+export class EventsListComponent implements OnInit, OnDestroy {
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 	years = signal<number[]>([]);
 	currentYearString = String(new Date().getFullYear());
@@ -82,7 +91,19 @@ export class EventsListComponent implements OnInit {
 	selectedStatuses = signal<string[]>([]);
 	selectedLeaderFilters = signal<string[]>([]);
 
+	sortColumn = signal<string | null>(null);
+	sortOrder = signal<"ASC" | "DESC">("ASC");
+
+	readonly sortOptions: SortOption[] = [
+		{ key: "name", label: "Název" },
+		{ key: "dateFrom", label: "Datum" },
+		{ key: "status", label: "Stav" },
+	];
+
 	statuses = signal<Record<string, EventStatus>>({});
+
+	// True when the viewport is at least the lg breakpoint (992px) — filters inline vs. in the modal.
+	isDesktop = signal(true);
 
 	yearOptions = computed<FilterPillOption[]>(() =>
 		this.years().map((year) => ({ value: String(year), label: String(year) })),
@@ -107,6 +128,11 @@ export class EventsListComponent implements OnInit {
 			pinned: true,
 			handler: () => this.create(),
 		},
+		{
+			text: "Smazané akce",
+			icon: "trash-outline",
+			handler: () => this.router.navigate(["smazane"], { relativeTo: this.route }),
+		},
 	]);
 
 	page = 1;
@@ -120,6 +146,23 @@ export class EventsListComponent implements OnInit {
 	rowLink = (event: SDK.EventResponseWithLinks) => "" + event.id;
 	rowId = (event: SDK.EventResponseWithLinks) => "event-" + event.id;
 
+	// Desktop-only hover preview: the event whose row is currently hovered, plus the
+	// floating card's viewport position (anchored next to the mouse cursor).
+	hoveredEvent = signal<SDK.EventResponseWithLinks | undefined>(undefined);
+	previewPosition = signal<{ top: number; left: number } | null>(null);
+
+	// Show the preview only after the pointer has rested on a row for a moment, so it
+	// doesn't flash while sweeping across the list.
+	private readonly previewDelayMs = 500;
+	private previewTimer: ReturnType<typeof setTimeout> | null = null;
+	private pendingEventId: number | null = null;
+
+	private previewOverlay = viewChild<ElementRef<HTMLElement>>("previewOverlay");
+	// Hold a direct reference to the relocated overlay: the `previewOverlay` viewChild
+	// signal may already be torn down by the time ngOnDestroy runs, which would leave the
+	// orphaned <body> node floating over the next page.
+	private previewOverlayEl: HTMLElement | null = null;
+
 	constructor(
 		private api: ApiService,
 		private router: Router,
@@ -127,7 +170,12 @@ export class EventsListComponent implements OnInit {
 		private injector: Injector,
 		private modalService: ModalService,
 		private toasts: ToastService,
+		private platformService: PlatformService,
 	) {
+		// Filters render inline in the toolbar on desktop and inside the filter modal on mobile;
+		// this tracks the lg breakpoint (992px) so the template can switch between the two.
+		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
+
 		addIcons({
 			addOutline,
 			handLeftOutline,
@@ -139,6 +187,25 @@ export class EventsListComponent implements OnInit {
 			arrowUndoOutline,
 			trashOutline,
 		});
+
+		// Move the hover-preview overlay to <body> so its fixed positioning is viewport-relative.
+		afterNextRender(
+			() => {
+				const overlay = this.previewOverlay()?.nativeElement;
+				if (overlay) {
+					this.previewOverlayEl = overlay;
+					document.body.appendChild(overlay);
+				}
+			},
+			{ injector: this.injector },
+		);
+	}
+
+	ngOnDestroy(): void {
+		this.clearTimer();
+		// The overlay was relocated to <body>, so Angular won't remove it with the view.
+		this.previewOverlayEl?.remove();
+		this.previewOverlayEl = null;
 	}
 
 	// Header shown above the actions on the mobile ActionSheet.
@@ -277,7 +344,17 @@ export class EventsListComponent implements OnInit {
 		this.selectedYears.set(this.normalizeFilterValueToArray(params["year"]));
 		this.selectedStatuses.set(this.normalizeFilterValueToArray(params["status"]));
 		this.selectedLeaderFilters.set(this.normalizeFilterValueToArray(params["leaders"]));
+		this.sortColumn.set(params["sort"] ?? null);
+		this.sortOrder.set(params["order"] === "DESC" ? "DESC" : "ASC");
 		this.loadEvents(this.filter);
+	}
+
+	onSortChange(sort: AdminTableSort) {
+		this.router.navigate([], {
+			queryParams: { sort: sort.sort || null, order: sort.sort ? sort.order : null },
+			queryParamsHandling: "merge",
+			replaceUrl: true,
+		});
 	}
 
 	setFilterParam(name: string, value: string | string[] | null) {
@@ -359,6 +436,8 @@ export class EventsListComponent implements OnInit {
 			my: leaders.includes("my"),
 			noleader: leaders.includes("noleader"),
 			deleted: !!filter.deleted,
+			sort: (filter as any)["sort"] || undefined,
+			order: (filter as any)["order"] || undefined,
 			offset: (this.page - 1) * this.pageSize,
 			limit: this.pageSize,
 		};
@@ -421,6 +500,61 @@ export class EventsListComponent implements OnInit {
 
 		if (hydrating) requestAnimationFrame(() => this.applyInitialScroll(elementId, framesLeft - 1));
 		else element.scrollIntoView({ behavior: "instant", block: "center" });
+	}
+
+	// Show the event preview card next to the mouse while it rests over a row. Delegated
+	// on the table wrapper so it keeps working as rows stream in via infinite scroll.
+	onRowHover(e: MouseEvent) {
+		const row = (e.target as HTMLElement | null)?.closest?.("[id^='event-']") as HTMLElement | null;
+		if (!row) {
+			this.clearHover();
+			return;
+		}
+
+		const id = Number(row.id.slice("event-".length));
+		const event = this.events().find((item) => item.id === id);
+		if (!event) return;
+
+		this.positionPreview(e);
+
+		// Already shown (or scheduled) for this row: just keep the card following the cursor.
+		if (this.hoveredEvent()?.id === id || this.pendingEventId === id) return;
+
+		// Moved onto a different row: restart the delay before revealing its card.
+		this.hoveredEvent.set(undefined);
+		this.pendingEventId = id;
+		this.clearTimer();
+		this.previewTimer = setTimeout(() => {
+			this.pendingEventId = null;
+			this.hoveredEvent.set(event);
+		}, this.previewDelayMs);
+	}
+
+	clearHover() {
+		this.clearTimer();
+		this.pendingEventId = null;
+		this.hoveredEvent.set(undefined);
+	}
+
+	private clearTimer() {
+		if (this.previewTimer) {
+			clearTimeout(this.previewTimer);
+			this.previewTimer = null;
+		}
+	}
+
+	private positionPreview(e: MouseEvent) {
+		const cardWidth = 360;
+		const offset = 16;
+		const margin = 12;
+
+		// Prefer the right of the cursor; flip to the left when it would overflow the viewport.
+		let left = e.clientX + offset;
+		if (left + cardWidth > window.innerWidth) left = Math.max(margin, e.clientX - cardWidth - offset);
+
+		// Sit just below the cursor, clamped so the card stays on screen.
+		const top = Math.max(margin, Math.min(e.clientY + offset, window.innerHeight - 240));
+		this.previewPosition.set({ top, left });
 	}
 
 	private normalizeFilterValueToArray(value: string | string[] | null | undefined): string[] {

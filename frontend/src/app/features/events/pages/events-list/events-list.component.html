@@ -1,37 +1,62 @@
 <bo-page-header backUrl="/" title="Přehled akcí" [actions]="actions()" />
 
-<bo-filter [search]="true" [showButtonMobileOnly]="true">
+<bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
+	@if (isDesktop()) {
+		<!-- Desktop: filter pills laid out inline in the toolbar. -->
+		<div toolbar-actions slot="end" class="events-filter-actions">
+			<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+		</div>
+	} @else {
+		<!-- Mobile: the same filter pills collected inside the filter modal, plus a sort control
+		     (the sortable table headers aren't available in the mobile list view). -->
+		<div class="events-filter-modal">
+			<div class="events-filter-modal-pills">
+				<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+			</div>
+
+			<bo-sort-select
+				[options]="sortOptions"
+				[sort]="sortColumn()"
+				[order]="sortOrder()"
+				(sortChange)="onSortChange($event)"
+			/>
+		</div>
+	}
+</bo-filter>
+
+<!-- Filter pills, shared between the desktop toolbar and the mobile filter modal. -->
+<ng-template #filterPills>
 	<bo-filter-pill
-		toolbar-actions
-		slot="end"
 		label="Rok"
+		[columns]="3"
 		[options]="yearOptions()"
 		[selected]="selectedYears()"
 		(selectedChange)="setFilterParam('year', $event)"
 	/>
 
 	<bo-filter-pill
-		toolbar-actions
-		slot="end"
 		label="Stav"
-		[singleColumn]="true"
 		[options]="statusOptions()"
 		[selected]="selectedStatuses()"
 		(selectedChange)="setFilterParam('status', $event)"
 	/>
 
 	<bo-filter-pill
-		toolbar-actions
-		slot="end"
 		label="Vedoucí"
-		[singleColumn]="true"
 		[options]="leaderOptions"
 		[selected]="selectedLeaderFilters()"
 		(selectedChange)="setFilterParam('leaders', $event)"
 	/>
-</bo-filter>
+</ng-template>
 
 <bo-page-content>
+	<div
+		class="events-table-wrapper"
+		(mouseover)="onRowHover($event)"
+		(mousemove)="onRowHover($event)"
+		(mouseleave)="clearHover()"
+		(click)="clearHover()"
+	>
 	<admin-table
 		[class]="'events-table'"
 		[rows]="events()"
@@ -39,12 +64,15 @@
 		[rowId]="rowId"
 		[actions]="eventActions"
 		[actionsHeader]="rowActionsHeader"
+		[sort]="sortColumn()"
+		[order]="sortOrder()"
+		(sortChange)="onSortChange($event)"
 	>
-		<admin-table-column header="Název" [primary]="true" cellClass="events-name-column" headerClass="align-middle events-name-column">
+		<admin-table-column header="Název" sort="name" [primary]="true" cellClass="events-name-column" headerClass="align-middle events-name-column">
 			<ng-container *adminCell="let event">{{ event.name }}</ng-container>
 		</admin-table-column>
 
-		<admin-table-column header="Datum" cellClass="events-date-column" headerClass="events-date-column align-middle">
+		<admin-table-column header="Datum" sort="dateFrom" cellClass="events-date-column" headerClass="events-date-column align-middle">
 			<ng-container *adminCell="let event">
 				{{ event.dateFrom | date: "EEEEEE d. M." }} -
 				{{ event.dateTill | date: "EEEEEE d. M. y" }}
@@ -53,46 +81,13 @@
 
 		<!-- Stav is placed here so it keeps its column position in the desktop table, but is
 		     flagged [right] so it renders on the right of each item in the mobile list. -->
-		<admin-table-column header="Stav" [right]="true" cellClass="events-status-column" headerClass="events-status-column">
-			<ng-container *adminHeader>
-				<div class="column-filter">
-					<ion-select
-						label="Stav"
-						interface="popover"
-						justify="start"
-						[ngModel]="selectedStatuses()"
-						(ngModelChange)="setFilterParam('status', $event)"
-						[multiple]="true"
-					>
-						@for (status of statuses() | keyvalue; track status.key) {
-							<ion-select-option [value]="status.key">
-								{{ status.value.name }}
-							</ion-select-option>
-						}
-					</ion-select>
-				</div>
-			</ng-container>
+		<admin-table-column header="Stav" sort="status" [right]="true" cellClass="events-status-column" headerClass="events-status-column">
 			<ng-container *adminCell="let event">
 				<bo-event-status-badge [event]="event"></bo-event-status-badge>
 			</ng-container>
 		</admin-table-column>
 
 		<admin-table-column header="Vedoucí" cellClass="events-leaders-column" headerClass="events-leaders-column">
-			<ng-container *adminHeader>
-				<div class="column-filter">
-					<ion-select
-						label="Vedoucí"
-						interface="popover"
-						justify="start"
-						[ngModel]="selectedLeaderFilters()"
-						(ngModelChange)="setFilterParam('leaders', $event)"
-						[multiple]="true"
-					>
-						<ion-select-option value="my">Moje akce</ion-select-option>
-						<ion-select-option value="noleader">Akce bez vedoucího</ion-select-option>
-					</ion-select>
-				</div>
-			</ng-container>
 			<ng-container *adminCell="let event">
 				@for (leader of event.leaders; track leader.id; let isLast = $last) {
 					<span class="leader"
@@ -109,8 +104,23 @@
 			</ng-container>
 		</admin-table-column>
 	</admin-table>
+	</div>
 
 	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
 		<ion-infinite-scroll-content></ion-infinite-scroll-content>
 	</ion-infinite-scroll>
 </bo-page-content>
+
+<!-- Relocated to <body> on init so its `position: fixed` resolves against the viewport
+     rather than the `contain`-ing ion-content it's declared in (which would offset it by
+     the sidebar width). Positioned next to the cursor from onRowHover. -->
+<div
+	#previewOverlay
+	class="event-hover-preview"
+	[style.top.px]="previewPosition()?.top"
+	[style.left.px]="previewPosition()?.left"
+>
+	@if (hoveredEvent(); as event) {
+		<event-card [event]="event"></event-card>
+	}
+</div>

@@ -26,6 +26,12 @@
 				</div>
 			</bo-item>
 			}
+
+			@if (expenses().length === 0) {
+				<bo-item>
+					<p class="text-muted"><em>Žádné účtenky</em></p>
+				</bo-item>
+			}
 		</ion-list>
 
 		<div *ngIf="event()?._links?.addEventExpense?.allowed" class="text-center">

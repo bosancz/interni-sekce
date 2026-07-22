@@ -47,5 +47,9 @@
 				<ion-skeleton-text [animated]="true"></ion-skeleton-text>
 			</bo-item>
 		}
+	} @else if (attendees()!.length === 0) {
+		<bo-item>
+			<p class="text-muted"><em>Žádní účastníci</em></p>
+		</bo-item>
 	}
 </ion-list>

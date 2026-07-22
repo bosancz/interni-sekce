@@ -11,7 +11,11 @@
 				}
 			</ion-list>
 		} @else if (allergies()!.length === 0) {
-			<p><em>Žádné alergie</em></p>
+			<ion-list>
+				<bo-item>
+					<p class="text-muted"><em>Žádné alergie</em></p>
+				</bo-item>
+			</ion-list>
 		} @else {
 			<ion-list>
 				@for (row of allergies(); track $index) {
@@ -40,7 +44,11 @@
 				}
 			</ion-list>
 		} @else if (problems()!.length === 0) {
-			<p><em>Žádné známé problémy</em></p>
+			<ion-list>
+				<bo-item>
+					<p class="text-muted"><em>Žádné známé problémy</em></p>
+				</bo-item>
+			</ion-list>
 		} @else {
 			<ion-list>
 				@for (row of problems(); track $index) {

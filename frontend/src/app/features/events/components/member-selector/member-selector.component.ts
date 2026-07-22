@@ -1,10 +1,10 @@
 import { CommonModule } from "@angular/common";
-import { AfterViewInit, Component, ElementRef, forwardRef, input, OnDestroy, OnInit } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, forwardRef, input, OnInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { IonChip, IonIcon, ModalController } from "@ionic/angular/standalone";
+import { IonChip, IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { addCircle, closeCircle } from "ionicons/icons";
-import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { SDK } from "src/sdk";
 import { MemberSelectorModalComponent } from "../member-selector-modal/member-selector-modal.component";
 
@@ -27,14 +27,12 @@ export type MemberSelectorType = SDK.MemberResponse | SDK.MemberResponse[] | nul
 
 	imports: [CommonModule, IonChip, IonIcon],
 })
-export class MemberSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit, OnDestroy {
+export class MemberSelectorComponent implements OnInit, ControlValueAccessor, AfterViewInit {
 	value: SDK.MemberResponse[] = [];
 
 	members = input.required<SDK.MemberResponse[]>();
 	placeholder = input<string | undefined>();
 	multiple = input<boolean | string>(false);
-
-	modal?: HTMLIonModalElement;
 
 	/* ControlValueAccessor */
 	onChange?: (value: MemberSelectorType) => void;
@@ -44,8 +42,7 @@ export class MemberSelectorComponent implements OnInit, ControlValueAccessor, Af
 	disabled = false;
 
 	constructor(
-		private modalController: ModalController,
-		private api: ApiService,
+		private modalService: ModalService,
 		private elRef: ElementRef<HTMLElement>,
 	) {
 		addIcons({ closeCircle, addCircle });
@@ -55,10 +52,6 @@ export class MemberSelectorComponent implements OnInit, ControlValueAccessor, Af
 
 	ngAfterViewInit() {
 		this.emitIonStyle();
-	}
-
-	ngOnDestroy() {
-		this.modal?.dismiss();
 	}
 
 	private emitIonStyle() {
@@ -90,20 +83,13 @@ export class MemberSelectorComponent implements OnInit, ControlValueAccessor, Af
 		this.focused = true;
 		this.emitIonStyle();
 
-		this.modal = await this.modalController.create({
-			component: MemberSelectorModalComponent,
-			componentProps: {
-				members: this.members(),
-			},
+		const member = await this.modalService.componentModal(MemberSelectorModalComponent, {
+			members: this.members(),
 		});
 
-		this.modal.onDidDismiss().then((result) => {
-			this.focused = false;
-			if (result.data?.member !== undefined) this.addMember(result.data.member);
-			this.emitIonStyle();
-		});
-
-		this.modal.present();
+		this.focused = false;
+		if (member) this.addMember(member);
+		this.emitIonStyle();
 	}
 
 	addMember(member: SDK.MemberResponse) {

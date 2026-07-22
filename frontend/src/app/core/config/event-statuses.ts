@@ -13,9 +13,9 @@ const asEventStatuses = <T>(value: { [key in keyof T]: EventStatus }) => value;
 export const EventStatuses = asEventStatuses({
 	draft: {
 		name: "Připravovaná",
-		color: "#2a3478",
-		background: "var(--bo-blue-tint-2, #e3e8fa)",
-		foreground: "var(--bo-heading, #2a3478)",
+		color: "#6b7185",
+		background: "var(--bo-neutral-pill, #eef1f6)",
+		foreground: "var(--bo-neutral-pill-text, #6b7185)",
 	},
 	pending: {
 		name: "Čeká na schválení",

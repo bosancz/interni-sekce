@@ -28,17 +28,32 @@
 <h3 class="mt-5">Fotogalerie</h3>
 
 @if (event()?.album; as album) {
-	<ion-item button [detail]="true" [routerLink]="['/galerie', album.id]" lines="none" class="album-link">
+	<ion-item button [detail]="false" [routerLink]="['/galerie', album.id]" lines="none" class="album-link">
 		<ion-icon name="images-outline" slot="start"></ion-icon>
 		<ion-label>
 			<h2>{{ album.name }}</h2>
 			<p>{{ album.dateFrom | date: "d. M. y" }} – {{ album.dateTill | date: "d. M. y" }}</p>
 		</ion-label>
+		@if (event()?._links?.updateEvent?.allowed) {
+			<ion-button
+				slot="end"
+				fill="clear"
+				color="medium"
+				[disabled]="removingAlbum()"
+				title="Odpojit album"
+				(click)="removeAlbum(album, $event)"
+			>
+				<ion-icon name="close-outline" slot="icon-only"></ion-icon>
+			</ion-button>
+		}
 	</ion-item>
 } @else if (!event()) {
 	<p><ion-skeleton-text animated></ion-skeleton-text></p>
 } @else if (event()?._links?.updateEvent?.allowed) {
-	<div class="text-center">
-		<bo-add-button [disabled]="creatingAlbum()" (click)="createAlbum()">Vytvořit album</bo-add-button>
+	<div class="bo-empty-state">
+		<ion-icon name="images-outline"></ion-icon>
+		<strong>Zatím žádná fotogalerie</strong>
+		<p>Vytvořte nové album, nebo připojte existující.</p>
+		<ion-button fill="solid" [disabled]="addingAlbum()" (click)="addAlbum()">Přidat album</ion-button>
 	</div>
 }

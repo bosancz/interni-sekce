@@ -18,17 +18,6 @@ ion-list {
 	flex-grow: 1;
 }
 
-
-.column-filter {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.column-filter ion-select {
-	min-width: 7rem;
-}
-
 :host ::ng-deep .events-table {
 	table-layout: fixed;
 	width: 100%;
@@ -52,13 +41,36 @@ ion-list {
 	white-space: normal;
 }
 
-:host ::ng-deep .events-table .events-actions-column {
-	width: 6%;
-	text-align: center;
-}
-
 ion-select::part(text) {
   font-weight: normal;
+}
+
+// Desktop: filter pills laid out inline in the filter toolbar.
+.events-filter-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px;
+}
+
+// Mobile: the same pills collected inside the filter modal, stacked full-width.
+.events-filter-modal {
+	.events-filter-modal-pills {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 8px 12px 4px;
+
+		bo-filter-pill {
+			display: block;
+		}
+
+		::ng-deep .filter-pill-button {
+			width: 100%;
+			margin-inline: 0;
+			justify-content: space-between;
+		}
+	}
 }
 
 // leader — round initial avatar in the leader's team colour + name
@@ -100,4 +112,28 @@ ion-select::part(text) {
 // rows in table view are clickable
 :host ::ng-deep .events-table tbody tr {
 	cursor: pointer;
+}
+
+// Floating event preview shown while hovering a row. Fixed to the viewport and
+// non-interactive so it never steals the pointer from the underlying rows (which
+// keeps the hover target — and therefore the preview — updating as you move down).
+.event-hover-preview {
+	position: fixed;
+	z-index: 1000;
+	width: 360px;
+	max-width: calc(100vw - 24px);
+	pointer-events: none;
+	filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.18));
+
+	event-card {
+		display: block;
+		margin: 0;
+	}
+}
+
+// Hover previews only make sense with a fine pointer (mouse); hide on touch.
+@media (hover: none), (pointer: coarse) {
+	.event-hover-preview {
+		display: none;
+	}
 }

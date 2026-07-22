@@ -1,0 +1,37 @@
+<bo-page-header title="Smazané akce" backUrl="/akce"></bo-page-header>
+
+<bo-page-content>
+	<admin-table
+		[rows]="events()"
+		[loading]="events() === undefined"
+		[actions]="eventActions"
+		[actionsHeader]="rowActionsHeader"
+	>
+		<admin-table-column header="Název" [primary]="true" headerClass="align-middle">
+			<ng-container *adminCell="let event">{{ event.name }}</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Datum" headerClass="align-middle">
+			<ng-container *adminCell="let event">
+				{{ event.dateFrom | date: "EEEEEE d. M." }} -
+				{{ event.dateTill | date: "EEEEEE d. M. y" }}
+			</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Stav" [right]="true" headerClass="align-middle">
+			<ng-container *adminCell="let event">
+				<bo-event-status-badge [event]="event"></bo-event-status-badge>
+			</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Smazáno" headerClass="align-middle">
+			<ng-container *adminCell="let event">
+				{{ event.deletedAt ? (event.deletedAt | date: "d. M. y H:mm") : "" }}
+			</ng-container>
+		</admin-table-column>
+	</admin-table>
+
+	@if (events()?.length === 0) {
+		<p class="ion-padding events-empty">Žádné smazané akce.</p>
+	}
+</bo-page-content>

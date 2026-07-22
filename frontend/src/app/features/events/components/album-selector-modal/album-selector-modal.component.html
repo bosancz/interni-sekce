@@ -1,0 +1,67 @@
+<ion-toolbar>
+	<ion-searchbar
+		enterkeyhint="search"
+		placeholder="Hledat album"
+		[value]="searchString() ?? ''"
+		[debounce]="300"
+		(ionInput)="searchAlbums($any($event).detail.value)"
+	></ion-searchbar>
+	<ion-buttons slot="end">
+		<ion-button (click)="close.emit()">Zrušit</ion-button>
+	</ion-buttons>
+</ion-toolbar>
+
+<ion-content>
+	@if (allowCreate) {
+		<ion-note class="verify-hint">
+			Nejdřív zkontrolujte, jestli už album neexistuje — pokud ho najdete v seznamu, připojte ho. Jinak vytvořte nové.
+		</ion-note>
+	}
+
+	<ion-list>
+		@for (album of albums() ?? []; track album.id) {
+			<ion-item
+				[button]="true"
+				[color]="selected()?.id === album.id ? 'light' : undefined"
+				(click)="selected.set(album)"
+			>
+				<ion-label>
+					<h3>{{ album.name }}</h3>
+					<p>{{ [album.dateFrom, album.dateTill] | dateRange }}</p>
+				</ion-label>
+				@if (selected()?.id === album.id) {
+					<ion-icon name="checkmark-outline" color="primary" slot="end"></ion-icon>
+				}
+			</ion-item>
+		} @empty {
+			@if (albums()) {
+				<ion-note class="empty-note">Žádné odpovídající album.</ion-note>
+			}
+		}
+	</ion-list>
+
+	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
+</ion-content>
+
+<ion-footer>
+	<ion-toolbar>
+		<div class="modal-actions">
+			@if (allowCreate) {
+				<ion-button fill="outline" (click)="submit.emit(CREATE_ALBUM)">
+					<ion-icon name="add-outline" slot="start"></ion-icon>
+					@if (createName) {
+						Vytvořit »{{ createName }}«
+					} @else {
+						Vytvořit nové
+					}
+				</ion-button>
+			}
+			<ion-button fill="solid" [disabled]="!selected()" (click)="linkSelected()">
+				<ion-icon name="link-outline" slot="start"></ion-icon>
+				Připojit vybrané
+			</ion-button>
+		</div>
+	</ion-toolbar>
+</ion-footer>
