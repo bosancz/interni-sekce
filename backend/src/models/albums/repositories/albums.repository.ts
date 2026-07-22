@@ -87,6 +87,33 @@ export class AlbumsRepository {
 		return this.repository.findOne({ where: { id }, relations });
 	}
 
+	// Soft-deleted albums only (deletedAt IS NOT NULL). withDeleted() lifts TypeORM's default
+	// filter that hides them, and the explicit condition keeps the live albums out.
+	async getDeletedAlbums(where: Brackets | string = "1=1") {
+		return this.repository
+			.createQueryBuilder("albums")
+			.select([
+				"albums.id",
+				"albums.name",
+				"albums.status",
+				"albums.dateFrom",
+				"albums.dateTill",
+				"albums.datePublished",
+				"albums.deletedAt",
+			])
+			.withDeleted()
+			.where(where)
+			.andWhere("albums.deletedAt IS NOT NULL")
+			.orderBy("albums.deletedAt", "DESC")
+			.getMany();
+	}
+
+	// Fetch a single album including soft-deleted ones, so restore/permanent-delete can run their
+	// permission checks against an album the normal (non-deleted) query would no longer return.
+	async getDeletedAlbum(id: Album["id"]) {
+		return this.repository.findOne({ where: { id }, withDeleted: true });
+	}
+
 	async createAlbum(album: Partial<Album>) {
 		return this.repository.save(album);
 	}
@@ -96,6 +123,18 @@ export class AlbumsRepository {
 	}
 
 	async deleteAlbum(id: Album["id"]) {
+		return this.repository.softDelete({ id });
+	}
+
+	// Clear deletedAt, bringing a soft-deleted album back to life.
+	async restoreAlbum(id: Album["id"]) {
+		return this.repository.restore({ id });
+	}
+
+	// Irreversibly remove the album from the database (as opposed to deleteAlbum's soft delete).
+	// The photos have to go first — both their rows (photos.album_id is ON DELETE RESTRICT) and
+	// their image files on disk, which nothing else would ever clean up.
+	async hardDeleteAlbum(id: Album["id"]) {
 		await this.photosService.deletePhotosByAlbum(id);
 
 		return this.repository.delete(id);

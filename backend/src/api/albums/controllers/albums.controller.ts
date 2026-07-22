@@ -8,12 +8,15 @@ import { AlbumsRepository, GetAlbumsOptions } from "src/models/albums/repositori
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import {
 	AlbumCreatePermission,
+	AlbumDeletePermanentPermission,
 	AlbumDeletePermission,
 	AlbumEditPermission,
 	AlbumPhotosPermission,
 	AlbumPublishPermission,
 	AlbumReadPermission,
 	AlbumReorderPhotosPermission,
+	AlbumRestorePermission,
+	AlbumsDeletedListPermission,
 	AlbumsListPermission,
 	AlbumsYearsPermission,
 	AlbumUnpublishPermission,
@@ -56,6 +59,17 @@ export class AlbumsController {
 		AlbumCreatePermission.canOrThrow(req);
 
 		return this.albums.createAlbum(body);
+	}
+
+	@Get("deleted")
+	@AcLinks(AlbumsDeletedListPermission)
+	@ApiResponse({ status: 200, type: WithLinks(AlbumResponse), isArray: true })
+	async listDeletedAlbums(@Req() req: Request): Promise<AlbumResponse[]> {
+		AlbumsDeletedListPermission.canOrThrow(req);
+
+		const where = AlbumsDeletedListPermission.canWhere(req, "albums");
+
+		return this.albums.getDeletedAlbums(where);
 	}
 
 	@Get("years")
@@ -101,6 +115,31 @@ export class AlbumsController {
 		AlbumDeletePermission.canOrThrow(req, album);
 
 		await this.albums.deleteAlbum(id);
+	}
+
+	@Post(":id/restore")
+	@AcLinks(AlbumRestorePermission)
+	@ApiResponse({ status: 204 })
+	async restoreAlbum(@Param("id") id: number, @Req() req: Request): Promise<void> {
+		const album = await this.albums.getDeletedAlbum(id);
+		if (!album) throw new NotFoundException();
+
+		AlbumRestorePermission.canOrThrow(req, album);
+
+		await this.albums.restoreAlbum(id);
+	}
+
+	@Delete(":id/permanent")
+	@AcLinks(AlbumDeletePermanentPermission)
+	@ApiResponse({ status: 204 })
+	async deleteAlbumPermanent(@Param("id") id: number, @Req() req: Request): Promise<void> {
+		const album = await this.albums.getDeletedAlbum(id);
+		if (!album) throw new NotFoundException();
+
+		AlbumDeletePermanentPermission.canOrThrow(req, album);
+
+		// removes the photo rows and their image files on disk along with the album
+		await this.albums.hardDeleteAlbum(id);
 	}
 
 	@Post(":id/publish")

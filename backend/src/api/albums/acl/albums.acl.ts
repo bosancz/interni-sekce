@@ -17,6 +17,15 @@ export const AlbumsYearsPermission = new Permission<void>({
 	inherit: AlbumsListPermission,
 });
 
+export const AlbumsDeletedListPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: AlbumResponse,
+
+	allowed: {
+		vedouci: true,
+	},
+});
+
 export const AlbumReadPermission = new Permission({
 	linkTo: AlbumResponse,
 	contains: AlbumResponse,
@@ -40,6 +49,7 @@ export const AlbumEditPermission = new Permission({
 	allowed: {
 		vedouci: true,
 	},
+	applicable: ({ doc }) => !doc.deletedAt,
 });
 
 export const AlbumDeletePermission = new Permission({
@@ -47,10 +57,26 @@ export const AlbumDeletePermission = new Permission({
 	inherit: AlbumEditPermission,
 });
 
+export const AlbumRestorePermission = new Permission({
+	linkTo: AlbumResponse,
+	allowed: {
+		vedouci: true,
+	},
+	applicable: ({ doc }) => !!doc.deletedAt,
+});
+
+export const AlbumDeletePermanentPermission = new Permission({
+	linkTo: AlbumResponse,
+	allowed: {
+		vedouci: true,
+	},
+	applicable: ({ doc }) => !!doc.deletedAt,
+});
+
 export const AlbumPublishPermission = new Permission({
 	linkTo: AlbumResponse,
 	inherit: AlbumEditPermission,
-	applicable: ({ doc }) => doc.status === "draft",
+	applicable: ({ doc }) => doc.status === "draft" && !doc.deletedAt,
 });
 
 export const AlbumUnpublishPermission = new Permission({
@@ -58,7 +84,7 @@ export const AlbumUnpublishPermission = new Permission({
 
 	inherit: AlbumEditPermission,
 
-	applicable: ({ doc }) => doc.status === "public",
+	applicable: ({ doc }) => doc.status === "public" && !doc.deletedAt,
 });
 
 export const AlbumReorderPhotosPermission = new Permission({
