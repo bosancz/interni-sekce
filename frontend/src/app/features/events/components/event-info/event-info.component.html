@@ -85,8 +85,8 @@
 			<bo-item label="Oddíl" [loading]="!event()">
 				<bo-group-select
 					[disabled]="!canEdit()"
-					[ngModel]="event()?.groupsIds ?? []"
-					(ngModelChange)="update.emit({ groupsIds: $event })"
+					[ngModel]="groupsIds()"
+					(ngModelChange)="updateGroups.emit($event)"
 					[multiple]="true"
 				></bo-group-select>
 			</bo-item>

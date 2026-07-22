@@ -220,7 +220,7 @@ export class MongoImportService {
 				mongoEvent.groups?.filter((g) => g !== "V").map((g) => this.getGroupId(t, g)) ?? [],
 			);
 
-			const eventData: Omit<Event, "id" | "setLeaders" | "setGroups" | "groupsIds" | "eventGroups"> = {
+			const eventData: Omit<Event, "id" | "setLeaders" | "eventGroups"> = {
 				name: mongoEvent.name,
 				status,
 				statusNote: mongoEvent.statusNote ?? null,
@@ -241,7 +241,6 @@ export class MongoImportService {
 				leadersEvent: mongoEvent.groups?.includes("V") || false,
 				hasRegistration: false, // TODO: migrate registration
 				report: null,
-				groups: undefined,
 			};
 
 			const event = await t.save(Event, eventData);

@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Album } from "src/models/albums/entities/album.entity";
-import { Group } from "src/models/members/entities/group.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { AfterLoad, Column, DeleteDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "./event-attendee.entity";
@@ -28,14 +27,11 @@ export class Event {
 	@OneToOne(() => Album, (album) => album.event)
 	album?: Album;
 
+	// The events<->groups membership. The join table is mapped explicitly (EventGroup), so this is
+	// the single source of truth for an event's groups — reads join it, writes go through
+	// EventsRepository.updateEventGroups(). Consumers read the group ids off eventGroups[].groupId.
 	@OneToMany(() => EventGroup, (eventGroup) => eventGroup.event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
 	eventGroups?: EventGroup[];
-
-	// Derived from eventGroups by setGroups() — the join table is mapped explicitly (EventGroup),
-	// so these are not relations themselves. Every read path has to join eventGroups for them to
-	// be populated; `groups` additionally needs eventGroups.group joined.
-	groupsIds!: number[];
-	groups?: Group[];
 
 	@OneToMany(() => EventAttendee, (ea) => ea.event, { onDelete: "CASCADE", onUpdate: "CASCADE" })
 	attendees?: EventAttendee[];
@@ -68,21 +64,6 @@ export class Event {
 	@DeleteDateColumn() deletedAt?: Date | null;
 
 	leaders?: Member[];
-
-	// Only fills what was actually joined: without eventGroups both stay untouched (rather than
-	// being set to an empty array, which would claim the event has no groups), and `groups` is
-	// left alone unless the group relation itself was selected too.
-	@AfterLoad()
-	setGroups() {
-		if (!this.eventGroups) return;
-
-		this.groupsIds = this.eventGroups.map((eventGroup) => eventGroup.groupId);
-
-		const groups = this.eventGroups
-			.map((eventGroup) => eventGroup.group)
-			.filter((group): group is Group => !!group);
-		if (groups.length && groups.length === this.eventGroups.length) this.groups = groups;
-	}
 
 	@AfterLoad()
 	setLeaders() {

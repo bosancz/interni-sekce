@@ -111,8 +111,8 @@ export class PublicService {
 	}
 
 	private serializeEvent(event: Event, groupNameById: Map<number, string>) {
-		const groups = (event.groupsIds ?? [])
-			.map((id) => groupNameById.get(id))
+		const groups = (event.eventGroups ?? [])
+			.map((eventGroup) => groupNameById.get(eventGroup.groupId))
 			.filter((name): name is string => !!name);
 
 		return {

@@ -13,10 +13,10 @@
 ## Backend entities
 
 - **One table, one entity mapping.** Never map the same table twice (e.g. an explicit `@Entity("x")` *and* a `@ManyToMany`/`@JoinTable` over `"x"`). TypeORM then builds two metadata objects for it, and the schema builder drops and recreates that table's indexes in **every** generated migration — permanent drift that survives being applied. `events_groups` was in this state for years; it is now mapped only by `EventGroup`.
-- **`Event.groups` / `Event.groupsIds` are derived, not relations.** Because `events_groups` is mapped explicitly, the real relation is `Event.eventGroups` (`@OneToMany` → `EventGroup`) and the two public fields are populated by the `setGroups()` `@AfterLoad` hook. Consequences:
-  - Any **new query returning events must `leftJoinAndSelect("events.eventGroups", "eventGroups")`**, otherwise `groupsIds` comes back `undefined` and the frontend loses group assignments. `groups` additionally needs `eventGroups.group` joined. The hook deliberately leaves both fields untouched when the relation was not loaded, rather than defaulting to `[]` — a missing join shows up as `undefined` instead of silently claiming the event has no groups.
-  - **Writes go through `EventsRepository.setEventGroups()`**, which syncs the join rows in a transaction. Do not expect a cascading `save()` to sync them the way `@JoinTable` used to.
-  - Keep `eventGroups` out of API DTOs (`EventResponse` omits it) so the SDK contract stays `groups` + `groupsIds`.
+- **`Event.eventGroups` is the single source of truth for group membership.** Because `events_groups` is mapped explicitly, the real relation is `Event.eventGroups` (`@OneToMany` → `EventGroup`). There are no derived `Event.groups` / `Event.groupsIds` fields — consumers read the group ids straight off `eventGroups[].groupId`. Consequences:
+  - Any **new query returning events must `leftJoinAndSelect("events.eventGroups", "eventGroups")`**, otherwise `eventGroups` comes back `undefined` and the frontend loses group assignments. To also expose the full `Group` on each row (the public program needs the short name), additionally join `eventGroups.group`.
+  - **Writes go through `EventsRepository.updateEventGroups()`**, which syncs the join rows in a transaction. Do not expect a cascading `save()` to sync them the way `@JoinTable` used to. `EventUpdateBody` (the `PATCH /events/:id` body) does **not** carry groups — membership is edited via the dedicated `PUT /events/:id/groups` endpoint (`EventGroupsUpdateBody { groupsIds }`).
+  - `EventResponse` exposes `eventGroups` (`EventGroupResponse[]`) directly, so the SDK contract is `eventGroups`, not `groups` / `groupsIds`. The public bosan.cz program keeps its own legacy shape (a `groups` array of short names), derived from `eventGroups` in `PublicService.serializeEvent()`.
 
 ## Database migrations
 

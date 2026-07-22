@@ -44,7 +44,7 @@ export class EventsRepository {
 				"events.meetingPlaceStart",
 				"events.meetingPlaceEnd",
 			])
-			// joined so Event.setGroups() can populate groupsIds, which every list consumer expects
+			// joined so the response carries eventGroups (group ids), which every list consumer expects
 			.leftJoinAndSelect("events.eventGroups", "eventGroups")
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
 			.leftJoinAndSelect("attendees.member", "leaders")
@@ -224,16 +224,7 @@ export class EventsRepository {
 	}
 
 	async updateEvent(id: number, data: Partial<Event>) {
-		const groupsIds = data.groupsIds;
-		delete data.groupsIds;
-
-		data.id = id;
-
-		const event = await this.eventsRepository.save(data);
-
-		if (groupsIds) await this.setEventGroups(id, groupsIds);
-
-		return event;
+		return this.eventsRepository.save({ ...data, id });
 	}
 
 	/**
@@ -241,7 +232,7 @@ export class EventsRepository {
 	 * (EventGroup) rather than through @JoinTable, so membership is synced here instead of falling
 	 * out of a cascading save. Delete-then-insert is fine at this size and keeps it order-independent.
 	 */
-	private async setEventGroups(eventId: number, groupsIds: number[]) {
+	async updateEventGroups(eventId: number, groupsIds: number[]) {
 		await this.eventGroupsRepository.manager.transaction(async (manager) => {
 			const eventGroups = manager.getRepository(EventGroup);
 

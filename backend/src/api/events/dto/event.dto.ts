@@ -1,26 +1,33 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { ArrayUnique, IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { AlbumResponse } from "src/api/albums/dto/album.dto";
 import { GroupResponse } from "src/api/members/dto/group.dto";
 import { MemberResponse } from "src/api/members/dto/member.dto";
 import { Album } from "src/models/albums/entities/album.entity";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";
+import { EventGroup } from "src/models/events/entities/event-group.entity";
 import { Event, EventPlaceGeometry, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { EventAttendeeResponse } from "./event-attendee.dto";
 import { EventExpenseResponse } from "./event-expense.dto";
 
-// eventGroups is the raw join-table relation; the response exposes the derived groups/groupsIds instead.
-export class EventResponse implements Omit<Event, "setLeaders" | "setGroups" | "eventGroups"> {
+// A single event<->group membership row. Consumers read group ids off `groupId`; `group` is only
+// populated on read paths that join eventGroups.group.
+export class EventGroupResponse implements Omit<EventGroup, "event"> {
+	eventId!: number;
+	groupId!: number;
+	@ApiPropertyOptional({ type: GroupResponse }) group?: Group | undefined;
+}
+
+export class EventResponse implements Omit<Event, "setLeaders"> {
 	id!: number;
 	name!: string;
 	@ApiProperty({ enum: EventStates, enumName: "EventStatesEnum" }) status!: EventStates;
 	dateFrom!: string;
 	dateTill!: string;
 	leadersEvent!: boolean;
-	groupsIds!: number[];
 	hasRegistration!: boolean;
 
 	type!: string | null;
@@ -39,8 +46,8 @@ export class EventResponse implements Omit<Event, "setLeaders" | "setGroups" | "
 	deletedAt?: Date | null;
 	report!: string | null;
 
+	@ApiPropertyOptional({ type: EventGroupResponse, isArray: true }) eventGroups?: EventGroup[] | undefined;
 	@ApiPropertyOptional({ type: AlbumResponse }) album?: Album | undefined;
-	@ApiPropertyOptional({ type: GroupResponse, isArray: true }) groups?: Group[] | undefined;
 	@ApiPropertyOptional({ type: EventAttendeeResponse, isArray: true }) attendees?: EventAttendee[] | undefined;
 	@ApiPropertyOptional({ type: EventExpenseResponse, isArray: true }) expenses?: EventExpense[] | undefined;
 	@ApiPropertyOptional({ type: MemberResponse, isArray: true }) leaders?: Member[] | undefined;
@@ -62,11 +69,6 @@ export class EventUpdateBody {
 	@IsOptional() @IsBoolean() leadersEvent?: boolean;
 	@IsOptional() @IsBoolean() hasRegistration?: boolean;
 
-	@ApiPropertyOptional({ type: "number", isArray: true })
-	@IsOptional()
-	@IsNumber({}, { each: true })
-	groupsIds?: number[];
-
 	@IsOptional() @IsString() type?: string | null;
 	@IsOptional() @IsString() description?: string | null;
 	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsNumber() price?: number | null;
@@ -85,4 +87,12 @@ export class EventUpdateBody {
 
 export class EventStatusChangeBody {
 	@IsString() @IsOptional() statusNote?: string;
+}
+
+// Replaces the full set of groups an event belongs to (see EventsController.updateEventGroups).
+export class EventGroupsUpdateBody {
+	@ApiProperty({ type: "number", isArray: true })
+	@IsNumber({}, { each: true })
+	@ArrayUnique()
+	groupsIds!: number[];
 }

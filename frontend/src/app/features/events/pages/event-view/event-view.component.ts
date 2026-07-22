@@ -116,6 +116,21 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 		await this.loadEvent(this.event()!.id);
 	}
 
+	async updateEventGroups(groupsIds: number[]) {
+		const event = this.event();
+		if (!event) return;
+
+		try {
+			this.event.set({ ...event, eventGroups: groupsIds.map((groupId) => ({ eventId: event.id, groupId })) });
+			await this.api.EventsApi.updateEventGroups(event.id, { groupsIds });
+			this.toastService.toast("Uloženo.");
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit změny.", { color: "warning" });
+		}
+
+		await this.loadEvent(event.id);
+	}
+
 	private async loadEvent(eventId: number) {
 		const event = await this.api.EventsApi.getEvent(eventId).then((res) => res.data);
 		this.event.set(event);

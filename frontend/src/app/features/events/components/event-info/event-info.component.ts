@@ -46,8 +46,12 @@ import { EventRegistrationComponent } from "../event-registration/event-registra
 export class EventInfoComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>(undefined);
 	update = output<SDK.EventUpdateBody>();
+	updateGroups = output<number[]>();
 
 	canEdit = computed(() => this.event()?._links?.updateEvent?.allowed ?? false);
+
+	// group ids are read off the eventGroups join rows (there is no derived groupsIds field anymore)
+	groupsIds = computed(() => this.event()?.eventGroups?.map((eventGroup) => eventGroup.groupId) ?? []);
 
 	placeCoordinates = computed(() => {
 		const geom = this.event()?.placeGeometry;

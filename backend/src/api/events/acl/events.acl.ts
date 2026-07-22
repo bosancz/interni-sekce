@@ -72,6 +72,14 @@ export const EventEditPermission = new Permission({
 	applicable: ({ doc }) => !doc.deletedAt,
 });
 
+export const EventGroupsEditPermission = new Permission({
+	linkTo: EventResponse,
+
+	inherit: EventEditPermission,
+
+	path: (e) => `${e.id}/groups`,
+});
+
 export const EventDeletePermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {

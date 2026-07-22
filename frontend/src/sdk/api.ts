@@ -743,16 +743,10 @@ export namespace SDK {
         'album'?: Album;
         /**
          * 
-         * @type {Array<number>}
+         * @type {Array<EventGroup>}
          * @memberof Event
          */
-        'groupsIds': Array<number>;
-        /**
-         * 
-         * @type {Array<Group>}
-         * @memberof Event
-         */
-        'groups'?: Array<Group>;
+        'eventGroups'?: Array<EventGroup>;
         /**
          * 
          * @type {Array<EventAttendee>}
@@ -1452,6 +1446,78 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface EventGroup
+     */
+    export interface EventGroup {
+        /**
+         * 
+         * @type {number}
+         * @memberof EventGroup
+         */
+        'eventId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventGroup
+         */
+        'groupId': number;
+        /**
+         * 
+         * @type {Event}
+         * @memberof EventGroup
+         */
+        'event'?: Event;
+        /**
+         * 
+         * @type {Group}
+         * @memberof EventGroup
+         */
+        'group'?: Group;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface EventGroupResponse
+     */
+    export interface EventGroupResponse {
+        /**
+         * 
+         * @type {GroupResponse}
+         * @memberof EventGroupResponse
+         */
+        'group'?: GroupResponse;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventGroupResponse
+         */
+        'eventId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventGroupResponse
+         */
+        'groupId': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface EventGroupsUpdateBody
+     */
+    export interface EventGroupsUpdateBody {
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof EventGroupsUpdateBody
+         */
+        'groupsIds': Array<number>;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface EventPlaceGeometry
      */
     export interface EventPlaceGeometry {
@@ -1483,16 +1549,16 @@ export namespace SDK {
         'status': EventStatesEnum;
         /**
          * 
+         * @type {Array<EventGroupResponse>}
+         * @memberof EventResponse
+         */
+        'eventGroups'?: Array<EventGroupResponse>;
+        /**
+         * 
          * @type {Album}
          * @memberof EventResponse
          */
         'album'?: Album;
-        /**
-         * 
-         * @type {Array<GroupResponse>}
-         * @memberof EventResponse
-         */
-        'groups'?: Array<GroupResponse>;
         /**
          * 
          * @type {Array<EventAttendeeResponse>}
@@ -1541,12 +1607,6 @@ export namespace SDK {
          * @memberof EventResponse
          */
         'leadersEvent': boolean;
-        /**
-         * 
-         * @type {Array<number>}
-         * @memberof EventResponse
-         */
-        'groupsIds': Array<number>;
         /**
          * 
          * @type {boolean}
@@ -1754,6 +1814,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof EventResponseLinks
          */
+        'updateEventGroups': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
         'deleteEvent': AcLink;
         /**
          * 
@@ -1825,16 +1891,16 @@ export namespace SDK {
         'status': EventStatesEnum;
         /**
          * 
+         * @type {Array<EventGroupResponse>}
+         * @memberof EventResponseWithLinks
+         */
+        'eventGroups'?: Array<EventGroupResponse>;
+        /**
+         * 
          * @type {Album}
          * @memberof EventResponseWithLinks
          */
         'album'?: Album;
-        /**
-         * 
-         * @type {Array<GroupResponse>}
-         * @memberof EventResponseWithLinks
-         */
-        'groups'?: Array<GroupResponse>;
         /**
          * 
          * @type {Array<EventAttendeeResponse>}
@@ -1889,12 +1955,6 @@ export namespace SDK {
          * @memberof EventResponseWithLinks
          */
         'leadersEvent': boolean;
-        /**
-         * 
-         * @type {Array<number>}
-         * @memberof EventResponseWithLinks
-         */
-        'groupsIds': Array<number>;
         /**
          * 
          * @type {boolean}
@@ -2031,12 +2091,6 @@ export namespace SDK {
      * @interface EventUpdateBody
      */
     export interface EventUpdateBody {
-        /**
-         * 
-         * @type {Array<number>}
-         * @memberof EventUpdateBody
-         */
-        'groupsIds'?: Array<number>;
         /**
          * 
          * @type {number}
@@ -5246,6 +5300,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * EventsApi - object-oriented interface
      * @export
@@ -6869,6 +6927,57 @@ export namespace SDK {
             }
     
             const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async updateEventGroups(
+            id: number,
+            body: EventGroupsUpdateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateEventGroups', 'id', id)
+            assertParamExists('updateEventGroups', 'eventGroupsUpdateBody', body)
+            
+            // verify required parameter 'eventGroupsUpdateBody' is not null or undefined
+            assertParamExists('updateEventGroups', 'id', id)
+            assertParamExists('updateEventGroups', 'eventGroupsUpdateBody', body)
+            
+            const localVarPath = `/api/events/{id}/groups`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
     

@@ -30,6 +30,7 @@
 				class="mb-5"
 				[class.d-none]="view() !== 'info'"
 				(update)="updateEvent($event)"
+				(updateGroups)="updateEventGroups($event)"
 			></bo-event-info>
 
 			<bo-event-attendees

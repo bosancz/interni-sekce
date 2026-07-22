@@ -10,6 +10,7 @@ import {
 	Param,
 	Patch,
 	Post,
+	Put,
 	Query,
 	Req,
 	Res,
@@ -28,6 +29,7 @@ import {
 	EventDeletePermanentPermission,
 	EventDeletePermission,
 	EventEditPermission,
+	EventGroupsEditPermission,
 	EventLeadPermission,
 	EventPublishPermission,
 	EventReadPermission,
@@ -41,7 +43,13 @@ import {
 	EventUncancelPermission,
 	EventUnpublishPermission,
 } from "../acl/events.acl";
-import { EventCreateBody, EventResponse, EventStatusChangeBody, EventUpdateBody } from "../dto/event.dto";
+import {
+	EventCreateBody,
+	EventGroupsUpdateBody,
+	EventResponse,
+	EventStatusChangeBody,
+	EventUpdateBody,
+} from "../dto/event.dto";
 import { ListEventsQuery } from "../dto/events.dto";
 
 @Controller("events")
@@ -153,6 +161,23 @@ export class EventsController {
 		};
 
 		await this.events.updateEvent(id, updateData);
+	}
+
+	@Put(":id/groups")
+	@HttpCode(204)
+	@AcLinks(EventGroupsEditPermission)
+	@ApiResponse({ status: 204 })
+	async updateEventGroups(
+		@Req() req: Request,
+		@Param("id") id: number,
+		@Body() body: EventGroupsUpdateBody,
+	): Promise<void> {
+		const event = await this.events.getEvent(id, { leaders: true });
+		if (!event) throw new NotFoundException();
+
+		EventGroupsEditPermission.canOrThrow(req, event);
+
+		await this.events.updateEventGroups(id, body.groupsIds);
 	}
 
 	@Delete(":id")
