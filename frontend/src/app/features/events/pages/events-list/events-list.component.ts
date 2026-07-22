@@ -87,6 +87,11 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 	years = signal<number[]>([]);
 	currentYearString = String(new Date().getFullYear());
+
+	// Special "Datum" pill value: show only current/upcoming events (dateTill >= today).
+	// Mutually exclusive with the concrete year chips and applied as the default filter.
+	readonly futureFilterValue = "budouci";
+
 	selectedYears = signal<string[]>([]);
 	selectedStatuses = signal<string[]>([]);
 	selectedLeaderFilters = signal<string[]>([]);
@@ -105,9 +110,10 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	// True when the viewport is at least the lg breakpoint (992px) — filters inline vs. in the modal.
 	isDesktop = signal(true);
 
-	yearOptions = computed<FilterPillOption[]>(() =>
-		this.years().map((year) => ({ value: String(year), label: String(year) })),
-	);
+	yearOptions = computed<FilterPillOption[]>(() => [
+		{ value: this.futureFilterValue, label: "Budoucí" },
+		...this.years().map((year) => ({ value: String(year), label: String(year) })),
+	]);
 	statusOptions = computed<FilterPillOption[]>(() =>
 		Object.entries(this.statuses()).map(([key, status]) => ({
 			value: key,
@@ -139,6 +145,9 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	readonly pageSize = 50;
 	private loadToken = 0;
 	private hasAutoScrolled = false;
+	// Whether the default "Budoucí" filter has already been resolved for this page open, so we
+	// only inject it when no date filter is present in the URL yet (and never fight the user's clear).
+	private defaultFilterApplied = false;
 
 	filter: UrlParams = {};
 
@@ -340,6 +349,15 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	}
 
 	onFilterChange(params: Params) {
+		// Default to the "Budoucí" (current/upcoming) filter the first time the page opens without a
+		// date filter in the URL. Applying it once lets the user still clear it to see all events.
+		if (!this.defaultFilterApplied && params["year"] === undefined) {
+			this.defaultFilterApplied = true;
+			this.setFilterParam("year", [this.futureFilterValue]);
+			return;
+		}
+		this.defaultFilterApplied = true;
+
 		this.filter = { ...params };
 		this.selectedYears.set(this.normalizeFilterValueToArray(params["year"]));
 		this.selectedStatuses.set(this.normalizeFilterValueToArray(params["status"]));
@@ -371,6 +389,26 @@ export class EventsListComponent implements OnInit, OnDestroy {
 			queryParamsHandling: "merge",
 			replaceUrl: true,
 		});
+	}
+
+	// Handle the "Datum" pill selection. "Budoucí" and concrete years are mutually exclusive:
+	// picking "Budoucí" drops any selected years, and picking a year drops "Budoucí".
+	setDateFilter(values: string[]) {
+		const wasFuture = this.selectedYears().includes(this.futureFilterValue);
+		const isFuture = values.includes(this.futureFilterValue);
+
+		if (isFuture && !wasFuture) {
+			// "Budoucí" was just picked → make it the only selection.
+			this.setFilterParam("year", [this.futureFilterValue]);
+		} else if (isFuture && values.length > 1) {
+			// A year was picked while "Budoucí" was active → drop "Budoucí".
+			this.setFilterParam(
+				"year",
+				values.filter((value) => value !== this.futureFilterValue),
+			);
+		} else {
+			this.setFilterParam("year", values);
+		}
 	}
 
 	toggleCurrentYear() {
@@ -429,10 +467,18 @@ export class EventsListComponent implements OnInit, OnDestroy {
 
 		const leaders = this.normalizeFilterValueToArray((filter as any)["leaders"]);
 
+		const dateFilters = this.normalizeFilterValueToArray((filter as any)["year"]);
+		const showFuture = dateFilters.includes(this.futureFilterValue);
+		const years = dateFilters
+			.filter((value) => value !== this.futureFilterValue)
+			.map((year) => parseInt(year, 10));
+
 		const params: SDK.EventsApiListEventsQueryParams = {
 			search: filter.search || undefined,
 			status: this.normalizeFilterValueToArray((filter as any)["status"]),
-			year: this.normalizeFilterValueToArray((filter as any)["year"]).map((year) => parseInt(year, 10)),
+			year: years,
+			// "Budoucí": only events that haven't ended yet (dateTill >= today).
+			dateFrom: showFuture ? (DateTime.now().startOf("day").toISODate() ?? undefined) : undefined,
 			my: leaders.includes("my"),
 			noleader: leaders.includes("noleader"),
 			deleted: !!filter.deleted,
