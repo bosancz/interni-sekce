@@ -1736,6 +1736,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof EventResponseLinks
          */
+        'deleteEventPermanent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
         'leadEvent': AcLink;
         /**
          * 
@@ -4136,6 +4142,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'listDeletedEvents': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'listGroups': AcLink;
         /**
          * 
@@ -4953,6 +4965,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for generateEventRegistration operation in EventsApi.
      * @export
@@ -5036,6 +5052,18 @@ export namespace SDK {
     
     
     
+    
+    
+    /**
+     * @export
+     */
+    export const ListEventsOrderEnum = {
+        Asc: 'ASC',
+        Desc: 'DESC'
+    } as const;
+    export type ListEventsOrderEnum = typeof ListEventsOrderEnum[keyof typeof ListEventsOrderEnum];
+    
+    
     /**
      * Query parameters for listEvents operation in EventsApi.
      * @export
@@ -5057,6 +5085,22 @@ export namespace SDK {
          * @memberof EventsApiListEvents
          */
         offset?: number
+    
+        //sort
+        /**
+         * 
+         * @type {string}
+         * @memberof EventsApiListEvents
+         */
+        sort?: string
+    
+        //orderisEnumOrderEnum
+        /**
+         * 
+         * @type {'ASC' | 'DESC'}
+         * @memberof EventsApiListEvents
+         */
+        order?: ListEventsOrderEnum
     
         //year
         /**
@@ -5503,6 +5547,48 @@ export namespace SDK {
             const localVarPath = `/api/events/{eventId}/expenses/{expenseId}`
                 .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)))
                 .replace(`{${"expenseId"}}`, encodeURIComponent(String(expenseId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async deleteEventPermanent(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteEventPermanent', 'id', id)
+            
+            const localVarPath = `/api/events/{id}/permanent`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6041,6 +6127,42 @@ export namespace SDK {
         /**
          * 
     
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async listDeletedEvents(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/events/deleted`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<EventResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -6154,6 +6276,14 @@ export namespace SDK {
     
             if (queryParams.offset !== undefined) {
                 requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+            if (queryParams.sort !== undefined) {
+                requestQueryParameter['sort'] = queryParams.sort;
+            }
+    
+            if (queryParams.order !== undefined) {
+                requestQueryParameter['order'] = queryParams.order;
             }
     
             if (queryParams.year) {
@@ -6822,6 +6952,14 @@ export namespace SDK {
     /**
      * @export
      */
+    export const ExportMembersXlsxOrderEnum = {
+        Asc: 'ASC',
+        Desc: 'DESC'
+    } as const;
+    export type ExportMembersXlsxOrderEnum = typeof ExportMembersXlsxOrderEnum[keyof typeof ExportMembersXlsxOrderEnum];
+    /**
+     * @export
+     */
     export const ExportMembersXlsxRolesEnum = {
         Dite: 'dite',
         Instruktor: 'instruktor',
@@ -6860,6 +6998,22 @@ export namespace SDK {
          * @memberof MembersApiExportMembersXlsx
          */
         offset?: number
+    
+        //sort
+        /**
+         * 
+         * @type {string}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        sort?: string
+    
+        //orderisEnumOrderEnum
+        /**
+         * 
+         * @type {'ASC' | 'DESC'}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        order?: ExportMembersXlsxOrderEnum
     
         //contacts
         /**
@@ -6982,6 +7136,14 @@ export namespace SDK {
     /**
      * @export
      */
+    export const ListMembersOrderEnum = {
+        Asc: 'ASC',
+        Desc: 'DESC'
+    } as const;
+    export type ListMembersOrderEnum = typeof ListMembersOrderEnum[keyof typeof ListMembersOrderEnum];
+    /**
+     * @export
+     */
     export const ListMembersRolesEnum = {
         Dite: 'dite',
         Instruktor: 'instruktor',
@@ -7020,6 +7182,22 @@ export namespace SDK {
          * @memberof MembersApiListMembers
          */
         offset?: number
+    
+        //sort
+        /**
+         * 
+         * @type {string}
+         * @memberof MembersApiListMembers
+         */
+        sort?: string
+    
+        //orderisEnumOrderEnum
+        /**
+         * 
+         * @type {'ASC' | 'DESC'}
+         * @memberof MembersApiListMembers
+         */
+        order?: ListMembersOrderEnum
     
         //contacts
         /**
@@ -7510,6 +7688,14 @@ export namespace SDK {
                 requestQueryParameter['offset'] = queryParams.offset;
             }
     
+            if (queryParams.sort !== undefined) {
+                requestQueryParameter['sort'] = queryParams.sort;
+            }
+    
+            if (queryParams.order !== undefined) {
+                requestQueryParameter['order'] = queryParams.order;
+            }
+    
             if (queryParams.contacts !== undefined) {
                 requestQueryParameter['contacts'] = queryParams.contacts;
             }
@@ -7872,6 +8058,14 @@ export namespace SDK {
     
             if (queryParams.offset !== undefined) {
                 requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+            if (queryParams.sort !== undefined) {
+                requestQueryParameter['sort'] = queryParams.sort;
+            }
+    
+            if (queryParams.order !== undefined) {
+                requestQueryParameter['order'] = queryParams.order;
             }
     
             if (queryParams.contacts !== undefined) {
@@ -8296,6 +8490,14 @@ export namespace SDK {
     /**
      * @export
      */
+    export const ListAlbumsOrderEnum = {
+        Asc: 'ASC',
+        Desc: 'DESC'
+    } as const;
+    export type ListAlbumsOrderEnum = typeof ListAlbumsOrderEnum[keyof typeof ListAlbumsOrderEnum];
+    /**
+     * @export
+     */
     export const ListAlbumsStatusEnum = {
         Public: 'public',
         Draft: 'draft'
@@ -8325,6 +8527,22 @@ export namespace SDK {
          */
         offset?: number
     
+        //sort
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoGalleryApiListAlbums
+         */
+        sort?: string
+    
+        //orderisEnumOrderEnum
+        /**
+         * 
+         * @type {'ASC' | 'DESC'}
+         * @memberof PhotoGalleryApiListAlbums
+         */
+        order?: ListAlbumsOrderEnum
+    
         //search
         /**
          * 
@@ -8336,18 +8554,18 @@ export namespace SDK {
         //statusisEnumStatusEnum
         /**
          * 
-         * @type {'public' | 'draft'}
+         * @type {Array<'public' | 'draft'>}
          * @memberof PhotoGalleryApiListAlbums
          */
-        status?: ListAlbumsStatusEnum
+        status?: Array<ListAlbumsStatusEnum>
     
         //year
         /**
          * 
-         * @type {string}
+         * @type {Array<number>}
          * @memberof PhotoGalleryApiListAlbums
          */
-        year?: string
+        year?: Array<number>
     }
     
     
@@ -8820,15 +9038,23 @@ export namespace SDK {
                 requestQueryParameter['offset'] = queryParams.offset;
             }
     
+            if (queryParams.sort !== undefined) {
+                requestQueryParameter['sort'] = queryParams.sort;
+            }
+    
+            if (queryParams.order !== undefined) {
+                requestQueryParameter['order'] = queryParams.order;
+            }
+    
             if (queryParams.search !== undefined) {
                 requestQueryParameter['search'] = queryParams.search;
             }
     
-            if (queryParams.status !== undefined) {
+            if (queryParams.status) {
                 requestQueryParameter['status'] = queryParams.status;
             }
     
-            if (queryParams.year !== undefined) {
+            if (queryParams.year) {
                 requestQueryParameter['year'] = queryParams.year;
             }
     
@@ -10117,6 +10343,14 @@ export namespace SDK {
     
     
     
+    /**
+     * @export
+     */
+    export const ListUsersOrderEnum = {
+        Asc: 'ASC',
+        Desc: 'DESC'
+    } as const;
+    export type ListUsersOrderEnum = typeof ListUsersOrderEnum[keyof typeof ListUsersOrderEnum];
     
     
     /**
@@ -10140,6 +10374,22 @@ export namespace SDK {
          * @memberof UsersApiListUsers
          */
         offset?: number
+    
+        //sort
+        /**
+         * 
+         * @type {string}
+         * @memberof UsersApiListUsers
+         */
+        sort?: string
+    
+        //orderisEnumOrderEnum
+        /**
+         * 
+         * @type {'ASC' | 'DESC'}
+         * @memberof UsersApiListUsers
+         */
+        order?: ListUsersOrderEnum
     
         //search
         /**
@@ -10388,6 +10638,14 @@ export namespace SDK {
     
             if (queryParams.offset !== undefined) {
                 requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+            if (queryParams.sort !== undefined) {
+                requestQueryParameter['sort'] = queryParams.sort;
+            }
+    
+            if (queryParams.order !== undefined) {
+                requestQueryParameter['order'] = queryParams.order;
             }
     
             if (queryParams.search !== undefined) {
