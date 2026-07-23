@@ -1,5 +1,5 @@
 import { AsyncPipe, DatePipe } from "@angular/common";
-import { Component, input, output, resource, signal } from "@angular/core";
+import { AfterViewInit, Component, input, output, resource, signal, viewChild } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
 import { Params, Router } from "@angular/router";
@@ -26,18 +26,27 @@ import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 		ButtonComponent,
 	],
 })
-export class GlobalSearchComponent {
+export class GlobalSearchComponent implements AfterViewInit {
 	/** Two-way bindable: whether the searchbar is expanded on small screens. */
 	showCancelButton = input(false);
 
+	/** Focus the searchbar as soon as the component shows up. */
+	autofocus = input(false);
+
+	/** The user dismissed the search (cancel button) or picked a result. */
 	close = output<void>();
+
+	/** The searchbar lost focus — consumers that float the results decide whether to hide them. */
+	searchBlur = output<void>();
+
+	private readonly searchbar = viewChild(IonSearchbar);
 
 	query = new Subject<string>();
 	debouncedQuery = toSignal(this.query.pipe(debounceTime(500)));
 
 	resultsOpen = signal(false);
 
-	/** How many results each section previews in the dropdown. */
+	/** How many results each section previews before "Zobrazit vše". */
 	private readonly previewLimit = 3;
 
 	membersSearchResults = resource({
@@ -67,10 +76,6 @@ export class GlobalSearchComponent {
 				: Promise.resolve(null),
 	});
 
-	// Delay closing the dropdown on blur so that click events on result items
-	// are processed before the dropdown disappears.
-	private static readonly BLUR_CLOSE_DELAY_MS = 200;
-
 	constructor(
 		private readonly globalSearch: GlobalSearchService,
 		private readonly router: Router,
@@ -79,15 +84,24 @@ export class GlobalSearchComponent {
 		// this.searchString.pipe(distinctUntilChanged()).subscribe((s) => this.resultsOpen.set(!!s));
 	}
 
-	onSearchBlur() {
-		setTimeout(() => {
-			this.query.next("");
-		}, GlobalSearchComponent.BLUR_CLOSE_DELAY_MS);
+	// the searchbar only takes focus once its web component has rendered, which is a tick after
+	// the view is initialised
+	private static readonly AUTOFOCUS_DELAY_MS = 100;
+
+	ngAfterViewInit() {
+		if (!this.autofocus()) return;
+
+		setTimeout(() => void this.searchbar()?.setFocus(), GlobalSearchComponent.AUTOFOCUS_DELAY_MS);
+	}
+
+	/** Empty the searchbar, which also drops the results. */
+	clear() {
+		this.query.next("");
+		this.resultsOpen.set(false);
 	}
 
 	closeSearch() {
-		this.query.next("");
-		this.resultsOpen.set(false);
+		this.clear();
 		this.close.emit();
 	}
 

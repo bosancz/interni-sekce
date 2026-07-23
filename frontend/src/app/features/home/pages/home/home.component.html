@@ -5,6 +5,9 @@
 	@case ("calendar") {
 		<bo-home-calendar></bo-home-calendar>
 	}
+	@case ("search") {
+		<bo-home-search></bo-home-search>
+	}
 }
 
 @if (!isLg()) {
@@ -12,6 +15,7 @@
 		<bo-tabs defaultTab="dashboard" (change)="view.set($event)">
 			<bo-tab name="dashboard" label="Bošán" icon="home-sharp"></bo-tab>
 			<bo-tab name="calendar" label="Kalendář" icon="calendar-sharp"></bo-tab>
+			<bo-tab name="search" label="Hledat" icon="search-sharp"></bo-tab>
 		</bo-tabs>
 	</bo-page-footer>
 }
