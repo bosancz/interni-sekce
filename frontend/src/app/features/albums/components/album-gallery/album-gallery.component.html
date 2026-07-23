@@ -1,49 +1,50 @@
-@if (photos()?.length) {
-	<!-- on mobile these options are in the page header actions menu -->
-	<div class="buttons d-none d-lg-block">
-		<ion-button (click)="upload.emit()" fill="clear" slot="end">
-			<ion-icon slot="start" name="cloud-upload-outline"></ion-icon> Nahrát fotky
-		</ion-button>
+<div class="gallery-header">
+	<h2>Galerie</h2>
 
-		@if (view() === 'gallery') {
-			<ion-button (click)="viewChange.emit('manage')" fill="clear" slot="end">
-				<ion-icon slot="start" name="create-outline"></ion-icon> Upravit
-			</ion-button>
-		} @else {
-			<ion-button (click)="viewChange.emit('gallery'); selectingCancel.emit()" fill="clear" slot="end">
-				<ion-icon slot="start" name="eye-outline"></ion-icon> Prohlížet 
+	@if (photos()?.length) {
+		<!-- labels collapse into plain icons below lg, like the page header actions -->
+		<div class="actions">
+			<ion-button (click)="upload.emit()" fill="clear">
+				<ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+				<span class="d-none d-lg-inline">Nahrát fotky</span>
 			</ion-button>
 
-			<ion-button (click)="sortDate.emit()" fill="clear" slot="end">
-				<ion-icon slot="start" name="calendar-outline"></ion-icon> Podle data
-			</ion-button>
-
-			<ion-button (click)="sortName.emit()" fill="clear" slot="end">
-				<ion-icon slot="start" name="text-outline"></ion-icon> Podle jména
-			</ion-button>
-
-			@if (!selecting()) {
-				<!-- on mobile selection is started by a long touch on a photo -->
-				@if (!platformService.isMobile.value) {
-					<ion-button (click)="selectingStart.emit()" fill="clear" slot="end">
-						<ion-icon slot="start" name="checkbox-outline"></ion-icon> Vybrat
-					</ion-button>
-				}
-			} @else {
-				<ion-button
-					(click)="deleteSelected.emit()"
-					[disabled]="!selectedPhotos().length"
-					fill="clear"
-					color="danger"
-					slot="end"
-				>
-					<ion-icon slot="start" name="trash-outline"></ion-icon> Smazat ({{ selectedPhotos().length }})
+			@if (view() === 'gallery') {
+				<ion-button (click)="viewChange.emit('manage')" fill="clear">
+					<ion-icon slot="start" name="create-outline"></ion-icon>
+					<span class="d-none d-lg-inline">Upravit</span>
 				</ion-button>
-
-				<ion-button (click)="selectingCancel.emit()" fill="clear" slot="end">
-					<ion-icon slot="start" name="close-outline"></ion-icon> Zrušit
+			} @else {
+				<ion-button (click)="viewChange.emit('gallery'); selectingCancel.emit()" fill="clear">
+					<ion-icon slot="start" name="eye-outline"></ion-icon>
+					<span class="d-none d-lg-inline">Prohlížet</span>
 				</ion-button>
 			}
+		</div>
+	}
+</div>
+
+@if (photos()?.length && view() === 'manage') {
+	<div class="buttons">
+		@if (!selecting()) {
+			<!-- the sort options live in a sheet/dialog, picking one there is the confirmation -->
+			<ion-button (click)="sort.emit()" fill="clear">
+				<ion-icon slot="start" name="swap-vertical-outline"></ion-icon> Seřadit
+			</ion-button>
+
+			<!-- deleting starts by selecting, which a long touch on a photo also does -->
+			<ion-button (click)="selectingStart.emit()" fill="clear" color="danger">
+				<ion-icon slot="start" name="trash-outline"></ion-icon> Smazat
+			</ion-button>
+		} @else {
+			<!-- sorting is out of the way while selecting, the row is about the selection now -->
+			<ion-button (click)="deleteSelected.emit()" [disabled]="!selectedPhotos().length" fill="clear" color="danger">
+				<ion-icon slot="start" name="trash-outline"></ion-icon> Smazat ({{ selectedPhotos().length }})
+			</ion-button>
+
+			<ion-button (click)="selectingCancel.emit()" fill="clear">
+				<ion-icon slot="start" name="close-outline"></ion-icon> Zrušit
+			</ion-button>
 		}
 	</div>
 }
