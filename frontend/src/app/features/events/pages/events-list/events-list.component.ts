@@ -156,6 +156,9 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	// Whether the default "Budoucí" filter has already been resolved for this page open, so we
 	// only inject it when no date filter is present in the URL yet (and never fight the user's clear).
 	private defaultFilterApplied = false;
+	// Canonical key of the query params the current list was loaded with, so the URL rewrite that
+	// mirrors the default filter doesn't trigger a second identical request when it echoes back.
+	private loadedFilterKey: string | null = null;
 
 	filter: UrlParams = {};
 
@@ -360,11 +363,18 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		// Default to the "Budoucí" (current/upcoming) filter the first time the page opens without a
 		// date filter in the URL. Applying it once lets the user still clear it to see all events.
 		if (!this.defaultFilterApplied && params["year"] === undefined) {
-			this.defaultFilterApplied = true;
+			// Apply it to this emission right away rather than waiting for the URL rewrite to come
+			// back around: when the page is entered via a router link (the sidebar), that navigation
+			// lands after the first load, so the initial request would go out without the filter.
+			params = { ...params, year: this.futureFilterValue };
 			this.setFilterParam("year", [this.futureFilterValue]);
-			return;
 		}
 		this.defaultFilterApplied = true;
+
+		// Skip the redundant reload when the rewrite above re-emits the params we just loaded with.
+		const filterKey = this.getFilterKey(params);
+		if (filterKey === this.loadedFilterKey) return;
+		this.loadedFilterKey = filterKey;
 
 		this.filter = { ...params };
 		this.selectedYears.set(this.normalizeFilterValueToArray(params["year"]));
@@ -560,6 +570,16 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		// Sit just below the cursor, clamped so the card stays on screen.
 		const top = Math.max(margin, Math.min(e.clientY + offset, window.innerHeight - 240));
 		this.previewPosition.set({ top, left });
+	}
+
+	// Order-independent serialization of the query params, used to detect a re-emission of the
+	// params the list is already showing.
+	private getFilterKey(params: Params): string {
+		return JSON.stringify(
+			Object.keys(params)
+				.sort()
+				.map((key) => [key, params[key]]),
+		);
 	}
 
 	private normalizeFilterValueToArray(value: string | string[] | null | undefined): string[] {
