@@ -3,7 +3,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute } from "@angular/router";
 import { PopoverController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { calendarSharp, homeSharp } from "ionicons/icons";
+import { calendarSharp, homeSharp, searchSharp } from "ionicons/icons";
 import { map } from "rxjs";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -15,6 +15,7 @@ import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { AccountMenuModalComponent } from "../../../../core/components/account-menu-modal/account-menu-modal.component";
 import { HomeCalendarComponent } from "../../components/home-calendar/home-calendar.component";
 import { HomeDashboardComponent } from "../../components/home-dashboard/home-dashboard.component";
+import { HomeSearchComponent } from "../../components/home-search/home-search.component";
 
 @Component({
 	selector: "bo-home",
@@ -24,6 +25,7 @@ import { HomeDashboardComponent } from "../../components/home-dashboard/home-das
 	imports: [
 		HomeDashboardComponent,
 		HomeCalendarComponent,
+		HomeSearchComponent,
 		PageFooterComponent,
 		TabsComponent,
 		TabComponent,
@@ -52,7 +54,7 @@ export class HomeComponent {
 	) {
 		route.queryParams.subscribe((params) => this.view.set(params["tab"] || "dashboard"));
 
-		addIcons({ homeSharp, calendarSharp });
+		addIcons({ homeSharp, calendarSharp, searchSharp });
 	}
 
 	async openAccountMenu(e: Event) {

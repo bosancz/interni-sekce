@@ -5,7 +5,7 @@
 		[showCancelButton]="showCancelButton() ? 'always' : 'never'"
 		(ionInput)="query.next($event.target.value || '')"
 		[value]="query | async"
-		(ionBlur)="onSearchBlur()"
+		(ionBlur)="searchBlur.emit()"
 		(ionCancel)="closeSearch()"
 	/>
 

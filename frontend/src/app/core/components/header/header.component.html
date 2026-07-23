@@ -9,7 +9,7 @@
 }
 
 @if (isLg() || showSearch()) {
-	<bo-global-search [showCancelButton]="!isLg()" (close)="showSearch.set(false)" />
+	<bo-global-search [showCancelButton]="!isLg()" (close)="showSearch.set(false)" (searchBlur)="onSearchBlur()" />
 }
 
 <ion-buttons slot="end">
