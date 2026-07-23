@@ -29,6 +29,15 @@ export class SidebarComponent {
 		fragment: "ignored",
 	};
 
+	// links that carry a default filter in the query params (e.g. "Akce" → ?year=budouci) still
+	// count as active once the user changes that filter on the target page
+	readonly pathLinkActiveOptions: IsActiveMatchOptions = {
+		paths: "subset",
+		queryParams: "ignored",
+		matrixParams: "ignored",
+		fragment: "ignored",
+	};
+
 	canAccessAdmin = this.userService.canAccessAdmin;
 
 	constructor(

@@ -93,20 +93,26 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	currentYearString = String(new Date().getFullYear());
 
 	// Special "Datum" pill value: show only current/upcoming events (dateTill >= today).
-	// Mutually exclusive with the concrete year chips and applied as the default filter.
+	// Mutually exclusive with the concrete year chips. It is not applied automatically here —
+	// the entry points that want it (sidebar/home "Akce") link to `?year=budouci` instead, so
+	// e.g. "Moje akce" can open the full list.
 	readonly futureFilterValue = "budouci";
 
 	selectedYears = signal<string[]>([]);
 	selectedStatuses = signal<string[]>([]);
 	selectedLeaderFilters = signal<string[]>([]);
 
-	// Default sort: by start date ascending, so the closest upcoming event sits at the top
-	// (pairs with the default "Budoucí" filter). Applied whenever the URL has no explicit sort.
+	// Default sort (used whenever the URL has no explicit sort): always by start date, with the
+	// direction following the date filter — "Budoucí" reads best nearest-first, while a full or
+	// past-year list reads best newest-first.
 	private readonly defaultSortColumn = "dateFrom";
-	private readonly defaultSortOrder: "ASC" | "DESC" = "ASC";
+
+	private defaultSortOrder(dateFilters: string[]): "ASC" | "DESC" {
+		return dateFilters.includes(this.futureFilterValue) ? "ASC" : "DESC";
+	}
 
 	sortColumn = signal<string | null>(this.defaultSortColumn);
-	sortOrder = signal<"ASC" | "DESC">(this.defaultSortOrder);
+	sortOrder = signal<"ASC" | "DESC">("ASC");
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "name", label: "Název" },
@@ -153,11 +159,8 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	page = 1;
 	readonly pageSize = 50;
 	private loadToken = 0;
-	// Whether the default "Budoucí" filter has already been resolved for this page open, so we
-	// only inject it when no date filter is present in the URL yet (and never fight the user's clear).
-	private defaultFilterApplied = false;
-	// Canonical key of the query params the current list was loaded with, so the URL rewrite that
-	// mirrors the default filter doesn't trigger a second identical request when it echoes back.
+	// Canonical key of the query params the current list was loaded with, so a re-emission of the
+	// params we already loaded with doesn't trigger a second identical request.
 	private loadedFilterKey: string | null = null;
 
 	filter: UrlParams = {};
@@ -360,28 +363,20 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	}
 
 	onFilterChange(params: Params) {
-		// Default to the "Budoucí" (current/upcoming) filter the first time the page opens without a
-		// date filter in the URL. Applying it once lets the user still clear it to see all events.
-		if (!this.defaultFilterApplied && params["year"] === undefined) {
-			// Apply it to this emission right away rather than waiting for the URL rewrite to come
-			// back around: when the page is entered via a router link (the sidebar), that navigation
-			// lands after the first load, so the initial request would go out without the filter.
-			params = { ...params, year: this.futureFilterValue };
-			this.setFilterParam("year", [this.futureFilterValue]);
-		}
-		this.defaultFilterApplied = true;
-
-		// Skip the redundant reload when the rewrite above re-emits the params we just loaded with.
+		// Skip the redundant reload when the params we already loaded with are re-emitted.
 		const filterKey = this.getFilterKey(params);
 		if (filterKey === this.loadedFilterKey) return;
 		this.loadedFilterKey = filterKey;
 
+		const dateFilters = this.normalizeFilterValueToArray(params["year"]);
+		const order = params["order"];
+
 		this.filter = { ...params };
-		this.selectedYears.set(this.normalizeFilterValueToArray(params["year"]));
+		this.selectedYears.set(dateFilters);
 		this.selectedStatuses.set(this.normalizeFilterValueToArray(params["status"]));
 		this.selectedLeaderFilters.set(this.normalizeFilterValueToArray(params["leaders"]));
 		this.sortColumn.set(params["sort"] ?? this.defaultSortColumn);
-		this.sortOrder.set(params["order"] === "DESC" ? "DESC" : "ASC");
+		this.sortOrder.set(order === "ASC" || order === "DESC" ? order : this.defaultSortOrder(dateFilters));
 		this.loadEvents(this.filter);
 	}
 
@@ -501,7 +496,7 @@ export class EventsListComponent implements OnInit, OnDestroy {
 			noleader: leaders.includes("noleader"),
 			deleted: !!filter.deleted,
 			sort: (filter as any)["sort"] || this.defaultSortColumn,
-			order: (filter as any)["order"] || this.defaultSortOrder,
+			order: (filter as any)["order"] || this.defaultSortOrder(dateFilters),
 			offset: (this.page - 1) * this.pageSize,
 			limit: this.pageSize,
 		};
