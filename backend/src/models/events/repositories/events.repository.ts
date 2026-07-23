@@ -219,6 +219,8 @@ export class EventsRepository {
 	}
 
 	async updateEvent(id: number, data: Partial<Event>) {
+		// groupsIds is a @RelationId (read-only); the join rows are synced by saving the
+		// @ManyToMany itself, so translate the ids into group references before saving.
 		if (data.groupsIds) {
 			data.groups = data.groupsIds.map((id) => ({ id }) as Group);
 			delete data.groupsIds;

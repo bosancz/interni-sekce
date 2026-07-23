@@ -87,12 +87,22 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 	years = signal<number[]>([]);
 	currentYearString = String(new Date().getFullYear());
+
+	// Special "Datum" pill value: show only current/upcoming events (dateTill >= today).
+	// Mutually exclusive with the concrete year chips and applied as the default filter.
+	readonly futureFilterValue = "budouci";
+
 	selectedYears = signal<string[]>([]);
 	selectedStatuses = signal<string[]>([]);
 	selectedLeaderFilters = signal<string[]>([]);
 
-	sortColumn = signal<string | null>(null);
-	sortOrder = signal<"ASC" | "DESC">("ASC");
+	// Default sort: by start date ascending, so the closest upcoming event sits at the top
+	// (pairs with the default "Budoucí" filter). Applied whenever the URL has no explicit sort.
+	private readonly defaultSortColumn = "dateFrom";
+	private readonly defaultSortOrder: "ASC" | "DESC" = "ASC";
+
+	sortColumn = signal<string | null>(this.defaultSortColumn);
+	sortOrder = signal<"ASC" | "DESC">(this.defaultSortOrder);
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "name", label: "Název" },
@@ -105,9 +115,10 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	// True when the viewport is at least the lg breakpoint (992px) — filters inline vs. in the modal.
 	isDesktop = signal(true);
 
-	yearOptions = computed<FilterPillOption[]>(() =>
-		this.years().map((year) => ({ value: String(year), label: String(year) })),
-	);
+	yearOptions = computed<FilterPillOption[]>(() => [
+		{ value: this.futureFilterValue, label: "Budoucí" },
+		...this.years().map((year) => ({ value: String(year), label: String(year) })),
+	]);
 	statusOptions = computed<FilterPillOption[]>(() =>
 		Object.entries(this.statuses()).map(([key, status]) => ({
 			value: key,
@@ -138,7 +149,9 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	page = 1;
 	readonly pageSize = 50;
 	private loadToken = 0;
-	private hasAutoScrolled = false;
+	// Whether the default "Budoucí" filter has already been resolved for this page open, so we
+	// only inject it when no date filter is present in the URL yet (and never fight the user's clear).
+	private defaultFilterApplied = false;
 
 	filter: UrlParams = {};
 
@@ -340,11 +353,20 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	}
 
 	onFilterChange(params: Params) {
+		// Default to the "Budoucí" (current/upcoming) filter the first time the page opens without a
+		// date filter in the URL. Applying it once lets the user still clear it to see all events.
+		if (!this.defaultFilterApplied && params["year"] === undefined) {
+			this.defaultFilterApplied = true;
+			this.setFilterParam("year", [this.futureFilterValue]);
+			return;
+		}
+		this.defaultFilterApplied = true;
+
 		this.filter = { ...params };
 		this.selectedYears.set(this.normalizeFilterValueToArray(params["year"]));
 		this.selectedStatuses.set(this.normalizeFilterValueToArray(params["status"]));
 		this.selectedLeaderFilters.set(this.normalizeFilterValueToArray(params["leaders"]));
-		this.sortColumn.set(params["sort"] ?? null);
+		this.sortColumn.set(params["sort"] ?? this.defaultSortColumn);
 		this.sortOrder.set(params["order"] === "DESC" ? "DESC" : "ASC");
 		this.loadEvents(this.filter);
 	}
@@ -371,6 +393,26 @@ export class EventsListComponent implements OnInit, OnDestroy {
 			queryParamsHandling: "merge",
 			replaceUrl: true,
 		});
+	}
+
+	// Handle the "Datum" pill selection. "Budoucí" and concrete years are mutually exclusive:
+	// picking "Budoucí" drops any selected years, and picking a year drops "Budoucí".
+	setDateFilter(values: string[]) {
+		const wasFuture = this.selectedYears().includes(this.futureFilterValue);
+		const isFuture = values.includes(this.futureFilterValue);
+
+		if (isFuture && !wasFuture) {
+			// "Budoucí" was just picked → make it the only selection.
+			this.setFilterParam("year", [this.futureFilterValue]);
+		} else if (isFuture && values.length > 1) {
+			// A year was picked while "Budoucí" was active → drop "Budoucí".
+			this.setFilterParam(
+				"year",
+				values.filter((value) => value !== this.futureFilterValue),
+			);
+		} else {
+			this.setFilterParam("year", values);
+		}
 	}
 
 	toggleCurrentYear() {
@@ -429,15 +471,23 @@ export class EventsListComponent implements OnInit, OnDestroy {
 
 		const leaders = this.normalizeFilterValueToArray((filter as any)["leaders"]);
 
+		const dateFilters = this.normalizeFilterValueToArray((filter as any)["year"]);
+		const showFuture = dateFilters.includes(this.futureFilterValue);
+		const years = dateFilters
+			.filter((value) => value !== this.futureFilterValue)
+			.map((year) => parseInt(year, 10));
+
 		const params: SDK.EventsApiListEventsQueryParams = {
 			search: filter.search || undefined,
 			status: this.normalizeFilterValueToArray((filter as any)["status"]),
-			year: this.normalizeFilterValueToArray((filter as any)["year"]).map((year) => parseInt(year, 10)),
+			year: years,
+			// "Budoucí": only events that haven't ended yet (dateTill >= today).
+			dateFrom: showFuture ? (DateTime.now().startOf("day").toISODate() ?? undefined) : undefined,
 			my: leaders.includes("my"),
 			noleader: leaders.includes("noleader"),
 			deleted: !!filter.deleted,
-			sort: (filter as any)["sort"] || undefined,
-			order: (filter as any)["order"] || undefined,
+			sort: (filter as any)["sort"] || this.defaultSortColumn,
+			order: (filter as any)["order"] || this.defaultSortOrder,
 			offset: (this.page - 1) * this.pageSize,
 			limit: this.pageSize,
 		};
@@ -451,55 +501,6 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		if (token !== this.loadToken) return;
 
 		this.events.set(loadMore ? [...this.events(), ...events] : events);
-
-		if (!loadMore) this.scrollToCurrentDate();
-	}
-
-	// On the first load, position the list at the current date, so upcoming events sit above
-	// the viewport and past events below. Runs only once per page open so later filter
-	// changes don't yank the scroll position.
-	private async scrollToCurrentDate() {
-		if (this.hasAutoScrolled || this.route.snapshot.fragment) {
-			this.hasAutoScrolled = true;
-			return;
-		}
-
-		const today = DateTime.now().startOf("day");
-		const isPastOrToday = (event: SDK.EventResponseWithLinks) => DateTime.fromISO(event.dateFrom) <= today;
-
-		// If the whole first page is future events, keep loading until today appears (capped).
-		const maxAutoLoadPages = 5;
-		while (this.events().length > 0 && !this.events().some(isPastOrToday) && this.page < maxAutoLoadPages) {
-			const lengthBefore = this.events().length;
-			await this.loadEvents(this.filter, true);
-			if (this.events().length === lengthBefore) break;
-		}
-
-		this.hasAutoScrolled = true;
-
-		const boundaryIndex = this.events().findIndex(isPastOrToday);
-
-		// index 0 means there are no future events above, so there is nothing to scroll past
-		if (boundaryIndex <= 0) return;
-
-		// Position the scroll in the same render pass that first paints the rows (before the
-		// browser paint), so the list appears already scrolled instead of jumping after load.
-		const elementId = "event-" + this.events()[boundaryIndex].id;
-		afterNextRender(() => this.applyInitialScroll(elementId), { injector: this.injector });
-	}
-
-	private applyInitialScroll(elementId: string, framesLeft = 120) {
-		const element = document.getElementById(elementId);
-		if (!element || !framesLeft) return;
-
-		// Ionic components hydrate asynchronously; until then ion-items have no layout and
-		// the target sits collapsed at the top of the list, so scrolling would be a no-op.
-		const hydrating =
-			element.getBoundingClientRect().height === 0 ||
-			(element.tagName.startsWith("ION-") && !element.classList.contains("hydrated"));
-
-		if (hydrating) requestAnimationFrame(() => this.applyInitialScroll(elementId, framesLeft - 1));
-		else element.scrollIntoView({ behavior: "instant", block: "center" });
 	}
 
 	// Show the event preview card next to the mouse while it rests over a row. Delegated

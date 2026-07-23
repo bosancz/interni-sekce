@@ -27,11 +27,11 @@
 <!-- Filter pills, shared between the desktop toolbar and the mobile filter modal. -->
 <ng-template #filterPills>
 	<bo-filter-pill
-		label="Rok"
+		label="Datum"
 		[columns]="3"
 		[options]="yearOptions()"
 		[selected]="selectedYears()"
-		(selectedChange)="setFilterParam('year', $event)"
+		(selectedChange)="setDateFilter($event)"
 	/>
 
 	<bo-filter-pill
