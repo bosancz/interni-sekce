@@ -68,8 +68,10 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	}
 
 	ngOnInit(): void {
-		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {
-			if (this.album()?.id !== params["album"]) this.loadAlbum(params["album"]);
+		this.route.params.pipe(untilDestroyed(this)).subscribe(async (params) => {
+			if (this.album()?.id === Number(params["album"])) return;
+			await this.loadAlbum(params["album"]);
+			this.openPhotoFromUrl();
 		});
 	}
 
@@ -99,12 +101,17 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 		const photos = await this.api.PhotoGalleryApi.getAlbumPhotos(albumId).then((res) => res.data);
 		this.photos.set(photos);
+	}
+
+	// deep link: only on the first load of an album, reloads after edits must not reopen the modal
+	private openPhotoFromUrl() {
+		if (this.photosModal) return;
 
 		const photoId = this.route.snapshot.queryParams["photo"];
-		if (photoId && !this.photosModal) {
-			const photo = photos?.find((item) => String(item.id) === String(photoId));
-			if (photo) this.openPhoto(photo);
-		}
+		if (!photoId) return;
+
+		const photo = this.photos()?.find((item) => String(item.id) === String(photoId));
+		if (photo) this.openPhoto(photo);
 	}
 
 	onGalleryClick(photo: SDK.PhotoResponseWithLinks) {
@@ -123,17 +130,19 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		const photos = this.photos();
 		const originalCount = photos?.length;
 
-		// reflect the open photo in the URL for deep-linking, without adding a
-		// history entry — back-to-close is provided by ModalService
-		this.router.navigate([], {
-			queryParams: { photo: photo.id },
+		// the open photo is reflected in the URL for deep-linking, but on the synthetic
+		// history entry ModalService pushes — so the modal writes it once it is presented.
+		// The entry we come back to on close must not carry it, or closing (which is a
+		// history.back()) would restore the URL of the photo just closed.
+		await this.router.navigate([], {
+			queryParams: { photo: null },
 			queryParamsHandling: "merge",
 			replaceUrl: true,
 		});
 
 		this.photosModal = await this.modalService.modal(
 			PhotosEditComponent,
-			{ photos },
+			{ photos, startPhoto: photo },
 			{ backdropDismiss: false, cssClass: "ion-modal-lg" },
 		);
 
