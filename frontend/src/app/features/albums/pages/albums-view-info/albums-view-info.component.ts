@@ -319,11 +319,14 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	}
 
 	private getAlbumActions(album: SDK.AlbumResponseWithLinks): Action[] {
+		// actions that do not apply to the album in its current state are hidden,
+		// actions that apply but the user is not permitted to use are shown disabled
 		return [
 			{
 				text: "Publikovat",
 				icon: "eye-outline",
-				hidden: album.status !== "draft",
+				hidden: !album._links.publishAlbum.applicable,
+				disabled: !album._links.publishAlbum.allowed,
 				handler: () => this.publish(),
 			},
 			{
@@ -336,7 +339,8 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 			{
 				text: "Zrušit publikaci",
 				icon: "eye-off-outline",
-				hidden: album.status !== "public",
+				hidden: !album._links.unpublishAlbum.applicable,
+				disabled: !album._links.unpublishAlbum.allowed,
 				handler: () => this.unpublish(),
 			},
 			{
@@ -344,6 +348,8 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 				role: "destructive",
 				icon: "trash",
 				color: "danger",
+				hidden: !album._links.deleteAlbum.applicable,
+				disabled: !album._links.deleteAlbum.allowed,
 				handler: () => this.delete(),
 			},
 		];

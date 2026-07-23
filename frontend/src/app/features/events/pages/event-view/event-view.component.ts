@@ -170,55 +170,62 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 	}
 
 	private setActions(event: SDK.EventResponseWithLinks) {
+		// actions that do not apply to the event in its current state are hidden,
+		// actions that apply but the user is not permitted to use are shown disabled
 		this.actions = [
 			{
 				text: "Vést akci",
 				color: "success",
 				icon: handLeftOutline,
-				hidden: !event._links.leadEvent.allowed,
+				hidden: !event._links.leadEvent.applicable,
+				disabled: !event._links.leadEvent.allowed,
 				handler: () => this.leadEvent(event),
 			},
 			{
 				text: "Ke schválení",
 				icon: arrowForwardOutline,
 				color: "primary",
-				hidden: !event?._links.submitEvent.allowed,
-
+				hidden: !event._links.submitEvent.applicable,
+				disabled: !event._links.submitEvent.allowed,
 				handler: () => this.eventStatusAction(event, "submitEvent"),
 			},
 			{
 				text: "Do programu",
 				icon: eyeOutline,
 				color: "primary",
-				hidden: !event?._links.publishEvent.allowed,
+				hidden: !event._links.publishEvent.applicable,
+				disabled: !event._links.publishEvent.allowed,
 				handler: () => this.eventStatusAction(event, "publishEvent"),
 			},
 			{
 				text: "Vrátit k úpravám",
 				icon: arrowBackOutline,
 				color: "danger",
-				hidden: !event?._links.rejectEvent.allowed,
-
+				hidden: !event._links.rejectEvent.applicable,
+				disabled: !event._links.rejectEvent.allowed,
 				handler: () => this.eventStatusAction(event, "rejectEvent"),
 			},
 			{
 				text: "Odebrat z programu",
 				icon: eyeOffOutline,
 				color: "danger",
-				hidden: !event?._links.unpublishEvent.allowed,
+				hidden: !event._links.unpublishEvent.applicable,
+				disabled: !event._links.unpublishEvent.allowed,
 				handler: () => this.eventStatusAction(event, "unpublishEvent"),
 			},
 			{
 				text: "Označit jako zrušenou",
 				color: "danger",
 				icon: closeOutline,
-				hidden: !event?._links.cancelEvent.allowed,
+				hidden: !event._links.cancelEvent.applicable,
+				disabled: !event._links.cancelEvent.allowed,
 				handler: () => this.eventStatusAction(event, "cancelEvent"),
 			},
 			{
 				text: "Odzrušit",
 				icon: arrowUndoOutline,
-				hidden: !event?._links.uncancelEvent.allowed,
+				hidden: !event._links.uncancelEvent.applicable,
+				disabled: !event._links.uncancelEvent.allowed,
 				handler: () => this.eventStatusAction(event, "uncancelEvent"),
 			},
 			{
@@ -226,7 +233,8 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 				role: "destructive",
 				color: "danger",
 				icon: "trash-outline",
-				hidden: !event._links.deleteEvent.allowed,
+				hidden: !event._links.deleteEvent.applicable,
+				disabled: !event._links.deleteEvent.allowed,
 				handler: () => this.deleteEvent(event),
 			},
 			{
@@ -234,7 +242,8 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 				role: "destructive",
 				color: "success",
 				icon: "arrow-undo-outline",
-				hidden: !event._links.restoreEvent.allowed,
+				hidden: !event._links.restoreEvent.applicable,
+				disabled: !event._links.restoreEvent.allowed,
 				handler: () => this.restoreEvent(event),
 			},
 		];
