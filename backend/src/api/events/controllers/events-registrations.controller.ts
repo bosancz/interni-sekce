@@ -64,8 +64,11 @@ export class EventsRegistrationsController {
 			throw new InternalServerErrorException("Failed to save registration");
 		}
 
+		// update(), not save(): the events loaded here carry a hand-attached `attendees` array whose
+		// `event` relation is not populated, and save() cascades that into events_attendees, nulling
+		// its event_id. Only the flag needs writing anyway.
 		event.hasRegistration = true;
-		await this.eventsRepository.save(event);
+		await this.eventsRepository.update(event.id, { hasRegistration: true });
 	}
 
 	@Get(":id/registration")
@@ -182,7 +185,7 @@ export class EventsRegistrationsController {
 						
 		await this.fileService.deleteFilesByPrefix(registrationFolder, "prihlaska")
 		event.hasRegistration = false;
-		await this.eventsRepository.save(event);
+		await this.eventsRepository.update(event.id, { hasRegistration: false });
 
 	}
 }
