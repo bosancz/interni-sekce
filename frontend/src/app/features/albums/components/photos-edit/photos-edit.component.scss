@@ -57,6 +57,12 @@ ion-toolbar {
 	@media (prefers-color-scheme: dark) {
 		--ion-item-color: #fff;
 	}
+
+	// the toolbars sit on black, so buttons without an explicit colour have to
+	// be white rather than the default primary
+	ion-button:not([color]) {
+		--color: #fff;
+	}
 }
 .nocaption {
 	opacity: 0.7;
