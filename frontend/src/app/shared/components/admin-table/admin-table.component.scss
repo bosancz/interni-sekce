@@ -99,8 +99,17 @@ table.table {
 			white-space: nowrap;
 		}
 
+		// Zebra striping. Both rules read `--bo-table-row-bg` first so a consumer can
+		// tint a row (by role, state, …) just by setting that custom property on the
+		// `tr` — without having to out-specify the `:nth-child(even)` selector, which
+		// ties on specificity and would otherwise win or lose purely on the order in
+		// which Angular happens to inject the two component stylesheets.
+		tbody tr {
+			background-color: var(--bo-table-row-bg, transparent);
+		}
+
 		tbody tr:nth-child(even) {
-			background-color: var(--bo-paper);
+			background-color: var(--bo-table-row-bg, var(--bo-paper));
 		}
 
 		// clickable rows (routerLink adds tabindex, or explicit .clickable) get a pointer cursor
