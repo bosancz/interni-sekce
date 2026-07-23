@@ -184,6 +184,9 @@ export const EventRegistrationGeneratePermission = new Permission({
 	linkTo: EventResponse,
 
 	inherit: EventEditPermission,
+	// The form prints the leader's name, phone and email — with no leader there is nothing to
+	// generate, and EventRegistrationService.assertGeneratable() would reject it anyway.
+	applicable: ({ doc }) => !!doc.attendees?.some((a) => a.type === "leader"),
 });
 
 export const EventRegistrationDeletePermission = new Permission({
