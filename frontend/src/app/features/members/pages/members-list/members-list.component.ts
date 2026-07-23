@@ -1,7 +1,7 @@
 import { DatePipe, KeyValue, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
 import { AfterViewInit, Component, computed, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
+import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
 	IonButton,
@@ -73,7 +73,6 @@ const COLUMNS_ICON =
 		AdminTableColumnComponent,
 		AdminTableCellDirective,
 		FormsModule,
-		RouterLink,
 		KeyValuePipe,
 		MemberPipe,
 		GroupBadgeComponent,
