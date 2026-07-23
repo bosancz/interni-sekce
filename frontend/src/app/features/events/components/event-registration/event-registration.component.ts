@@ -189,11 +189,15 @@ export class EventRegistrationComponent {
 		const link = document.createElement("a");
 		link.href = fileUrl;
 		link.target = "_blank";
+		link.rel = "noopener";
 
 		document.body.appendChild(link);
 		link.click();
 
 		document.body.removeChild(link);
-		window.URL.revokeObjectURL(fileUrl);
+
+		// Opening a blob URL in a new tab is async — revoking right away kills it before
+		// the tab fetches it (Chrome then shows ERR_FILE_NOT_FOUND), so release it later.
+		setTimeout(() => window.URL.revokeObjectURL(fileUrl), 60_000);
 	}
 }
