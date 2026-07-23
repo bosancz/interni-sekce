@@ -10,6 +10,7 @@ import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
 import { MarkdownEditorModalComponent } from "src/app/shared/components/markdown-editor-modal/markdown-editor-modal.component";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
 import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 import { AlbumSelectorModalComponent, CREATE_ALBUM } from "../album-selector-modal/album-selector-modal.component";
@@ -30,6 +31,7 @@ import { AlbumSelectorModalComponent, CREATE_ALBUM } from "../album-selector-mod
 		IonItem,
 		IonLabel,
 		IonSkeletonText,
+		TooltipDirective,
 	],
 })
 export class EventReportComponent {

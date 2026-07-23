@@ -5,6 +5,7 @@ import { CzechHolidays } from "czech-holidays";
 import { DateTime } from "luxon";
 import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
+import { TooltipDirective } from "../../directives/tooltip.directive";
 import { EventStatusPipe } from "../../pipes/event-status.pipe";
 
 const months = [
@@ -73,7 +74,7 @@ class CalendarEvent<T extends SDK.CPVEventResponseWithLinks | SDK.EventResponseW
 	templateUrl: "./event-calendar.component.html",
 	styleUrls: ["./event-calendar.component.scss"],
 
-	imports: [RouterLink, IonBadge, EventStatusPipe],
+	imports: [RouterLink, IonBadge, EventStatusPipe, TooltipDirective],
 })
 export class EventCalendarComponent implements OnInit {
 	dateFromString = input.required<DateTime | string, DateTime>({

@@ -34,6 +34,7 @@ import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-
 import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
 import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
@@ -82,6 +83,7 @@ const COLUMNS_ICON =
 		FilterPillComponent,
 		SortSelectComponent,
 		NgTemplateOutlet,
+		TooltipDirective,
 	],
 })
 export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnter {

@@ -30,6 +30,7 @@ import {
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 
@@ -52,6 +53,7 @@ import { SDK } from "src/sdk";
 		IonInputStandalone,
 		IonIcon,
 		PhotoImageUrlPipe,
+		TooltipDirective,
 	],
 })
 export class PhotosEditComponent implements OnInit, ViewWillLeave {

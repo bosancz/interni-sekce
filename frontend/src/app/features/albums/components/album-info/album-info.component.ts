@@ -7,6 +7,7 @@ import { EditButtonDateRangeComponent } from "src/app/shared/components/edit-but
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
 import { EditButtonTextComponent } from "src/app/shared/components/edit-button-text/edit-button-text.component";
 import { ItemComponent } from "src/app/shared/components/item/item.component";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { MarkdownPipe } from "src/app/shared/pipes/markdown.pipe";
 import { SDK } from "src/sdk";
@@ -29,6 +30,7 @@ import { EditButtonEventComponent } from "../edit-button-event/edit-button-event
 		EditButtonTextComponent,
 		EditButtonMarkdownComponent,
 		MarkdownPipe,
+		TooltipDirective,
 	],
 })
 export class AlbumInfoComponent {

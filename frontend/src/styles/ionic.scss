@@ -128,3 +128,16 @@ ion-searchbar {
 ion-content {
 	--ion-background-color: var(--bo-paper);
 }
+
+/* A disabled ion-button gets `pointer-events: none` on its host, so a boTooltip sitting on it
+   would never see the hover that is supposed to explain *why* it is disabled. Give the host its
+   pointer events back and kill them on the inner native button instead, so the button stays
+   unclickable but the tooltip still fires. */
+ion-button[boTooltip].button-disabled {
+	pointer-events: auto;
+	cursor: default;
+
+	&::part(native) {
+		pointer-events: none;
+	}
+}
