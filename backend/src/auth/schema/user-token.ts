@@ -1,4 +1,4 @@
-import { IsNumber } from "class-validator";
+import { IsNumber, IsOptional } from "class-validator";
 import { JwtPayload } from "jsonwebtoken";
 import { UserRoles } from "src/models/users/entities/user.entity";
 
@@ -10,6 +10,14 @@ import { UserRoles } from "src/models/users/entities/user.entity";
 export class TokenPayload {
 	@IsNumber()
 	userId!: number;
+
+	/**
+	 * Set while impersonating: the user who started the impersonation. Logging out
+	 * of an impersonated session returns to this identity instead of ending the session.
+	 */
+	@IsOptional()
+	@IsNumber()
+	impersonatorId?: number;
 }
 
 export type SignedToken = TokenPayload & JwtPayload;
@@ -23,4 +31,6 @@ export interface SessionUser {
 	memberId?: number;
 	memberActive: boolean;
 	roles: UserRoles[];
+	/** The user this session is impersonating from, if any. */
+	impersonatorId?: number;
 }

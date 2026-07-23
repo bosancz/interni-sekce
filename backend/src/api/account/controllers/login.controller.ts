@@ -128,7 +128,19 @@ export class LoginController {
 	}
 
 	@Post("logout")
-	logout(@Res({ passthrough: true }) res: Response) {
+	async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+		// logging out of an impersonated session returns to the account that started it
+		const impersonatorId = req.user?.impersonatorId;
+
+		if (impersonatorId) {
+			const impersonator = await this.users.findUser({ id: impersonatorId });
+
+			if (impersonator) {
+				await this.setLoginToken(res, impersonator);
+				return;
+			}
+		}
+
 		this.tokenService.clearToken(res);
 	}
 
