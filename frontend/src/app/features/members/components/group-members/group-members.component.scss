@@ -41,7 +41,7 @@ ion-select::part(text) {
 		}
 	}
 
-	ion-list {
+	ion-list:not(:first-child) {
 		margin-top: 8px;
 	}
 }

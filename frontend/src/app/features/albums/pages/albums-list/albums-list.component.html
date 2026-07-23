@@ -11,9 +11,12 @@
 			<!-- Mobile: the same filter pills collected inside the filter modal, plus a sort control
 			     (the sortable table headers aren't available in the mobile grid view). -->
 			<div class="albums-filter-modal">
-				<div class="albums-filter-modal-pills">
-					<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
-				</div>
+				<ion-list lines="full">
+					<ion-item-divider>Filtry</ion-item-divider>
+					<div class="albums-filter-modal-pills">
+						<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+					</div>
+				</ion-list>
 
 				<bo-sort-select
 					[options]="sortOptions"

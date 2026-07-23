@@ -15,9 +15,12 @@
 	} @else {
 		<!-- Mobile: the same filters, columns and view options collected inside the filter modal. -->
 		<div class="members-filter-modal">
-			<div class="members-filter-modal-pills">
-				<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
-			</div>
+			<ion-list lines="full">
+				<ion-item-divider>Filtry</ion-item-divider>
+				<div class="members-filter-modal-pills">
+					<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+				</div>
+			</ion-list>
 
 			<bo-sort-select
 				[options]="sortOptions"

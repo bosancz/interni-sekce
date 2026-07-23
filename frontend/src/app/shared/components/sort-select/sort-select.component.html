@@ -1,7 +1,7 @@
 <ion-list lines="full">
 	<ion-item-divider>{{ label() }}</ion-item-divider>
 
-	<ion-item [lines]="sort() ? 'full' : 'none'">
+	<ion-item lines="none">
 		<ion-select
 			label="Seřadit podle"
 			interface="popover"
@@ -15,18 +15,18 @@
 				<ion-select-option [value]="option.key">{{ option.label }}</ion-select-option>
 			}
 		</ion-select>
-	</ion-item>
 
-	@if (sort()) {
-		<ion-item lines="none">
-			<ion-segment [value]="order()" (ionChange)="selectOrder($any($event.detail.value))">
-				<ion-segment-button value="ASC">
-					<ion-label>Vzestupně</ion-label>
-				</ion-segment-button>
-				<ion-segment-button value="DESC">
-					<ion-label>Sestupně</ion-label>
-				</ion-segment-button>
-			</ion-segment>
-		</ion-item>
-	}
+		@if (sort()) {
+			<ion-button
+				slot="end"
+				fill="clear"
+				size="small"
+				color="medium"
+				[attr.aria-label]="order() === 'ASC' ? 'Vzestupně' : 'Sestupně'"
+				(click)="toggleOrder()"
+			>
+				<ion-icon slot="icon-only" [name]="order() === 'ASC' ? 'arrow-up' : 'arrow-down'"></ion-icon>
+			</ion-button>
+		}
+	</ion-item>
 </ion-list>

@@ -420,16 +420,41 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	}
 
 	setViewSelection(key: string, value: boolean) {
-		this.viewSelections.update((selections) => ({ ...selections, [key]: value }));
+		this.applyViewSelections({ ...this.viewSelections(), [key]: value });
+	}
+
+	// Mobile renders the column picker as a multiselect pill, which emits the full list of
+	// visible columns rather than a single toggle.
+	setColumnSelection(keys: string[]) {
+		const selected = new Set(keys);
+		this.applyViewSelections(
+			Object.fromEntries(Object.keys(this.viewSelections()).map((key) => [key, selected.has(key)])),
+		);
+	}
+
+	private applyViewSelections(selections: { [key: string]: boolean }) {
+		const previous = this.viewSelections();
+		this.viewSelections.set(selections);
 
 		// Enabling a contact column after the list was already loaded without contacts:
 		// re-fetch so the newly visible column has data (still a single request).
-		if (value && (key === "firstTelephone" || key === "firstEmail")) {
+		const contactColumnAdded = ["firstTelephone", "firstEmail"].some((key) => selections[key] && !previous[key]);
+		if (contactColumnAdded) {
 			const members = this.members();
 			const contactsLoaded = !!members?.some((member) => member.contacts !== undefined);
 			if (!contactsLoaded) this.loadMembers(this.filter);
 		}
 	}
+
+	columnOptions = computed<FilterPillOption[]>(() =>
+		Object.keys(this.viewSelections()).map((key) => ({ value: key, label: this.getViewSelectionLabel(key) })),
+	);
+
+	selectedColumns = computed(() =>
+		Object.entries(this.viewSelections())
+			.filter(([, visible]) => visible)
+			.map(([key]) => key),
+	);
 
 	public getViewSelectionLabel(key: string): string {
 		const labels: { [key: string]: string } = {

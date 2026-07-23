@@ -17,9 +17,12 @@
 	} @else {
 		<!-- Mobile: the same filters, columns and view options collected inside the filter modal. -->
 		<div class="members-filter-modal">
-			<div class="members-filter-modal-pills">
-				<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
-			</div>
+			<ion-list lines="full">
+				<ion-item-divider>Filtry</ion-item-divider>
+				<div class="members-filter-modal-pills">
+					<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+				</div>
+			</ion-list>
 
 			<bo-sort-select
 				[options]="sortOptions"
@@ -28,8 +31,19 @@
 				(sortChange)="onSortChange($event)"
 			/>
 
+			<!-- Columns are secondary on mobile, so they collapse into a multiselect pill instead of
+			     the long checkbox list the desktop popover uses. -->
 			<ion-list lines="full">
-				<ng-container [ngTemplateOutlet]="columnsList"></ng-container>
+				<ion-item-divider>Sloupce</ion-item-divider>
+				<div class="members-filter-modal-pills">
+					<bo-filter-pill
+						label="Vybrat sloupce"
+						[options]="columnOptions()"
+						[selected]="selectedColumns()"
+						[columns]="2"
+						(selectedChange)="setColumnSelection($event)"
+					/>
+				</div>
 			</ion-list>
 
 			<ion-list lines="full">

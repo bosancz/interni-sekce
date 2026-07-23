@@ -16,6 +16,8 @@ import {
 	InfiniteScrollCustomEvent,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
+	IonItemDivider,
+	IonList,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
@@ -69,6 +71,8 @@ type EventStatusActions = ExtractExisting<
 		FormsModule,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
+		IonItemDivider,
+		IonList,
 		EventStatusBadgeComponent,
 		EventCardComponent,
 		GroupPipe,
