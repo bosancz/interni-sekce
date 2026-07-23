@@ -1,7 +1,9 @@
-import { Component, OnInit, signal } from "@angular/core";
+import { Component, computed, OnInit, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { PopoverController } from "@ionic/angular/standalone";
+import { IonIcon, PopoverController } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
 import { DateTime } from "luxon";
 import { ApiService } from "src/app/core/services/api.service";
 import { UserService } from "src/app/core/services/user.service";
@@ -11,6 +13,21 @@ import { PageContentComponent } from "src/app/shared/components/page-content/pag
 import { SDK } from "src/sdk";
 import { HomeCardMyEventsComponent } from "../home-card-my-events/home-card-my-events.component";
 import { HomeCardNoleaderEventsComponent } from "../home-card-noleader-events/home-card-noleader-events.component";
+
+const months = [
+	"Leden",
+	"Únor",
+	"Březen",
+	"Duben",
+	"Květen",
+	"Červen",
+	"Červenec",
+	"Srpen",
+	"Září",
+	"Říjen",
+	"Listopad",
+	"Prosinec",
+];
 
 @UntilDestroy()
 @Component({
@@ -23,14 +40,19 @@ import { HomeCardNoleaderEventsComponent } from "../home-card-noleader-events/ho
 		HomeCardNoleaderEventsComponent,
 		PageContentComponent,
 		ButtonSquareComponent,
+		IonIcon,
 		RouterLink,
 	],
 })
 export class HomeDashboardComponent implements OnInit {
 	view = signal("home");
 
-	dateFrom = signal(DateTime.local());
-	dateTill = signal(DateTime.local().plus({ months: 1 }));
+	currentMonth = signal(DateTime.local().startOf("month"));
+
+	dateFrom = computed(() => this.currentMonth().startOf("month"));
+	dateTill = computed(() => this.currentMonth().endOf("month"));
+
+	monthTitle = computed(() => `${months[this.currentMonth().month - 1]} ${this.currentMonth().year}`);
 
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 
@@ -40,25 +62,23 @@ export class HomeDashboardComponent implements OnInit {
 		private api: ApiService,
 		private userService: UserService,
 		public popoverController: PopoverController,
-	) {}
+	) {
+		addIcons({ chevronBackOutline, chevronForwardOutline });
+	}
 
 	ngOnInit(): void {
 		this.loadCalendarEvents();
 	}
 
+	previousMonth() {
+		this.currentMonth.update((month) => month.minus({ months: 1 }));
+	}
+
+	nextMonth() {
+		this.currentMonth.update((month) => month.plus({ months: 1 }));
+	}
+
 	async loadCalendarEvents() {
-		const options: any = {
-			sort: "dateFrom",
-		};
-
-		this.dateTill.set(DateTime.local().plus({ months: 1 }));
-
-		options.filter = {
-			dateTill: { $gte: this.dateFrom().toISODate() },
-			dateFrom: { $lte: this.dateTill().toISODate() },
-		};
-
-		// TODO: use options above
 		const events = await this.api.EventsApi.listEvents().then((res: any) => res.data);
 		this.events.set(events);
 	}

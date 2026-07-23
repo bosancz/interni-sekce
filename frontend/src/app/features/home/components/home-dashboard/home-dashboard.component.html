@@ -58,13 +58,36 @@
 				</div>
 			</div>
 			<div class="col-lg-6 col-xl-4 pl-lg-2">
-				<bo-event-calendar
-					[dateFrom]="dateFrom()"
-					[dateTill]="dateTill()"
-					[events]="events()"
-					[cpv]="true"
-					[headingLevel]="3"
-				></bo-event-calendar>
+				<div class="calendar-card">
+					<div class="calendar-nav">
+						<h3 class="calendar-nav-title mb-0">{{ monthTitle() }}</h3>
+						<div class="calendar-nav-buttons">
+							<button
+								type="button"
+								class="calendar-nav-button"
+								aria-label="Předchozí měsíc"
+								(click)="previousMonth()"
+							>
+								<ion-icon name="chevron-back-outline"></ion-icon>
+							</button>
+							<button
+								type="button"
+								class="calendar-nav-button"
+								aria-label="Následující měsíc"
+								(click)="nextMonth()"
+							>
+								<ion-icon name="chevron-forward-outline"></ion-icon>
+							</button>
+						</div>
+					</div>
+					<bo-event-calendar
+						[dateFrom]="dateFrom()"
+						[dateTill]="dateTill()"
+						[events]="events()"
+						[cpv]="true"
+						[headingLevel]="3"
+					></bo-event-calendar>
+				</div>
 			</div>
 		</div>
 	</div>

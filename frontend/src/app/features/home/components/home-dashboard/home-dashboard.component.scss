@@ -5,12 +5,52 @@
 }
 
 // calendar column sits in a soft white card
-bo-event-calendar {
-	display: block;
+.calendar-card {
 	background-color: var(--bo-white);
 	border-radius: var(--bo-radius-card);
 	box-shadow: var(--bo-shadow-card);
 	padding: 0.75rem 1rem;
+}
+
+.calendar-nav {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 0.5rem;
+}
+
+.calendar-nav-title {
+	margin: 0;
+	font-size: 1.1rem;
+	font-weight: 600;
+	line-height: 2rem;
+}
+
+.calendar-nav-buttons {
+	display: flex;
+	gap: 0.25rem;
+}
+
+.calendar-nav-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: none;
+	border-radius: var(--bo-radius-btn);
+	background-color: transparent;
+	color: var(--bo-dark);
+	cursor: pointer;
+
+	&:hover {
+		background-color: var(--bo-light);
+	}
+
+	ion-icon {
+		font-size: 1.25rem;
+	}
 }
 
 .ribbon {
