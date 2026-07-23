@@ -41,6 +41,9 @@ export class Event {
 	@RelationId((event: Event) => event.groups)
 	groupsIds!: number[];
 
+	// events_groups is mapped *only* by this @JoinTable — there must be no @Entity("events_groups")
+	// alongside it, or TypeORM builds two metadata objects for the table and every generated
+	// migration drops and recreates its indexes.
 	@ManyToMany(() => Group, { onDelete: "CASCADE", onUpdate: "CASCADE" })
 	@JoinTable({ name: "events_groups", joinColumn: { name: "event_id" }, inverseJoinColumn: { name: "group_id" } })
 	groups?: Group[];
