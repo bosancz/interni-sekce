@@ -7,7 +7,6 @@ import { Album } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense, EventExpenseTypes } from "src/models/events/entities/event-expense.entity";
-import { EventGroup } from "src/models/events/entities/event-group.entity";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
@@ -62,7 +61,9 @@ export class MongoImportService {
 		await this.clearTable(t, Album);
 		await this.clearTable(t, EventAttendee);
 		await this.clearTable(t, EventExpense);
-		await this.clearTable(t, EventGroup);
+		// events_groups has no entity of its own (it is the @ManyToMany join table on Event), so it
+		// is cleared by table name rather than through clearTable()
+		await this.clearJoinTable(t, "events_groups");
 		await this.clearTable(t, Event);
 		await this.clearTable(t, MemberContact);
 		await this.clearTable(t, Member);
@@ -73,6 +74,16 @@ export class MongoImportService {
 	private async clearTable<T extends ObjectLiteral>(t: EntityManager, entity: EntityTarget<T>) {
 		const deleteCount = await t.deleteAll(entity).then((res) => res.affected);
 		this.logger.debug(` - Removed ${deleteCount} ${(<any>entity).name} entities in postgres.`);
+	}
+
+	private async clearJoinTable(t: EntityManager, tableName: string) {
+		const deleteCount = await t
+			.createQueryBuilder()
+			.delete()
+			.from(tableName)
+			.execute()
+			.then((res) => res.affected);
+		this.logger.debug(` - Removed ${deleteCount} ${tableName} rows in postgres.`);
 	}
 
 	async importUsers(t: EntityManager, memberIds: Record<string, number>) {
