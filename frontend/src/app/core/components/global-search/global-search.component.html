@@ -11,7 +11,10 @@
 
 	@if (query | async) {
 		<div class="p-3 search-results">
-			<h3>Členové</h3>
+			<div class="search-section-header">
+				<h3>Členové</h3>
+				<bo-button (click)="showAll(['/databaze/clenove'])">Zobrazit vše</bo-button>
+			</div>
 			<ion-list lines="full">
 				@if (membersSearchResults.value() === null) {
 					<ion-item>
@@ -41,7 +44,10 @@
 				}
 			</ion-list>
 
-			<h3>Akce</h3>
+			<div class="search-section-header">
+				<h3>Akce</h3>
+				<bo-button (click)="showAll(['/akce'])">Zobrazit vše</bo-button>
+			</div>
 			<ion-list lines="full">
 				@if (eventsSearchResults.value() === null) {
 					<ion-item>
@@ -71,7 +77,10 @@
 				}
 			</ion-list>
 
-			<h3>Galerie</h3>
+			<div class="search-section-header">
+				<h3>Galerie</h3>
+				<bo-button (click)="showAll(['/galerie'])">Zobrazit vše</bo-button>
+			</div>
 			<ion-list lines="full">
 				@if (albumsSearchResults.value() === null) {
 					<ion-item>

@@ -2,17 +2,29 @@ import { AsyncPipe, DatePipe } from "@angular/common";
 import { Component, input, output, resource, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
-import { Router } from "@angular/router";
+import { Params, Router } from "@angular/router";
 import { IonItem, IonLabel, IonList, IonSearchbar, IonSkeletonText } from "@ionic/angular/standalone";
 import { debounceTime, Subject } from "rxjs";
 import { GlobalSearchService } from "src/app/core/services/global-search.service";
+import { ButtonComponent } from "src/app/shared/components/button/button.component";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 
 @Component({
 	selector: "bo-global-search",
 	templateUrl: "./global-search.component.html",
 	styleUrl: "./global-search.component.scss",
-	imports: [IonSearchbar, AsyncPipe, FormsModule, IonList, IonItem, IonLabel, GroupPipe, DatePipe, IonSkeletonText],
+	imports: [
+		IonSearchbar,
+		AsyncPipe,
+		FormsModule,
+		IonList,
+		IonItem,
+		IonLabel,
+		GroupPipe,
+		DatePipe,
+		IonSkeletonText,
+		ButtonComponent,
+	],
 })
 export class GlobalSearchComponent {
 	/** Two-way bindable: whether the searchbar is expanded on small screens. */
@@ -25,12 +37,15 @@ export class GlobalSearchComponent {
 
 	resultsOpen = signal(false);
 
+	/** How many results each section previews in the dropdown. */
+	private readonly previewLimit = 3;
+
 	membersSearchResults = resource({
 		defaultValue: null,
 		params: () => (this.debouncedQuery() ? { query: this.debouncedQuery() } : undefined),
 		loader: ({ params, abortSignal }) =>
 			params.query
-				? this.globalSearch.searchMembers(params.query, { limit: 3, abortSignal })
+				? this.globalSearch.searchMembers(params.query, { limit: this.previewLimit, abortSignal })
 				: Promise.resolve(null),
 	});
 
@@ -39,7 +54,7 @@ export class GlobalSearchComponent {
 		params: () => (this.debouncedQuery() ? { query: this.debouncedQuery() } : undefined),
 		loader: ({ params, abortSignal }) =>
 			params.query
-				? this.globalSearch.searchEvents(params.query, { limit: 3, abortSignal })
+				? this.globalSearch.searchEvents(params.query, { limit: this.previewLimit, abortSignal })
 				: Promise.resolve(null),
 	});
 
@@ -48,7 +63,7 @@ export class GlobalSearchComponent {
 		params: () => (this.debouncedQuery() ? { query: this.debouncedQuery() } : undefined),
 		loader: ({ params, abortSignal }) =>
 			params.query
-				? this.globalSearch.searchAlbums(params.query, { limit: 3, abortSignal })
+				? this.globalSearch.searchAlbums(params.query, { limit: this.previewLimit, abortSignal })
 				: Promise.resolve(null),
 	});
 
@@ -76,9 +91,14 @@ export class GlobalSearchComponent {
 		this.close.emit();
 	}
 
-	async navigate(commands: unknown[]) {
+	async navigate(commands: unknown[], queryParams?: Params) {
 		this.query.next("");
 		this.close.emit();
-		await this.router.navigate(commands);
+		await this.router.navigate(commands, queryParams ? { queryParams } : undefined);
+	}
+
+	/** Open a full list page with the current query prefilled into its own search filter. */
+	async showAll(commands: unknown[]) {
+		await this.navigate(commands, { search: this.debouncedQuery() });
 	}
 }

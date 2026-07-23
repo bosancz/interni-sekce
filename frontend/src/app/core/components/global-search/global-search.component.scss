@@ -45,3 +45,25 @@
 	text-align: center;
 	color: var(--ion-color-medium);
 }
+
+// Section title with its "open the full list" button pushed to the right. The button's own
+// sizing is em-based, so shrinking the font here scales it down to fit the dropdown.
+.search-section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin: 1rem 0 0.5rem;
+
+	&:first-child {
+		margin-top: 0;
+	}
+
+	h3 {
+		margin: 0;
+	}
+
+	bo-button {
+		font-size: 0.8rem;
+	}
+}
