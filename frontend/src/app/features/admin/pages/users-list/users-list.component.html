@@ -65,9 +65,9 @@
 			<admin-table>
 				<thead>
 					<tr>
-						<th>Login</th>
 						<th>Email</th>
 						<th>Člen</th>
+						<th>Login</th>
 						<th>Role</th>
 					</tr>
 				</thead>
@@ -76,12 +76,12 @@
 					@if (users()) {
 						@for (user of users()!; track user.id) {
 							<tr [routerLink]="['/admin/uzivatele', user.id]">
-								<td>{{ user.login }}</td>
 								<td>{{ user.email }}</td>
 								<td>
 									{{ user.member?.nickname || "-" }} ({{ user.member?.firstName }}
 									{{ user.member?.lastName }})
 								</td>
+								<td>{{ user.login }}</td>
 								<td>
 									@for (role of user.roles; track role) {
 										<ion-badge class="me-1">{{
