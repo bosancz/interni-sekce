@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, NotFoundException, Param, Req } from "@nestjs/common";
+import { Controller, Get, HttpCode, NotFoundException, Param, ParseIntPipe, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
@@ -21,7 +21,7 @@ export class EventsReportsController {
 	@HttpCode(204)
 	@AcLinks(EventReportReadPermission)
 	@ApiResponse({ status: 204 })
-	async getEventReport(@Req() req: Request, @Param("id") id: number): Promise<void> {
+	async getEventReport(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
 		const event = await this.events.getEvent(id);
 		if (!event) throw new NotFoundException();
 

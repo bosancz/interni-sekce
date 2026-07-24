@@ -8,6 +8,7 @@ import {
 	Logger,
 	NotFoundException,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Query,
@@ -122,7 +123,7 @@ export class EventsController {
 	@Get(":id")
 	@AcLinks(EventReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(EventResponse) })
-	async getEvent(@Req() req: Request, @Param("id") id: number): Promise<EventResponse> {
+	async getEvent(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<EventResponse> {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
@@ -135,7 +136,7 @@ export class EventsController {
 	@HttpCode(204)
 	@AcLinks(EventEditPermission)
 	@ApiResponse({ status: 204 })
-	async updateEvent(@Req() req: Request, @Param("id") id: number, @Body() body: EventUpdateBody): Promise<void> {
+	async updateEvent(@Req() req: Request, @Param("id", ParseIntPipe) id: number, @Body() body: EventUpdateBody): Promise<void> {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
@@ -159,7 +160,7 @@ export class EventsController {
 	@HttpCode(204)
 	@AcLinks(EventDeletePermission)
 	@ApiResponse({ status: 204 })
-	async deleteEvent(@Req() req: Request, @Param("id") id: number): Promise<void> {
+	async deleteEvent(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
@@ -172,7 +173,7 @@ export class EventsController {
 	@HttpCode(204)
 	@AcLinks(EventRestorePermission)
 	@ApiResponse({ status: 204 })
-	async restoreEvent(@Req() req: Request, @Param("id") id: number): Promise<void> {
+	async restoreEvent(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
@@ -185,7 +186,7 @@ export class EventsController {
 	@HttpCode(204)
 	@AcLinks(EventDeletePermanentPermission)
 	@ApiResponse({ status: 204 })
-	async deleteEventPermanent(@Req() req: Request, @Param("id") id: number): Promise<void> {
+	async deleteEventPermanent(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
 		const event = await this.events.getEvent(id, { leaders: true });
 		if (!event) throw new NotFoundException();
 
@@ -198,7 +199,7 @@ export class EventsController {
 	@HttpCode(204)
 	@AcLinks(EventLeadPermission)
 	@ApiResponse({ status: 204 })
-	async leadEvent(@Req() req: Request, @Param("id") id: number, @AuthUser() authUser: SessionUser): Promise<void> {
+	async leadEvent(@Req() req: Request, @Param("id", ParseIntPipe) id: number, @AuthUser() authUser: SessionUser): Promise<void> {
 		if (authUser.memberId === undefined) throw new ConflictException("User is not linked to a member.");
 
 		const event = await this.events.getEvent(id, { leaders: true });
@@ -215,7 +216,7 @@ export class EventsController {
 	@ApiResponse({ status: 204 })
 	async submitEvent(
 		@Req() req: Request,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Body() body: EventStatusChangeBody,
 	): Promise<void> {
 		const event = await this.events.getEvent(id, { leaders: true });
@@ -232,7 +233,7 @@ export class EventsController {
 	@ApiResponse({ status: 204 })
 	async rejectEvent(
 		@Req() req: Request,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Body() body: EventStatusChangeBody,
 	): Promise<void> {
 		const event = await this.events.getEvent(id, { leaders: true });
@@ -249,7 +250,7 @@ export class EventsController {
 	@ApiResponse({ status: 204 })
 	async publishEvent(
 		@Req() req: Request,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Body() body: EventStatusChangeBody,
 	): Promise<void> {
 		const event = await this.events.getEvent(id, { leaders: true });
@@ -266,7 +267,7 @@ export class EventsController {
 	@ApiResponse({ status: 204 })
 	async unpublishEvent(
 		@Req() req: Request,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Body() body: EventStatusChangeBody,
 	): Promise<void> {
 		const event = await this.events.getEvent(id, { leaders: true });
@@ -283,7 +284,7 @@ export class EventsController {
 	@ApiResponse({ status: 204 })
 	async cancelEvent(
 		@Req() req: Request,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Body() body: EventStatusChangeBody,
 	): Promise<void> {
 		const event = await this.events.getEvent(id, { leaders: true });
@@ -300,7 +301,7 @@ export class EventsController {
 	@ApiResponse({ status: 204 })
 	async uncancelEvent(
 		@Req() req: Request,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Body() body: EventStatusChangeBody,
 	): Promise<void> {
 		const event = await this.events.getEvent(id, { leaders: true });

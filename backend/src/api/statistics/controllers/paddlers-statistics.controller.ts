@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Req } from "@nestjs/common";
+import { Controller, Get, Param, ParseIntPipe, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { PaddlersStatisticsService } from "src/models/statistics/services/paddlers-statistics.service";
@@ -21,7 +21,7 @@ export class PaddlersStatisticsController {
 
 	@Get(":year/ranking")
 	@ApiResponse({ status: 200, type: PaddlersRankingResponse, isArray: true })
-	getPaddlersRanking(@Req() req: Request, @Param("year") year: number): Promise<PaddlersRankingResponse[]> {
+	getPaddlersRanking(@Req() req: Request, @Param("year", ParseIntPipe) year: number): Promise<PaddlersRankingResponse[]> {
 		PadlersRankingPermission.canOrThrow(req);
 
 		return this.statistics.getPaddlersRanking(year);

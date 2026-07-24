@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, NotFoundException, Param, Req, Res, StreamableFile } from "@nestjs/common";
+import { Controller, Get, HttpCode, NotFoundException, Param, ParseIntPipe, Req, Res, StreamableFile } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
@@ -25,7 +25,7 @@ export class EventsAnnouncementController {
 	@ApiResponse({ status: 200 })
 	async getEventAnnouncement(
 		@Req() req: Request,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Res({ passthrough: true }) res: Response,
 	): Promise<StreamableFile> {
 		//const event = await this.events.getEvent(id);
