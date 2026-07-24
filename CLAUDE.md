@@ -24,5 +24,28 @@
   - **Unrelated drift.** The diff compares *all* entities against the DB, so it happily sweeps in changes you did not intend — indexes/columns from someone else's in-flight entity edits, or divergence that was already there. Delete those statements (from both `up()` and `down()`) so the migration only contains the change you meant to make.
   - **Statements TypeORM cannot generate.** A few DB objects have no entity representation (`CREATE COLLATION`, extensions, functions), so the generator emits code that references them without creating them — which fails on a fresh DB or in production. Add those statements by hand, ahead of the statement that depends on them; see `*-GroupNameNaturalNumericCollation.ts`, which creates the `natural_numeric` ICU collation before the column starts using it.
   - **That `down()` really reverses `up()`**, including any statements you added or removed by hand.
-- Then apply it and confirm it actually works, rather than assuming — run `migrations:run`, and check the resulting schema/data (e.g. query `information_schema.columns`). `migrations:revert` is a cheap way to verify both directions.
+- **Generated columns must be registered in `typeorm_metadata`.** TypeORM stores the `asExpression` of every `generatedType: "STORED"` column in the `typeorm_metadata` table and compares against it on each generate. If a migration adds the column with raw `ALTER TABLE ... GENERATED ALWAYS AS (...)` but skips the metadata row, **every** later `migrations:generate` will try to drop and recreate the column — permanent drift. Pair each `ADD` with the matching `INSERT INTO "typeorm_metadata" (...)` (and each `DROP` with a `DELETE`), exactly as the generator emits it — **except** use `current_database()` for the `database` value instead of the hardcoded DB name the generator bakes in, or it won't match in production. See `*-SearchStringColumns.ts` (the `search_string` unaccent columns), which also creates the `unaccent` extension and an IMMUTABLE `immutable_unaccent` wrapper ahead of the columns (a STORED generated column rejects the STABLE built-in `unaccent()`).
+- Then apply it and confirm it actually works, rather than assuming — run `migrations:run`, and check the resulting schema/data (e.g. query `information_schema.columns`). `migrations:revert` is a cheap way to verify both directions. After applying, run `migrations:generate` once more: a clean change reports *"No changes in database schema were found"* — anything else is drift to fix before committing.
 - Migrations auto-run in production only (`migrationsRun` in `config.ts`); in dev, apply them yourself with `npm run migrations:run` (`migrations:revert` undoes the last one).
+
+### Running Postgres in a cloud/sandbox session (no DB already up)
+
+Web/sandbox sessions start with no database — the dev server and `migrations:*` commands need one. Postgres 16 is preinstalled but the client-facing config points at `localhost:5432`, so spin up a local cluster and export the `DB_*` vars. It **cannot run as root**; use the preexisting unprivileged `postgres` system user.
+
+```bash
+PGBIN=/usr/lib/postgresql/16/bin
+PGDATA=/tmp/pgdata; rm -rf "$PGDATA"; mkdir -p "$PGDATA"; chown postgres:postgres "$PGDATA" /tmp
+su postgres -c "$PGBIN/initdb -D $PGDATA -U postgres --auth=trust"
+su postgres -c "$PGBIN/pg_ctl -D $PGDATA -o '-p 5432 -k /tmp -c listen_addresses=127.0.0.1' -l /tmp/pg.log start"
+# App DB + the extensions the entities need (PostGIS for Event.placeGeometry):
+PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE interni;"
+PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -d interni -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+```
+
+- **PostGIS** is not preinstalled; if `CREATE EXTENSION postgis` fails, `apt-get update && apt-get install -y postgresql-16-postgis-3` (the initial `apt-get update` is needed — the stale index 404s otherwise). `unaccent` ships with core.
+- Point the tooling at this cluster with the `DB_*` env vars from `config.ts`, then run migrations from `backend/`:
+  ```bash
+  export DB_HOST=127.0.0.1 DB_PORT=5432 DB_USER=postgres DB_PASSWORD=postgres DB_DATABASE_NAME=interni DB_SCHEMA=public
+  npm install && npm run migrations:run
+  ```
+- Dependencies may be uninstalled too — use `npm install` (there is no committed lockfile, so `npm ci` fails). Don't commit the `package-lock.json` it creates.
