@@ -71,7 +71,9 @@ export class UsersController {
 			.skip(query.offset || 0);
 
 		if (query.search)
-			q.andWhere("user.login ILIKE :search OR member.nickname ILIKE :search", { search: `%${query.search}%` });
+			q.andWhere("unaccent(user.login) ILIKE unaccent(:search) OR unaccent(member.nickname) ILIKE unaccent(:search)", {
+				search: `%${query.search}%`,
+			});
 
 		if (query.roles) q.andWhere("user.roles && array[:...roles]::users_roles_enum[]", { roles: query.roles });
 

@@ -70,7 +70,7 @@ export class AlbumsRepository {
 
 		if (options.search) {
 			const search = `%${options.search}%`;
-			q.andWhere("albums.name ILIKE :search", { search });
+			q.andWhere("unaccent(albums.name) ILIKE unaccent(:search)", { search });
 		}
 
 		return q.getMany();

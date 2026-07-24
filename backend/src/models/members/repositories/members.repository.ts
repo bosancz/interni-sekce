@@ -67,7 +67,7 @@ export class MembersRepository {
 
 		if (options.search)
 			q.andWhere(
-				"members.nickname ILIKE :search OR members.firstName ILIKE :search OR members.lastName ILIKE :search",
+				"unaccent(members.nickname) ILIKE unaccent(:search) OR unaccent(members.firstName) ILIKE unaccent(:search) OR unaccent(members.lastName) ILIKE unaccent(:search)",
 				{
 					search: `%${options.search}%`,
 				},
