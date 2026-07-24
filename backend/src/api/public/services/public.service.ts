@@ -61,14 +61,17 @@ export class PublicService {
 
 	/**
 	 * Collects the original image files of a published album for a ZIP download.
-	 * Missing files on disk are skipped; unique names are enforced so photos sharing
-	 * an original filename don't overwrite each other inside the archive.
+	 * Files are not stat-ed here — archiver skips missing ones on its own (emitting an
+	 * ENOENT warning the controller logs), which avoids a serial round-trip per photo
+	 * that scales badly on slow/networked storage. Unique names are enforced so photos
+	 * sharing an original filename don't overwrite each other inside the archive.
 	 */
 	async getAlbumDownload(albumId: number): Promise<{ filename: string; files: { path: string; name: string }[] }> {
 		const album = await this.albums.getAlbum(albumId);
 		if (!album || album.status !== AlbumStatus.public) throw new NotFoundException();
 
 		const photos = await this.photos.getPhotos({ album: album.id });
+		if (!photos.length) throw new NotFoundException("Album has no downloadable photos.");
 
 		const files: { path: string; name: string }[] = [];
 		const usedNames = new Set<string>();
@@ -77,20 +80,12 @@ export class PublicService {
 			const ext = extname(photo.name);
 			const path = this.photosFiles.getPhotoImagePath(photo, PhotoSizes.original);
 
-			try {
-				await this.photosFiles.fileExists(path);
-			} catch {
-				continue;
-			}
-
 			let name = sanitizeFilename(photo.name) || `${photo.id}${ext}`;
 			if (usedNames.has(name)) name = `${photo.id}_${name}`;
 			usedNames.add(name);
 
 			files.push({ path, name });
 		}
-
-		if (!files.length) throw new NotFoundException("Album has no downloadable photos.");
 
 		const albumName = sanitizeFilename(album.name) || String(album.id);
 		return { filename: `${albumName}.zip`, files };
