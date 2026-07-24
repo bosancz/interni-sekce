@@ -46,11 +46,18 @@ export class PublicService {
 		const event = await this.events.getEvent(eventId);
 		if (!event || !this.isPubliclyVisible(event) || !event.hasRegistration) throw new NotFoundException();
 
-		const folder = join(this.config.fs.eventsDir, String(event.id));
+		// Mirror EventsRegistrationsController: events imported from the old server keep their legacy
+		// Mongo ObjectId in `srcId` and store the PDF in a folder keyed by that ObjectId (named
+		// `registration.pdf`); natively-created events use the numeric-id folder (`prihlaska_<name>.pdf`).
+		const folder = join(this.config.fs.eventsDir, event.srcId ?? String(event.id));
 
 		let matches: string[];
 		try {
+			// Prefer the new `prihlaska*` file, fall back to the legacy `registration*` one.
 			matches = await this.files.getFilesByPrefx(folder, "prihlaska");
+			if (matches.length === 0) {
+				matches = await this.files.getFilesByPrefx(folder, "registration");
+			}
 		} catch {
 			throw new NotFoundException("Registration not found");
 		}
