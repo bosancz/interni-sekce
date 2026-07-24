@@ -44,6 +44,14 @@ export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	private resizeObserver?: ResizeObserver;
 
+	// Some photos carry a transposed width/height (e.g. EXIF-rotated originals imported from
+	// the old server, whose served thumbnail is baked upright while the stored dimensions are
+	// not). The served image is the source of truth for the aspect ratio, so once it loads we
+	// override the stored ratio with the natural one and re-tile. Keyed by photo id.
+	private ratioOverrides = new Map<SDK.PhotoResponseWithLinks["id"], number>();
+
+	private recomputeScheduled = false;
+
 	constructor(
 		private elRef: ElementRef<HTMLElement>,
 		private ngZone: NgZone,
@@ -89,7 +97,7 @@ export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 
 			// add photos to row, stop when first photo over limit
 			while (rowWidth <= this.width && (photo = photos.shift())) {
-				const ratio = photo.width && photo.height ? photo.width / photo.height : 3 / 2;
+				const ratio = this.ratioFor(photo);
 				rowWidth += maxHeight * ratio;
 				if (row.photos.length) rowWidth += this.margin;
 				row.photos.push({ photo, ratio });
@@ -114,6 +122,41 @@ export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 
 		this.rows.set(rows);
+	}
+
+	private ratioFor(photo: SDK.PhotoResponseWithLinks): number {
+		const override = this.ratioOverrides.get(photo.id);
+		if (override) return override;
+		return photo.width && photo.height ? photo.width / photo.height : 3 / 2;
+	}
+
+	// Coalesce the re-tiling that natural-ratio corrections trigger: many lazily-loaded
+	// images can report a corrected ratio within the same frame, so rebuild the rows once.
+	private scheduleRecompute() {
+		if (this.recomputeScheduled) return;
+		this.recomputeScheduled = true;
+		requestAnimationFrame(() => {
+			this.recomputeScheduled = false;
+			this.ngZone.run(() => this.createRows());
+		});
+	}
+
+	onImgLoad(event: Event, photo: SDK.PhotoResponseWithLinks) {
+		const img = event.target as HTMLImageElement;
+		const { naturalWidth, naturalHeight } = img;
+
+		// ignore the 1x1 transparent placeholder swapped in on error
+		if (naturalWidth <= 1 || naturalHeight <= 1) return;
+
+		const natural = naturalWidth / naturalHeight;
+		const current = this.ratioFor(photo);
+
+		// only re-tile when the stored ratio is meaningfully off (e.g. transposed), so
+		// correctly-tagged photos never shift and sub-pixel differences are ignored
+		if (Math.abs(natural - current) / current <= 0.02) return;
+
+		this.ratioOverrides.set(photo.id, natural);
+		this.scheduleRecompute();
 	}
 
 	// transparent 1x1 pixel — replaces a failed image so the browser stops

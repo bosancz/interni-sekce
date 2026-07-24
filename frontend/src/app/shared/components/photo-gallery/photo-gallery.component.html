@@ -12,6 +12,7 @@
 				<img
 					[src]="item.photo | photoImageUrl: 'small'"
 					loading="lazy"
+					(load)="onImgLoad($event, item.photo)"
 					(error)="onImgError($event)"
 				/>
 				@if (item.photo.caption) {

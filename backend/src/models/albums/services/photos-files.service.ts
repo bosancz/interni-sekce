@@ -75,9 +75,15 @@ export class PhotosFilesService {
 						.join(",")})`
 				: null;
 
+		// EXIF orientations 5–8 rotate the image by 90°, so its displayed dimensions are the
+		// stored pixel dimensions swapped. The variants we serve are baked upright with .rotate(),
+		// so the dimensions we persist must describe that upright image or the gallery lays the
+		// photo out with a transposed aspect ratio and it appears distorted.
+		const swapAxes = typeof metadata.orientation === "number" && metadata.orientation >= 5;
+
 		return {
-			width: metadata.width ?? null,
-			height: metadata.height ?? null,
+			width: (swapAxes ? metadata.height : metadata.width) ?? null,
+			height: (swapAxes ? metadata.width : metadata.height) ?? null,
 			bg,
 			timestamp: this.readCaptureDate(metadata.exif) ?? new Date(),
 		};
