@@ -1,5 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { TokenPayload } from "google-auth-library";
 import { google } from "googleapis";
 import { Config } from "src/config";
 
@@ -8,12 +7,6 @@ export class GoogleService {
 	private readonly logger = new Logger(GoogleService.name);
 
 	readonly gmail = google.gmail({ version: "v1" });
-
-	readonly oauth = new google.auth.OAuth2({
-		clientId: this.config.google.clientId,
-		clientSecret: this.config.google.clientSecret,
-		redirectUri: "postmessage",
-	});
 
 	constructor(private readonly config: Config) {
 		const keyFilePath = this.config.google.keyFile;
@@ -31,19 +24,28 @@ export class GoogleService {
 		google.options({ auth });
 	}
 
-	async validateOauthToken(code: string): Promise<TokenPayload> {
-		const tokens = await this.oauth.getToken(code).then((res) => res.tokens);
-		if (!tokens.id_token) throw new Error("No id_token in Google response");
+	/**
+	 * Validate the Google OAuth access token the frontend obtained and return the signed-in
+	 * user's email.
+	 *
+	 * This only talks to Google's public tokeninfo endpoint, so it needs no client secret and
+	 * no code exchange — the single service-account key file (used for mail) is enough for the
+	 * whole Google setup, matching the old server.
+	 */
+	async validateAccessToken(accessToken: string): Promise<{ email: string }> {
+		const client = new google.auth.OAuth2();
 
-		const payload = await this.oauth
-			.verifyIdToken({
-				idToken: tokens.id_token,
-				audience: this.config.google.clientId,
-			})
-			.then((res) => res.getPayload());
+		// Throws on an invalid/expired token.
+		const info = await client.getTokenInfo(accessToken);
 
-		if (!payload) throw new Error("No payload in Google id token");
+		if (!info.email) throw new Error("Google account did not expose an email address");
 
-		return payload;
+		// When a login client id is known, make sure the token was actually minted for this
+		// app — otherwise an access token obtained for a different site could be replayed here.
+		if (this.config.google.clientId && info.aud !== this.config.google.clientId) {
+			throw new Error("Google token was not issued for this application");
+		}
+
+		return { email: info.email };
 	}
 }

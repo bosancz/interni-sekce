@@ -1,6 +1,5 @@
 import { Global, Injectable, Logger, LogLevel, Module } from "@nestjs/common";
 import { config } from "dotenv";
-import { readFileSync } from "fs";
 import * as path from "path";
 import { DataSourceOptions } from "typeorm";
 import { SnakeNamingStrategy } from "./database/snake-naming.strategy";
@@ -112,43 +111,24 @@ const photos = {
 };
 
 /**
- * Google credentials.
+ * Google.
  *
- * Two distinct Google artifacts are involved, and both can be supplied through the mounted
- * JSON key file (in {@link fs.keysDir}, default `keys/google.json`) — mirroring the old
- * server, which loaded everything from `google.json` — with environment variables taking
- * precedence when set:
- *   - a **service-account** key (`client_email` + `private_key`) used to send mail through
- *     the Gmail API. Always read from the file, lazily, by GoogleService (`google.keyFile`).
- *   - the **"Web application" OAuth client** (`client_id` + `client_secret`) used by the
- *     Google login popup / auth-code exchange. Read from the same file's `web` / `installed`
- *     block (the shape Google Cloud downloads), or a hand-merged top-level block, and
- *     overridable via GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET.
+ * The whole Google setup runs off a single mounted service-account key file (default
+ * `keys/google.json`), exactly like the old server: it is used to send mail through the
+ * Gmail API, and login only *verifies* the token the frontend obtains, which needs no
+ * client secret and no code exchange. So there is deliberately no GOOGLE_CLIENT_SECRET.
+ *
+ * `clientId` is the public "Web application" OAuth client id. It is not a secret (it ships
+ * in the frontend and is delivered to it via the API), so it carries a sensible default and
+ * is used only to check that login tokens were issued for this app. Override with
+ * GOOGLE_CLIENT_ID if the deployment uses a different Google Cloud OAuth client.
  */
-function loadJsonKeyfile(filePath: string): Record<string, any> {
-	try {
-		return JSON.parse(readFileSync(filePath, "utf8"));
-	} catch {
-		logger.log(`Google key file not found or unreadable at ${filePath}; relying on environment variables.`);
-		return {};
-	}
-}
-
-const googleKeyFile = path.join(fs.keysDir, process.env["GOOGLE_KEY_FILE"] ?? "google.json");
-const googleKeyfile = loadJsonKeyfile(googleKeyFile);
-// OAuth web-client credentials, if this file carries them. A pure service-account file
-// (type === "service_account") never does, and its numeric `client_id` must not be mistaken
-// for the login client id — so it is deliberately ignored in that case.
-const googleOauthClient: Record<string, any> =
-	googleKeyfile["web"] ??
-	googleKeyfile["installed"] ??
-	(googleKeyfile["type"] === "service_account" ? {} : googleKeyfile);
+const GOOGLE_CLIENT_ID = "249555539983-j8rvff7bovgnecsmjffe0a3dj55j33hh.apps.googleusercontent.com";
 
 const google = {
-	keyFile: googleKeyFile,
-	impersonate: process.env["GOOGLE_IMPERSONATE"] ?? googleKeyfile["impersonate"] ?? "interni@bosan.cz",
-	clientId: process.env["GOOGLE_CLIENT_ID"] ?? googleOauthClient["client_id"],
-	clientSecret: process.env["GOOGLE_CLIENT_SECRET"] ?? googleOauthClient["client_secret"],
+	keyFile: path.join(fs.keysDir, process.env["GOOGLE_KEY_FILE"] ?? "google.json"),
+	impersonate: process.env["GOOGLE_IMPERSONATE"] ?? "interni@bosan.cz",
+	clientId: process.env["GOOGLE_CLIENT_ID"] ?? GOOGLE_CLIENT_ID,
 };
 
 const mapy = {
