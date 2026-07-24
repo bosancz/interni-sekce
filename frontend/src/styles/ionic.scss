@@ -115,6 +115,34 @@ ion-button {
 	font-weight: 600;
 }
 
+/* PWA install banner — brand identity ("žlutá na modré").
+   The default toast leaves its action in --ion-color-primary (deep brand blue),
+   which is invisible on the dark toast surface. Give it the brand blue surface
+   with the yellow accent so the message, icon and buttons stay legible in both
+   the light and dark themes. */
+ion-toast.install-toast {
+	--background: var(--san-blue);
+	--color: #fff;
+	--border-radius: var(--bo-radius-card);
+	--box-shadow: var(--bo-shadow-hero-blue);
+
+	&::part(icon) {
+		color: var(--san-yellow);
+	}
+
+	/* primary action ("Nainstalovat") in the brand yellow so it reads as the CTA */
+	&::part(button) {
+		color: var(--san-yellow);
+		font-weight: 700;
+	}
+
+	/* dismiss ("Teď ne") stays a quiet white so it doesn't compete with the CTA */
+	&::part(button cancel) {
+		color: rgba(255, 255, 255, 0.85);
+		font-weight: 600;
+	}
+}
+
 ion-searchbar {
 	--border-radius: var(--bo-radius-pill) !important;
 }

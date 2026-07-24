@@ -38,6 +38,15 @@
 
 ion-button {
 	--border-radius: var(--bo-radius-btn);
+	/* Drive the button off the app's own theme-aware brand tokens instead of Ionic's
+	   default primary: deep brand blue on the light card, the light periwinkle brand
+	   accent on the dark card. The label tracks --bo-paper so it always contrasts the
+	   accent — otherwise the default primary renders dark-navy-on-near-black in dark mode. */
+	--background: var(--bo-heading);
+	--background-hover: var(--bo-heading);
+	--background-focused: var(--bo-heading);
+	--background-activated: var(--bo-heading);
+	--color: var(--bo-paper);
 	text-transform: none;
 	letter-spacing: 0;
 	font-weight: 700;
