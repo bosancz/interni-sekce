@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { DateTime } from "luxon";
@@ -84,7 +84,7 @@ export class AlbumsController {
 	@Get(":id")
 	@AcLinks(AlbumReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(AlbumResponse) })
-	async getAlbum(@Param("id") id: number, @Req() req: Request): Promise<AlbumResponse> {
+	async getAlbum(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<AlbumResponse> {
 		const album = await this.albums.getAlbum(id, { event: true });
 		if (!album) throw new NotFoundException();
 
@@ -96,7 +96,7 @@ export class AlbumsController {
 	@Patch(":id")
 	@AcLinks(AlbumEditPermission)
 	@ApiResponse({ status: 204 })
-	async updateAlbum(@Param("id") id: number, @Req() req: Request, @Body() body: AlbumUpdateBody): Promise<void> {
+	async updateAlbum(@Param("id", ParseIntPipe) id: number, @Req() req: Request, @Body() body: AlbumUpdateBody): Promise<void> {
 		const album = await this.albums.getAlbum(id);
 		if (!album) throw new NotFoundException();
 
@@ -108,7 +108,7 @@ export class AlbumsController {
 	@Delete(":id")
 	@AcLinks(AlbumDeletePermission)
 	@ApiResponse({ status: 204 })
-	async deleteAlbum(@Param("id") id: number, @Req() req: Request): Promise<void> {
+	async deleteAlbum(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
 		const album = await this.albums.getAlbum(id);
 		if (!album) throw new NotFoundException();
 
@@ -120,7 +120,7 @@ export class AlbumsController {
 	@Post(":id/restore")
 	@AcLinks(AlbumRestorePermission)
 	@ApiResponse({ status: 204 })
-	async restoreAlbum(@Param("id") id: number, @Req() req: Request): Promise<void> {
+	async restoreAlbum(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
 		const album = await this.albums.getDeletedAlbum(id);
 		if (!album) throw new NotFoundException();
 
@@ -132,7 +132,7 @@ export class AlbumsController {
 	@Delete(":id/permanent")
 	@AcLinks(AlbumDeletePermanentPermission)
 	@ApiResponse({ status: 204 })
-	async deleteAlbumPermanent(@Param("id") id: number, @Req() req: Request): Promise<void> {
+	async deleteAlbumPermanent(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
 		const album = await this.albums.getDeletedAlbum(id);
 		if (!album) throw new NotFoundException();
 
@@ -145,7 +145,7 @@ export class AlbumsController {
 	@Post(":id/publish")
 	@AcLinks(AlbumPublishPermission)
 	@ApiResponse({ status: 204 })
-	async publishAlbum(@Param("id") id: number, @Req() req: Request): Promise<void> {
+	async publishAlbum(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
 		const album = await this.albums.getAlbum(id);
 		if (!album) throw new NotFoundException();
 
@@ -157,7 +157,7 @@ export class AlbumsController {
 	@Post(":id/unpublish")
 	@AcLinks(AlbumUnpublishPermission)
 	@ApiResponse({ status: 204 })
-	async unpublishAlbum(@Param("id") id: number, @Req() req: Request): Promise<void> {
+	async unpublishAlbum(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
 		const album = await this.albums.getAlbum(id);
 		if (!album) throw new NotFoundException();
 
@@ -169,7 +169,7 @@ export class AlbumsController {
 	@Get(":id/photos")
 	@AcLinks(AlbumPhotosPermission)
 	@ApiResponse({ status: 200, type: WithLinks(PhotoResponse), isArray: true })
-	async getAlbumPhotos(@Param("id") id: number, @Req() req: Request): Promise<PhotoResponse[]> {
+	async getAlbumPhotos(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<PhotoResponse[]> {
 		const album = await this.albums.getAlbum(id);
 		if (!album) throw new NotFoundException();
 
@@ -182,7 +182,7 @@ export class AlbumsController {
 	@AcLinks(AlbumReorderPhotosPermission)
 	@ApiResponse({ status: 204 })
 	async reorderAlbumPhotos(
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Req() req: Request,
 		@Body() body: AlbumPhotosOrderBody,
 	): Promise<void> {

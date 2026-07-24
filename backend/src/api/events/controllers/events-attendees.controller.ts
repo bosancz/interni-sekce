@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Put, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Put, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
@@ -21,7 +21,7 @@ export class EventsAttendeesController {
 	@Get(":eventId/attendees")
 	@AcLinks(EventAttendeesListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(EventAttendeeResponse), isArray: true })
-	async listEventAttendees(@Req() req: Request, @Param("eventId") eventId: number): Promise<EventAttendeeResponse[]> {
+	async listEventAttendees(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<EventAttendeeResponse[]> {
 		const event = await this.events.getEvent(eventId);
 		if (!event) throw new NotFoundException();
 
@@ -35,8 +35,8 @@ export class EventsAttendeesController {
 	@ApiResponse({ status: 204 })
 	async addEventAttendee(
 		@Req() req: Request,
-		@Param("eventId") eventId: number,
-		@Param("memberId") memberId: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@Param("memberId", ParseIntPipe) memberId: number,
 		@Body() body: EventAttendeeCreateBody,
 	) {
 		const event = await this.events.getEvent(eventId);
@@ -52,8 +52,8 @@ export class EventsAttendeesController {
 	@ApiResponse({ status: 204 })
 	async updateEventAttendee(
 		@Req() req: Request,
-		@Param("eventId") eventId: number,
-		@Param("memberId") memberId: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@Param("memberId", ParseIntPipe) memberId: number,
 		@Body() body: EventAttendeeUpdateBody,
 	) {
 		const eventAttendee = await this.events.getEventAttendee(eventId, memberId);
@@ -71,8 +71,8 @@ export class EventsAttendeesController {
 	@ApiResponse({ status: 204 })
 	async deleteEventAttendee(
 		@Req() req: Request,
-		@Param("eventId") eventId: number,
-		@Param("memberId") memberId: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@Param("memberId", ParseIntPipe) memberId: number,
 	) {
 		const eventAttendee = await this.events.getEventAttendee(eventId, memberId);
 		if (!eventAttendee) throw new NotFoundException();

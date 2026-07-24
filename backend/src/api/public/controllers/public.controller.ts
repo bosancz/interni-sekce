@@ -5,6 +5,7 @@ import {
 	Logger,
 	NotFoundException,
 	Param,
+	ParseIntPipe,
 	Query,
 	Req,
 	Res,
@@ -60,7 +61,7 @@ export class PublicController {
 	}
 
 	@Get("program/:id/registration")
-	async getProgramRegistration(@Param("id") id: number, @Res() res: Response): Promise<void> {
+	async getProgramRegistration(@Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<void> {
 		const { path, filename } = await this.publicService.getRegistrationFile(id);
 
 		res.setHeader("Content-Type", "application/pdf");
@@ -87,18 +88,18 @@ export class PublicController {
 
 	@Get("gallery/:id")
 	@AcLinks(PublicGalleryAlbumPermission)
-	async getGalleryAlbum(@Param("id") id: number) {
+	async getGalleryAlbum(@Param("id", ParseIntPipe) id: number) {
 		return this.publicService.getAlbum(id);
 	}
 
 	@Get("gallery/:id/preview")
 	@AcLinks(PublicGalleryAlbumPreviewPermission)
-	async getGalleryAlbumPreview(@Param("id") id: number) {
+	async getGalleryAlbumPreview(@Param("id", ParseIntPipe) id: number) {
 		return this.publicService.getAlbum(id, { preview: true });
 	}
 
 	@Get("gallery/:id/download")
-	async downloadAlbum(@Param("id") id: number, @Res() res: Response): Promise<void> {
+	async downloadAlbum(@Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<void> {
 		const { filename, files } = await this.publicService.getAlbumDownload(id);
 
 		const archive = archiver("zip", { store: true }); // photos are already compressed; store to save CPU
@@ -121,7 +122,7 @@ export class PublicController {
 
 	@Get("photos/:id/image/:size")
 	async getPublicPhotoImage(
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Param("size") size: PhotoSizes,
 		@Res() res: Response,
 	): Promise<void> {
