@@ -252,8 +252,12 @@ export class MongoImportService {
 				waterKm: null,
 				river: null,
 				leadersEvent: mongoEvent.groups?.includes("V") || false,
-				hasRegistration: false, // TODO: migrate registration
+				// The legacy registration PDF is not moved or copied; keep the original Mongo ObjectId
+				// (srcId) so the backend can serve it straight from the legacy on-disk layout, and flag
+				// the event when the old record referenced a registration file.
+				hasRegistration: !!mongoEvent.registration,
 				report: null,
+				srcId: mongoEvent._id.toString(),
 				groups,
 			};
 
