@@ -890,6 +890,12 @@ export namespace SDK {
          * @type {string}
          * @memberof Event
          */
+        'srcId': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Event
+         */
         'deletedAt'?: string | null;
         /**
          * 
