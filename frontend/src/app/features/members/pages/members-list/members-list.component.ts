@@ -1,7 +1,7 @@
 import { DatePipe, KeyValue, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
 import { AfterViewInit, Component, computed, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
+import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
 	IonButton,
@@ -34,6 +34,7 @@ import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-
 import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
 import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
@@ -72,7 +73,6 @@ const COLUMNS_ICON =
 		AdminTableColumnComponent,
 		AdminTableCellDirective,
 		FormsModule,
-		RouterLink,
 		KeyValuePipe,
 		MemberPipe,
 		GroupBadgeComponent,
@@ -82,6 +82,7 @@ const COLUMNS_ICON =
 		FilterPillComponent,
 		SortSelectComponent,
 		NgTemplateOutlet,
+		TooltipDirective,
 	],
 })
 export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnter {
@@ -420,16 +421,41 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	}
 
 	setViewSelection(key: string, value: boolean) {
-		this.viewSelections.update((selections) => ({ ...selections, [key]: value }));
+		this.applyViewSelections({ ...this.viewSelections(), [key]: value });
+	}
+
+	// Mobile renders the column picker as a multiselect pill, which emits the full list of
+	// visible columns rather than a single toggle.
+	setColumnSelection(keys: string[]) {
+		const selected = new Set(keys);
+		this.applyViewSelections(
+			Object.fromEntries(Object.keys(this.viewSelections()).map((key) => [key, selected.has(key)])),
+		);
+	}
+
+	private applyViewSelections(selections: { [key: string]: boolean }) {
+		const previous = this.viewSelections();
+		this.viewSelections.set(selections);
 
 		// Enabling a contact column after the list was already loaded without contacts:
 		// re-fetch so the newly visible column has data (still a single request).
-		if (value && (key === "firstTelephone" || key === "firstEmail")) {
+		const contactColumnAdded = ["firstTelephone", "firstEmail"].some((key) => selections[key] && !previous[key]);
+		if (contactColumnAdded) {
 			const members = this.members();
 			const contactsLoaded = !!members?.some((member) => member.contacts !== undefined);
 			if (!contactsLoaded) this.loadMembers(this.filter);
 		}
 	}
+
+	columnOptions = computed<FilterPillOption[]>(() =>
+		Object.keys(this.viewSelections()).map((key) => ({ value: key, label: this.getViewSelectionLabel(key) })),
+	);
+
+	selectedColumns = computed(() =>
+		Object.entries(this.viewSelections())
+			.filter(([, visible]) => visible)
+			.map(([key]) => key),
+	);
 
 	public getViewSelectionLabel(key: string): string {
 		const labels: { [key: string]: string } = {

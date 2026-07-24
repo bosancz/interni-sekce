@@ -2,6 +2,16 @@
 	display: block;
 }
 
+/* the card itself is full width like its siblings, but the scan shouldn't be
+   upscaled past its natural size – keep it centred at a readable width */
+.preview {
+	text-align: center;
+
+	img {
+		max-width: min(100%, 400px);
+	}
+}
+
 .upload {
 	padding: 2em 0;
 	text-align: center;

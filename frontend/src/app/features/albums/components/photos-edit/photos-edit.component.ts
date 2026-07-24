@@ -2,7 +2,7 @@ import { DatePipe } from "@angular/common";
 import { Component, HostListener, Input, OnInit, signal, ViewChild } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Router } from "@angular/router";
 import {
 	AlertController,
 	IonButton,
@@ -17,7 +17,6 @@ import {
 	IonPopover,
 	IonToolbar,
 	ModalController,
-	ViewWillLeave,
 } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
@@ -30,6 +29,7 @@ import {
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 
@@ -52,12 +52,14 @@ import { SDK } from "src/sdk";
 		IonInputStandalone,
 		IonIcon,
 		PhotoImageUrlPipe,
+		TooltipDirective,
 	],
 })
-export class PhotosEditComponent implements OnInit, ViewWillLeave {
+export class PhotosEditComponent implements OnInit {
 	photo = signal<SDK.PhotoResponseWithLinks | undefined>(undefined);
 	// Set via Ionic modal componentProps (Object.assign), so it must be a plain property, not a signal input
 	@Input() photos!: SDK.PhotoResponseWithLinks[];
+	@Input() startPhoto?: SDK.PhotoResponseWithLinks;
 
 	// true when the current photo's image failed to load, so we show a message instead
 	imageError = signal(false);
@@ -83,7 +85,6 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 		private api: ApiService,
 		private toastService: ToastService,
 		private alertController: AlertController,
-		private route: ActivatedRoute,
 		private router: Router,
 		private platformService: PlatformService,
 	) {
@@ -91,18 +92,12 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 	}
 
 	ngOnInit(): void {
-		const photoId = this.route.snapshot.queryParams["photo"];
-		const photos = this.photos;
-
-		let index = photos.findIndex((item) => String(item.id) === String(photoId));
+		// the photo to start on comes in as a prop, openPhoto then puts it in the URL —
+		// the modal owns the ?photo= param for as long as it is open (see openPhoto)
+		let index = this.photos.findIndex((item) => item.id === this.startPhoto?.id);
 		if (index === -1) index = 0;
 
-		this.currentIndex.set(index);
-		this.photo.set(photos[index]);
-	}
-
-	ionViewWillLeave(): void {
-		this.router.navigate([], { queryParams: { photo: undefined }, queryParamsHandling: "merge", replaceUrl: true });
+		this.openPhoto(index);
 	}
 
 	@HostListener("document:keyup", ["$event"])
@@ -173,6 +168,7 @@ export class PhotosEditComponent implements OnInit, ViewWillLeave {
 		this.imageError.set(false);
 		this.photo.set(photo);
 
+		// replaces the modal's own history entry, so closing (a history.back()) drops the param with it
 		this.router.navigate([], { queryParams: { photo: photo.id }, queryParamsHandling: "merge", replaceUrl: true });
 	}
 

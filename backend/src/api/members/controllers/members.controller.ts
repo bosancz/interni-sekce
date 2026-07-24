@@ -5,6 +5,7 @@ import {
 	Get,
 	NotFoundException,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Query,
@@ -83,7 +84,7 @@ export class MembersController {
 	@Get(":id")
 	@AcLinks(MemberReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(MemberResponse) })
-	async getMember(@Param("id") id: number, @Req() req: Request): Promise<MemberResponse> {
+	async getMember(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<MemberResponse> {
 		const member = await this.members.getMember(id);
 		if (!member) throw new NotFoundException();
 
@@ -95,7 +96,7 @@ export class MembersController {
 	@Patch(":id")
 	@AcLinks(MemberUpdatePermission)
 	@ApiResponse({ status: 204 })
-	async updateMember(@Req() req: Request, @Param("id") id: number, @Body() body: MemberUpdateBody) {
+	async updateMember(@Req() req: Request, @Param("id", ParseIntPipe) id: number, @Body() body: MemberUpdateBody) {
 		const member = await this.members.getMember(id);
 		if (!member) throw new NotFoundException();
 
@@ -107,7 +108,7 @@ export class MembersController {
 	@Delete(":id")
 	@AcLinks(MemberDeletePermission)
 	@ApiResponse({ status: 204 })
-	async deleteMember(@Req() req: Request, @Param("id") id: number) {
+	async deleteMember(@Req() req: Request, @Param("id", ParseIntPipe) id: number) {
 		const member = await this.members.getMember(id);
 		if (!member) throw new NotFoundException();
 
@@ -119,7 +120,7 @@ export class MembersController {
 	@Post(":id/restore")
 	@AcLinks(MemberRestorePermission)
 	@ApiResponse({ status: 204 })
-	async restoreMember(@Req() req: Request, @Param("id") id: number) {
+	async restoreMember(@Req() req: Request, @Param("id", ParseIntPipe) id: number) {
 		const member = await this.members.getDeletedMember(id);
 		if (!member) throw new NotFoundException();
 
@@ -131,7 +132,7 @@ export class MembersController {
 	@Delete(":id/permanent")
 	@AcLinks(MemberDeletePermanentPermission)
 	@ApiResponse({ status: 204 })
-	async deleteMemberPermanent(@Req() req: Request, @Param("id") id: number) {
+	async deleteMemberPermanent(@Req() req: Request, @Param("id", ParseIntPipe) id: number) {
 		const member = await this.members.getDeletedMember(id);
 		if (!member) throw new NotFoundException();
 

@@ -1,0 +1,38 @@
+<bo-page-header title="Smazaná alba" backUrl="/galerie"></bo-page-header>
+
+<bo-page-content>
+	<admin-table
+		[rows]="albums()"
+		[loading]="albums() === undefined"
+		[actions]="albumActions"
+		[actionsHeader]="rowActionsHeader"
+	>
+		<admin-table-column header="Název alba" [primary]="true" headerClass="align-middle">
+			<ng-container *adminCell="let album">{{ album.name }}</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Datum" headerClass="align-middle">
+			<ng-container *adminCell="let album">
+				{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }}
+			</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Stav" [right]="true" headerClass="align-middle">
+			<ng-container *adminCell="let album">
+				<span class="bo-pill" [class.bo-pill-green]="album.status === 'public'">
+					{{ album | album: "status" }}
+				</span>
+			</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Smazáno" headerClass="align-middle">
+			<ng-container *adminCell="let album">
+				{{ album.deletedAt ? (album.deletedAt | date: "d. M. y H:mm") : "" }}
+			</ng-container>
+		</admin-table-column>
+	</admin-table>
+
+	@if (albums()?.length === 0) {
+		<p class="ion-padding albums-empty">Žádná smazaná alba.</p>
+	}
+</bo-page-content>

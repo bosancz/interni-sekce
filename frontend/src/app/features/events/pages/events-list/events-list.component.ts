@@ -16,6 +16,8 @@ import {
 	InfiniteScrollCustomEvent,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
+	IonItemDivider,
+	IonList,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
@@ -69,6 +71,8 @@ type EventStatusActions = ExtractExisting<
 		FormsModule,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
+		IonItemDivider,
+		IonList,
 		EventStatusBadgeComponent,
 		EventCardComponent,
 		GroupPipe,
@@ -87,11 +91,27 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 	years = signal<number[]>([]);
 	currentYearString = String(new Date().getFullYear());
+
+	// Special "Datum" pill value: show only current/upcoming events (dateTill >= today).
+	// Mutually exclusive with the concrete year chips. It is not applied automatically here —
+	// the entry points that want it (sidebar/home "Akce") link to `?year=budouci` instead, so
+	// e.g. "Moje akce" can open the full list.
+	readonly futureFilterValue = "budouci";
+
 	selectedYears = signal<string[]>([]);
 	selectedStatuses = signal<string[]>([]);
 	selectedLeaderFilters = signal<string[]>([]);
 
-	sortColumn = signal<string | null>(null);
+	// Default sort (used whenever the URL has no explicit sort): always by start date, with the
+	// direction following the date filter — "Budoucí" reads best nearest-first, while a full or
+	// past-year list reads best newest-first.
+	private readonly defaultSortColumn = "dateFrom";
+
+	private defaultSortOrder(dateFilters: string[]): "ASC" | "DESC" {
+		return dateFilters.includes(this.futureFilterValue) ? "ASC" : "DESC";
+	}
+
+	sortColumn = signal<string | null>(this.defaultSortColumn);
 	// String, not "ASC" | "DESC": a multi-column sort carries a comma-separated list (e.g. "ASC,DESC").
 	sortOrder = signal<string>("ASC");
 
@@ -106,9 +126,10 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	// True when the viewport is at least the lg breakpoint (992px) — filters inline vs. in the modal.
 	isDesktop = signal(true);
 
-	yearOptions = computed<FilterPillOption[]>(() =>
-		this.years().map((year) => ({ value: String(year), label: String(year) })),
-	);
+	yearOptions = computed<FilterPillOption[]>(() => [
+		{ value: this.futureFilterValue, label: "Budoucí" },
+		...this.years().map((year) => ({ value: String(year), label: String(year) })),
+	]);
 	statusOptions = computed<FilterPillOption[]>(() =>
 		Object.entries(this.statuses()).map(([key, status]) => ({
 			value: key,
@@ -139,7 +160,9 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	page = 1;
 	readonly pageSize = 50;
 	private loadToken = 0;
-	private hasAutoScrolled = false;
+	// Canonical key of the query params the current list was loaded with, so a re-emission of the
+	// params we already loaded with doesn't trigger a second identical request.
+	private loadedFilterKey: string | null = null;
 
 	filter: UrlParams = {};
 
@@ -341,13 +364,22 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	}
 
 	onFilterChange(params: Params) {
+		// Skip the redundant reload when the params we already loaded with are re-emitted.
+		const filterKey = this.getFilterKey(params);
+		if (filterKey === this.loadedFilterKey) return;
+		this.loadedFilterKey = filterKey;
+
+		const dateFilters = this.normalizeFilterValueToArray(params["year"]);
+		const order = params["order"];
+
 		this.filter = { ...params };
-		this.selectedYears.set(this.normalizeFilterValueToArray(params["year"]));
+		this.selectedYears.set(dateFilters);
 		this.selectedStatuses.set(this.normalizeFilterValueToArray(params["status"]));
 		this.selectedLeaderFilters.set(this.normalizeFilterValueToArray(params["leaders"]));
-		this.sortColumn.set(params["sort"] ?? null);
-		// Keep the raw param — it may be a comma-separated list of directions for a multi-column sort.
-		this.sortOrder.set(params["order"] ?? "ASC");
+		this.sortColumn.set(params["sort"] ?? this.defaultSortColumn);
+		// With an explicit sort in the URL, keep the raw order param (it may be a comma-separated
+		// list of directions for a multi-column sort); otherwise use the filter-dependent default.
+		this.sortOrder.set(params["sort"] ? (order ?? "ASC") : this.defaultSortOrder(dateFilters));
 		this.loadEvents(this.filter);
 	}
 
@@ -373,6 +405,26 @@ export class EventsListComponent implements OnInit, OnDestroy {
 			queryParamsHandling: "merge",
 			replaceUrl: true,
 		});
+	}
+
+	// Handle the "Datum" pill selection. "Budoucí" and concrete years are mutually exclusive:
+	// picking "Budoucí" drops any selected years, and picking a year drops "Budoucí".
+	setDateFilter(values: string[]) {
+		const wasFuture = this.selectedYears().includes(this.futureFilterValue);
+		const isFuture = values.includes(this.futureFilterValue);
+
+		if (isFuture && !wasFuture) {
+			// "Budoucí" was just picked → make it the only selection.
+			this.setFilterParam("year", [this.futureFilterValue]);
+		} else if (isFuture && values.length > 1) {
+			// A year was picked while "Budoucí" was active → drop "Budoucí".
+			this.setFilterParam(
+				"year",
+				values.filter((value) => value !== this.futureFilterValue),
+			);
+		} else {
+			this.setFilterParam("year", values);
+		}
 	}
 
 	toggleCurrentYear() {
@@ -431,15 +483,23 @@ export class EventsListComponent implements OnInit, OnDestroy {
 
 		const leaders = this.normalizeFilterValueToArray((filter as any)["leaders"]);
 
+		const dateFilters = this.normalizeFilterValueToArray((filter as any)["year"]);
+		const showFuture = dateFilters.includes(this.futureFilterValue);
+		const years = dateFilters
+			.filter((value) => value !== this.futureFilterValue)
+			.map((year) => parseInt(year, 10));
+
 		const params: SDK.EventsApiListEventsQueryParams = {
 			search: filter.search || undefined,
 			status: this.normalizeFilterValueToArray((filter as any)["status"]),
-			year: this.normalizeFilterValueToArray((filter as any)["year"]).map((year) => parseInt(year, 10)),
+			year: years,
+			// "Budoucí": only events that haven't ended yet (dateTill >= today).
+			dateFrom: showFuture ? (DateTime.now().startOf("day").toISODate() ?? undefined) : undefined,
 			my: leaders.includes("my"),
 			noleader: leaders.includes("noleader"),
 			deleted: !!filter.deleted,
-			sort: (filter as any)["sort"] || undefined,
-			order: (filter as any)["order"] || undefined,
+			sort: (filter as any)["sort"] || this.defaultSortColumn,
+			order: (filter as any)["order"] || this.defaultSortOrder(dateFilters),
 			offset: (this.page - 1) * this.pageSize,
 			limit: this.pageSize,
 		};
@@ -453,55 +513,6 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		if (token !== this.loadToken) return;
 
 		this.events.set(loadMore ? [...this.events(), ...events] : events);
-
-		if (!loadMore) this.scrollToCurrentDate();
-	}
-
-	// On the first load, position the list at the current date, so upcoming events sit above
-	// the viewport and past events below. Runs only once per page open so later filter
-	// changes don't yank the scroll position.
-	private async scrollToCurrentDate() {
-		if (this.hasAutoScrolled || this.route.snapshot.fragment) {
-			this.hasAutoScrolled = true;
-			return;
-		}
-
-		const today = DateTime.now().startOf("day");
-		const isPastOrToday = (event: SDK.EventResponseWithLinks) => DateTime.fromISO(event.dateFrom) <= today;
-
-		// If the whole first page is future events, keep loading until today appears (capped).
-		const maxAutoLoadPages = 5;
-		while (this.events().length > 0 && !this.events().some(isPastOrToday) && this.page < maxAutoLoadPages) {
-			const lengthBefore = this.events().length;
-			await this.loadEvents(this.filter, true);
-			if (this.events().length === lengthBefore) break;
-		}
-
-		this.hasAutoScrolled = true;
-
-		const boundaryIndex = this.events().findIndex(isPastOrToday);
-
-		// index 0 means there are no future events above, so there is nothing to scroll past
-		if (boundaryIndex <= 0) return;
-
-		// Position the scroll in the same render pass that first paints the rows (before the
-		// browser paint), so the list appears already scrolled instead of jumping after load.
-		const elementId = "event-" + this.events()[boundaryIndex].id;
-		afterNextRender(() => this.applyInitialScroll(elementId), { injector: this.injector });
-	}
-
-	private applyInitialScroll(elementId: string, framesLeft = 120) {
-		const element = document.getElementById(elementId);
-		if (!element || !framesLeft) return;
-
-		// Ionic components hydrate asynchronously; until then ion-items have no layout and
-		// the target sits collapsed at the top of the list, so scrolling would be a no-op.
-		const hydrating =
-			element.getBoundingClientRect().height === 0 ||
-			(element.tagName.startsWith("ION-") && !element.classList.contains("hydrated"));
-
-		if (hydrating) requestAnimationFrame(() => this.applyInitialScroll(elementId, framesLeft - 1));
-		else element.scrollIntoView({ behavior: "instant", block: "center" });
 	}
 
 	// Show the event preview card next to the mouse while it rests over a row. Delegated
@@ -557,6 +568,16 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		// Sit just below the cursor, clamped so the card stays on screen.
 		const top = Math.max(margin, Math.min(e.clientY + offset, window.innerHeight - 240));
 		this.previewPosition.set({ top, left });
+	}
+
+	// Order-independent serialization of the query params, used to detect a re-emission of the
+	// params the list is already showing.
+	private getFilterKey(params: Params): string {
+		return JSON.stringify(
+			Object.keys(params)
+				.sort()
+				.map((key) => [key, params[key]]),
+		);
 	}
 
 	private normalizeFilterValueToArray(value: string | string[] | null | undefined): string[] {

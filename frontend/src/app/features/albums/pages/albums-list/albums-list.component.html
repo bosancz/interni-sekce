@@ -11,9 +11,12 @@
 			<!-- Mobile: the same filter pills collected inside the filter modal, plus a sort control
 			     (the sortable table headers aren't available in the mobile grid view). -->
 			<div class="albums-filter-modal">
-				<div class="albums-filter-modal-pills">
-					<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
-				</div>
+				<ion-list lines="full">
+					<ion-item-divider>Filtry</ion-item-divider>
+					<div class="albums-filter-modal-pills">
+						<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+					</div>
+				</ion-list>
 
 				<bo-sort-select
 					[options]="sortOptions"
@@ -43,64 +46,42 @@
 		/>
 	</ng-template>
 
-	@if (view() === 'table') {
-		<admin-table
-			[class]="'albums-table'"
-			[display]="'table'"
-			[rows]="albums()"
-			[loading]="albums() === undefined"
-			[rowLink]="rowLink"
-			[sort]="sortColumn()"
-			[order]="sortOrder()"
-			(sortChange)="onSortChange($event)"
-		>
-			<admin-table-column header="Název alba" sort="name" [primary]="true" cellClass="albums-name-column" headerClass="align-middle albums-name-column">
-				<ng-container *adminCell="let album">{{ album.name }}</ng-container>
-			</admin-table-column>
+	<admin-table
+		[class]="'albums-table'"
+		[display]="view() === 'table' ? 'table' : 'list'"
+		[rows]="albums()"
+		[loading]="albums() === undefined"
+		[rowLink]="rowLink"
+		[actions]="albumActions"
+		[actionsHeader]="rowActionsHeader"
+		[sort]="sortColumn()"
+		[order]="sortOrder()"
+		(sortChange)="onSortChange($event)"
+	>
+		<admin-table-column header="Název alba" sort="name" [primary]="true" cellClass="albums-name-column" headerClass="align-middle albums-name-column">
+			<ng-container *adminCell="let album">{{ album.name }}</ng-container>
+		</admin-table-column>
 
-			<admin-table-column header="Datum" sort="dateFrom" cellClass="date albums-date-column" headerClass="align-middle albums-date-column">
-				<ng-container *adminCell="let album">
-					{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }}
-				</ng-container>
-			</admin-table-column>
+		<admin-table-column header="Datum" sort="dateFrom" cellClass="date albums-date-column" headerClass="align-middle albums-date-column">
+			<ng-container *adminCell="let album">
+				{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }}
+			</ng-container>
+		</admin-table-column>
 
-			<admin-table-column header="Stav" sort="status" cellClass="albums-status-column" headerClass="align-middle albums-status-column">
-				<ng-container *adminCell="let album">
-					<span class="bo-pill" [class.bo-pill-green]="album.status === 'public'">
-						{{ album | album: "status" }}
-					</span>
-				</ng-container>
-			</admin-table-column>
+		<!-- Stav keeps its column position in the desktop table, but is flagged [right] so it
+		     renders on the right of each item in the mobile list. -->
+		<admin-table-column header="Stav" sort="status" [right]="true" cellClass="albums-status-column" headerClass="align-middle albums-status-column">
+			<ng-container *adminCell="let album">
+				<span class="bo-pill" [class.bo-pill-green]="album.status === 'public'">
+					{{ album | album: "status" }}
+				</span>
+			</ng-container>
+		</admin-table-column>
 
-			<admin-table-column header="Publikováno" sort="datePublished" cellClass="albums-published-column" headerClass="align-middle albums-published-column">
-				<ng-container *adminCell="let album">{{ album.datePublished | date: "d. M. y" }}</ng-container>
-			</admin-table-column>
-		</admin-table>
-	}
-
-	@if (view() === 'grid') {
-		<ion-list>
-			@if (albums() === undefined) {
-				@for (item of loadingArray; track $index) {
-					<ion-item>
-						<ion-label><ion-skeleton-text animated></ion-skeleton-text></ion-label>
-					</ion-item>
-				}
-			}
-
-			@for (album of albums(); track album.id) {
-				<ion-item class="clickable" [routerLink]="'' + album.id">
-					<ion-label>
-						<h2>{{ album.name }}</h2>
-						<p>
-							{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }},
-							{{ album | album: "status" }}
-						</p>
-					</ion-label>
-				</ion-item>
-			}
-		</ion-list>
-	}
+		<admin-table-column header="Publikováno" sort="datePublished" cellClass="albums-published-column" headerClass="align-middle albums-published-column">
+			<ng-container *adminCell="let album">{{ album.datePublished | date: "d. M. y" }}</ng-container>
+		</admin-table-column>
+	</admin-table>
 
 	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
 		<ion-infinite-scroll-content></ion-infinite-scroll-content>

@@ -79,8 +79,21 @@ ion-modal.dialog {
 	--min-width: 250px;
 	--max-width: 95vw;
 	--height: fit-content;
+	/* cap the fit-content height so a tall dialog (e.g. the mobile filter sheet) stays on
+	   screen and scrolls inside bo-modal-layout instead of running past the viewport */
+	--max-height: 90vh;
+	--max-height: 90dvh;
 	--border-radius: var(--bo-radius-card);
 	--box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+
+	/* The modal component element (.ion-page) sits in a fit-content wrapper, so its height is
+	   indefinite and percentage bounds inside it resolve to nothing — the same cap has to be
+	   repeated in absolute units to give bo-modal-layout something definite to scroll against. */
+	> .ion-page {
+		min-height: 0;
+		max-height: 90vh;
+		max-height: 90dvh;
+	}
 }
 
 /* search / list dialogs need a bounded height so their scrolling ion-content
@@ -127,4 +140,17 @@ ion-searchbar {
 
 ion-content {
 	--ion-background-color: var(--bo-paper);
+}
+
+/* A disabled ion-button gets `pointer-events: none` on its host, so a boTooltip sitting on it
+   would never see the hover that is supposed to explain *why* it is disabled. Give the host its
+   pointer events back and kill them on the inner native button instead, so the button stays
+   unclickable but the tooltip still fires. */
+ion-button[boTooltip].button-disabled {
+	pointer-events: auto;
+	cursor: default;
+
+	&::part(native) {
+		pointer-events: none;
+	}
 }

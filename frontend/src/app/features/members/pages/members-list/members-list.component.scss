@@ -1,32 +1,5 @@
-// Row-state classes are applied by admin-table (rows live in its view), so pierce
-// encapsulation with ::ng-deep to reach them from this page's stylesheet.
-:host ::ng-deep .member-inactive {
-	color: var(--bo-muted);
-	opacity: 0.65;
-}
-:host ::ng-deep ion-item.member-inactive {
-	--color: var(--bo-muted);
-}
-:host ::ng-deep tr.member-paused {
-	color: var(--bo-muted);
-}
-
-// Highlight leaders and instructors with a light role tint. The table.table +
-// tbody qualifiers are needed to outrank admin-table's zebra striping rule
-// (`table.table tbody tr:nth-child(even)`), which would otherwise grey out
-// every second tinted row.
-:host ::ng-deep table.table tbody tr.member-vedouci {
-	background-color: rgba(var(--ion-color-warning-rgb), 0.1);
-}
-:host ::ng-deep ion-item.member-vedouci {
-	--background: rgba(var(--ion-color-warning-rgb), 0.1);
-}
-:host ::ng-deep table.table tbody tr.member-instruktor {
-	background-color: rgba(var(--ion-color-success-rgb), 0.14);
-}
-:host ::ng-deep ion-item.member-instruktor {
-	--background: rgba(var(--ion-color-success-rgb), 0.14);
-}
+// Row-state styling (`member-inactive`, `member-vedouci`, …) is global — see
+// src/styles/member-rows.scss — so every member list renders it identically.
 
 .members-active-toggle {
 	color: var(--bo-muted);
@@ -77,7 +50,7 @@ ion-select::part(text) {
 		}
 	}
 
-	ion-list {
+	ion-list:not(:first-child) {
 		margin-top: 8px;
 	}
 }

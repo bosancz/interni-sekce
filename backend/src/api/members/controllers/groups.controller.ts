@@ -8,6 +8,7 @@ import {
 	HttpStatus,
 	NotFoundException,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Query,
@@ -58,7 +59,7 @@ export class GroupsController {
 	@Get(":id")
 	@AcLinks(GroupReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(GroupResponse) })
-	async getGroup(@Param("id") id: number, @Req() req: Request) {
+	async getGroup(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
 		const group = await this.groups.getGroup(id);
 		if (!group) throw new NotFoundException();
 
@@ -70,7 +71,7 @@ export class GroupsController {
 	@Patch(":id")
 	@AcLinks(GroupEditPermission)
 	@ApiResponse({ status: HttpStatus.OK })
-	async updateGroup(@Param("id") id: number, @Req() req: Request, @Body() body: UpdateGroupBody) {
+	async updateGroup(@Param("id", ParseIntPipe) id: number, @Req() req: Request, @Body() body: UpdateGroupBody) {
 		const group = await this.groups.getGroup(id);
 		if (!group) throw new NotFoundException();
 
@@ -81,7 +82,7 @@ export class GroupsController {
 
 	@Delete(":id")
 	@AcLinks(GroupDeletePermission)
-	async deleteGroup(@Param("id") id: number, @Req() req: Request): Promise<void> {
+	async deleteGroup(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
 		const group = await this.groups.getGroup(id);
 		if (!group) throw new NotFoundException();
 
@@ -94,7 +95,7 @@ export class GroupsController {
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@AcLinks(GroupRestorePermission)
 	@ApiResponse({ status: HttpStatus.NO_CONTENT })
-	async restoreGroup(@Param("id") id: number, @Req() req: Request): Promise<void> {
+	async restoreGroup(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
 		const group = await this.groups.getGroup(id, { withDeleted: true });
 		if (!group) throw new NotFoundException();
 
@@ -105,7 +106,7 @@ export class GroupsController {
 
 	@Delete(":id/permanent")
 	@AcLinks(GroupPermanentDeletePermission)
-	async permanentlyDeleteGroup(@Param("id") id: number, @Req() req: Request): Promise<void> {
+	async permanentlyDeleteGroup(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
 		const group = await this.groups.getGroup(id, { withDeleted: true });
 		if (!group) throw new NotFoundException();
 

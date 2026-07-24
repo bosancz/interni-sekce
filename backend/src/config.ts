@@ -110,11 +110,25 @@ const photos = {
 	},
 };
 
+/**
+ * Google.
+ *
+ * The whole Google setup runs off a single mounted service-account key file (default
+ * `keys/google.json`), exactly like the old server: it is used to send mail through the
+ * Gmail API, and login only *verifies* the token the frontend obtains, which needs no
+ * client secret and no code exchange. So there is deliberately no GOOGLE_CLIENT_SECRET.
+ *
+ * `clientId` is the public "Web application" OAuth client id. It is not a secret (it ships
+ * in the frontend and is delivered to it via the API), so it carries a sensible default and
+ * is used only to check that login tokens were issued for this app. Override with
+ * GOOGLE_CLIENT_ID if the deployment uses a different Google Cloud OAuth client.
+ */
+const GOOGLE_CLIENT_ID = "249555539983-j8rvff7bovgnecsmjffe0a3dj55j33hh.apps.googleusercontent.com";
+
 const google = {
 	keyFile: path.join(fs.keysDir, process.env["GOOGLE_KEY_FILE"] ?? "google.json"),
 	impersonate: process.env["GOOGLE_IMPERSONATE"] ?? "interni@bosan.cz",
-	clientId: process.env["GOOGLE_CLIENT_ID"],
-	clientSecret: process.env["GOOGLE_CLIENT_SECRET"],
+	clientId: process.env["GOOGLE_CLIENT_ID"] ?? GOOGLE_CLIENT_ID,
 };
 
 const mapy = {

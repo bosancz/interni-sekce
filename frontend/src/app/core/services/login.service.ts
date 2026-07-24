@@ -2,6 +2,7 @@ import { EventEmitter, Injectable } from "@angular/core";
 
 import { ApiService } from "src/app/core/services/api.service";
 import { GoogleService } from "src/app/core/services/google.service";
+import { Logger } from "src/logger";
 import { ToastService } from "./toast.service";
 import { UserService } from "./user.service";
 
@@ -29,6 +30,8 @@ export class LoginError extends Error {
 	providedIn: "root",
 })
 export class LoginService {
+	private readonly logger = new Logger(LoginService.name);
+
 	onLogin: EventEmitter<void> = new EventEmitter();
 	onLogout: EventEmitter<void> = new EventEmitter();
 
@@ -78,6 +81,9 @@ export class LoginService {
 			// load user
 			await this.userService.loadUser();
 		} catch (err) {
+			// Keep the real cause visible in the console — the UI only shows a generic
+			// message, which previously made Google login failures impossible to diagnose.
+			this.logger.error("Google login failed", err);
 			throw new LoginError("googleFailed", err);
 		}
 	}

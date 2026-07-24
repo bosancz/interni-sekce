@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseIntPipe, Patch, Post, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
@@ -20,7 +20,7 @@ export class EventsExpensesController {
 	@Get("")
 	@AcLinks(EventExpensesListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(EventExpenseResponse), isArray: true })
-	async listEventExpenses(@Req() req: Request, @Param("eventId") eventId: number): Promise<EventExpenseResponse[]> {
+	async listEventExpenses(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<EventExpenseResponse[]> {
 		const event = await this.events.getEvent(eventId);
 		if (!event) throw new NotFoundException();
 
@@ -37,7 +37,7 @@ export class EventsExpensesController {
 	@ApiResponse({ status: 201, type: WithLinks(EventExpenseResponse) })
 	async addEventExpense(
 		@Req() req: Request,
-		@Param("eventId") eventId: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
 		@Body() body: EventExpenseCreateBody,
 	) {
 		const event = await this.events.getEvent(eventId);
@@ -53,8 +53,8 @@ export class EventsExpensesController {
 	@ApiResponse({ status: 204 })
 	async updateEventExpense(
 		@Req() req: Request,
-		@Param("eventId") eventId: number,
-		@Param("expenseId") expenseId: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@Param("expenseId", ParseIntPipe) expenseId: number,
 		@Body() body: EventExpenseUpdateBody,
 	) {
 		const eventExpense = await this.events.getEventExpense(eventId, expenseId);
@@ -72,8 +72,8 @@ export class EventsExpensesController {
 	@ApiResponse({ status: 204 })
 	async deleteEventExpense(
 		@Req() req: Request,
-		@Param("eventId") eventId: number,
-		@Param("expenseId") expenseId: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@Param("expenseId", ParseIntPipe) expenseId: number,
 	) {
 		const eventExpense = await this.events.getEventExpense(eventId, expenseId);
 		if (!eventExpense) throw new NotFoundException();

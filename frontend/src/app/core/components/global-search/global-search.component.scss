@@ -6,6 +6,7 @@
 	flex-grow: 1;
 	max-width: 500px;
 	margin: 0 auto;
+	// anchor for consumers that float the results over the page (the header dropdown)
 	position: relative;
 	ion-searchbar {
 		--box-shadow: none;
@@ -14,19 +15,6 @@
 }
 
 .search-results {
-	position: absolute;
-	top: 100%;
-	left: 0;
-	right: 0;
-	z-index: 1000;
-	background: var(--ion-background-color, #fff);
-	color: var(--ion-text-color, #000);
-	border-radius: 8px;
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-	max-height: 70vh;
-	overflow-y: auto;
-	margin-top: 4px;
-
 	ion-list {
 		background: transparent;
 		padding: 0;
@@ -44,4 +32,26 @@
 	padding: 1rem;
 	text-align: center;
 	color: var(--ion-color-medium);
+}
+
+// Section title with its "open the full list" button pushed to the right. The button's own
+// sizing is em-based, so shrinking the font here scales it down to fit.
+.search-section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin: 1rem 0 0.5rem;
+
+	&:first-child {
+		margin-top: 0;
+	}
+
+	h3 {
+		margin: 0;
+	}
+
+	bo-button {
+		font-size: 0.8rem;
+	}
 }

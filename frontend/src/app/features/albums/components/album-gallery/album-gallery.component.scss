@@ -1,0 +1,44 @@
+.gallery-header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin-top: 2rem;
+
+	h2 {
+		margin: 0;
+		min-width: 0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.actions {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		flex-shrink: 0;
+		align-items: center;
+	}
+}
+
+.buttons {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+}
+
+// without a label the buttons are icons only, so drop the padding the label took
+@media (max-width: 991.98px) {
+	.gallery-header .actions ion-button {
+		--padding-start: 6px;
+		--padding-end: 6px;
+
+		ion-icon {
+			margin-inline-end: 0;
+		}
+	}
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from "@angular/core";
+import { Component, computed, OnInit, signal } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { AlertController, NavController } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -41,21 +41,30 @@ export class GroupViewComponent implements OnInit {
 
 	view = signal<"info" | "clenove">("clenove");
 
-	actions: Action[] = [
-		{
-			text: "Upravit",
-			icon: "create",
-			pinned: true,
-			handler: () => this.navController.navigateForward(`/databaze/oddily/${this.group()?.id}/upravit`),
-		},
-		{
-			text: "Smazat",
-			icon: "trash",
-			color: "danger",
+	// actions that do not apply to the group are hidden,
+	// actions that apply but the user is not permitted to use are shown disabled
+	actions = computed<Action[]>(() => {
+		const links = this.group()?._links;
 
-			handler: () => this.deleteGroup(),
-		},
-	];
+		return [
+			{
+				text: "Upravit",
+				icon: "create",
+				pinned: true,
+				hidden: !links?.updateGroup.applicable,
+				disabled: !links?.updateGroup.allowed,
+				handler: () => this.navController.navigateForward(`/databaze/oddily/${this.group()?.id}/upravit`),
+			},
+			{
+				text: "Smazat",
+				icon: "trash",
+				color: "danger",
+				hidden: !links?.deleteGroup.applicable,
+				disabled: !links?.deleteGroup.allowed,
+				handler: () => this.deleteGroup(),
+			},
+		];
+	});
 
 	constructor(
 		private route: ActivatedRoute,

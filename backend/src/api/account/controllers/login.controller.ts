@@ -9,7 +9,6 @@ import {
 	Query,
 	Req,
 	Res,
-	UnauthorizedException,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
@@ -68,11 +67,10 @@ export class LoginController {
 		@Res({ passthrough: true }) res: Response,
 		@Body() body: LoginGoogleBody,
 	) {
-		const tokenInfo = await this.googleService.validateOauthToken(body.token);
-		if (!tokenInfo?.email) throw new UnauthorizedException("Email missing in Google user account.");
+		const { email } = await this.googleService.validateAccessToken(body.token);
 
-		const user = await this.users.findUser({ email: tokenInfo.email });
-		if (!user) throw new NotFoundException(`User with email ${tokenInfo.email} not found.`);
+		const user = await this.users.findUser({ email });
+		if (!user) throw new NotFoundException(`User with email ${email} not found.`);
 
 		LoginGooglePermission.canOrThrow(req);
 
@@ -128,7 +126,19 @@ export class LoginController {
 	}
 
 	@Post("logout")
-	logout(@Res({ passthrough: true }) res: Response) {
+	async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+		// logging out of an impersonated session returns to the account that started it
+		const impersonatorId = req.user?.impersonatorId;
+
+		if (impersonatorId) {
+			const impersonator = await this.users.findUser({ id: impersonatorId });
+
+			if (impersonator) {
+				await this.setLoginToken(res, impersonator);
+				return;
+			}
+		}
+
 		this.tokenService.clearToken(res);
 	}
 

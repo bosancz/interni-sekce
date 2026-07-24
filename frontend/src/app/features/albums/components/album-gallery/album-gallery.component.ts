@@ -2,18 +2,14 @@ import { Component, input, output } from "@angular/core";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
-	calendarOutline,
-	eyeOutline,
-	checkboxOutline,
-	imageOutline,
 	closeOutline,
 	cloudUploadOutline,
-	save,
+	createOutline,
+	eyeOutline,
+	imageOutline,
 	swapVerticalOutline,
-	textOutline,
 	trashOutline,
 } from "ionicons/icons";
-import { PlatformService } from "src/app/core/services/platform.service";
 import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
 import { SDK } from "src/sdk";
 import { PhotoListComponent } from "../photo-list/photo-list.component";
@@ -33,8 +29,7 @@ export class AlbumGalleryComponent {
 
 	upload = output<void>();
 	viewChange = output<"gallery" | "manage">();
-	sortDate = output<void>();
-	sortName = output<void>();
+	sort = output<void>();
 	selectingStart = output<void>();
 	selectingCancel = output<void>();
 	deleteSelected = output<void>();
@@ -44,16 +39,13 @@ export class AlbumGalleryComponent {
 	listClick = output<CustomEvent<SDK.PhotoResponseWithLinks | undefined>>();
 	longPress = output<SDK.PhotoResponseWithLinks>();
 
-	constructor(public platformService: PlatformService) {
+	constructor() {
 		addIcons({
 			cloudUploadOutline,
 			trashOutline,
-			save,
 			swapVerticalOutline,
-			checkboxOutline,
 			closeOutline,
-			calendarOutline,
-			textOutline,
+			createOutline,
 			eyeOutline,
 			imageOutline,
 		});

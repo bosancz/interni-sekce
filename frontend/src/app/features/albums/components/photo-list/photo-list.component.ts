@@ -12,6 +12,7 @@ import {
 	IonSkeletonText,
 } from "@ionic/angular/standalone";
 import { ItemReorderEventDetail } from "@ionic/core";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 
@@ -32,6 +33,7 @@ import { SDK } from "src/sdk";
 		IonSkeletonText,
 		IonRippleEffect,
 		PhotoImageUrlPipe,
+		TooltipDirective,
 	],
 })
 export class PhotoListComponent implements OnInit {

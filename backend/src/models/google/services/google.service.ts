@@ -1,5 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { TokenPayload } from "google-auth-library";
 import { google } from "googleapis";
 import { Config } from "src/config";
 
@@ -8,12 +7,6 @@ export class GoogleService {
 	private readonly logger = new Logger(GoogleService.name);
 
 	readonly gmail = google.gmail({ version: "v1" });
-
-	readonly oauth = new google.auth.OAuth2({
-		clientId: this.config.google.clientId,
-		clientSecret: this.config.google.clientSecret,
-		redirectUri: "postmessage",
-	});
 
 	constructor(private readonly config: Config) {
 		const keyFilePath = this.config.google.keyFile;
@@ -31,19 +24,29 @@ export class GoogleService {
 		google.options({ auth });
 	}
 
-	async validateOauthToken(code: string): Promise<TokenPayload> {
-		const tokens = await this.oauth.getToken(code).then((res) => res.tokens);
-		if (!tokens.id_token) throw new Error("No id_token in Google response");
+	/**
+	 * Validate the Google OAuth access token the frontend obtained and return the signed-in
+	 * user's email.
+	 *
+	 * Reads the profile straight from Google's UserInfo endpoint with the access token as a
+	 * bearer: a valid token yields the email, an invalid/expired one yields 401. No client
+	 * secret and no code exchange — the single service-account key file (used for mail) is
+	 * enough for the whole Google setup, matching the old server.
+	 */
+	async validateAccessToken(accessToken: string): Promise<{ email: string }> {
+		const res = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+			headers: { Authorization: `Bearer ${accessToken}` },
+		});
 
-		const payload = await this.oauth
-			.verifyIdToken({
-				idToken: tokens.id_token,
-				audience: this.config.google.clientId,
-			})
-			.then((res) => res.getPayload());
+		if (!res.ok) {
+			const body = await res.text().catch(() => "");
+			this.logger.warn(`Google rejected the access token (HTTP ${res.status}): ${body}`);
+			throw new Error(`Google rejected the access token (HTTP ${res.status})`);
+		}
 
-		if (!payload) throw new Error("No payload in Google id token");
+		const info = (await res.json()) as { email?: string; email_verified?: boolean };
+		if (!info.email) throw new Error("Google account did not expose an email address");
 
-		return payload;
+		return { email: info.email };
 	}
 }

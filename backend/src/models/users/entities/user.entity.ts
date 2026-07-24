@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Member } from "src/models/members/entities/member.entity";
-import { Column, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export enum UserRoles {
 	"admin" = "admin",
@@ -8,8 +8,9 @@ export enum UserRoles {
 	"program" = "program",
 }
 
+// No @Index on login — @Column({ unique: true }) below already enforces it (constraint
+// UQ_2d443082eccd5198f95f2a36e2c); a second unique index would only duplicate it.
 @Entity("users")
-@Index(["login"], { unique: true })
 export class User {
 	@PrimaryGeneratedColumn()
 	id!: number;

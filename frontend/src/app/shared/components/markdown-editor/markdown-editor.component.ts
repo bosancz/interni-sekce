@@ -1,6 +1,7 @@
 import { Component, input, model, signal, viewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { IonButton, IonSegment, IonSegmentButton, IonTextarea } from "@ionic/angular/standalone";
+import { TooltipDirective } from "../../directives/tooltip.directive";
 import { MarkdownPipe } from "../../pipes/markdown.pipe";
 
 // TODO: use the new `implements FormValueControl<string>`
@@ -10,7 +11,7 @@ import { MarkdownPipe } from "../../pipes/markdown.pipe";
 	selector: "bo-markdown-editor",
 	templateUrl: "./markdown-editor.component.html",
 	styleUrl: "./markdown-editor.component.scss",
-	imports: [FormsModule, IonButton, IonTextarea, IonSegment, IonSegmentButton, MarkdownPipe],
+	imports: [FormsModule, IonButton, IonTextarea, IonSegment, IonSegmentButton, MarkdownPipe, TooltipDirective],
 })
 export class MarkdownEditorComponent {
 	placeholder = input<string | undefined>();

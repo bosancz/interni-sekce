@@ -7,6 +7,7 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 	Param,
+	ParseIntPipe,
 	Post,
 	Put,
 	Query,
@@ -64,13 +65,16 @@ export class EventsRegistrationsController {
 			throw new InternalServerErrorException("Failed to save registration");
 		}
 
+		// update(), not save(): the events loaded here carry a hand-attached `attendees` array whose
+		// `event` relation is not populated, and save() cascades that into events_attendees, nulling
+		// its event_id. Only the flag needs writing anyway.
 		event.hasRegistration = true;
-		await this.eventsRepository.save(event);
+		await this.eventsRepository.update(event.id, { hasRegistration: true });
 	}
 
 	@Get(":id/registration")
 	@AcLinks(EventRegistrationReadPermission)
-	async getEventRegistration(@Req() req: Request, @Param("id") id: number, @Res() res: Response): Promise<void> {
+	async getEventRegistration(@Req() req: Request, @Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<void> {
 		const event = await this.events.getEvent(id);
 		if (!event) throw new NotFoundException();
 		EventRegistrationReadPermission.canOrThrow(req, event);
@@ -115,7 +119,7 @@ export class EventsRegistrationsController {
 	})
 	async saveEventRegistration(
 		@Req() req: Request,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@UploadedFile() registration: Express.Multer.File): Promise<void> {
 			const event = await this.events.getEvent(id);
 			if (!event) throw new NotFoundException();
@@ -136,7 +140,7 @@ export class EventsRegistrationsController {
 	@Get(":id/registration/templates")
 	@AcLinks(EventRegistrationGeneratePermission)
 	@ApiResponse({ status: 200, type: [RegistrationTemplateResponse] })
-	async getEventRegistrationTemplates(@Req() req: Request, @Param("id") id: number): Promise<RegistrationTemplateResponse[]> {
+	async getEventRegistrationTemplates(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<RegistrationTemplateResponse[]> {
 		const event = await this.events.getEvent(id);
 		if (!event) throw new NotFoundException();
 
@@ -154,7 +158,7 @@ export class EventsRegistrationsController {
 	@ApiQuery({ name: "note", required: false })
 	async generateEventRegistration(
 		@Req() req: Request,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Query("template") template: string,
 		@Query("color") color: string,
 		@Query("note") note?: string,
@@ -174,7 +178,7 @@ export class EventsRegistrationsController {
 
 	@Delete(":id/registration")
 	@AcLinks(EventRegistrationDeletePermission)
-	async deleteEventRegistration(@Req() req: Request, @Param("id") id: number): Promise<void> {
+	async deleteEventRegistration(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
 		const event = await this.events.getEvent(id);
 		if (!event) throw new NotFoundException();
 		EventRegistrationDeletePermission.canOrThrow(req, event);
@@ -182,7 +186,7 @@ export class EventsRegistrationsController {
 						
 		await this.fileService.deleteFilesByPrefix(registrationFolder, "prihlaska")
 		event.hasRegistration = false;
-		await this.eventsRepository.save(event);
+		await this.eventsRepository.update(event.id, { hasRegistration: false });
 
 	}
 }

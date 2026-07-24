@@ -5,22 +5,8 @@
 	actionsHeader="Album"
 />
 
-@if (selecting()) {
-	<div class="selection-bar d-lg-none">
-		<ion-button (click)="deleteSelected()" [disabled]="!selectedPhotos().length" fill="clear" color="danger">
-			<ion-icon slot="start" name="trash-outline"></ion-icon> Smazat ({{ selectedPhotos().length }})
-		</ion-button>
-
-		<ion-button (click)="cancelSelecting()" fill="clear">
-			<ion-icon slot="start" name="close-outline"></ion-icon> Zrušit
-		</ion-button>
-	</div>
-}
-
 <bo-page-content [padding]="true">
 	<bo-album-info [album]="album()" (update)="updateAlbum($event)" />
-
-	<h2>Galerie</h2>
 
 	<bo-album-gallery
 		[photos]="photos()"
@@ -29,8 +15,7 @@
 		[selectedPhotos]="selectedPhotos()"
 		(upload)="uploadPhotos()"
 		(viewChange)="photosView.set($event)"
-		(sortDate)="sortByDate()"
-		(sortName)="sortByName()"
+		(sort)="sortPhotos()"
 		(selectingStart)="startSelecting()"
 		(selectingCancel)="cancelSelecting()"
 		(deleteSelected)="deleteSelected()"

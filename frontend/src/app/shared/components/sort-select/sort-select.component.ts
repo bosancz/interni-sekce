@@ -1,15 +1,16 @@
 import { Component, computed, input, output } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import {
+	IonButton,
+	IonIcon,
 	IonItem,
 	IonItemDivider,
-	IonLabel,
 	IonList,
-	IonSegment,
-	IonSegmentButton,
 	IonSelect,
 	IonSelectOption,
 } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { arrowDown, arrowUp } from "ionicons/icons";
 import { AdminTableSort, AdminTableSortOrder } from "../admin-table/admin-table.component";
 
 export interface SortOption {
@@ -19,10 +20,10 @@ export interface SortOption {
 }
 
 /**
- * Mobile-friendly sort control for the filter modal: a column dropdown plus an
- * ascending/descending segment. Mirrors the desktop `admin-table` header sorting,
- * emitting the same `sortChange` shape so pages reuse their existing handler.
- * Selecting "Výchozí" emits an empty key to fall back to the default order.
+ * Mobile-friendly sort control for the filter modal: a column dropdown with an
+ * inline ascending/descending toggle. Mirrors the desktop `admin-table` header
+ * sorting, emitting the same `sortChange` shape so pages reuse their existing
+ * handler. Selecting "Výchozí" emits an empty key to fall back to the default order.
  *
  * This control stays single-column: the `[sort]`/`[order]` inputs may arrive with
  * commas (a desktop multi-key URL opened on a phone), so it shows only the *first*
@@ -37,9 +38,8 @@ export interface SortOption {
 		IonList,
 		IonItem,
 		IonItemDivider,
-		IonLabel,
-		IonSegment,
-		IonSegmentButton,
+		IonButton,
+		IonIcon,
 		IonSelect,
 		IonSelectOption,
 	],
@@ -64,6 +64,10 @@ export class SortSelectComponent {
 		return first === "DESC" ? "DESC" : "ASC";
 	});
 
+	constructor() {
+		addIcons({ arrowUp, arrowDown });
+	}
+
 	selectColumn(key: string | null) {
 		if (!key) {
 			this.sortChange.emit({ sort: "", order: "ASC" });
@@ -72,9 +76,9 @@ export class SortSelectComponent {
 		this.sortChange.emit({ sort: key, order: this.primaryOrder() });
 	}
 
-	selectOrder(order: AdminTableSortOrder) {
+	toggleOrder() {
 		const key = this.primaryKey();
 		if (!key) return;
-		this.sortChange.emit({ sort: key, order });
+		this.sortChange.emit({ sort: key, order: this.primaryOrder() === "ASC" ? "DESC" : "ASC" });
 	}
 }

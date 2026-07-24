@@ -1,5 +1,5 @@
 import { Event } from "src/models/events/entities/event.entity";
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Photo } from "./photo.entity";
 
 export enum AlbumStatus {
@@ -31,4 +31,6 @@ export class Album {
 	@Column({ type: "timestamp with time zone", nullable: true }) datePublished!: Date | string | null;
 	@Column({ type: "date" }) dateFrom!: string | null;
 	@Column({ type: "date" }) dateTill!: string | null;
+
+	@DeleteDateColumn() deletedAt?: Date | null;
 }

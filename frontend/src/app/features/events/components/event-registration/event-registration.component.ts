@@ -10,6 +10,7 @@ import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { MarkdownEditorModalComponent } from "src/app/shared/components/markdown-editor-modal/markdown-editor-modal.component";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
 import { EventsService } from "../../services/events.service";
 
@@ -18,7 +19,7 @@ import { EventsService } from "../../services/events.service";
 	selector: "bo-event-registration",
 	templateUrl: "./event-registration.component.html",
 	styleUrls: ["./event-registration.component.scss"],
-	imports: [CommonModule, FormsModule, IonButton, IonIcon],
+	imports: [CommonModule, FormsModule, IonButton, IonIcon, TooltipDirective],
 })
 export class EventRegistrationComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>();
@@ -81,6 +82,13 @@ export class EventRegistrationComponent {
 	async generateRegistration() {
 		const event = this.event();
 		if (!event) return;
+
+		// The generated form is built around the leader's contacts — say so up front instead of
+		// walking the user through the color/template/note dialogs only to fail on the request.
+		if (!event.leaders?.length) {
+			this.toastService.toast("Akce nemá vedoucího, přihlášku nelze vygenerovat.");
+			return;
+		}
 
 		let templates: SDK.RegistrationTemplateResponse[];
 		try {
@@ -181,11 +189,15 @@ export class EventRegistrationComponent {
 		const link = document.createElement("a");
 		link.href = fileUrl;
 		link.target = "_blank";
+		link.rel = "noopener";
 
 		document.body.appendChild(link);
 		link.click();
 
 		document.body.removeChild(link);
-		window.URL.revokeObjectURL(fileUrl);
+
+		// Opening a blob URL in a new tab is async — revoking right away kills it before
+		// the tab fetches it (Chrome then shows ERR_FILE_NOT_FOUND), so release it later.
+		setTimeout(() => window.URL.revokeObjectURL(fileUrl), 60_000);
 	}
 }

@@ -1,23 +1,9 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute, Router } from "@angular/router";
-import { AlertController, IonButton, IonIcon, ViewWillLeave } from "@ionic/angular/standalone";
+import { ActionSheetController, AlertController, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import {
-	calendarOutline,
-	closeOutline,
-	cloudUploadOutline,
-	createOutline,
-	eyeOffOutline,
-	eyeOutline,
-	openOutline,
-	save,
-	swapVerticalOutline,
-	textOutline,
-	trash,
-	trashOutline,
-} from "ionicons/icons";
+import { calendarOutline, eyeOffOutline, eyeOutline, openOutline, textOutline, trash } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
@@ -35,16 +21,8 @@ import { PhotosUploadComponent } from "../../components/photos-upload/photos-upl
 @Component({
 	selector: "bo-albums-view-info",
 	templateUrl: "./albums-view-info.component.html",
-	styleUrls: ["./albums-view-info.component.scss"],
 
-	imports: [
-		PageHeaderComponent,
-		PageContentComponent,
-		AlbumInfoComponent,
-		AlbumGalleryComponent,
-		IonButton,
-		IonIcon,
-	],
+	imports: [PageHeaderComponent, PageContentComponent, AlbumInfoComponent, AlbumGalleryComponent],
 })
 export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
@@ -57,19 +35,17 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 	selectedPhotos = signal<SDK.PhotoResponseWithLinks[]>([]);
 
-	private isDesktop = toSignal(this.platformService.isLg, { initialValue: this.platformService.isLg.value });
-
+	// the gallery controls live inline next to the Galerie heading on every size,
+	// so the header menu only ever holds the album actions
 	headerActions = computed<Action[]>(() => {
 		const album = this.album();
 		if (!album) return [];
-		// on desktop the gallery controls live inline above the gallery; on mobile
-		// they are folded into the header actions menu alongside the album actions
-		if (this.isDesktop()) return this.getAlbumActions(album);
-		return [...this.getAlbumActions(album), ...this.getGalleryActions()];
+		return this.getAlbumActions(album);
 	});
 
 	alert?: HTMLIonAlertElement;
 	photosModal?: HTMLIonModalElement;
+	sortSheet?: HTMLIonActionSheetElement;
 
 	constructor(
 		private route: ActivatedRoute,
@@ -77,33 +53,31 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		private api: ApiService,
 		private toastService: ToastService,
 		private alertController: AlertController,
+		private actionSheetController: ActionSheetController,
 		private modalService: ModalService,
-		public platformService: PlatformService,
+		private platformService: PlatformService,
 	) {
 		addIcons({
-			cloudUploadOutline,
 			openOutline,
 			eyeOutline,
 			eyeOffOutline,
 			trash,
-			trashOutline,
-			createOutline,
-			save,
-			swapVerticalOutline,
-			closeOutline,
 			calendarOutline,
 			textOutline,
 		});
 	}
 
 	ngOnInit(): void {
-		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {
-			if (this.album()?.id !== params["album"]) this.loadAlbum(params["album"]);
+		this.route.params.pipe(untilDestroyed(this)).subscribe(async (params) => {
+			if (this.album()?.id === Number(params["album"])) return;
+			await this.loadAlbum(params["album"]);
+			this.openPhotoFromUrl();
 		});
 	}
 
 	ionViewWillLeave() {
 		this.alert?.dismiss();
+		this.sortSheet?.dismiss();
 		this.photosModal?.dismiss();
 	}
 
@@ -127,12 +101,17 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 		const photos = await this.api.PhotoGalleryApi.getAlbumPhotos(albumId).then((res) => res.data);
 		this.photos.set(photos);
+	}
+
+	// deep link: only on the first load of an album, reloads after edits must not reopen the modal
+	private openPhotoFromUrl() {
+		if (this.photosModal) return;
 
 		const photoId = this.route.snapshot.queryParams["photo"];
-		if (photoId && !this.photosModal) {
-			const photo = photos?.find((item) => String(item.id) === String(photoId));
-			if (photo) this.openPhoto(photo);
-		}
+		if (!photoId) return;
+
+		const photo = this.photos()?.find((item) => String(item.id) === String(photoId));
+		if (photo) this.openPhoto(photo);
 	}
 
 	onGalleryClick(photo: SDK.PhotoResponseWithLinks) {
@@ -151,17 +130,19 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		const photos = this.photos();
 		const originalCount = photos?.length;
 
-		// reflect the open photo in the URL for deep-linking, without adding a
-		// history entry — back-to-close is provided by ModalService
-		this.router.navigate([], {
-			queryParams: { photo: photo.id },
+		// the open photo is reflected in the URL for deep-linking, but on the synthetic
+		// history entry ModalService pushes — so the modal writes it once it is presented.
+		// The entry we come back to on close must not carry it, or closing (which is a
+		// history.back()) would restore the URL of the photo just closed.
+		await this.router.navigate([], {
+			queryParams: { photo: null },
 			queryParamsHandling: "merge",
 			replaceUrl: true,
 		});
 
 		this.photosModal = await this.modalService.modal(
 			PhotosEditComponent,
-			{ photos },
+			{ photos, startPhoto: photo },
 			{ backdropDismiss: false, cssClass: "ion-modal-lg" },
 		);
 
@@ -183,14 +164,69 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		await this.persistOrder(photos);
 	}
 
-	async sortByDate() {
-		const photos = [...(this.photos() ?? [])].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
-		this.photos.set(photos);
-		await this.persistOrder(photos);
+	// picking an option is itself the confirmation that the custom order can go
+	async sortPhotos() {
+		const options = [
+			{
+				value: "date",
+				text: "Podle data",
+				icon: "calendar-outline",
+				compare: (a: SDK.PhotoResponseWithLinks, b: SDK.PhotoResponseWithLinks) =>
+					a.timestamp.localeCompare(b.timestamp),
+			},
+			{
+				value: "name",
+				text: "Podle jména",
+				icon: "text-outline",
+				compare: (a: SDK.PhotoResponseWithLinks, b: SDK.PhotoResponseWithLinks) => a.name.localeCompare(b.name),
+			},
+		];
+
+		// the action sheet slides up from the bottom edge, which only reads well on a phone
+		if (this.platformService.isLg.value) {
+			this.alert = await this.alertController.create({
+				header: "Seřadit fotky",
+				message: "Vlastní pořadí fotek se ztratí.",
+				inputs: options.map((option, index) => ({
+					type: "radio" as const,
+					label: option.text,
+					value: option.value,
+					checked: index === 0,
+				})),
+				buttons: [
+					{ text: "Zrušit", role: "cancel" },
+					{
+						text: "Seřadit",
+						handler: (value: string) => {
+							const option = options.find((item) => item.value === value);
+							if (option) this.applySort(option.compare);
+						},
+					},
+				],
+			});
+
+			this.alert.present();
+			return;
+		}
+
+		this.sortSheet = await this.actionSheetController.create({
+			header: "Seřadit fotky",
+			subHeader: "Vlastní pořadí fotek se ztratí.",
+			buttons: [
+				...options.map((option) => ({
+					text: option.text,
+					icon: option.icon,
+					handler: () => this.applySort(option.compare),
+				})),
+				{ text: "Zrušit", role: "cancel" },
+			],
+		});
+
+		this.sortSheet.present();
 	}
 
-	async sortByName() {
-		const photos = [...(this.photos() ?? [])].sort((a, b) => a.name.localeCompare(b.name));
+	private async applySort(compare: (a: SDK.PhotoResponseWithLinks, b: SDK.PhotoResponseWithLinks) => number) {
+		const photos = [...(this.photos() ?? [])].sort(compare);
 		this.photos.set(photos);
 		await this.persistOrder(photos);
 	}
@@ -319,11 +355,14 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	}
 
 	private getAlbumActions(album: SDK.AlbumResponseWithLinks): Action[] {
+		// actions that do not apply to the album in its current state are hidden,
+		// actions that apply but the user is not permitted to use are shown disabled
 		return [
 			{
 				text: "Publikovat",
 				icon: "eye-outline",
-				hidden: album.status !== "draft",
+				hidden: !album._links.publishAlbum.applicable,
+				disabled: !album._links.publishAlbum.allowed,
 				handler: () => this.publish(),
 			},
 			{
@@ -336,7 +375,8 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 			{
 				text: "Zrušit publikaci",
 				icon: "eye-off-outline",
-				hidden: album.status !== "public",
+				hidden: !album._links.unpublishAlbum.applicable,
+				disabled: !album._links.unpublishAlbum.allowed,
 				handler: () => this.unpublish(),
 			},
 			{
@@ -344,49 +384,9 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 				role: "destructive",
 				icon: "trash",
 				color: "danger",
+				hidden: !album._links.deleteAlbum.applicable,
+				disabled: !album._links.deleteAlbum.allowed,
 				handler: () => this.delete(),
-			},
-		];
-	}
-
-	// photo edit options shown in the header on mobile instead of the inline buttons row
-	private getGalleryActions(): Action[] {
-		const manage = this.photosView() === "manage";
-
-		return [
-			{
-				text: "Nahrát fotky",
-				icon: "cloud-upload-outline",
-				// the empty state shows its own upload button
-				hidden: !this.photos()?.length,
-				handler: () => this.uploadPhotos(),
-			},
-			{
-				text: "Upravit",
-				icon: "create-outline",
-				hidden: manage || !this.photos()?.length,
-				handler: () => this.photosView.set("manage"),
-			},
-			{
-				text: "Prohlížet",
-				icon: "eye-outline",
-				hidden: !manage,
-				handler: () => {
-					this.photosView.set("gallery");
-					this.cancelSelecting();
-				},
-			},
-			{
-				text: "Podle data",
-				icon: "calendar-outline",
-				hidden: !manage,
-				handler: () => this.sortByDate(),
-			},
-			{
-				text: "Podle jména",
-				icon: "text-outline",
-				hidden: !manage,
-				handler: () => this.sortByName(),
 			},
 		];
 	}

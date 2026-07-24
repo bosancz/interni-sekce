@@ -46,6 +46,7 @@ export class TokenService {
 			memberId: user.memberId ?? undefined,
 			memberActive: user.member?.active ?? false,
 			roles: user.roles ?? [],
+			impersonatorId: payload.impersonatorId,
 		};
 
 		await this.renewTokenIfNeeded(res, payload);
@@ -72,9 +73,12 @@ export class TokenService {
 		}
 	}
 
-	/** Issue a fresh session cookie identifying the given user. */
-	async setToken(res: Response, userId: number) {
-		const token = await this.createToken({ userId });
+	/**
+	 * Issue a fresh session cookie identifying the given user. `impersonatorId` marks
+	 * the session as an impersonation of that user and is what logging out returns to.
+	 */
+	async setToken(res: Response, userId: number, impersonatorId?: number) {
+		const token = await this.createToken({ userId, impersonatorId });
 
 		// maxAge makes the cookie survive browser restarts; without it the session ends when the browser closes
 		res.cookie(this.cookieName, token, {
@@ -101,6 +105,6 @@ export class TokenService {
 		const tokenAgeSeconds = Math.floor(Date.now() / 1000) - payload.iat;
 		if (tokenAgeSeconds < this.tokenRenewalAgeSeconds) return;
 
-		await this.setToken(res, payload.userId);
+		await this.setToken(res, payload.userId, payload.impersonatorId);
 	}
 }

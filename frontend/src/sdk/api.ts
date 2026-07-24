@@ -257,6 +257,12 @@ export namespace SDK {
          * @memberof Album
          */
         'dateTill': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Album
+         */
+        'deletedAt'?: string | null;
     }
     
     export const AlbumStatusEnum = {
@@ -375,6 +381,12 @@ export namespace SDK {
         'eventId'?: number | null;
         /**
          * 
+         * @type {string}
+         * @memberof AlbumResponse
+         */
+        'deletedAt'?: string | null;
+        /**
+         * 
          * @type {EventResponseWithLinks}
          * @memberof AlbumResponse
          */
@@ -419,6 +431,18 @@ export namespace SDK {
          * @memberof AlbumResponseLinks
          */
         'deleteAlbum': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
+        'restoreAlbum': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
+        'deleteAlbumPermanent': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -499,6 +523,12 @@ export namespace SDK {
          * @memberof AlbumResponseWithLinks
          */
         'eventId'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof AlbumResponseWithLinks
+         */
+        'deletedAt'?: string | null;
         /**
          * 
          * @type {EventResponseWithLinks}
@@ -4101,6 +4131,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'createAlbum': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listDeletedAlbums': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -8463,6 +8499,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * @export
      */
@@ -8535,6 +8575,14 @@ export namespace SDK {
          */
         year?: Array<number>
     }
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -8694,6 +8742,48 @@ export namespace SDK {
             assertParamExists('deleteAlbum', 'id', id)
             
             const localVarPath = `/api/albums/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async deleteAlbumPermanent(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deleteAlbumPermanent', 'id', id)
+            
+            const localVarPath = `/api/albums/{id}/permanent`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -9046,6 +9136,42 @@ export namespace SDK {
          * @memberof PhotoGalleryApi
          */
         
+        public async listDeletedAlbums(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/albums/deleted`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<AlbumResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
         public async listPhotos(
             options: AxiosRequestConfig = {}
         ) {
@@ -9160,6 +9286,48 @@ export namespace SDK {
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async restoreAlbum(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('restoreAlbum', 'id', id)
+            
+            const localVarPath = `/api/albums/{id}/restore`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
     
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;

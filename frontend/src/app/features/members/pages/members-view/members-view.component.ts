@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from "@angular/core";
+import { Component, computed, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from "@angular/router";
 import {
 	AlertController,
@@ -59,15 +59,32 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 	membershipStates = MembershipStates;
 
-	actions: Action[] = [
-		{
-			text: "Smazat",
-			role: "destructive",
-			icon: "trash",
-			color: "danger",
-			handler: () => this.delete(),
-		},
-	];
+	// actions that do not apply to the member are hidden,
+	// actions that apply but the user is not permitted to use are shown disabled
+	actions = computed<Action[]>(() => {
+		const links = this.member()?._links;
+
+		return [
+			{
+				text: "Smazat",
+				role: "destructive",
+				icon: "trash",
+				color: "danger",
+				hidden: !links?.deleteMember.applicable,
+				disabled: !links?.deleteMember.allowed,
+				handler: () => this.delete(),
+			},
+			{
+				text: "Obnovit",
+				role: "destructive",
+				icon: "arrow-undo-outline",
+				color: "success",
+				hidden: !links?.restoreMember.applicable,
+				disabled: !links?.restoreMember.allowed,
+				handler: () => this.restore(),
+			},
+		];
+	});
 
 	constructor(
 		private api: ApiService,
@@ -154,6 +171,16 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		this.toastService.toast(`Člen ${this.member()!.nickname} smazán.`);
 
 		this.router.navigate(["../"], { relativeTo: this.route, replaceUrl: true });
+	}
+
+	async restore() {
+		const member = this.member();
+		if (!member) return;
+
+		await this.api.MembersApi.restoreMember(member.id);
+		await this.loadMember(member.id);
+
+		this.toastService.toast(`Člen ${member.nickname} obnoven.`);
 	}
 
 	getFullName(member?: SDK.MemberResponseWithLinks | null) {

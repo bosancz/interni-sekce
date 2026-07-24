@@ -8,7 +8,12 @@
 		<ion-icon name="home-sharp" class="me-3"></ion-icon>
 		<ion-label>Bošán</ion-label>
 	</ion-item>
-	<ion-item routerLink="akce" routerLinkActive="active">
+	<ion-item
+		routerLink="/akce"
+		[queryParams]="{ year: 'budouci' }"
+		routerLinkActive="active"
+		[routerLinkActiveOptions]="pathLinkActiveOptions"
+	>
 		<span class="nav-icon nav-icon--akce me-3"></span>
 		<ion-label>Akce</ion-label>
 	</ion-item>
