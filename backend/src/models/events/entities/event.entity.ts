@@ -76,6 +76,12 @@ export class Event {
 	@Column({ type: "boolean", nullable: false, default: false }) hasRegistration!: boolean;
 	@Column({ type: "varchar", nullable: true }) report!: string | null;
 
+	// Legacy Mongo ObjectId of the event, set only for events imported from the old server
+	// (mongo-import). When present, the registration PDF lives in the legacy on-disk layout
+	// (folder keyed by this ObjectId, file named registration.pdf) rather than the numeric-id
+	// layout; see EventsRegistrationsController.registrationFolder.
+	@Column({ type: "varchar", nullable: true }) srcId!: string | null;
+
 	@DeleteDateColumn() deletedAt?: Date | null;
 
 	leaders?: Member[];

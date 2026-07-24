@@ -12,7 +12,9 @@ import { Member } from "src/models/members/entities/member.entity";
 import { EventAttendeeResponse } from "./event-attendee.dto";
 import { EventExpenseResponse } from "./event-expense.dto";
 
-export class EventResponse implements Omit<Event, "setLeaders"> {
+// srcId is the legacy Mongo ObjectId used only for backend file resolution (registration PDFs of
+// imported events); like PhotoResponse omits Photo.srcId/srcAlbumId, it is not exposed in the API.
+export class EventResponse implements Omit<Event, "setLeaders" | "srcId"> {
 	id!: number;
 	name!: string;
 	@ApiProperty({ enum: EventStates, enumName: "EventStatesEnum" }) status!: EventStates;
