@@ -366,6 +366,18 @@ export class MongoImportService {
 			// wrongly deleted albums (photos deleted, but records stay in DB)
 			if (!albumId) continue;
 
+			// The old server stored the original's raw pixel dimensions, which for EXIF-rotated
+			// photos are transposed relative to how the image is displayed. The thumbnails it
+			// serves are baked upright, so their orientation is the source of truth: transpose
+			// the original dimensions when it disagrees, otherwise the gallery lays the photo out
+			// with the wrong aspect ratio and it appears distorted.
+			let width = mongoPhoto.sizes?.original.width ?? null;
+			let height = mongoPhoto.sizes?.original.height ?? null;
+			const thumb = mongoPhoto.sizes?.small ?? mongoPhoto.sizes?.big;
+			if (width && height && thumb?.width && thumb?.height && width >= height !== thumb.width >= thumb.height) {
+				[width, height] = [height, width];
+			}
+
 			const photoData: Omit<Photo, "id"> = {
 				albumId,
 				bg: mongoPhoto.bg ?? null,
@@ -376,8 +388,8 @@ export class MongoImportService {
 				order: null, // imported photos fall back to timestamp ordering
 				title: mongoPhoto.title ?? null,
 				uploadedById: mongoPhoto.uploadedBy ? userIds[mongoPhoto.uploadedBy.toString()] : null,
-				width: mongoPhoto.sizes?.original.width ?? null,
-				height: mongoPhoto.sizes?.original.height ?? null,
+				width,
+				height,
 				// Keep the original Mongo ObjectIds so the backend can serve the existing image
 				// files straight from the legacy on-disk layout (they are not moved or copied).
 				srcAlbumId: mongoPhoto.album.toString(),

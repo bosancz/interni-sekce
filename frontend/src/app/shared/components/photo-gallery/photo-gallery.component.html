@@ -1,4 +1,4 @@
-@for (row of rows(); track row) {
+@for (row of rows(); track $index) {
 	<div class="photo-row">
 		@for (item of row.photos; track item.photo.id) {
 			<div
@@ -12,7 +12,6 @@
 				<img
 					[src]="item.photo | photoImageUrl: 'small'"
 					loading="lazy"
-					(load)="onImgLoad($event, item.photo)"
 					(error)="onImgError($event)"
 				/>
 				@if (item.photo.caption) {
