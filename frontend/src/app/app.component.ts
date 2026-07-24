@@ -54,6 +54,7 @@ export class AppComponent implements OnInit {
 	private async showInstallBanner() {
 		const toast = await this.toastService.toast("Nainstalovat aplikaci na plochu tohoto zařízení?", {
 			icon: downloadOutline,
+			cssClass: "install-toast",
 			duration: 0,
 			position: "bottom",
 			buttons: [
