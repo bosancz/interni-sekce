@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from "@angular/core";
+import { Component } from "@angular/core";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
@@ -7,17 +7,11 @@ import {
 	informationCircleOutline,
 	phonePortraitOutline,
 } from "ionicons/icons";
+import { PwaInstallService } from "src/app/core/services/pwa-install.service";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
-
-// from https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent
-interface BeforeInstallPromptEvent {
-	platforms: string[];
-	userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-	prompt: () => Promise<void>;
-}
 
 @Component({
 	selector: "bo-account-app",
@@ -32,14 +26,12 @@ interface BeforeInstallPromptEvent {
 		CardContentComponent,
 	],
 })
-export class AccountAppComponent implements OnInit {
-	beforeinstallprompt = signal<BeforeInstallPromptEvent | undefined>(undefined);
+export class AccountAppComponent {
+	readonly canInstall = this.pwaInstall.canInstall;
 
-	installed = signal(false);
+	readonly installed = this.pwaInstall.installed;
 
-	promptShown = signal(false);
-
-	constructor() {
+	constructor(private readonly pwaInstall: PwaInstallService) {
 		addIcons({
 			phonePortraitOutline,
 			informationCircleOutline,
@@ -48,34 +40,7 @@ export class AccountAppComponent implements OnInit {
 		});
 	}
 
-	ngOnInit() {
-		window.addEventListener("beforeinstallprompt", (event: any) => {
-			// Prevent Chrome 67 and earlier from automatically showing the prompt
-			event.preventDefault();
-			// Stash the event so it can be triggered later.
-			this.beforeinstallprompt.set(<BeforeInstallPromptEvent>event);
-		});
-
-		window.addEventListener("appinstalled", (event) => {
-			this.installed.set(true);
-		});
-	}
-
 	install() {
-		this.promptShown.set(true);
-
-		const beforeinstallprompt = this.beforeinstallprompt();
-
-		beforeinstallprompt?.prompt();
-
-		// Wait for the user to respond to the prompt
-		beforeinstallprompt?.userChoice.then((choiceResult) => {
-			if (choiceResult.outcome === "accepted") {
-				console.log("User accepted the A2HS prompt");
-			} else {
-				console.log("User dismissed the A2HS prompt");
-			}
-			this.beforeinstallprompt.set(undefined);
-		});
+		this.pwaInstall.install();
 	}
 }
