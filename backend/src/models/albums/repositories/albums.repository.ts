@@ -4,6 +4,7 @@ import { PaginationOptions } from "src/helpers/pagination";
 import { applySort } from "src/helpers/sort";
 import { Brackets, FindOptionsRelations, Repository } from "typeorm";
 import { Album } from "../entities/album.entity";
+import { AlbumsMetadataService } from "../services/albums-metadata.service";
 import { PhotosRepository } from "./photos.repository";
 
 export interface GetAlbumsOptions extends PaginationOptions {
@@ -16,6 +17,7 @@ export interface GetAlbumsOptions extends PaginationOptions {
 export class AlbumsRepository {
 	constructor(
 		private photosService: PhotosRepository,
+		private albumsMetadata: AlbumsMetadataService,
 		@InjectRepository(Album) private repository: Repository<Album>,
 	) {}
 
@@ -115,11 +117,17 @@ export class AlbumsRepository {
 	}
 
 	async createAlbum(album: Partial<Album>) {
-		return this.repository.save(album);
+		const saved = await this.repository.save(album);
+		// Mirror the album's metadata into its photos directory as a DB-independent backup.
+		await this.albumsMetadata.writeAlbumMetadataById(saved.id);
+		return saved;
 	}
 
 	async updateAlbum(id: Album["id"], album: Partial<Album>) {
-		return this.repository.save({ ...album, id });
+		const saved = await this.repository.save({ ...album, id });
+		// Keep the on-disk metadata.json in sync with the album's persisted state.
+		await this.albumsMetadata.writeAlbumMetadataById(id);
+		return saved;
 	}
 
 	async deleteAlbum(id: Album["id"]) {

@@ -9,6 +9,7 @@ import {
 	Logger,
 	NotFoundException,
 	Param,
+	ParseIntPipe,
 	Put,
 	Req,
 	Res,
@@ -53,7 +54,7 @@ export class MemberInsuranceCardController {
 	@Get("")
 	@AcLinks(MemberInsuranceCardReadPermission)
 	@ApiResponse({})
-	async getInsuranceCard(@Req() req: Request, @Res() res: Response, @Param("id") memberId: number) {
+	async getInsuranceCard(@Req() req: Request, @Res() res: Response, @Param("id", ParseIntPipe) memberId: number) {
 		const member = await this.membersService.getMember(memberId);
 		if (!member) throw new NotFoundException("Member not found");
 
@@ -89,7 +90,7 @@ export class MemberInsuranceCardController {
 	@ApiResponse({ status: HttpStatus.NO_CONTENT })
 	async uploadInsuranceCard(
 		@Req() req: Request,
-		@Param("id") memberId: number,
+		@Param("id", ParseIntPipe) memberId: number,
 		@UploadedFile() file: Express.Multer.File,
 	) {
 		const member = await this.membersService.getMember(memberId);
@@ -120,7 +121,7 @@ export class MemberInsuranceCardController {
 	@Delete("")
 	@AcLinks(MemberInsuranceCardDeletePermission)
 	@ApiResponse({ status: HttpStatus.NO_CONTENT })
-	async deleteInsuranceCard(@Req() req: Request, @Param("id") memberId: number) {
+	async deleteInsuranceCard(@Req() req: Request, @Param("id", ParseIntPipe) memberId: number) {
 		const member = await this.membersService.getMember(memberId);
 		if (!member) throw new NotFoundException("Member not found");
 

@@ -7,6 +7,7 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 	Param,
+	ParseIntPipe,
 	Post,
 	Put,
 	Query,
@@ -73,7 +74,7 @@ export class EventsRegistrationsController {
 
 	@Get(":id/registration")
 	@AcLinks(EventRegistrationReadPermission)
-	async getEventRegistration(@Req() req: Request, @Param("id") id: number, @Res() res: Response): Promise<void> {
+	async getEventRegistration(@Req() req: Request, @Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<void> {
 		const event = await this.events.getEvent(id);
 		if (!event) throw new NotFoundException();
 		EventRegistrationReadPermission.canOrThrow(req, event);
@@ -118,7 +119,7 @@ export class EventsRegistrationsController {
 	})
 	async saveEventRegistration(
 		@Req() req: Request,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@UploadedFile() registration: Express.Multer.File): Promise<void> {
 			const event = await this.events.getEvent(id);
 			if (!event) throw new NotFoundException();
@@ -139,7 +140,7 @@ export class EventsRegistrationsController {
 	@Get(":id/registration/templates")
 	@AcLinks(EventRegistrationGeneratePermission)
 	@ApiResponse({ status: 200, type: [RegistrationTemplateResponse] })
-	async getEventRegistrationTemplates(@Req() req: Request, @Param("id") id: number): Promise<RegistrationTemplateResponse[]> {
+	async getEventRegistrationTemplates(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<RegistrationTemplateResponse[]> {
 		const event = await this.events.getEvent(id);
 		if (!event) throw new NotFoundException();
 
@@ -157,7 +158,7 @@ export class EventsRegistrationsController {
 	@ApiQuery({ name: "note", required: false })
 	async generateEventRegistration(
 		@Req() req: Request,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Query("template") template: string,
 		@Query("color") color: string,
 		@Query("note") note?: string,
@@ -177,7 +178,7 @@ export class EventsRegistrationsController {
 
 	@Delete(":id/registration")
 	@AcLinks(EventRegistrationDeletePermission)
-	async deleteEventRegistration(@Req() req: Request, @Param("id") id: number): Promise<void> {
+	async deleteEventRegistration(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
 		const event = await this.events.getEvent(id);
 		if (!event) throw new NotFoundException();
 		EventRegistrationDeletePermission.canOrThrow(req, event);

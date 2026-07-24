@@ -6,6 +6,7 @@ import {
 	Get,
 	NotFoundException,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Req,
@@ -74,7 +75,7 @@ export class PhotosController {
 	@Get(":id")
 	@AcLinks(PhotoReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(PhotoResponse) })
-	async getPhoto(@Param("id") id: number, @Req() req: Request) {
+	async getPhoto(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
 		const photo = await this.photos.getPhoto(id);
 		if (!photo) throw new NotFoundException();
 
@@ -86,7 +87,7 @@ export class PhotosController {
 	@Patch(":id")
 	@AcLinks(PhotoEditPermission)
 	@ApiResponse({ status: 204 })
-	async updatePhoto(@Param("id") id: number, @Req() req: Request, @Body() body: PhotoUpdateBody): Promise<void> {
+	async updatePhoto(@Param("id", ParseIntPipe) id: number, @Req() req: Request, @Body() body: PhotoUpdateBody): Promise<void> {
 		const photo = await this.photos.getPhoto(id);
 		if (!photo) throw new NotFoundException();
 
@@ -98,7 +99,7 @@ export class PhotosController {
 	@Delete(":id")
 	@AcLinks(PhotoDeletePermission)
 	@ApiResponse({ status: 204 })
-	async deletePhoto(@Param("id") id: number, @Req() req: Request): Promise<void> {
+	async deletePhoto(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
 		const photo = await this.photos.getPhoto(id);
 		if (!photo) throw new NotFoundException();
 
@@ -110,7 +111,7 @@ export class PhotosController {
 	@Get(":id/image/:size")
 	@AcLinks(PhotoReadFilePermission)
 	async getPhotoImage(
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Param("size") size: PhotoSizes,
 		@Req() req: Request,
 		@Res() res: Response,

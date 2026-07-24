@@ -5,6 +5,7 @@ import {
 	Get,
 	NotFoundException,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Put,
@@ -91,7 +92,7 @@ export class UsersController {
 	@ApiResponse({ status: 200, type: WithLinks(UserResponse) })
 	async getUser(
 		@Req() req: Request,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Query() query: GetUserQueryDto,
 	): Promise<UserResponse> {
 		const user = await this.userRepository.findOne({
@@ -108,7 +109,7 @@ export class UsersController {
 	@Patch(":id")
 	@AcLinks(UserEditPermission)
 	@ApiResponse({ status: 204 })
-	async updateUser(@Req() req: Request, @Param("id") id: number, @Body() body: UserUpdateBody): Promise<void> {
+	async updateUser(@Req() req: Request, @Param("id", ParseIntPipe) id: number, @Body() body: UserUpdateBody): Promise<void> {
 		const user = await this.userService.getUser(id);
 		if (!user) throw new NotFoundException();
 
@@ -120,7 +121,7 @@ export class UsersController {
 	@Delete(":id")
 	@AcLinks(UserDeletePermission)
 	@ApiResponse({ status: 204 })
-	async deleteUser(@Req() req: Request, @Param("id") id: number): Promise<void> {
+	async deleteUser(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
 		const user = await this.userService.getUser(id);
 		if (!user) throw new NotFoundException();
 
@@ -134,7 +135,7 @@ export class UsersController {
 	@ApiResponse({ status: 204 })
 	async setUserPassword(
 		@Req() req: Request,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 		@Body() body: UserSetPasswordBody,
 	): Promise<void> {
 		const user = await this.userService.getUser(id);
@@ -152,7 +153,7 @@ export class UsersController {
 	async impersonateUser(
 		@Req() req: Request,
 		@Res({ passthrough: true }) res: Response,
-		@Param("id") id: number,
+		@Param("id", ParseIntPipe) id: number,
 	) {
 		const user = await this.userService.getUser(id);
 		if (!user) throw new NotFoundException();
