@@ -66,12 +66,7 @@ export class MembersRepository {
 		if (options.groups) q.andWhere("members.groupId IN (:...groupIds)", { groupIds: options.groups });
 
 		if (options.search)
-			q.andWhere(
-				"unaccent(members.nickname) ILIKE unaccent(:search) OR unaccent(members.firstName) ILIKE unaccent(:search) OR unaccent(members.lastName) ILIKE unaccent(:search)",
-				{
-					search: `%${options.search}%`,
-				},
-			);
+			q.andWhere("members.searchString ILIKE unaccent(:search)", { search: `%${options.search}%` });
 
 		if (options.roles) q.andWhere("members.role IN (:...roles)", { roles: options.roles });
 

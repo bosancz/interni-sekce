@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Member } from "src/models/members/entities/member.entity";
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -28,6 +28,19 @@ export class User {
 		transformer: { from: (v) => v, to: (v: string) => v.toLocaleLowerCase() },
 	})
 	login!: string;
+
+	// Diacritic-insensitive haystack for search, maintained by Postgres as a stored generated
+	// column (see SearchStringColumns migration). Matched with `searchString ILIKE unaccent(:q)`.
+	@Column({
+		type: "text",
+		nullable: true,
+		select: false,
+		asExpression: "immutable_unaccent(coalesce(login, ''))",
+		generatedType: "STORED",
+	})
+	@ApiHideProperty()
+	searchString?: string;
+
 	@Column({ type: "varchar", nullable: true, select: false }) password!: string | null;
 	@Column({ type: "varchar", unique: true }) email!: string | null;
 

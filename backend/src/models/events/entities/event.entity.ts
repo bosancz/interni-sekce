@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { Member } from "src/models/members/entities/member.entity";
@@ -55,6 +55,19 @@ export class Event {
 	expenses?: EventExpense[];
 
 	@Column({ type: "text", nullable: false }) name!: string;
+
+	// Diacritic-insensitive haystack for search, maintained by Postgres as a stored generated
+	// column (see SearchStringColumns migration). Matched with `searchString ILIKE unaccent(:q)`.
+	@Column({
+		type: "text",
+		nullable: true,
+		select: false,
+		asExpression: "immutable_unaccent(coalesce(name, ''))",
+		generatedType: "STORED",
+	})
+	@ApiHideProperty()
+	searchString?: string;
+
 	@Column({ type: "enum", nullable: false, enum: EventStates, default: EventStates.draft }) status!: EventStates;
 	@Column({ type: "text", nullable: true }) statusNote!: string | null;
 	@Column({ type: "text", nullable: true }) place!: string | null;

@@ -62,6 +62,18 @@ export class Member {
 	@Column({ type: "varchar", nullable: true }) function?: string | null;
 	@Column({ type: "varchar", nullable: true }) firstName?: string | null;
 	@Column({ type: "varchar", nullable: true }) lastName?: string | null;
+
+	// Diacritic-insensitive haystack for search, maintained by Postgres as a stored generated
+	// column (see SearchStringColumns migration). Matched with `searchString ILIKE unaccent(:q)`.
+	@Column({
+		type: "text",
+		nullable: true,
+		select: false,
+		asExpression: "immutable_unaccent(coalesce(nickname, '') || ' ' || coalesce(first_name, '') || ' ' || coalesce(last_name, ''))",
+		generatedType: "STORED",
+	})
+	@ApiHideProperty()
+	searchString?: string;
 	@Column({ type: "date", nullable: true }) birthday?: string | null;
 	@Column({ type: "varchar", nullable: true }) addressStreet?: string | null;
 	@Column({ type: "varchar", nullable: true }) addressStreetNo?: string | null;

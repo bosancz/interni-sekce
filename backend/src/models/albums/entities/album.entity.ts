@@ -1,3 +1,4 @@
+import { ApiHideProperty } from "@nestjs/swagger";
 import { Event } from "src/models/events/entities/event.entity";
 import { Column, DeleteDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Photo } from "./photo.entity";
@@ -26,6 +27,18 @@ export class Album {
 	status!: AlbumStatus;
 
 	@Column({ nullable: false }) name!: string;
+
+	// Diacritic-insensitive haystack for search, maintained by Postgres as a stored generated
+	// column (see SearchStringColumns migration). Matched with `searchString ILIKE unaccent(:q)`.
+	@Column({
+		type: "text",
+		nullable: true,
+		select: false,
+		asExpression: "immutable_unaccent(coalesce(name, ''))",
+		generatedType: "STORED",
+	})
+	@ApiHideProperty()
+	searchString?: string;
 
 	@Column({ type: "text", nullable: true }) description!: string | null;
 	@Column({ type: "timestamp with time zone", nullable: true }) datePublished!: Date | string | null;

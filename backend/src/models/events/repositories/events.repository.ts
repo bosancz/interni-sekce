@@ -81,7 +81,7 @@ export class EventsRepository {
 
 		if (options.status?.length) q.andWhere("events.status IN (:...statuses)", { statuses: options.status });
 
-		if (options.search) q.andWhere("unaccent(name) ILIKE unaccent(:search)", { search: `%${options.search}%` });
+		if (options.search) q.andWhere("events.searchString ILIKE unaccent(:search)", { search: `%${options.search}%` });
 
 		if (options.memberId) q.andWhere("attendees.member_id = :memberId", { memberId: options.memberId });
 

@@ -71,7 +71,7 @@ export class UsersController {
 			.skip(query.offset || 0);
 
 		if (query.search)
-			q.andWhere("unaccent(user.login) ILIKE unaccent(:search) OR unaccent(member.nickname) ILIKE unaccent(:search)", {
+			q.andWhere("user.searchString ILIKE unaccent(:search) OR member.searchString ILIKE unaccent(:search)", {
 				search: `%${query.search}%`,
 			});
 
