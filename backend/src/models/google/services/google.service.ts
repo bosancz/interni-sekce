@@ -28,23 +28,24 @@ export class GoogleService {
 	 * Validate the Google OAuth access token the frontend obtained and return the signed-in
 	 * user's email.
 	 *
-	 * This only talks to Google's public tokeninfo endpoint, so it needs no client secret and
-	 * no code exchange — the single service-account key file (used for mail) is enough for the
-	 * whole Google setup, matching the old server.
+	 * Reads the profile straight from Google's UserInfo endpoint with the access token as a
+	 * bearer: a valid token yields the email, an invalid/expired one yields 401. No client
+	 * secret and no code exchange — the single service-account key file (used for mail) is
+	 * enough for the whole Google setup, matching the old server.
 	 */
 	async validateAccessToken(accessToken: string): Promise<{ email: string }> {
-		const client = new google.auth.OAuth2();
+		const res = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+			headers: { Authorization: `Bearer ${accessToken}` },
+		});
 
-		// Throws on an invalid/expired token.
-		const info = await client.getTokenInfo(accessToken);
-
-		if (!info.email) throw new Error("Google account did not expose an email address");
-
-		// When a login client id is known, make sure the token was actually minted for this
-		// app — otherwise an access token obtained for a different site could be replayed here.
-		if (this.config.google.clientId && info.aud !== this.config.google.clientId) {
-			throw new Error("Google token was not issued for this application");
+		if (!res.ok) {
+			const body = await res.text().catch(() => "");
+			this.logger.warn(`Google rejected the access token (HTTP ${res.status}): ${body}`);
+			throw new Error(`Google rejected the access token (HTTP ${res.status})`);
 		}
+
+		const info = (await res.json()) as { email?: string; email_verified?: boolean };
+		if (!info.email) throw new Error("Google account did not expose an email address");
 
 		return { email: info.email };
 	}
