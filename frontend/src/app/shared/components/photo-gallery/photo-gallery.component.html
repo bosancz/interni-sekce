@@ -1,14 +1,18 @@
 @for (row of rows(); track row) {
 	<div class="photo-row">
 		@for (item of row.photos; track item.photo.id) {
-			<div class="photo" (click)="onPhotoClick($event, item.photo)" [class.clickable]="clickable()">
+			<div
+				class="photo"
+				(click)="onPhotoClick($event, item.photo)"
+				[class.clickable]="clickable()"
+				[style.height]="row.height + 'px'"
+				[style.width]="row.height * item.ratio + 'px'"
+				[style.background-color]="item.photo.bg"
+			>
 				<img
 					[src]="item.photo | photoImageUrl: 'small'"
 					loading="lazy"
 					(error)="onImgError($event)"
-					[style.height]="row.height + 'px'"
-					[style.width]="row.height * item.ratio + 'px'"
-					[style.background-color]="item.photo.bg"
 				/>
 				@if (item.photo.caption) {
 					<span class="caption">{{ item.photo.caption }}</span>
