@@ -22,6 +22,7 @@ import { RegistrationTemplateResponse } from "../dto/registration-template.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response} from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { EventRegistrationService } from "src/models/events/services/event-registration.service";
@@ -40,6 +41,7 @@ import {sanitizeFilename} from '../../../helpers/sanitizefilename'
 
 
 @Controller("events")
+@Authenticated()
 @AcController()
 @ApiTags("Events")
 export class EventsRegistrationsController {
@@ -51,15 +53,33 @@ export class EventsRegistrationsController {
 		@InjectRepository(Event) private eventsRepository: Repository<Event>,
 	) {}
 
+	/**
+	 * On-disk folder holding the event's registration PDF. Events imported from the old server keep
+	 * their legacy Mongo ObjectId in `srcId`, and their files live in a folder keyed by that ObjectId
+	 * (named `registration.pdf`); natively-created events use the numeric-id folder (with a
+	 * `prihlaska_<name>.pdf` file). Coalescing on `srcId` lets both resolve without moving files —
+	 * mirrors how Photo.srcId is used to serve legacy images. See getEventRegistration for the
+	 * matching legacy vs. new filename handling.
+	 */
+	private registrationFolder(event: Event): string {
+		return path.join(this.config.fs.eventsDir, event.srcId ?? event.id.toString());
+	}
+
+	/** Removes any existing registration PDF (new `prihlaska*` or legacy `registration*`) for the event. */
+	private async deleteRegistrationFiles(registrationFolder: string): Promise<void> {
+		await this.fileService.deleteFilesByPrefix(registrationFolder, "prihlaska");
+		await this.fileService.deleteFilesByPrefix(registrationFolder, "registration");
+	}
+
 	/** Replaces any existing "prihlaska" file for the event with the given PDF and flags the event. */
 	private async storeRegistration(event: Event, data: Buffer): Promise<void> {
-		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString());
+		const registrationFolder = this.registrationFolder(event);
 		const registrationFileName = "prihlaska_" + sanitizeFilename(event.name) + ".pdf";
 		const registrationPath = path.join(registrationFolder, registrationFileName);
 
 		try {
 			await this.fileService.ensureDir(registrationFolder);
-			await this.fileService.deleteFilesByPrefix(registrationFolder, "prihlaska");
+			await this.deleteRegistrationFiles(registrationFolder);
 			await this.fileService.saveFile(registrationPath, data);
 		} catch (err) {
 			throw new InternalServerErrorException("Failed to save registration");
@@ -79,11 +99,16 @@ export class EventsRegistrationsController {
 		if (!event) throw new NotFoundException();
 		EventRegistrationReadPermission.canOrThrow(req, event);
 
-		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString());
+		const registrationFolder = this.registrationFolder(event);
 
 		let matchingFiles: string[];
 		try {
+			// New uploads/generations are named `prihlaska_<name>.pdf`; legacy imported events keep the
+			// old `registration.pdf`. Prefer the new file, fall back to the legacy one.
 			matchingFiles = await this.fileService.getFilesByPrefx(registrationFolder, "prihlaska");
+			if (matchingFiles.length === 0) {
+				matchingFiles = await this.fileService.getFilesByPrefx(registrationFolder, "registration");
+			}
 		} catch {
 			throw new NotFoundException("Registration not found");
 		}
@@ -182,9 +207,9 @@ export class EventsRegistrationsController {
 		const event = await this.events.getEvent(id);
 		if (!event) throw new NotFoundException();
 		EventRegistrationDeletePermission.canOrThrow(req, event);
-		const registrationFolder = path.join(this.config.fs.eventsDir, event.id.toString())
-						
-		await this.fileService.deleteFilesByPrefix(registrationFolder, "prihlaska")
+		const registrationFolder = this.registrationFolder(event);
+
+		await this.deleteRegistrationFiles(registrationFolder);
 		event.hasRegistration = false;
 		await this.eventsRepository.update(event.id, { hasRegistration: false });
 

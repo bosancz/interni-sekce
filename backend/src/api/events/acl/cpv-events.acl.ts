@@ -8,6 +8,5 @@ export const CPVEventsListPermission = new Permission<void>({
 
 	allowed: {
 		vedouci: true,
-		verejnost: true,
 	},
 });

@@ -10,7 +10,7 @@ import { registerOpenAPI } from "./openapi";
 async function bootstrap() {
 	const logger = new Logger("MAIN");
 
-	logger.log("Bošán - Interní sekce");
+	logger.log("Bošán");
 	logger.log(`Version: ${StaticConfig.app.version}`);
 	logger.log(`Environment: ${StaticConfig.environment}`);
 

@@ -1,4 +1,4 @@
-# Vývoj interní sekce
+# Vývoj
 
 - [Instalace](#instalace)
   - [Vývojové prostředí](#vývojové-prostředí)
@@ -22,6 +22,7 @@ Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a 
 💡 Lze použít i jiné editory, ale instalace je složitější. Např. u Cursoru je nutné spouštět devcontainer přes DevPod.
 
 1. Nainstaluj
+
    - [Docker](https://www.docker.com/get-started/)
    - [VSCode](https://code.visualstudio.com/) s [rozšířením Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
@@ -34,6 +35,7 @@ Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a 
 #### Klasická instalace
 
 1. Nainstaluj
+
    - [NodeJS](https://nodejs.org/) (verze 22 nebo vyšší)
    - [PostgreSQL](https://www.postgresql.org/download/) (verze 15)
    - Editor dle volby (doporučujeme [VSCode](https://code.visualstudio.com/))
@@ -88,7 +90,7 @@ Tím se spustí backend (BE) na [http://localhost:3000](http://localhost:3000) a
 
 ```
 interni-sekce/
-├── !old/                  # Starý kód interní sekce (ExpressJS + MongoDB)
+├── !old/                  # kód staré interní sekce (ExpressJS + MongoDB)
 ├── backend/               # Kód backendu (NestJS + PostgreSQL)
 ├── frontend/              # Kód frontendu (Angular)
 ├── scripts/               # Skripty pro vývoj a nasazení

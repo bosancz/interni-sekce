@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Pars
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import {
 	EventExpenseCreatePermission,
@@ -12,6 +13,7 @@ import {
 import { EventExpenseCreateBody, EventExpenseResponse, EventExpenseUpdateBody } from "../dto/event-expense.dto";
 
 @Controller("events/:eventId/expenses")
+@Authenticated()
 @AcController()
 @ApiTags("Events")
 export class EventsExpensesController {

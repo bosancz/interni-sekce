@@ -32,7 +32,7 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       context: .
-      publish-image-name: bosancz/interni-sekce
+      image-name: bosancz/interni-sekce
       registry: ghcr.io
       tag: next
       build-args: |

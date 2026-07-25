@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { Member } from "src/models/members/entities/member.entity";
@@ -7,6 +7,7 @@ import {
 	Column,
 	DeleteDateColumn,
 	Entity,
+	Index,
 	JoinTable,
 	ManyToMany,
 	OneToMany,
@@ -55,6 +56,21 @@ export class Event {
 	expenses?: EventExpense[];
 
 	@Column({ type: "text", nullable: false }) name!: string;
+
+	// Diacritic- and case-insensitive full-text vector, maintained by Postgres as a stored generated
+	// column (see SearchVectorColumns migration). Matched with `searchVector @@ to_tsquery(...)`.
+	// The GIN index is created in that migration; synchronize:false because TypeORM cannot express it.
+	@Index("IDX_events_search_vector", { synchronize: false })
+	@Column({
+		type: "tsvector",
+		nullable: true,
+		select: false,
+		asExpression: "to_tsvector('simple_unaccent', coalesce(name, ''))",
+		generatedType: "STORED",
+	})
+	@ApiHideProperty()
+	searchVector?: string;
+
 	@Column({ type: "enum", nullable: false, enum: EventStates, default: EventStates.draft }) status!: EventStates;
 	@Column({ type: "text", nullable: true }) statusNote!: string | null;
 	@Column({ type: "text", nullable: true }) place!: string | null;
@@ -75,6 +91,12 @@ export class Event {
 	@Column({ type: "boolean", nullable: false, default: false }) leadersEvent!: boolean;
 	@Column({ type: "boolean", nullable: false, default: false }) hasRegistration!: boolean;
 	@Column({ type: "varchar", nullable: true }) report!: string | null;
+
+	// Legacy Mongo ObjectId of the event, set only for events imported from the old server
+	// (mongo-import). When present, the registration PDF lives in the legacy on-disk layout
+	// (folder keyed by this ObjectId, file named registration.pdf) rather than the numeric-id
+	// layout; see EventsRegistrationsController.registrationFolder.
+	@Column({ type: "varchar", nullable: true }) srcId!: string | null;
 
 	@DeleteDateColumn() deletedAt?: Date | null;
 

@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Member } from "src/models/members/entities/member.entity";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export enum UserRoles {
 	"admin" = "admin",
@@ -28,6 +28,21 @@ export class User {
 		transformer: { from: (v) => v, to: (v: string) => v.toLocaleLowerCase() },
 	})
 	login!: string;
+
+	// Diacritic- and case-insensitive full-text vector, maintained by Postgres as a stored generated
+	// column (see SearchVectorColumns migration). Matched with `searchVector @@ to_tsquery(...)`.
+	// The GIN index is created in that migration; synchronize:false because TypeORM cannot express it.
+	@Index("IDX_users_search_vector", { synchronize: false })
+	@Column({
+		type: "tsvector",
+		nullable: true,
+		select: false,
+		asExpression: "to_tsvector('simple_unaccent', coalesce(login, ''))",
+		generatedType: "STORED",
+	})
+	@ApiHideProperty()
+	searchVector?: string;
+
 	@Column({ type: "varchar", nullable: true, select: false }) password!: string | null;
 	@Column({ type: "varchar", unique: true }) email!: string | null;
 

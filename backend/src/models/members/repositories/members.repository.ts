@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationOptions } from "src/helpers/pagination";
+import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
 import { Brackets, FindOneOptions, Repository } from "typeorm";
 import { MemberContact } from "../entities/member-contact.entity";
@@ -65,13 +66,10 @@ export class MembersRepository {
 
 		if (options.groups) q.andWhere("members.groupId IN (:...groupIds)", { groupIds: options.groups });
 
-		if (options.search)
-			q.andWhere(
-				"members.nickname ILIKE :search OR members.firstName ILIKE :search OR members.lastName ILIKE :search",
-				{
-					search: `%${options.search}%`,
-				},
-			);
+		if (options.search) {
+			const search = toPrefixTsQuery(options.search);
+			if (search) q.andWhere("members.searchVector @@ to_tsquery('simple_unaccent', :search)", { search });
+		}
 
 		if (options.roles) q.andWhere("members.role IN (:...roles)", { roles: options.roles });
 

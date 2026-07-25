@@ -10,12 +10,11 @@ import {
 	Post,
 	Query,
 	Req,
-	UseGuards,
 } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
-import { UserGuard } from "src/auth/guards/user.guard";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
 import {
 	MemberCreatePermission,
@@ -30,7 +29,7 @@ import {
 import { MemberCreateBody, MemberResponse, MemberUpdateBody, MembersListQuery } from "../dto/member.dto";
 
 @Controller("members")
-@UseGuards(UserGuard)
+@Authenticated()
 @AcController()
 @ApiTags("Members")
 export class MembersController {

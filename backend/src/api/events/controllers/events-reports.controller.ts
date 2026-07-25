@@ -3,12 +3,14 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { Repository } from "typeorm";
 import { EventReportReadPermission } from "../acl/events.acl";
 
 @Controller("events")
+@Authenticated()
 @AcController()
 @ApiTags("Events")
 export class EventsReportsController {

@@ -2,5 +2,5 @@ import { createMailTemplate } from "src/models/mail/functions/create-mail-templa
 
 export const SendLoginLinkMailTemplate = createMailTemplate<{ link: string }>({
 	filePath: __dirname + "/send-login-link.mail-template.hbs",
-	subject: "Přihlašovací odkaz do Interní sekce",
+	subject: "Přihlašovací odkaz na do aplikace Bošán",
 });

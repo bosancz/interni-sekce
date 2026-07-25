@@ -1,5 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
+import { COOKIE_AUTH_SCHEME } from "./auth/decorators/authenticated.decorator";
 import { Config } from "./config";
 
 // uncomment if using SWC compiler
@@ -7,6 +8,9 @@ import { Config } from "./config";
 
 const ROOT_TAG = "Root" as const;
 const PUBLIC_TAG = "Public API" as const;
+
+/** Name of the httpOnly session cookie set by TokenService — the credential the API authenticates with. */
+const SESSION_COOKIE_NAME = "token" as const;
 
 export function generateOpenAPI(path: string, app: INestApplication, config: Config) {
 	const builder = new DocumentBuilder()
@@ -19,6 +23,22 @@ export function generateOpenAPI(path: string, app: INestApplication, config: Con
 				"Exposes only published events (program) and published photo galleries, in the " +
 				"legacy response shape the website expects (string `_id`s, photo `sizes`, `_links`). " +
 				"These endpoints require no login and are safe to call cross-origin from the website.",
+		)
+		// Define the session-cookie security scheme. Endpoints opt in to it with the `@Authenticated()`
+		// decorator (which also applies UserGuard); public endpoints simply omit it. Authentication is a
+		// JWT carried in the httpOnly `token` cookie (see TokenService), attached automatically by the
+		// browser — there is no Authorization header.
+		.addCookieAuth(
+			SESSION_COOKIE_NAME,
+			{
+				type: "apiKey",
+				in: "cookie",
+				name: SESSION_COOKIE_NAME,
+				description:
+					"Session authentication via the httpOnly `token` cookie issued on login. Sent " +
+					"automatically by the browser; it cannot be set from JavaScript.",
+			},
+			COOKIE_AUTH_SCHEME,
 		)
 		.build();
 
