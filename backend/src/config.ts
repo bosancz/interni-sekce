@@ -50,7 +50,7 @@ const logging: { level: LogLevel[]; query: boolean } = {
  * App
  */
 const app = {
-	name: "Bošán - Interní sekce",
+	name: "Bošán",
 	baseUrl:
 		process.env["BASE_URL"] || `http://${server.host}${server.port ? ":" + server.port : ""}${server.basePath}`,
 	version: process.env["VERSION"] || "DEV",
