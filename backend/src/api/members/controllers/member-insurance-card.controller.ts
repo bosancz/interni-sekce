@@ -14,7 +14,6 @@ import {
 	Req,
 	Res,
 	UploadedFile,
-	UseGuards,
 	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -24,7 +23,7 @@ import { createReadStream } from "fs";
 import { contentType } from "mime-types";
 import { extname } from "path";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
-import { UserGuard } from "src/auth/guards/user.guard";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Config } from "src/config";
 import { FilesService } from "src/models/files/services/files.service";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
@@ -39,7 +38,7 @@ import {
 const ALLOWED_INSURANCE_CARD_TYPES = ["pdf", "jpg", "jpeg", "png"];
 
 @Controller("members/:id/insurance-card")
-@UseGuards(UserGuard)
+@Authenticated()
 @AcController()
 @ApiTags("Members")
 export class MemberInsuranceCardController {

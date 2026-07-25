@@ -18,6 +18,7 @@ import {
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { AuthUser } from "src/auth/decorators/auth-user.decorator";
 import { SessionUser } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
@@ -46,6 +47,7 @@ import { EventCreateBody, EventResponse, EventStatusChangeBody, EventUpdateBody 
 import { ListEventsQuery } from "../dto/events.dto";
 
 @Controller("events")
+@Authenticated()
 @AcController()
 @ApiTags("Events")
 export class EventsController {

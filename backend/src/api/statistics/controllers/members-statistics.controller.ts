@@ -1,8 +1,10 @@
 import { Controller, Get } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { MembersReportResponse } from "../dto/members-report.dto";
 
 @Controller("statistics/members")
+@Authenticated()
 @ApiTags("Statistics")
 export class MembersStatisticsController {
 	@Get()

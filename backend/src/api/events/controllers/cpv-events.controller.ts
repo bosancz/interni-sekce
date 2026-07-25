@@ -2,10 +2,12 @@ import { Controller, Get, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { CPVEventsListPermission } from "../acl/cpv-events.acl";
 import { CPVEventResponse } from "../dto/cpv-event.dto";
 
 @Controller("cpv-events")
+@Authenticated()
 @AcController()
 @ApiTags("Events")
 export class CPVEventsController {

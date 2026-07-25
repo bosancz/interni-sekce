@@ -21,6 +21,7 @@ import { createReadStream } from "fs";
 import { contentType } from "mime-types";
 import { extname } from "path";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import {
@@ -34,6 +35,7 @@ import {
 import { PhotoCreateBody, PhotoResponse, PhotoSizes, PhotoUpdateBody } from "../dto/photo.dto";
 
 @Controller("photos")
+@Authenticated()
 @AcController()
 @ApiTags("Photo gallery")
 export class PhotosController {
