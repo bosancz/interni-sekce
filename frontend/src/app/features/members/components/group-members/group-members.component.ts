@@ -83,7 +83,8 @@ export class GroupMembersComponent implements OnInit {
 	selectedMembership = signal<string[]>([]);
 
 	sortColumn = signal<string | null>("role");
-	sortOrder = signal<"ASC" | "DESC">("DESC");
+	// String, not "ASC" | "DESC": desktop multisort carries a comma-separated list (e.g. "ASC,DESC").
+	sortOrder = signal<string>("DESC");
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "nickname", label: "Přezdívka" },

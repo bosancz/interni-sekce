@@ -7,15 +7,36 @@
 						@for (column of columns(); track column) {
 							<th [class]="column.headerClass()">
 								@if (column.sort()) {
+									@let idx = sortIndex(column.sort());
 									<button
 										type="button"
 										class="admin-table-sort"
-										[class.admin-table-sort-active]="sort() === column.sort()"
+										[class.admin-table-sort-active]="idx >= 0"
+										[attr.aria-label]="
+											column.header() +
+											(idx < 0
+												? ': seřadit vzestupně'
+												: activeSort()[idx].order === 'ASC'
+													? ': seřadit sestupně'
+													: ': zrušit řazení')
+										"
+										[title]="
+											idx < 0
+												? 'Seřadit vzestupně'
+												: activeSort()[idx].order === 'ASC'
+													? 'Seřadit sestupně'
+													: 'Zrušit řazení'
+										"
 										(click)="onSort(column)"
 									>
 										<span>{{ column.header() }}</span>
-										@if (sort() === column.sort()) {
-											<ion-icon [name]="order() === 'ASC' ? 'caret-up' : 'caret-down'"></ion-icon>
+										@if (idx >= 0) {
+											<ion-icon
+												[name]="activeSort()[idx].order === 'ASC' ? 'caret-up' : 'caret-down'"
+											></ion-icon>
+											@if (activeSort().length > 1) {
+												<span class="admin-table-sort-index">{{ idx + 1 }}</span>
+											}
 										} @else {
 											<ion-icon name="swap-vertical" class="admin-table-sort-idle"></ion-icon>
 										}

@@ -112,7 +112,8 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	}
 
 	sortColumn = signal<string | null>(this.defaultSortColumn);
-	sortOrder = signal<"ASC" | "DESC">("ASC");
+	// String, not "ASC" | "DESC": a multi-column sort carries a comma-separated list (e.g. "ASC,DESC").
+	sortOrder = signal<string>("ASC");
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "name", label: "Název" },
@@ -376,7 +377,9 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		this.selectedStatuses.set(this.normalizeFilterValueToArray(params["status"]));
 		this.selectedLeaderFilters.set(this.normalizeFilterValueToArray(params["leaders"]));
 		this.sortColumn.set(params["sort"] ?? this.defaultSortColumn);
-		this.sortOrder.set(order === "ASC" || order === "DESC" ? order : this.defaultSortOrder(dateFilters));
+		// With an explicit sort in the URL, keep the raw order param (it may be a comma-separated
+		// list of directions for a multi-column sort); otherwise use the filter-dependent default.
+		this.sortOrder.set(params["sort"] ? (order ?? "ASC") : this.defaultSortOrder(dateFilters));
 		this.loadEvents(this.filter);
 	}
 

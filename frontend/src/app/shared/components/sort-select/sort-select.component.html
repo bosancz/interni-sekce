@@ -7,7 +7,7 @@
 			interface="popover"
 			justify="start"
 			placeholder="Výchozí"
-			[ngModel]="sort()"
+			[ngModel]="primaryKey()"
 			(ngModelChange)="selectColumn($event)"
 		>
 			<ion-select-option [value]="null">Výchozí</ion-select-option>
@@ -16,16 +16,16 @@
 			}
 		</ion-select>
 
-		@if (sort()) {
+		@if (primaryKey()) {
 			<ion-button
 				slot="end"
 				fill="clear"
 				size="small"
 				color="medium"
-				[attr.aria-label]="order() === 'ASC' ? 'Vzestupně' : 'Sestupně'"
+				[attr.aria-label]="primaryOrder() === 'ASC' ? 'Vzestupně' : 'Sestupně'"
 				(click)="toggleOrder()"
 			>
-				<ion-icon slot="icon-only" [name]="order() === 'ASC' ? 'arrow-up' : 'arrow-down'"></ion-icon>
+				<ion-icon slot="icon-only" [name]="primaryOrder() === 'ASC' ? 'arrow-up' : 'arrow-down'"></ion-icon>
 			</ion-button>
 		}
 	</ion-item>

@@ -96,7 +96,8 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	selectedStatuses = signal<string[]>([]);
 
 	sortColumn = signal<string | null>(null);
-	sortOrder = signal<"ASC" | "DESC">("ASC");
+	// String, not "ASC" | "DESC": a multi-column sort carries a comma-separated list (e.g. "ASC,DESC").
+	sortOrder = signal<string>("ASC");
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "name", label: "Název alba" },
@@ -224,7 +225,8 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		this.selectedYears.set(this.normalizeFilterValueToArray(params["year"]));
 		this.selectedStatuses.set(this.normalizeFilterValueToArray(params["status"]));
 		this.sortColumn.set(params["sort"] ?? null);
-		this.sortOrder.set(params["order"] === "DESC" ? "DESC" : "ASC");
+		// Keep the raw param — it may be a comma-separated list of directions for a multi-column sort.
+		this.sortOrder.set(params["order"] ?? "ASC");
 		this.loadAlbums(this.filter);
 	}
 
@@ -290,7 +292,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 			status: this.normalizeFilterValueToArray(filter.status) as SDK.ListAlbumsStatusEnum[],
 			year: this.normalizeFilterValueToArray(filter.year).map((year) => parseInt(year, 10)),
 			sort: (filter.sort as string) || undefined,
-			order: (filter.order as SDK.ListAlbumsOrderEnum) || undefined,
+			order: (filter.order as string) || undefined,
 			offset: (this.page() - 1) * this.pageSize,
 			limit: this.pageSize,
 		};

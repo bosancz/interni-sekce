@@ -13,8 +13,10 @@ import { AdminTableColumnComponent } from "./admin-table-column.component";
 export type AdminTableDisplay = "auto" | "table" | "list";
 export type AdminTableSortOrder = "ASC" | "DESC";
 export interface AdminTableSort {
+	/** Active sort key(s), comma-joined in priority order (e.g. `"group,role"`); `""` when unsorted. */
 	sort: string;
-	order: AdminTableSortOrder;
+	/** Matching direction(s), comma-joined to line up with `sort` (e.g. `"ASC,DESC"`). */
+	order: string;
 }
 
 /** Signature of the per-row callbacks (link / id / class). */
@@ -85,11 +87,11 @@ export class AdminTableComponent {
 	/** `(row) => header` — title shown above the actions on the mobile ActionSheet. */
 	actionsHeader = input<((row: any) => string | null | undefined) | null>(null);
 
-	/** Active sort column key (matches a column's `[sort]`), or `null` when unsorted. */
+	/** Active sort key(s), comma-separated in priority order (e.g. `"group,role"`), or `null` when unsorted. */
 	sort = input<string | null>(null);
 
-	/** Active sort direction for the `sort` column. */
-	order = input<AdminTableSortOrder>("ASC");
+	/** Active sort direction(s), comma-separated to match each `sort` key (e.g. `"ASC,DESC"`). */
+	order = input<AdminTableSortOrder | string>("ASC");
 
 	rowClick = output<any>();
 
@@ -115,20 +117,51 @@ export class AdminTableComponent {
 
 	readonly skeletonArray = computed(() => Array.from({ length: this.skeletonRows() }));
 
+	/** Parsed active sort, in priority order — pairs each `sort` key with its direction. */
+	readonly activeSort = computed<{ key: string; order: AdminTableSortOrder }[]>(() => {
+		const keys = (this.sort() ?? "").split(",").map((k) => k.trim()).filter((k) => !!k);
+		const orders = String(this.order() ?? "").split(",");
+		return keys.map((key, i) => ({
+			key,
+			order: (orders[i] ?? "").trim().toUpperCase() === "DESC" ? "DESC" : "ASC",
+		}));
+	});
+
+	/** Zero-based position of a column in the active sort, or -1 when it is not sorted. */
+	sortIndex(key: string | null): number {
+		if (!key) return -1;
+		return this.activeSort().findIndex((s) => s.key === key);
+	}
+
 	constructor(private readonly platformService: PlatformService) {
 		addIcons({ caretUp, caretDown, swapVertical });
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 	}
 
 	/**
-	 * Toggle sorting for a column header click: switching to a new column starts
-	 * ascending; clicking the active column flips its direction.
+	 * Cycle a column header through the three-state multi-sort: an unsorted column is
+	 * appended as the last (lowest-priority) key ascending; a key sorted ASC flips to
+	 * DESC in place; a key sorted DESC is removed, so the remaining keys shift up in
+	 * priority. Emits the whole list comma-joined, or `{ sort: "", order: "" }` once the
+	 * last key is cycled off (which pages treat as "back to default").
 	 */
 	onSort(column: AdminTableColumnComponent) {
 		const key = column.sort();
 		if (!key) return;
-		const order: AdminTableSortOrder = this.sort() === key && this.order() === "ASC" ? "DESC" : "ASC";
-		this.sortChange.emit({ sort: key, order });
+
+		const current = this.activeSort();
+		const i = current.findIndex((s) => s.key === key);
+
+		let next: { key: string; order: AdminTableSortOrder }[];
+		if (i < 0) next = [...current, { key, order: "ASC" }];
+		else if (current[i].order === "ASC")
+			next = current.map((s, j) => (j === i ? { ...s, order: "DESC" as const } : s));
+		else next = current.filter((_, j) => j !== i);
+
+		this.sortChange.emit({
+			sort: next.map((s) => s.key).join(","),
+			order: next.map((s) => s.order).join(","),
+		});
 	}
 
 	trackRow = (index: number, row: any) => {
