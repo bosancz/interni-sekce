@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationOptions } from "src/helpers/pagination";
+import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
 import { Group } from "src/models/members/entities/group.entity";
 import { Brackets, FindOptionsSelect, Repository } from "typeorm";
@@ -81,7 +82,10 @@ export class EventsRepository {
 
 		if (options.status?.length) q.andWhere("events.status IN (:...statuses)", { statuses: options.status });
 
-		if (options.search) q.andWhere("events.searchString ILIKE unaccent(:search)", { search: `%${options.search}%` });
+		if (options.search) {
+			const search = toPrefixTsQuery(options.search);
+			if (search) q.andWhere("events.searchVector @@ to_tsquery('simple_unaccent', :search)", { search });
+		}
 
 		if (options.memberId) q.andWhere("attendees.member_id = :memberId", { memberId: options.memberId });
 

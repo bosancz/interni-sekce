@@ -7,6 +7,7 @@ import {
 	Column,
 	DeleteDateColumn,
 	Entity,
+	Index,
 	JoinTable,
 	ManyToMany,
 	OneToMany,
@@ -56,17 +57,19 @@ export class Event {
 
 	@Column({ type: "text", nullable: false }) name!: string;
 
-	// Diacritic-insensitive haystack for search, maintained by Postgres as a stored generated
-	// column (see SearchStringColumns migration). Matched with `searchString ILIKE unaccent(:q)`.
+	// Diacritic- and case-insensitive full-text vector, maintained by Postgres as a stored generated
+	// column (see SearchVectorColumns migration). Matched with `searchVector @@ to_tsquery(...)`.
+	// The GIN index is created in that migration; synchronize:false because TypeORM cannot express it.
+	@Index("IDX_events_search_vector", { synchronize: false })
 	@Column({
-		type: "text",
+		type: "tsvector",
 		nullable: true,
 		select: false,
-		asExpression: "immutable_unaccent(coalesce(name, ''))",
+		asExpression: "to_tsvector('simple_unaccent', coalesce(name, ''))",
 		generatedType: "STORED",
 	})
 	@ApiHideProperty()
-	searchString?: string;
+	searchVector?: string;
 
 	@Column({ type: "enum", nullable: false, enum: EventStates, default: EventStates.draft }) status!: EventStates;
 	@Column({ type: "text", nullable: true }) statusNote!: string | null;

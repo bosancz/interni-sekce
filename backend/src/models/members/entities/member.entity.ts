@@ -5,6 +5,7 @@ import {
 	Column,
 	DeleteDateColumn,
 	Entity,
+	Index,
 	JoinColumn,
 	ManyToOne,
 	OneToMany,
@@ -63,17 +64,19 @@ export class Member {
 	@Column({ type: "varchar", nullable: true }) firstName?: string | null;
 	@Column({ type: "varchar", nullable: true }) lastName?: string | null;
 
-	// Diacritic-insensitive haystack for search, maintained by Postgres as a stored generated
-	// column (see SearchStringColumns migration). Matched with `searchString ILIKE unaccent(:q)`.
+	// Diacritic- and case-insensitive full-text vector, maintained by Postgres as a stored generated
+	// column (see SearchVectorColumns migration). Matched with `searchVector @@ to_tsquery(...)`.
+	// The GIN index is created in that migration; synchronize:false because TypeORM cannot express it.
+	@Index("IDX_members_search_vector", { synchronize: false })
 	@Column({
-		type: "text",
+		type: "tsvector",
 		nullable: true,
 		select: false,
-		asExpression: "immutable_unaccent(coalesce(nickname, '') || ' ' || coalesce(first_name, '') || ' ' || coalesce(last_name, ''))",
+		asExpression: "to_tsvector('simple_unaccent', coalesce(nickname, '') || ' ' || coalesce(first_name, '') || ' ' || coalesce(last_name, ''))",
 		generatedType: "STORED",
 	})
 	@ApiHideProperty()
-	searchString?: string;
+	searchVector?: string;
 	@Column({ type: "date", nullable: true }) birthday?: string | null;
 	@Column({ type: "varchar", nullable: true }) addressStreet?: string | null;
 	@Column({ type: "varchar", nullable: true }) addressStreetNo?: string | null;
