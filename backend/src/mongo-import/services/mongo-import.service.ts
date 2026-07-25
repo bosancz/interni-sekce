@@ -1,7 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
 import { DateTime } from "luxon";
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { Config } from "src/config";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
@@ -14,11 +13,11 @@ import { Member, MemberRanks, MemberRoles, MembershipStates } from "src/models/m
 import { User, UserRoles } from "src/models/users/entities/user.entity";
 import { EntityManager, EntityTarget, ObjectLiteral } from "typeorm";
 import { MongoMemberGroups } from "../data/member-groups";
-import { MongoAlbum } from "../models/album";
-import { MongoEvent } from "../models/event";
-import { MongoMember } from "../models/member";
-import { MongoPhoto } from "../models/photo";
-import { MongoUser } from "../models/user";
+import { MongoAlbum, MongoAlbumSchema } from "../models/album";
+import { MongoEvent, MongoEventSchema } from "../models/event";
+import { MongoMember, MongoMemberSchema } from "../models/member";
+import { MongoPhoto, MongoPhotoSchema } from "../models/photo";
+import { MongoUser, MongoUserSchema } from "../models/user";
 
 @Injectable()
 export class MongoImportService {
@@ -26,12 +25,15 @@ export class MongoImportService {
 
 	private readonly groupsIndex = new Map<string, number>();
 
+	// Assigned lazily in importData() once the Mongo connection is established, so that no
+	// connection is opened just by constructing this service at CLI startup.
+	private albumsModel!: Model<MongoAlbum>;
+	private photosModel!: Model<MongoPhoto>;
+	private eventsModel!: Model<MongoEvent>;
+	private membersModel!: Model<MongoMember>;
+	private usersModel!: Model<MongoUser>;
+
 	constructor(
-		@InjectModel(MongoAlbum.name) private albumsModel: Model<MongoAlbum>,
-		@InjectModel(MongoPhoto.name) private photosModel: Model<MongoPhoto>,
-		@InjectModel(MongoEvent.name) private eventsModel: Model<MongoEvent>,
-		@InjectModel(MongoMember.name) private membersModel: Model<MongoMember>,
-		@InjectModel(MongoUser.name) private usersModel: Model<MongoUser>,
 		private entityManager: EntityManager,
 		private config: Config,
 	) {}
@@ -39,17 +41,32 @@ export class MongoImportService {
 	async importData() {
 		this.logger.log(`Starting mongo import from ${this.config.mongoDb.uri}...`);
 
-		await this.entityManager.transaction(async (t) => {
-			await this.init(t);
+		// Connect to Mongo only now, when the import actually runs — not at module/CLI startup.
+		const connection = await mongoose
+			.createConnection(this.config.mongoDb.uri, { connectTimeoutMS: 1000 })
+			.asPromise();
 
-			const memberIds = await this.importMembers(t);
+		this.albumsModel = connection.model(MongoAlbum.name, MongoAlbumSchema);
+		this.photosModel = connection.model(MongoPhoto.name, MongoPhotoSchema);
+		this.eventsModel = connection.model(MongoEvent.name, MongoEventSchema);
+		this.membersModel = connection.model(MongoMember.name, MongoMemberSchema);
+		this.usersModel = connection.model(MongoUser.name, MongoUserSchema);
 
-			const userIds = await this.importUsers(t, memberIds);
+		try {
+			await this.entityManager.transaction(async (t) => {
+				await this.init(t);
 
-			const eventIds = await this.importEvents(t, memberIds);
+				const memberIds = await this.importMembers(t);
 
-			await this.importAlbums(t, userIds, eventIds);
-		});
+				const userIds = await this.importUsers(t, memberIds);
+
+				const eventIds = await this.importEvents(t, memberIds);
+
+				await this.importAlbums(t, userIds, eventIds);
+			});
+		} finally {
+			await connection.close();
+		}
 
 		this.logger.log(`Mongo import finished.`);
 	}
