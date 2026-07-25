@@ -3,6 +3,7 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { DateTime } from "luxon";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
 import { AlbumsRepository, GetAlbumsOptions } from "src/models/albums/repositories/albums.repository";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
@@ -25,6 +26,7 @@ import { AlbumCreateBody, AlbumListQuery, AlbumResponse, AlbumUpdateBody } from 
 import { AlbumPhotosOrderBody, PhotoResponse } from "../dto/photo.dto";
 
 @Controller("albums")
+@Authenticated()
 @AcController()
 @ApiTags("Photo gallery")
 export class AlbumsController {

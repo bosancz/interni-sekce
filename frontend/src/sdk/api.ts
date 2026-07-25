@@ -5810,6 +5810,8 @@ export namespace SDK {
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
     
+            // authentication cookieAuth required
+    
     
     
             setSearchParams(requestUrlObj, requestQueryParameter);
@@ -9828,8 +9830,6 @@ export namespace SDK {
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
     
-            // authentication cookieAuth required
-    
     
     
             setSearchParams(requestUrlObj, requestQueryParameter);
@@ -10098,8 +10098,6 @@ export namespace SDK {
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
     
-            // authentication cookieAuth required
-    
     
     
             setSearchParams(requestUrlObj, requestQueryParameter);
@@ -10149,8 +10147,6 @@ export namespace SDK {
             const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
-    
-            // authentication cookieAuth required
     
     
     

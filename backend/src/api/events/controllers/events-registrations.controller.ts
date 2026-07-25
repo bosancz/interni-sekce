@@ -22,6 +22,7 @@ import { RegistrationTemplateResponse } from "../dto/registration-template.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response} from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { EventRegistrationService } from "src/models/events/services/event-registration.service";
@@ -40,6 +41,7 @@ import {sanitizeFilename} from '../../../helpers/sanitizefilename'
 
 
 @Controller("events")
+@Authenticated()
 @AcController()
 @ApiTags("Events")
 export class EventsRegistrationsController {

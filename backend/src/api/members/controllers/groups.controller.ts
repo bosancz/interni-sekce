@@ -13,13 +13,12 @@ import {
 	Post,
 	Query,
 	Req,
-	UseGuards,
 } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { QueryFailedError } from "typeorm";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
-import { UserGuard } from "src/auth/guards/user.guard";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
 import {
 	GroupCreatePermission,
@@ -33,7 +32,7 @@ import {
 import { CreateGroupBody, GroupResponse, ListGroupsQuery, UpdateGroupBody } from "../dto/group.dto";
 
 @Controller("groups")
-@UseGuards(UserGuard)
+@Authenticated()
 @AcController()
 @ApiTags("Members")
 export class GroupsController {

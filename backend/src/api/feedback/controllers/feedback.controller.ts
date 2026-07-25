@@ -1,9 +1,9 @@
-import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Post, Req } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController } from "src/access-control/access-control-lib";
 import { AuthUser } from "src/auth/decorators/auth-user.decorator";
-import { UserGuard } from "src/auth/guards/user.guard";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { SessionUser } from "src/auth/schema/user-token";
 import { Config } from "src/config";
 import { MailService } from "src/models/mail/services/mail.service";
@@ -13,7 +13,7 @@ import { BugReportBody } from "../dto/bug-report-body.dto";
 import { BugReportMailTemplate } from "../mail-templates/bug-report/bug-report.mail-template";
 
 @Controller("feedback")
-@UseGuards(UserGuard)
+@Authenticated()
 @ApiTags("Feedback")
 @AcController()
 export class FeedbackController {

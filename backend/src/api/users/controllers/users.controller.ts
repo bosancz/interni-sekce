@@ -17,6 +17,7 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { HashService } from "src/auth/services/hash.service";
 import { TokenService } from "src/auth/services/token.service";
 import { toPrefixTsQuery } from "src/helpers/search";
@@ -39,6 +40,7 @@ import { GetUserQueryDto, UserResponse } from "../dto/user.dto";
 import { ListUsersQuery } from "../dto/users.dto";
 
 @Controller("users")
+@Authenticated()
 @AcController()
 @ApiTags("Users")
 export class UsersController {

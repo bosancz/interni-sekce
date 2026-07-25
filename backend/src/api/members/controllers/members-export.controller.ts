@@ -1,8 +1,8 @@
-import { Controller, Get, Query, Req, Res, UseGuards } from "@nestjs/common";
+import { Controller, Get, Query, Req, Res } from "@nestjs/common";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
-import { UserGuard } from "src/auth/guards/user.guard";
+import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
 import { MembersExportService } from "src/models/members/services/members-export.service";
 import { pipeline } from "stream/promises";
@@ -10,7 +10,7 @@ import { MembersExportPermission } from "../acl/members.acl";
 import { MembersListQuery } from "../dto/member.dto";
 
 @Controller("members/export")
-@UseGuards(UserGuard)
+@Authenticated()
 @AcController()
 @ApiTags("Members")
 export class MembersExportController {
