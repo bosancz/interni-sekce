@@ -62,6 +62,35 @@ export class PhotosFilesService {
 		return join(this.config.fs.thumbnailsDir, albumDir, `${fileId}_${size}${ext}`);
 	}
 
+	/**
+	 * Read the width/height of a photo's on-disk image as it is actually displayed (with any EXIF
+	 * orientation applied), trying the served variants in the order the frontend prefers them.
+	 * Returns null when no readable file exists for the photo. Used by the dimension-repair
+	 * command to detect and fix stored dimensions that are transposed relative to what is served.
+	 */
+	async readServedDimensions(photo: Photo): Promise<{ width: number; height: number } | null> {
+		for (const size of [PhotoSizes.small, PhotoSizes.big, PhotoSizes.original]) {
+			const path = this.getPhotoImagePath(photo, size);
+
+			try {
+				await this.files.fileAccessible(path);
+				const metadata = await sharp(path, { limitInputPixels: MAX_INPUT_PIXELS }).metadata();
+				if (!metadata.width || !metadata.height) continue;
+
+				// orientations 5–8 rotate the image 90°, so the displayed axes are swapped
+				const swapAxes = typeof metadata.orientation === "number" && metadata.orientation >= 5;
+				return {
+					width: swapAxes ? metadata.height : metadata.width,
+					height: swapAxes ? metadata.width : metadata.height,
+				};
+			} catch {
+				// missing or unreadable variant — fall through to the next size
+			}
+		}
+
+		return null;
+	}
+
 	/** Read image dimensions, dominant background color and capture date from the buffer. */
 	async extractMetadata(buffer: Buffer): Promise<PhotoMetadata> {
 		const image = sharp(buffer, { limitInputPixels: MAX_INPUT_PIXELS });
@@ -75,9 +104,15 @@ export class PhotosFilesService {
 						.join(",")})`
 				: null;
 
+		// EXIF orientations 5–8 rotate the image by 90°, so its displayed dimensions are the
+		// stored pixel dimensions swapped. The variants we serve are baked upright with .rotate(),
+		// so the dimensions we persist must describe that upright image or the gallery lays the
+		// photo out with a transposed aspect ratio and it appears distorted.
+		const swapAxes = typeof metadata.orientation === "number" && metadata.orientation >= 5;
+
 		return {
-			width: metadata.width ?? null,
-			height: metadata.height ?? null,
+			width: (swapAxes ? metadata.height : metadata.width) ?? null,
+			height: (swapAxes ? metadata.width : metadata.height) ?? null,
 			bg,
 			timestamp: this.readCaptureDate(metadata.exif) ?? new Date(),
 		};
