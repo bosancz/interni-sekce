@@ -6,7 +6,7 @@
 	"lang": "cs",
 	"dir": "ltr",
 	"theme_color": "#2a3478",
-	"background_color": "#ffffff",
+	"background_color": "#2a3478",
 	"display": "standalone",
 	"orientation": "portrait",
 	"start_url": "/",
