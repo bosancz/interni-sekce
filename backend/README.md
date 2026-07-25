@@ -1,4 +1,4 @@
-# Backend interní sekce
+# Backend
 
 - [Migrace](#migrace)
 - [Vytvoření administrátorského uživatele](#vytvoření-administrátorského-uživatele)

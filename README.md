@@ -1,4 +1,4 @@
-# Bošán — interní sekce Dětské vodácké skupiny ŠÁN.
+# Bošán — administrační aplikace Dětské vodácké skupiny ŠÁN.
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-17-orange.svg?style=flat-square)](#contributors-) ![UptimeRobot](https://badgen.net/uptime-robot/month/ur482829-fa51144d74e17b8b556c2f6c)
 
@@ -6,15 +6,15 @@
 
 1. Pokud nemáš účet tak se [zaregistruj na GitHubu](https://github.com/join). (zabere asi 1 minutu)
 2. V záložce Issues [vytvoř nové hlášení](https://github.com/bosancz/interni-sekce/issues/new/choose), kde popíšeš, co je špatně nebo co by mohlo být lépe.
-3. Hotovo! Lidi co mají interní sekci na starosti to vyřeší a tobě přijde zpráva.
+3. Hotovo! Lidi co mají aplikaci na starosti to vyřeší a tobě přijde zpráva.
 
 ## Vývoj 🚀
 
-Detaily k rozvoji interní sekce najdeš v souboru [CONTRIBUTING.md](./CONTRIBUTING.md).
+Detaily k rozvoji aplikace najdeš v souboru [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-## Kdo dělá interní sekci ✨
+## Kdo se podílí? ✨
 
-Interní sekce vznikla a funguje díky těmto skvělým lidem ([co znamená které emoji?](https://allcontributors.org/docs/en/emoji-key)):
+Aplikace Bošán vznikla a funguje díky těmto skvělým lidem ([co znamená které emoji?](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
