@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationOptions } from "src/helpers/pagination";
+import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
 import { Brackets, FindOptionsRelations, Repository } from "typeorm";
 import { Album } from "../entities/album.entity";
@@ -69,8 +70,8 @@ export class AlbumsRepository {
 		if (options.status?.length) q.andWhere("albums.status IN (:...statuses)", { statuses: options.status });
 
 		if (options.search) {
-			const search = `%${options.search}%`;
-			q.andWhere("albums.name ILIKE :search", { search });
+			const search = toPrefixTsQuery(options.search);
+			if (search) q.andWhere("albums.searchVector @@ to_tsquery('simple_unaccent', :search)", { search });
 		}
 
 		return q.getMany();

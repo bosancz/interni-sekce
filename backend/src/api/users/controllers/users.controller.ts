@@ -19,6 +19,7 @@ import { Request, Response } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { HashService } from "src/auth/services/hash.service";
 import { TokenService } from "src/auth/services/token.service";
+import { toPrefixTsQuery } from "src/helpers/search";
 import { User } from "src/models/users/entities/user.entity";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { Repository } from "typeorm";
@@ -70,8 +71,14 @@ export class UsersController {
 			.take(query.limit || 25)
 			.skip(query.offset || 0);
 
-		if (query.search)
-			q.andWhere("user.login ILIKE :search OR member.nickname ILIKE :search", { search: `%${query.search}%` });
+		if (query.search) {
+			const search = toPrefixTsQuery(query.search);
+			if (search)
+				q.andWhere(
+					"user.searchVector @@ to_tsquery('simple_unaccent', :search) OR member.searchVector @@ to_tsquery('simple_unaccent', :search)",
+					{ search },
+				);
+		}
 
 		if (query.roles) q.andWhere("user.roles && array[:...roles]::users_roles_enum[]", { roles: query.roles });
 
