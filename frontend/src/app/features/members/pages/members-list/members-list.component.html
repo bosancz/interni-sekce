@@ -1,4 +1,4 @@
-<bo-page-header title="Databáze" [actions]="actions()" />
+<bo-page-header title="Členská databáze" [actions]="actions()" />
 
 <bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
 	@if (isDesktop()) {
@@ -260,7 +260,7 @@
 
 	@if (!members()) {
 		<p class="ion-padding">
-			Databáze je prázdná. Chceš <a class="clickable" (click)="create()">přidat prvního člena</a>?
+			Členská databáze je prázdná. Chceš <a class="clickable" (click)="create()">přidat prvního člena</a>?
 		</p>
 	}
 
