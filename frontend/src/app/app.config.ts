@@ -1,4 +1,4 @@
-import { provideHttpClient, withXhr } from "@angular/common/http";
+import { provideHttpClient } from "@angular/common/http";
 import { ApplicationConfig, ErrorHandler, isDevMode, LOCALE_ID, provideZoneChangeDetection } from "@angular/core";
 import {
 	provideRouter,
@@ -54,7 +54,7 @@ export const appConfig: ApplicationConfig = {
 		{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
 		{ provide: ErrorHandler, useClass: MainErrorHandler },
 		{ provide: LOCALE_ID, useValue: "cs" },
-		provideHttpClient(withXhr()),
+		provideHttpClient(),
 		provideCharts(withDefaultRegisterables()),
 		Config,
 	],
