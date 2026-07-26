@@ -44,20 +44,30 @@ ion-segment {
 		}
 	}
 
+	// Border lives on a wrapper we fully control (outside Ionic's shadow DOM)
+	// so an empty field is always visibly outlined — not only once focused.
+	.textarea-wrap {
+		flex-grow: 1;
+		display: flex;
+		margin: 4px 2px 0;
+		border: 1px solid var(--ion-color-step-300);
+		border-radius: 8px;
+		background: var(--bo-light);
+		overflow: hidden;
+
+		&:focus-within {
+			border-color: var(--ion-color-primary);
+			box-shadow: 0 0 0 1px var(--ion-color-primary);
+		}
+	}
+
 	ion-textarea {
 		flex-grow: 1;
 		--padding-start: 16px;
 		--padding-end: 16px;
 		--border-radius: 8px;
-		margin: 4px 2px 0;
 		--min-height: 220px;
 		--background: var(--bo-light);
-
-		// `fill="outline"` draws the border via these vars; make it clearly
-		// visible so an empty field is distinguishable from the white background.
-		--border-width: 1px;
-		--border-color: var(--ion-color-step-300);
-		--highlight-color-focused: var(--ion-color-primary);
 	}
 }
 

@@ -72,13 +72,14 @@
 		</div>
 	</div>
 
-	<ion-textarea
-		autoGrow
-		fill="outline"
-		[placeholder]="placeholder()"
-		[(ngModel)]="content"
-		(keydown)="onEditorKeydown($event)"
-	></ion-textarea>
+	<div class="textarea-wrap">
+		<ion-textarea
+			autoGrow
+			[placeholder]="placeholder()"
+			[(ngModel)]="content"
+			(keydown)="onEditorKeydown($event)"
+		></ion-textarea>
+	</div>
 </div>
 
 <div class="preview-pane" [hidden]="view() !== 'preview'">
