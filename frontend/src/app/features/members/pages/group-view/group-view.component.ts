@@ -3,8 +3,9 @@ import { ActivatedRoute } from "@angular/router";
 import { AlertController, NavController } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { create, informationCircleOutline, peopleOutline, trash } from "ionicons/icons";
+import { addOutline, create, downloadOutline, informationCircleOutline, peopleOutline, trash } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
@@ -17,6 +18,7 @@ import { VerticalMenuComponent } from "src/app/shared/components/vertical-menu/v
 import { SDK } from "src/sdk";
 import { GroupInfoComponent } from "../../components/group-info/group-info.component";
 import { GroupMembersComponent } from "../../components/group-members/group-members.component";
+import { MemberCreateModalComponent } from "../../components/member-create-modal/member-create-modal.component";
 import { GroupsService } from "../../services/groups.service";
 
 @UntilDestroy()
@@ -41,29 +43,46 @@ export class GroupViewComponent implements OnInit {
 
 	view = signal<"info" | "clenove">("clenove");
 
-	// actions that do not apply to the group are hidden,
-	// actions that apply but the user is not permitted to use are shown disabled
+	// actions the user is not permitted to use are hidden entirely (not shown disabled)
 	actions = computed<Action[]>(() => {
 		const links = this.group()?._links;
 
-		return [
+		const actions: Action[] = [
 			{
 				text: "Upravit",
 				icon: "create",
 				pinned: true,
-				hidden: !links?.updateGroup.applicable,
-				disabled: !links?.updateGroup.allowed,
+				hidden: !links?.updateGroup.applicable || !links?.updateGroup.allowed,
 				handler: () => this.navController.navigateForward(`/databaze/oddily/${this.group()?.id}/upravit`),
 			},
 			{
 				text: "Smazat",
 				icon: "trash",
 				color: "danger",
-				hidden: !links?.deleteGroup.applicable,
-				disabled: !links?.deleteGroup.allowed,
+				hidden: !links?.deleteGroup.applicable || !links?.deleteGroup.allowed,
 				handler: () => this.deleteGroup(),
 			},
 		];
+
+		// member-list actions only make sense while looking at the Členové tab
+		if (this.view() === "clenove") {
+			actions.push(
+				{
+					text: "Nový člen",
+					icon: "add-outline",
+					pinned: true,
+
+					handler: () => this.createMember(),
+				},
+				{
+					text: "Export do XLSX",
+					icon: "download-outline",
+					handler: () => this.exportMembers(),
+				},
+			);
+		}
+
+		return actions;
 	});
 
 	constructor(
@@ -73,8 +92,9 @@ export class GroupViewComponent implements OnInit {
 		private groupsService: GroupsService,
 		private alertController: AlertController,
 		private toastService: ToastService,
+		private modalService: ModalService,
 	) {
-		addIcons({ informationCircleOutline, peopleOutline, create, trash });
+		addIcons({ informationCircleOutline, peopleOutline, create, trash, addOutline, downloadOutline });
 	}
 
 	ngOnInit(): void {
@@ -113,5 +133,39 @@ export class GroupViewComponent implements OnInit {
 		await this.toastService.toast(`${group.name ?? "Oddíl " + group.id} smazán.`);
 
 		this.navController.navigateBack("/databaze");
+	}
+
+	private async createMember() {
+		const group = this.group();
+		if (!group) return;
+
+		const memberData = await this.modalService.componentModal(MemberCreateModalComponent, {
+			defaultGroupId: group.id,
+		});
+		if (!memberData) return;
+
+		await this.api.MembersApi.createMember(memberData);
+		await this.toastService.toast("Člen uložen.");
+
+		// re-fetch the group so bo-group-members (subscribed to currentGroup) reloads its list
+		this.groupsService.loadGroup(group.id);
+	}
+
+	private async exportMembers() {
+		const group = this.group();
+		if (!group) return;
+
+		const res = await this.api.MembersApi.exportMembersXlsx({ groups: [group.id], active: true }, { responseType: "blob" });
+
+		const blob = new Blob([res.data], {
+			type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		});
+
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `${group.shortName ?? "oddil-" + group.id}.xlsx`;
+		a.click();
+		URL.revokeObjectURL(url);
 	}
 }
