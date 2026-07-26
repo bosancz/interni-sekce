@@ -1,5 +1,5 @@
 import { Injectable, OnApplicationBootstrap } from "@nestjs/common";
-import { access, mkdir, readdir, rename, unlink, writeFile } from "fs/promises";
+import { access, mkdir, readdir, rename, rmdir, unlink, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 import { Config } from "src/config";
 
@@ -30,6 +30,15 @@ export class FilesService implements OnApplicationBootstrap {
 
 	async deleteFile(path: string) {
 		return unlink(path);
+	}
+
+	async readDir(path: string): Promise<string[]> {
+		return readdir(path);
+	}
+
+	/** Remove a directory. Fails if it is not empty. */
+	async deleteDir(path: string) {
+		return rmdir(path);
 	}
 
 	async moveFile(oldPath: string, newPath: string) {

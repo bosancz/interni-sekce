@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { FilesModule } from "src/models/files/files.module";
+import { CleanAlbumsMetadataCommand } from "./commands/clean-album-metadata.command";
 import { FixPhotoDimensionsCommand } from "./commands/fix-photo-dimensions.command";
 import { WriteAlbumsMetadataCommand } from "./commands/write-album-metadata.command";
 import { Album } from "./entities/album.entity";
@@ -23,6 +24,7 @@ import { PhotosMaintenanceService } from "./services/photos-maintenance.service"
 		PhotosFilesService,
 		PhotosMaintenanceService,
 		WriteAlbumsMetadataCommand,
+		CleanAlbumsMetadataCommand,
 		FixPhotoDimensionsCommand,
 	],
 	exports: [AlbumsRepository, PhotosRepository, PhotosFilesService],
