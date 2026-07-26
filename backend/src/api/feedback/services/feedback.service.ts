@@ -43,8 +43,12 @@ export class FeedbackService {
 		};
 	}
 
-	/** Construct and send the bug-report email to the configured recipient. */
-	async sendBugReportEmail(report: BugReport): Promise<void> {
+	/**
+	 * Construct and send the bug-report email to the configured recipient.
+	 * Returns whether the email was actually sent; delivery failures are logged, not thrown,
+	 * so the caller can fall back to the other channel.
+	 */
+	async sendBugReportEmail(report: BugReport): Promise<boolean> {
 		const mail = BugReportMailTemplate(this.config.feedback.bugReportRecipient, {
 			reporter: report.reporter,
 			environment: report.environment,
@@ -52,16 +56,23 @@ export class FeedbackService {
 			description: report.description,
 		});
 
-		await this.mailService.sendMail(mail);
-		this.logger.verbose("Bug report email sent");
+		try {
+			await this.mailService.sendMail(mail);
+			this.logger.verbose("Bug report email sent");
+			return true;
+		} catch (err) {
+			this.logger.error(`Failed to send bug report email: ${(err as Error).message}`);
+			return false;
+		}
 	}
 
 	/**
-	 * Construct and file the bug report as a GitHub issue. Best-effort: a misconfigured or
-	 * unreachable GitHub must not fail the report, which is also delivered by email.
+	 * Construct and file the bug report as a GitHub issue.
+	 * Returns whether an issue was actually created — false when GitHub is not configured or
+	 * the API call fails (logged, not thrown), so the caller can fall back to the email.
 	 */
-	async fileBugReportIssue(report: BugReport): Promise<void> {
-		if (!this.github.isConfigured) return;
+	async fileBugReportIssue(report: BugReport): Promise<boolean> {
+		if (!this.github.isConfigured) return false;
 
 		try {
 			const issue = await this.github.createIssue(this.config.github.bugReportRepo, {
@@ -71,8 +82,10 @@ export class FeedbackService {
 			});
 
 			this.logger.verbose(`Bug report filed as GitHub issue #${issue.number} (${issue.url}).`);
+			return true;
 		} catch (err) {
 			this.logger.error(`Failed to file bug report as a GitHub issue: ${(err as Error).message}`);
+			return false;
 		}
 	}
 
