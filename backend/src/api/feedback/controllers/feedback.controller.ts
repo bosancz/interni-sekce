@@ -22,7 +22,10 @@ export class FeedbackController {
 
 		const report = await this.feedback.buildBugReport(authUser.userId, body);
 
-		await this.feedback.sendBugReportEmail(report);
+		// File the issue first: it is best-effort and never throws, so it is filed even when
+		// the email send below fails. The email is sent last so its failure still surfaces to
+		// the client (the primary channel), without discarding the already-filed issue.
 		await this.feedback.fileBugReportIssue(report);
+		await this.feedback.sendBugReportEmail(report);
 	}
 }
