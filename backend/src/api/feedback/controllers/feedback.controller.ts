@@ -43,7 +43,9 @@ export class FeedbackController {
 			description: body.description,
 		});
 
+		this.logger.debug(`Sending email to ${this.config.feedback.bugReportRecipient}`);
 		await this.mailService.sendMail(mail);
+		this.logger.verbose("Bug report email sent");
 
 		// Also file the report as a GitHub issue. This is best-effort: a misconfigured or
 		// unreachable GitHub must not fail the report, which has already been delivered by mail.
@@ -77,7 +79,7 @@ export class FeedbackController {
 				labels: [this.config.github.bugReportLabel],
 			});
 
-			this.logger.log(`Bug report filed as GitHub issue #${issue.number} (${issue.url}).`);
+			this.logger.verbose(`Bug report filed as GitHub issue #${issue.number} (${issue.url}).`);
 		} catch (err) {
 			this.logger.error(`Failed to file bug report as a GitHub issue: ${(err as Error).message}`);
 		}
