@@ -222,6 +222,8 @@ export class GroupMembersComponent implements OnInit {
 			roles: this.selectedRoles() as SDK.ListMembersRolesEnum[],
 			membership: this.selectedMembership() as SDK.ListMembersMembershipEnum[],
 			groups: [this.groupId],
+			// No pagination UI here — load the whole group in one request.
+			limit: 1000,
 			// default: active only; "show inactive" reveals inactive members too
 			active: this.showInactive() ? undefined : true,
 			// Fetch contacts in the same request instead of one call per member,
