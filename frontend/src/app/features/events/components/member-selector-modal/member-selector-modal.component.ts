@@ -44,6 +44,8 @@ export class MemberSelectorModalComponent
 {
 	members = input<SDK.MemberResponse[]>([]);
 	keepOpenAfterSelect = false;
+	// omezení výběru na dané role, ostatní členy modal vůbec nenabídne
+	roles?: SDK.MemberRolesEnum[];
 	onSelect?: (member: SDK.MemberResponse) => void;
 
 	membersIndex: string[] = [];
@@ -64,11 +66,13 @@ export class MemberSelectorModalComponent
 		this.loadMembers();
 	}
 	private async loadMembers() {
+		const roles = this.roles;
+
 		const inputMembers = this.members();
 		if (inputMembers && inputMembers.length === 0) {
-			this._members = await this.api.MembersApi.listMembers({ limit: 1000 }).then((res) => res.data);
+			this._members = await this.api.MembersApi.listMembers({ limit: 1000, roles }).then((res) => res.data);
 		} else {
-			this._members = inputMembers || [];
+			this._members = (inputMembers || []).filter((member) => !roles || roles.includes(member.role));
 		}
 
 		this.sortMembers();

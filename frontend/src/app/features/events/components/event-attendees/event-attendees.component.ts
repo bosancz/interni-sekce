@@ -17,6 +17,9 @@ import { EventAgeHistogramComponent } from "../event-age-histogram/event-age-his
 import { EventAttendeesListComponent } from "../event-attendees-list/event-attendees-list.component";
 import { EventBirthdayListComponent } from "../event-birthday-list/event-birthday-list.component";
 
+// vedoucím akce může být jen instruktor nebo vedoucí, ne dítě
+const LEADER_ROLES: SDK.MemberRolesEnum[] = [SDK.MemberRolesEnum.Instruktor, SDK.MemberRolesEnum.Vedouci];
+
 @UntilDestroy()
 @Component({
 	selector: "bo-event-attendees",
@@ -126,6 +129,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 		await this.modalService.componentModal(MemberSelectorModalComponent, {
 			keepOpenAfterSelect: true,
+			roles: type === "leader" ? LEADER_ROLES : undefined,
 			onSelect: (member: SDK.MemberResponse) => void addSelectedMember(member),
 		});
 	}
