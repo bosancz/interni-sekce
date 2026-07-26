@@ -15,6 +15,9 @@ import { SDK } from "src/sdk";
 import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 import { AlbumSelectorModalComponent, CREATE_ALBUM } from "../album-selector-modal/album-selector-modal.component";
 
+/** Prefilled outline offered when writing a report for an event that doesn't have one yet. */
+const EVENT_REPORT_TEMPLATE = ["# Průběh akce", "", "# Problémy", "", "# Pochvaly pro členy"].join("\n");
+
 @UntilDestroy()
 @Component({
 	selector: "bo-event-report",
@@ -54,7 +57,7 @@ export class EventReportComponent {
 	async writeReport() {
 		const result = await this.modalService.componentModal(MarkdownEditorModalComponent, {
 			header: "Report",
-			value: this.event()?.report,
+			value: this.event()?.report || EVENT_REPORT_TEMPLATE,
 		});
 
 		if (result !== null) this.update.emit({ report: result });
