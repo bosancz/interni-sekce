@@ -1,43 +1,37 @@
-import { Body, Controller, Post, Req } from "@nestjs/common";
+import { Body, Controller, InternalServerErrorException, Post, Req } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController } from "src/access-control/access-control-lib";
 import { AuthUser } from "src/auth/decorators/auth-user.decorator";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { SessionUser } from "src/auth/schema/user-token";
-import { Config } from "src/config";
-import { MailService } from "src/models/mail/services/mail.service";
-import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { SendBugReportPermission } from "../acl/feedback.acl";
 import { BugReportBody } from "../dto/bug-report-body.dto";
-import { BugReportMailTemplate } from "../mail-templates/bug-report/bug-report.mail-template";
+import { FeedbackService } from "../services/feedback.service";
 
 @Controller("feedback")
 @Authenticated()
 @ApiTags("Feedback")
 @AcController()
 export class FeedbackController {
-	constructor(
-		private readonly mailService: MailService,
-		private readonly users: UsersRepository,
-		private readonly config: Config,
-	) {}
+	constructor(private readonly feedback: FeedbackService) {}
 
 	@Post("bug")
 	async sendBugReport(@Req() req: Request, @AuthUser() authUser: SessionUser, @Body() body: BugReportBody) {
 		SendBugReportPermission.canOrThrow(req);
 
-		const user = await this.users.getUser(authUser.userId, { includeMember: true });
+		const report = await this.feedback.buildBugReport(authUser.userId, body);
 
-		const reporter = [user?.member?.nickname, user?.login && `<${user.login}>`].filter(Boolean).join(" ") || "neznámý";
+		// Deliver on both channels independently — neither throws on its own failure. The
+		// report succeeds as long as at least one channel got through; only a total failure
+		// (email and GitHub both down) surfaces as an error to the client.
+		const [emailed, filed] = await Promise.all([
+			this.feedback.sendBugReportEmail(report),
+			this.feedback.fileBugReportIssue(report),
+		]);
 
-		const mail = BugReportMailTemplate(this.config.feedback.bugReportRecipient, {
-			reporter,
-			environment: this.config.app.environmentTitle || this.config.environment,
-			url: body.url,
-			description: body.description,
-		});
-
-		await this.mailService.sendMail(mail);
+		if (!emailed && !filed) {
+			throw new InternalServerErrorException("Bug report could not be delivered by email or GitHub.");
+		}
 	}
 }

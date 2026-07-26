@@ -144,6 +144,34 @@ const feedback = {
 };
 
 /**
+ * GitHub App.
+ *
+ * In-app bug reports are additionally filed as GitHub issues (see FeedbackController /
+ * GithubService). Authentication uses a GitHub App: the App ID + private key sign a JWT
+ * that is exchanged for a short-lived installation access token (all handled by
+ * @octokit/auth-app), so issues are created as the app — no personal account or PAT.
+ *
+ * Set up: create a GitHub App with "Issues: Read & write" permission, generate a private
+ * key, and install it on the target repo. Provide the key either inline via
+ * GITHUB_APP_PRIVATE_KEY (PEM, literal `\n` escapes are accepted) or as a file mounted in
+ * the keys dir via GITHUB_APP_PRIVATE_KEY_FILE. The installation id is auto-discovered
+ * from the repo, so GITHUB_APP_INSTALLATION_ID is optional. When appId/privateKey are
+ * unset the integration is simply disabled and bug reports fall back to email only.
+ */
+const github = {
+	appId: process.env["GITHUB_APP_ID"] ?? "",
+	privateKey: (process.env["GITHUB_APP_PRIVATE_KEY"] ?? "").replace(/\\n/g, "\n"),
+	privateKeyFile: process.env["GITHUB_APP_PRIVATE_KEY_FILE"]
+		? path.resolve(fs.keysDir, process.env["GITHUB_APP_PRIVATE_KEY_FILE"])
+		: "",
+	installationId: process.env["GITHUB_APP_INSTALLATION_ID"] ?? "",
+	// Repository that in-app bug reports are filed into, as "owner/repo".
+	bugReportRepo: process.env["GITHUB_BUG_REPORT_REPO"] ?? "bosancz/interni-sekce",
+	// Label applied to every issue created from an in-app bug report.
+	bugReportLabel: process.env["GITHUB_BUG_REPORT_LABEL"] ?? "user-reported",
+};
+
+/**
  * OAuth2 identity-provider settings.
  *
  * The backend acts as an OAuth2 provider (authorization-code flow) so external
@@ -166,6 +194,7 @@ export class Config {
 	db = db;
 	environment = environment;
 	feedback = feedback;
+	github = github;
 	google = google;
 	jwt = jwt;
 	logging = logging;
