@@ -11,6 +11,37 @@
 				color="light"
 				fill="solid"
 				size="small"
+				(click)="onAddHeading(1)"
+				aria-label="Přidat nadpis 1. úrovně"
+				boTooltip="Nadpis 1. úrovně (#)"
+			>
+				H1
+			</ion-button>
+			<ion-button
+				color="light"
+				fill="solid"
+				size="small"
+				(click)="onAddHeading(2)"
+				aria-label="Přidat nadpis 2. úrovně"
+				boTooltip="Nadpis 2. úrovně (##)"
+			>
+				H2
+			</ion-button>
+			<ion-button
+				color="light"
+				fill="solid"
+				size="small"
+				(click)="onAddHeading(3)"
+				aria-label="Přidat nadpis 3. úrovně"
+				boTooltip="Nadpis 3. úrovně (###)"
+			>
+				H3
+			</ion-button>
+			<div class="toolbar-separator"></div>
+			<ion-button
+				color="light"
+				fill="solid"
+				size="small"
 				(click)="onAddBold()"
 				aria-label="Přidat tučné formátování"
 				boTooltip="Tučné (Ctrl/Cmd + B)"
@@ -60,6 +91,7 @@
 <div class="help-pane" [hidden]="view() !== 'help'">
 	<p>Používej markdown zápis přímo v textu:</p>
 	<ul>
+		<li><strong>Nadpisy:</strong> <code>#</code>, <code>##</code>, <code>###</code> na začátku řádku</li>
 		<li><strong>Tučné:</strong> <code>**text**</code></li>
 		<li><strong>Kurzíva:</strong> <code>_text_</code></li>
 		<li><strong>Seznam:</strong> každý řádek začni <code>- </code></li>

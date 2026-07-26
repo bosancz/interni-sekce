@@ -48,6 +48,10 @@ export class MarkdownEditorComponent {
 		void this.addList();
 	}
 
+	onAddHeading(level: 1 | 2 | 3) {
+		void this.addHeading(level);
+	}
+
 	async addBold() {
 		await this.wrapSelection("**");
 	}
@@ -63,6 +67,24 @@ export class MarkdownEditorComponent {
 			return selected
 				.split("\n")
 				.map((line) => (line.length ? (line.startsWith("- ") ? line : `- ${line}`) : "- "))
+				.join("\n");
+		});
+	}
+
+	async addHeading(level: 1 | 2 | 3) {
+		const prefix = `${"#".repeat(level)} `;
+
+		await this.transformSelection((selected) => {
+			if (!selected.length) return prefix;
+
+			return selected
+				.split("\n")
+				.map((line) => {
+					// Strip any existing heading marker so switching levels
+					// replaces rather than stacks the markers.
+					const stripped = line.replace(/^#{1,6}\s+/, "");
+					return `${prefix}${stripped}`;
+				})
 				.join("\n");
 		});
 	}
