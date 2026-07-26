@@ -1,34 +1,33 @@
 {
-  "name": "@bosancz/interni-sekce",
-  "description": "Webové stránky Dětské vodácké skupiny ŠÁN",
-  "main": "index.js",
-  "version": "4.0.0-rc.17",
-  "private": true,
-  "scripts": {
-    "all-contributors:check": "all-contributors check",
-    "all-contributors:generate": "all-contributors generate",
-    "install": "./scripts/install.sh",
-    "dev": "FORCE_COLOR=3 concurrently -k -n FE,BE --prefix-colors green,yellow \"npm run dev:frontend\" \"npm run dev:backend\" 2>&1 | tee dev.log",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev",
-    "release": "git switch master && git push && git switch release && git merge master --ff-only && git push --follow-tags && git switch master",
-    "release:patch": "git switch master && npm version patch && git push && npm run release",
-    "release:minor": "git switch master && npm version minor && git push && npm run release",
-    "release:major": "git switch master && npm version major && git push && npm run release",
-    "update-tags": "git fetch --tags --force origin"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^21.2.1",
-    "@commitlint/config-conventional": "^21.2.0",
-    "all-contributors-cli": "^6.26.1",
-    "concurrently": "^10.0.3"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bosancz/bosan.cz.git"
-  },
-  "bugs": {
-    "url": "https://github.com/bosancz/bosan.cz/issues"
-  },
-  "homepage": "https://github.com/bosancz/bosan.cz#readme"
+	"name": "@bosancz/interni-sekce",
+	"description": "Webové stránky Dětské vodácké skupiny ŠÁN",
+	"main": "index.js",
+	"private": true,
+	"scripts": {
+		"all-contributors:check": "all-contributors check",
+		"all-contributors:generate": "all-contributors generate",
+		"install": "./scripts/install.sh",
+		"dev": "FORCE_COLOR=3 concurrently -k -n FE,BE --prefix-colors green,yellow \"npm run dev:frontend\" \"npm run dev:backend\" 2>&1 | tee dev.log",
+		"dev:backend": "cd backend && npm run dev",
+		"dev:frontend": "cd frontend && npm run dev",
+		"release": "git switch master && git push && git switch release && git merge master --ff-only && git push --follow-tags && git switch master",
+		"release:patch": "git switch master && npm version patch && git push && npm run release",
+		"release:minor": "git switch master && npm version minor && git push && npm run release",
+		"release:major": "git switch master && npm version major && git push && npm run release",
+		"update-tags": "git fetch --tags --force origin"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^21.2.1",
+		"@commitlint/config-conventional": "^21.2.0",
+		"all-contributors-cli": "^6.26.1",
+		"concurrently": "^10.0.3"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bosancz/bosan.cz.git"
+	},
+	"bugs": {
+		"url": "https://github.com/bosancz/bosan.cz/issues"
+	},
+	"homepage": "https://github.com/bosancz/bosan.cz#readme"
 }
