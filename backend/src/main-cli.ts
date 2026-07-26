@@ -7,10 +7,7 @@ async function bootstrap() {
 	const logger = new Logger("CLI");
 
 	await CommandFactory.run(CliModule, {
-		logger:
-			StaticConfig.environment === "development"
-				? ["log", "warn", "error", "fatal", "verbose", "debug"]
-				: ["log", "warn", "error", "fatal"],
+		logger: StaticConfig.logging.level,
 		serviceErrorHandler: (error) => {
 			logger.error(error);
 			console.error(error);
