@@ -1,5 +1,5 @@
 import { KeyValuePipe } from "@angular/common";
-import { Component, signal } from "@angular/core";
+import { Component, Input, OnInit, signal } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import {
 	IonButton,
@@ -38,7 +38,10 @@ import { SDK } from "src/sdk";
 		GroupsSelectComponent,
 	],
 })
-export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCreateBody> {
+export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCreateBody> implements OnInit {
+	// Preselects the group when opened from within a group's page; the user can still change it.
+	@Input() defaultGroupId?: number | null;
+
 	roles = MemberRoles;
 
 	showValidationErrors = signal(false);
@@ -53,6 +56,10 @@ export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCr
 
 	constructor(modalController: ModalController) {
 		super(modalController);
+	}
+
+	ngOnInit() {
+		if (this.defaultGroupId != null) this.form.controls.groupId.setValue(this.defaultGroupId);
 	}
 
 	createMember() {
