@@ -6,6 +6,9 @@ import { StaticConfig } from "./config";
 async function bootstrap() {
 	const logger = new Logger("CLI");
 
+	logger.log(`${StaticConfig.app.name} CLI`);
+	logger.log(`Version: ${StaticConfig.app.version}`);
+
 	await CommandFactory.run(CliModule, {
 		logger: StaticConfig.logging.level,
 		serviceErrorHandler: (error) => {
