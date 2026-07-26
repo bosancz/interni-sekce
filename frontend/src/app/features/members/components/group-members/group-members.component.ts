@@ -74,10 +74,6 @@ import { GroupsService } from "../../services/groups.service";
 	],
 })
 export class GroupMembersComponent implements OnInit {
-	// Upper bound for a single group's membership; used to fetch the whole group in one
-	// request instead of relying on the backend's paginated default (see loadMembers).
-	private static readonly MEMBERS_LIMIT = 1000;
-
 	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
 
 	roles = MemberRoles;
@@ -226,13 +222,8 @@ export class GroupMembersComponent implements OnInit {
 			roles: this.selectedRoles() as SDK.ListMembersRolesEnum[],
 			membership: this.selectedMembership() as SDK.ListMembersMembershipEnum[],
 			groups: [this.groupId],
-			// This tab shows the whole group at once (no pagination UI). Without an explicit
-			// limit the backend caps the result at its default (25), which — combined with the
-			// default `role DESC` sort — silently drops members that sort last (e.g. children,
-			// role "dite") in any group larger than the cap. A group is inherently bounded
-			// (children + leaders of a single oddíl), so request far above any real size to
-			// load every member in a single request.
-			limit: GroupMembersComponent.MEMBERS_LIMIT,
+			// No pagination UI here — load the whole group in one request.
+			limit: 1000,
 			// default: active only; "show inactive" reveals inactive members too
 			active: this.showInactive() ? undefined : true,
 			// Fetch contacts in the same request instead of one call per member,
