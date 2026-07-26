@@ -68,8 +68,7 @@ export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 				text: "Nový oddíl",
 				icon: "add-outline",
 				pinned: true,
-				disabled: !links?.createGroup.allowed,
-				hidden: !links?.createGroup.applicable,
+				hidden: !links?.createGroup.applicable || !links?.createGroup.allowed,
 				handler: () => this.createGroup(),
 			},
 		]);

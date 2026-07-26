@@ -13,7 +13,7 @@
 
 			@if (attendee.member?.birthday && hasBirthday(attendee)) {
 				<span class="birthday" slot="end">
-					🎉 {{ attendee.member.birthday | date: "d. M." }}
+					🎉 {{ attendee.member?.birthday | date: "d. M." }}
 				</span>
 			}
 

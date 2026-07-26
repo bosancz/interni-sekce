@@ -2,7 +2,6 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
-    "ignoreDeprecations": "6.0",
     "outDir": "./dist",
     "typeRoots": ["node_modules/@types"],
     "types": ["google.accounts"],
