@@ -52,13 +52,12 @@ ion-segment {
 		margin: 4px 2px 0;
 		--min-height: 220px;
 		--background: var(--bo-light);
-		border: 1px solid var(--ion-color-step-200);
-		border-radius: 8px;
 
-		&.ion-focused,
-		&:focus-within {
-			border-color: var(--ion-color-primary);
-		}
+		// `fill="outline"` draws the border via these vars; make it clearly
+		// visible so an empty field is distinguishable from the white background.
+		--border-width: 1px;
+		--border-color: var(--ion-color-step-300);
+		--highlight-color-focused: var(--ion-color-primary);
 	}
 }
 
