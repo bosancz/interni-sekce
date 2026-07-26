@@ -53,12 +53,14 @@
 </ng-template>
 
 <bo-page-content>
+	<!-- The preview is dismissed on `pointerdown` rather than `click`, so it is already gone by
+	     the time the row's routerLink starts navigating away. -->
 	<div
 		class="events-table-wrapper"
 		(mouseover)="onRowHover($event)"
 		(mousemove)="onRowHover($event)"
 		(mouseleave)="clearHover()"
-		(click)="clearHover()"
+		(pointerdown)="clearHover()"
 	>
 	<admin-table
 		[class]="'events-table'"

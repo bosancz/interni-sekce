@@ -180,6 +180,13 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	private previewTimer: ReturnType<typeof setTimeout> | null = null;
 	private pendingEventId: number | null = null;
 
+	// Opening an event does not destroy this page — Ionic keeps it in the navigation stack — and
+	// the overlay sits in <body>, outside the hidden ion-page, so a preview left behind would
+	// float over the event we navigated to. Dismissing it on pointerdown is not enough on its
+	// own: the page transition slides rows out from under the resting cursor, and the resulting
+	// hover events would schedule the card straight back in. Pause on leave, resume on return.
+	private previewPaused = false;
+
 	private previewOverlay = viewChild<ElementRef<HTMLElement>>("previewOverlay");
 	// Hold a direct reference to the relocated overlay: the `previewOverlay` viewChild
 	// signal may already be torn down by the time ngOnDestroy runs, which would leave the
@@ -222,6 +229,15 @@ export class EventsListComponent implements OnInit, OnDestroy {
 			},
 			{ injector: this.injector },
 		);
+	}
+
+	ionViewWillEnter(): void {
+		this.previewPaused = false;
+	}
+
+	ionViewWillLeave(): void {
+		this.previewPaused = true;
+		this.clearHover();
 	}
 
 	ngOnDestroy(): void {
@@ -515,6 +531,8 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	// Show the event preview card next to the mouse while it rests over a row. Delegated
 	// on the table wrapper so it keeps working as rows stream in via infinite scroll.
 	onRowHover(e: MouseEvent) {
+		if (this.previewPaused) return;
+
 		const row = (e.target as HTMLElement | null)?.closest?.("[id^='event-']") as HTMLElement | null;
 		if (!row) {
 			this.clearHover();
