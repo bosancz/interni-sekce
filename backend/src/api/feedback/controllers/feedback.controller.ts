@@ -72,7 +72,7 @@ export class FeedbackController {
 				.join("\n");
 
 			const issue = await this.github.createIssue(this.config.github.bugReportRepo, {
-				title: this.issueTitle(params.description),
+				title: this.issueTitle(params.description, this.config.app.environmentTitle),
 				body: issueBody,
 				labels: [this.config.github.bugReportLabel],
 			});
@@ -83,10 +83,15 @@ export class FeedbackController {
 		}
 	}
 
-	/** Build a concise issue title from the free-text description (first line, truncated). */
-	private issueTitle(description: string): string {
+	/**
+	 * Build a concise issue title from the free-text description (first line, truncated).
+	 * Non-production environments (ENV_TITLE set, e.g. "TEST") are prefixed so a report from
+	 * the testing environment is recognizable straight from the issue list.
+	 */
+	private issueTitle(description: string, environmentTitle: string): string {
 		const firstLine = description.trim().split("\n")[0].trim();
 		const summary = firstLine.length > 80 ? `${firstLine.slice(0, 77)}…` : firstLine;
-		return `Nahlášená chyba: ${summary}`;
+		const prefix = environmentTitle ? `[${environmentTitle}] ` : "";
+		return `${prefix}Nahlášená chyba: ${summary}`;
 	}
 }
