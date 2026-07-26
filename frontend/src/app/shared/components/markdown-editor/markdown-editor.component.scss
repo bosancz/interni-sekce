@@ -33,9 +33,9 @@ ion-segment {
 		display: flex;
 		align-items: center;
 		gap: 4px;
-		border: 1px solid var(--ion-color-step-200);
+		border: 1px solid var(--bo-line);
 		border-radius: 8px;
-		background: var(--ion-color-step-50);
+		background: var(--bo-light);
 		width: fit-content;
 
 		ion-button {
@@ -46,11 +46,13 @@ ion-segment {
 
 	// Border lives on a wrapper we fully control (outside Ionic's shadow DOM)
 	// so an empty field is always visibly outlined — not only once focused.
+	// Note: `--ion-color-step-*` is only defined in the dark theme, so using it
+	// here would make the whole `border` declaration invalid in light mode.
 	.textarea-wrap {
 		flex-grow: 1;
 		display: flex;
 		margin: 4px 2px 0;
-		border: 1px solid var(--ion-color-step-300);
+		border: 1px solid color-mix(in srgb, var(--bo-muted) 45%, transparent);
 		border-radius: 8px;
 		background: var(--bo-light);
 		overflow: hidden;
@@ -109,5 +111,5 @@ ion-segment {
 .toolbar-separator {
 	width: 1px;
 	height: 20px;
-	background: var(--ion-color-step-250);
+	background: var(--bo-line);
 }
