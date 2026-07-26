@@ -8,6 +8,7 @@ async function bootstrap() {
 
 	logger.log(`${StaticConfig.app.name} CLI`);
 	logger.log(`Version: ${StaticConfig.app.version}`);
+	logger.log(`Logging level: ${StaticConfig.logging.level}`);
 
 	await CommandFactory.run(CliModule, {
 		logger: StaticConfig.logging.level,
