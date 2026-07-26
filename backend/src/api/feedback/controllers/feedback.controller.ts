@@ -43,7 +43,6 @@ export class FeedbackController {
 			description: body.description,
 		});
 
-		this.logger.debug(`Sending email to ${this.config.feedback.bugReportRecipient}`);
 		await this.mailService.sendMail(mail);
 		this.logger.verbose("Bug report email sent");
 
