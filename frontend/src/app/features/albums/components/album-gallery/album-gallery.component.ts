@@ -27,6 +27,18 @@ export class AlbumGalleryComponent {
 	selecting = input<boolean>(false);
 	selectedPhotos = input<SDK.PhotoResponseWithLinks[]>([]);
 
+	upload = output<void>();
+	viewChange = output<"gallery" | "manage">();
+	sort = output<void>();
+	selectingStart = output<void>();
+	selectingCancel = output<void>();
+	deleteSelected = output<void>();
+	selectedPhotosChange = output<SDK.PhotoResponseWithLinks[]>();
+	reorder = output<SDK.PhotoResponseWithLinks[]>();
+	photoClick = output<SDK.PhotoResponseWithLinks>();
+	listClick = output<CustomEvent<SDK.PhotoResponseWithLinks | undefined>>();
+	longPress = output<SDK.PhotoResponseWithLinks>();
+
 	// currently selected tag filter (null = show all photos)
 	activeTag = signal<string | null>(null);
 
@@ -62,18 +74,6 @@ export class AlbumGalleryComponent {
 	toggleTag(tag: string) {
 		this.activeTag.set(this.effectiveTag() === tag ? null : tag);
 	}
-
-	upload = output<void>();
-	viewChange = output<"gallery" | "manage">();
-	sort = output<void>();
-	selectingStart = output<void>();
-	selectingCancel = output<void>();
-	deleteSelected = output<void>();
-	selectedPhotosChange = output<SDK.PhotoResponseWithLinks[]>();
-	reorder = output<SDK.PhotoResponseWithLinks[]>();
-	photoClick = output<SDK.PhotoResponseWithLinks>();
-	listClick = output<CustomEvent<SDK.PhotoResponseWithLinks | undefined>>();
-	longPress = output<SDK.PhotoResponseWithLinks>();
 
 	constructor() {
 		addIcons({
