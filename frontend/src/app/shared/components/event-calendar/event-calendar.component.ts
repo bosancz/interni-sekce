@@ -116,25 +116,25 @@ export class EventCalendarComponent implements OnInit {
 		effect(() => {
 			const dateFrom = this.dateFromString() as DateTime;
 			const dateTill = this.dateTillString() as DateTime;
-			const cpv = this.cpv();
 			const events = this.events();
 
 			this.dateFrom = dateFrom;
 			this.dateTill = dateTill;
 			this.createCalendar();
 			if (events) this.assignEvents(events, "own");
-			if (this.eventsCPV) this.assignEvents(this.eventsCPV, "cpv");
+			this.assignEvents(this.eventsCPV, "cpv");
+		});
 
-			if (cpv) {
+		// CPV events come from a separate endpoint that ignores the date range, so (re)load them
+		// only when the `cpv` flag toggles. Loading them inside the calendar effect above re-ran on
+		// every date/own-events change and appended a fresh copy each time, duplicating every event.
+		effect(() => {
+			if (this.cpv()) {
 				this.loadEventsCPV();
 			} else {
 				this.eventsCPV = [];
+				this.assignEvents(this.eventsCPV, "cpv");
 			}
-		});
-
-		effect(() => {
-			const events = this.events();
-			if (events) this.assignEvents(events, "own");
 		});
 	}
 
