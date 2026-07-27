@@ -31,6 +31,18 @@
 	flex-wrap: wrap;
 }
 
+.tag-filter {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 2px;
+	margin: 0.5rem 0;
+
+	ion-chip {
+		cursor: pointer;
+	}
+}
+
 // without a label the buttons are icons only, so drop the padding the label took
 @media (max-width: 991.98px) {
 	.gallery-header .actions ion-button {

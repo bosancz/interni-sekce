@@ -95,6 +95,13 @@
 
 	@if (photo()) {
 		<ion-toolbar class="bottom-toolbar" [class.controls-hidden]="!controlsVisible()">
+			<div class="tags-bar">
+				<bo-photo-tags-editor
+					[tags]="photo()!.tags || []"
+					[albumTags]="albumTags()"
+					(tagsChange)="saveTags($event)"
+				></bo-photo-tags-editor>
+			</div>
 			@if (!editingCaption()) {
 				<ion-item lines="none">
 					<ion-label [class.nocaption]="!photo()!.caption" (dblclick)="editCaption()">

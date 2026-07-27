@@ -49,11 +49,27 @@
 	</div>
 }
 
+@if (view() === 'gallery' && allTags().length) {
+	<!-- filter the gallery by tag, mirroring the public site's tag buttons -->
+	<div class="tag-filter">
+		<ion-chip [outline]="!!effectiveTag()" color="primary" (click)="selectTag(null)">Všechny fotky</ion-chip>
+		@for (tag of allTags(); track tag) {
+			<ion-chip
+				[outline]="effectiveTag() !== tag"
+				color="primary"
+				(click)="selectTag(effectiveTag() === tag ? null : tag)"
+			>
+				#{{ tag }}
+			</ion-chip>
+		}
+	</div>
+}
+
 <div class="gallery">
 	@if (view() === 'gallery') {
 		@if (photos()?.length) {
 			<bo-photo-gallery
-				[photos]="photos()!"
+				[photos]="displayPhotos()!"
 				[maxHeight]="320"
 				[clickable]="true"
 				(click)="photoClick.emit($event)"

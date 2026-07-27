@@ -1,11 +1,26 @@
-.tag {
+.tags {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 2px;
+}
+
+ion-chip.tag {
+	margin: 2px;
+	font-size: 0.85rem;
 	cursor: pointer;
-	vertical-align: middle;
-	margin: 0 5px 0 0;
+	transition: opacity 0.15s ease;
+
+	// an available-but-not-applied tag is dimmed, so the photo's own tags stand out
+	&:not(.active):not(.add) {
+		opacity: 0.55;
+	}
+	&:not(.active):not(.add):hover {
+		opacity: 0.85;
+	}
 }
-.tag:not(.active) {
-	opacity: 0.3;
-}
-.tag:not(.active):hover {
-	opacity: 0.8;
+
+ion-chip.tag.add ion-icon {
+	margin-right: 2px;
+	font-size: 1rem;
 }

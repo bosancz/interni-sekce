@@ -32,6 +32,7 @@ import { ToastService } from "src/app/core/services/toast.service";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
+import { PhotoTagsEditorComponent } from "../photo-tags-editor/photo-tags-editor.component";
 
 @Component({
 	selector: "bo-photos-edit",
@@ -53,6 +54,7 @@ import { SDK } from "src/sdk";
 		IonIcon,
 		PhotoImageUrlPipe,
 		TooltipDirective,
+		PhotoTagsEditorComponent,
 	],
 })
 export class PhotosEditComponent implements OnInit {
@@ -60,6 +62,10 @@ export class PhotosEditComponent implements OnInit {
 	// Set via Ionic modal componentProps (Object.assign), so it must be a plain property, not a signal input
 	@Input() photos!: SDK.PhotoResponseWithLinks[];
 	@Input() startPhoto?: SDK.PhotoResponseWithLinks;
+
+	// every tag used anywhere in the album, offered as ready-made toggles in the editor;
+	// grows as new tags are created so they become reusable on the other photos too
+	albumTags = signal<string[]>([]);
 
 	// true when the current photo's image failed to load, so we show a message instead
 	imageError = signal(false);
@@ -92,12 +98,23 @@ export class PhotosEditComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+		this.rebuildAlbumTags();
+
 		// the photo to start on comes in as a prop, openPhoto then puts it in the URL —
 		// the modal owns the ?photo= param for as long as it is open (see openPhoto)
 		let index = this.photos.findIndex((item) => item.id === this.startPhoto?.id);
 		if (index === -1) index = 0;
 
 		this.openPhoto(index);
+	}
+
+	// collect the distinct tags across all photos in the album, in first-seen order
+	private rebuildAlbumTags() {
+		const seen = new Set<string>();
+		for (const photo of this.photos) {
+			for (const tag of photo.tags ?? []) seen.add(tag);
+		}
+		this.albumTags.set([...seen]);
 	}
 
 	@HostListener("document:keyup", ["$event"])
@@ -183,22 +200,54 @@ export class PhotosEditComponent implements OnInit {
 	}
 
 	async saveCaption(value: string | number | null | undefined) {
-		const photo = this.photo();
-		if (!photo) return;
+		const current = this.photo();
+		if (!current) return;
 
 		const caption = value == null || value === "" ? null : String(value);
 
 		try {
-			await this.api.PhotoGalleryApi.updatePhoto(photo.id, { caption });
+			await this.api.PhotoGalleryApi.updatePhoto(current.id, { caption });
 		} catch (e) {
 			this.toastService.toast("Nepodařilo se uložit popisek.", { color: "warning" });
 			return; // keep editing so the user can retry
 		}
 
-		// mutate the shared object in place so the parent's photo list shows the new caption too
+		// mutate the real array element (not the detached copy the signal may hold after a
+		// previous edit) so the parent's photo list — and repeated edits — stay in sync; only
+		// touch the view if this photo is still the one on screen (the user may have swiped away)
+		const photo = this.photos.find((item) => item.id === current.id) ?? current;
 		photo.caption = caption;
-		this.photo.set({ ...photo });
+		if (this.photo()?.id === photo.id) this.photo.set({ ...photo });
 		this.editingCaption.set(false);
+	}
+
+	async saveTags(tags: string[]) {
+		const current = this.photo();
+		if (!current) return;
+
+		// resolve the real array element so the parent gallery/list see the change too
+		const photo = this.photos.find((item) => item.id === current.id) ?? current;
+		const previous = photo.tags ?? null;
+		const next = tags.length ? tags : null;
+
+		// Apply optimistically and synchronously: the editor is fully controlled off the photo's
+		// tags, so a quick second toggle must derive its set from this pending value rather than
+		// the not-yet-persisted previous one (otherwise concurrent PATCHes would drop a tag). The
+		// chip also reacts instantly. Reflect it in the view only while this photo is on screen.
+		const showing = () => this.photo()?.id === photo.id;
+		photo.tags = next;
+		if (showing()) this.photo.set({ ...photo });
+		this.rebuildAlbumTags();
+
+		try {
+			await this.api.PhotoGalleryApi.updatePhoto(photo.id, { tags: next });
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit štítky.", { color: "warning" });
+			// roll the optimistic change back, again only touching the view if still shown
+			photo.tags = previous;
+			if (showing()) this.photo.set({ ...photo });
+			this.rebuildAlbumTags();
+		}
 	}
 
 	async close() {
