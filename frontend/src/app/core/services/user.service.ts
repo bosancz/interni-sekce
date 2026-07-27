@@ -19,20 +19,19 @@ export class UserService {
 	/** Signal mirror of the current user, for reactive role checks. */
 	readonly currentUser = toSignal(this.user);
 
-	/** May manage the program (program managers, reviewers and admins). */
-	readonly canManagePrograms = computed(() => this.hasRole("program", "revizor", "admin"));
+	// Permission gates are derived from the API root `_links` rather than the user's roles, so the
+	// backend stays the single source of truth: a link's `allowed` flag already encodes who may use
+	// it. This keeps navigation visibility (and the route guards) in lock-step with what the server
+	// actually permits, instead of duplicating the role rules on the client.
 
-	/** May manage users (reviewers and admins). */
-	readonly canManageUsers = computed(() => this.hasRole("revizor", "admin"));
+	/** May manage the program (whoever the backend lets list deleted events). */
+	readonly canManagePrograms = computed(() => this.api.links()?.listDeletedEvents.allowed ?? false);
+
+	/** May manage users (whoever the backend lets list users). */
+	readonly canManageUsers = computed(() => this.api.links()?.listUsers.allowed ?? false);
 
 	/** Whether the administration section should be visible at all. */
 	readonly canAccessAdmin = computed(() => this.canManagePrograms() || this.canManageUsers());
-
-	/** True if the current user has at least one of the given roles. */
-	hasRole(...roles: SDK.UserRolesEnum[]): boolean {
-		const userRoles = this.currentUser()?.roles ?? [];
-		return roles.some((role) => userRoles.includes(role));
-	}
 
 	constructor(
 		private api: ApiService,
