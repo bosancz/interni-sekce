@@ -97,8 +97,8 @@
 	<ion-item-divider>Zobrazení</ion-item-divider>
 	<ion-item lines="none">
 		<ion-toggle
-			[checked]="showInactive()"
-			(ionChange)="setFilterParam('active', $event.detail.checked ? 'all' : null)"
+			[boStagedChecked]="showInactive()"
+			(boStagedCheckedChange)="setFilterParam('active', $event ? 'all' : null)"
 			justify="space-between"
 		>
 			Zobrazit i neaktivní

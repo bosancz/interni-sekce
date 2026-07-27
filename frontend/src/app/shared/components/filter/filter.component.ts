@@ -19,7 +19,7 @@ import { filterOutline } from "ionicons/icons";
 import { ModalService } from "src/app/core/services/modal.service";
 import { UrlParams } from "src/helpers/typings";
 import { FilterModalComponent } from "../filter-modal/filter-modal.component";
-import { FilterPillComponent } from "../filter-pill/filter-pill.component";
+import { STAGED_CONTROL, StagedControl } from "../staged-control";
 
 export type FilterData = any;
 
@@ -49,9 +49,9 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 	@ViewChild(IonSearchbar) searchbar?: IonSearchbar;
 
 	@ContentChildren(NgModel, { descendants: true }) controls!: QueryList<NgModel>;
-	// Filter pills projected into the modal — staged while it is open so their toggles don't touch
-	// the URL until the user confirms (immediateFilter mode only).
-	@ContentChildren(FilterPillComponent, { descendants: true }) pills!: QueryList<FilterPillComponent>;
+	// Staged controls (pills, sort select, toggles) projected into the modal — held in a draft while
+	// it is open so nothing is applied until the user confirms (immediateFilter mode only).
+	@ContentChildren(STAGED_CONTROL, { descendants: true }) stagedControls!: QueryList<StagedControl>;
 
 	readonly filterId = String(new Date().getTime());
 
@@ -88,12 +88,12 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 		const immediate = this.immediateFilter();
 
 		if (immediate) {
-			// Stage the pills so their toggles only build a draft and never touch the URL while the
-			// modal is open — the list behind it stays put. The pills render lazily inside the modal,
-			// so seed them both now and as they appear. On confirm ("Hotovo") the drafts are emitted
-			// and applied; on any other close (Zrušit / backdrop / back) they are dropped.
-			const seed = () => this.pills.forEach((pill) => pill.beginStaging());
-			const pillsSub = this.pills.changes.subscribe(seed);
+			// Stage every control in the modal so it only builds a draft and never touches the filters
+			// (URL or local state) while the modal is open — the list behind it stays put. The controls
+			// render lazily inside the modal, so seed them both now and as they appear. On confirm
+			// ("Hotovo") the drafts are applied; on any other close (Zrušit / backdrop / back) dropped.
+			const seed = () => this.stagedControls.forEach((control) => control.beginStaging());
+			const stagedSub = this.stagedControls.changes.subscribe(seed);
 			seed();
 
 			const result = await this.modalService.componentModal(FilterModalComponent, {
@@ -101,8 +101,8 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 				immediate,
 			});
 
-			pillsSub.unsubscribe();
-			this.pills.forEach((pill) => (result === true ? pill.commit() : pill.cancel()));
+			stagedSub.unsubscribe();
+			this.stagedControls.forEach((control) => (result === true ? control.commit() : control.cancel()));
 			return;
 		}
 

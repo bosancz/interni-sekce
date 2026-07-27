@@ -1,7 +1,8 @@
-import { Component, computed, input, output, signal } from "@angular/core";
+import { Component, computed, forwardRef, input, output, signal } from "@angular/core";
 import { IonContent, IonIcon, IonPopover } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { chevronDown } from "ionicons/icons";
+import { STAGED_CONTROL, StagedControl } from "../staged-control";
 
 export interface FilterPillOption {
 	value: string;
@@ -31,8 +32,9 @@ export interface FilterPillOption {
 	templateUrl: "./filter-pill.component.html",
 	styleUrls: ["./filter-pill.component.scss"],
 	imports: [IonIcon, IonPopover, IonContent],
+	providers: [{ provide: STAGED_CONTROL, useExisting: forwardRef(() => FilterPillComponent) }],
 })
-export class FilterPillComponent {
+export class FilterPillComponent implements StagedControl {
 	label = input.required<string>();
 	options = input<FilterPillOption[]>([]);
 	selected = input<string[]>([]);

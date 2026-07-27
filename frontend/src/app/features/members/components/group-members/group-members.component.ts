@@ -39,6 +39,7 @@ import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/a
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
+import { StagedCheckedDirective } from "src/app/shared/components/staged-checked.directive";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
@@ -53,6 +54,7 @@ import { GroupsService } from "../../services/groups.service";
 		FilterComponent,
 		FilterPillComponent,
 		SortSelectComponent,
+		StagedCheckedDirective,
 		IonContent,
 		IonList,
 		IonItem,
