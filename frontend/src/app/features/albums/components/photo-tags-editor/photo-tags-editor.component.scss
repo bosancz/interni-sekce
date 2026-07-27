@@ -11,12 +11,13 @@ ion-chip.tag {
 	cursor: pointer;
 	transition: opacity 0.15s ease;
 
-	// an available-but-not-applied tag is dimmed, so the photo's own tags stand out
+	// applied vs available is carried mainly by filled-vs-outline; a light dim is only a
+	// secondary cue, kept high enough to stay readable on the modal's black background
 	&:not(.active):not(.add) {
-		opacity: 0.55;
+		opacity: 0.8;
 	}
 	&:not(.active):not(.add):hover {
-		opacity: 0.85;
+		opacity: 1;
 	}
 }
 

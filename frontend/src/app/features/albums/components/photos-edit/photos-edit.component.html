@@ -97,7 +97,7 @@
 		<ion-toolbar class="bottom-toolbar" [class.controls-hidden]="!controlsVisible()">
 			<div class="tags-bar">
 				<bo-photo-tags-editor
-					[tags]="photo()!.tags || []"
+					[tags]="photo()!.tags ?? null"
 					[albumTags]="albumTags()"
 					(tagsChange)="saveTags($event)"
 				></bo-photo-tags-editor>

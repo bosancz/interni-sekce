@@ -18,8 +18,9 @@ import { addOutline } from "ionicons/icons";
 	imports: [IonChip, IonIcon],
 })
 export class PhotoTagsEditorComponent {
-	// tags currently on the photo
-	tags = input<string[]>([]);
+	// tags currently on the photo (null/undefined treated as empty; nullable so callers can
+	// bind the raw value without allocating a fresh [] on every change-detection pass)
+	tags = input<string[] | null>(null);
 	// every tag used anywhere in the album, offered as ready-made toggles
 	albumTags = input<string[]>([]);
 	disabled = input<boolean>(false);
@@ -33,7 +34,7 @@ export class PhotoTagsEditorComponent {
 	availableTags = computed(() => {
 		const seen = new Set<string>();
 		const result: string[] = [];
-		for (const tag of [...this.albumTags(), ...this.tags()]) {
+		for (const tag of [...this.albumTags(), ...(this.tags() ?? [])]) {
 			if (seen.has(tag)) continue;
 			seen.add(tag);
 			result.push(tag);
@@ -46,13 +47,13 @@ export class PhotoTagsEditorComponent {
 	}
 
 	hasTag(tag: string) {
-		return this.tags().includes(tag);
+		return (this.tags() ?? []).includes(tag);
 	}
 
 	toggleTag(tag: string) {
 		if (this.disabled()) return;
 
-		const tags = this.tags();
+		const tags = this.tags() ?? [];
 		const next = tags.includes(tag) ? tags.filter((t) => t !== tag) : [...tags, tag];
 		this.tagsChange.emit(next);
 	}
@@ -85,8 +86,9 @@ export class PhotoTagsEditorComponent {
 
 		// a tag already on the photo is a no-op; one that only exists elsewhere in the
 		// album (or is brand new) gets added
-		if (this.tags().includes(tag)) return;
+		const tags = this.tags() ?? [];
+		if (tags.includes(tag)) return;
 
-		this.tagsChange.emit([...this.tags(), tag]);
+		this.tagsChange.emit([...tags, tag]);
 	}
 }
