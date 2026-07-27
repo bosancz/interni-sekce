@@ -58,6 +58,11 @@ export class AlbumGalleryComponent {
 		this.activeTag.set(tag);
 	}
 
+	// clicking the active tag again clears the filter
+	toggleTag(tag: string) {
+		this.activeTag.set(this.effectiveTag() === tag ? null : tag);
+	}
+
 	upload = output<void>();
 	viewChange = output<"gallery" | "manage">();
 	sort = output<void>();

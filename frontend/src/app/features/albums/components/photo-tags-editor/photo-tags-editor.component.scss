@@ -25,3 +25,9 @@ ion-chip.tag.add ion-icon {
 	margin-right: 2px;
 	font-size: 1rem;
 }
+
+// a light focus ring reads on the modal's black background
+ion-chip.tag:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 2px;
+}

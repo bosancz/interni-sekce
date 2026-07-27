@@ -41,6 +41,11 @@
 	ion-chip {
 		cursor: pointer;
 	}
+
+	ion-chip:focus-visible {
+		outline: 2px solid var(--ion-color-primary);
+		outline-offset: 2px;
+	}
 }
 
 // without a label the buttons are icons only, so drop the padding the label took
