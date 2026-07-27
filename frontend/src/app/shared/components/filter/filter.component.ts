@@ -19,6 +19,7 @@ import { filterOutline } from "ionicons/icons";
 import { ModalService } from "src/app/core/services/modal.service";
 import { UrlParams } from "src/helpers/typings";
 import { FilterModalComponent } from "../filter-modal/filter-modal.component";
+import { FilterPillComponent } from "../filter-pill/filter-pill.component";
 
 export type FilterData = any;
 
@@ -48,6 +49,9 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 	@ViewChild(IonSearchbar) searchbar?: IonSearchbar;
 
 	@ContentChildren(NgModel, { descendants: true }) controls!: QueryList<NgModel>;
+	// Filter pills projected into the modal — staged while it is open so their toggles don't touch
+	// the URL until the user confirms (immediateFilter mode only).
+	@ContentChildren(FilterPillComponent, { descendants: true }) pills!: QueryList<FilterPillComponent>;
 
 	readonly filterId = String(new Date().getTime());
 
@@ -83,24 +87,29 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 	async openFilter(filterContent: TemplateRef<any>) {
 		const immediate = this.immediateFilter();
 
-		// Snapshot the filters as they are before the modal opens. Staged controls write to the URL
-		// live while the modal is open (so the list previews behind it), but the change must be
-		// confirmed with "Hotovo" to stick — otherwise we restore this snapshot on close.
-		const paramsBeforeOpen = immediate ? { ...this.route.snapshot.queryParams } : null;
+		if (immediate) {
+			// Stage the pills so their toggles only build a draft and never touch the URL while the
+			// modal is open — the list behind it stays put. The pills render lazily inside the modal,
+			// so seed them both now and as they appear. On confirm ("Hotovo") the drafts are emitted
+			// and applied; on any other close (Zrušit / backdrop / back) they are dropped.
+			const seed = () => this.pills.forEach((pill) => pill.beginStaging());
+			const pillsSub = this.pills.changes.subscribe(seed);
+			seed();
+
+			const result = await this.modalService.componentModal(FilterModalComponent, {
+				content: filterContent,
+				immediate,
+			});
+
+			pillsSub.unsubscribe();
+			this.pills.forEach((pill) => (result === true ? pill.commit() : pill.cancel()));
+			return;
+		}
 
 		const result = await this.modalService.componentModal(FilterModalComponent, {
 			content: filterContent,
 			immediate,
 		});
-
-		if (immediate) {
-			// Confirmed with "Hotovo": keep the filters the staged controls wrote to the URL.
-			// Anything else (Zrušit / backdrop / back button) reverts to the pre-open snapshot.
-			if (result !== true) {
-				this.router.navigate([], { queryParams: paramsBeforeOpen ?? {}, replaceUrl: true });
-			}
-			return;
-		}
 
 		if (result === true) {
 			// filter submitted - set new filters

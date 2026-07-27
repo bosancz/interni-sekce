@@ -19,6 +19,12 @@ export interface FilterPillOption {
  * Filter pill styled like the events "Rok" pill: a rounded button next to the search box that
  * opens a popover with a grid of toggleable chips. Drop it inside <bo-filter> with the
  * `toolbar-actions slot="end"` attributes so it is projected into the toolbar.
+ *
+ * Inline (desktop) the pill applies immediately — every toggle emits `selectedChange`. Inside the
+ * mobile filter modal `<bo-filter>` puts the pill into *staging* mode via {@link beginStaging}: the
+ * toggles then only build up a local draft and nothing is emitted (so the list behind the modal is
+ * left untouched) until the modal is confirmed, at which point {@link commit} emits the draft. A
+ * cancelled modal calls {@link cancel} and the draft is dropped.
  */
 @Component({
 	selector: "bo-filter-pill",
@@ -39,12 +45,19 @@ export class FilterPillComponent {
 	popoverOpen = signal(false);
 	popoverEvent = signal<Event | undefined>(undefined);
 
+	// While staging, toggles write here instead of emitting; null means "not staging" (apply live).
+	private draft = signal<string[] | null>(null);
+
+	// The selection the pill should display and act on: the local draft while staging, otherwise the
+	// committed value from the `selected` input.
+	private effectiveSelected = computed(() => this.draft() ?? this.selected());
+
 	/**
 	 * Text shown in the pill button. Single-select pills show the selected option's short code (or
 	 * label) instead of a count, since there can only ever be one; multi-select pills show a count.
 	 */
 	buttonLabel = computed(() => {
-		const selected = this.selected();
+		const selected = this.effectiveSelected();
 		if (!selected.length) return this.label();
 
 		if (selected.length === 1) {
@@ -65,28 +78,57 @@ export class FilterPillComponent {
 	}
 
 	isSelected(value: string): boolean {
-		return this.selected().includes(value);
+		return this.effectiveSelected().includes(value);
 	}
 
 	toggle(value: string) {
-		const current = this.selected();
+		const current = this.effectiveSelected();
+		const next = current.includes(value)
+			? current.filter((item) => item !== value)
+			: this.multiple()
+				? [...current, value]
+				: [value];
 
-		if (!this.multiple()) {
-			this.selectedChange.emit(current.includes(value) ? [] : [value]);
-			this.popoverOpen.set(false);
-			return;
-		}
+		if (!this.multiple()) this.popoverOpen.set(false);
 
-		this.selectedChange.emit(
-			current.includes(value) ? current.filter((item) => item !== value) : [...current, value],
-		);
+		this.apply(next);
 	}
 
 	clear() {
-		this.selectedChange.emit([]);
+		this.apply([]);
 	}
 
 	done() {
 		this.popoverOpen.set(false);
+	}
+
+	// --- staging, driven by the parent <bo-filter> around the mobile filter modal ---
+
+	/** Enter staging: start buffering toggles from the current committed selection. Idempotent, so
+	 * the parent can (re-)seed pills as they render into the modal without wiping in-progress edits. */
+	beginStaging() {
+		if (this.draft() === null) this.draft.set([...this.selected()]);
+	}
+
+	/** Confirm staging: emit the draft (if it changed anything) and return to live mode. */
+	commit() {
+		const draft = this.draft();
+		this.draft.set(null);
+		if (draft && !this.sameSelection(draft, this.selected())) this.selectedChange.emit(draft);
+	}
+
+	/** Abort staging: drop the draft and return to live mode without emitting. */
+	cancel() {
+		this.draft.set(null);
+	}
+
+	// Route a new selection to the draft while staging, or straight out as an emit when live.
+	private apply(next: string[]) {
+		if (this.draft() === null) this.selectedChange.emit(next);
+		else this.draft.set(next);
+	}
+
+	private sameSelection(a: string[], b: string[]): boolean {
+		return a.length === b.length && a.every((value) => b.includes(value));
 	}
 }

@@ -93,9 +93,6 @@ export class ModalService {
 	private async presentWithBackClose(overlay: DismissableOverlay) {
 		this.ensurePopstateListener();
 
-		// URL at the moment we push the synthetic entry, so we can tell on close whether a
-		// control inside the overlay moved the page in the meantime.
-		const urlAtPresent = window.location.href;
 		history.pushState(history.state, "");
 		this.backStack.push(overlay);
 
@@ -105,18 +102,8 @@ export class ModalService {
 
 			// closed from within: drop the synthetic entry we added on present
 			this.backStack.splice(index, 1);
-
-			// If the overlay wrote to the URL while it was open (e.g. the immediate filter
-			// modal saving the selected filters to the query params with `replaceUrl`), our
-			// synthetic entry has been overwritten with that new URL and the entry beneath it
-			// still holds the pre-open URL. Calling history.back() here would navigate to that
-			// stale URL and silently revert the change (issue #293). Only balance the history
-			// when the page hasn't moved; otherwise keep the new URL and leave the extra entry,
-			// so the browser back button simply undoes the filter change.
-			if (window.location.href === urlAtPresent) {
-				this.suppressPopstate = true;
-				history.back();
-			}
+			this.suppressPopstate = true;
+			history.back();
 		});
 
 		await overlay.present();
