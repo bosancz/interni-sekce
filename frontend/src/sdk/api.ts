@@ -467,6 +467,12 @@ export namespace SDK {
          * @memberof AlbumResponseLinks
          */
         'reorderAlbumPhotos': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
+        'setAlbumTitlePhotos': AcLink;
     }
     
         /**
@@ -556,6 +562,20 @@ export namespace SDK {
     
     export type AlbumResponseWithLinksStatusEnum = typeof AlbumResponseWithLinksStatusEnum[keyof typeof AlbumResponseWithLinksStatusEnum];
     
+    
+        /**
+     * 
+     * @export
+     * @interface AlbumTitlePhotosBody
+     */
+    export interface AlbumTitlePhotosBody {
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof AlbumTitlePhotosBody
+         */
+        'photoIds': Array<number>;
+    }
     
         /**
      * 
@@ -3848,6 +3868,12 @@ export namespace SDK {
          * @type {number}
          * @memberof Photo
          */
+        'titlePhotoOrder': number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof Photo
+         */
         'width': number | null;
         /**
          * 
@@ -4011,6 +4037,12 @@ export namespace SDK {
          * @memberof PhotoResponseWithLinks
          */
         'order'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponseWithLinks
+         */
+        'titlePhotoOrder'?: number | null;
         /**
          * 
          * @type {number}
@@ -8769,6 +8801,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * PhotoGalleryApi - object-oriented interface
      * @export
@@ -9518,6 +9554,59 @@ export namespace SDK {
             setSearchParams(requestUrlObj, requestQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async setAlbumTitlePhotos(
+            id: number,
+            body: AlbumTitlePhotosBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('setAlbumTitlePhotos', 'id', id)
+            assertParamExists('setAlbumTitlePhotos', 'albumTitlePhotosBody', body)
+            
+            // verify required parameter 'albumTitlePhotosBody' is not null or undefined
+            assertParamExists('setAlbumTitlePhotos', 'id', id)
+            assertParamExists('setAlbumTitlePhotos', 'albumTitlePhotosBody', body)
+            
+            const localVarPath = `/api/albums/{id}/photos/title`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
     
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;

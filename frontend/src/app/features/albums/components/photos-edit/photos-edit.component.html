@@ -2,6 +2,14 @@
 	<ion-toolbar class="top-toolbar" [class.controls-hidden]="!controlsVisible()">
 		<ion-buttons slot="end">
 			@if (photo()) {
+				<ion-button
+					fill="clear"
+					[color]="photo()!.titlePhotoOrder != null ? 'warning' : undefined"
+					(click)="toggleTitlePhoto()"
+					[boTooltip]="photo()!.titlePhotoOrder != null ? 'Odebrat z titulních fotek' : 'Nastavit jako titulní fotku'"
+				>
+					<ion-icon slot="icon-only" [name]="photo()!.titlePhotoOrder != null ? 'star' : 'star-outline'"></ion-icon>
+				</ion-button>
 				<ion-button color="danger" fill="clear" (click)="delete(photo()!)">Smazat</ion-button>
 				<ion-button fill="clear" id="info-trigger" (keydown.enter)="$event.preventDefault()">Info</ion-button>
 			}

@@ -28,6 +28,11 @@ export class Photo {
 	@Column({ type: "text", nullable: false }) name!: string;
 	@Column({ type: "timestamp with time zone", nullable: false }) timestamp!: Date;
 	@Column({ type: "integer", nullable: true }) order!: number | null;
+
+	// 1-based position among the album's title photos (the preview thumbnails shown on the public
+	// website), or null when the photo is not a title photo. At most three photos per album carry
+	// a non-null value; ordering by it gives the title photos in their chosen order.
+	@Column({ type: "integer", nullable: true }) titlePhotoOrder!: number | null;
 	@Column({ type: "integer", nullable: true }) width!: number | null;
 	@Column({ type: "integer", nullable: true }) height!: number | null;
 	@Column({ type: "text", nullable: true }) title!: string | null;

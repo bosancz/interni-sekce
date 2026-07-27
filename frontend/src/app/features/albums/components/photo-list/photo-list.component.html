@@ -20,7 +20,12 @@
 					</ion-avatar>
 
 					<ion-label>
-						<h2 [class.nocaption]="!photo.caption">{{ photo.caption || "Bez popisku" }}</h2>
+						<h2 [class.nocaption]="!photo.caption">
+							@if (photo.titlePhotoOrder != null) {
+								<ion-icon name="star" color="warning" title="Titulní fotka"></ion-icon>
+							}
+							{{ photo.caption || "Bez popisku" }}
+						</h2>
 						<p class="row no-gutters info">
 							<span class="col-12 col-lg-4 col-xl-3">Datum: {{ photo.timestamp | date: "d. M. y H:mm:ss" }}</span>
 							@if (photo.width && photo.height) {
@@ -65,6 +70,9 @@
 				<div class="square" [class.checked]="isPhotoChecked(photo)">
 					<div class="photo ion-activatable ripple-parent" (click)="onPhotoClick(photo, $event)">
 						<img [src]="photo | photoImageUrl: 'small'" [style.background-color]="photo.bg" loading="lazy" />
+						@if (photo.titlePhotoOrder != null) {
+							<ion-icon class="title-badge" name="star" color="warning" title="Titulní fotka"></ion-icon>
+						}
 						<ion-ripple-effect></ion-ripple-effect>
 					</div>
 					<ion-checkbox [ngModel]="isPhotoChecked(photo)" (ngModelChange)="onPhotoCheck(photo, $event)"></ion-checkbox>

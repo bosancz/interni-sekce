@@ -381,6 +381,10 @@ export class MongoImportService {
 
 		c = 0;
 
+		// mongo photo ObjectId -> imported postgres photo id, so the album title-photo selection
+		// (which references photos by their Mongo id) can be resolved after all photos are imported
+		const photoIds: Record<string, number> = {};
+
 		for (let mongoPhoto of mongoPhotos) {
 			const albumId = albumIds[mongoPhoto.album.toString()];
 
@@ -407,6 +411,7 @@ export class MongoImportService {
 				tags: mongoPhoto.tags ?? null,
 				timestamp: mongoPhoto.date ?? new Date(),
 				order: null, // imported photos fall back to timestamp ordering
+				titlePhotoOrder: null, // title-photo selection is applied in a later pass (see importTitlePhotos)
 				title: mongoPhoto.title ?? null,
 				uploadedById: mongoPhoto.uploadedBy ? userIds[mongoPhoto.uploadedBy.toString()] : null,
 				width,
@@ -417,12 +422,61 @@ export class MongoImportService {
 				srcId: mongoPhoto._id.toString(),
 			};
 
-			await t.save(Photo, photoData);
+			const photo = await t.save(Photo, photoData);
+
+			photoIds[mongoPhoto._id.toString()] = photo.id;
 
 			c++;
 		}
 
 		this.logger.debug(` - Imported ${c} photos.`);
+
+		await this.importTitlePhotos(t, mongoAlbums, albumIds, photoIds);
+	}
+
+	/**
+	 * Reinstate the legacy album preview selection: the old records kept up to three chosen photos
+	 * per album in `titlePhotos` (with an older single `titlePhoto` as fallback). Map those Mongo
+	 * photo ids to their imported rows and write their 1-based position into `titlePhotoOrder`, so
+	 * the public website shows the same preview thumbnails again.
+	 */
+	private async importTitlePhotos(
+		t: EntityManager,
+		mongoAlbums: MongoAlbum[],
+		albumIds: Record<string, number>,
+		photoIds: Record<string, number>,
+	) {
+		this.logger.debug("Importing album title photos...");
+
+		let c = 0;
+
+		for (const mongoAlbum of mongoAlbums) {
+			const albumId = albumIds[mongoAlbum._id.toString()];
+			if (!albumId) continue;
+
+			// prefer the newer ordered array, fall back to the single legacy field
+			const mongoTitleIds = mongoAlbum.titlePhotos?.length
+				? mongoAlbum.titlePhotos
+				: mongoAlbum.titlePhoto
+					? [mongoAlbum.titlePhoto]
+					: [];
+
+			// resolve to imported photo ids, drop unknown/missing ones, dedupe, cap at three
+			const titlePhotoIds: number[] = [];
+			for (const mongoTitleId of mongoTitleIds) {
+				const photoId = photoIds[mongoTitleId.toString()];
+				if (photoId && !titlePhotoIds.includes(photoId)) titlePhotoIds.push(photoId);
+				if (titlePhotoIds.length === 3) break;
+			}
+
+			for (const [index, photoId] of titlePhotoIds.entries()) {
+				// the album guard ignores a stray selection that points at another album's photo
+				await t.update(Photo, { id: photoId, albumId }, { titlePhotoOrder: index + 1 });
+				c++;
+			}
+		}
+
+		this.logger.debug(` - Imported ${c} album title photos.`);
 	}
 
 	private async getGroupId(t: EntityManager, oldGroupId: string) {

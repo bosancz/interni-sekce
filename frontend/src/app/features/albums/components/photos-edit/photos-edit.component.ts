@@ -25,6 +25,8 @@ import {
 	chevronForwardOutline,
 	createOutline,
 	imageOutline,
+	star,
+	starOutline,
 } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
@@ -88,7 +90,7 @@ export class PhotosEditComponent implements OnInit {
 		private router: Router,
 		private platformService: PlatformService,
 	) {
-		addIcons({ createOutline, checkmarkOutline, chevronBackOutline, chevronForwardOutline, imageOutline });
+		addIcons({ createOutline, checkmarkOutline, chevronBackOutline, chevronForwardOutline, imageOutline, star, starOutline });
 	}
 
 	ngOnInit(): void {
@@ -199,6 +201,48 @@ export class PhotosEditComponent implements OnInit {
 		photo.caption = caption;
 		this.photo.set({ ...photo });
 		this.editingCaption.set(false);
+	}
+
+	// The album's title photos (up to three preview thumbnails shown on the public website), in order.
+	private titlePhotos(): SDK.PhotoResponseWithLinks[] {
+		return this.photos
+			.filter((item) => item.titlePhotoOrder != null)
+			.sort((a, b) => (a.titlePhotoOrder ?? 0) - (b.titlePhotoOrder ?? 0));
+	}
+
+	async toggleTitlePhoto() {
+		const photo = this.photo();
+		if (!photo) return;
+
+		const current = this.titlePhotos();
+		const isTitle = photo.titlePhotoOrder != null;
+
+		// removing keeps the rest in order; adding appends to the end, capped at three
+		let next: SDK.PhotoResponseWithLinks[];
+		if (isTitle) {
+			next = current.filter((item) => item.id !== photo.id);
+		} else {
+			if (current.length >= 3) {
+				this.toastService.toast("Titulní fotky mohou být nejvýše tři.", { color: "warning" });
+				return;
+			}
+			next = [...current, photo];
+		}
+
+		try {
+			await this.api.PhotoGalleryApi.setAlbumTitlePhotos(photo.albumId, { photoIds: next.map((item) => item.id) });
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit titulní fotky.", { color: "warning" });
+			return;
+		}
+
+		// mirror the new selection onto the shared photo objects so the album gallery reflects it too
+		for (const item of this.photos) item.titlePhotoOrder = null;
+		next.forEach((item, index) => (item.titlePhotoOrder = index + 1));
+
+		this.photo.set({ ...photo });
+
+		this.toastService.toast(isTitle ? "Odebráno z titulních fotek." : "Nastaveno jako titulní fotka.");
 	}
 
 	async close() {

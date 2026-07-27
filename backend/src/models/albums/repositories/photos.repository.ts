@@ -103,6 +103,59 @@ export class PhotosRepository {
 		);
 	}
 
+	/**
+	 * Replace the album's title-photo selection with the given ids, in order: each listed photo gets
+	 * its 1-based position in `titlePhotoOrder`, every other photo in the album is cleared. Ids from
+	 * other albums are ignored. Run as a single transaction so the album never briefly has a stale
+	 * selection. The caller enforces the max-three cap (see AlbumTitlePhotosBody).
+	 */
+	async setTitlePhotos(albumId: Photo["albumId"], photoIds: number[]) {
+		await this.repository.manager.transaction(async (t) => {
+			await t.query(`UPDATE "photos" SET "title_photo_order" = NULL WHERE "album_id" = $1`, [albumId]);
+
+			if (photoIds.length) {
+				await t.query(
+					`UPDATE "photos" SET "title_photo_order" = u.ord
+					 FROM unnest($1::int[]) WITH ORDINALITY AS u(id, ord)
+					 WHERE "photos".id = u.id AND "photos".album_id = $2`,
+					[photoIds, albumId],
+				);
+			}
+		});
+	}
+
+	/** The album's title photos (preview thumbnails), in their chosen order. */
+	async getTitlePhotos(albumId: Photo["albumId"]) {
+		return this.repository
+			.createQueryBuilder("photos")
+			.where("photos.album_id = :albumId", { albumId })
+			.andWhere("photos.title_photo_order IS NOT NULL")
+			.orderBy("photos.title_photo_order", "ASC")
+			.getMany();
+	}
+
+	/** Title photos for several albums at once, grouped by album id, each list in its chosen order. */
+	async getTitlePhotosByAlbums(albumIds: Photo["albumId"][]) {
+		const map = new Map<number, Photo[]>();
+		if (!albumIds.length) return map;
+
+		const photos = await this.repository
+			.createQueryBuilder("photos")
+			.where("photos.album_id IN (:...albumIds)", { albumIds })
+			.andWhere("photos.title_photo_order IS NOT NULL")
+			.orderBy("photos.album_id", "ASC")
+			.addOrderBy("photos.title_photo_order", "ASC")
+			.getMany();
+
+		for (const photo of photos) {
+			const list = map.get(photo.albumId) ?? [];
+			list.push(photo);
+			map.set(photo.albumId, list);
+		}
+
+		return map;
+	}
+
 	async deletePhoto(id: Photo["id"]) {
 		const photo = await this.repository.findOneBy({ id });
 		if (!photo) return;
