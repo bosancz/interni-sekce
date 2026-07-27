@@ -3,7 +3,8 @@
 
 	<ion-buttons slot="buttons">
 		@if (immediate) {
-			<ion-button color="primary" [strong]="true" (click)="close.emit()">Hotovo</ion-button>
+			<ion-button color="secondary" (click)="close.emit()">Zrušit</ion-button>
+			<ion-button color="primary" [strong]="true" (click)="submit.emit(true)">Hotovo</ion-button>
 		} @else {
 			<ion-button color="secondary" (click)="submit.emit(false)">Vymazat</ion-button>
 			<ion-button color="primary" [strong]="true" (click)="submit.emit(true)">Filtrovat</ion-button>

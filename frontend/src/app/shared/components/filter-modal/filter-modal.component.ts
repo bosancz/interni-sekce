@@ -13,8 +13,10 @@ import { ModalLayoutComponent } from "../modal-layout/modal-layout.component";
 })
 export class FilterModalComponent extends InputModalComponent<boolean> {
 	content!: TemplateRef<any>; // must be set in the parent component
-	// When true the modal is a plain disclosure sheet: its controls apply immediately (they write
-	// straight to the URL), so the footer is a single "Hotovo" close button instead of Vymazat/Filtrovat.
+	// When true the modal stages its controls: they write to the URL live (so the list previews the
+	// change in the background), but the change only sticks if the user confirms with "Hotovo".
+	// Dismissing — "Zrušit", the backdrop or the back button — reverts to the filters from before the
+	// modal was opened. The footer is a Zrušit/Hotovo pair instead of Vymazat/Filtrovat.
 	immediate = false;
 
 	constructor(modalCtrl: ModalController) {

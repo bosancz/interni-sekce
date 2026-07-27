@@ -82,13 +82,23 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 
 	async openFilter(filterContent: TemplateRef<any>) {
 		const immediate = this.immediateFilter();
+
+		// Snapshot the filters as they are before the modal opens. Staged controls write to the URL
+		// live while the modal is open (so the list previews behind it), but the change must be
+		// confirmed with "Hotovo" to stick — otherwise we restore this snapshot on close.
+		const paramsBeforeOpen = immediate ? { ...this.route.snapshot.queryParams } : null;
+
 		const result = await this.modalService.componentModal(FilterModalComponent, {
 			content: filterContent,
 			immediate,
 		});
 
 		if (immediate) {
-			// Controls inside the sheet already wrote their changes to the URL; nothing to submit/revert.
+			// Confirmed with "Hotovo": keep the filters the staged controls wrote to the URL.
+			// Anything else (Zrušit / backdrop / back button) reverts to the pre-open snapshot.
+			if (result !== true) {
+				this.router.navigate([], { queryParams: paramsBeforeOpen ?? {}, replaceUrl: true });
+			}
 			return;
 		}
 

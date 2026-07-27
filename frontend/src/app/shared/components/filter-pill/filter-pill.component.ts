@@ -85,4 +85,8 @@ export class FilterPillComponent {
 	clear() {
 		this.selectedChange.emit([]);
 	}
+
+	done() {
+		this.popoverOpen.set(false);
+	}
 }
