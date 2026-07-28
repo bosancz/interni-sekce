@@ -1,4 +1,18 @@
 <bo-modal-layout>
+	<div slot="title" class="changelog-header">
+		<h1>Seznam změn</h1>
+
+		<a
+			class="github-link"
+			[href]="repositoryUrl"
+			target="_blank"
+			rel="noopener"
+			aria-label="Zobrazit repozitář na GitHubu"
+		>
+			<ion-icon name="logo-github"></ion-icon>
+		</a>
+	</div>
+
 	@if (content() === undefined) {
 		<p class="muted">Načítání…</p>
 	} @else if (content()) {

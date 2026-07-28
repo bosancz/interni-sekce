@@ -162,22 +162,27 @@ function renderSection(version, date, buckets, repoUrl) {
 	return lines.join("\n");
 }
 
-const DEFAULT_HEADER = ["# Seznam změn", "", "Přehled novinek a oprav v jednotlivých verzích aplikace.", ""].join("\n");
+// The changelog modal renders its own title and intro, so the file carries no header text at all —
+// it starts straight with the newest "## <version>" section.
+const DEFAULT_HEADER = "";
 
 function prepend(file, section) {
 	let content = existsSync(file) ? readFileSync(file, "utf8") : "";
-	if (!content.trim()) content = DEFAULT_HEADER + "\n";
+	if (!content.trim()) content = DEFAULT_HEADER;
 
-	const marker = content.indexOf("\n## ");
+	// Split the file into any header text and the version sections, so the new section goes on top
+	// of the list. The header may be empty — the file can start straight with "## <version>".
+	const marker = content.startsWith("## ") ? 0 : content.indexOf("\n## ");
 	if (marker === -1) {
-		// No version sections yet — append after the header, keeping one blank line.
-		const trimmed = content.replace(/\s*$/, "");
-		return `${trimmed}\n\n${section}\n`;
+		// No version sections yet — append after whatever header exists.
+		const header = content.replace(/\s*$/, "");
+		return header ? `${header}\n\n${section}\n` : `${section}\n`;
 	}
 
-	const header = content.slice(0, marker + 1); // include the newline before "## "
-	const rest = content.slice(marker + 1);
-	return `${header.replace(/\s*$/, "")}\n\n${section}\n${rest}`;
+	const splitAt = marker === 0 ? 0 : marker + 1; // keep the newline before "## " with the header
+	const header = content.slice(0, splitAt).replace(/\s*$/, "");
+	const rest = content.slice(splitAt);
+	return header ? `${header}\n\n${section}\n${rest}` : `${section}\n${rest}`;
 }
 
 function main() {
