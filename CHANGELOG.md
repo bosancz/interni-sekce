@@ -1,3 +1,10 @@
+## v4.3.2 — 2026-07-28
+
+- ✨ [Umožnění výběru a kopírování textu v seznamu změn](https://github.com/bosancz/interni-sekce/commit/b355a3fa60a853932d4a77302df94e2a05e61fd7)
+- ✨ [Odkaz na GitHub v záhlaví changelogu](https://github.com/bosancz/interni-sekce/commit/7b19dc8b3b3ebcc2b002bca35dd09705d1c5dcb4)
+- ♻️ [Odstranění podtitulku ze seznamu změn](https://github.com/bosancz/interni-sekce/commit/208a5ba6139adf431cd9b18672d2120eb61fb76c)
+- ♻️ [Přesunutí nadpisu "Seznam změn" do záhlaví modalu](https://github.com/bosancz/interni-sekce/commit/661f3fd085c0b43533aa2bdbc4a32a9447cb3ce4)
+
 ## v4.3.1 — 2026-07-28
 
 - ✨ [Gitmoji u položek a odkazy na commity v seznamu změn](https://github.com/bosancz/interni-sekce/commit/8b5dfaebc800461a73d3e50649a6df8049f06181)
