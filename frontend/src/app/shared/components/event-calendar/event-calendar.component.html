@@ -51,7 +51,7 @@
 			<div class="events cpv" [style.height]="row.blocks.cpv.levels * eventHeight + 'px'">
 				@for (calEvent of row.blocks.cpv.events; track calEvent.event.name) {
 					<a
-						class="event d-block"
+						class="event"
 						[style.left]="getEventLeft(calEvent, row) * 100 + '%'"
 						[style.width]="getEventWidth(calEvent, row) * 100 + '%'"
 						[style.top]="eventHeight * (calEvent.level - 1) + 'px'"

@@ -4,6 +4,7 @@ import { FormsModule } from "@angular/forms";
 import {
 	IonAvatar,
 	IonCheckbox,
+	IonChip,
 	IonItem,
 	IonLabel,
 	IonReorder,
@@ -27,6 +28,7 @@ import { SDK } from "src/sdk";
 		IonReorderGroup,
 		IonItem,
 		IonCheckbox,
+		IonChip,
 		IonAvatar,
 		IonLabel,
 		IonReorder,

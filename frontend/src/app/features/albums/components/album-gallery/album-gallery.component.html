@@ -49,11 +49,43 @@
 	</div>
 }
 
+@if (view() === 'gallery' && allTags().length) {
+	<!-- filter the gallery by tag, mirroring the public site's tag buttons -->
+	<div class="tag-filter" role="group" aria-label="Filtrovat podle štítku">
+		<ion-chip
+			role="button"
+			tabindex="0"
+			[attr.aria-pressed]="!effectiveTag()"
+			[outline]="!!effectiveTag()"
+			color="primary"
+			(click)="selectTag(null)"
+			(keydown.enter)="selectTag(null)"
+			(keydown.space)="$event.preventDefault(); selectTag(null)"
+		>
+			Všechny fotky
+		</ion-chip>
+		@for (tag of allTags(); track tag) {
+			<ion-chip
+				role="button"
+				tabindex="0"
+				[attr.aria-pressed]="effectiveTag() === tag"
+				[outline]="effectiveTag() !== tag"
+				color="primary"
+				(click)="toggleTag(tag)"
+				(keydown.enter)="toggleTag(tag)"
+				(keydown.space)="$event.preventDefault(); toggleTag(tag)"
+			>
+				#{{ tag }}
+			</ion-chip>
+		}
+	</div>
+}
+
 <div class="gallery">
 	@if (view() === 'gallery') {
 		@if (photos()?.length) {
 			<bo-photo-gallery
-				[photos]="photos()!"
+				[photos]="displayPhotos()!"
 				[maxHeight]="320"
 				[clickable]="true"
 				(click)="photoClick.emit($event)"
