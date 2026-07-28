@@ -55,6 +55,9 @@ const app = {
 		process.env["BASE_URL"] || `http://${server.host}${server.port ? ":" + server.port : ""}${server.basePath}`,
 	version: process.env["VERSION"] || "DEV",
 	environmentTitle: process.env["ENV_TITLE"] ?? (environment === "production" ? "" : environment.toUpperCase()),
+	// Repo-root CHANGELOG.md, served at GET /api/changelog. The "../../" resolves to the repo
+	// root in dev and to /app in the Docker image (mirrors the staticRoot idiom above).
+	changelogPath: process.env["CHANGELOG_PATH"] || path.join(__dirname, "../../CHANGELOG.md"),
 };
 
 const jwtSecret = process.env["JWT_SECRET"];

@@ -33,9 +33,19 @@ jobs:
     with:
       semver: ${{ github.event.inputs.semver }}
 
+  changelog:
+    name: Update changelog
+    needs: version
+    uses: ./.github/workflows/changelog.yml
+    with:
+      version: ${{ needs.version.outputs.new_tag }}
+    secrets: inherit
+
   build:
     name: Build and publish
-    needs: version
+    needs:
+      - version
+      - changelog
     uses: ./.github/workflows/build.yml
     with:
       context: .
@@ -43,6 +53,7 @@ jobs:
       registry: ghcr.io
       tag: latest
       version: ${{ needs.version.outputs.new_tag }}
+      ref: ${{ needs.changelog.outputs.sha }}
       build-args: |
         VERSION=${{ needs.version.outputs.new_tag }}
     secrets:
@@ -61,8 +72,10 @@ jobs:
     name: Tag release
     needs:
       - version
+      - changelog
       - deploy
     uses: ./.github/workflows/tag.yml
     with:
       tag: PROD
       version: ${{ needs.version.outputs.new_tag }}
+      ref: ${{ needs.changelog.outputs.sha }}

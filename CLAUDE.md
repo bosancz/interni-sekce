@@ -1,5 +1,11 @@
 # Project notes
 
+## Commits & changelog
+
+- **Always commit in [Conventional Commits](https://www.conventionalcommits.org/) format** (`type(scope): description`, e.g. `feat(gallery): přidání štítků k fotkám`, `fix: oprava iniciál v avataru`). commitlint (`@commitlint/config-conventional`) is installed for this reason.
+- **Write the `description` in Czech.** The visitor-facing changelog is generated straight from commit subjects (`feat` → *Novinky*, `fix` → *Opravy*), so a Czech description gives a legible changelog. Keep the `type`/`scope` in English (they must match commitlint and the generator's parser).
+- `CHANGELOG.md` (repo root) is regenerated and committed automatically on Release-to-PROD by `.github/workflows/changelog.yml` (via `scripts/generate-changelog.mjs`), which **prepends** the new version's section — so manual edits to older sections are preserved. Only `feat`/`fix` reach the changelog; other types (`chore`/`docs`/`refactor`/…) are omitted. The backend serves the file at `GET /api/changelog`, and clicking the version in the menu shows it.
+
 ## Dev workflow
 
 - Do not run build checks (e.g. `ng build`, `npm run build`) if a dev server is already running — rely on the running dev server's compilation output instead.

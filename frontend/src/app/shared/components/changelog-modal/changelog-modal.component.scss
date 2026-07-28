@@ -1,0 +1,33 @@
+.changelog {
+	// Long changelogs scroll within the dialog body rather than growing the modal.
+	max-height: 60vh;
+	overflow-y: auto;
+
+	h2 {
+		font-size: 1.1rem;
+		margin: 1.25rem 0 0.5rem;
+
+		&:first-child {
+			margin-top: 0;
+		}
+	}
+
+	h3 {
+		font-size: 0.95rem;
+		margin: 0.75rem 0 0.25rem;
+		color: var(--ion-color-medium);
+	}
+
+	ul {
+		margin: 0 0 0.5rem;
+		padding-inline-start: 1.25rem;
+	}
+
+	li {
+		margin: 0.15rem 0;
+	}
+}
+
+.muted {
+	color: var(--ion-color-medium);
+}

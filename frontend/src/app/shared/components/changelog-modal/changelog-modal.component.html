@@ -1,0 +1,15 @@
+<bo-modal-layout>
+	<h4 slot="title">Co je nového</h4>
+
+	@if (content() === undefined) {
+		<p class="muted">Načítání…</p>
+	} @else if (content()) {
+		<div class="changelog" [innerHTML]="content()! | markdown"></div>
+	} @else {
+		<p class="muted">Zatím tu nejsou žádné změny k zobrazení.</p>
+	}
+
+	<ion-buttons slot="buttons">
+		<ion-button (click)="close.emit()" color="primary">Zavřít</ion-button>
+	</ion-buttons>
+</bo-modal-layout>

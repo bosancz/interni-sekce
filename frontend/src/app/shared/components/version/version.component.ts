@@ -1,16 +1,20 @@
 import { Component, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { SwUpdate } from "@angular/service-worker";
-import { IonSpinner } from "@ionic/angular/standalone";
+import { IonIcon, IonSpinner } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { timeOutline } from "ionicons/icons";
 import { map } from "rxjs";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
+import { ChangelogModalComponent } from "src/app/shared/components/changelog-modal/changelog-modal.component";
 import { Logger } from "src/logger";
 
 @Component({
 	selector: "bo-version",
 	templateUrl: "./version.component.html",
 	styleUrl: "./version.component.scss",
-	imports: [IonSpinner],
+	imports: [IonSpinner, IonIcon],
 })
 export class VersionComponent {
 	private readonly logger = new Logger("VersionComponent");
@@ -21,7 +25,9 @@ export class VersionComponent {
 	constructor(
 		private readonly api: ApiService,
 		private readonly swUpdate: SwUpdate,
+		private readonly modal: ModalService,
 	) {
+		addIcons({ timeOutline });
 		this.checkForUpdates();
 	}
 
@@ -45,5 +51,9 @@ export class VersionComponent {
 
 	doUpdate(): void {
 		this.swUpdate.activateUpdate().then(() => document.location.reload());
+	}
+
+	openChangelog(): void {
+		this.modal.componentModal(ChangelogModalComponent);
 	}
 }
