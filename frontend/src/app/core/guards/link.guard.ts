@@ -12,7 +12,7 @@ import { ApiService } from "../services/api.service";
  * user is redirected to the home page. This closes the hole where admin-only pages were reachable
  * by typing their URL — the backend `_links` are the single source of truth for what is permitted.
  *
- * @example canMatch: [linkGuard("listUsers", "listDeletedEvents")]
+ * @example canMatch: [linkGuard("listUsers", "listEvents")]
  */
 export function linkGuard(...links: (keyof SDK.RootResponseLinks)[]): CanMatchFn {
 	return () => {

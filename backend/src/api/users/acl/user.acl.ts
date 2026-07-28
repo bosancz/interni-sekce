@@ -9,6 +9,7 @@ export const UsersListPermission = new Permission<void>({
 
 	allowed: {
 		vedouci: true,
+		revizor: true,
 		admin: true,
 	},
 });

@@ -31,7 +31,7 @@ export const appRoutes: Routes = [
 	{
 		path: "program",
 		title: "Program",
-		canMatch: [linkGuard("listDeletedEvents")],
+		canMatch: [linkGuard("listEvents")],
 		loadChildren: () => import("./features/program/program.routing").then((m) => m.programRoutes),
 	},
 
@@ -52,7 +52,7 @@ export const appRoutes: Routes = [
 	{
 		path: "admin",
 		title: "Administrace",
-		canMatch: [linkGuard("listUsers", "listDeletedEvents")],
+		canMatch: [linkGuard("listUsers", "listEvents")],
 		loadChildren: () => import("./features/admin/admin.routing").then((m) => m.adminRoutes),
 	},
 

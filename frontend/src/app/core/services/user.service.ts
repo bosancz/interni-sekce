@@ -24,14 +24,18 @@ export class UserService {
 	// it. This keeps navigation visibility (and the route guards) in lock-step with what the server
 	// actually permits, instead of duplicating the role rules on the client.
 
-	/** May manage the program (whoever the backend lets list deleted events). */
-	readonly canManagePrograms = computed(() => this.api.links()?.listDeletedEvents.allowed ?? false);
+	/**
+	 * May open the program section (whoever the backend lets list events, i.e. leaders). The page is
+	 * an overview of the event pipeline; the program-role actions on each event stay gated per-event
+	 * by that event's own `_links`, so non-managers simply see no action buttons.
+	 */
+	readonly canAccessProgram = computed(() => this.api.links()?.listEvents.allowed ?? false);
 
 	/** May manage users (whoever the backend lets list users). */
 	readonly canManageUsers = computed(() => this.api.links()?.listUsers.allowed ?? false);
 
 	/** Whether the administration section should be visible at all. */
-	readonly canAccessAdmin = computed(() => this.canManagePrograms() || this.canManageUsers());
+	readonly canAccessAdmin = computed(() => this.canAccessProgram() || this.canManageUsers());
 
 	constructor(
 		private api: ApiService,

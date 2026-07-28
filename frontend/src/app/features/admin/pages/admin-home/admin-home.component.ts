@@ -14,7 +14,7 @@ import { PageHeaderComponent } from "src/app/shared/components/page-header/page-
 })
 export class AdminHomeComponent {
 	canManageUsers = this.userService.canManageUsers;
-	canManagePrograms = this.userService.canManagePrograms;
+	canAccessProgram = this.userService.canAccessProgram;
 
 	constructor(private readonly userService: UserService) {}
 }
