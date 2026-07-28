@@ -1,4 +1,15 @@
 <bo-modal-layout>
+	<a
+		slot="title"
+		class="github-link"
+		[href]="repositoryUrl"
+		target="_blank"
+		rel="noopener"
+		aria-label="Zobrazit repozitář na GitHubu"
+	>
+		<ion-icon name="logo-github"></ion-icon>
+	</a>
+
 	@if (content() === undefined) {
 		<p class="muted">Načítání…</p>
 	} @else if (content()) {
