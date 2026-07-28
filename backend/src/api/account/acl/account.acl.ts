@@ -7,7 +7,6 @@ export const AccountReadPermission = new Permission<User>({
 
 	allowed: {
 		uzivatel: true,
-		admin: true,
 		verejnost: true,
 	},
 });

@@ -14,10 +14,6 @@ export const GroupListPermission = new Permission<void>({
 export const GroupCreatePermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: GroupResponse,
-
-	allowed: {
-		admin: true,
-	},
 });
 
 export const GroupReadPermission = new Permission({
@@ -31,27 +27,22 @@ export const GroupReadPermission = new Permission({
 
 export const GroupEditPermission = new Permission({
 	linkTo: GroupResponse,
-
-	allowed: { admin: true },
 });
 
 export const GroupDeletePermission = new Permission({
 	linkTo: GroupResponse,
 
-	allowed: { admin: true },
 	applicable: ({ doc }) => !doc.deletedAt,
 });
 
 export const GroupRestorePermission = new Permission({
 	linkTo: GroupResponse,
 
-	allowed: { admin: true },
 	applicable: ({ doc }) => !!doc.deletedAt,
 });
 
 export const GroupPermanentDeletePermission = new Permission({
 	linkTo: GroupResponse,
 
-	allowed: { admin: true },
 	applicable: ({ doc }) => !!doc.deletedAt,
 });
