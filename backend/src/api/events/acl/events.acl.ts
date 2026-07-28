@@ -22,8 +22,9 @@ export const EventsDeletedListPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: EventResponse,
 
+	// Anyone who can list events can also list deleted events (admin is always allowed implicitly).
 	allowed: {
-		program: true,
+		vedouci: true,
 	},
 });
 
@@ -88,8 +89,9 @@ export const EventRestorePermission = new Permission({
 
 export const EventDeletePermanentPermission = new Permission({
 	linkTo: EventResponse,
+	// Permanent deletion is irreversible and reserved for admins only.
 	allowed: {
-		program: true,
+		admin: true,
 	},
 	applicable: ({ doc }) => !!doc.deletedAt,
 });

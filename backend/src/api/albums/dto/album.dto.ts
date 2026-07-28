@@ -18,6 +18,7 @@ export class AlbumResponse {
 	@ApiPropertyOptional({ type: "string" }) dateFrom!: string | null;
 	@ApiPropertyOptional({ type: "string" }) dateTill!: string | null;
 	@ApiPropertyOptional({ type: "number" }) eventId!: number | null;
+	@ApiPropertyOptional({ type: "number" }) createdById!: number | null;
 	@ApiPropertyOptional({ type: "string" }) deletedAt?: Date | null;
 
 	@AcEntity(EventResponse)
