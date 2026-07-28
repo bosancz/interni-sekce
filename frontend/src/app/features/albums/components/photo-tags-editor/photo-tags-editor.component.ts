@@ -1,83 +1,94 @@
-import { Component, forwardRef, input, signal } from "@angular/core";
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { Component, computed, inject, input, output } from "@angular/core";
+import { AlertController, IonChip, IonIcon } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { addOutline } from "ionicons/icons";
 
+/**
+ * Presentational editor for a single photo's tags. It offers the album's existing tag
+ * vocabulary (`albumTags`) as toggleable chips — a chip is highlighted when the photo
+ * carries that tag — plus a "+" chip that prompts for a brand-new tag. Every change is
+ * emitted through `tagsChange`; the component keeps no state of its own, so the parent
+ * owns persistence (see PhotosEditComponent.saveTags).
+ */
 @Component({
-	selector: "photo-tags-editor",
+	selector: "bo-photo-tags-editor",
 	templateUrl: "./photo-tags-editor.component.html",
 	styleUrls: ["./photo-tags-editor.component.scss"],
-	
-	imports: [FormsModule],
-	providers: [
-		{
-			provide: NG_VALUE_ACCESSOR,
-			multi: true,
-			useExisting: forwardRef(() => PhotoTagsEditorComponent),
-		},
-	],
+
+	imports: [IonChip, IonIcon],
 })
-export class PhotoTagsEditorComponent implements ControlValueAccessor {
-	tags = input<string[]>([]);
-	selectedTags = signal<string[]>([]);
+export class PhotoTagsEditorComponent {
+	// tags currently on the photo (null/undefined treated as empty; nullable so callers can
+	// bind the raw value without allocating a fresh [] on every change-detection pass)
+	tags = input<string[] | null>(null);
+	// every tag used anywhere in the album, offered as ready-made toggles
+	albumTags = input<string[]>([]);
+	disabled = input<boolean>(false);
 
-	disabled: boolean = false;
+	tagsChange = output<string[]>();
 
-	onChange: any = () => {};
-	onTouched: any = () => {};
+	private alertController = inject(AlertController);
 
-	writeValue(tags: any): void {
-		this.selectedTags.set(tags || []);
-	}
-	registerOnChange(fn: any): void {
-		this.onChange = fn;
-	}
-	registerOnTouched(fn: any): void {
-		this.onTouched = fn;
-	}
-	setDisabledState(isDisabled: boolean): void {
-		this.disabled = isDisabled;
-	}
+	// the album vocabulary plus any tag already on this photo, de-duplicated and
+	// kept in a stable order so chips don't jump around as tags are toggled
+	availableTags = computed(() => {
+		const seen = new Set<string>();
+		const result: string[] = [];
+		for (const tag of [...this.albumTags(), ...(this.tags() ?? [])]) {
+			if (seen.has(tag)) continue;
+			seen.add(tag);
+			result.push(tag);
+		}
+		return result;
+	});
 
-	constructor() {}
+	constructor() {
+		addIcons({ addOutline });
+	}
 
 	hasTag(tag: string) {
-		return this.selectedTags().indexOf(tag) !== -1;
+		return (this.tags() ?? []).includes(tag);
 	}
 
 	toggleTag(tag: string) {
-		if (this.disabled) return;
+		if (this.disabled()) return;
 
-		const selected = [...this.selectedTags()];
-		let i = selected.indexOf(tag);
-		if (i === -1) {
-			selected.push(tag);
-		} else {
-			selected.splice(i, 1);
-		}
-
-		this.selectedTags.set(selected);
-		this.onChange(selected);
+		const tags = this.tags() ?? [];
+		const next = tags.includes(tag) ? tags.filter((t) => t !== tag) : [...tags, tag];
+		this.tagsChange.emit(next);
 	}
 
-	newTag() {
-		if (this.disabled) return;
+	async addTag() {
+		if (this.disabled()) return;
 
-		let tag = window.prompt("Zadejte název nového tagu:");
+		const alert = await this.alertController.create({
+			header: "Nový štítek",
+			inputs: [{ name: "tag", type: "text", placeholder: "Název štítku" }],
+			buttons: [
+				{ text: "Zrušit", role: "cancel" },
+				{
+					text: "Přidat",
+					handler: (value: { tag: string }) => {
+						this.commitNewTag(value.tag);
+					},
+				},
+			],
+		});
+
+		await alert.present();
+	}
+
+	private commitNewTag(raw: string | undefined | null) {
+		// normalize: trim, drop a leading "#", collapse inner whitespace
+		let tag = (raw ?? "").trim().replace(/\s+/g, " ");
+		if (tag.startsWith("#")) tag = tag.slice(1).trim();
 		if (!tag) return;
 
-		if (tag.charAt(0) === "#") tag = tag.substring(1);
+		// a tag already on the photo is a no-op; one that only exists elsewhere in the
+		// album (or is brand new) gets added
+		const tags = this.tags() ?? [];
+		if (tags.includes(tag)) return;
 
-		const tags = [...this.tags()];
-		if (tags.indexOf(tag) === -1) {
-			tags.push(tag);
-			// Note: tags is an input, so we can't directly modify it
-			// This would need to be handled by the parent component
-		}
-
-		const selected = [...this.selectedTags()];
-		if (selected.indexOf(tag) === -1) {
-			selected.push(tag);
-			this.selectedTags.set(selected);
-			this.onChange(selected);
-		}
+		this.tagsChange.emit([...tags, tag]);
 	}
 }
