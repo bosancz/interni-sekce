@@ -1,5 +1,5 @@
 import { DatePipe, KeyValue, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
-import { Component, computed, OnInit, signal } from "@angular/core";
+import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import {
 	IonButton,
@@ -39,6 +39,7 @@ import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/a
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
+import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
@@ -72,6 +73,7 @@ import { GroupsService } from "../../services/groups.service";
 		MemberPipe,
 		TooltipDirective,
 	],
+	providers: [FilterModel],
 })
 export class GroupMembersComponent implements OnInit {
 	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
@@ -79,11 +81,25 @@ export class GroupMembersComponent implements OnInit {
 	roles = MemberRoles;
 	membershipStates = MembershipStates;
 
-	selectedRoles = signal<string[]>([]);
-	selectedMembership = signal<string[]>([]);
+	// Wrapper model that owns the whole filter (declared first so the computeds below can read it).
+	// This page keeps its filters in local state (no URL), so `applied` is the committed filter the
+	// list is loaded with; the model holds the staged draft on top of it.
+	private model = inject(FilterModel);
+	private readonly defaultFilter: FilterValues = {
+		roles: [],
+		membership: [],
+		showInactive: false,
+		sort: "role",
+		order: "DESC",
+	};
+	private applied = signal<FilterValues>(this.defaultFilter);
 
-	sortColumn = signal<string | null>("role");
-	sortOrder = signal<"ASC" | "DESC">("DESC");
+	// Display state derives from the model: staged draft while the modal is open, else the applied filter.
+	selectedRoles = computed(() => this.asArray(this.model.value("roles")));
+	selectedMembership = computed(() => this.asArray(this.model.value("membership")));
+
+	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? null);
+	sortOrder = computed<"ASC" | "DESC">(() => (this.model.value("order") === "ASC" ? "ASC" : "DESC"));
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "nickname", label: "Přezdívka" },
@@ -96,7 +112,7 @@ export class GroupMembersComponent implements OnInit {
 		{ key: "street", label: "Ulice" },
 		{ key: "status", label: "Stav" },
 	];
-	showInactive = signal(false);
+	showInactive = computed(() => !!this.model.value("showInactive"));
 	search = signal<string>("");
 
 	private groupId?: number;
@@ -170,6 +186,8 @@ export class GroupMembersComponent implements OnInit {
 		// Filters render inline in the toolbar on desktop and inside the filter modal on mobile;
 		// this tracks the lg breakpoint (992px) so the template can switch between the two.
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
+
+		this.model.setCommitted(this.defaultFilter);
 	}
 
 	ngOnInit(): void {
@@ -177,6 +195,9 @@ export class GroupMembersComponent implements OnInit {
 			this.groupId = group?.id;
 			this.loadMembers();
 		});
+		// Applying the filter (live on desktop, on "Hotovo" in the modal) becomes the committed filter
+		// the list is loaded with.
+		this.model.apply$.pipe(untilDestroyed(this)).subscribe((filter) => this.applyFilter(filter));
 	}
 
 	onFilterChange(value: { search?: string }) {
@@ -184,25 +205,26 @@ export class GroupMembersComponent implements OnInit {
 		this.loadMembers();
 	}
 
-	setRolesFilter(roles: string[]) {
-		this.selectedRoles.set(roles);
+	private applyFilter(filter: FilterValues) {
+		this.applied.set(filter);
+		this.model.setCommitted(filter);
 		this.loadMembers();
+	}
+
+	setRolesFilter(roles: string[]) {
+		this.model.set("roles", roles);
 	}
 
 	setMembershipFilter(membership: string[]) {
-		this.selectedMembership.set(membership);
-		this.loadMembers();
+		this.model.set("membership", membership);
 	}
 
 	setShowInactive(showInactive: boolean) {
-		this.showInactive.set(showInactive);
-		this.loadMembers();
+		this.model.set("showInactive", showInactive);
 	}
 
 	onSortChange(sort: AdminTableSort) {
-		this.sortColumn.set(sort.sort || null);
-		this.sortOrder.set(sort.order);
-		this.loadMembers();
+		this.model.patch({ sort: sort.sort || null, order: sort.order });
 	}
 
 	private async loadMembers() {
@@ -217,20 +239,22 @@ export class GroupMembersComponent implements OnInit {
 		// changes can be discarded and only the latest request updates the list.
 		const loadId = ++this.latestLoadId;
 
+		const applied = this.applied();
+		const sort = (applied["sort"] as string) || undefined;
 		const params: SDK.MembersApiListMembersQueryParams = {
 			search: this.search() || undefined,
-			roles: this.selectedRoles() as SDK.ListMembersRolesEnum[],
-			membership: this.selectedMembership() as SDK.ListMembersMembershipEnum[],
+			roles: this.asArray(applied["roles"]) as SDK.ListMembersRolesEnum[],
+			membership: this.asArray(applied["membership"]) as SDK.ListMembersMembershipEnum[],
 			groups: [this.groupId],
 			// No pagination UI here — load the whole group in one request.
 			limit: 1000,
 			// default: active only; "show inactive" reveals inactive members too
-			active: this.showInactive() ? undefined : true,
+			active: applied["showInactive"] ? undefined : true,
 			// Fetch contacts in the same request instead of one call per member,
 			// and only when a contact column is actually visible.
 			contacts: this.needsContacts() || undefined,
-			sort: this.sortColumn() || undefined,
-			order: this.sortColumn() ? this.sortOrder() : undefined,
+			sort,
+			order: sort ? ((applied["order"] as SDK.ListMembersOrderEnum) ?? "ASC") : undefined,
 		};
 
 		const members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
@@ -238,6 +262,15 @@ export class GroupMembersComponent implements OnInit {
 		if (loadId !== this.latestLoadId) return;
 
 		this.members.set(members);
+	}
+
+	private asArray(value: unknown): string[] {
+		if (Array.isArray(value)) return value.filter(Boolean).map(String);
+		if (!value) return [];
+		return String(value)
+			.split(",")
+			.map((s) => s.trim())
+			.filter(Boolean);
 	}
 
 	// Contacts are only needed when the phone/email columns are shown.

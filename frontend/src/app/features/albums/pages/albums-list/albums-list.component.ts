@@ -1,5 +1,5 @@
 import { DatePipe, NgTemplateOutlet } from "@angular/common";
-import { Component, computed, OnInit, signal } from "@angular/core";
+import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
@@ -28,6 +28,7 @@ import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/a
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
+import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { AlbumPipe } from "src/app/shared/pipes/album.pipe";
@@ -59,6 +60,7 @@ import { SDK } from "src/sdk";
 		AlbumPipe,
 		NgTemplateOutlet,
 	],
+	providers: [FilterModel],
 })
 export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave {
 	years = signal<string[]>([]);
@@ -92,11 +94,15 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	filter: UrlParams = {};
 
-	selectedYears = signal<string[]>([]);
-	selectedStatuses = signal<string[]>([]);
+	// Wrapper model that owns the whole filter (declared first so the computeds below can read it).
+	private model = inject(FilterModel);
 
-	sortColumn = signal<string | null>(null);
-	sortOrder = signal<"ASC" | "DESC">("ASC");
+	// Display state derives from the model: staged draft while the modal is open, else committed (URL).
+	selectedYears = computed(() => this.normalizeFilterValueToArray(this.model.value("year")));
+	selectedStatuses = computed(() => this.normalizeFilterValueToArray(this.model.value("status")));
+
+	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? null);
+	sortOrder = computed<"ASC" | "DESC">(() => (this.model.value("order") === "DESC" ? "DESC" : "ASC"));
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "name", label: "Název alba" },
@@ -201,10 +207,11 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	}
 
 	ngOnInit(): void {
-		// All filter state (year/status/search) is written to the URL, so drive loading from the
-		// query params directly rather than the FilterComponent's `(change)` output (which only
-		// emits its own projected controls, and only while the mobile modal is open).
-		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onFilterChange(params));
+		// The URL is the committed filter: feed it to the model and load from it. It changes only when
+		// a filter is applied (live on desktop, on "Hotovo" in the modal), so the list stays put while
+		// the modal stages.
+		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onParams(params));
+		this.model.apply$.pipe(untilDestroyed(this)).subscribe((filter) => this.applyFilter(filter));
 	}
 
 	ionViewWillEnter() {
@@ -219,38 +226,47 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		this.alert?.dismiss();
 	}
 
-	onFilterChange(params: Params) {
+	onParams(params: Params) {
+		this.model.setCommitted(this.modelFromParams(params));
 		this.filter = { ...params };
-		this.selectedYears.set(this.normalizeFilterValueToArray(params["year"]));
-		this.selectedStatuses.set(this.normalizeFilterValueToArray(params["status"]));
-		this.sortColumn.set(params["sort"] ?? null);
-		this.sortOrder.set(params["order"] === "DESC" ? "DESC" : "ASC");
 		this.loadAlbums(this.filter);
 	}
 
-	onSortChange(sort: AdminTableSort) {
+	private modelFromParams(p: Params): FilterValues {
+		return {
+			year: this.normalizeFilterValueToArray(p["year"]),
+			status: this.normalizeFilterValueToArray(p["status"]),
+			sort: p["sort"] ?? null,
+			order: p["order"] ?? null,
+		};
+	}
+
+	private applyFilter(filter: FilterValues) {
+		const list = (value: unknown) => {
+			const array = this.normalizeFilterValueToArray(value);
+			return array.length ? array.join(",") : null;
+		};
 		this.router.navigate([], {
-			queryParams: { sort: sort.sort || null, order: sort.sort ? sort.order : null },
+			queryParams: {
+				year: list(filter["year"]),
+				status: list(filter["status"]),
+				sort: (filter["sort"] as string) || null,
+				order: (filter["order"] as string) || null,
+			},
 			queryParamsHandling: "merge",
 			replaceUrl: true,
 		});
+	}
+
+	onSortChange(sort: AdminTableSort) {
+		this.model.patch({ sort: sort.sort || null, order: sort.sort ? sort.order : null });
 	}
 
 	setFilterParam(name: string, value: string | string[] | null) {
-		let formattedValue = value;
-
-		if (Array.isArray(value)) {
-			formattedValue = value.length > 0 ? value.join(",") : null;
-		}
-
-		this.router.navigate([], {
-			queryParams: { [name]: formattedValue || null },
-			queryParamsHandling: "merge",
-			replaceUrl: true,
-		});
+		this.model.set(name, value);
 	}
 
-	private normalizeFilterValueToArray(value: string | string[] | null | undefined): string[] {
+	private normalizeFilterValueToArray(value: unknown): string[] {
 		if (Array.isArray(value)) return value.filter((item) => !!item).map((item) => String(item));
 		if (!value) return [];
 

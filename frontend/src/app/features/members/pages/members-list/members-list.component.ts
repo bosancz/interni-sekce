@@ -1,5 +1,5 @@
 import { DatePipe, KeyValue, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
-import { AfterViewInit, Component, computed, OnInit, signal } from "@angular/core";
+import { AfterViewInit, Component, computed, inject, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
@@ -32,6 +32,7 @@ import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/a
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
 import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
+import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
 import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
@@ -84,18 +85,24 @@ const COLUMNS_ICON =
 		NgTemplateOutlet,
 		TooltipDirective,
 	],
+	providers: [FilterModel],
 })
 export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnter {
+	// Wrapper model that owns the whole filter (declared first so the computeds below can read it).
+	private model = inject(FilterModel);
+
 	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
 	groups = signal<SDK.GroupResponseWithLinks[]>([]);
 	roles = MemberRoles;
 	membershipStates = MembershipStates;
-	selectedGroups = signal<string[]>([]);
-	selectedRoles = signal<string[]>([]);
-	selectedMembership = signal<string[]>([]);
 
-	sortColumn = signal<string | null>(null);
-	sortOrder = signal<"ASC" | "DESC">("ASC");
+	// Display state derives from the model: staged draft while the modal is open, else committed (URL).
+	selectedGroups = computed(() => this.normalizeFilterValueToArray(this.model.value("groups")));
+	selectedRoles = computed(() => this.normalizeFilterValueToArray(this.model.value("roles")));
+	selectedMembership = computed(() => this.normalizeFilterValueToArray(this.model.value("membership")));
+
+	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? null);
+	sortOrder = computed<"ASC" | "DESC">(() => (this.model.value("order") === "DESC" ? "DESC" : "ASC"));
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "nickname", label: "Přezdívka" },
@@ -215,14 +222,15 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	isDesktop = signal(true);
 
 	// True when inactive members (and groups) are currently shown (filter "active" === "all").
-	showInactive = signal(false);
+	showInactive = computed(() => ((this.model.value("active") as string) || "active") === "all");
 
 	ngOnInit() {
 		// All filter state (groups/roles/membership/age/search/active) is written to the URL via
 		// setFilterParam, so drive loading from the query params directly rather than the
 		// FilterComponent's `(change)` output (which only reflects its own projected NgModel
 		// controls — the pills are now plain buttons and no longer register there).
-		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onFilterChange(params));
+		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onParams(params));
+		this.model.apply$.pipe(untilDestroyed(this)).subscribe((filter) => this.applyFilter(filter));
 	}
 
 	ngAfterViewInit(): void {
@@ -269,37 +277,48 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		this.toasts.toast("Zkopírováno do schránky.");
 	}
 
-	onFilterChange(params: Params) {
+	onParams(params: Params) {
+		this.model.setCommitted(this.modelFromParams(params));
 		this.filter = { ...params };
-		this.selectedGroups.set(this.normalizeFilterValueToArray(params["groups"]));
-		this.selectedRoles.set(this.normalizeFilterValueToArray(params["roles"]));
-		this.selectedMembership.set(this.normalizeFilterValueToArray(params["membership"]));
-		this.showInactive.set(((params["active"] as string) || "active") === "all");
-		this.sortColumn.set(params["sort"] ?? null);
-		this.sortOrder.set(params["order"] === "DESC" ? "DESC" : "ASC");
 		this.loadMembers(this.filter);
 	}
 
-	onSortChange(sort: AdminTableSort) {
+	private modelFromParams(p: Params): FilterValues {
+		return {
+			groups: this.normalizeFilterValueToArray(p["groups"]),
+			roles: this.normalizeFilterValueToArray(p["roles"]),
+			membership: this.normalizeFilterValueToArray(p["membership"]),
+			active: p["active"] ?? null,
+			sort: p["sort"] ?? null,
+			order: p["order"] ?? null,
+		};
+	}
+
+	private applyFilter(filter: FilterValues) {
+		const list = (value: unknown) => {
+			const array = this.normalizeFilterValueToArray(value);
+			return array.length ? array.join(",") : null;
+		};
 		this.router.navigate([], {
-			queryParams: { sort: sort.sort || null, order: sort.sort ? sort.order : null },
+			queryParams: {
+				groups: list(filter["groups"]),
+				roles: list(filter["roles"]),
+				membership: list(filter["membership"]),
+				active: (filter["active"] as string) || null,
+				sort: (filter["sort"] as string) || null,
+				order: (filter["order"] as string) || null,
+			},
 			queryParamsHandling: "merge",
 			replaceUrl: true,
 		});
 	}
 
+	onSortChange(sort: AdminTableSort) {
+		this.model.patch({ sort: sort.sort || null, order: sort.sort ? sort.order : null });
+	}
+
 	setFilterParam(name: string, value: string | string[] | null) {
-		let formattedValue = value;
-
-		if (Array.isArray(value)) {
-			formattedValue = value.length > 0 ? value.join(",") : null;
-		}
-
-		this.router.navigate([], {
-			queryParams: { [name]: formattedValue || null },
-			queryParamsHandling: "merge",
-			replaceUrl: true,
-		});
+		this.model.set(name, value);
 	}
 
 	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
@@ -352,7 +371,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		return !!selections["firstTelephone"] || !!selections["firstEmail"];
 	}
 
-	private normalizeFilterValueToArray(value: string | string[] | null | undefined): string[] {
+	private normalizeFilterValueToArray(value: unknown): string[] {
 		if (Array.isArray(value)) return value.filter((item) => !!item).map((item) => String(item));
 		if (!value) return [];
 

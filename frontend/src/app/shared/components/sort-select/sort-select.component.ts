@@ -24,6 +24,9 @@ export interface SortOption {
  * inline ascending/descending toggle. Mirrors the desktop `admin-table` header
  * sorting, emitting the same `sortChange` shape so pages reuse their existing
  * handler. Selecting "Výchozí" emits an empty key to fall back to the default order.
+ *
+ * Dumb control: renders `sort`/`order` and emits `sortChange`. Whether that applies immediately or
+ * is staged until the modal is confirmed is decided by the page's FilterModel, not here.
  */
 @Component({
 	selector: "bo-sort-select",
