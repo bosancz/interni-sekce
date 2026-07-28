@@ -93,12 +93,18 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 			// filter to apply; any other close (Zrušit / backdrop / back) drops the draft.
 			this.filterModel?.begin();
 
-			const result = await this.modalService.componentModal(FilterModalComponent, {
-				content: filterContent,
-				immediate,
-			});
+			// Present without the history-based back-close: the model applies the filter with
+			// `replaceUrl`, so it replaces the current entry and the browser back button doesn't cycle
+			// through every filter change.
+			const modal = await this.modalService.modal(
+				FilterModalComponent,
+				{ content: filterContent, immediate },
+				{ cssClass: "dialog" },
+				false,
+			);
+			const { data } = await modal.onDidDismiss<boolean>();
 
-			if (result === true) this.filterModel?.commit();
+			if (data === true) this.filterModel?.commit();
 			else this.filterModel?.cancel();
 			return;
 		}

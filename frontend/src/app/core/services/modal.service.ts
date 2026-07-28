@@ -76,9 +76,15 @@ export class ModalService {
 		component: Type<C>,
 		componentProps?: ComponentProps<C>,
 		options: Omit<ModalOptions<Type<C>>, "component" | "componentProps"> = {},
+		// The back-close helper pushes a synthetic history entry. Callers that navigate on confirm (the
+		// immediate filter modal, which writes the filters to the URL with `replaceUrl`) opt out, so the
+		// applied filter replaces the current entry instead of the browser back button cycling through
+		// every filter change. Such modals fall back to Ionic's built-in hardware/gesture back dismiss.
+		backClose = true,
 	): Promise<HTMLIonModalElement> {
 		const modal = await this.modalController.create({ component, componentProps, ...options });
-		await this.presentWithBackClose(modal);
+		if (backClose) await this.presentWithBackClose(modal);
+		else await modal.present();
 		return modal;
 	}
 
@@ -93,8 +99,6 @@ export class ModalService {
 	private async presentWithBackClose(overlay: DismissableOverlay) {
 		this.ensurePopstateListener();
 
-		// URL when the overlay opened, so on close we can tell whether it navigated in the meantime.
-		const urlAtPresent = window.location.href;
 		history.pushState(history.state, "");
 		this.backStack.push(overlay);
 
@@ -102,18 +106,13 @@ export class ModalService {
 			const index = this.backStack.indexOf(overlay);
 			if (index === -1) return; // already removed by the back-navigation path
 
-			// closed from within: drop the synthetic entry we added on present
+			// closed from within: drop the synthetic entry we added on present. Callers that navigate
+			// on confirm (the filter modal) must do so *after* this back settles — see
+			// FilterComponent.openFilter — so the navigation replaces the pre-open entry rather than
+			// stacking on top of it.
 			this.backStack.splice(index, 1);
-
-			// The synthetic entry balances a browser back-press against a *stationary* page. If the
-			// overlay navigated on its way out — the filter modal writing the confirmed filters to the
-			// query params on "Hotovo" — history.back() would land on the pre-open URL and silently
-			// undo that navigation. So only balance the history when the page hasn't moved; a confirmed
-			// filter change keeps its new URL, and the browser back button then simply reverts it.
-			if (window.location.href === urlAtPresent) {
-				this.suppressPopstate = true;
-				history.back();
-			}
+			this.suppressPopstate = true;
+			history.back();
 		});
 
 		await overlay.present();
