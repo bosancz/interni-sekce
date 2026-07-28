@@ -1,6 +1,7 @@
 import { Routes } from "@angular/router";
 
 import { NotFoundComponent } from "./core/pages/not-found/not-found.component";
+import { linkGuard } from "./core/guards/link.guard";
 
 export const appRoutes: Routes = [
 	{
@@ -30,7 +31,7 @@ export const appRoutes: Routes = [
 	{
 		path: "program",
 		title: "Program",
-		data: { permission: "program" },
+		canMatch: [linkGuard("listEvents")],
 		loadChildren: () => import("./features/program/program.routing").then((m) => m.programRoutes),
 	},
 
@@ -51,7 +52,7 @@ export const appRoutes: Routes = [
 	{
 		path: "admin",
 		title: "Administrace",
-		data: { permission: "admin" },
+		canMatch: [linkGuard("listUsers", "listEvents")],
 		loadChildren: () => import("./features/admin/admin.routing").then((m) => m.adminRoutes),
 	},
 
