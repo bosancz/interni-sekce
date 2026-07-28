@@ -29,6 +29,8 @@ export type SignedToken = TokenPayload & JwtPayload;
 export interface SessionUser {
 	userId: number;
 	memberId?: number;
+	/** Group of the linked member, if any — used to scope leader (`vedouci`) permissions to their own group. */
+	memberGroupId?: number;
 	memberActive: boolean;
 	roles: UserRoles[];
 	/** The user this session is impersonating from, if any. */

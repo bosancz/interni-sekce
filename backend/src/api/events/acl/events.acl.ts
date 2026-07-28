@@ -22,9 +22,9 @@ export const EventsDeletedListPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: EventResponse,
 
+	// Anyone who can list events can also list deleted events (admin is always allowed implicitly).
 	allowed: {
-		program: true,
-		admin: true,
+		vedouci: true,
 	},
 });
 

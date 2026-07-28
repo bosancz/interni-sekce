@@ -54,7 +54,11 @@ export const AlbumEditPermission = new Permission({
 
 export const AlbumDeletePermission = new Permission({
 	linkTo: AlbumResponse,
-	inherit: AlbumEditPermission,
+	allowed: {
+		// Only the album's creator may delete it; admin (implicit) may delete any album.
+		vedouci: ({ doc, req }) => doc.createdById !== null && doc.createdById === req.user?.userId,
+	},
+	applicable: ({ doc }) => !doc.deletedAt,
 });
 
 export const AlbumRestorePermission = new Permission({

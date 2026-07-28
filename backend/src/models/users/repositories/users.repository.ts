@@ -30,7 +30,7 @@ export class UsersRepository {
 	async getSessionUser(id: number) {
 		return this.repository.findOne({
 			where: { id },
-			select: { id: true, memberId: true, roles: true, member: { id: true, active: true } },
+			select: { id: true, memberId: true, roles: true, member: { id: true, active: true, groupId: true } },
 			relations: { member: true },
 		});
 	}

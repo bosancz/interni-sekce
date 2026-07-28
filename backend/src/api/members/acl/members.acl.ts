@@ -51,7 +51,8 @@ export const MemberUpdatePermission = new Permission({
 export const MemberDeletePermission = new Permission({
 	linkTo: MemberResponse,
 	allowed: {
-		vedouci: true,
+		// A leader may delete only members of their own group; admin (implicit) may delete anyone.
+		vedouci: ({ doc, req }) => req.user?.memberGroupId !== undefined && doc.groupId === req.user.memberGroupId,
 	},
 	applicable: ({ doc }) => !doc.deletedAt,
 });
