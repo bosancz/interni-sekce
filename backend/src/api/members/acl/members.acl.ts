@@ -59,8 +59,9 @@ export const MemberDeletePermission = new Permission({
 
 export const MemberRestorePermission = new Permission({
 	linkTo: MemberResponse,
+	// Restore mirrors delete: a leader may restore only members of their own group; admin anyone.
 	allowed: {
-		vedouci: true,
+		vedouci: ({ doc, req }) => req.user?.memberGroupId !== undefined && doc.groupId === req.user.memberGroupId,
 	},
 	applicable: ({ doc }) => !!doc.deletedAt,
 });

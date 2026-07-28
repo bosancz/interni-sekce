@@ -63,8 +63,9 @@ export const AlbumDeletePermission = new Permission({
 
 export const AlbumRestorePermission = new Permission({
 	linkTo: AlbumResponse,
+	// Restore mirrors delete: only the album's creator may restore it; admin (implicit) any album.
 	allowed: {
-		vedouci: true,
+		vedouci: ({ doc, req }) => doc.createdById !== null && doc.createdById === req.user?.userId,
 	},
 	applicable: ({ doc }) => !!doc.deletedAt,
 });
