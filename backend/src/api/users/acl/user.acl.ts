@@ -8,7 +8,6 @@ export const UsersListPermission = new Permission<void>({
 	contains: UserResponse,
 
 	allowed: {
-		vedouci: true,
 		revizor: true,
 		admin: true,
 	},
@@ -28,8 +27,8 @@ export const UserReadPermission = new Permission<User>({
 	contains: UserResponse,
 
 	allowed: {
-		vedouci: true,
 		revizor: true,
+		vedouci: ({ doc, req }) => doc.id === req.user?.userId,
 	},
 });
 
