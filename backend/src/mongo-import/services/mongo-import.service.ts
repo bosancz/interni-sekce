@@ -10,8 +10,9 @@ import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member, MemberRanks, MemberRoles, MembershipStates } from "src/models/members/entities/member.entity";
+import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import { User, UserRoles } from "src/models/users/entities/user.entity";
-import { EntityManager, EntityTarget, ObjectLiteral } from "typeorm";
+import { EntityManager, EntityTarget, In, ObjectLiteral } from "typeorm";
 import { MongoMemberGroups } from "../data/member-groups";
 import { MongoAlbum, MongoAlbumSchema } from "../models/album";
 import { MongoEvent, MongoEventSchema } from "../models/event";
@@ -36,6 +37,7 @@ export class MongoImportService {
 	constructor(
 		private entityManager: EntityManager,
 		private config: Config,
+		private photosRepository: PhotosRepository,
 	) {}
 
 	async importData() {
@@ -69,6 +71,90 @@ export class MongoImportService {
 		}
 
 		this.logger.log(`Mongo import finished.`);
+	}
+
+	/**
+	 * Backfill *only* the album title-photo selection from Mongo onto the already-imported Postgres
+	 * data — used when a full reimport is no longer possible because the data is live and has since
+	 * been edited. The legacy selection lives in `album.titlePhotos` (older single `titlePhoto` as a
+	 * fallback); each entry is a Mongo photo ObjectId, which maps onto the existing rows through
+	 * `photos.srcId` (the legacy id kept at import time). Touches nothing but `title_photo_order`.
+	 *
+	 * By default albums that already have a selection are left untouched (so an editor's choice made
+	 * in the app is never clobbered); pass `overwrite` to replace those too. Safe to re-run.
+	 */
+	async importTitlePhotosOnly(options: { overwrite?: boolean } = {}) {
+		this.logger.log(`Starting title-photo backfill from ${this.config.mongoDb.uri}...`);
+
+		const connection = await mongoose
+			.createConnection(this.config.mongoDb.uri, { connectTimeoutMS: 1000 })
+			.asPromise();
+
+		this.albumsModel = connection.model(MongoAlbum.name, MongoAlbumSchema);
+
+		let albumsSet = 0;
+		let photosSet = 0;
+		let skipped = 0;
+		let unresolved = 0;
+
+		try {
+			const mongoAlbums = await this.albumsModel.find({}).lean();
+			this.logger.debug(` - Found ${mongoAlbums.length} albums in mongo.`);
+
+			for (const mongoAlbum of mongoAlbums) {
+				// prefer the newer ordered array, fall back to the single legacy field
+				const mongoTitleIds = mongoAlbum.titlePhotos?.length
+					? mongoAlbum.titlePhotos
+					: mongoAlbum.titlePhoto
+						? [mongoAlbum.titlePhoto]
+						: [];
+				if (!mongoTitleIds.length) continue;
+
+				// map the legacy photo ObjectIds onto the already-imported rows via photos.srcId
+				const srcIds = mongoTitleIds.map((id) => id.toString());
+				const existingPhotos = await this.entityManager.find(Photo, { where: { srcId: In(srcIds) } });
+				const bySrcId = new Map(existingPhotos.map((photo) => [photo.srcId, photo]));
+
+				// preserve the legacy order, dedupe, cap at three
+				const ordered: Photo[] = [];
+				for (const srcId of srcIds) {
+					const photo = bySrcId.get(srcId);
+					if (photo && !ordered.some((item) => item.id === photo.id)) ordered.push(photo);
+					if (ordered.length === 3) break;
+				}
+
+				if (!ordered.length) {
+					// the album referenced title photos, but none of them still exist in Postgres
+					unresolved++;
+					continue;
+				}
+
+				// the selection belongs to one album; ignore stray references to other albums' photos
+				const albumId = ordered[0].albumId;
+				const photoIds = ordered.filter((photo) => photo.albumId === albumId).map((photo) => photo.id);
+
+				if (!options.overwrite) {
+					const current = await this.photosRepository.getTitlePhotos(albumId);
+					if (current.length) {
+						skipped++;
+						continue;
+					}
+				}
+
+				await this.photosRepository.setTitlePhotos(albumId, photoIds);
+				albumsSet++;
+				photosSet += photoIds.length;
+			}
+		} finally {
+			await connection.close();
+		}
+
+		this.logger.log(
+			`Title-photo backfill finished: set ${photosSet} title photos across ${albumsSet} albums` +
+				(skipped ? `, skipped ${skipped} with an existing selection` : "") +
+				(unresolved ? `, ${unresolved} albums referenced photos no longer present` : "") +
+				".",
+		);
 	}
 
 	async init(t: EntityManager) {
