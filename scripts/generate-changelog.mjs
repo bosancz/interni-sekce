@@ -162,7 +162,9 @@ function renderSection(version, date, buckets, repoUrl) {
 	return lines.join("\n");
 }
 
-const DEFAULT_HEADER = ["# Seznam změn", "", "Přehled novinek a oprav v jednotlivých verzích aplikace.", ""].join("\n");
+// No "# Seznam změn" heading — the changelog modal renders that as its own title, so the file
+// carries only the intro paragraph above the version sections.
+const DEFAULT_HEADER = ["Přehled novinek a oprav v jednotlivých verzích aplikace.", ""].join("\n");
 
 function prepend(file, section) {
 	let content = existsSync(file) ? readFileSync(file, "utf8") : "";

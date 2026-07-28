@@ -1,5 +1,3 @@
-# Seznam změn
-
 Přehled novinek a oprav v jednotlivých verzích aplikace.
 
 ## v4.3.1 — 2026-07-28

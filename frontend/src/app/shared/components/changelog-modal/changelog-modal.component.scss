@@ -2,20 +2,12 @@
 	// Long changelogs scroll within the dialog body rather than growing the modal.
 	max-height: 60vh;
 	overflow-y: auto;
-	// the modal layout's content slot has no padding of its own, and the changelog brings its own
-	// heading, so the layout's title slot is left empty (and collapses)
+	// the modal layout's content slot has no padding of its own, so the changelog supplies it
 	padding: 16px;
 
 	// the markdown is injected with [innerHTML], so it carries no view-encapsulation attribute —
 	// without ::ng-deep none of these rules would reach it
 	::ng-deep {
-		// "Seznam změn" — serves as the modal title
-		h1 {
-			font-size: 1.5rem;
-			font-weight: bold;
-			margin: 0 0 0.5rem;
-		}
-
 		h2 {
 			font-size: 1.1rem;
 			margin: 2.5rem 0 1rem;
@@ -80,10 +72,23 @@
 	}
 }
 
-// GitHub odkaz v záhlaví — zarovnaný vpravo nahoru, aby nezasahoval do nadpisu changelogu
-.github-link {
+// Záhlaví modalu: nadpis vlevo, odkaz na GitHub vpravo
+.changelog-header {
 	display: flex;
-	justify-content: flex-end;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+
+	// inherit the modal-layout .title sizing (1.5em bold) instead of the UA h1 defaults
+	h1 {
+		margin: 0;
+		font-size: inherit;
+	}
+}
+
+.github-link {
+	display: inline-flex;
+	align-items: center;
 	color: inherit;
 
 	ion-icon {
