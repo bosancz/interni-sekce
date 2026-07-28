@@ -29,6 +29,7 @@ export const UserReadPermission = new Permission<User>({
 
 	allowed: {
 		vedouci: true,
+		revizor: true,
 	},
 });
 
