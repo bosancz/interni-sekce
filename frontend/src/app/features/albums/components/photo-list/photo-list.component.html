@@ -41,6 +41,13 @@
 								</span>
 							}
 						</p>
+						@if (photo.tags?.length) {
+							<div class="tags">
+								@for (tag of photo.tags; track tag) {
+									<ion-chip class="tag" color="warning">#{{ tag }}</ion-chip>
+								}
+							</div>
+						}
 					</ion-label>
 
 					<ion-reorder slot="end"></ion-reorder>

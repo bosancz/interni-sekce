@@ -1,6 +1,7 @@
 import { ApiHideProperty } from "@nestjs/swagger";
 import { Event } from "src/models/events/entities/event.entity";
-import { Column, DeleteDateColumn, Entity, Index, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/models/users/entities/user.entity";
+import { Column, DeleteDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Photo } from "./photo.entity";
 
 export enum AlbumStatus {
@@ -41,6 +42,14 @@ export class Album {
 	})
 	@ApiHideProperty()
 	searchVector?: string;
+
+	// The user who created the album. Deletion is restricted to the creator (or admin); see AlbumDeletePermission.
+	@Column({ type: "integer", nullable: true }) createdById!: number | null;
+
+	@ManyToOne(() => User, { onDelete: "SET NULL", onUpdate: "CASCADE" })
+	@JoinColumn({ name: "created_by_id" })
+	@ApiHideProperty()
+	createdBy?: User | null;
 
 	@Column({ type: "text", nullable: true }) description!: string | null;
 	@Column({ type: "timestamp with time zone", nullable: true }) datePublished!: Date | string | null;

@@ -235,6 +235,12 @@ export namespace SDK {
         'name': string;
         /**
          * 
+         * @type {number}
+         * @memberof Album
+         */
+        'createdById': number | null;
+        /**
+         * 
          * @type {string}
          * @memberof Album
          */
@@ -379,6 +385,12 @@ export namespace SDK {
          * @memberof AlbumResponse
          */
         'eventId'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof AlbumResponse
+         */
+        'createdById'?: number | null;
         /**
          * 
          * @type {string}
@@ -529,6 +541,12 @@ export namespace SDK {
          * @memberof AlbumResponseWithLinks
          */
         'eventId'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof AlbumResponseWithLinks
+         */
+        'createdById'?: number | null;
         /**
          * 
          * @type {string}

@@ -19,6 +19,10 @@ export interface FilterPillOption {
  * Filter pill styled like the events "Rok" pill: a rounded button next to the search box that
  * opens a popover with a grid of toggleable chips. Drop it inside <bo-filter> with the
  * `toolbar-actions slot="end"` attributes so it is projected into the toolbar.
+ *
+ * The pill is dumb: it renders `selected` and emits `selectedChange`. Whether that change applies
+ * immediately or is staged until the mobile filter modal is confirmed is decided by the page's
+ * FilterModel, not here.
  */
 @Component({
 	selector: "bo-filter-pill",
@@ -84,5 +88,9 @@ export class FilterPillComponent {
 
 	clear() {
 		this.selectedChange.emit([]);
+	}
+
+	done() {
+		this.popoverOpen.set(false);
 	}
 }

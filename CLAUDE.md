@@ -4,6 +4,10 @@
 
 - Do not run build checks (e.g. `ng build`, `npm run build`) if a dev server is already running — rely on the running dev server's compilation output instead.
 - One warm dev server is shared across all agents. `npm run dev` (root) runs frontend + backend via `concurrently` and tees combined output to `dev.log` in the repo root. To check whether your change compiled or broke the app, read `dev.log` (e.g. `tail -n 80 dev.log`, or `grep '\[FE\]' dev.log` for Angular only) — do **not** start your own `ng serve`/dev server (the port is already in use and it just fragments the setup). Lines are prefixed `[FE]`/`[BE]`; the file contains raw ANSI color codes, so strip them when parsing. `dev.log` is gitignored.
+- **No `dev.log` (or a stale one) means no server is running — you are in a fresh cloud/sandbox session and are expected to start one yourself so you can actually verify your change.** The "don't start your own server" rule above only prevents fragmenting an *already-running* shared server; it is **not** licence to ship unverified. Bring the server up (backgrounded) and then read `dev.log` exactly as above:
+  - There is no committed lockfile, so install with `npm install`, **not** `npm ci` / `npm run install` (both run `npm ci`, which fails without a lockfile). Install in whichever of `frontend/` and `backend/` you touched. Don't commit the `package-lock.json` this creates.
+  - A **frontend-only** change does not need the database — the fastest check is `cd frontend && npm install && npm run dev` and reading its Angular compile output.
+  - For a **backend** change, or to run the full root `npm run dev` (which is what produces `dev.log`), first bring up Postgres and export the `DB_*` vars — see [Running Postgres in a cloud/sandbox session](#running-postgres-in-a-cloudsandbox-session-no-db-already-up) below.
 - Because the server (and `dev.log`) is shared, an error in the log may originate from another agent's concurrent change, not yours. Before assuming your edit broke the build, check whether the failing file/area is one you touched; if not, it is likely someone else's in-flight work and will clear on its own.
 
 ## Frontend SDK

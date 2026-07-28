@@ -12,19 +12,14 @@
 			</p>
 
 			@if (attendee.member?.birthday && hasBirthday(attendee)) {
-				<span class="birthday" slot="end">
-					🎉 {{ attendee.member.birthday | date: "d. M." }}
-				</span>
+				<span class="birthday text-muted"> 🎉 {{ attendee.member.birthday | date: "d. M." }} </span>
 			}
 
-			@if (attendee.member) {
-				<bo-group-badge
-					class="group"
-					[short]="true"
-					slot="end"
-					[groupId]="attendee.member.groupId"
-				></bo-group-badge>
-			}
+			<div class="group" slot="end">
+				@if (attendee.member) {
+					<bo-group-badge [short]="true" [groupId]="attendee.member.groupId"></bo-group-badge>
+				}
+			</div>
 
 			<div class="role" slot="end">
 				<ion-badge mode="ios">
@@ -32,11 +27,14 @@
 				</ion-badge>
 			</div>
 
-			@if (attendee._links.deleteEventAttendee.allowed) {
-				<bo-delete-button
-					(click)="remove.emit(attendee); $event.preventDefault(); $event.stopPropagation()"
-					slot="end"
-				></bo-delete-button>
+			@if (canRemoveAny()) {
+				<div class="delete" slot="end">
+					@if (attendee._links.deleteEventAttendee.allowed) {
+						<bo-delete-button
+							(click)="remove.emit(attendee); $event.preventDefault(); $event.stopPropagation()"
+						></bo-delete-button>
+					}
+				</div>
 			}
 		</bo-item>
 	}

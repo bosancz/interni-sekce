@@ -44,6 +44,7 @@ export class TokenService {
 		req.user = {
 			userId: user.id,
 			memberId: user.memberId ?? undefined,
+			memberGroupId: user.member?.groupId ?? undefined,
 			memberActive: user.member?.active ?? false,
 			roles: user.roles ?? [],
 			impersonatorId: payload.impersonatorId,

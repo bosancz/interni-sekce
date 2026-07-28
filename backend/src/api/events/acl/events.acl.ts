@@ -22,9 +22,9 @@ export const EventsDeletedListPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: EventResponse,
 
+	// Anyone who can list events can also list deleted events (admin is always allowed implicitly).
 	allowed: {
-		program: true,
-		admin: true,
+		vedouci: true,
 	},
 });
 
@@ -64,7 +64,6 @@ export const EventEditPermission = new Permission({
 	linkTo: EventResponse,
 
 	allowed: {
-		admin: true,
 		program: true,
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
@@ -76,7 +75,6 @@ export const EventDeletePermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
-		admin: true,
 	},
 	applicable: ({ doc }) => doc.status !== EventStates.public && !doc.deletedAt,
 });
@@ -85,15 +83,14 @@ export const EventRestorePermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
-		admin: true,
 	},
 	applicable: ({ doc }) => !!doc.deletedAt,
 });
 
 export const EventDeletePermanentPermission = new Permission({
 	linkTo: EventResponse,
+	// Permanent deletion is irreversible and reserved for admins only.
 	allowed: {
-		program: true,
 		admin: true,
 	},
 	applicable: ({ doc }) => !!doc.deletedAt,
@@ -103,7 +100,6 @@ export const EventLeadPermission = new Permission({
 	linkTo: EventResponse,
 
 	allowed: {
-		admin: true,
 		vedouci: true,
 	},
 
@@ -114,7 +110,6 @@ export const EventSubmitPermission = new Permission({
 	linkTo: EventResponse,
 
 	allowed: {
-		admin: true,
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
 
@@ -125,7 +120,6 @@ export const EventPublishPermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
-		admin: true,
 	},
 	applicable: ({ doc }) =>
 		[EventStates.pending, EventStates.draft].includes(doc.status) && !!doc.leaders?.length && !doc.deletedAt,
@@ -135,7 +129,6 @@ export const EventRejectPermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
-		admin: true,
 	},
 	applicable: ({ doc }) => doc.status === EventStates.pending && !doc.deletedAt,
 });
@@ -144,7 +137,6 @@ export const EventUnpublishPermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
-		admin: true,
 	},
 	applicable: ({ doc }) => doc.status === EventStates.public && !doc.deletedAt,
 });
@@ -153,7 +145,6 @@ export const EventCancelPermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
-		admin: true,
 	},
 	applicable: ({ doc }) => doc.status === EventStates.public && !doc.deletedAt,
 });
@@ -162,7 +153,6 @@ export const EventUncancelPermission = new Permission({
 	linkTo: EventResponse,
 	allowed: {
 		program: true,
-		admin: true,
 	},
 	applicable: ({ doc, req }) => doc.status === EventStates.cancelled && !doc.deletedAt,
 });
@@ -212,7 +202,6 @@ export const EventAnnouncementGetPermission = new Permission({
 	linkTo: EventResponse,
 
 	allowed: {
-		admin: true,
 		revizor: true,
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
@@ -222,8 +211,7 @@ export const EventAccountingGetPermission = new Permission({
 	linkTo: EventResponse,
 
 	allowed: {
-		admin: true,
-		revizor:true,
+		revizor: true,
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
 });
@@ -257,7 +245,6 @@ export const EventExpenseEditPermission = new Permission({
 	linkTo: EventExpenseResponse,
 
 	allowed: {
-		admin: true,
 		vedouci: ({ doc, req }) => isMyEvent(doc.event, req),
 	},
 
@@ -290,7 +277,6 @@ export const EventAttendeeCreatePermission = new Permission({
 	linkTo: EventResponse,
 
 	allowed: {
-		admin: true,
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
 });
@@ -299,7 +285,6 @@ export const EventAttendeeEditPermission = new Permission({
 	linkTo: EventAttendeeResponse,
 
 	allowed: {
-		admin: true,
 		vedouci: ({ doc, req }) => isMyEvent(doc.event, req),
 	},
 

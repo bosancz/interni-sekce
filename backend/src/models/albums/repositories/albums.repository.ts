@@ -36,6 +36,7 @@ export class AlbumsRepository {
 				"albums.dateFrom",
 				"albums.dateTill",
 				"albums.datePublished",
+				"albums.createdById",
 			])
 			// row-level permission filter (see Permission.canWhere)
 			.where(where)
@@ -102,6 +103,7 @@ export class AlbumsRepository {
 				"albums.dateFrom",
 				"albums.dateTill",
 				"albums.datePublished",
+				"albums.createdById",
 				"albums.deletedAt",
 			])
 			.withDeleted()

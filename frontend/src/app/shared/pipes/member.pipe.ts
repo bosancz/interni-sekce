@@ -49,6 +49,6 @@ export class MemberPipe implements PipeTransform {
 	}
 
 	getFirstLetterLocal(value: string): string {
-		return value.match(/^(Ch|\w)/)?.[0] || "";
+		return value.match(/^(Ch|[\p{L}\p{N}])/u)?.[0] || "";
 	}
 }

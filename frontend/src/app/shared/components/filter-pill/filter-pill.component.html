@@ -37,6 +37,11 @@
 				@if (selected().length) {
 					<button type="button" class="filter-pill-clear" (click)="clear()">Zrušit výběr</button>
 				}
+				@if (multiple()) {
+					<!-- Multi-select chips stay open on tap (dismissOnSelect=false), so give an explicit
+					     way to confirm and close the dropdown instead of only the backdrop. -->
+					<button type="button" class="filter-pill-done" (click)="done()">Hotovo</button>
+				}
 			</div>
 		</ion-content>
 	</ng-template>

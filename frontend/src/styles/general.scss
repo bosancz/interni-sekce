@@ -222,6 +222,19 @@ ion-select.filter-pill {
 		font-weight: 700;
 		cursor: pointer;
 	}
+
+	.filter-pill-done {
+		width: 100%;
+		margin-top: 10px;
+		padding: 10px 0;
+		border: none;
+		border-radius: 10px;
+		background: var(--bo-blue);
+		color: var(--bo-white);
+		font-size: 0.8125rem;
+		font-weight: 700;
+		cursor: pointer;
+	}
 }
 
 // the "eye" view-options popover (column toggles + inactive filter)

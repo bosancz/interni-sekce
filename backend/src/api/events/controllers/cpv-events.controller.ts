@@ -5,18 +5,20 @@ import { AcController, AcLinks, WithLinks } from "src/access-control/access-cont
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { CPVEventsListPermission } from "../acl/cpv-events.acl";
 import { CPVEventResponse } from "../dto/cpv-event.dto";
+import { CPVEventsService } from "../services/cpv-events.service";
 
 @Controller("cpv-events")
 @Authenticated()
 @AcController()
 @ApiTags("Events")
 export class CPVEventsController {
+	constructor(private readonly cpvEventsService: CPVEventsService) {}
+
 	@Get("")
 	@AcLinks(CPVEventsListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(CPVEventResponse), isArray: true })
 	async getCPVEvents(@Req() req: Request): Promise<CPVEventResponse[]> {
 		CPVEventsListPermission.canOrThrow(req);
-		// TODO: load events from raft.cz
-		return [];
+		return this.cpvEventsService.getEvents();
 	}
 }

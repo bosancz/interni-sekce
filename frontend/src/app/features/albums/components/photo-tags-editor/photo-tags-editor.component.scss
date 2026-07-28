@@ -1,11 +1,33 @@
-.tag {
+.tags {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 2px;
+}
+
+ion-chip.tag {
+	margin: 2px;
+	font-size: 0.85rem;
 	cursor: pointer;
-	vertical-align: middle;
-	margin: 0 5px 0 0;
+	transition: opacity 0.15s ease;
+
+	// applied vs available is carried mainly by filled-vs-outline; a light dim is only a
+	// secondary cue, kept high enough to stay readable on the modal's black background
+	&:not(.active):not(.add) {
+		opacity: 0.8;
+	}
+	&:not(.active):not(.add):hover {
+		opacity: 1;
+	}
 }
-.tag:not(.active) {
-	opacity: 0.3;
+
+ion-chip.tag.add ion-icon {
+	margin-right: 2px;
+	font-size: 1rem;
 }
-.tag:not(.active):hover {
-	opacity: 0.8;
+
+// a light focus ring reads on the modal's black background
+ion-chip.tag:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 2px;
 }

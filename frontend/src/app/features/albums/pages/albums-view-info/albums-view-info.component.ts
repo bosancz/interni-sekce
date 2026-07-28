@@ -153,6 +153,10 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 			const photos = this.photos();
 			if (photos?.length !== originalCount && album) {
 				this.loadAlbum(album.id); // album must be present when closing modal
+			} else if (photos) {
+				// tag/caption edits in the modal mutate photo objects in place; refresh the
+				// signal reference so the gallery's derived tag filter reflects them
+				this.photos.set([...photos]);
 			}
 		});
 	}

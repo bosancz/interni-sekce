@@ -4,6 +4,7 @@ import {
 	Component,
 	ContentChildren,
 	input,
+	Optional,
 	output,
 	QueryList,
 	signal,
@@ -19,6 +20,7 @@ import { filterOutline } from "ionicons/icons";
 import { ModalService } from "src/app/core/services/modal.service";
 import { UrlParams } from "src/helpers/typings";
 import { FilterModalComponent } from "../filter-modal/filter-modal.component";
+import { FilterModel } from "./filter-model";
 
 export type FilterData = any;
 
@@ -62,6 +64,8 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 		private router: Router,
 		private route: ActivatedRoute,
 		private modalService: ModalService,
+		// Provided by the list page as the wrapper filter model; absent for legacy (NgModel) filters.
+		@Optional() private filterModel: FilterModel | null,
 	) {
 		addIcons({ filterOutline });
 	}
@@ -82,15 +86,31 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 
 	async openFilter(filterContent: TemplateRef<any>) {
 		const immediate = this.immediateFilter();
+
+		if (immediate) {
+			// Stage the whole filter in the model: while the modal is open, control changes only build
+			// a draft (the list behind it stays put). On confirm ("Hotovo") the model emits the full
+			// filter to apply; any other close (Zrušit / backdrop / back) drops the draft.
+			this.filterModel?.begin();
+
+			// componentModal resolves only once its back-close has settled in the router (see
+			// ModalService), so committing here — which navigates with replaceUrl — replaces the
+			// restored pre-open entry instead of stacking a new one (which would make the back button
+			// cycle through every filter change).
+			const result = await this.modalService.componentModal(FilterModalComponent, {
+				content: filterContent,
+				immediate,
+			});
+
+			if (result === true) this.filterModel?.commit();
+			else this.filterModel?.cancel();
+			return;
+		}
+
 		const result = await this.modalService.componentModal(FilterModalComponent, {
 			content: filterContent,
 			immediate,
 		});
-
-		if (immediate) {
-			// Controls inside the sheet already wrote their changes to the URL; nothing to submit/revert.
-			return;
-		}
 
 		if (result === true) {
 			// filter submitted - set new filters

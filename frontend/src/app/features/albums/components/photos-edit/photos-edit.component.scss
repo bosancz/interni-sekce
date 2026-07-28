@@ -69,6 +69,14 @@ ion-toolbar {
 	font-style: italic;
 }
 
+// tag chips sit just above the caption row; they wrap onto multiple lines and
+// scroll if the album has a lot of tags, so they never crowd out the image
+.tags-bar {
+	padding: 4px 12px 0;
+	max-height: 25vh;
+	overflow-y: auto;
+}
+
 .image-viewer {
 	position: absolute;
 	inset: 0;

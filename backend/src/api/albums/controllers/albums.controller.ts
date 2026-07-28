@@ -61,7 +61,7 @@ export class AlbumsController {
 	async createAlbum(@Req() req: Request, @Body() body: AlbumCreateBody): Promise<AlbumResponse> {
 		AlbumCreatePermission.canOrThrow(req);
 
-		return this.albums.createAlbum(body);
+		return this.albums.createAlbum({ ...body, createdById: req.user?.userId ?? null });
 	}
 
 	@Get("deleted")

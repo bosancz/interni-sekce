@@ -451,6 +451,7 @@ export class MongoImportService {
 				name: mongoAlbum.name,
 				status: <any>mongoAlbum.status,
 				eventId: mongoAlbum.event ? eventIds[mongoAlbum.event.toString()] : null,
+				createdById: null,
 			};
 
 			const album = await t.save(Album, albumData);

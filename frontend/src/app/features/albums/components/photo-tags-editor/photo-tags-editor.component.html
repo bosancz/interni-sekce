@@ -1,6 +1,36 @@
-@for (tag of tags(); track tag) {
-	<span class="tag badge badge-warning" [class.active]="hasTag(tag)" (click)="toggleTag(tag)"
-		>#{{ tag }}</span
-	>
-}
-<span class="tag badge badge-warning" (click)="newTag()">+</span>
+<div class="tags">
+	@for (tag of availableTags(); track tag) {
+		<ion-chip
+			class="tag"
+			role="button"
+			[attr.tabindex]="disabled() ? -1 : 0"
+			[attr.aria-pressed]="hasTag(tag)"
+			[class.active]="hasTag(tag)"
+			[outline]="!hasTag(tag)"
+			color="warning"
+			[disabled]="disabled()"
+			(click)="toggleTag(tag)"
+			(keydown.enter)="toggleTag(tag)"
+			(keydown.space)="$event.preventDefault(); toggleTag(tag)"
+		>
+			#{{ tag }}
+		</ion-chip>
+	}
+
+	@if (!disabled()) {
+		<ion-chip
+			class="tag add"
+			role="button"
+			tabindex="0"
+			aria-label="Přidat štítek"
+			outline
+			color="light"
+			(click)="addTag()"
+			(keydown.enter)="addTag()"
+			(keydown.space)="$event.preventDefault(); addTag()"
+		>
+			<ion-icon name="add-outline"></ion-icon>
+			Štítek
+		</ion-chip>
+	}
+</div>

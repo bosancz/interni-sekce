@@ -8,18 +8,13 @@ export const UsersListPermission = new Permission<void>({
 	contains: UserResponse,
 
 	allowed: {
-		vedouci: true,
-		admin: true,
+		revizor: true,
 	},
 });
 
 export const UserCreatePermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: UserResponse,
-
-	allowed: {
-		admin: true,
-	},
 });
 
 export const UserReadPermission = new Permission<User>({
@@ -27,39 +22,27 @@ export const UserReadPermission = new Permission<User>({
 	contains: UserResponse,
 
 	allowed: {
-		vedouci: true,
+		revizor: true,
+		vedouci: ({ doc, req }) => doc.id === req.user?.userId,
 	},
 });
 
 export const UserEditPermission = new Permission<User>({
 	linkTo: UserResponse,
-
-	allowed: {
-		admin: true,
-	},
 });
 
 export const UserDeletePermission = new Permission<User>({
 	linkTo: UserResponse,
-
-	allowed: {
-		admin: true,
-	},
 });
 
 export const UserSetPassword = new Permission<User>({
 	linkTo: UserResponse,
 
 	allowed: {
-		admin: true,
 		uzivatel: ({ doc, req }) => doc.id === req.user?.userId,
 	},
 });
 
 export const UserImpersonatePermission = new Permission<User>({
 	linkTo: UserResponse,
-
-	allowed: {
-		admin: true,
-	},
 });
