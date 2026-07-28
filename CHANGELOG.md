@@ -1,5 +1,3 @@
-Přehled novinek a oprav v jednotlivých verzích aplikace.
-
 ## v4.3.1 — 2026-07-28
 
 - ✨ [Gitmoji u položek a odkazy na commity v seznamu změn](https://github.com/bosancz/interni-sekce/commit/8b5dfaebc800461a73d3e50649a6df8049f06181)
