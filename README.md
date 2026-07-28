@@ -1,6 +1,6 @@
 # Bošán — administrační aplikace Dětské vodácké skupiny ŠÁN.
 
-[![All Contributors](https://img.shields.io/badge/all_contributors-17-orange.svg?style=flat-square)](#contributors-) ![UptimeRobot](https://badgen.net/uptime-robot/month/ur482829-fa51144d74e17b8b556c2f6c)
+![Version](https://img.shields.io/github/v/tag/bosancz/interni-sekce?filter=v*) [![All Contributors](https://img.shields.io/badge/all_contributors-17-orange.svg?style=flat-square)](#contributors-) ![UptimeRobot](https://badgen.net/uptime-robot/month/ur482829-fa51144d74e17b8b556c2f6c)
 
 ## Nahlášení chyby nebo návrh nové funkce 🐛💡
 
