@@ -2,14 +2,18 @@
 // Generate a CHANGELOG.md section from conventional commits.
 //
 // Reads the commits in a range (previous tag .. target ref), keeps the
-// user-facing conventional types (feat -> Novinky, fix -> Opravy), and
-// prepends a "## <version> — <date>" section to CHANGELOG.md. Existing
-// content (including manual edits to older versions) is preserved.
+// user-facing conventional types (feat, fix) and prepends a
+// "## <version> — <date>" section to CHANGELOG.md. Every version is a single
+// flat list — the type is carried by a gitmoji at the start of each entry
+// instead of a heading — with features first, fixes second and the technical
+// types after them. Existing content (including manual edits to older
+// versions) is preserved.
 //
 // Usage:
 //   node scripts/generate-changelog.mjs --new-tag v4.4.0 [--date 2026-07-28]
 //                                       [--from v4.3.0] [--to HEAD]
 //                                       [--file CHANGELOG.md] [--stdout]
+//                                       [--repo-url https://github.com/o/r]
 //                                       [--list-other]
 //
 // Defaults: --to HEAD; --from = the latest v* tag reachable before --to;
@@ -41,54 +45,117 @@ function git(args) {
 	return execFileSync("git", args, { encoding: "utf8" }).trim();
 }
 
-// Conventional types we surface, in display order. Everything else
-// (chore/docs/style/refactor/test/ci/build/perf and non-conventional
-// subjects) is intentionally dropped from the visitor-facing changelog.
+// Every Conventional Commits type, in display order — the types visitors notice first
+// (features, fixes, then visual changes), the technical ones after them — each with the
+// gitmoji that labels its entries; the type is carried by the emoji, not by a heading.
+// Subjects that are not conventional commits (and merge commits, which `git log --no-merges`
+// drops) are the only thing left out.
 const SECTIONS = [
-	{ type: "feat", title: "Novinky" },
-	{ type: "fix", title: "Opravy" },
+	{ type: "feat", emoji: "✨" },
+	{ type: "fix", emoji: "🐛" },
+	{ type: "style", emoji: "🎨" },
+	{ type: "perf", emoji: "⚡️" },
+	{ type: "refactor", emoji: "♻️" },
+	{ type: "docs", emoji: "📝" },
+	{ type: "test", emoji: "✅" },
+	{ type: "build", emoji: "📦️" },
+	{ type: "ci", emoji: "👷" },
+	{ type: "revert", emoji: "⏪️" },
+	{ type: "chore", emoji: "🔧" },
 ];
 
 const CONVENTIONAL = /^(\w+)(?:\(([^)]*)\))?(!)?:\s*(.+)$/;
 
-function categorize(subjects) {
-	const buckets = new Map(SECTIONS.map((s) => [s.type, []]));
+// Issue references, collected from the whole commit message and appended to the entry as
+// "(#123)" — the frontend turns those into links to the GitHub issue. Two accepted spellings:
+// a GitHub closing keyword anywhere in the body ("Closes #123", the trailer Claude Code and
+// GitHub both use), or a bare "(#123)" in the subject.
+const ISSUE_KEYWORD_REF = /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?|refs?)\s+#(\d+)/gi;
+const ISSUE_SUBJECT_REF = /\(#(\d+)\)/g;
+
+// The references are re-rendered at the end of the entry, so whatever form they took in the
+// subject is stripped from the description — together with the separator they hang off, so
+// "…tlačítko, closes #38" does not leave a dangling comma.
+const ISSUE_IN_SUBJECT = /\s*[,;–-]?\s*(?:\(#\d+\)|(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?|refs?)\s+#\d+)/gi;
+
+function collectIssues(text, pattern) {
+	pattern.lastIndex = 0;
+	const issues = [];
+	for (let m = pattern.exec(text); m; m = pattern.exec(text)) issues.push(Number(m[1]));
+	return issues;
+}
+
+function categorize(commits) {
+	const buckets = new Map(SECTIONS.map((s) => [s.type, new Map()]));
 	const other = [];
 
-	for (const subject of subjects) {
+	for (const { hash, subject, body } of commits) {
 		const match = CONVENTIONAL.exec(subject);
 		if (!match) {
 			other.push(subject);
 			continue;
 		}
 		const type = match[1].toLowerCase();
-		const description = match[4].trim();
-		if (buckets.has(type)) {
-			const text = description.charAt(0).toUpperCase() + description.slice(1);
-			const list = buckets.get(type);
-			if (!list.includes(text)) list.push(text);
-		} else {
+		if (!buckets.has(type)) {
 			other.push(subject);
+			continue;
 		}
+
+		const issues = [
+			...collectIssues(subject, ISSUE_SUBJECT_REF),
+			...collectIssues(`${subject}\n${body}`, ISSUE_KEYWORD_REF),
+		];
+		const description = match[4].replace(ISSUE_IN_SUBJECT, "").trim();
+		const text = description.charAt(0).toUpperCase() + description.slice(1);
+
+		// same description twice (e.g. a fix reapplied on another branch) collapses into one
+		// entry carrying the issues of both
+		const entries = buckets.get(type);
+		const entry = entries.get(text) ?? { text, hash, issues: new Set() };
+		for (const issue of issues) entry.issues.add(issue);
+		entries.set(text, entry);
 	}
 
 	return { buckets, other };
 }
 
-function renderSection(version, date, buckets) {
-	const lines = [`## ${version} — ${date}`, ""];
-	let hasContent = false;
+// Each entry opens with the gitmoji of its type and links to the commit it came from; a "#123"
+// reference is rendered after it and linked to the issue by the frontend. Markdown special
+// characters in the description would break the link syntax, so they are escaped.
+function renderEntry({ text, hash, issues }, emoji, repoUrl) {
+	const label = text.replace(/([\\`*_[\]()])/g, "\\$1");
+	const line = `- ${emoji} [${label}](${repoUrl}/commit/${hash})`;
+	if (!issues.size) return line;
+	const refs = [...issues].sort((a, b) => a - b).map((issue) => `#${issue}`);
+	return `${line} (${refs.join(", ")})`;
+}
 
-	for (const { type, title } of SECTIONS) {
-		const items = buckets.get(type);
-		if (!items.length) continue;
-		hasContent = true;
-		lines.push(`### ${title}`, "");
-		for (const item of items) lines.push(`- ${item}`);
-		lines.push("");
+// Base for the commit links, taken from the origin remote so a fork/rename needs no edit here.
+const FALLBACK_REPO_URL = "https://github.com/bosancz/interni-sekce";
+
+function repoUrlFromGit() {
+	try {
+		const url = git(["remote", "get-url", "origin"]);
+		const normalized = url
+			.replace(/^git@github\.com:/, "https://github.com/")
+			.replace(/\.git$/, "")
+			.replace(/\/+$/, "");
+		return normalized.startsWith("http") ? normalized : FALLBACK_REPO_URL;
+	} catch {
+		return FALLBACK_REPO_URL;
 	}
+}
 
-	if (!hasContent) lines.push("_Bez uživatelských změn._", "");
+// One flat list per version — the types follow the SECTIONS order, so features and fixes open
+// the list, and each entry is labelled by its own gitmoji rather than by a heading.
+function renderSection(version, date, buckets, repoUrl) {
+	const lines = [`## ${version} — ${date}`, ""];
+	const entries = SECTIONS.flatMap(({ type, emoji }) =>
+		[...buckets.get(type).values()].map((entry) => renderEntry(entry, emoji, repoUrl))
+	);
+
+	if (entries.length) lines.push(...entries, "");
+	else lines.push("_Bez uživatelských změn._", "");
 
 	return lines.join("\n");
 }
@@ -133,12 +200,17 @@ function main() {
 	const date = typeof args.date === "string" ? args.date : git(["log", "-1", "--format=%cs", to]);
 	const range = from ? `${from}..${to}` : to;
 
-	const subjects = git(["log", range, "--no-merges", "--format=%s"])
-		.split("\n")
-		.map((s) => s.trim())
-		.filter(Boolean);
+	// hash + subject + body per commit, delimited by the ASCII record/unit separators so
+	// multi-line bodies (which is where "Closes #123" lives) survive the split
+	const commits = git(["log", range, "--no-merges", "--format=\x1e%H\x1f%s\x1f%b"])
+		.split("\x1e")
+		.filter((chunk) => chunk.trim())
+		.map((chunk) => {
+			const [hash = "", subject = "", body = ""] = chunk.split("\x1f");
+			return { hash: hash.trim(), subject: subject.trim(), body: body.trim() };
+		});
 
-	const { buckets, other } = categorize(subjects);
+	const { buckets, other } = categorize(commits);
 
 	if (args["list-other"]) {
 		// Diagnostic: show the commits that would NOT appear in the changelog,
@@ -147,7 +219,8 @@ function main() {
 		for (const s of other) console.error(`  - ${s}`);
 	}
 
-	const section = renderSection(version, date, buckets);
+	const repoUrl = typeof args["repo-url"] === "string" ? args["repo-url"].replace(/\/+$/, "") : repoUrlFromGit();
+	const section = renderSection(version, date, buckets, repoUrl);
 
 	if (args.stdout) {
 		process.stdout.write(section + "\n");

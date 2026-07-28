@@ -1,9 +1,7 @@
 import { Component, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { SwUpdate } from "@angular/service-worker";
-import { IonIcon, IonSpinner } from "@ionic/angular/standalone";
-import { addIcons } from "ionicons";
-import { timeOutline } from "ionicons/icons";
+import { IonSpinner } from "@ionic/angular/standalone";
 import { map } from "rxjs";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -14,7 +12,7 @@ import { Logger } from "src/logger";
 	selector: "bo-version",
 	templateUrl: "./version.component.html",
 	styleUrl: "./version.component.scss",
-	imports: [IonSpinner, IonIcon],
+	imports: [IonSpinner],
 })
 export class VersionComponent {
 	private readonly logger = new Logger("VersionComponent");
@@ -27,7 +25,6 @@ export class VersionComponent {
 		private readonly swUpdate: SwUpdate,
 		private readonly modal: ModalService,
 	) {
-		addIcons({ timeOutline });
 		this.checkForUpdates();
 	}
 

@@ -3,20 +3,17 @@ import { existsSync, readFileSync } from "fs";
 import { Config } from "src/config";
 
 /**
- * Loads the repo-root CHANGELOG.md once at startup (it only changes on redeploy) and hands the
- * raw markdown to the changelog endpoint. Never throws: a missing/unreadable file yields "".
+ * Reads the repo-root CHANGELOG.md on every request, so edits to the file show up without a
+ * restart. Never throws: a missing/unreadable file yields "".
  */
 @Injectable()
 export class ChangelogService {
 	private readonly logger = new Logger(ChangelogService.name);
-	private readonly content: string;
 
-	constructor(private readonly config: Config) {
-		this.content = this.load();
-	}
+	constructor(private readonly config: Config) {}
 
 	getContent(): string {
-		return this.content;
+		return this.load();
 	}
 
 	private load(): string {

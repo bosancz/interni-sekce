@@ -7,10 +7,7 @@
 			<a (click)="doUpdate()" class="clickable">Aktualizovat</a>
 		}
 		@default {
-			<a (click)="openChangelog()" class="clickable">
-				<ion-icon name="time-outline"></ion-icon>
-				Verze {{ version() }}
-			</a>
+			<a (click)="openChangelog()" class="clickable">Verze {{ version() }}</a>
 		}
 	}
 </p>
