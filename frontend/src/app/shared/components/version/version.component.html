@@ -7,7 +7,7 @@
 			<a (click)="doUpdate()" class="clickable">Aktualizovat</a>
 		}
 		@default {
-			Verze {{ version() }}
+			<a (click)="openChangelog()" class="clickable">Verze {{ version() }}</a>
 		}
 	}
 </p>

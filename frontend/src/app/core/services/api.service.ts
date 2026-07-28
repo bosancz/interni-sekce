@@ -36,6 +36,15 @@ export class ApiService extends SDK {
 		map((res) => res.data),
 		shareReplay(1),
 	);
+
+	/**
+	 * Raw CHANGELOG.md markdown, shown in the version changelog modal. Deliberately not
+	 * `shareReplay`ed — each subscription (i.e. each modal open) refetches, so the modal always
+	 * shows the current file.
+	 */
+	public changelog = this.watch((signal) => this.RootApi.getChangelog({ signal })).pipe(
+		map((res) => res.data.content),
+	);
 	public rootLinks = new ReplaySubject<SDK.RootResponseLinks>(1);
 
 	/**

@@ -686,6 +686,26 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface ChangelogResponseWithLinks
+     */
+    export interface ChangelogResponseWithLinks {
+        /**
+         * 
+         * @type {string}
+         * @memberof ChangelogResponseWithLinks
+         */
+        'content': string;
+        /**
+         * 
+         * @type {object}
+         * @memberof ChangelogResponseWithLinks
+         */
+        '_links': object;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface CreateContactBody
      */
     export interface CreateContactBody {
@@ -10198,6 +10218,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * RootApi - object-oriented interface
      * @export
@@ -10244,6 +10268,42 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<RootResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof RootApi
+         */
+        
+        public async getChangelog(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/changelog`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<ChangelogResponseWithLinks>(axiosRequestConfig);
         }
     
         /**

@@ -4,6 +4,8 @@ import { SwUpdate } from "@angular/service-worker";
 import { IonSpinner } from "@ionic/angular/standalone";
 import { map } from "rxjs";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
+import { ChangelogModalComponent } from "src/app/shared/components/changelog-modal/changelog-modal.component";
 import { Logger } from "src/logger";
 
 @Component({
@@ -21,6 +23,7 @@ export class VersionComponent {
 	constructor(
 		private readonly api: ApiService,
 		private readonly swUpdate: SwUpdate,
+		private readonly modal: ModalService,
 	) {
 		this.checkForUpdates();
 	}
@@ -45,5 +48,9 @@ export class VersionComponent {
 
 	doUpdate(): void {
 		this.swUpdate.activateUpdate().then(() => document.location.reload());
+	}
+
+	openChangelog(): void {
+		this.modal.componentModal(ChangelogModalComponent);
 	}
 }
