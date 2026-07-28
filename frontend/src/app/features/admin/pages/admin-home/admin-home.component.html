@@ -3,7 +3,7 @@
 <bo-page-content [padding]="true">
 	<div class="p-1 p-lg-3">
 		<div class="row nav-buttons">
-			@if (canManageUsers()) {
+			@if (canAccessUsers()) {
 				<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
 					<bo-button-square
 						routerLink="/admin/uzivatele"
@@ -14,7 +14,7 @@
 					></bo-button-square>
 				</div>
 			}
-			@if (canManagePrograms()) {
+			@if (canAccessProgram()) {
 				<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
 					<bo-button-square
 						routerLink="/program"

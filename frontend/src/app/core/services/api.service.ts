@@ -1,4 +1,5 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { Observable, ReplaySubject, Subject, fromEvent } from "rxjs";
 import { filter, map, shareReplay, switchMap } from "rxjs/operators";
@@ -36,6 +37,13 @@ export class ApiService extends SDK {
 		shareReplay(1),
 	);
 	public rootLinks = new ReplaySubject<SDK.RootResponseLinks>(1);
+
+	/**
+	 * Signal mirror of the API root `_links`, for reactive permission checks. Each link carries an
+	 * `allowed` flag computed by the backend from the caller's roles, so it is the single source of
+	 * truth for what the current user may do — used to gate navigation links and route access.
+	 */
+	public links: Signal<SDK.RootResponseLinks | undefined> = toSignal(this.rootLinks);
 
 	constructor(config: Config) {
 		super({

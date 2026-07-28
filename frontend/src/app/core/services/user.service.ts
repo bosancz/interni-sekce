@@ -19,20 +19,27 @@ export class UserService {
 	/** Signal mirror of the current user, for reactive role checks. */
 	readonly currentUser = toSignal(this.user);
 
-	/** May manage the program (program managers, reviewers and admins). */
-	readonly canManagePrograms = computed(() => this.hasRole("program", "revizor", "admin"));
+	// Permission gates are derived from the API root `_links` rather than the user's roles, so the
+	// backend stays the single source of truth: a link's `allowed` flag already encodes who may use
+	// it. This keeps navigation visibility (and the route guards) in lock-step with what the server
+	// actually permits, instead of duplicating the role rules on the client.
 
-	/** May manage users (reviewers and admins). */
-	readonly canManageUsers = computed(() => this.hasRole("revizor", "admin"));
+	/**
+	 * May open the program section (whoever the backend lets list events, i.e. leaders). The page is
+	 * an overview of the event pipeline; the program-role actions on each event stay gated per-event
+	 * by that event's own `_links`, so non-managers simply see no action buttons.
+	 */
+	readonly canAccessProgram = computed(() => this.api.links()?.listEvents.allowed ?? false);
+
+	/**
+	 * May open the users section (whoever the backend lets list users). Listing is the entry point;
+	 * the actual create/edit/delete actions stay gated per-user by that user's own `_links`, so
+	 * non-managers only get a read-only view.
+	 */
+	readonly canAccessUsers = computed(() => this.api.links()?.listUsers.allowed ?? false);
 
 	/** Whether the administration section should be visible at all. */
-	readonly canAccessAdmin = computed(() => this.canManagePrograms() || this.canManageUsers());
-
-	/** True if the current user has at least one of the given roles. */
-	hasRole(...roles: SDK.UserRolesEnum[]): boolean {
-		const userRoles = this.currentUser()?.roles ?? [];
-		return roles.some((role) => userRoles.includes(role));
-	}
+	readonly canAccessAdmin = computed(() => this.canAccessProgram() || this.canAccessUsers());
 
 	constructor(
 		private api: ApiService,
