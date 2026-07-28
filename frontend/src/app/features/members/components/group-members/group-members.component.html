@@ -62,8 +62,8 @@
 	@for (selection of viewSelections() | keyvalue: originalViewOrder; track selection.key) {
 		<ion-item>
 			<ion-checkbox
-				[boStagedChecked]="viewSelections()[selection.key]"
-				(boStagedCheckedChange)="setViewSelection(selection.key, $event)"
+				[checked]="viewSelections()[selection.key]"
+				(ionChange)="setViewSelection(selection.key, $event.detail.checked)"
 				justify="space-between"
 			>
 				{{ getViewSelectionLabel(selection.key) }}
@@ -77,8 +77,8 @@
 	<ion-item-divider>Zobrazení</ion-item-divider>
 	<ion-item lines="none">
 		<ion-toggle
-			[boStagedChecked]="showInactive()"
-			(boStagedCheckedChange)="setShowInactive($event)"
+			[checked]="showInactive()"
+			(ionChange)="setShowInactive($event.detail.checked)"
 			justify="space-between"
 		>
 			Zobrazit i neaktivní

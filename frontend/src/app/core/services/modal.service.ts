@@ -93,6 +93,8 @@ export class ModalService {
 	private async presentWithBackClose(overlay: DismissableOverlay) {
 		this.ensurePopstateListener();
 
+		// URL when the overlay opened, so on close we can tell whether it navigated in the meantime.
+		const urlAtPresent = window.location.href;
 		history.pushState(history.state, "");
 		this.backStack.push(overlay);
 
@@ -102,8 +104,16 @@ export class ModalService {
 
 			// closed from within: drop the synthetic entry we added on present
 			this.backStack.splice(index, 1);
-			this.suppressPopstate = true;
-			history.back();
+
+			// The synthetic entry balances a browser back-press against a *stationary* page. If the
+			// overlay navigated on its way out — the filter modal writing the confirmed filters to the
+			// query params on "Hotovo" — history.back() would land on the pre-open URL and silently
+			// undo that navigation. So only balance the history when the page hasn't moved; a confirmed
+			// filter change keeps its new URL, and the browser back button then simply reverts it.
+			if (window.location.href === urlAtPresent) {
+				this.suppressPopstate = true;
+				history.back();
+			}
 		});
 
 		await overlay.present();

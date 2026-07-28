@@ -4,6 +4,7 @@ import {
 	Component,
 	ContentChildren,
 	input,
+	Optional,
 	output,
 	QueryList,
 	signal,
@@ -19,7 +20,7 @@ import { filterOutline } from "ionicons/icons";
 import { ModalService } from "src/app/core/services/modal.service";
 import { UrlParams } from "src/helpers/typings";
 import { FilterModalComponent } from "../filter-modal/filter-modal.component";
-import { STAGED_CONTROL, StagedControl } from "../staged-control";
+import { FilterModel } from "./filter-model";
 
 export type FilterData = any;
 
@@ -49,9 +50,6 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 	@ViewChild(IonSearchbar) searchbar?: IonSearchbar;
 
 	@ContentChildren(NgModel, { descendants: true }) controls!: QueryList<NgModel>;
-	// Staged controls (pills, sort select, toggles) projected into the modal — held in a draft while
-	// it is open so nothing is applied until the user confirms (immediateFilter mode only).
-	@ContentChildren(STAGED_CONTROL, { descendants: true }) stagedControls!: QueryList<StagedControl>;
 
 	readonly filterId = String(new Date().getTime());
 
@@ -66,6 +64,8 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 		private router: Router,
 		private route: ActivatedRoute,
 		private modalService: ModalService,
+		// Provided by the list page as the wrapper filter model; absent for legacy (NgModel) filters.
+		@Optional() private filterModel: FilterModel | null,
 	) {
 		addIcons({ filterOutline });
 	}
@@ -88,21 +88,18 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 		const immediate = this.immediateFilter();
 
 		if (immediate) {
-			// Stage every control in the modal so it only builds a draft and never touches the filters
-			// (URL or local state) while the modal is open — the list behind it stays put. The controls
-			// render lazily inside the modal, so seed them both now and as they appear. On confirm
-			// ("Hotovo") the drafts are applied; on any other close (Zrušit / backdrop / back) dropped.
-			const seed = () => this.stagedControls.forEach((control) => control.beginStaging());
-			const stagedSub = this.stagedControls.changes.subscribe(seed);
-			seed();
+			// Stage the whole filter in the model: while the modal is open, control changes only build
+			// a draft (the list behind it stays put). On confirm ("Hotovo") the model emits the full
+			// filter to apply; any other close (Zrušit / backdrop / back) drops the draft.
+			this.filterModel?.begin();
 
 			const result = await this.modalService.componentModal(FilterModalComponent, {
 				content: filterContent,
 				immediate,
 			});
 
-			stagedSub.unsubscribe();
-			this.stagedControls.forEach((control) => (result === true ? control.commit() : control.cancel()));
+			if (result === true) this.filterModel?.commit();
+			else this.filterModel?.cancel();
 			return;
 		}
 

@@ -4,6 +4,7 @@ import {
 	Component,
 	computed,
 	ElementRef,
+	inject,
 	Injector,
 	OnDestroy,
 	OnInit,
@@ -47,6 +48,7 @@ import { EventStatusBadgeComponent } from "src/app/shared/components/event-statu
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
+import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { ExtractExisting, UrlParams } from "src/helpers/typings";
@@ -86,8 +88,12 @@ type EventStatusActions = ExtractExisting<
 		FilterPillComponent,
 		SortSelectComponent,
 	],
+	providers: [FilterModel],
 })
 export class EventsListComponent implements OnInit, OnDestroy {
+	// Wrapper model that owns the whole filter (declared first so the computeds below can read it).
+	private model = inject(FilterModel);
+
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 	years = signal<number[]>([]);
 	currentYearString = String(new Date().getFullYear());
@@ -98,9 +104,11 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	// e.g. "Moje akce" can open the full list.
 	readonly futureFilterValue = "budouci";
 
-	selectedYears = signal<string[]>([]);
-	selectedStatuses = signal<string[]>([]);
-	selectedLeaderFilters = signal<string[]>([]);
+	// Display state is derived from the filter model: the staged draft while the modal is open,
+	// otherwise the committed (URL) values.
+	selectedYears = computed(() => this.normalizeFilterValueToArray(this.model.value("year")));
+	selectedStatuses = computed(() => this.normalizeFilterValueToArray(this.model.value("status")));
+	selectedLeaderFilters = computed(() => this.normalizeFilterValueToArray(this.model.value("leaders")));
 
 	// Default sort (used whenever the URL has no explicit sort): always by start date, with the
 	// direction following the date filter — "Budoucí" reads best nearest-first, while a full or
@@ -111,8 +119,11 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		return dateFilters.includes(this.futureFilterValue) ? "ASC" : "DESC";
 	}
 
-	sortColumn = signal<string | null>(this.defaultSortColumn);
-	sortOrder = signal<"ASC" | "DESC">("ASC");
+	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? this.defaultSortColumn);
+	sortOrder = computed<"ASC" | "DESC">(() => {
+		const order = this.model.value("order");
+		return order === "ASC" || order === "DESC" ? order : this.defaultSortOrder(this.selectedYears());
+	});
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "name", label: "Název" },
@@ -372,52 +383,60 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		this.loadYears();
 		this.loadStatuses();
 
-		// All filter state (year/status/search/leaders) is written to the URL, so drive loading
-		// from the query params directly rather than the FilterComponent's `(change)` output
-		// (which only emits its own projected controls, and only while the mobile modal is open).
-		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onFilterChange(params));
+		// The URL is the committed filter: feed it to the model and drive loading from it. It only
+		// changes when a filter is applied (live on desktop, on "Hotovo" in the modal), so the list
+		// stays put while the modal stages.
+		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onParams(params));
+		// Applying the filter (from the model) writes it back to the URL.
+		this.model.apply$.pipe(untilDestroyed(this)).subscribe((filter) => this.applyFilter(filter));
 	}
 
-	onFilterChange(params: Params) {
+	onParams(params: Params) {
+		this.model.setCommitted(this.modelFromParams(params));
+
 		// Skip the redundant reload when the params we already loaded with are re-emitted.
 		const filterKey = this.getFilterKey(params);
 		if (filterKey === this.loadedFilterKey) return;
 		this.loadedFilterKey = filterKey;
 
-		const dateFilters = this.normalizeFilterValueToArray(params["year"]);
-		const order = params["order"];
-
 		this.filter = { ...params };
-		this.selectedYears.set(dateFilters);
-		this.selectedStatuses.set(this.normalizeFilterValueToArray(params["status"]));
-		this.selectedLeaderFilters.set(this.normalizeFilterValueToArray(params["leaders"]));
-		this.sortColumn.set(params["sort"] ?? this.defaultSortColumn);
-		this.sortOrder.set(order === "ASC" || order === "DESC" ? order : this.defaultSortOrder(dateFilters));
 		this.loadEvents(this.filter);
 	}
 
-	onSortChange(sort: AdminTableSort) {
+	private modelFromParams(p: Params): FilterValues {
+		return {
+			year: this.normalizeFilterValueToArray(p["year"]),
+			status: this.normalizeFilterValueToArray(p["status"]),
+			leaders: this.normalizeFilterValueToArray(p["leaders"]),
+			sort: p["sort"] ?? null,
+			order: p["order"] ?? null,
+		};
+	}
+
+	private applyFilter(filter: FilterValues) {
+		const list = (value: unknown) => {
+			const array = this.normalizeFilterValueToArray(value);
+			return array.length ? array.join(",") : null;
+		};
 		this.router.navigate([], {
-			queryParams: { sort: sort.sort || null, order: sort.sort ? sort.order : null },
+			queryParams: {
+				year: list(filter["year"]),
+				status: list(filter["status"]),
+				leaders: list(filter["leaders"]),
+				sort: (filter["sort"] as string) || null,
+				order: (filter["order"] as string) || null,
+			},
 			queryParamsHandling: "merge",
 			replaceUrl: true,
 		});
 	}
 
+	onSortChange(sort: AdminTableSort) {
+		this.model.patch({ sort: sort.sort || null, order: sort.sort ? sort.order : null });
+	}
+
 	setFilterParam(name: string, value: string | string[] | null) {
-		let formattedValue = value;
-
-		// If the value is an array from your multi-select, format it for the URL
-		if (Array.isArray(value)) {
-			// Join it into a string like "2024,2025", or set to null if the array is empty
-			formattedValue = value.length > 0 ? value.join(",") : null;
-		}
-
-		this.router.navigate([], {
-			queryParams: { [name]: formattedValue || null },
-			queryParamsHandling: "merge",
-			replaceUrl: true,
-		});
+		this.model.set(name, value);
 	}
 
 	// Handle the "Datum" pill selection. "Budoucí" and concrete years are mutually exclusive:
@@ -441,7 +460,7 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	}
 
 	toggleCurrentYear() {
-		const selectedYears = this.normalizeFilterValueToArray((this.filter as any)["year"]);
+		const selectedYears = this.selectedYears();
 		const hasCurrentYear = selectedYears.includes(this.currentYearString);
 
 		this.setFilterParam(
@@ -595,7 +614,7 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		);
 	}
 
-	private normalizeFilterValueToArray(value: string | string[] | null | undefined): string[] {
+	private normalizeFilterValueToArray(value: unknown): string[] {
 		if (Array.isArray(value)) return value.filter((item) => !!item).map((item) => String(item));
 		if (!value) return [];
 
