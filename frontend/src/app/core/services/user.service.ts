@@ -31,11 +31,15 @@ export class UserService {
 	 */
 	readonly canAccessProgram = computed(() => this.api.links()?.listEvents.allowed ?? false);
 
-	/** May manage users (whoever the backend lets list users). */
-	readonly canManageUsers = computed(() => this.api.links()?.listUsers.allowed ?? false);
+	/**
+	 * May open the users section (whoever the backend lets list users). Listing is the entry point;
+	 * the actual create/edit/delete actions stay gated per-user by that user's own `_links`, so
+	 * non-managers only get a read-only view.
+	 */
+	readonly canAccessUsers = computed(() => this.api.links()?.listUsers.allowed ?? false);
 
 	/** Whether the administration section should be visible at all. */
-	readonly canAccessAdmin = computed(() => this.canAccessProgram() || this.canManageUsers());
+	readonly canAccessAdmin = computed(() => this.canAccessProgram() || this.canAccessUsers());
 
 	constructor(
 		private api: ApiService,

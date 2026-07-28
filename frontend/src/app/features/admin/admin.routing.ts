@@ -10,13 +10,13 @@ import { UsersViewComponent } from "./pages/users-view/users-view.component";
 
 // The user-management pages are gated on the `listUsers` link so that someone who can reach `/admin`
 // only for the program section cannot open them by typing the URL.
-const canManageUsers = [linkGuard("listUsers")];
+const canAccessUsers = [linkGuard("listUsers")];
 
 export const adminRoutes: Routes = [
 	{ path: "", component: AdminHomeComponent },
 
-	{ path: "uzivatele", component: UsersListComponent, canMatch: canManageUsers },
-	{ path: "uzivatele/vytvorit", component: UsersCreateComponent, canMatch: canManageUsers },
-	{ path: "uzivatele/:user", component: UsersViewComponent, canMatch: canManageUsers },
-	{ path: "uzivatele/:user/upravit", component: UsersEditComponent, canMatch: canManageUsers },
+	{ path: "uzivatele", component: UsersListComponent, canMatch: canAccessUsers },
+	{ path: "uzivatele/vytvorit", component: UsersCreateComponent, canMatch: canAccessUsers },
+	{ path: "uzivatele/:user", component: UsersViewComponent, canMatch: canAccessUsers },
+	{ path: "uzivatele/:user/upravit", component: UsersEditComponent, canMatch: canAccessUsers },
 ];
