@@ -76,15 +76,9 @@ export class ModalService {
 		component: Type<C>,
 		componentProps?: ComponentProps<C>,
 		options: Omit<ModalOptions<Type<C>>, "component" | "componentProps"> = {},
-		// The back-close helper pushes a synthetic history entry. Callers that navigate on confirm (the
-		// immediate filter modal, which writes the filters to the URL with `replaceUrl`) opt out, so the
-		// applied filter replaces the current entry instead of the browser back button cycling through
-		// every filter change. Such modals fall back to Ionic's built-in hardware/gesture back dismiss.
-		backClose = true,
 	): Promise<HTMLIonModalElement> {
 		const modal = await this.modalController.create({ component, componentProps, ...options });
-		if (backClose) await this.presentWithBackClose(modal);
-		else await modal.present();
+		await this.presentWithBackClose(modal);
 		return modal;
 	}
 
