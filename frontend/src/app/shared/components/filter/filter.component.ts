@@ -12,9 +12,7 @@ import {
 	ViewChild,
 } from "@angular/core";
 import { FormsModule, NgModel } from "@angular/forms";
-import { ActivatedRoute, NavigationCancel, NavigationEnd, NavigationSkipped, Router } from "@angular/router";
-import { firstValueFrom } from "rxjs";
-import { filter, take } from "rxjs/operators";
+import { ActivatedRoute, Router } from "@angular/router";
 import { IonBadge, IonButton, IonIcon, IonModal, IonSearchbar, IonToolbar } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
@@ -95,22 +93,17 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 			// filter to apply; any other close (Zrušit / backdrop / back) drops the draft.
 			this.filterModel?.begin();
 
-			// The modal is presented with the back-close helper (browser back closes it and stays on
-			// the page). Closing from within runs history.back() to drop the synthetic entry, landing
-			// back on the pre-open URL. We apply the confirmed filter only *after* that back has settled
-			// in the router, so our replaceUrl replaces the pre-open entry instead of stacking a new one
-			// (which would make the back button cycle through every filter change).
+			// componentModal resolves only once its back-close has settled in the router (see
+			// ModalService), so committing here — which navigates with replaceUrl — replaces the
+			// restored pre-open entry instead of stacking a new one (which would make the back button
+			// cycle through every filter change).
 			const result = await this.modalService.componentModal(FilterModalComponent, {
 				content: filterContent,
 				immediate,
 			});
 
-			if (result === true) {
-				await this.backCloseSettled();
-				this.filterModel?.commit();
-			} else {
-				this.filterModel?.cancel();
-			}
+			if (result === true) this.filterModel?.commit();
+			else this.filterModel?.cancel();
 			return;
 		}
 
@@ -130,25 +123,6 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 			// filter dismissed - revert changes
 			this.setControls(this.route.snapshot.queryParams);
 		}
-	}
-
-	// Resolve once the modal's back-close (history.back in ModalService) has settled in the router —
-	// for a stationary page that is a NavigationSkipped — so a filter applied right after is the last
-	// navigation and replaces the restored pre-open entry. A short fallback guards against no event.
-	private backCloseSettled(): Promise<void> {
-		const settled = firstValueFrom(
-			this.router.events.pipe(
-				filter(
-					(event) =>
-						event instanceof NavigationEnd ||
-						event instanceof NavigationSkipped ||
-						event instanceof NavigationCancel,
-				),
-				take(1),
-			),
-		).then(() => undefined);
-		const fallback = new Promise<void>((resolve) => setTimeout(resolve, 700));
-		return Promise.race([settled, fallback]);
 	}
 
 	onSearchbarUpdate() {

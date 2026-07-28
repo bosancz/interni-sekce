@@ -1,6 +1,9 @@
 import { EventEmitter, Injectable, TemplateRef, Type } from "@angular/core";
+import { NavigationCancel, NavigationEnd, NavigationSkipped, Router } from "@angular/router";
 import { AlertController, ModalController, ModalOptions } from "@ionic/angular/standalone";
 import { ComponentProps, TextFieldTypes } from "@ionic/core";
+import { firstValueFrom } from "rxjs";
+import { filter, take } from "rxjs/operators";
 import { ModalTemplateComponent } from "../../shared/components/modal-template/modal-template.component";
 
 // overlays we can present, back-close and dismiss uniformly
@@ -64,6 +67,7 @@ export class ModalService {
 	constructor(
 		private alertController: AlertController,
 		private modalController: ModalController,
+		private router: Router,
 	) {}
 
 	/**
@@ -100,16 +104,38 @@ export class ModalService {
 			const index = this.backStack.indexOf(overlay);
 			if (index === -1) return; // already removed by the back-navigation path
 
-			// closed from within: drop the synthetic entry we added on present. Callers that navigate
-			// on confirm (the filter modal) must do so *after* this back settles — see
-			// FilterComponent.openFilter — so the navigation replaces the pre-open entry rather than
-			// stacking on top of it.
+			// closed from within: drop the synthetic entry we added on present.
 			this.backStack.splice(index, 1);
 			this.suppressPopstate = true;
 			history.back();
 		});
 
 		await overlay.present();
+	}
+
+	/**
+	 * Resolves once the overlay has closed *and* the back-close it triggers (the history.back in
+	 * presentWithBackClose) has settled in the router. For a stationary page that settling event is a
+	 * NavigationSkipped. A caller that navigates on the modal result (the filter modal's replaceUrl)
+	 * must wait for this so its navigation runs last and replaces the restored pre-open entry, instead
+	 * of stacking on top of the synthetic one — which would make browser-back cycle through every
+	 * change. A short fallback guards against no event ever arriving.
+	 */
+	private async waitForBackCloseToSettle(overlay: DismissableOverlay): Promise<void> {
+		await overlay.onDidDismiss();
+		const settled = firstValueFrom(
+			this.router.events.pipe(
+				filter(
+					(event) =>
+						event instanceof NavigationEnd ||
+						event instanceof NavigationSkipped ||
+						event instanceof NavigationCancel,
+				),
+				take(1),
+			),
+		).then(() => undefined);
+		const fallback = new Promise<void>((resolve) => setTimeout(resolve, 700));
+		await Promise.race([settled, fallback]);
 	}
 
 	private ensurePopstateListener() {
@@ -272,9 +298,14 @@ export class ModalService {
 				cssClass: classes.join(" "),
 			});
 
-			modal.onWillDismiss().then((ev) => resolve(ev.data ?? null));
+			const data = modal.onWillDismiss().then((ev) => ev.data ?? null);
 
 			await this.presentWithBackClose(modal);
+
+			// Resolve only once the back-close has fully settled in the router, so a caller can navigate
+			// on the result (e.g. the filter modal applying on "Hotovo") without the back reverting it.
+			await this.waitForBackCloseToSettle(modal);
+			resolve(await data);
 		});
 	}
 
