@@ -35,6 +35,7 @@ jobs:
       image-name: bosancz/interni-sekce
       registry: ghcr.io
       tag: next
+      changelog-version: NEXT-${{ needs.version.outputs.version }}
       build-args: |
         VERSION=NEXT-${{ needs.version.outputs.version }}
     secrets:

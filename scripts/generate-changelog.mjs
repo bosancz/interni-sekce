@@ -16,7 +16,9 @@
 //                                       [--repo-url https://github.com/o/r]
 //                                       [--list-other]
 //
-// Defaults: --to HEAD; --from = the latest v* tag reachable before --to;
+// Defaults: --to HEAD; --from = the latest v* tag reachable from --to (--to itself
+// included, so re-running on an already tagged commit yields an empty section rather
+// than repeating the previous version);
 // --date = the committer date (YYYY-MM-DD) of --to. Nothing depends on the
 // wall clock, so runs are reproducible.
 
@@ -191,7 +193,7 @@ function main() {
 	let from = typeof args.from === "string" ? args.from : null;
 	if (!from) {
 		try {
-			from = git(["describe", "--tags", "--abbrev=0", "--match", "v*", `${to}^`]);
+			from = git(["describe", "--tags", "--abbrev=0", "--match", "v*", to]);
 		} catch {
 			from = null; // no earlier tag — take the whole history
 		}
