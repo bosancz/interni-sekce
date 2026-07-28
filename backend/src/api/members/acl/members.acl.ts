@@ -67,8 +67,9 @@ export const MemberRestorePermission = new Permission({
 
 export const MemberDeletePermanentPermission = new Permission({
 	linkTo: MemberResponse,
+	// Permanent deletion is irreversible and reserved for admins only.
 	allowed: {
-		vedouci: true,
+		admin: true,
 	},
 	applicable: ({ doc }) => !!doc.deletedAt,
 });

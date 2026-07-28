@@ -71,8 +71,9 @@ export const AlbumRestorePermission = new Permission({
 
 export const AlbumDeletePermanentPermission = new Permission({
 	linkTo: AlbumResponse,
+	// Permanent deletion is irreversible and reserved for admins only.
 	allowed: {
-		vedouci: true,
+		admin: true,
 	},
 	applicable: ({ doc }) => !!doc.deletedAt,
 });

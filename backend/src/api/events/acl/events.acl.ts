@@ -92,8 +92,8 @@ export const EventRestorePermission = new Permission({
 
 export const EventDeletePermanentPermission = new Permission({
 	linkTo: EventResponse,
+	// Permanent deletion is irreversible and reserved for admins only.
 	allowed: {
-		program: true,
 		admin: true,
 	},
 	applicable: ({ doc }) => !!doc.deletedAt,
