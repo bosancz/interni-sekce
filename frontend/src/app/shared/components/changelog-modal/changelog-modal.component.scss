@@ -4,6 +4,9 @@
 	overflow-y: auto;
 	// the modal layout's content slot has no padding of its own, so the changelog supplies it
 	padding: 16px;
+	// Ionic sets user-select:none app-wide for a native feel; the changelog is prose meant to be
+	// read and copied, so opt its text back into selection.
+	user-select: text !important;
 
 	// the markdown is injected with [innerHTML], so it carries no view-encapsulation attribute —
 	// without ::ng-deep none of these rules would reach it
