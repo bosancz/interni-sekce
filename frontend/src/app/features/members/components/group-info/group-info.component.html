@@ -49,7 +49,7 @@
 	</bo-card-content>
 </bo-card>
 
-<bo-card [color]="group()?.color || undefined">
+<bo-card class="mb-4" [color]="group()?.color || undefined">
 	<bo-card-header>
 		<bo-card-title>
 			<span class="bo-card-section-title">
@@ -95,3 +95,5 @@
 		}
 	</bo-card-content>
 </bo-card>
+
+<bo-group-missing-data [members]="members()" [color]="group()?.color || undefined" />
