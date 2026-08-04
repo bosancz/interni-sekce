@@ -33,31 +33,41 @@ export class MembersRepository {
 			.take(options.limit)
 			.skip(options.offset);
 
+		// Sorts that are an expression rather than a plain column are selected under an alias and
+		// ordered by that alias. Combining the contacts join below with take/skip makes TypeORM
+		// paginate through a distinct-id subquery, and it can only carry an ORDER BY over into that
+		// subquery when it is either `alias.column` or a selected alias — a bare expression is parsed
+		// as an alias name and the query fails ("CONCAT(members" alias was not found).
+		q.addSelect("CONCAT(members.nickname,members.first_name,members.last_name)", "sort_nickname")
+			.addSelect("CONCAT(members.last_name,members.first_name)", "sort_name")
+			.addSelect("DATE_PART('year', AGE(CURRENT_DATE, members.birthday))", "sort_age")
+			// Sort by the *displayed* group (its name, e.g. "6. oddíl"), not the internal group
+			// id. `groups.name` carries the `natural_numeric` ICU collation (see Group entity),
+			// so embedded numbers order naturally: "3. oddíl" precedes "22. oddíl", and
+			// non-numeric names ("Klub přátel", …) sort after them.
+			.addSelect("(SELECT g.name FROM groups g WHERE g.id = members.group_id)", "sort_group");
+
 		applySort(
 			q,
 			options,
 			{
-				nickname: "CONCAT(members.nickname,members.first_name,members.last_name)",
-				name: "CONCAT(members.last_name,members.first_name)",
+				nickname: "sort_nickname",
+				name: "sort_name",
 				role: "members.role",
 				membership: "members.membership",
-				age: "DATE_PART('year', AGE(CURRENT_DATE, members.birthday))",
+				age: "sort_age",
 				birthday: "members.birthday",
-				// Sort by the *displayed* group (its name, e.g. "6. oddíl"), not the internal group
-				// id. `groups.name` carries the `natural_numeric` ICU collation (see Group entity),
-				// so embedded numbers order naturally: "3. oddíl" precedes "22. oddíl", and
-				// non-numeric names ("Klub přátel", …) sort after them.
-				group: "(SELECT g.name FROM groups g WHERE g.id = members.group_id)",
+				group: "sort_group",
 				city: "members.addressCity",
 				street: "members.addressStreet",
 				status: "members.active",
 			},
-			{ column: "CONCAT(members.nickname,members.first_name,members.last_name)", order: "ASC" },
+			{ column: "sort_nickname", order: "ASC" },
 		);
 
 		// Keep members within the same group in a readable order.
 		if (options.sort === "group") {
-			q.addOrderBy("CONCAT(members.nickname,members.first_name,members.last_name)", "ASC");
+			q.addOrderBy("sort_nickname", "ASC");
 		}
 
 		// Join contacts up-front only when requested (i.e. the contacts column is visible).
