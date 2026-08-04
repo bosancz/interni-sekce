@@ -2,7 +2,16 @@ import { Component, computed, input } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonButton, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { alertCircleOutline, checkmarkCircleOutline, chevronForwardOutline } from "ionicons/icons";
+import {
+	alertCircleOutline,
+	calendarOutline,
+	callOutline,
+	checkmarkCircleOutline,
+	chevronForwardOutline,
+	homeOutline,
+	medkitOutline,
+	cardOutline
+} from "ionicons/icons";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
@@ -13,12 +22,19 @@ import { SDK } from "src/sdk";
 interface MissingDataCheck {
 	// Shown as a pill next to the member, so it reads as the name of the missing item.
 	label: string;
+	// The pill shrinks to this icon on narrow screens, where five labels would eat the whole row.
+	icon: string;
 	missing: (member: SDK.MemberResponse) => boolean;
+}
+
+export interface MissingDataItem {
+	label: string;
+	icon: string;
 }
 
 export interface MissingDataEntry {
 	member: SDK.MemberResponseWithLinks;
-	labels: string[];
+	items: MissingDataItem[];
 }
 
 // The checks a member is run through, in the order their pills appear. Contacts are only known when
@@ -27,31 +43,33 @@ const MISSING_DATA_CHECKS: MissingDataCheck[] = [
 	{
 		// A child is reached through their parents, so an empty contacts list means there is nobody to call.
 		label: "Kontakt na rodiče",
+		icon: "call-outline",
 		missing: (member) => member.role === "dite" && !member.contacts?.length,
 	},
 	{
 		// Instructors and leaders are reached directly; a contact on the member record counts as well.
 		label: "Kontakt",
-		missing: (member) =>
-			member.role !== "dite" &&
-			!member.mobile &&
-			!member.email &&
-			!member.contacts?.some((contact) => contact.mobile || contact.email),
+		icon: "call-outline",
+		missing: (member) => member.role !== "dite" && (!member.mobile || !member.email),
 	},
 	{
 		label: "Datum narození",
+		icon: "calendar-outline",
 		missing: (member) => !member.birthday,
 	},
 	{
 		// Street and city are what an address is actually used for (mail, pickup), so either one
 		// missing counts as an unusable address.
 		label: "Adresa",
+		icon: "home-outline",
 		missing: (member) => !member.addressStreet || !member.addressCity,
 	},
 	{
 		label: "Kartička pojištěnce",
-		missing: (member) => !member.insuranceCardFile,
+		icon: "card-outline",
+		missing: (member) => member.role === "dite" && !member.insuranceCardFile,
 	},
+
 ];
 
 @Component({
@@ -87,15 +105,27 @@ export class GroupMissingDataComponent {
 			.filter((member) => member.active)
 			.map((member) => ({
 				member,
-				labels: MISSING_DATA_CHECKS.filter((check) => check.missing(member)).map((check) => check.label),
+				items: MISSING_DATA_CHECKS.filter((check) => check.missing(member)).map(({ label, icon }) => ({
+					label,
+					icon,
+				})),
 			}))
-			.filter((entry) => entry.labels.length > 0);
+			.filter((entry) => entry.items.length > 0);
 	});
 
 	// Total number of missing items across the group, shown in the card header.
-	missingCount = computed(() => this.entries().reduce((sum, entry) => sum + entry.labels.length, 0));
+	missingCount = computed(() => this.entries().reduce((sum, entry) => sum + entry.items.length, 0));
 
 	constructor() {
-		addIcons({ alertCircleOutline, checkmarkCircleOutline, chevronForwardOutline });
+		addIcons({
+			alertCircleOutline,
+			checkmarkCircleOutline,
+			chevronForwardOutline,
+			callOutline,
+			calendarOutline,
+			homeOutline,
+			cardOutline,
+			medkitOutline,
+		});
 	}
 }

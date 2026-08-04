@@ -36,6 +36,31 @@
 	justify-content: flex-end;
 }
 
+.missing-label {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	ion-icon {
+		font-size: 1.15em;
+	}
+}
+
+// Phones show the icon alone (see the template), so the pill drops the label padding and
+// becomes a round badge instead of a wide oval with a single glyph in it. Sized in rem, not
+// em — the pill's own 0.8em font size is meant for text and leaves the glyph too small.
+@media (max-width: 767.98px) {
+	.missing-label {
+		width: 2.25rem;
+		height: 2.25rem;
+		padding: 0;
+
+		ion-icon {
+			font-size: 1.35rem;
+		}
+	}
+}
+
 .missing-link {
 	flex: 0 0 auto;
 	margin: 0;

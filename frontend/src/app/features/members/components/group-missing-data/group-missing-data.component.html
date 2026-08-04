@@ -31,12 +31,22 @@
 					<div class="bo-info-row missing-row">
 						<div class="missing-member">
 							<span class="missing-name">{{ entry.member | member: "nickname" }}</span>
-							<span class="missing-role">{{ entry.member | member: "role" }}</span>
 						</div>
 
 						<div class="missing-labels">
-							@for (label of entry.labels; track label) {
-								<span class="bo-pill bo-pill-danger-dashed">{{ label }}</span>
+							@for (item of entry.items; track item.label) {
+								<!-- Below the md breakpoint the pill shrinks to its icon — five labels do not fit
+								     next to a name on a phone. The wording stays as the icon's aria-label and,
+								     on a pointer device, as the tooltip. -->
+								<span class="bo-pill bo-pill-danger-dashed missing-label">
+									<ion-icon
+										class="ion-hide-md-up"
+										[name]="item.icon"
+										[attr.aria-label]="item.label"
+										[title]="item.label"
+									/>
+									<span class="ion-hide-md-down">{{ item.label }}</span>
+								</span>
 							}
 						</div>
 
@@ -46,7 +56,7 @@
 							size="small"
 							[routerLink]="['/databaze/clenove', entry.member.id]"
 						>
-							Otevřít
+							
 							<ion-icon slot="end" name="chevron-forward-outline" />
 						</ion-button>
 					</div>
