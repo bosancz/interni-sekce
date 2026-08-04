@@ -1,0 +1,56 @@
+// Count of missing items, sitting at the end of the card title.
+.missing-count {
+	margin-left: auto;
+}
+
+// One member per row: who they are on the left, what is missing in the middle, the link on the right.
+// Wraps on narrow screens so the pills keep their own line instead of squeezing the name.
+.missing-row {
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 8px 12px;
+}
+
+.missing-member {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.missing-name {
+	color: var(--bo-ink);
+	font-weight: 600;
+	word-break: break-word;
+}
+
+.missing-role {
+	color: var(--bo-muted);
+	font-size: 0.8125rem;
+}
+
+.missing-labels {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	flex: 1 1 auto;
+	justify-content: flex-end;
+}
+
+.missing-link {
+	flex: 0 0 auto;
+	margin: 0;
+	--padding-start: 8px;
+	--padding-end: 8px;
+}
+
+// Empty state — nothing is missing in this group.
+.missing-empty {
+	justify-content: flex-start;
+	color: var(--bo-muted);
+
+	ion-icon {
+		font-size: 1.25rem;
+		color: var(--bo-green);
+		flex: 0 0 auto;
+	}
+}

@@ -12,6 +12,7 @@ import { CardTitleComponent } from "src/app/shared/components/card-title/card-ti
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { SDK } from "src/sdk";
 import { GroupsService } from "../../services/groups.service";
+import { GroupMissingDataComponent } from "../group-missing-data/group-missing-data.component";
 
 interface StatRow {
 	label: string;
@@ -28,6 +29,7 @@ interface StatRow {
 		CardHeaderComponent,
 		CardTitleComponent,
 		CardContentComponent,
+		GroupMissingDataComponent,
 		IonIcon,
 		IonSkeletonText,
 	],
@@ -95,6 +97,12 @@ export class GroupInfoComponent implements OnInit {
 		const members = await this.api.MembersApi.listMembers({
 			groups: [this.groupId],
 			// active omitted: fetch active and inactive so both can be counted.
+			// No pagination here — load the whole group at once, otherwise the stats
+			// would only describe the first page (the API defaults to 25).
+			limit: 1000,
+			// Contacts come along in the same request; the missing-data card needs them
+			// to tell whether a member has anyone to be reached through.
+			contacts: true,
 		}).then((res) => res.data);
 
 		if (loadId !== this.latestLoadId) return;
