@@ -13,6 +13,7 @@ import { PageContentComponent } from "src/app/shared/components/page-content/pag
 import { SDK } from "src/sdk";
 import { HomeCardMyEventsComponent } from "../home-card-my-events/home-card-my-events.component";
 import { HomeCardNoleaderEventsComponent } from "../home-card-noleader-events/home-card-noleader-events.component";
+import { HomeCardTopLeadersComponent } from "../home-card-top-leaders/home-card-top-leaders.component";
 
 const months = [
 	"Leden",
@@ -38,6 +39,7 @@ const months = [
 		EventCalendarComponent,
 		HomeCardMyEventsComponent,
 		HomeCardNoleaderEventsComponent,
+		HomeCardTopLeadersComponent,
 		PageContentComponent,
 		ButtonSquareComponent,
 		IonIcon,

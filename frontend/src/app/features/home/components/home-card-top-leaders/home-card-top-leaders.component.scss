@@ -1,0 +1,61 @@
+:host {
+	display: block;
+}
+
+ion-list {
+	--ion-item-background: none;
+}
+
+// explains what the ranking is built on, so the numbers don't need a legend
+.hint {
+	margin: 0;
+	color: var(--bo-muted);
+	font-size: 0.8rem;
+}
+
+// place in the ranking — the winner gets the brand yellow, the rest a neutral pill
+.rank {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	margin-inline-end: 0.9rem;
+	border-radius: var(--bo-radius-pill);
+	background-color: var(--bo-neutral-pill);
+	color: var(--bo-neutral-pill-text);
+	font-family: var(--font-san);
+	font-weight: 800;
+	font-size: 0.85rem;
+}
+
+.rank-first {
+	background-color: var(--bo-yellow);
+	color: #fff;
+	box-shadow: 0 2px 8px rgba(var(--san-yellow-rgb), 0.35);
+}
+
+.leader-name {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+}
+
+.score {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	line-height: 1.1;
+}
+
+.score-value {
+	font-family: var(--font-san);
+	font-weight: 800;
+	font-size: 1.4rem;
+	color: var(--bo-heading);
+}
+
+.score-label {
+	font-size: 0.75rem;
+	color: var(--bo-muted);
+}

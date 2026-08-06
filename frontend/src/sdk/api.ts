@@ -4294,6 +4294,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'getTopLeaders': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'listUsers': AcLink;
         /**
          * 
@@ -4339,6 +4345,62 @@ export namespace SDK {
          * @memberof RootResponseWithLinks
          */
         '_links': RootResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface TopLeaderResponse
+     */
+    export interface TopLeaderResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof TopLeaderResponse
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopLeaderResponse
+         */
+        'nickname': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopLeaderResponse
+         */
+        'groupId': number;
+        /**
+         * \"Dětodny\" — children × days, summed over the events the member led. The ranking score.
+         * @type {number}
+         * @memberof TopLeaderResponse
+         */
+        'childDays': number;
+        /**
+         * How many children that score comes from (each event\'s children counted once).
+         * @type {number}
+         * @memberof TopLeaderResponse
+         */
+        'childrenCount': number;
+        /**
+         * How many events that score comes from.
+         * @type {number}
+         * @memberof TopLeaderResponse
+         */
+        'eventsCount': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopLeaderResponse
+         */
+        'firstName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopLeaderResponse
+         */
+        'lastName'?: string | null;
     }
     
         /**
@@ -10449,6 +10511,25 @@ export namespace SDK {
     
     
     
+    
+    /**
+     * Query parameters for getTopLeaders operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetTopLeadersQueryParams
+     */
+    export interface StatisticsApiGetTopLeadersQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof StatisticsApiGetTopLeaders
+         */
+        limit?: number
+    }
+    
+    
+    
+    
     /**
      * StatisticsApi - object-oriented interface
      * @export
@@ -10731,6 +10812,50 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<PadlersTotalsResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {StatisticsApiGetTopLeadersQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof StatisticsApi
+         */
+        
+        public async getTopLeaders(
+            queryParams: StatisticsApiGetTopLeadersQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/statistics/leaders/top`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<TopLeaderResponse>>(axiosRequestConfig);
         }
     }
     

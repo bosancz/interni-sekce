@@ -1,0 +1,52 @@
+@if (canSeeLeaders()) {
+	<bo-card>
+		<bo-card-header>
+			<bo-card-title> Nejlepší vedoucí </bo-card-title>
+		</bo-card-header>
+
+		<bo-card-content>
+			<p class="hint">Letos podle dětodní — počet dětí × počet dní akce</p>
+
+			@if (leaders(); as leaders) {
+				@if (leaders.length) {
+					<ion-list lines="full">
+						@for (leader of leaders; track leader.memberId) {
+							<ion-item [detail]="true" [routerLink]="'/databaze/clenove/' + leader.memberId">
+								<div class="rank" [class.rank-first]="leader.rank === 1" slot="start">
+									{{ leader.rank }}.
+								</div>
+								<ion-label>
+									<h4 class="leader-name">
+										<strong>{{ leader.nickname }}</strong>
+										<bo-group-badge [groupId]="leader.groupId" [short]="true"></bo-group-badge>
+									</h4>
+									<p>
+										{{ leader.eventsCount }} {{ leader.eventsCount | i18nPlural: eventsPluralMap }}
+										· {{ leader.childrenCount }}
+										{{ leader.childrenCount | i18nPlural: childrenPluralMap }}
+									</p>
+								</ion-label>
+								<div class="score" slot="end">
+									<span class="score-value">{{ leader.childDays }}</span>
+									<span class="score-label">{{
+										leader.childDays | i18nPlural: childDaysPluralMap
+									}}</span>
+								</div>
+							</ion-item>
+						}
+					</ion-list>
+				} @else {
+					<p class="m-0 mt-2 mb-3 text-center">Letos zatím nikdo nevedl akci s dětmi.</p>
+				}
+			} @else {
+				<ion-list lines="full">
+					@for (row of skeletonRows; track $index) {
+						<ion-item>
+							<ion-label><ion-skeleton-text [animated]="true"></ion-skeleton-text></ion-label>
+						</ion-item>
+					}
+				</ion-list>
+			}
+		</bo-card-content>
+	</bo-card>
+}
