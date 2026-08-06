@@ -1,15 +1,13 @@
 import { I18nPluralPipe } from "@angular/common";
 import { Component, computed, effect, signal } from "@angular/core";
-import { RouterLink } from "@angular/router";
-import { IonIcon, IonItem, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonContent, IonIcon, IonItem, IonLabel, IonList, IonPopover, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
+import { chevronBackOutline, chevronForwardOutline, informationCircleOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
-import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
 import { SDK } from "src/sdk";
 
 /** How many leaders the ranking shows. */
@@ -25,18 +23,18 @@ export type LeadersStatistics = Omit<SDK.TopLeadersResponse, "leaders"> & { lead
 	styleUrls: ["./home-card-top-leaders.component.scss"],
 
 	imports: [
-		RouterLink,
 		I18nPluralPipe,
+		IonContent,
 		IonIcon,
 		IonList,
 		IonItem,
 		IonLabel,
+		IonPopover,
 		IonSkeletonText,
 		CardComponent,
 		CardHeaderComponent,
 		CardTitleComponent,
 		CardContentComponent,
-		GroupBadgeComponent,
 	],
 })
 export class HomeCardTopLeadersComponent {
@@ -52,6 +50,9 @@ export class HomeCardTopLeadersComponent {
 	canGoBack = computed(() => this.year() > (this.statistics()?.firstYear ?? this.year()));
 	canGoForward = computed(() => this.year() < (this.statistics()?.lastYear ?? this.year()));
 
+	infoOpen = signal(false);
+	infoEvent = signal<Event | undefined>(undefined);
+
 	skeletonRows = Array.from({ length: TOP_LEADERS_LIMIT });
 
 	// Czech picks a different form for 1, for 2–4 and for everything else (0 included).
@@ -59,7 +60,7 @@ export class HomeCardTopLeadersComponent {
 	eventsPluralMap = { "=1": "akce", "=2": "akce", "=3": "akce", "=4": "akce", other: "akcí" };
 
 	constructor(private api: ApiService) {
-		addIcons({ chevronBackOutline, chevronForwardOutline });
+		addIcons({ chevronBackOutline, chevronForwardOutline, informationCircleOutline });
 
 		// the permission only becomes known once the root request resolves, and the year changes
 		// with the arrows — so load reactively from both
@@ -75,6 +76,11 @@ export class HomeCardTopLeadersComponent {
 
 	nextYear() {
 		this.year.update((year) => year + 1);
+	}
+
+	openInfo(event: Event) {
+		this.infoEvent.set(event);
+		this.infoOpen.set(true);
 	}
 
 	async loadStatistics(year: number) {

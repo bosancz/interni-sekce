@@ -6,6 +6,12 @@ ion-list {
 	--ion-item-background: none;
 }
 
+.header-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
 // year switcher — same shape as the calendar card's month arrows on the same dashboard
 .year-nav {
 	display: flex;
@@ -21,7 +27,7 @@ ion-list {
 	text-align: center;
 }
 
-.year-nav-button {
+.header-button {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -71,13 +77,6 @@ ion-list {
 	font-size: 0.85rem;
 }
 
-// explains what the ranking is built on, so the numbers don't need a legend
-.hint {
-	margin: 0.5rem 0 0;
-	color: var(--bo-muted);
-	font-size: 0.8rem;
-}
-
 // place in the ranking — the winner gets the brand yellow, the rest a neutral pill
 .rank {
 	display: inline-flex;
@@ -98,12 +97,6 @@ ion-list {
 	background-color: var(--bo-yellow);
 	color: #fff;
 	box-shadow: 0 2px 8px rgba(var(--san-yellow-rgb), 0.35);
-}
-
-.leader-name {
-	display: flex;
-	align-items: center;
-	gap: 0.5em;
 }
 
 .score {

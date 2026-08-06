@@ -116,6 +116,37 @@ ion-select.filter-pill {
 	}
 }
 
+// explanation of the dětodny metric, opened from the info button of the top-leaders card.
+// Popover content is created outside the component's view encapsulation, so it is styled here.
+.leaders-info-popover {
+	--width: 300px;
+
+	&::part(content) {
+		border-radius: 14px;
+		box-shadow: var(--bo-shadow);
+		border: 1px solid var(--bo-line);
+	}
+
+	.info-panel {
+		padding: 12px 14px;
+		font-size: 0.85rem;
+
+		h4 {
+			margin: 0 0 0.5rem;
+			color: var(--bo-heading);
+			font-size: 1rem;
+		}
+
+		p {
+			margin: 0 0 0.5rem;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+	}
+}
+
 // the dropdown panel for filter pills
 .filter-pill-popover {
 	--width: 220px;

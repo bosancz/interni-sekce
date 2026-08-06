@@ -3,26 +3,37 @@
 		<bo-card-header>
 			<bo-card-title> Nejlepší vedoucí </bo-card-title>
 
-			<div class="year-nav" slot="buttons">
+			<div class="header-actions" slot="buttons">
 				<button
 					type="button"
-					class="year-nav-button"
-					aria-label="Předchozí rok"
-					[disabled]="!canGoBack()"
-					(click)="previousYear()"
+					class="header-button"
+					aria-label="Jak se počítají dětodny"
+					(click)="openInfo($event)"
 				>
-					<ion-icon name="chevron-back-outline"></ion-icon>
+					<ion-icon name="information-circle-outline"></ion-icon>
 				</button>
-				<span class="year-nav-value">{{ year() }}</span>
-				<button
-					type="button"
-					class="year-nav-button"
-					aria-label="Následující rok"
-					[disabled]="!canGoForward()"
-					(click)="nextYear()"
-				>
-					<ion-icon name="chevron-forward-outline"></ion-icon>
-				</button>
+
+				<div class="year-nav">
+					<button
+						type="button"
+						class="header-button"
+						aria-label="Předchozí rok"
+						[disabled]="!canGoBack()"
+						(click)="previousYear()"
+					>
+						<ion-icon name="chevron-back-outline"></ion-icon>
+					</button>
+					<span class="year-nav-value">{{ year() }}</span>
+					<button
+						type="button"
+						class="header-button"
+						aria-label="Následující rok"
+						[disabled]="!canGoForward()"
+						(click)="nextYear()"
+					>
+						<ion-icon name="chevron-forward-outline"></ion-icon>
+					</button>
+				</div>
 			</div>
 		</bo-card-header>
 
@@ -36,19 +47,16 @@
 					</span>
 				</div>
 
-				<p class="hint">Dětoden = jedno dítě na jednom dni akce</p>
-
 				@if (statistics.leaders.length) {
 					<ion-list lines="full">
 						@for (leader of statistics.leaders; track leader.memberId) {
-							<ion-item [detail]="true" [routerLink]="'/databaze/clenove/' + leader.memberId">
+							<ion-item>
 								<div class="rank" [class.rank-first]="leader.rank === 1" slot="start">
 									{{ leader.rank }}.
 								</div>
 								<ion-label>
-									<h4 class="leader-name">
+									<h4>
 										<strong>{{ leader.nickname }}</strong>
-										<bo-group-badge [groupId]="leader.groupId" [short]="true"></bo-group-badge>
 									</h4>
 									<p>
 										{{ leader.eventsCount }} {{ leader.eventsCount | i18nPlural: eventsPluralMap }}
@@ -77,4 +85,28 @@
 			}
 		</bo-card-content>
 	</bo-card>
+
+	<ion-popover
+		cssClass="leaders-info-popover"
+		[isOpen]="infoOpen()"
+		[event]="infoEvent()"
+		(didDismiss)="infoOpen.set(false)"
+	>
+		<ng-template>
+			<ion-content>
+				<div class="info-panel">
+					<h4>Jak se počítají dětodny</h4>
+					<p>Dětoden = jedno dítě na jednom dni akce.</p>
+					<p>
+						Každá akce se boduje počtem dětí vynásobeným počtem dní akce — dvoudenní akce se třemi
+						dětmi má 6 dětodní. Celé skóre akce dostane každý její vedoucí.
+					</p>
+					<p>
+						Jako dítě se počítá účastník, kterému bylo v den začátku akce méně než 15 let. Do
+						statistiky se počítají jen proběhlé a nezrušené akce daného roku.
+					</p>
+				</div>
+			</ion-content>
+		</ng-template>
+	</ion-popover>
 }
