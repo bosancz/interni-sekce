@@ -5,7 +5,7 @@ import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { LeadersStatisticsService } from "src/models/statistics/services/leaders-statistics.service";
 import { TopLeadersPermission } from "../acl/leaders.acl";
-import { TopLeaderResponse, TopLeadersQuery } from "../dto/top-leaders.dto";
+import { TopLeadersQuery, TopLeadersResponse } from "../dto/top-leaders.dto";
 
 const DEFAULT_TOP_LEADERS_LIMIT = 5;
 
@@ -18,10 +18,13 @@ export class LeadersStatisticsController {
 
 	@Get("top")
 	@AcLinks(TopLeadersPermission)
-	@ApiResponse({ status: 200, type: TopLeaderResponse, isArray: true })
-	getTopLeaders(@Req() req: Request, @Query() query: TopLeadersQuery): Promise<TopLeaderResponse[]> {
+	@ApiResponse({ status: 200, type: TopLeadersResponse })
+	getTopLeaders(@Req() req: Request, @Query() query: TopLeadersQuery): Promise<TopLeadersResponse> {
 		TopLeadersPermission.canOrThrow(req);
 
-		return this.statistics.getTopLeaders(query.limit ?? DEFAULT_TOP_LEADERS_LIMIT);
+		return this.statistics.getLeadersStatistics(
+			query.year ?? new Date().getFullYear(),
+			query.limit ?? DEFAULT_TOP_LEADERS_LIMIT,
+		);
 	}
 }

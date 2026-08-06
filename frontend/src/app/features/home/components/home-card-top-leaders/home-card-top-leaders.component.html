@@ -2,15 +2,45 @@
 	<bo-card>
 		<bo-card-header>
 			<bo-card-title> Nejlepší vedoucí </bo-card-title>
+
+			<div class="year-nav" slot="buttons">
+				<button
+					type="button"
+					class="year-nav-button"
+					aria-label="Předchozí rok"
+					[disabled]="!canGoBack()"
+					(click)="previousYear()"
+				>
+					<ion-icon name="chevron-back-outline"></ion-icon>
+				</button>
+				<span class="year-nav-value">{{ year() }}</span>
+				<button
+					type="button"
+					class="year-nav-button"
+					aria-label="Následující rok"
+					[disabled]="!canGoForward()"
+					(click)="nextYear()"
+				>
+					<ion-icon name="chevron-forward-outline"></ion-icon>
+				</button>
+			</div>
 		</bo-card-header>
 
 		<bo-card-content>
-			<p class="hint">Letos podle dětodní — počet dětí × počet dní akce</p>
+			@if (statistics(); as statistics) {
+				<div class="total">
+					<span class="total-value">{{ statistics.childDays }}</span>
+					<span class="total-label">
+						{{ statistics.childDays | i18nPlural: childDaysPluralMap }} na všech akcích roku
+						{{ statistics.year }}
+					</span>
+				</div>
 
-			@if (leaders(); as leaders) {
-				@if (leaders.length) {
+				<p class="hint">Dětoden = jedno dítě na jednom dni akce</p>
+
+				@if (statistics.leaders.length) {
 					<ion-list lines="full">
-						@for (leader of leaders; track leader.memberId) {
+						@for (leader of statistics.leaders; track leader.memberId) {
 							<ion-item [detail]="true" [routerLink]="'/databaze/clenove/' + leader.memberId">
 								<div class="rank" [class.rank-first]="leader.rank === 1" slot="start">
 									{{ leader.rank }}.
@@ -22,8 +52,6 @@
 									</h4>
 									<p>
 										{{ leader.eventsCount }} {{ leader.eventsCount | i18nPlural: eventsPluralMap }}
-										· {{ leader.childrenCount }}
-										{{ leader.childrenCount | i18nPlural: childrenPluralMap }}
 									</p>
 								</ion-label>
 								<div class="score" slot="end">
@@ -36,7 +64,7 @@
 						}
 					</ion-list>
 				} @else {
-					<p class="m-0 mt-2 mb-3 text-center">Letos zatím nikdo nevedl akci s dětmi.</p>
+					<p class="m-0 mt-2 mb-3 text-center">V tomto roce nikdo nevedl akci s dětmi.</p>
 				}
 			} @else {
 				<ion-list lines="full">

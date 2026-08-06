@@ -6,9 +6,74 @@ ion-list {
 	--ion-item-background: none;
 }
 
+// year switcher — same shape as the calendar card's month arrows on the same dashboard
+.year-nav {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.year-nav-value {
+	font-family: var(--font-san);
+	font-weight: 700;
+	font-size: 1rem;
+	min-width: 3ch;
+	text-align: center;
+}
+
+.year-nav-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: none;
+	border-radius: var(--bo-radius-btn);
+	background-color: transparent;
+	color: var(--bo-dark);
+	cursor: pointer;
+
+	&:hover:not(:disabled) {
+		background-color: var(--bo-light);
+	}
+
+	&:disabled {
+		opacity: 0.3;
+		cursor: default;
+	}
+
+	ion-icon {
+		font-size: 1.25rem;
+	}
+}
+
+// headline number: the whole club's dětodny for the selected year
+.total {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5rem;
+	padding: 0.6rem 0.9rem;
+	border-radius: var(--bo-radius-btn);
+	background-color: var(--bo-blue-tint);
+}
+
+.total-value {
+	font-family: var(--font-san);
+	font-weight: 800;
+	font-size: 1.9rem;
+	line-height: 1;
+	color: var(--bo-heading);
+}
+
+.total-label {
+	color: var(--bo-muted);
+	font-size: 0.85rem;
+}
+
 // explains what the ranking is built on, so the numbers don't need a legend
 .hint {
-	margin: 0;
+	margin: 0.5rem 0 0;
 	color: var(--bo-muted);
 	font-size: 0.8rem;
 }

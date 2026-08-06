@@ -4378,12 +4378,6 @@ export namespace SDK {
          */
         'childDays': number;
         /**
-         * How many children that score comes from (each event\'s children counted once).
-         * @type {number}
-         * @memberof TopLeaderResponse
-         */
-        'childrenCount': number;
-        /**
          * How many events that score comes from.
          * @type {number}
          * @memberof TopLeaderResponse
@@ -4401,6 +4395,44 @@ export namespace SDK {
          * @memberof TopLeaderResponse
          */
         'lastName'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface TopLeadersResponse
+     */
+    export interface TopLeadersResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof TopLeadersResponse
+         */
+        'year': number;
+        /**
+         * Dětodny of every event of the year, each event counted once — not once per leader.
+         * @type {number}
+         * @memberof TopLeadersResponse
+         */
+        'childDays': number;
+        /**
+         * Oldest and newest year with a finished event, so the year switcher knows where to stop.
+         * @type {number}
+         * @memberof TopLeadersResponse
+         */
+        'firstYear': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopLeadersResponse
+         */
+        'lastYear': number;
+        /**
+         * 
+         * @type {Array<TopLeaderResponse>}
+         * @memberof TopLeadersResponse
+         */
+        'leaders': Array<TopLeaderResponse>;
     }
     
         /**
@@ -10518,6 +10550,14 @@ export namespace SDK {
      * @interface StatisticsApiGetTopLeadersQueryParams
      */
     export interface StatisticsApiGetTopLeadersQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetTopLeaders
+         */
+        year?: number
+    
         //limit
         /**
          * 
@@ -10842,6 +10882,10 @@ export namespace SDK {
     
             // authentication cookieAuth required
     
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
             if (queryParams.limit !== undefined) {
                 requestQueryParameter['limit'] = queryParams.limit;
             }
@@ -10855,7 +10899,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<Array<TopLeaderResponse>>(axiosRequestConfig);
+            return this.axios.request<TopLeadersResponse>(axiosRequestConfig);
         }
     }
     
