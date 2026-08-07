@@ -1,0 +1,119 @@
+:host {
+	display: block;
+}
+
+ion-list {
+	--ion-item-background: none;
+}
+
+.header-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+// year switcher — same shape as the calendar card's month arrows on the same dashboard
+.year-nav {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.year-nav-value {
+	font-family: var(--font-san);
+	font-weight: 700;
+	font-size: 1rem;
+	min-width: 3ch;
+	text-align: center;
+}
+
+.header-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: none;
+	border-radius: var(--bo-radius-btn);
+	background-color: transparent;
+	color: var(--bo-dark);
+	cursor: pointer;
+
+	&:hover:not(:disabled) {
+		background-color: var(--bo-light);
+	}
+
+	&:disabled {
+		opacity: 0.3;
+		cursor: default;
+	}
+
+	ion-icon {
+		font-size: 1.25rem;
+	}
+}
+
+// headline number: the whole club's dětodny for the selected year
+.total {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5rem;
+	padding: 0.6rem 0.9rem;
+	border-radius: var(--bo-radius-btn);
+	background-color: var(--bo-blue-tint);
+}
+
+.total-value {
+	font-family: var(--font-san);
+	font-weight: 800;
+	font-size: 1.9rem;
+	line-height: 1;
+	color: var(--bo-heading);
+}
+
+.total-label {
+	color: var(--bo-muted);
+	font-size: 0.85rem;
+}
+
+// place in the ranking — the winner gets the brand yellow, the rest a neutral pill
+.rank {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	margin-inline-end: 0.9rem;
+	border-radius: var(--bo-radius-pill);
+	background-color: var(--bo-neutral-pill);
+	color: var(--bo-neutral-pill-text);
+	font-family: var(--font-san);
+	font-weight: 800;
+	font-size: 0.85rem;
+}
+
+.rank-first {
+	background-color: var(--bo-yellow);
+	color: #fff;
+	box-shadow: 0 2px 8px rgba(var(--san-yellow-rgb), 0.35);
+}
+
+.score {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	line-height: 1.1;
+}
+
+.score-value {
+	font-family: var(--font-san);
+	font-weight: 800;
+	font-size: 1.4rem;
+	color: var(--bo-heading);
+}
+
+.score-label {
+	font-size: 0.75rem;
+	color: var(--bo-muted);
+}
