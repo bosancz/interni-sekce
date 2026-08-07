@@ -4372,7 +4372,7 @@ export namespace SDK {
          */
         'groupId': number;
         /**
-         * \"Dětodny\" — children × days, summed over the events the member led. The ranking score.
+         * \"děťodny\" — children × days, summed over the events the member led. The ranking score.
          * @type {number}
          * @memberof TopLeaderResponse
          */
@@ -4410,7 +4410,7 @@ export namespace SDK {
          */
         'year': number;
         /**
-         * Dětodny of every event of the year, each event counted once — not once per leader.
+         * děťodny of every event of the year, each event counted once — not once per leader.
          * @type {number}
          * @memberof TopLeadersResponse
          */
