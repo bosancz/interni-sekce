@@ -7,7 +7,7 @@ export class TopLeaderResponse {
 	@ApiProperty() nickname!: string;
 	@ApiProperty() groupId!: number;
 
-	/** "Dětodny" — children × days, summed over the events the member led. The ranking score. */
+	/** "děťodny" — children × days, summed over the events the member led. The ranking score. */
 	@ApiProperty() childDays!: number;
 
 	/** How many events that score comes from. */
@@ -20,7 +20,7 @@ export class TopLeaderResponse {
 export class TopLeadersResponse {
 	@ApiProperty() year!: number;
 
-	/** Dětodny of every event of the year, each event counted once — not once per leader. */
+	/** děťodny of every event of the year, each event counted once — not once per leader. */
 	@ApiProperty() childDays!: number;
 
 	/** Oldest and newest year with a finished event, so the year switcher knows where to stop. */

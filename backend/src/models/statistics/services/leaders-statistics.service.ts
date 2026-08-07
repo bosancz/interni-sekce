@@ -26,7 +26,7 @@ export interface TopLeader {
 	firstName: string | null;
 	lastName: string | null;
 	groupId: number;
-	/** "Dětodny" — children × days, summed over the events the member led. The ranking score. */
+	/** "děťodny" — children × days, summed over the events the member led. The ranking score. */
 	childDays: number;
 	/** How many events that score comes from. */
 	eventsCount: number;
@@ -34,7 +34,7 @@ export interface TopLeader {
 
 export interface LeadersStatistics {
 	year: number;
-	/** Dětodny of *every* event of the year, each event counted once — not once per leader. */
+	/** děťodny of *every* event of the year, each event counted once — not once per leader. */
 	childDays: number;
 	/** Oldest and newest year with a finished event, so the year switcher knows where to stop. */
 	firstYear: number;
@@ -50,7 +50,7 @@ export class LeadersStatisticsService {
 	) {}
 
 	/**
-	 * Everything the dashboard's leaders block shows for one year: the year's total dětodny, the
+	 * Everything the dashboard's leaders block shows for one year: the year's total děťodny, the
 	 * best leaders in it, and the range of years that have any data at all.
 	 */
 	async getLeadersStatistics(year: number, limit: number): Promise<LeadersStatistics> {
@@ -64,7 +64,7 @@ export class LeadersStatisticsService {
 	}
 
 	/**
-	 * Ranks leaders by the "dětodny" they collected in the given year: every event is worth its
+	 * Ranks leaders by the "děťodny" they collected in the given year: every event is worth its
 	 * number of child attendees multiplied by how many days it lasted, so a two-day event with three
 	 * children scores 6. Every leader of an event gets the full score, so co-leaders each score the
 	 * whole event.
@@ -106,7 +106,7 @@ export class LeadersStatisticsService {
 	}
 
 	/**
-	 * Dětodny of the whole year — summed over *events*, so an event with two leaders still counts
+	 * děťodny of the whole year — summed over *events*, so an event with two leaders still counts
 	 * once, unlike the per-leader scores of the ranking.
 	 */
 	private async getChildDays(year: number): Promise<number> {
