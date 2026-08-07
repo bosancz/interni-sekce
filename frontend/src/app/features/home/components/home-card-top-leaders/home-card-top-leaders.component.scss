@@ -117,3 +117,78 @@ ion-list {
 	font-size: 0.75rem;
 	color: var(--bo-muted);
 }
+
+// Popovers of this card: the děťodny explanation behind the info button and the per-leader event
+// breakdown. Ionic creates popover content outside the component's view encapsulation, so these
+// rules have to be global — ::ng-deep emits them unscoped while keeping them in this (lazily
+// loaded) component's stylesheet rather than the app-wide one, which the initial bundle budget
+// counts.
+::ng-deep .leaders-popover {
+	--width: 320px;
+	--max-height: 60vh;
+
+	&::part(content) {
+		border-radius: 14px;
+		box-shadow: var(--bo-shadow);
+		border: 1px solid var(--bo-line);
+	}
+
+	.popover-panel {
+		padding: 12px 14px;
+		font-size: 0.85rem;
+
+		h4 {
+			margin: 0 0 0.5rem;
+			color: var(--bo-heading);
+			font-size: 1rem;
+		}
+
+		p {
+			margin: 0 0 0.5rem;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+	}
+
+	// the events making up one leader's score
+	.leader-events {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+
+		li {
+			padding: 0.45rem 0;
+			border-top: 1px solid var(--bo-card-line);
+		}
+
+		li:first-child {
+			border-top: none;
+			padding-top: 0;
+		}
+
+		li:last-child {
+			padding-bottom: 0;
+		}
+	}
+
+	.leader-event-name {
+		display: block;
+		font-weight: 700;
+	}
+
+	.leader-event-meta {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.75rem;
+		color: var(--bo-muted);
+		font-size: 0.8rem;
+	}
+
+	.leader-event-score {
+		white-space: nowrap;
+		font-weight: 700;
+		color: var(--bo-heading);
+	}
+}
