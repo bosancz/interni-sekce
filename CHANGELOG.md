@@ -1,3 +1,13 @@
+## v4.3.3 — 2026-08-07
+
+- ✨ [Rozpad skóre vedoucího na jednotlivé akce](https://github.com/bosancz/interni-sekce/commit/5f7599e8f90a2975778ebb82d82e70828233ff38)
+- ✨ [Přepínání let a celkový součet dětodní v žebříčku vedoucích](https://github.com/bosancz/interni-sekce/commit/db4709717fc47ea858d351f13adc1f38a7ddca2a)
+- ✨ [Žebříček nejlepších vedoucích na hlavní stránce](https://github.com/bosancz/interni-sekce/commit/ccef48609a88bd42b81d7a103089b4e39ebc4006)
+- ✨ [Karta nevyplněných dat na stránce oddílu](https://github.com/bosancz/interni-sekce/commit/534719af7b9ae9f3b1ccad88dea63d5a9e9ed5ef) (#313)
+- 🐛 [Styly popoverů žebříčku mimo globální stylesheet](https://github.com/bosancz/interni-sekce/commit/d71d8be7da216d451130801cef03358154816893)
+- 🐛 [Oprava chyby při načítání členů s kontakty](https://github.com/bosancz/interni-sekce/commit/cd0ccd33a700543c6c3003ec26613d1ad371c3ad) (#313)
+- ♻️ [Zjednodušení řádků žebříčku vedoucích](https://github.com/bosancz/interni-sekce/commit/5acc472ce6f8ac9b2a2df5bd4d04e95c51919275)
+
 ## v4.3.2 — 2026-07-28
 
 - ✨ [Umožnění výběru a kopírování textu v seznamu změn](https://github.com/bosancz/interni-sekce/commit/b355a3fa60a853932d4a77302df94e2a05e61fd7)
