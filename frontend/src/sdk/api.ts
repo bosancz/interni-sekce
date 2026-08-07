@@ -2672,6 +2672,44 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface LeaderEventResponse
+     */
+    export interface LeaderEventResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof LeaderEventResponse
+         */
+        'eventId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof LeaderEventResponse
+         */
+        'name': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof LeaderEventResponse
+         */
+        'dateFrom': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof LeaderEventResponse
+         */
+        'dateTill': string;
+        /**
+         * Dětodny this single event was worth — children on it × how many days it lasted.
+         * @type {number}
+         * @memberof LeaderEventResponse
+         */
+        'childDays': number;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface LoginCredentialsBody
      */
     export interface LoginCredentialsBody {
@@ -10532,6 +10570,25 @@ export namespace SDK {
     
     
     
+    /**
+     * Query parameters for getLeaderEvents operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetLeaderEventsQueryParams
+     */
+    export interface StatisticsApiGetLeaderEventsQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetLeaderEvents
+         */
+        year?: number
+    }
+    
+    
+    
+    
+    
     
     
     
@@ -10732,6 +10789,56 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<number>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {StatisticsApiGetLeaderEventsQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof StatisticsApi
+         */
+        
+        public async getLeaderEvents(
+            memberId: number,
+            queryParams: StatisticsApiGetLeaderEventsQueryParams,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('getLeaderEvents', 'memberId', memberId)
+            
+            const localVarPath = `/api/statistics/leaders/{memberId}/events`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<LeaderEventResponse>>(axiosRequestConfig);
         }
     
         /**

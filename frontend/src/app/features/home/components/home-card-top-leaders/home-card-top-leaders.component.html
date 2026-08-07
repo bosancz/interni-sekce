@@ -50,7 +50,7 @@
 				@if (statistics.leaders.length) {
 					<ion-list lines="full">
 						@for (leader of statistics.leaders; track leader.memberId) {
-							<ion-item>
+							<ion-item button [detail]="false" (click)="openLeaderEvents($event, leader)">
 								<div class="rank" [class.rank-first]="leader.rank === 1" slot="start">
 									{{ leader.rank }}.
 								</div>
@@ -87,15 +87,55 @@
 	</bo-card>
 
 	<ion-popover
-		cssClass="leaders-info-popover"
+		cssClass="leaders-popover"
+		[isOpen]="leaderEventsOpen()"
+		[event]="leaderEventsEvent()"
+		(didDismiss)="leaderEventsOpen.set(false)"
+	>
+		<ng-template>
+			<ion-content>
+				<div class="popover-panel">
+					@if (openedLeader(); as opened) {
+						<h4>{{ opened.leader.nickname }} — {{ opened.year }}</h4>
+					}
+
+					@if (leaderEvents(); as events) {
+						@if (events.length) {
+							<ul class="leader-events">
+								@for (event of events; track event.eventId) {
+									<li>
+										<span class="leader-event-name">{{ event.name }}</span>
+										<span class="leader-event-meta">
+											<span>{{ [event.dateFrom, event.dateTill] | dateRange }}</span>
+											<span class="leader-event-score">
+												{{ event.childDays }}
+												{{ event.childDays | i18nPlural: childDaysPluralMap }}
+											</span>
+										</span>
+									</li>
+								}
+							</ul>
+						} @else {
+							<p>Žádné akce s dětmi.</p>
+						}
+					} @else {
+						<p>Načítání…</p>
+					}
+				</div>
+			</ion-content>
+		</ng-template>
+	</ion-popover>
+
+	<ion-popover
+		cssClass="leaders-popover"
 		[isOpen]="infoOpen()"
 		[event]="infoEvent()"
 		(didDismiss)="infoOpen.set(false)"
 	>
 		<ng-template>
 			<ion-content>
-				<div class="info-panel">
-					<h4>Co to jsou děťodny</h4>
+				<div class="popover-panel">
+					<h4>Jak se počítají dětodny</h4>
 					<p>Dětoden = jedno dítě na jednom dni akce.</p>
 					<p>
 						Dvoudenní akce se třemi
