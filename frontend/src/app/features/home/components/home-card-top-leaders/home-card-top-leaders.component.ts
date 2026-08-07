@@ -8,6 +8,7 @@ import { CardContentComponent } from "src/app/shared/components/card-content/car
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
+import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
 
 /** How many leaders the ranking shows. */
@@ -23,6 +24,7 @@ export type LeadersStatistics = Omit<SDK.TopLeadersResponse, "leaders"> & { lead
 	styleUrls: ["./home-card-top-leaders.component.scss"],
 
 	imports: [
+		DateRangePipe,
 		I18nPluralPipe,
 		IonContent,
 		IonIcon,
@@ -53,6 +55,13 @@ export class HomeCardTopLeadersComponent {
 	infoOpen = signal(false);
 	infoEvent = signal<Event | undefined>(undefined);
 
+	/** The row whose events are shown, with the year they were loaded for. */
+	openedLeader = signal<{ leader: RankedLeader; year: number } | undefined>(undefined);
+	leaderEventsOpen = signal(false);
+	leaderEventsEvent = signal<Event | undefined>(undefined);
+	/** `undefined` while the events of the opened leader are still loading. */
+	leaderEvents = signal<SDK.LeaderEventResponse[] | undefined>(undefined);
+
 	skeletonRows = Array.from({ length: TOP_LEADERS_LIMIT });
 
 	// Czech picks a different form for 1, for 2–4 and for everything else (0 included).
@@ -72,15 +81,35 @@ export class HomeCardTopLeadersComponent {
 
 	previousYear() {
 		this.year.update((year) => year - 1);
+		this.leaderEventsOpen.set(false);
 	}
 
 	nextYear() {
 		this.year.update((year) => year + 1);
+		this.leaderEventsOpen.set(false);
 	}
 
 	openInfo(event: Event) {
 		this.infoEvent.set(event);
 		this.infoOpen.set(true);
+	}
+
+	/** Opens the breakdown of the events that make up this leader's score. */
+	async openLeaderEvents(event: Event, leader: RankedLeader) {
+		const year = this.year();
+
+		this.openedLeader.set({ leader, year });
+		this.leaderEvents.set(undefined);
+		this.leaderEventsEvent.set(event);
+		this.leaderEventsOpen.set(true);
+
+		const events = await this.api.StatisticsApi.getLeaderEvents(leader.memberId, { year }).then((res) => res.data);
+
+		// a slow response must not land in a popover that meanwhile shows somebody else
+		const opened = this.openedLeader();
+		if (opened?.leader.memberId !== leader.memberId || opened.year !== year) return;
+
+		this.leaderEvents.set(events);
 	}
 
 	async loadStatistics(year: number) {

@@ -32,6 +32,15 @@ export interface TopLeader {
 	eventsCount: number;
 }
 
+export interface LeaderEvent {
+	eventId: number;
+	name: string;
+	dateFrom: string;
+	dateTill: string;
+	/** Dětodny this single event was worth — children on it × how many days it lasted. */
+	childDays: number;
+}
+
 export interface LeadersStatistics {
 	year: number;
 	/** děťodny of *every* event of the year, each event counted once — not once per leader. */
@@ -106,7 +115,36 @@ export class LeadersStatisticsService {
 	}
 
 	/**
-	 * děťodny of the whole year — summed over *events*, so an event with two leaders still counts
+	 * The events behind one leader's score — the same events the ranking counted for them, each with
+	 * the dětodny it contributed. Ordered by the biggest contribution first.
+	 */
+	async getLeaderEvents(memberId: number, year: number): Promise<LeaderEvent[]> {
+		const childDays = `ec.children_count * ${EVENT_DAYS}`;
+
+		const rows = await this.eventAttendeesRepository
+			.createQueryBuilder("la")
+			.select("e.id", "eventId")
+			.addSelect("e.name", "name")
+			// dates are rendered by the frontend, so hand them over as plain ISO strings
+			.addSelect("TO_CHAR(e.date_from, 'YYYY-MM-DD')", "dateFrom")
+			.addSelect("TO_CHAR(e.date_till, 'YYYY-MM-DD')", "dateTill")
+			.addSelect(childDays, "childDays")
+			.innerJoin(Event, "e", `e.id = la.eventId AND ${FINISHED_EVENT_CONDITION}`, {
+				cancelledStatus: EventStates.cancelled,
+			})
+			.innerJoin((qb) => this.childrenPerEvent(qb), "ec", "ec.event_id = la.event_id")
+			.where("la.type = :leaderType", { leaderType: EventAttendeeType.leader })
+			.andWhere("la.memberId = :memberId", { memberId })
+			.andWhere(EVENT_YEAR_CONDITION, { year })
+			.orderBy(childDays, "DESC")
+			.addOrderBy("e.date_from", "DESC")
+			.getRawMany<Omit<LeaderEvent, "childDays"> & { childDays: string }>();
+
+		return rows.map((row) => ({ ...row, childDays: Number(row.childDays) }));
+	}
+
+	/**
+	 * Dětodny of the whole year — summed over *events*, so an event with two leaders still counts
 	 * once, unlike the per-leader scores of the ranking.
 	 */
 	private async getChildDays(year: number): Promise<number> {

@@ -30,7 +30,18 @@ export class TopLeadersResponse {
 	@ApiProperty({ type: TopLeaderResponse, isArray: true }) leaders!: TopLeaderResponse[];
 }
 
-export class TopLeadersQuery {
+/** One of the events behind a leader's score, as shown when their row is opened. */
+export class LeaderEventResponse {
+	@ApiProperty() eventId!: number;
+	@ApiProperty() name!: string;
+	@ApiProperty() dateFrom!: string;
+	@ApiProperty() dateTill!: string;
+
+	/** Dětodny this single event was worth — children on it × how many days it lasted. */
+	@ApiProperty() childDays!: number;
+}
+
+export class StatisticsYearQuery {
 	@ApiPropertyOptional({ minimum: 1900, maximum: 2999, description: "Defaults to the current year." })
 	@Type(() => Number)
 	@IsInt()
@@ -38,7 +49,9 @@ export class TopLeadersQuery {
 	@Max(2999)
 	@IsOptional()
 	year?: number;
+}
 
+export class TopLeadersQuery extends StatisticsYearQuery {
 	@ApiPropertyOptional({ minimum: 1, maximum: 100, default: 5 })
 	@Type(() => Number)
 	@IsInt()
