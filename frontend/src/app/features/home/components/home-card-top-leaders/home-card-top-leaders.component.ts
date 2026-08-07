@@ -56,7 +56,7 @@ export class HomeCardTopLeadersComponent {
 	skeletonRows = Array.from({ length: TOP_LEADERS_LIMIT });
 
 	// Czech picks a different form for 1, for 2–4 and for everything else (0 included).
-	childDaysPluralMap = { "=1": "dětoden", "=2": "dětodny", "=3": "dětodny", "=4": "dětodny", other: "dětodní" };
+	childDaysPluralMap = { "=1": "děťoden", "=2": "děťodny", "=3": "děťodny", "=4": "děťodny", other: "děťodní" };
 	eventsPluralMap = { "=1": "akce", "=2": "akce", "=3": "akce", "=4": "akce", other: "akcí" };
 
 	constructor(private api: ApiService) {

@@ -7,7 +7,7 @@
 				<button
 					type="button"
 					class="header-button"
-					aria-label="Jak se počítají dětodny"
+					aria-label="Jak se počítají děťodny"
 					(click)="openInfo($event)"
 				>
 					<ion-icon name="information-circle-outline"></ion-icon>
@@ -42,7 +42,7 @@
 				<div class="total">
 					<span class="total-value">{{ statistics.childDays }}</span>
 					<span class="total-label">
-						{{ statistics.childDays | i18nPlural: childDaysPluralMap }} na všech akcích roku
+						{{ statistics.childDays | i18nPlural: childDaysPluralMap }} na akcích roku
 						{{ statistics.year }}
 					</span>
 				</div>
@@ -95,16 +95,13 @@
 		<ng-template>
 			<ion-content>
 				<div class="info-panel">
-					<h4>Jak se počítají dětodny</h4>
+					<h4>Co to jsou děťodny</h4>
 					<p>Dětoden = jedno dítě na jednom dni akce.</p>
 					<p>
-						Každá akce se boduje počtem dětí vynásobeným počtem dní akce — dvoudenní akce se třemi
-						dětmi má 6 dětodní. Celé skóre akce dostane každý její vedoucí.
+						Dvoudenní akce se třemi
+						dětmi má 6 děťodní. Celé skóre akce dostane každý její vedoucí.
 					</p>
-					<p>
-						Jako dítě se počítá účastník, kterému bylo v den začátku akce méně než 15 let. Do
-						statistiky se počítají jen proběhlé a nezrušené akce daného roku.
-					</p>
+
 				</div>
 			</ion-content>
 		</ng-template>
