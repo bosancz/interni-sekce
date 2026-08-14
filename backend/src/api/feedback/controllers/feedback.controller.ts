@@ -24,6 +24,6 @@ export class FeedbackController {
 
 		const issue = await this.feedback.fileBugReportIssue(report);
 
-		await this.feedback.sendBugReportEmail(report, issue);
+		await this.feedback.sendBugReportEmail(report, issue).catch(() => undefined);
 	}
 }

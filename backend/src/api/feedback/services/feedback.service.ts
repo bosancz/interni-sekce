@@ -46,7 +46,7 @@ export class FeedbackService {
 		};
 	}
 
-	async sendBugReportEmail(report: BugReport, issue?: BugReportIssue | null): Promise<boolean> {
+	async sendBugReportEmail(report: BugReport, issue?: BugReportIssue | null): Promise<void> {
 		const mail = BugReportMailTemplate(this.config.feedback.bugReportRecipient, {
 			reporter: report.reporter,
 			reporterUrl: report.reporterUrl,
@@ -59,10 +59,9 @@ export class FeedbackService {
 		try {
 			await this.mailService.sendMail(mail);
 			this.logger.verbose("Bug report email sent");
-			return true;
 		} catch (err) {
 			this.logger.error(`Failed to send bug report email: ${(err as Error).message}`);
-			return false;
+			throw err;
 		}
 	}
 
