@@ -1,4 +1,4 @@
-import { Body, Controller, InternalServerErrorException, Post, Req } from "@nestjs/common";
+import { Body, Controller, Post, Req } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController } from "src/access-control/access-control-lib";
@@ -22,15 +22,13 @@ export class FeedbackController {
 
 		const report = await this.feedback.buildBugReport(authUser.userId, body);
 
-		// File the issue first so the email can link to it, then send the email regardless of
-		// whether that succeeded — neither channel throws on its own failure. The report
-		// succeeds as long as at least one channel got through; only a total failure (email
-		// and GitHub both down) surfaces as an error to the client.
+		// The GitHub issue is the report itself: if it cannot be filed, the request fails and
+		// the user knows to report the bug some other way. The email is only a notification on
+		// top of it — it links to the issue and its own delivery failure is logged, not
+		// surfaced. (With the GitHub App unconfigured the issue is skipped without error and
+		// the email carries the report alone.)
 		const issue = await this.feedback.fileBugReportIssue(report);
-		const emailed = await this.feedback.sendBugReportEmail(report, issue);
 
-		if (!emailed && !issue) {
-			throw new InternalServerErrorException("Bug report could not be delivered by email or GitHub.");
-		}
+		await this.feedback.sendBugReportEmail(report, issue);
 	}
 }

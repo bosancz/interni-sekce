@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { Config } from "src/config";
 import { GithubService } from "src/models/github/services/github.service";
 import { MailService } from "src/models/mail/services/mail.service";
@@ -55,8 +55,8 @@ export class FeedbackService {
 	/**
 	 * Construct and send the bug-report email to the configured recipient. When the report was
 	 * already filed as a GitHub issue, the email links to it.
-	 * Returns whether the email was actually sent; delivery failures are logged, not thrown,
-	 * so the caller can fall back to the other channel.
+	 * The email is a notification on top of the issue, so delivery failures are only logged,
+	 * never thrown; the returned flag says whether it actually went out.
 	 */
 	async sendBugReportEmail(report: BugReport, issue?: BugReportIssue | null): Promise<boolean> {
 		const mail = BugReportMailTemplate(this.config.feedback.bugReportRecipient, {
@@ -80,8 +80,9 @@ export class FeedbackService {
 
 	/**
 	 * Construct and file the bug report as a GitHub issue.
-	 * Returns the created issue, or null when GitHub is not configured or the API call fails
-	 * (logged, not thrown), so the caller can fall back to the email alone.
+	 * Throws when the issue could not be created, so the user is told their report did not
+	 * land. Returns null only when the GitHub App is not configured at all — the integration
+	 * is then deliberately disabled and the email carries the report on its own.
 	 */
 	async fileBugReportIssue(report: BugReport): Promise<BugReportIssue | null> {
 		if (!this.github.isConfigured) return null;
@@ -99,7 +100,7 @@ export class FeedbackService {
 			return issue;
 		} catch (err) {
 			this.logger.error(`Failed to file bug report as a GitHub issue: ${(err as Error).message}`);
-			return null;
+			throw new InternalServerErrorException("Bug report could not be filed as a GitHub issue.");
 		}
 	}
 
