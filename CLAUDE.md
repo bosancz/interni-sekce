@@ -19,6 +19,7 @@
   - Lockfiles are committed and `npm ci` works in `frontend/` and `backend/`. Do **not** use the root `npm ci` / `npm run install`: it runs `scripts/install.sh`, which also builds the backend and runs migrations, so it needs a database. `npm install` in a sandbox adds platform-specific optional deps to the lockfile — don't commit that churn.
   - A **frontend-only** change needs no database: `cd frontend && npm ci && npm run dev`, then read the Angular compile output.
   - For a **backend** change, or the full root `npm run dev` (the thing that produces `dev.log`), bring up Postgres first — see below.
+- **`.mcp.json` registers the Angular CLI MCP server** (`npx -y @angular/cli mcp`) — Angular docs/best-practices lookups plus workspace tools. It runs from the repo root and finds `frontend/angular.json` by itself, but needs Node 24 like every other `ng` command; its `devserver_start` tool starts a dev server, so the one-warm-server rule above applies to it too.
 
 ## Frontend SDK
 
