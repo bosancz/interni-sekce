@@ -1,6 +1,8 @@
 export class Config {
 	production = true;
 
+	version = APP_VERSION;
+
 	apiRoot = "/";
 
 	jwtDomains = ["bosan.cz"];

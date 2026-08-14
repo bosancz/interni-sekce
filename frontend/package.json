@@ -3,7 +3,7 @@
 	"description": "Bošán",
 	"private": true,
 	"scripts": {
-		"build": "ng build --configuration production",
+		"build": "ng build --configuration production --define APP_VERSION=\"'${VERSION:-DEV}'\"",
 		"dev": "ng serve",
 		"dev:test-server": "ng serve --configuration=test-server",
 		"generate:sdk": "openapi-sdk -i http://127.0.0.1:3000/api/openapi-json -o src/sdk"
