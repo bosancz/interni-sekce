@@ -49,8 +49,9 @@
 	</div>
 }
 
-@if (view() === 'gallery' && allTags().length) {
-	<!-- filter the gallery by tag, mirroring the public site's tag buttons -->
+@if (view() === 'gallery' && photos()?.length) {
+	<!-- filter the gallery by tag, mirroring the public site's tag buttons; shown even without
+	     any tags yet, so the hint below tells people where tags come from -->
 	<div class="tag-filter" role="group" aria-label="Filtrovat podle štítku">
 		<ion-chip
 			role="button"
@@ -77,6 +78,9 @@
 			>
 				#{{ tag }}
 			</ion-chip>
+		}
+		@if (!allTags().length) {
+			<span class="tag-hint">Štítky přidáte po kliknutí na fotku.</span>
 		}
 	</div>
 }
