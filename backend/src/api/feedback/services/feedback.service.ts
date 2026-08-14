@@ -14,13 +14,11 @@ export interface BugReport {
 	description: string;
 }
 
-/** The GitHub issue a bug report was filed as. */
 export interface BugReportIssue {
 	number: number;
 	url: string;
 }
 
-/** Longest issue title built from the report; the rest of the line continues in the body. */
 const ISSUE_TITLE_MAX_LENGTH = 80;
 
 @Injectable()
@@ -34,10 +32,6 @@ export class FeedbackService {
 		private readonly config: Config,
 	) {}
 
-	/**
-	 * Resolve a submitted bug report into the context the email and issue share: the
-	 * reporter's identity (from the authenticated user) and what they wrote.
-	 */
 	async buildBugReport(userId: number, body: BugReportBody): Promise<BugReport> {
 		const user = await this.users.getUser(userId, { includeMember: true });
 
@@ -52,12 +46,6 @@ export class FeedbackService {
 		};
 	}
 
-	/**
-	 * Construct and send the bug-report email to the configured recipient. When the report was
-	 * already filed as a GitHub issue, the email links to it.
-	 * The email is a notification on top of the issue, so delivery failures are only logged,
-	 * never thrown; the returned flag says whether it actually went out.
-	 */
 	async sendBugReportEmail(report: BugReport, issue?: BugReportIssue | null): Promise<boolean> {
 		const mail = BugReportMailTemplate(this.config.feedback.bugReportRecipient, {
 			reporter: report.reporter,
@@ -78,12 +66,6 @@ export class FeedbackService {
 		}
 	}
 
-	/**
-	 * Construct and file the bug report as a GitHub issue.
-	 * Throws when the issue could not be created, so the user is told their report did not
-	 * land. Returns null only when the GitHub App is not configured at all — the integration
-	 * is then deliberately disabled and the email carries the report on its own.
-	 */
 	async fileBugReportIssue(report: BugReport): Promise<BugReportIssue | null> {
 		if (!this.github.isConfigured) return null;
 
@@ -117,12 +99,6 @@ export class FeedbackService {
 			.join("\n");
 	}
 
-	/**
-	 * Split the free-text description into the issue title and the issue body: the first line
-	 * becomes the title, every following line stays in the body. A first line too long for a
-	 * title is cut at the last word that fits, ends with a horizontal ellipsis and continues
-	 * (ellipsis-prefixed) at the top of the body, so nothing the user wrote is lost.
-	 */
 	private splitDescription(description: string): { title: string; body: string } {
 		const text = description.replace(/\r\n/g, "\n").trim();
 		const breakIndex = text.indexOf("\n");

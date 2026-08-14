@@ -22,11 +22,6 @@ export class FeedbackController {
 
 		const report = await this.feedback.buildBugReport(authUser.userId, body);
 
-		// The GitHub issue is the report itself: if it cannot be filed, the request fails and
-		// the user knows to report the bug some other way. The email is only a notification on
-		// top of it — it links to the issue and its own delivery failure is logged, not
-		// surfaced. (With the GitHub App unconfigured the issue is skipped without error and
-		// the email carries the report alone.)
 		const issue = await this.feedback.fileBugReportIssue(report);
 
 		await this.feedback.sendBugReportEmail(report, issue);
