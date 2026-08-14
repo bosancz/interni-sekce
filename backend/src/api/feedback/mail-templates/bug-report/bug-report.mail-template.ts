@@ -2,7 +2,7 @@ import { createMailTemplate } from "src/models/mail/functions/create-mail-templa
 
 export const BugReportMailTemplate = createMailTemplate<{
 	reporter: string;
-	environment: string;
+	reporterUrl: string;
 	url?: string;
 	description: string;
 	issueNumber?: number;

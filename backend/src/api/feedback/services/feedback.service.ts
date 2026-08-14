@@ -9,7 +9,7 @@ import { BugReportMailTemplate } from "../mail-templates/bug-report/bug-report.m
 /** A bug report resolved into everything the email and issue need. */
 export interface BugReport {
 	reporter: string;
-	environment: string;
+	reporterUrl: string;
 	url?: string;
 	description: string;
 }
@@ -36,17 +36,17 @@ export class FeedbackService {
 
 	/**
 	 * Resolve a submitted bug report into the context the email and issue share: the
-	 * reporter's identity (from the authenticated user) and the current environment.
+	 * reporter's identity (from the authenticated user) and what they wrote.
 	 */
 	async buildBugReport(userId: number, body: BugReportBody): Promise<BugReport> {
 		const user = await this.users.getUser(userId, { includeMember: true });
 
 		const reporter =
-			[user?.member?.nickname, user?.login && `<${user.login}>`].filter(Boolean).join(" ") || "neznámý";
+			[user?.member?.nickname, user?.login && `(${user.login})`].filter(Boolean).join(" ") || "neznámý";
 
 		return {
 			reporter,
-			environment: this.config.app.environmentTitle || this.config.environment,
+			reporterUrl: `${this.config.app.baseUrl}/admin/uzivatele/${userId}`,
 			url: body.url,
 			description: body.description,
 		};
@@ -61,7 +61,7 @@ export class FeedbackService {
 	async sendBugReportEmail(report: BugReport, issue?: BugReportIssue | null): Promise<boolean> {
 		const mail = BugReportMailTemplate(this.config.feedback.bugReportRecipient, {
 			reporter: report.reporter,
-			environment: report.environment,
+			reporterUrl: report.reporterUrl,
 			url: report.url,
 			description: report.description,
 			issueNumber: issue?.number,
@@ -110,8 +110,7 @@ export class FeedbackService {
 			description ? "" : null,
 			description ? "---" : null,
 			description ? "" : null,
-			`**Nahlásil:** ${report.reporter}`,
-			`**Prostředí:** ${report.environment}`,
+			`**Nahlásil:** [${report.reporter}](${report.reporterUrl})`,
 			report.url ? `**URL:** ${report.url}` : null,
 		]
 			.filter((line) => line !== null)
