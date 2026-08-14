@@ -25,11 +25,11 @@
 //   node scripts/generate-changelog.mjs --backfill-other [--file CHANGELOG.md]
 //                                       [--repo-url https://github.com/o/r]
 //
-// --backfill adds the avatars to entries already written in the file, leaving everything
-// else about them untouched. It is a maintenance mode for when the avatar markup changes:
-// the sections of a released version are never regenerated (manual edits to them are meant
-// to survive), so this is the only way to bring them up to the current format. Entries that
-// already carry avatars are left alone, so it can be re-run safely.
+// --backfill re-renders the two ends of the entries already in the file — the gitmoji of the
+// type and the avatars of the authors — leaving the description between them untouched. It is
+// a maintenance mode for when that markup changes: the sections of a released version are never
+// regenerated (manual edits to them are meant to survive), so this is the only way to bring them
+// up to the current format. It rewrites rather than appends, so it can be re-run safely.
 //
 // --backfill-other is the same kind of maintenance mode for the question-mark entries: it
 // walks the sections the generator wrote, works out the tag range of each one and appends
@@ -110,8 +110,8 @@ const SECTIONS = [
 // `git log --no-merges` drops, are the only thing left out. The key is deliberately not a
 // possible commit type: it has a dash, which "\w+" in CONVENTIONAL cannot match.
 const OTHER_TYPE = "non-conventional";
-const OTHER_EMOJI = "❓";
-const TYPES = [...SECTIONS, { type: OTHER_TYPE, emoji: OTHER_EMOJI }];
+const OTHER = { type: OTHER_TYPE, emoji: "❓" };
+const TYPES = [...SECTIONS, OTHER];
 
 const CONVENTIONAL = /^(\w+)(?:\(([^)]*)\))?(!)?:\s*(.+)$/;
 
@@ -396,12 +396,18 @@ function renderCredit({ author, committer }) {
 	return `<span class="changelog-credit" title="${title}">${parts.join("")}</span>`;
 }
 
+// The gitmoji opening an entry, carrying the name of the type it stands for as its tooltip —
+// the emoji alone says little to a visitor who does not know the convention.
+function renderType({ type, emoji }) {
+	return `<span class="changelog-type" title="${escapeHtml(type)}">${emoji}</span>`;
+}
+
 // Each entry opens with the gitmoji of its type and links to the commit it came from; a "#123"
 // reference is rendered after it and linked to the issue by the frontend, and the avatars of its
 // authors close the line. Markdown special characters in the description would break the link
 // syntax, so they are escaped.
-function renderEntry({ text, hash, issues, credits }, emoji, repoUrl) {
-	const parts = [`- ${emoji} [${escapeMarkdown(text)}](${repoUrl}/commit/${hash})`];
+function renderEntry({ text, hash, issues, credits }, type, repoUrl) {
+	const parts = [`- ${renderType(type)} [${escapeMarkdown(text)}](${repoUrl}/commit/${hash})`];
 
 	if (issues.size) {
 		const refs = [...issues].sort((a, b) => a - b).map((issue) => `#${issue}`);
@@ -439,8 +445,8 @@ const PLACEHOLDERS = [NO_CHANGES, "_Interní vylepšení a údržba._"];
 // gitmoji rather than by a heading.
 function renderSection(version, date, buckets, repoUrl) {
 	const lines = [`## ${version} — ${date}`, ""];
-	const entries = TYPES.flatMap(({ type, emoji }) =>
-		[...buckets.get(type).values()].map((entry) => renderEntry(entry, emoji, repoUrl)),
+	const entries = TYPES.flatMap((type) =>
+		[...buckets.get(type.type).values()].map((entry) => renderEntry(entry, type, repoUrl)),
 	);
 
 	if (entries.length) lines.push(...entries, "");
@@ -472,12 +478,15 @@ function prepend(file, section) {
 	return header ? `${header}\n\n${section}\n${rest}` : `${section}\n${rest}`;
 }
 
-// An entry already written in the file: the gitmoji, the description linking its commit, and
-// whatever the generator appended after it (issue references, avatars).
-// The trailing group is the credit, in either the markup written today or the markdown image link
-// the first version of the feature emitted, so re-running only ever replaces it — never doubles it.
+// An entry already written in the file, split into the parts --backfill rewrites and the body it
+// copies over verbatim: the gitmoji (bare, or already wrapped in its titled span), the description
+// linking its commit, and the credit — in either the markup written today or the markdown image
+// link the first version of the feature emitted, so re-running only ever replaces it, never
+// doubles it.
 const WRITTEN_ENTRY =
-	/^(- \S+ \[[^\]]*\]\(\S*?\/commit\/([0-9a-f]{7,40})\).*?)(\s*(?:<span class="changelog-credit"|\[!\[).*)?$/;
+	/^- (?:<span class="changelog-type"[^>]*>)?(?<emoji>\S+?)(?:<\/span>)? (?<body>\[[^\]]*\]\(\S*?\/commit\/(?<hash>[0-9a-f]{7,40})\).*?)(?:\s*(?:<span class="changelog-credit"|\[!\[).*)?$/;
+
+const TYPE_BY_EMOJI = new Map(TYPES.map((type) => [type.emoji, type]));
 
 /** The identity fields of a commit, from the local clone when it has it, from the API otherwise. */
 async function readCommit(hash, repo, token) {
@@ -523,7 +532,7 @@ async function backfill(file, repoUrl, { useApi, token }) {
 
 	const commits = new Map();
 	for (const line of lines) {
-		const hash = WRITTEN_ENTRY.exec(line)?.[2];
+		const hash = WRITTEN_ENTRY.exec(line)?.groups.hash;
 		if (!hash || commits.has(hash)) continue;
 		try {
 			const commit = await readCommit(hash, repo, token);
@@ -540,12 +549,17 @@ async function backfill(file, repoUrl, { useApi, token }) {
 		const match = WRITTEN_ENTRY.exec(line);
 		if (!match) return line;
 
-		const commit = commits.get(match[2]);
+		const { emoji, body, hash } = match.groups;
+		const commit = commits.get(hash);
 		const credit = commit && creditFor(commit, identities);
 		if (!credit) return line;
 
+		// the gitmoji is re-rendered from the type it stands for, so that entries written before it
+		// carried its name as a tooltip gain one; an emoji from no known type is left as it is
+		const type = TYPE_BY_EMOJI.get(emoji);
+
 		credited++;
-		return `${match[1]} ${renderCredit(credit)}`;
+		return `- ${type ? renderType(type) : emoji} ${body} ${renderCredit(credit)}`;
 	});
 
 	writeFileSync(file, rewritten.join("\n"));
@@ -600,10 +614,10 @@ function sectionContents(lines, { start, end }) {
 	const hashes = new Set();
 
 	for (const line of lines.slice(start, end)) {
-		const entry = WRITTEN_ENTRY.exec(line);
+		const entry = WRITTEN_ENTRY.exec(line)?.groups;
 		if (!entry) continue;
-		texts.add(unescapeMarkdown(/\[([^\]]*)\]/.exec(entry[1])?.[1] ?? ""));
-		hashes.add(entry[2]);
+		texts.add(unescapeMarkdown(/^\[([^\]]*)\]/.exec(entry.body)?.[1] ?? ""));
+		hashes.add(entry.hash);
 	}
 
 	const placeholder = lines.slice(start, end).findIndex((line) => PLACEHOLDERS.includes(line.trim()));
@@ -649,7 +663,7 @@ async function backfillOther(file, repoUrl, { useApi, token }) {
 	for (const section of [...missing].reverse()) {
 		const entries = [...categorize(section.commits, identities).get(OTHER_TYPE).values()]
 			.filter((entry) => !section.texts.has(entry.text) && !section.hashes.has(entry.hash))
-			.map((entry) => renderEntry(entry, OTHER_EMOJI, repoUrl));
+			.map((entry) => renderEntry(entry, OTHER, repoUrl));
 		if (!entries.length) continue;
 
 		const last = lines.slice(section.start, section.end).findLastIndex((line) => line.startsWith("- "));
