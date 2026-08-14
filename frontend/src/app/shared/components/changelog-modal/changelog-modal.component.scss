@@ -76,10 +76,11 @@
 		// the credit closing each entry: the commit author, and behind them the committer when the
 		// two differ. A wrapped entry keeps the stack on the text line, not in the hanging indent.
 		.changelog-credit {
-			--avatar-size: 1.35rem;
+			--avatar-size: 1rem;
 
 			display: inline-flex;
-			vertical-align: -0.35rem;
+			align-items: center;
+			vertical-align: -0.2rem;
 			margin-inline-start: 0.25rem;
 			// the entries hang their wrapped lines on a negative text-indent, which an inline-flex
 			// would otherwise inherit and apply to its own content
@@ -93,10 +94,9 @@
 			z-index: 1;
 		}
 
-		// the committer sits behind the author with only a sliver showing, the way GitHub collapses
-		// an avatar stack
+		// the committer sits behind the author, mostly covered, the way GitHub collapses an avatar stack
 		.changelog-committer {
-			margin-inline-start: calc(var(--avatar-size) * -0.9);
+			margin-inline-start: calc(var(--avatar-size) * -0.6);
 		}
 
 		.changelog-author,
@@ -117,7 +117,7 @@
 		.changelog-initials {
 			background: var(--ion-color-light);
 			color: var(--ion-color-medium);
-			font-size: 0.7rem;
+			font-size: 0.5rem;
 			font-weight: 600;
 			line-height: var(--avatar-size);
 			text-align: center;
