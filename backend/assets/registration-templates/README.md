@@ -29,6 +29,9 @@ Použij dvojité složené závorky. Dostupné údaje:
 | `{{arrival}}` | příjezd (datum, čas, místo dohromady) |
 | `{{dateFrom}}` / `{{dateTill}}` | datum od / do |
 | `{{{descriptionHtml}}}` | popis akce (psaný v markdownu, vloží se jako HTML – **použij trojité závorky**) |
+| `{{{itemListHtml}}}` | co s sebou (psané v markdownu, vloží se jako HTML – **použij trojité závorky**) |
+| `{{{noteHtml}}}` | poznámka zadaná při generování (markdown → HTML – **použij trojité závorky**) |
+| `{{price}}` | cena i s „Kč" |
 | `{{contactsLine}}` | vedoucí a kontakty na jednom řádku |
 | `{{#each contacts}} {{name}} {{phone}} {{email}} {{/each}}` | seznam vedoucích pro vlastní formátování |
 | `{{accent}}` | vybraná barva (hex), kterou se generuje |
