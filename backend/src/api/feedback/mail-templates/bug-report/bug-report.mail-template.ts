@@ -5,6 +5,8 @@ export const BugReportMailTemplate = createMailTemplate<{
 	environment: string;
 	url?: string;
 	description: string;
+	issueNumber?: number;
+	issueUrl?: string;
 }>({
 	filePath: __dirname + "/bug-report.mail-template.hbs",
 	subject: "Nahlášení chyby v aplikaci Bošán",

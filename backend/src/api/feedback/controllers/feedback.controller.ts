@@ -22,15 +22,14 @@ export class FeedbackController {
 
 		const report = await this.feedback.buildBugReport(authUser.userId, body);
 
-		// Deliver on both channels independently — neither throws on its own failure. The
-		// report succeeds as long as at least one channel got through; only a total failure
-		// (email and GitHub both down) surfaces as an error to the client.
-		const [emailed, filed] = await Promise.all([
-			this.feedback.sendBugReportEmail(report),
-			this.feedback.fileBugReportIssue(report),
-		]);
+		// File the issue first so the email can link to it, then send the email regardless of
+		// whether that succeeded — neither channel throws on its own failure. The report
+		// succeeds as long as at least one channel got through; only a total failure (email
+		// and GitHub both down) surfaces as an error to the client.
+		const issue = await this.feedback.fileBugReportIssue(report);
+		const emailed = await this.feedback.sendBugReportEmail(report, issue);
 
-		if (!emailed && !filed) {
+		if (!emailed && !issue) {
 			throw new InternalServerErrorException("Bug report could not be delivered by email or GitHub.");
 		}
 	}

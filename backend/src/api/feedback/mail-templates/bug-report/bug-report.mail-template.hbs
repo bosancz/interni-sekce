@@ -10,6 +10,10 @@
 	<p><strong>Stránka:</strong> <a href="{{url}}">{{url}}</a></p>
 {{/if}}
 
+{{#if issueUrl}}
+	<p><strong>GitHub issue:</strong> <a href="{{issueUrl}}">#{{issueNumber}}</a></p>
+{{/if}}
+
 <p><strong>Popis chyby:</strong></p>
 
 <blockquote style="white-space: pre-wrap;">{{description}}</blockquote>
