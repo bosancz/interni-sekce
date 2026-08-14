@@ -193,12 +193,18 @@ export class EventRegistrationService {
 			dateTill: this.formatDate(event.dateTill),
 			departure: this.formatDeparture(event.dateFrom, event.timeFrom, event.meetingPlaceStart),
 			arrival: this.formatDeparture(event.dateTill, event.timeTill, event.meetingPlaceEnd),
-			descriptionHtml: event.description ? marked.parse(event.description, { async: false }) : "",
+			descriptionHtml: this.renderMarkdown(event.description),
 			price: event.price != null ? `${event.price} Kč` : "",
-			itemList: event.itemList || "",
-			noteHtml: note?.trim() ? marked.parse(note, { async: false }) : "",
+			itemListHtml: this.renderMarkdown(event.itemList),
+			noteHtml: this.renderMarkdown(note),
 			contactsLine: contactsLine.filter(Boolean).join(", "),
 		};
+	}
+
+	/** Renders a markdown field the same way the web does (`MarkdownPipe`), so the PDF matches the site. */
+	private renderMarkdown(markdown: string | null | undefined): string {
+		if (!markdown?.trim()) return "";
+		return marked.parse(markdown, { async: false, breaks: true });
 	}
 
 	private formatDate(date: string | null | undefined): string {
