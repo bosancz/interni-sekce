@@ -17,7 +17,7 @@ import { Logger } from "src/logger";
 export class VersionComponent {
 	private readonly logger = new Logger("VersionComponent");
 
-	version = toSignal(this.api.info.pipe(map((info) => info.version)));
+	version = toSignal(this.api.info.pipe(map((info) => info.version.replace(/^v(?=\d)/, ""))));
 	updateAvailable = signal(false);
 	updating = signal(false);
 
