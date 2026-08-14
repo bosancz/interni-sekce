@@ -3,6 +3,7 @@
 FROM node:24-alpine AS build-frontend
 
 ARG NG_CONFIGURATION=production
+ARG VERSION
 
 WORKDIR /app/frontend
 
@@ -12,6 +13,7 @@ RUN npm ci
 
 # build
 COPY ./frontend .
+ENV VERSION=$VERSION
 RUN npm run build
 
 

@@ -1,11 +1,11 @@
 import { Component, signal } from "@angular/core";
-import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { SwUpdate } from "@angular/service-worker";
 import { IonSpinner } from "@ionic/angular/standalone";
-import { filter, map } from "rxjs";
-import { ApiService } from "src/app/core/services/api.service";
+import { filter } from "rxjs";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ChangelogModalComponent } from "src/app/shared/components/changelog-modal/changelog-modal.component";
+import { Config } from "src/config";
 import { Logger } from "src/logger";
 
 @Component({
@@ -17,14 +17,14 @@ import { Logger } from "src/logger";
 export class VersionComponent {
 	private readonly logger = new Logger("VersionComponent");
 
-	version = toSignal(this.api.info.pipe(map((info) => info.version.replace(/^v(?=\d)/, ""))));
+	version = this.config.version.replace(/^v(?=\d)/, "");
 	updateAvailable = signal(false);
 	updating = signal(false);
 
 	private updateCheck?: Promise<boolean>;
 
 	constructor(
-		private readonly api: ApiService,
+		private readonly config: Config,
 		private readonly swUpdate: SwUpdate,
 		private readonly modal: ModalService,
 	) {
