@@ -83,8 +83,12 @@ jobs:
       # Generated into the working tree the image is built from. A release then persists it by pushing
       # changelog-branch below; a pre-release leaves it uncommitted, so the image — and only the image —
       # lists the changes no released version carries yet.
+      # GITHUB_TOKEN lets the generator ask the API which GitHub account authored each commit, so the
+      # entries carry their authors' avatars; without it those authors fall back to their initials.
       - name: Generate changelog
         if: inputs.changelog-version != ''
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/generate-changelog.mjs --new-tag "${{ inputs.changelog-version }}"
 
       - name: Set up Docker Buildx

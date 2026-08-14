@@ -9,12 +9,15 @@
 // types after them. Existing content (including manual edits to older
 // versions) is preserved.
 //
+// Each entry ends with the avatars of its commit authors, linked to their GitHub
+// profiles; see resolveAuthors() for how a commit author becomes a GitHub user.
+//
 // Usage:
 //   node scripts/generate-changelog.mjs --new-tag v4.4.0 [--date 2026-07-28]
 //                                       [--from v4.3.0] [--to HEAD]
 //                                       [--file CHANGELOG.md] [--stdout]
 //                                       [--repo-url https://github.com/o/r]
-//                                       [--list-other]
+//                                       [--list-other] [--no-authors]
 //
 // Defaults: --to HEAD; --from = the latest v* tag reachable from --to (--to itself
 // included, so re-running on an already tagged commit yields an empty section rather
@@ -87,11 +90,102 @@ function collectIssues(text, pattern) {
 	return issues;
 }
 
-function categorize(commits) {
+// Avatars are requested at twice their rendered size, so they stay sharp on retina screens.
+const AVATAR_SIZE = 48;
+
+// GitHub's private-email addresses carry the account they belong to — "1273865+SmallhillCZ@…" or
+// the older "SmallhillCZ@…" — so those authors resolve to a profile without asking the API.
+const GITHUB_NOREPLY = /^(?:(\d+)\+)?([A-Za-z\d](?:[A-Za-z\d]|-(?=[A-Za-z\d])){0,38})@users\.noreply\.github\.com$/i;
+
+const GITHUB_API = "https://api.github.com";
+
+function apiRepo(repoUrl) {
+	const match = /^https:\/\/github\.com\/([^/]+)\/([^/]+)$/.exec(repoUrl);
+	return match ? { owner: match[1], repo: match[2] } : null;
+}
+
+function avatarUrl(url) {
+	const separator = url.includes("?") ? "&" : "?";
+	return `${url}${separator}s=${AVATAR_SIZE}`;
+}
+
+/** Author of a commit GitHub knows nothing about — rendered as initials instead of an avatar. */
+function anonymousAuthor(name) {
+	return { name, login: null };
+}
+
+/**
+ * Asks GitHub which account authored a commit. The commit has to be pushed already, which it is
+ * whenever the changelog is generated in CI; locally it may not be, and a 404 (like any other
+ * failure — no network, rate limit, a repo the token cannot see) simply leaves the author
+ * unresolved rather than failing the run.
+ */
+async function fetchCommitAuthor({ owner, repo }, hash, token) {
+	const headers = { accept: "application/vnd.github+json", "user-agent": "generate-changelog" };
+	if (token) headers.authorization = `Bearer ${token}`;
+
+	const response = await fetch(`${GITHUB_API}/repos/${owner}/${repo}/commits/${hash}`, {
+		headers,
+		signal: AbortSignal.timeout(10000),
+	});
+	if (!response.ok) throw new Error(`GitHub API ${response.status} for commit ${hash}`);
+
+	const author = (await response.json()).author;
+	return author?.login ? { login: author.login, avatar: author.avatar_url } : null;
+}
+
+/**
+ * Maps every distinct commit-author address in the range to a GitHub account, so entries can be
+ * rendered with the author's avatar. Resolution is per address, not per commit — a release has a
+ * handful of authors and hundreds of commits — and is attempted twice: from the address itself
+ * when it is a GitHub no-reply one, otherwise by asking the API about one of the author's commits.
+ * Authors that resolve to neither keep their name and are rendered as initials.
+ */
+async function resolveAuthors(commits, repoUrl, { useApi, token }) {
+	const authors = new Map();
+	for (const { hash, authorName, authorEmail } of commits) {
+		if (!authors.has(authorEmail)) authors.set(authorEmail, { name: authorName, hash });
+	}
+
+	const repo = apiRepo(repoUrl);
+	const resolved = new Map();
+
+	for (const [email, { name, hash }] of authors) {
+		const noreply = GITHUB_NOREPLY.exec(email);
+		if (noreply) {
+			const [, id, login] = noreply;
+			const avatar = id
+				? avatarUrl(`https://avatars.githubusercontent.com/u/${id}`)
+				: `https://github.com/${login}.png?size=${AVATAR_SIZE}`;
+			resolved.set(email, { name, login, avatar });
+			continue;
+		}
+
+		if (!useApi || !repo) {
+			resolved.set(email, anonymousAuthor(name));
+			continue;
+		}
+
+		try {
+			const account = await fetchCommitAuthor(repo, hash, token);
+			resolved.set(
+				email,
+				account ? { name, login: account.login, avatar: avatarUrl(account.avatar) } : anonymousAuthor(name),
+			);
+		} catch (err) {
+			console.error(`Could not resolve the GitHub account of ${name} <${email}>: ${err.message}`);
+			resolved.set(email, anonymousAuthor(name));
+		}
+	}
+
+	return resolved;
+}
+
+function categorize(commits, authors) {
 	const buckets = new Map(SECTIONS.map((s) => [s.type, new Map()]));
 	const other = [];
 
-	for (const { hash, subject, body } of commits) {
+	for (const { hash, subject, body, authorEmail } of commits) {
 		const match = CONVENTIONAL.exec(subject);
 		if (!match) {
 			other.push(subject);
@@ -111,25 +205,58 @@ function categorize(commits) {
 		const text = description.charAt(0).toUpperCase() + description.slice(1);
 
 		// same description twice (e.g. a fix reapplied on another branch) collapses into one
-		// entry carrying the issues of both
+		// entry carrying the issues — and the authors — of both
 		const entries = buckets.get(type);
-		const entry = entries.get(text) ?? { text, hash, issues: new Set() };
+		const entry = entries.get(text) ?? { text, hash, issues: new Set(), authors: new Map() };
 		for (const issue of issues) entry.issues.add(issue);
+
+		const author = authors.get(authorEmail);
+		if (author) entry.authors.set(author.login ?? `name:${author.name}`, author);
+
 		entries.set(text, entry);
 	}
 
 	return { buckets, other };
 }
 
+function escapeMarkdown(text) {
+	return text.replace(/([\\`*_[\]()])/g, "\\$1");
+}
+
+// Up to two letters taken from the author's name, for authors with no GitHub account to show.
+function initials(name) {
+	const letters = name
+		.split(/[\s._-]+/)
+		.filter(Boolean)
+		.map((word) => [...word][0])
+		.filter((letter) => /\p{L}/u.test(letter));
+	return (letters.slice(0, 2).join("") || "?").toUpperCase();
+}
+
+// The avatar links to the author's GitHub profile and carries their name as the tooltip; an author
+// GitHub does not know gets a circle with their initials instead, which the frontend styles like an
+// avatar. The inline HTML is plain enough to survive Angular's sanitizer.
+function renderAuthor({ name, login, avatar }) {
+	const title = name.replace(/"/g, "&quot;");
+	if (!login) return `<span class="changelog-avatar" title="${title}">${initials(name)}</span>`;
+	return `[![${escapeMarkdown(name)}](${avatar} "${title}")](https://github.com/${login})`;
+}
+
 // Each entry opens with the gitmoji of its type and links to the commit it came from; a "#123"
-// reference is rendered after it and linked to the issue by the frontend. Markdown special
-// characters in the description would break the link syntax, so they are escaped.
-function renderEntry({ text, hash, issues }, emoji, repoUrl) {
-	const label = text.replace(/([\\`*_[\]()])/g, "\\$1");
-	const line = `- ${emoji} [${label}](${repoUrl}/commit/${hash})`;
-	if (!issues.size) return line;
-	const refs = [...issues].sort((a, b) => a - b).map((issue) => `#${issue}`);
-	return `${line} (${refs.join(", ")})`;
+// reference is rendered after it and linked to the issue by the frontend, and the avatars of its
+// authors close the line. Markdown special characters in the description would break the link
+// syntax, so they are escaped.
+function renderEntry({ text, hash, issues, authors }, emoji, repoUrl) {
+	const parts = [`- ${emoji} [${escapeMarkdown(text)}](${repoUrl}/commit/${hash})`];
+
+	if (issues.size) {
+		const refs = [...issues].sort((a, b) => a - b).map((issue) => `#${issue}`);
+		parts.push(`(${refs.join(", ")})`);
+	}
+
+	for (const author of authors.values()) parts.push(renderAuthor(author));
+
+	return parts.join(" ");
 }
 
 // Base for the commit links, taken from the origin remote so a fork/rename needs no edit here.
@@ -153,7 +280,7 @@ function repoUrlFromGit() {
 function renderSection(version, date, buckets, repoUrl) {
 	const lines = [`## ${version} — ${date}`, ""];
 	const entries = SECTIONS.flatMap(({ type, emoji }) =>
-		[...buckets.get(type).values()].map((entry) => renderEntry(entry, emoji, repoUrl))
+		[...buckets.get(type).values()].map((entry) => renderEntry(entry, emoji, repoUrl)),
 	);
 
 	if (entries.length) lines.push(...entries, "");
@@ -185,7 +312,7 @@ function prepend(file, section) {
 	return header ? `${header}\n\n${section}\n${rest}` : `${section}\n${rest}`;
 }
 
-function main() {
+async function main() {
 	const args = parseArgs(process.argv.slice(2));
 
 	const to = typeof args.to === "string" ? args.to : "HEAD";
@@ -207,17 +334,29 @@ function main() {
 	const date = typeof args.date === "string" ? args.date : git(["log", "-1", "--format=%cs", to]);
 	const range = from ? `${from}..${to}` : to;
 
-	// hash + subject + body per commit, delimited by the ASCII record/unit separators so
+	// hash + author + subject + body per commit, delimited by the ASCII record/unit separators so
 	// multi-line bodies (which is where "Closes #123" lives) survive the split
-	const commits = git(["log", range, "--no-merges", "--format=\x1e%H\x1f%s\x1f%b"])
+	const commits = git(["log", range, "--no-merges", "--format=\x1e%H\x1f%an\x1f%ae\x1f%s\x1f%b"])
 		.split("\x1e")
 		.filter((chunk) => chunk.trim())
 		.map((chunk) => {
-			const [hash = "", subject = "", body = ""] = chunk.split("\x1f");
-			return { hash: hash.trim(), subject: subject.trim(), body: body.trim() };
+			const [hash = "", authorName = "", authorEmail = "", subject = "", body = ""] = chunk.split("\x1f");
+			return {
+				hash: hash.trim(),
+				authorName: authorName.trim(),
+				authorEmail: authorEmail.trim(),
+				subject: subject.trim(),
+				body: body.trim(),
+			};
 		});
 
-	const { buckets, other } = categorize(commits);
+	const repoUrl = typeof args["repo-url"] === "string" ? args["repo-url"].replace(/\/+$/, "") : repoUrlFromGit();
+	const authors = await resolveAuthors(commits, repoUrl, {
+		useApi: !args["no-authors"],
+		token: process.env.GITHUB_TOKEN || process.env.GH_TOKEN || "",
+	});
+
+	const { buckets, other } = categorize(commits, authors);
 
 	if (args["list-other"]) {
 		// Diagnostic: show the commits that would NOT appear in the changelog,
@@ -226,7 +365,6 @@ function main() {
 		for (const s of other) console.error(`  - ${s}`);
 	}
 
-	const repoUrl = typeof args["repo-url"] === "string" ? args["repo-url"].replace(/\/+$/, "") : repoUrlFromGit();
 	const section = renderSection(version, date, buckets, repoUrl);
 
 	if (args.stdout) {
@@ -239,4 +377,4 @@ function main() {
 	console.error(`Prepended ${version} (${range}) to ${file}.`);
 }
 
-main();
+await main();

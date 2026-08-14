@@ -72,6 +72,31 @@
 			color: var(--ion-color-primary);
 			white-space: nowrap;
 		}
+
+		// the avatars of the commit authors, at the end of each entry — the only images in the
+		// changelog; a wrapped entry keeps them on the text line, not in the hanging indent
+		li img,
+		.changelog-avatar {
+			display: inline-block;
+			vertical-align: -0.35rem;
+			width: 1.35rem;
+			height: 1.35rem;
+			border-radius: 50%;
+			margin-inline-start: 0.25rem;
+			// the entries hang their wrapped lines on a negative text-indent, which an inline-block
+			// would otherwise inherit and apply to its own content
+			text-indent: 0;
+		}
+
+		// authors GitHub does not know: their initials in a circle of the same size
+		.changelog-avatar {
+			background: var(--ion-color-light);
+			color: var(--ion-color-medium);
+			font-size: 0.7rem;
+			font-weight: 600;
+			line-height: 1.35rem;
+			text-align: center;
+		}
 	}
 }
 
