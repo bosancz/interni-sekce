@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-// Generate a CHANGELOG.md section from conventional commits.
+// Generate a CHANGELOG.md section from the commits of a release.
 //
-// Reads the commits in a range (previous tag .. target ref), keeps the
-// user-facing conventional types (feat, fix) and prepends a
+// Reads the commits in a range (previous tag .. target ref) and prepends a
 // "## <version> — <date>" section to CHANGELOG.md. Every version is a single
 // flat list — the type is carried by a gitmoji at the start of each entry
-// instead of a heading — with features first, fixes second and the technical
-// types after them. Existing content (including manual edits to older
-// versions) is preserved.
+// instead of a heading — with features first, fixes second, the technical
+// types after them and the commits that are not conventional commits at all,
+// marked with a question mark, last. Existing content (including manual edits
+// to older versions) is preserved.
 //
 // Each entry ends with the avatars of its commit authors, linked to their GitHub
 // profiles, and — when somebody else committed the work, which is what happens whenever
@@ -19,8 +19,10 @@
 //                                       [--from v4.3.0] [--to HEAD]
 //                                       [--file CHANGELOG.md] [--stdout]
 //                                       [--repo-url https://github.com/o/r]
-//                                       [--list-other] [--no-authors]
+//                                       [--no-authors]
 //   node scripts/generate-changelog.mjs --backfill [--file CHANGELOG.md]
+//                                       [--repo-url https://github.com/o/r]
+//   node scripts/generate-changelog.mjs --backfill-other [--file CHANGELOG.md]
 //                                       [--repo-url https://github.com/o/r]
 //
 // --backfill adds the avatars to entries already written in the file, leaving everything
@@ -28,6 +30,13 @@
 // the sections of a released version are never regenerated (manual edits to them are meant
 // to survive), so this is the only way to bring them up to the current format. Entries that
 // already carry avatars are left alone, so it can be re-run safely.
+//
+// --backfill-other is the same kind of maintenance mode for the question-mark entries: it
+// walks the sections the generator wrote, works out the tag range of each one and appends
+// the non-conventional commits of that range that the file does not carry yet. The curated
+// history below the "---" divider — seeded from the legacy repository — and hand-written
+// sections are left alone, and entries already in the file are never repeated, so it too
+// can be re-run safely.
 //
 // Defaults: --to HEAD; --from = the latest v* tag reachable from --to (--to itself
 // included, so re-running on an already tagged commit yields an empty section rather
@@ -81,8 +90,6 @@ function commitFromFields(fields) {
 // Every Conventional Commits type, in display order — the types visitors notice first
 // (features, fixes, then visual changes), the technical ones after them — each with the
 // gitmoji that labels its entries; the type is carried by the emoji, not by a heading.
-// Subjects that are not conventional commits (and merge commits, which `git log --no-merges`
-// drops) are the only thing left out.
 const SECTIONS = [
 	{ type: "feat", emoji: "✨" },
 	{ type: "fix", emoji: "🐛" },
@@ -96,6 +103,15 @@ const SECTIONS = [
 	{ type: "revert", emoji: "⏪️" },
 	{ type: "chore", emoji: "🔧" },
 ];
+
+// Commits whose subject is not a conventional commit — a branch commit that never got a type,
+// an import from the legacy repository — reach the changelog too, with their subject taken
+// whole, labelled by a question mark and listed after every known type. Merge commits, which
+// `git log --no-merges` drops, are the only thing left out. The key is deliberately not a
+// possible commit type: it has a dash, which "\w+" in CONVENTIONAL cannot match.
+const OTHER_TYPE = "non-conventional";
+const OTHER_EMOJI = "❓";
+const TYPES = [...SECTIONS, { type: OTHER_TYPE, emoji: OTHER_EMOJI }];
 
 const CONVENTIONAL = /^(\w+)(?:\(([^)]*)\))?(!)?:\s*(.+)$/;
 
@@ -258,51 +274,86 @@ function creditFor({ authorEmail, committerEmail }, identities) {
 	return { author, committer: distinct ? committer : null };
 }
 
-function categorize(commits, identities) {
-	const buckets = new Map(SECTIONS.map((s) => [s.type, new Map()]));
-	const other = [];
+/**
+ * What the changelog makes of a commit: the type its entry is listed under and the text of that
+ * entry. A conventional subject gives up its description, anything else is taken whole, and both
+ * lose the issue references — they are re-rendered at the end of the entry.
+ */
+function describe({ subject, body }) {
+	const match = CONVENTIONAL.exec(subject);
+	const type = match?.[1].toLowerCase() ?? "";
+	const conventional = SECTIONS.some((section) => section.type === type);
 
-	for (const commit of commits) {
-		const { hash, subject, body } = commit;
-		const match = CONVENTIONAL.exec(subject);
-		if (!match) {
-			other.push(subject);
-			continue;
-		}
-		const type = match[1].toLowerCase();
-		if (!buckets.has(type)) {
-			other.push(subject);
-			continue;
-		}
+	const description = (conventional ? match[4] : subject).replace(ISSUE_IN_SUBJECT, "").trim();
 
-		const issues = [
+	return {
+		type: conventional ? type : OTHER_TYPE,
+		text: description.charAt(0).toUpperCase() + description.slice(1),
+		issues: [
 			...collectIssues(subject, ISSUE_SUBJECT_REF),
 			...collectIssues(`${subject}\n${body}`, ISSUE_KEYWORD_REF),
-		];
-		const description = match[4].replace(ISSUE_IN_SUBJECT, "").trim();
-		const text = description.charAt(0).toUpperCase() + description.slice(1);
+		],
+	};
+}
 
-		// same description twice (e.g. a fix reapplied on another branch) collapses into one
-		// entry carrying the issues — and the authors — of both
-		const entries = buckets.get(type);
-		const entry = entries.get(text) ?? { text, hash, issues: new Set(), credits: new Map() };
-		for (const issue of issues) entry.issues.add(issue);
+/**
+ * Files a commit under a text, merging it into the entry that text already has: the same
+ * description twice (e.g. a fix reapplied on another branch) collapses into one entry carrying
+ * the issues — and the authors — of all of them.
+ */
+function addEntry(entries, { text, issues }, commit, identities) {
+	const entry = entries.get(text) ?? { text, hash: commit.hash, issues: new Set(), credits: new Map() };
+	for (const issue of issues) entry.issues.add(issue);
 
-		// keyed by the author alone: the same person showing up with two different committers is
-		// still one person to credit, and their avatar should not appear on the entry twice
-		const credit = creditFor(commit, identities);
-		if (credit && !entry.credits.has(identityKey(credit.author))) {
-			entry.credits.set(identityKey(credit.author), credit);
-		}
-
-		entries.set(text, entry);
+	// keyed by the author alone: the same person showing up with two different committers is
+	// still one person to credit, and their avatar should not appear on the entry twice
+	const credit = creditFor(commit, identities);
+	if (credit && !entry.credits.has(identityKey(credit.author))) {
+		entry.credits.set(identityKey(credit.author), credit);
 	}
 
-	return { buckets, other };
+	entries.set(text, entry);
+}
+
+function categorize(commits, identities) {
+	const buckets = new Map(TYPES.map((s) => [s.type, new Map()]));
+	const described = commits.map((commit) => ({ commit, ...describe(commit) }));
+
+	const typed = new Map();
+	for (const item of described.filter((item) => item.type !== OTHER_TYPE)) {
+		addEntry(buckets.get(item.type), item, item.commit, identities);
+		typed.set(item.text, item.type);
+	}
+
+	// after the typed commits, so that a subject repeating one of their descriptions — the same
+	// work committed on a branch without a type and again with one — joins that entry instead of
+	// showing up a second time under the question mark
+	for (const item of described.filter((item) => item.type === OTHER_TYPE)) {
+		addEntry(buckets.get(typed.get(item.text) ?? OTHER_TYPE), item, item.commit, identities);
+	}
+
+	return buckets;
 }
 
 function escapeMarkdown(text) {
 	return text.replace(/([\\`*_[\]()])/g, "\\$1");
+}
+
+function unescapeMarkdown(text) {
+	return text.replace(/\\([\\`*_[\]()])/g, "$1");
+}
+
+/** The commits of a range, newest first: hash, both identities, subject and body. */
+function commitsInRange(range) {
+	// the fields are delimited by the ASCII record/unit separators, so multi-line bodies (which is
+	// where "Closes #123" lives) survive the split
+	return git(["log", range, "--no-merges", `--format=\x1e${GIT_COMMIT_FORMAT}\x1f%s\x1f%b`])
+		.split("\x1e")
+		.filter((chunk) => chunk.trim())
+		.map((chunk) => {
+			const fields = chunk.split("\x1f");
+			return { ...commitFromFields(fields), subject: (fields[5] ?? "").trim(), body: (fields[6] ?? "").trim() };
+		});
 }
 
 // Up to two letters taken from the author's name, for authors with no GitHub account to show.
@@ -378,16 +429,22 @@ function repoUrlFromGit() {
 	}
 }
 
-// One flat list per version — the types follow the SECTIONS order, so features and fixes open
-// the list, and each entry is labelled by its own gitmoji rather than by a heading.
+// What a version with nothing to show carries instead of a list — today's wording first, then the
+// one earlier releases were generated with, back when only the user-facing types reached the file.
+const NO_CHANGES = "_Bez uživatelských změn._";
+const PLACEHOLDERS = [NO_CHANGES, "_Interní vylepšení a údržba._"];
+
+// One flat list per version — the types follow the TYPES order, so features and fixes open
+// the list and the non-conventional commits close it, and each entry is labelled by its own
+// gitmoji rather than by a heading.
 function renderSection(version, date, buckets, repoUrl) {
 	const lines = [`## ${version} — ${date}`, ""];
-	const entries = SECTIONS.flatMap(({ type, emoji }) =>
+	const entries = TYPES.flatMap(({ type, emoji }) =>
 		[...buckets.get(type).values()].map((entry) => renderEntry(entry, emoji, repoUrl)),
 	);
 
 	if (entries.length) lines.push(...entries, "");
-	else lines.push("_Bez uživatelských změn._", "");
+	else lines.push(NO_CHANGES, "");
 
 	return lines.join("\n");
 }
@@ -495,6 +552,119 @@ async function backfill(file, repoUrl, { useApi, token }) {
 	console.error(`Rewrote the credits of ${credited} entries in ${file} (${commits.size} commits).`);
 }
 
+const SECTION_HEADING = /^## (\S+)\s+—/;
+
+// The rule below which the file stops being generated output: everything after it was seeded by
+// hand from the legacy bosancz/bosan.cz repository and is not regenerated from this history.
+const LEGACY_DIVIDER = /^---+\s*$/;
+
+/**
+ * The generated sections of the file, newest first, each with the lines it spans. Reading stops at
+ * the legacy divider, so the curated history below it is never touched.
+ */
+function readSections(lines) {
+	const sections = [];
+	let end = lines.length;
+
+	for (let i = 0; i < lines.length; i++) {
+		if (LEGACY_DIVIDER.test(lines[i])) {
+			end = i;
+			break;
+		}
+		if (!SECTION_HEADING.test(lines[i])) continue;
+		if (sections.length) sections.at(-1).end = i;
+		sections.push({ version: SECTION_HEADING.exec(lines[i])[1], start: i, end: lines.length });
+	}
+
+	if (sections.length) sections.at(-1).end = end;
+	return sections;
+}
+
+/** The range a released version covers: the commits it added on top of the previous tag. */
+function tagRange(version) {
+	if (!git(["tag", "--list", version])) return null;
+	try {
+		return `${git(["describe", "--tags", "--abbrev=0", "--match", "v*", `${version}^`])}..${version}`;
+	} catch {
+		return version; // the first tagged version — everything before it belongs to it
+	}
+}
+
+/**
+ * What a section already carries: the description of every entry and the commit each of them links.
+ * Both are matched against so a re-run adds nothing twice, whether the entry is still the one the
+ * generator wrote or has been reworded by hand since.
+ */
+function sectionContents(lines, { start, end }) {
+	const texts = new Set();
+	const hashes = new Set();
+
+	for (const line of lines.slice(start, end)) {
+		const entry = WRITTEN_ENTRY.exec(line);
+		if (!entry) continue;
+		texts.add(unescapeMarkdown(/\[([^\]]*)\]/.exec(entry[1])?.[1] ?? ""));
+		hashes.add(entry[2]);
+	}
+
+	const placeholder = lines.slice(start, end).findIndex((line) => PLACEHOLDERS.includes(line.trim()));
+
+	return { texts, hashes, placeholder, generated: hashes.size > 0 || placeholder !== -1 };
+}
+
+/**
+ * Appends the non-conventional commits of every released version to the section that version
+ * already has in the file. Sections the generator did not write — the hand-written summary of the
+ * rewrite, everything below the legacy divider — and versions this clone has no tag for are left
+ * alone, and so is every entry already in the file: only what is missing is added, at the end of
+ * the list where the question-mark entries belong.
+ */
+async function backfillOther(file, repoUrl, { useApi, token }) {
+	if (!existsSync(file)) {
+		console.error(`Error: ${file} does not exist.`);
+		process.exit(1);
+	}
+
+	const lines = readFileSync(file, "utf8").split("\n");
+	const sections = readSections(lines);
+
+	const missing = [];
+	for (const section of sections) {
+		const range = tagRange(section.version);
+		const contents = sectionContents(lines, section);
+		if (!range || !contents.generated) {
+			console.error(`Skipping ${section.version}: ${range ? "not a generated section" : "no such tag"}.`);
+			continue;
+		}
+		missing.push({ ...section, ...contents, commits: commitsInRange(range) });
+	}
+
+	const identities = await resolveIdentities(
+		missing.flatMap(({ commits }) => commits),
+		repoUrl,
+		{ useApi, token },
+	);
+
+	let added = 0;
+	// back to front, so that splicing a section does not move the ones still to come
+	for (const section of [...missing].reverse()) {
+		const entries = [...categorize(section.commits, identities).get(OTHER_TYPE).values()]
+			.filter((entry) => !section.texts.has(entry.text) && !section.hashes.has(entry.hash))
+			.map((entry) => renderEntry(entry, OTHER_EMOJI, repoUrl));
+		if (!entries.length) continue;
+
+		const last = lines.slice(section.start, section.end).findLastIndex((line) => line.startsWith("- "));
+
+		if (section.placeholder !== -1) lines.splice(section.start + section.placeholder, 1, ...entries);
+		else lines.splice(section.start + last + 1, 0, ...entries);
+
+		added += entries.length;
+		console.error(`${section.version}: added ${entries.length} entries.`);
+	}
+
+	writeFileSync(file, lines.join("\n"));
+	console.error(`Added ${added} non-conventional entries to ${file}.`);
+}
+
 async function main() {
 	const args = parseArgs(process.argv.slice(2));
 
@@ -503,6 +673,14 @@ async function main() {
 
 	if (args.backfill) {
 		await backfill(file, repoUrlArg ?? repoUrlFromGit(), { useApi: !args["no-authors"], token: githubToken() });
+		return;
+	}
+
+	if (args["backfill-other"]) {
+		await backfillOther(file, repoUrlArg ?? repoUrlFromGit(), {
+			useApi: !args["no-authors"],
+			token: githubToken(),
+		});
 		return;
 	}
 
@@ -524,16 +702,7 @@ async function main() {
 
 	const date = typeof args.date === "string" ? args.date : git(["log", "-1", "--format=%cs", to]);
 	const range = from ? `${from}..${to}` : to;
-
-	// hash + author + committer + subject + body per commit, delimited by the ASCII record/unit
-	// separators so multi-line bodies (which is where "Closes #123" lives) survive the split
-	const commits = git(["log", range, "--no-merges", `--format=\x1e${GIT_COMMIT_FORMAT}\x1f%s\x1f%b`])
-		.split("\x1e")
-		.filter((chunk) => chunk.trim())
-		.map((chunk) => {
-			const fields = chunk.split("\x1f");
-			return { ...commitFromFields(fields), subject: (fields[5] ?? "").trim(), body: (fields[6] ?? "").trim() };
-		});
+	const commits = commitsInRange(range);
 
 	const repoUrl = repoUrlArg ?? repoUrlFromGit();
 	const identities = await resolveIdentities(commits, repoUrl, {
@@ -541,16 +710,7 @@ async function main() {
 		token: githubToken(),
 	});
 
-	const { buckets, other } = categorize(commits, identities);
-
-	if (args["list-other"]) {
-		// Diagnostic: show the commits that would NOT appear in the changelog,
-		// so they can be reviewed and folded in by hand when seeding.
-		console.error(`# Uncategorized commits in ${range} (${other.length}):`);
-		for (const s of other) console.error(`  - ${s}`);
-	}
-
-	const section = renderSection(version, date, buckets, repoUrl);
+	const section = renderSection(version, date, categorize(commits, identities), repoUrl);
 
 	if (args.stdout) {
 		process.stdout.write(section + "\n");
