@@ -15,7 +15,7 @@
 
 - **Never start a second dev server, or run `ng build`/`npm run build`, while one is already running.** One warm server is shared by all agents: root `npm run dev` runs frontend + backend via `concurrently` and tees to `dev.log` (gitignored, lines prefixed `[FE]`/`[BE]`, raw ANSI codes — strip them). Verify your change by reading it: `tail -n 80 dev.log`, or `grep '\[FE\]' dev.log` for Angular alone. An error there may come from another agent's in-flight change — check whether the failing file is one you touched before assuming it is yours.
 - **A missing or stale `dev.log` means no server is running: you are in a fresh cloud/sandbox session and are expected to start one, so you can actually verify your change.** The rule above only prevents fragmenting an *already running* server; it is not licence to ship unverified.
-  - If `ng serve` refuses with a Node version error, the image's Node is older than the Angular CLI requires — install a newer one (`nvm install 24`) and prepend its `bin` to `PATH`.
+  - **Angular needs Node 24** — the sandbox's default 22.22.2 is one patch below its engines floor, so every `ng` command fails on the engine check.
   - Lockfiles are committed and `npm ci` works in `frontend/` and `backend/`. Do **not** use the root `npm ci` / `npm run install`: it runs `scripts/install.sh`, which also builds the backend and runs migrations, so it needs a database. `npm install` in a sandbox adds platform-specific optional deps to the lockfile — don't commit that churn.
   - A **frontend-only** change needs no database: `cd frontend && npm ci && npm run dev`, then read the Angular compile output.
   - For a **backend** change, or the full root `npm run dev` (the thing that produces `dev.log`), bring up Postgres first — see below.
