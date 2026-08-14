@@ -319,18 +319,18 @@ function escapeHtml(text) {
 	return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-// A single avatar, carrying the person's name as its tooltip; somebody GitHub does not know gets a
-// circle with their initials instead, which the frontend styles the same way.
+// A single avatar; somebody GitHub does not know gets a circle with their initials instead, which the
+// frontend styles the same way. The tooltip belongs to the whole credit, not to the single avatar.
 function renderAvatar({ name, login, avatar }) {
-	const title = escapeHtml(name);
-	if (!login) return `<span class="changelog-avatar changelog-initials" title="${title}">${escapeHtml(initials(name))}</span>`;
-	return `<img class="changelog-avatar" src="${escapeHtml(avatar)}" alt="${title}" title="${title}">`;
+	if (!login) return `<span class="changelog-avatar changelog-initials">${escapeHtml(initials(name))}</span>`;
+	return `<img class="changelog-avatar" src="${escapeHtml(avatar)}" alt="${escapeHtml(name)}">`;
 }
 
 // The credit closing an entry: the author's avatar, linked to their GitHub profile, and behind it —
-// nine tenths covered, the way GitHub stacks them — the committer's when that is somebody else. Only
-// the author's is a link, and the stack does not open up on hover. The inline HTML is kept plain
-// enough to survive Angular's sanitizer, and its whole layout hangs off these two class names.
+// mostly covered, the way GitHub stacks them — the committer's when that is somebody else. Only the
+// author's is a link, and the stack does not open up on hover. One tooltip names both people
+// ("Kopec a claude"). The inline HTML is kept plain enough to survive Angular's sanitizer, and its
+// whole layout hangs off these class names.
 function renderCredit({ author, committer }) {
 	const authorAvatar = renderAvatar(author);
 	const parts = [
@@ -340,7 +340,9 @@ function renderCredit({ author, committer }) {
 	];
 	if (committer) parts.push(`<span class="changelog-committer">${renderAvatar(committer)}</span>`);
 
-	return `<span class="changelog-credit">${parts.join("")}</span>`;
+	const title = escapeHtml(committer ? `${author.name} a ${committer.name}` : author.name);
+
+	return `<span class="changelog-credit" title="${title}">${parts.join("")}</span>`;
 }
 
 // Each entry opens with the gitmoji of its type and links to the commit it came from; a "#123"
@@ -418,7 +420,7 @@ function prepend(file, section) {
 // The trailing group is the credit, in either the markup written today or the markdown image link
 // the first version of the feature emitted, so re-running only ever replaces it — never doubles it.
 const WRITTEN_ENTRY =
-	/^(- \S+ \[[^\]]*\]\(\S*?\/commit\/([0-9a-f]{7,40})\).*?)(\s*(?:<span class="changelog-credit">|\[!\[).*)?$/;
+	/^(- \S+ \[[^\]]*\]\(\S*?\/commit\/([0-9a-f]{7,40})\).*?)(\s*(?:<span class="changelog-credit"|\[!\[).*)?$/;
 
 /** The identity fields of a commit, from the local clone when it has it, from the API otherwise. */
 async function readCommit(hash, repo, token) {

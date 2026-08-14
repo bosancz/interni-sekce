@@ -79,6 +79,7 @@
 			--avatar-size: 1.35rem;
 
 			display: inline-flex;
+			align-items: center;
 			vertical-align: -0.35rem;
 			margin-inline-start: 0.25rem;
 			// the entries hang their wrapped lines on a negative text-indent, which an inline-flex
@@ -93,10 +94,12 @@
 			z-index: 1;
 		}
 
-		// the committer sits behind the author with only a sliver showing, the way GitHub collapses
+		// the committer sits behind the author, smaller and mostly covered, the way GitHub collapses
 		// an avatar stack
 		.changelog-committer {
-			margin-inline-start: calc(var(--avatar-size) * -0.9);
+			--avatar-size: 1rem;
+
+			margin-inline-start: calc(var(--avatar-size) * -0.6);
 		}
 
 		.changelog-author,
