@@ -1,13 +1,13 @@
 <p class="version">
-	@switch (updateStatus()) {
-		@case ("checking") {
+	<a (click)="openChangelog()" class="clickable">Verze {{ version() }}</a>
+</p>
+
+@if (updateAvailable()) {
+	<p class="update">
+		@if (updating()) {
 			<ion-spinner></ion-spinner>
-		}
-		@case ("available") {
+		} @else {
 			<a (click)="doUpdate()" class="clickable">Aktualizovat</a>
 		}
-		@default {
-			<a (click)="openChangelog()" class="clickable">Verze {{ version() }}</a>
-		}
-	}
-</p>
+	</p>
+}
