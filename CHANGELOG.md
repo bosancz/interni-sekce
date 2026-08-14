@@ -1,3 +1,7 @@
+## v4.4.2 — 2026-08-14
+
+- <span class="changelog-type" title="style">🎨</span> [Odstranit předponu v u čísla verze v menu](https://github.com/bosancz/interni-sekce/commit/47b66fd87b8110c6a36370cb568c26d382e44204) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.4.1 — 2026-08-14
 
 - <span class="changelog-type" title="feat">✨</span> [Zobrazit filtr štítků i u alba bez štítků](https://github.com/bosancz/interni-sekce/commit/1bc87c48ecb13251f4d3d245ae6e312d6a8c91e1) (#292) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
