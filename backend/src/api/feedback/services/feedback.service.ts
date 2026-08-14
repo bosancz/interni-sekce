@@ -105,13 +105,13 @@ export class FeedbackService {
 
 	private issueBody(report: BugReport, description: string): string {
 		return [
-			`**Nahlásil:** ${report.reporter}`,
-			`**Prostředí:** ${report.environment}`,
-			report.url ? `**URL:** ${report.url}` : null,
+			description || null,
 			description ? "" : null,
 			description ? "---" : null,
 			description ? "" : null,
-			description || null,
+			`**Nahlásil:** ${report.reporter}`,
+			`**Prostředí:** ${report.environment}`,
+			report.url ? `**URL:** ${report.url}` : null,
 		]
 			.filter((line) => line !== null)
 			.join("\n");
