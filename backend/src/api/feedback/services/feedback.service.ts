@@ -72,7 +72,7 @@ export class FeedbackService {
 
 		try {
 			const issue = await this.github.createIssue(this.config.github.bugReportRepo, {
-				title: this.issueTitle(title, this.config.app.environmentTitle),
+				title: title || "Nahlášená chyba",
 				body: this.issueBody(report, body),
 				labels: [this.config.github.bugReportLabel],
 			});
@@ -114,14 +114,5 @@ export class FeedbackService {
 			title: `${firstLine.slice(0, cut).trimEnd()}…`,
 			body: [`…${firstLine.slice(cut).trim()}`, otherLines].filter(Boolean).join("\n"),
 		};
-	}
-
-	/**
-	 * Non-production environments (ENV_TITLE set, e.g. "TEST") are prefixed so a report from
-	 * the testing environment is recognizable straight from the issue list.
-	 */
-	private issueTitle(title: string, environmentTitle: string): string {
-		const prefix = environmentTitle ? `[${environmentTitle}] ` : "";
-		return `${prefix}${title || "Nahlášená chyba"}`;
 	}
 }
