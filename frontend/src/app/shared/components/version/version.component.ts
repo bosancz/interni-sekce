@@ -1,8 +1,9 @@
-import { Component, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Component, computed, signal } from "@angular/core";
+import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
 import { SwUpdate } from "@angular/service-worker";
 import { IonSpinner } from "@ionic/angular/standalone";
-import { filter } from "rxjs";
+import { filter, map } from "rxjs";
+import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ChangelogModalComponent } from "src/app/shared/components/changelog-modal/changelog-modal.component";
 import { Config } from "src/config";
@@ -21,12 +22,26 @@ export class VersionComponent {
 	updateAvailable = signal(false);
 	updating = signal(false);
 
+	/**
+	 * Version the backend currently serves — always the one the app updates *to*, since the API is
+	 * refetched on tab focus while the loaded frontend keeps its build-time version.
+	 */
+	private readonly apiVersion = toSignal(
+		this.api.info.pipe(map((info) => info.version.replace(/^v(?=\d)/, ""))),
+	);
+
+	newVersion = computed(() => {
+		const apiVersion = this.apiVersion();
+		return apiVersion && apiVersion !== this.version ? apiVersion : null;
+	});
+
 	private updateCheck?: Promise<boolean>;
 
 	constructor(
 		private readonly config: Config,
 		private readonly swUpdate: SwUpdate,
 		private readonly modal: ModalService,
+		private readonly api: ApiService,
 	) {
 		this.swUpdate.versionUpdates
 			.pipe(
