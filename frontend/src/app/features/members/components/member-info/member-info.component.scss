@@ -6,3 +6,8 @@
 ::ng-deep bo-card-content {
 	padding: 0 !important;
 }
+
+/* the address is one value per line (street / city / PSČ / country) */
+.address-value {
+	white-space: pre-line;
+}

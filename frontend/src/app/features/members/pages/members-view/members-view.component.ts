@@ -21,7 +21,6 @@ import { PageContentComponent } from "src/app/shared/components/page-content/pag
 import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
-import { MemberAddressComponent } from "../../components/member-address/member-address.component";
 import { MemberContactComponent } from "../../components/member-contact/member-contact.component";
 import MemberContactsComponent from "../../components/member-contacts/member-contacts.component";
 import { MemberHealthComponent } from "../../components/member-health/member-health.component";
@@ -47,7 +46,6 @@ import { MemberProfileComponent } from "../../components/member-profile/member-p
 		MemberProfileComponent,
 		MemberInfoComponent,
 		MemberContactComponent,
-		MemberAddressComponent,
 		MemberMembershipComponent,
 		MemberHealthComponent,
 		MemberContactsComponent,
