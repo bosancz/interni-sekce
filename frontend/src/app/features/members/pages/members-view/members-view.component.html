@@ -1,4 +1,8 @@
-<bo-page-header [title]="getFullName(member())" backUrl="/databaze" [actions]="actions()" />
+<bo-page-header [title]="getTitleName(member())" backUrl="/databaze" [actions]="actions()">
+	@if (member(); as memberValue) {
+		<bo-group-badge slot="title-end" class="ms-3" [groupId]="memberValue.groupId" />
+	}
+</bo-page-header>
 
 <bo-page-content [padding]="true">
 	<div class="row mt-3 mt-xxl-5 layout">

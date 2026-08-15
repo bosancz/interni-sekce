@@ -5,6 +5,10 @@
 
 <h2 class="ms-3">{{ title() }}</h2>
 
+<div class="title-end">
+	<ng-content select="[slot=title-end]"></ng-content>
+</div>
+
 <div class="spacer"></div>
 
 <div class="actions" slot="end">
