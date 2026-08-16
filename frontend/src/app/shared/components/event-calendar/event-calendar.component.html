@@ -40,7 +40,8 @@
 						[style.left]="getEventLeft(calEvent, row) * 100 + '%'"
 						[style.width]="getEventWidth(calEvent, row) * 100 + '%'"
 						[style.top]="eventHeight * (calEvent.level - 1) + 'px'"
-						placement="bottom"
+						[boTooltip]="calEvent.event.name"
+						boTooltipPlacement="bottom"
 						[routerLink]="['/akce', calEvent.event.id]"
 					>
 						<span class="event-label">{{ calEvent.event.name }}</span>
@@ -57,7 +58,8 @@
 						[style.top]="eventHeight * (calEvent.level - 1) + 'px'"
 						[attr.href]="calEvent.event.link || null"
 						target="_blank"
-						placement="bottom"
+						[boTooltip]="calEvent.event.name"
+						boTooltipPlacement="bottom"
 					>
 						<span class="event-label">{{ calEvent.event.name }}</span>
 					</a>
