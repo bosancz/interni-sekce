@@ -1,5 +1,9 @@
 # Project notes
 
+## Code style
+
+- **No explanatory comments in the code.** Do not add them, and do not extend the ones already there — a comment that reads like a note to the reviewer belongs in the commit message or in this file, not in the source. What is worth remembering across sessions goes into `CLAUDE.md`.
+
 ## Commits & changelog
 
 - **Commit in [Conventional Commits](https://www.conventionalcommits.org/) format** (`type(scope): description`) — commitlint (`@commitlint/config-conventional`) enforces it. **Write the description in Czech**, `type`/`scope` in English: the visitor-facing changelog takes commit subjects **verbatim**, so the subject you write is the line visitors read.

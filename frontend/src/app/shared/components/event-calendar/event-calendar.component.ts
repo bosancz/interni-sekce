@@ -289,8 +289,4 @@ export class EventCalendarComponent implements OnInit {
 	) {
 		return (event.dateTill.diff(event.dateFrom, "days").days + 1) / month.days.length;
 	}
-
-	getEventTooltip(event: SDK.EventResponseWithLinks): string {
-		return event.name;
-	}
 }

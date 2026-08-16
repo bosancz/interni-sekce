@@ -3,9 +3,7 @@ import { CPVEventResponse } from "../dto/cpv-event.dto";
 
 const CALENDAR_URL = "https://www.raft.cz/kalendar.aspx";
 
-// Prepended to every event name so its provenance is visible in the calendar. There is only one
-// source for now; when more are added this should become a per-event value.
-const SOURCE_LABEL = "Raft.cz";
+const SOURCE_LABEL = "Zdroj: Raft.cz";
 
 // The event listing is rendered by an ASP.NET WebForms page that only shows a single day by
 // default. To get the full list we replay the "Výpis všech akcí" (list all events) postback,
@@ -96,7 +94,7 @@ export class CPVEventsService {
 			const river = this.extractRiver(card);
 
 			events.push({
-				name: `${SOURCE_LABEL}: ${name}`,
+				name: `${name} — ${SOURCE_LABEL}`,
 				dateFrom: dates.dateFrom,
 				dateTill: dates.dateTill,
 				...(river ? { description: river } : {}),
