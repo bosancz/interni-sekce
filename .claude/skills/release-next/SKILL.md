@@ -17,4 +17,4 @@ mcp__github__actions_run_trigger
   ref: <output of `git rev-parse --abbrev-ref HEAD`>
 ```
 
-Then point the user at https://github.com/bosancz/interni-sekce/actions/workflows/release-next.yml and stop.
+Then print the expected version tag — `NEXT-` plus the current commit's short SHA (`git rev-parse --short=7 HEAD`), e.g. `NEXT-389fe80` — point the user at https://github.com/bosancz/interni-sekce/actions/workflows/release-next.yml and stop.
