@@ -13,6 +13,21 @@ export class TopLeaderResponse {
 	/** How many events that score comes from. */
 	@ApiProperty() eventsCount!: number;
 
+	@ApiProperty() rank!: number;
+
+	@ApiPropertyOptional({ type: "string" }) firstName?: string | null;
+	@ApiPropertyOptional({ type: "string" }) lastName?: string | null;
+}
+
+export class MyRankingResponse {
+	@ApiProperty() memberId!: number;
+	@ApiProperty() nickname!: string;
+	@ApiProperty() groupId!: number;
+	@ApiProperty() childDays!: number;
+	@ApiProperty() eventsCount!: number;
+
+	@ApiPropertyOptional({ type: "number" }) rank?: number | null;
+
 	@ApiPropertyOptional({ type: "string" }) firstName?: string | null;
 	@ApiPropertyOptional({ type: "string" }) lastName?: string | null;
 }
@@ -28,6 +43,8 @@ export class TopLeadersResponse {
 	@ApiProperty() lastYear!: number;
 
 	@ApiProperty({ type: TopLeaderResponse, isArray: true }) leaders!: TopLeaderResponse[];
+
+	@ApiPropertyOptional({ type: MyRankingResponse }) me?: MyRankingResponse;
 }
 
 /** One of the events behind a leader's score, as shown when their row is opened. */

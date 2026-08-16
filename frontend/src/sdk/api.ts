@@ -3804,6 +3804,62 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface MyRankingResponse
+     */
+    export interface MyRankingResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof MyRankingResponse
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof MyRankingResponse
+         */
+        'nickname': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof MyRankingResponse
+         */
+        'groupId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MyRankingResponse
+         */
+        'childDays': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MyRankingResponse
+         */
+        'eventsCount': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MyRankingResponse
+         */
+        'rank'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MyRankingResponse
+         */
+        'firstName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MyRankingResponse
+         */
+        'lastName'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface PaddlersRankingResponse
      */
     export interface PaddlersRankingResponse {
@@ -4423,6 +4479,12 @@ export namespace SDK {
         'eventsCount': number;
         /**
          * 
+         * @type {number}
+         * @memberof TopLeaderResponse
+         */
+        'rank': number;
+        /**
+         * 
          * @type {string}
          * @memberof TopLeaderResponse
          */
@@ -4471,6 +4533,12 @@ export namespace SDK {
          * @memberof TopLeadersResponse
          */
         'leaders': Array<TopLeaderResponse>;
+        /**
+         * 
+         * @type {MyRankingResponse}
+         * @memberof TopLeadersResponse
+         */
+        'me'?: MyRankingResponse;
     }
     
         /**

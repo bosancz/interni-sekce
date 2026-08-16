@@ -30,6 +30,7 @@ export class LeadersStatisticsController {
 		return this.statistics.getLeadersStatistics(
 			query.year ?? new Date().getFullYear(),
 			query.limit ?? DEFAULT_TOP_LEADERS_LIMIT,
+			req.user?.memberId,
 		);
 	}
 

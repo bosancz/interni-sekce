@@ -93,6 +93,33 @@ ion-list {
 	font-size: 0.85rem;
 }
 
+.ranking-gap {
+	padding: 0.35rem 0;
+	color: var(--bo-muted);
+	font-family: var(--font-regular);
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 0.8;
+	text-align: center;
+}
+
+.my-ranking {
+	--ion-item-background: var(--bo-blue-tint);
+	--border-radius: var(--bo-radius-btn);
+	--inner-border-width: 0;
+	--border-width: 0;
+	--inner-padding-end: 0.6rem;
+
+	.rank {
+		background-color: var(--bo-blue-mid);
+		color: #fff;
+	}
+}
+
+.rank-unranked {
+	font-family: var(--font-regular);
+}
+
 .rank-first {
 	background-color: var(--bo-yellow);
 	color: #fff;
