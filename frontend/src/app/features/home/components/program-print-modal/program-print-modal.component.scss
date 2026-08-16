@@ -1,0 +1,8 @@
+.options {
+	padding: 0 16px 16px;
+
+	::ng-deep ion-item {
+		--padding-start: 0;
+		--inner-padding-end: 0;
+	}
+}
