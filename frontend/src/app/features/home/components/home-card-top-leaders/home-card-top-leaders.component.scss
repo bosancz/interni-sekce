@@ -93,6 +93,37 @@ ion-list {
 	font-size: 0.85rem;
 }
 
+// the ranks between the shown top and the user's own place, which are not listed
+.ranking-gap {
+	padding: 0.35rem 0;
+	color: var(--bo-muted);
+	font-family: var(--font-regular);
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 0.8;
+	text-align: center;
+}
+
+// the user's own row, set apart from the top so they find themselves at a glance
+.my-ranking {
+	--ion-item-background: var(--bo-blue-tint);
+	--border-radius: var(--bo-radius-btn);
+	--inner-border-width: 0;
+	--border-width: 0;
+	// the rows above end flush with the card, but here the score would touch the tinted edge
+	--inner-padding-end: 0.6rem;
+
+	.rank {
+		background-color: var(--bo-blue-mid);
+		color: #fff;
+	}
+}
+
+// no place yet — the brand font has no dash glyph, so the placeholder needs the text font
+.rank-unranked {
+	font-family: var(--font-regular);
+}
+
 .rank-first {
 	background-color: var(--bo-yellow);
 	color: #fff;

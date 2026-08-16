@@ -14,9 +14,8 @@ import { SDK } from "src/sdk";
 /** How many leaders the ranking shows. */
 const TOP_LEADERS_LIMIT = 5;
 
-export type RankedLeader = SDK.TopLeaderResponse & { rank: number };
-
-export type LeadersStatistics = Omit<SDK.TopLeadersResponse, "leaders"> & { leaders: RankedLeader[] };
+/** A row of the ranking — one of the top leaders, or the user's own place shown under them. */
+export type RankedLeader = SDK.TopLeaderResponse | SDK.MyRankingResponse;
 
 @Component({
 	selector: "bo-home-card-top-leaders",
@@ -41,9 +40,30 @@ export type LeadersStatistics = Omit<SDK.TopLeadersResponse, "leaders"> & { lead
 })
 export class HomeCardTopLeadersComponent {
 	/** `undefined` until the first response arrives, so the card can show its skeleton rows. */
-	statistics = signal<LeadersStatistics | undefined>(undefined);
+	statistics = signal<SDK.TopLeadersResponse | undefined>(undefined);
 
 	year = signal(new Date().getFullYear());
+
+	/**
+	 * The user's own place, shown under the top when they did not make it into it — being 23rd is
+	 * the part of the ranking that is supposed to motivate.
+	 */
+	myRanking = computed(() => {
+		const statistics = this.statistics();
+		if (!statistics?.me) return undefined;
+
+		const inTop = statistics.leaders.some((leader) => leader.memberId === statistics.me!.memberId);
+
+		return inTop ? undefined : statistics.me;
+	});
+
+	/** Whether anybody at all is ranked between the shown top and the user's own row. */
+	myRankingHasGap = computed(() => {
+		const rank = this.myRanking()?.rank;
+		const lastShown = this.statistics()?.leaders.at(-1)?.rank;
+
+		return rank == null || lastShown === undefined || rank > lastShown + 1;
+	});
 
 	/** The ranking is a leaders-only statistic — the root `_links` say whether this user may see it. */
 	canSeeLeaders = computed(() => this.api.links()?.getTopLeaders?.allowed ?? false);
@@ -120,21 +140,6 @@ export class HomeCardTopLeadersComponent {
 		// a slow response must not overwrite a year the user has already clicked past
 		if (this.year() !== year) return;
 
-		this.statistics.set({ ...statistics, leaders: this.setRanks(statistics.leaders) });
-	}
-
-	/** Leaders with the same score share a place, the next one skips ahead (1., 1., 3., …). */
-	private setRanks(leaders: SDK.TopLeaderResponse[]): RankedLeader[] {
-		let rank = 0;
-		let previousChildDays: number | undefined = undefined;
-
-		return leaders.map((leader, index) => {
-			if (leader.childDays !== previousChildDays) {
-				rank = index + 1;
-				previousChildDays = leader.childDays;
-			}
-
-			return { ...leader, rank };
-		});
+		this.statistics.set(statistics);
 	}
 }

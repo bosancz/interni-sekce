@@ -70,6 +70,28 @@
 								</div>
 							</ion-item>
 						}
+
+						@if (myRanking(); as me) {
+							@if (myRankingHasGap()) {
+								<div class="ranking-gap" aria-hidden="true">⋮</div>
+							}
+
+							<ion-item button class="my-ranking" [detail]="false" (click)="openLeaderEvents($event, me)">
+								<div class="rank" [class.rank-unranked]="!me.rank" slot="start">
+									{{ me.rank ? me.rank + "." : "–" }}
+								</div>
+								<ion-label>
+									<h4>
+										<strong>{{ me.nickname }}</strong>
+									</h4>
+									<p>{{ me.eventsCount }} {{ me.eventsCount | i18nPlural: eventsPluralMap }}</p>
+								</ion-label>
+								<div class="score" slot="end">
+									<span class="score-value">{{ me.childDays }}</span>
+									<span class="score-label">{{ me.childDays | i18nPlural: childDaysPluralMap }}</span>
+								</div>
+							</ion-item>
+						}
 					</ion-list>
 				} @else {
 					<p class="m-0 mt-2 mb-3 text-center">V tomto roce nikdo nevedl akci s dětmi.</p>
