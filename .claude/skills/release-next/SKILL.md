@@ -6,7 +6,7 @@ allowed-tools: Bash(git rev-parse:*), mcp__github__actions_run_trigger
 
 # Release current branch to NEXT
 
-Dispatch the workflow against the current branch and report the run link. Nothing else — no pre-checks, no watching the run.
+1. Dispatch the workflow against the current branch. Nothing else — no pre-checks, no watching the run.
 
 ```
 mcp__github__actions_run_trigger
@@ -17,4 +17,9 @@ mcp__github__actions_run_trigger
   ref: <output of `git rev-parse --abbrev-ref HEAD`>
 ```
 
-Then point the user at https://github.com/bosancz/interni-sekce/actions/workflows/release-next.yml and stop.
+2. Print following three lines:
+* `Expected tag: NEXT-<git sha>` (use current commit's short SHA - `git rev-parse --short=7 HEAD`)
+* `Workflow: https://github.com/bosancz/interni-sekce/actions/workflows/release-next.yml`
+* `NEXT deployment: https://next.interni.bosan.cz`
+
+3. Stop.
