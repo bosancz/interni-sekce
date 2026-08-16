@@ -3838,7 +3838,7 @@ export namespace SDK {
          */
         'eventsCount': number;
         /**
-         * Missing when the member led no event with children that year, so they are not ranked at all.
+         * 
          * @type {number}
          * @memberof MyRankingResponse
          */
@@ -4478,7 +4478,7 @@ export namespace SDK {
          */
         'eventsCount': number;
         /**
-         * Place in the ranking; equal scores share a place and the next one skips ahead (1., 1., 3., …).
+         * 
          * @type {number}
          * @memberof TopLeaderResponse
          */
@@ -4534,7 +4534,7 @@ export namespace SDK {
          */
         'leaders': Array<TopLeaderResponse>;
         /**
-         * Where the caller stands — missing when their user has no member of its own.
+         * 
          * @type {MyRankingResponse}
          * @memberof TopLeadersResponse
          */

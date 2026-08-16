@@ -14,7 +14,6 @@ import { SDK } from "src/sdk";
 /** How many leaders the ranking shows. */
 const TOP_LEADERS_LIMIT = 5;
 
-/** A row of the ranking — one of the top leaders, or the user's own place shown under them. */
 export type RankedLeader = SDK.TopLeaderResponse | SDK.MyRankingResponse;
 
 @Component({
@@ -44,10 +43,6 @@ export class HomeCardTopLeadersComponent {
 
 	year = signal(new Date().getFullYear());
 
-	/**
-	 * The user's own place, shown under the top when they did not make it into it — being 23rd is
-	 * the part of the ranking that is supposed to motivate.
-	 */
 	myRanking = computed(() => {
 		const statistics = this.statistics();
 		if (!statistics?.me) return undefined;
@@ -57,7 +52,6 @@ export class HomeCardTopLeadersComponent {
 		return inTop ? undefined : statistics.me;
 	});
 
-	/** Whether anybody at all is ranked between the shown top and the user's own row. */
 	myRankingHasGap = computed(() => {
 		const rank = this.myRanking()?.rank;
 		const lastShown = this.statistics()?.leaders.at(-1)?.rank;

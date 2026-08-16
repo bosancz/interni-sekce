@@ -13,14 +13,12 @@ export class TopLeaderResponse {
 	/** How many events that score comes from. */
 	@ApiProperty() eventsCount!: number;
 
-	/** Place in the ranking; equal scores share a place and the next one skips ahead (1., 1., 3., …). */
 	@ApiProperty() rank!: number;
 
 	@ApiPropertyOptional({ type: "string" }) firstName?: string | null;
 	@ApiPropertyOptional({ type: "string" }) lastName?: string | null;
 }
 
-/** The caller's own place, which may be well below the shown top. */
 export class MyRankingResponse {
 	@ApiProperty() memberId!: number;
 	@ApiProperty() nickname!: string;
@@ -28,7 +26,6 @@ export class MyRankingResponse {
 	@ApiProperty() childDays!: number;
 	@ApiProperty() eventsCount!: number;
 
-	/** Missing when the member led no event with children that year, so they are not ranked at all. */
 	@ApiPropertyOptional({ type: "number" }) rank?: number | null;
 
 	@ApiPropertyOptional({ type: "string" }) firstName?: string | null;
@@ -47,7 +44,6 @@ export class TopLeadersResponse {
 
 	@ApiProperty({ type: TopLeaderResponse, isArray: true }) leaders!: TopLeaderResponse[];
 
-	/** Where the caller stands — missing when their user has no member of its own. */
 	@ApiPropertyOptional({ type: MyRankingResponse }) me?: MyRankingResponse;
 }
 

@@ -30,11 +30,9 @@ export interface TopLeader {
 	childDays: number;
 	/** How many events that score comes from. */
 	eventsCount: number;
-	/** Place in the ranking; equal scores share a place and the next one skips ahead (1., 1., 3., …). */
 	rank: number;
 }
 
-/** The caller's own place, which may be outside the shown top — `rank` is null when they scored nothing. */
 export type MyRanking = Omit<TopLeader, "rank"> & { rank: number | null };
 
 export interface LeaderEvent {
@@ -54,7 +52,6 @@ export interface LeadersStatistics {
 	firstYear: number;
 	lastYear: number;
 	leaders: TopLeader[];
-	/** Where the caller themselves stands, so the card can show it under the top. */
 	me?: MyRanking;
 }
 
@@ -68,8 +65,7 @@ export class LeadersStatisticsService {
 
 	/**
 	 * Everything the dashboard's leaders block shows for one year: the year's total děťodny, the
-	 * best leaders in it, the range of years that have any data at all, and — when the caller has a
-	 * member of their own — where that member stands.
+	 * best leaders in it, and the range of years that have any data at all.
 	 */
 	async getLeadersStatistics(year: number, limit: number, memberId?: number): Promise<LeadersStatistics> {
 		const [childDays, ranking, { firstYear, lastYear }] = await Promise.all([
@@ -84,11 +80,6 @@ export class LeadersStatisticsService {
 		return { year, childDays, firstYear, lastYear, leaders, me };
 	}
 
-	/**
-	 * The caller's own row, taken from the ranking they are already in. A member who led nothing that
-	 * year is not in it at all — they still get a row, with no place and a zero score, so the card can
-	 * show them what they are missing out on.
-	 */
 	private async getMyRanking(ranking: TopLeader[], memberId: number): Promise<MyRanking | undefined> {
 		const ranked = ranking.find((leader) => leader.memberId === memberId);
 		if (ranked) return ranked;
@@ -116,8 +107,6 @@ export class LeadersStatisticsService {
 	 * number of child attendees multiplied by how many days it lasted, so a two-day event with three
 	 * children scores 6. Every leader of an event gets the full score, so co-leaders each score the
 	 * whole event.
-	 *
-	 * Returns the whole ranking rather than its top — the caller's own place can be anywhere in it.
 	 */
 	private async getRankedLeaders(year: number): Promise<TopLeader[]> {
 		const childDays = `SUM(ec.children_count * ${EVENT_DAYS})`;
@@ -158,7 +147,6 @@ export class LeadersStatisticsService {
 		);
 	}
 
-	/** Leaders with the same score share a place, the next one skips ahead (1., 1., 3., …). */
 	private setRanks(leaders: Omit<TopLeader, "rank">[]): TopLeader[] {
 		let rank = 0;
 		let previousChildDays: number | undefined = undefined;
