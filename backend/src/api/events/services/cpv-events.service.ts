@@ -3,9 +3,6 @@ import { CPVEventResponse } from "../dto/cpv-event.dto";
 
 const CALENDAR_URL = "https://www.raft.cz/kalendar.aspx";
 
-// Appended to every event name so its provenance is visible in the calendar without pushing the
-// name itself out of the truncated calendar bar. There is only one source for now; when more are
-// added this should become a per-event value.
 const SOURCE_LABEL = "Zdroj: Raft.cz";
 
 // The event listing is rendered by an ASP.NET WebForms page that only shows a single day by
