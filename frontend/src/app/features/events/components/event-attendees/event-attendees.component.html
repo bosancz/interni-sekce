@@ -51,14 +51,12 @@
 			</div>
 		}
 
-		@if (event() && event()!._links.getEventAnnouncement.allowed) {
-			@if ((attendees()!.length + leaders()!.length) !=0){
-				<div class="text-center">
-					<ion-button (click)="getAnnouncement(event()!)" expand="block" fill="outline">
-						Stáhnout ohlášku
-					</ion-button>
-				</div>
-			}
+		@if (event() && event()!._links.getEventAnnouncement.allowed && attendeesCount()) {
+			<div class="text-center">
+				<ion-button (click)="getAnnouncement(event()!)" expand="block" fill="outline">
+					Stáhnout ohlášku
+				</ion-button>
+			</div>
 		}
 	</div>
 </div>
