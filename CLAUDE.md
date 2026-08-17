@@ -30,6 +30,13 @@
 
 - `frontend/src/sdk` is generated from the backend's OpenAPI spec — never hand-edit `frontend/src/sdk/api.ts`. After changing a backend controller/DTO, run `npm run generate:sdk` from `frontend/` (it reads `http://127.0.0.1:3000/api/openapi-json`, so the backend must be up). Every NestJS route needs a unique `operationId` (method name) or generation fails validation.
 
+## Public API (bosan.cz)
+
+- The website's iCalendar feed is `GET /api/public/program/ical` (`ProgramIcalService`, `ical-generator`). The old server served it at `/api/program/ical`; `ProgramIcalLegacyController` keeps that URL alive — deprecated in OpenAPI, same body — because people's calendar apps are still subscribed to it. Never drop it without warning: an ICS subscription is set-and-forget and nobody re-enters the URL.
+- Events are **all-day**, so `DTEND` is exclusive (`dateTill + 1 day`, RFC 5545 §3.6.1) and the calendar deliberately sets **no** timezone: `ical-generator` renders `DTSTAMP` as floating local time when one is set, which is invalid — without it `DTSTAMP` is proper UTC and the date-only `DTSTART`/`DTEND` are unaffected (the Luxon values carry `Europe/Prague` themselves). `timeFrom`/`timeTill` are free text ("8:00", "ráno"), so they are never parsed into times.
+- Cancelled events stay in the feed as `STATUS:CANCELLED` with a `Zrušeno: ` summary prefix, mirroring the website. `UID` is `event-<id>@bosan.cz` — stable, so clients update instead of duplicating. The window is `ICAL_DAYS_BACK` (30) days back, unbounded forward; `EventsRepository.getPublicProgramIcal()` skips the 100-row cap the JSON program endpoint applies.
+- bosan.cz resolves the feed URL from the API root's `_links` (`program:ical`) in `CalendarSyncManualComponent`, falling back to the hardcoded URL — the hardcoded one going stale is what broke this in the first place (#352).
+
 ## Backend entities
 
 - **One table, one entity mapping.** Never map a table twice (an explicit `@Entity("x")` *and* a `@ManyToMany`/`@JoinTable` over `"x"`): TypeORM builds two metadata objects for it and then **every** generated migration drops and recreates that table's indexes — permanent drift that survives being applied. `events_groups` was in this state for years; it is now mapped **only** by the `@ManyToMany`/`@JoinTable` on `Event.groups`, and must not get an entity of its own again.
