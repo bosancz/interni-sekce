@@ -1,4 +1,4 @@
-import { Component, signal } from "@angular/core";
+import { Component, computed, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -70,6 +70,14 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 	actions: Action[] = [];
 
 	view = signal<"info" | "attendees" | "problems" | "accounting" | "registration" | "report">("info");
+
+	attendeesCount = signal<number | undefined>(undefined);
+	problemsCount = signal<number | undefined>(undefined);
+	expensesCount = signal<number | undefined>(undefined);
+
+	attendeesBadge = computed(() => this.attendeesCount() || undefined);
+	problemsBadge = computed(() => this.problemsCount() || undefined);
+	expensesBadge = computed(() => this.expensesCount() || undefined);
 
 	constructor(
 		private readonly api: ApiService,

@@ -18,7 +18,7 @@ export class TabComponent implements OnInit {
 	disabled = input<boolean | undefined>();
 
 	badge = input<string | number | undefined>();
-	badgeColor = input<string | undefined>();
+	badgeVariant = input<"neutral" | "attention">("neutral");
 
 	active = signal(false);
 

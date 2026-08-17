@@ -16,3 +16,19 @@ ion-item {
 		font-weight: 800;
 	}
 }
+
+ion-badge {
+	--background: var(--bo-neutral-badge);
+	--color: var(--bo-neutral-badge-text);
+	border-radius: var(--bo-radius-pill);
+	font-size: 0.7rem;
+	font-weight: 700;
+	padding: 0.3em 0.6em;
+	min-width: 1.8em;
+	text-align: center;
+
+	&.badge-attention {
+		--background: var(--san-yellow);
+		--color: #1f2430;
+	}
+}
