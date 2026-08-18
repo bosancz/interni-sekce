@@ -74,11 +74,11 @@ export class PhotosController {
 		return this.photos.createPhoto(body.albumId, file, req.user?.userId ?? null);
 	}
 
-	@Get(":id")
+	@Get(":photoId")
 	@AcLinks(PhotoReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(PhotoResponse) })
-	async getPhoto(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
-		const photo = await this.photos.getPhoto(id);
+	async getPhoto(@Param("photoId", ParseIntPipe) photoId: number, @Req() req: Request) {
+		const photo = await this.photos.getPhoto(photoId);
 		if (!photo) throw new NotFoundException();
 
 		PhotoReadPermission.canOrThrow(req, photo);
@@ -86,11 +86,11 @@ export class PhotosController {
 		return photo;
 	}
 
-	@Patch(":id")
+	@Patch(":photoId")
 	@AcLinks(PhotoEditPermission)
 	@ApiResponse({ status: 204 })
-	async updatePhoto(@Param("id", ParseIntPipe) id: number, @Req() req: Request, @Body() body: PhotoUpdateBody): Promise<void> {
-		const photo = await this.photos.getPhoto(id);
+	async updatePhoto(@Param("photoId", ParseIntPipe) photoId: number, @Req() req: Request, @Body() body: PhotoUpdateBody): Promise<void> {
+		const photo = await this.photos.getPhoto(photoId);
 		if (!photo) throw new NotFoundException();
 
 		PhotoEditPermission.canOrThrow(req, photo);
@@ -98,11 +98,11 @@ export class PhotosController {
 		await this.photos.updatePhoto(photo.id, body);
 	}
 
-	@Delete(":id")
+	@Delete(":photoId")
 	@AcLinks(PhotoDeletePermission)
 	@ApiResponse({ status: 204 })
-	async deletePhoto(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
-		const photo = await this.photos.getPhoto(id);
+	async deletePhoto(@Param("photoId", ParseIntPipe) photoId: number, @Req() req: Request): Promise<void> {
+		const photo = await this.photos.getPhoto(photoId);
 		if (!photo) throw new NotFoundException();
 
 		PhotoDeletePermission.canOrThrow(req, photo);
@@ -110,17 +110,17 @@ export class PhotosController {
 		await this.photos.deletePhoto(photo.id);
 	}
 
-	@Get(":id/image/:size")
+	@Get(":photoId/image/:size")
 	@AcLinks(PhotoReadFilePermission)
 	async getPhotoImage(
-		@Param("id", ParseIntPipe) id: number,
+		@Param("photoId", ParseIntPipe) photoId: number,
 		@Param("size") size: PhotoSizes,
 		@Req() req: Request,
 		@Res() res: Response,
 	): Promise<void> {
 		if (!Object.values(PhotoSizes).includes(size)) throw new BadRequestException("Unknown image size.");
 
-		const photo = await this.photos.getPhoto(id);
+		const photo = await this.photos.getPhoto(photoId);
 		if (!photo) throw new NotFoundException();
 
 		PhotoReadFilePermission.canOrThrow(req, photo);

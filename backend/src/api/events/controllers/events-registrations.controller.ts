@@ -92,10 +92,10 @@ export class EventsRegistrationsController {
 		await this.eventsRepository.update(event.id, { hasRegistration: true });
 	}
 
-	@Get(":id/registration")
+	@Get(":eventId/registration")
 	@AcLinks(EventRegistrationReadPermission)
-	async getEventRegistration(@Req() req: Request, @Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<void> {
-		const event = await this.events.getEvent(id);
+	async getEventRegistration(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number, @Res() res: Response): Promise<void> {
+		const event = await this.events.getEvent(eventId);
 		if (!event) throw new NotFoundException();
 		EventRegistrationReadPermission.canOrThrow(req, event);
 
@@ -125,7 +125,7 @@ export class EventsRegistrationsController {
 	}
 
 
-	@Put(":id/registration")
+	@Put(":eventId/registration")
 	@HttpCode(204)
 	@AcLinks(EventRegistrationEditPermission)
 	@ApiResponse({ status: 204 })
@@ -144,9 +144,9 @@ export class EventsRegistrationsController {
 	})
 	async saveEventRegistration(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) id: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
 		@UploadedFile() registration: Express.Multer.File): Promise<void> {
-			const event = await this.events.getEvent(id);
+			const event = await this.events.getEvent(eventId);
 			if (!event) throw new NotFoundException();
 
 			EventRegistrationEditPermission.canOrThrow(req, event);
@@ -162,11 +162,11 @@ export class EventsRegistrationsController {
 			await this.storeRegistration(event, data);
 		}
 
-	@Get(":id/registration/templates")
+	@Get(":eventId/registration/templates")
 	@AcLinks(EventRegistrationGeneratePermission)
 	@ApiResponse({ status: 200, type: [RegistrationTemplateResponse] })
-	async getEventRegistrationTemplates(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<RegistrationTemplateResponse[]> {
-		const event = await this.events.getEvent(id);
+	async getEventRegistrationTemplates(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<RegistrationTemplateResponse[]> {
+		const event = await this.events.getEvent(eventId);
 		if (!event) throw new NotFoundException();
 
 		EventRegistrationGeneratePermission.canOrThrow(req, event);
@@ -174,7 +174,7 @@ export class EventsRegistrationsController {
 		return this.eventRegistrationService.listTemplates();
 	}
 
-	@Post(":id/registration/generate")
+	@Post(":eventId/registration/generate")
 	@HttpCode(204)
 	@AcLinks(EventRegistrationGeneratePermission)
 	@ApiResponse({ status: 204 })
@@ -183,14 +183,14 @@ export class EventsRegistrationsController {
 	@ApiQuery({ name: "note", required: false })
 	async generateEventRegistration(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) id: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
 		@Query("template") template: string,
 		@Query("color") color: string,
 		@Query("note") note?: string,
 	): Promise<void> {
 		// Load attendees with member contacts so the generated form can list organisers and their contacts.
 		const event = await this.eventsRepository.findOne({
-			where: { id },
+			where: { id: eventId },
 			relations: { attendees: { member: { contacts: true } } },
 		});
 		if (!event) throw new NotFoundException();
@@ -201,10 +201,10 @@ export class EventsRegistrationsController {
 		await this.storeRegistration(event, data);
 	}
 
-	@Delete(":id/registration")
+	@Delete(":eventId/registration")
 	@AcLinks(EventRegistrationDeletePermission)
-	async deleteEventRegistration(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
-		const event = await this.events.getEvent(id);
+	async deleteEventRegistration(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<void> {
+		const event = await this.events.getEvent(eventId);
 		if (!event) throw new NotFoundException();
 		EventRegistrationDeletePermission.canOrThrow(req, event);
 		const registrationFolder = this.registrationFolder(event);

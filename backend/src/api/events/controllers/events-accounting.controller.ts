@@ -21,19 +21,19 @@ export class EventsAccountingController {
 		private readonly eventAccountingService: EventAccountingService,
 	) {}
 
-	@Get(":id/accounting")
+	@Get(":eventId/accounting")
 	@HttpCode(200)
 	@AcLinks(EventAccountingGetPermission)
 	@ApiResponse({ status: 200 })
 	async getEventAccounting(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) id: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
 		@Res({ passthrough: true }) res: Response,
 	): Promise<StreamableFile> {
-		//const event = await this.events.getEvent(id);
+		//const event = await this.events.getEvent(eventId);
 
 		const event = await this.eventsRepository.findOne({
-			where: { id: id },
+			where: { id: eventId },
 			relations: { attendees: { member: { contacts: true } }, expenses: true }, // Important: load nested member relation
 		});
 
