@@ -1,3 +1,7 @@
+## v4.6.1 — 2026-08-18
+
+- <span class="changelog-type" title="feat">✨</span> [Tlačítko pro otevření svého člena z Mého účtu](https://github.com/bosancz/interni-sekce/commit/1e67381a35cba74a6f7425c8dbfdd81c600aa868) (#360) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.6.0 — 2026-08-18
 
 - <span class="changelog-type" title="feat">✨</span> [Přidej ical export programu akcí](https://github.com/bosancz/interni-sekce/commit/19d41cd46c0194e3aa42bb33293eb6df636a6aa7) (#352) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
