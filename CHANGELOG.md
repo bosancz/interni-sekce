@@ -1,3 +1,8 @@
+## v4.6.0 — 2026-08-18
+
+- <span class="changelog-type" title="feat">✨</span> [Přidej ical export programu akcí](https://github.com/bosancz/interni-sekce/commit/19d41cd46c0194e3aa42bb33293eb6df636a6aa7) (#352) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+- <span class="changelog-type" title="refactor">♻️</span> [Odstraň mrtvý web-config](https://github.com/bosancz/interni-sekce/commit/c2bfbb878e3c1d634c798cbc14f7f731af4b21fe) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.5.0 — 2026-08-18
 
 - <span class="changelog-type" title="feat">✨</span> [Badge s počty na tabech detailu akce](https://github.com/bosancz/interni-sekce/commit/548796388b15927522618bb45cb20d9dc8abc43b) (#353) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
