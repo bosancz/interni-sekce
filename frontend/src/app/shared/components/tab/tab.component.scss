@@ -2,6 +2,22 @@ ion-label {
 	font-family: var(--font-san);
 }
 
+ion-badge {
+	--background: var(--bo-neutral-badge);
+	--color: var(--bo-neutral-badge-text);
+	border-radius: var(--bo-radius-pill);
+	font-size: 0.65rem;
+	font-weight: 700;
+	padding: 0.3em 0.5em;
+	min-width: 1.7em;
+	text-align: center;
+
+	&.badge-attention {
+		--background: var(--san-yellow);
+		--color: #1f2430;
+	}
+}
+
 ion-tab-button {
 	--color: var(--bo-muted);
 	--color-selected: var(--bo-nav-active-fg);

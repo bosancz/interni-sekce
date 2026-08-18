@@ -42,9 +42,17 @@ const LEADER_ROLES: SDK.MemberRolesEnum[] = [SDK.MemberRolesEnum.Instruktor, SDK
 export class EventAttendeesComponent implements OnInit, OnDestroy {
 	event = input<SDK.EventResponseWithLinks | null | undefined>();
 	change = output<void>();
+	count = output<number | undefined>();
 
 	attendees = signal<SDK.EventAttendeeResponseWithLinks[] | undefined>(undefined);
 	leaders = signal<SDK.EventAttendeeResponseWithLinks[] | undefined>(undefined);
+
+	attendeesCount = computed(() => {
+		const attendees = this.attendees();
+		const leaders = this.leaders();
+		if (attendees === undefined || leaders === undefined) return undefined;
+		return attendees.length + leaders.length;
+	});
 
 	allMembers = computed(() =>
 		[...(this.leaders() ?? []), ...(this.attendees() ?? [])]
@@ -65,6 +73,8 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			const event = this.event();
 			this.loadAttendees(event);
 		});
+
+		effect(() => this.count.emit(this.attendeesCount()));
 	}
 
 	ngOnInit(): void {}

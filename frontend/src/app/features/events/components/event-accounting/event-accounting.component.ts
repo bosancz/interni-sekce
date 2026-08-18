@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, effect, input, OnDestroy, OnInit, signal } from "@angular/core";
+import { Component, effect, input, OnDestroy, OnInit, output, signal } from "@angular/core";
 import { IonBadge, IonButton, IonList } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/core/services/api.service";
@@ -42,6 +42,7 @@ import { EventExpensesChartComponent } from "../event-expenses-chart/event-expen
 })
 export class EventAccountingComponent implements OnInit, OnDestroy {
 	event = input<SDK.EventResponseWithLinks | undefined>();
+	count = output<number>();
 
 	expenses = signal<SDK.EventExpenseResponseWithLinks[]>([]);
 
@@ -59,6 +60,8 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 			const event = this.event();
 			if (event) this.loadExpenses();
 		});
+
+		effect(() => this.count.emit(this.expenses().length));
 	}
 
 	ngOnInit(): void {}
