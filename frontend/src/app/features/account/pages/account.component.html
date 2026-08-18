@@ -112,6 +112,11 @@
 								Člen skupiny
 							</span>
 						</bo-card-title>
+						<ion-buttons slot="buttons">
+							@if (user.member; as member) {
+								<bo-card-open-button [routerLink]="['/databaze/clenove', member.id]" />
+							}
+						</ion-buttons>
 					</bo-card-header>
 					<bo-card-content>
 						@if (user.member; as member) {
