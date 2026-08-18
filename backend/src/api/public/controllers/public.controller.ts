@@ -10,7 +10,7 @@ import {
 	Req,
 	Res,
 } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiProduces, ApiResponse, ApiTags } from "@nestjs/swagger";
 import archiver = require("archiver");
 import { Request, Response } from "express";
 import { createReadStream } from "fs";
@@ -27,9 +27,11 @@ import {
 	PublicGalleryAlbumPreviewPermission,
 	PublicGalleryPermission,
 	PublicGalleryRecentPermission,
+	PublicProgramIcalPermission,
 	PublicProgramPermission,
 } from "../acl/public.acl";
 import { PublicGalleryQuery, PublicProgramQuery } from "../dto/public.dto";
+import { ProgramIcalService } from "../services/program-ical.service";
 import { PublicService } from "../services/public.service";
 
 /**
@@ -45,6 +47,7 @@ export class PublicController {
 
 	constructor(
 		private readonly publicService: PublicService,
+		private readonly programIcal: ProgramIcalService,
 		private readonly albums: AlbumsRepository,
 		private readonly photos: PhotosRepository,
 		private readonly photosFiles: PhotosFilesService,
@@ -58,6 +61,14 @@ export class PublicController {
 			dateFrom: query.dateFrom,
 			dateTill: query.dateTill,
 		});
+	}
+
+	@Get("program/ical")
+	@AcLinks(PublicProgramIcalPermission)
+	@ApiProduces("text/calendar")
+	@ApiResponse({ status: 200, description: "iCalendar feed of the public program.", type: String })
+	async getProgramIcal(@Res() res: Response): Promise<void> {
+		await this.programIcal.sendProgramIcal(res);
 	}
 
 	@Get("program/:id/registration")

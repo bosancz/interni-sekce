@@ -112,7 +112,23 @@ export class EventsRepository {
 	 * currently-running events stay visible.
 	 */
 	async getPublicProgram(options: { dateFrom?: string; dateTill?: string; limit?: number } = {}) {
-		const q = this.eventsRepository
+		const q = this.publicProgramQuery(options.dateFrom ?? this.defaultProgramFrom()).take(
+			Math.min(options.limit ?? 100, 100),
+		);
+
+		if (options.dateTill) q.andWhere("events.dateFrom <= :dateTill", { dateTill: options.dateTill });
+
+		return this.withLeaders(await q.getMany());
+	}
+
+	async getPublicProgramIcal(options: { dateFrom?: string } = {}) {
+		const q = this.publicProgramQuery(options.dateFrom ?? this.defaultProgramFrom());
+
+		return this.withLeaders(await q.getMany());
+	}
+
+	private publicProgramQuery(dateFrom: string) {
+		return this.eventsRepository
 			.createQueryBuilder("events")
 			.select([
 				"events.id",
@@ -134,15 +150,12 @@ export class EventsRepository {
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
 			.leftJoinAndSelect("attendees.member", "leaders")
 			.where("events.status IN (:...statuses)", { statuses: [EventStates.public, EventStates.cancelled] })
-			.andWhere("events.dateTill >= :dateFrom", { dateFrom: options.dateFrom ?? this.defaultProgramFrom() })
+			.andWhere("events.dateTill >= :dateFrom", { dateFrom })
 			.orderBy("events.dateFrom", "ASC")
-			.addOrderBy("events.timeFrom", "ASC", "NULLS FIRST")
-			.take(Math.min(options.limit ?? 100, 100));
+			.addOrderBy("events.timeFrom", "ASC", "NULLS FIRST");
+	}
 
-		if (options.dateTill) q.andWhere("events.dateFrom <= :dateTill", { dateTill: options.dateTill });
-
-		const events = await q.getMany();
-
+	private withLeaders(events: Event[]) {
 		for (const event of events) {
 			event.leaders = (event.attendees ?? [])
 				.filter((a) => a.member && a.type === EventAttendeeType.leader)

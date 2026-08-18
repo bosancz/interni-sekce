@@ -175,6 +175,18 @@ const github = {
 };
 
 /**
+ * Public iCalendar feed of the event program (GET /api/public/program/ical).
+ */
+const ical = {
+	name: process.env["ICAL_NAME"] ?? `${app.name} – program akcí`,
+	description: process.env["ICAL_DESCRIPTION"] ?? "Program akcí oddílu Bošán",
+	organizer: process.env["ICAL_ORGANIZER"] ?? "info@bosan.cz",
+	timezone: process.env["ICAL_TIMEZONE"] ?? "Europe/Prague",
+	daysBack: process.env["ICAL_DAYS_BACK"] ? parseInt(process.env["ICAL_DAYS_BACK"], 10) : 30,
+	ttlSeconds: process.env["ICAL_TTL_SECONDS"] ? parseInt(process.env["ICAL_TTL_SECONDS"], 10) : 3600,
+};
+
+/**
  * OAuth2 identity-provider settings.
  *
  * The backend acts as an OAuth2 provider (authorization-code flow) so external
@@ -199,6 +211,7 @@ export class Config {
 	feedback = feedback;
 	github = github;
 	google = google;
+	ical = ical;
 	jwt = jwt;
 	logging = logging;
 	mongoDb = mongoDb;

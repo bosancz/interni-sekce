@@ -4364,6 +4364,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'getProgramIcal': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'getGallery': AcLink;
         /**
          * 
@@ -9984,6 +9990,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for getProgram operation in PublicAPIApi.
      * @export
@@ -10014,6 +10024,10 @@ export namespace SDK {
          */
         dateTill?: string
     }
+    
+    
+    
+    
     
     
     
@@ -10257,6 +10271,44 @@ export namespace SDK {
         }
     
         /**
+         * The old server\'s iCalendar feed URL, kept so calendar apps subscribed to it keep working. Serves the same feed as GET /api/public/program/ical.
+         * @summary Deprecated: use GET /api/public/program/ical instead.
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getLegacyProgramIcal(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/program/ical`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<string>(axiosRequestConfig);
+        }
+    
+        /**
          * 
     
          * @param {PublicAPIApiGetProgramQueryParams} queryParams Query parameters.
@@ -10304,6 +10356,42 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getProgramIcal(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/program/ical`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<string>(axiosRequestConfig);
         }
     
         /**

@@ -19,6 +19,12 @@ export const PublicProgramPermission = new Permission<void>({
 	allowed: { verejnost: true },
 });
 
+export const PublicProgramIcalPermission = new Permission<void>({
+	linkTo: RootResponse,
+	name: "program:ical",
+	allowed: { verejnost: true },
+});
+
 export const PublicGalleryPermission = new Permission<void>({
 	linkTo: RootResponse,
 	name: "gallery",
