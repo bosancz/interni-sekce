@@ -28,7 +28,7 @@
 
 ## Testovací data
 
-- `npm run cli seed` (backend) naplní databázi vzorovými daty v hobitím duchu — `src/seed/`: uživatel `bilbo`/`gandalf`, oddíly (22. oddíl trpaslíci, 13. oddíl nepřátelé, Klub přátel), členové, budoucí akce podle typů a album bez fotek (ty potřebují soubory na disku). Data jsou v `seed/data/seed-data.ts`, datumy akcí jsou relativní ke dni spuštění.
+- `npm run cli seed` (backend) naplní databázi vzorovými daty v hobitím duchu — `src/seed/`: uživatelé `bilbo` (admin), `vedouci`, `instruktor` a `program` — všichni s heslem `gandalf` a s členem v Klubu přátel, takže mají i odvozenou roli vedoucího; oddíly Trpaslíci, Nepřátelé a Klub přátel, členové, budoucí akce podle typů a album bez fotek (ty potřebují soubory na disku). Data jsou v `seed/data/seed-data.ts`, datumy akcí jsou relativní ke dni spuštění.
 - Příkaz je **idempotentní** — záznamy hledá podle přirozeného klíče (login / přezdívka / název) a aktualizuje je; kontakty, účastníky a útraty seedovaných záznamů přepisuje. Nic jiného v databázi nemaže, takže se dá pouštět i na prostředí s importovanými daty.
 - **Kam se smí seedovat, rozhoduje značka v databázi** — `ALTER DATABASE <db> SET app.environment = 'test'` (resp. `'production'`). Bez značky příkaz odmítne běžet (i ve vývoji) a vypíše hotové SQL i to, že jde použít `--force`; databáze označená jako produkční se odmítne vždy, ani `--force` nepomůže. Značku nepřenáší `pg_dump` (jen `pg_dumpall`), takže obnova dat z produkčního dumpu do testovací databáze o ni nepřijde a špatně nasměrovaný `DB_HOST` seed zastaví.
 - `SEED_ON_START=true` naplní data při každém startu aplikace (po migracích, `main.ts`) — tahle cesta `--force` nezná, bez značky `test` se jen přeskočí s chybou v logu.

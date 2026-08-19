@@ -87,9 +87,19 @@ npm run cli create-admin
 npm run cli seed
 ```
 
-Vytvoří vzorová data v hobitím duchu — uživatele `bilbo` (heslo `gandalf`), tři oddíly (22. oddíl
-s trpaslíky, 13. oddíl s nepřáteli a Klub přátel), třináct členů, sedm budoucích akcí různých typů
-a jedno album. Příkaz je idempotentní: opakované spuštění
+Vytvoří vzorová data v hobitím duchu — tři oddíly (Trpaslíci, Nepřátelé a Klub přátel), šestnáct
+členů, sedm budoucích akcí různých typů a jedno album. Všichni testovací uživatelé mají heslo
+`gandalf` a jsou navázaní na aktivního člena v Klubu přátel, takže mají roli vedoucího:
+
+| login | člen | role |
+| --- | --- | --- |
+| `bilbo` | Bilbo | vedoucí + admin |
+| `vedouci` | Vedoucí | vedoucí |
+| `instruktor` | Instruktor | vedoucí |
+| `program` | Správce programu | vedoucí + správce programu |
+
+Roli vedoucího neukládá databáze — access-control ji přiděluje každému uživateli navázanému na
+aktivního člena (viz `AccessControlModule`). Příkaz je idempotentní: opakované spuštění
 existující záznamy aktualizuje (hledá je podle přezdívky / názvu / loginu), nezakládá je znovu a nemaže
 nic ostatního. Datumy akcí jsou relativní ke dni spuštění, takže akce jsou vždy v budoucnu.
 
