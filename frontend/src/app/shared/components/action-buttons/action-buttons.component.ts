@@ -93,6 +93,8 @@ export class ActionButtonsComponent implements OnInit {
 	}
 
 	onClick(action: Action) {
+		if (action.disabled) return;
+
 		action.handler?.();
 	}
 
