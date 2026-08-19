@@ -34,11 +34,6 @@ import { PublicGalleryQuery, PublicProgramQuery } from "../dto/public.dto";
 import { ProgramIcalService } from "../services/program-ical.service";
 import { PublicService } from "../services/public.service";
 
-/**
- * Unauthenticated public API consumed by the bosan.cz website. Returns the legacy
- * response shapes (string `_id`s, photo `sizes`, `_links`) so the existing website
- * frontend keeps working against the rewritten backend without changes on its side.
- */
 @Controller("public")
 @AcController()
 @ApiTags("Public API")
@@ -79,9 +74,7 @@ export class PublicController {
 		res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
 
 		await new Promise<void>((resolve, reject) => {
-			res.sendFile(path, (err) =>
-				err ? reject(new InternalServerErrorException(err.message)) : resolve(),
-			);
+			res.sendFile(path, (err) => (err ? reject(new InternalServerErrorException(err.message)) : resolve()));
 		});
 	}
 
@@ -113,9 +106,8 @@ export class PublicController {
 	async downloadAlbum(@Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<void> {
 		const { filename, files } = await this.publicService.getAlbumDownload(id);
 
-		const archive = archiver("zip", { store: true }); // photos are already compressed; store to save CPU
+		const archive = archiver("zip", { store: true });
 
-		// Surface archiver problems: soft warnings are logged, hard errors abort the stream.
 		archive.on("warning", (err) => this.logger.warn(`Album ${id} ZIP warning: ${err.message}`));
 		archive.on("error", (err) => {
 			this.logger.error(`Album ${id} ZIP failed: ${err.message}`);
@@ -142,7 +134,6 @@ export class PublicController {
 		const photo = await this.photos.getPhoto(id);
 		if (!photo) throw new NotFoundException();
 
-		// only expose photos that belong to a published album
 		const album = await this.albums.getAlbum(photo.albumId);
 		if (!album || album.status !== AlbumStatus.public) throw new NotFoundException();
 

@@ -1,32 +1,25 @@
-// X-Small devices (portrait phones, less than 576px)
-// No media query for `xs` since this is the default in Bootstrap
 .grid {
 	--square-size: calc(100% / 3);
 }
 
-// Small devices (landscape phones, 576px and up)
 @media (min-width: 576px) {
 }
 
-// Medium devices (tablets, 768px and up)
 @media (min-width: 768px) {
 	.grid {
 		--square-size: calc(100% / 4);
 	}
 }
 
-// Large devices (desktops, 992px and up)
 @media (min-width: 992px) {
 }
 
-// X-Large devices (large desktops, 1200px and up)
 @media (min-width: 1200px) {
 	.grid {
 		--square-size: calc(100% / 5);
 	}
 }
 
-// XX-Large devices (larger desktops, 1400px and up)
 @media (min-width: 1400px) {
 }
 
@@ -128,7 +121,6 @@
 		height: 22px;
 		margin: 0;
 		font-size: 0.75rem;
-		// these chips are display-only, so don't imply they're clickable
 		cursor: default;
 	}
 }

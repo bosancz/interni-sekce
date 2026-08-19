@@ -5,12 +5,7 @@ import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { LeadersStatisticsService } from "src/models/statistics/services/leaders-statistics.service";
 import { LeaderEventsPermission, TopLeadersPermission } from "../acl/leaders.acl";
-import {
-	LeaderEventResponse,
-	StatisticsYearQuery,
-	TopLeadersQuery,
-	TopLeadersResponse,
-} from "../dto/top-leaders.dto";
+import { LeaderEventResponse, StatisticsYearQuery, TopLeadersQuery, TopLeadersResponse } from "../dto/top-leaders.dto";
 
 const DEFAULT_TOP_LEADERS_LIMIT = 5;
 

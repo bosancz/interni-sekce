@@ -59,15 +59,11 @@ import { PhotoTagsEditorComponent } from "../photo-tags-editor/photo-tags-editor
 })
 export class PhotosEditComponent implements OnInit {
 	photo = signal<SDK.PhotoResponseWithLinks | undefined>(undefined);
-	// Set via Ionic modal componentProps (Object.assign), so it must be a plain property, not a signal input
 	@Input() photos!: SDK.PhotoResponseWithLinks[];
 	@Input() startPhoto?: SDK.PhotoResponseWithLinks;
 
-	// every tag used anywhere in the album, offered as ready-made toggles in the editor;
-	// grows as new tags are created so they become reusable on the other photos too
 	albumTags = signal<string[]>([]);
 
-	// true when the current photo's image failed to load, so we show a message instead
 	imageError = signal(false);
 
 	editingCaption = signal(false);
@@ -76,10 +72,8 @@ export class PhotosEditComponent implements OnInit {
 
 	currentIndex = signal(0);
 
-	// tapping the photo on mobile hides/shows the top info bar and bottom caption bar
 	controlsVisible = signal(true);
 
-	// arrows are shown on the desktop (wide) layout; narrow/mobile navigates by swiping (see onPointerDown/onPointerUp)
 	isLg = toSignal(this.platformService.isLg, { initialValue: this.platformService.isLg.value });
 
 	private swipeStart?: { x: number; y: number };
@@ -100,15 +94,12 @@ export class PhotosEditComponent implements OnInit {
 	ngOnInit(): void {
 		this.rebuildAlbumTags();
 
-		// the photo to start on comes in as a prop, openPhoto then puts it in the URL —
-		// the modal owns the ?photo= param for as long as it is open (see openPhoto)
 		let index = this.photos.findIndex((item) => item.id === this.startPhoto?.id);
 		if (index === -1) index = 0;
 
 		this.openPhoto(index);
 	}
 
-	// collect the distinct tags across all photos in the album, in first-seen order
 	private rebuildAlbumTags() {
 		const seen = new Set<string>();
 		for (const photo of this.photos) {
@@ -151,7 +142,6 @@ export class PhotosEditComponent implements OnInit {
 	}
 
 	onPointerDown(event: PointerEvent) {
-		// navigate by swipe on touch devices only; desktop uses the arrows
 		if (event.pointerType !== "touch") return;
 		this.swipeStart = { x: event.clientX, y: event.clientY };
 	}
@@ -162,17 +152,14 @@ export class PhotosEditComponent implements OnInit {
 		const dy = event.clientY - this.swipeStart.y;
 		this.swipeStart = undefined;
 
-		// a mostly-horizontal drag past the threshold navigates between photos
 		if (Math.abs(dx) >= 50 && Math.abs(dx) > Math.abs(dy)) {
 			if (dx < 0) this.nextPhoto();
 			else this.previousPhoto();
 			return;
 		}
 
-		// a clear vertical scroll is ignored
 		if (Math.abs(dy) >= 50) return;
 
-		// anything else is a tap → toggle the info and caption bars
 		if (!this.editingCaption()) this.controlsVisible.update((visible) => !visible);
 	}
 
@@ -185,13 +172,11 @@ export class PhotosEditComponent implements OnInit {
 		this.imageError.set(false);
 		this.photo.set(photo);
 
-		// replaces the modal's own history entry, so closing (a history.back()) drops the param with it
 		this.router.navigate([], { queryParams: { photo: photo.id }, queryParamsHandling: "merge", replaceUrl: true });
 	}
 
 	editCaption() {
 		this.editingCaption.set(true);
-		// the input only renders after change detection, the ViewChild is not available yet
 		setTimeout(() => this.captionInput?.getInputElement().then((el) => el.focus()));
 	}
 
@@ -209,12 +194,9 @@ export class PhotosEditComponent implements OnInit {
 			await this.api.PhotoGalleryApi.updatePhoto(current.id, { caption });
 		} catch (e) {
 			this.toastService.toast("Nepodařilo se uložit popisek.", { color: "warning" });
-			return; // keep editing so the user can retry
+			return;
 		}
 
-		// mutate the real array element (not the detached copy the signal may hold after a
-		// previous edit) so the parent's photo list — and repeated edits — stay in sync; only
-		// touch the view if this photo is still the one on screen (the user may have swiped away)
 		const photo = this.photos.find((item) => item.id === current.id) ?? current;
 		photo.caption = caption;
 		if (this.photo()?.id === photo.id) this.photo.set({ ...photo });
@@ -225,15 +207,10 @@ export class PhotosEditComponent implements OnInit {
 		const current = this.photo();
 		if (!current) return;
 
-		// resolve the real array element so the parent gallery/list see the change too
 		const photo = this.photos.find((item) => item.id === current.id) ?? current;
 		const previous = photo.tags ?? null;
 		const next = tags.length ? tags : null;
 
-		// Apply optimistically and synchronously: the editor is fully controlled off the photo's
-		// tags, so a quick second toggle must derive its set from this pending value rather than
-		// the not-yet-persisted previous one (otherwise concurrent PATCHes would drop a tag). The
-		// chip also reacts instantly. Reflect it in the view only while this photo is on screen.
 		const showing = () => this.photo()?.id === photo.id;
 		photo.tags = next;
 		if (showing()) this.photo.set({ ...photo });
@@ -243,7 +220,6 @@ export class PhotosEditComponent implements OnInit {
 			await this.api.PhotoGalleryApi.updatePhoto(photo.id, { tags: next });
 		} catch (e) {
 			this.toastService.toast("Nepodařilo se uložit štítky.", { color: "warning" });
-			// roll the optimistic change back, again only touching the view if still shown
 			photo.tags = previous;
 			if (showing()) this.photo.set({ ...photo });
 			this.rebuildAlbumTags();
@@ -270,7 +246,6 @@ export class PhotosEditComponent implements OnInit {
 	async deleteConfirmed(photo: SDK.PhotoResponseWithLinks) {
 		await this.api.PhotoGalleryApi.deletePhoto(photo.id);
 
-		// mutate the input array in place so the parent gallery reflects the deletion
 		const photos = this.photos;
 		const i = photos.findIndex((item) => item.id === photo.id);
 		if (i !== -1) photos.splice(i, 1);
@@ -280,7 +255,6 @@ export class PhotosEditComponent implements OnInit {
 			return;
 		}
 
-		// show the photo that shifted into this slot, or the last one
 		this.openPhoto(Math.min(i, photos.length - 1));
 	}
 

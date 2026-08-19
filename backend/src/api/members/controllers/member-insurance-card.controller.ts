@@ -33,8 +33,6 @@ import {
 	MemberInsuranceCardUploadPermission,
 } from "../acl/member-insurance-card.acl";
 
-// Restrict to non-active document types. Serving an uploaded .svg/.html inline on the
-// app origin would let it run as stored XSS, so those must never be accepted.
 const ALLOWED_INSURANCE_CARD_TYPES = ["pdf", "jpg", "jpeg", "png"];
 
 @Controller("members/:memberId/insurance-card")
@@ -53,7 +51,11 @@ export class MemberInsuranceCardController {
 	@Get("")
 	@AcLinks(MemberInsuranceCardReadPermission)
 	@ApiResponse({})
-	async getInsuranceCard(@Req() req: Request, @Res() res: Response, @Param("memberId", ParseIntPipe) memberId: number) {
+	async getInsuranceCard(
+		@Req() req: Request,
+		@Res() res: Response,
+		@Param("memberId", ParseIntPipe) memberId: number,
+	) {
 		const member = await this.membersService.getMember(memberId);
 		if (!member) throw new NotFoundException("Member not found");
 
@@ -64,7 +66,6 @@ export class MemberInsuranceCardController {
 
 		res.setHeader("Content-Disposition", `inline; filename="insurance_card.${member.insuranceCardFile}"`);
 		res.setHeader("Content-Type", contentType(member.insuranceCardFile) || "application/octet-stream");
-		// never let the browser sniff/execute the stored file as something active
 		res.setHeader("X-Content-Type-Options", "nosniff");
 
 		createReadStream(path).pipe(res);
@@ -101,7 +102,9 @@ export class MemberInsuranceCardController {
 
 		const ext = extname(file.originalname).slice(1).toLowerCase();
 		if (!ALLOWED_INSURANCE_CARD_TYPES.includes(ext)) {
-			throw new BadRequestException(`Unsupported file type. Allowed: ${ALLOWED_INSURANCE_CARD_TYPES.join(", ")}.`);
+			throw new BadRequestException(
+				`Unsupported file type. Allowed: ${ALLOWED_INSURANCE_CARD_TYPES.join(", ")}.`,
+			);
 		}
 
 		const path = this.getInsuraceCardPath(member.id, ext);

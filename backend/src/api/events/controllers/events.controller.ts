@@ -63,7 +63,6 @@ export class EventsController {
 		@AuthUser() authUser: SessionUser,
 		@Query() query: ListEventsQuery,
 	): Promise<EventResponse[]> {
-		// canWhere both authorizes (throws if not allowed) and returns the row-level filter
 		const where = EventsListPermission.canWhere(req, "events");
 
 		const options: GetEventsOptions = {
@@ -138,7 +137,11 @@ export class EventsController {
 	@HttpCode(204)
 	@AcLinks(EventEditPermission)
 	@ApiResponse({ status: 204 })
-	async updateEvent(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number, @Body() body: EventUpdateBody): Promise<void> {
+	async updateEvent(
+		@Req() req: Request,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@Body() body: EventUpdateBody,
+	): Promise<void> {
 		const event = await this.events.getEvent(eventId, { leaders: true });
 		if (!event) throw new NotFoundException();
 
@@ -201,7 +204,11 @@ export class EventsController {
 	@HttpCode(204)
 	@AcLinks(EventLeadPermission)
 	@ApiResponse({ status: 204 })
-	async leadEvent(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number, @AuthUser() authUser: SessionUser): Promise<void> {
+	async leadEvent(
+		@Req() req: Request,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@AuthUser() authUser: SessionUser,
+	): Promise<void> {
 		if (authUser.memberId === undefined) throw new ConflictException("User is not linked to a member.");
 
 		const event = await this.events.getEvent(eventId, { leaders: true });

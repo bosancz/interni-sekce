@@ -1,48 +1,4 @@
 #!/usr/bin/env node
-// Generate a CHANGELOG.md section from the commits of a release.
-//
-// Reads the commits in a range (previous tag .. target ref) and prepends a
-// "## <version> — <date>" section to CHANGELOG.md. Every version is a single
-// flat list — the type is carried by a gitmoji at the start of each entry
-// instead of a heading — with features first, fixes second, the technical
-// types after them and the commits that are not conventional commits at all,
-// marked with a question mark, last. Existing content (including manual edits
-// to older versions) is preserved.
-//
-// Each entry ends with the avatars of its commit authors, linked to their GitHub
-// profiles, and — when somebody else committed the work, which is what happens whenever
-// Claude does — the committer's avatar tucked behind the author's; see resolveIdentities()
-// for how a commit identity becomes a GitHub user.
-//
-// Usage:
-//   node scripts/generate-changelog.mjs --new-tag v4.4.0 [--date 2026-07-28]
-//                                       [--from v4.3.0] [--to HEAD]
-//                                       [--file CHANGELOG.md] [--stdout]
-//                                       [--repo-url https://github.com/o/r]
-//                                       [--no-authors]
-//   node scripts/generate-changelog.mjs --backfill [--file CHANGELOG.md]
-//                                       [--repo-url https://github.com/o/r]
-//   node scripts/generate-changelog.mjs --backfill-other [--file CHANGELOG.md]
-//                                       [--repo-url https://github.com/o/r]
-//
-// --backfill re-renders the two ends of the entries already in the file — the gitmoji of the
-// type and the avatars of the authors — leaving the description between them untouched. It is
-// a maintenance mode for when that markup changes: the sections of a released version are never
-// regenerated (manual edits to them are meant to survive), so this is the only way to bring them
-// up to the current format. It rewrites rather than appends, so it can be re-run safely.
-//
-// --backfill-other is the same kind of maintenance mode for the question-mark entries: it
-// walks the sections the generator wrote, works out the tag range of each one and appends
-// the non-conventional commits of that range that the file does not carry yet. The curated
-// history below the "---" divider — seeded from the legacy repository — and hand-written
-// sections are left alone, and entries already in the file are never repeated, so it too
-// can be re-run safely.
-//
-// Defaults: --to HEAD; --from = the latest v* tag reachable from --to (--to itself
-// included, so re-running on an already tagged commit yields an empty section rather
-// than repeating the previous version);
-// --date = the committer date (YYYY-MM-DD) of --to. Nothing depends on the
-// wall clock, so runs are reproducible.
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -73,7 +29,6 @@ function githubToken() {
 	return process.env.GITHUB_TOKEN || process.env.GH_TOKEN || "";
 }
 
-// The identity fields every commit is read with, in one place so `git log` and the API agree on them.
 const GIT_COMMIT_FORMAT = "%H\x1f%an\x1f%ae\x1f%cn\x1f%ce";
 
 function commitFromFields(fields) {
@@ -87,9 +42,6 @@ function commitFromFields(fields) {
 	};
 }
 
-// Every Conventional Commits type, in display order — the types visitors notice first
-// (features, fixes, then visual changes), the technical ones after them — each with the
-// gitmoji that labels its entries; the type is carried by the emoji, not by a heading.
 const SECTIONS = [
 	{ type: "feat", emoji: "✨" },
 	{ type: "fix", emoji: "🐛" },
@@ -104,27 +56,15 @@ const SECTIONS = [
 	{ type: "chore", emoji: "🔧" },
 ];
 
-// Commits whose subject is not a conventional commit — a branch commit that never got a type,
-// an import from the legacy repository — reach the changelog too, with their subject taken
-// whole, labelled by a question mark and listed after every known type. Merge commits, which
-// `git log --no-merges` drops, are the only thing left out. The key is deliberately not a
-// possible commit type: it has a dash, which "\w+" in CONVENTIONAL cannot match.
 const OTHER_TYPE = "non-conventional";
 const OTHER = { type: OTHER_TYPE, emoji: "❓" };
 const TYPES = [...SECTIONS, OTHER];
 
 const CONVENTIONAL = /^(\w+)(?:\(([^)]*)\))?(!)?:\s*(.+)$/;
 
-// Issue references, collected from the whole commit message and appended to the entry as
-// "(#123)" — the frontend turns those into links to the GitHub issue. Two accepted spellings:
-// a GitHub closing keyword anywhere in the body ("Closes #123", the trailer Claude Code and
-// GitHub both use), or a bare "(#123)" in the subject.
 const ISSUE_KEYWORD_REF = /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?|refs?)\s+#(\d+)/gi;
 const ISSUE_SUBJECT_REF = /\(#(\d+)\)/g;
 
-// The references are re-rendered at the end of the entry, so whatever form they took in the
-// subject is stripped from the description — together with the separator they hang off, so
-// "…tlačítko, closes #38" does not leave a dangling comma.
 const ISSUE_IN_SUBJECT = /\s*[,;–-]?\s*(?:\(#\d+\)|(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?|refs?)\s+#\d+)/gi;
 
 function collectIssues(text, pattern) {
@@ -134,16 +74,10 @@ function collectIssues(text, pattern) {
 	return issues;
 }
 
-// Avatars are requested at twice their rendered size, so they stay sharp on retina screens.
 const AVATAR_SIZE = 48;
 
-// GitHub's private-email addresses carry the account they belong to — "1273865+SmallhillCZ@…" or
-// the older "SmallhillCZ@…" — so those authors resolve to a profile without asking the API.
 const GITHUB_NOREPLY = /^(?:(\d+)\+)?([A-Za-z\d](?:[A-Za-z\d]|-(?=[A-Za-z\d])){0,38})@users\.noreply\.github\.com$/i;
 
-// GitHub signs every commit made through its web UI as its own account. That is not somebody to
-// credit, and it would otherwise sit behind a good part of the entries, so such commits are shown
-// with their author alone.
 const BOT_COMMITTER_EMAILS = new Set(["noreply@github.com"]);
 
 const GITHUB_API = "https://api.github.com";
@@ -158,16 +92,10 @@ function avatarUrl(url) {
 	return `${url}${separator}s=${AVATAR_SIZE}`;
 }
 
-/** Author of a commit GitHub knows nothing about — rendered as initials instead of an avatar. */
 function anonymousAuthor(name) {
 	return { name, login: null };
 }
 
-/**
- * Asks GitHub about a commit. It has to be pushed already, which it is whenever the changelog is
- * generated in CI; locally it may not be, and a 404 (like any other failure — no network, rate
- * limit, a repo the token cannot see) leaves the identity unresolved rather than failing the run.
- */
 async function fetchCommit({ owner, repo }, hash, token) {
 	const headers = { accept: "application/vnd.github+json", "user-agent": "generate-changelog" };
 	if (token) headers.authorization = `Bearer ${token}`;
@@ -181,10 +109,6 @@ async function fetchCommit({ owner, repo }, hash, token) {
 	return response.json();
 }
 
-/**
- * The two identities of a commit as GitHub reports them: the address git recorded, paired with the
- * account GitHub matched it to (null when it matched none).
- */
 function commitIdentities(data) {
 	return ["author", "committer"].map((role) => ({
 		name: data.commit?.[role]?.name ?? "",
@@ -194,15 +118,6 @@ function commitIdentities(data) {
 	}));
 }
 
-/**
- * Maps every distinct address in the range — authors and committers alike — to a GitHub account, so
- * entries can be rendered with their avatars. Resolution is per address, not per commit (a release
- * has a handful of people and hundreds of commits) and is attempted twice: from the address itself
- * when it is a GitHub no-reply one, otherwise by asking the API about one of that person's commits.
- * A lookup answers for both identities of the commit it names, so an address that shares a commit
- * with an already pending one — the usual author/committer pair — costs no request of its own.
- * Addresses that resolve to neither keep their name and are rendered as initials.
- */
 async function resolveIdentities(commits, repoUrl, { useApi, token }) {
 	const pending = new Map();
 	for (const { hash, authorName, authorEmail, committerName, committerEmail } of commits) {
@@ -253,32 +168,19 @@ async function resolveIdentities(commits, repoUrl, { useApi, token }) {
 	return resolved;
 }
 
-/** Key under which an identity is deduplicated — the account when there is one, the name otherwise. */
 function identityKey({ name, login }) {
 	return login ? `login:${login.toLowerCase()}` : `name:${name}`;
 }
 
-/**
- * Who to credit for a commit: its author, plus the committer when that is somebody else — a commit
- * Claude wrote and a human authored, or the other way round. Commits where the two are the same
- * person carry a single avatar.
- */
 function creditFor({ authorEmail, committerEmail }, identities) {
 	const author = identities.get(authorEmail);
 	if (!author) return null;
 
-	// a bot address can still have been resolved — a lookup answers for both identities of the commit
-	// it names, whether they were asked about or not — so it is filtered out here rather than there
 	const committer = BOT_COMMITTER_EMAILS.has(committerEmail) ? null : identities.get(committerEmail);
 	const distinct = committer && identityKey(committer) !== identityKey(author);
 	return { author, committer: distinct ? committer : null };
 }
 
-/**
- * What the changelog makes of a commit: the type its entry is listed under and the text of that
- * entry. A conventional subject gives up its description, anything else is taken whole, and both
- * lose the issue references — they are re-rendered at the end of the entry.
- */
 function describe({ subject, body }) {
 	const match = CONVENTIONAL.exec(subject);
 	const type = match?.[1].toLowerCase() ?? "";
@@ -296,17 +198,10 @@ function describe({ subject, body }) {
 	};
 }
 
-/**
- * Files a commit under a text, merging it into the entry that text already has: the same
- * description twice (e.g. a fix reapplied on another branch) collapses into one entry carrying
- * the issues — and the authors — of all of them.
- */
 function addEntry(entries, { text, issues }, commit, identities) {
 	const entry = entries.get(text) ?? { text, hash: commit.hash, issues: new Set(), credits: new Map() };
 	for (const issue of issues) entry.issues.add(issue);
 
-	// keyed by the author alone: the same person showing up with two different committers is
-	// still one person to credit, and their avatar should not appear on the entry twice
 	const credit = creditFor(commit, identities);
 	if (credit && !entry.credits.has(identityKey(credit.author))) {
 		entry.credits.set(identityKey(credit.author), credit);
@@ -325,9 +220,6 @@ function categorize(commits, identities) {
 		typed.set(item.text, item.type);
 	}
 
-	// after the typed commits, so that a subject repeating one of their descriptions — the same
-	// work committed on a branch without a type and again with one — joins that entry instead of
-	// showing up a second time under the question mark
 	for (const item of described.filter((item) => item.type === OTHER_TYPE)) {
 		addEntry(buckets.get(typed.get(item.text) ?? OTHER_TYPE), item, item.commit, identities);
 	}
@@ -343,10 +235,7 @@ function unescapeMarkdown(text) {
 	return text.replace(/\\([\\`*_[\]()])/g, "$1");
 }
 
-/** The commits of a range, newest first: hash, both identities, subject and body. */
 function commitsInRange(range) {
-	// the fields are delimited by the ASCII record/unit separators, so multi-line bodies (which is
-	// where "Closes #123" lives) survive the split
 	return git(["log", range, "--no-merges", `--format=\x1e${GIT_COMMIT_FORMAT}\x1f%s\x1f%b`])
 		.split("\x1e")
 		.filter((chunk) => chunk.trim())
@@ -356,7 +245,6 @@ function commitsInRange(range) {
 		});
 }
 
-// Up to two letters taken from the author's name, for authors with no GitHub account to show.
 function initials(name) {
 	const letters = name
 		.split(/[\s._-]+/)
@@ -370,18 +258,11 @@ function escapeHtml(text) {
 	return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-// A single avatar; somebody GitHub does not know gets a circle with their initials instead, which the
-// frontend styles the same way. The tooltip belongs to the whole credit, not to the single avatar.
 function renderAvatar({ name, login, avatar }) {
 	if (!login) return `<span class="changelog-avatar changelog-initials">${escapeHtml(initials(name))}</span>`;
 	return `<img class="changelog-avatar" src="${escapeHtml(avatar)}" alt="${escapeHtml(name)}">`;
 }
 
-// The credit closing an entry: the author's avatar, linked to their GitHub profile, and behind it —
-// mostly covered, the way GitHub stacks them — the committer's when that is somebody else. Only the
-// author's is a link, and the stack does not open up on hover. One tooltip names both people
-// ("Kopec a claude"). The inline HTML is kept plain enough to survive Angular's sanitizer, and its
-// whole layout hangs off these class names.
 function renderCredit({ author, committer }) {
 	const authorAvatar = renderAvatar(author);
 	const parts = [
@@ -396,16 +277,10 @@ function renderCredit({ author, committer }) {
 	return `<span class="changelog-credit" title="${title}">${parts.join("")}</span>`;
 }
 
-// The gitmoji opening an entry, carrying the name of the type it stands for as its tooltip —
-// the emoji alone says little to a visitor who does not know the convention.
 function renderType({ type, emoji }) {
 	return `<span class="changelog-type" title="${escapeHtml(type)}">${emoji}</span>`;
 }
 
-// Each entry opens with the gitmoji of its type and links to the commit it came from; a "#123"
-// reference is rendered after it and linked to the issue by the frontend, and the avatars of its
-// authors close the line. Markdown special characters in the description would break the link
-// syntax, so they are escaped.
 function renderEntry({ text, hash, issues, credits }, type, repoUrl) {
 	const parts = [`- ${renderType(type)} [${escapeMarkdown(text)}](${repoUrl}/commit/${hash})`];
 
@@ -419,7 +294,6 @@ function renderEntry({ text, hash, issues, credits }, type, repoUrl) {
 	return parts.join(" ");
 }
 
-// Base for the commit links, taken from the origin remote so a fork/rename needs no edit here.
 const FALLBACK_REPO_URL = "https://github.com/bosancz/interni-sekce";
 
 function repoUrlFromGit() {
@@ -435,14 +309,9 @@ function repoUrlFromGit() {
 	}
 }
 
-// What a version with nothing to show carries instead of a list — today's wording first, then the
-// one earlier releases were generated with, back when only the user-facing types reached the file.
 const NO_CHANGES = "_Bez uživatelských změn._";
 const PLACEHOLDERS = [NO_CHANGES, "_Interní vylepšení a údržba._"];
 
-// One flat list per version — the types follow the TYPES order, so features and fixes open
-// the list and the non-conventional commits close it, and each entry is labelled by its own
-// gitmoji rather than by a heading.
 function renderSection(version, date, buckets, repoUrl) {
 	const lines = [`## ${version} — ${date}`, ""];
 	const entries = TYPES.flatMap((type) =>
@@ -455,51 +324,37 @@ function renderSection(version, date, buckets, repoUrl) {
 	return lines.join("\n");
 }
 
-// The changelog modal renders its own title and intro, so the file carries no header text at all —
-// it starts straight with the newest "## <version>" section.
 const DEFAULT_HEADER = "";
 
 function prepend(file, section) {
 	let content = existsSync(file) ? readFileSync(file, "utf8") : "";
 	if (!content.trim()) content = DEFAULT_HEADER;
 
-	// Split the file into any header text and the version sections, so the new section goes on top
-	// of the list. The header may be empty — the file can start straight with "## <version>".
 	const marker = content.startsWith("## ") ? 0 : content.indexOf("\n## ");
 	if (marker === -1) {
-		// No version sections yet — append after whatever header exists.
 		const header = content.replace(/\s*$/, "");
 		return header ? `${header}\n\n${section}\n` : `${section}\n`;
 	}
 
-	const splitAt = marker === 0 ? 0 : marker + 1; // keep the newline before "## " with the header
+	const splitAt = marker === 0 ? 0 : marker + 1;
 	const header = content.slice(0, splitAt).replace(/\s*$/, "");
 	const rest = content.slice(splitAt);
 	return header ? `${header}\n\n${section}\n${rest}` : `${section}\n${rest}`;
 }
 
-// An entry already written in the file, split into the parts --backfill rewrites and the body it
-// copies over verbatim: the gitmoji (bare, or already wrapped in its titled span), the description
-// linking its commit, and the credit — in either the markup written today or the markdown image
-// link the first version of the feature emitted, so re-running only ever replaces it, never
-// doubles it.
 const WRITTEN_ENTRY =
 	/^- (?:<span class="changelog-type"[^>]*>)?(?<emoji>\S+?)(?:<\/span>)? (?<body>\[[^\]]*\]\(\S*?\/commit\/(?<hash>[0-9a-f]{7,40})\).*?)(?:\s*(?:<span class="changelog-credit"|\[!\[).*)?$/;
 
 const TYPE_BY_EMOJI = new Map(TYPES.map((type) => [type.emoji, type]));
 
-/** The identity fields of a commit, from the local clone when it has it, from the API otherwise. */
 async function readCommit(hash, repo, token) {
 	try {
-		// stderr muted: a hash this clone does not have is an expected outcome here, not a failure
 		const fields = execFileSync("git", ["log", "-1", `--format=${GIT_COMMIT_FORMAT}`, `${hash}^{commit}`], {
 			encoding: "utf8",
 			stdio: ["ignore", "pipe", "ignore"],
 		});
 		return commitFromFields(fields.trim().split("\x1f"));
 	} catch {
-		// Not in this clone — a shallow checkout, or a commit that only ever lived on a branch that
-		// was squashed away. GitHub still has it, and answers with the same fields.
 		if (!repo) return null;
 		const [author, committer] = commitIdentities(await fetchCommit(repo, hash, token));
 		return {
@@ -512,15 +367,6 @@ async function readCommit(hash, repo, token) {
 	}
 }
 
-/**
- * Rewrites the entries already in the file so they carry the current avatar markup. Only the credit
- * at the end of an entry is touched — the description, its commit link and its issue references are
- * copied over verbatim, so hand-written sections and hand-edited entries survive. An entry whose
- * commit cannot be resolved at all keeps whatever it had.
- *
- * A collapsed entry (one description, several commits) links only one of them, so it is credited to
- * that commit's author alone; the others are lost to the file's format and cannot be recovered here.
- */
 async function backfill(file, repoUrl, { useApi, token }) {
 	if (!existsSync(file)) {
 		console.error(`Error: ${file} does not exist.`);
@@ -554,8 +400,6 @@ async function backfill(file, repoUrl, { useApi, token }) {
 		const credit = commit && creditFor(commit, identities);
 		if (!credit) return line;
 
-		// the gitmoji is re-rendered from the type it stands for, so that entries written before it
-		// carried its name as a tooltip gain one; an emoji from no known type is left as it is
 		const type = TYPE_BY_EMOJI.get(emoji);
 
 		credited++;
@@ -568,14 +412,8 @@ async function backfill(file, repoUrl, { useApi, token }) {
 
 const SECTION_HEADING = /^## (\S+)\s+—/;
 
-// The rule below which the file stops being generated output: everything after it was seeded by
-// hand from the legacy bosancz/bosan.cz repository and is not regenerated from this history.
 const LEGACY_DIVIDER = /^---+\s*$/;
 
-/**
- * The generated sections of the file, newest first, each with the lines it spans. Reading stops at
- * the legacy divider, so the curated history below it is never touched.
- */
 function readSections(lines) {
 	const sections = [];
 	let end = lines.length;
@@ -594,21 +432,15 @@ function readSections(lines) {
 	return sections;
 }
 
-/** The range a released version covers: the commits it added on top of the previous tag. */
 function tagRange(version) {
 	if (!git(["tag", "--list", version])) return null;
 	try {
 		return `${git(["describe", "--tags", "--abbrev=0", "--match", "v*", `${version}^`])}..${version}`;
 	} catch {
-		return version; // the first tagged version — everything before it belongs to it
+		return version;
 	}
 }
 
-/**
- * What a section already carries: the description of every entry and the commit each of them links.
- * Both are matched against so a re-run adds nothing twice, whether the entry is still the one the
- * generator wrote or has been reworded by hand since.
- */
 function sectionContents(lines, { start, end }) {
 	const texts = new Set();
 	const hashes = new Set();
@@ -625,13 +457,6 @@ function sectionContents(lines, { start, end }) {
 	return { texts, hashes, placeholder, generated: hashes.size > 0 || placeholder !== -1 };
 }
 
-/**
- * Appends the non-conventional commits of every released version to the section that version
- * already has in the file. Sections the generator did not write — the hand-written summary of the
- * rewrite, everything below the legacy divider — and versions this clone has no tag for are left
- * alone, and so is every entry already in the file: only what is missing is added, at the end of
- * the list where the question-mark entries belong.
- */
 async function backfillOther(file, repoUrl, { useApi, token }) {
 	if (!existsSync(file)) {
 		console.error(`Error: ${file} does not exist.`);
@@ -659,7 +484,6 @@ async function backfillOther(file, repoUrl, { useApi, token }) {
 	);
 
 	let added = 0;
-	// back to front, so that splicing a section does not move the ones still to come
 	for (const section of [...missing].reverse()) {
 		const entries = [...categorize(section.commits, identities).get(OTHER_TYPE).values()]
 			.filter((entry) => !section.texts.has(entry.text) && !section.hashes.has(entry.hash))
@@ -710,7 +534,7 @@ async function main() {
 		try {
 			from = git(["describe", "--tags", "--abbrev=0", "--match", "v*", to]);
 		} catch {
-			from = null; // no earlier tag — take the whole history
+			from = null;
 		}
 	}
 

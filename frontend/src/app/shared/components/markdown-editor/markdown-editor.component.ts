@@ -5,8 +5,6 @@ import { TooltipDirective } from "../../directives/tooltip.directive";
 import { MarkdownPipe } from "../../pipes/markdown.pipe";
 
 // TODO: use the new `implements FormValueControl<string>`
-// once we update to Angular 22 (release date 2026-06-01)
-// https://push-based.io/article/goodbye-controlvalueaccessor-hello-signals
 @Component({
 	selector: "bo-markdown-editor",
 	templateUrl: "./markdown-editor.component.html",
@@ -80,8 +78,6 @@ export class MarkdownEditorComponent {
 			return selected
 				.split("\n")
 				.map((line) => {
-					// Strip any existing heading marker so switching levels
-					// replaces rather than stacks the markers.
 					const stripped = line.replace(/^#{1,6}\s+/, "");
 					return `${prefix}${stripped}`;
 				})
@@ -92,14 +88,9 @@ export class MarkdownEditorComponent {
 	private wrapSelection(wrapper: string) {
 		return this.transformSelection(
 			(selected) => {
-				// Keep leading/trailing whitespace outside the wrapper so the
-				// formatting only applies to the visible content.
 				const match = /^(\s*)([\s\S]*?)(\s*)$/.exec(selected);
 				const [, leading, inner, trailing] = match ?? ["", "", selected, ""];
 				if (!inner) return `${wrapper}${wrapper}`;
-				// Strip any existing wrappers inside the selection so the
-				// formatting isn't applied twice (e.g. selecting already-bold
-				// text and pressing Bold removes the inner markers).
 				const cleaned = inner.split(wrapper).join("");
 				return `${leading}${wrapper}${cleaned}${wrapper}${trailing}`;
 			},
@@ -122,18 +113,13 @@ export class MarkdownEditorComponent {
 		const selectedText = value.slice(selectionStart, selectionEnd);
 		const transformed = transform(selectedText);
 
-		// Use execCommand('insertText') so the change is recorded in the
-		// browser's native undo stack (CTRL+Z works after applying).
 		input.focus();
 		input.setSelectionRange(selectionStart, selectionEnd);
 
-		// Note: Although the execCommand() method is deprecated, there are still some valid use cases that do not yet have viable alternatives. For example, unlike direct DOM manipulation, modifications performed by execCommand() preserve the undo buffer (edit history). For these use cases, you can still use this method, but test to ensure cross-browser compatibility, such as by using document.queryCommandSupported().
-		// https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
 		const supportsInsertText =
 			typeof document.queryCommandSupported === "function" && document.queryCommandSupported("insertText");
 		const inserted = supportsInsertText && document.execCommand("insertText", false, transformed);
 
-		// Fallback for environments where execCommand is not supported.
 		if (!inserted) {
 			const newValue = `${value.slice(0, selectionStart)}${transformed}${value.slice(selectionEnd)}`;
 			this.content.set(newValue);

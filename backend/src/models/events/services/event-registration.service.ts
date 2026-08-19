@@ -16,7 +16,6 @@ const META_FILE = "meta.json";
 
 const IMG_DIR = path.resolve("assets/img");
 
-/** Fixed accent palette offered when generating a registration. */
 const PALETTES: Record<string, string> = {
 	black: "#1a1a1a",
 	blue: "#2a3478",
@@ -32,7 +31,6 @@ export interface RegistrationTemplate {
 
 @Injectable()
 export class EventRegistrationService {
-	/** Lists the available templates by scanning the templates directory (drop a folder, it appears). */
 	async listTemplates(): Promise<RegistrationTemplate[]> {
 		let entries: string[] = [];
 		try {
@@ -51,9 +49,7 @@ export class EventRegistrationService {
 			try {
 				const meta = JSON.parse(await readFile(path.join(dir, META_FILE), "utf-8"));
 				if (typeof meta?.name === "string" && meta.name.trim()) name = meta.name.trim();
-			} catch {
-				// no/invalid meta.json — fall back to the folder name
-			}
+			} catch {}
 			templates.push({ id, name });
 		}
 
@@ -74,7 +70,6 @@ export class EventRegistrationService {
 		return this.htmlToPdf(html, templateDir);
 	}
 
-	/** Forces the chosen accent onto the template's `--accent` variable, overriding the template's own default. */
 	private injectAccent(html: string, accent: string): string {
 		const override = `<style>:root{--accent:${accent} !important;}</style>`;
 		if (html.includes("</head>")) return html.replace("</head>", `${override}</head>`);
@@ -82,11 +77,6 @@ export class EventRegistrationService {
 		return html + override;
 	}
 
-	/**
-	 * Swaps each decorative `<img class="icon" src="…svg">` for the inline SVG recolored to the accent.
-	 * The SVG paths carry no fill, so a `fill` on the root `<svg>` tints the whole icon. Other images
-	 * (e.g. the brand logo) keep their own colors. Templates keep the `<img>` so they still preview in a browser.
-	 */
 	private inlineIcons(html: string, accent: string): string {
 		return html.replace(/<img\b[^>]*\bclass="[^"]*\bicon\b[^"]*"[^>]*>/g, (tag) => {
 			const src = tag.match(/\bsrc="([^"]+)"/)?.[1];
@@ -108,7 +98,6 @@ export class EventRegistrationService {
 		});
 	}
 
-	/** Refuses generation when the data the form relies on is missing, listing exactly what. */
 	private assertGeneratable(event: Event): void {
 		const missing: string[] = [];
 		if (!event.name?.trim()) missing.push("název akce");
@@ -120,7 +109,6 @@ export class EventRegistrationService {
 		}
 	}
 
-	/** Validates the requested template id and returns its directory (guards against path traversal). */
 	private async resolveTemplateDir(templateId: string): Promise<string> {
 		if (!templateId || !/^[a-z0-9_-]+$/i.test(templateId)) {
 			throw new BadRequestException("Neplatná šablona.");
@@ -132,7 +120,6 @@ export class EventRegistrationService {
 		return dir;
 	}
 
-	/** Renders HTML to a PDF buffer with headless Chromium. Writes a temp file in the template dir so relative images/fonts/CSS resolve. */
 	private async htmlToPdf(html: string, templateDir: string): Promise<Buffer> {
 		const tempFile = path.join(templateDir, `.render-${Date.now()}-${Math.random().toString(36).slice(2)}.html`);
 		let browser: puppeteer.Browser | undefined;
@@ -160,7 +147,6 @@ export class EventRegistrationService {
 		}
 	}
 
-	/** Picks the Chromium binary: explicit env (prod), then a system install, then Puppeteer's bundled download. */
 	private resolveChromiumPath(): string | undefined {
 		const fromEnv = process.env["PUPPETEER_EXECUTABLE_PATH"];
 		if (fromEnv) return fromEnv;
@@ -169,15 +155,13 @@ export class EventRegistrationService {
 		const systemChromium = candidates.find((candidate) => existsSync(candidate));
 		if (systemChromium) return systemChromium;
 
-		return undefined; // fall back to Puppeteer's bundled Chromium
+		return undefined;
 	}
 
 	private buildContext(event: Event, accent: string, note?: string) {
 		const contactsLine = (event.leaders || []).map((member) => {
 			const fullName = [member.firstName, member.lastName].filter(Boolean).join(" ");
-			const name = member.nickname
-				? `${member.firstName} "${member.nickname}" ${member.lastName}`
-				: fullName;
+			const name = member.nickname ? `${member.firstName} "${member.nickname}" ${member.lastName}` : fullName;
 
 			const phone = member.mobile ? `(${member.mobile})` : "";
 			const email = member.email || "";
@@ -201,7 +185,6 @@ export class EventRegistrationService {
 		};
 	}
 
-	/** Renders a markdown field the same way the web does (`MarkdownPipe`), so the PDF matches the site. */
 	private renderMarkdown(markdown: string | null | undefined): string {
 		if (!markdown?.trim()) return "";
 		return marked.parse(markdown, { async: false, breaks: true });

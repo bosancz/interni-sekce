@@ -68,7 +68,6 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	view = signal<"table" | "grid">(this.platformService.isPortrait.value ? "grid" : "table");
 
-	// True when the viewport is at least the lg breakpoint (992px) — filters inline vs. in the modal.
 	isDesktop = signal(true);
 
 	page = signal(1);
@@ -94,10 +93,8 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	filter: UrlParams = {};
 
-	// Wrapper model that owns the whole filter (declared first so the computeds below can read it).
 	private model = inject(FilterModel);
 
-	// Display state derives from the model: staged draft while the modal is open, else committed (URL).
 	selectedYears = computed(() => this.normalizeFilterValueToArray(this.model.value("year")));
 	selectedStatuses = computed(() => this.normalizeFilterValueToArray(this.model.value("status")));
 
@@ -111,14 +108,10 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		{ key: "datePublished", label: "Publikováno" },
 	];
 
-	// Row link for the declarative admin-table (navigates to the album detail).
 	rowLink = (album: SDK.AlbumResponseWithLinks) => "" + album.id;
 
-	// Header shown above the actions on the mobile ActionSheet.
 	rowActionsHeader = (album: SDK.AlbumResponseWithLinks) => album.name;
 
-	// Arrow property (stable reference + bound `this`) so it can be passed as the
-	// admin-table `[actions]` input and invoked from there per row.
 	albumActions = (album: SDK.AlbumResponseWithLinks): Action[] => [
 		{
 			text: "Publikovat",
@@ -168,7 +161,9 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	}
 
 	private async delete(album: SDK.AlbumResponseWithLinks) {
-		const confirmation = await this.modalService.deleteConfirmationModal(`Opravdu chcete smazat album ${album.name}?`);
+		const confirmation = await this.modalService.deleteConfirmationModal(
+			`Opravdu chcete smazat album ${album.name}?`,
+		);
 		if (!confirmation) return;
 
 		await this.api.PhotoGalleryApi.deleteAlbum(album.id);
@@ -176,9 +171,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		this.loadAlbums(this.filter);
 	}
 
-	yearOptions = computed<FilterPillOption[]>(() =>
-		this.years().map((year) => ({ value: year, label: year })),
-	);
+	yearOptions = computed<FilterPillOption[]>(() => this.years().map((year) => ({ value: year, label: year })));
 	statusOptions = computed<FilterPillOption[]>(() =>
 		Object.entries(AlbumStatuses).map(([key, status]) => ({
 			value: key,
@@ -201,15 +194,10 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	) {
 		addIcons({ addOutline, eyeOutline, eyeOffOutline, openOutline, trashOutline });
 
-		// Filters render inline in the toolbar on desktop and inside the filter modal on mobile;
-		// this tracks the lg breakpoint (992px) so the template can switch between the two.
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 	}
 
 	ngOnInit(): void {
-		// The URL is the committed filter: feed it to the model and load from it. It changes only when
-		// a filter is applied (live on desktop, on "Hotovo" in the modal), so the list stays put while
-		// the modal stages.
 		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onParams(params));
 		this.model.apply$.pipe(untilDestroyed(this)).subscribe((filter) => this.applyFilter(filter));
 	}
@@ -311,8 +299,6 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 			limit: this.pageSize,
 		};
 
-		// Guard against out-of-order responses: a slower earlier request must not append its
-		// rows on top of a newer filtered result.
 		const token = ++this.loadToken;
 
 		const newAlbums = await this.api.PhotoGalleryApi.listAlbums(params).then((res) => res.data);
@@ -333,8 +319,18 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 			header: "Vytvořit album",
 			inputs: [
 				{ name: "name", type: "text", placeholder: "Název alba" },
-				{ name: "dateFrom", type: "date", placeholder: "Datum od", attributes: { required: true, "aria-label": "Datum od" } },
-				{ name: "dateTill", type: "date", placeholder: "Datum do", attributes: { required: true, "aria-label": "Datum do" } },
+				{
+					name: "dateFrom",
+					type: "date",
+					placeholder: "Datum od",
+					attributes: { required: true, "aria-label": "Datum od" },
+				},
+				{
+					name: "dateTill",
+					type: "date",
+					placeholder: "Datum do",
+					attributes: { required: true, "aria-label": "Datum do" },
+				},
 			],
 			buttons: [
 				{ role: "cancel", text: "Zrušit" },
@@ -349,7 +345,6 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	}
 
 	private onCreateAlbum(albumData: SDK.AlbumCreateBody) {
-		// prevent switched date order
 		if (albumData.dateFrom && albumData.dateTill) {
 			const dates = [albumData.dateFrom, albumData.dateTill];
 			dates.sort();

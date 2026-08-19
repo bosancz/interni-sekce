@@ -36,13 +36,7 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 	search = input<boolean>(false);
 	paramsSeparator = input<string>(",");
 	showButtonMobileOnly = input<boolean>(false);
-	// Whether to render the filter button that opens the modal. Set to false when every filter lives
-	// in the toolbar (pills/popovers) and there is no projected modal content, so mobile and desktop
-	// share the same inline controls instead of a redundant modal.
 	filterModal = input<boolean>(true);
-	// When true the modal is a plain disclosure sheet whose controls (pills/toggles) write straight to
-	// the URL, so there is nothing to submit or revert — used to collect inline controls into a modal
-	// on mobile while keeping them inline on desktop.
 	immediateFilter = input<boolean>(false);
 	change = output<FilterData>();
 
@@ -57,14 +51,12 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 
 	filterCount = signal<number>(0);
 
-	// ControlValueAccessor
 	disabled = signal<boolean>(false);
 
 	constructor(
 		private router: Router,
 		private route: ActivatedRoute,
 		private modalService: ModalService,
-		// Provided by the list page as the wrapper filter model; absent for legacy (NgModel) filters.
 		@Optional() private filterModel: FilterModel | null,
 	) {
 		addIcons({ filterOutline });
@@ -88,15 +80,8 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 		const immediate = this.immediateFilter();
 
 		if (immediate) {
-			// Stage the whole filter in the model: while the modal is open, control changes only build
-			// a draft (the list behind it stays put). On confirm ("Hotovo") the model emits the full
-			// filter to apply; any other close (Zrušit / backdrop / back) drops the draft.
 			this.filterModel?.begin();
 
-			// componentModal resolves only once its back-close has settled in the router (see
-			// ModalService), so committing here — which navigates with replaceUrl — replaces the
-			// restored pre-open entry instead of stacking a new one (which would make the back button
-			// cycle through every filter change).
 			const result = await this.modalService.componentModal(FilterModalComponent, {
 				content: filterContent,
 				immediate,
@@ -113,14 +98,11 @@ export class FilterComponent implements AfterContentInit, AfterViewInit {
 		});
 
 		if (result === true) {
-			// filter submitted - set new filters
 			this.setParams();
 		} else if (result === false) {
-			// filter reset - clear all filters
 			this.setControls({});
 			this.setParams();
 		} else {
-			// filter dismissed - revert changes
 			this.setControls(this.route.snapshot.queryParams);
 		}
 	}

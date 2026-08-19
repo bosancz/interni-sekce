@@ -6,7 +6,6 @@ import { UsersRepository } from "src/models/users/repositories/users.repository"
 import { BugReportBody } from "../dto/bug-report-body.dto";
 import { BugReportMailTemplate } from "../mail-templates/bug-report/bug-report.mail-template";
 
-/** A bug report resolved into everything the email and issue need. */
 export interface BugReport {
 	reporter: string;
 	reporterUrl: string;
