@@ -1,7 +1,7 @@
 import { Logger } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 import { StaticConfig } from "src/config";
-import { DatabaseEnvironments, SeedService } from "../services/seed.service";
+import { DatabaseEnvironments, markTestDatabaseSql, SeedService } from "../services/seed.service";
 
 interface SeedCommandOptions {
 	force?: boolean;
@@ -21,24 +21,29 @@ export class SeedCommand extends CommandRunner {
 
 	@Option({
 		flags: "-f, --force",
-		description: "Seed even on a production build when the database is not marked as a test database.",
+		description: "Seed even when the database is not marked as a test database.",
 	})
 	parseForce(): boolean {
 		return true;
 	}
 
 	async run(inputs: string[], options: SeedCommandOptions): Promise<void> {
-		const environment = await this.seedService.getDatabaseEnvironment();
+		const { database, environment } = await this.seedService.getDatabaseEnvironment();
 
 		if (environment === DatabaseEnvironments.production) {
 			throw new Error(
-				`Refusing to seed test data: the database is marked as production (app.environment = '${DatabaseEnvironments.production}').`,
+				`Refusing to seed test data: database '${database}' is marked as production (app.environment = '${DatabaseEnvironments.production}').`,
 			);
 		}
 
-		if (StaticConfig.production && environment !== DatabaseEnvironments.test && !options.force) {
+		if (environment !== DatabaseEnvironments.test && !options.force) {
 			throw new Error(
-				`Refusing to seed test data on a production build: the database is not marked as a test database. Mark it with \`ALTER DATABASE <database> SET app.environment = '${DatabaseEnvironments.test}';\` or pass --force.`,
+				[
+					`Refusing to seed test data: database '${database}' is not marked as a test database (app.environment = ${environment ?? "unset"}).`,
+					`Either mark it as a test database:`,
+					`    ${markTestDatabaseSql(database)}`,
+					`or run the command with --force to seed it anyway.`,
+				].join("\n"),
 			);
 		}
 

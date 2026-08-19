@@ -95,7 +95,8 @@ nic ostatního. Datumy akcí jsou relativní ke dni spuštění, takže akce jso
 
 ### Označení testovací databáze
 
-Aby se testovací data nikdy nedostala do produkce, řídí se seed značkou uloženou **v databázi**:
+Aby se testovací data nikdy nedostala do produkce, řídí se seed značkou uloženou **v databázi**.
+Bez ní příkaz odmítne běžet a vypíše, čím ji nastavit, případně lze značku obejít pomocí `--force`:
 
 ```sql
 -- na testovací databázi (NEXT, lokální vývoj)
@@ -109,18 +110,21 @@ Značka se nastavuje jednou při zřízení databáze a nikam se nekopíruje —
 takže obnova dat z produkčního dumpu do testovací databáze o označení nepřijde. Když aplikace
 omylem míří na produkční databázi, seed se nespustí.
 
-Pravidla:
+Pravidla (stejná pro vývoj i produkční build, takže i lokální databázi je potřeba jednou označit):
 
-| stav databáze | vývojový build | produkční build (i NEXT) |
+| stav databáze | `npm run cli seed` | `SEED_ON_START` |
 | --- | --- | --- |
 | `app.environment = 'test'` | seeduje | seeduje |
-| bez značky | seeduje | odmítne, pokud nedostane `--force` |
-| `app.environment = 'production'` | odmítne vždy | odmítne vždy (ani `--force` nepomůže) |
+| bez značky | odmítne, dokud nedostane `--force` | přeskočí a zaloguje chybu |
+| `app.environment = 'production'` | odmítne vždy (ani `--force` nepomůže) | přeskočí a zaloguje chybu |
+
+Na produkčním buildu (`NODE_ENV=production`, tedy i NEXT) navíc příkaz zaloguje varování, že zakládá
+uživatele se známým heslem.
 
 ### Automatické plnění při startu
 
 S `SEED_ON_START=true` se testovací data doplní při každém startu aplikace (tedy i po nasazení
-nové verze na NEXT), hned po migracích. Tahle cesta vyžaduje značku `test` vždy — bez ní se seed
+nové verze na NEXT), hned po migracích. Tahle cesta `--force` nezná — bez značky `test` se seed
 jen přeskočí s chybovou hláškou v logu a aplikace naběhne normálně.
 
 ## Spuštění vývojového serveru

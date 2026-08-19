@@ -17,6 +17,10 @@ export const DatabaseEnvironments = {
 	production: "production",
 } as const;
 
+export function markTestDatabaseSql(database: string) {
+	return `ALTER DATABASE "${database}" SET app.environment = '${DatabaseEnvironments.test}';`;
+}
+
 @Injectable()
 export class SeedService {
 	private readonly logger = new Logger(SeedService.name);
@@ -26,20 +30,20 @@ export class SeedService {
 		private hashService: HashService,
 	) {}
 
-	async getDatabaseEnvironment(): Promise<string | null> {
-		const [row] = await this.entityManager.query<{ environment: string | null }[]>(
-			"SELECT current_setting('app.environment', true) AS environment",
+	async getDatabaseEnvironment(): Promise<{ database: string; environment: string | null }> {
+		const [row] = await this.entityManager.query<{ database: string; environment: string | null }[]>(
+			"SELECT current_database() AS database, current_setting('app.environment', true) AS environment",
 		);
 
-		return row?.environment || null;
+		return { database: row.database, environment: row.environment || null };
 	}
 
 	async seedOnStart() {
-		const environment = await this.getDatabaseEnvironment();
+		const { database, environment } = await this.getDatabaseEnvironment();
 
 		if (environment !== DatabaseEnvironments.test) {
 			this.logger.error(
-				`Databáze není označená jako testovací (app.environment = ${environment ?? "nenastaveno"}), testovací data se plnit nebudou. Označ ji příkazem: ALTER DATABASE <databáze> SET app.environment = '${DatabaseEnvironments.test}';`,
+				`Database '${database}' is not marked as a test database (app.environment = ${environment ?? "unset"}), skipping the seed. Mark it as a test database: ${markTestDatabaseSql(database)}`,
 			);
 			return;
 		}
