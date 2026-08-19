@@ -51,11 +51,9 @@ export class EventCreateModalComponent extends InputModalComponent<SDK.EventCrea
 		this.showValidationErrors = true;
 		if (!this.form.valid) return;
 
-		// get data from form
 		// TODO: create a typed form
 		let eventData = this.form.getRawValue();
 
-		// prevent switched date order
 		if (eventData.dateFrom && eventData.dateTill) {
 			const dates = [eventData.dateFrom, eventData.dateTill];
 			dates.sort();

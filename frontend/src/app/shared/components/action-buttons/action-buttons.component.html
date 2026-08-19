@@ -1,4 +1,3 @@
-<!-- PINNED -->
 @for (action of pinned(); track action) {
 	<ion-button
 		class="pinned"
@@ -17,7 +16,6 @@
 	</ion-button>
 }
 
-<!-- BUTTONS -->
 @for (action of buttons(); track action) {
 	<ion-button
 		[disabled]="action.disabled"
@@ -31,7 +29,6 @@
 	</ion-button>
 }
 
-<!-- DROPDOWN -->
 @if (menu().length > 0) {
 	<ion-button [class.d-xl-none]="!ios" (click)="openActions()">
 		<ion-icon name="ellipsis-vertical"></ion-icon>

@@ -95,7 +95,11 @@ export class MembersController {
 	@Patch(":memberId")
 	@AcLinks(MemberUpdatePermission)
 	@ApiResponse({ status: 204 })
-	async updateMember(@Req() req: Request, @Param("memberId", ParseIntPipe) memberId: number, @Body() body: MemberUpdateBody) {
+	async updateMember(
+		@Req() req: Request,
+		@Param("memberId", ParseIntPipe) memberId: number,
+		@Body() body: MemberUpdateBody,
+	) {
 		const member = await this.members.getMember(memberId);
 		if (!member) throw new NotFoundException();
 

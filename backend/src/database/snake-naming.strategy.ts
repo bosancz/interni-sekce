@@ -1,8 +1,5 @@
 import { DefaultNamingStrategy, NamingStrategyInterface } from "typeorm";
 
-// Vendored from `typeorm-naming-strategies` (https://github.com/tonivj5/typeorm-naming-strategies),
-// which doesn't support typeorm 1.x (still requires `typeorm@^0.2.0 || ^0.3.0` as a peer),
-// blocking `npm ci` with an unresolvable peer dependency conflict.
 function snakeCase(str: string): string {
 	return str
 		.replace(/([A-Z])([A-Z])([a-z])/g, "$1_$2$3")
@@ -16,9 +13,7 @@ export class SnakeNamingStrategy extends DefaultNamingStrategy implements Naming
 	}
 
 	columnName(propertyName: string, customName: string | undefined, embeddedPrefixes: string[]): string {
-		return (
-			snakeCase(embeddedPrefixes.concat("").join("_")) + (customName ? customName : snakeCase(propertyName))
-		);
+		return snakeCase(embeddedPrefixes.concat("").join("_")) + (customName ? customName : snakeCase(propertyName));
 	}
 
 	relationName(propertyName: string): string {

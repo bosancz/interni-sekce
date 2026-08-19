@@ -7,10 +7,8 @@ export class TopLeaderResponse {
 	@ApiProperty() nickname!: string;
 	@ApiProperty() groupId!: number;
 
-	/** "děťodny" — children × days, summed over the events the member led. The ranking score. */
 	@ApiProperty() childDays!: number;
 
-	/** How many events that score comes from. */
 	@ApiProperty() eventsCount!: number;
 
 	@ApiProperty() rank!: number;
@@ -35,10 +33,8 @@ export class MyRankingResponse {
 export class TopLeadersResponse {
 	@ApiProperty() year!: number;
 
-	/** děťodny of every event of the year, each event counted once — not once per leader. */
 	@ApiProperty() childDays!: number;
 
-	/** Oldest and newest year with a finished event, so the year switcher knows where to stop. */
 	@ApiProperty() firstYear!: number;
 	@ApiProperty() lastYear!: number;
 
@@ -47,14 +43,12 @@ export class TopLeadersResponse {
 	@ApiPropertyOptional({ type: MyRankingResponse }) me?: MyRankingResponse;
 }
 
-/** One of the events behind a leader's score, as shown when their row is opened. */
 export class LeaderEventResponse {
 	@ApiProperty() eventId!: number;
 	@ApiProperty() name!: string;
 	@ApiProperty() dateFrom!: string;
 	@ApiProperty() dateTill!: string;
 
-	/** Dětodny this single event was worth — children on it × how many days it lasted. */
 	@ApiProperty() childDays!: number;
 }
 

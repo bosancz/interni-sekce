@@ -2,7 +2,6 @@
 	display: block;
 }
 
-/* each parent contact is a sub-block inside the single card, separated by a hairline */
 .contact + .contact {
 	margin-top: 1rem;
 	padding-top: 1rem;
@@ -26,7 +25,6 @@
 	color: var(--bo-muted);
 }
 
-/* let the contact text be selected/copied by hand (Ionic sets user-select:none on items) */
 .relationship,
 ion-label {
 	user-select: text !important;
@@ -43,7 +41,6 @@ ion-list {
 	background: transparent;
 }
 
-/* let the card show through – drop Ionic's default grey item/hover background */
 ion-item {
 	--background: transparent;
 	--background-hover: transparent;

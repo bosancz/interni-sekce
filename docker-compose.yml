@@ -24,7 +24,7 @@ services:
     environment:
       POSTGRES_PASSWORD: password
 
-  adminer:    
+  adminer:
     image: adminer
-    ports: 
+    ports:
       - 8080:8080

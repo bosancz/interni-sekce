@@ -23,8 +23,6 @@
 					<bo-member-contact [member]="member()" (update)="updateMember($event)" />
 				</div>
 
-				<!-- Kontakty rodiče: sits below Kontakt in the left desktop column, so break the
-				     masonry column after it to push the remaining cards to the right column -->
 				<div class="card-col card-col--break-after d-lg-block" [class.d-none]="view() !== 'contacts'">
 					<bo-member-contacts [member]="member()" (update)="updateMember($event)" />
 				</div>

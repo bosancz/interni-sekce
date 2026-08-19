@@ -22,7 +22,6 @@ Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a 
 💡 Lze použít i jiné editory, ale instalace je složitější. Např. u Cursoru je nutné spouštět devcontainer přes DevPod.
 
 1. Nainstaluj
-
    - [Docker](https://www.docker.com/get-started/)
    - [VSCode](https://code.visualstudio.com/) s [rozšířením Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
@@ -35,7 +34,6 @@ Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a 
 #### Klasická instalace
 
 1. Nainstaluj
-
    - [NodeJS](https://nodejs.org/) (verze 22 nebo vyšší)
    - [PostgreSQL](https://www.postgresql.org/download/) (verze 15)
    - Editor dle volby (doporučujeme [VSCode](https://code.visualstudio.com/))

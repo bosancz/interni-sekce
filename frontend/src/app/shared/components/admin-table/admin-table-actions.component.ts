@@ -13,18 +13,6 @@ import { ellipsisVertical } from "ionicons/icons";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { Action } from "../action-buttons/action-buttons.component";
 
-/**
- * Trailing three-dots menu for `admin-table` rows. `admin-table` renders it
- * automatically (as a trailing `<td>` on desktop and inside the item on mobile)
- * when given an `[actions]` callback, so both views expose the same row actions.
- * The attribute selector lets it host on any element (`<td>` or a `<div>`). It
- * swallows the click so a row-level `routerLink` doesn't fire; on desktop it
- * opens a dropdown popover, on mobile a native ActionSheet.
- *
- * ```html
- * <td admin-table-actions [actions]="rowActions(item)" [header]="item.name"></td>
- * ```
- */
 @Component({
 	selector: "[admin-table-actions]",
 	template: `
@@ -89,16 +77,12 @@ export class AdminTableActionsComponent {
 		addIcons({ ellipsisVertical });
 	}
 
-	// Keep the menu click from bubbling up to a clickable/routerLink row.
 	@HostListener("click", ["$event"])
 	onHostClick(event: Event) {
 		event.stopPropagation();
 	}
 
 	async openActions(event: Event) {
-		// Stop the tap here so it can't fall through to the row's routerLink/click
-		// (on mobile the row is an ion-item[routerLink]; without this a tap on the
-		// trigger navigates into the row instead of opening the menu).
 		event.stopPropagation();
 		event.preventDefault();
 

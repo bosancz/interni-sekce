@@ -1,4 +1,14 @@
-import { Controller, Get, HttpCode, NotFoundException, Param, ParseIntPipe, Req, Res, StreamableFile } from "@nestjs/common";
+import {
+	Controller,
+	Get,
+	HttpCode,
+	NotFoundException,
+	Param,
+	ParseIntPipe,
+	Req,
+	Res,
+	StreamableFile,
+} from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
@@ -30,11 +40,9 @@ export class EventsAccountingController {
 		@Param("eventId", ParseIntPipe) eventId: number,
 		@Res({ passthrough: true }) res: Response,
 	): Promise<StreamableFile> {
-		//const event = await this.events.getEvent(eventId);
-
 		const event = await this.eventsRepository.findOne({
 			where: { id: eventId },
-			relations: { attendees: { member: { contacts: true } }, expenses: true }, // Important: load nested member relation
+			relations: { attendees: { member: { contacts: true } }, expenses: true },
 		});
 
 		if (!event) throw new NotFoundException();

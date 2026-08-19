@@ -12,7 +12,6 @@ ion-list {
 	gap: 0.25rem;
 }
 
-// year switcher — same shape as the calendar card's month arrows on the same dashboard
 .year-nav {
 	display: flex;
 	align-items: center;
@@ -54,7 +53,6 @@ ion-list {
 	}
 }
 
-// headline number: the whole club's děťodny for the selected year
 .total {
 	display: flex;
 	align-items: baseline;
@@ -77,7 +75,6 @@ ion-list {
 	font-size: 0.85rem;
 }
 
-// place in the ranking — the winner gets the brand yellow, the rest a neutral pill
 .rank {
 	display: inline-flex;
 	align-items: center;
@@ -145,11 +142,6 @@ ion-list {
 	color: var(--bo-muted);
 }
 
-// Popovers of this card: the děťodny explanation behind the info button and the per-leader event
-// breakdown. Ionic creates popover content outside the component's view encapsulation, so these
-// rules have to be global — ::ng-deep emits them unscoped while keeping them in this (lazily
-// loaded) component's stylesheet rather than the app-wide one, which the initial bundle budget
-// counts.
 ::ng-deep .leaders-popover {
 	--width: 320px;
 	--max-height: 60vh;
@@ -179,7 +171,6 @@ ion-list {
 		}
 	}
 
-	// the events making up one leader's score
 	.leader-events {
 		list-style: none;
 		margin: 0;

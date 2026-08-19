@@ -1,5 +1,3 @@
-/* The host is a flex column (Ionic's .ion-page) bounded by the modal's max height, so the
-   title and buttons stay put and only the projected content scrolls when it is too tall. */
 :host {
 	display: flex;
 	flex-direction: column;
@@ -15,7 +13,6 @@
 	font-weight: bold;
 }
 
-/* modals without a title (e.g. the filter sheet) should not pay for its padding */
 .title:empty {
 	display: none;
 }

@@ -18,7 +18,7 @@ import { EventTypeID, EventTypes } from "src/app/core/config/event-types";
 		"[class.disabled]": "disabled",
 		"[class.readonly]": "readonly",
 	},
-	
+
 	imports: [CommonModule],
 })
 export class EventTypeSelectorComponent implements ControlValueAccessor, AfterViewInit {
@@ -44,7 +44,6 @@ export class EventTypeSelectorComponent implements ControlValueAccessor, AfterVi
 		this.onChange(this.value());
 	}
 
-	/* ControlValueAccessor */
 	writeValue(value?: EventTypeID) {
 		this.value.set(value);
 	}
@@ -57,10 +56,7 @@ export class EventTypeSelectorComponent implements ControlValueAccessor, AfterVi
 		this.onTouched = fn;
 	}
 
-	setDisabledState(isDisabled: boolean): void {
-		// Note: Signal inputs are read-only. This method is part of ControlValueAccessor interface.
-		// The disabled state should be managed differently, but for compatibility we'll keep the method.
-	}
+	setDisabledState(isDisabled: boolean): void {}
 
 	private emitIonStyle() {
 		this.elRef.nativeElement.dispatchEvent(

@@ -22,17 +22,9 @@ interface OauthAccessPayload {
 	clientId: string;
 }
 
-// Authorization codes are exchanged immediately, so a short lifetime is safe
-// and limits the window in which a leaked code could be replayed.
 const CODE_TTL_SECONDS = 60;
-// Access tokens only need to live long enough for the client to call userinfo.
 const ACCESS_TTL_SECONDS = 300;
 
-/**
- * Minimal OAuth2 identity provider (authorization-code flow) used for SSO into
- * first-party apps such as the Wiki.js wiki. Codes and access tokens are
- * stateless signed JWTs (via {@link TokenService}); no extra storage is needed.
- */
 @Injectable()
 export class OauthService {
 	readonly accessTokenTtlSeconds = ACCESS_TTL_SECONDS;
@@ -43,7 +35,6 @@ export class OauthService {
 		private readonly users: UsersRepository,
 	) {}
 
-	/** Registered OAuth clients (only those with a configured client id). */
 	private get clients(): OauthClient[] {
 		return [this.config.oauth.wiki].filter((client) => client.clientId && client.clientSecret);
 	}
@@ -72,7 +63,6 @@ export class OauthService {
 		return this.tokenService.signToken(payload, { expiresIn: CODE_TTL_SECONDS });
 	}
 
-	/** Verify an authorization code and, if valid for this client, mint an access token. */
 	async exchangeCode(code: string, client: OauthClient, redirectUri: string): Promise<string | undefined> {
 		const payload = await this.tokenService.verifyToken<OauthCodePayload>(code);
 		if (!payload || payload.type !== "oauth_code") return undefined;
@@ -91,7 +81,6 @@ export class OauthService {
 		return this.tokenService.signToken(payload, { expiresIn: ACCESS_TTL_SECONDS });
 	}
 
-	/** Resolve the user behind an access token into OAuth userinfo claims. */
 	async getUserInfo(accessToken: string) {
 		const payload = await this.tokenService.verifyToken<OauthAccessPayload>(accessToken);
 		if (!payload || payload.type !== "oauth_access") return undefined;

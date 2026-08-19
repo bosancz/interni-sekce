@@ -58,7 +58,6 @@ export const AlbumDeletePermission = new Permission({
 	linkTo: AlbumResponse,
 	params: { albumId: "id" },
 	allowed: {
-		// Only the album's creator may delete it; admin (implicit) may delete any album.
 		vedouci: ({ doc, req }) => doc.createdById !== null && doc.createdById === req.user?.userId,
 	},
 	applicable: ({ doc }) => !doc.deletedAt,
@@ -67,7 +66,6 @@ export const AlbumDeletePermission = new Permission({
 export const AlbumRestorePermission = new Permission({
 	linkTo: AlbumResponse,
 	params: { albumId: "id" },
-	// Restore mirrors delete: only the album's creator may restore it; admin (implicit) any album.
 	allowed: {
 		vedouci: ({ doc, req }) => doc.createdById !== null && doc.createdById === req.user?.userId,
 	},
@@ -77,7 +75,6 @@ export const AlbumRestorePermission = new Permission({
 export const AlbumDeletePermanentPermission = new Permission({
 	linkTo: AlbumResponse,
 	params: { albumId: "id" },
-	// Permanent deletion is irreversible and reserved for admins only.
 	allowed: {
 		admin: true,
 	},

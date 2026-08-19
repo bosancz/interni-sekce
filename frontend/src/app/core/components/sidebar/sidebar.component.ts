@@ -16,12 +16,20 @@ import { VersionComponent } from "src/app/shared/components/version/version.comp
 	selector: "bo-sidebar",
 	templateUrl: "./sidebar.component.html",
 	styleUrl: "./sidebar.component.scss",
-	imports: [RouterLink, RouterLinkActive, IonList, IonItem, IonIcon, IonLabel, DarkModeToggleComponent, VersionComponent],
+	imports: [
+		RouterLink,
+		RouterLinkActive,
+		IonList,
+		IonItem,
+		IonIcon,
+		IonLabel,
+		DarkModeToggleComponent,
+		VersionComponent,
+	],
 })
 export class SidebarComponent {
 	title = this.api.info.pipe(map((info) => "Bošán" + (info.environmentTitle ? ` ${info.environmentTitle}` : "")));
 
-	// exact matching for home tabs (they differ only in the ?tab= query param)
 	readonly tabLinkActiveOptions: IsActiveMatchOptions = {
 		paths: "exact",
 		queryParams: "exact",
@@ -29,8 +37,6 @@ export class SidebarComponent {
 		fragment: "ignored",
 	};
 
-	// links that carry a default filter in the query params (e.g. "Akce" → ?year=budouci) still
-	// count as active once the user changes that filter on the target page
 	readonly pathLinkActiveOptions: IsActiveMatchOptions = {
 		paths: "subset",
 		queryParams: "ignored",

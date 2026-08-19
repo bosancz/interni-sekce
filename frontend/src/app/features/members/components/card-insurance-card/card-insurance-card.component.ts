@@ -41,11 +41,8 @@ export class CardInsuranceCardComponent implements OnDestroy {
 
 	public isCameraCapable = false;
 
-	/** Currently held object URL, kept so it can be revoked. */
 	private objectUrl: string | null = null;
-	/** Key of the card last loaded, to avoid re-fetching on unrelated member updates. */
 	private loadedKey: string | null = null;
-	/** Guards against out-of-order async loads superseding the latest one. */
 	private loadToken = 0;
 
 	constructor(
@@ -71,12 +68,6 @@ export class CardInsuranceCardComponent implements OnDestroy {
 		return this.platform.is("mobile") || this.platform.is("mobileweb") || this.platform.is("tablet");
 	}
 
-	/**
-	 * Loads the insurance card through the authenticated API client and renders it
-	 * from a blob object URL. Using the SDK (instead of pointing an <img> at the
-	 * protected endpoint) ensures the request carries the session credentials and
-	 * always fetches the current file rather than a cached one.
-	 */
 	private async loadInsuranceCard(member?: SDK.MemberResponseWithLinks | null) {
 		const applicable = !!member?._links?.getInsuranceCard?.applicable;
 
@@ -89,18 +80,16 @@ export class CardInsuranceCardComponent implements OnDestroy {
 		}
 
 		const key = `${member.id}:${member.insuranceCardFile}`;
-		// Already showing this exact card – skip refetching on unrelated member changes.
 		if (key === this.loadedKey && this.objectUrl) return;
 
 		const token = ++this.loadToken;
 
-		// Show the loading skeleton while fetching.
 		this.insuranceCardUrl.set(undefined);
 		this.insuranceCardSafeUrl.set(undefined);
 
 		try {
 			const res = await this.api.MembersApi.getInsuranceCard(member.id, { responseType: "blob" });
-			if (token !== this.loadToken) return; // a newer load started
+			if (token !== this.loadToken) return;
 
 			this.revokeObjectUrl();
 			this.objectUrl = URL.createObjectURL(res.data as unknown as Blob);
@@ -139,10 +128,6 @@ export class CardInsuranceCardComponent implements OnDestroy {
 		fileInput.value = "";
 	}
 
-	/**
-	 * Opens the camera modal, lets the user frame and photograph the card, then
-	 * uploads the cropped image through the same path as a file upload.
-	 */
 	async captureFromCamera() {
 		const file = await this.modalService.componentModal(InsuranceCardCameraModalComponent, undefined, {
 			cssClass: "insurance-card-camera",
@@ -159,7 +144,6 @@ export class CardInsuranceCardComponent implements OnDestroy {
 		try {
 			await this.api.MembersApi.uploadInsuranceCard(member.id, file);
 
-			// Force a reload of the preview even if the file extension is unchanged.
 			this.loadedKey = null;
 			this.insuranceCardUrl.set(undefined);
 			this.update.emit();

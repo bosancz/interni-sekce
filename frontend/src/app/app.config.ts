@@ -16,8 +16,6 @@ import { TitleService } from "./core/services/title.service";
 
 export const appConfig: ApplicationConfig = {
 	providers: [
-		// Angular 21 defaults to zoneless change detection; large parts of this app
-		// still mutate plain properties after `await`, which zoneless never picks up.
 		provideZoneChangeDetection(),
 		provideIonicAngular({
 			innerHTMLTemplatesEnabled: true,
@@ -43,10 +41,7 @@ export const appConfig: ApplicationConfig = {
 			}),
 		),
 		provideServiceWorker("ngsw-worker.js", {
-			enabled: !isDevMode(), // Disable in development, enable in production
-			// Don't wait for ApplicationRef.isStable — Ionic + observers can keep the
-			// zone busy long enough that the default `registerWhenStable:30000` makes
-			// SwUpdate.checkForUpdate() hang until the 30s fallback fires.
+			enabled: !isDevMode(),
 			registrationStrategy: "registerImmediately",
 		}),
 		{ provide: TitleStrategy, useClass: TitleService },

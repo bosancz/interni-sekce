@@ -31,11 +31,8 @@ import { SDK } from "src/sdk";
 export class DeletedAlbumsListComponent implements ViewWillEnter {
 	albums = signal<SDK.AlbumResponseWithLinks[] | undefined>(undefined);
 
-	// Header shown above the actions on the mobile ActionSheet.
 	rowActionsHeader = (album: SDK.AlbumResponseWithLinks) => album.name;
 
-	// Arrow property (stable reference + bound `this`) so it can be passed as the
-	// admin-table `[actions]` input and invoked from there per row.
 	albumActions = (album: SDK.AlbumResponseWithLinks): Action[] => [
 		{
 			text: "Obnovit",

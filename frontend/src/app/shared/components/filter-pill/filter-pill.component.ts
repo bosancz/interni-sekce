@@ -6,24 +6,12 @@ import { chevronDown } from "ionicons/icons";
 export interface FilterPillOption {
 	value: string;
 	label: string;
-	/** optional chip colours (e.g. event status colours) — tint when idle, solid when selected */
 	background?: string;
 	foreground?: string;
-	/** single chip colour (e.g. group colour) — the tint is derived from it, solid when selected */
 	color?: string;
-	/** compact label shown in the pill button when a single-select pill has this option selected (e.g. group short code) */
 	shortLabel?: string;
 }
 
-/**
- * Filter pill styled like the events "Rok" pill: a rounded button next to the search box that
- * opens a popover with a grid of toggleable chips. Drop it inside <bo-filter> with the
- * `toolbar-actions slot="end"` attributes so it is projected into the toolbar.
- *
- * The pill is dumb: it renders `selected` and emits `selectedChange`. Whether that change applies
- * immediately or is staged until the mobile filter modal is confirmed is decided by the page's
- * FilterModel, not here.
- */
 @Component({
 	selector: "bo-filter-pill",
 	templateUrl: "./filter-pill.component.html",
@@ -34,19 +22,13 @@ export class FilterPillComponent {
 	label = input.required<string>();
 	options = input<FilterPillOption[]>([]);
 	selected = input<string[]>([]);
-	// single-select pills replace the value and close on pick; multi-select toggle chips
 	multiple = input<boolean>(true);
-	// number of chip columns in the popover grid (1 = stacked single column)
 	columns = input<number>(1);
 	selectedChange = output<string[]>();
 
 	popoverOpen = signal(false);
 	popoverEvent = signal<Event | undefined>(undefined);
 
-	/**
-	 * Text shown in the pill button. Single-select pills show the selected option's short code (or
-	 * label) instead of a count, since there can only ever be one; multi-select pills show a count.
-	 */
 	buttonLabel = computed(() => {
 		const selected = this.selected();
 		if (!selected.length) return this.label();
