@@ -43,7 +43,6 @@ export class GroupViewComponent implements OnInit {
 
 	view = signal<"info" | "clenove">("clenove");
 
-	// actions the user is not permitted to use are hidden entirely (not shown disabled)
 	actions = computed<Action[]>(() => {
 		const links = this.group()?._links;
 
@@ -64,7 +63,6 @@ export class GroupViewComponent implements OnInit {
 			},
 		];
 
-		// member-list actions only make sense while looking at the Členové tab
 		if (this.view() === "clenove") {
 			actions.push(
 				{
@@ -147,7 +145,6 @@ export class GroupViewComponent implements OnInit {
 		await this.api.MembersApi.createMember(memberData);
 		await this.toastService.toast("Člen uložen.");
 
-		// re-fetch the group so bo-group-members (subscribed to currentGroup) reloads its list
 		this.groupsService.loadGroup(group.id);
 	}
 
@@ -155,7 +152,10 @@ export class GroupViewComponent implements OnInit {
 		const group = this.group();
 		if (!group) return;
 
-		const res = await this.api.MembersApi.exportMembersXlsx({ groups: [group.id], active: true }, { responseType: "blob" });
+		const res = await this.api.MembersApi.exportMembersXlsx(
+			{ groups: [group.id], active: true },
+			{ responseType: "blob" },
+		);
 
 		const blob = new Blob([res.data], {
 			type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

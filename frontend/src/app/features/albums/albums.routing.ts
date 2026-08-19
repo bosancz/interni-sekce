@@ -5,7 +5,6 @@ import { AlbumsViewInfoComponent } from "./pages/albums-view-info/albums-view-in
 import { DeletedAlbumsListComponent } from "./pages/deleted-albums-list/deleted-albums-list.component";
 
 export const albumsRoutes: Routes = [
-	// must stay ahead of the `:album` routes, which would otherwise swallow it
 	{ path: "smazane", component: DeletedAlbumsListComponent },
 
 	{ path: ":album/upravit", component: AlbumsEditComponent },

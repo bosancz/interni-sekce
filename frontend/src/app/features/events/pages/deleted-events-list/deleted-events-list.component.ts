@@ -31,11 +31,8 @@ import { SDK } from "src/sdk";
 export class DeletedEventsListComponent implements ViewWillEnter {
 	events = signal<SDK.EventResponseWithLinks[] | undefined>(undefined);
 
-	// Header shown above the actions on the mobile ActionSheet.
 	rowActionsHeader = (event: SDK.EventResponseWithLinks) => event.name;
 
-	// Arrow property (stable reference + bound `this`) so it can be passed as the
-	// admin-table `[actions]` input and invoked from there per row.
 	eventActions = (event: SDK.EventResponseWithLinks): Action[] => [
 		{
 			text: "Obnovit",

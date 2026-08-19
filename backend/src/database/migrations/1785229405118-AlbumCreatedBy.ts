@@ -1,16 +1,15 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class AlbumCreatedBy1785229405118 implements MigrationInterface {
-    name = 'AlbumCreatedBy1785229405118'
+	name = "AlbumCreatedBy1785229405118";
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE "albums" ADD "created_by_id" integer`);
-        await queryRunner.query(`ALTER TABLE "albums" ADD CONSTRAINT "FK_7cd93bf4f6279611a0b441fd26d" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE`);
+	public async up(queryRunner: QueryRunner): Promise<void> {
+		await queryRunner.query(`ALTER TABLE "albums" ADD "created_by_id" integer`);
+		await queryRunner.query(
+			`ALTER TABLE "albums" ADD CONSTRAINT "FK_7cd93bf4f6279611a0b441fd26d" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE`,
+		);
 
-        // Backfill the creator for existing albums from the linked event's leader (the lowest-id user
-        // account linked to a "leader" attendee of that event). Albums with no event, no leader, or a
-        // leader without a user account keep created_by_id NULL and are therefore admin-only to delete.
-        await queryRunner.query(`
+		await queryRunner.query(`
             UPDATE "albums" a
             SET "created_by_id" = (
                 SELECT u."id"
@@ -22,11 +21,10 @@ export class AlbumCreatedBy1785229405118 implements MigrationInterface {
             )
             WHERE a."event_id" IS NOT NULL AND a."created_by_id" IS NULL
         `);
-    }
+	}
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE "albums" DROP CONSTRAINT "FK_7cd93bf4f6279611a0b441fd26d"`);
-        await queryRunner.query(`ALTER TABLE "albums" DROP COLUMN "created_by_id"`);
-    }
-
+	public async down(queryRunner: QueryRunner): Promise<void> {
+		await queryRunner.query(`ALTER TABLE "albums" DROP CONSTRAINT "FK_7cd93bf4f6279611a0b441fd26d"`);
+		await queryRunner.query(`ALTER TABLE "albums" DROP COLUMN "created_by_id"`);
+	}
 }

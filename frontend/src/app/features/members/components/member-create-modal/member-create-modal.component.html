@@ -40,12 +40,7 @@
 			</ion-item>
 
 			<ion-item>
-				<ion-select
-					label="Role"
-					labelPlacement="stacked"
-					formControlName="role"
-					placeholder="nositel prstenu"
-				>
+				<ion-select label="Role" labelPlacement="stacked" formControlName="role" placeholder="nositel prstenu">
 					@for (role of roles | keyvalue; track role.key) {
 						<ion-select-option [value]="role.key">{{ role.value.title }}</ion-select-option>
 					}

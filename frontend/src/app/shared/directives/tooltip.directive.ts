@@ -1,17 +1,5 @@
 import { Directive, ElementRef, HostListener, OnDestroy, input } from "@angular/core";
 
-/**
- * Instant tooltip, a replacement for the native `title` attribute: that one only appears after
- * roughly a second and is never shown for disabled controls.
- *
- * Works on any element, including a disabled `ion-button` — see the `ion-button.bo-tooltip` rule in
- * `styles/ionic.scss`, which hands the disabled host its pointer events back so the hover lands.
- * That also makes the host the click target, so `blockDisabledClicks()` below swallows the click
- * again — otherwise a disabled button would run its handler.
- *
- * The bubble is appended to `<body>` (so no parent's `overflow` can clip it) and therefore styled
- * inline — a component stylesheet would not reach it.
- */
 @Directive({
 	selector: "[boTooltip]",
 	host: { class: "bo-tooltip" },
@@ -54,8 +42,6 @@ export class TooltipDirective implements OnDestroy {
 		this.tooltip = tooltip;
 		this.position(tooltip);
 
-		// A scrolled-away anchor would leave the bubble floating over nothing; capture phase so
-		// scrolling in any container counts, not just the window.
 		window.addEventListener("scroll", this.hideHandler, true);
 		window.addEventListener("resize", this.hideHandler);
 	}
@@ -75,7 +61,6 @@ export class TooltipDirective implements OnDestroy {
 		this.hide();
 	}
 
-	/** Centers the bubble on the host, flipping below / clamping to the viewport when it would not fit. */
 	private position(tooltip: HTMLElement) {
 		const gap = 6;
 		const host = this.el.nativeElement.getBoundingClientRect();
@@ -95,11 +80,6 @@ export class TooltipDirective implements OnDestroy {
 	}
 }
 
-/**
- * The pointer events handed back above land the click on the host, where Angular's `(click)` sits.
- * A capture listener on `document` runs before any listener on the target, whatever order those
- * were registered in, so this is where the click can still be stopped.
- */
 function blockDisabledClicks() {
 	if (disabledClickGuard) return;
 	disabledClickGuard = true;

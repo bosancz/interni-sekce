@@ -81,8 +81,6 @@ export class EventExpensesChartComponent implements OnInit {
 		const persons = attendees?.length || 1;
 		this.persons.set(persons);
 
-		// only include expense types that actually have an expense, so the
-		// legend doesn't list empty categories
 		const usedTypes = (Object.keys(EventExpenseTypes) as SDK.EventExpenseTypesEnum[])
 			.map((type) => ({ type, total: this.getTotalExpenseByType(expenses, type) }))
 			.filter((entry) => entry.total > 0);

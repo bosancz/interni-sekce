@@ -2,29 +2,27 @@
 	<div class="order-2 order-lg-1 col-12 col-xl-8">
 		<ion-list>
 			@for (expense of expenses(); track expense.id) {
-			<bo-item (click)="editExpense(expense)">
+				<bo-item (click)="editExpense(expense)">
+					<div class="expense-grid">
+						<span class="id-cell">{{ expense.receiptNumber }}</span>
 
-				<div class="expense-grid">
-					<span class="id-cell">{{ expense.receiptNumber }}</span>
+						<div class="badge-cell">
+							<ion-badge mode="ios" [style.background-color]="expense | eventExpense: 'color'">
+								{{ expense | eventExpense: "type" }}
+							</ion-badge>
+						</div>
 
-					<div class="badge-cell">
-						<ion-badge mode="ios" [style.background-color]="expense | eventExpense: 'color'">
-							{{ expense | eventExpense: "type" }}
-						</ion-badge>
+						<span class="amount-cell"> {{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč </span>
+
+						<div class="action-cell">
+							<bo-delete-button
+								(click)="$event.stopPropagation(); removeExpense(expense)"
+							></bo-delete-button>
+						</div>
+
+						<p class="desc-cell">{{ expense.description }}</p>
 					</div>
-
-					<span class="amount-cell">
-						{{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč
-					</span>
-
-					<div class="action-cell">
-						<bo-delete-button (click)="$event.stopPropagation(); removeExpense(expense)"></bo-delete-button>
-					</div>
-
-					<p class="desc-cell">{{ expense.description }}</p>
-
-				</div>
-			</bo-item>
+				</bo-item>
 			}
 
 			@if (expenses().length === 0) {

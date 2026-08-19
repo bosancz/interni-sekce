@@ -89,7 +89,11 @@ export class PhotosController {
 	@Patch(":photoId")
 	@AcLinks(PhotoEditPermission)
 	@ApiResponse({ status: 204 })
-	async updatePhoto(@Param("photoId", ParseIntPipe) photoId: number, @Req() req: Request, @Body() body: PhotoUpdateBody): Promise<void> {
+	async updatePhoto(
+		@Param("photoId", ParseIntPipe) photoId: number,
+		@Req() req: Request,
+		@Body() body: PhotoUpdateBody,
+	): Promise<void> {
 		const photo = await this.photos.getPhoto(photoId);
 		if (!photo) throw new NotFoundException();
 

@@ -44,10 +44,6 @@ ion-segment {
 		}
 	}
 
-	// Border lives on a wrapper we fully control (outside Ionic's shadow DOM)
-	// so an empty field is always visibly outlined — not only once focused.
-	// Note: `--ion-color-step-*` is only defined in the dark theme, so using it
-	// here would make the whole `border` declaration invalid in light mode.
 	.textarea-wrap {
 		flex-grow: 1;
 		display: flex;

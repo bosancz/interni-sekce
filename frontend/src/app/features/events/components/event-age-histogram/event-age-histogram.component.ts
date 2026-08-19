@@ -39,17 +39,14 @@ export class EventAgeHistogramComponent {
 		if (!ages.length) {
 			this.histogram.set([]);
 			this.countMax.set(0);
-			return; // no members with a birthday yet
+			return;
 		}
 
 		const min = Math.min(...ages);
 		const max = Math.max(...ages);
 
-		// pick a "nice" bucket width so the number of bars stays readable
-		// no matter how wide the actual age range is
 		const binSize = this.getBinSize(max - min + 1);
 
-		// align bucket boundaries to multiples of the bin size for tidy labels
 		const first = Math.floor(min / binSize) * binSize;
 		const last = Math.floor(max / binSize) * binSize;
 

@@ -7,17 +7,13 @@ import { Roles, StaticRoles } from "./schema/roles";
 const acOptions: AccessControlLibOptions = {
 	adminRole: UserRoles.admin,
 	getUserRoles: (req: Request) => {
-		// roles from the database
 		const roles = new Set<Roles>(req.user?.roles ?? []);
 
-		// default role for all users
 		roles.add(StaticRoles.verejnost);
 
-		// default role for registered users
 		if (req.user) {
 			roles.add(StaticRoles.uzivatel);
 
-			// leader role is reserved for users linked to an active member
 			if (req.user.memberActive) roles.add(StaticRoles.vedouci);
 		}
 

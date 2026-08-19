@@ -16,9 +16,6 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { arrowUndoOutline, eyeOutline, trashOutline } from "ionicons/icons";
 
-// Custom "columns" glyph (outlined rectangle split into three columns) — Ionicons has no columns icon.
-// Must be a `data:image/svg+xml;utf8,` URI: ionicons parses that via DOMParser, whereas a raw SVG
-// string would be treated as a URL and fetched (failing silently → invisible icon).
 const COLUMNS_ICON =
 	"data:image/svg+xml;utf8," +
 	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
@@ -81,9 +78,6 @@ export class GroupMembersComponent implements OnInit {
 	roles = MemberRoles;
 	membershipStates = MembershipStates;
 
-	// Wrapper model that owns the whole filter (declared first so the computeds below can read it).
-	// This page keeps its filters in local state (no URL), so `applied` is the committed filter the
-	// list is loaded with; the model holds the staged draft on top of it.
 	private model = inject(FilterModel);
 	private readonly defaultFilter: FilterValues = {
 		roles: [],
@@ -94,7 +88,6 @@ export class GroupMembersComponent implements OnInit {
 	};
 	private applied = signal<FilterValues>(this.defaultFilter);
 
-	// Display state derives from the model: staged draft while the modal is open, else the applied filter.
 	selectedRoles = computed(() => this.asArray(this.model.value("roles")));
 	selectedMembership = computed(() => this.asArray(this.model.value("membership")));
 
@@ -141,10 +134,8 @@ export class GroupMembersComponent implements OnInit {
 		status: false,
 	});
 
-	// True when the viewport is at least the lg breakpoint (992px) — filters inline vs. in the modal.
 	isDesktop = signal(true);
 
-	// Row helpers for admin-table (bound as inputs, so keep stable references).
 	rowLink = (member: SDK.MemberResponseWithLinks) => ["/databaze/clenove", member.id];
 	rowClass = (member: SDK.MemberResponseWithLinks) => ({
 		"member-inactive": !member.active,
@@ -154,8 +145,6 @@ export class GroupMembersComponent implements OnInit {
 	});
 	rowActionsHeader = (member: SDK.MemberResponseWithLinks) => member.nickname || member.firstName;
 
-	// Arrow property (stable reference + bound `this`) so it can be passed as the
-	// admin-table `[actions]` input and invoked from there per row.
 	memberActions = (member: SDK.MemberResponseWithLinks): Action[] => [
 		{
 			text: "Smazat",
@@ -183,8 +172,6 @@ export class GroupMembersComponent implements OnInit {
 		private platformService: PlatformService,
 	) {
 		addIcons({ arrowUndoOutline, eyeOutline, trashOutline, columns: COLUMNS_ICON });
-		// Filters render inline in the toolbar on desktop and inside the filter modal on mobile;
-		// this tracks the lg breakpoint (992px) so the template can switch between the two.
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 
 		this.model.setCommitted(this.defaultFilter);
@@ -195,8 +182,6 @@ export class GroupMembersComponent implements OnInit {
 			this.groupId = group?.id;
 			this.loadMembers();
 		});
-		// Applying the filter (live on desktop, on "Hotovo" in the modal) becomes the committed filter
-		// the list is loaded with.
 		this.model.apply$.pipe(untilDestroyed(this)).subscribe((filter) => this.applyFilter(filter));
 	}
 
@@ -235,8 +220,6 @@ export class GroupMembersComponent implements OnInit {
 
 		this.members.set(undefined);
 
-		// Each load gets a unique id so out-of-order responses from rapid filter
-		// changes can be discarded and only the latest request updates the list.
 		const loadId = ++this.latestLoadId;
 
 		const applied = this.applied();
@@ -246,12 +229,8 @@ export class GroupMembersComponent implements OnInit {
 			roles: this.asArray(applied["roles"]) as SDK.ListMembersRolesEnum[],
 			membership: this.asArray(applied["membership"]) as SDK.ListMembersMembershipEnum[],
 			groups: [this.groupId],
-			// No pagination UI here — load the whole group in one request.
 			limit: 1000,
-			// default: active only; "show inactive" reveals inactive members too
 			active: applied["showInactive"] ? undefined : true,
-			// Fetch contacts in the same request instead of one call per member,
-			// and only when a contact column is actually visible.
 			contacts: this.needsContacts() || undefined,
 			sort,
 			order: sort ? ((applied["order"] as SDK.ListMembersOrderEnum) ?? "ASC") : undefined,
@@ -273,7 +252,6 @@ export class GroupMembersComponent implements OnInit {
 			.filter(Boolean);
 	}
 
-	// Contacts are only needed when the phone/email columns are shown.
 	private needsContacts(): boolean {
 		const selections = this.viewSelections();
 		return !!selections["firstTelephone"] || !!selections["firstEmail"];
@@ -303,8 +281,6 @@ export class GroupMembersComponent implements OnInit {
 	setViewSelection(key: string, value: boolean) {
 		this.viewSelections.update((selections) => ({ ...selections, [key]: value }));
 
-		// Enabling a contact column after the list was already loaded without contacts:
-		// re-fetch so the newly visible column has data (still a single request).
 		if (value && (key === "firstTelephone" || key === "firstEmail")) {
 			const members = this.members();
 			const contactsLoaded = !!members?.some((member) => member.contacts !== undefined);

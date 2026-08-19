@@ -24,7 +24,6 @@ export class PhotosRepository {
 	getPhotos(options: GetPhotosOptions = {}, where: Brackets | string = "1=1") {
 		const q = this.repository
 			.createQueryBuilder("photos")
-			// row-level permission filter (see Permission.canWhere)
 			.where(where)
 			.orderBy("photos.order", "ASC", "NULLS LAST")
 			.addOrderBy("photos.timestamp", "ASC");
@@ -33,7 +32,6 @@ export class PhotosRepository {
 
 		if (options.offset) q.skip(options.offset);
 
-		// return the whole album for the gallery; cap only the unfiltered global list
 		if (options.limit) q.take(options.limit);
 		else if (!options.album) q.take(50);
 
@@ -60,7 +58,6 @@ export class PhotosRepository {
 		const ext = extname(file.originalname);
 		const metadata = await this.photosFiles.extractMetadata(file.buffer);
 
-		// new photos go to the end of the album's custom order
 		const { max } = await this.repository
 			.createQueryBuilder("photos")
 			.select("MAX(photos.order)", "max")
@@ -93,7 +90,6 @@ export class PhotosRepository {
 		return this.repository.save({ ...photo, id });
 	}
 
-	/** Persist a custom photo order: each photo gets the position of its id in the array. Ids from other albums are ignored. */
 	async reorderPhotos(albumId: Photo["albumId"], photoIds: number[]) {
 		await this.repository.query(
 			`UPDATE "photos" SET "order" = u.ord
@@ -107,7 +103,6 @@ export class PhotosRepository {
 		const photo = await this.repository.findOneBy({ id });
 		if (!photo) return;
 
-		// photo_faces.photo_id is ON DELETE RESTRICT, so the tagged faces have to go first
 		await this.facesRepository.delete({ photoId: id });
 
 		await this.repository.delete(id);

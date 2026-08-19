@@ -3,13 +3,6 @@ import { AlertController, IonChip, IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { addOutline } from "ionicons/icons";
 
-/**
- * Presentational editor for a single photo's tags. It offers the album's existing tag
- * vocabulary (`albumTags`) as toggleable chips — a chip is highlighted when the photo
- * carries that tag — plus a "+" chip that prompts for a brand-new tag. Every change is
- * emitted through `tagsChange`; the component keeps no state of its own, so the parent
- * owns persistence (see PhotosEditComponent.saveTags).
- */
 @Component({
 	selector: "bo-photo-tags-editor",
 	templateUrl: "./photo-tags-editor.component.html",
@@ -18,10 +11,7 @@ import { addOutline } from "ionicons/icons";
 	imports: [IonChip, IonIcon],
 })
 export class PhotoTagsEditorComponent {
-	// tags currently on the photo (null/undefined treated as empty; nullable so callers can
-	// bind the raw value without allocating a fresh [] on every change-detection pass)
 	tags = input<string[] | null>(null);
-	// every tag used anywhere in the album, offered as ready-made toggles
 	albumTags = input<string[]>([]);
 	disabled = input<boolean>(false);
 
@@ -29,8 +19,6 @@ export class PhotoTagsEditorComponent {
 
 	private alertController = inject(AlertController);
 
-	// the album vocabulary plus any tag already on this photo, de-duplicated and
-	// kept in a stable order so chips don't jump around as tags are toggled
 	availableTags = computed(() => {
 		const seen = new Set<string>();
 		const result: string[] = [];
@@ -79,13 +67,10 @@ export class PhotoTagsEditorComponent {
 	}
 
 	private commitNewTag(raw: string | undefined | null) {
-		// normalize: trim, drop a leading "#", collapse inner whitespace
 		let tag = (raw ?? "").trim().replace(/\s+/g, " ");
 		if (tag.startsWith("#")) tag = tag.slice(1).trim();
 		if (!tag) return;
 
-		// a tag already on the photo is a no-op; one that only exists elsewhere in the
-		// album (or is brand new) gets added
 		const tags = this.tags() ?? [];
 		if (tags.includes(tag)) return;
 

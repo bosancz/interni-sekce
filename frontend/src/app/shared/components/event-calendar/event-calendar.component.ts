@@ -125,9 +125,6 @@ export class EventCalendarComponent implements OnInit {
 			this.assignEvents(this.eventsCPV, "cpv");
 		});
 
-		// CPV events come from a separate endpoint that ignores the date range, so (re)load them
-		// only when the `cpv` flag toggles. Loading them inside the calendar effect above re-ran on
-		// every date/own-events change and appended a fresh copy each time, duplicating every event.
 		effect(() => {
 			if (this.cpv()) {
 				this.loadEventsCPV();
@@ -203,10 +200,8 @@ export class EventCalendarComponent implements OnInit {
 		if (!events) return;
 
 		this.calendarRows.forEach((row) => {
-			// get the monthBlock to which we assign
 			const rowBlock = row.blocks[type];
 
-			// assign events based on first and last day, convert to CalendarEvent
 			rowBlock.events = <
 				CalendarEvent<SDK.CPVEventResponseWithLinks>[] | CalendarEvent<SDK.EventResponseWithLinks>[]
 			>events

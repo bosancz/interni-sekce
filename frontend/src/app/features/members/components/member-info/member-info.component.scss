@@ -2,12 +2,10 @@
 	display: block;
 }
 
-/* rows provide their own padding – drop the default p-3 from bo-card-content */
 ::ng-deep bo-card-content {
 	padding: 0 !important;
 }
 
-/* the address is one value per line (street / city / PSČ / country) */
 .address-value {
 	white-space: pre-line;
 }

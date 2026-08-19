@@ -6,7 +6,7 @@ account — no second email/password prompt.
 ## How it works
 
 The backend acts as an **OAuth2 identity provider** (authorization-code flow).
-Wiki.js is configured as a *Generic OAuth2* client pointing at it.
+Wiki.js is configured as a _Generic OAuth2_ client pointing at it.
 
 ```
 Browser ──"Wiki"──▶ /login/<key> (Wiki.js)
@@ -29,11 +29,11 @@ invisible.
 
 Under the app's public base URL (`{APP}` = value of `BASE_URL`, e.g. `https://bosan.cz`):
 
-| Endpoint | Purpose |
-| --- | --- |
+| Endpoint                         | Purpose                |
+| -------------------------------- | ---------------------- |
 | `GET  {APP}/api/oauth/authorize` | Authorization endpoint |
-| `POST {APP}/api/oauth/token` | Token endpoint |
-| `GET  {APP}/api/oauth/userinfo` | User info endpoint |
+| `POST {APP}/api/oauth/token`     | Token endpoint         |
+| `GET  {APP}/api/oauth/userinfo`  | User info endpoint     |
 
 ## 1. Configure the backend (env vars)
 
@@ -52,17 +52,17 @@ backend afterwards. Also make sure `BASE_URL` is set to the app's public URL.
 
 In Wiki.js: **Administration → Authentication → + Add Strategy → Generic OAuth2**.
 
-| Field | Value |
-| --- | --- |
-| Client ID | `bosan-wiki` (must match `OAUTH_WIKI_CLIENT_ID`) |
-| Client Secret | the same secret as `OAUTH_WIKI_CLIENT_SECRET` |
-| Authorization Endpoint URL | `{APP}/api/oauth/authorize` |
-| Token Endpoint URL | `{APP}/api/oauth/token` |
-| User Info Endpoint URL | `{APP}/api/oauth/userinfo` |
-| Scope | `openid profile email` (any non-empty value; the backend ignores it) |
-| User ID claim | `sub` |
-| Display Name claim | `name` |
-| Email claim | `email` |
+| Field                      | Value                                                                |
+| -------------------------- | -------------------------------------------------------------------- |
+| Client ID                  | `bosan-wiki` (must match `OAUTH_WIKI_CLIENT_ID`)                     |
+| Client Secret              | the same secret as `OAUTH_WIKI_CLIENT_SECRET`                        |
+| Authorization Endpoint URL | `{APP}/api/oauth/authorize`                                          |
+| Token Endpoint URL         | `{APP}/api/oauth/token`                                              |
+| User Info Endpoint URL     | `{APP}/api/oauth/userinfo`                                           |
+| Scope                      | `openid profile email` (any non-empty value; the backend ignores it) |
+| User ID claim              | `sub`                                                                |
+| Display Name claim         | `name`                                                               |
+| Email claim                | `email`                                                              |
 
 Enable:
 
@@ -82,7 +82,7 @@ the Wiki.js strategy login URL so it skips the wiki's own login page:
 `frontend/src/app/features/home/components/home-dashboard/home-dashboard.component.html`
 
 ```html
-<a href="https://wiki.bosan.cz/login/<strategyKey>" target="_blank" rel="noopener" ...>
+<a href="https://wiki.bosan.cz/login/<strategyKey>" target="_blank" rel="noopener" ...></a>
 ```
 
 (Until then it links to `https://wiki.bosan.cz`, where the user can click

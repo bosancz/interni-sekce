@@ -12,19 +12,15 @@ export class GroupsRepository {
 	async getGroups(options: ListGroupsQuery = {}, where: Brackets | string = "1=1") {
 		const q = this.groupsRepository.createQueryBuilder("groups");
 
-		// row-level permission filter (see Permission.canWhere)
 		q.where(where);
 
 		q.addOrderBy("short_name", "ASC", "NULLS LAST");
 
 		if (options.active) q.andWhere({ active: options.active });
 
-		// deleted mode lists ONLY soft-deleted groups (so the UI can offer to restore them);
-		// the active filter above does not apply here, mirroring the events "deleted" view
 		if (options.includeDeleted) q.withDeleted().andWhere("groups.deleted_at IS NOT NULL");
 
 		if (options.includeMemberCounts) {
-			// Count active children and active leaders (instruktor + vedouci) separately.
 			q.addSelect(
 				(qb: SelectQueryBuilder<Group>) =>
 					qb

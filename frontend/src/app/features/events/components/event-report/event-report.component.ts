@@ -15,7 +15,6 @@ import { SDK } from "src/sdk";
 import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 import { AlbumSelectorModalComponent, CREATE_ALBUM } from "../album-selector-modal/album-selector-modal.component";
 
-/** Prefilled outline offered when writing a report for an event that doesn't have one yet. */
 const EVENT_REPORT_TEMPLATE = ["# Průběh akce", "", "# Problémy", "", "# Pochvaly pro členy"].join("\n");
 
 @UntilDestroy()
@@ -53,7 +52,6 @@ export class EventReportComponent {
 		addIcons({ imagesOutline, chevronForwardOutline, documentTextOutline, closeOutline });
 	}
 
-	/** opens the same markdown editor as the pencil edit button */
 	async writeReport() {
 		const result = await this.modalService.componentModal(MarkdownEditorModalComponent, {
 			header: "Report",
@@ -63,11 +61,6 @@ export class EventReportComponent {
 		if (result !== null) this.update.emit({ report: result });
 	}
 
-	/**
-	 * Single entry point for adding a gallery to the event. The selector is pre-searched with the
-	 * event name so a likely-matching album surfaces immediately: the user either links that existing
-	 * album or creates a new one (pre-filled from the event) — both paths from one modal.
-	 */
 	async addAlbum() {
 		const event = this.event();
 		if (!event || this.addingAlbum()) return;
@@ -106,12 +99,7 @@ export class EventReportComponent {
 		}
 	}
 
-	/**
-	 * Detaches the linked album from the event. The album itself is kept — only the link is cleared
-	 * by nulling the album's `eventId` (albums own the relation, so there is no event-side field).
-	 */
 	async removeAlbum(album: SDK.Album, mouseEvent?: Event) {
-		// the album row is itself a router link; keep the click from navigating away
 		mouseEvent?.stopPropagation();
 		mouseEvent?.preventDefault();
 

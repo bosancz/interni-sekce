@@ -20,7 +20,6 @@ export class DarkModeService {
 		} else {
 			document.body.classList.remove("dark");
 		}
-		// keep bootstrap utilities (.text-muted, borders, ...) in sync with the app theme
 		document.body.setAttribute("data-bs-theme", isDarkMode ? "dark" : "light");
 	}
 

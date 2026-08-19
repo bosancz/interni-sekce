@@ -87,7 +87,6 @@ export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 			let row = new PhotoRow();
 			let photo: SDK.PhotoResponseWithLinks | undefined;
 
-			// add photos to row, stop when first photo over limit
 			while (rowWidth <= this.width && (photo = photos.shift())) {
 				const ratio = photo.width && photo.height ? photo.width / photo.height : 3 / 2;
 				rowWidth += maxHeight * ratio;
@@ -116,8 +115,6 @@ export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.rows.set(rows);
 	}
 
-	// transparent 1x1 pixel — replaces a failed image so the browser stops
-	// drawing its broken-image glyph while the placeholder colour stays visible
 	private static readonly TRANSPARENT_PX =
 		"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 

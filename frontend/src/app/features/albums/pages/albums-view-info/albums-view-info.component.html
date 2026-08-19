@@ -1,9 +1,4 @@
-<bo-page-header
-	[title]="album()?.name"
-	backUrl="/galerie"
-	[actions]="headerActions()"
-	actionsHeader="Album"
-/>
+<bo-page-header [title]="album()?.name" backUrl="/galerie" [actions]="headerActions()" actionsHeader="Album" />
 
 <bo-page-content [padding]="true">
 	<bo-album-info [album]="album()" (update)="updateAlbum($event)" />

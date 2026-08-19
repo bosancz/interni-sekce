@@ -52,7 +52,6 @@ export class ActionButtonsComponent implements OnInit {
 			this.buttons.set(actions.filter((item) => !item.pinned));
 
 			if (actions.filter((item) => !item.pinned).length) {
-				// disabled actions stay in the menu (rendered disabled) so the user sees what is possible but not permitted
 				const menu = actions.filter((item) => item.text && !item.pinned);
 
 				if (!menu.some((item) => item.role === "cancel") && this.platformService.isIos.value) {

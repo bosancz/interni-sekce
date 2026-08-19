@@ -26,10 +26,7 @@
 		display: block;
 		width: 100%;
 		height: 100%;
-		// fill the cell while preserving the image's own aspect ratio, so a global
-		// img { max-width } (Ionic normalize / Bootstrap) can never stretch it
 		object-fit: cover;
-		// override any inherited max-width that would clamp width independently of height
 		max-width: none;
 	}
 

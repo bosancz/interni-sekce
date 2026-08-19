@@ -15,7 +15,9 @@
 					>
 						<div
 							class="date"
-							[class.selected]="selectedDate() === day.date || (selectedDate() && hoverDate() === day.date)"
+							[class.selected]="
+								selectedDate() === day.date || (selectedDate() && hoverDate() === day.date)
+							"
 							[class.selectedRange]="isSelectedRange(day)"
 							[class.empty]="day.properties.empty"
 						>

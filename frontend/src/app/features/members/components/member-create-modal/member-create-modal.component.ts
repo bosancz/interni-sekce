@@ -39,7 +39,6 @@ import { SDK } from "src/sdk";
 	],
 })
 export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCreateBody> implements OnInit {
-	// Preselects the group when opened from within a group's page; the user can still change it.
 	@Input() defaultGroupId?: number | null;
 
 	roles = MemberRoles;
