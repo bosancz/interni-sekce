@@ -1,0 +1,12 @@
+<div class="steps" [style.--accent]="accentColor()">
+	@for (step of steps(); track step.key) {
+		<div class="step" [class.active]="step.active">
+			<div class="rail">
+				<span class="track" [class.filled]="step.reached" [class.edge]="$first"></span>
+				<span class="dot" [class.filled]="step.reached"></span>
+				<span class="track" [class.filled]="step.reached && !step.active" [class.edge]="$last"></span>
+			</div>
+			<div class="label">{{ step.label }}</div>
+		</div>
+	}
+</div>

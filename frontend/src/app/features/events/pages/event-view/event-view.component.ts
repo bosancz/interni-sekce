@@ -35,6 +35,7 @@ import { EventAccountingComponent } from "../../components/event-accounting/even
 import { EventAttendeesComponent } from "../../components/event-attendees/event-attendees.component";
 import { EventInfoComponent } from "../../components/event-info/event-info.component";
 import { EventProblemsComponent } from "../../components/event-problems/event-problems.component";
+import { EventProgressComponent } from "../../components/event-progress/event-progress.component";
 import { EventReportComponent } from "../../components/event-report/event-report.component";
 
 export type EventStatusActions = ExtractExisting<
@@ -51,6 +52,7 @@ export type EventStatusActions = ExtractExisting<
 	imports: [
 		EventAttendeesComponent,
 		EventProblemsComponent,
+		EventProgressComponent,
 		EventAccountingComponent,
 		EventReportComponent,
 		PageFooterComponent,
