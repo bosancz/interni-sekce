@@ -56,8 +56,7 @@ export class EventTypeSelectorComponent implements ControlValueAccessor, AfterVi
 		this.onTouched = fn;
 	}
 
-	setDisabledState(isDisabled: boolean): void {
-	}
+	setDisabledState(isDisabled: boolean): void {}
 
 	private emitIonStyle() {
 		this.elRef.nativeElement.dispatchEvent(

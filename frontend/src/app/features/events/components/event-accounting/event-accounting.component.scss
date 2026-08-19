@@ -28,62 +28,62 @@ bo-item {
 }
 
 .expense-grid {
-    display: grid;
-    align-items: center;
-    width: 100%;
-    gap: 4px 12px;
-    padding: 8px 0;
+	display: grid;
+	align-items: center;
+	width: 100%;
+	gap: 4px 12px;
+	padding: 8px 0;
 
-    grid-template-areas:
-        "id badge amount action"
-        "desc desc desc desc";
+	grid-template-areas:
+		"id badge amount action"
+		"desc desc desc desc";
 
-    grid-template-columns: 1fr 90px 95px 30px;
+	grid-template-columns: 1fr 90px 95px 30px;
 }
 
 .id-cell {
-    grid-area: id;
-    font-weight: bold;
+	grid-area: id;
+	font-weight: bold;
 }
 
 .desc-cell {
-    grid-area: desc;
-    margin: 0;
-    color: var(--ion-color-medium);
-    padding-top: 4px;
+	grid-area: desc;
+	margin: 0;
+	color: var(--ion-color-medium);
+	padding-top: 4px;
 
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .badge-cell {
-    grid-area: badge;
-    display: flex;
-    justify-content: center;
+	grid-area: badge;
+	display: flex;
+	justify-content: center;
 }
 
 .amount-cell {
-    grid-area: amount;
-    text-align: right;
-    white-space: nowrap;
+	grid-area: amount;
+	text-align: right;
+	white-space: nowrap;
 }
 
 .action-cell {
-    grid-area: action;
-    display: flex;
-    justify-content: flex-end;
+	grid-area: action;
+	display: flex;
+	justify-content: flex-end;
 }
 
 @media (min-width: 768px) {
-    .expense-grid {
-        grid-template-areas: "id desc badge amount action";
+	.expense-grid {
+		grid-template-areas: "id desc badge amount action";
 
-        grid-template-columns: 50px 1fr 90px 95px 30px;
-        align-items: center;
-    }
+		grid-template-columns: 50px 1fr 90px 95px 30px;
+		align-items: center;
+	}
 
-    .desc-cell {
-        padding-top: 0;
-    }
+	.desc-cell {
+		padding-top: 0;
+	}
 }

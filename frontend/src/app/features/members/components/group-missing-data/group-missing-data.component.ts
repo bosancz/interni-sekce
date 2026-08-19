@@ -10,7 +10,7 @@ import {
 	chevronForwardOutline,
 	homeOutline,
 	medkitOutline,
-	cardOutline
+	cardOutline,
 } from "ionicons/icons";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
@@ -61,7 +61,6 @@ const MISSING_DATA_CHECKS: MissingDataCheck[] = [
 		icon: "card-outline",
 		missing: (member) => member.role === "dite" && !member.insuranceCardFile,
 	},
-
 ];
 
 @Component({

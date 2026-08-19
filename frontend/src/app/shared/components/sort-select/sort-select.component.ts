@@ -21,16 +21,7 @@ export interface SortOption {
 @Component({
 	selector: "bo-sort-select",
 	templateUrl: "./sort-select.component.html",
-	imports: [
-		FormsModule,
-		IonList,
-		IonItem,
-		IonItemDivider,
-		IonButton,
-		IonIcon,
-		IonSelect,
-		IonSelectOption,
-	],
+	imports: [FormsModule, IonList, IonItem, IonItemDivider, IonButton, IonIcon, IonSelect, IonSelectOption],
 })
 export class SortSelectComponent {
 	options = input.required<SortOption[]>();

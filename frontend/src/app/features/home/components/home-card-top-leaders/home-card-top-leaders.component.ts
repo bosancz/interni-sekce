@@ -1,6 +1,14 @@
 import { I18nPluralPipe } from "@angular/common";
 import { Component, computed, effect, signal } from "@angular/core";
-import { IonContent, IonIcon, IonItem, IonLabel, IonList, IonPopover, IonSkeletonText } from "@ionic/angular/standalone";
+import {
+	IonContent,
+	IonIcon,
+	IonItem,
+	IonLabel,
+	IonList,
+	IonPopover,
+	IonSkeletonText,
+} from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { chevronBackOutline, chevronForwardOutline, informationCircleOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";

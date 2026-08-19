@@ -51,7 +51,11 @@ export class MemberInsuranceCardController {
 	@Get("")
 	@AcLinks(MemberInsuranceCardReadPermission)
 	@ApiResponse({})
-	async getInsuranceCard(@Req() req: Request, @Res() res: Response, @Param("memberId", ParseIntPipe) memberId: number) {
+	async getInsuranceCard(
+		@Req() req: Request,
+		@Res() res: Response,
+		@Param("memberId", ParseIntPipe) memberId: number,
+	) {
 		const member = await this.membersService.getMember(memberId);
 		if (!member) throw new NotFoundException("Member not found");
 
@@ -98,7 +102,9 @@ export class MemberInsuranceCardController {
 
 		const ext = extname(file.originalname).slice(1).toLowerCase();
 		if (!ALLOWED_INSURANCE_CARD_TYPES.includes(ext)) {
-			throw new BadRequestException(`Unsupported file type. Allowed: ${ALLOWED_INSURANCE_CARD_TYPES.join(", ")}.`);
+			throw new BadRequestException(
+				`Unsupported file type. Allowed: ${ALLOWED_INSURANCE_CARD_TYPES.join(", ")}.`,
+			);
 		}
 
 		const path = this.getInsuraceCardPath(member.id, ext);

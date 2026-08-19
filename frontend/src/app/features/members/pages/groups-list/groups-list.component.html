@@ -36,7 +36,10 @@
 
 	@if (groups() !== undefined && !groups().length) {
 		@if (createGroupLink()?.allowed) {
-			<p>Žádné oddíly zatím nejsou vytvořeny. Chceš <a class="clickable" (click)="createGroup()">vytvořit první oddíl</a>?</p>
+			<p>
+				Žádné oddíly zatím nejsou vytvořeny. Chceš
+				<a class="clickable" (click)="createGroup()">vytvořit první oddíl</a>?
+			</p>
 		} @else {
 			<p>Žádné oddíly zatím nejsou vytvořeny.</p>
 		}

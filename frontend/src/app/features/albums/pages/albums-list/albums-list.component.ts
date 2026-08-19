@@ -161,7 +161,9 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	}
 
 	private async delete(album: SDK.AlbumResponseWithLinks) {
-		const confirmation = await this.modalService.deleteConfirmationModal(`Opravdu chcete smazat album ${album.name}?`);
+		const confirmation = await this.modalService.deleteConfirmationModal(
+			`Opravdu chcete smazat album ${album.name}?`,
+		);
 		if (!confirmation) return;
 
 		await this.api.PhotoGalleryApi.deleteAlbum(album.id);
@@ -169,9 +171,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		this.loadAlbums(this.filter);
 	}
 
-	yearOptions = computed<FilterPillOption[]>(() =>
-		this.years().map((year) => ({ value: year, label: year })),
-	);
+	yearOptions = computed<FilterPillOption[]>(() => this.years().map((year) => ({ value: year, label: year })));
 	statusOptions = computed<FilterPillOption[]>(() =>
 		Object.entries(AlbumStatuses).map(([key, status]) => ({
 			value: key,
@@ -319,8 +319,18 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 			header: "Vytvořit album",
 			inputs: [
 				{ name: "name", type: "text", placeholder: "Název alba" },
-				{ name: "dateFrom", type: "date", placeholder: "Datum od", attributes: { required: true, "aria-label": "Datum od" } },
-				{ name: "dateTill", type: "date", placeholder: "Datum do", attributes: { required: true, "aria-label": "Datum do" } },
+				{
+					name: "dateFrom",
+					type: "date",
+					placeholder: "Datum od",
+					attributes: { required: true, "aria-label": "Datum od" },
+				},
+				{
+					name: "dateTill",
+					type: "date",
+					placeholder: "Datum do",
+					attributes: { required: true, "aria-label": "Datum do" },
+				},
 			],
 			buttons: [
 				{ role: "cancel", text: "Zrušit" },

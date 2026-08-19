@@ -152,7 +152,10 @@ export class GroupViewComponent implements OnInit {
 		const group = this.group();
 		if (!group) return;
 
-		const res = await this.api.MembersApi.exportMembersXlsx({ groups: [group.id], active: true }, { responseType: "blob" });
+		const res = await this.api.MembersApi.exportMembersXlsx(
+			{ groups: [group.id], active: true },
+			{ responseType: "blob" },
+		);
 
 		const blob = new Blob([res.data], {
 			type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

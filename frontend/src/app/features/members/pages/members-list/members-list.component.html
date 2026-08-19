@@ -143,7 +143,12 @@
 		(sortChange)="onSortChange($event)"
 	>
 		@if (viewSelections().nickname) {
-			<admin-table-column header="Přezdívka" sort="nickname" [primary]="true" headerClass="align-middle members-nickname-column">
+			<admin-table-column
+				header="Přezdívka"
+				sort="nickname"
+				[primary]="true"
+				headerClass="align-middle members-nickname-column"
+			>
 				<ng-container *adminCell="let member">{{ member.nickname || member.firstName }}</ng-container>
 			</admin-table-column>
 		}

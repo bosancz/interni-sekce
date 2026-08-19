@@ -13,7 +13,6 @@ tr.event-small {
 	opacity: 0.8;
 }
 
-
 ion-list {
 	flex-grow: 1;
 }
@@ -42,7 +41,7 @@ ion-list {
 }
 
 ion-select::part(text) {
-  font-weight: normal;
+	font-weight: normal;
 }
 
 .events-filter-actions {

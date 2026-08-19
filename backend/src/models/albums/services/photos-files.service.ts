@@ -65,8 +65,7 @@ export class PhotosFilesService {
 					width: swapAxes ? metadata.height : metadata.width,
 					height: swapAxes ? metadata.width : metadata.height,
 				};
-			} catch {
-			}
+			} catch {}
 		}
 
 		return null;

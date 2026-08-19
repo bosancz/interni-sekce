@@ -74,8 +74,7 @@ export class GlobalSearchComponent implements AfterViewInit {
 	constructor(
 		private readonly globalSearch: GlobalSearchService,
 		private readonly router: Router,
-	) {
-	}
+	) {}
 
 	private static readonly AUTOFOCUS_DELAY_MS = 100;
 

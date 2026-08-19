@@ -20,7 +20,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiConsumes, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { RegistrationTemplateResponse } from "../dto/registration-template.dto";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Request, Response} from "express";
+import { Request, Response } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Event } from "src/models/events/entities/event.entity";
@@ -35,10 +35,9 @@ import {
 } from "../acl/events.acl";
 import { FilesService } from "../../../models/files/services/files.service";
 import { Config } from "src/config";
-import * as path from 'path';
+import * as path from "path";
 import { readFile, unlink } from "fs/promises";
-import {sanitizeFilename} from '../../../helpers/sanitizefilename'
-
+import { sanitizeFilename } from "../../../helpers/sanitizefilename";
 
 @Controller("events")
 @Authenticated()
@@ -81,7 +80,11 @@ export class EventsRegistrationsController {
 
 	@Get(":eventId/registration")
 	@AcLinks(EventRegistrationReadPermission)
-	async getEventRegistration(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number, @Res() res: Response): Promise<void> {
+	async getEventRegistration(
+		@Req() req: Request,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@Res() res: Response,
+	): Promise<void> {
 		const event = await this.events.getEvent(eventId);
 		if (!event) throw new NotFoundException();
 		EventRegistrationReadPermission.canOrThrow(req, event);
@@ -105,17 +108,18 @@ export class EventsRegistrationsController {
 		const registrationPath = path.join(registrationFolder, matchingFiles[0]);
 
 		await new Promise<void>((resolve, reject) => {
-			res.sendFile(registrationPath, (err) => (err ? reject(new InternalServerErrorException(err.message)) : resolve()));
+			res.sendFile(registrationPath, (err) =>
+				err ? reject(new InternalServerErrorException(err.message)) : resolve(),
+			);
 		});
 	}
-
 
 	@Put(":eventId/registration")
 	@HttpCode(204)
 	@AcLinks(EventRegistrationEditPermission)
 	@ApiResponse({ status: 204 })
-	@UseInterceptors(FileInterceptor("registration", { dest: './uploads_temp' }))
-	@ApiConsumes('multipart/form-data')
+	@UseInterceptors(FileInterceptor("registration", { dest: "./uploads_temp" }))
+	@ApiConsumes("multipart/form-data")
 	@ApiBody({
 		schema: {
 			type: "object",
@@ -130,27 +134,31 @@ export class EventsRegistrationsController {
 	async saveEventRegistration(
 		@Req() req: Request,
 		@Param("eventId", ParseIntPipe) eventId: number,
-		@UploadedFile() registration: Express.Multer.File): Promise<void> {
-			const event = await this.events.getEvent(eventId);
-			if (!event) throw new NotFoundException();
+		@UploadedFile() registration: Express.Multer.File,
+	): Promise<void> {
+		const event = await this.events.getEvent(eventId);
+		if (!event) throw new NotFoundException();
 
-			EventRegistrationEditPermission.canOrThrow(req, event);
-			if (!registration) throw new BadRequestException("Registration not provided")
+		EventRegistrationEditPermission.canOrThrow(req, event);
+		if (!registration) throw new BadRequestException("Registration not provided");
 
-			let data: Buffer;
-			try {
-				data = await readFile(registration.path);
-			} finally {
-				await unlink(registration.path).catch(() => undefined);
-			}
-
-			await this.storeRegistration(event, data);
+		let data: Buffer;
+		try {
+			data = await readFile(registration.path);
+		} finally {
+			await unlink(registration.path).catch(() => undefined);
 		}
+
+		await this.storeRegistration(event, data);
+	}
 
 	@Get(":eventId/registration/templates")
 	@AcLinks(EventRegistrationGeneratePermission)
 	@ApiResponse({ status: 200, type: [RegistrationTemplateResponse] })
-	async getEventRegistrationTemplates(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<RegistrationTemplateResponse[]> {
+	async getEventRegistrationTemplates(
+		@Req() req: Request,
+		@Param("eventId", ParseIntPipe) eventId: number,
+	): Promise<RegistrationTemplateResponse[]> {
 		const event = await this.events.getEvent(eventId);
 		if (!event) throw new NotFoundException();
 
@@ -196,6 +204,5 @@ export class EventsRegistrationsController {
 		await this.deleteRegistrationFiles(registrationFolder);
 		event.hasRegistration = false;
 		await this.eventsRepository.update(event.id, { hasRegistration: false });
-
 	}
 }

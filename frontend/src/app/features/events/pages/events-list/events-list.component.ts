@@ -475,9 +475,7 @@ export class EventsListComponent implements OnInit, OnDestroy {
 
 		const dateFilters = this.normalizeFilterValueToArray((filter as any)["year"]);
 		const showFuture = dateFilters.includes(this.futureFilterValue);
-		const years = dateFilters
-			.filter((value) => value !== this.futureFilterValue)
-			.map((year) => parseInt(year, 10));
+		const years = dateFilters.filter((value) => value !== this.futureFilterValue).map((year) => parseInt(year, 10));
 
 		const params: SDK.EventsApiListEventsQueryParams = {
 			search: filter.search || undefined,

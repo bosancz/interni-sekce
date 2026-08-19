@@ -16,19 +16,13 @@
 
 			<bo-item label="Termín" [loading]="!event()">
 				<p>
-					{{
-						[event()?.dateFrom, event()?.dateTill]
-							| dateRange
-					}}
+					{{ [event()?.dateFrom, event()?.dateTill] | dateRange }}
 				</p>
 				@if (canEdit()) {
 					<bo-edit-button-date-range
 						slot="end"
 						label="Datum od - do"
-						[value]="[
-							event()?.dateFrom,
-							event()?.dateTill,
-						]"
+						[value]="[event()?.dateFrom, event()?.dateTill]"
 						(update)="update.emit({ dateFrom: $event[0], dateTill: $event[1] })"
 					/>
 				}

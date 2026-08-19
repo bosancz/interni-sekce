@@ -16,7 +16,16 @@ import { VersionComponent } from "src/app/shared/components/version/version.comp
 	selector: "bo-sidebar",
 	templateUrl: "./sidebar.component.html",
 	styleUrl: "./sidebar.component.scss",
-	imports: [RouterLink, RouterLinkActive, IonList, IonItem, IonIcon, IonLabel, DarkModeToggleComponent, VersionComponent],
+	imports: [
+		RouterLink,
+		RouterLinkActive,
+		IonList,
+		IonItem,
+		IonIcon,
+		IonLabel,
+		DarkModeToggleComponent,
+		VersionComponent,
+	],
 })
 export class SidebarComponent {
 	title = this.api.info.pipe(map((info) => "Bošán" + (info.environmentTitle ? ` ${info.environmentTitle}` : "")));

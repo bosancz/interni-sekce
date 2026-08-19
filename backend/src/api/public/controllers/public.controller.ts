@@ -74,9 +74,7 @@ export class PublicController {
 		res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
 
 		await new Promise<void>((resolve, reject) => {
-			res.sendFile(path, (err) =>
-				err ? reject(new InternalServerErrorException(err.message)) : resolve(),
-			);
+			res.sendFile(path, (err) => (err ? reject(new InternalServerErrorException(err.message)) : resolve()));
 		});
 	}
 

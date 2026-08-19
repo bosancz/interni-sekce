@@ -53,7 +53,6 @@ export class AccountNotificationsComponent implements OnInit {
 
 	updateNotifications() {
 		this.userNotifications = {};
-
 	}
 
 	updateSystemNotificationStatus() {

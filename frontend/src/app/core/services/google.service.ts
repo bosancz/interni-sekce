@@ -74,7 +74,9 @@ export class GoogleService {
 			if (existing) {
 				if (typeof google !== "undefined" && google.accounts?.oauth2) return resolve();
 				existing.addEventListener("load", () => resolve());
-				existing.addEventListener("error", () => reject(new GoogleError("Failed to load Google Identity Services")));
+				existing.addEventListener("error", () =>
+					reject(new GoogleError("Failed to load Google Identity Services")),
+				);
 				return;
 			}
 

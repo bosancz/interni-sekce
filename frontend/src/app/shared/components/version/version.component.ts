@@ -22,9 +22,7 @@ export class VersionComponent {
 	updateAvailable = signal(false);
 	updating = signal(false);
 
-	private readonly apiVersion = toSignal(
-		this.api.info.pipe(map((info) => info.version.replace(/^v(?=\d)/, ""))),
-	);
+	private readonly apiVersion = toSignal(this.api.info.pipe(map((info) => info.version.replace(/^v(?=\d)/, ""))));
 
 	newVersion = computed(() => {
 		const apiVersion = this.apiVersion();

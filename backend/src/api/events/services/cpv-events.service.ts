@@ -58,7 +58,8 @@ export class CPVEventsService {
 	private parseEvents(html: string): CPVEventResponse[] {
 		const events: CPVEventResponse[] = [];
 
-		const cardRegex = /id="ctl00_ContentPlaceHolder1_dg_ctl\d+_Nazev"([\s\S]*?)(?=id="ctl00_ContentPlaceHolder1_dg_ctl\d+_Nazev"|id="ctl00_ContentPlaceHolder1_zmena")/g;
+		const cardRegex =
+			/id="ctl00_ContentPlaceHolder1_dg_ctl\d+_Nazev"([\s\S]*?)(?=id="ctl00_ContentPlaceHolder1_dg_ctl\d+_Nazev"|id="ctl00_ContentPlaceHolder1_zmena")/g;
 
 		for (const cardMatch of html.matchAll(cardRegex)) {
 			const card = cardMatch[1];
@@ -103,7 +104,9 @@ export class CPVEventsService {
 	}
 
 	private matchLabelledDate(card: string, label: string): string | null {
-		const regex = new RegExp(`<strong>${label}:</strong>\\s*<span[^>]*>\\s*(\\d{2})\\.(\\d{2})\\.(\\d{4})\\s*</span>`);
+		const regex = new RegExp(
+			`<strong>${label}:</strong>\\s*<span[^>]*>\\s*(\\d{2})\\.(\\d{2})\\.(\\d{4})\\s*</span>`,
+		);
 		const match = card.match(regex);
 		if (!match) return null;
 		const [, day, month, year] = match;
@@ -118,7 +121,9 @@ export class CPVEventsService {
 	}
 
 	private stripTags(html: string): string {
-		return this.decodeHtml(html.replace(/<[^>]*>/g, "")).replace(/\s+/g, " ").trim();
+		return this.decodeHtml(html.replace(/<[^>]*>/g, ""))
+			.replace(/\s+/g, " ")
+			.trim();
 	}
 
 	private decodeHtml(text: string): string {

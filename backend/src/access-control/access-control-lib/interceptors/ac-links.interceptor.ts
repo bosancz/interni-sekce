@@ -101,7 +101,11 @@ export class AcLinksInterceptor implements NestInterceptor {
 		return path;
 	}
 
-	private resolveParam(param: string, doc: any, params: { [param: string]: keyof any | ((doc: any) => string | number) }) {
+	private resolveParam(
+		param: string,
+		doc: any,
+		params: { [param: string]: keyof any | ((doc: any) => string | number) },
+	) {
 		const resolve = params[param];
 
 		if (typeof resolve === "function") return String(resolve(doc));

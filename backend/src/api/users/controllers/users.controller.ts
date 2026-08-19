@@ -118,7 +118,11 @@ export class UsersController {
 	@Patch(":userId")
 	@AcLinks(UserEditPermission)
 	@ApiResponse({ status: 204 })
-	async updateUser(@Req() req: Request, @Param("userId", ParseIntPipe) userId: number, @Body() body: UserUpdateBody): Promise<void> {
+	async updateUser(
+		@Req() req: Request,
+		@Param("userId", ParseIntPipe) userId: number,
+		@Body() body: UserUpdateBody,
+	): Promise<void> {
 		const user = await this.userService.getUser(userId);
 		if (!user) throw new NotFoundException();
 

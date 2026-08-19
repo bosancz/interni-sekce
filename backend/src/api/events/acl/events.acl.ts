@@ -172,7 +172,7 @@ export const EventRegistrationReadPermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
-	applicable: ({ doc }) => doc.hasRegistration
+	applicable: ({ doc }) => doc.hasRegistration,
 });
 
 export const EventRegistrationEditPermission = new Permission({
@@ -195,7 +195,7 @@ export const EventRegistrationDeletePermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
-	applicable: ({ doc }) => doc.hasRegistration
+	applicable: ({ doc }) => doc.hasRegistration,
 });
 
 export const EventReportReadPermission = new Permission({

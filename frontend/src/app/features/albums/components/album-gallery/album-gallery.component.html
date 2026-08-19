@@ -8,7 +8,7 @@
 				<span class="d-none d-lg-inline">Nahrát fotky</span>
 			</ion-button>
 
-			@if (view() === 'gallery') {
+			@if (view() === "gallery") {
 				<ion-button (click)="viewChange.emit('manage')" fill="clear">
 					<ion-icon slot="start" name="create-outline"></ion-icon>
 					<span class="d-none d-lg-inline">Upravit</span>
@@ -23,7 +23,7 @@
 	}
 </div>
 
-@if (photos()?.length && view() === 'manage') {
+@if (photos()?.length && view() === "manage") {
 	<div class="buttons">
 		@if (!selecting()) {
 			<ion-button (click)="sort.emit()" fill="clear">
@@ -34,7 +34,12 @@
 				<ion-icon slot="start" name="trash-outline"></ion-icon> Smazat
 			</ion-button>
 		} @else {
-			<ion-button (click)="deleteSelected.emit()" [disabled]="!selectedPhotos().length" fill="clear" color="danger">
+			<ion-button
+				(click)="deleteSelected.emit()"
+				[disabled]="!selectedPhotos().length"
+				fill="clear"
+				color="danger"
+			>
 				<ion-icon slot="start" name="trash-outline"></ion-icon> Smazat ({{ selectedPhotos().length }})
 			</ion-button>
 
@@ -45,7 +50,7 @@
 	</div>
 }
 
-@if (view() === 'gallery' && photos()?.length) {
+@if (view() === "gallery" && photos()?.length) {
 	<div class="tag-filter" role="group" aria-label="Filtrovat podle štítku">
 		<ion-chip
 			role="button"
@@ -80,7 +85,7 @@
 }
 
 <div class="gallery">
-	@if (view() === 'gallery') {
+	@if (view() === "gallery") {
 		@if (photos()?.length) {
 			<bo-photo-gallery
 				[photos]="displayPhotos()!"

@@ -9,11 +9,7 @@
 				[style.width]="row.height * item.ratio + 'px'"
 				[style.background-color]="item.photo.bg"
 			>
-				<img
-					[src]="item.photo | photoImageUrl: 'small'"
-					loading="lazy"
-					(error)="onImgError($event)"
-				/>
+				<img [src]="item.photo | photoImageUrl: 'small'" loading="lazy" (error)="onImgError($event)" />
 				@if (item.photo.caption) {
 					<span class="caption">{{ item.photo.caption }}</span>
 				}

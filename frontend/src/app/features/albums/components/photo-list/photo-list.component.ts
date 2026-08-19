@@ -124,8 +124,7 @@ export class PhotoListComponent implements OnInit {
 
 		if (isChecked && i === -1) {
 			selected.push(photo);
-		}
-		else if (!isChecked && i !== -1) {
+		} else if (!isChecked && i !== -1) {
 			selected.splice(i, 1);
 		}
 

@@ -1,7 +1,17 @@
 import { ApiHideProperty } from "@nestjs/swagger";
 import { Event } from "src/models/events/entities/event.entity";
 import { User } from "src/models/users/entities/user.entity";
-import { Column, DeleteDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+	Column,
+	DeleteDateColumn,
+	Entity,
+	Index,
+	JoinColumn,
+	ManyToOne,
+	OneToMany,
+	OneToOne,
+	PrimaryGeneratedColumn,
+} from "typeorm";
 import { Photo } from "./photo.entity";
 
 export enum AlbumStatus {

@@ -3,7 +3,6 @@ import { EventStatus, EventStatusID, EventStatuses } from "src/app/core/config/e
 
 @Pipe({
 	name: "eventStatus",
-
 })
 export class EventStatusPipe implements PipeTransform {
 	statuses = EventStatuses;

@@ -224,7 +224,9 @@ export default class MemberContactsComponent {
 		if (contactId) {
 			const { data: updated } = await this.api.MembersApi.updateContact(member.id, contactId, data);
 			this.contacts.set(
-				(this.contacts() ?? []).map((c) => (c.id === contactId ? (updated as SDK.MemberContactResponseWithLinks) : c)),
+				(this.contacts() ?? []).map((c) =>
+					c.id === contactId ? (updated as SDK.MemberContactResponseWithLinks) : c,
+				),
 			);
 		} else {
 			const { data: created } = await this.api.MembersApi.createContact(member.id, data);

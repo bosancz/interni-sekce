@@ -7,8 +7,7 @@ import { sanitizeFilename } from "../../../helpers/sanitizefilename";
 import { string2Date } from "../../../helpers/string2date";
 @Injectable()
 export class EventAccountingService {
-	constructor() {
-	}
+	constructor() {}
 
 	async generateAccounting(event: Event): Promise<{ fileBuffer: Buffer; fileName: string }> {
 		const fileName = `Uctovani_${sanitizeFilename(event.name)}.xlsx`;

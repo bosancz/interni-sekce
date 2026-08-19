@@ -38,7 +38,8 @@ ion-item {
 
 		--nav-icon-mask: var(--nav-icon-src) no-repeat center / contain;
 		-webkit-mask: var(--nav-icon-mask);
-		mask: var(--nav-icon-mask), var(--nav-icon-mask), var(--nav-icon-mask), var(--nav-icon-mask),
+		mask:
+			var(--nav-icon-mask), var(--nav-icon-mask), var(--nav-icon-mask), var(--nav-icon-mask),
 			var(--nav-icon-mask), var(--nav-icon-mask), var(--nav-icon-mask), var(--nav-icon-mask);
 		mask-position:
 			calc(50% - 0.5px) calc(50% - 0.5px),

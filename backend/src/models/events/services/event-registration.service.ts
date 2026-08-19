@@ -49,8 +49,7 @@ export class EventRegistrationService {
 			try {
 				const meta = JSON.parse(await readFile(path.join(dir, META_FILE), "utf-8"));
 				if (typeof meta?.name === "string" && meta.name.trim()) name = meta.name.trim();
-			} catch {
-			}
+			} catch {}
 			templates.push({ id, name });
 		}
 
@@ -162,9 +161,7 @@ export class EventRegistrationService {
 	private buildContext(event: Event, accent: string, note?: string) {
 		const contactsLine = (event.leaders || []).map((member) => {
 			const fullName = [member.firstName, member.lastName].filter(Boolean).join(" ");
-			const name = member.nickname
-				? `${member.firstName} "${member.nickname}" ${member.lastName}`
-				: fullName;
+			const name = member.nickname ? `${member.firstName} "${member.nickname}" ${member.lastName}` : fullName;
 
 			const phone = member.mobile ? `(${member.mobile})` : "";
 			const email = member.email || "";

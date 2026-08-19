@@ -70,7 +70,11 @@ export class GroupsController {
 	@Patch(":groupId")
 	@AcLinks(GroupEditPermission)
 	@ApiResponse({ status: HttpStatus.OK })
-	async updateGroup(@Param("groupId", ParseIntPipe) groupId: number, @Req() req: Request, @Body() body: UpdateGroupBody) {
+	async updateGroup(
+		@Param("groupId", ParseIntPipe) groupId: number,
+		@Req() req: Request,
+		@Body() body: UpdateGroupBody,
+	) {
 		const group = await this.groups.getGroup(groupId);
 		if (!group) throw new NotFoundException();
 
@@ -115,7 +119,9 @@ export class GroupsController {
 			await this.groups.hardDeleteGroup(groupId);
 		} catch (err) {
 			if (err instanceof QueryFailedError && (err.driverError as { code?: string }).code === "23503") {
-				throw new ConflictException("Oddíl nelze trvale smazat, protože jsou na něj navázané záznamy (např. členové).");
+				throw new ConflictException(
+					"Oddíl nelze trvale smazat, protože jsou na něj navázané záznamy (např. členové).",
+				);
 			}
 			throw err;
 		}

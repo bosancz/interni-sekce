@@ -3,7 +3,6 @@ import { Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
 	name: "dateRange",
-
 })
 export class DateRangePipe implements PipeTransform {
 	transform(

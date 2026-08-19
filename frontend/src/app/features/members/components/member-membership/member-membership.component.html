@@ -21,8 +21,13 @@
 				<div class="bo-info-row">
 					<span class="bo-info-label">Aktivní</span>
 					<span class="bo-info-action">
-						<span class="bo-info-value">{{ memberValue.active === undefined ? "-" : memberValue.active ? "Ano" : "Ne" }}</span>
-						<bo-edit-button [disabled]="!memberValue._links.updateMember.allowed" (click)="editActivity()" />
+						<span class="bo-info-value">{{
+							memberValue.active === undefined ? "-" : memberValue.active ? "Ano" : "Ne"
+						}}</span>
+						<bo-edit-button
+							[disabled]="!memberValue._links.updateMember.allowed"
+							(click)="editActivity()"
+						/>
 					</span>
 				</div>
 
@@ -46,7 +51,10 @@
 					<span class="bo-info-label">Stav členství</span>
 					<span class="bo-info-action">
 						<span class="bo-info-value">{{ (memberValue | member: "membership") || "-" }}</span>
-						<bo-edit-button [disabled]="!memberValue._links.updateMember.allowed" (click)="editMembership()" />
+						<bo-edit-button
+							[disabled]="!memberValue._links.updateMember.allowed"
+							(click)="editMembership()"
+						/>
 					</span>
 				</div>
 			</div>

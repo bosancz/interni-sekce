@@ -13,9 +13,7 @@ export class GoogleService {
 
 		const auth = new google.auth.GoogleAuth({
 			keyFile: keyFilePath,
-			scopes: [
-				"https://mail.google.com/",
-			],
+			scopes: ["https://mail.google.com/"],
 			clientOptions: {
 				subject: this.config.google.impersonate,
 			},

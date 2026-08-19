@@ -11,7 +11,15 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { alertCircle, alertCircleOutline, ellipse, helpCircle, medkitOutline, trashOutline, warning } from "ionicons/icons";
+import {
+	alertCircle,
+	alertCircleOutline,
+	ellipse,
+	helpCircle,
+	medkitOutline,
+	trashOutline,
+	warning,
+} from "ionicons/icons";
 import { DefaultHealthSeverity, HealthSeverities, HealthSeverityOrder } from "src/app/core/config/health-severity";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";

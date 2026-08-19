@@ -13,9 +13,7 @@ export class SnakeNamingStrategy extends DefaultNamingStrategy implements Naming
 	}
 
 	columnName(propertyName: string, customName: string | undefined, embeddedPrefixes: string[]): string {
-		return (
-			snakeCase(embeddedPrefixes.concat("").join("_")) + (customName ? customName : snakeCase(propertyName))
-		);
+		return snakeCase(embeddedPrefixes.concat("").join("_")) + (customName ? customName : snakeCase(propertyName));
 	}
 
 	relationName(propertyName: string): string {
