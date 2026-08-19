@@ -40,6 +40,10 @@ const STEP_LABELS: Record<EventStatusID, string> = {
 	finalized: "Uzavřená",
 };
 
+const PAST_STEP_LABELS: Partial<Record<EventProgressStep["key"], string>> = {
+	pending: "Schválena",
+};
+
 const NO_LEADER_LABEL = "Bez vedoucího";
 
 @Component({
@@ -102,10 +106,11 @@ export class EventProgressComponent {
 		const statusSteps = STEPS.map((step, index) => {
 			const status = index === this.statusIndex() ? this.status()! : step.statuses[0];
 			const noLeader = index === this.statusIndex() && status === "draft" && this.noLeader();
+			const past = this.statusIndex() > index;
 
 			return {
 				key: step.key,
-				label: noLeader ? NO_LEADER_LABEL : STEP_LABELS[status],
+				label: noLeader ? NO_LEADER_LABEL : (past && PAST_STEP_LABELS[step.key]) || STEP_LABELS[status],
 				reached: this.activeIndex() >= index,
 				active: index === this.activeIndex(),
 				clickable: false,
