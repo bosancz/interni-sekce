@@ -2,6 +2,7 @@
 
 ## Code style
 
+- **Injected dependencies:** services are named with the `Service` suffix (`private notificationsService: NotificationsService`), repositories without it but with the full entity name (`private notificationSettings: NotificationSettingsRepository`).
 - **No explanatory comments in the code.** Do not add them, and do not extend the ones already there — a comment that reads like a note to the reviewer belongs in the commit message or in this file, not in the source. What is worth remembering across sessions goes into `CLAUDE.md`.
 
 ## Commits & changelog
