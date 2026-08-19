@@ -13,8 +13,8 @@ import { MemberContact } from "src/models/members/entities/member-contact.entity
 import { Member } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
 import { EntityManager } from "typeorm";
-import { extname } from "path";
-import sharp = require("sharp");
+import { readFile } from "fs/promises";
+import { extname, resolve } from "path";
 import {
 	SeedAlbums,
 	SeedEventSchedules,
@@ -29,6 +29,8 @@ export const DatabaseEnvironments = {
 	test: "test",
 	production: "production",
 } as const;
+
+export const SeedPhotosDir = "assets/seed/photos";
 
 export const SeedPasswordMissing =
 	"Refusing to seed test data: set the SEED_PASSWORD environment variable to the password every seeded user gets.";
@@ -328,7 +330,7 @@ export class SeedService {
 		uploadedById: number | null,
 	) {
 		for (const [index, seedPhoto] of seedPhotos.entries()) {
-			const buffer = await this.renderPhoto(seedPhoto);
+			const buffer = await readFile(resolve(SeedPhotosDir, seedPhoto.name));
 			const metadata = await this.photosFiles.extractMetadata(buffer);
 
 			const existing = await t.findOne(Photo, { where: { albumId, name: seedPhoto.name } });
@@ -352,46 +354,5 @@ export class SeedService {
 
 			await this.photosFiles.savePhotoFiles(albumId, photo.id, extname(seedPhoto.name), buffer);
 		}
-	}
-
-	private async renderPhoto(seedPhoto: SeedPhoto) {
-		const { sky, sun, mountains, hills, water, waves, boat } = seedPhoto.scene;
-
-		const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
-			<defs>
-				<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-					<stop offset="0%" stop-color="${sky[0]}"/>
-					<stop offset="100%" stop-color="${sky[1]}"/>
-				</linearGradient>
-				<linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
-					<stop offset="0%" stop-color="${water[0]}"/>
-					<stop offset="100%" stop-color="${water[1]}"/>
-				</linearGradient>
-			</defs>
-			<rect width="1200" height="800" fill="url(#sky)"/>
-			<circle cx="930" cy="180" r="70" fill="${sun}" opacity="0.9"/>
-			<path d="M0 470 L210 250 L330 340 L470 190 L640 470 Z" fill="${mountains}"/>
-			<path d="M470 190 L520 235 L420 235 Z" fill="#F2F2F2" opacity="0.85"/>
-			<path d="M560 470 L760 300 L900 400 L1050 290 L1200 470 Z" fill="${mountains}" opacity="0.75"/>
-			<path d="M0 500 Q 200 420 420 490 T 820 470 T 1200 500 L1200 540 L0 540 Z" fill="${hills}"/>
-			<rect y="520" width="1200" height="280" fill="url(#water)"/>
-			<g fill="none" stroke="${waves}" stroke-width="6" stroke-linecap="round" opacity="0.55">
-				<path d="M40 600 q 40 -18 80 0 t 80 0"/>
-				<path d="M300 650 q 40 -18 80 0 t 80 0"/>
-				<path d="M700 615 q 40 -18 80 0 t 80 0"/>
-				<path d="M980 690 q 40 -18 80 0 t 80 0"/>
-				<path d="M160 730 q 40 -18 80 0 t 80 0"/>
-				<path d="M520 745 q 40 -18 80 0 t 80 0"/>
-			</g>
-			<g transform="translate(430 600)">
-				<path d="M0 40 Q 150 110 300 40 Q 150 76 0 40 Z" fill="${boat}"/>
-				<path d="M96 40 L120 -30" stroke="${boat}" stroke-width="9" stroke-linecap="round"/>
-				<path d="M204 40 L180 -30" stroke="${boat}" stroke-width="9" stroke-linecap="round"/>
-				<circle cx="112" cy="14" r="19" fill="${hills}"/>
-				<circle cx="188" cy="14" r="19" fill="${hills}"/>
-			</g>
-		</svg>`;
-
-		return sharp(Buffer.from(svg)).jpeg({ quality: 82 }).toBuffer();
 	}
 }

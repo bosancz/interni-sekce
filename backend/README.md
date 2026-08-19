@@ -97,8 +97,8 @@ npm run cli seed
 Vytvoří vzorová data v hobitím duchu — tři oddíly (Trpaslíci, Nepřátelé a Klub přátel), patnáct
 členů, sedm budoucích akcí různých typů a jedno album. Akce jsou vždy posazené na skutečné dny
 v týdnu — víkend (so–ne), prodloužený víkend (pá–ne), nebo týden (so–so) — a dvě z nich jsou
-zatím bez vedoucích. Album má dvě fotky, které se při seedu vygenerují a uloží (originál
-i náhledy) do `DATA_DIR`. Heslo testovacích uživatelů se bere
+zatím bez vedoucích. Album má pět fotek — soubory leží v `assets/seed/photos` a seed je uloží
+(originál i náhledy) do `DATA_DIR`. Heslo testovacích uživatelů se bere
 z proměnné `SEED_PASSWORD`; bez ní příkaz odmítne běžet, aby se nikde nezakládaly účty se
 zabudovaným heslem. Všichni uživatelé jsou navázaní na aktivního člena v Klubu přátel, takže mají
 roli vedoucího:

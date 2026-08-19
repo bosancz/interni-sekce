@@ -84,22 +84,11 @@ export interface SeedEvent {
 	expenses?: SeedEventExpense[];
 }
 
-export interface SeedPhotoScene {
-	sky: [string, string];
-	sun: string;
-	mountains: string;
-	hills: string;
-	water: [string, string];
-	waves: string;
-	boat: string;
-}
-
 export interface SeedPhoto {
 	name: string;
 	title: string;
 	caption: string;
 	tags: string[];
-	scene: SeedPhotoScene;
 }
 
 export interface SeedAlbum {
@@ -493,34 +482,34 @@ export const SeedAlbums: SeedAlbum[] = [
 		days: 3,
 		photos: [
 			{
-				name: "vyplouvame-z-hobitina.jpg",
-				title: "Vyplouváme z Hobitína",
-				caption: "Ranní mlha nad Vodou, Bilbo bez kapesníku a s pádlem.",
-				tags: ["voda", "Hobitín"],
-				scene: {
-					sky: ["#BFE3F2", "#FDF3D0"],
-					sun: "#FEC503",
-					mountains: "#7A8F6B",
-					hills: "#36802D",
-					water: ["#2E6E8E", "#1B4A63"],
-					waves: "#BFE3F2",
-					boat: "#5A3A1B",
-				},
+				name: "bilbo-pred-pytlikovem.jpg",
+				title: "Bilbo před Pytlíkovem",
+				caption: "Ráno odjezdu. Kapesník zůstal doma.",
+				tags: ["výprava", "Hobitín"],
 			},
 			{
-				name: "sudy-na-lesni-rece.jpg",
-				title: "Sudy na Lesní řece",
-				caption: "Splutí z elfích sklepů až k Dlouhému jezeru, tentokrát i s pádly.",
-				tags: ["voda", "Lesní řeka"],
-				scene: {
-					sky: ["#3B2A4A", "#B4552F"],
-					sun: "#F2A65A",
-					mountains: "#2B2233",
-					hills: "#1F3A2C",
-					water: ["#173A4A", "#0B1F2B"],
-					waves: "#4E8FA6",
-					boat: "#8B4513",
-				},
+				name: "gandalf-na-ceste.jpg",
+				title: "Gandalf na cestě",
+				caption: "Vedoucí nechodí pozdě ani brzy, přichází přesně tehdy, kdy zamýšlí.",
+				tags: ["výprava", "vedoucí"],
+			},
+			{
+				name: "thorin-pod-osamelou-horou.jpg",
+				title: "Thorin pod Osamělou horou",
+				caption: "Nástup před výpravou k Osamělé hoře.",
+				tags: ["výprava", "hory"],
+			},
+			{
+				name: "glum-u-jezera.jpg",
+				title: "Glum u jezera",
+				caption: "U jezera pod Mlžnými horami. Prsten se toho dne nenašel.",
+				tags: ["voda", "jezero"],
+			},
+			{
+				name: "bilbo-na-ceste.jpg",
+				title: "Bilbo na cestě",
+				caption: "Tam a zase zpátky, tentokrát s bagáží.",
+				tags: ["výprava"],
 			},
 		],
 	},
