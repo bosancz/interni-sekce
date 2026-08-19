@@ -52,7 +52,7 @@ export class UsersController {
 		private userService: UsersRepository,
 		private tokenService: TokenService,
 		private hashService: HashService,
-		private notifications: NotificationsService,
+		private notificationsService: NotificationsService,
 		@InjectRepository(User) private userRepository: Repository<User>,
 	) {}
 
@@ -100,7 +100,7 @@ export class UsersController {
 
 		const user = await this.userService.createUser(body);
 
-		this.notifications
+		this.notificationsService
 			.onUserCreated(user, req.user?.userId)
 			.catch((err) => this.logger.error(`Failed to send user created notifications: ${err.message}`));
 

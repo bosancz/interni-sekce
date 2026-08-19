@@ -51,9 +51,9 @@ import {
 @ApiTags("Notifications")
 export class AccountNotificationsController {
 	constructor(
-		private subscriptions: NotificationSubscriptionsRepository,
-		private settings: NotificationSettingsRepository,
-		private push: PushService,
+		private notificationSubscriptions: NotificationSubscriptionsRepository,
+		private notificationSettings: NotificationSettingsRepository,
+		private pushService: PushService,
 	) {}
 
 	@Get()
@@ -65,7 +65,7 @@ export class AccountNotificationsController {
 	): Promise<NotificationSettingsResponse> {
 		NotificationSettingsReadPermission.canOrThrow(req);
 
-		const settings = await this.settings.getUserSettings(authUser.userId);
+		const settings = await this.notificationSettings.getUserSettings(authUser.userId);
 		const userRoles = OptionsStore.getUserRoles(req);
 
 		const types = Object.entries(NotificationTypesMetadata)
@@ -78,8 +78,8 @@ export class AccountNotificationsController {
 			}));
 
 		return {
-			pushEnabled: this.push.isConfigured,
-			vapidPublicKey: this.push.publicKey,
+			pushEnabled: this.pushService.isConfigured,
+			vapidPublicKey: this.pushService.publicKey,
 			types,
 		};
 	}
@@ -104,7 +104,7 @@ export class AccountNotificationsController {
 			channels.includes(NotificationChannels.push) || channels.includes(NotificationChannels.email);
 		if (forcesInApp && !channels.includes(NotificationChannels.inApp)) channels.push(NotificationChannels.inApp);
 
-		await this.settings.setSetting(authUser.userId, notificationType, channels);
+		await this.notificationSettings.setSetting(authUser.userId, notificationType, channels);
 	}
 
 	@Get("devices")
@@ -116,7 +116,7 @@ export class AccountNotificationsController {
 	): Promise<NotificationDeviceResponse[]> {
 		NotificationDevicesListPermission.canOrThrow(req);
 
-		return this.subscriptions.listDevices(authUser.userId);
+		return this.notificationSubscriptions.listDevices(authUser.userId);
 	}
 
 	@Post("devices")
@@ -130,7 +130,7 @@ export class AccountNotificationsController {
 	): Promise<NotificationDeviceResponse> {
 		NotificationDeviceSubscribePermission.canOrThrow(req);
 
-		const device = await this.subscriptions.upsertSubscription(authUser.userId, {
+		const device = await this.notificationSubscriptions.upsertSubscription(authUser.userId, {
 			deviceId: body.deviceId,
 			deviceName: body.deviceName ?? null,
 			endpoint: body.endpoint,
@@ -151,16 +151,16 @@ export class AccountNotificationsController {
 		@AuthUser() authUser: SessionUser,
 		@Param("deviceId", ParseIntPipe) deviceId: number,
 	): Promise<void> {
-		const device = await this.subscriptions.getSendableDevice(authUser.userId, deviceId);
+		const device = await this.notificationSubscriptions.getSendableDevice(authUser.userId, deviceId);
 		if (!device) throw new NotFoundException();
 
 		NotificationDeviceTestPermission.canOrThrow(req, device);
 
-		if (!this.push.isConfigured) throw new ServiceUnavailableException("Push notifications are not configured.");
+		if (!this.pushService.isConfigured) throw new ServiceUnavailableException("Push notifications are not configured.");
 
 		let alive: boolean;
 		try {
-			alive = await this.push.send(
+			alive = await this.pushService.send(
 				{ endpoint: device.endpoint!, keyP256dh: device.keyP256dh!, keyAuth: device.keyAuth! },
 				{ title: "Zkušební upozornění", body: "Upozornění na tomto zařízení fungují." },
 			);
@@ -169,7 +169,7 @@ export class AccountNotificationsController {
 		}
 
 		if (!alive) {
-			await this.subscriptions.deleteSubscription(device.id);
+			await this.notificationSubscriptions.deleteSubscription(device.id);
 			throw new NotFoundException("The subscription has expired and was removed.");
 		}
 	}
@@ -183,11 +183,11 @@ export class AccountNotificationsController {
 		@AuthUser() authUser: SessionUser,
 		@Param("deviceId", ParseIntPipe) deviceId: number,
 	): Promise<void> {
-		const device = await this.subscriptions.getDevice(authUser.userId, deviceId);
+		const device = await this.notificationSubscriptions.getDevice(authUser.userId, deviceId);
 		if (!device) throw new NotFoundException();
 
 		NotificationDeviceDeletePermission.canOrThrow(req, device);
 
-		await this.subscriptions.deleteDevice(authUser.userId, deviceId);
+		await this.notificationSubscriptions.deleteDevice(authUser.userId, deviceId);
 	}
 }

@@ -23,10 +23,10 @@ export class NotificationsService {
 
 	constructor(
 		@InjectRepository(User) private users: Repository<User>,
-		private subscriptions: NotificationSubscriptionsRepository,
-		private settings: NotificationSettingsRepository,
-		private push: PushService,
-		private mail: MailService,
+		private notificationSubscriptions: NotificationSubscriptionsRepository,
+		private notificationSettings: NotificationSettingsRepository,
+		private pushService: PushService,
+		private mailService: MailService,
 		private config: Config,
 	) {}
 
@@ -106,7 +106,7 @@ export class NotificationsService {
 		const recipients = users.filter((user) => user.id !== actorUserId);
 		if (!recipients.length) return;
 
-		const settings = await this.settings.getUsersSettings(
+		const settings = await this.notificationSettings.getUsersSettings(
 			recipients.map((user) => user.id),
 			type,
 		);
@@ -126,9 +126,9 @@ export class NotificationsService {
 	}
 
 	private async sendPush(users: User[], message: NotificationMessage) {
-		if (!this.push.isConfigured || !users.length) return;
+		if (!this.pushService.isConfigured || !users.length) return;
 
-		const subscriptions = await this.subscriptions.getSendableSubscriptions(users.map((user) => user.id));
+		const subscriptions = await this.notificationSubscriptions.getSendableSubscriptions(users.map((user) => user.id));
 
 		const payload = {
 			title: message.title,
@@ -138,7 +138,7 @@ export class NotificationsService {
 
 		for (const subscription of subscriptions) {
 			try {
-				const alive = await this.push.send(
+				const alive = await this.pushService.send(
 					{
 						endpoint: subscription.endpoint!,
 						keyP256dh: subscription.keyP256dh!,
@@ -148,7 +148,7 @@ export class NotificationsService {
 				);
 
 				// expired subscriptions are cleaned up here, since only sending discovers them
-				if (!alive) await this.subscriptions.deleteSubscription(subscription.id);
+				if (!alive) await this.notificationSubscriptions.deleteSubscription(subscription.id);
 			} catch (err) {
 				this.logger.error(`Failed to send push notification: ${(err as Error).message}`);
 			}
@@ -167,7 +167,7 @@ export class NotificationsService {
 			});
 
 			try {
-				await this.mail.sendMail(mail);
+				await this.mailService.sendMail(mail);
 			} catch (err) {
 				this.logger.error(`Failed to send notification email to ${user.email}: ${(err as Error).message}`);
 			}

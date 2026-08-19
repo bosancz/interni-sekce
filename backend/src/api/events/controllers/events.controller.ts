@@ -56,7 +56,7 @@ export class EventsController {
 
 	constructor(
 		private events: EventsRepository,
-		private notifications: NotificationsService,
+		private notificationsService: NotificationsService,
 	) {}
 
 	@Get()
@@ -232,7 +232,7 @@ export class EventsController {
 
 		await this.events.updateEvent(eventId, { status: EventStates.pending, statusNote: body.statusNote });
 
-		this.notifications
+		this.notificationsService
 			.onEventSubmitted(event, req.user?.userId)
 			.catch((err) => this.logger.error(`Failed to send event submitted notifications: ${err.message}`));
 	}
@@ -253,7 +253,7 @@ export class EventsController {
 
 		await this.events.updateEvent(eventId, { status: EventStates.draft, statusNote: body.statusNote });
 
-		this.notifications
+		this.notificationsService
 			.onEventRejected(event, body.statusNote, req.user?.userId)
 			.catch((err) => this.logger.error(`Failed to send event rejected notifications: ${err.message}`));
 	}
@@ -274,7 +274,7 @@ export class EventsController {
 
 		await this.events.updateEvent(eventId, { status: EventStates.public, statusNote: body.statusNote });
 
-		this.notifications
+		this.notificationsService
 			.onEventPublished(event, req.user?.userId)
 			.catch((err) => this.logger.error(`Failed to send event published notifications: ${err.message}`));
 	}
@@ -312,7 +312,7 @@ export class EventsController {
 
 		await this.events.updateEvent(eventId, { status: EventStates.cancelled, statusNote: body.statusNote });
 
-		this.notifications
+		this.notificationsService
 			.onEventCancelled(event, body.statusNote, req.user?.userId)
 			.catch((err) => this.logger.error(`Failed to send event cancelled notifications: ${err.message}`));
 	}
@@ -333,7 +333,7 @@ export class EventsController {
 
 		await this.events.updateEvent(eventId, { status: EventStates.public, statusNote: body.statusNote });
 
-		this.notifications
+		this.notificationsService
 			.onEventUncancelled(event, req.user?.userId)
 			.catch((err) => this.logger.error(`Failed to send event uncancelled notifications: ${err.message}`));
 	}
