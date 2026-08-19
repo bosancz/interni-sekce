@@ -177,7 +177,7 @@ export const EventRegistrationReadPermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
-	applicable: ({ doc }) => doc.hasRegistration
+	applicable: ({ doc }) => doc.hasRegistration,
 });
 
 export const EventRegistrationEditPermission = new Permission({
@@ -202,7 +202,7 @@ export const EventRegistrationDeletePermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
-	applicable: ({ doc }) => doc.hasRegistration
+	applicable: ({ doc }) => doc.hasRegistration,
 });
 
 export const EventReportReadPermission = new Permission({
@@ -242,6 +242,22 @@ export const EventAnnouncementUnsentPermission = new Permission({
 
 	inherit: EventEditPermission,
 	applicable: ({ doc }) => !!doc.announcementSentAt && !doc.deletedAt,
+});
+
+export const EventAccountingSentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => doc.status === EventStates.public && !doc.accountingSentAt && !doc.deletedAt,
+});
+
+export const EventAccountingUnsentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => !!doc.accountingSentAt && !doc.deletedAt,
 });
 
 export const EventAccountingGetPermission = new Permission({

@@ -931,6 +931,12 @@ export namespace SDK {
         'announcementSentAt': object;
         /**
          * 
+         * @type {object}
+         * @memberof Event
+         */
+        'accountingSentAt': object;
+        /**
+         * 
          * @type {string}
          * @memberof Event
          */
@@ -1540,6 +1546,12 @@ export namespace SDK {
         'announcementSentAt'?: string;
         /**
          * 
+         * @type {string}
+         * @memberof EventResponse
+         */
+        'accountingSentAt'?: string;
+        /**
+         * 
          * @type {Album}
          * @memberof EventResponse
          */
@@ -1716,6 +1728,18 @@ export namespace SDK {
          * @memberof EventResponseLinks
          */
         'getEventAccounting': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'markAccountingSent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'unmarkAccountingSent': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -1898,6 +1922,12 @@ export namespace SDK {
          * @memberof EventResponseWithLinks
          */
         'announcementSentAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'accountingSentAt'?: string;
         /**
          * 
          * @type {Album}
@@ -5539,6 +5569,14 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * EventsApi - object-oriented interface
      * @export
@@ -6716,6 +6754,50 @@ export namespace SDK {
          * @memberof EventsApi
          */
         
+        public async markAccountingSent(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('markAccountingSent', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/accounting/sent`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
         public async markAnnouncementSent(
             eventId: number,
             options: AxiosRequestConfig = {}
@@ -7053,6 +7135,50 @@ export namespace SDK {
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async unmarkAccountingSent(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('unmarkAccountingSent', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/accounting/sent`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
     
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;

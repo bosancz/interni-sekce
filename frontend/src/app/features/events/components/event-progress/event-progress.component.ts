@@ -1,25 +1,29 @@
-import { ChangeDetectionStrategy, Component, computed, input, signal } from "@angular/core";
-import { IonContent, IonIcon, IonPopover } from "@ionic/angular/standalone";
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from "@angular/core";
+import { DatePipe } from "@angular/common";
+import { IonButton, IonContent, IonIcon, IonPopover } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { chatbubbleEllipsesOutline } from "ionicons/icons";
+import { ApiService } from "src/app/core/services/api.service";
+import { ToastService } from "src/app/core/services/toast.service";
 import { EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
 import { SDK } from "src/sdk";
 
 export interface EventProgressStep {
-	key: string;
+	key: "draft" | "pending" | "public" | "announcement" | "closure";
 	label: string;
 	reached: boolean;
 	active: boolean;
+	clickable: boolean;
+	note: boolean;
 }
 
-export interface EventProgressFollowUp {
+export interface EventClosureItem {
 	key: string;
 	label: string;
 	done: boolean;
-	tracked: boolean;
 }
 
-const STEPS: { key: string; statuses: EventStatusID[] }[] = [
+const STEPS: { key: EventProgressStep["key"]; statuses: EventStatusID[] }[] = [
 	{ key: "draft", statuses: ["draft"] },
 	{ key: "pending", statuses: ["pending", "rejected"] },
 	{ key: "public", statuses: ["public", "cancelled", "finalized"] },
@@ -35,20 +39,23 @@ const STEP_LABELS: Record<EventStatusID, string> = {
 };
 
 const NO_LEADER_LABEL = "Bez vedoucího";
-const ANNOUNCEMENT_LABEL = "Ohláška odeslána";
 
 @Component({
 	selector: "bo-event-progress",
 	templateUrl: "./event-progress.component.html",
 	styleUrl: "./event-progress.component.scss",
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [IonIcon, IonPopover, IonContent],
+	imports: [DatePipe, IonButton, IonIcon, IonPopover, IonContent],
 })
 export class EventProgressComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>(undefined);
 
+	change = output<void>();
+
 	noteOpen = signal(false);
-	noteEvent = signal<Event | undefined>(undefined);
+	announcementOpen = signal(false);
+	closureOpen = signal(false);
+	popoverEvent = signal<Event | undefined>(undefined);
 
 	statusNote = computed(() => this.event()?.statusNote || undefined);
 
@@ -56,16 +63,42 @@ export class EventProgressComponent {
 
 	private noLeader = computed(() => !this.event()?.leaders?.length);
 
-	private announcementSent = computed(() => !!this.event()?.announcementSentAt);
+	announcementSent = computed(() => !!this.event()?.announcementSentAt);
+
+	closureItems = computed<EventClosureItem[]>(() => {
+		const event = this.event();
+		const album = event?.album;
+
+		return [
+			{ key: "accounting", label: "Vyúčtování odesláno", done: !!event?.accountingSentAt },
+			{ key: "report", label: "Report vyplněn", done: !!event?.report },
+			{
+				key: "album",
+				label: !album
+					? "Bez galerie"
+					: album.status === "public"
+						? "Galerie zveřejněna"
+						: "Galerie nezveřejněná",
+				done: album?.status === "public",
+			},
+		];
+	});
+
+	closureCount = computed(() => this.closureItems().filter((item) => item.done).length);
 
 	private statusIndex = computed(() => {
 		const status = this.status();
 		return status ? STEPS.findIndex((step) => step.statuses.includes(status)) : -1;
 	});
 
-	private activeIndex = computed(() => (this.announcementSent() ? STEPS.length : this.statusIndex()));
+	private activeIndex = computed(() => {
+		if (!this.announcementSent()) return this.statusIndex();
+		return this.closureCount() === this.closureItems().length ? STEPS.length + 1 : STEPS.length;
+	});
 
 	steps = computed<EventProgressStep[]>(() => {
+		const event = this.event();
+
 		const statusSteps = STEPS.map((step, index) => {
 			const status = index === this.statusIndex() ? this.status()! : step.statuses[0];
 			const noLeader = index === this.statusIndex() && status === "draft" && this.noLeader();
@@ -75,36 +108,33 @@ export class EventProgressComponent {
 				label: noLeader ? NO_LEADER_LABEL : STEP_LABELS[status],
 				reached: this.activeIndex() >= index,
 				active: index === this.activeIndex(),
+				clickable: false,
+				note: index === this.statusIndex() && !!this.statusNote(),
 			};
 		});
 
-		if (!this.announcementSent()) return statusSteps;
-
-		return [...statusSteps, { key: "announcement", label: ANNOUNCEMENT_LABEL, reached: true, active: true }];
-	});
-
-	followUps = computed<EventProgressFollowUp[]>(() => {
-		if (!this.announcementSent()) return [];
-
-		const album = this.event()?.album;
-
 		return [
-			{ key: "accounting", label: "Vyúčtování", done: false, tracked: false },
-			{ key: "report", label: "Report", done: false, tracked: false },
+			...statusSteps,
 			{
-				key: "album",
-				label: !album
-					? "Bez galerie"
-					: album.status === "public"
-						? "Galerie zveřejněna"
-						: "Galerie nezveřejněná",
-				done: album?.status === "public",
-				tracked: true,
+				key: "announcement" as const,
+				label: "Ohláška odeslána",
+				reached: this.activeIndex() >= STEPS.length,
+				active: this.activeIndex() === STEPS.length,
+				clickable: !!event && (this.announcementSent() || event._links.markAnnouncementSent.applicable),
+				note: false,
+			},
+			{
+				key: "closure" as const,
+				label: `Uzavření ${this.closureCount()}/${this.closureItems().length}`,
+				reached: this.activeIndex() >= STEPS.length + 1,
+				active: this.activeIndex() === STEPS.length + 1,
+				clickable: !!event,
+				note: false,
 			},
 		];
 	});
 
-	activeLabel = computed(() => this.steps().find((step) => step.active)?.label);
+	noteLabel = computed(() => this.steps().find((step) => step.note)?.label);
 
 	accentColor = computed(() => {
 		const status = this.status();
@@ -113,12 +143,53 @@ export class EventProgressComponent {
 		return EventStatuses[status]?.color ?? "var(--bo-line)";
 	});
 
-	constructor() {
+	constructor(
+		private readonly api: ApiService,
+		private readonly toastService: ToastService,
+	) {
 		addIcons({ chatbubbleEllipsesOutline });
 	}
 
 	openNote(event: Event) {
-		this.noteEvent.set(event);
+		this.popoverEvent.set(event);
 		this.noteOpen.set(true);
+	}
+
+	openStep(step: EventProgressStep, event: Event) {
+		if (!step.clickable) return;
+		this.popoverEvent.set(event);
+		if (step.key === "announcement") this.announcementOpen.set(true);
+		if (step.key === "closure") this.closureOpen.set(true);
+	}
+
+	async markAnnouncementSent() {
+		await this.callApi((id) => this.api.EventsApi.markAnnouncementSent(id));
+		this.announcementOpen.set(false);
+	}
+
+	async unmarkAnnouncementSent() {
+		await this.callApi((id) => this.api.EventsApi.unmarkAnnouncementSent(id));
+		this.announcementOpen.set(false);
+	}
+
+	async markAccountingSent() {
+		await this.callApi((id) => this.api.EventsApi.markAccountingSent(id));
+	}
+
+	async unmarkAccountingSent() {
+		await this.callApi((id) => this.api.EventsApi.unmarkAccountingSent(id));
+	}
+
+	private async callApi(action: (eventId: number) => Promise<unknown>) {
+		const event = this.event();
+		if (!event) return;
+
+		try {
+			await action(event.id);
+			this.toastService.toast("Uloženo.");
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit změnu.", { color: "danger" });
+		}
 	}
 }

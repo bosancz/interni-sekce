@@ -6,13 +6,21 @@
 .steps {
 	display: flex;
 	align-items: flex-start;
-	max-width: 640px;
+	max-width: 760px;
 	margin: 0 auto;
 }
 
 .step {
 	flex: 1 1 0;
 	min-width: 0;
+
+	&.clickable {
+		cursor: pointer;
+
+		.label:hover span {
+			text-decoration: underline;
+		}
+	}
 }
 
 .rail {
@@ -88,47 +96,6 @@
 	}
 }
 
-.follow-ups {
-	display: flex;
-	justify-content: center;
-	flex-wrap: wrap;
-	gap: 0.4rem 1.1rem;
-	max-width: 640px;
-	margin: 0.5rem auto 0;
-	padding-top: 0.5rem;
-	border-top: 1px dashed var(--bo-line);
-}
-
-.follow-up {
-	display: flex;
-	align-items: center;
-	gap: 0.35em;
-	font-size: 0.75rem;
-	line-height: 1.2;
-	color: var(--bo-muted);
-
-	.dot {
-		width: 0.5rem;
-		height: 0.5rem;
-		border-radius: 50%;
-		background: var(--bo-line);
-	}
-
-	&.untracked .dot {
-		background: transparent;
-		border: 1px dashed var(--bo-muted);
-	}
-
-	&.done {
-		color: var(--accent);
-		font-weight: 700;
-
-		.dot {
-			background: var(--accent);
-		}
-	}
-}
-
 ::ng-deep .event-progress-note-popover {
 	--width: min(20rem, calc(100vw - 2rem));
 
@@ -143,8 +110,45 @@
 		}
 
 		p {
-			margin: 0;
+			margin: 0 0 0.5rem;
 			white-space: pre-wrap;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+	}
+
+	.closure-items {
+		list-style: none;
+		margin: 0 0 0.5rem;
+		padding: 0;
+
+		li {
+			display: flex;
+			align-items: center;
+			gap: 0.5em;
+			padding: 0.2rem 0;
+			color: var(--bo-muted);
+
+			.closure-dot {
+				flex: 0 0 auto;
+				width: 0.6rem;
+				height: 0.6rem;
+				border-radius: 50%;
+				background: transparent;
+				border: 1px dashed var(--bo-muted);
+			}
+
+			&.done {
+				color: var(--bo-green);
+				font-weight: 700;
+
+				.closure-dot {
+					background: var(--bo-green);
+					border-color: var(--bo-green);
+				}
+			}
 		}
 	}
 }

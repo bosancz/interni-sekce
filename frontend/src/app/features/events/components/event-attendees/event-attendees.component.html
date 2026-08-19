@@ -56,25 +56,6 @@
 				<ion-button (click)="getAnnouncement(event()!)" expand="block" fill="outline">
 					Stáhnout ohlášku
 				</ion-button>
-
-				@if (event()!._links.markAnnouncementSent.applicable) {
-					<ion-button
-						(click)="markAnnouncementSent(event()!)"
-						expand="block"
-						fill="clear"
-						size="small"
-						[disabled]="!event()!._links.markAnnouncementSent.allowed"
-					>
-						Označit ohlášku za odeslanou
-					</ion-button>
-				} @else if (event()!.announcementSentAt) {
-					<p class="announcement-sent">
-						Ohláška odeslána {{ event()!.announcementSentAt | date: "d. M. y" }}
-						@if (event()!._links.unmarkAnnouncementSent.allowed) {
-							<button type="button" (click)="unmarkAnnouncementSent(event()!)">zrušit označení</button>
-						}
-					</p>
-				}
 			</div>
 		}
 	</div>
