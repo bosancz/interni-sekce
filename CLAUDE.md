@@ -26,6 +26,12 @@
   - For a **backend** change, or the full root `npm run dev` (the thing that produces `dev.log`), bring up Postgres first — see below.
 - **`.mcp.json` registers the Angular CLI MCP server** (`npx -y @angular/cli mcp`) — Angular docs/best-practices lookups plus workspace tools. It runs from the repo root and finds `frontend/angular.json` by itself, but needs Node 24 like every other `ng` command; its `devserver_start` tool starts a dev server, so the one-warm-server rule above applies to it too.
 
+## Testovací data
+
+- `npm run cli seed` (backend) naplní databázi vzorovými daty v hobitím duchu — `src/seed/`: uživatel `bilbo`/`gandalf`, oddíly, členové (trpaslíci), budoucí akce podle typů a album bez fotek (ty potřebují soubory na disku). Data jsou v `seed/data/seed-data.ts`, datumy akcí jsou relativní ke dni spuštění.
+- Příkaz je **idempotentní** — záznamy hledá podle přirozeného klíče (login / přezdívka / název) a aktualizuje je; kontakty, účastníky a útraty seedovaných záznamů přepisuje. Nic jiného v databázi nemaže, takže se dá pouštět i na prostředí s importovanými daty.
+- Na produkčním buildu (`NODE_ENV=production`, tedy i NEXT) odmítne běžet bez `--force`, protože zakládá uživatele se známým heslem.
+
 ## Frontend SDK
 
 - `frontend/src/sdk` is generated from the backend's OpenAPI spec — never hand-edit `frontend/src/sdk/api.ts`. After changing a backend controller/DTO, run `npm run generate:sdk` from `frontend/` (it reads `http://127.0.0.1:3000/api/openapi-json`, so the backend must be up). Every NestJS route needs a unique `operationId` (method name) or generation fails validation.

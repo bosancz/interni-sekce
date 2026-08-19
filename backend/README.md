@@ -48,6 +48,10 @@
         │   ├── data            # Importovaná data
         │   ├── models          # Modely pro import
         │   └── services        # Služby pro import
+        ├── seed                # Vzorová testovací data
+        │   ├── commands        # Příkaz seed
+        │   ├── data            # Definice vzorových dat
+        │   └── services        # Služba pro naplnění databáze
         ├── app.module.ts       # Hlavní modul aplikace
         ├── cli.module.ts       # Modul pro CLI příkazy
         ├── config.ts           # Konfigurace aplikace
@@ -75,6 +79,24 @@ npm run migrations:run
 
 ```bash
 npm run cli create-admin
+```
+
+## Naplnění testovacími daty
+
+```bash
+npm run cli seed
+```
+
+Vytvoří vzorová data v hobitím duchu — uživatele `bilbo` (heslo `gandalf`), dva oddíly, osm členů,
+šest budoucích akcí různých typů a jedno album. Příkaz je idempotentní: opakované spuštění
+existující záznamy aktualizuje (hledá je podle přezdívky / názvu / loginu), nezakládá je znovu a nemaže
+nic ostatního. Datumy akcí jsou relativní ke dni spuštění, takže akce jsou vždy v budoucnu.
+
+⚠️ Na produkčním buildu (`NODE_ENV=production`, tedy i NEXT) příkaz odmítne běžet, protože zakládá
+uživatele se známým heslem. Na testovacím prostředí ho spusť s `--force`:
+
+```bash
+npm run cli seed -- --force
 ```
 
 ## Spuštění vývojového serveru
