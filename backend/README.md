@@ -147,6 +147,11 @@ záznamy z dřívějších verzí seedu. Rozšíření (`postgis`, `cube`, `unac
 `natural_numeric` i konfiguraci fulltextu si migrace vytvářejí samy, takže po resetu nic
 nechybí. Značka `app.environment` visí na databázi, ne na schématu, takže reset přežije.
 
+⚠️ Se schématem padnou i rozšíření, která v něm sedí, a `CREATE EXTENSION postgis` smí jen
+superuser (`cube` a `unaccent` jsou trusted, `postgis` ne). Příkaz to proto kontroluje předem
+a na nesuperuserovém spojení schéma vůbec nezahodí — jinak by databáze zůstala rozbitá
+uprostřed migrací.
+
 Řídí se stejnou značkou jako seed — na databázi označené jako produkční příkaz odmítne běžet
 i s `--force`.
 

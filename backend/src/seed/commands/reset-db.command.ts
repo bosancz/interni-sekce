@@ -47,6 +47,8 @@ export class ResetDbCommand extends CommandRunner {
 
 		const schema = ("schema" in this.config.db ? this.config.db.schema : null) ?? "public";
 
+		await this.assertExtensionsRecreatable(schema);
+
 		this.logger.warn(`Dropping schema "${schema}" in database '${database}' with all its data...`);
 
 		await this.dataSource.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);
@@ -55,5 +57,31 @@ export class ResetDbCommand extends CommandRunner {
 		await runMigrations(this.config);
 
 		if (options.seed !== false) await this.seedService.seed();
+	}
+
+	private async assertExtensionsRecreatable(schema: string) {
+		const [{ superuser }] = await this.dataSource.query<{ superuser: boolean }[]>(
+			"SELECT current_setting('is_superuser') = 'on' AS superuser",
+		);
+
+		if (superuser) return;
+
+		const untrusted = await this.dataSource.query<{ extname: string }[]>(
+			`SELECT e.extname
+			FROM pg_extension e
+			JOIN pg_namespace n ON n.oid = e.extnamespace
+			LEFT JOIN pg_available_extension_versions v ON v.name = e.extname AND v.version = e.extversion
+			WHERE n.nspname = $1 AND coalesce(v.trusted, false) = false`,
+			[schema],
+		);
+
+		if (!untrusted.length) return;
+
+		throw new Error(
+			[
+				`Refusing to drop schema "${schema}": it holds extensions this connection cannot create again (${untrusted.map((e) => e.extname).join(", ")}).`,
+				`Dropping the schema drops them with it and the migrations would then fail. Run the command as a database superuser, or recreate the database by hand.`,
+			].join("\n"),
+		);
 	}
 }
