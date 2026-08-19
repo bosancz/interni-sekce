@@ -28,7 +28,7 @@
 
 ## Testovací data
 
-- `npm run cli seed` (backend) naplní databázi vzorovými daty v hobitím duchu — `src/seed/`: uživatel `bilbo`/`gandalf`, oddíly, členové (trpaslíci), budoucí akce podle typů a album bez fotek (ty potřebují soubory na disku). Data jsou v `seed/data/seed-data.ts`, datumy akcí jsou relativní ke dni spuštění.
+- `npm run cli seed` (backend) naplní databázi vzorovými daty v hobitím duchu — `src/seed/`: uživatel `bilbo`/`gandalf`, oddíly (22. oddíl trpaslíci, 13. oddíl nepřátelé, Klub přátel), členové, budoucí akce podle typů a album bez fotek (ty potřebují soubory na disku). Data jsou v `seed/data/seed-data.ts`, datumy akcí jsou relativní ke dni spuštění.
 - Příkaz je **idempotentní** — záznamy hledá podle přirozeného klíče (login / přezdívka / název) a aktualizuje je; kontakty, účastníky a útraty seedovaných záznamů přepisuje. Nic jiného v databázi nemaže, takže se dá pouštět i na prostředí s importovanými daty.
 - Na produkčním buildu (`NODE_ENV=production`, tedy i NEXT) odmítne běžet bez `--force`, protože zakládá uživatele se známým heslem.
 

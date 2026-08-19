@@ -22,6 +22,7 @@ export interface SeedMemberContact {
 	name?: string;
 	mobile?: string;
 	email?: string;
+	other?: string;
 }
 
 export interface SeedMember {
@@ -94,7 +95,8 @@ export interface SeedUser {
 }
 
 export const SeedGroups: SeedGroup[] = [
-	{ shortName: "3", name: "3. oddíl", color: "#36802D", active: true },
+	{ shortName: "22", name: "22. oddíl", color: "#FEC503", active: true },
+	{ shortName: "13", name: "13. oddíl", color: "#8B0000", active: true },
 	{ shortName: "KP", name: "Klub přátel", color: "#0F0F0F", active: true },
 ];
 
@@ -111,7 +113,7 @@ export const SeedUsers: SeedUser[] = [
 export const SeedMembers: SeedMember[] = [
 	{
 		nickname: "Bilbo",
-		group: "3",
+		group: "22",
 		role: MemberRoles.vedouci,
 		rank: MemberRanks.vedouci,
 		function: "kronikář",
@@ -139,7 +141,7 @@ export const SeedMembers: SeedMember[] = [
 	},
 	{
 		nickname: "Thorin",
-		group: "3",
+		group: "22",
 		role: MemberRoles.vedouci,
 		rank: MemberRanks.vedouci,
 		function: "vedoucí oddílu",
@@ -155,7 +157,7 @@ export const SeedMembers: SeedMember[] = [
 	},
 	{
 		nickname: "Balin",
-		group: "3",
+		group: "22",
 		role: MemberRoles.instruktor,
 		rank: MemberRanks.instruktor,
 		function: "kvartýrmajstr",
@@ -167,7 +169,7 @@ export const SeedMembers: SeedMember[] = [
 	},
 	{
 		nickname: "Fíli",
-		group: "3",
+		group: "22",
 		role: MemberRoles.dite,
 		firstName: "Fíli",
 		lastName: "Dísson",
@@ -180,7 +182,7 @@ export const SeedMembers: SeedMember[] = [
 	},
 	{
 		nickname: "Kíli",
-		group: "3",
+		group: "22",
 		role: MemberRoles.dite,
 		firstName: "Kíli",
 		lastName: "Dísson",
@@ -193,7 +195,7 @@ export const SeedMembers: SeedMember[] = [
 	},
 	{
 		nickname: "Bombur",
-		group: "3",
+		group: "22",
 		role: MemberRoles.dite,
 		firstName: "Bombur",
 		lastName: "Bofursson",
@@ -207,13 +209,73 @@ export const SeedMembers: SeedMember[] = [
 	},
 	{
 		nickname: "Ori",
-		group: "3",
+		group: "22",
 		role: MemberRoles.dite,
 		firstName: "Ori",
 		lastName: "Dorisson",
 		birthday: "2015-08-19",
 		membership: MembershipStates.pozastaveno,
 		contacts: [{ relationship: "Otec", name: "Dori", mobile: "777 000 013" }],
+	},
+	{
+		nickname: "Šmak",
+		group: "13",
+		role: MemberRoles.vedouci,
+		rank: MemberRanks.vedouci,
+		function: "vedoucí oddílu",
+		firstName: "Šmak",
+		lastName: "Zlatý",
+		birthday: "1940-12-01",
+		mobile: "777 000 020",
+		email: "smak@bosan.cz",
+		addressStreet: "Poklad pod Horou",
+		addressStreetNo: "1",
+		addressCity: "Osamělá hora",
+		addressPostalCode: "444 04",
+	},
+	{
+		nickname: "Azog",
+		group: "13",
+		role: MemberRoles.instruktor,
+		rank: MemberRanks.instruktor,
+		function: "náčelník skřetů",
+		firstName: "Azog",
+		lastName: "Poskvrnitel",
+		birthday: "2003-04-04",
+		mobile: "777 000 021",
+		email: "azog@bosan.cz",
+	},
+	{
+		nickname: "Velký skřet",
+		group: "13",
+		role: MemberRoles.vedouci,
+		rank: MemberRanks.vedouci,
+		function: "hospodář",
+		firstName: "Velký",
+		lastName: "Skřet",
+		birthday: "1968-10-31",
+		mobile: "777 000 022",
+		active: false,
+	},
+	{
+		nickname: "Bolg",
+		group: "13",
+		role: MemberRoles.dite,
+		firstName: "Bolg",
+		lastName: "Azogsson",
+		birthday: "2012-09-09",
+		contacts: [{ relationship: "Otec", name: "Azog", mobile: "777 000 021", email: "azog@bosan.cz" }],
+	},
+	{
+		nickname: "Glum",
+		group: "13",
+		role: MemberRoles.dite,
+		firstName: "Sméagol",
+		birthday: "2011-01-13",
+		membership: MembershipStates.neclen,
+		allergies: [{ name: "sluneční světlo", severity: HealthSeverity.medium }],
+		knownProblems: [{ name: "mluví sám se sebou, ztrácí prsteny", severity: HealthSeverity.low }],
+		contacts: [{ relationship: "Jiný", name: "Děagol", other: "nedostupný" }],
 	},
 ];
 
@@ -226,7 +288,7 @@ export const SeedEvents: SeedEvent[] = [
 		days: 1,
 		place: "Hobitín, hostinec U Zeleného draka",
 		description: "Pravidelná schůzka oddílu. Hraje se, plánuje se výprava a povídá se o dracích.",
-		groups: ["3"],
+		groups: ["22"],
 		leaders: ["Bilbo"],
 		attendees: ["Fíli", "Kíli", "Bombur", "Ori"],
 		timeFrom: "17:00",
@@ -243,7 +305,7 @@ export const SeedEvents: SeedEvent[] = [
 		days: 3,
 		place: "Osamělá hora",
 		description: "Třídenní putování přes Divočinu. Spí se pod širákem, vaří se na ohni.",
-		groups: ["3"],
+		groups: ["22"],
 		leaders: ["Thorin", "Bilbo"],
 		attendees: ["Balin", "Fíli", "Kíli", "Bombur"],
 		timeFrom: "8:00",
@@ -261,7 +323,7 @@ export const SeedEvents: SeedEvent[] = [
 		days: 2,
 		place: "Temný hvozd",
 		description: "Sjezd Lesní řeky na kánoích a v prázdných sudech od vína.",
-		groups: ["3"],
+		groups: ["22"],
 		leaders: ["Thorin"],
 		attendees: ["Balin", "Fíli", "Kíli"],
 		river: "Lesní řeka",
@@ -278,7 +340,7 @@ export const SeedEvents: SeedEvent[] = [
 		days: 1,
 		place: "Kraj",
 		description: "Vyjížďka po Kraji se zastávkou na druhou snídani.",
-		groups: ["3"],
+		groups: ["22"],
 		leaders: ["Bilbo"],
 		attendees: ["Fíli", "Kíli", "Ori"],
 		timeFrom: "9:00",
@@ -294,7 +356,7 @@ export const SeedEvents: SeedEvent[] = [
 		days: 1,
 		place: "Pytlíkov, Hobitín",
 		description: "Po nečekané návštěvě je potřeba spravit dveře, nádobí a spíž.",
-		groups: ["3"],
+		groups: ["22"],
 		leaders: ["Bilbo", "Thorin"],
 		attendees: ["Balin"],
 		leadersEvent: true,
@@ -308,7 +370,7 @@ export const SeedEvents: SeedEvent[] = [
 		days: 14,
 		place: "Roklinka",
 		description: "Čtrnáctidenní tábor u Elrondových. Kroniky, výpravy a zpěv do noci.",
-		groups: ["3", "KP"],
+		groups: ["22", "KP"],
 		leaders: ["Thorin", "Bilbo", "Gandalf"],
 		attendees: ["Balin", "Fíli", "Kíli", "Bombur", "Ori"],
 		hasRegistration: true,
@@ -338,6 +400,22 @@ export const SeedEvents: SeedEvent[] = [
 				description: "Doprava k Mlžným horám",
 			},
 		],
+	},
+	{
+		name: "Koupání v Dlouhém jezeře",
+		type: "bazén",
+		status: EventStates.public,
+		dayOffset: 28,
+		days: 1,
+		place: "Dlouhé jezero",
+		description: "Odpoledne u vody pod Osamělou horou. Plave se, potápí se a nikdo si nebere luk.",
+		groups: ["13"],
+		leaders: ["Šmak"],
+		attendees: ["Azog", "Bolg", "Glum"],
+		timeFrom: "14:00",
+		timeTill: "18:00",
+		meetingPlaceStart: "Město na jezeře",
+		itemList: "plavky, ručník, šupinové brnění",
 	},
 ];
 
