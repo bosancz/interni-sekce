@@ -35,8 +35,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 	selectedPhotos = signal<SDK.PhotoResponseWithLinks[]>([]);
 
-	// the gallery controls live inline next to the Galerie heading on every size,
-	// so the header menu only ever holds the album actions
 	headerActions = computed<Action[]>(() => {
 		const album = this.album();
 		if (!album) return [];
@@ -103,7 +101,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		this.photos.set(photos);
 	}
 
-	// deep link: only on the first load of an album, reloads after edits must not reopen the modal
 	private openPhotoFromUrl() {
 		if (this.photosModal) return;
 
@@ -130,10 +127,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		const photos = this.photos();
 		const originalCount = photos?.length;
 
-		// the open photo is reflected in the URL for deep-linking, but on the synthetic
-		// history entry ModalService pushes — so the modal writes it once it is presented.
-		// The entry we come back to on close must not carry it, or closing (which is a
-		// history.back()) would restore the URL of the photo just closed.
 		await this.router.navigate([], {
 			queryParams: { photo: null },
 			queryParamsHandling: "merge",
@@ -152,23 +145,18 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 			const album = this.album();
 			const photos = this.photos();
 			if (photos?.length !== originalCount && album) {
-				this.loadAlbum(album.id); // album must be present when closing modal
+				this.loadAlbum(album.id);
 			} else if (photos) {
-				// tag/caption edits in the modal mutate photo objects in place; refresh the
-				// signal reference so the gallery's derived tag filter reflects them
 				this.photos.set([...photos]);
 			}
 		});
 	}
-
-	// --- Ordering -----------------------------------------------------------
 
 	async onReorder(photos: SDK.PhotoResponseWithLinks[]) {
 		this.photos.set(photos);
 		await this.persistOrder(photos);
 	}
 
-	// picking an option is itself the confirmation that the custom order can go
 	async sortPhotos() {
 		const options = [
 			{
@@ -186,7 +174,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 			},
 		];
 
-		// the action sheet slides up from the bottom edge, which only reads well on a phone
 		if (this.platformService.isLg.value) {
 			this.alert = await this.alertController.create({
 				header: "Seřadit fotky",
@@ -247,8 +234,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		}
 	}
 
-	// --- Selecting & deleting -------------------------------------------------
-
 	startSelecting() {
 		this.selecting.set(true);
 		this.selectedPhotos.set([]);
@@ -290,15 +275,13 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 		const album = this.album();
 		if (album) {
-			await this.loadAlbum(album.id); // wouldnt be able to delete photos if no album was present
+			await this.loadAlbum(album.id);
 		}
 
 		toast.dismiss();
 		this.toastService.toast("Fotky smazány");
 		this.cancelSelecting();
 	}
-
-	// --- Album actions ------------------------------------------------------
 
 	async uploadPhotos() {
 		const album = this.album();
@@ -359,8 +342,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	}
 
 	private getAlbumActions(album: SDK.AlbumResponseWithLinks): Action[] {
-		// actions that do not apply to the album in its current state are hidden,
-		// actions that apply but the user is not permitted to use are shown disabled
 		return [
 			{
 				text: "Publikovat",

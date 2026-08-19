@@ -115,7 +115,6 @@ export class UsersViewComponent {
 		const user = this.user();
 		if (!user?._links.updateUser.allowed) return;
 
-		// no componentProps: the modal loads the member list itself
 		const member = await this.modalService.componentModal(MemberSelectorModalComponent);
 		if (member) await this.updateUser({ memberId: member.id });
 	}

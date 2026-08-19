@@ -39,8 +39,6 @@ export class EventAttendeesListComponent {
 
 	loadingArray = new Array(10).fill(null);
 
-	// The delete button is a fixed-width column, so it is either reserved on every
-	// row or on none — otherwise the badge columns would not line up.
 	canRemoveAny = computed(() => !!this.attendees()?.some((a) => a._links.deleteEventAttendee.allowed));
 
 	hasBirthday(attendee: SDK.EventAttendeeResponseWithLinks) {

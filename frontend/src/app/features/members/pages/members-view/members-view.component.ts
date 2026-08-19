@@ -59,8 +59,6 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 	membershipStates = MembershipStates;
 
-	// actions that do not apply to the member are hidden,
-	// actions that apply but the user is not permitted to use are shown disabled
 	actions = computed<Action[]>(() => {
 		const links = this.member()?._links;
 

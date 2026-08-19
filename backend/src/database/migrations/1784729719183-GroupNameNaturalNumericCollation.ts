@@ -4,8 +4,6 @@ export class GroupNameNaturalNumericCollation1784729719183 implements MigrationI
     name = 'GroupNameNaturalNumericCollation1784729719183'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        // TypeORM models collations only as a column property, so it cannot generate the
-        // collation object itself — it must exist before the column can reference it.
         await queryRunner.query(`CREATE COLLATION IF NOT EXISTS "natural_numeric" (provider = icu, locale = 'en-u-kn-true')`);
         await queryRunner.query(`ALTER TABLE "groups" ALTER COLUMN "name" TYPE text COLLATE "natural_numeric"`);
     }

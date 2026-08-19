@@ -2,7 +2,6 @@
 
 <bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
 	@if (isDesktop()) {
-		<!-- Desktop: filters, columns and view options laid out inline in the toolbar. -->
 		<div toolbar-actions slot="end" class="members-filter-actions">
 			<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
 
@@ -15,7 +14,6 @@
 			</ion-button>
 		</div>
 	} @else {
-		<!-- Mobile: the same filters, columns and view options collected inside the filter modal. -->
 		<div class="members-filter-modal">
 			<ion-list lines="full">
 				<ion-item-divider>Filtry</ion-item-divider>
@@ -31,8 +29,6 @@
 				(sortChange)="onSortChange($event)"
 			/>
 
-			<!-- Columns are secondary on mobile, so they collapse into a multiselect pill instead of
-			     the long checkbox list the desktop popover uses. -->
 			<ion-list lines="full">
 				<ion-item-divider>Sloupce</ion-item-divider>
 				<div class="members-filter-modal-pills">
@@ -53,7 +49,6 @@
 	}
 </bo-filter>
 
-<!-- Filter pills, shared between the desktop toolbar and the mobile filter modal. -->
 <ng-template #filterPills>
 	<bo-filter-pill
 		label="Oddíl"
@@ -76,7 +71,6 @@
 	/>
 </ng-template>
 
-<!-- Column picker, shared between the desktop popover and the mobile filter modal. -->
 <ng-template #columnsList>
 	<ion-item-divider>Sloupce</ion-item-divider>
 	@for (selection of viewSelections() | keyvalue: originalViewOrder; track selection.key) {
@@ -92,7 +86,6 @@
 	}
 </ng-template>
 
-<!-- View options, shared between the desktop popover and the mobile filter modal. -->
 <ng-template #viewOptionsList>
 	<ion-item-divider>Zobrazení</ion-item-divider>
 	<ion-item lines="none">
@@ -106,7 +99,6 @@
 	</ion-item>
 </ng-template>
 
-<!-- Column picker popover (desktop). Kept at top level so its trigger button works regardless of the active view. -->
 <ion-popover
 	trigger="columns-popover-trigger"
 	triggerAction="click"
@@ -122,7 +114,6 @@
 	</ng-template>
 </ion-popover>
 
-<!-- View options popover (desktop). -->
 <ion-popover
 	trigger="inactive-popover-trigger"
 	triggerAction="click"

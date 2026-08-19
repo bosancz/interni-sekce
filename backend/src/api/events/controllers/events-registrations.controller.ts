@@ -53,25 +53,15 @@ export class EventsRegistrationsController {
 		@InjectRepository(Event) private eventsRepository: Repository<Event>,
 	) {}
 
-	/**
-	 * On-disk folder holding the event's registration PDF. Events imported from the old server keep
-	 * their legacy Mongo ObjectId in `srcId`, and their files live in a folder keyed by that ObjectId
-	 * (named `registration.pdf`); natively-created events use the numeric-id folder (with a
-	 * `prihlaska_<name>.pdf` file). Coalescing on `srcId` lets both resolve without moving files —
-	 * mirrors how Photo.srcId is used to serve legacy images. See getEventRegistration for the
-	 * matching legacy vs. new filename handling.
-	 */
 	private registrationFolder(event: Event): string {
 		return path.join(this.config.fs.eventsDir, event.srcId ?? event.id.toString());
 	}
 
-	/** Removes any existing registration PDF (new `prihlaska*` or legacy `registration*`) for the event. */
 	private async deleteRegistrationFiles(registrationFolder: string): Promise<void> {
 		await this.fileService.deleteFilesByPrefix(registrationFolder, "prihlaska");
 		await this.fileService.deleteFilesByPrefix(registrationFolder, "registration");
 	}
 
-	/** Replaces any existing "prihlaska" file for the event with the given PDF and flags the event. */
 	private async storeRegistration(event: Event, data: Buffer): Promise<void> {
 		const registrationFolder = this.registrationFolder(event);
 		const registrationFileName = "prihlaska_" + sanitizeFilename(event.name) + ".pdf";
@@ -85,9 +75,6 @@ export class EventsRegistrationsController {
 			throw new InternalServerErrorException("Failed to save registration");
 		}
 
-		// update(), not save(): the events loaded here carry a hand-attached `attendees` array whose
-		// `event` relation is not populated, and save() cascades that into events_attendees, nulling
-		// its event_id. Only the flag needs writing anyway.
 		event.hasRegistration = true;
 		await this.eventsRepository.update(event.id, { hasRegistration: true });
 	}
@@ -103,8 +90,6 @@ export class EventsRegistrationsController {
 
 		let matchingFiles: string[];
 		try {
-			// New uploads/generations are named `prihlaska_<name>.pdf`; legacy imported events keep the
-			// old `registration.pdf`. Prefer the new file, fall back to the legacy one.
 			matchingFiles = await this.fileService.getFilesByPrefx(registrationFolder, "prihlaska");
 			if (matchingFiles.length === 0) {
 				matchingFiles = await this.fileService.getFilesByPrefx(registrationFolder, "registration");
@@ -188,7 +173,6 @@ export class EventsRegistrationsController {
 		@Query("color") color: string,
 		@Query("note") note?: string,
 	): Promise<void> {
-		// Load attendees with member contacts so the generated form can list organisers and their contacts.
 		const event = await this.eventsRepository.findOne({
 			where: { id: eventId },
 			relations: { attendees: { member: { contacts: true } } },

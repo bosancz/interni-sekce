@@ -27,7 +27,6 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 	placeholder = input<string>();
 	eventOutput = output<SDK.EventResponseWithLinks>();
 
-	/* ControlValueAccessor */
 	onChange?: (value: SDK.EventResponseWithLinks["id"] | null) => void;
 	onTouched?: () => void;
 
@@ -76,7 +75,6 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 		if (event) this.selectEvent(event);
 	}
 
-	// user-initiated selection: update the displayed event AND notify the form / parent
 	private selectEvent(event: SDK.EventResponseWithLinks | null) {
 		const id = event?.id ?? null;
 		if (id === this.value()) return;
@@ -93,8 +91,6 @@ export class EventSelectorComponent implements OnInit, ControlValueAccessor, Aft
 		return this.api.EventsApi.getEvent(eventId).then((res) => res.data);
 	}
 
-	/* ControlValueAccessor */
-	// model -> view only: load the event for display, never call onChange here
 	async writeValue(eventId?: SDK.EventResponseWithLinks["id"] | null): Promise<void> {
 		const value = eventId ?? null;
 		if (value === this.value()) return;

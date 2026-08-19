@@ -37,18 +37,15 @@ interface StatRow {
 export class GroupInfoComponent implements OnInit {
 	group = signal<SDK.GroupResponseWithLinks | null | undefined>(undefined);
 
-	// All members of the group (active and inactive) — the basis for the stats below.
 	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
 
 	private groupId?: number;
 	private latestLoadId = 0;
 
-	// Active members only (inactive are counted separately as a status stat).
 	private activeMembers = computed(() => this.members()?.filter((member) => member.active) ?? []);
 
 	totalActive = computed(() => this.activeMembers().length);
 
-	// Active members broken down by role, in the config's order.
 	roleStats = computed<StatRow[]>(() => {
 		const active = this.activeMembers();
 		return Object.entries(MemberRoles).map(([role, meta]) => ({
@@ -57,7 +54,6 @@ export class GroupInfoComponent implements OnInit {
 		}));
 	});
 
-	// Active members broken down by membership state, in the config's order.
 	membershipStats = computed<StatRow[]>(() => {
 		const active = this.activeMembers();
 		return Object.entries(MembershipStates).map(([state, meta]) => ({
@@ -91,17 +87,11 @@ export class GroupInfoComponent implements OnInit {
 
 		this.members.set(undefined);
 
-		// Guard against out-of-order responses when the group changes rapidly.
 		const loadId = ++this.latestLoadId;
 
 		const members = await this.api.MembersApi.listMembers({
 			groups: [this.groupId],
-			// active omitted: fetch active and inactive so both can be counted.
-			// No pagination here — load the whole group at once, otherwise the stats
-			// would only describe the first page (the API defaults to 25).
 			limit: 1000,
-			// Contacts come along in the same request; the missing-data card needs them
-			// to tell whether a member has anyone to be reached through.
 			contacts: true,
 		}).then((res) => res.data);
 

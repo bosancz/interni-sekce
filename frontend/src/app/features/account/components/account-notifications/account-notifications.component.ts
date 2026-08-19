@@ -44,16 +44,6 @@ export class AccountNotificationsComponent implements OnInit {
 
 	async subscribe() {
 		// TODO: notifications
-		// const vapidPublicKey = await this.api.getAsText("notifications:key");
-		// try {
-		//   const subscription = await this.swPush.requestSubscription({
-		//     serverPublicKey: vapidPublicKey,
-		//   });
-		//   await this.api.post("user:subscriptions", subscription);
-		//   this.toastService.toast("Notifikace byly zapnuty.");
-		// } catch (err) {
-		//   this.toastService.toast("Nepodařilo se nastavit notifikace.");
-		// }
 	}
 
 	async unsubscribe() {
@@ -64,13 +54,6 @@ export class AccountNotificationsComponent implements OnInit {
 	updateNotifications() {
 		this.userNotifications = {};
 
-		// this.notifications.forEach(notification => {
-		//   this.userNotifications[notification.id] = {
-		//     email: notification.id in this.user?.notifications && !!this.user?.notifications[notification.id].email,
-		//     system: notification.id in this.user?.notifications && !!this.user?.notifications[notification.id].system
-		//   };
-
-		// });
 	}
 
 	updateSystemNotificationStatus() {

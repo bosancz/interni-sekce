@@ -23,7 +23,6 @@ export class AuthModule {
 	configure(consumer: MiddlewareConsumer) {
 		consumer.apply(TokenMiddleware).forRoutes({ path: "*", method: RequestMethod.ALL });
 
-		// ugly workaround to apply middleware to root routes also
 		consumer.apply(TokenMiddleware).forRoutes(RootController);
 	}
 }

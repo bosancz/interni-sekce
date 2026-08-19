@@ -5,19 +5,8 @@ const CALENDAR_URL = "https://www.raft.cz/kalendar.aspx";
 
 const SOURCE_LABEL = "Zdroj: Raft.cz";
 
-// The event listing is rendered by an ASP.NET WebForms page that only shows a single day by
-// default. To get the full list we replay the "Výpis všech akcí" (list all events) postback,
-// which is triggered by this control.
 const LIST_ALL_EVENT_TARGET = "ctl00$ContentPlaceHolder1$Vse";
 
-/**
- * Scrapes the vodácký (paddling) events calendar from raft.cz.
- *
- * raft.cz/kalendar.aspx is a classic ASP.NET WebForms page: the initial GET only lists events
- * for the current day, and "show all" is a `__doPostBack`. So we GET the page to harvest the
- * hidden form fields (`__VIEWSTATE` & co.), then POST them back together with the list-all
- * event target to receive the full listing, and parse the resulting event cards.
- */
 @Injectable()
 export class CPVEventsService {
 	private readonly logger = new Logger(CPVEventsService.name);
@@ -51,7 +40,6 @@ export class CPVEventsService {
 		return res.text();
 	}
 
-	/** Pulls the ASP.NET hidden state fields required to replay a postback. */
 	private extractFormFields(html: string): Record<string, string> {
 		const fields: Record<string, string> = {};
 		for (const name of ["__VIEWSTATE", "__VIEWSTATEGENERATOR", "__EVENTVALIDATION"]) {
@@ -67,15 +55,9 @@ export class CPVEventsService {
 		return match ? this.decodeHtml(match[1]) : null;
 	}
 
-	/**
-	 * Parses the event cards out of the list-all listing. Each event is a card whose title link
-	 * carries the name and detail URL, followed by a date block that is either a single day
-	 * (`den:`) or a range (`Začátek:` … `Konec:`).
-	 */
 	private parseEvents(html: string): CPVEventResponse[] {
 		const events: CPVEventResponse[] = [];
 
-		// Each event card container id looks like ctl00_ContentPlaceHolder1_dg_ctlNN_Nazev.
 		const cardRegex = /id="ctl00_ContentPlaceHolder1_dg_ctl\d+_Nazev"([\s\S]*?)(?=id="ctl00_ContentPlaceHolder1_dg_ctl\d+_Nazev"|id="ctl00_ContentPlaceHolder1_zmena")/g;
 
 		for (const cardMatch of html.matchAll(cardRegex)) {
@@ -110,12 +92,10 @@ export class CPVEventsService {
 	}
 
 	private extractDates(card: string): { dateFrom: string; dateTill: string } | null {
-		// Multi-day event: explicit start and end.
 		const start = this.matchLabelledDate(card, "Začátek");
 		const end = this.matchLabelledDate(card, "Konec");
 		if (start && end) return { dateFrom: start, dateTill: end };
 
-		// Single-day event.
 		const day = this.matchLabelledDate(card, "den");
 		if (day) return { dateFrom: day, dateTill: day };
 

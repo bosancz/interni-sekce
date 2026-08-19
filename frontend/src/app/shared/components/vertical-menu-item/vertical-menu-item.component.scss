@@ -9,7 +9,6 @@ ion-item {
 	--color: var(--bo-muted);
 	font-weight: 600;
 
-	// active subnav item — yellow tint + blue bold
 	&.active {
 		--background: var(--bo-nav-active-bg);
 		--color: var(--bo-nav-active-fg);

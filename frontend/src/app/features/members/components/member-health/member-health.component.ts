@@ -92,15 +92,6 @@ export class MemberHealthComponent {
 		this.update.emit({ knownProblems: this.member()!.knownProblems!.filter((_, i) => i !== index) });
 	}
 
-	/**
-	 * Two-step Ionic alert flow: first a text box for the name, then a selectable
-	 * list of the three severity levels saved with a normal button. Resolves with the
-	 * updated list, or null when cancelled. When `index` is given the entry at that
-	 * position is edited, otherwise a new one is appended.
-	 *
-	 * It is split into two alerts because a single Ionic alert can only render one
-	 * input kind — it cannot mix a text field with a radio selection.
-	 */
 	private async openEntryAlert(
 		current: SDK.HealthEntryDto[] | null | undefined,
 		index: number | undefined,
@@ -127,7 +118,6 @@ export class MemberHealthComponent {
 		return entries;
 	}
 
-	/** Step 1 – text box for the entry name. */
 	private askName(header: string, placeholder: string, value?: string): Promise<string | null> {
 		return new Promise(async (resolve) => {
 			const alert = await this.alertController.create({
@@ -149,7 +139,7 @@ export class MemberHealthComponent {
 							const name = data.name?.trim();
 							if (!name) {
 								this.toastService.toast("Vyplň název", { color: "danger" });
-								return false; // keep the alert open
+								return false;
 							}
 							resolve(name);
 						},
@@ -161,7 +151,6 @@ export class MemberHealthComponent {
 		});
 	}
 
-	/** Step 2 – pick one of the three severity levels, then save. */
 	private askSeverity(currentSeverity?: SDK.HealthSeverityEnum): Promise<SDK.HealthSeverityEnum | null> {
 		const selected = currentSeverity ?? DefaultHealthSeverity;
 

@@ -11,8 +11,6 @@ ion-chip.tag {
 	cursor: pointer;
 	transition: opacity 0.15s ease;
 
-	// applied vs available is carried mainly by filled-vs-outline; a light dim is only a
-	// secondary cue, kept high enough to stay readable on the modal's black background
 	&:not(.active):not(.add) {
 		opacity: 0.8;
 	}
@@ -26,7 +24,6 @@ ion-chip.tag.add ion-icon {
 	font-size: 1rem;
 }
 
-// a light focus ring reads on the modal's black background
 ion-chip.tag:focus-visible {
 	outline: 2px solid #fff;
 	outline-offset: 2px;

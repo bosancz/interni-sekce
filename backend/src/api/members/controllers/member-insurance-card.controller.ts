@@ -33,8 +33,6 @@ import {
 	MemberInsuranceCardUploadPermission,
 } from "../acl/member-insurance-card.acl";
 
-// Restrict to non-active document types. Serving an uploaded .svg/.html inline on the
-// app origin would let it run as stored XSS, so those must never be accepted.
 const ALLOWED_INSURANCE_CARD_TYPES = ["pdf", "jpg", "jpeg", "png"];
 
 @Controller("members/:memberId/insurance-card")
@@ -64,7 +62,6 @@ export class MemberInsuranceCardController {
 
 		res.setHeader("Content-Disposition", `inline; filename="insurance_card.${member.insuranceCardFile}"`);
 		res.setHeader("Content-Type", contentType(member.insuranceCardFile) || "application/octet-stream");
-		// never let the browser sniff/execute the stored file as something active
 		res.setHeader("X-Content-Type-Options", "nosniff");
 
 		createReadStream(path).pipe(res);

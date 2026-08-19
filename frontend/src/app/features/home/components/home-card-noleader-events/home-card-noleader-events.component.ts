@@ -42,8 +42,6 @@ export class HomeCardNoleaderEventsComponent implements OnInit {
 	}
 
 	async loadNoLeaderEvents() {
-		// the API returns events ordered by dateFrom descending, so ask for all upcoming
-		// noleader events and sort them nearest-first here
 		const events = await this.api.EventsApi.listEvents({ noleader: true, dateFrom: DateTime.now().toISODate() }).then(
 			(res) => res.data,
 		);

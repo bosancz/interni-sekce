@@ -6,7 +6,6 @@ export class PhotosOrder1781252306740 implements MigrationInterface {
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(`ALTER TABLE "photos" ADD "order" integer`);
 
-		// backfill: number existing photos within each album by capture date
 		await queryRunner.query(`
 			UPDATE "photos" p
 			SET "order" = sub.rn

@@ -25,7 +25,6 @@ export class MailService {
 
 		const message = messageParts.join("\n");
 
-		// The body needs to be base64url encoded.
 		const encodedMessage = Buffer.from(message)
 			.toString("base64")
 			.replace(/\+/g, "-")

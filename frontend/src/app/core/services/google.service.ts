@@ -9,7 +9,7 @@ import { ApiService } from "./api.service";
 const GSI_SRC = "https://accounts.google.com/gsi/client";
 
 export class GoogleError extends Error {
-	name: string = "GoogleError"; // when transpiled to ES5 cant test if instanceof GoogleError
+	name: string = "GoogleError";
 
 	description?: string;
 
@@ -25,10 +25,6 @@ export class GoogleError extends Error {
 export class GoogleService {
 	private readonly logger = new Logger(GoogleService.name);
 
-	// Load the Google Identity Services client exactly once. Kicked off eagerly (see the
-	// constructor) so the library is ready by the time the user clicks: requestAccessToken()
-	// has to run synchronously within the user gesture, otherwise the browser blocks the OAuth
-	// popup and the sign-in fails silently.
 	private gsiReady?: Promise<void>;
 
 	constructor(
@@ -38,11 +34,6 @@ export class GoogleService {
 		this.loadGsi().catch((err) => this.logger.error("Failed to preload Google Identity Services", err));
 	}
 
-	/**
-	 * Run the Google login popup and return an OAuth access token. The token is verified
-	 * server-side (see backend GoogleService.validateAccessToken), so the browser never needs
-	 * a client secret — only the public client id.
-	 */
 	async signIn(): Promise<string> {
 		await this.loadGsi();
 
@@ -50,8 +41,6 @@ export class GoogleService {
 			throw new GoogleError("Google Identity Services library is not available");
 		}
 
-		// Prefer the id the backend advertises, fall back to the frontend default so login
-		// works even with no backend Google configuration (as in the old deployment).
 		const info = await firstValueFrom(this.api.info);
 		const client_id = info.googleClientId || this.config.googleClientId;
 		if (!client_id) throw new GoogleError("No Google client ID configured");
@@ -61,9 +50,6 @@ export class GoogleService {
 				client_id,
 				scope: "openid email profile",
 				callback: (res) => resolve(res),
-				// Popup blocked, user cancelled, denied consent, unregistered origin, ... all
-				// arrive here (never in `callback`); without this handler they were dropped and
-				// the promise hung forever.
 				error_callback: (err) =>
 					reject(new GoogleError(err?.message || "Google sign-in was cancelled or failed", err?.type)),
 			});
@@ -101,7 +87,6 @@ export class GoogleService {
 			document.body.appendChild(script);
 		});
 
-		// Allow a later retry if this attempt failed to load the library.
 		this.gsiReady.catch(() => (this.gsiReady = undefined));
 
 		return this.gsiReady;

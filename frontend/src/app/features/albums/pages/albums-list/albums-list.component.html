@@ -3,13 +3,10 @@
 <bo-page-content>
 	<bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
 		@if (isDesktop()) {
-			<!-- Desktop: filter pills laid out inline in the toolbar. -->
 			<div toolbar-actions slot="end" class="albums-filter-actions">
 				<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
 			</div>
 		} @else {
-			<!-- Mobile: the same filter pills collected inside the filter modal, plus a sort control
-			     (the sortable table headers aren't available in the mobile grid view). -->
 			<div class="albums-filter-modal">
 				<ion-list lines="full">
 					<ion-item-divider>Filtry</ion-item-divider>
@@ -28,7 +25,6 @@
 		}
 	</bo-filter>
 
-	<!-- Filter pills, shared between the desktop toolbar and the mobile filter modal. -->
 	<ng-template #filterPills>
 		<bo-filter-pill
 			label="Rok"
@@ -68,8 +64,6 @@
 			</ng-container>
 		</admin-table-column>
 
-		<!-- Stav keeps its column position in the desktop table, but is flagged [right] so it
-		     renders on the right of each item in the mobile list. -->
 		<admin-table-column header="Stav" sort="status" [right]="true" cellClass="albums-status-column" headerClass="align-middle albums-status-column">
 			<ng-container *adminCell="let album">
 				<span class="bo-pill" [class.bo-pill-green]="album.status === 'public'">

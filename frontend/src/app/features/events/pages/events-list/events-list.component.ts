@@ -91,28 +91,18 @@ type EventStatusActions = ExtractExisting<
 	providers: [FilterModel],
 })
 export class EventsListComponent implements OnInit, OnDestroy {
-	// Wrapper model that owns the whole filter (declared first so the computeds below can read it).
 	private model = inject(FilterModel);
 
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 	years = signal<number[]>([]);
 	currentYearString = String(new Date().getFullYear());
 
-	// Special "Datum" pill value: show only current/upcoming events (dateTill >= today).
-	// Mutually exclusive with the concrete year chips. It is not applied automatically here —
-	// the entry points that want it (sidebar/home "Akce") link to `?year=budouci` instead, so
-	// e.g. "Moje akce" can open the full list.
 	readonly futureFilterValue = "budouci";
 
-	// Display state is derived from the filter model: the staged draft while the modal is open,
-	// otherwise the committed (URL) values.
 	selectedYears = computed(() => this.normalizeFilterValueToArray(this.model.value("year")));
 	selectedStatuses = computed(() => this.normalizeFilterValueToArray(this.model.value("status")));
 	selectedLeaderFilters = computed(() => this.normalizeFilterValueToArray(this.model.value("leaders")));
 
-	// Default sort (used whenever the URL has no explicit sort): always by start date, with the
-	// direction following the date filter — "Budoucí" reads best nearest-first, while a full or
-	// past-year list reads best newest-first.
 	private readonly defaultSortColumn = "dateFrom";
 
 	private defaultSortOrder(dateFilters: string[]): "ASC" | "DESC" {
@@ -133,7 +123,6 @@ export class EventsListComponent implements OnInit, OnDestroy {
 
 	statuses = signal<Record<string, EventStatus>>({});
 
-	// True when the viewport is at least the lg breakpoint (992px) — filters inline vs. in the modal.
 	isDesktop = signal(true);
 
 	yearOptions = computed<FilterPillOption[]>(() => [
@@ -170,38 +159,23 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	page = 1;
 	readonly pageSize = 50;
 	private loadToken = 0;
-	// Canonical key of the query params the current list was loaded with, so a re-emission of the
-	// params we already loaded with doesn't trigger a second identical request.
 	private loadedFilterKey: string | null = null;
 
 	filter: UrlParams = {};
 
-	// Row helpers for admin-table (bound as inputs, so keep stable references).
 	rowLink = (event: SDK.EventResponseWithLinks) => "" + event.id;
 	rowId = (event: SDK.EventResponseWithLinks) => "event-" + event.id;
 
-	// Desktop-only hover preview: the event whose row is currently hovered, plus the
-	// floating card's viewport position (anchored next to the mouse cursor).
 	hoveredEvent = signal<SDK.EventResponseWithLinks | undefined>(undefined);
 	previewPosition = signal<{ top: number; left: number } | null>(null);
 
-	// Show the preview only after the pointer has rested on a row for a moment, so it
-	// doesn't flash while sweeping across the list.
 	private readonly previewDelayMs = 500;
 	private previewTimer: ReturnType<typeof setTimeout> | null = null;
 	private pendingEventId: number | null = null;
 
-	// Opening an event does not destroy this page — Ionic keeps it in the navigation stack — and
-	// the overlay sits in <body>, outside the hidden ion-page, so a preview left behind would
-	// float over the event we navigated to. Dismissing it on pointerdown is not enough on its
-	// own: the page transition slides rows out from under the resting cursor, and the resulting
-	// hover events would schedule the card straight back in. Pause on leave, resume on return.
 	private previewPaused = false;
 
 	private previewOverlay = viewChild<ElementRef<HTMLElement>>("previewOverlay");
-	// Hold a direct reference to the relocated overlay: the `previewOverlay` viewChild
-	// signal may already be torn down by the time ngOnDestroy runs, which would leave the
-	// orphaned <body> node floating over the next page.
 	private previewOverlayEl: HTMLElement | null = null;
 
 	constructor(
@@ -213,8 +187,6 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		private toasts: ToastService,
 		private platformService: PlatformService,
 	) {
-		// Filters render inline in the toolbar on desktop and inside the filter modal on mobile;
-		// this tracks the lg breakpoint (992px) so the template can switch between the two.
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 
 		addIcons({
@@ -229,7 +201,6 @@ export class EventsListComponent implements OnInit, OnDestroy {
 			trashOutline,
 		});
 
-		// Move the hover-preview overlay to <body> so its fixed positioning is viewport-relative.
 		afterNextRender(
 			() => {
 				const overlay = this.previewOverlay()?.nativeElement;
@@ -253,16 +224,12 @@ export class EventsListComponent implements OnInit, OnDestroy {
 
 	ngOnDestroy(): void {
 		this.clearTimer();
-		// The overlay was relocated to <body>, so Angular won't remove it with the view.
 		this.previewOverlayEl?.remove();
 		this.previewOverlayEl = null;
 	}
 
-	// Header shown above the actions on the mobile ActionSheet.
 	rowActionsHeader = (event: SDK.EventResponseWithLinks) => event.name;
 
-	// Arrow property (stable reference + bound `this`) so it can be passed as the
-	// admin-table `[actions]` input and invoked from there per row.
 	eventActions = (event: SDK.EventResponseWithLinks): Action[] => {
 		return [
 			{
@@ -345,7 +312,7 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		}
 
 		const statusNote = window.prompt("Poznámka ke změně stavu (můžeš nechat prázdné):");
-		if (statusNote === null) return; // user clicked on cancel
+		if (statusNote === null) return;
 
 		await this.api.EventsApi[action](event.id, { statusNote });
 		this.toasts.toast("Uloženo");
@@ -383,18 +350,13 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		this.loadYears();
 		this.loadStatuses();
 
-		// The URL is the committed filter: feed it to the model and drive loading from it. It only
-		// changes when a filter is applied (live on desktop, on "Hotovo" in the modal), so the list
-		// stays put while the modal stages.
 		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onParams(params));
-		// Applying the filter (from the model) writes it back to the URL.
 		this.model.apply$.pipe(untilDestroyed(this)).subscribe((filter) => this.applyFilter(filter));
 	}
 
 	onParams(params: Params) {
 		this.model.setCommitted(this.modelFromParams(params));
 
-		// Skip the redundant reload when the params we already loaded with are re-emitted.
 		const filterKey = this.getFilterKey(params);
 		if (filterKey === this.loadedFilterKey) return;
 		this.loadedFilterKey = filterKey;
@@ -439,17 +401,13 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		this.model.set(name, value);
 	}
 
-	// Handle the "Datum" pill selection. "Budoucí" and concrete years are mutually exclusive:
-	// picking "Budoucí" drops any selected years, and picking a year drops "Budoucí".
 	setDateFilter(values: string[]) {
 		const wasFuture = this.selectedYears().includes(this.futureFilterValue);
 		const isFuture = values.includes(this.futureFilterValue);
 
 		if (isFuture && !wasFuture) {
-			// "Budoucí" was just picked → make it the only selection.
 			this.setFilterParam("year", [this.futureFilterValue]);
 		} else if (isFuture && values.length > 1) {
-			// A year was picked while "Budoucí" was active → drop "Budoucí".
 			this.setFilterParam(
 				"year",
 				values.filter((value) => value !== this.futureFilterValue),
@@ -525,7 +483,6 @@ export class EventsListComponent implements OnInit, OnDestroy {
 			search: filter.search || undefined,
 			status: this.normalizeFilterValueToArray((filter as any)["status"]),
 			year: years,
-			// "Budoucí": only events that haven't ended yet (dateTill >= today).
 			dateFrom: showFuture ? (DateTime.now().startOf("day").toISODate() ?? undefined) : undefined,
 			my: leaders.includes("my"),
 			noleader: leaders.includes("noleader"),
@@ -536,8 +493,6 @@ export class EventsListComponent implements OnInit, OnDestroy {
 			limit: this.pageSize,
 		};
 
-		// Guard against out-of-order responses: a slower earlier request (e.g. the initial
-		// unfiltered load) must not append its rows on top of a newer filtered result.
 		const token = ++this.loadToken;
 
 		const events = await this.api.EventsApi.listEvents(params).then((res: any) => res.data);
@@ -547,8 +502,6 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		this.events.set(loadMore ? [...this.events(), ...events] : events);
 	}
 
-	// Show the event preview card next to the mouse while it rests over a row. Delegated
-	// on the table wrapper so it keeps working as rows stream in via infinite scroll.
 	onRowHover(e: MouseEvent) {
 		if (this.previewPaused) return;
 
@@ -564,10 +517,8 @@ export class EventsListComponent implements OnInit, OnDestroy {
 
 		this.positionPreview(e);
 
-		// Already shown (or scheduled) for this row: just keep the card following the cursor.
 		if (this.hoveredEvent()?.id === id || this.pendingEventId === id) return;
 
-		// Moved onto a different row: restart the delay before revealing its card.
 		this.hoveredEvent.set(undefined);
 		this.pendingEventId = id;
 		this.clearTimer();
@@ -595,17 +546,13 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		const offset = 16;
 		const margin = 12;
 
-		// Prefer the right of the cursor; flip to the left when it would overflow the viewport.
 		let left = e.clientX + offset;
 		if (left + cardWidth > window.innerWidth) left = Math.max(margin, e.clientX - cardWidth - offset);
 
-		// Sit just below the cursor, clamped so the card stays on screen.
 		const top = Math.max(margin, Math.min(e.clientY + offset, window.innerHeight - 240));
 		this.previewPosition.set({ top, left });
 	}
 
-	// Order-independent serialization of the query params, used to detect a re-emission of the
-	// params the list is already showing.
 	private getFilterKey(params: Params): string {
 		return JSON.stringify(
 			Object.keys(params)

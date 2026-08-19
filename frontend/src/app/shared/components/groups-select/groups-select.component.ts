@@ -110,7 +110,6 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 		);
 	}
 
-	// ControlValueAccessor
 	writeValue(groups: number | number[] | undefined): void {
 		if (this.multiple()) {
 			this.selectedGroups.set(Array.isArray(groups) ? groups : (this.groups()?.map((group) => group.id) ?? []));

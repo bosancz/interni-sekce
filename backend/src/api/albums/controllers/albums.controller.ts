@@ -140,7 +140,6 @@ export class AlbumsController {
 
 		AlbumDeletePermanentPermission.canOrThrow(req, album);
 
-		// removes the photo rows and their image files on disk along with the album
 		await this.albums.hardDeleteAlbum(albumId);
 	}
 

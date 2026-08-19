@@ -63,7 +63,6 @@ export class EventsController {
 		@AuthUser() authUser: SessionUser,
 		@Query() query: ListEventsQuery,
 	): Promise<EventResponse[]> {
-		// canWhere both authorizes (throws if not allowed) and returns the row-level filter
 		const where = EventsListPermission.canWhere(req, "events");
 
 		const options: GetEventsOptions = {

@@ -2,7 +2,6 @@
 
 <bo-page-content [padding]="true">
 	<div class="d-lg-flex gap-4">
-		<!-- Vertical menu for desktop -->
 		<div class="d-none d-lg-block" style="min-width: 200px">
 			<bo-vertical-menu defaultTab="clenove" (change)="view.set($any($event))">
 				<bo-vertical-menu-item name="clenove" label="Členové" icon="people-outline"></bo-vertical-menu-item>
@@ -10,7 +9,6 @@
 			</bo-vertical-menu>
 		</div>
 
-		<!-- Content area -->
 		<div class="flex-grow-1">
 			<bo-group-members class="mb-5" [class.d-none]="view() !== 'clenove'"></bo-group-members>
 

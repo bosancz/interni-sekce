@@ -59,7 +59,6 @@ interface PhotoUploadItem {
 	],
 })
 export class PhotosUploadComponent extends InputModalComponent<boolean> implements OnInit, AfterViewInit, OnDestroy {
-	// Set via Ionic modal componentProps (Object.assign), so it must be a plain property, not a signal input
 	@Input() album!: SDK.AlbumResponseWithLinks;
 
 	tags = signal<string[]>([]);
@@ -111,7 +110,6 @@ export class PhotosUploadComponent extends InputModalComponent<boolean> implemen
 	updateTags() {
 		const tags: string[] = [];
 		const album = this.album;
-		// album.photos may not be populated; collect tags only when present
 		album.photos?.forEach((photo) => {
 			photo.tags?.filter((tag) => tags.indexOf(tag) === -1).forEach((tag) => tags.push(tag));
 		});
@@ -198,8 +196,6 @@ export class PhotosUploadComponent extends InputModalComponent<boolean> implemen
 			throw new Error("Unsupported file type.");
 		}
 
-		// The generated SDK serializes the body as JSON and can't send a file, so we post
-		// the multipart form directly and observe upload progress.
 		const formData = new FormData();
 		formData.set("albumId", String(album.id));
 		formData.set("file", uploadItem.file, uploadItem.file.name);

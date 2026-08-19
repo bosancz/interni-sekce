@@ -1,6 +1,5 @@
 <bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true" (change)="onFilterChange($event)">
 	@if (isDesktop()) {
-		<!-- Desktop: filters, columns and view options laid out inline in the toolbar. -->
 		<div toolbar-actions slot="end" class="members-filter-actions">
 			<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
 
@@ -13,7 +12,6 @@
 			</ion-button>
 		</div>
 	} @else {
-		<!-- Mobile: the same filters, columns and view options collected inside the filter modal. -->
 		<div class="members-filter-modal">
 			<ion-list lines="full">
 				<ion-item-divider>Filtry</ion-item-divider>
@@ -40,7 +38,6 @@
 	}
 </bo-filter>
 
-<!-- Filter pills, shared between the desktop toolbar and the mobile filter modal. -->
 <ng-template #filterPills>
 	<bo-filter-pill
 		label="Role"
@@ -56,7 +53,6 @@
 	/>
 </ng-template>
 
-<!-- Column picker, shared between the desktop popover and the mobile filter modal. -->
 <ng-template #columnsList>
 	<ion-item-divider>Sloupce</ion-item-divider>
 	@for (selection of viewSelections() | keyvalue: originalViewOrder; track selection.key) {
@@ -72,7 +68,6 @@
 	}
 </ng-template>
 
-<!-- View options, shared between the desktop popover and the mobile filter modal. -->
 <ng-template #viewOptionsList>
 	<ion-item-divider>Zobrazení</ion-item-divider>
 	<ion-item lines="none">
@@ -86,7 +81,6 @@
 	</ion-item>
 </ng-template>
 
-<!-- Column picker popover (desktop). -->
 <ion-popover
 	trigger="group-columns-popover-trigger"
 	triggerAction="click"
@@ -102,7 +96,6 @@
 	</ng-template>
 </ion-popover>
 
-<!-- View options popover (desktop). -->
 <ion-popover
 	trigger="group-inactive-popover-trigger"
 	triggerAction="click"

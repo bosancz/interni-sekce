@@ -30,11 +30,10 @@ export class EventsAnnouncementController {
 		@Param("eventId", ParseIntPipe) eventId: number,
 		@Res({ passthrough: true }) res: Response,
 	): Promise<StreamableFile> {
-		//const event = await this.events.getEvent(eventId);
 
 		const event = await this.eventsRepository.findOne({
 			where: { id: eventId },
-			relations: { attendees: { member: { contacts: true } } }, // Important: load nested member relation
+			relations: { attendees: { member: { contacts: true } } },
 		});
 
 		if (!event) throw new NotFoundException();

@@ -49,7 +49,6 @@ export class AccountCredentialsComponent {
 			},
 		});
 
-		// login is NOT NULL + unique in the database, never send an empty value
 		if (!result?.value) return;
 
 		await this.api.UsersApi.updateUser(user.id, { login: result.value });
@@ -70,7 +69,6 @@ export class AccountCredentialsComponent {
 			},
 		});
 
-		// never send an empty password
 		if (!result?.value) return;
 
 		await this.api.UsersApi.setUserPassword(user.id, { password: result.value });

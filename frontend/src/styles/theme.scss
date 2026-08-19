@@ -26,7 +26,6 @@ html {
 	--lightBlue: #{$lightBlue};
 	--linkBlue: #{$linkBlue};
 
-	// @media (prefers-color-scheme: dark) {
 }
 body.dark {
 	--colorPrimary: #{$colorPrimary};

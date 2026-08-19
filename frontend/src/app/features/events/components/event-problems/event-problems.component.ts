@@ -15,11 +15,6 @@ interface HealthSummaryRow {
 	severity: SDK.HealthSeverityEnum;
 }
 
-/**
- * Read-only overview of the allergies and known problems of all event attendees
- * (leaders and members). Loads the attendees itself and refreshes whenever the event
- * input changes, e.g. after someone is added or removed elsewhere.
- */
 @UntilDestroy()
 @Component({
 	selector: "bo-event-problems",
@@ -82,7 +77,6 @@ export class EventProblemsComponent {
 			}
 		}
 
-		// Most severe first, then alphabetically by attendee name.
 		rows.sort(
 			(a, b) =>
 				this.severities[b.severity].order - this.severities[a.severity].order ||

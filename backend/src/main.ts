@@ -34,13 +34,11 @@ async function bootstrap() {
 	}
 
 	if (config.server.cors) {
-		// development: reflect any origin for convenience
 		app.enableCors({
 			origin: true,
 			credentials: true,
 		});
 	} else if (config.server.corsOrigins.length) {
-		// production: only the explicitly allow-listed first-party origins (e.g. the bosan.cz website)
 		app.enableCors({
 			origin: config.server.corsOrigins,
 			credentials: true,
@@ -56,11 +54,9 @@ async function bootstrap() {
 		}),
 	);
 
-	// comment to disable OpenAPI and Swagger
 	registerOpenAPI("api/openapi", app, config);
 
 	if (!config.production) {
-		// make JSONs nice for debugging
 		app.getHttpAdapter().getInstance().set("json spaces", 2);
 	}
 

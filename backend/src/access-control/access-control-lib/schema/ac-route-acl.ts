@@ -4,22 +4,16 @@ import { OptionsStore } from "../options-store";
 import { EntityType } from "./entity-type";
 
 export interface AcRouteOptions<DOC = void, ROLES extends string = string, PDATA extends Object = {}> {
-	/** Add link for this route to the specified parent entity. This adds a links object as a property (default `_links`) to all routes of the same entity */
 	linkTo?: Type<DOC extends void ? any : DOC>;
 
-	/** Add links from child routes linked to this entity. This adds a links object as a property (default `_links`) to the response */
 	contains?: EntityType;
 
-	/** Permissions for the current route */
 	allowed?: AcAllowed<DOC, ROLES, PDATA>;
 
-	/** Inherit permissions of the specified entity */
 	inherit?: AcPermission<DOC, ROLES>;
 
-	/** Global condition whether this route is accessible (e.g. is document in the state to perform this operation) */
 	applicable?: (params: { doc: DOC; req: Request }) => boolean;
 
-	/** Resolves route parameters of the linked route from the document when building the link href, either by property name or by function */
 	params?: { [param: string]: keyof DOC | ((doc: DOC) => string | number) };
 
 	path?: (d: DOC) => string;
@@ -84,13 +78,10 @@ export class AcPermission<DOC, ROLES extends string = string, PDATA extends Obje
 
 	private checkAllowed(permission: AcAllowedValue<DOC>, req: Request, doc?: DOC) {
 		try {
-			// get permission from permission object
 			let permissionValue = typeof permission === "object" ? permission.permission : permission;
 
-			// permission specified globally
 			if (typeof permissionValue === "boolean") return permissionValue;
 
-			// permission specified per document
 			if (typeof permissionValue === "function") {
 				if (!doc) throw new InternalServerErrorException("Document must be provided for permission check.");
 				return permissionValue({ doc, req });
@@ -99,7 +90,6 @@ export class AcPermission<DOC, ROLES extends string = string, PDATA extends Obje
 			if (err instanceof TypeError)
 				throw new InternalServerErrorException(`Invalid document provided for validation. ${err.message}`);
 			else {
-				// this.logger.error(err);
 				throw new InternalServerErrorException("Permission validation error.");
 			}
 		}

@@ -3,7 +3,6 @@
 <bo-page-content [padding]="true">
 	@if (user(); as user) {
 		<div class="account-layout">
-			<!-- profilová hlavička -->
 			<bo-card class="profile-card">
 				<bo-card-content>
 					<div class="profile">
@@ -53,7 +52,6 @@
 			</bo-card>
 
 			<div class="account-grid">
-				<!-- Uživatelský účet -->
 				<bo-card>
 					<bo-card-header>
 						<bo-card-title>
@@ -103,7 +101,6 @@
 					</bo-card-content>
 				</bo-card>
 
-				<!-- Člen skupiny -->
 				<bo-card>
 					<bo-card-header>
 						<bo-card-title>
@@ -144,10 +141,8 @@
 					</bo-card-content>
 				</bo-card>
 
-				<!-- Přihlašování -->
 				<bo-account-credentials class="grid-full" />
 
-				<!-- Aplikace -->
 				<bo-account-app class="grid-full" />
 			</div>
 		</div>

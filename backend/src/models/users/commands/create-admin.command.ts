@@ -5,14 +5,6 @@ import { StaticConfig } from "src/config";
 import { UserRoles } from "../entities/user.entity";
 import { UsersRepository } from "../repositories/users.repository";
 
-/**
- * Creates (or resets the password of) an admin user.
- *
- * Credentials come from the ADMIN_LOGIN / ADMIN_EMAIL / ADMIN_PASSWORD environment
- * variables. If no password is provided a strong random one is generated and printed
- * once. There is intentionally no hardcoded default so this command can never seed a
- * well-known admin account.
- */
 @Command({
 	name: "create-admin",
 	arguments: "",

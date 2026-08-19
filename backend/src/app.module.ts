@@ -33,11 +33,9 @@ import { UsersModelModule } from "./models/users/users-model.module";
 			useFactory: (config: Config) => [{ rootPath: config.server.staticRoot }],
 		}),
 		MulterModule.register({
-			// in-memory storage so handlers that read file.buffer (photos, insurance cards) work;
-			// handlers that need a file on disk (event registration) set their own dest per-route
 			storage: memoryStorage(),
 			limits: {
-				fileSize: 1024 * 1024 * 100, // 100 MB
+				fileSize: 1024 * 1024 * 100,
 			},
 		}),
 		EventsModule,

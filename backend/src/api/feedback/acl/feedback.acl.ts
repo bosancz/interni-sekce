@@ -3,7 +3,6 @@ import { Roles } from "src/access-control/schema/roles";
 import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
 
-// Any logged-in user can report a bug.
 export const allowed: AcAllowed<void, Roles> = {
 	uzivatel: true,
 };

@@ -114,8 +114,6 @@ export class GroupsController {
 		try {
 			await this.groups.hardDeleteGroup(groupId);
 		} catch (err) {
-			// Postgres foreign-key violation (23503): the members→groups FK (onDelete RESTRICT)
-			// still references this group, so it can't be permanently removed
 			if (err instanceof QueryFailedError && (err.driverError as { code?: string }).code === "23503") {
 				throw new ConflictException("Oddíl nelze trvale smazat, protože jsou na něj navázané záznamy (např. členové).");
 			}

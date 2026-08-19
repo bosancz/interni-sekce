@@ -7,9 +7,6 @@ export class AlbumCreatedBy1785229405118 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "albums" ADD "created_by_id" integer`);
         await queryRunner.query(`ALTER TABLE "albums" ADD CONSTRAINT "FK_7cd93bf4f6279611a0b441fd26d" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE`);
 
-        // Backfill the creator for existing albums from the linked event's leader (the lowest-id user
-        // account linked to a "leader" attendee of that event). Albums with no event, no leader, or a
-        // leader without a user account keep created_by_id NULL and are therefore admin-only to delete.
         await queryRunner.query(`
             UPDATE "albums" a
             SET "created_by_id" = (
