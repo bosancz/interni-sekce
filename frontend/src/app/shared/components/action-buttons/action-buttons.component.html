@@ -1,6 +1,11 @@
 <!-- PINNED -->
 @for (action of pinned(); track action) {
-	<ion-button class="pinned" [disabled]="action.disabled" (click)="onClick(action)">
+	<ion-button
+		class="pinned"
+		[disabled]="action.disabled"
+		[boTooltip]="action.disabled ? noPermissionText : null"
+		(click)="onClick(action)"
+	>
 		@if (action.icon) {
 			<ion-icon [class.d-xl-none]="!ios && action.text" [name]="action.icon"></ion-icon>
 		}
@@ -17,6 +22,7 @@
 	<ion-button
 		[disabled]="action.disabled"
 		[color]="action.color"
+		[boTooltip]="action.disabled ? noPermissionText : null"
 		(click)="onClick(action)"
 		class="d-none"
 		[class.d-xl-inline-block]="!ios"

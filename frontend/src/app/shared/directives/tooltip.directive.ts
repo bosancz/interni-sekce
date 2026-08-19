@@ -4,7 +4,7 @@ import { Directive, ElementRef, HostListener, OnDestroy, input } from "@angular/
  * Instant tooltip, a replacement for the native `title` attribute: that one only appears after
  * roughly a second and is never shown for disabled controls.
  *
- * Works on any element, including a disabled `ion-button` — see the `ion-button[boTooltip]` rule in
+ * Works on any element, including a disabled `ion-button` — see the `ion-button.bo-tooltip` rule in
  * `styles/ionic.scss`, which hands the disabled host its pointer events back so the hover lands.
  *
  * The bubble is appended to `<body>` (so no parent's `overflow` can clip it) and therefore styled
@@ -12,6 +12,7 @@ import { Directive, ElementRef, HostListener, OnDestroy, input } from "@angular/
  */
 @Directive({
 	selector: "[boTooltip]",
+	host: { class: "bo-tooltip" },
 })
 export class TooltipDirective implements OnDestroy {
 	boTooltip = input<string | null | undefined>();

@@ -174,7 +174,7 @@ ion-content {
    would never see the hover that is supposed to explain *why* it is disabled. Give the host its
    pointer events back and kill them on the inner native button instead, so the button stays
    unclickable but the tooltip still fires. */
-ion-button[boTooltip].button-disabled {
+ion-button.bo-tooltip.button-disabled {
 	pointer-events: auto;
 	cursor: default;
 
