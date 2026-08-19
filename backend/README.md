@@ -81,6 +81,13 @@ npm run migrations:run
 npm run cli create-admin
 ```
 
+Login a e-mail bere z proměnných `ADMIN_LOGIN` a `ADMIN_EMAIL`; když některá chybí, zeptá se na ni
+interaktivně. Bez terminálu (a bez proměnných) skončí chybou, která řekne, kterou proměnnou
+nastavit — takže se nikde nezasekne na čekání na vstup.
+
+Heslo se bere z `ADMIN_PASSWORD`. Mimo produkci se bez ní vygeneruje náhodné a jednou vypíše,
+na produkci je proměnná povinná.
+
 ## Naplnění testovacími daty
 
 ```bash
