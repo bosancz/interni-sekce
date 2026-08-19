@@ -1,13 +1,7 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
-import {
-	IonButton,
-	IonButtons,
-	IonCheckbox,
-	IonItem,
-	IonList,
-	IonNote,
-	ModalController,
-} from "@ionic/angular/standalone";
+import { IonIcon, ModalController } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { checkmarkOutline } from "ionicons/icons";
 import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { SDK } from "src/sdk";
@@ -16,7 +10,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-closure-modal",
 	templateUrl: "./event-closure-modal.component.html",
 	styleUrl: "./event-closure-modal.component.scss",
-	imports: [IonButton, IonButtons, IonCheckbox, IonItem, IonList, IonNote, ModalLayoutComponent],
+	imports: [IonIcon, ModalLayoutComponent],
 })
 export class EventClosureModalComponent extends InputModalComponent<{ accountingSent: boolean }> implements OnInit {
 	event!: SDK.EventResponseWithLinks;
@@ -29,20 +23,32 @@ export class EventClosureModalComponent extends InputModalComponent<{ accounting
 			: this.event._links.markAccountingSent.applicable && this.event._links.markAccountingSent.allowed,
 	);
 
-	reportFilled = computed(() => !!this.event.report);
+	autoItems = computed(() => {
+		const album = this.event.album;
 
-	albumPublished = computed(() => this.event.album?.status === "public");
-
-	albumHint = computed(() =>
-		!this.event.album
-			? "K akci není připojená žádná galerie."
-			: this.albumPublished()
-				? "Připojená galerie je zveřejněná."
-				: "Připojená galerie zatím není zveřejněná.",
-	);
+		return [
+			{
+				key: "report",
+				label: "Report vyplněn",
+				helper: "Zaškrtne se samo, jakmile je vyplněný report akce.",
+				done: !!this.event.report,
+			},
+			{
+				key: "album",
+				label: "Galerie zveřejněna",
+				helper: !album
+					? "K akci není připojená žádná galerie."
+					: album.status === "public"
+						? "Připojená galerie je zveřejněná."
+						: "Připojená galerie zatím není zveřejněná.",
+				done: album?.status === "public",
+			},
+		];
+	});
 
 	constructor(modalController: ModalController) {
 		super(modalController);
+		addIcons({ checkmarkOutline });
 	}
 
 	ngOnInit(): void {

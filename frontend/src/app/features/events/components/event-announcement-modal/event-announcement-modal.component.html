@@ -1,28 +1,36 @@
 <bo-modal-layout>
-	<h4 slot="title">Ohláška</h4>
+	<div slot="title" class="bm-title">
+		<h2>Ohláška</h2>
+		<span class="bm-accent-bar"></span>
+	</div>
 
-	<ion-note class="hint">Ohláška se odesílá mimo systém — po odeslání ji tady zaškrtni.</ion-note>
-
-	<ion-list>
-		<ion-item lines="none">
-			<ion-checkbox
-				justify="start"
-				labelPlacement="end"
+	<div class="bm-body">
+		<label class="bm-check-row" [class.checked]="sent()" [class.disabled]="!editable()">
+			<input
+				type="checkbox"
+				class="bm-visually-hidden"
 				[checked]="sent()"
 				[disabled]="!editable()"
-				(ionChange)="sent.set($any($event).detail.checked)"
-			>
-				Ohláška odeslána
-			</ion-checkbox>
-		</ion-item>
-	</ion-list>
+				(change)="sent.set($any($event.target).checked)"
+			/>
+			<span class="bm-checkbox">
+				@if (sent()) {
+					<ion-icon name="checkmark-outline"></ion-icon>
+				}
+			</span>
+			<span class="bm-row-text">
+				<span class="bm-row-label">Ohláška odeslána</span>
+				<span class="bm-row-helper">Ohláška se odesílá mimo systém — po odeslání ji tady zaškrtni.</span>
+			</span>
+		</label>
 
-	@if (sentAt(); as date) {
-		<ion-note class="hint">Označeno {{ date | date: "d. M. y" }}.</ion-note>
-	}
+		@if (sentAt(); as date) {
+			<p class="bm-sent-note">Označeno {{ date | date: "d. M. y" }}.</p>
+		}
+	</div>
 
-	<ion-buttons slot="buttons">
-		<ion-button (click)="close.emit()" color="secondary">Zrušit</ion-button>
-		<ion-button (click)="save()" color="primary" [disabled]="!editable()">Uložit</ion-button>
-	</ion-buttons>
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button type="button" class="bm-btn-primary" [disabled]="!editable()" (click)="save()">Uložit</button>
+	</div>
 </bo-modal-layout>

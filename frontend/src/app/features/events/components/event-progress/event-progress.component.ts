@@ -167,7 +167,11 @@ export class EventProgressComponent {
 		if (!step.clickable || !event) return;
 
 		if (step.key === "announcement") {
-			const result = await this.modalService.componentModal(EventAnnouncementModalComponent, { event });
+			const result = await this.modalService.componentModal(
+				EventAnnouncementModalComponent,
+				{ event },
+				{ cssClass: "dialog-brand" },
+			);
 			if (!result || result.sent === !!event.announcementSentAt) return;
 
 			await this.callApi((id) =>
@@ -178,7 +182,11 @@ export class EventProgressComponent {
 		}
 
 		if (step.key === "closure") {
-			const result = await this.modalService.componentModal(EventClosureModalComponent, { event });
+			const result = await this.modalService.componentModal(
+				EventClosureModalComponent,
+				{ event },
+				{ cssClass: "dialog-brand" },
+			);
 			if (!result || result.accountingSent === !!event.accountingSentAt) return;
 
 			await this.callApi((id) =>
