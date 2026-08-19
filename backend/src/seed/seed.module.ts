@@ -1,0 +1,23 @@
+import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { AuthModule } from "src/auth/auth.module";
+import { Album } from "src/models/albums/entities/album.entity";
+import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
+import { EventExpense } from "src/models/events/entities/event-expense.entity";
+import { Event } from "src/models/events/entities/event.entity";
+import { Group } from "src/models/members/entities/group.entity";
+import { MemberContact } from "src/models/members/entities/member-contact.entity";
+import { Member } from "src/models/members/entities/member.entity";
+import { User } from "src/models/users/entities/user.entity";
+import { SeedCommand } from "./commands/seed.command";
+import { SeedService } from "./services/seed.service";
+
+@Module({
+	imports: [
+		TypeOrmModule.forFeature([Album, Event, EventAttendee, EventExpense, Group, Member, MemberContact, User]),
+		AuthModule,
+	],
+	providers: [SeedService, SeedCommand],
+	exports: [SeedCommand],
+})
+export class SeedModule {}

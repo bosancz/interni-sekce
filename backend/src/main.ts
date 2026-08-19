@@ -6,6 +6,7 @@ import { AppModule } from "./app.module";
 import { Config, StaticConfig } from "./config";
 import { runMigrations } from "./database/run-migrations";
 import { registerOpenAPI } from "./openapi";
+import { SeedService } from "./seed/services/seed.service";
 
 async function bootstrap() {
 	const logger = new Logger("MAIN");
@@ -28,6 +29,11 @@ async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, nestOptions);
 
 	const config = app.get(Config);
+
+	if (config.seed.onStart) {
+		logger.log("SEED_ON_START je zapnuté, plním databázi testovacími daty...");
+		await app.get(SeedService).seedOnStart();
+	}
 
 	if (config.server.globalPrefix) {
 		app.setGlobalPrefix(config.server.globalPrefix);

@@ -48,6 +48,10 @@
         │   ├── data            # Importovaná data
         │   ├── models          # Modely pro import
         │   └── services        # Služby pro import
+        ├── seed                # Vzorová testovací data
+        │   ├── commands        # Příkaz seed
+        │   ├── data            # Definice vzorových dat
+        │   └── services        # Služba pro naplnění databáze
         ├── app.module.ts       # Hlavní modul aplikace
         ├── cli.module.ts       # Modul pro CLI příkazy
         ├── config.ts           # Konfigurace aplikace
@@ -76,6 +80,65 @@ npm run migrations:run
 ```bash
 npm run cli create-admin
 ```
+
+## Naplnění testovacími daty
+
+```bash
+npm run cli seed
+```
+
+Vytvoří vzorová data v hobitím duchu — tři oddíly (Trpaslíci, Nepřátelé a Klub přátel), patnáct
+členů, sedm budoucích akcí různých typů a jedno album. Všichni testovací uživatelé mají heslo
+`gandalf` a jsou navázaní na aktivního člena v Klubu přátel, takže mají roli vedoucího:
+
+| login | člen | role |
+| --- | --- | --- |
+| `bilbo` | Bilbo | vedoucí + admin |
+| `vedouci` | Beorn (vedoucí) | vedoucí |
+| `instruktor` | Elrond (instruktor) | vedoucí |
+| `program` | Gandalf (správce programu) | vedoucí + správce programu |
+
+Přezdívka člena nese postavu i testovací roli, aby bylo v seznamu členů na první pohled vidět,
+kterým účtem se pod kým přihlásit.
+
+Roli vedoucího neukládá databáze — access-control ji přiděluje každému uživateli navázanému na
+aktivního člena (viz `AccessControlModule`). Příkaz je idempotentní: opakované spuštění
+existující záznamy aktualizuje (hledá je podle přezdívky / názvu / loginu), nezakládá je znovu a nemaže
+nic ostatního. Datumy akcí jsou relativní ke dni spuštění, takže akce jsou vždy v budoucnu.
+
+### Označení testovací databáze
+
+Aby se testovací data nikdy nedostala do produkce, řídí se seed značkou uloženou **v databázi**.
+Bez ní příkaz odmítne běžet a vypíše, čím ji nastavit, případně lze značku obejít pomocí `--force`:
+
+```sql
+-- na testovací databázi (NEXT, lokální vývoj)
+ALTER DATABASE <databáze> SET app.environment = 'test';
+
+-- na produkční databázi
+ALTER DATABASE <databáze> SET app.environment = 'production';
+```
+
+Značka se nastavuje jednou při zřízení databáze a nikam se nekopíruje — `pg_dump` ji nepřenáší,
+takže obnova dat z produkčního dumpu do testovací databáze o označení nepřijde. Když aplikace
+omylem míří na produkční databázi, seed se nespustí.
+
+Pravidla (stejná pro vývoj i produkční build, takže i lokální databázi je potřeba jednou označit):
+
+| stav databáze | `npm run cli seed` | `SEED_ON_START` |
+| --- | --- | --- |
+| `app.environment = 'test'` | seeduje | seeduje |
+| bez značky | odmítne, dokud nedostane `--force` | přeskočí a zaloguje chybu |
+| `app.environment = 'production'` | odmítne vždy (ani `--force` nepomůže) | přeskočí a zaloguje chybu |
+
+Na produkčním buildu (`NODE_ENV=production`, tedy i NEXT) navíc příkaz zaloguje varování, že zakládá
+uživatele se známým heslem.
+
+### Automatické plnění při startu
+
+S `SEED_ON_START=true` se testovací data doplní při každém startu aplikace (tedy i po nasazení
+nové verze na NEXT), hned po migracích. Tahle cesta `--force` nezná — bez značky `test` se seed
+jen přeskočí s chybovou hláškou v logu a aplikace naběhne normálně.
 
 ## Spuštění vývojového serveru
 
