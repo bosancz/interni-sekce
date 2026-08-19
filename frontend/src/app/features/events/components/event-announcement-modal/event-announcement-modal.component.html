@@ -1,0 +1,28 @@
+<bo-modal-layout>
+	<h4 slot="title">Ohláška</h4>
+
+	<ion-note class="hint">Ohláška se odesílá mimo systém — po odeslání ji tady zaškrtni.</ion-note>
+
+	<ion-list>
+		<ion-item lines="none">
+			<ion-checkbox
+				justify="start"
+				labelPlacement="end"
+				[checked]="sent()"
+				[disabled]="!editable()"
+				(ionChange)="sent.set($any($event).detail.checked)"
+			>
+				Ohláška odeslána
+			</ion-checkbox>
+		</ion-item>
+	</ion-list>
+
+	@if (sentAt(); as date) {
+		<ion-note class="hint">Označeno {{ date | date: "d. M. y" }}.</ion-note>
+	}
+
+	<ion-buttons slot="buttons">
+		<ion-button (click)="close.emit()" color="secondary">Zrušit</ion-button>
+		<ion-button (click)="save()" color="primary" [disabled]="!editable()">Uložit</ion-button>
+	</ion-buttons>
+</bo-modal-layout>

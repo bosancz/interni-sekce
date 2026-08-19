@@ -1,12 +1,21 @@
 <div class="steps" [style.--accent]="accentColor()">
 	@for (step of steps(); track step.key) {
-		<div class="step" [class.active]="step.active" [class.clickable]="step.clickable">
-			<div class="rail" (click)="openStep(step, $event)">
+		<div
+			class="step"
+			[class.active]="step.active"
+			[class.clickable]="step.clickable"
+			[attr.role]="step.clickable ? 'button' : null"
+			[attr.tabindex]="step.clickable ? 0 : null"
+			(click)="openStep(step)"
+			(keydown.enter)="openStep(step)"
+			(keydown.space)="openStep(step)"
+		>
+			<div class="rail">
 				<span class="track" [class.filled]="step.reached" [class.edge]="$first"></span>
 				<span class="dot" [class.filled]="step.reached"></span>
 				<span class="track" [class.filled]="step.reached && !step.active" [class.edge]="$last"></span>
 			</div>
-			<div class="label" (click)="openStep(step, $event)">
+			<div class="label">
 				<span>{{ step.label }}</span>
 				@if (step.note) {
 					<button type="button" class="note-button" aria-label="Poznámka ke stavu" (click)="openNote($event)">
@@ -21,7 +30,7 @@
 <ion-popover
 	cssClass="event-progress-note-popover"
 	[isOpen]="noteOpen()"
-	[event]="popoverEvent()"
+	[event]="noteEvent()"
 	(didDismiss)="noteOpen.set(false)"
 >
 	<ng-template>
@@ -29,76 +38,6 @@
 			<div class="popover-panel">
 				<h4>{{ noteLabel() }}</h4>
 				<p>{{ statusNote() }}</p>
-			</div>
-		</ion-content>
-	</ng-template>
-</ion-popover>
-
-<ion-popover
-	cssClass="event-progress-note-popover"
-	[isOpen]="announcementOpen()"
-	[event]="popoverEvent()"
-	(didDismiss)="announcementOpen.set(false)"
->
-	<ng-template>
-		<ion-content>
-			<div class="popover-panel">
-				<h4>Ohláška</h4>
-				@if (announcementSent()) {
-					<p>Odesláno {{ event()!.announcementSentAt | date: "d. M. y" }}</p>
-					@if (event()!._links.unmarkAnnouncementSent.allowed) {
-						<ion-button size="small" fill="clear" (click)="unmarkAnnouncementSent()"
-							>Zrušit označení</ion-button
-						>
-					}
-				} @else {
-					<p>Ohláška se odesílá mimo systém, po odeslání ji tu označ.</p>
-					<ion-button
-						size="small"
-						expand="block"
-						(click)="markAnnouncementSent()"
-						[disabled]="!event()!._links.markAnnouncementSent.allowed"
-					>
-						Označit za odeslanou
-					</ion-button>
-				}
-			</div>
-		</ion-content>
-	</ng-template>
-</ion-popover>
-
-<ion-popover
-	cssClass="event-progress-note-popover"
-	[isOpen]="closureOpen()"
-	[event]="popoverEvent()"
-	(didDismiss)="closureOpen.set(false)"
->
-	<ng-template>
-		<ion-content>
-			<div class="popover-panel">
-				<h4>Uzavření akce</h4>
-				<ul class="closure-items">
-					@for (item of closureItems(); track item.key) {
-						<li [class.done]="item.done">
-							<span class="closure-dot"></span>
-							<span>{{ item.label }}</span>
-						</li>
-					}
-				</ul>
-				@if (event()!._links.markAccountingSent.applicable) {
-					<ion-button
-						size="small"
-						expand="block"
-						(click)="markAccountingSent()"
-						[disabled]="!event()!._links.markAccountingSent.allowed"
-					>
-						Označit vyúčtování za odeslané
-					</ion-button>
-				} @else if (event()!.accountingSentAt && event()!._links.unmarkAccountingSent.allowed) {
-					<ion-button size="small" fill="clear" (click)="unmarkAccountingSent()">
-						Zrušit označení vyúčtování
-					</ion-button>
-				}
 			</div>
 		</ion-content>
 	</ng-template>

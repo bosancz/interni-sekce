@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from "@angular/core";
-import { DatePipe } from "@angular/common";
-import { IonButton, IonContent, IonIcon, IonPopover } from "@ionic/angular/standalone";
+import { IonContent, IonIcon, IonPopover } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { chatbubbleEllipsesOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
 import { SDK } from "src/sdk";
+import { EventAnnouncementModalComponent } from "../event-announcement-modal/event-announcement-modal.component";
+import { EventClosureModalComponent } from "../event-closure-modal/event-closure-modal.component";
 
 export interface EventProgressStep {
 	key: "draft" | "pending" | "public" | "announcement" | "closure";
@@ -45,7 +47,7 @@ const NO_LEADER_LABEL = "Bez vedoucího";
 	templateUrl: "./event-progress.component.html",
 	styleUrl: "./event-progress.component.scss",
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [DatePipe, IonButton, IonIcon, IonPopover, IonContent],
+	imports: [IonIcon, IonPopover, IonContent],
 })
 export class EventProgressComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>(undefined);
@@ -53,9 +55,7 @@ export class EventProgressComponent {
 	change = output<void>();
 
 	noteOpen = signal(false);
-	announcementOpen = signal(false);
-	closureOpen = signal(false);
-	popoverEvent = signal<Event | undefined>(undefined);
+	noteEvent = signal<Event | undefined>(undefined);
 
 	statusNote = computed(() => this.event()?.statusNote || undefined);
 
@@ -145,39 +145,43 @@ export class EventProgressComponent {
 
 	constructor(
 		private readonly api: ApiService,
+		private readonly modalService: ModalService,
 		private readonly toastService: ToastService,
 	) {
 		addIcons({ chatbubbleEllipsesOutline });
 	}
 
-	openNote(event: Event) {
-		this.popoverEvent.set(event);
+	openNote(domEvent: Event) {
+		domEvent.stopPropagation();
+		this.noteEvent.set(domEvent);
 		this.noteOpen.set(true);
 	}
 
-	openStep(step: EventProgressStep, event: Event) {
-		if (!step.clickable) return;
-		this.popoverEvent.set(event);
-		if (step.key === "announcement") this.announcementOpen.set(true);
-		if (step.key === "closure") this.closureOpen.set(true);
-	}
+	async openStep(step: EventProgressStep) {
+		const event = this.event();
+		if (!step.clickable || !event) return;
 
-	async markAnnouncementSent() {
-		await this.callApi((id) => this.api.EventsApi.markAnnouncementSent(id));
-		this.announcementOpen.set(false);
-	}
+		if (step.key === "announcement") {
+			const result = await this.modalService.componentModal(EventAnnouncementModalComponent, { event });
+			if (!result || result.sent === !!event.announcementSentAt) return;
 
-	async unmarkAnnouncementSent() {
-		await this.callApi((id) => this.api.EventsApi.unmarkAnnouncementSent(id));
-		this.announcementOpen.set(false);
-	}
+			await this.callApi((id) =>
+				result.sent
+					? this.api.EventsApi.markAnnouncementSent(id)
+					: this.api.EventsApi.unmarkAnnouncementSent(id),
+			);
+		}
 
-	async markAccountingSent() {
-		await this.callApi((id) => this.api.EventsApi.markAccountingSent(id));
-	}
+		if (step.key === "closure") {
+			const result = await this.modalService.componentModal(EventClosureModalComponent, { event });
+			if (!result || result.accountingSent === !!event.accountingSentAt) return;
 
-	async unmarkAccountingSent() {
-		await this.callApi((id) => this.api.EventsApi.unmarkAccountingSent(id));
+			await this.callApi((id) =>
+				result.accountingSent
+					? this.api.EventsApi.markAccountingSent(id)
+					: this.api.EventsApi.unmarkAccountingSent(id),
+			);
+		}
 	}
 
 	private async callApi(action: (eventId: number) => Promise<unknown>) {

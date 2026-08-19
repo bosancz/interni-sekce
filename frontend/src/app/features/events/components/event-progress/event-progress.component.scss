@@ -13,12 +13,34 @@
 .step {
 	flex: 1 1 0;
 	min-width: 0;
+	padding: 0.35rem 0 0.3rem;
+	border-radius: var(--bo-radius-btn);
+	transition: background-color 150ms;
 
 	&.clickable {
 		cursor: pointer;
 
-		.label:hover span {
-			text-decoration: underline;
+		&:hover,
+		&:focus-visible {
+			background: var(--bo-blue-tint);
+
+			.label {
+				color: var(--bo-heading);
+			}
+
+			.label span {
+				text-decoration: underline;
+			}
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--bo-blue);
+			outline-offset: -2px;
+		}
+
+		&.active:hover .label,
+		&.active:focus-visible .label {
+			color: var(--accent);
 		}
 	}
 }
@@ -115,39 +137,6 @@
 
 			&:last-child {
 				margin-bottom: 0;
-			}
-		}
-	}
-
-	.closure-items {
-		list-style: none;
-		margin: 0 0 0.5rem;
-		padding: 0;
-
-		li {
-			display: flex;
-			align-items: center;
-			gap: 0.5em;
-			padding: 0.2rem 0;
-			color: var(--bo-muted);
-
-			.closure-dot {
-				flex: 0 0 auto;
-				width: 0.6rem;
-				height: 0.6rem;
-				border-radius: 50%;
-				background: transparent;
-				border: 1px dashed var(--bo-muted);
-			}
-
-			&.done {
-				color: var(--bo-green);
-				font-weight: 700;
-
-				.closure-dot {
-					background: var(--bo-green);
-					border-color: var(--bo-green);
-				}
 			}
 		}
 	}
