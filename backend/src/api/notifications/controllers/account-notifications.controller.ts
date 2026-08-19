@@ -26,7 +26,7 @@ import { NotificationSettingsRepository } from "src/models/notifications/reposit
 import { NotificationSubscriptionsRepository } from "src/models/notifications/repositories/notification-subscriptions.repository";
 import { PushService } from "src/models/notifications/services/push.service";
 import {
-	normalizeNotificationChannels,
+	NotificationChannels,
 	NotificationTypes,
 	NotificationTypesMetadata,
 } from "src/models/notifications/schema/notification-types";
@@ -97,7 +97,14 @@ export class AccountNotificationsController {
 	): Promise<void> {
 		NotificationSettingUpdatePermission.canOrThrow(req, { type: notificationType } as never);
 
-		await this.settings.setSetting(authUser.userId, notificationType, normalizeNotificationChannels(body.channels));
+		const channels = [...body.channels];
+
+		// push and e-mail notifications always show on the in-app notifications page too
+		const forcesInApp =
+			channels.includes(NotificationChannels.push) || channels.includes(NotificationChannels.email);
+		if (forcesInApp && !channels.includes(NotificationChannels.inApp)) channels.push(NotificationChannels.inApp);
+
+		await this.settings.setSetting(authUser.userId, notificationType, channels);
 	}
 
 	@Get("devices")

@@ -14,13 +14,6 @@ export enum NotificationChannels {
 	"inApp" = "inApp",
 }
 
-/** Push and e-mail notifications always show on the in-app notifications page too. */
-export function normalizeNotificationChannels(channels: NotificationChannels[]): NotificationChannels[] {
-	const forcesInApp = channels.includes(NotificationChannels.push) || channels.includes(NotificationChannels.email);
-	if (forcesInApp && !channels.includes(NotificationChannels.inApp)) return [...channels, NotificationChannels.inApp];
-	return channels;
-}
-
 export interface NotificationTypeMetadata {
 	title: string;
 	description: string;
