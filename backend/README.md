@@ -87,16 +87,19 @@ npm run cli create-admin
 npm run cli seed
 ```
 
-Vytvoří vzorová data v hobitím duchu — tři oddíly (Trpaslíci, Nepřátelé a Klub přátel), šestnáct
+Vytvoří vzorová data v hobitím duchu — tři oddíly (Trpaslíci, Nepřátelé a Klub přátel), patnáct
 členů, sedm budoucích akcí různých typů a jedno album. Všichni testovací uživatelé mají heslo
 `gandalf` a jsou navázaní na aktivního člena v Klubu přátel, takže mají roli vedoucího:
 
 | login | člen | role |
 | --- | --- | --- |
 | `bilbo` | Bilbo | vedoucí + admin |
-| `vedouci` | Vedoucí | vedoucí |
-| `instruktor` | Instruktor | vedoucí |
-| `program` | Správce programu | vedoucí + správce programu |
+| `vedouci` | Beorn (vedoucí) | vedoucí |
+| `instruktor` | Elrond (instruktor) | vedoucí |
+| `program` | Gandalf (správce programu) | vedoucí + správce programu |
+
+Přezdívka člena nese postavu i testovací roli, aby bylo v seznamu členů na první pohled vidět,
+kterým účtem se pod kým přihlásit.
 
 Roli vedoucího neukládá databáze — access-control ji přiděluje každému uživateli navázanému na
 aktivního člena (viz `AccessControlModule`). Příkaz je idempotentní: opakované spuštění
