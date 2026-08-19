@@ -139,6 +139,17 @@ const mapy = {
 };
 
 /**
+ * Web Push (VAPID). The key pair is provided at runtime — generate one with
+ * `npx web-push generate-vapid-keys`. With the keys unset the push integration
+ * is disabled: no public key is served to the frontend and sending is skipped.
+ */
+const push = {
+	publicKey: process.env["VAPID_PUBLIC_KEY"] ?? "",
+	privateKey: process.env["VAPID_PRIVATE_KEY"] ?? "",
+	subject: process.env["VAPID_SUBJECT"] ?? `mailto:${process.env["GOOGLE_IMPERSONATE"] ?? "interni@bosan.cz"}`,
+};
+
+/**
  * Feedback / bug reports
  */
 const feedback = {
@@ -217,6 +228,7 @@ export class Config {
 	mongoDb = mongoDb;
 	oauth = oauth;
 	production = production;
+	push = push;
 	server = server;
 	fs = fs;
 	mapy = mapy;

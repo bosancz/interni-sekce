@@ -3,6 +3,7 @@ import {
 	Controller,
 	Delete,
 	Get,
+	Logger,
 	NotFoundException,
 	Param,
 	ParseIntPipe,
@@ -21,6 +22,7 @@ import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { HashService } from "src/auth/services/hash.service";
 import { TokenService } from "src/auth/services/token.service";
 import { toPrefixTsQuery } from "src/helpers/search";
+import { NotificationsService } from "src/models/notifications/services/notifications.service";
 import { User } from "src/models/users/entities/user.entity";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { Repository } from "typeorm";
@@ -44,10 +46,13 @@ import { ListUsersQuery } from "../dto/users.dto";
 @AcController()
 @ApiTags("Users")
 export class UsersController {
+	private logger = new Logger(UsersController.name);
+
 	constructor(
 		private userService: UsersRepository,
 		private tokenService: TokenService,
 		private hashService: HashService,
+		private notifications: NotificationsService,
 		@InjectRepository(User) private userRepository: Repository<User>,
 	) {}
 
@@ -93,7 +98,13 @@ export class UsersController {
 	async createUser(@Req() req: Request, @Body() body: UserCreateBody): Promise<UserResponse> {
 		UserCreatePermission.canOrThrow(req);
 
-		return this.userService.createUser(body);
+		const user = await this.userService.createUser(body);
+
+		this.notifications
+			.onUserCreated(user, req.user?.userId)
+			.catch((err) => this.logger.error(`Failed to send user created notifications: ${err.message}`));
+
+		return user;
 	}
 
 	@Get(":userId")

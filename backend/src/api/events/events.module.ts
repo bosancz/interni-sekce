@@ -4,6 +4,7 @@ import { EventAttendee } from "src/models/events/entities/event-attendee.entity"
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsModelModule } from "src/models/events/events-model.module";
 import { FilesModule } from "src/models/files/files.module";
+import { NotificationsModelModule } from "src/models/notifications/notifications-model.module";
 import { CPVEventsController } from "./controllers/cpv-events.controller";
 import { EventsAccountingController } from "./controllers/events-accounting.controller";
 import { EventsAnnouncementController } from "./controllers/events-announcement.controller";
@@ -15,7 +16,7 @@ import { EventsController } from "./controllers/events.controller";
 import { CPVEventsService } from "./services/cpv-events.service";
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Event, EventAttendee]), EventsModelModule, FilesModule],
+	imports: [TypeOrmModule.forFeature([Event, EventAttendee]), EventsModelModule, FilesModule, NotificationsModelModule],
 	controllers: [
 		EventsController,
 		EventsAttendeesController,

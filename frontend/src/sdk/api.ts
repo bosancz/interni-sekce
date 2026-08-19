@@ -28,6 +28,7 @@ export class SDK {
         EventsApi: SDK.EventsApi;
         FeedbackApi: SDK.FeedbackApi;
         MembersApi: SDK.MembersApi;
+        NotificationsApi: SDK.NotificationsApi;
         PhotoGalleryApi: SDK.PhotoGalleryApi;
         PublicAPIApi: SDK.PublicAPIApi;
         RootApi: SDK.RootApi;
@@ -43,6 +44,7 @@ export class SDK {
             this.EventsApi = new SDK.EventsApi(configuration, axios!);
             this.FeedbackApi = new SDK.FeedbackApi(configuration, axios!);
             this.MembersApi = new SDK.MembersApi(configuration, axios!);
+            this.NotificationsApi = new SDK.NotificationsApi(configuration, axios!);
             this.PhotoGalleryApi = new SDK.PhotoGalleryApi(configuration, axios!);
             this.PublicAPIApi = new SDK.PublicAPIApi(configuration, axios!);
             this.RootApi = new SDK.RootApi(configuration, axios!);
@@ -3856,6 +3858,256 @@ export namespace SDK {
          */
         'lastName'?: string | null;
     }
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const NotificationChannelsEnum = {
+        Disabled: 'disabled',
+        Push: 'push',
+        Email: 'email',
+        Both: 'both'
+    } as const;
+    
+    export type NotificationChannelsEnum = typeof NotificationChannelsEnum[keyof typeof NotificationChannelsEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @interface NotificationDeviceResponseLinks
+     */
+    export interface NotificationDeviceResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof NotificationDeviceResponseLinks
+         */
+        'testNotificationDevice': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof NotificationDeviceResponseLinks
+         */
+        'deleteNotificationDevice': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface NotificationDeviceResponseWithLinks
+     */
+    export interface NotificationDeviceResponseWithLinks {
+        /**
+         * 
+         * @type {NotificationDeviceResponseLinks}
+         * @memberof NotificationDeviceResponseWithLinks
+         */
+        '_links': NotificationDeviceResponseLinks;
+        /**
+         * 
+         * @type {number}
+         * @memberof NotificationDeviceResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationDeviceResponseWithLinks
+         */
+        'deviceId': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationDeviceResponseWithLinks
+         */
+        'deviceName': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationDeviceResponseWithLinks
+         */
+        'createdAt': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationDeviceResponseWithLinks
+         */
+        'updatedAt': string;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface NotificationSettingUpdateBody
+     */
+    export interface NotificationSettingUpdateBody {
+        /**
+         * 
+         * @type {NotificationChannelsEnum}
+         * @memberof NotificationSettingUpdateBody
+         */
+        'channel': NotificationChannelsEnum;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @interface NotificationSettingsResponseWithLinks
+     */
+    export interface NotificationSettingsResponseWithLinks {
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationSettingsResponseWithLinks
+         */
+        'vapidPublicKey': string | null;
+        /**
+         * 
+         * @type {Array<NotificationTypeSettingResponseWithLinks>}
+         * @memberof NotificationSettingsResponseWithLinks
+         */
+        'types': Array<NotificationTypeSettingResponseWithLinks>;
+        /**
+         * 
+         * @type {object}
+         * @memberof NotificationSettingsResponseWithLinks
+         */
+        '_links': object;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof NotificationSettingsResponseWithLinks
+         */
+        'pushEnabled': boolean;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface NotificationSubscribeBody
+     */
+    export interface NotificationSubscribeBody {
+        /**
+         * 
+         * @type {NotificationSubscriptionKeysBody}
+         * @memberof NotificationSubscribeBody
+         */
+        'keys': NotificationSubscriptionKeysBody;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationSubscribeBody
+         */
+        'deviceId': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationSubscribeBody
+         */
+        'deviceName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationSubscribeBody
+         */
+        'endpoint': string;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface NotificationSubscriptionKeysBody
+     */
+    export interface NotificationSubscriptionKeysBody {
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationSubscriptionKeysBody
+         */
+        'p256dh': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationSubscriptionKeysBody
+         */
+        'auth': string;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface NotificationTypeSettingResponseLinks
+     */
+    export interface NotificationTypeSettingResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof NotificationTypeSettingResponseLinks
+         */
+        'updateNotificationSetting': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface NotificationTypeSettingResponseWithLinks
+     */
+    export interface NotificationTypeSettingResponseWithLinks {
+        /**
+         * 
+         * @type {NotificationTypesEnum}
+         * @memberof NotificationTypeSettingResponseWithLinks
+         */
+        'type': NotificationTypesEnum;
+        /**
+         * 
+         * @type {NotificationChannelsEnum}
+         * @memberof NotificationTypeSettingResponseWithLinks
+         */
+        'channel': NotificationChannelsEnum;
+        /**
+         * 
+         * @type {NotificationTypeSettingResponseLinks}
+         * @memberof NotificationTypeSettingResponseWithLinks
+         */
+        '_links': NotificationTypeSettingResponseLinks;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationTypeSettingResponseWithLinks
+         */
+        'title': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationTypeSettingResponseWithLinks
+         */
+        'description': string;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const NotificationTypesEnum = {
+        MyEvents: 'myEvents',
+        SubmittedEvents: 'submittedEvents',
+        NewEvents: 'newEvents',
+        NewUsers: 'newUsers'
+    } as const;
+    
+    export type NotificationTypesEnum = typeof NotificationTypesEnum[keyof typeof NotificationTypesEnum];
+    
     
         /**
      * 
@@ -8847,6 +9099,308 @@ export namespace SDK {
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             axiosRequestConfig.data = requestFormParams;
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    }
+    
+        
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * NotificationsApi - object-oriented interface
+     * @export
+     * @class NotificationsApi
+     * @extends {BaseAPI}
+     */
+    export class NotificationsApi extends BaseAPI {
+    
+        constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
+            super(configuration, configuration.basePath, axios);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} deviceId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof NotificationsApi
+         */
+        
+        public async deleteNotificationDevice(
+            deviceId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'deviceId' is not null or undefined
+            assertParamExists('deleteNotificationDevice', 'deviceId', deviceId)
+            
+            const localVarPath = `/api/account/notifications/devices/{deviceId}`
+                .replace(`{${"deviceId"}}`, encodeURIComponent(String(deviceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof NotificationsApi
+         */
+        
+        public async getNotificationSettings(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/account/notifications`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<NotificationSettingsResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof NotificationsApi
+         */
+        
+        public async listNotificationDevices(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/account/notifications/devices`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<NotificationDeviceResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof NotificationsApi
+         */
+        
+        public async subscribeNotificationDevice(
+            body: NotificationSubscribeBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'notificationSubscribeBody' is not null or undefined
+            assertParamExists('subscribeNotificationDevice', 'notificationSubscribeBody', body)
+            
+            const localVarPath = `/api/account/notifications/devices`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<NotificationDeviceResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} deviceId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof NotificationsApi
+         */
+        
+        public async testNotificationDevice(
+            deviceId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'deviceId' is not null or undefined
+            assertParamExists('testNotificationDevice', 'deviceId', deviceId)
+            
+            const localVarPath = `/api/account/notifications/devices/{deviceId}/test`
+                .replace(`{${"deviceId"}}`, encodeURIComponent(String(deviceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {NotificationTypesEnum} notificationType 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof NotificationsApi
+         */
+        
+        public async updateNotificationSetting(
+            notificationType: NotificationTypesEnum,
+            body: NotificationSettingUpdateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'notificationType' is not null or undefined
+            assertParamExists('updateNotificationSetting', 'notificationType', notificationType)
+            assertParamExists('updateNotificationSetting', 'notificationSettingUpdateBody', body)
+            
+            // verify required parameter 'notificationSettingUpdateBody' is not null or undefined
+            assertParamExists('updateNotificationSetting', 'notificationType', notificationType)
+            assertParamExists('updateNotificationSetting', 'notificationSettingUpdateBody', body)
+            
+            const localVarPath = `/api/account/notifications/settings/{notificationType}`
+                .replace(`{${"notificationType"}}`, encodeURIComponent(String(notificationType)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
     
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
