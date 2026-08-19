@@ -243,7 +243,7 @@ export class EventsController {
 
 		EventRejectPermission.canOrThrow(req, event);
 
-		await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
+		await this.events.updateEvent(id, { status: EventStates.rejected, statusNote: body.statusNote });
 	}
 
 	@Post(":id/publish")

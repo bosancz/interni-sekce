@@ -113,7 +113,8 @@ export const EventSubmitPermission = new Permission({
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
 
-	applicable: ({ doc }) => doc.status === EventStates.draft && !doc.deletedAt && !!doc.leaders?.length,
+	applicable: ({ doc }) =>
+		[EventStates.draft, EventStates.rejected].includes(doc.status) && !doc.deletedAt && !!doc.leaders?.length,
 });
 
 export const EventPublishPermission = new Permission({
@@ -122,7 +123,9 @@ export const EventPublishPermission = new Permission({
 		program: true,
 	},
 	applicable: ({ doc }) =>
-		[EventStates.pending, EventStates.draft].includes(doc.status) && !!doc.leaders?.length && !doc.deletedAt,
+		[EventStates.pending, EventStates.draft, EventStates.rejected].includes(doc.status) &&
+		!!doc.leaders?.length &&
+		!doc.deletedAt,
 });
 
 export const EventRejectPermission = new Permission({

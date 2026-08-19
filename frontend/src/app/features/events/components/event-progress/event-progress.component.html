@@ -6,7 +6,30 @@
 				<span class="dot" [class.filled]="step.reached"></span>
 				<span class="track" [class.filled]="step.reached && !step.active" [class.edge]="$last"></span>
 			</div>
-			<div class="label">{{ step.label }}</div>
+			<div class="label">
+				<span>{{ step.label }}</span>
+				@if (step.active && statusNote()) {
+					<button type="button" class="note-button" aria-label="Poznámka ke stavu" (click)="openNote($event)">
+						<ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+					</button>
+				}
+			</div>
 		</div>
 	}
 </div>
+
+<ion-popover
+	cssClass="event-progress-note-popover"
+	[isOpen]="noteOpen()"
+	[event]="noteEvent()"
+	(didDismiss)="noteOpen.set(false)"
+>
+	<ng-template>
+		<ion-content>
+			<div class="popover-panel">
+				<h4>{{ activeLabel() }}</h4>
+				<p>{{ statusNote() }}</p>
+			</div>
+		</ion-content>
+	</ng-template>
+</ion-popover>

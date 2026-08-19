@@ -21,6 +21,7 @@ import { EventExpense } from "./event-expense.entity";
 export enum EventStates {
 	"draft" = "draft",
 	"pending" = "pending",
+	"rejected" = "rejected",
 	"public" = "public",
 	"cancelled" = "cancelled",
 }

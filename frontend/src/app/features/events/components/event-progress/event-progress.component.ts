@@ -1,4 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, input, signal } from "@angular/core";
+import { IonContent, IonIcon, IonPopover } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { chatbubbleEllipsesOutline } from "ionicons/icons";
 import { EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
 import { SDK } from "src/sdk";
 
@@ -31,10 +34,15 @@ const NO_LEADER_LABEL = "Bez vedoucího";
 	templateUrl: "./event-progress.component.html",
 	styleUrl: "./event-progress.component.scss",
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [],
+	imports: [IonIcon, IonPopover, IonContent],
 })
 export class EventProgressComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>(undefined);
+
+	noteOpen = signal(false);
+	noteEvent = signal<Event | undefined>(undefined);
+
+	statusNote = computed(() => this.event()?.statusNote || undefined);
 
 	private status = computed(() => this.event()?.status as EventStatusID | undefined);
 
@@ -59,10 +67,21 @@ export class EventProgressComponent {
 		}),
 	);
 
+	activeLabel = computed(() => this.steps().find((step) => step.active)?.label);
+
 	accentColor = computed(() => {
 		const status = this.status();
 		if (!status) return "var(--bo-line)";
 		if (status === "draft" && this.noLeader()) return EventStatuses.cancelled.color;
 		return EventStatuses[status]?.color ?? "var(--bo-line)";
 	});
+
+	constructor() {
+		addIcons({ chatbubbleEllipsesOutline });
+	}
+
+	openNote(event: Event) {
+		this.noteEvent.set(event);
+		this.noteOpen.set(true);
+	}
 }

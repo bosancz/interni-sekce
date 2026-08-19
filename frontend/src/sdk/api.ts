@@ -946,6 +946,7 @@ export namespace SDK {
     export const EventStatusEnum = {
         Draft: 'draft',
         Pending: 'pending',
+        Rejected: 'rejected',
         Public: 'public',
         Cancelled: 'cancelled'
     } as const;
@@ -2048,6 +2049,7 @@ export namespace SDK {
     export const EventStatesEnum = {
         Draft: 'draft',
         Pending: 'pending',
+        Rejected: 'rejected',
         Public: 'public',
         Cancelled: 'cancelled'
     } as const;
@@ -2206,6 +2208,7 @@ export namespace SDK {
     export const EventUpdateBodyStatusEnum = {
         Draft: 'draft',
         Pending: 'pending',
+        Rejected: 'rejected',
         Public: 'public',
         Cancelled: 'cancelled'
     } as const;
