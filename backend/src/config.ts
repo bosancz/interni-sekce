@@ -87,6 +87,10 @@ const db: DataSourceOptions = {
 	namingStrategy: new SnakeNamingStrategy(),
 };
 
+const seed = {
+	onStart: ["true", "1"].includes(process.env["SEED_ON_START"] ?? ""),
+};
+
 const mongoDb = {
 	uri: process.env["MONGODB_URI"] ?? "",
 };
@@ -217,6 +221,7 @@ export class Config {
 	mongoDb = mongoDb;
 	oauth = oauth;
 	production = production;
+	seed = seed;
 	server = server;
 	fs = fs;
 	mapy = mapy;

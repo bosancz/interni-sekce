@@ -30,7 +30,8 @@
 
 - `npm run cli seed` (backend) naplní databázi vzorovými daty v hobitím duchu — `src/seed/`: uživatel `bilbo`/`gandalf`, oddíly (22. oddíl trpaslíci, 13. oddíl nepřátelé, Klub přátel), členové, budoucí akce podle typů a album bez fotek (ty potřebují soubory na disku). Data jsou v `seed/data/seed-data.ts`, datumy akcí jsou relativní ke dni spuštění.
 - Příkaz je **idempotentní** — záznamy hledá podle přirozeného klíče (login / přezdívka / název) a aktualizuje je; kontakty, účastníky a útraty seedovaných záznamů přepisuje. Nic jiného v databázi nemaže, takže se dá pouštět i na prostředí s importovanými daty.
-- Na produkčním buildu (`NODE_ENV=production`, tedy i NEXT) odmítne běžet bez `--force`, protože zakládá uživatele se známým heslem.
+- **Kam se smí seedovat, rozhoduje značka v databázi** — `ALTER DATABASE <db> SET app.environment = 'test'` (resp. `'production'`). Databáze označená jako produkční se odmítne vždy, i s `--force`; neoznačená databáze na produkčním buildu potřebuje `--force`; vývojový build seeduje i bez značky. Značku nepřenáší `pg_dump` (jen `pg_dumpall`), takže obnova dat z produkčního dumpu do testovací databáze o ni nepřijde a špatně nasměrovaný `DB_HOST` seed zastaví.
+- `SEED_ON_START=true` naplní data při každém startu aplikace (po migracích, `main.ts`) — tahle cesta značku `test` vyžaduje vždy a bez ní se jen přeskočí s chybou v logu.
 
 ## Frontend SDK
 

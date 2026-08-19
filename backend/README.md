@@ -93,12 +93,35 @@ a jedno album. Příkaz je idempotentní: opakované spuštění
 existující záznamy aktualizuje (hledá je podle přezdívky / názvu / loginu), nezakládá je znovu a nemaže
 nic ostatního. Datumy akcí jsou relativní ke dni spuštění, takže akce jsou vždy v budoucnu.
 
-⚠️ Na produkčním buildu (`NODE_ENV=production`, tedy i NEXT) příkaz odmítne běžet, protože zakládá
-uživatele se známým heslem. Na testovacím prostředí ho spusť s `--force`:
+### Označení testovací databáze
 
-```bash
-npm run cli seed -- --force
+Aby se testovací data nikdy nedostala do produkce, řídí se seed značkou uloženou **v databázi**:
+
+```sql
+-- na testovací databázi (NEXT, lokální vývoj)
+ALTER DATABASE <databáze> SET app.environment = 'test';
+
+-- na produkční databázi
+ALTER DATABASE <databáze> SET app.environment = 'production';
 ```
+
+Značka se nastavuje jednou při zřízení databáze a nikam se nekopíruje — `pg_dump` ji nepřenáší,
+takže obnova dat z produkčního dumpu do testovací databáze o označení nepřijde. Když aplikace
+omylem míří na produkční databázi, seed se nespustí.
+
+Pravidla:
+
+| stav databáze | vývojový build | produkční build (i NEXT) |
+| --- | --- | --- |
+| `app.environment = 'test'` | seeduje | seeduje |
+| bez značky | seeduje | odmítne, pokud nedostane `--force` |
+| `app.environment = 'production'` | odmítne vždy | odmítne vždy (ani `--force` nepomůže) |
+
+### Automatické plnění při startu
+
+S `SEED_ON_START=true` se testovací data doplní při každém startu aplikace (tedy i po nasazení
+nové verze na NEXT), hned po migracích. Tahle cesta vyžaduje značku `test` vždy — bez ní se seed
+jen přeskočí s chybovou hláškou v logu a aplikace naběhne normálně.
 
 ## Spuštění vývojového serveru
 

@@ -12,6 +12,11 @@ import { User } from "src/models/users/entities/user.entity";
 import { EntityManager } from "typeorm";
 import { SeedAlbums, SeedEvents, SeedGroups, SeedMembers, SeedUsers } from "../data/seed-data";
 
+export const DatabaseEnvironments = {
+	test: "test",
+	production: "production",
+} as const;
+
 @Injectable()
 export class SeedService {
 	private readonly logger = new Logger(SeedService.name);
@@ -20,6 +25,27 @@ export class SeedService {
 		private entityManager: EntityManager,
 		private hashService: HashService,
 	) {}
+
+	async getDatabaseEnvironment(): Promise<string | null> {
+		const [row] = await this.entityManager.query<{ environment: string | null }[]>(
+			"SELECT current_setting('app.environment', true) AS environment",
+		);
+
+		return row?.environment || null;
+	}
+
+	async seedOnStart() {
+		const environment = await this.getDatabaseEnvironment();
+
+		if (environment !== DatabaseEnvironments.test) {
+			this.logger.error(
+				`Databáze není označená jako testovací (app.environment = ${environment ?? "nenastaveno"}), testovací data se plnit nebudou. Označ ji příkazem: ALTER DATABASE <databáze> SET app.environment = '${DatabaseEnvironments.test}';`,
+			);
+			return;
+		}
+
+		await this.seed();
+	}
 
 	async seed() {
 		this.logger.log("Seeding test data...");

@@ -1,7 +1,7 @@
 import { Logger } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 import { StaticConfig } from "src/config";
-import { SeedService } from "../services/seed.service";
+import { DatabaseEnvironments, SeedService } from "../services/seed.service";
 
 interface SeedCommandOptions {
 	force?: boolean;
@@ -21,16 +21,24 @@ export class SeedCommand extends CommandRunner {
 
 	@Option({
 		flags: "-f, --force",
-		description: "Allow seeding on a production build (NODE_ENV=production/staging), e.g. the NEXT environment.",
+		description: "Seed even on a production build when the database is not marked as a test database.",
 	})
 	parseForce(): boolean {
 		return true;
 	}
 
 	async run(inputs: string[], options: SeedCommandOptions): Promise<void> {
-		if (StaticConfig.production && !options.force) {
+		const environment = await this.seedService.getDatabaseEnvironment();
+
+		if (environment === DatabaseEnvironments.production) {
 			throw new Error(
-				"Refusing to seed test data on a production build. Pass --force if this really is a test environment.",
+				`Refusing to seed test data: the database is marked as production (app.environment = '${DatabaseEnvironments.production}').`,
+			);
+		}
+
+		if (StaticConfig.production && environment !== DatabaseEnvironments.test && !options.force) {
+			throw new Error(
+				`Refusing to seed test data on a production build: the database is not marked as a test database. Mark it with \`ALTER DATABASE <database> SET app.environment = '${DatabaseEnvironments.test}';\` or pass --force.`,
 			);
 		}
 

@@ -23,6 +23,7 @@ import { MailService } from "./models/mail/services/mail.service";
 import { MembersModelModule } from "./models/members/members-model.module";
 import { StatisticsModelModule } from "./models/statistics/statistics-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
+import { SeedModule } from "./seed/seed.module";
 
 @Module({
 	imports: [
@@ -59,6 +60,7 @@ import { UsersModelModule } from "./models/users/users-model.module";
 		StatisticsModelModule,
 		GoogleModelModule,
 		FilesModule,
+		SeedModule,
 	],
 	controllers: [],
 	providers: [MailService],
