@@ -106,7 +106,8 @@ interni-sekce/backend/
 │   ├── database/          # Konfigurace databáze a migrace
 │   ├── helpers/           # Pomocné funkce
 │   ├── models/            # Databázové entity a modely
-│   └── mongo-import/      # Import dat z MongoDB
+│   ├── mongo-import/      # Import dat z MongoDB
+│   └── seed/              # Vzorová testovací data (npm run cli seed)
 ├── test/                  # E2E testy
 ├── .env                   # Konfigurace prostředí (zejména připojení k databázi)
 ├── .env.template          # Šablona konfigurace prostředí

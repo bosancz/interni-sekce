@@ -24,6 +24,13 @@
   - Frontend-only change: `cd frontend && npm ci && npm run dev`. Backend change or the full root `npm run dev`: bring up Postgres first (below).
 - **`.mcp.json` registers the Angular CLI MCP server** (`npx -y @angular/cli mcp`) — docs/best-practices plus workspace tools, run from the repo root, Node 24 like every `ng` command; its `devserver_start` falls under the one-server rule.
 
+## Testovací data
+
+- `npm run cli seed` (backend) naplní databázi vzorovými daty v hobitím duchu — `src/seed/`: uživatelé `bilbo` (admin), `vedouci`, `instruktor` a `program` — všichni s heslem `gandalf` a s členem v Klubu přátel (`Bilbo`, `Beorn (vedoucí)`, `Elrond (instruktor)`, `Gandalf (správce programu)` — přezdívka nese postavu i roli), takže mají i odvozenou roli vedoucího; oddíly Trpaslíci, Nepřátelé a Klub přátel, členové, budoucí akce podle typů a album bez fotek (ty potřebují soubory na disku). Data jsou v `seed/data/seed-data.ts`, datumy akcí jsou relativní ke dni spuštění.
+- Příkaz je **idempotentní** — záznamy hledá podle přirozeného klíče (login / přezdívka / název) a aktualizuje je; kontakty, účastníky a útraty seedovaných záznamů přepisuje. Nic jiného v databázi nemaže, takže se dá pouštět i na prostředí s importovanými daty.
+- **Kam se smí seedovat, rozhoduje značka v databázi** — `ALTER DATABASE <db> SET app.environment = 'test'` (resp. `'production'`). Bez značky příkaz odmítne běžet (i ve vývoji) a vypíše hotové SQL i to, že jde použít `--force`; databáze označená jako produkční se odmítne vždy, ani `--force` nepomůže. Značku nepřenáší `pg_dump` (jen `pg_dumpall`), takže obnova dat z produkčního dumpu do testovací databáze o ni nepřijde a špatně nasměrovaný `DB_HOST` seed zastaví.
+- `SEED_ON_START=true` naplní data při každém startu aplikace (po migracích, `main.ts`) — tahle cesta `--force` nezná, bez značky `test` se jen přeskočí s chybou v logu.
+
 ## Frontend SDK
 
 - `frontend/src/sdk` is generated from the backend's OpenAPI spec — never hand-edit `api.ts`. After changing a backend controller/DTO run `npm run generate:sdk` from `frontend/` (reads `http://127.0.0.1:3000/api/openapi-json`, so the backend must be up). Every NestJS route needs a unique `operationId` (method name) or generation fails validation.
@@ -66,6 +73,7 @@ PGDATA=/tmp/pgdata; rm -rf "$PGDATA"; mkdir -p "$PGDATA"; chown postgres:postgre
 su postgres -c "$PGBIN/initdb -D $PGDATA -U postgres --auth=trust"
 su postgres -c "$PGBIN/pg_ctl -D $PGDATA -o '-p 5432 -k /tmp -c listen_addresses=127.0.0.1' -l /tmp/pg.log start"
 PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE interni;"
+PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -c "ALTER DATABASE interni SET app.environment = 'test';"
 PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -d interni -c "CREATE EXTENSION IF NOT EXISTS postgis;"
 export DB_HOST=127.0.0.1 DB_PORT=5432 DB_USER=postgres DB_PASSWORD=postgres DB_DATABASE_NAME=interni DB_SCHEMA=public
 cd backend && npm ci && npm run migrations:run
