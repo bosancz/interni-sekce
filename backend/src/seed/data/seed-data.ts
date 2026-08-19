@@ -84,13 +84,22 @@ export interface SeedEvent {
 	expenses?: SeedEventExpense[];
 }
 
+export interface SeedPhotoScene {
+	sky: [string, string];
+	sun: string;
+	mountains: string;
+	hills: string;
+	water: [string, string];
+	waves: string;
+	boat: string;
+}
+
 export interface SeedPhoto {
 	name: string;
 	title: string;
 	caption: string;
 	tags: string[];
-	background: string;
-	accent: string;
+	scene: SeedPhotoScene;
 }
 
 export interface SeedAlbum {
@@ -484,20 +493,34 @@ export const SeedAlbums: SeedAlbum[] = [
 		days: 3,
 		photos: [
 			{
-				name: "odchod-z-hobitina.jpg",
-				title: "Odchod z Hobitína",
-				caption: "Bilbo bez kapesníku, zato s prstenem.",
-				tags: ["výprava", "Hobitín"],
-				background: "#36802D",
-				accent: "#FEC503",
+				name: "vyplouvame-z-hobitina.jpg",
+				title: "Vyplouváme z Hobitína",
+				caption: "Ranní mlha nad Vodou, Bilbo bez kapesníku a s pádlem.",
+				tags: ["voda", "Hobitín"],
+				scene: {
+					sky: ["#BFE3F2", "#FDF3D0"],
+					sun: "#FEC503",
+					mountains: "#7A8F6B",
+					hills: "#36802D",
+					water: ["#2E6E8E", "#1B4A63"],
+					waves: "#BFE3F2",
+					boat: "#5A3A1B",
+				},
 			},
 			{
-				name: "u-osamele-hory.jpg",
-				title: "U Osamělé hory",
-				caption: "Poslední světlo Durinova dne na tajných dveřích.",
-				tags: ["výprava", "hory"],
-				background: "#8B4513",
-				accent: "#0F0F0F",
+				name: "sudy-na-lesni-rece.jpg",
+				title: "Sudy na Lesní řece",
+				caption: "Splutí z elfích sklepů až k Dlouhému jezeru, tentokrát i s pádly.",
+				tags: ["voda", "Lesní řeka"],
+				scene: {
+					sky: ["#3B2A4A", "#B4552F"],
+					sun: "#F2A65A",
+					mountains: "#2B2233",
+					hills: "#1F3A2C",
+					water: ["#173A4A", "#0B1F2B"],
+					waves: "#4E8FA6",
+					boat: "#8B4513",
+				},
 			},
 		],
 	},
