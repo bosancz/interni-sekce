@@ -24,24 +24,21 @@ export class EventClosureModalComponent extends InputModalComponent<{ accounting
 	);
 
 	autoItems = computed(() => {
-		const album = this.event.album;
+		const reportFilled = !!this.event.report;
+		const albumPublished = this.event.album?.status === "public";
 
 		return [
 			{
 				key: "report",
-				label: "Report vyplněn",
-				helper: "Zaškrtne se samo, jakmile je vyplněný report akce.",
-				done: !!this.event.report,
+				label: reportFilled ? "Report vyplněn" : "Report nevyplněn",
+				helper: reportFilled ? undefined : "vyplň report akce",
+				done: reportFilled,
 			},
 			{
 				key: "album",
-				label: "Galerie zveřejněna",
-				helper: !album
-					? "K akci není připojená žádná galerie."
-					: album.status === "public"
-						? "Připojená galerie je zveřejněná."
-						: "Připojená galerie zatím není zveřejněná.",
-				done: album?.status === "public",
+				label: albumPublished ? "Galerie zveřejněna" : "Galerie nezveřejněna",
+				helper: albumPublished ? undefined : "založ a zveřejni galerii fotek",
+				done: albumPublished,
 			},
 		];
 	});

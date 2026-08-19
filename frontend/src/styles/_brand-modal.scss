@@ -2,7 +2,6 @@
    design handoff; they are declared as tokens so dark mode can restate the surfaces alone. */
 :host {
 	--bm-blue: #2a3478;
-	--bm-title-color: #2a3478;
 	--bm-yellow: #e28f26;
 	--bm-yellow-on-blue: #f5b445;
 	--bm-green: #799f3d;
@@ -24,7 +23,6 @@
 }
 
 :host-context(body.dark) {
-	--bm-title-color: #aeb7f0;
 	--bm-text: #f2f3f7;
 	--bm-muted: #aab0c2;
 	--bm-muted-2: #9aa0b5;
@@ -37,28 +35,6 @@
 	--bm-dot-idle: #4a4f63;
 	--bm-chip-bg: #2f3342;
 	--bm-chip-fg: #aab0c2;
-}
-
-.bm-accent-bar {
-	width: 44px;
-	height: 5px;
-	border-radius: 99px;
-	background: var(--bm-yellow);
-}
-
-.bm-title {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-
-	h2 {
-		margin: 0;
-		font-family: var(--font-regular);
-		font-size: 22px;
-		font-weight: 800;
-		letter-spacing: -0.01em;
-		color: var(--bm-title-color);
-	}
 }
 
 .bm-body {
@@ -190,13 +166,6 @@
 	min-width: 0;
 }
 
-.bm-row-label-line {
-	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 8px;
-}
-
 .bm-row-label {
 	font-size: 16px;
 	font-weight: 700;
@@ -225,18 +194,6 @@
 	color: var(--bm-muted-2);
 }
 
-.bm-auto-chip {
-	flex: 0 0 auto;
-	padding: 2px 9px;
-	border-radius: 99px;
-	background: var(--bm-chip-bg);
-	color: var(--bm-chip-fg);
-	font-size: 11px;
-	font-weight: 800;
-	letter-spacing: 0.04em;
-	text-transform: uppercase;
-}
-
 .bm-btn-ghost,
 .bm-btn-primary {
 	font-family: inherit;
@@ -256,7 +213,7 @@
 .bm-btn-ghost {
 	padding: 11px 20px;
 	background: transparent;
-	color: var(--bm-title-color);
+	color: var(--bo-heading);
 	font-size: 15px;
 	font-weight: 700;
 

@@ -83,8 +83,10 @@ ion-modal.dialog {
 	   screen and scrolls inside bo-modal-layout instead of running past the viewport */
 	--max-height: 90vh;
 	--max-height: 90dvh;
-	--border-radius: var(--bo-radius-card);
-	--box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+	--border-radius: 20px;
+	--box-shadow: 0 24px 64px rgba(20, 26, 70, 0.35);
+	--backdrop-opacity: 0.55;
+	--ion-backdrop-color: #2a3478;
 
 	/* The modal component element (.ion-page) sits in a fit-content wrapper, so its height is
 	   indefinite and percentage bounds inside it resolve to nothing — the same cap has to be
@@ -103,39 +105,10 @@ ion-modal.dialog.dialog-list {
 	--height: 70vh;
 }
 
-/* brand dialog per the ŠÁN identity: wider card, softer radius, blue-tinted backdrop */
+/* fixed-width brand dialogs (the event announcement / closure steps) */
 ion-modal.dialog.dialog-brand {
 	--width: 480px;
 	--max-width: calc(100vw - 32px);
-	--border-radius: 20px;
-	--box-shadow: 0 24px 64px rgba(20, 26, 70, 0.35);
-	--backdrop-opacity: 0.55;
-	--ion-backdrop-color: #2a3478;
-	--background: #ffffff;
-
-	/* the brand paddings sit on the shared bo-modal-layout so these dialogs keep using it */
-	bo-modal-layout {
-		.title {
-			padding: 24px 28px 18px;
-		}
-
-		.content {
-			padding: 6px 28px 22px;
-		}
-
-		.footer {
-			padding: 16px 28px 22px;
-			border-top: 1px solid #ecedf4;
-		}
-	}
-}
-
-body.dark ion-modal.dialog.dialog-brand {
-	--background: #1b1e27;
-
-	bo-modal-layout .footer {
-		border-top-color: #2a2d3a;
-	}
 }
 
 ion-popover.transparent {

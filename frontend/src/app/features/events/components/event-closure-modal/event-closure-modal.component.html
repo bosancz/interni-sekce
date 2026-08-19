@@ -1,8 +1,5 @@
 <bo-modal-layout>
-	<div slot="title" class="bm-title">
-		<h2>Uzavření akce</h2>
-		<span class="bm-accent-bar"></span>
-	</div>
+	<h4 slot="title">Uzavření akce</h4>
 
 	<div class="bm-body">
 		<label class="bm-check-row" [class.checked]="accountingSent()" [class.disabled]="!accountingEditable()">
@@ -34,11 +31,10 @@
 					}
 				</span>
 				<span class="bm-row-text">
-					<span class="bm-row-label-line">
-						<span class="bm-row-label">{{ item.label }}</span>
-						<span class="bm-auto-chip">automaticky</span>
-					</span>
-					<span class="bm-row-helper">{{ item.helper }}</span>
+					<span class="bm-row-label">{{ item.label }}</span>
+					@if (item.helper) {
+						<span class="bm-row-helper">{{ item.helper }}</span>
+					}
 				</span>
 			</div>
 		}
