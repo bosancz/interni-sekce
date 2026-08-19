@@ -96,16 +96,16 @@ export class UsersController {
 		return this.userService.createUser(body);
 	}
 
-	@Get(":id")
+	@Get(":userId")
 	@AcLinks(UserReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(UserResponse) })
 	async getUser(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) id: number,
+		@Param("userId", ParseIntPipe) userId: number,
 		@Query() query: GetUserQueryDto,
 	): Promise<UserResponse> {
 		const user = await this.userRepository.findOne({
-			where: { id },
+			where: { id: userId },
 			relations: query.includeMember ? { member: { group: true } } : {},
 		});
 		if (!user) throw new NotFoundException();
@@ -115,56 +115,56 @@ export class UsersController {
 		return user;
 	}
 
-	@Patch(":id")
+	@Patch(":userId")
 	@AcLinks(UserEditPermission)
 	@ApiResponse({ status: 204 })
-	async updateUser(@Req() req: Request, @Param("id", ParseIntPipe) id: number, @Body() body: UserUpdateBody): Promise<void> {
-		const user = await this.userService.getUser(id);
+	async updateUser(@Req() req: Request, @Param("userId", ParseIntPipe) userId: number, @Body() body: UserUpdateBody): Promise<void> {
+		const user = await this.userService.getUser(userId);
 		if (!user) throw new NotFoundException();
 
 		UserEditPermission.canOrThrow(req, user);
 
-		await this.userService.updateUser(id, body);
+		await this.userService.updateUser(userId, body);
 	}
 
-	@Delete(":id")
+	@Delete(":userId")
 	@AcLinks(UserDeletePermission)
 	@ApiResponse({ status: 204 })
-	async deleteUser(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
-		const user = await this.userService.getUser(id);
+	async deleteUser(@Req() req: Request, @Param("userId", ParseIntPipe) userId: number): Promise<void> {
+		const user = await this.userService.getUser(userId);
 		if (!user) throw new NotFoundException();
 
 		UserDeletePermission.canOrThrow(req, user);
 
-		await this.userService.deleteUser(id);
+		await this.userService.deleteUser(userId);
 	}
 
-	@Put(":id/password")
+	@Put(":userId/password")
 	@AcLinks(UserSetPassword)
 	@ApiResponse({ status: 204 })
 	async setUserPassword(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) id: number,
+		@Param("userId", ParseIntPipe) userId: number,
 		@Body() body: UserSetPasswordBody,
 	): Promise<void> {
-		const user = await this.userService.getUser(id);
+		const user = await this.userService.getUser(userId);
 		if (!user) throw new NotFoundException();
 
 		UserSetPassword.canOrThrow(req, user);
 
 		// the password column stores a bcrypt hash, never the plaintext
 		const password = await this.hashService.generateHash(body.password);
-		await this.userService.updateUser(id, { password });
+		await this.userService.updateUser(userId, { password });
 	}
 
-	@Post(":id/impersonate")
+	@Post(":userId/impersonate")
 	@AcLinks(UserImpersonatePermission)
 	async impersonateUser(
 		@Req() req: Request,
 		@Res({ passthrough: true }) res: Response,
-		@Param("id", ParseIntPipe) id: number,
+		@Param("userId", ParseIntPipe) userId: number,
 	) {
-		const user = await this.userService.getUser(id);
+		const user = await this.userService.getUser(userId);
 		if (!user) throw new NotFoundException();
 
 		UserImpersonatePermission.canOrThrow(req, user);

@@ -19,6 +19,9 @@ export interface AcRouteOptions<DOC = void, ROLES extends string = string, PDATA
 	/** Global condition whether this route is accessible (e.g. is document in the state to perform this operation) */
 	applicable?: (params: { doc: DOC; req: Request }) => boolean;
 
+	/** Resolves route parameters of the linked route from the document when building the link href, either by property name or by function */
+	params?: { [param: string]: keyof DOC | ((doc: DOC) => string | number) };
+
 	path?: (d: DOC) => string;
 
 	name?: string;

@@ -83,11 +83,11 @@ export class AlbumsController {
 		return this.albums.getAlbumsYears();
 	}
 
-	@Get(":id")
+	@Get(":albumId")
 	@AcLinks(AlbumReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(AlbumResponse) })
-	async getAlbum(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<AlbumResponse> {
-		const album = await this.albums.getAlbum(id, { event: true });
+	async getAlbum(@Param("albumId", ParseIntPipe) albumId: number, @Req() req: Request): Promise<AlbumResponse> {
+		const album = await this.albums.getAlbum(albumId, { event: true });
 		if (!album) throw new NotFoundException();
 
 		AlbumReadPermission.canOrThrow(req, album);
@@ -95,11 +95,11 @@ export class AlbumsController {
 		return album;
 	}
 
-	@Patch(":id")
+	@Patch(":albumId")
 	@AcLinks(AlbumEditPermission)
 	@ApiResponse({ status: 204 })
-	async updateAlbum(@Param("id", ParseIntPipe) id: number, @Req() req: Request, @Body() body: AlbumUpdateBody): Promise<void> {
-		const album = await this.albums.getAlbum(id);
+	async updateAlbum(@Param("albumId", ParseIntPipe) albumId: number, @Req() req: Request, @Body() body: AlbumUpdateBody): Promise<void> {
+		const album = await this.albums.getAlbum(albumId);
 		if (!album) throw new NotFoundException();
 
 		AlbumEditPermission.canOrThrow(req, album);
@@ -107,88 +107,88 @@ export class AlbumsController {
 		await this.albums.updateAlbum(album.id, body);
 	}
 
-	@Delete(":id")
+	@Delete(":albumId")
 	@AcLinks(AlbumDeletePermission)
 	@ApiResponse({ status: 204 })
-	async deleteAlbum(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
-		const album = await this.albums.getAlbum(id);
+	async deleteAlbum(@Param("albumId", ParseIntPipe) albumId: number, @Req() req: Request): Promise<void> {
+		const album = await this.albums.getAlbum(albumId);
 		if (!album) throw new NotFoundException();
 
 		AlbumDeletePermission.canOrThrow(req, album);
 
-		await this.albums.deleteAlbum(id);
+		await this.albums.deleteAlbum(albumId);
 	}
 
-	@Post(":id/restore")
+	@Post(":albumId/restore")
 	@AcLinks(AlbumRestorePermission)
 	@ApiResponse({ status: 204 })
-	async restoreAlbum(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
-		const album = await this.albums.getDeletedAlbum(id);
+	async restoreAlbum(@Param("albumId", ParseIntPipe) albumId: number, @Req() req: Request): Promise<void> {
+		const album = await this.albums.getDeletedAlbum(albumId);
 		if (!album) throw new NotFoundException();
 
 		AlbumRestorePermission.canOrThrow(req, album);
 
-		await this.albums.restoreAlbum(id);
+		await this.albums.restoreAlbum(albumId);
 	}
 
-	@Delete(":id/permanent")
+	@Delete(":albumId/permanent")
 	@AcLinks(AlbumDeletePermanentPermission)
 	@ApiResponse({ status: 204 })
-	async deleteAlbumPermanent(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
-		const album = await this.albums.getDeletedAlbum(id);
+	async deleteAlbumPermanent(@Param("albumId", ParseIntPipe) albumId: number, @Req() req: Request): Promise<void> {
+		const album = await this.albums.getDeletedAlbum(albumId);
 		if (!album) throw new NotFoundException();
 
 		AlbumDeletePermanentPermission.canOrThrow(req, album);
 
 		// removes the photo rows and their image files on disk along with the album
-		await this.albums.hardDeleteAlbum(id);
+		await this.albums.hardDeleteAlbum(albumId);
 	}
 
-	@Post(":id/publish")
+	@Post(":albumId/publish")
 	@AcLinks(AlbumPublishPermission)
 	@ApiResponse({ status: 204 })
-	async publishAlbum(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
-		const album = await this.albums.getAlbum(id);
+	async publishAlbum(@Param("albumId", ParseIntPipe) albumId: number, @Req() req: Request): Promise<void> {
+		const album = await this.albums.getAlbum(albumId);
 		if (!album) throw new NotFoundException();
 
 		AlbumPublishPermission.canOrThrow(req, album);
 
-		await this.albums.updateAlbum(id, { status: AlbumStatus.public, datePublished: DateTime.local().toISO() });
+		await this.albums.updateAlbum(albumId, { status: AlbumStatus.public, datePublished: DateTime.local().toISO() });
 	}
 
-	@Post(":id/unpublish")
+	@Post(":albumId/unpublish")
 	@AcLinks(AlbumUnpublishPermission)
 	@ApiResponse({ status: 204 })
-	async unpublishAlbum(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
-		const album = await this.albums.getAlbum(id);
+	async unpublishAlbum(@Param("albumId", ParseIntPipe) albumId: number, @Req() req: Request): Promise<void> {
+		const album = await this.albums.getAlbum(albumId);
 		if (!album) throw new NotFoundException();
 
 		AlbumUnpublishPermission.canOrThrow(req, album);
 
-		await this.albums.updateAlbum(id, { status: AlbumStatus.draft, datePublished: null });
+		await this.albums.updateAlbum(albumId, { status: AlbumStatus.draft, datePublished: null });
 	}
 
-	@Get(":id/photos")
+	@Get(":albumId/photos")
 	@AcLinks(AlbumPhotosPermission)
 	@ApiResponse({ status: 200, type: WithLinks(PhotoResponse), isArray: true })
-	async getAlbumPhotos(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<PhotoResponse[]> {
-		const album = await this.albums.getAlbum(id);
+	async getAlbumPhotos(@Param("albumId", ParseIntPipe) albumId: number, @Req() req: Request): Promise<PhotoResponse[]> {
+		const album = await this.albums.getAlbum(albumId);
 		if (!album) throw new NotFoundException();
 
 		AlbumPhotosPermission.canOrThrow(req, album);
 
-		return this.photos.getPhotos({ album: id });
+		return this.photos.getPhotos({ album: albumId });
 	}
 
-	@Patch(":id/photos/order")
+	@Patch(":albumId/photos/order")
 	@AcLinks(AlbumReorderPhotosPermission)
 	@ApiResponse({ status: 204 })
 	async reorderAlbumPhotos(
-		@Param("id", ParseIntPipe) id: number,
+		@Param("albumId", ParseIntPipe) albumId: number,
 		@Req() req: Request,
 		@Body() body: AlbumPhotosOrderBody,
 	): Promise<void> {
-		const album = await this.albums.getAlbum(id);
+		const album = await this.albums.getAlbum(albumId);
 		if (!album) throw new NotFoundException();
 
 		AlbumReorderPhotosPermission.canOrThrow(req, album);

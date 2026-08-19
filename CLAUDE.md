@@ -37,6 +37,11 @@
 - Cancelled events stay in the feed as `STATUS:CANCELLED` with a `Zrušeno: ` summary prefix, mirroring the website. `UID` is `event-<id>@bosan.cz` — stable, so clients update instead of duplicating. The window is `ICAL_DAYS_BACK` (30) days back, unbounded forward; `EventsRepository.getPublicProgramIcal()` skips the 100-row cap the JSON program endpoint applies.
 - bosan.cz resolves the feed URL from the API root's `_links` (`program:ical`) in `CalendarSyncManualComponent`, falling back to the hardcoded URL — the hardcoded one going stale is what broke this in the first place (#352).
 
+## API routes & links
+
+- **Route parameters are named after their entity, never `id`** — `:eventId`, `:memberId`, `:contactId`, `:albumId`, `:photoId`, `:groupId`, `:userId`, `:expenseId`. The `Public API` controllers are the exception: their `:id` params are part of URLs bosan.cz already calls, so they stay. Renaming a param changes the generated SDK signature, so regenerate it (see *Frontend SDK*).
+- **`_links` hrefs are built by substituting `:param` from the document**, so a param named after the entity does not resolve from a doc that only has `id`. Each permission maps it with `params: { eventId: "id" },` — a `keyof DOC` property name, or a `(doc) => …` function when the value is not a plain property — applied to the **whole** href, controller prefix included. The older `path:` option cannot do this: it only replaces the *method* path, never the controller prefix, so on `@Controller("events/:eventId/expenses")` it left a literal `eventId` in the URL and, when it spelled the path out in full, duplicated the prefix (`/events/1/expenses/1/expenses/1`). Params the document genuinely does not know (`:memberId` on an event link, `:size` on a photo) stay literal by design.
+
 ## Backend entities
 
 - **One table, one entity mapping.** Never map a table twice (an explicit `@Entity("x")` *and* a `@ManyToMany`/`@JoinTable` over `"x"`): TypeORM builds two metadata objects for it and then **every** generated migration drops and recreates that table's indexes — permanent drift that survives being applied. `events_groups` was in this state for years; it is now mapped **only** by the `@ManyToMany`/`@JoinTable` on `Event.groups`, and must not get an entity of its own again.

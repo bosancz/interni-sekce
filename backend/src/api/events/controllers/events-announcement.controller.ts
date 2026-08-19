@@ -21,19 +21,19 @@ export class EventsAnnouncementController {
 		private readonly eventAnnouncementService: EventAnnouncementService,
 	) {}
 
-	@Get(":id/announcement")
+	@Get(":eventId/announcement")
 	@HttpCode(200)
 	@AcLinks(EventAnnouncementGetPermission)
 	@ApiResponse({ status: 200 })
 	async getEventAnnouncement(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) id: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
 		@Res({ passthrough: true }) res: Response,
 	): Promise<StreamableFile> {
-		//const event = await this.events.getEvent(id);
+		//const event = await this.events.getEvent(eventId);
 
 		const event = await this.eventsRepository.findOne({
-			where: { id: id },
+			where: { id: eventId },
 			relations: { attendees: { member: { contacts: true } } }, // Important: load nested member relation
 		});
 
