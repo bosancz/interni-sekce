@@ -54,12 +54,18 @@ export interface SeedEventExpense {
 	description: string;
 }
 
+export enum SeedEventSchedules {
+	weekend = "weekend",
+	longWeekend = "longWeekend",
+	week = "week",
+}
+
 export interface SeedEvent {
 	name: string;
 	type: string;
 	status: EventStates;
-	dayOffset: number;
-	days: number;
+	schedule: SeedEventSchedules;
+	weeks: number;
 	place: string;
 	description: string;
 	groups: string[];
@@ -78,12 +84,22 @@ export interface SeedEvent {
 	expenses?: SeedEventExpense[];
 }
 
+export interface SeedPhoto {
+	name: string;
+	title: string;
+	caption: string;
+	tags: string[];
+	background: string;
+	accent: string;
+}
+
 export interface SeedAlbum {
 	name: string;
 	description: string;
 	status: AlbumStatus;
 	dayOffset: number;
 	days: number;
+	photos: SeedPhoto[];
 }
 
 export interface SeedUser {
@@ -324,8 +340,8 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Schůzka U Zeleného draka",
 		type: "schůzka",
 		status: EventStates.public,
-		dayOffset: 7,
-		days: 1,
+		schedule: SeedEventSchedules.weekend,
+		weeks: 1,
 		place: "Hobitín, hostinec U Zeleného draka",
 		description: "Pravidelná schůzka oddílu. Hraje se, plánuje se výprava a povídá se o dracích.",
 		groups: ["T"],
@@ -341,8 +357,8 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Výprava k Osamělé hoře",
 		type: "peší výlet",
 		status: EventStates.public,
-		dayOffset: 21,
-		days: 3,
+		schedule: SeedEventSchedules.longWeekend,
+		weeks: 3,
 		place: "Osamělá hora",
 		description: "Třídenní putování přes Divočinu. Spí se pod širákem, vaří se na ohni.",
 		groups: ["T"],
@@ -359,8 +375,8 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Splutí Lesní řeky",
 		type: "voda",
 		status: EventStates.public,
-		dayOffset: 35,
-		days: 2,
+		schedule: SeedEventSchedules.longWeekend,
+		weeks: 5,
 		place: "Temný hvozd",
 		description: "Sjezd Lesní řeky na kánoích a v prázdných sudech od vína.",
 		groups: ["T"],
@@ -376,12 +392,12 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Cyklovýlet přes Kraj",
 		type: "cyklo",
 		status: EventStates.pending,
-		dayOffset: 49,
-		days: 1,
+		schedule: SeedEventSchedules.weekend,
+		weeks: 7,
 		place: "Kraj",
 		description: "Vyjížďka po Kraji se zastávkou na druhou snídani.",
 		groups: ["T"],
-		leaders: ["Bilbo"],
+		leaders: [],
 		attendees: ["Fíli", "Kíli", "Ori"],
 		timeFrom: "9:00",
 		timeTill: "16:00",
@@ -392,8 +408,8 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Brigáda na opravě Pytlíkova",
 		type: "brigáda",
 		status: EventStates.draft,
-		dayOffset: 63,
-		days: 1,
+		schedule: SeedEventSchedules.weekend,
+		weeks: 9,
 		place: "Pytlíkov, Hobitín",
 		description: "Po nečekané návštěvě je potřeba spravit dveře, nádobí a spíž.",
 		groups: ["T"],
@@ -406,8 +422,8 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Tábor v Roklince",
 		type: "tábor",
 		status: EventStates.public,
-		dayOffset: 120,
-		days: 14,
+		schedule: SeedEventSchedules.week,
+		weeks: 17,
 		place: "Roklinka",
 		description: "Čtrnáctidenní tábor u Elrondových. Kroniky, výpravy a zpěv do noci.",
 		groups: ["T", "KP"],
@@ -445,12 +461,12 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Koupání v Dlouhém jezeře",
 		type: "bazén",
 		status: EventStates.public,
-		dayOffset: 28,
-		days: 1,
+		schedule: SeedEventSchedules.weekend,
+		weeks: 4,
 		place: "Dlouhé jezero",
 		description: "Odpoledne u vody pod Osamělou horou. Plave se, potápí se a nikdo si nebere luk.",
 		groups: ["N"],
-		leaders: ["Šmak"],
+		leaders: [],
 		attendees: ["Azog", "Bolg", "Glum"],
 		timeFrom: "14:00",
 		timeTill: "18:00",
@@ -466,5 +482,23 @@ export const SeedAlbums: SeedAlbum[] = [
 		status: AlbumStatus.public,
 		dayOffset: -180,
 		days: 3,
+		photos: [
+			{
+				name: "odchod-z-hobitina.jpg",
+				title: "Odchod z Hobitína",
+				caption: "Bilbo bez kapesníku, zato s prstenem.",
+				tags: ["výprava", "Hobitín"],
+				background: "#36802D",
+				accent: "#FEC503",
+			},
+			{
+				name: "u-osamele-hory.jpg",
+				title: "U Osamělé hory",
+				caption: "Poslední světlo Durinova dne na tajných dveřích.",
+				tags: ["výprava", "hory"],
+				background: "#8B4513",
+				accent: "#0F0F0F",
+			},
+		],
 	},
 ];

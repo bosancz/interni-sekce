@@ -1,7 +1,9 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "src/auth/auth.module";
+import { AlbumsModelModule } from "src/models/albums/albums-model.module";
 import { Album } from "src/models/albums/entities/album.entity";
+import { Photo } from "src/models/albums/entities/photo.entity";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";
 import { Event } from "src/models/events/entities/event.entity";
@@ -15,8 +17,9 @@ import { SeedService } from "./services/seed.service";
 
 @Module({
 	imports: [
-		TypeOrmModule.forFeature([Album, Event, EventAttendee, EventExpense, Group, Member, MemberContact, User]),
+		TypeOrmModule.forFeature([Album, Photo, Event, EventAttendee, EventExpense, Group, Member, MemberContact, User]),
 		AuthModule,
+		AlbumsModelModule,
 	],
 	providers: [SeedService, SeedCommand, ResetDbCommand],
 	exports: [SeedCommand, ResetDbCommand],

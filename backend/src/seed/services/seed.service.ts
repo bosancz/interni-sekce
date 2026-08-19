@@ -3,6 +3,8 @@ import { DateTime } from "luxon";
 import { HashService } from "src/auth/services/hash.service";
 import { Config } from "src/config";
 import { Album } from "src/models/albums/entities/album.entity";
+import { Photo } from "src/models/albums/entities/photo.entity";
+import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";
 import { Event } from "src/models/events/entities/event.entity";
@@ -11,7 +13,17 @@ import { MemberContact } from "src/models/members/entities/member-contact.entity
 import { Member } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
 import { EntityManager } from "typeorm";
-import { SeedAlbums, SeedEvents, SeedGroups, SeedMembers, SeedUsers } from "../data/seed-data";
+import { extname } from "path";
+import sharp = require("sharp");
+import {
+	SeedAlbums,
+	SeedEventSchedules,
+	SeedEvents,
+	SeedGroups,
+	SeedMembers,
+	SeedPhoto,
+	SeedUsers,
+} from "../data/seed-data";
 
 export const DatabaseEnvironments = {
 	test: "test",
@@ -33,6 +45,7 @@ export class SeedService {
 		private entityManager: EntityManager,
 		private hashService: HashService,
 		private config: Config,
+		private photosFiles: PhotosFilesService,
 	) {}
 
 	async getDatabaseEnvironment(): Promise<{ database: string; environment: string | null }> {
@@ -205,8 +218,7 @@ export class SeedService {
 		const today = DateTime.local().startOf("day");
 
 		for (const seedEvent of SeedEvents) {
-			const dateFrom = today.plus({ days: seedEvent.dayOffset });
-			const dateTill = dateFrom.plus({ days: seedEvent.days - 1 });
+			const { dateFrom, dateTill } = this.eventDates(today, seedEvent.schedule, seedEvent.weeks);
 
 			const existing = await t.findOne(Event, { where: { name: seedEvent.name } });
 
@@ -265,6 +277,19 @@ export class SeedService {
 		this.logger.debug(` - Seeded ${SeedEvents.length} events.`);
 	}
 
+	private eventDates(today: DateTime, schedule: SeedEventSchedules, weeks: number) {
+		const saturday = today.plus({ days: (6 - today.weekday + 7) % 7 || 7 }).plus({ weeks });
+
+		switch (schedule) {
+			case SeedEventSchedules.longWeekend:
+				return { dateFrom: saturday.minus({ days: 1 }), dateTill: saturday.plus({ days: 1 }) };
+			case SeedEventSchedules.week:
+				return { dateFrom: saturday, dateTill: saturday.plus({ days: 7 }) };
+			default:
+				return { dateFrom: saturday, dateTill: saturday.plus({ days: 1 }) };
+		}
+	}
+
 	private async seedAlbums(t: EntityManager, userIds: Map<string, number>) {
 		const today = DateTime.local().startOf("day");
 		const createdById = userIds.values().next().value ?? null;
@@ -275,7 +300,7 @@ export class SeedService {
 
 			const existing = await t.findOne(Album, { where: { name: seedAlbum.name } });
 
-			await t.save(Album, {
+			const album = await t.save(Album, {
 				...(existing ? { id: existing.id } : {}),
 				name: seedAlbum.name,
 				description: seedAlbum.description,
@@ -286,8 +311,62 @@ export class SeedService {
 				eventId: null,
 				createdById,
 			});
+
+			await this.seedPhotos(t, album.id, seedAlbum.photos, dateFrom, createdById);
 		}
 
-		this.logger.debug(` - Seeded ${SeedAlbums.length} albums (without photos, those need image files).`);
+		this.logger.debug(
+			` - Seeded ${SeedAlbums.length} albums with ${SeedAlbums.reduce((count, album) => count + album.photos.length, 0)} photos.`,
+		);
+	}
+
+	private async seedPhotos(
+		t: EntityManager,
+		albumId: number,
+		seedPhotos: SeedPhoto[],
+		dateFrom: DateTime,
+		uploadedById: number | null,
+	) {
+		for (const [index, seedPhoto] of seedPhotos.entries()) {
+			const buffer = await this.renderPhoto(seedPhoto);
+			const metadata = await this.photosFiles.extractMetadata(buffer);
+
+			const existing = await t.findOne(Photo, { where: { albumId, name: seedPhoto.name } });
+
+			const photo = await t.save(Photo, {
+				...(existing ? { id: existing.id } : {}),
+				albumId,
+				name: seedPhoto.name,
+				title: seedPhoto.title,
+				caption: seedPhoto.caption,
+				tags: seedPhoto.tags,
+				order: index,
+				timestamp: dateFrom.plus({ days: index }).toJSDate(),
+				width: metadata.width,
+				height: metadata.height,
+				bg: metadata.bg,
+				uploadedById,
+				srcAlbumId: null,
+				srcId: null,
+			});
+
+			await this.photosFiles.savePhotoFiles(albumId, photo.id, extname(seedPhoto.name), buffer);
+		}
+	}
+
+	private async renderPhoto(seedPhoto: SeedPhoto) {
+		const stripe = await sharp({
+			create: { width: 1200, height: 200, channels: 3, background: seedPhoto.accent },
+		})
+			.png()
+			.toBuffer();
+
+		return sharp({ create: { width: 1200, height: 800, channels: 3, background: seedPhoto.background } })
+			.composite([
+				{ input: stripe, top: 260, left: 0 },
+				{ input: stripe, top: 540, left: 0 },
+			])
+			.jpeg({ quality: 80 })
+			.toBuffer();
 	}
 }
