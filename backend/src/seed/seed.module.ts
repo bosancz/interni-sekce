@@ -9,6 +9,7 @@ import { Group } from "src/models/members/entities/group.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
+import { ResetDbCommand } from "./commands/reset-db.command";
 import { SeedCommand } from "./commands/seed.command";
 import { SeedService } from "./services/seed.service";
 
@@ -17,7 +18,7 @@ import { SeedService } from "./services/seed.service";
 		TypeOrmModule.forFeature([Album, Event, EventAttendee, EventExpense, Group, Member, MemberContact, User]),
 		AuthModule,
 	],
-	providers: [SeedService, SeedCommand],
-	exports: [SeedCommand],
+	providers: [SeedService, SeedCommand, ResetDbCommand],
+	exports: [SeedCommand, ResetDbCommand],
 })
 export class SeedModule {}

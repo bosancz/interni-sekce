@@ -38,6 +38,29 @@ export class SeedService {
 		return { database: row.database, environment: row.environment || null };
 	}
 
+	async assertTestDatabase(action: string, force = false) {
+		const { database, environment } = await this.getDatabaseEnvironment();
+
+		if (environment === DatabaseEnvironments.production) {
+			throw new Error(
+				`Refusing to ${action}: database '${database}' is marked as production (app.environment = '${DatabaseEnvironments.production}').`,
+			);
+		}
+
+		if (environment !== DatabaseEnvironments.test && !force) {
+			throw new Error(
+				[
+					`Refusing to ${action}: database '${database}' is not marked as a test database (app.environment = ${environment ?? "unset"}).`,
+					`Either mark it as a test database:`,
+					`    ${markTestDatabaseSql(database)}`,
+					`or run the command with --force to do it anyway.`,
+				].join("\n"),
+			);
+		}
+
+		return database;
+	}
+
 	async seedOnStart() {
 		const { database, environment } = await this.getDatabaseEnvironment();
 

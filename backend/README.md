@@ -134,6 +134,28 @@ Pravidla (stejná pro vývoj i produkční build, takže i lokální databázi j
 Na produkčním buildu (`NODE_ENV=production`, tedy i NEXT) navíc příkaz zaloguje varování, že zakládá
 uživatele se známým heslem.
 
+### Vyčištění databáze
+
+```bash
+npm run cli reset-db            # zahodí schéma, spustí migrace a naplní testovací data
+npm run cli reset-db -- --no-seed   # jen zahodí schéma a spustí migrace
+```
+
+Zahodí celé schéma i s daty (`DROP SCHEMA ... CASCADE`), znovu spustí všechny migrace od začátku
+a naplní testovací data — hodí se, když se v testovací databázi nahromadila stará data nebo
+záznamy z dřívějších verzí seedu. Rozšíření (`postgis`, `cube`, `unaccent`), kolaci
+`natural_numeric` i konfiguraci fulltextu si migrace vytvářejí samy, takže po resetu nic
+nechybí. Značka `app.environment` visí na databázi, ne na schématu, takže reset přežije.
+
+Řídí se stejnou značkou jako seed — na databázi označené jako produkční příkaz odmítne běžet
+i s `--force`.
+
+Na NEXT stačí (kontejner s aplikací):
+
+```bash
+docker exec <kontejner> npm run cli reset-db
+```
+
 ### Automatické plnění při startu
 
 S `SEED_ON_START=true` se testovací data doplní při každém startu aplikace (tedy i po nasazení

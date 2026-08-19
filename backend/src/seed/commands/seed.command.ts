@@ -1,7 +1,7 @@
 import { Logger } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 import { StaticConfig } from "src/config";
-import { DatabaseEnvironments, markTestDatabaseSql, SeedService } from "../services/seed.service";
+import { SeedService } from "../services/seed.service";
 
 interface SeedCommandOptions {
 	force?: boolean;
@@ -28,24 +28,7 @@ export class SeedCommand extends CommandRunner {
 	}
 
 	async run(inputs: string[], options: SeedCommandOptions): Promise<void> {
-		const { database, environment } = await this.seedService.getDatabaseEnvironment();
-
-		if (environment === DatabaseEnvironments.production) {
-			throw new Error(
-				`Refusing to seed test data: database '${database}' is marked as production (app.environment = '${DatabaseEnvironments.production}').`,
-			);
-		}
-
-		if (environment !== DatabaseEnvironments.test && !options.force) {
-			throw new Error(
-				[
-					`Refusing to seed test data: database '${database}' is not marked as a test database (app.environment = ${environment ?? "unset"}).`,
-					`Either mark it as a test database:`,
-					`    ${markTestDatabaseSql(database)}`,
-					`or run the command with --force to seed it anyway.`,
-				].join("\n"),
-			);
-		}
+		await this.seedService.assertTestDatabase("seed test data", options.force);
 
 		if (StaticConfig.production) {
 			this.logger.warn(
