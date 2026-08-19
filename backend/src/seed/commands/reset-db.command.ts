@@ -3,7 +3,7 @@ import { Command, CommandRunner, Option } from "nest-commander";
 import { Config } from "src/config";
 import { runMigrations } from "src/database/run-migrations";
 import { DataSource } from "typeorm";
-import { SeedService } from "../services/seed.service";
+import { SeedPasswordMissing, SeedService } from "../services/seed.service";
 
 interface ResetDbCommandOptions {
 	force?: boolean;
@@ -43,6 +43,8 @@ export class ResetDbCommand extends CommandRunner {
 	}
 
 	async run(inputs: string[], options: ResetDbCommandOptions): Promise<void> {
+		if (options.seed && !this.config.seed.password) throw new Error(SeedPasswordMissing);
+
 		const database = await this.seedService.assertTestDatabase("drop and recreate the schema", options.force);
 
 		const schema = ("schema" in this.config.db ? this.config.db.schema : null) ?? "public";

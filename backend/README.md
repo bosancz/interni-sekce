@@ -81,12 +81,12 @@ npm run migrations:run
 npm run cli create-admin
 ```
 
-Login a e-mail bere z proměnných `ADMIN_LOGIN` a `ADMIN_EMAIL`; když některá chybí, zeptá se na ni
-interaktivně. Bez terminálu (a bez proměnných) skončí chybou, která řekne, kterou proměnnou
-nastavit — takže se nikde nezasekne na čekání na vstup.
+Login, e-mail a heslo bere z proměnných `ADMIN_LOGIN`, `ADMIN_EMAIL` a `ADMIN_PASSWORD`; na to,
+co chybí, se zeptá interaktivně. Bez terminálu (a bez proměnných) skončí chybou, která řekne,
+kterou proměnnou nastavit — takže se nikde nezasekne na čekání na vstup.
 
-Heslo se bere z `ADMIN_PASSWORD`. Mimo produkci se bez ní vygeneruje náhodné a jednou vypíše,
-na produkci je proměnná povinná.
+Když se na heslo jen odklepne prázdný vstup, mimo produkci se vygeneruje náhodné a jednou vypíše;
+na produkci je heslo povinné. Zadávané heslo se v terminálu nijak neskrývá.
 
 ## Naplnění testovacími daty
 
@@ -95,8 +95,10 @@ npm run cli seed
 ```
 
 Vytvoří vzorová data v hobitím duchu — tři oddíly (Trpaslíci, Nepřátelé a Klub přátel), patnáct
-členů, sedm budoucích akcí různých typů a jedno album. Všichni testovací uživatelé mají heslo
-`gandalf` a jsou navázaní na aktivního člena v Klubu přátel, takže mají roli vedoucího:
+členů, sedm budoucích akcí různých typů a jedno album. Heslo testovacích uživatelů se bere
+z proměnné `SEED_PASSWORD`; bez ní příkaz odmítne běžet, aby se nikde nezakládaly účty se
+zabudovaným heslem. Všichni uživatelé jsou navázaní na aktivního člena v Klubu přátel, takže mají
+roli vedoucího:
 
 | login | člen | role |
 | --- | --- | --- |
@@ -171,8 +173,8 @@ docker exec <kontejner> npm run cli reset-db -- --seed
 ### Automatické plnění při startu
 
 S `SEED_ON_START=true` se testovací data doplní při každém startu aplikace (tedy i po nasazení
-nové verze na NEXT), hned po migracích. Tahle cesta `--force` nezná — bez značky `test` se seed
-jen přeskočí s chybovou hláškou v logu a aplikace naběhne normálně.
+nové verze na NEXT), hned po migracích. Tahle cesta `--force` nezná — bez značky `test` nebo bez
+`SEED_PASSWORD` se seed jen přeskočí s chybovou hláškou v logu a aplikace naběhne normálně.
 
 ## Spuštění vývojového serveru
 

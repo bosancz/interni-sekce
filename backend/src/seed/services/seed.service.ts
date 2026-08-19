@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { DateTime } from "luxon";
 import { HashService } from "src/auth/services/hash.service";
+import { Config } from "src/config";
 import { Album } from "src/models/albums/entities/album.entity";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";
@@ -17,6 +18,9 @@ export const DatabaseEnvironments = {
 	production: "production",
 } as const;
 
+export const SeedPasswordMissing =
+	"Refusing to seed test data: set the SEED_PASSWORD environment variable to the password every seeded user gets.";
+
 export function markTestDatabaseSql(database: string) {
 	return `ALTER DATABASE "${database}" SET app.environment = '${DatabaseEnvironments.test}';`;
 }
@@ -28,6 +32,7 @@ export class SeedService {
 	constructor(
 		private entityManager: EntityManager,
 		private hashService: HashService,
+		private config: Config,
 	) {}
 
 	async getDatabaseEnvironment(): Promise<{ database: string; environment: string | null }> {
@@ -62,6 +67,11 @@ export class SeedService {
 	}
 
 	async seedOnStart() {
+		if (!this.config.seed.password) {
+			this.logger.error(`${SeedPasswordMissing} Skipping the seed.`);
+			return;
+		}
+
 		const { database, environment } = await this.getDatabaseEnvironment();
 
 		if (environment !== DatabaseEnvironments.test) {
@@ -75,12 +85,16 @@ export class SeedService {
 	}
 
 	async seed() {
+		const password = this.config.seed.password;
+
+		if (!password) throw new Error(SeedPasswordMissing);
+
 		this.logger.log("Seeding test data...");
 
 		await this.entityManager.transaction(async (t) => {
 			const groupIds = await this.seedGroups(t);
 			const memberIds = await this.seedMembers(t, groupIds);
-			const userIds = await this.seedUsers(t, memberIds);
+			const userIds = await this.seedUsers(t, memberIds, password);
 			await this.seedEvents(t, groupIds, memberIds);
 			await this.seedAlbums(t, userIds);
 		});
@@ -157,8 +171,9 @@ export class SeedService {
 		return memberIds;
 	}
 
-	private async seedUsers(t: EntityManager, memberIds: Map<string, number>) {
+	private async seedUsers(t: EntityManager, memberIds: Map<string, number>, password: string) {
 		const userIds = new Map<string, number>();
+		const passwordHash = await this.hashService.generateHash(password);
 
 		for (const seedUser of SeedUsers) {
 			const login = seedUser.login.toLocaleLowerCase();
@@ -169,7 +184,7 @@ export class SeedService {
 				...(existing ? { id: existing.id } : {}),
 				login,
 				email: seedUser.email,
-				password: await this.hashService.generateHash(seedUser.password),
+				password: passwordHash,
 				roles: seedUser.roles,
 				memberId: memberIds.get(seedUser.member) ?? null,
 				loginCode: null,
@@ -177,9 +192,11 @@ export class SeedService {
 			});
 
 			userIds.set(seedUser.login, user.id);
-
-			this.logger.warn(` - Test user '${seedUser.login}' has password '${seedUser.password}'.`);
 		}
+
+		this.logger.warn(
+			` - Seeded ${userIds.size} test users (${[...userIds.keys()].join(", ")}), all with the password from SEED_PASSWORD.`,
+		);
 
 		return userIds;
 	}

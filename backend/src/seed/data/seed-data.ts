@@ -88,7 +88,6 @@ export interface SeedAlbum {
 
 export interface SeedUser {
 	login: string;
-	password: string;
 	email: string;
 	roles: UserRoles[];
 	member: string;
@@ -103,28 +102,24 @@ export const SeedGroups: SeedGroup[] = [
 export const SeedUsers: SeedUser[] = [
 	{
 		login: "bilbo",
-		password: "gandalf",
 		email: "bilbo@bosan.cz",
 		roles: [UserRoles.admin],
 		member: "Bilbo",
 	},
 	{
 		login: "vedouci",
-		password: "gandalf",
 		email: "vedouci@bosan.cz",
 		roles: [],
 		member: "Beorn (vedoucí)",
 	},
 	{
 		login: "instruktor",
-		password: "gandalf",
 		email: "instruktor@bosan.cz",
 		roles: [],
 		member: "Elrond (instruktor)",
 	},
 	{
 		login: "program",
-		password: "gandalf",
 		email: "program@bosan.cz",
 		roles: [UserRoles.program],
 		member: "Gandalf (správce programu)",

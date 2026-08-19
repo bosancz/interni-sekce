@@ -22,17 +22,7 @@ export class CreateAdminCommand extends CommandRunner {
 	}
 
 	async run(): Promise<void> {
-		const { login, email } = await this.resolveCredentials();
-
-		let password = process.env["ADMIN_PASSWORD"];
-		let generated = false;
-		if (!password) {
-			if (StaticConfig.production) {
-				throw new Error("Set ADMIN_PASSWORD when creating an admin user in production.");
-			}
-			password = this.hashService.generateRandomString(18);
-			generated = true;
-		}
+		const { login, email, password, generated } = await this.resolveCredentials();
 
 		const passwordHash = await this.hashService.generateHash(password);
 
@@ -54,19 +44,25 @@ export class CreateAdminCommand extends CommandRunner {
 	}
 
 	private async resolveCredentials() {
-		const login = process.env["ADMIN_LOGIN"];
-		const email = process.env["ADMIN_EMAIL"];
+		const envLogin = process.env["ADMIN_LOGIN"];
+		const envEmail = process.env["ADMIN_EMAIL"];
+		const envPassword = process.env["ADMIN_PASSWORD"];
 
-		if (login && email) return { login, email };
+		if (envLogin && envEmail && envPassword) {
+			return { login: envLogin, email: envEmail, password: envPassword, generated: false };
+		}
 
 		const readline = createInterface({ input: process.stdin, output: process.stdout });
 		const lines = readline[Symbol.asyncIterator]();
 
 		try {
-			return {
-				login: login || (await this.ask(lines, "Login", "ADMIN_LOGIN")),
-				email: email || (await this.ask(lines, "E-mail", "ADMIN_EMAIL")),
-			};
+			const login = envLogin || (await this.ask(lines, "Login", "ADMIN_LOGIN"));
+			const email = envEmail || (await this.ask(lines, "E-mail", "ADMIN_EMAIL"));
+			const { password, generated } = envPassword
+				? { password: envPassword, generated: false }
+				: await this.askPassword(lines);
+
+			return { login, email, password, generated };
 		} finally {
 			readline.close();
 		}
@@ -85,5 +81,20 @@ export class CreateAdminCommand extends CommandRunner {
 		}
 
 		return value;
+	}
+
+	private async askPassword(lines: AsyncIterator<string>) {
+		process.stdout.write("Password: ");
+
+		const line = await lines.next();
+		const value = line.value?.trim();
+
+		if (value) return { password: value, generated: false };
+
+		if (StaticConfig.production) {
+			throw new Error("No password given. Enter one, or set the ADMIN_PASSWORD environment variable.");
+		}
+
+		return { password: this.hashService.generateRandomString(18), generated: true };
 	}
 }
