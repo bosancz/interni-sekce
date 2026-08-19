@@ -18,6 +18,17 @@
 	}
 </div>
 
+@if (followUps().length) {
+	<div class="follow-ups" [style.--accent]="accentColor()">
+		@for (followUp of followUps(); track followUp.key) {
+			<div class="follow-up" [class.done]="followUp.done" [class.untracked]="!followUp.tracked">
+				<span class="dot"></span>
+				<span class="label">{{ followUp.label }}</span>
+			</div>
+		}
+	</div>
+}
+
 <ion-popover
 	cssClass="event-progress-note-popover"
 	[isOpen]="noteOpen()"

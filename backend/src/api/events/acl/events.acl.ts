@@ -228,6 +228,22 @@ export const EventAnnouncementGetPermission = new Permission({
 	},
 });
 
+export const EventAnnouncementSentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => doc.status === EventStates.public && !doc.announcementSentAt && !doc.deletedAt,
+});
+
+export const EventAnnouncementUnsentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => !!doc.announcementSentAt && !doc.deletedAt,
+});
+
 export const EventAccountingGetPermission = new Permission({
 	linkTo: EventResponse,
 	params: { eventId: "id" },

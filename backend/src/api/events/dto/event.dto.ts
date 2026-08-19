@@ -39,6 +39,7 @@ export class EventResponse implements Omit<Event, "setLeaders" | "srcId"> {
 	river!: string | null;
 	deletedAt?: Date | null;
 	report!: string | null;
+	@ApiPropertyOptional({ type: "string" }) announcementSentAt!: Date | string | null;
 
 	@ApiPropertyOptional({ type: AlbumResponse }) album?: Album | undefined;
 	@ApiPropertyOptional({ type: GroupResponse, isArray: true }) groups?: Group[] | undefined;

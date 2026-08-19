@@ -88,6 +88,47 @@
 	}
 }
 
+.follow-ups {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 0.4rem 1.1rem;
+	max-width: 640px;
+	margin: 0.5rem auto 0;
+	padding-top: 0.5rem;
+	border-top: 1px dashed var(--bo-line);
+}
+
+.follow-up {
+	display: flex;
+	align-items: center;
+	gap: 0.35em;
+	font-size: 0.75rem;
+	line-height: 1.2;
+	color: var(--bo-muted);
+
+	.dot {
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 50%;
+		background: var(--bo-line);
+	}
+
+	&.untracked .dot {
+		background: transparent;
+		border: 1px dashed var(--bo-muted);
+	}
+
+	&.done {
+		color: var(--accent);
+		font-weight: 700;
+
+		.dot {
+			background: var(--accent);
+		}
+	}
+}
+
 ::ng-deep .event-progress-note-popover {
 	--width: min(20rem, calc(100vw - 2rem));
 

@@ -200,4 +200,24 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			this.toastService.toast("Nepodařilo se stáhnout ohlášku.", { color: "danger" });
 		}
 	}
+
+	async markAnnouncementSent(event: SDK.EventResponseWithLinks) {
+		try {
+			await this.api.EventsApi.markAnnouncementSent(event.id);
+			this.toastService.toast("Ohláška označena za odeslanou.");
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit změnu.", { color: "danger" });
+		}
+	}
+
+	async unmarkAnnouncementSent(event: SDK.EventResponseWithLinks) {
+		try {
+			await this.api.EventsApi.unmarkAnnouncementSent(event.id);
+			this.toastService.toast("Označení zrušeno.");
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit změnu.", { color: "danger" });
+		}
+	}
 }

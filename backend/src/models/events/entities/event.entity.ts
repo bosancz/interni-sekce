@@ -92,6 +92,7 @@ export class Event {
 	@Column({ type: "boolean", nullable: false, default: false }) leadersEvent!: boolean;
 	@Column({ type: "boolean", nullable: false, default: false }) hasRegistration!: boolean;
 	@Column({ type: "varchar", nullable: true }) report!: string | null;
+	@Column({ type: "timestamp with time zone", nullable: true }) announcementSentAt!: Date | string | null;
 
 	// Legacy Mongo ObjectId of the event, set only for events imported from the old server
 	// (mongo-import). When present, the registration PDF lives in the legacy on-disk layout

@@ -12,6 +12,13 @@ export interface EventProgressStep {
 	active: boolean;
 }
 
+export interface EventProgressFollowUp {
+	key: string;
+	label: string;
+	done: boolean;
+	tracked: boolean;
+}
+
 const STEPS: { key: string; statuses: EventStatusID[] }[] = [
 	{ key: "draft", statuses: ["draft"] },
 	{ key: "pending", statuses: ["pending", "rejected"] },
@@ -28,6 +35,7 @@ const STEP_LABELS: Record<EventStatusID, string> = {
 };
 
 const NO_LEADER_LABEL = "Bez vedoucího";
+const ANNOUNCEMENT_LABEL = "Ohláška odeslána";
 
 @Component({
 	selector: "bo-event-progress",
@@ -48,24 +56,53 @@ export class EventProgressComponent {
 
 	private noLeader = computed(() => !this.event()?.leaders?.length);
 
-	private activeIndex = computed(() => {
+	private announcementSent = computed(() => !!this.event()?.announcementSentAt);
+
+	private statusIndex = computed(() => {
 		const status = this.status();
 		return status ? STEPS.findIndex((step) => step.statuses.includes(status)) : -1;
 	});
 
-	steps = computed<EventProgressStep[]>(() =>
-		STEPS.map((step, index) => {
-			const active = index === this.activeIndex();
-			const status = active ? this.status()! : step.statuses[0];
+	private activeIndex = computed(() => (this.announcementSent() ? STEPS.length : this.statusIndex()));
+
+	steps = computed<EventProgressStep[]>(() => {
+		const statusSteps = STEPS.map((step, index) => {
+			const status = index === this.statusIndex() ? this.status()! : step.statuses[0];
+			const noLeader = index === this.statusIndex() && status === "draft" && this.noLeader();
 
 			return {
 				key: step.key,
-				label: active && status === "draft" && this.noLeader() ? NO_LEADER_LABEL : STEP_LABELS[status],
+				label: noLeader ? NO_LEADER_LABEL : STEP_LABELS[status],
 				reached: this.activeIndex() >= index,
-				active,
+				active: index === this.activeIndex(),
 			};
-		}),
-	);
+		});
+
+		if (!this.announcementSent()) return statusSteps;
+
+		return [...statusSteps, { key: "announcement", label: ANNOUNCEMENT_LABEL, reached: true, active: true }];
+	});
+
+	followUps = computed<EventProgressFollowUp[]>(() => {
+		if (!this.announcementSent()) return [];
+
+		const album = this.event()?.album;
+
+		return [
+			{ key: "accounting", label: "Vyúčtování", done: false, tracked: false },
+			{ key: "report", label: "Report", done: false, tracked: false },
+			{
+				key: "album",
+				label: !album
+					? "Bez galerie"
+					: album.status === "public"
+						? "Galerie zveřejněna"
+						: "Galerie nezveřejněná",
+				done: album?.status === "public",
+				tracked: true,
+			},
+		];
+	});
 
 	activeLabel = computed(() => this.steps().find((step) => step.active)?.label);
 
