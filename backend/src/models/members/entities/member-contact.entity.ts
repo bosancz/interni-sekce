@@ -1,5 +1,5 @@
 import { ApiHideProperty } from "@nestjs/swagger";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Member } from "./member.entity";
 
 @Entity("members_contacts")
@@ -20,4 +20,16 @@ export class MemberContact {
 	@Column({ type: "varchar", nullable: true }) mobile?: string;
 	@Column({ type: "varchar", nullable: true }) email?: string;
 	@Column({ type: "text", nullable: true }) other?: string;
+
+	@Index("IDX_members_contacts_search_vector", { synchronize: false })
+	@Column({
+		type: "tsvector",
+		nullable: true,
+		select: false,
+		asExpression:
+			"to_tsvector('simple_unaccent', coalesce(name, '') || ' ' || regexp_replace(regexp_replace(coalesce(mobile, ''), '(?<=[[:digit:]])[[:space:]-]+(?=[[:digit:]])', '', 'g'), '([+]|00)420', '', 'g') || ' ' || translate(coalesce(email, ''), '@._+-', '     '))",
+		generatedType: "STORED",
+	})
+	@ApiHideProperty()
+	searchVector?: string;
 }
