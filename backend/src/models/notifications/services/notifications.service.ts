@@ -110,16 +110,16 @@ export class NotificationsService {
 			recipients.map((user) => user.id),
 			type,
 		);
-		const channels = new Map(settings.map((setting) => [setting.userId, setting.channel]));
-		const defaultChannel = NotificationTypesMetadata[type].defaultChannel;
+		const overrides = new Map(settings.map((setting) => [setting.userId, setting.channels]));
+		const defaultChannels = NotificationTypesMetadata[type].defaultChannels;
 
 		const pushUsers: User[] = [];
 		const emailUsers: User[] = [];
 
 		for (const user of recipients) {
-			const channel = channels.get(user.id) ?? defaultChannel;
-			if ([NotificationChannels.push, NotificationChannels.both].includes(channel)) pushUsers.push(user);
-			if ([NotificationChannels.email, NotificationChannels.both].includes(channel)) emailUsers.push(user);
+			const channels = overrides.get(user.id) ?? defaultChannels;
+			if (channels.includes(NotificationChannels.push)) pushUsers.push(user);
+			if (channels.includes(NotificationChannels.email)) emailUsers.push(user);
 		}
 
 		await Promise.all([this.sendPush(pushUsers, message), this.sendEmails(emailUsers, message)]);

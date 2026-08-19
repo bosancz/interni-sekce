@@ -9,16 +9,22 @@ export enum NotificationTypes {
 }
 
 export enum NotificationChannels {
-	"disabled" = "disabled",
 	"push" = "push",
 	"email" = "email",
-	"both" = "both",
+	"inApp" = "inApp",
+}
+
+/** Push and e-mail notifications always show on the in-app notifications page too. */
+export function normalizeNotificationChannels(channels: NotificationChannels[]): NotificationChannels[] {
+	const forcesInApp = channels.includes(NotificationChannels.push) || channels.includes(NotificationChannels.email);
+	if (forcesInApp && !channels.includes(NotificationChannels.inApp)) return [...channels, NotificationChannels.inApp];
+	return channels;
 }
 
 export interface NotificationTypeMetadata {
 	title: string;
 	description: string;
-	defaultChannel: NotificationChannels;
+	defaultChannels: NotificationChannels[];
 	/** Roles that receive and may configure this notification type; null = every registered user. */
 	roles: Roles[] | null;
 }
@@ -27,25 +33,25 @@ export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTy
 	[NotificationTypes.myEvents]: {
 		title: "Moje akce",
 		description: "Schválení, vrácení nebo zrušení akce, kterou vedu",
-		defaultChannel: NotificationChannels.push,
+		defaultChannels: [NotificationChannels.push, NotificationChannels.inApp],
 		roles: [StaticRoles.vedouci],
 	},
 	[NotificationTypes.submittedEvents]: {
 		title: "Akce ke schválení",
 		description: "Akce odeslaná ke schválení programu",
-		defaultChannel: NotificationChannels.push,
+		defaultChannels: [NotificationChannels.push, NotificationChannels.inApp],
 		roles: [UserRoles.program, UserRoles.admin],
 	},
 	[NotificationTypes.newEvents]: {
 		title: "Nové akce",
 		description: "Nově zveřejněné akce v programu",
-		defaultChannel: NotificationChannels.push,
+		defaultChannels: [NotificationChannels.push, NotificationChannels.inApp],
 		roles: null,
 	},
 	[NotificationTypes.newUsers]: {
 		title: "Noví uživatelé",
 		description: "Nově založené uživatelské účty",
-		defaultChannel: NotificationChannels.push,
+		defaultChannels: [NotificationChannels.push, NotificationChannels.inApp],
 		roles: [UserRoles.admin],
 	},
 };

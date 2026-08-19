@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { NotificationSubscription } from "src/models/notifications/entities/notification-subscription.entity";
 import { NotificationChannels, NotificationTypes } from "src/models/notifications/schema/notification-types";
@@ -9,7 +9,8 @@ export class NotificationTypeSettingResponse {
 	@ApiProperty({ enum: NotificationTypes, enumName: "NotificationTypesEnum" }) type!: NotificationTypes;
 	title!: string;
 	description!: string;
-	@ApiProperty({ enum: NotificationChannels, enumName: "NotificationChannelsEnum" }) channel!: NotificationChannels;
+	@ApiProperty({ enum: NotificationChannels, enumName: "NotificationChannelsEnum", isArray: true })
+	channels!: NotificationChannels[];
 }
 
 export class NotificationSettingsResponse {
@@ -22,9 +23,10 @@ export class NotificationSettingsResponse {
 }
 
 export class NotificationSettingUpdateBody {
-	@ApiProperty({ enum: NotificationChannels, enumName: "NotificationChannelsEnum" })
-	@IsEnum(NotificationChannels)
-	channel!: NotificationChannels;
+	@ApiProperty({ enum: NotificationChannels, enumName: "NotificationChannelsEnum", isArray: true })
+	@IsArray()
+	@IsEnum(NotificationChannels, { each: true })
+	channels!: NotificationChannels[];
 }
 
 export class NotificationDeviceResponse

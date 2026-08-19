@@ -16,7 +16,7 @@ export class NotificationSetting {
 	@ApiProperty({ enum: NotificationTypes, enumName: "NotificationTypesEnum" })
 	type!: NotificationTypes;
 
-	@Column({ type: "enum", enum: NotificationChannels })
-	@ApiProperty({ enum: NotificationChannels, enumName: "NotificationChannelsEnum" })
-	channel!: NotificationChannels;
+	@Column({ type: "enum", enum: NotificationChannels, array: true, nullable: true })
+	@ApiProperty({ enum: NotificationChannels, enumName: "NotificationChannelsEnum", isArray: true, nullable: true })
+	channels!: NotificationChannels[] | null;
 }

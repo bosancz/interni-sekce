@@ -17,7 +17,7 @@ export class NotificationSettingsRepository {
 		return this.repository.findBy({ userId: In(userIds), type });
 	}
 
-	async setSetting(userId: number, type: NotificationTypes, channel: NotificationChannels) {
-		return this.repository.save({ userId, type, channel });
+	async setSetting(userId: number, type: NotificationTypes, channels: NotificationChannels[]) {
+		return this.repository.save({ userId, type, channels });
 	}
 }

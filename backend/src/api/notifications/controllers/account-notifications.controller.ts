@@ -26,6 +26,7 @@ import { NotificationSettingsRepository } from "src/models/notifications/reposit
 import { NotificationSubscriptionsRepository } from "src/models/notifications/repositories/notification-subscriptions.repository";
 import { PushService } from "src/models/notifications/services/push.service";
 import {
+	normalizeNotificationChannels,
 	NotificationTypes,
 	NotificationTypesMetadata,
 } from "src/models/notifications/schema/notification-types";
@@ -73,7 +74,7 @@ export class AccountNotificationsController {
 				type: <NotificationTypes>type,
 				title: metadata.title,
 				description: metadata.description,
-				channel: settings.find((setting) => setting.type === type)?.channel ?? metadata.defaultChannel,
+				channels: settings.find((setting) => setting.type === type)?.channels ?? metadata.defaultChannels,
 			}));
 
 		return {
@@ -96,7 +97,7 @@ export class AccountNotificationsController {
 	): Promise<void> {
 		NotificationSettingUpdatePermission.canOrThrow(req, { type: notificationType } as never);
 
-		await this.settings.setSetting(authUser.userId, notificationType, body.channel);
+		await this.settings.setSetting(authUser.userId, notificationType, normalizeNotificationChannels(body.channels));
 	}
 
 	@Get("devices")

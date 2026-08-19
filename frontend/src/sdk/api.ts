@@ -3866,10 +3866,9 @@ export namespace SDK {
      */
     
     export const NotificationChannelsEnum = {
-        Disabled: 'disabled',
         Push: 'push',
         Email: 'email',
-        Both: 'both'
+        InApp: 'inApp'
     } as const;
     
     export type NotificationChannelsEnum = typeof NotificationChannelsEnum[keyof typeof NotificationChannelsEnum];
@@ -3947,13 +3946,31 @@ export namespace SDK {
     export interface NotificationSettingUpdateBody {
         /**
          * 
-         * @type {NotificationChannelsEnum}
+         * @type {Array<NotificationChannelsEnum>}
          * @memberof NotificationSettingUpdateBody
          */
-        'channel': NotificationChannelsEnum;
+        'channels': Array<NotificationChannelsEnum>;
     }
     
-    
+        /**
+     * 
+     * @export
+     * @interface NotificationSettingsResponseLinks
+     */
+    export interface NotificationSettingsResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof NotificationSettingsResponseLinks
+         */
+        'listNotificationDevices': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof NotificationSettingsResponseLinks
+         */
+        'subscribeNotificationDevice': AcLink;
+    }
     
         /**
      * 
@@ -3975,10 +3992,10 @@ export namespace SDK {
         'types': Array<NotificationTypeSettingResponseWithLinks>;
         /**
          * 
-         * @type {object}
+         * @type {NotificationSettingsResponseLinks}
          * @memberof NotificationSettingsResponseWithLinks
          */
-        '_links': object;
+        '_links': NotificationSettingsResponseLinks;
         /**
          * 
          * @type {boolean}
@@ -4067,10 +4084,10 @@ export namespace SDK {
         'type': NotificationTypesEnum;
         /**
          * 
-         * @type {NotificationChannelsEnum}
+         * @type {Array<NotificationChannelsEnum>}
          * @memberof NotificationTypeSettingResponseWithLinks
          */
-        'channel': NotificationChannelsEnum;
+        'channels': Array<NotificationChannelsEnum>;
         /**
          * 
          * @type {NotificationTypeSettingResponseLinks}
@@ -4605,6 +4622,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'exportMembersXlsx': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getNotificationSettings': AcLink;
         /**
          * 
          * @type {AcLink}
