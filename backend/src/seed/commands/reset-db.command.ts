@@ -35,11 +35,11 @@ export class ResetDbCommand extends CommandRunner {
 	}
 
 	@Option({
-		flags: "--no-seed",
-		description: "Only drop the schema and run the migrations, without seeding test data.",
+		flags: "-s, --seed",
+		description: "Seed test data once the migrations are done.",
 	})
-	parseNoSeed(): boolean {
-		return false;
+	parseSeed(): boolean {
+		return true;
 	}
 
 	async run(inputs: string[], options: ResetDbCommandOptions): Promise<void> {
@@ -56,7 +56,7 @@ export class ResetDbCommand extends CommandRunner {
 
 		await runMigrations(this.config);
 
-		if (options.seed !== false) await this.seedService.seed();
+		if (options.seed) await this.seedService.seed();
 	}
 
 	private async assertExtensionsRecreatable(schema: string) {

@@ -137,12 +137,12 @@ uživatele se známým heslem.
 ### Vyčištění databáze
 
 ```bash
-npm run cli reset-db            # zahodí schéma, spustí migrace a naplní testovací data
-npm run cli reset-db -- --no-seed   # jen zahodí schéma a spustí migrace
+npm run cli reset-db             # zahodí schéma a spustí migrace
+npm run cli reset-db -- --seed   # a rovnou naplní testovací data
 ```
 
-Zahodí celé schéma i s daty (`DROP SCHEMA ... CASCADE`), znovu spustí všechny migrace od začátku
-a naplní testovací data — hodí se, když se v testovací databázi nahromadila stará data nebo
+Zahodí celé schéma i s daty (`DROP SCHEMA ... CASCADE`) a znovu spustí všechny migrace od začátku;
+s `--seed` navíc naplní testovací data — hodí se, když se v testovací databázi nahromadila stará data nebo
 záznamy z dřívějších verzí seedu. Rozšíření (`postgis`, `cube`, `unaccent`), kolaci
 `natural_numeric` i konfiguraci fulltextu si migrace vytvářejí samy, takže po resetu nic
 nechybí. Značka `app.environment` visí na databázi, ne na schématu, takže reset přežije.
@@ -158,7 +158,7 @@ i s `--force`.
 Na NEXT stačí (kontejner s aplikací):
 
 ```bash
-docker exec <kontejner> npm run cli reset-db
+docker exec <kontejner> npm run cli reset-db -- --seed
 ```
 
 ### Automatické plnění při startu
