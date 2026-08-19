@@ -20,6 +20,7 @@ export const UserCreatePermission = new Permission<void>({
 export const UserReadPermission = new Permission<User>({
 	linkTo: UserResponse,
 	contains: UserResponse,
+	params: { userId: "id" },
 
 	allowed: {
 		revizor: true,
@@ -29,14 +30,17 @@ export const UserReadPermission = new Permission<User>({
 
 export const UserEditPermission = new Permission<User>({
 	linkTo: UserResponse,
+	params: { userId: "id" },
 });
 
 export const UserDeletePermission = new Permission<User>({
 	linkTo: UserResponse,
+	params: { userId: "id" },
 });
 
 export const UserSetPassword = new Permission<User>({
 	linkTo: UserResponse,
+	params: { userId: "id" },
 
 	allowed: {
 		uzivatel: ({ doc, req }) => doc.id === req.user?.userId,
@@ -45,4 +49,5 @@ export const UserSetPassword = new Permission<User>({
 
 export const UserImpersonatePermission = new Permission<User>({
 	linkTo: UserResponse,
+	params: { userId: "id" },
 });

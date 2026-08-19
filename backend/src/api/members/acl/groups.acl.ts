@@ -19,6 +19,7 @@ export const GroupCreatePermission = new Permission<void>({
 export const GroupReadPermission = new Permission({
 	linkTo: GroupResponse,
 	contains: GroupResponse,
+	params: { groupId: "id" },
 
 	allowed: {
 		vedouci: true,
@@ -27,22 +28,26 @@ export const GroupReadPermission = new Permission({
 
 export const GroupEditPermission = new Permission({
 	linkTo: GroupResponse,
+	params: { groupId: "id" },
 });
 
 export const GroupDeletePermission = new Permission({
 	linkTo: GroupResponse,
+	params: { groupId: "id" },
 
 	applicable: ({ doc }) => !doc.deletedAt,
 });
 
 export const GroupRestorePermission = new Permission({
 	linkTo: GroupResponse,
+	params: { groupId: "id" },
 
 	applicable: ({ doc }) => !!doc.deletedAt,
 });
 
 export const GroupPermanentDeletePermission = new Permission({
 	linkTo: GroupResponse,
+	params: { groupId: "id" },
 
 	applicable: ({ doc }) => !!doc.deletedAt,
 });

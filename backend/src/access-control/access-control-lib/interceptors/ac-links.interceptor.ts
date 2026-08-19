@@ -90,13 +90,24 @@ export class AcLinksInterceptor implements NestInterceptor {
 		if (typeof route.acl.options.path === "function") pathItems.push(String(route.acl.options.path(doc)));
 		else pathItems.push(<string>Reflect.getMetadata(MetadataConstant.routePath, route.handler));
 
+		const params = route.acl.options.params ?? {};
+
 		const path = pathItems
 			.map((item) => String(item).replace(/^\//, "").replace(/\/$/, ""))
 			.filter((item) => !!item)
 			.join("/")
-			.replace(/\:([a-zA-Z]+)/g, (match, param) => (param in doc ? doc[param] : param));
+			.replace(/\:([a-zA-Z]+)/g, (match, param) => this.resolveParam(param, doc, params));
 
 		return path;
+	}
+
+	private resolveParam(param: string, doc: any, params: { [param: string]: keyof any | ((doc: any) => string | number) }) {
+		const resolve = params[param];
+
+		if (typeof resolve === "function") return String(resolve(doc));
+		if (resolve !== undefined) return String(doc[resolve]);
+
+		return param in doc ? doc[param] : param;
 	}
 
 	private getControllerPath(route: RouteStoreItem) {

@@ -29,6 +29,7 @@ export const AlbumsDeletedListPermission = new Permission<void>({
 export const AlbumReadPermission = new Permission({
 	linkTo: AlbumResponse,
 	contains: AlbumResponse,
+	params: { albumId: "id" },
 
 	allowed: {
 		vedouci: true,
@@ -46,6 +47,7 @@ export const AlbumCreatePermission = new Permission<void>({
 
 export const AlbumEditPermission = new Permission({
 	linkTo: AlbumResponse,
+	params: { albumId: "id" },
 	allowed: {
 		vedouci: true,
 	},
@@ -54,6 +56,7 @@ export const AlbumEditPermission = new Permission({
 
 export const AlbumDeletePermission = new Permission({
 	linkTo: AlbumResponse,
+	params: { albumId: "id" },
 	allowed: {
 		// Only the album's creator may delete it; admin (implicit) may delete any album.
 		vedouci: ({ doc, req }) => doc.createdById !== null && doc.createdById === req.user?.userId,
@@ -63,6 +66,7 @@ export const AlbumDeletePermission = new Permission({
 
 export const AlbumRestorePermission = new Permission({
 	linkTo: AlbumResponse,
+	params: { albumId: "id" },
 	// Restore mirrors delete: only the album's creator may restore it; admin (implicit) any album.
 	allowed: {
 		vedouci: ({ doc, req }) => doc.createdById !== null && doc.createdById === req.user?.userId,
@@ -72,6 +76,7 @@ export const AlbumRestorePermission = new Permission({
 
 export const AlbumDeletePermanentPermission = new Permission({
 	linkTo: AlbumResponse,
+	params: { albumId: "id" },
 	// Permanent deletion is irreversible and reserved for admins only.
 	allowed: {
 		admin: true,
@@ -81,12 +86,14 @@ export const AlbumDeletePermanentPermission = new Permission({
 
 export const AlbumPublishPermission = new Permission({
 	linkTo: AlbumResponse,
+	params: { albumId: "id" },
 	inherit: AlbumEditPermission,
 	applicable: ({ doc }) => doc.status === "draft" && !doc.deletedAt,
 });
 
 export const AlbumUnpublishPermission = new Permission({
 	linkTo: AlbumResponse,
+	params: { albumId: "id" },
 
 	inherit: AlbumEditPermission,
 
@@ -95,12 +102,14 @@ export const AlbumUnpublishPermission = new Permission({
 
 export const AlbumReorderPhotosPermission = new Permission({
 	linkTo: AlbumResponse,
+	params: { albumId: "id" },
 	inherit: AlbumEditPermission,
 });
 
 export const AlbumPhotosPermission = new Permission({
 	linkTo: AlbumResponse,
 	contains: PhotoResponse,
+	params: { albumId: "id" },
 
 	allowed: {
 		vedouci: true,
