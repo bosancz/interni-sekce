@@ -78,12 +78,23 @@ export class MembersRepository {
 
 		if (options.search) {
 			const search = toPrefixTsQuery(options.search);
-			if (search) q.andWhere("members.searchVector @@ to_tsquery('simple_unaccent', :search)", { search });
+			if (search)
+				q.andWhere(
+					new Brackets((qb) =>
+						qb
+							.where("members.searchVector @@ to_tsquery('simple_unaccent', :search)")
+							.orWhere(
+								"EXISTS (SELECT 1 FROM members_contacts mc WHERE mc.member_id = members.id AND mc.search_vector @@ to_tsquery('simple_unaccent', :search))",
+							),
+					),
+					{ search },
+				);
 		}
 
 		if (options.roles) q.andWhere("members.role IN (:...roles)", { roles: options.roles });
 
-		if (options.membership?.length) q.andWhere("members.membership IN (:...membership)", { membership: options.membership });
+		if (options.membership?.length)
+			q.andWhere("members.membership IN (:...membership)", { membership: options.membership });
 
 		if (options.age?.length)
 			q.andWhere(

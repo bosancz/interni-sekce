@@ -72,7 +72,8 @@ export class Member {
 		type: "tsvector",
 		nullable: true,
 		select: false,
-		asExpression: "to_tsvector('simple_unaccent', coalesce(nickname, '') || ' ' || coalesce(first_name, '') || ' ' || coalesce(last_name, ''))",
+		asExpression:
+			"to_tsvector('simple_unaccent', coalesce(nickname, '') || ' ' || coalesce(first_name, '') || ' ' || coalesce(last_name, '') || ' ' || regexp_replace(regexp_replace(coalesce(mobile, ''), '(?<=[[:digit:]])[[:space:]-]+(?=[[:digit:]])', '', 'g'), '([+]|00)420', '', 'g') || ' ' || translate(coalesce(email, ''), '@._+-', '     '))",
 		generatedType: "STORED",
 	})
 	@ApiHideProperty()
