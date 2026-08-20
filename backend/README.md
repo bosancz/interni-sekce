@@ -81,6 +81,13 @@ npm run migrations:run
 npm run cli create-admin
 ```
 
+Login, e-mail a heslo bere z proměnných `ADMIN_LOGIN`, `ADMIN_EMAIL` a `ADMIN_PASSWORD`; na to,
+co chybí, se zeptá interaktivně. Bez terminálu (a bez proměnných) skončí chybou, která řekne,
+kterou proměnnou nastavit — takže se nikde nezasekne na čekání na vstup.
+
+Když se na heslo jen odklepne prázdný vstup, mimo produkci se vygeneruje náhodné a jednou vypíše;
+na produkci je heslo povinné. Zadávané heslo se v terminálu nijak neskrývá.
+
 ## Naplnění testovacími daty
 
 ```bash
@@ -88,8 +95,13 @@ npm run cli seed
 ```
 
 Vytvoří vzorová data v hobitím duchu — tři oddíly (Trpaslíci, Nepřátelé a Klub přátel), patnáct
-členů, sedm budoucích akcí různých typů a jedno album. Všichni testovací uživatelé mají heslo
-`gandalf` a jsou navázaní na aktivního člena v Klubu přátel, takže mají roli vedoucího:
+členů, sedm budoucích akcí různých typů a jedno album. Akce jsou vždy posazené na skutečné dny
+v týdnu — víkend (so–ne), prodloužený víkend (pá–ne), nebo týden (so–so) — a dvě z nich jsou
+zatím bez vedoucích. Album má pět fotek — soubory leží v `assets/seed/photos` a seed je uloží
+(originál i náhledy) do `DATA_DIR`. Heslo testovacích uživatelů se bere
+z proměnné `SEED_PASSWORD`; bez ní příkaz odmítne běžet, aby se nikde nezakládaly účty se
+zabudovaným heslem. Všichni uživatelé jsou navázaní na aktivního člena v Klubu přátel, takže mají
+roli vedoucího:
 
 | login | člen | role |
 | --- | --- | --- |
@@ -134,11 +146,38 @@ Pravidla (stejná pro vývoj i produkční build, takže i lokální databázi j
 Na produkčním buildu (`NODE_ENV=production`, tedy i NEXT) navíc příkaz zaloguje varování, že zakládá
 uživatele se známým heslem.
 
+### Vyčištění databáze
+
+```bash
+npm run cli reset-db             # zahodí schéma a spustí migrace
+npm run cli reset-db -- --seed   # a rovnou naplní testovací data
+```
+
+Zahodí celé schéma i s daty (`DROP SCHEMA ... CASCADE`) a znovu spustí všechny migrace od začátku;
+s `--seed` navíc naplní testovací data — hodí se, když se v testovací databázi nahromadila stará data nebo
+záznamy z dřívějších verzí seedu. Rozšíření (`postgis`, `cube`, `unaccent`), kolaci
+`natural_numeric` i konfiguraci fulltextu si migrace vytvářejí samy, takže po resetu nic
+nechybí. Značka `app.environment` visí na databázi, ne na schématu, takže reset přežije.
+
+⚠️ Se schématem padnou i rozšíření, která v něm sedí, a `CREATE EXTENSION postgis` smí jen
+superuser (`cube` a `unaccent` jsou trusted, `postgis` ne). Příkaz to proto kontroluje předem
+a na nesuperuserovém spojení schéma vůbec nezahodí — jinak by databáze zůstala rozbitá
+uprostřed migrací.
+
+Řídí se stejnou značkou jako seed — na databázi označené jako produkční příkaz odmítne běžet
+i s `--force`.
+
+Na NEXT stačí (kontejner s aplikací):
+
+```bash
+docker exec <kontejner> npm run cli reset-db -- --seed
+```
+
 ### Automatické plnění při startu
 
 S `SEED_ON_START=true` se testovací data doplní při každém startu aplikace (tedy i po nasazení
-nové verze na NEXT), hned po migracích. Tahle cesta `--force` nezná — bez značky `test` se seed
-jen přeskočí s chybovou hláškou v logu a aplikace naběhne normálně.
+nové verze na NEXT), hned po migracích. Tahle cesta `--force` nezná — bez značky `test` nebo bez
+`SEED_PASSWORD` se seed jen přeskočí s chybovou hláškou v logu a aplikace naběhne normálně.
 
 ## Spuštění vývojového serveru
 

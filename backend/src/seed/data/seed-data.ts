@@ -54,12 +54,18 @@ export interface SeedEventExpense {
 	description: string;
 }
 
+export enum SeedEventSchedules {
+	weekend = "weekend",
+	longWeekend = "longWeekend",
+	week = "week",
+}
+
 export interface SeedEvent {
 	name: string;
 	type: string;
 	status: EventStates;
-	dayOffset: number;
-	days: number;
+	schedule: SeedEventSchedules;
+	weeks: number;
 	place: string;
 	description: string;
 	groups: string[];
@@ -78,17 +84,24 @@ export interface SeedEvent {
 	expenses?: SeedEventExpense[];
 }
 
+export interface SeedPhoto {
+	name: string;
+	title: string;
+	caption: string;
+	tags: string[];
+}
+
 export interface SeedAlbum {
 	name: string;
 	description: string;
 	status: AlbumStatus;
 	dayOffset: number;
 	days: number;
+	photos: SeedPhoto[];
 }
 
 export interface SeedUser {
 	login: string;
-	password: string;
 	email: string;
 	roles: UserRoles[];
 	member: string;
@@ -103,28 +116,24 @@ export const SeedGroups: SeedGroup[] = [
 export const SeedUsers: SeedUser[] = [
 	{
 		login: "bilbo",
-		password: "gandalf",
 		email: "bilbo@bosan.cz",
 		roles: [UserRoles.admin],
 		member: "Bilbo",
 	},
 	{
 		login: "vedouci",
-		password: "gandalf",
 		email: "vedouci@bosan.cz",
 		roles: [],
 		member: "Beorn (vedoucí)",
 	},
 	{
 		login: "instruktor",
-		password: "gandalf",
 		email: "instruktor@bosan.cz",
 		roles: [],
 		member: "Elrond (instruktor)",
 	},
 	{
 		login: "program",
-		password: "gandalf",
 		email: "program@bosan.cz",
 		roles: [UserRoles.program],
 		member: "Gandalf (správce programu)",
@@ -329,8 +338,8 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Schůzka U Zeleného draka",
 		type: "schůzka",
 		status: EventStates.public,
-		dayOffset: 7,
-		days: 1,
+		schedule: SeedEventSchedules.weekend,
+		weeks: 1,
 		place: "Hobitín, hostinec U Zeleného draka",
 		description: "Pravidelná schůzka oddílu. Hraje se, plánuje se výprava a povídá se o dracích.",
 		groups: ["T"],
@@ -346,8 +355,8 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Výprava k Osamělé hoře",
 		type: "peší výlet",
 		status: EventStates.public,
-		dayOffset: 21,
-		days: 3,
+		schedule: SeedEventSchedules.longWeekend,
+		weeks: 3,
 		place: "Osamělá hora",
 		description: "Třídenní putování přes Divočinu. Spí se pod širákem, vaří se na ohni.",
 		groups: ["T"],
@@ -364,8 +373,8 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Splutí Lesní řeky",
 		type: "voda",
 		status: EventStates.public,
-		dayOffset: 35,
-		days: 2,
+		schedule: SeedEventSchedules.longWeekend,
+		weeks: 5,
 		place: "Temný hvozd",
 		description: "Sjezd Lesní řeky na kánoích a v prázdných sudech od vína.",
 		groups: ["T"],
@@ -381,12 +390,12 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Cyklovýlet přes Kraj",
 		type: "cyklo",
 		status: EventStates.pending,
-		dayOffset: 49,
-		days: 1,
+		schedule: SeedEventSchedules.weekend,
+		weeks: 7,
 		place: "Kraj",
 		description: "Vyjížďka po Kraji se zastávkou na druhou snídani.",
 		groups: ["T"],
-		leaders: ["Bilbo"],
+		leaders: [],
 		attendees: ["Fíli", "Kíli", "Ori"],
 		timeFrom: "9:00",
 		timeTill: "16:00",
@@ -397,8 +406,8 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Brigáda na opravě Pytlíkova",
 		type: "brigáda",
 		status: EventStates.draft,
-		dayOffset: 63,
-		days: 1,
+		schedule: SeedEventSchedules.weekend,
+		weeks: 9,
 		place: "Pytlíkov, Hobitín",
 		description: "Po nečekané návštěvě je potřeba spravit dveře, nádobí a spíž.",
 		groups: ["T"],
@@ -411,8 +420,8 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Tábor v Roklince",
 		type: "tábor",
 		status: EventStates.public,
-		dayOffset: 120,
-		days: 14,
+		schedule: SeedEventSchedules.week,
+		weeks: 17,
 		place: "Roklinka",
 		description: "Čtrnáctidenní tábor u Elrondových. Kroniky, výpravy a zpěv do noci.",
 		groups: ["T", "KP"],
@@ -450,12 +459,12 @@ export const SeedEvents: SeedEvent[] = [
 		name: "Koupání v Dlouhém jezeře",
 		type: "bazén",
 		status: EventStates.public,
-		dayOffset: 28,
-		days: 1,
+		schedule: SeedEventSchedules.weekend,
+		weeks: 4,
 		place: "Dlouhé jezero",
 		description: "Odpoledne u vody pod Osamělou horou. Plave se, potápí se a nikdo si nebere luk.",
 		groups: ["N"],
-		leaders: ["Šmak"],
+		leaders: [],
 		attendees: ["Azog", "Bolg", "Glum"],
 		timeFrom: "14:00",
 		timeTill: "18:00",
@@ -471,5 +480,37 @@ export const SeedAlbums: SeedAlbum[] = [
 		status: AlbumStatus.public,
 		dayOffset: -180,
 		days: 3,
+		photos: [
+			{
+				name: "bilbo-pred-pytlikovem.jpg",
+				title: "Bilbo před Pytlíkovem",
+				caption: "Ráno odjezdu. Kapesník zůstal doma.",
+				tags: ["výprava", "Hobitín"],
+			},
+			{
+				name: "gandalf-na-ceste.jpg",
+				title: "Gandalf na cestě",
+				caption: "Vedoucí nechodí pozdě ani brzy, přichází přesně tehdy, kdy zamýšlí.",
+				tags: ["výprava", "vedoucí"],
+			},
+			{
+				name: "thorin-pod-osamelou-horou.jpg",
+				title: "Thorin pod Osamělou horou",
+				caption: "Nástup před výpravou k Osamělé hoře.",
+				tags: ["výprava", "hory"],
+			},
+			{
+				name: "glum-u-jezera.jpg",
+				title: "Glum u jezera",
+				caption: "U jezera pod Mlžnými horami. Prsten se toho dne nenašel.",
+				tags: ["voda", "jezero"],
+			},
+			{
+				name: "bilbo-na-ceste.jpg",
+				title: "Bilbo na cestě",
+				caption: "Tam a zase zpátky, tentokrát s bagáží.",
+				tags: ["výprava"],
+			},
+		],
 	},
 ];

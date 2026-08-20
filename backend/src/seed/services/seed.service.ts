@@ -1,7 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { DateTime } from "luxon";
 import { HashService } from "src/auth/services/hash.service";
+import { Config } from "src/config";
 import { Album } from "src/models/albums/entities/album.entity";
+import { Photo } from "src/models/albums/entities/photo.entity";
+import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";
 import { Event } from "src/models/events/entities/event.entity";
@@ -10,12 +13,27 @@ import { MemberContact } from "src/models/members/entities/member-contact.entity
 import { Member } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
 import { EntityManager } from "typeorm";
-import { SeedAlbums, SeedEvents, SeedGroups, SeedMembers, SeedUsers } from "../data/seed-data";
+import { readFile } from "fs/promises";
+import { extname, resolve } from "path";
+import {
+	SeedAlbums,
+	SeedEventSchedules,
+	SeedEvents,
+	SeedGroups,
+	SeedMembers,
+	SeedPhoto,
+	SeedUsers,
+} from "../data/seed-data";
 
 export const DatabaseEnvironments = {
 	test: "test",
 	production: "production",
 } as const;
+
+export const SeedPhotosDir = "assets/seed/photos";
+
+export const SeedPasswordMissing =
+	"Refusing to seed test data: set the SEED_PASSWORD environment variable to the password every seeded user gets.";
 
 export function markTestDatabaseSql(database: string) {
 	return `ALTER DATABASE "${database}" SET app.environment = '${DatabaseEnvironments.test}';`;
@@ -28,6 +46,8 @@ export class SeedService {
 	constructor(
 		private entityManager: EntityManager,
 		private hashService: HashService,
+		private config: Config,
+		private photosFiles: PhotosFilesService,
 	) {}
 
 	async getDatabaseEnvironment(): Promise<{ database: string; environment: string | null }> {
@@ -38,7 +58,35 @@ export class SeedService {
 		return { database: row.database, environment: row.environment || null };
 	}
 
+	async assertTestDatabase(action: string, force = false) {
+		const { database, environment } = await this.getDatabaseEnvironment();
+
+		if (environment === DatabaseEnvironments.production) {
+			throw new Error(
+				`Refusing to ${action}: database '${database}' is marked as production (app.environment = '${DatabaseEnvironments.production}').`,
+			);
+		}
+
+		if (environment !== DatabaseEnvironments.test && !force) {
+			throw new Error(
+				[
+					`Refusing to ${action}: database '${database}' is not marked as a test database (app.environment = ${environment ?? "unset"}).`,
+					`Either mark it as a test database:`,
+					`    ${markTestDatabaseSql(database)}`,
+					`or run the command with --force to do it anyway.`,
+				].join("\n"),
+			);
+		}
+
+		return database;
+	}
+
 	async seedOnStart() {
+		if (!this.config.seed.password) {
+			this.logger.error(`${SeedPasswordMissing} Skipping the seed.`);
+			return;
+		}
+
 		const { database, environment } = await this.getDatabaseEnvironment();
 
 		if (environment !== DatabaseEnvironments.test) {
@@ -52,12 +100,16 @@ export class SeedService {
 	}
 
 	async seed() {
+		const password = this.config.seed.password;
+
+		if (!password) throw new Error(SeedPasswordMissing);
+
 		this.logger.log("Seeding test data...");
 
 		await this.entityManager.transaction(async (t) => {
 			const groupIds = await this.seedGroups(t);
 			const memberIds = await this.seedMembers(t, groupIds);
-			const userIds = await this.seedUsers(t, memberIds);
+			const userIds = await this.seedUsers(t, memberIds, password);
 			await this.seedEvents(t, groupIds, memberIds);
 			await this.seedAlbums(t, userIds);
 		});
@@ -134,8 +186,9 @@ export class SeedService {
 		return memberIds;
 	}
 
-	private async seedUsers(t: EntityManager, memberIds: Map<string, number>) {
+	private async seedUsers(t: EntityManager, memberIds: Map<string, number>, password: string) {
 		const userIds = new Map<string, number>();
+		const passwordHash = await this.hashService.generateHash(password);
 
 		for (const seedUser of SeedUsers) {
 			const login = seedUser.login.toLocaleLowerCase();
@@ -146,7 +199,7 @@ export class SeedService {
 				...(existing ? { id: existing.id } : {}),
 				login,
 				email: seedUser.email,
-				password: await this.hashService.generateHash(seedUser.password),
+				password: passwordHash,
 				roles: seedUser.roles,
 				memberId: memberIds.get(seedUser.member) ?? null,
 				loginCode: null,
@@ -154,9 +207,11 @@ export class SeedService {
 			});
 
 			userIds.set(seedUser.login, user.id);
-
-			this.logger.warn(` - Test user '${seedUser.login}' has password '${seedUser.password}'.`);
 		}
+
+		this.logger.warn(
+			` - Seeded ${userIds.size} test users (${[...userIds.keys()].join(", ")}), all with the password from SEED_PASSWORD.`,
+		);
 
 		return userIds;
 	}
@@ -165,8 +220,7 @@ export class SeedService {
 		const today = DateTime.local().startOf("day");
 
 		for (const seedEvent of SeedEvents) {
-			const dateFrom = today.plus({ days: seedEvent.dayOffset });
-			const dateTill = dateFrom.plus({ days: seedEvent.days - 1 });
+			const { dateFrom, dateTill } = this.eventDates(today, seedEvent.schedule, seedEvent.weeks);
 
 			const existing = await t.findOne(Event, { where: { name: seedEvent.name } });
 
@@ -225,6 +279,19 @@ export class SeedService {
 		this.logger.debug(` - Seeded ${SeedEvents.length} events.`);
 	}
 
+	private eventDates(today: DateTime, schedule: SeedEventSchedules, weeks: number) {
+		const saturday = today.plus({ days: (6 - today.weekday + 7) % 7 || 7 }).plus({ weeks });
+
+		switch (schedule) {
+			case SeedEventSchedules.longWeekend:
+				return { dateFrom: saturday.minus({ days: 1 }), dateTill: saturday.plus({ days: 1 }) };
+			case SeedEventSchedules.week:
+				return { dateFrom: saturday, dateTill: saturday.plus({ days: 7 }) };
+			default:
+				return { dateFrom: saturday, dateTill: saturday.plus({ days: 1 }) };
+		}
+	}
+
 	private async seedAlbums(t: EntityManager, userIds: Map<string, number>) {
 		const today = DateTime.local().startOf("day");
 		const createdById = userIds.values().next().value ?? null;
@@ -235,7 +302,7 @@ export class SeedService {
 
 			const existing = await t.findOne(Album, { where: { name: seedAlbum.name } });
 
-			await t.save(Album, {
+			const album = await t.save(Album, {
 				...(existing ? { id: existing.id } : {}),
 				name: seedAlbum.name,
 				description: seedAlbum.description,
@@ -246,8 +313,46 @@ export class SeedService {
 				eventId: null,
 				createdById,
 			});
+
+			await this.seedPhotos(t, album.id, seedAlbum.photos, dateFrom, createdById);
 		}
 
-		this.logger.debug(` - Seeded ${SeedAlbums.length} albums (without photos, those need image files).`);
+		this.logger.debug(
+			` - Seeded ${SeedAlbums.length} albums with ${SeedAlbums.reduce((count, album) => count + album.photos.length, 0)} photos.`,
+		);
+	}
+
+	private async seedPhotos(
+		t: EntityManager,
+		albumId: number,
+		seedPhotos: SeedPhoto[],
+		dateFrom: DateTime,
+		uploadedById: number | null,
+	) {
+		for (const [index, seedPhoto] of seedPhotos.entries()) {
+			const buffer = await readFile(resolve(SeedPhotosDir, seedPhoto.name));
+			const metadata = await this.photosFiles.extractMetadata(buffer);
+
+			const existing = await t.findOne(Photo, { where: { albumId, name: seedPhoto.name } });
+
+			const photo = await t.save(Photo, {
+				...(existing ? { id: existing.id } : {}),
+				albumId,
+				name: seedPhoto.name,
+				title: seedPhoto.title,
+				caption: seedPhoto.caption,
+				tags: seedPhoto.tags,
+				order: index,
+				timestamp: dateFrom.plus({ days: index }).toJSDate(),
+				width: metadata.width,
+				height: metadata.height,
+				bg: metadata.bg,
+				uploadedById,
+				srcAlbumId: null,
+				srcId: null,
+			});
+
+			await this.photosFiles.savePhotoFiles(albumId, photo.id, extname(seedPhoto.name), buffer);
+		}
 	}
 }
