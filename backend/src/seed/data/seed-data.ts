@@ -335,11 +335,28 @@ export const SeedMembers: SeedMember[] = [
 
 export const SeedEvents: SeedEvent[] = [
 	{
+		name: "Neočekávaný dýchánek",
+		type: "schůzka",
+		status: EventStates.pending,
+		schedule: SeedEventSchedules.weekend,
+		weeks: 1,
+		place: "Pytlíkov, Hobitín",
+		description:
+			"První schůzka trpaslíků, Gandalfa a Bilba u Bilba doma. Nikdo ji neohlásil, nikdo ji nevede a spíž to zřejmě neustojí.",
+		groups: ["T", "KP"],
+		leaders: [],
+		attendees: ["Bilbo", "Gandalf (správce programu)", "Thorin", "Balin", "Fíli", "Kíli", "Bombur", "Ori"],
+		timeFrom: "18:00",
+		timeTill: "pozdě do noci",
+		meetingPlaceStart: "u kulatých dveří s runou",
+		itemList: "kapesník, nádobí na mytí, píseň na dobrou noc",
+	},
+	{
 		name: "Schůzka U Zeleného draka",
 		type: "schůzka",
 		status: EventStates.public,
 		schedule: SeedEventSchedules.weekend,
-		weeks: 1,
+		weeks: 2,
 		place: "Hobitín, hostinec U Zeleného draka",
 		description: "Pravidelná schůzka oddílu. Hraje se, plánuje se výprava a povídá se o dracích.",
 		groups: ["T"],
