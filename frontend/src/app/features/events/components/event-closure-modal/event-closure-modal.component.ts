@@ -37,7 +37,7 @@ export class EventClosureModalComponent extends InputModalComponent<{ accounting
 			{
 				key: "album",
 				label: albumPublished ? "Galerie zveřejněna" : "Galerie nezveřejněna",
-				helper: albumPublished ? undefined : "založ a zveřejni galerii fotek",
+				helper: albumPublished ? "Nepovinné." : "Nepovinné — založ a zveřejni galerii fotek.",
 				done: albumPublished,
 			},
 		];
