@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipStates } from "src/app/core/config/membership-states";
+import { getAge, getAgeLabel } from "src/helpers/age";
 import { SDK } from "src/sdk";
 
 @Pipe({
@@ -10,7 +10,8 @@ import { SDK } from "src/sdk";
 export class MemberPipe implements PipeTransform {
 	transform(
 		member: SDK.MemberResponse | undefined,
-		property: "nickname" | "age" | "membership" | "role" | "initials",
+		property: "nickname" | "age" | "ageLabel" | "membership" | "role" | "initials",
+		referenceDate?: string | null,
 	) {
 		if (!member) return "";
 
@@ -18,14 +19,13 @@ export class MemberPipe implements PipeTransform {
 			case "nickname":
 				return member.nickname || member.firstName || member.lastName || "?";
 
-			case "age":
-				let birthday: DateTime | string | null | undefined = member.birthday;
+			case "age": {
+				const age = getAge(member.birthday, referenceDate);
+				return age === null ? "" : String(age);
+			}
 
-				if (!birthday) return "";
-
-				if (typeof birthday === "string") birthday = DateTime.fromISO(birthday);
-
-				return String(Math.floor(birthday.diffNow("years").years * -1));
+			case "ageLabel":
+				return getAgeLabel(member.birthday, referenceDate);
 
 			case "membership":
 				return MembershipStates[member.membership].title;
