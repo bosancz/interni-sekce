@@ -41,16 +41,14 @@
 				</bo-card-content>
 			</bo-card>
 
-			<div class="d-none d-lg-block">
-				<bo-card class="mb-3">
-					<bo-card-header>
-						<bo-card-title>Věk účastníků</bo-card-title>
-					</bo-card-header>
-					<bo-card-content>
-						<event-age-histogram [event]="event()!" [members]="allMembers()"></event-age-histogram>
-					</bo-card-content>
-				</bo-card>
-			</div>
+			<bo-card class="mb-3">
+				<bo-card-header>
+					<bo-card-title>Věk účastníků</bo-card-title>
+				</bo-card-header>
+				<bo-card-content>
+					<event-age-histogram [event]="event()!" [members]="allMembers()"></event-age-histogram>
+				</bo-card-content>
+			</bo-card>
 		}
 
 		@if (event() && event()!._links.getEventAnnouncement.allowed && attendeesCount()) {
