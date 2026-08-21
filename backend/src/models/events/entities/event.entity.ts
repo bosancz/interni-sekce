@@ -21,6 +21,7 @@ import { EventExpense } from "./event-expense.entity";
 export enum EventStates {
 	"draft" = "draft",
 	"pending" = "pending",
+	"rejected" = "rejected",
 	"public" = "public",
 	"cancelled" = "cancelled",
 }
@@ -85,6 +86,8 @@ export class Event {
 	@Column({ type: "boolean", nullable: false, default: false }) leadersEvent!: boolean;
 	@Column({ type: "boolean", nullable: false, default: false }) hasRegistration!: boolean;
 	@Column({ type: "varchar", nullable: true }) report!: string | null;
+	@Column({ type: "timestamp with time zone", nullable: true }) announcementSentAt!: Date | string | null;
+	@Column({ type: "timestamp with time zone", nullable: true }) accountingSentAt!: Date | string | null;
 
 	@Column({ type: "varchar", nullable: true }) srcId!: string | null;
 

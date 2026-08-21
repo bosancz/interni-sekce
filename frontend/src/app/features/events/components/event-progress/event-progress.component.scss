@@ -1,0 +1,153 @@
+:host {
+	display: block;
+	padding: 0 10px 14px 10px;
+}
+
+.steps {
+	display: flex;
+	align-items: flex-start;
+	max-width: 760px;
+	margin: 0 auto;
+}
+
+.step {
+	flex: 1 1 0;
+	min-width: 0;
+	padding: 0.35rem 0 0.3rem;
+
+	&.clickable {
+		cursor: pointer;
+
+		&:hover,
+		&:focus-visible {
+			.label > span {
+				background: var(--bo-blue-tint);
+			}
+
+			.dot::after {
+				transform: translate(-50%, -50%) scale(1);
+			}
+		}
+
+		&:focus-visible {
+			outline: none;
+		}
+	}
+}
+
+.rail {
+	display: flex;
+	align-items: center;
+}
+
+.track {
+	flex: 1 1 0;
+	height: 2px;
+	background: var(--bo-line);
+	transition: background-color 300ms;
+
+	&.filled {
+		background: var(--accent);
+	}
+
+	&.edge {
+		background: transparent;
+	}
+}
+
+.dot {
+	position: relative;
+	flex: 0 0 auto;
+	width: 0.75rem;
+	height: 0.75rem;
+	border-radius: 50%;
+	background: var(--bo-line);
+	transition:
+		background-color 300ms,
+		box-shadow 300ms;
+
+	&.filled {
+		background: var(--accent);
+	}
+
+	&::after {
+		content: "";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 0.3rem;
+		height: 0.3rem;
+		border-radius: 50%;
+		background: var(--bo-ink);
+		transform: translate(-50%, -50%) scale(0);
+		transition: transform 150ms;
+	}
+}
+
+.label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.25em;
+	margin-top: 0.4rem;
+	text-align: center;
+	font-size: 0.75rem;
+	line-height: 1.2;
+	color: var(--bo-muted);
+
+	> span {
+		padding: 0.15rem 0.45rem;
+		border-radius: var(--bo-radius-btn);
+		transition: background-color 150ms;
+	}
+}
+
+.note-button {
+	display: inline-flex;
+	align-items: center;
+	flex-shrink: 0;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+
+	ion-icon {
+		font-size: 1.15em;
+	}
+}
+
+.step.active {
+	.dot {
+		box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+	}
+
+	.label {
+		font-weight: 700;
+		color: var(--accent);
+	}
+}
+
+::ng-deep .event-progress-note-popover {
+	--width: min(20rem, calc(100vw - 2rem));
+
+	.popover-panel {
+		padding: 12px 14px;
+		font-size: 0.85rem;
+
+		h4 {
+			margin: 0 0 0.4rem;
+			color: var(--bo-heading);
+			font-size: 0.95rem;
+		}
+
+		p {
+			margin: 0 0 0.5rem;
+			white-space: pre-wrap;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+	}
+}

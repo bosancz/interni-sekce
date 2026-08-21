@@ -118,7 +118,8 @@ export const EventSubmitPermission = new Permission({
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
 
-	applicable: ({ doc }) => doc.status === EventStates.draft && !doc.deletedAt && !!doc.leaders?.length,
+	applicable: ({ doc }) =>
+		[EventStates.draft, EventStates.rejected].includes(doc.status) && !doc.deletedAt && !!doc.leaders?.length,
 });
 
 export const EventPublishPermission = new Permission({
@@ -128,7 +129,9 @@ export const EventPublishPermission = new Permission({
 		program: true,
 	},
 	applicable: ({ doc }) =>
-		[EventStates.pending, EventStates.draft].includes(doc.status) && !!doc.leaders?.length && !doc.deletedAt,
+		[EventStates.pending, EventStates.draft, EventStates.rejected].includes(doc.status) &&
+		!!doc.leaders?.length &&
+		!doc.deletedAt,
 });
 
 export const EventRejectPermission = new Permission({
@@ -219,6 +222,38 @@ export const EventAnnouncementGetPermission = new Permission({
 		revizor: true,
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
+});
+
+export const EventAnnouncementSentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => doc.status === EventStates.public && !doc.announcementSentAt && !doc.deletedAt,
+});
+
+export const EventAnnouncementUnsentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => !!doc.announcementSentAt && !doc.deletedAt,
+});
+
+export const EventAccountingSentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => doc.status === EventStates.public && !doc.accountingSentAt && !doc.deletedAt,
+});
+
+export const EventAccountingUnsentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => !!doc.accountingSentAt && !doc.deletedAt,
 });
 
 export const EventAccountingGetPermission = new Permission({

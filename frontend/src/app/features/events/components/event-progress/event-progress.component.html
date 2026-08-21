@@ -1,0 +1,44 @@
+<div class="steps" [style.--accent]="accentColor()">
+	@for (step of steps(); track step.key) {
+		<div
+			class="step"
+			[class.active]="step.active"
+			[class.clickable]="step.clickable"
+			[attr.role]="step.clickable ? 'button' : null"
+			[attr.tabindex]="step.clickable ? 0 : null"
+			(click)="openStep(step)"
+			(keydown.enter)="openStep(step)"
+			(keydown.space)="openStep(step)"
+		>
+			<div class="rail">
+				<span class="track" [class.filled]="step.reached" [class.edge]="$first"></span>
+				<span class="dot" [class.filled]="step.reached"></span>
+				<span class="track" [class.filled]="step.reached && !step.active" [class.edge]="$last"></span>
+			</div>
+			<div class="label">
+				<span>{{ step.label }}</span>
+				@if (step.note) {
+					<button type="button" class="note-button" aria-label="Poznámka ke stavu" (click)="openNote($event)">
+						<ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+					</button>
+				}
+			</div>
+		</div>
+	}
+</div>
+
+<ion-popover
+	cssClass="event-progress-note-popover"
+	[isOpen]="noteOpen()"
+	[event]="noteEvent()"
+	(didDismiss)="noteOpen.set(false)"
+>
+	<ng-template>
+		<ion-content>
+			<div class="popover-panel">
+				<h4>{{ noteLabel() }}</h4>
+				<p>{{ statusNote() }}</p>
+			</div>
+		</ion-content>
+	</ng-template>
+</ion-popover>

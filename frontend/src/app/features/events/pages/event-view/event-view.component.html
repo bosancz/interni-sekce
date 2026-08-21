@@ -10,6 +10,8 @@
 	</div>
 </bo-page-header>
 
+<bo-event-progress [event]="event()" (change)="reloadEvent()"></bo-event-progress>
+
 <bo-page-content [padding]="true">
 	<div class="d-lg-flex gap-4">
 		<div class="d-none d-lg-block" style="min-width: 200px">

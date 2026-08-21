@@ -237,7 +237,6 @@ export class MongoImportService {
 			if (!mongoEvent.dateFrom || !mongoEvent.dateTill) continue;
 
 			let status = <any>mongoEvent.status ?? EventStates.draft;
-			if (status === "rejected") status = EventStates.pending;
 
 			const groups = await Promise.all(
 				mongoEvent.groups
@@ -249,6 +248,8 @@ export class MongoImportService {
 				name: mongoEvent.name,
 				status,
 				statusNote: mongoEvent.statusNote ?? null,
+				announcementSentAt: null,
+				accountingSentAt: null,
 				place: mongoEvent.place ?? null,
 				placeGeometry: null,
 				description: mongoEvent.description ?? null,
