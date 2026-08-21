@@ -10,7 +10,8 @@ import { SDK } from "src/sdk";
 export class MemberPipe implements PipeTransform {
 	transform(
 		member: SDK.MemberResponse | undefined,
-		property: "nickname" | "age" | "membership" | "role" | "initials",
+		property: "nickname" | "age" | "ageLabel" | "membership" | "role" | "initials",
+		referenceDate?: string | DateTime | null,
 	) {
 		if (!member) return "";
 
@@ -18,14 +19,16 @@ export class MemberPipe implements PipeTransform {
 			case "nickname":
 				return member.nickname || member.firstName || member.lastName || "?";
 
-			case "age":
-				let birthday: DateTime | string | null | undefined = member.birthday;
+			case "age": {
+				const age = this.getAge(member, referenceDate);
+				return age === null ? "" : String(age);
+			}
 
-				if (!birthday) return "";
-
-				if (typeof birthday === "string") birthday = DateTime.fromISO(birthday);
-
-				return String(Math.floor(birthday.diffNow("years").years * -1));
+			case "ageLabel": {
+				const age = this.getAge(member, referenceDate);
+				if (age === null) return "";
+				return `${age} ${age === 1 ? "rok" : age < 5 ? "roky" : "let"}`;
+			}
 
 			case "membership":
 				return MembershipStates[member.membership].title;
@@ -36,6 +39,18 @@ export class MemberPipe implements PipeTransform {
 			case "initials":
 				return member ? this.getInitials(member) : "";
 		}
+	}
+
+	getAge(member: SDK.MemberResponse, referenceDate?: string | DateTime | null): number | null {
+		if (!member.birthday) return null;
+
+		const birthday = DateTime.fromISO(member.birthday);
+		if (!birthday.isValid) return null;
+
+		const reference = typeof referenceDate === "string" ? DateTime.fromISO(referenceDate) : referenceDate;
+		const to = reference?.isValid ? reference : DateTime.now();
+
+		return Math.floor(to.diff(birthday, "years").years);
 	}
 
 	getInitials(member: SDK.MemberResponse): string {
