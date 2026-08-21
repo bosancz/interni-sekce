@@ -42,11 +42,10 @@ export class HomeCardNoleaderEventsComponent implements OnInit {
 	}
 
 	async loadNoLeaderEvents() {
-		// the API returns events ordered by dateFrom descending, so ask for all upcoming
-		// noleader events and sort them nearest-first here
-		const events = await this.api.EventsApi.listEvents({ noleader: true, dateFrom: DateTime.now().toISODate() }).then(
-			(res) => res.data,
-		);
+		const events = await this.api.EventsApi.listEvents({
+			noleader: true,
+			dateFrom: DateTime.now().toISODate(),
+		}).then((res) => res.data);
 		events.sort((a, b) => a.dateFrom.localeCompare(b.dateFrom));
 		this.hasMore.set(events.length > 5);
 		this.events.set(events.slice(0, 5));

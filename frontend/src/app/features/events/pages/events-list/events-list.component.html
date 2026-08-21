@@ -2,13 +2,10 @@
 
 <bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
 	@if (isDesktop()) {
-		<!-- Desktop: filter pills laid out inline in the toolbar. -->
 		<div toolbar-actions slot="end" class="events-filter-actions">
 			<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
 		</div>
 	} @else {
-		<!-- Mobile: the same filter pills collected inside the filter modal, plus a sort control
-		     (the sortable table headers aren't available in the mobile list view). -->
 		<div class="events-filter-modal">
 			<ion-list lines="full">
 				<ion-item-divider>Filtry</ion-item-divider>
@@ -27,7 +24,6 @@
 	}
 </bo-filter>
 
-<!-- Filter pills, shared between the desktop toolbar and the mobile filter modal. -->
 <ng-template #filterPills>
 	<bo-filter-pill
 		label="Datum"
@@ -53,8 +49,6 @@
 </ng-template>
 
 <bo-page-content>
-	<!-- The preview is dismissed on `pointerdown` rather than `click`, so it is already gone by
-	     the time the row's routerLink starts navigating away. -->
 	<div
 		class="events-table-wrapper"
 		(mouseover)="onRowHover($event)"
@@ -62,53 +56,67 @@
 		(mouseleave)="clearHover()"
 		(pointerdown)="clearHover()"
 	>
-	<admin-table
-		[class]="'events-table'"
-		[rows]="events()"
-		[rowLink]="rowLink"
-		[rowId]="rowId"
-		[actions]="eventActions"
-		[actionsHeader]="rowActionsHeader"
-		[sort]="sortColumn()"
-		[order]="sortOrder()"
-		(sortChange)="onSortChange($event)"
-	>
-		<admin-table-column header="Název" sort="name" [primary]="true" cellClass="events-name-column" headerClass="align-middle events-name-column">
-			<ng-container *adminCell="let event">{{ event.name }}</ng-container>
-		</admin-table-column>
+		<admin-table
+			[class]="'events-table'"
+			[rows]="events()"
+			[rowLink]="rowLink"
+			[rowId]="rowId"
+			[actions]="eventActions"
+			[actionsHeader]="rowActionsHeader"
+			[sort]="sortColumn()"
+			[order]="sortOrder()"
+			(sortChange)="onSortChange($event)"
+		>
+			<admin-table-column
+				header="Název"
+				sort="name"
+				[primary]="true"
+				cellClass="events-name-column"
+				headerClass="align-middle events-name-column"
+			>
+				<ng-container *adminCell="let event">{{ event.name }}</ng-container>
+			</admin-table-column>
 
-		<admin-table-column header="Datum" sort="dateFrom" cellClass="events-date-column" headerClass="events-date-column align-middle">
-			<ng-container *adminCell="let event">
-				{{ event.dateFrom | date: "EEEEEE d. M." }} -
-				{{ event.dateTill | date: "EEEEEE d. M. y" }}
-			</ng-container>
-		</admin-table-column>
+			<admin-table-column
+				header="Datum"
+				sort="dateFrom"
+				cellClass="events-date-column"
+				headerClass="events-date-column align-middle"
+			>
+				<ng-container *adminCell="let event">
+					{{ event.dateFrom | date: "EEEEEE d. M." }} -
+					{{ event.dateTill | date: "EEEEEE d. M. y" }}
+				</ng-container>
+			</admin-table-column>
 
-		<!-- Stav is placed here so it keeps its column position in the desktop table, but is
-		     flagged [right] so it renders on the right of each item in the mobile list. -->
-		<admin-table-column header="Stav" sort="status" [right]="true" cellClass="events-status-column" headerClass="events-status-column">
-			<ng-container *adminCell="let event">
-				<bo-event-status-badge [event]="event"></bo-event-status-badge>
-			</ng-container>
-		</admin-table-column>
+			<admin-table-column
+				header="Stav"
+				sort="status"
+				[right]="true"
+				cellClass="events-status-column"
+				headerClass="events-status-column"
+			>
+				<ng-container *adminCell="let event">
+					<bo-event-status-badge [event]="event"></bo-event-status-badge>
+				</ng-container>
+			</admin-table-column>
 
-		<admin-table-column header="Vedoucí" cellClass="events-leaders-column" headerClass="events-leaders-column">
-			<ng-container *adminCell="let event">
-				@for (leader of event.leaders; track leader.id; let isLast = $last) {
-					<span class="leader"
-						><span
-							class="leader-avatar"
-							[style.background-color]="leader.groupId | group: 'color'"
-							>{{ (leader | member: "nickname")?.charAt(0) }}</span
-						>{{ leader | member: "nickname" }}{{ isLast ? "" : "," }}</span
-					>
-				}
-				@if (!event.leaders?.length) {
-					<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
-				}
-			</ng-container>
-		</admin-table-column>
-	</admin-table>
+			<admin-table-column header="Vedoucí" cellClass="events-leaders-column" headerClass="events-leaders-column">
+				<ng-container *adminCell="let event">
+					@for (leader of event.leaders; track leader.id; let isLast = $last) {
+						<span class="leader"
+							><span class="leader-avatar" [style.background-color]="leader.groupId | group: 'color'">{{
+								(leader | member: "nickname")?.charAt(0)
+							}}</span
+							>{{ leader | member: "nickname" }}{{ isLast ? "" : "," }}</span
+						>
+					}
+					@if (!event.leaders?.length) {
+						<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
+					}
+				</ng-container>
+			</admin-table-column>
+		</admin-table>
 	</div>
 
 	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
@@ -116,9 +124,6 @@
 	</ion-infinite-scroll>
 </bo-page-content>
 
-<!-- Relocated to <body> on init so its `position: fixed` resolves against the viewport
-     rather than the `contain`-ing ion-content it's declared in (which would offset it by
-     the sidebar width). Positioned next to the cursor from onRowHover. -->
 <div
 	#previewOverlay
 	class="event-hover-preview"

@@ -17,14 +17,7 @@ import { CardComponent } from "src/app/shared/components/card/card.component";
 	selector: "bo-account-app",
 	templateUrl: "./account-app.component.html",
 	styleUrls: ["./account-app.component.scss"],
-	imports: [
-		IonButton,
-		IonIcon,
-		CardComponent,
-		CardHeaderComponent,
-		CardTitleComponent,
-		CardContentComponent,
-	],
+	imports: [IonButton, IonIcon, CardComponent, CardHeaderComponent, CardTitleComponent, CardContentComponent],
 })
 export class AccountAppComponent {
 	readonly canInstall = this.pwaInstall.canInstall;

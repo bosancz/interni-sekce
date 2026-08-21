@@ -5,7 +5,6 @@ export interface EventExpenseTypesMetadata {
 	color: string;
 }
 
-// brand-aligned category colours (chips + expense chart)
 export const EventExpenseTypes: { [id in SDK.EventExpenseTypesEnum]: EventExpenseTypesMetadata } = {
 	food: { title: "Potraviny", color: "#799f3d" },
 	transport: { title: "Doprava", color: "#e28f26" },

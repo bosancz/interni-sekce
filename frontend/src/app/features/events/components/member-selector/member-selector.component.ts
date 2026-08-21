@@ -34,7 +34,6 @@ export class MemberSelectorComponent implements OnInit, ControlValueAccessor, Af
 	placeholder = input<string | undefined>();
 	multiple = input<boolean | string>(false);
 
-	/* ControlValueAccessor */
 	onChange?: (value: MemberSelectorType) => void;
 	onTouched?: () => void;
 
@@ -122,7 +121,6 @@ export class MemberSelectorComponent implements OnInit, ControlValueAccessor, Af
 		this.emitIonStyle();
 	}
 
-	/* ControlValueAccessor */
 	writeValue(obj?: MemberSelectorType): void {
 		this.updateValue(obj || null);
 	}

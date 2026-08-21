@@ -1,10 +1,8 @@
 import { formatDate } from "@angular/common";
 import { Pipe, PipeTransform } from "@angular/core";
-// (value: string | number | Date, format: string, locale: string, timezone?: string): string
 
 @Pipe({
 	name: "dateRange",
-	
 })
 export class DateRangePipe implements PipeTransform {
 	transform(

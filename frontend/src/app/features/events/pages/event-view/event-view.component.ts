@@ -152,7 +152,7 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 		}
 
 		const statusNote = window.prompt("Poznámka ke změně stavu (můžeš nechat prázdné):");
-		if (statusNote === null) return; // user clicked on cancel
+		if (statusNote === null) return;
 
 		await this.api.EventsApi[action](event.id, { statusNote });
 
@@ -180,8 +180,6 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 	}
 
 	private setActions(event: SDK.EventResponseWithLinks) {
-		// actions that do not apply to the event in its current state are hidden,
-		// actions that apply but the user is not permitted to use are shown disabled
 		this.actions = [
 			{
 				text: "Vést akci",

@@ -17,7 +17,6 @@ import { EventAgeHistogramComponent } from "../event-age-histogram/event-age-his
 import { EventAttendeesListComponent } from "../event-attendees-list/event-attendees-list.component";
 import { EventBirthdayListComponent } from "../event-birthday-list/event-birthday-list.component";
 
-// vedoucím akce může být jen instruktor nebo vedoucí, ne dítě
 const LEADER_ROLES: SDK.MemberRolesEnum[] = [SDK.MemberRolesEnum.Instruktor, SDK.MemberRolesEnum.Vedouci];
 
 @UntilDestroy()
@@ -156,7 +155,6 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		}
 
 		try {
-			// optimistic update
 			this.attendees.set(this.attendees()?.filter((item) => item.memberId !== attendee.memberId));
 
 			await this.api.EventsApi.deleteEventAttendee(event.id, attendee.memberId);
@@ -167,7 +165,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			this.change.emit();
 		} catch (e) {
 			this.toastService.toast("Nepodařilo se odebrat účastníka.");
-			this.attendees.set([...(this.attendees() ?? []), attendee]); // rollback
+			this.attendees.set([...(this.attendees() ?? []), attendee]);
 		}
 	}
 

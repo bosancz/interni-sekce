@@ -22,11 +22,6 @@ export class UsersRepository {
 		});
 	}
 
-	/**
-	 * Minimal load used to authorize every request: the user id, linked member id
-	 * and the member's active state, plus roles. Fetched by primary key, so it
-	 * stays cheap enough to run on each request.
-	 */
 	async getSessionUser(id: number) {
 		return this.repository.findOne({
 			where: { id },

@@ -3,6 +3,7 @@ import { Component, ElementRef, input, output, signal, ViewChild } from "@angula
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
 import { AlertController, IonButton, IonIcon } from "@ionic/angular/standalone";
+import { AlertButton } from "@ionic/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { cloudUploadOutline, colorWandOutline, eyeOutline, trashOutline } from "ionicons/icons";
@@ -83,12 +84,12 @@ export class EventRegistrationComponent {
 		const event = this.event();
 		if (!event) return;
 
-		// The generated form is built around the leader's contacts — say so up front instead of
-		// walking the user through the color/template/note dialogs only to fail on the request.
 		if (!event.leaders?.length) {
 			this.toastService.toast("Akce nemá vedoucího, přihlášku nelze vygenerovat.");
 			return;
 		}
+
+		if (event.hasRegistration && !(await this.confirmOverwriteRegistration(event))) return;
 
 		let templates: SDK.RegistrationTemplateResponse[];
 		try {
@@ -120,6 +121,33 @@ export class EventRegistrationComponent {
 		await colorAlert.present();
 	}
 
+	private async confirmOverwriteRegistration(event: SDK.EventResponseWithLinks): Promise<boolean> {
+		return new Promise<boolean>(async (resolve) => {
+			const buttons: AlertButton[] = [{ text: "Zrušit", role: "cancel", handler: () => resolve(false) }];
+
+			if (event._links?.getEventRegistration?.allowed) {
+				buttons.push({
+					text: "Zobrazit existující přihlášku",
+					handler: () => {
+						void this.getRegistration();
+						resolve(false);
+					},
+				});
+			}
+
+			buttons.push({ text: "Ano, nahradit přihlášku", role: "destructive", handler: () => resolve(true) });
+
+			const alert = await this.alertController.create({
+				header: "Přepsat přihlášku?",
+				message: "Generováním přihlášky přepíšeš tu, co je u akce nahraná. Opravdu to chceš udělat?",
+				buttons,
+			});
+
+			alert.onDidDismiss().then(() => resolve(false));
+			await alert.present();
+		});
+	}
+
 	private async selectTemplate(eventId: number, color: string, templates: SDK.RegistrationTemplateResponse[]) {
 		const templateAlert = await this.alertController.create({
 			header: "Vyber šablonu přihlášky",
@@ -140,7 +168,6 @@ export class EventRegistrationComponent {
 		await templateAlert.present();
 	}
 
-	/** Third step: optional ad-hoc note (e.g. payment instructions). Not stored — only injected into this generation. */
 	private async promptNoteAndGenerate(eventId: number, template: string, color: string) {
 		const note = await this.modalService.componentModal(MarkdownEditorModalComponent, {
 			header: "Doplňující informace (nepovinné)",
@@ -196,8 +223,6 @@ export class EventRegistrationComponent {
 
 		document.body.removeChild(link);
 
-		// Opening a blob URL in a new tab is async — revoking right away kills it before
-		// the tab fetches it (Chrome then shows ERR_FILE_NOT_FOUND), so release it later.
 		setTimeout(() => window.URL.revokeObjectURL(fileUrl), 60_000);
 	}
 }

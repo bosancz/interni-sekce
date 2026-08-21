@@ -6,12 +6,6 @@ import { AcPermission } from "../schema/ac-route-acl";
 import { MetadataConstant } from "../schema/metadata-constant";
 import { RouteStoreItem } from "../schema/route-store-item";
 
-/**
- * Adds field (default: `_links`) to response documents based on Access Control permissions
- * @param entity Access Control List entity
- * @param options Options for field generation
- * @returns
- */
 export function AcLinks(acl: AcPermission<any>): MethodDecorator {
 	return (target: any, method: string | symbol, descriptor: PropertyDescriptor) => {
 		const controller = target;
@@ -41,8 +35,6 @@ export function AcLinks(acl: AcPermission<any>): MethodDecorator {
 			SetMetadata(MetadataConstant.route, routeStoreItem),
 			UseInterceptors(AcLinksInterceptor),
 		];
-
-		// if (acl.options.contains) decorators.push(ApiResponse({ type: WithLinks(acl.options.contains) }));
 
 		return applyDecorators(...decorators)(target, method, descriptor);
 	};

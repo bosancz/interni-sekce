@@ -67,7 +67,6 @@ export class PhotoListComponent implements OnInit {
 			return;
 		}
 
-		// complete(array) finishes the drag animation and returns the array in the new order
 		const reordered = ev.detail.complete([...photos]) as SDK.PhotoResponseWithLinks[];
 		this.reorderChange.emit(reordered);
 	}
@@ -80,7 +79,6 @@ export class PhotoListComponent implements OnInit {
 		event.preventDefault();
 		event.stopPropagation();
 
-		// a long-press already handled this interaction; swallow the trailing click
 		if (this.longPressFired) {
 			this.longPressFired = false;
 			return;
@@ -104,7 +102,6 @@ export class PhotoListComponent implements OnInit {
 	}
 
 	onPointerMove(event: PointerEvent) {
-		// tolerate finger jitter, but cancel when the gesture becomes a scroll or drag
 		if (!this.longPressStart) return;
 		const dx = event.clientX - this.longPressStart.x;
 		const dy = event.clientY - this.longPressStart.y;
@@ -125,12 +122,9 @@ export class PhotoListComponent implements OnInit {
 		const selected = [...this.selected()];
 		const i = selected.indexOf(photo);
 
-		// if checked, but not in list, add photo
 		if (isChecked && i === -1) {
 			selected.push(photo);
-		}
-		// if not checked, but in list, remove photo
-		else if (!isChecked && i !== -1) {
+		} else if (!isChecked && i !== -1) {
 			selected.splice(i, 1);
 		}
 

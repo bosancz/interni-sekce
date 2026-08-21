@@ -36,7 +36,6 @@ export class FilesService implements OnApplicationBootstrap {
 		return readdir(path);
 	}
 
-	/** Remove a directory. Fails if it is not empty. */
 	async deleteDir(path: string) {
 		return rmdir(path);
 	}

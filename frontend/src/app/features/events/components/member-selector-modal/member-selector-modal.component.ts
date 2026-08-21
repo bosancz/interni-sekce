@@ -44,7 +44,6 @@ export class MemberSelectorModalComponent
 {
 	members = input<SDK.MemberResponse[]>([]);
 	keepOpenAfterSelect = false;
-	// omezení výběru na dané role, ostatní členy modal vůbec nenabídne
 	roles?: SDK.MemberRolesEnum[];
 	onSelect?: (member: SDK.MemberResponse) => void;
 
@@ -95,12 +94,11 @@ export class MemberSelectorModalComponent
 
 	searchMembers(searchString?: string) {
 		if (!searchString) {
-			//NOTE: Chceme zobrazit vsechny cleny, pokud neni nic zadano do vyhledavani stejne tak nikdo nebude vyhledavat ne?
 			this.filteredMembers.set(this._members);
 			return;
 		}
 
-		searchString = searchString.replace(/[.*+?^${}()|[\]\\]/gi, "\\$&"); // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
+		searchString = searchString.replace(/[.*+?^${}()|[\]\\]/gi, "\\$&");
 		const re = new RegExp("(^| )" + searchString, "i");
 
 		this.filteredMembers.set(this._members.filter((member, i) => re.test(this.membersIndex[i])));

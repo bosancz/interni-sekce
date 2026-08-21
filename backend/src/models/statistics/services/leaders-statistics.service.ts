@@ -5,17 +5,10 @@ import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Member, MemberRoles } from "src/models/members/entities/member.entity";
 import { ObjectLiteral, Repository, SelectQueryBuilder } from "typeorm";
 
-/**
- * Age at which an attendee stops counting as a child. Members have no role history — only their
- * current `role` — so whether somebody was a child *at the time of the event* is derived from their
- * birthday and the event's start date instead.
- */
 const CHILD_AGE_LIMIT = 15;
 
-/** Both dates are inclusive, so a same-day event lasts one day. Expects the event alias to be `e`. */
 const EVENT_DAYS = "(e.date_till - e.date_from + 1)";
 
-/** Only events that already happened are ranked — future ones have nothing to show yet. */
 const FINISHED_EVENT_CONDITION = "e.deletedAt IS NULL AND e.status != :cancelledStatus AND e.dateTill <= CURRENT_DATE";
 
 const EVENT_YEAR_CONDITION = "EXTRACT(YEAR FROM e.dateFrom) = :year";
@@ -26,9 +19,7 @@ export interface TopLeader {
 	firstName: string | null;
 	lastName: string | null;
 	groupId: number;
-	/** "děťodny" — children × days, summed over the events the member led. The ranking score. */
 	childDays: number;
-	/** How many events that score comes from. */
 	eventsCount: number;
 	rank: number;
 }
@@ -40,15 +31,12 @@ export interface LeaderEvent {
 	name: string;
 	dateFrom: string;
 	dateTill: string;
-	/** Dětodny this single event was worth — children on it × how many days it lasted. */
 	childDays: number;
 }
 
 export interface LeadersStatistics {
 	year: number;
-	/** děťodny of *every* event of the year, each event counted once — not once per leader. */
 	childDays: number;
-	/** Oldest and newest year with a finished event, so the year switcher knows where to stop. */
 	firstYear: number;
 	lastYear: number;
 	leaders: TopLeader[];
@@ -63,10 +51,6 @@ export class LeadersStatisticsService {
 		@InjectRepository(Member) private membersRepository: Repository<Member>,
 	) {}
 
-	/**
-	 * Everything the dashboard's leaders block shows for one year: the year's total děťodny, the
-	 * best leaders in it, and the range of years that have any data at all.
-	 */
 	async getLeadersStatistics(year: number, limit: number, memberId?: number): Promise<LeadersStatistics> {
 		const [childDays, ranking, { firstYear, lastYear }] = await Promise.all([
 			this.getChildDays(year),
@@ -102,12 +86,6 @@ export class LeadersStatisticsService {
 		};
 	}
 
-	/**
-	 * Ranks leaders by the "děťodny" they collected in the given year: every event is worth its
-	 * number of child attendees multiplied by how many days it lasted, so a two-day event with three
-	 * children scores 6. Every leader of an event gets the full score, so co-leaders each score the
-	 * whole event.
-	 */
 	private async getRankedLeaders(year: number): Promise<TopLeader[]> {
 		const childDays = `SUM(ec.children_count * ${EVENT_DAYS})`;
 
@@ -129,15 +107,12 @@ export class LeadersStatisticsService {
 			.andWhere(EVENT_YEAR_CONDITION, { year })
 			.groupBy("m.id")
 			.orderBy(childDays, "DESC")
-			// fewest events for the same score first, then alphabetically — so the order never
-			// depends on how the database happens to return the rows
 			.addOrderBy("COUNT(*)", "ASC")
 			.addOrderBy("m.nickname", "ASC")
 			.getRawMany<
 				Omit<TopLeader, "childDays" | "eventsCount" | "rank"> & { childDays: string; eventsCount: string }
 			>();
 
-		// SUM()/COUNT() come back as strings (Postgres bigint/numeric)
 		return this.setRanks(
 			rows.map((row) => ({
 				...row,
@@ -161,10 +136,6 @@ export class LeadersStatisticsService {
 		});
 	}
 
-	/**
-	 * The events behind one leader's score — the same events the ranking counted for them, each with
-	 * the dětodny it contributed. Ordered by the biggest contribution first.
-	 */
 	async getLeaderEvents(memberId: number, year: number): Promise<LeaderEvent[]> {
 		const childDays = `ec.children_count * ${EVENT_DAYS}`;
 
@@ -172,7 +143,6 @@ export class LeadersStatisticsService {
 			.createQueryBuilder("la")
 			.select("e.id", "eventId")
 			.addSelect("e.name", "name")
-			// dates are rendered by the frontend, so hand them over as plain ISO strings
 			.addSelect("TO_CHAR(e.date_from, 'YYYY-MM-DD')", "dateFrom")
 			.addSelect("TO_CHAR(e.date_till, 'YYYY-MM-DD')", "dateTill")
 			.addSelect(childDays, "childDays")
@@ -190,10 +160,6 @@ export class LeadersStatisticsService {
 		return rows.map((row) => ({ ...row, childDays: Number(row.childDays) }));
 	}
 
-	/**
-	 * Dětodny of the whole year — summed over *events*, so an event with two leaders still counts
-	 * once, unlike the per-leader scores of the ranking.
-	 */
 	private async getChildDays(year: number): Promise<number> {
 		const row = await this.eventsRepository
 			.createQueryBuilder("e")
@@ -206,7 +172,6 @@ export class LeadersStatisticsService {
 		return Number(row?.childDays ?? 0);
 	}
 
-	/** Years that have a finished event, falling back to the current year on an empty database. */
 	private async getYearRange(): Promise<{ firstYear: number; lastYear: number }> {
 		const row = await this.eventsRepository
 			.createQueryBuilder("e")
@@ -223,11 +188,6 @@ export class LeadersStatisticsService {
 		};
 	}
 
-	/**
-	 * Children per event, counted once per event — the day multiplier is applied by the callers.
-	 * An attendee counts as a child when they were under {@link CHILD_AGE_LIMIT} on the day the
-	 * event started; members whose birthday is unknown fall back to their current role.
-	 */
 	private childrenPerEvent(qb: SelectQueryBuilder<ObjectLiteral>) {
 		return qb
 			.select("ca.event_id", "event_id")

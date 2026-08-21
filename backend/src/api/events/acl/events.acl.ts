@@ -22,7 +22,6 @@ export const EventsDeletedListPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: EventResponse,
 
-	// Anyone who can list events can also list deleted events (admin is always allowed implicitly).
 	allowed: {
 		vedouci: true,
 	},
@@ -94,7 +93,6 @@ export const EventRestorePermission = new Permission({
 export const EventDeletePermanentPermission = new Permission({
 	linkTo: EventResponse,
 	params: { eventId: "id" },
-	// Permanent deletion is irreversible and reserved for admins only.
 	allowed: {
 		admin: true,
 	},
@@ -192,8 +190,6 @@ export const EventRegistrationGeneratePermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
-	// The form prints the leader's name, phone and email — with no leader there is nothing to
-	// generate, and EventRegistrationService.assertGeneratable() would reject it anyway.
 	applicable: ({ doc }) => !!doc.attendees?.some((a) => a.type === "leader"),
 });
 

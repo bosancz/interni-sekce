@@ -77,7 +77,6 @@ export class AlbumsEditComponent {
 
 		const formValue = this.albumForm.value;
 
-		// the "event" control holds the selected event id (or null)
 		const albumData: SDK.AlbumUpdateBody = {
 			name: formValue.name,
 			description: formValue.description,
@@ -87,7 +86,6 @@ export class AlbumsEditComponent {
 			eventId: formValue.event ?? null,
 		};
 
-		// prevent switched date order
 		if (albumData.dateFrom && albumData.dateTill) {
 			const dates = [albumData.dateFrom, albumData.dateTill];
 			dates.sort();

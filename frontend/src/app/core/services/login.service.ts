@@ -72,17 +72,12 @@ export class LoginService {
 
 	async loginGoogle() {
 		try {
-			// get google token
 			const googleToken = await this.googleService.signIn();
 
-			// validate token with the server
 			await this.api.AccountApi.loginUsingGoogle({ token: googleToken });
 
-			// load user
 			await this.userService.loadUser();
 		} catch (err) {
-			// Keep the real cause visible in the console — the UI only shows a generic
-			// message, which previously made Google login failures impossible to diagnose.
 			this.logger.error("Google login failed", err);
 			throw new LoginError("googleFailed", err);
 		}

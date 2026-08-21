@@ -16,19 +16,13 @@
 
 			<bo-item label="Termín" [loading]="!event()">
 				<p>
-					{{
-						[event()?.dateFrom, event()?.dateTill]
-							| dateRange
-					}}
+					{{ [event()?.dateFrom, event()?.dateTill] | dateRange }}
 				</p>
 				@if (canEdit()) {
 					<bo-edit-button-date-range
 						slot="end"
 						label="Datum od - do"
-						[value]="[
-							event()?.dateFrom,
-							event()?.dateTill,
-						]"
+						[value]="[event()?.dateFrom, event()?.dateTill]"
 						(update)="update.emit({ dateFrom: $event[0], dateTill: $event[1] })"
 					/>
 				}
@@ -134,23 +128,6 @@
 		</ion-list>
 
 		<!-- TODO: ten label bych dal mimo ten edit button, ale stejně to chci trochu předělat, aby se třeba na mobilu ten markdown editova na celou obrazovku a na PC třeba i inline -->
-		<!-- <bo-edit-button-markdown
-	label="Popis"
-	[disabled]="!event()?._links?.updateEvent?.allowed"
-	[value]="event()?.description"
-	(update)="update.emit({ description: $event })"
->
-</bo-edit-button-markdown> -->
-		<!-- 
-<bo-card>
-	<bo-card-content>
-		<bo-item lines="none" [loading]="!event()">
-			@if (event()) {
-				<p>{{ event()!.description }}</p>
-			}
-		</bo-item>
-	</bo-card-content>
-</bo-card> -->
 	</div>
 	<div class="col-12 col-xl-4 d-none d-lg-block">
 		<event-card [event]="event()" class="mb-3" [actions]="false"></event-card>

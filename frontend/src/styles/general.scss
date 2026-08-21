@@ -40,7 +40,6 @@ h3 {
 	color: var(--bo-heading);
 }
 
-/* brand pills — status / role / team chips */
 .bo-pill {
 	display: inline-block;
 	padding: 0.25em 0.9em;
@@ -79,7 +78,6 @@ h3 {
 	}
 }
 
-/* filter pill — ion-select styled as a rounded dropdown pill next to the search box */
 ion-select.filter-pill {
 	--highlight-color: transparent;
 	--padding-start: 14px;
@@ -104,7 +102,6 @@ ion-select.filter-pill {
 		font-weight: 700;
 	}
 
-	// active state: has a value selected
 	&.has-value {
 		background: var(--bo-blue-tint);
 		border-color: var(--bo-blue);
@@ -116,7 +113,6 @@ ion-select.filter-pill {
 	}
 }
 
-// the dropdown panel for filter pills
 .filter-pill-popover {
 	--width: 220px;
 
@@ -127,7 +123,6 @@ ion-select.filter-pill {
 	}
 }
 
-// filter pill popover — compact grid of toggleable chips (bo-filter-pill)
 .filter-pill-chips-popover {
 	--width: 264px;
 	--max-height: 60vh;
@@ -177,7 +172,6 @@ ion-select.filter-pill {
 			color: var(--bo-white);
 		}
 
-		// colored chips (e.g. event statuses): tinted while idle, solid in its own colour when selected
 		&.colored {
 			background: var(--chip-bg);
 			border-color: transparent;
@@ -193,7 +187,6 @@ ion-select.filter-pill {
 				color: var(--bo-white);
 			}
 
-			// single-colour chips (e.g. group colours): derive the idle tint from the one colour
 			&.single-color {
 				background: color-mix(in srgb, var(--chip-color) 14%, transparent);
 				color: var(--chip-color);
@@ -237,7 +230,6 @@ ion-select.filter-pill {
 	}
 }
 
-// the "eye" view-options popover (column toggles + inactive filter)
 .view-options-popover {
 	--width: 240px;
 
@@ -247,7 +239,6 @@ ion-select.filter-pill {
 		border: 1px solid var(--bo-line);
 	}
 
-	// "SLOUPCE" / "FILTR" section subheaders
 	ion-item-divider {
 		--background: var(--bo-white);
 		--color: var(--bo-muted);
@@ -263,7 +254,6 @@ ion-select.filter-pill {
 	}
 }
 
-/* brand empty state — dashed rounded container + icon + message + CTA */
 .bo-empty-state {
 	border: 1px dashed var(--bo-neutral-badge);
 	border-radius: var(--bo-radius-card);
@@ -287,7 +277,6 @@ ion-select.filter-pill {
 	}
 }
 
-/* card section title with a leading section icon (Můj účet & detail cards) */
 .bo-card-section-title {
 	display: flex;
 	align-items: center;
@@ -300,7 +289,6 @@ ion-select.filter-pill {
 	}
 }
 
-/* label / value rows inside a card, separated by a hairline divider */
 .bo-info-list {
 	display: flex;
 	flex-direction: column;
@@ -327,7 +315,6 @@ ion-select.filter-pill {
 	word-break: break-word;
 }
 
-/* value + inline edit button on the right side of a card row */
 .bo-info-action {
 	display: flex;
 	align-items: center;
@@ -351,7 +338,6 @@ ion-select.filter-pill {
 	user-select: text !important;
 }
 
-/* Barevný puntík u výběru barvy přihlášky (ion-alert s radio inputy) */
 .color-radio .alert-radio-label {
 	display: flex;
 	align-items: center;
