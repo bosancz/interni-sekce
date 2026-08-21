@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipStates } from "src/app/core/config/membership-states";
+import { getAge, getAgeLabel } from "src/helpers/age";
 import { SDK } from "src/sdk";
 
 @Pipe({
@@ -11,7 +11,7 @@ export class MemberPipe implements PipeTransform {
 	transform(
 		member: SDK.MemberResponse | undefined,
 		property: "nickname" | "age" | "ageLabel" | "membership" | "role" | "initials",
-		referenceDate?: string | DateTime | null,
+		referenceDate?: string | null,
 	) {
 		if (!member) return "";
 
@@ -20,15 +20,12 @@ export class MemberPipe implements PipeTransform {
 				return member.nickname || member.firstName || member.lastName || "?";
 
 			case "age": {
-				const age = this.getAge(member, referenceDate);
+				const age = getAge(member.birthday, referenceDate);
 				return age === null ? "" : String(age);
 			}
 
-			case "ageLabel": {
-				const age = this.getAge(member, referenceDate);
-				if (age === null) return "";
-				return `${age} ${age === 1 ? "rok" : age < 5 ? "roky" : "let"}`;
-			}
+			case "ageLabel":
+				return getAgeLabel(member.birthday, referenceDate);
 
 			case "membership":
 				return MembershipStates[member.membership].title;
@@ -39,18 +36,6 @@ export class MemberPipe implements PipeTransform {
 			case "initials":
 				return member ? this.getInitials(member) : "";
 		}
-	}
-
-	getAge(member: SDK.MemberResponse, referenceDate?: string | DateTime | null): number | null {
-		if (!member.birthday) return null;
-
-		const birthday = DateTime.fromISO(member.birthday);
-		if (!birthday.isValid) return null;
-
-		const reference = typeof referenceDate === "string" ? DateTime.fromISO(referenceDate) : referenceDate;
-		const to = reference?.isValid ? reference : DateTime.now();
-
-		return Math.floor(to.diff(birthday, "years").years);
 	}
 
 	getInitials(member: SDK.MemberResponse): string {
