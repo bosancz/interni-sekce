@@ -96,13 +96,11 @@ export class EventProgressComponent {
 		];
 	});
 
-	private closureRequiredItems = computed(() => this.closureItems().filter((item) => item.required));
+	closureCount = computed(() => this.closureItems().filter((item) => item.done).length);
 
-	closureCount = computed(() => this.closureRequiredItems().filter((item) => item.done).length);
+	closureTotal = computed(() => this.closureItems().length);
 
-	closureTotal = computed(() => this.closureRequiredItems().length);
-
-	closureDone = computed(() => this.closureCount() === this.closureTotal());
+	closureDone = computed(() => this.closureItems().every((item) => !item.required || item.done));
 
 	private statusIndex = computed(() => {
 		const status = this.status();
