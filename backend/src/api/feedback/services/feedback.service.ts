@@ -8,6 +8,7 @@ import { BugReportMailTemplate } from "../mail-templates/bug-report/bug-report.m
 
 export interface BugReport {
 	reporter: string;
+	reporterName: string;
 	reporterUrl: string;
 	url?: string;
 	description: string;
@@ -19,6 +20,7 @@ export interface BugReportIssue {
 }
 
 const ISSUE_TITLE_MAX_LENGTH = 80;
+const ISSUE_TITLE_MIN_TEXT_LENGTH = 20;
 
 @Injectable()
 export class FeedbackService {
@@ -34,11 +36,14 @@ export class FeedbackService {
 	async buildBugReport(userId: number, body: BugReportBody): Promise<BugReport> {
 		const user = await this.users.getUser(userId, { includeMember: true });
 
+		const reporterName = user?.member?.nickname || user?.login || "neznámý";
+
 		const reporter =
 			[user?.member?.nickname, user?.login && `(${user.login})`].filter(Boolean).join(" ") || "neznámý";
 
 		return {
 			reporter,
+			reporterName,
 			reporterUrl: `${this.config.app.baseUrl}/admin/uzivatele/${userId}`,
 			url: body.url,
 			description: body.description,
@@ -67,11 +72,11 @@ export class FeedbackService {
 	async fileBugReportIssue(report: BugReport): Promise<BugReportIssue | null> {
 		if (!this.github.isConfigured) return null;
 
-		const { title, body } = this.splitDescription(report.description);
+		const { title, body } = this.splitDescription(report.description, report.reporterName);
 
 		try {
 			const issue = await this.github.createIssue(this.config.github.bugReportRepo, {
-				title: title || "Nahlášená chyba",
+				title,
 				body: this.issueBody(report, body),
 				labels: [this.config.github.bugReportLabel],
 			});
@@ -97,20 +102,25 @@ export class FeedbackService {
 			.join("\n");
 	}
 
-	private splitDescription(description: string): { title: string; body: string } {
+	private splitDescription(description: string, reporterName: string): { title: string; body: string } {
 		const text = description.replace(/\r\n/g, "\n").trim();
 		const breakIndex = text.indexOf("\n");
 
 		const firstLine = (breakIndex === -1 ? text : text.slice(0, breakIndex)).trim();
 		const otherLines = breakIndex === -1 ? "" : text.slice(breakIndex + 1).trim();
 
-		if (firstLine.length <= ISSUE_TITLE_MAX_LENGTH) return { title: firstLine, body: otherLines };
+		const suffix = ` (${reporterName})`;
+		const maxLength = Math.max(ISSUE_TITLE_MIN_TEXT_LENGTH, ISSUE_TITLE_MAX_LENGTH - suffix.length);
 
-		const lastSpace = firstLine.lastIndexOf(" ", ISSUE_TITLE_MAX_LENGTH - 1);
-		const cut = lastSpace > ISSUE_TITLE_MAX_LENGTH / 2 ? lastSpace : ISSUE_TITLE_MAX_LENGTH - 1;
+		if (!firstLine) return { title: `Nahlášená chyba${suffix}`, body: otherLines };
+
+		if (firstLine.length <= maxLength) return { title: `${firstLine}${suffix}`, body: otherLines };
+
+		const lastSpace = firstLine.lastIndexOf(" ", maxLength - 1);
+		const cut = lastSpace > maxLength / 2 ? lastSpace : maxLength - 1;
 
 		return {
-			title: `${firstLine.slice(0, cut).trimEnd()}…`,
+			title: `${firstLine.slice(0, cut).trimEnd()}…${suffix}`,
 			body: [`…${firstLine.slice(cut).trim()}`, otherLines].filter(Boolean).join("\n"),
 		};
 	}
