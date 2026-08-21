@@ -1,1 +1,4 @@
 <span>{{ member().firstName }}&nbsp;{{ member().lastName }}</span>
+@if (member() | member: "ageLabel" : referenceDate(); as age) {
+	<span class="age">{{ age }}</span>
+}

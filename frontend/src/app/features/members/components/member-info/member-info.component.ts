@@ -14,6 +14,7 @@ import { EditButtonDateComponent } from "../../../../shared/components/edit-butt
 import { EditButtonNameComponent } from "../../../../shared/components/edit-button-name/edit-button-name.component";
 import { EditButtonTextComponent } from "../../../../shared/components/edit-button-text/edit-button-text.component";
 import { EditButtonComponent } from "../../../../shared/components/edit-button/edit-button.component";
+import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 
 @UntilDestroy()
 @Component({
@@ -32,6 +33,7 @@ import { EditButtonComponent } from "../../../../shared/components/edit-button/e
 		EditButtonNameComponent,
 		EditButtonTextComponent,
 		EditButtonDateComponent,
+		MemberPipe,
 	],
 })
 export class MemberInfoComponent {

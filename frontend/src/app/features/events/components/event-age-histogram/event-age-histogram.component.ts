@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, effect, input, signal } from "@angular/core";
-import { DateTime } from "luxon";
+import { getAge } from "src/helpers/age";
 import { SDK } from "src/sdk";
 
 @Component({
@@ -28,13 +28,10 @@ export class EventAgeHistogramComponent {
 
 	updateAges(event: SDK.EventResponseWithLinks): void {
 		const members = this.members();
-		const dateFrom = DateTime.fromISO(event.dateFrom).set({ hour: 0 });
 
-		const ages: number[] = [];
-		members.forEach((member) => {
-			if (!member.birthday) return;
-			ages.push(Math.floor(-1 * DateTime.fromISO(member.birthday).diff(dateFrom, "years").toObject().years!));
-		});
+		const ages = members
+			.map((member) => getAge(member.birthday, event.dateFrom))
+			.filter((age): age is number => age !== null);
 
 		if (!ages.length) {
 			this.histogram.set([]);

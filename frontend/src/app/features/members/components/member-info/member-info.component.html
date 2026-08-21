@@ -52,7 +52,12 @@
 					<span class="bo-info-label">Datum narození</span>
 					<span class="bo-info-action">
 						<span class="bo-info-value">{{
-							memberValue.birthday ? (memberValue.birthday | date: "d. M. y") : "-"
+							memberValue.birthday
+								? (memberValue.birthday | date: "d. M. y") +
+									" (" +
+									(memberValue | member: "ageLabel") +
+									")"
+								: "-"
 						}}</span>
 						<bo-edit-button-date
 							label="Datum narození"
