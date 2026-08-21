@@ -39,29 +39,14 @@ export class EventAgeHistogramComponent {
 			return;
 		}
 
-		const min = Math.min(...ages);
-		const max = Math.max(...ages);
+		const counts = new Map<number, number>();
+		for (const age of ages) counts.set(age, (counts.get(age) ?? 0) + 1);
 
-		const binSize = this.getBinSize(max - min + 1);
-
-		const first = Math.floor(min / binSize) * binSize;
-		const last = Math.floor(max / binSize) * binSize;
-
-		let countMax = 0;
-		const histogram: Array<{ label: string; count: number }> = [];
-		for (let from = first; from <= last; from += binSize) {
-			const to = from + binSize - 1;
-			const count = ages.filter((age) => age >= from && age <= to).length;
-			countMax = Math.max(countMax, count);
-			histogram.push({ label: binSize === 1 ? `${from}` : `${from}–${to}`, count });
-		}
+		const histogram = [...counts.entries()]
+			.sort(([a], [b]) => a - b)
+			.map(([age, count]) => ({ label: `${age}`, count }));
 
 		this.histogram.set(histogram);
-		this.countMax.set(countMax);
-	}
-
-	private getBinSize(range: number, targetBins = 10): number {
-		const niceSizes = [1, 2, 5, 10, 20, 25, 50];
-		return niceSizes.find((size) => range / size <= targetBins) ?? 100;
+		this.countMax.set(Math.max(...histogram.map((bar) => bar.count)));
 	}
 }
