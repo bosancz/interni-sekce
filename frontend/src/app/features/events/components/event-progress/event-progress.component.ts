@@ -147,7 +147,7 @@ export class EventProgressComponent {
 			...statusSteps,
 			{
 				key: "announcement" as const,
-				label: "Ohláška odeslána",
+				label: this.announcementSent() ? "Ohláška odeslána" : "Ohláška",
 				reached: this.activeIndex() >= STEPS.length,
 				active: this.activeIndex() === STEPS.length,
 				clickable: !!event && (this.announcementSent() || event._links.markAnnouncementSent.applicable),
