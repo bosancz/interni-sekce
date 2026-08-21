@@ -56,6 +56,11 @@
 - **Bootstrap is loaded globally, so `.modal-header`/`.modal-body`/`.modal-footer` are taken** — its rules centred the title. Component classes there are prefixed `bm-`.
 - **A modal's "can I edit this" flag must read the persisted value, not its own checkbox signal** — `unmarkX.allowed` is false while `xSentAt` is null, so deriving it from the checkbox disables the save button the instant the box is ticked.
 
+## People picker
+
+- **`MemberSelectorModalComponent` is the only picker on people.** Ionic assigns `componentProps` as plain properties, so `selectedIds` is a **`Signal<number[]>` owned by the caller** — that is what repaints the checked state when the underlying list changes. Without it the picker stays as it was: no checkboxes, "Zrušit", closes on the first pick (`users-view`).
+- With `keepOpenAfterSelect` the modal stays open, the button reads "Hotovo" (everything is already saved) and `onSelect`/`onDeselect` may be async — the row shows a spinner and ignores further clicks meanwhile. `event-attendees` both adds and removes through it; unchecking a leader there is deliberately not confirmed, unlike the list's delete button, because one more click puts them back.
+
 ## API routes & links
 
 - **Route parameters are named after their entity, never `id`** — `:eventId`, `:memberId`, `:albumId`, … The `Public API` controllers are the exception: their `:id` params are in URLs bosan.cz already calls. Renaming a param changes the SDK signature, so regenerate it.

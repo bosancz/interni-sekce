@@ -108,27 +108,41 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		const event = this.event();
 		if (!event) return;
 
-		const addSelectedMember = async (member?: SDK.MemberResponse | null) => {
-			if (!member?.id) return;
+		const selectedIds = computed(() =>
+			((type === "leader" ? this.leaders() : this.attendees()) ?? []).map((attendee) => attendee.memberId),
+		);
 
+		const addSelectedMember = async (member: SDK.MemberResponse) => {
 			try {
-				const existingAttendee = [...(this.attendees() ?? []), ...(this.leaders() ?? [])].find(
-					(item) => item.member && item.member.id === member.id,
-				);
-				if (existingAttendee && existingAttendee.type === type) {
-					this.toastService.toast("Účastník už v seznamu je.");
-					return;
-				}
-
-				if (existingAttendee) {
+				if (this.findAttendee(member.id)) {
 					await this.api.EventsApi.updateEventAttendee(event.id, member.id, { type });
 				} else {
 					await this.api.EventsApi.addEventAttendee(event.id, member.id, { type });
 				}
-
-				this.toastService.toast("Účastník přidán.");
 			} catch (e) {
-				this.toastService.toast("Nepodařilo se přidat účastníka." + e);
+				this.toastService.toast("Nepodařilo se přidat účastníka.", { color: "danger" });
+				return;
+			}
+
+			await this.loadAttendees(event);
+
+			this.change.emit();
+		};
+
+		const removeSelectedMember = async (member: SDK.MemberResponse) => {
+			const attendee = this.findAttendee(member.id);
+			if (!attendee) return;
+
+			if (!attendee._links.deleteEventAttendee.allowed) {
+				this.toastService.toast("Tohoto účastníka nemůžete odebrat.", { color: "danger" });
+				return;
+			}
+
+			try {
+				await this.api.EventsApi.deleteEventAttendee(event.id, member.id);
+			} catch (e) {
+				this.toastService.toast("Nepodařilo se odebrat účastníka.", { color: "danger" });
+				return;
 			}
 
 			await this.loadAttendees(event);
@@ -139,8 +153,16 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		await this.modalService.componentModal(MemberSelectorModalComponent, {
 			keepOpenAfterSelect: true,
 			roles: type === "leader" ? LEADER_ROLES : undefined,
-			onSelect: (member: SDK.MemberResponse) => void addSelectedMember(member),
+			selectedIds,
+			onSelect: addSelectedMember,
+			onDeselect: removeSelectedMember,
 		});
+	}
+
+	private findAttendee(memberId: number) {
+		return [...(this.attendees() ?? []), ...(this.leaders() ?? [])].find(
+			(attendee) => attendee.memberId === memberId,
+		);
 	}
 
 	async removeAttendee(attendee: SDK.EventAttendeeResponseWithLinks) {
