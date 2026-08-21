@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from "@angular/core";
 import { IonContent, IonIcon, IonPopover } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
+import { DateTime } from "luxon";
 import { chatbubbleEllipsesOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -107,13 +108,20 @@ export class EventProgressComponent {
 		return status ? STEPS.findIndex((step) => step.statuses.includes(status)) : -1;
 	});
 
+	private eventEnded = computed(() => {
+		const dateTill = this.event()?.dateTill;
+		if (!dateTill) return false;
+		return DateTime.fromISO(dateTill).endOf("day") < DateTime.now();
+	});
+
 	private activeIndex = computed(() => {
 		if (!this.announcementSent()) return this.statusIndex();
+		if (!this.eventEnded() && !this.closureDone()) return STEPS.length;
 		return STEPS.length + 1;
 	});
 
 	private closureColor = computed(() => {
-		if (!this.announcementSent()) return NEUTRAL_COLOR;
+		if (this.activeIndex() < STEPS.length + 1) return NEUTRAL_COLOR;
 		return this.closureDone() ? DONE_COLOR : IN_PROGRESS_COLOR;
 	});
 
