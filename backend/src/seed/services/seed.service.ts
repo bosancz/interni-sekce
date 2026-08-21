@@ -7,7 +7,7 @@ import { Photo } from "src/models/albums/entities/photo.entity";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";
-import { Event } from "src/models/events/entities/event.entity";
+import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member } from "src/models/members/entities/member.entity";
@@ -17,6 +17,7 @@ import { readFile } from "fs/promises";
 import { extname, resolve } from "path";
 import {
 	SeedAlbums,
+	SeedEvent,
 	SeedEventSchedules,
 	SeedEvents,
 	SeedGroups,
@@ -37,6 +38,19 @@ export const SeedPasswordMissing =
 
 export function markTestDatabaseSql(database: string) {
 	return `ALTER DATABASE "${database}" SET app.environment = '${DatabaseEnvironments.test}';`;
+}
+
+export function assertSeedEventStatuses(events: SeedEvent[]) {
+	const invalid = events.filter((event) => !event.leaders.length && event.status !== EventStates.draft);
+
+	if (invalid.length) {
+		throw new Error(
+			[
+				`Invalid seed events: an event without leaders can only be a '${EventStates.draft}', there is nobody to submit it for approval.`,
+				...invalid.map((event) => `    '${event.name}' has no leaders but the status '${event.status}'.`),
+			].join("\n"),
+		);
+	}
 }
 
 @Injectable()
@@ -219,6 +233,8 @@ export class SeedService {
 	private async seedEvents(t: EntityManager, groupIds: Map<string, number>, memberIds: Map<string, number>) {
 		const today = DateTime.local().startOf("day");
 
+		assertSeedEventStatuses(SeedEvents);
+
 		for (const seedEvent of SeedEvents) {
 			const { dateFrom, dateTill } = this.eventDates(today, seedEvent.schedule, seedEvent.weeks);
 
@@ -246,6 +262,8 @@ export class SeedService {
 				leadersEvent: seedEvent.leadersEvent ?? false,
 				hasRegistration: seedEvent.hasRegistration ?? false,
 				report: null,
+				announcementSentAt: null,
+				accountingSentAt: null,
 				srcId: null,
 				groups: seedEvent.groups.map((shortName) => {
 					const id = groupIds.get(shortName);
