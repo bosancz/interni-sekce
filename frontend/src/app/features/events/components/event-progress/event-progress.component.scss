@@ -54,7 +54,8 @@
 		background: var(--accent-in, var(--accent));
 	}
 
-	&.edge {
+	&.edge,
+	&.track-in.edge {
 		background: transparent;
 	}
 }
