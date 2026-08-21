@@ -1,7 +1,9 @@
-<div class="steps" [style.--accent]="accentColor()">
+<div class="steps">
 	@for (step of steps(); track step.key) {
 		<div
 			class="step"
+			[style.--accent]="step.accent"
+			[style.--accent-in]="step.accentIn"
 			[class.active]="step.active"
 			[class.clickable]="step.clickable"
 			[attr.role]="step.clickable ? 'button' : null"
@@ -11,7 +13,7 @@
 			(keydown.space)="openStep(step)"
 		>
 			<div class="rail">
-				<span class="track" [class.filled]="step.reached" [class.edge]="$first"></span>
+				<span class="track track-in" [class.filled]="step.reached" [class.edge]="$first"></span>
 				<span class="dot" [class.filled]="step.reached"></span>
 				<span class="track" [class.filled]="step.reached && !step.active" [class.edge]="$last"></span>
 			</div>

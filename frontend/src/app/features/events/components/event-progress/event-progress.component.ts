@@ -17,17 +17,20 @@ export interface EventProgressStep {
 	active: boolean;
 	clickable: boolean;
 	note: boolean;
+	accent: string;
+	accentIn: string;
 }
 
 export interface EventClosureItem {
 	key: string;
 	label: string;
 	done: boolean;
+	required: boolean;
 }
 
 const STEPS: { key: EventProgressStep["key"]; statuses: EventStatusID[] }[] = [
-	{ key: "draft", statuses: ["draft"] },
-	{ key: "pending", statuses: ["pending", "rejected"] },
+	{ key: "draft", statuses: ["draft", "rejected"] },
+	{ key: "pending", statuses: ["pending"] },
 	{ key: "public", statuses: ["public", "cancelled", "finalized"] },
 ];
 
@@ -44,7 +47,11 @@ const PAST_STEP_LABELS: Partial<Record<EventProgressStep["key"], string>> = {
 	pending: "Schválena",
 };
 
-const NO_LEADER_LABEL = "Bez vedoucího";
+const NEUTRAL_COLOR = "var(--bo-line)";
+
+const IN_PROGRESS_COLOR = EventStatuses.pending.color;
+
+const DONE_COLOR = EventStatuses.public.color;
 
 @Component({
 	selector: "bo-event-progress",
@@ -74,8 +81,8 @@ export class EventProgressComponent {
 		const album = event?.album;
 
 		return [
-			{ key: "accounting", label: "Vyúčtování odesláno", done: !!event?.accountingSentAt },
-			{ key: "report", label: "Report vyplněn", done: !!event?.report },
+			{ key: "accounting", label: "Vyúčtování odesláno", done: !!event?.accountingSentAt, required: true },
+			{ key: "report", label: "Report vyplněn", done: !!event?.report, required: true },
 			{
 				key: "album",
 				label: !album
@@ -84,11 +91,16 @@ export class EventProgressComponent {
 						? "Galerie zveřejněna"
 						: "Galerie nezveřejněná",
 				done: album?.status === "public",
+				required: false,
 			},
 		];
 	});
 
 	closureCount = computed(() => this.closureItems().filter((item) => item.done).length);
+
+	closureTotal = computed(() => this.closureItems().length);
+
+	closureDone = computed(() => this.closureItems().every((item) => !item.required || item.done));
 
 	private statusIndex = computed(() => {
 		const status = this.status();
@@ -97,7 +109,12 @@ export class EventProgressComponent {
 
 	private activeIndex = computed(() => {
 		if (!this.announcementSent()) return this.statusIndex();
-		return this.closureCount() === this.closureItems().length ? STEPS.length + 1 : STEPS.length;
+		return STEPS.length + 1;
+	});
+
+	private closureColor = computed(() => {
+		if (!this.announcementSent()) return NEUTRAL_COLOR;
+		return this.closureDone() ? DONE_COLOR : IN_PROGRESS_COLOR;
 	});
 
 	steps = computed<EventProgressStep[]>(() => {
@@ -105,20 +122,20 @@ export class EventProgressComponent {
 
 		const statusSteps = STEPS.map((step, index) => {
 			const status = index === this.statusIndex() ? this.status()! : step.statuses[0];
-			const noLeader = index === this.statusIndex() && status === "draft" && this.noLeader();
 			const past = this.statusIndex() > index;
 
 			return {
 				key: step.key,
-				label: noLeader ? NO_LEADER_LABEL : (past && PAST_STEP_LABELS[step.key]) || STEP_LABELS[status],
+				label: (past && PAST_STEP_LABELS[step.key]) || STEP_LABELS[status],
 				reached: this.activeIndex() >= index,
 				active: index === this.activeIndex(),
 				clickable: false,
 				note: index === this.statusIndex() && !!this.statusNote(),
+				accent: this.accentColor(),
 			};
 		});
 
-		return [
+		const allSteps = [
 			...statusSteps,
 			{
 				key: "announcement" as const,
@@ -127,25 +144,32 @@ export class EventProgressComponent {
 				active: this.activeIndex() === STEPS.length,
 				clickable: !!event && (this.announcementSent() || event._links.markAnnouncementSent.applicable),
 				note: false,
+				accent: this.accentColor(),
 			},
 			{
 				key: "closure" as const,
-				label: `Uzavření ${this.closureCount()}/${this.closureItems().length}`,
+				label: `Uzavřená ${this.closureCount()}/${this.closureTotal()}`,
 				reached: this.activeIndex() >= STEPS.length + 1,
 				active: this.activeIndex() === STEPS.length + 1,
 				clickable: !!event,
 				note: false,
+				accent: this.closureColor(),
 			},
 		];
+
+		return allSteps.map((step, index) => ({
+			...step,
+			accentIn: index > 0 ? allSteps[index - 1].accent : step.accent,
+		}));
 	});
 
 	noteLabel = computed(() => this.steps().find((step) => step.note)?.label);
 
 	accentColor = computed(() => {
 		const status = this.status();
-		if (!status) return "var(--bo-line)";
-		if (status === "draft" && this.noLeader()) return EventStatuses.cancelled.color;
-		return EventStatuses[status]?.color ?? "var(--bo-line)";
+		if (!status) return NEUTRAL_COLOR;
+		if (status === "draft") return this.noLeader() ? EventStatuses.draft.color : IN_PROGRESS_COLOR;
+		return EventStatuses[status]?.color ?? NEUTRAL_COLOR;
 	});
 
 	constructor(

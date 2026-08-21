@@ -50,6 +50,10 @@
 		background: var(--accent);
 	}
 
+	&.track-in.filled {
+		background: var(--accent-in, var(--accent));
+	}
+
 	&.edge {
 		background: transparent;
 	}
