@@ -18,7 +18,7 @@ export interface EventProgressStep {
 	clickable: boolean;
 	note: boolean;
 	accent: string;
-	accentIn: string;
+	accentOut: string;
 }
 
 export interface EventClosureItem {
@@ -159,7 +159,7 @@ export class EventProgressComponent {
 
 		return allSteps.map((step, index) => ({
 			...step,
-			accentIn: index > 0 ? allSteps[index - 1].accent : step.accent,
+			accentOut: allSteps[index + 1]?.accent ?? step.accent,
 		}));
 	});
 

@@ -3,7 +3,7 @@
 		<div
 			class="step"
 			[style.--accent]="step.accent"
-			[style.--accent-in]="step.accentIn"
+			[style.--accent-out]="step.accentOut"
 			[class.active]="step.active"
 			[class.clickable]="step.clickable"
 			[attr.role]="step.clickable ? 'button' : null"
@@ -15,7 +15,7 @@
 			<div class="rail">
 				<span class="track track-in" [class.filled]="step.reached" [class.edge]="$first"></span>
 				<span class="dot" [class.filled]="step.reached"></span>
-				<span class="track" [class.filled]="step.reached && !step.active" [class.edge]="$last"></span>
+				<span class="track track-out" [class.filled]="step.reached && !step.active" [class.edge]="$last"></span>
 			</div>
 			<div class="label">
 				<span>{{ step.label }}</span>
