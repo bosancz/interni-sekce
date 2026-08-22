@@ -2,7 +2,7 @@
 	<h4 slot="title">Náhled přihlášky</h4>
 
 	<div class="preview">
-		<iframe class="preview-frame" [src]="src" title="Náhled přihlášky"></iframe>
+		<img class="preview-image" [src]="image" alt="Náhled přihlášky" (click)="openInNewTab()" />
 	</div>
 
 	<p class="preview-note">Zkontroluj přihlášku — k akci se uloží až po publikování.</p>

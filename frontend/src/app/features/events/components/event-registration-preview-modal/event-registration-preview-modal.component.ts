@@ -1,5 +1,4 @@
 import { Component } from "@angular/core";
-import { SafeResourceUrl } from "@angular/platform-browser";
 import { IonIcon, ModalController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { openOutline } from "ionicons/icons";
@@ -13,7 +12,7 @@ import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/mod
 	imports: [IonIcon, ModalLayoutComponent],
 })
 export class EventRegistrationPreviewModalComponent extends InputModalComponent<boolean> {
-	src!: SafeResourceUrl;
+	image!: string;
 	url!: string;
 
 	constructor(modalController: ModalController) {

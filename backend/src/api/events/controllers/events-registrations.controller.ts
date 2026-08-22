@@ -13,12 +13,12 @@ import {
 	Query,
 	Req,
 	Res,
-	StreamableFile,
 	UploadedFile,
 	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiConsumes, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { RegistrationPreviewResponse } from "../dto/registration-preview.dto";
 import { RegistrationTemplateResponse } from "../dto/registration-template.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
@@ -38,7 +38,7 @@ import { FilesService } from "../../../models/files/services/files.service";
 import { Config } from "src/config";
 import * as path from "path";
 import { readFile, unlink } from "fs/promises";
-import { contentDispositionFilename, sanitizeFilename } from "../../../helpers/sanitizefilename";
+import { sanitizeFilename } from "../../../helpers/sanitizefilename";
 
 @Controller("events")
 @Authenticated()
@@ -174,7 +174,7 @@ export class EventsRegistrationsController {
 	@Post(":eventId/registration/generate")
 	@HttpCode(200)
 	@AcLinks(EventRegistrationGeneratePermission)
-	@ApiResponse({ status: 200 })
+	@ApiResponse({ status: 200, type: RegistrationPreviewResponse })
 	@ApiQuery({ name: "template", required: true })
 	@ApiQuery({ name: "color", required: true })
 	@ApiQuery({ name: "note", required: false })
@@ -183,9 +183,8 @@ export class EventsRegistrationsController {
 		@Param("eventId", ParseIntPipe) eventId: number,
 		@Query("template") template: string,
 		@Query("color") color: string,
-		@Res({ passthrough: true }) res: Response,
 		@Query("note") note?: string,
-	): Promise<StreamableFile> {
+	): Promise<RegistrationPreviewResponse> {
 		const event = await this.eventsRepository.findOne({
 			where: { id: eventId },
 			relations: { attendees: { member: { contacts: true } } },
@@ -194,13 +193,9 @@ export class EventsRegistrationsController {
 
 		EventRegistrationGeneratePermission.canOrThrow(req, event);
 
-		const data = await this.eventRegistrationService.generateRegistration(event, template, color, note);
+		const { pdf, image } = await this.eventRegistrationService.generateRegistration(event, template, color, note);
 
-		res.setHeader("Content-Type", "application/pdf");
-		res.setHeader("Content-Disposition", `inline; ${contentDispositionFilename(this.registrationFileName(event))}`);
-		res.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-
-		return new StreamableFile(data);
+		return { pdf: pdf.toString("base64"), image: image.toString("base64") };
 	}
 
 	@Delete(":eventId/registration")

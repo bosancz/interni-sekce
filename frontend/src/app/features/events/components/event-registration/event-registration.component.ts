@@ -155,14 +155,9 @@ export class EventRegistrationComponent {
 	private async generateWithTemplate(eventId: number, template: string, color: string, note?: string) {
 		this.generatingRegistration.set(true);
 
-		let registration: Blob;
+		let preview: SDK.RegistrationPreviewResponse;
 		try {
-			const response = (await this.api.EventsApi.generateEventRegistration(
-				eventId,
-				{ template, color, note },
-				{ responseType: "blob" },
-			)) as any;
-			registration = new Blob([response.data], { type: "application/pdf" });
+			preview = (await this.api.EventsApi.generateEventRegistration(eventId, { template, color, note })).data;
 		} catch (err: any) {
 			this.toastService.toast("Nastala chyba při generování: " + (await this.errorMessage(err)));
 			return;
@@ -170,16 +165,17 @@ export class EventRegistrationComponent {
 			this.generatingRegistration.set(false);
 		}
 
-		await this.previewRegistration(eventId, registration);
+		await this.previewRegistration(eventId, preview);
 	}
 
-	private async previewRegistration(eventId: number, registration: Blob) {
+	private async previewRegistration(eventId: number, preview: SDK.RegistrationPreviewResponse) {
+		const registration = this.base64ToBlob(preview.pdf, "application/pdf");
 		const url = window.URL.createObjectURL(registration);
 
 		try {
 			const publish = await this.modalService.componentModal(
 				EventRegistrationPreviewModalComponent,
-				{ src: this.sanitizer.bypassSecurityTrustResourceUrl(url + "#navpanes=0&view=Fit"), url },
+				{ image: `data:image/jpeg;base64,${preview.image}`, url },
 				{ cssClass: "dialog-preview", backdropDismiss: false },
 			);
 
@@ -187,6 +183,15 @@ export class EventRegistrationComponent {
 		} finally {
 			setTimeout(() => window.URL.revokeObjectURL(url), 60_000);
 		}
+	}
+
+	private base64ToBlob(base64: string, type: string): Blob {
+		const binary = atob(base64);
+		const bytes = new Uint8Array(binary.length);
+
+		for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+		return new Blob([bytes], { type });
 	}
 
 	private async publishRegistration(eventId: number, registration: Blob) {
