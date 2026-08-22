@@ -183,6 +183,7 @@ export const EventRegistrationEditPermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
+	applicable: ({ doc }) => !doc.hasRegistration,
 });
 
 export const EventRegistrationGeneratePermission = new Permission({
@@ -190,7 +191,7 @@ export const EventRegistrationGeneratePermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
-	applicable: ({ doc }) => !!doc.attendees?.some((a) => a.type === "leader"),
+	applicable: ({ doc }) => !doc.hasRegistration && !!doc.attendees?.some((a) => a.type === "leader"),
 });
 
 export const EventRegistrationDeletePermission = new Permission({

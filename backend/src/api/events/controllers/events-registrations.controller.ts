@@ -18,6 +18,7 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiConsumes, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { RegistrationPreviewResponse } from "../dto/registration-preview.dto";
 import { RegistrationTemplateResponse } from "../dto/registration-template.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
@@ -61,10 +62,13 @@ export class EventsRegistrationsController {
 		await this.fileService.deleteFilesByPrefix(registrationFolder, "registration");
 	}
 
+	private registrationFileName(event: Event): string {
+		return "prihlaska_" + sanitizeFilename(event.name) + ".pdf";
+	}
+
 	private async storeRegistration(event: Event, data: Buffer): Promise<void> {
 		const registrationFolder = this.registrationFolder(event);
-		const registrationFileName = "prihlaska_" + sanitizeFilename(event.name) + ".pdf";
-		const registrationPath = path.join(registrationFolder, registrationFileName);
+		const registrationPath = path.join(registrationFolder, this.registrationFileName(event));
 
 		try {
 			await this.fileService.ensureDir(registrationFolder);
@@ -168,9 +172,9 @@ export class EventsRegistrationsController {
 	}
 
 	@Post(":eventId/registration/generate")
-	@HttpCode(204)
+	@HttpCode(200)
 	@AcLinks(EventRegistrationGeneratePermission)
-	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 200, type: RegistrationPreviewResponse })
 	@ApiQuery({ name: "template", required: true })
 	@ApiQuery({ name: "color", required: true })
 	@ApiQuery({ name: "note", required: false })
@@ -180,7 +184,7 @@ export class EventsRegistrationsController {
 		@Query("template") template: string,
 		@Query("color") color: string,
 		@Query("note") note?: string,
-	): Promise<void> {
+	): Promise<RegistrationPreviewResponse> {
 		const event = await this.eventsRepository.findOne({
 			where: { id: eventId },
 			relations: { attendees: { member: { contacts: true } } },
@@ -189,8 +193,9 @@ export class EventsRegistrationsController {
 
 		EventRegistrationGeneratePermission.canOrThrow(req, event);
 
-		const data = await this.eventRegistrationService.generateRegistration(event, template, color, note);
-		await this.storeRegistration(event, data);
+		const { pdf, image } = await this.eventRegistrationService.generateRegistration(event, template, color, note);
+
+		return { pdf: pdf.toString("base64"), image: image.toString("base64") };
 	}
 
 	@Delete(":eventId/registration")

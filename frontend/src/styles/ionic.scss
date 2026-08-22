@@ -101,6 +101,11 @@ ion-modal.dialog.dialog-brand {
 	--max-width: calc(100vw - 32px);
 }
 
+ion-modal.dialog.dialog-preview {
+	--width: 1000px;
+	--max-width: calc(100vw - 32px);
+}
+
 ion-popover.transparent {
 	--background: transparent;
 }

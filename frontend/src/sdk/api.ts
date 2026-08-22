@@ -4297,6 +4297,25 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface RegistrationPreviewResponse
+     */
+    export interface RegistrationPreviewResponse {
+        /**
+         * PDF přihlášky v base64
+         * @type {string}
+         * @memberof RegistrationPreviewResponse
+         */
+        'pdf': string;
+        /**
+         * Náhled přihlášky jako JPEG v base64
+         * @type {string}
+         * @memberof RegistrationPreviewResponse
+         */
+        'image': string;
+    }
+    /**
+     * 
+     * @export
      * @interface RegistrationTemplateResponse
      */
     export interface RegistrationTemplateResponse {
@@ -6106,7 +6125,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<void>(axiosRequestConfig);
+            return this.axios.request<RegistrationPreviewResponse>(axiosRequestConfig);
         }
     
         /**

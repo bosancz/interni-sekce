@@ -14,6 +14,7 @@ import {
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
+import { contentDispositionFilename } from "src/helpers/sanitizefilename";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Event } from "src/models/events/entities/event.entity";
@@ -59,7 +60,7 @@ export class EventsAccountingController {
 
 		res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
-		res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+		res.setHeader("Content-Disposition", `attachment; ${contentDispositionFilename(fileName)}`);
 		res.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 
 		return new StreamableFile(fileBuffer);

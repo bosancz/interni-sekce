@@ -5,6 +5,7 @@ import { existsSync, readFileSync } from "fs";
 import { readdir, readFile, unlink, writeFile } from "fs/promises";
 import * as path from "path";
 import * as puppeteer from "puppeteer";
+import sharp = require("sharp");
 import { pathToFileURL } from "url";
 import { string2Date } from "src/helpers/string2date";
 import { Event } from "src/models/events/entities/event.entity";
@@ -28,6 +29,24 @@ export interface RegistrationTemplate {
 	id: string;
 	name: string;
 }
+
+export interface RenderedRegistration {
+	pdf: Buffer;
+	image: Buffer;
+}
+
+const MM_TO_PX = 96 / 25.4;
+const PREVIEW_PAGE = { width: 297, height: 210, margin: 11 };
+const PREVIEW_SCALE = 1.5;
+const PREVIEW_QUALITY = 82;
+
+const previewViewport = {
+	width: Math.round((PREVIEW_PAGE.width - 2 * PREVIEW_PAGE.margin) * MM_TO_PX),
+	height: Math.round((PREVIEW_PAGE.height - 2 * PREVIEW_PAGE.margin) * MM_TO_PX),
+	deviceScaleFactor: PREVIEW_SCALE,
+};
+
+const previewMargin = Math.round(PREVIEW_PAGE.margin * MM_TO_PX * PREVIEW_SCALE);
 
 @Injectable()
 export class EventRegistrationService {
@@ -56,7 +75,12 @@ export class EventRegistrationService {
 		return templates.sort((a, b) => a.name.localeCompare(b.name, "cs"));
 	}
 
-	async generateRegistration(event: Event, templateId: string, color: string, note?: string): Promise<Buffer> {
+	async generateRegistration(
+		event: Event,
+		templateId: string,
+		color: string,
+		note?: string,
+	): Promise<RenderedRegistration> {
 		this.assertGeneratable(event);
 		const accent = PALETTES[color];
 		if (!accent) throw new BadRequestException("Neplatná barva.");
@@ -67,7 +91,7 @@ export class EventRegistrationService {
 		const rendered = Handlebars.compile(source)(this.buildContext(event, accent, note));
 		const html = this.inlineIcons(this.injectAccent(rendered, accent), accent);
 
-		return this.htmlToPdf(html, templateDir);
+		return this.renderTemplate(html, templateDir, `Přihláška – ${event.name}`);
 	}
 
 	private injectAccent(html: string, accent: string): string {
@@ -120,7 +144,7 @@ export class EventRegistrationService {
 		return dir;
 	}
 
-	private async htmlToPdf(html: string, templateDir: string): Promise<Buffer> {
+	private async renderTemplate(html: string, templateDir: string, title: string): Promise<RenderedRegistration> {
 		const tempFile = path.join(templateDir, `.render-${Date.now()}-${Math.random().toString(36).slice(2)}.html`);
 		let browser: puppeteer.Browser | undefined;
 
@@ -133,18 +157,38 @@ export class EventRegistrationService {
 			});
 
 			const page = await browser.newPage();
+			await page.setViewport(previewViewport);
 			await page.goto(pathToFileURL(tempFile).href, { waitUntil: "networkidle0" });
+			await page.evaluate((documentTitle) => (document.title = documentTitle), title);
+
 			const pdf = await page.pdf({
 				format: "A4",
 				landscape: true,
 				printBackground: true,
 				preferCSSPageSize: true,
 			});
-			return Buffer.from(pdf);
+
+			await page.emulateMediaType("print");
+			const screenshot = await page.screenshot({ type: "png", fullPage: true });
+
+			return { pdf: Buffer.from(pdf), image: await this.pagePreview(Buffer.from(screenshot)) };
 		} finally {
 			await browser?.close().catch(() => undefined);
 			await unlink(tempFile).catch(() => undefined);
 		}
+	}
+
+	private async pagePreview(screenshot: Buffer): Promise<Buffer> {
+		return sharp(screenshot)
+			.extend({
+				top: previewMargin,
+				bottom: previewMargin,
+				left: previewMargin,
+				right: previewMargin,
+				background: "#ffffff",
+			})
+			.jpeg({ quality: PREVIEW_QUALITY })
+			.toBuffer();
 	}
 
 	private resolveChromiumPath(): string | undefined {

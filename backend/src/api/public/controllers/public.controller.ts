@@ -33,6 +33,7 @@ import {
 import { PublicGalleryQuery, PublicProgramQuery } from "../dto/public.dto";
 import { ProgramIcalService } from "../services/program-ical.service";
 import { PublicService } from "../services/public.service";
+import { contentDispositionFilename } from "src/helpers/sanitizefilename";
 
 @Controller("public")
 @AcController()
@@ -71,7 +72,7 @@ export class PublicController {
 		const { path, filename } = await this.publicService.getRegistrationFile(id);
 
 		res.setHeader("Content-Type", "application/pdf");
-		res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+		res.setHeader("Content-Disposition", `attachment; ${contentDispositionFilename(filename)}`);
 
 		await new Promise<void>((resolve, reject) => {
 			res.sendFile(path, (err) => (err ? reject(new InternalServerErrorException(err.message)) : resolve()));
@@ -115,7 +116,7 @@ export class PublicController {
 		});
 
 		res.setHeader("Content-Type", "application/zip");
-		res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+		res.setHeader("Content-Disposition", `attachment; ${contentDispositionFilename(filename)}`);
 
 		archive.pipe(res);
 		for (const file of files) archive.file(file.path, { name: file.name });
