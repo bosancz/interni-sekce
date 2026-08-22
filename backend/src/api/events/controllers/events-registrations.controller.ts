@@ -13,6 +13,7 @@ import {
 	Query,
 	Req,
 	Res,
+	StreamableFile,
 	UploadedFile,
 	UseInterceptors,
 } from "@nestjs/common";
@@ -61,10 +62,13 @@ export class EventsRegistrationsController {
 		await this.fileService.deleteFilesByPrefix(registrationFolder, "registration");
 	}
 
+	private registrationFileName(event: Event): string {
+		return "prihlaska_" + sanitizeFilename(event.name) + ".pdf";
+	}
+
 	private async storeRegistration(event: Event, data: Buffer): Promise<void> {
 		const registrationFolder = this.registrationFolder(event);
-		const registrationFileName = "prihlaska_" + sanitizeFilename(event.name) + ".pdf";
-		const registrationPath = path.join(registrationFolder, registrationFileName);
+		const registrationPath = path.join(registrationFolder, this.registrationFileName(event));
 
 		try {
 			await this.fileService.ensureDir(registrationFolder);
@@ -168,9 +172,9 @@ export class EventsRegistrationsController {
 	}
 
 	@Post(":eventId/registration/generate")
-	@HttpCode(204)
+	@HttpCode(200)
 	@AcLinks(EventRegistrationGeneratePermission)
-	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 200 })
 	@ApiQuery({ name: "template", required: true })
 	@ApiQuery({ name: "color", required: true })
 	@ApiQuery({ name: "note", required: false })
@@ -179,8 +183,9 @@ export class EventsRegistrationsController {
 		@Param("eventId", ParseIntPipe) eventId: number,
 		@Query("template") template: string,
 		@Query("color") color: string,
+		@Res({ passthrough: true }) res: Response,
 		@Query("note") note?: string,
-	): Promise<void> {
+	): Promise<StreamableFile> {
 		const event = await this.eventsRepository.findOne({
 			where: { id: eventId },
 			relations: { attendees: { member: { contacts: true } } },
@@ -190,7 +195,12 @@ export class EventsRegistrationsController {
 		EventRegistrationGeneratePermission.canOrThrow(req, event);
 
 		const data = await this.eventRegistrationService.generateRegistration(event, template, color, note);
-		await this.storeRegistration(event, data);
+
+		res.setHeader("Content-Type", "application/pdf");
+		res.setHeader("Content-Disposition", `inline; filename="${this.registrationFileName(event)}"`);
+		res.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+
+		return new StreamableFile(data);
 	}
 
 	@Delete(":eventId/registration")

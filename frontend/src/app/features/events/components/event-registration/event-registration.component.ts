@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, ElementRef, input, output, signal, ViewChild } from "@angular/core";
+import { Component, computed, ElementRef, input, output, signal, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
 import { AlertController, IonButton, IonIcon } from "@ionic/angular/standalone";
@@ -11,6 +11,7 @@ import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { MarkdownEditorModalComponent } from "src/app/shared/components/markdown-editor-modal/markdown-editor-modal.component";
+import { EventRegistrationPreviewModalComponent } from "../event-registration-preview-modal/event-registration-preview-modal.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
 import { EventsService } from "../../services/events.service";
@@ -27,6 +28,9 @@ export class EventRegistrationComponent {
 	update = output<void>();
 
 	uploadingRegistration = signal(false);
+	generatingRegistration = signal(false);
+
+	busy = computed(() => this.uploadingRegistration() || this.generatingRegistration());
 
 	private readonly colors = [
 		{ id: "black", name: "Černá" },
@@ -135,11 +139,11 @@ export class EventRegistrationComponent {
 				});
 			}
 
-			buttons.push({ text: "Ano, nahradit přihlášku", role: "destructive", handler: () => resolve(true) });
+			buttons.push({ text: "Ano, vygenerovat novou", handler: () => resolve(true) });
 
 			const alert = await this.alertController.create({
 				header: "Přepsat přihlášku?",
-				message: "Generováním přihlášky přepíšeš tu, co je u akce nahraná. Opravdu to chceš udělat?",
+				message: "Nová přihláška nahradí tu, co je u akce nahraná — až ji publikuješ.",
 				buttons,
 			});
 
@@ -179,18 +183,69 @@ export class EventRegistrationComponent {
 	}
 
 	private async generateWithTemplate(eventId: number, template: string, color: string, note?: string) {
+		this.generatingRegistration.set(true);
+
+		let registration: Blob;
+		try {
+			const response = (await this.api.EventsApi.generateEventRegistration(
+				eventId,
+				{ template, color, note },
+				{ responseType: "blob" },
+			)) as any;
+			registration = new Blob([response.data], { type: "application/pdf" });
+		} catch (err: any) {
+			this.toastService.toast("Nastala chyba při generování: " + (await this.errorMessage(err)));
+			return;
+		} finally {
+			this.generatingRegistration.set(false);
+		}
+
+		await this.previewRegistration(eventId, registration);
+	}
+
+	private async previewRegistration(eventId: number, registration: Blob) {
+		const url = window.URL.createObjectURL(registration);
+
+		try {
+			const publish = await this.modalService.componentModal(
+				EventRegistrationPreviewModalComponent,
+				{ src: this.sanitizer.bypassSecurityTrustResourceUrl(url + "#navpanes=0&view=Fit"), url },
+				{ cssClass: "dialog-preview", backdropDismiss: false },
+			);
+
+			if (publish) await this.publishRegistration(eventId, registration);
+		} finally {
+			setTimeout(() => window.URL.revokeObjectURL(url), 60_000);
+		}
+	}
+
+	private async publishRegistration(eventId: number, registration: Blob) {
 		this.uploadingRegistration.set(true);
 
 		try {
-			await this.api.EventsApi.generateEventRegistration(eventId, { template, color, note });
+			const file = new File([registration], "prihlaska.pdf", { type: "application/pdf" });
+			await this.api.EventsApi.saveEventRegistration(eventId, file);
 			this.update.emit();
-			this.toastService.toast("Přihláška vygenerována.");
+			this.toastService.toast("Přihláška publikována.");
 		} catch (err: any) {
-			const message = err?.response?.data?.message ?? err.message;
-			this.toastService.toast("Nastala chyba při generování: " + message);
+			this.toastService.toast("Nastala chyba při publikování: " + (await this.errorMessage(err)));
 		} finally {
 			this.uploadingRegistration.set(false);
 		}
+	}
+
+	private async errorMessage(err: any): Promise<string> {
+		const data = err?.response?.data;
+
+		if (data instanceof Blob) {
+			try {
+				return JSON.parse(await data.text()).message ?? err.message;
+			} catch {
+				return err.message;
+			}
+		}
+
+		return data?.message ?? err.message;
 	}
 
 	async deleteRegistration() {

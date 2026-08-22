@@ -1,7 +1,7 @@
 <div class="buttons">
 	@if (event()?._links?.saveEventRegistration?.applicable) {
 		<ion-button
-			[disabled]="!event()?._links?.saveEventRegistration?.allowed || uploadingRegistration()"
+			[disabled]="!event()?._links?.saveEventRegistration?.allowed || busy()"
 			fill="clear"
 			(click)="registrationInput.click()"
 		>
@@ -11,7 +11,7 @@
 	}
 	@if (event()?._links?.generateEventRegistration; as generateLink) {
 		<ion-button
-			[disabled]="!generateLink.allowed || !generateLink.applicable || uploadingRegistration()"
+			[disabled]="!generateLink.allowed || !generateLink.applicable || busy()"
 			[boTooltip]="generateLink.applicable ? 'Generovat' : 'Akce nemá vedoucího'"
 			fill="clear"
 			(click)="generateRegistration()"
@@ -22,7 +22,7 @@
 	}
 	@if (event()?._links?.getEventRegistration?.applicable) {
 		<ion-button
-			[disabled]="!event()?._links?.getEventRegistration?.allowed || uploadingRegistration()"
+			[disabled]="!event()?._links?.getEventRegistration?.allowed || busy()"
 			boTooltip="Zobrazit"
 			fill="clear"
 			(click)="getRegistration()"
@@ -33,7 +33,7 @@
 	}
 	@if (event()?._links?.deleteEventRegistration?.applicable) {
 		<ion-button
-			[disabled]="!event()?._links?.deleteEventRegistration?.allowed || uploadingRegistration()"
+			[disabled]="!event()?._links?.deleteEventRegistration?.allowed || busy()"
 			boTooltip="Smazat"
 			fill="clear"
 			color="danger"
@@ -51,7 +51,9 @@
 	}
 }
 
-@if (uploadingRegistration()) {
+@if (generatingRegistration()) {
+	<p>Generuji přihlášku&hellip;</p>
+} @else if (uploadingRegistration()) {
 	<p>Nahrávám&hellip;</p>
 }
 <input

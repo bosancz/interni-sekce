@@ -67,7 +67,7 @@ export class EventRegistrationService {
 		const rendered = Handlebars.compile(source)(this.buildContext(event, accent, note));
 		const html = this.inlineIcons(this.injectAccent(rendered, accent), accent);
 
-		return this.htmlToPdf(html, templateDir);
+		return this.htmlToPdf(html, templateDir, `Přihláška – ${event.name}`);
 	}
 
 	private injectAccent(html: string, accent: string): string {
@@ -120,7 +120,7 @@ export class EventRegistrationService {
 		return dir;
 	}
 
-	private async htmlToPdf(html: string, templateDir: string): Promise<Buffer> {
+	private async htmlToPdf(html: string, templateDir: string, title: string): Promise<Buffer> {
 		const tempFile = path.join(templateDir, `.render-${Date.now()}-${Math.random().toString(36).slice(2)}.html`);
 		let browser: puppeteer.Browser | undefined;
 
@@ -134,6 +134,7 @@ export class EventRegistrationService {
 
 			const page = await browser.newPage();
 			await page.goto(pathToFileURL(tempFile).href, { waitUntil: "networkidle0" });
+			await page.evaluate((documentTitle) => (document.title = documentTitle), title);
 			const pdf = await page.pdf({
 				format: "A4",
 				landscape: true,
