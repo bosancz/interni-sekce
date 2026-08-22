@@ -3,7 +3,6 @@ import { Component, computed, ElementRef, input, output, signal, ViewChild } fro
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
 import { AlertController, IonButton, IonIcon } from "@ionic/angular/standalone";
-import { AlertButton } from "@ionic/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { cloudUploadOutline, colorWandOutline, eyeOutline, trashOutline } from "ionicons/icons";
@@ -93,8 +92,6 @@ export class EventRegistrationComponent {
 			return;
 		}
 
-		if (event.hasRegistration && !(await this.confirmOverwriteRegistration(event))) return;
-
 		let templates: SDK.RegistrationTemplateResponse[];
 		try {
 			templates = (await this.api.EventsApi.getEventRegistrationTemplates(event.id)).data;
@@ -123,33 +120,6 @@ export class EventRegistrationComponent {
 			],
 		});
 		await colorAlert.present();
-	}
-
-	private async confirmOverwriteRegistration(event: SDK.EventResponseWithLinks): Promise<boolean> {
-		return new Promise<boolean>(async (resolve) => {
-			const buttons: AlertButton[] = [{ text: "Zrušit", role: "cancel", handler: () => resolve(false) }];
-
-			if (event._links?.getEventRegistration?.allowed) {
-				buttons.push({
-					text: "Zobrazit existující přihlášku",
-					handler: () => {
-						void this.getRegistration();
-						resolve(false);
-					},
-				});
-			}
-
-			buttons.push({ text: "Ano, vygenerovat novou", handler: () => resolve(true) });
-
-			const alert = await this.alertController.create({
-				header: "Přepsat přihlášku?",
-				message: "Nová přihláška nahradí tu, co je u akce nahraná — až ji publikuješ.",
-				buttons,
-			});
-
-			alert.onDidDismiss().then(() => resolve(false));
-			await alert.present();
-		});
 	}
 
 	private async selectTemplate(eventId: number, color: string, templates: SDK.RegistrationTemplateResponse[]) {

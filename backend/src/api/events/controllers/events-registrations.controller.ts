@@ -38,7 +38,7 @@ import { FilesService } from "../../../models/files/services/files.service";
 import { Config } from "src/config";
 import * as path from "path";
 import { readFile, unlink } from "fs/promises";
-import { sanitizeFilename } from "../../../helpers/sanitizefilename";
+import { contentDispositionFilename, sanitizeFilename } from "../../../helpers/sanitizefilename";
 
 @Controller("events")
 @Authenticated()
@@ -197,7 +197,7 @@ export class EventsRegistrationsController {
 		const data = await this.eventRegistrationService.generateRegistration(event, template, color, note);
 
 		res.setHeader("Content-Type", "application/pdf");
-		res.setHeader("Content-Disposition", `inline; filename="${this.registrationFileName(event)}"`);
+		res.setHeader("Content-Disposition", `inline; ${contentDispositionFilename(this.registrationFileName(event))}`);
 		res.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 
 		return new StreamableFile(data);
