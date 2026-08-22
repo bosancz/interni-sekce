@@ -183,6 +183,7 @@ export const EventRegistrationEditPermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
+	applicable: ({ doc }) => !doc.hasRegistration,
 });
 
 export const EventRegistrationGeneratePermission = new Permission({
