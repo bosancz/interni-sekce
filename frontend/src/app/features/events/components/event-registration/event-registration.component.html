@@ -9,11 +9,11 @@
 			<span class="ion-hide-md-down">Nahrát</span>
 		</ion-button>
 	}
-	@if (event()?._links?.generateEventRegistration; as generateLink) {
+	@if (event()?._links?.generateEventRegistration?.applicable) {
 		@if (!event()?.hasRegistration) {
 			<ion-button
-				[disabled]="!generateLink.allowed || !generateLink.applicable || busy()"
-				[boTooltip]="generateLink.applicable ? 'Generovat' : 'Akce nemá vedoucího'"
+				[disabled]="!event()?._links?.generateEventRegistration?.allowed || busy()"
+				[boTooltip]="event()?._links?.generateEventRegistration?.applicable ? 'Generovat' : 'Akce nemá vedoucího'"
 				fill="clear"
 				(click)="generateRegistration()"
 			>
@@ -47,11 +47,6 @@
 	}
 </div>
 
-@if (event()?._links?.generateEventRegistration; as generateLink) {
-	@if (generateLink.allowed && !generateLink.applicable && !event()?.hasRegistration) {
-		<p class="hint">Přihlášku nelze vygenerovat, akce nemá vedoucího.</p>
-	}
-}
 
 @if (generatingRegistration()) {
 	<p>Generuji přihlášku&hellip;</p>
