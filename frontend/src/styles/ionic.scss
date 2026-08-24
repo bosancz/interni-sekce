@@ -95,6 +95,19 @@ ion-modal.dialog.dialog-list {
 	--height: 70vh;
 }
 
+/* people picker: fixed width, tall enough for the list to scroll inside */
+ion-modal.dialog.dialog-picker {
+	--width: 560px;
+	--max-width: calc(100vw - 32px);
+	--max-height: min(720px, 90vh);
+	--max-height: min(720px, 90dvh);
+
+	> .ion-page {
+		max-height: min(720px, 90vh);
+		max-height: min(720px, 90dvh);
+	}
+}
+
 /* fixed-width brand dialogs (the event announcement / closure steps) */
 ion-modal.dialog.dialog-brand {
 	--width: 480px;
