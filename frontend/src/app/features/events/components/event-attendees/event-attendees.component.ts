@@ -108,9 +108,8 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		const event = this.event();
 		if (!event) return;
 
-		const selectedIds = computed(() =>
-			((type === "leader" ? this.leaders() : this.attendees()) ?? []).map((attendee) => attendee.memberId),
-		);
+		const selectedAttendees = computed(() => (type === "leader" ? this.leaders() : this.attendees()) ?? []);
+		const selectedIds = computed(() => selectedAttendees().map((attendee) => attendee.memberId));
 
 		const addSelectedMember = async (member: SDK.MemberResponse) => {
 			try {
@@ -150,13 +149,50 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			this.change.emit();
 		};
 
-		await this.modalService.componentModal(MemberSelectorModalComponent, {
-			keepOpenAfterSelect: true,
-			roles: type === "leader" ? LEADER_ROLES : undefined,
-			selectedIds,
-			onSelect: addSelectedMember,
-			onDeselect: removeSelectedMember,
-		});
+		const clearAllMembers = async () => {
+			const removable = (selectedAttendees() ?? []).filter(
+				(attendee) => attendee._links.deleteEventAttendee.allowed,
+			);
+			if (!removable.length) return;
+
+			const confirmation = await this.modalService.deleteConfirmationModal(
+				type === "leader"
+					? "Opravdu chcete odebrat všechny vedoucí akce?"
+					: "Opravdu chcete odebrat všechny účastníky akce?",
+				{ header: "Odebrat vše?", buttonText: "Odebrat" },
+			);
+			if (!confirmation) return;
+
+			try {
+				for (const attendee of removable) {
+					await this.api.EventsApi.deleteEventAttendee(event.id, attendee.memberId);
+				}
+			} catch (e) {
+				this.toastService.toast("Nepodařilo se odebrat účastníky.", { color: "danger" });
+			}
+
+			await this.loadAttendees(event);
+
+			this.change.emit();
+		};
+
+		await this.modalService.componentModal(
+			MemberSelectorModalComponent,
+			{
+				keepOpenAfterSelect: true,
+				roles: type === "leader" ? LEADER_ROLES : undefined,
+				title: type === "leader" ? "Přidat vedoucí" : "Přidat účastníky",
+				subtitle:
+					type === "leader"
+						? "Vyber vedoucí a instruktory ze svého oddílu."
+						: "Vyber účastníky ze svého oddílu.",
+				selectedIds,
+				onSelect: addSelectedMember,
+				onDeselect: removeSelectedMember,
+				onClearAll: clearAllMembers,
+			},
+			{ cssClass: "dialog-picker" },
+		);
 	}
 
 	private findAttendee(memberId: number) {

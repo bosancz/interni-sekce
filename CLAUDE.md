@@ -58,8 +58,11 @@
 
 ## People picker
 
-- **`MemberSelectorModalComponent` is the only picker on people.** Ionic assigns `componentProps` as plain properties, so `selectedIds` is a **`Signal<number[]>` owned by the caller** — that is what repaints the checked state when the underlying list changes. Without it the picker stays as it was: no checkboxes, "Zrušit", closes on the first pick (`users-view`).
-- With `keepOpenAfterSelect` the modal stays open, the button reads "Hotovo" (everything is already saved) and `onSelect`/`onDeselect` may be async — the row shows a spinner and ignores further clicks meanwhile. `event-attendees` both adds and removes through it; unchecking a leader there is deliberately not confirmed, unlike the list's delete button, because one more click puts them back.
+- **`MemberSelectorModalComponent` is the only picker on people.** It wraps `bo-modal-layout` like every other modal — title/subtitle + ✕ in the title slot, sticky search and group chips above the scrolling list, count and buttons in the footer (design handoff "Výběr lidí", #357). `dialog-picker` pins it to 560 px / 720 px.
+- Ionic assigns `componentProps` as plain properties, so `selectedIds` is a **`Signal<number[]>` owned by the caller** — that is what repaints the checked state when the underlying list changes. Without it the picker is single-select: no checkboxes, no count, "Zrušit", closes on the first pick (`users-view`).
+- With `keepOpenAfterSelect` the modal stays open, the button reads "Hotovo" (everything is already saved) and `onSelect`/`onDeselect`/`onClearAll` may be async — the row shows a spinner and ignores further clicks meanwhile. `event-attendees` adds, removes and (confirmed) clears through it; unchecking a single leader there is deliberately not confirmed, unlike the list's delete button, because one more click puts them back.
+- **Filtering never touches the selection** — the footer count is the source of truth. Search is diacritics-insensitive substring over nickname + first/last name; group chips come from the groups actually present in the loaded list. Group tags tint the group's own colour (`rgba` + a fixed-lightness `hsl`, both themes as `--mp-tag-*` custom properties) instead of the solid badge used in lists.
+- **Content projection ignores `slot=` on elements inside `@if`** — the footer must be projected unconditionally, with the branch inside it, or it silently lands in the default slot. The host also needs `display: flex; max-height: 100%`, or the list overflows past the footer instead of scrolling.
 
 ## API routes & links
 

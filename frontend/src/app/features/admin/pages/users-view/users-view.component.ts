@@ -115,7 +115,14 @@ export class UsersViewComponent {
 		const user = this.user();
 		if (!user?._links.updateUser.allowed) return;
 
-		const member = await this.modalService.componentModal(MemberSelectorModalComponent);
+		const member = await this.modalService.componentModal(
+			MemberSelectorModalComponent,
+			{
+				title: "Propojit člena",
+				subtitle: "Vyber člena, kterému tenhle účet patří.",
+			},
+			{ cssClass: "dialog-picker" },
+		);
 		if (member) await this.updateUser({ memberId: member.id });
 	}
 

@@ -1,53 +1,106 @@
-<ion-toolbar>
-	<ion-searchbar
-		#searchBar
-		placeholder="Hledej…"
-		enterkeyhint="search"
-		(ionInput)="searchMembers($any($event).detail.value)"
-	></ion-searchbar>
-	<ion-buttons slot="end">
-		<ion-button (click)="close.emit()">{{ keepOpenAfterSelect ? "Hotovo" : "Zrušit" }}</ion-button>
-	</ion-buttons>
-</ion-toolbar>
-
-@if (selectable) {
-	<div class="selection-summary" [class.empty]="!selectedCount()">
-		<ion-icon [name]="selectedCount() ? 'checkmark-circle' : 'ellipse-outline'"></ion-icon>
-		{{ selectedLabel() }}
+<bo-modal-layout>
+	<div slot="title" class="mp-head">
+		<div class="mp-head-text">
+			<h4>{{ title }}</h4>
+			@if (subtitle) {
+				<p class="mp-subtitle">{{ subtitle }}</p>
+			}
+		</div>
+		<button type="button" class="mp-close" aria-label="Zavřít" (click)="close.emit()">
+			<ion-icon name="close-outline"></ion-icon>
+		</button>
 	</div>
-}
 
-<div class="member-selector-scrollable">
-	<ion-list>
+	<div class="mp-tools">
+		<div class="mp-search">
+			<ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+			<input
+				#searchInput
+				type="text"
+				enterkeyhint="search"
+				autocomplete="off"
+				placeholder="Hledat podle jména nebo přezdívky"
+				aria-label="Hledat podle jména nebo přezdívky"
+				[value]="query()"
+				(input)="query.set($any($event.target).value)"
+			/>
+			@if (query()) {
+				<button type="button" class="mp-clear" (click)="clearQuery()">Zrušit</button>
+			}
+		</div>
+
+		@if (groupChips().length > 1) {
+			<div class="mp-chips">
+				<button
+					type="button"
+					class="mp-chip"
+					[class.active]="groupFilter() === null"
+					(click)="groupFilter.set(null)"
+				>
+					Všichni
+				</button>
+				@for (chip of groupChips(); track chip.id) {
+					<button
+						type="button"
+						class="mp-chip"
+						[class.active]="groupFilter() === chip.id"
+						(click)="groupFilter.set(chip.id)"
+					>
+						{{ chip.name }}
+					</button>
+				}
+			</div>
+		}
+	</div>
+
+	<div class="mp-list">
 		@for (member of filteredMembers(); track member.id) {
-			<ion-item [button]="true" [class.selected]="isSelected(member.id)" (click)="toggleMember(member)">
+			<label class="mp-row" [class.selected]="isSelected(member.id)" [class.pending]="isPending(member.id)">
+				<input
+					class="bm-visually-hidden"
+					[attr.type]="selectable ? 'checkbox' : 'radio'"
+					name="member-selector"
+					[checked]="isSelected(member.id)"
+					[disabled]="isPending(member.id)"
+					(change)="toggleMember(member)"
+				/>
 				@if (selectable) {
-					<div class="state" slot="start">
+					<span class="bm-checkbox mp-box">
 						@if (isPending(member.id)) {
 							<ion-spinner name="crescent"></ion-spinner>
-						} @else {
-							<ion-icon [name]="isSelected(member.id) ? 'checkbox' : 'square-outline'"></ion-icon>
+						} @else if (isSelected(member.id)) {
+							<ion-icon name="checkmark-outline"></ion-icon>
 						}
-					</div>
+					</span>
 				}
-				<ion-label>
-					<h3>{{ member | member: "nickname" }}</h3>
-					<p><bo-member-item-detail [member]="member"></bo-member-item-detail></p>
-				</ion-label>
-				<ion-badge mode="ios" [style.background-color]="member.groupId | group: 'color'">
+				<span class="mp-row-text">
+					<span class="mp-nickname">{{ member | member: "nickname" }}</span>
+					<span class="mp-name"><bo-member-item-detail [member]="member"></bo-member-item-detail></span>
+				</span>
+				<span class="mp-tag" [style]="tagStyles().get(member.groupId)">
 					{{ member.groupId | group: "name" }}
-				</ion-badge>
-			</ion-item>
+				</span>
+			</label>
 		}
 
 		@if (loading()) {
-			<ion-item>
-				<ion-label class="loading"><ion-spinner name="crescent"></ion-spinner></ion-label>
-			</ion-item>
+			<div class="mp-placeholder"><ion-spinner name="crescent"></ion-spinner></div>
 		} @else if (!filteredMembers().length) {
-			<ion-item>
-				<ion-label class="text-muted"><em>Nikoho jsme nenašli</em></ion-label>
-			</ion-item>
+			<div class="mp-placeholder mp-empty">Nikdo nenalezen.</div>
 		}
-	</ion-list>
-</div>
+	</div>
+
+	<div slot="buttons" class="mp-foot">
+		@if (selectable) {
+			<span class="mp-count">{{ selectedLabel() }}</span>
+			@if (onClearAll && selectedCount()) {
+				<button type="button" class="bm-btn-ghost" [disabled]="clearing()" (click)="clearAll()">
+					Odebrat vše
+				</button>
+			}
+			<button type="button" class="bm-btn-primary" (click)="close.emit()">Hotovo</button>
+		} @else {
+			<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		}
+	</div>
+</bo-modal-layout>
