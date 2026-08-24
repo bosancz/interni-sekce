@@ -70,6 +70,10 @@
 	}
 	@if (photo()) {
 		<div class="image-viewer" (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
+			@if (photo()!.titlePhoto) {
+				<ion-icon class="title-badge" name="star"></ion-icon>
+			}
+
 			@if (isLg() && currentIndex() > 0) {
 				<ion-button class="nav prev" fill="clear" (click)="previousPhoto()">
 					<ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
