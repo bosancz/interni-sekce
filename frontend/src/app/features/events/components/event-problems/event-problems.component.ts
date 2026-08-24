@@ -1,4 +1,4 @@
-import { Component, computed, effect, input, signal } from "@angular/core";
+import { Component, computed, effect, input, output, signal } from "@angular/core";
 import { IonIcon, IonList, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
@@ -15,11 +15,6 @@ interface HealthSummaryRow {
 	severity: SDK.HealthSeverityEnum;
 }
 
-/**
- * Read-only overview of the allergies and known problems of all event attendees
- * (leaders and members). Loads the attendees itself and refreshes whenever the event
- * input changes, e.g. after someone is added or removed elsewhere.
- */
 @UntilDestroy()
 @Component({
 	selector: "bo-event-problems",
@@ -29,6 +24,7 @@ interface HealthSummaryRow {
 })
 export class EventProblemsComponent {
 	event = input<SDK.EventResponseWithLinks | null | undefined>();
+	count = output<number | undefined>();
 
 	readonly severities = HealthSeverities;
 
@@ -37,12 +33,21 @@ export class EventProblemsComponent {
 	allergies = computed<HealthSummaryRow[] | undefined>(() => this.buildRows("allergies"));
 	problems = computed<HealthSummaryRow[] | undefined>(() => this.buildRows("knownProblems"));
 
+	problemsCount = computed(() => {
+		const allergies = this.allergies();
+		const problems = this.problems();
+		if (allergies === undefined || problems === undefined) return undefined;
+		return allergies.length + problems.length;
+	});
+
 	constructor(private api: ApiService) {
 		addIcons({ ellipse, alertCircle, warning, helpCircle });
 
 		effect(() => {
 			this.loadAttendees(this.event());
 		});
+
+		effect(() => this.count.emit(this.problemsCount()));
 	}
 
 	private async loadAttendees(event?: SDK.EventResponseWithLinks | null) {
@@ -72,7 +77,6 @@ export class EventProblemsComponent {
 			}
 		}
 
-		// Most severe first, then alphabetically by attendee name.
 		rows.sort(
 			(a, b) =>
 				this.severities[b.severity].order - this.severities[a.severity].order ||

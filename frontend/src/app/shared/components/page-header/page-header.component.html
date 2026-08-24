@@ -1,9 +1,10 @@
-<!-- @if (isIos() && backUrl) {
-	<ion-back-button [defaultHref]="backUrl"></ion-back-button>
-} -->
 <ng-content select="[slot=start]"></ng-content>
 
 <h2 class="ms-3">{{ title() }}</h2>
+
+<div class="title-end">
+	<ng-content select="[slot=title-end]"></ng-content>
+</div>
 
 <div class="spacer"></div>
 

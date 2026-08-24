@@ -12,11 +12,7 @@ import { ModalLayoutComponent } from "../modal-layout/modal-layout.component";
 	imports: [ModalLayoutComponent, NgTemplateOutlet, IonButtons, IonButton],
 })
 export class FilterModalComponent extends InputModalComponent<boolean> {
-	content!: TemplateRef<any>; // must be set in the parent component
-	// When true the modal stages its controls: the filter pills only build a draft while it is open
-	// and leave the URL (and the list behind it) untouched. The draft is applied only if the user
-	// confirms with "Hotovo"; dismissing — "Zrušit", the backdrop or the back button — drops it. The
-	// footer is a Zrušit/Hotovo pair instead of Vymazat/Filtrovat.
+	content!: TemplateRef<any>;
 	immediate = false;
 
 	constructor(modalCtrl: ModalController) {

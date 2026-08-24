@@ -26,8 +26,6 @@ export class MongoImportService {
 
 	private readonly groupsIndex = new Map<string, number>();
 
-	// Assigned lazily in importData() once the Mongo connection is established, so that no
-	// connection is opened just by constructing this service at CLI startup.
 	private albumsModel!: Model<MongoAlbum>;
 	private photosModel!: Model<MongoPhoto>;
 	private eventsModel!: Model<MongoEvent>;
@@ -43,7 +41,6 @@ export class MongoImportService {
 	async importData() {
 		this.logger.log(`Starting mongo import from ${this.config.mongoDb.uri}...`);
 
-		// Connect to Mongo only now, when the import actually runs — not at module/CLI startup.
 		const connection = await mongoose
 			.createConnection(this.config.mongoDb.uri, { connectTimeoutMS: 1000 })
 			.asPromise();
@@ -145,8 +142,6 @@ export class MongoImportService {
 		await this.clearTable(t, Album);
 		await this.clearTable(t, EventAttendee);
 		await this.clearTable(t, EventExpense);
-		// events_groups has no entity of its own (it is the @ManyToMany join table on Event), so it
-		// is cleared by table name rather than through clearTable()
 		await this.clearJoinTable(t, "events_groups");
 		await this.clearTable(t, Event);
 		await this.clearTable(t, MemberContact);
@@ -309,7 +304,6 @@ export class MongoImportService {
 			if (!mongoEvent.dateFrom || !mongoEvent.dateTill) continue;
 
 			let status = <any>mongoEvent.status ?? EventStates.draft;
-			if (status === "rejected") status = EventStates.pending;
 
 			const groups = await Promise.all(
 				mongoEvent.groups
@@ -321,6 +315,8 @@ export class MongoImportService {
 				name: mongoEvent.name,
 				status,
 				statusNote: mongoEvent.statusNote ?? null,
+				announcementSentAt: null,
+				accountingSentAt: null,
 				place: mongoEvent.place ?? null,
 				placeGeometry: null,
 				description: mongoEvent.description ?? null,
@@ -336,9 +332,6 @@ export class MongoImportService {
 				waterKm: null,
 				river: null,
 				leadersEvent: mongoEvent.groups?.includes("V") || false,
-				// The legacy registration PDF is not moved or copied; keep the original Mongo ObjectId
-				// (srcId) so the backend can serve it straight from the legacy on-disk layout, and flag
-				// the event when the old record referenced a registration file.
 				hasRegistration: !!mongoEvent.registration,
 				report: null,
 				srcId: mongoEvent._id.toString(),
@@ -456,14 +449,8 @@ export class MongoImportService {
 		for (let mongoPhoto of mongoPhotos) {
 			const albumId = albumIds[mongoPhoto.album.toString()];
 
-			// wrongly deleted albums (photos deleted, but records stay in DB)
 			if (!albumId) continue;
 
-			// The old server stored the original's raw pixel dimensions, which for EXIF-rotated
-			// photos are transposed relative to how the image is displayed. The thumbnails it
-			// serves are baked upright, so their orientation is the source of truth: transpose
-			// the original dimensions when it disagrees, otherwise the gallery lays the photo out
-			// with the wrong aspect ratio and it appears distorted.
 			let width = mongoPhoto.sizes?.original.width ?? null;
 			let height = mongoPhoto.sizes?.original.height ?? null;
 			const thumb = mongoPhoto.sizes?.small ?? mongoPhoto.sizes?.big;
@@ -478,14 +465,12 @@ export class MongoImportService {
 				name: mongoPhoto.name ?? "",
 				tags: mongoPhoto.tags ?? null,
 				timestamp: mongoPhoto.date ?? new Date(),
-				order: null, // imported photos fall back to timestamp ordering
-				titlePhoto: false, // the title photo is flagged in a later pass (see importTitlePhotos)
+				order: null,
+				titlePhoto: false,
 				title: mongoPhoto.title ?? null,
 				uploadedById: mongoPhoto.uploadedBy ? userIds[mongoPhoto.uploadedBy.toString()] : null,
 				width,
 				height,
-				// Keep the original Mongo ObjectIds so the backend can serve the existing image
-				// files straight from the legacy on-disk layout (they are not moved or copied).
 				srcAlbumId: mongoPhoto.album.toString(),
 				srcId: mongoPhoto._id.toString(),
 			};

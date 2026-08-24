@@ -23,6 +23,7 @@ import { MailService } from "./models/mail/services/mail.service";
 import { MembersModelModule } from "./models/members/members-model.module";
 import { StatisticsModelModule } from "./models/statistics/statistics-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
+import { SeedModule } from "./seed/seed.module";
 
 @Module({
 	imports: [
@@ -33,11 +34,9 @@ import { UsersModelModule } from "./models/users/users-model.module";
 			useFactory: (config: Config) => [{ rootPath: config.server.staticRoot }],
 		}),
 		MulterModule.register({
-			// in-memory storage so handlers that read file.buffer (photos, insurance cards) work;
-			// handlers that need a file on disk (event registration) set their own dest per-route
 			storage: memoryStorage(),
 			limits: {
-				fileSize: 1024 * 1024 * 100, // 100 MB
+				fileSize: 1024 * 1024 * 100,
 			},
 		}),
 		EventsModule,
@@ -59,6 +58,7 @@ import { UsersModelModule } from "./models/users/users-model.module";
 		StatisticsModelModule,
 		GoogleModelModule,
 		FilesModule,
+		SeedModule,
 	],
 	controllers: [],
 	providers: [MailService],

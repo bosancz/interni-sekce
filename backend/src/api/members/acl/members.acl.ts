@@ -35,6 +35,7 @@ export const MemberCreatePermission = new Permission<void>({
 export const MemberReadPermission = new Permission({
 	linkTo: MemberResponse,
 	contains: MemberResponse,
+	params: { memberId: "id" },
 
 	allowed: {
 		vedouci: true,
@@ -43,6 +44,7 @@ export const MemberReadPermission = new Permission({
 
 export const MemberUpdatePermission = new Permission({
 	linkTo: MemberResponse,
+	params: { memberId: "id" },
 	allowed: {
 		vedouci: true,
 	},
@@ -50,8 +52,8 @@ export const MemberUpdatePermission = new Permission({
 
 export const MemberDeletePermission = new Permission({
 	linkTo: MemberResponse,
+	params: { memberId: "id" },
 	allowed: {
-		// A leader may delete only members of their own group; admin (implicit) may delete anyone.
 		vedouci: ({ doc, req }) => req.user?.memberGroupId !== undefined && doc.groupId === req.user.memberGroupId,
 	},
 	applicable: ({ doc }) => !doc.deletedAt,
@@ -59,7 +61,7 @@ export const MemberDeletePermission = new Permission({
 
 export const MemberRestorePermission = new Permission({
 	linkTo: MemberResponse,
-	// Restore mirrors delete: a leader may restore only members of their own group; admin anyone.
+	params: { memberId: "id" },
 	allowed: {
 		vedouci: ({ doc, req }) => req.user?.memberGroupId !== undefined && doc.groupId === req.user.memberGroupId,
 	},
@@ -68,7 +70,7 @@ export const MemberRestorePermission = new Permission({
 
 export const MemberDeletePermanentPermission = new Permission({
 	linkTo: MemberResponse,
-	// Permanent deletion is irreversible and reserved for admins only.
+	params: { memberId: "id" },
 	allowed: {
 		admin: true,
 	},

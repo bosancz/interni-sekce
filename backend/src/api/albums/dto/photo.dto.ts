@@ -30,13 +30,11 @@ export class PhotoResponse {
 	@ApiPropertyOptional({ type: "string", isArray: true }) tags!: string[] | null;
 	@ApiPropertyOptional({ type: "string" }) bg!: string | null;
 
-	// @ApiPropertyOptional() faces?: PhotoFace[] | null;
 	@ApiPropertyOptional({ type: () => WithLinks(() => AlbumResponse) }) album?: Album | undefined;
 	@ApiPropertyOptional({ type: () => WithLinks(UserResponse) }) uploadedBy?: User | null;
 }
 
 export class PhotoCreateBody {
-	// multipart sends albumId as a string; @Type converts it and @IsInt whitelists it for the global ValidationPipe
 	@ApiProperty()
 	@Type(() => Number)
 	@IsInt()
@@ -45,8 +43,6 @@ export class PhotoCreateBody {
 	@ApiProperty({ type: "string", format: "binary" }) file!: any;
 }
 
-// explicit validators: the global ValidationPipe (whitelist + forbidNonWhitelisted)
-// rejects any property that has no class-validator decorator
 export class PhotoUpdateBody {
 	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() title?: string | null;
 	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() caption?: string | null;

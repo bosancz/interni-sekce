@@ -1,17 +1,8 @@
 import { Directive, ElementRef, HostListener, OnDestroy, input } from "@angular/core";
 
-/**
- * Instant tooltip, a replacement for the native `title` attribute: that one only appears after
- * roughly a second and is never shown for disabled controls.
- *
- * Works on any element, including a disabled `ion-button` — see the `ion-button[boTooltip]` rule in
- * `styles/ionic.scss`, which hands the disabled host its pointer events back so the hover lands.
- *
- * The bubble is appended to `<body>` (so no parent's `overflow` can clip it) and therefore styled
- * inline — a component stylesheet would not reach it.
- */
 @Directive({
 	selector: "[boTooltip]",
+	host: { class: "bo-tooltip" },
 })
 export class TooltipDirective implements OnDestroy {
 	boTooltip = input<string | null | undefined>();
@@ -20,7 +11,9 @@ export class TooltipDirective implements OnDestroy {
 	private tooltip?: HTMLElement;
 	private readonly hideHandler = () => this.hide();
 
-	constructor(private el: ElementRef<HTMLElement>) {}
+	constructor(private el: ElementRef<HTMLElement>) {
+		blockDisabledClicks();
+	}
 
 	@HostListener("mouseenter")
 	@HostListener("focusin")
@@ -49,8 +42,6 @@ export class TooltipDirective implements OnDestroy {
 		this.tooltip = tooltip;
 		this.position(tooltip);
 
-		// A scrolled-away anchor would leave the bubble floating over nothing; capture phase so
-		// scrolling in any container counts, not just the window.
 		window.addEventListener("scroll", this.hideHandler, true);
 		window.addEventListener("resize", this.hideHandler);
 	}
@@ -70,7 +61,6 @@ export class TooltipDirective implements OnDestroy {
 		this.hide();
 	}
 
-	/** Centers the bubble on the host, flipping below / clamping to the viewport when it would not fit. */
 	private position(tooltip: HTMLElement) {
 		const gap = 6;
 		const host = this.el.nativeElement.getBoundingClientRect();
@@ -89,3 +79,22 @@ export class TooltipDirective implements OnDestroy {
 		tooltip.style.left = `${left}px`;
 	}
 }
+
+function blockDisabledClicks() {
+	if (disabledClickGuard) return;
+	disabledClickGuard = true;
+
+	document.addEventListener(
+		"click",
+		(event) => {
+			const target = event.target as HTMLElement | null;
+			if (!target?.closest?.(".bo-tooltip.button-disabled")) return;
+
+			event.stopImmediatePropagation();
+			event.preventDefault();
+		},
+		true,
+	);
+}
+
+let disabledClickGuard = false;

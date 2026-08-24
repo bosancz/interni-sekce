@@ -4,12 +4,10 @@
 	gap: 14px;
 }
 
-/* karty používají vlastní odsazení řádků – zrušíme výchozí p-3 z bo-card-content */
 .account-grid ::ng-deep bo-card-content {
 	padding: 0 !important;
 }
 
-/* ---- profilová hlavička ---- */
 .profile-card {
 	::ng-deep bo-card-content {
 		padding: 18px !important;
@@ -66,7 +64,6 @@
 	font-weight: 600;
 }
 
-/* hodnota + inline editační tlačítko na pravé straně řádku */
 .bo-info-action {
 	display: flex;
 	align-items: center;
@@ -79,7 +76,6 @@
 	}
 }
 
-/* ---- mřížka karet ---- */
 .account-grid {
 	display: grid;
 	grid-template-columns: 1fr;
@@ -90,7 +86,6 @@
 	display: block;
 }
 
-/* ---- desktop ≥ 992px ---- */
 @media (min-width: 992px) {
 	.account-layout {
 		gap: 20px;

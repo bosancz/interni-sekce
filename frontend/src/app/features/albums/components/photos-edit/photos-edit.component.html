@@ -70,7 +70,6 @@
 	}
 	@if (photo()) {
 		<div class="image-viewer" (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
-			<!-- arrows on desktop, swipe left/right on mobile -->
 			@if (isLg() && currentIndex() > 0) {
 				<ion-button class="nav prev" fill="clear" (click)="previousPhoto()">
 					<ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>

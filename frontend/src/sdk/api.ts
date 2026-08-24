@@ -706,6 +706,26 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface ChangelogResponseWithLinks
+     */
+    export interface ChangelogResponseWithLinks {
+        /**
+         * 
+         * @type {string}
+         * @memberof ChangelogResponseWithLinks
+         */
+        'content': string;
+        /**
+         * 
+         * @type {object}
+         * @memberof ChangelogResponseWithLinks
+         */
+        '_links': object;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface CreateContactBody
      */
     export interface CreateContactBody {
@@ -925,6 +945,18 @@ export namespace SDK {
         'report': string | null;
         /**
          * 
+         * @type {object}
+         * @memberof Event
+         */
+        'announcementSentAt': object;
+        /**
+         * 
+         * @type {object}
+         * @memberof Event
+         */
+        'accountingSentAt': object;
+        /**
+         * 
          * @type {string}
          * @memberof Event
          */
@@ -946,6 +978,7 @@ export namespace SDK {
     export const EventStatusEnum = {
         Draft: 'draft',
         Pending: 'pending',
+        Rejected: 'rejected',
         Public: 'public',
         Cancelled: 'cancelled'
     } as const;
@@ -1527,6 +1560,18 @@ export namespace SDK {
         'status': EventStatesEnum;
         /**
          * 
+         * @type {string}
+         * @memberof EventResponse
+         */
+        'announcementSentAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponse
+         */
+        'accountingSentAt'?: string;
+        /**
+         * 
          * @type {Album}
          * @memberof EventResponse
          */
@@ -1708,7 +1753,31 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof EventResponseLinks
          */
+        'markAccountingSent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'unmarkAccountingSent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
         'getEventAnnouncement': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'markAnnouncementSent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'unmarkAnnouncementSent': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -1867,6 +1936,18 @@ export namespace SDK {
          * @memberof EventResponseWithLinks
          */
         'status': EventStatesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'announcementSentAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'accountingSentAt'?: string;
         /**
          * 
          * @type {Album}
@@ -2048,6 +2129,7 @@ export namespace SDK {
     export const EventStatesEnum = {
         Draft: 'draft',
         Pending: 'pending',
+        Rejected: 'rejected',
         Public: 'public',
         Cancelled: 'cancelled'
     } as const;
@@ -2206,6 +2288,7 @@ export namespace SDK {
     export const EventUpdateBodyStatusEnum = {
         Draft: 'draft',
         Pending: 'pending',
+        Rejected: 'rejected',
         Public: 'public',
         Cancelled: 'cancelled'
     } as const;
@@ -2668,6 +2751,44 @@ export namespace SDK {
     
     export type HealthSeverityEnum = typeof HealthSeverityEnum[keyof typeof HealthSeverityEnum];
     
+    
+        /**
+     * 
+     * @export
+     * @interface LeaderEventResponse
+     */
+    export interface LeaderEventResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof LeaderEventResponse
+         */
+        'eventId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof LeaderEventResponse
+         */
+        'name': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof LeaderEventResponse
+         */
+        'dateFrom': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof LeaderEventResponse
+         */
+        'dateTill': string;
+        /**
+         * Dětodny this single event was worth — children on it × how many days it lasted.
+         * @type {number}
+         * @memberof LeaderEventResponse
+         */
+        'childDays': number;
+    }
     
         /**
      * 
@@ -3766,6 +3887,62 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface MyRankingResponse
+     */
+    export interface MyRankingResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof MyRankingResponse
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof MyRankingResponse
+         */
+        'nickname': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof MyRankingResponse
+         */
+        'groupId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MyRankingResponse
+         */
+        'childDays': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MyRankingResponse
+         */
+        'eventsCount': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MyRankingResponse
+         */
+        'rank'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MyRankingResponse
+         */
+        'firstName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MyRankingResponse
+         */
+        'lastName'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface PaddlersRankingResponse
      */
     export interface PaddlersRankingResponse {
@@ -4152,6 +4329,25 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface RegistrationPreviewResponse
+     */
+    export interface RegistrationPreviewResponse {
+        /**
+         * PDF přihlášky v base64
+         * @type {string}
+         * @memberof RegistrationPreviewResponse
+         */
+        'pdf': string;
+        /**
+         * Náhled přihlášky jako JPEG v base64
+         * @type {string}
+         * @memberof RegistrationPreviewResponse
+         */
+        'image': string;
+    }
+    /**
+     * 
+     * @export
      * @interface RegistrationTemplateResponse
      */
     export interface RegistrationTemplateResponse {
@@ -4282,6 +4478,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'getProgramIcal': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'getGallery': AcLink;
         /**
          * 
@@ -4301,6 +4503,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'getGalleryAlbumPreview': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getTopLeaders': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -4351,6 +4559,106 @@ export namespace SDK {
          * @memberof RootResponseWithLinks
          */
         '_links': RootResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface TopLeaderResponse
+     */
+    export interface TopLeaderResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof TopLeaderResponse
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopLeaderResponse
+         */
+        'nickname': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopLeaderResponse
+         */
+        'groupId': number;
+        /**
+         * \"děťodny\" — children × days, summed over the events the member led. The ranking score.
+         * @type {number}
+         * @memberof TopLeaderResponse
+         */
+        'childDays': number;
+        /**
+         * How many events that score comes from.
+         * @type {number}
+         * @memberof TopLeaderResponse
+         */
+        'eventsCount': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopLeaderResponse
+         */
+        'rank': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopLeaderResponse
+         */
+        'firstName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopLeaderResponse
+         */
+        'lastName'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface TopLeadersResponse
+     */
+    export interface TopLeadersResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof TopLeadersResponse
+         */
+        'year': number;
+        /**
+         * děťodny of every event of the year, each event counted once — not once per leader.
+         * @type {number}
+         * @memberof TopLeadersResponse
+         */
+        'childDays': number;
+        /**
+         * Oldest and newest year with a finished event, so the year switcher knows where to stop.
+         * @type {number}
+         * @memberof TopLeadersResponse
+         */
+        'firstYear': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopLeadersResponse
+         */
+        'lastYear': number;
+        /**
+         * 
+         * @type {Array<TopLeaderResponse>}
+         * @memberof TopLeadersResponse
+         */
+        'leaders': Array<TopLeaderResponse>;
+        /**
+         * 
+         * @type {MyRankingResponse}
+         * @memberof TopLeadersResponse
+         */
+        'me'?: MyRankingResponse;
     }
     
         /**
@@ -5304,6 +5612,22 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * EventsApi - object-oriented interface
      * @export
@@ -5435,28 +5759,28 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async cancelEvent(
-            id: number,
+            eventId: number,
             body: EventStatusChangeBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('cancelEvent', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('cancelEvent', 'eventId', eventId)
             assertParamExists('cancelEvent', 'eventStatusChangeBody', body)
             
             // verify required parameter 'eventStatusChangeBody' is not null or undefined
-            assertParamExists('cancelEvent', 'id', id)
+            assertParamExists('cancelEvent', 'eventId', eventId)
             assertParamExists('cancelEvent', 'eventStatusChangeBody', body)
             
-            const localVarPath = `/api/events/{id}/cancel`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/cancel`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5533,22 +5857,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async deleteEvent(
-            id: number,
+            eventId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deleteEvent', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('deleteEvent', 'eventId', eventId)
             
-            const localVarPath = `/api/events/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5681,22 +6005,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async deleteEventPermanent(
-            id: number,
+            eventId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deleteEventPermanent', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('deleteEventPermanent', 'eventId', eventId)
             
-            const localVarPath = `/api/events/{id}/permanent`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/permanent`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5725,22 +6049,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async deleteEventRegistration(
-            id: number,
+            eventId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deleteEventRegistration', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('deleteEventRegistration', 'eventId', eventId)
             
-            const localVarPath = `/api/events/{id}/registration`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/registration`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5769,7 +6093,7 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {EventsApiGenerateEventRegistrationQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -5777,28 +6101,28 @@ export namespace SDK {
          */
         
         public async generateEventRegistration(
-            id: number,
+            eventId: number,
             queryParams: EventsApiGenerateEventRegistrationQueryParams,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('generateEventRegistration', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('generateEventRegistration', 'eventId', eventId)
             assertParamExists('generateEventRegistration', 'template', queryParams.template)
             assertParamExists('generateEventRegistration', 'color', queryParams.color)
             
             // verify required parameter 'template' is not null or undefined
-            assertParamExists('generateEventRegistration', 'id', id)
+            assertParamExists('generateEventRegistration', 'eventId', eventId)
             assertParamExists('generateEventRegistration', 'template', queryParams.template)
             assertParamExists('generateEventRegistration', 'color', queryParams.color)
             
             // verify required parameter 'color' is not null or undefined
-            assertParamExists('generateEventRegistration', 'id', id)
+            assertParamExists('generateEventRegistration', 'eventId', eventId)
             assertParamExists('generateEventRegistration', 'template', queryParams.template)
             assertParamExists('generateEventRegistration', 'color', queryParams.color)
             
-            const localVarPath = `/api/events/{id}/registration/generate`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/registration/generate`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5833,7 +6157,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<void>(axiosRequestConfig);
+            return this.axios.request<RegistrationPreviewResponse>(axiosRequestConfig);
         }
     
         /**
@@ -5877,22 +6201,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async getEvent(
-            id: number,
+            eventId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getEvent', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('getEvent', 'eventId', eventId)
             
-            const localVarPath = `/api/events/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5921,22 +6245,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async getEventAccounting(
-            id: number,
+            eventId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getEventAccounting', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('getEventAccounting', 'eventId', eventId)
             
-            const localVarPath = `/api/events/{id}/accounting`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/accounting`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5965,22 +6289,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async getEventAnnouncement(
-            id: number,
+            eventId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getEventAnnouncement', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('getEventAnnouncement', 'eventId', eventId)
             
-            const localVarPath = `/api/events/{id}/announcement`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/announcement`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6009,22 +6333,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async getEventRegistration(
-            id: number,
+            eventId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getEventRegistration', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('getEventRegistration', 'eventId', eventId)
             
-            const localVarPath = `/api/events/{id}/registration`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/registration`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6053,22 +6377,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async getEventRegistrationTemplates(
-            id: number,
+            eventId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getEventRegistrationTemplates', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('getEventRegistrationTemplates', 'eventId', eventId)
             
-            const localVarPath = `/api/events/{id}/registration/templates`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/registration/templates`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6097,22 +6421,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async getEventReport(
-            id: number,
+            eventId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getEventReport', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('getEventReport', 'eventId', eventId)
             
-            const localVarPath = `/api/events/{id}/report`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/report`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6217,22 +6541,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async leadEvent(
-            id: number,
+            eventId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('leadEvent', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('leadEvent', 'eventId', eventId)
             
-            const localVarPath = `/api/events/{id}/lead`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/lead`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6475,28 +6799,116 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async markAccountingSent(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('markAccountingSent', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/accounting/sent`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async markAnnouncementSent(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('markAnnouncementSent', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/announcement/sent`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async publishEvent(
-            id: number,
+            eventId: number,
             body: EventStatusChangeBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('publishEvent', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('publishEvent', 'eventId', eventId)
             assertParamExists('publishEvent', 'eventStatusChangeBody', body)
             
             // verify required parameter 'eventStatusChangeBody' is not null or undefined
-            assertParamExists('publishEvent', 'id', id)
+            assertParamExists('publishEvent', 'eventId', eventId)
             assertParamExists('publishEvent', 'eventStatusChangeBody', body)
             
-            const localVarPath = `/api/events/{id}/publish`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/publish`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6528,28 +6940,28 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async rejectEvent(
-            id: number,
+            eventId: number,
             body: EventStatusChangeBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('rejectEvent', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('rejectEvent', 'eventId', eventId)
             assertParamExists('rejectEvent', 'eventStatusChangeBody', body)
             
             // verify required parameter 'eventStatusChangeBody' is not null or undefined
-            assertParamExists('rejectEvent', 'id', id)
+            assertParamExists('rejectEvent', 'eventId', eventId)
             assertParamExists('rejectEvent', 'eventStatusChangeBody', body)
             
-            const localVarPath = `/api/events/{id}/reject`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/reject`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6581,22 +6993,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async restoreEvent(
-            id: number,
+            eventId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('restoreEvent', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('restoreEvent', 'eventId', eventId)
             
-            const localVarPath = `/api/events/{id}/restore`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/restore`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6625,23 +7037,23 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async saveEventRegistration(
-            id: number,
+            eventId: number,
             registration: File,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('saveEventRegistration', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('saveEventRegistration', 'eventId', eventId)
             
-            const localVarPath = `/api/events/{id}/registration`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/registration`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6678,28 +7090,28 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async submitEvent(
-            id: number,
+            eventId: number,
             body: EventStatusChangeBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('submitEvent', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('submitEvent', 'eventId', eventId)
             assertParamExists('submitEvent', 'eventStatusChangeBody', body)
             
             // verify required parameter 'eventStatusChangeBody' is not null or undefined
-            assertParamExists('submitEvent', 'id', id)
+            assertParamExists('submitEvent', 'eventId', eventId)
             assertParamExists('submitEvent', 'eventStatusChangeBody', body)
             
-            const localVarPath = `/api/events/{id}/submit`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/submit`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6731,28 +7143,28 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async uncancelEvent(
-            id: number,
+            eventId: number,
             body: EventStatusChangeBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('uncancelEvent', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('uncancelEvent', 'eventId', eventId)
             assertParamExists('uncancelEvent', 'eventStatusChangeBody', body)
             
             // verify required parameter 'eventStatusChangeBody' is not null or undefined
-            assertParamExists('uncancelEvent', 'id', id)
+            assertParamExists('uncancelEvent', 'eventId', eventId)
             assertParamExists('uncancelEvent', 'eventStatusChangeBody', body)
             
-            const localVarPath = `/api/events/{id}/uncancel`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/uncancel`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6784,28 +7196,116 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async unmarkAccountingSent(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('unmarkAccountingSent', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/accounting/sent`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async unmarkAnnouncementSent(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('unmarkAnnouncementSent', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/announcement/sent`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async unpublishEvent(
-            id: number,
+            eventId: number,
             body: EventStatusChangeBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('unpublishEvent', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('unpublishEvent', 'eventId', eventId)
             assertParamExists('unpublishEvent', 'eventStatusChangeBody', body)
             
             // verify required parameter 'eventStatusChangeBody' is not null or undefined
-            assertParamExists('unpublishEvent', 'id', id)
+            assertParamExists('unpublishEvent', 'eventId', eventId)
             assertParamExists('unpublishEvent', 'eventStatusChangeBody', body)
             
-            const localVarPath = `/api/events/{id}/unpublish`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}/unpublish`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6837,28 +7337,28 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} eventId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
          */
         
         public async updateEvent(
-            id: number,
+            eventId: number,
             body: EventUpdateBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateEvent', 'id', id)
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('updateEvent', 'eventId', eventId)
             assertParamExists('updateEvent', 'eventUpdateBody', body)
             
             // verify required parameter 'eventUpdateBody' is not null or undefined
-            assertParamExists('updateEvent', 'id', id)
+            assertParamExists('updateEvent', 'eventId', eventId)
             assertParamExists('updateEvent', 'eventUpdateBody', body)
             
-            const localVarPath = `/api/events/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/events/{eventId}`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7466,28 +7966,28 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} memberId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async createContact(
-            id: number,
+            memberId: number,
             body: CreateContactBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('createContact', 'id', id)
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('createContact', 'memberId', memberId)
             assertParamExists('createContact', 'createContactBody', body)
             
             // verify required parameter 'createContactBody' is not null or undefined
-            assertParamExists('createContact', 'id', id)
+            assertParamExists('createContact', 'memberId', memberId)
             assertParamExists('createContact', 'createContactBody', body)
             
-            const localVarPath = `/api/members/{id}/contacts`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/members/{memberId}/contacts`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7609,7 +8109,7 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} memberId 
          * @param {number} contactId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -7617,21 +8117,21 @@ export namespace SDK {
          */
         
         public async deleteContact(
-            id: number,
+            memberId: number,
             contactId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deleteContact', 'id', id)
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('deleteContact', 'memberId', memberId)
             assertParamExists('deleteContact', 'contactId', contactId)
             
             // verify required parameter 'contactId' is not null or undefined
-            assertParamExists('deleteContact', 'id', id)
+            assertParamExists('deleteContact', 'memberId', memberId)
             assertParamExists('deleteContact', 'contactId', contactId)
             
-            const localVarPath = `/api/members/{id}/contacts/{contactId}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+            const localVarPath = `/api/members/{memberId}/contacts/{contactId}`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)))
                 .replace(`{${"contactId"}}`, encodeURIComponent(String(contactId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -7661,22 +8161,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} groupId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async deleteGroup(
-            id: number,
+            groupId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deleteGroup', 'id', id)
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('deleteGroup', 'groupId', groupId)
             
-            const localVarPath = `/api/groups/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/groups/{groupId}`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7705,22 +8205,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} memberId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async deleteInsuranceCard(
-            id: number,
+            memberId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deleteInsuranceCard', 'id', id)
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('deleteInsuranceCard', 'memberId', memberId)
             
-            const localVarPath = `/api/members/{id}/insurance-card`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/members/{memberId}/insurance-card`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7749,22 +8249,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} memberId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async deleteMember(
-            id: number,
+            memberId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deleteMember', 'id', id)
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('deleteMember', 'memberId', memberId)
             
-            const localVarPath = `/api/members/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/members/{memberId}`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7793,22 +8293,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} memberId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async deleteMemberPermanent(
-            id: number,
+            memberId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deleteMemberPermanent', 'id', id)
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('deleteMemberPermanent', 'memberId', memberId)
             
-            const localVarPath = `/api/members/{id}/permanent`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/members/{memberId}/permanent`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7921,22 +8421,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} groupId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async getGroup(
-            id: number,
+            groupId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getGroup', 'id', id)
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('getGroup', 'groupId', groupId)
             
-            const localVarPath = `/api/groups/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/groups/{groupId}`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7965,22 +8465,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} memberId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async getInsuranceCard(
-            id: number,
+            memberId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getInsuranceCard', 'id', id)
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('getInsuranceCard', 'memberId', memberId)
             
-            const localVarPath = `/api/members/{id}/insurance-card`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/members/{memberId}/insurance-card`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8009,22 +8509,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} memberId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async getMember(
-            id: number,
+            memberId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getMember', 'id', id)
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('getMember', 'memberId', memberId)
             
-            const localVarPath = `/api/members/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/members/{memberId}`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8053,22 +8553,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} memberId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async listContacts(
-            id: number,
+            memberId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('listContacts', 'id', id)
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('listContacts', 'memberId', memberId)
             
-            const localVarPath = `/api/members/{id}/contacts`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/members/{memberId}/contacts`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8309,22 +8809,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} groupId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async permanentlyDeleteGroup(
-            id: number,
+            groupId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('permanentlyDeleteGroup', 'id', id)
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('permanentlyDeleteGroup', 'groupId', groupId)
             
-            const localVarPath = `/api/groups/{id}/permanent`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/groups/{groupId}/permanent`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8353,22 +8853,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} groupId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async restoreGroup(
-            id: number,
+            groupId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('restoreGroup', 'id', id)
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('restoreGroup', 'groupId', groupId)
             
-            const localVarPath = `/api/groups/{id}/restore`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/groups/{groupId}/restore`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8397,22 +8897,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} memberId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async restoreMember(
-            id: number,
+            memberId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('restoreMember', 'id', id)
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('restoreMember', 'memberId', memberId)
             
-            const localVarPath = `/api/members/{id}/restore`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/members/{memberId}/restore`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8441,7 +8941,7 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} memberId 
          * @param {number} contactId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -8449,29 +8949,29 @@ export namespace SDK {
          */
         
         public async updateContact(
-            id: number,
+            memberId: number,
             contactId: number,
             body: CreateContactBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateContact', 'id', id)
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('updateContact', 'memberId', memberId)
             assertParamExists('updateContact', 'contactId', contactId)
             assertParamExists('updateContact', 'createContactBody', body)
             
             // verify required parameter 'contactId' is not null or undefined
-            assertParamExists('updateContact', 'id', id)
+            assertParamExists('updateContact', 'memberId', memberId)
             assertParamExists('updateContact', 'contactId', contactId)
             assertParamExists('updateContact', 'createContactBody', body)
             
             // verify required parameter 'createContactBody' is not null or undefined
-            assertParamExists('updateContact', 'id', id)
+            assertParamExists('updateContact', 'memberId', memberId)
             assertParamExists('updateContact', 'contactId', contactId)
             assertParamExists('updateContact', 'createContactBody', body)
             
-            const localVarPath = `/api/members/{id}/contacts/{contactId}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+            const localVarPath = `/api/members/{memberId}/contacts/{contactId}`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)))
                 .replace(`{${"contactId"}}`, encodeURIComponent(String(contactId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -8504,28 +9004,28 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} groupId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async updateGroup(
-            id: number,
+            groupId: number,
             body: UpdateGroupBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateGroup', 'id', id)
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('updateGroup', 'groupId', groupId)
             assertParamExists('updateGroup', 'updateGroupBody', body)
             
             // verify required parameter 'updateGroupBody' is not null or undefined
-            assertParamExists('updateGroup', 'id', id)
+            assertParamExists('updateGroup', 'groupId', groupId)
             assertParamExists('updateGroup', 'updateGroupBody', body)
             
-            const localVarPath = `/api/groups/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/groups/{groupId}`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8557,28 +9057,28 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} memberId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async updateMember(
-            id: number,
+            memberId: number,
             body: MemberUpdateBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateMember', 'id', id)
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('updateMember', 'memberId', memberId)
             assertParamExists('updateMember', 'memberUpdateBody', body)
             
             // verify required parameter 'memberUpdateBody' is not null or undefined
-            assertParamExists('updateMember', 'id', id)
+            assertParamExists('updateMember', 'memberId', memberId)
             assertParamExists('updateMember', 'memberUpdateBody', body)
             
-            const localVarPath = `/api/members/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/members/{memberId}`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8610,23 +9110,23 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} memberId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
          */
         
         public async uploadInsuranceCard(
-            id: number,
+            memberId: number,
             file: File,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('uploadInsuranceCard', 'id', id)
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('uploadInsuranceCard', 'memberId', memberId)
             
-            const localVarPath = `/api/members/{id}/insurance-card`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/members/{memberId}/insurance-card`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8943,22 +9443,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
          */
         
         public async deleteAlbum(
-            id: number,
+            albumId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deleteAlbum', 'id', id)
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('deleteAlbum', 'albumId', albumId)
             
-            const localVarPath = `/api/albums/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/albums/{albumId}`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8987,22 +9487,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
          */
         
         public async deleteAlbumPermanent(
-            id: number,
+            albumId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deleteAlbumPermanent', 'id', id)
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('deleteAlbumPermanent', 'albumId', albumId)
             
-            const localVarPath = `/api/albums/{id}/permanent`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/albums/{albumId}/permanent`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9031,22 +9531,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} photoId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
          */
         
         public async deletePhoto(
-            id: number,
+            photoId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deletePhoto', 'id', id)
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('deletePhoto', 'photoId', photoId)
             
-            const localVarPath = `/api/photos/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/photos/{photoId}`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9075,22 +9575,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
          */
         
         public async getAlbum(
-            id: number,
+            albumId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getAlbum', 'id', id)
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('getAlbum', 'albumId', albumId)
             
-            const localVarPath = `/api/albums/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/albums/{albumId}`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9119,22 +9619,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
          */
         
         public async getAlbumPhotos(
-            id: number,
+            albumId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getAlbumPhotos', 'id', id)
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('getAlbumPhotos', 'albumId', albumId)
             
-            const localVarPath = `/api/albums/{id}/photos`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/albums/{albumId}/photos`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9201,22 +9701,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} photoId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
          */
         
         public async getPhoto(
-            id: number,
+            photoId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getPhoto', 'id', id)
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('getPhoto', 'photoId', photoId)
             
-            const localVarPath = `/api/photos/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/photos/{photoId}`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9245,7 +9745,7 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} photoId 
          * @param {string} size 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -9253,21 +9753,21 @@ export namespace SDK {
          */
         
         public async getPhotoImage(
-            id: number,
+            photoId: number,
             size: string,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getPhotoImage', 'id', id)
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('getPhotoImage', 'photoId', photoId)
             assertParamExists('getPhotoImage', 'size', size)
             
             // verify required parameter 'size' is not null or undefined
-            assertParamExists('getPhotoImage', 'id', id)
+            assertParamExists('getPhotoImage', 'photoId', photoId)
             assertParamExists('getPhotoImage', 'size', size)
             
-            const localVarPath = `/api/photos/{id}/image/{size}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+            const localVarPath = `/api/photos/{photoId}/image/{size}`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)))
                 .replace(`{${"size"}}`, encodeURIComponent(String(size)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -9441,22 +9941,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
          */
         
         public async publishAlbum(
-            id: number,
+            albumId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('publishAlbum', 'id', id)
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('publishAlbum', 'albumId', albumId)
             
-            const localVarPath = `/api/albums/{id}/publish`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/albums/{albumId}/publish`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9485,28 +9985,28 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
          */
         
         public async reorderAlbumPhotos(
-            id: number,
+            albumId: number,
             body: AlbumPhotosOrderBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('reorderAlbumPhotos', 'id', id)
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('reorderAlbumPhotos', 'albumId', albumId)
             assertParamExists('reorderAlbumPhotos', 'albumPhotosOrderBody', body)
             
             // verify required parameter 'albumPhotosOrderBody' is not null or undefined
-            assertParamExists('reorderAlbumPhotos', 'id', id)
+            assertParamExists('reorderAlbumPhotos', 'albumId', albumId)
             assertParamExists('reorderAlbumPhotos', 'albumPhotosOrderBody', body)
             
-            const localVarPath = `/api/albums/{id}/photos/order`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/albums/{albumId}/photos/order`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9538,22 +10038,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
          */
         
         public async restoreAlbum(
-            id: number,
+            albumId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('restoreAlbum', 'id', id)
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('restoreAlbum', 'albumId', albumId)
             
-            const localVarPath = `/api/albums/{id}/restore`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/albums/{albumId}/restore`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9582,7 +10082,7 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
@@ -9642,15 +10142,15 @@ export namespace SDK {
          */
         
         public async unpublishAlbum(
-            id: number,
+            albumId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('unpublishAlbum', 'id', id)
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('unpublishAlbum', 'albumId', albumId)
             
-            const localVarPath = `/api/albums/{id}/unpublish`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/albums/{albumId}/unpublish`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9679,28 +10179,28 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
          */
         
         public async updateAlbum(
-            id: number,
+            albumId: number,
             body: AlbumUpdateBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateAlbum', 'id', id)
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('updateAlbum', 'albumId', albumId)
             assertParamExists('updateAlbum', 'albumUpdateBody', body)
             
             // verify required parameter 'albumUpdateBody' is not null or undefined
-            assertParamExists('updateAlbum', 'id', id)
+            assertParamExists('updateAlbum', 'albumId', albumId)
             assertParamExists('updateAlbum', 'albumUpdateBody', body)
             
-            const localVarPath = `/api/albums/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/albums/{albumId}`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9732,28 +10232,28 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} photoId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
          */
         
         public async updatePhoto(
-            id: number,
+            photoId: number,
             body: PhotoUpdateBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('updatePhoto', 'id', id)
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('updatePhoto', 'photoId', photoId)
             assertParamExists('updatePhoto', 'photoUpdateBody', body)
             
             // verify required parameter 'photoUpdateBody' is not null or undefined
-            assertParamExists('updatePhoto', 'id', id)
+            assertParamExists('updatePhoto', 'photoId', photoId)
             assertParamExists('updatePhoto', 'photoUpdateBody', body)
             
-            const localVarPath = `/api/photos/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/photos/{photoId}`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9853,6 +10353,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for getProgram operation in PublicAPIApi.
      * @export
@@ -9883,6 +10387,10 @@ export namespace SDK {
          */
         dateTill?: string
     }
+    
+    
+    
+    
     
     
     
@@ -10126,6 +10634,44 @@ export namespace SDK {
         }
     
         /**
+         * The old server\'s iCalendar feed URL, kept so calendar apps subscribed to it keep working. Serves the same feed as GET /api/public/program/ical.
+         * @summary Deprecated: use GET /api/public/program/ical instead.
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @deprecated
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getLegacyProgramIcal(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/program/ical`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<string>(axiosRequestConfig);
+        }
+    
+        /**
          * 
     
          * @param {PublicAPIApiGetProgramQueryParams} queryParams Query parameters.
@@ -10173,6 +10719,42 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getProgramIcal(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/program/ical`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<string>(axiosRequestConfig);
         }
     
         /**
@@ -10287,6 +10869,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * RootApi - object-oriented interface
      * @export
@@ -10333,6 +10919,42 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<RootResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof RootApi
+         */
+        
+        public async getChangelog(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/changelog`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<ChangelogResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -10467,6 +11089,20 @@ export namespace SDK {
     
     
     
+    /**
+     * Query parameters for getLeaderEvents operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetLeaderEventsQueryParams
+     */
+    export interface StatisticsApiGetLeaderEventsQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetLeaderEvents
+         */
+        year?: number
+    }
     
     
     
@@ -10474,6 +11110,38 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for getTopLeaders operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetTopLeadersQueryParams
+     */
+    export interface StatisticsApiGetTopLeadersQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetTopLeaders
+         */
+        year?: number
+    
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof StatisticsApiGetTopLeaders
+         */
+        limit?: number
+    }
     
     
     
@@ -10645,6 +11313,56 @@ export namespace SDK {
         /**
          * 
     
+         * @param {number} memberId 
+         * @param {StatisticsApiGetLeaderEventsQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof StatisticsApi
+         */
+        
+        public async getLeaderEvents(
+            memberId: number,
+            queryParams: StatisticsApiGetLeaderEventsQueryParams,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('getLeaderEvents', 'memberId', memberId)
+            
+            const localVarPath = `/api/statistics/leaders/{memberId}/events`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<LeaderEventResponse>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof StatisticsApi
@@ -10760,6 +11478,54 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<PadlersTotalsResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {StatisticsApiGetTopLeadersQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof StatisticsApi
+         */
+        
+        public async getTopLeaders(
+            queryParams: StatisticsApiGetTopLeadersQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/statistics/leaders/top`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<TopLeadersResponse>(axiosRequestConfig);
         }
     }
     
@@ -10932,22 +11698,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} userId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof UsersApi
          */
         
         public async deleteUser(
-            id: number,
+            userId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('deleteUser', 'id', id)
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('deleteUser', 'userId', userId)
             
-            const localVarPath = `/api/users/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/users/{userId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -10976,7 +11742,7 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} userId 
          * @param {UsersApiGetUserQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -10984,16 +11750,16 @@ export namespace SDK {
          */
         
         public async getUser(
-            id: number,
+            userId: number,
             queryParams: UsersApiGetUserQueryParams,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getUser', 'id', id)
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('getUser', 'userId', userId)
             
-            const localVarPath = `/api/users/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/users/{userId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -11026,22 +11792,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} userId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof UsersApi
          */
         
         public async impersonateUser(
-            id: number,
+            userId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('impersonateUser', 'id', id)
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('impersonateUser', 'userId', userId)
             
-            const localVarPath = `/api/users/{id}/impersonate`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/users/{userId}/impersonate`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -11134,28 +11900,28 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} userId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof UsersApi
          */
         
         public async setUserPassword(
-            id: number,
+            userId: number,
             body: UserSetPasswordBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('setUserPassword', 'id', id)
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('setUserPassword', 'userId', userId)
             assertParamExists('setUserPassword', 'userSetPasswordBody', body)
             
             // verify required parameter 'userSetPasswordBody' is not null or undefined
-            assertParamExists('setUserPassword', 'id', id)
+            assertParamExists('setUserPassword', 'userId', userId)
             assertParamExists('setUserPassword', 'userSetPasswordBody', body)
             
-            const localVarPath = `/api/users/{id}/password`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/users/{userId}/password`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -11187,28 +11953,28 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} userId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof UsersApi
          */
         
         public async updateUser(
-            id: number,
+            userId: number,
             body: UserUpdateBody,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('updateUser', 'id', id)
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('updateUser', 'userId', userId)
             assertParamExists('updateUser', 'userUpdateBody', body)
             
             // verify required parameter 'userUpdateBody' is not null or undefined
-            assertParamExists('updateUser', 'id', id)
+            assertParamExists('updateUser', 'userId', userId)
             assertParamExists('updateUser', 'userUpdateBody', body)
             
-            const localVarPath = `/api/users/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/users/{userId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

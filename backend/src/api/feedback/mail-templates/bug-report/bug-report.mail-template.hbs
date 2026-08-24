@@ -2,12 +2,14 @@
 
 <p>Uživatel nahlásil chybu v bošánovské aplikaci.</p>
 
-<p><strong>Nahlásil/a:</strong> {{reporter}}</p>
-
-<p><strong>Prostředí:</strong> {{environment}}</p>
+<p><strong>Nahlásil/a:</strong> <a href="{{reporterUrl}}">{{reporter}}</a></p>
 
 {{#if url}}
 	<p><strong>Stránka:</strong> <a href="{{url}}">{{url}}</a></p>
+{{/if}}
+
+{{#if issueUrl}}
+	<p><strong>GitHub issue:</strong> <a href="{{issueUrl}}">#{{issueNumber}}</a></p>
 {{/if}}
 
 <p><strong>Popis chyby:</strong></p>

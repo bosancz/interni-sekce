@@ -21,7 +21,9 @@
 				<div class="bo-info-row">
 					<span class="bo-info-label">Jméno</span>
 					<span class="bo-info-action">
-						<span class="bo-info-value">{{ memberValue.firstName || "-" }} {{ memberValue.lastName || "-" }}</span>
+						<span class="bo-info-value"
+							>{{ memberValue.firstName || "-" }} {{ memberValue.lastName || "-" }}</span
+						>
 						<bo-edit-button-name
 							label="Jméno"
 							placeholder="Bilbo"
@@ -49,13 +51,31 @@
 				<div class="bo-info-row">
 					<span class="bo-info-label">Datum narození</span>
 					<span class="bo-info-action">
-						<span class="bo-info-value">{{ memberValue.birthday ? (memberValue.birthday | date: "d. M. y") : "-" }}</span>
+						<span class="bo-info-value">{{
+							memberValue.birthday
+								? (memberValue.birthday | date: "d. M. y") +
+									" (" +
+									(memberValue | member: "ageLabel") +
+									")"
+								: "-"
+						}}</span>
 						<bo-edit-button-date
 							label="Datum narození"
 							[disabled]="!memberValue._links.updateMember.allowed"
 							[value]="memberValue.birthday"
 							(update)="update.emit({ birthday: $event })"
 						/>
+					</span>
+				</div>
+
+				<div class="bo-info-row">
+					<span class="bo-info-label">Adresa</span>
+					<span class="bo-info-action">
+						<span class="bo-info-value address-value">{{ getFullAddress(memberValue) || "-" }}</span>
+						<bo-edit-button
+							[disabled]="!memberValue._links.updateMember.allowed"
+							(click)="editAddress()"
+						></bo-edit-button>
 					</span>
 				</div>
 			</div>

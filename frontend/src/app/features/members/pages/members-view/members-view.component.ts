@@ -17,11 +17,11 @@ import { ApiService } from "src/app/core/services/api.service";
 import { TitleService } from "src/app/core/services/title.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
-import { MemberAddressComponent } from "../../components/member-address/member-address.component";
 import { MemberContactComponent } from "../../components/member-contact/member-contact.component";
 import MemberContactsComponent from "../../components/member-contacts/member-contacts.component";
 import { MemberHealthComponent } from "../../components/member-health/member-health.component";
@@ -47,10 +47,10 @@ import { MemberProfileComponent } from "../../components/member-profile/member-p
 		MemberProfileComponent,
 		MemberInfoComponent,
 		MemberContactComponent,
-		MemberAddressComponent,
 		MemberMembershipComponent,
 		MemberHealthComponent,
 		MemberContactsComponent,
+		GroupBadgeComponent,
 	],
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeave {
@@ -59,8 +59,6 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 	membershipStates = MembershipStates;
 
-	// actions that do not apply to the member are hidden,
-	// actions that apply but the user is not permitted to use are shown disabled
 	actions = computed<Action[]>(() => {
 		const links = this.member()?._links;
 
@@ -121,7 +119,7 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 	async loadMember(id: number) {
 		const member = await this.api.MembersApi.getMember(id).then((res) => res.data);
-		this.titleService.setTitle(member?.nickname ?? null);
+		this.titleService.setTitle(this.getTitleName(member) || null);
 
 		this.member.set(member);
 	}
@@ -156,7 +154,7 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 		const alert = await this.alertController.create({
 			header: "Smazat člena?",
-			message: `Opravdu chcete smazat člena „<strong>${this.getFullName(this.member()!)}</strong>“?`,
+			message: `Opravdu chcete smazat člena „<strong>${this.getTitleName(this.member()!)}</strong>“?`,
 			buttons: [{ text: "Zrušit" }, { text: "Smazat", handler: () => this.deleteConfirmed() }],
 		});
 
@@ -183,12 +181,9 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		this.toastService.toast(`Člen ${member.nickname} obnoven.`);
 	}
 
-	getFullName(member?: SDK.MemberResponseWithLinks | null) {
+	getTitleName(member?: SDK.MemberResponseWithLinks | null) {
 		if (!member) return "";
-		return (
-			member.nickname +
-			(member?.firstName || member.lastName ? ` (${member?.firstName} ${member?.lastName})` : "")
-		);
+		return member.nickname || member.firstName || member.lastName || "";
 	}
 
 	getAge(member?: SDK.MemberResponseWithLinks) {}

@@ -5,14 +5,8 @@ import { cameraOutline, checkmarkOutline, flashOffOutline, flashOutline, refresh
 import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 
-/**
- * Aspect ratio of an ID-1 card (bank / insurance card): 85.6mm × 53.98mm ≈ 1.586.
- * The on-screen guide frame and the captured crop both use this ratio so that the
- * photo matches exactly what the user framed.
- */
 const CARD_ASPECT_RATIO = 85.6 / 53.98;
 
-/** Longest edge of the produced image, keeps the upload small while staying sharp. */
 const OUTPUT_MAX_WIDTH = 1600;
 
 type CaptureState = "initializing" | "live" | "preview" | "error";
@@ -36,11 +30,9 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 	torchAvailable = signal(false);
 	torchOn = signal(false);
 
-	/** Data URL of the freshly cropped photo, shown in the preview step. */
 	previewUrl = signal<string | null>(null);
 
 	private stream: MediaStream | null = null;
-	/** The cropped photo, produced on capture and uploaded when confirmed. */
 	private capturedFile: File | null = null;
 
 	constructor(modalController: ModalController) {
@@ -65,7 +57,6 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		}
 
 		try {
-			// Prefer the rear camera at a high resolution – best for reading small print off a card.
 			this.stream = await navigator.mediaDevices.getUserMedia({
 				video: {
 					facingMode: { ideal: "environment" },
@@ -106,7 +97,6 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 			await track.applyConstraints({ advanced: [{ torch: next } as MediaTrackConstraintSet] });
 			this.torchOn.set(next);
 		} catch {
-			// Some devices report torch support but reject the constraint – just hide the option.
 			this.torchAvailable.set(false);
 		}
 	}
@@ -122,12 +112,6 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		this.state.set("error");
 	}
 
-	/**
-	 * Grabs the current video frame and crops it to the region covered by the guide
-	 * frame. The video is rendered with `object-fit: cover`, so the mapping between
-	 * the displayed frame and the intrinsic camera pixels has to account for the
-	 * scaling and centering the browser applies.
-	 */
 	capture() {
 		const videoEl = this.video()?.nativeElement;
 		const frameEl = this.frame()?.nativeElement;
@@ -140,14 +124,12 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		const videoRect = videoEl.getBoundingClientRect();
 		const frameRect = frameEl.getBoundingClientRect();
 
-		// object-fit: cover scales the video up until it fills the box, cropping the overflow.
 		const scale = Math.max(videoRect.width / intrinsicW, videoRect.height / intrinsicH);
 		const visibleW = videoRect.width / scale;
 		const visibleH = videoRect.height / scale;
 		const offsetX = (intrinsicW - visibleW) / 2;
 		const offsetY = (intrinsicH - visibleH) / 2;
 
-		// Guide frame position relative to the video element, mapped into intrinsic pixels.
 		const cropX = offsetX + (frameRect.left - videoRect.left) / scale;
 		const cropY = offsetY + (frameRect.top - videoRect.top) / scale;
 		const cropW = frameRect.width / scale;
@@ -178,14 +160,12 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		);
 	}
 
-	/** Discard the captured photo and go back to the live camera. */
 	async retake() {
 		this.capturedFile = null;
 		this.previewUrl.set(null);
 		await this.startCamera();
 	}
 
-	/** Confirm the captured photo – hands the file back to the caller for upload. */
 	confirm() {
 		if (this.capturedFile) this.submit.emit(this.capturedFile);
 	}

@@ -19,12 +19,12 @@ export class EventsReportsController {
 		@InjectRepository(Event) private eventsRepository: Repository<Event>,
 	) {}
 
-	@Get(":id/report")
+	@Get(":eventId/report")
 	@HttpCode(204)
 	@AcLinks(EventReportReadPermission)
 	@ApiResponse({ status: 204 })
-	async getEventReport(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
-		const event = await this.events.getEvent(id);
+	async getEventReport(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<void> {
+		const event = await this.events.getEvent(eventId);
 		if (!event) throw new NotFoundException();
 
 		EventReportReadPermission.canOrThrow(req, event);

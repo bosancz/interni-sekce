@@ -1,0 +1,63 @@
+<bo-card [color]="color()">
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="alert-circle-outline" />
+				Nevyplněná data
+				@if (missingCount()) {
+					<span class="bo-pill bo-pill-red missing-count">{{ missingCount() }}</span>
+				}
+			</span>
+		</bo-card-title>
+	</bo-card-header>
+
+	<bo-card-content>
+		@if (members() === undefined) {
+			<div class="bo-info-list">
+				<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+				<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+				<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+			</div>
+		} @else if (entries().length === 0) {
+			<div class="bo-info-list">
+				<div class="bo-info-row missing-empty">
+					<ion-icon name="checkmark-circle-outline" />
+					<span>U aktivních členů nechybí žádné údaje.</span>
+				</div>
+			</div>
+		} @else {
+			<div class="bo-info-list">
+				@for (entry of entries(); track entry.member.id) {
+					<div class="bo-info-row missing-row">
+						<div class="missing-member">
+							<span class="missing-name">{{ entry.member | member: "nickname" }}</span>
+						</div>
+
+						<div class="missing-labels">
+							@for (item of entry.items; track item.label) {
+								<span class="bo-pill bo-pill-danger-dashed missing-label">
+									<ion-icon
+										class="ion-hide-md-up"
+										[name]="item.icon"
+										[attr.aria-label]="item.label"
+										[title]="item.label"
+									/>
+									<span class="ion-hide-md-down">{{ item.label }}</span>
+								</span>
+							}
+						</div>
+
+						<ion-button
+							class="missing-link"
+							fill="clear"
+							size="small"
+							[routerLink]="['/databaze/clenove', entry.member.id]"
+						>
+							<ion-icon slot="end" name="chevron-forward-outline" />
+						</ion-button>
+					</div>
+				}
+			</div>
+		}
+	</bo-card-content>
+</bo-card>

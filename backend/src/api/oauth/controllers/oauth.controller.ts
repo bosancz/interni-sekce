@@ -16,13 +16,6 @@ import { Config } from "src/config";
 import { OauthTokenBody } from "../dto/oauth.dto";
 import { OauthService } from "../services/oauth.service";
 
-/**
- * OAuth2 identity-provider endpoints (authorization-code flow) that let external
- * first-party apps – the Wiki.js wiki – log users in via SSO. See WIKI-SSO.md.
- *
- * These are plain OAuth infrastructure endpoints, not part of the HATEOAS API
- * surface, so they are excluded from the OpenAPI docs.
- */
 @Controller("oauth")
 @ApiExcludeController()
 export class OauthController {
@@ -42,9 +35,6 @@ export class OauthController {
 		}
 		if (response_type !== "code") throw new BadRequestException("Unsupported response_type");
 
-		// The session is set by TokenMiddleware from the `token` cookie, which
-		// rides along on this top-level navigation (sameSite=none). If the user
-		// is not logged in, send them to the app to sign in and try again.
 		if (!req.user) {
 			return res.redirect(this.config.app.baseUrl);
 		}

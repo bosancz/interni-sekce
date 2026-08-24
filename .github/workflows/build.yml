@@ -27,6 +27,18 @@ on:
         description: "Build arguments"
         type: string
         required: false
+      ref:
+        description: "Git ref to check out and build (defaults to the triggering commit)"
+        type: string
+        required: false
+      changelog-version:
+        description: "Record the commits since the last v* tag under this version in CHANGELOG.md before building"
+        type: string
+        required: false
+      changelog-branch:
+        description: "Push the regenerated CHANGELOG.md to this branch once the image is published; empty leaves it in the working tree, so it reaches the image and nowhere else"
+        type: string
+        required: false
     secrets:
       username:
         description: "Username for the container registry"
@@ -38,16 +50,46 @@ on:
       images:
         description: "List of pushed images, separated by commas"
         value: ${{ jobs.build.outputs.images }}
+      sha:
+        description: "Commit SHA the image was built from — the changelog commit when one was pushed"
+        value: ${{ jobs.build.outputs.sha }}
 
 jobs:
   build:
     name: Build and publish Docker image
     runs-on: ubuntu-latest
+    # contents: write to push the changelog commit, packages: write to push the image — declaring the
+    # block replaces the inherited set, so both have to be listed
+    permissions:
+      contents: write
+      packages: write
     outputs:
       images: ${{ steps.meta.outputs.images }}
+      sha: ${{ steps.commit.outputs.sha }}
     steps:
       - name: Checkout the updated source code
         uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          # full history + tags when the changelog is generated here, so it can diff since the last version tag
+          fetch-depth: ${{ inputs.changelog-version != '' && '0' || '1' }}
+
+      - name: Set up Node
+        if: inputs.changelog-version != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # Generated into the working tree the image is built from. A release then persists it by pushing
+      # changelog-branch below; a pre-release leaves it uncommitted, so the image — and only the image —
+      # lists the changes no released version carries yet.
+      # GITHUB_TOKEN lets the generator ask the API which GitHub account authored each commit, so the
+      # entries carry their authors' avatars; without it those authors fall back to their initials.
+      - name: Generate changelog
+        if: inputs.changelog-version != ''
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/generate-changelog.mjs --new-tag "${{ inputs.changelog-version }}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -91,3 +133,22 @@ jobs:
           cache-from: type=gha,scope=${{ inputs.image-name }}
           cache-to: type=gha,mode=max,scope=${{ inputs.image-name }}
           build-args: ${{ inputs.build-args }}
+
+      # After the image is published, so a failed build never leaves a changelog section on the branch
+      # for a version that was not released — the next attempt would then record that version twice.
+      - name: Commit and push the changelog
+        id: commit
+        if: inputs.changelog-branch != ''
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+
+          if git diff --quiet -- CHANGELOG.md; then
+            echo "No changelog changes to commit."
+          else
+            git add CHANGELOG.md
+            git commit -m "chore(release): update changelog for ${{ inputs.changelog-version }} [skip ci]"
+            git push origin HEAD:${{ inputs.changelog-branch }}
+          fi
+
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"

@@ -17,8 +17,6 @@ import { PlatformService } from "src/app/core/services/platform.service";
 	imports: [RouterLink, IonButton, IonButtons, IonIcon, GlobalSearchComponent, AccountMenuComponent],
 })
 export class HeaderComponent {
-	// Delay dropping the results on blur so that clicks on result items are processed
-	// before the dropdown disappears.
 	private static readonly BLUR_CLOSE_DELAY_MS = 200;
 
 	showSearch = signal(false);
@@ -36,7 +34,6 @@ export class HeaderComponent {
 		addIcons({ searchSharp });
 	}
 
-	/** The header shows the results as a dropdown, so they go away once the searchbar is left. */
 	onSearchBlur() {
 		setTimeout(() => this.globalSearch()?.clear(), HeaderComponent.BLUR_CLOSE_DELAY_MS);
 	}

@@ -9,6 +9,11 @@
 				src: url("../../fonts/SanGrotesk-Regular.otf");
 			}
 
+			@font-face {
+				font-family: "NunitoSans";
+				src: url("../../fonts/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf");
+			}
+
 			/* --- barva šablony: stačí změnit tuto jednu hodnotu (při generování ji nahradí vybraná barva) --- */
 			:root {
 				--accent: #799f3d;
@@ -24,7 +29,7 @@
 			}
 
 			body {
-				font-family: "Helvetica Neue", Arial, sans-serif;
+				font-family: "NunitoSans", "Helvetica Neue", Arial, sans-serif;
 				font-size: 11px;
 				line-height: 1.4;
 				color: #1f2329;
@@ -128,8 +133,14 @@
 				margin: 4px 0;
 			}
 
-			.info-box .multiline {
-				white-space: pre-line;
+			.info-box .item-list > .label + p {
+				display: inline;
+			}
+
+			.info-box .item-list ul,
+			.info-box .item-list ol {
+				margin: 4px 0;
+				padding-left: 18px;
 			}
 
 			/* volitelný box s doplňující informací (např. platební instrukce) */
@@ -238,7 +249,7 @@
 						{{#if departure}}<p><span class="label">Odjezd:</span> {{departure}}</p>{{/if}}
 						{{#if arrival}}<p><span class="label">Příjezd:</span> {{arrival}}</p>{{/if}}
 						{{#if price}}<p><span class="label">Cena:</span> {{price}}</p>{{/if}}
-						{{#if itemList}}<p class="multiline"><span class="label">Co s sebou:</span> {{itemList}}</p>{{/if}}
+						{{#if itemListHtml}}<div class="item-list"><span class="label">Co s sebou:</span> {{{itemListHtml}}}</div>{{/if}}
 						{{#if contactsLine}}<p><span class="label">Kontakt:</span> {{contactsLine}}</p>{{/if}}
 					</div>
 

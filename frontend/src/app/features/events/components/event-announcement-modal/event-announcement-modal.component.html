@@ -1,0 +1,33 @@
+<bo-modal-layout>
+	<h4 slot="title">Ohláška</h4>
+
+	<div class="bm-body">
+		<label class="bm-check-row" [class.checked]="sent()" [class.disabled]="!editable()">
+			<input
+				type="checkbox"
+				class="bm-visually-hidden"
+				[checked]="sent()"
+				[disabled]="!editable()"
+				(change)="sent.set($any($event.target).checked)"
+			/>
+			<span class="bm-checkbox">
+				@if (sent()) {
+					<ion-icon name="checkmark-outline"></ion-icon>
+				}
+			</span>
+			<span class="bm-row-text">
+				<span class="bm-row-label">Ohláška odeslána</span>
+				<span class="bm-row-helper">Ohláška se odesílá e-mailem — po odeslání ji tady zaškrtni.</span>
+			</span>
+		</label>
+
+		@if (sentAt(); as date) {
+			<p class="bm-sent-note">Označeno {{ date | date: "d. M. y" }}.</p>
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button type="button" class="bm-btn-primary" [disabled]="!editable()" (click)="save()">Uložit</button>
+	</div>
+</bo-modal-layout>

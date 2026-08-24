@@ -55,7 +55,6 @@ export class ProgramPrintModalComponent extends InputModalComponent implements O
 			return;
 		}
 
-		// lazy načítání ProgramExportService, je totiž závislá na obrovské (700k) docx knihovně
 		const ProgramExportService = await import("../../../program/services/program-export.service").then(
 			(f) => f.ProgramExportService,
 		);
@@ -63,7 +62,6 @@ export class ProgramPrintModalComponent extends InputModalComponent implements O
 
 		programExport.export(events);
 
-		// Close modal after successful export
 		this.close.emit();
 	}
 }

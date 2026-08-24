@@ -46,7 +46,6 @@ export class EventsRepository {
 			])
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
 			.leftJoinAndSelect("attendees.member", "leaders")
-			// row-level permission filter (see Permission.canWhere)
 			.where(where);
 
 		applySort(
@@ -95,8 +94,6 @@ export class EventsRepository {
 
 		const events = await q.getMany();
 
-		// populate `leaders` from the joined leader attendees so list consumers (cards, exports)
-		// get the same shape as getEvent() — the @AfterLoad hook only covers already-loaded attendees
 		for (const event of events) {
 			event.leaders = (event.attendees ?? [])
 				.filter((a) => a.member && a.type === EventAttendeeType.leader)
@@ -106,13 +103,24 @@ export class EventsRepository {
 		return events;
 	}
 
-	/**
-	 * Public program for the bosan.cz website: only published/cancelled events, with
-	 * leader members and groups loaded. `dateFrom` defaults to a few days back so the
-	 * currently-running events stay visible.
-	 */
 	async getPublicProgram(options: { dateFrom?: string; dateTill?: string; limit?: number } = {}) {
-		const q = this.eventsRepository
+		const q = this.publicProgramQuery(options.dateFrom ?? this.defaultProgramFrom()).take(
+			Math.min(options.limit ?? 100, 100),
+		);
+
+		if (options.dateTill) q.andWhere("events.dateFrom <= :dateTill", { dateTill: options.dateTill });
+
+		return this.withLeaders(await q.getMany());
+	}
+
+	async getPublicProgramIcal(options: { dateFrom?: string } = {}) {
+		const q = this.publicProgramQuery(options.dateFrom ?? this.defaultProgramFrom());
+
+		return this.withLeaders(await q.getMany());
+	}
+
+	private publicProgramQuery(dateFrom: string) {
+		return this.eventsRepository
 			.createQueryBuilder("events")
 			.select([
 				"events.id",
@@ -134,15 +142,12 @@ export class EventsRepository {
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
 			.leftJoinAndSelect("attendees.member", "leaders")
 			.where("events.status IN (:...statuses)", { statuses: [EventStates.public, EventStates.cancelled] })
-			.andWhere("events.dateTill >= :dateFrom", { dateFrom: options.dateFrom ?? this.defaultProgramFrom() })
+			.andWhere("events.dateTill >= :dateFrom", { dateFrom })
 			.orderBy("events.dateFrom", "ASC")
-			.addOrderBy("events.timeFrom", "ASC", "NULLS FIRST")
-			.take(Math.min(options.limit ?? 100, 100));
+			.addOrderBy("events.timeFrom", "ASC", "NULLS FIRST");
+	}
 
-		if (options.dateTill) q.andWhere("events.dateFrom <= :dateTill", { dateTill: options.dateTill });
-
-		const events = await q.getMany();
-
+	private withLeaders(events: Event[]) {
 		for (const event of events) {
 			event.leaders = (event.attendees ?? [])
 				.filter((a) => a.member && a.type === EventAttendeeType.leader)
@@ -152,7 +157,6 @@ export class EventsRepository {
 		return events;
 	}
 
-	/** Three days back, so events that are currently under way are still shown. */
 	private defaultProgramFrom() {
 		const from = new Date();
 		from.setDate(from.getDate() - 3);
@@ -173,14 +177,12 @@ export class EventsRepository {
 			relations: { member: true },
 			withDeleted: true,
 		});
-		event.attendees = leaderAttendees; // so isMyEvent(doc) works in canOrThrow & _links
+		event.attendees = leaderAttendees;
 		event.leaders = leaderAttendees.map((ea) => ea.member!);
 
 		return event;
 	}
 
-	// Soft-deleted events only (deleted_at IS NOT NULL). withDeleted() lifts TypeORM's default
-	// filter that hides them, and the explicit condition keeps the live events out.
 	async getDeletedEvents(where: Brackets | string = "1=1") {
 		const q = this.eventsRepository
 			.createQueryBuilder("events")
@@ -203,7 +205,6 @@ export class EventsRepository {
 
 		const events = await q.getMany();
 
-		// populate `leaders` from the joined leader attendees, matching getEvents()' shape
 		for (const event of events) {
 			event.leaders = (event.attendees ?? [])
 				.filter((a) => a.member && a.type === EventAttendeeType.leader)
@@ -213,7 +214,6 @@ export class EventsRepository {
 		return events;
 	}
 
-	// Irreversibly remove the row from the database (as opposed to deleteEvent's soft delete).
 	async hardDeleteEvent(id: number) {
 		await this.eventsRepository.delete({ id });
 	}
@@ -223,8 +223,6 @@ export class EventsRepository {
 	}
 
 	async updateEvent(id: number, data: Partial<Event>) {
-		// groupsIds is a @RelationId (read-only); the join rows are synced by saving the
-		// @ManyToMany itself, so translate the ids into group references before saving.
 		if (data.groupsIds) {
 			data.groups = data.groupsIds.map((id) => ({ id }) as Group);
 			delete data.groupsIds;
@@ -269,7 +267,6 @@ export class EventsRepository {
 			.where("attendee.event_id = :id", { id })
 			.leftJoinAndSelect("attendee.member", "member")
 			.leftJoinAndSelect("attendee.event", "event")
-			// event.attendees is needed so isMyEvent(doc.event) works in the edit/delete permission checks and _links
 			.leftJoinAndSelect("event.attendees", "leaders", "leaders.type = :type", { type: "leader" })
 			.select(["attendee", "member", "event.id", "leaders"])
 			.withDeleted();
@@ -280,7 +277,6 @@ export class EventsRepository {
 	async getEventAttendee(eventId: number, memberId: number) {
 		return this.eventAttendeesRepository.findOne({
 			where: { eventId, memberId },
-			// event.attendees is needed so isMyEvent(doc.event) works in the edit/delete permission checks
 			relations: { member: true, event: { attendees: true } },
 			withDeleted: true,
 		});
@@ -313,7 +309,7 @@ export class EventsRepository {
 	async getEventExpense(eventId: number, expenseId: number) {
 		return this.eventExpensesRepository.findOne({
 			where: { eventId, id: expenseId },
-			relations: { event: { attendees: true } }, // so isMyEvent(doc.event) works in canOrThrow
+			relations: { event: { attendees: true } },
 			withDeleted: true,
 		});
 	}

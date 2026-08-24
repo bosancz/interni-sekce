@@ -1,4 +1,4 @@
-name: Release to PROD
+name: Release to PRODUCTION
 
 on:
   workflow_dispatch:
@@ -43,6 +43,10 @@ jobs:
       registry: ghcr.io
       tag: latest
       version: ${{ needs.version.outputs.new_tag }}
+      # the changelog section is written into the tree the image is built from and pushed to master
+      # once the image is published; the resulting commit is what gets tagged
+      changelog-version: ${{ needs.version.outputs.new_tag }}
+      changelog-branch: master
       build-args: |
         VERSION=${{ needs.version.outputs.new_tag }}
     secrets:
@@ -61,8 +65,9 @@ jobs:
     name: Tag release
     needs:
       - version
-      - deploy
+      - build
     uses: ./.github/workflows/tag.yml
     with:
-      tag: PROD
+      tag: PRODUCTION
       version: ${{ needs.version.outputs.new_tag }}
+      ref: ${{ needs.build.outputs.sha }}

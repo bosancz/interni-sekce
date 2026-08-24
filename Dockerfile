@@ -3,6 +3,7 @@
 FROM node:24-alpine AS build-frontend
 
 ARG NG_CONFIGURATION=production
+ARG VERSION
 
 WORKDIR /app/frontend
 
@@ -12,6 +13,7 @@ RUN npm ci
 
 # build
 COPY ./frontend .
+ENV VERSION=$VERSION
 RUN npm run build
 
 
@@ -57,6 +59,9 @@ COPY --from=build-backend /app/backend/package.json /app/backend/
 
 # copy frontend files
 COPY --from=build-frontend /app/frontend/dist /app/frontend/dist
+
+# changelog served at GET /api/changelog (see ChangelogService); path resolves via config.app.changelogPath
+COPY CHANGELOG.md /app/CHANGELOG.md
 
 # run
 WORKDIR /app/backend

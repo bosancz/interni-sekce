@@ -27,6 +27,8 @@
 				<bo-add-button (click)="addAttendee('attendee')">Přidat účastníka</bo-add-button>
 			</div>
 		}
+
+		<p class="attendees-note text-muted">Věk je uvedený ke dni začátku akce.</p>
 	</div>
 	<div class="order-1 order-lg-2 col-12 col-xl-4">
 		@if (event()) {
@@ -39,26 +41,22 @@
 				</bo-card-content>
 			</bo-card>
 
-			<div class="d-none d-lg-block">
-				<bo-card class="mb-3">
-					<bo-card-header>
-						<bo-card-title>Věk účastníků</bo-card-title>
-					</bo-card-header>
-					<bo-card-content>
-						<event-age-histogram [event]="event()!" [members]="allMembers()"></event-age-histogram>
-					</bo-card-content>
-				</bo-card>
-			</div>
+			<bo-card class="mb-3">
+				<bo-card-header>
+					<bo-card-title>Věk účastníků</bo-card-title>
+				</bo-card-header>
+				<bo-card-content>
+					<event-age-histogram [event]="event()!" [members]="allMembers()"></event-age-histogram>
+				</bo-card-content>
+			</bo-card>
 		}
 
-		@if (event() && event()!._links.getEventAnnouncement.allowed) {
-			@if ((attendees()!.length + leaders()!.length) !=0){
-				<div class="text-center">
-					<ion-button (click)="getAnnouncement(event()!)" expand="block" fill="outline">
-						Stáhnout ohlášku
-					</ion-button>
-				</div>
-			}
+		@if (event() && event()!._links.getEventAnnouncement.allowed && attendeesCount()) {
+			<div class="text-center">
+				<ion-button (click)="getAnnouncement(event()!)" expand="block" fill="outline">
+					Stáhnout ohlášku
+				</ion-button>
+			</div>
 		}
 	</div>
 </div>

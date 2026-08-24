@@ -11,6 +11,10 @@ on:
         description: "Version to tag"
         type: string
         required: false
+      ref:
+        description: "Git ref to tag (defaults to the triggering commit)"
+        type: string
+        required: false
 
 permissions:
   contents: write
@@ -24,6 +28,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0 # Fetch all history for tags
+          ref: ${{ inputs.ref }}
 
       - name: Set up Git
         run: |
@@ -39,9 +44,5 @@ jobs:
       - name: Create Version Tag
         if: inputs.version
         run: |
-          if git ls-remote --exit-code --tags origin "refs/tags/${{ inputs.version }}" >/dev/null 2>&1; then
-            echo "Tag ${{ inputs.version }} already exists, leaving it untouched."
-            exit 0
-          fi
-          git tag ${{ inputs.version }}
-          git push origin ${{ inputs.version }}
+          git tag --force ${{ inputs.version }}
+          git push origin --force ${{ inputs.version }}

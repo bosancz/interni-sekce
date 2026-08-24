@@ -4,6 +4,7 @@ import { ActionSheetButton, PredefinedColors } from "@ionic/core";
 import { addIcons } from "ionicons";
 import { ellipsisVertical } from "ionicons/icons";
 import { PlatformService } from "src/app/core/services/platform.service";
+import { TooltipDirective } from "../../directives/tooltip.directive";
 
 export interface Action extends ActionSheetButton {
 	disabled?: boolean;
@@ -17,7 +18,7 @@ export interface Action extends ActionSheetButton {
 	templateUrl: "./action-buttons.component.html",
 	styleUrls: ["./action-buttons.component.scss"],
 
-	imports: [IonButton, IonIcon, IonText],
+	imports: [IonButton, IonIcon, IonText, TooltipDirective],
 })
 export class ActionButtonsComponent implements OnInit {
 	actions = input<Action[]>([]);
@@ -25,6 +26,8 @@ export class ActionButtonsComponent implements OnInit {
 	subHeader = input<string | null | undefined>();
 
 	close = output<void>();
+
+	readonly noPermissionText = "K této akci nemáš oprávnění.";
 
 	pinned = signal<Action[]>([]);
 	buttons = signal<Action[]>([]);
@@ -49,7 +52,6 @@ export class ActionButtonsComponent implements OnInit {
 			this.buttons.set(actions.filter((item) => !item.pinned));
 
 			if (actions.filter((item) => !item.pinned).length) {
-				// disabled actions stay in the menu (rendered disabled) so the user sees what is possible but not permitted
 				const menu = actions.filter((item) => item.text && !item.pinned);
 
 				if (!menu.some((item) => item.role === "cancel") && this.platformService.isIos.value) {
@@ -90,6 +92,8 @@ export class ActionButtonsComponent implements OnInit {
 	}
 
 	onClick(action: Action) {
+		if (action.disabled) return;
+
 		action.handler?.();
 	}
 

@@ -9,10 +9,25 @@ ion-item {
 	--color: var(--bo-muted);
 	font-weight: 600;
 
-	// active subnav item — yellow tint + blue bold
 	&.active {
 		--background: var(--bo-nav-active-bg);
 		--color: var(--bo-nav-active-fg);
 		font-weight: 800;
+	}
+}
+
+ion-badge {
+	--background: var(--bo-neutral-badge);
+	--color: var(--bo-neutral-badge-text);
+	border-radius: var(--bo-radius-pill);
+	font-size: 0.7rem;
+	font-weight: 700;
+	padding: 0.3em 0.6em;
+	min-width: 1.8em;
+	text-align: center;
+
+	&.badge-attention {
+		--background: var(--san-yellow);
+		--color: #1f2430;
 	}
 }

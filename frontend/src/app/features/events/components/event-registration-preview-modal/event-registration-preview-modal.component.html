@@ -1,0 +1,23 @@
+<bo-modal-layout>
+	<h4 slot="title">Náhled přihlášky</h4>
+
+	<div class="preview">
+		<img class="preview-image" [src]="image" alt="Náhled přihlášky" (click)="openInNewTab()" />
+	</div>
+
+	<p class="preview-note">Zkontroluj přihlášku — k akci se uloží až po publikování.</p>
+
+	<div slot="buttons" class="bm-buttons preview-buttons">
+		<button
+			type="button"
+			class="bm-btn-ghost preview-open"
+			(click)="openInNewTab()"
+			aria-label="Otevřít v novém panelu"
+		>
+			<ion-icon name="open-outline"></ion-icon>
+			<span class="preview-open-label">Otevřít v novém panelu</span>
+		</button>
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button type="button" class="bm-btn-primary" (click)="publish()">Publikovat</button>
+	</div>
+</bo-modal-layout>

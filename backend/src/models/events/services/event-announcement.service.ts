@@ -14,7 +14,6 @@ export class EventAnnouncementService {
 		const xlsx = await xlsxPopulate.fromFileAsync(templatePath);
 		const annoucementSheet = xlsx.sheet("Ohláška");
 
-		// Header
 		annoucementSheet.cell("B12").value(event.name || "");
 		annoucementSheet.range("B14:B14").value(string2Date(event.dateFrom) || "");
 		annoucementSheet.range("B15:B15").value(string2Date(event.dateTill) || "");

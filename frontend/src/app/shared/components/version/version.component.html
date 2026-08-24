@@ -1,13 +1,19 @@
 <p class="version">
-	@switch (updateStatus()) {
-		@case ("checking") {
-			<ion-spinner></ion-spinner>
-		}
-		@case ("available") {
-			<a (click)="doUpdate()" class="clickable">Aktualizovat</a>
-		}
-		@default {
-			Verze {{ version() }}
-		}
-	}
+	<a (click)="openChangelog()" class="clickable">Verze {{ version }}</a>
 </p>
+
+@if (updateAvailable()) {
+	<p class="update">
+		@if (updating()) {
+			<ion-spinner></ion-spinner>
+		} @else {
+			<a (click)="doUpdate()" class="clickable">
+				@if (newVersion(); as targetVersion) {
+					Aktualizovat na {{ targetVersion }}
+				} @else {
+					Aktualizovat
+				}
+			</a>
+		}
+	</p>
+}

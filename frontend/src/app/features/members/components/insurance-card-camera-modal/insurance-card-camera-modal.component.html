@@ -2,12 +2,9 @@
 	<h4 slot="title">Vyfotit kartičku pojištěnce</h4>
 
 	<div class="camera-stage" [style.aspect-ratio]="cardAspectRatio">
-		<!-- Live camera preview. Kept in the DOM (hidden) during preview so the -->
-		<!-- video element and its ref stay available for a quick retake. -->
 		<video #video class="feed" [class.hidden]="state() !== 'live'" playsinline muted></video>
 
 		@if (state() === "live") {
-			<!-- Card-shaped guide with corner brackets to line the card up against. -->
 			<div class="overlay">
 				<div #frame class="guide" [style.aspect-ratio]="cardAspectRatio">
 					<span class="corner top-left"></span>

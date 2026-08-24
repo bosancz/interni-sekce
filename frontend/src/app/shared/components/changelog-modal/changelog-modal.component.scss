@@ -1,0 +1,133 @@
+.changelog {
+	max-height: 60vh;
+	overflow-y: auto;
+	padding: 16px;
+	user-select: text !important;
+
+	::ng-deep {
+		h2 {
+			font-size: 1.1rem;
+			margin: 2.5rem 0 1rem;
+
+			&:not(:first-of-type) {
+				border-top: 1px solid var(--bo-line);
+				padding-top: 1.5rem;
+			}
+		}
+
+		hr {
+			border: none;
+			border-top: 4px solid var(--black);
+			margin: 3rem 0;
+			opacity: 1;
+		}
+
+		hr + h2 {
+			border-top: none;
+			padding-top: 0;
+			margin-top: 0;
+		}
+
+		p {
+			margin: 0 0 1rem;
+		}
+
+		ul {
+			margin: 0 0 0.5rem;
+			padding-inline-start: 0;
+			list-style: none;
+		}
+
+		li {
+			margin: 0.15rem 0;
+			padding-inline-start: 1.75rem;
+			text-indent: -1.75rem;
+		}
+
+		a {
+			color: inherit;
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+
+		a.issue-ref {
+			color: var(--ion-color-primary);
+			white-space: nowrap;
+		}
+
+		.changelog-credit {
+			--avatar-size: 1rem;
+
+			display: inline-flex;
+			align-items: center;
+			vertical-align: -0.2rem;
+			margin-inline-start: 0.25rem;
+			text-indent: 0;
+		}
+
+		.changelog-author {
+			position: relative;
+			z-index: 1;
+		}
+
+		.changelog-committer {
+			margin-inline-start: calc(var(--avatar-size) * -0.6);
+		}
+
+		.changelog-author,
+		.changelog-committer {
+			display: block;
+		}
+
+		.changelog-avatar {
+			display: block;
+			width: var(--avatar-size);
+			height: var(--avatar-size);
+			border-radius: 50%;
+			box-shadow: 0 0 0 1px var(--ion-background-color, #fff);
+		}
+
+		.changelog-initials {
+			background: var(--ion-color-light);
+			color: var(--ion-color-medium);
+			font-size: 0.5rem;
+			font-weight: 600;
+			line-height: var(--avatar-size);
+			text-align: center;
+		}
+	}
+}
+
+.changelog-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+
+	h1 {
+		margin: 0;
+		font-size: inherit;
+	}
+}
+
+.github-link {
+	display: inline-flex;
+	align-items: center;
+	color: inherit;
+
+	ion-icon {
+		font-size: 1.75rem;
+	}
+
+	&:hover {
+		color: var(--ion-color-primary);
+	}
+}
+
+.muted {
+	color: var(--ion-color-medium);
+	padding: 16px;
+}

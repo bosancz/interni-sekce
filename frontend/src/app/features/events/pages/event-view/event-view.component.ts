@@ -1,4 +1,4 @@
-import { Component, signal } from "@angular/core";
+import { Component, computed, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -35,6 +35,7 @@ import { EventAccountingComponent } from "../../components/event-accounting/even
 import { EventAttendeesComponent } from "../../components/event-attendees/event-attendees.component";
 import { EventInfoComponent } from "../../components/event-info/event-info.component";
 import { EventProblemsComponent } from "../../components/event-problems/event-problems.component";
+import { EventProgressComponent } from "../../components/event-progress/event-progress.component";
 import { EventReportComponent } from "../../components/event-report/event-report.component";
 
 export type EventStatusActions = ExtractExisting<
@@ -51,6 +52,7 @@ export type EventStatusActions = ExtractExisting<
 	imports: [
 		EventAttendeesComponent,
 		EventProblemsComponent,
+		EventProgressComponent,
 		EventAccountingComponent,
 		EventReportComponent,
 		PageFooterComponent,
@@ -70,6 +72,14 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 	actions: Action[] = [];
 
 	view = signal<"info" | "attendees" | "problems" | "accounting" | "registration" | "report">("info");
+
+	attendeesCount = signal<number | undefined>(undefined);
+	problemsCount = signal<number | undefined>(undefined);
+	expensesCount = signal<number | undefined>(undefined);
+
+	attendeesBadge = computed(() => this.attendeesCount() || undefined);
+	problemsBadge = computed(() => this.problemsCount() || undefined);
+	expensesBadge = computed(() => this.expensesCount() || undefined);
 
 	constructor(
 		private readonly api: ApiService,
@@ -142,7 +152,7 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 		}
 
 		const statusNote = window.prompt("Poznámka ke změně stavu (můžeš nechat prázdné):");
-		if (statusNote === null) return; // user clicked on cancel
+		if (statusNote === null) return;
 
 		await this.api.EventsApi[action](event.id, { statusNote });
 
@@ -170,8 +180,6 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 	}
 
 	private setActions(event: SDK.EventResponseWithLinks) {
-		// actions that do not apply to the event in its current state are hidden,
-		// actions that apply but the user is not permitted to use are shown disabled
 		this.actions = [
 			{
 				text: "Vést akci",

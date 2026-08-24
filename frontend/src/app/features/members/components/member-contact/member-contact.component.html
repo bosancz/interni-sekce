@@ -3,7 +3,7 @@
 		<bo-card-title>
 			<span class="bo-card-section-title">
 				<ion-icon name="call-outline" />
-				Kontakt
+				Kontakt na člena
 			</span>
 		</bo-card-title>
 	</bo-card-header>
@@ -15,8 +15,7 @@
 			</div>
 		}
 
-		@if (member()) {
-			@let memberValue = member()!;
+		@if (member(); as memberValue) {
 			<div class="bo-info-list selectable">
 				<div class="bo-info-row">
 					<span class="bo-info-label">Mobil</span>

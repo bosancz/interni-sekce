@@ -22,7 +22,6 @@ export const EventsDeletedListPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: EventResponse,
 
-	// Anyone who can list events can also list deleted events (admin is always allowed implicitly).
 	allowed: {
 		vedouci: true,
 	},
@@ -45,6 +44,7 @@ export const EventsStatusesPermission = new Permission<void>({
 export const EventReadPermission = new Permission({
 	linkTo: EventResponse,
 	contains: EventResponse,
+	params: { eventId: "id" },
 
 	allowed: {
 		vedouci: true,
@@ -62,6 +62,7 @@ export const EventCreatePermission = new Permission<void>({
 
 export const EventEditPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 
 	allowed: {
 		program: true,
@@ -73,6 +74,7 @@ export const EventEditPermission = new Permission({
 
 export const EventDeletePermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 	allowed: {
 		program: true,
 	},
@@ -81,6 +83,7 @@ export const EventDeletePermission = new Permission({
 
 export const EventRestorePermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 	allowed: {
 		program: true,
 	},
@@ -89,7 +92,7 @@ export const EventRestorePermission = new Permission({
 
 export const EventDeletePermanentPermission = new Permission({
 	linkTo: EventResponse,
-	// Permanent deletion is irreversible and reserved for admins only.
+	params: { eventId: "id" },
 	allowed: {
 		admin: true,
 	},
@@ -98,6 +101,7 @@ export const EventDeletePermanentPermission = new Permission({
 
 export const EventLeadPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 
 	allowed: {
 		vedouci: true,
@@ -108,25 +112,31 @@ export const EventLeadPermission = new Permission({
 
 export const EventSubmitPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 
 	allowed: {
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
 
-	applicable: ({ doc }) => doc.status === EventStates.draft && !doc.deletedAt && !!doc.leaders?.length,
+	applicable: ({ doc }) =>
+		[EventStates.draft, EventStates.rejected].includes(doc.status) && !doc.deletedAt && !!doc.leaders?.length,
 });
 
 export const EventPublishPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 	allowed: {
 		program: true,
 	},
 	applicable: ({ doc }) =>
-		[EventStates.pending, EventStates.draft].includes(doc.status) && !!doc.leaders?.length && !doc.deletedAt,
+		[EventStates.pending, EventStates.draft, EventStates.rejected].includes(doc.status) &&
+		!!doc.leaders?.length &&
+		!doc.deletedAt,
 });
 
 export const EventRejectPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 	allowed: {
 		program: true,
 	},
@@ -135,6 +145,7 @@ export const EventRejectPermission = new Permission({
 
 export const EventUnpublishPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 	allowed: {
 		program: true,
 	},
@@ -143,6 +154,7 @@ export const EventUnpublishPermission = new Permission({
 
 export const EventCancelPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 	allowed: {
 		program: true,
 	},
@@ -151,6 +163,7 @@ export const EventCancelPermission = new Permission({
 
 export const EventUncancelPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 	allowed: {
 		program: true,
 	},
@@ -159,35 +172,39 @@ export const EventUncancelPermission = new Permission({
 
 export const EventRegistrationReadPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
-	applicable: ({ doc }) => doc.hasRegistration
+	applicable: ({ doc }) => doc.hasRegistration,
 });
 
 export const EventRegistrationEditPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
+	applicable: ({ doc }) => !doc.hasRegistration,
 });
 
 export const EventRegistrationGeneratePermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
-	// The form prints the leader's name, phone and email — with no leader there is nothing to
-	// generate, and EventRegistrationService.assertGeneratable() would reject it anyway.
-	applicable: ({ doc }) => !!doc.attendees?.some((a) => a.type === "leader"),
+	applicable: ({ doc }) => !doc.hasRegistration && !!doc.attendees?.some((a) => a.type === "leader"),
 });
 
 export const EventRegistrationDeletePermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
-	applicable: ({ doc }) => doc.hasRegistration
+	applicable: ({ doc }) => doc.hasRegistration,
 });
 
 export const EventReportReadPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 
 	inherit: EventReadPermission,
 });
@@ -200,6 +217,7 @@ export const EventReportEditPermission = new Permission({
 
 export const EventAnnouncementGetPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 
 	allowed: {
 		revizor: true,
@@ -207,8 +225,41 @@ export const EventAnnouncementGetPermission = new Permission({
 	},
 });
 
+export const EventAnnouncementSentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => doc.status === EventStates.public && !doc.announcementSentAt && !doc.deletedAt,
+});
+
+export const EventAnnouncementUnsentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => !!doc.announcementSentAt && !doc.deletedAt,
+});
+
+export const EventAccountingSentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => doc.status === EventStates.public && !doc.accountingSentAt && !doc.deletedAt,
+});
+
+export const EventAccountingUnsentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => !!doc.accountingSentAt && !doc.deletedAt,
+});
+
 export const EventAccountingGetPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 
 	allowed: {
 		revizor: true,
@@ -219,10 +270,9 @@ export const EventAccountingGetPermission = new Permission({
 export const EventExpensesListPermission = new Permission({
 	linkTo: EventResponse,
 	contains: EventExpenseResponse,
+	params: { eventId: "id" },
 
 	inherit: EventReadPermission,
-
-	path: (e) => `${e.id}/attendees`,
 });
 
 export const EventExpenseReadPermission = new Permission({
@@ -235,6 +285,7 @@ export const EventExpenseReadPermission = new Permission({
 export const EventExpenseCreatePermission = new Permission({
 	linkTo: EventResponse,
 	contains: EventExpenseResponse,
+	params: { eventId: "id" },
 
 	allowed: {
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
@@ -243,27 +294,25 @@ export const EventExpenseCreatePermission = new Permission({
 
 export const EventExpenseEditPermission = new Permission({
 	linkTo: EventExpenseResponse,
+	params: { expenseId: "id" },
 
 	allowed: {
 		vedouci: ({ doc, req }) => isMyEvent(doc.event, req),
 	},
-
-	path: (d) => `${d.eventId}/expenses/${d.id}`,
 });
 
 export const EventExpenseDeletePermission = new Permission({
 	linkTo: EventExpenseResponse,
-	path: (d) => `${d.eventId}/expenses/${d.id}`,
+	params: { expenseId: "id" },
 	inherit: EventExpenseEditPermission,
 });
 
 export const EventAttendeesListPermission = new Permission({
 	linkTo: EventResponse,
 	contains: EventAttendeeResponse,
+	params: { eventId: "id" },
 
 	inherit: EventReadPermission,
-
-	path: (e) => `${e.id}/attendees`,
 });
 
 export const EventAttendeeReadPermission = new Permission({
@@ -275,6 +324,7 @@ export const EventAttendeeReadPermission = new Permission({
 
 export const EventAttendeeCreatePermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 
 	allowed: {
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
@@ -287,12 +337,9 @@ export const EventAttendeeEditPermission = new Permission({
 	allowed: {
 		vedouci: ({ doc, req }) => isMyEvent(doc.event, req),
 	},
-
-	path: (d) => `${d.eventId}/attendees/${d.memberId}`,
 });
 
 export const EventAttendeeDeletePermission = new Permission({
 	linkTo: EventAttendeeResponse,
-	path: (e) => `${e.eventId}/attendees/${e.memberId}`,
 	inherit: EventAttendeeEditPermission,
 });

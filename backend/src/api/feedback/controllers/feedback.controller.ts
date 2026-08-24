@@ -1,4 +1,4 @@
-import { Body, Controller, InternalServerErrorException, Post, Req } from "@nestjs/common";
+import { Body, Controller, Post, Req } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController } from "src/access-control/access-control-lib";
@@ -22,16 +22,8 @@ export class FeedbackController {
 
 		const report = await this.feedback.buildBugReport(authUser.userId, body);
 
-		// Deliver on both channels independently — neither throws on its own failure. The
-		// report succeeds as long as at least one channel got through; only a total failure
-		// (email and GitHub both down) surfaces as an error to the client.
-		const [emailed, filed] = await Promise.all([
-			this.feedback.sendBugReportEmail(report),
-			this.feedback.fileBugReportIssue(report),
-		]);
+		const issue = await this.feedback.fileBugReportIssue(report);
 
-		if (!emailed && !filed) {
-			throw new InternalServerErrorException("Bug report could not be delivered by email or GitHub.");
-		}
+		await this.feedback.sendBugReportEmail(report, issue).catch(() => undefined);
 	}
 }

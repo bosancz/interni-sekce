@@ -33,7 +33,6 @@
 	width: 16%;
 }
 
-// Desktop: filter pills laid out inline in the filter toolbar.
 .albums-filter-actions {
 	display: flex;
 	flex-wrap: wrap;
@@ -41,7 +40,6 @@
 	gap: 4px;
 }
 
-// Mobile: the same pills collected inside the filter modal, stacked full-width.
 .albums-filter-modal {
 	.albums-filter-modal-pills {
 		display: flex;

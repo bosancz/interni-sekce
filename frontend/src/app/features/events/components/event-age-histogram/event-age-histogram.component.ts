@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, effect, input, signal } from "@angular/core";
-import { DateTime } from "luxon";
+import { getAge } from "src/helpers/age";
 import { SDK } from "src/sdk";
 
 @Component({
@@ -28,46 +28,25 @@ export class EventAgeHistogramComponent {
 
 	updateAges(event: SDK.EventResponseWithLinks): void {
 		const members = this.members();
-		const dateFrom = DateTime.fromISO(event.dateFrom).set({ hour: 0 });
 
-		const ages: number[] = [];
-		members.forEach((member) => {
-			if (!member.birthday) return;
-			ages.push(Math.floor(-1 * DateTime.fromISO(member.birthday).diff(dateFrom, "years").toObject().years!));
-		});
+		const ages = members
+			.map((member) => getAge(member.birthday, event.dateFrom))
+			.filter((age): age is number => age !== null);
 
 		if (!ages.length) {
 			this.histogram.set([]);
 			this.countMax.set(0);
-			return; // no members with a birthday yet
+			return;
 		}
 
-		const min = Math.min(...ages);
-		const max = Math.max(...ages);
+		const counts = new Map<number, number>();
+		for (const age of ages) counts.set(age, (counts.get(age) ?? 0) + 1);
 
-		// pick a "nice" bucket width so the number of bars stays readable
-		// no matter how wide the actual age range is
-		const binSize = this.getBinSize(max - min + 1);
-
-		// align bucket boundaries to multiples of the bin size for tidy labels
-		const first = Math.floor(min / binSize) * binSize;
-		const last = Math.floor(max / binSize) * binSize;
-
-		let countMax = 0;
-		const histogram: Array<{ label: string; count: number }> = [];
-		for (let from = first; from <= last; from += binSize) {
-			const to = from + binSize - 1;
-			const count = ages.filter((age) => age >= from && age <= to).length;
-			countMax = Math.max(countMax, count);
-			histogram.push({ label: binSize === 1 ? `${from}` : `${from}–${to}`, count });
-		}
+		const histogram = [...counts.entries()]
+			.sort(([a], [b]) => a - b)
+			.map(([age, count]) => ({ label: `${age}`, count }));
 
 		this.histogram.set(histogram);
-		this.countMax.set(countMax);
-	}
-
-	private getBinSize(range: number, targetBins = 10): number {
-		const niceSizes = [1, 2, 5, 10, 20, 25, 50];
-		return niceSizes.find((size) => range / size <= targetBins) ?? 100;
+		this.countMax.set(Math.max(...histogram.map((bar) => bar.count)));
 	}
 }

@@ -42,9 +42,6 @@ import { SDK } from "src/sdk";
 import { MembershipStates } from "../../../../core/config/membership-states";
 import { MemberCreateModalComponent } from "../../components/member-create-modal/member-create-modal.component";
 
-// Custom "columns" glyph (outlined rectangle split into three columns) — Ionicons has no columns icon.
-// Must be a `data:image/svg+xml;utf8,` URI: ionicons parses that via DOMParser, whereas a raw SVG
-// string would be treated as a URL and fetched (failing silently → invisible icon).
 const COLUMNS_ICON =
 	"data:image/svg+xml;utf8," +
 	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
@@ -88,7 +85,6 @@ const COLUMNS_ICON =
 	providers: [FilterModel],
 })
 export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnter {
-	// Wrapper model that owns the whole filter (declared first so the computeds below can read it).
 	private model = inject(FilterModel);
 
 	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
@@ -96,7 +92,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	roles = MemberRoles;
 	membershipStates = MembershipStates;
 
-	// Display state derives from the model: staged draft while the modal is open, else committed (URL).
 	selectedGroups = computed(() => this.normalizeFilterValueToArray(this.model.value("groups")));
 	selectedRoles = computed(() => this.normalizeFilterValueToArray(this.model.value("roles")));
 	selectedMembership = computed(() => this.normalizeFilterValueToArray(this.model.value("membership")));
@@ -117,8 +112,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		{ key: "status", label: "Stav" },
 	];
 
-	// Only active groups are offered in the Oddíl filter, unless "show inactive" is on. A group that
-	// is already selected stays visible even when inactive, so the pill keeps its label.
 	groupOptions = computed<FilterPillOption[]>(() => {
 		const showInactive = this.showInactive();
 		const selected = this.selectedGroups();
@@ -140,7 +133,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		label: state.title,
 	}));
 
-	// Row helpers for admin-table (bound as inputs, so keep stable references).
 	rowLink = (member: SDK.MemberResponseWithLinks) => "" + member.id;
 	rowClass = (member: SDK.MemberResponseWithLinks) => ({
 		"member-inactive": !member.active,
@@ -149,11 +141,8 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		"member-instruktor": member.role === "instruktor",
 	});
 
-	// Header shown above the actions on the mobile ActionSheet.
 	rowActionsHeader = (member: SDK.MemberResponseWithLinks) => member.nickname || member.firstName;
 
-	// Arrow property (stable reference + bound `this`) so it can be passed as the
-	// admin-table `[actions]` input and invoked from there per row.
 	memberActions = (member: SDK.MemberResponseWithLinks): Action[] => [
 		{
 			text: "Smazat",
@@ -213,22 +202,14 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		private platformService: PlatformService,
 	) {
 		addIcons({ addOutline, arrowUndoOutline, downloadOutline, eyeOutline, trashOutline, columns: COLUMNS_ICON });
-		// Filters render inline in the toolbar on desktop and inside the filter modal on mobile;
-		// this tracks the lg breakpoint (992px) so the template can switch between the two.
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 	}
 
-	// True when the viewport is at least the lg breakpoint (992px) — filters inline vs. in the modal.
 	isDesktop = signal(true);
 
-	// True when inactive members (and groups) are currently shown (filter "active" === "all").
 	showInactive = computed(() => ((this.model.value("active") as string) || "active") === "all");
 
 	ngOnInit() {
-		// All filter state (groups/roles/membership/age/search/active) is written to the URL via
-		// setFilterParam, so drive loading from the query params directly rather than the
-		// FilterComponent's `(change)` output (which only reflects its own projected NgModel
-		// controls — the pills are now plain buttons and no longer register there).
 		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onParams(params));
 		this.model.apply$.pipe(untilDestroyed(this)).subscribe((filter) => this.applyFilter(filter));
 	}
@@ -336,9 +317,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			this.members.set([]);
 		}
 
-		// Each load gets a unique id so out-of-order responses from rapid filter
-		// changes (e.g. unchecking one role then checking another) can be discarded
-		// and only the latest request is allowed to update the list.
 		const loadId = ++this.latestLoadId;
 
 		const params: SDK.MembersApiListMembersQueryParams = {
@@ -348,10 +326,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.ListMembersMembershipEnum[],
 			limit: this.pageSize,
 			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
-			// default: active only; "all" reveals inactive members too
 			active: ((filter["active"] as string) || "active") === "all" ? undefined : true,
-			// Fetch contacts in the same request instead of one call per member,
-			// and only when a contact column is actually visible.
 			contacts: this.needsContacts() || undefined,
 			sort: (filter["sort"] as string) || undefined,
 			order: (filter["order"] as SDK.ListMembersOrderEnum) || undefined,
@@ -365,7 +340,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		this.members.set([...currentMembers, ...members]);
 	}
 
-	// Contacts are only needed when the phone/email columns are shown.
 	private needsContacts(): boolean {
 		const selections = this.viewSelections();
 		return !!selections["firstTelephone"] || !!selections["firstEmail"];
@@ -441,8 +415,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		this.applyViewSelections({ ...this.viewSelections(), [key]: value });
 	}
 
-	// Mobile renders the column picker as a multiselect pill, which emits the full list of
-	// visible columns rather than a single toggle.
 	setColumnSelection(keys: string[]) {
 		const selected = new Set(keys);
 		this.applyViewSelections(
@@ -454,8 +426,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		const previous = this.viewSelections();
 		this.viewSelections.set(selections);
 
-		// Enabling a contact column after the list was already loaded without contacts:
-		// re-fetch so the newly visible column has data (still a single request).
 		const contactColumnAdded = ["firstTelephone", "firstEmail"].some((key) => selections[key] && !previous[key]);
 		if (contactColumnAdded) {
 			const members = this.members();

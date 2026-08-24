@@ -1,13 +1,10 @@
-/* Core CSS required for Ionic components to work properly */
 @use "@ionic/angular/css/core.css";
 
-/* Basic CSS for apps built with Ionic */
 @use "@ionic/angular/css/normalize.css";
 @use "@ionic/angular/css/structure.css";
 @use "@ionic/angular/css/typography.css";
 @use "@ionic/angular/css/display.css";
 
-/* Optional CSS utils that can be commented out */
 @use "@ionic/angular/css/padding.css";
 @use "@ionic/angular/css/float-elements.css";
 @use "@ionic/angular/css/text-alignment.css";
@@ -79,16 +76,13 @@ ion-modal.dialog {
 	--min-width: 250px;
 	--max-width: 95vw;
 	--height: fit-content;
-	/* cap the fit-content height so a tall dialog (e.g. the mobile filter sheet) stays on
-	   screen and scrolls inside bo-modal-layout instead of running past the viewport */
 	--max-height: 90vh;
 	--max-height: 90dvh;
-	--border-radius: var(--bo-radius-card);
-	--box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+	--border-radius: 20px;
+	--box-shadow: 0 24px 64px rgba(20, 26, 70, 0.35);
+	--backdrop-opacity: 0.55;
+	--ion-backdrop-color: #2a3478;
 
-	/* The modal component element (.ion-page) sits in a fit-content wrapper, so its height is
-	   indefinite and percentage bounds inside it resolve to nothing — the same cap has to be
-	   repeated in absolute units to give bo-modal-layout something definite to scroll against. */
 	> .ion-page {
 		min-height: 0;
 		max-height: 90vh;
@@ -96,18 +90,39 @@ ion-modal.dialog {
 	}
 }
 
-/* search / list dialogs need a bounded height so their scrolling ion-content
-   does not collapse inside the fit-content card */
 ion-modal.dialog.dialog-list {
 	--width: 480px;
 	--height: 70vh;
+}
+
+/* people picker: fixed width, tall enough for the list to scroll inside */
+ion-modal.dialog.dialog-picker {
+	--width: 560px;
+	--max-width: calc(100vw - 32px);
+	--max-height: min(720px, 90vh);
+	--max-height: min(720px, 90dvh);
+
+	> .ion-page {
+		max-height: min(720px, 90vh);
+		max-height: min(720px, 90dvh);
+	}
+}
+
+/* fixed-width brand dialogs (the event announcement / closure steps) */
+ion-modal.dialog.dialog-brand {
+	--width: 480px;
+	--max-width: calc(100vw - 32px);
+}
+
+ion-modal.dialog.dialog-preview {
+	--width: 1000px;
+	--max-width: calc(100vw - 32px);
 }
 
 ion-popover.transparent {
 	--background: transparent;
 }
 
-/* rounded brand buttons */
 ion-button {
 	--border-radius: var(--bo-radius-btn);
 	text-transform: none;
@@ -115,11 +130,6 @@ ion-button {
 	font-weight: 600;
 }
 
-/* PWA install banner — brand identity ("žlutá na modré").
-   The default toast leaves its action in --ion-color-primary (deep brand blue),
-   which is invisible on the dark toast surface. Give it the brand blue surface
-   with the yellow accent so the message, icon and buttons stay legible in both
-   the light and dark themes. */
 ion-toast.install-toast {
 	--background: var(--san-blue);
 	--color: #fff;
@@ -130,13 +140,11 @@ ion-toast.install-toast {
 		color: var(--san-yellow);
 	}
 
-	/* primary action ("Nainstalovat") in the brand yellow so it reads as the CTA */
 	&::part(button) {
 		color: var(--san-yellow);
 		font-weight: 700;
 	}
 
-	/* dismiss ("Teď ne") stays a quiet white so it doesn't compete with the CTA */
 	&::part(button cancel) {
 		color: rgba(255, 255, 255, 0.85);
 		font-weight: 600;
@@ -159,7 +167,6 @@ ion-searchbar {
 	textarea {
 		min-height: 40vh !important;
 	}
-
 }
 
 .ion-page {
@@ -170,11 +177,7 @@ ion-content {
 	--ion-background-color: var(--bo-paper);
 }
 
-/* A disabled ion-button gets `pointer-events: none` on its host, so a boTooltip sitting on it
-   would never see the hover that is supposed to explain *why* it is disabled. Give the host its
-   pointer events back and kill them on the inner native button instead, so the button stays
-   unclickable but the tooltip still fires. */
-ion-button[boTooltip].button-disabled {
+ion-button.bo-tooltip.button-disabled {
 	pointer-events: auto;
 	cursor: default;
 

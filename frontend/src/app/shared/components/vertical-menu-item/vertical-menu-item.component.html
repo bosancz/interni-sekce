@@ -3,4 +3,7 @@
 		<ion-icon [name]="icon()!" class="me-3"></ion-icon>
 	}
 	<ion-label>{{ label() }}</ion-label>
+	@if (badge() !== undefined) {
+		<ion-badge slot="end" [class.badge-attention]="badgeVariant() === 'attention'">{{ badge() }}</ion-badge>
+	}
 </ion-item>
