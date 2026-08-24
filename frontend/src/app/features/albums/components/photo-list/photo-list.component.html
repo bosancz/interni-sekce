@@ -21,7 +21,7 @@
 
 					<ion-label>
 						<h2 [class.nocaption]="!photo.caption">
-							@if (photo.titlePhotoOrder != null) {
+							@if (photo.titlePhoto) {
 								<ion-icon name="star" color="warning" title="Titulní fotka"></ion-icon>
 							}
 							{{ photo.caption || "Bez popisku" }}
@@ -77,7 +77,7 @@
 				<div class="square" [class.checked]="isPhotoChecked(photo)">
 					<div class="photo ion-activatable ripple-parent" (click)="onPhotoClick(photo, $event)">
 						<img [src]="photo | photoImageUrl: 'small'" [style.background-color]="photo.bg" loading="lazy" />
-						@if (photo.titlePhotoOrder != null) {
+						@if (photo.titlePhoto) {
 							<ion-icon class="title-badge" name="star" color="warning" title="Titulní fotka"></ion-icon>
 						}
 						<ion-ripple-effect></ion-ripple-effect>

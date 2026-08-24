@@ -223,46 +223,29 @@ export class PhotosEditComponent implements OnInit {
 		this.editingCaption.set(false);
 	}
 
-	// The album's title photos (up to three preview thumbnails shown on the public website), in order.
-	private titlePhotos(): SDK.PhotoResponseWithLinks[] {
-		return this.photos
-			.filter((item) => item.titlePhotoOrder != null)
-			.sort((a, b) => (a.titlePhotoOrder ?? 0) - (b.titlePhotoOrder ?? 0));
-	}
-
+	// Set this photo as the album's single title photo, or unset it if it already is. Each album has
+	// at most one; picking a new one replaces the previous.
 	async toggleTitlePhoto() {
 		const photo = this.photo();
 		if (!photo) return;
 
-		const current = this.titlePhotos();
-		const isTitle = photo.titlePhotoOrder != null;
-
-		// removing keeps the rest in order; adding appends to the end, capped at three
-		let next: SDK.PhotoResponseWithLinks[];
-		if (isTitle) {
-			next = current.filter((item) => item.id !== photo.id);
-		} else {
-			if (current.length >= 3) {
-				this.toastService.toast("Titulní fotky mohou být nejvýše tři.", { color: "warning" });
-				return;
-			}
-			next = [...current, photo];
-		}
+		const isTitle = photo.titlePhoto;
+		const photoId = isTitle ? null : photo.id;
 
 		try {
-			await this.api.PhotoGalleryApi.setAlbumTitlePhotos(photo.albumId, { photoIds: next.map((item) => item.id) });
+			await this.api.PhotoGalleryApi.setAlbumTitlePhoto(photo.albumId, { photoId });
 		} catch (e) {
-			this.toastService.toast("Nepodařilo se uložit titulní fotky.", { color: "warning" });
+			this.toastService.toast("Nepodařilo se uložit titulní fotku.", { color: "warning" });
 			return;
 		}
 
 		// mirror the new selection onto the shared photo objects so the album gallery reflects it too
-		for (const item of this.photos) item.titlePhotoOrder = null;
-		next.forEach((item, index) => (item.titlePhotoOrder = index + 1));
+		for (const item of this.photos) item.titlePhoto = false;
+		if (!isTitle) photo.titlePhoto = true;
 
 		this.photo.set({ ...photo });
 
-		this.toastService.toast(isTitle ? "Odebráno z titulních fotek." : "Nastaveno jako titulní fotka.");
+		this.toastService.toast(isTitle ? "Odebráno z titulní fotky." : "Nastaveno jako titulní fotka.");
 	}
 
 	async saveTags(tags: string[]) {

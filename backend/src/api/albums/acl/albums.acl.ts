@@ -98,7 +98,7 @@ export const AlbumReorderPhotosPermission = new Permission({
 	inherit: AlbumEditPermission,
 });
 
-export const AlbumSetTitlePhotosPermission = new Permission({
+export const AlbumSetTitlePhotoPermission = new Permission({
 	linkTo: AlbumResponse,
 	inherit: AlbumEditPermission,
 });

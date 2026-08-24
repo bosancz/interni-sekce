@@ -104,54 +104,40 @@ export class PhotosRepository {
 	}
 
 	/**
-	 * Replace the album's title-photo selection with the given ids, in order: each listed photo gets
-	 * its 1-based position in `titlePhotoOrder`, every other photo in the album is cleared. Ids from
-	 * other albums are ignored. Run as a single transaction so the album never briefly has a stale
-	 * selection. The caller enforces the max-three cap (see AlbumTitlePhotosBody).
+	 * Set (or clear) the album's single title photo. Any previously flagged photo in the album is
+	 * unset first, then the given one — when it belongs to the album — is flagged, all in one
+	 * transaction so the album never briefly has two or none. Pass null to just clear the selection.
 	 */
-	async setTitlePhotos(albumId: Photo["albumId"], photoIds: number[]) {
+	async setTitlePhoto(albumId: Photo["albumId"], photoId: Photo["id"] | null) {
 		await this.repository.manager.transaction(async (t) => {
-			await t.query(`UPDATE "photos" SET "title_photo_order" = NULL WHERE "album_id" = $1`, [albumId]);
+			await t.query(`UPDATE "photos" SET "title_photo" = false WHERE "album_id" = $1`, [albumId]);
 
-			if (photoIds.length) {
-				await t.query(
-					`UPDATE "photos" SET "title_photo_order" = u.ord
-					 FROM unnest($1::int[]) WITH ORDINALITY AS u(id, ord)
-					 WHERE "photos".id = u.id AND "photos".album_id = $2`,
-					[photoIds, albumId],
-				);
+			if (photoId != null) {
+				await t.query(`UPDATE "photos" SET "title_photo" = true WHERE "id" = $1 AND "album_id" = $2`, [
+					photoId,
+					albumId,
+				]);
 			}
 		});
 	}
 
-	/** The album's title photos (preview thumbnails), in their chosen order. */
-	async getTitlePhotos(albumId: Photo["albumId"]) {
-		return this.repository
-			.createQueryBuilder("photos")
-			.where("photos.album_id = :albumId", { albumId })
-			.andWhere("photos.title_photo_order IS NOT NULL")
-			.orderBy("photos.title_photo_order", "ASC")
-			.getMany();
+	/** The album's title photo (its preview thumbnail), or null when none is chosen. */
+	async getTitlePhoto(albumId: Photo["albumId"]) {
+		return this.repository.findOne({ where: { albumId, titlePhoto: true } });
 	}
 
-	/** Title photos for several albums at once, grouped by album id, each list in its chosen order. */
+	/** The title photo of each of the given albums, keyed by album id (albums without one are absent). */
 	async getTitlePhotosByAlbums(albumIds: Photo["albumId"][]) {
-		const map = new Map<number, Photo[]>();
+		const map = new Map<number, Photo>();
 		if (!albumIds.length) return map;
 
 		const photos = await this.repository
 			.createQueryBuilder("photos")
 			.where("photos.album_id IN (:...albumIds)", { albumIds })
-			.andWhere("photos.title_photo_order IS NOT NULL")
-			.orderBy("photos.album_id", "ASC")
-			.addOrderBy("photos.title_photo_order", "ASC")
+			.andWhere("photos.title_photo = true")
 			.getMany();
 
-		for (const photo of photos) {
-			const list = map.get(photo.albumId) ?? [];
-			list.push(photo);
-			map.set(photo.albumId, list);
-		}
+		for (const photo of photos) map.set(photo.albumId, photo);
 
 		return map;
 	}

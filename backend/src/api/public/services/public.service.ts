@@ -152,8 +152,8 @@ export class PublicService {
 
 	async getGallery() {
 		const albums = await this.albums.getAlbums({ status: [AlbumStatus.public], limit: 1000 });
-		const titlePhotosByAlbum = await this.photos.getTitlePhotosByAlbums(albums.map((album) => album.id));
-		return albums.map((album) => this.serializeAlbum(album, { titlePhotos: titlePhotosByAlbum.get(album.id) }));
+		const titlePhotoByAlbum = await this.photos.getTitlePhotosByAlbums(albums.map((album) => album.id));
+		return albums.map((album) => this.serializeAlbum(album, { titlePhoto: titlePhotoByAlbum.get(album.id) }));
 	}
 
 	async getRecentGallery(limit = 5) {
@@ -164,11 +164,11 @@ export class PublicService {
 
 		return Promise.all(
 			albums.map(async (album) => {
-				const [photos, titlePhotos] = await Promise.all([
+				const [photos, titlePhoto] = await Promise.all([
 					this.photos.getPhotos({ album: album.id, limit: 3 }),
-					this.photos.getTitlePhotos(album.id),
+					this.photos.getTitlePhoto(album.id),
 				]);
-				return this.serializeAlbum(album, { photos, titlePhotos });
+				return this.serializeAlbum(album, { photos, titlePhoto });
 			}),
 		);
 	}
@@ -177,24 +177,39 @@ export class PublicService {
 		const album = await this.albums.getAlbum(id);
 		if (!album || album.status !== AlbumStatus.public) throw new NotFoundException();
 
-		const [photos, titlePhotos] = await Promise.all([
+		const [photos, titlePhoto] = await Promise.all([
 			this.photos.getPhotos({ album: album.id, limit: options.preview ? 3 : undefined }),
-			this.photos.getTitlePhotos(album.id),
+			this.photos.getTitlePhoto(album.id),
 		]);
 
-		return this.serializeAlbum(album, { photos, titlePhotos });
+		return this.serializeAlbum(album, { photos, titlePhoto });
 	}
 
-	// `titlePhotos` are the photos an editor picked as the album's preview thumbnails (up to three,
-	// in order). When none are picked, fall back to the first few photos by album order so existing
-	// albums still get a preview — matching the behaviour before the selection feature existed.
+	// Build the up-to-three preview list: the chosen title photo first (if any), then the album's
+	// other photos (in the order they were passed) until three are collected, de-duplicated.
+	private buildTitlePhotos(titlePhoto: Photo | null | undefined, photos: Photo[] | undefined): Photo[] {
+		const list: Photo[] = [];
+		if (titlePhoto) list.push(titlePhoto);
+
+		for (const photo of photos ?? []) {
+			if (list.length >= 3) break;
+			if (!list.some((item) => item.id === photo.id)) list.push(photo);
+		}
+
+		return list;
+	}
+
+	// `titlePhotos` is the album preview the website renders (up to three thumbnails). The editor's
+	// chosen title photo leads, then the album's first photos (by order) fill the rest; when nothing
+	// is chosen it is simply the first few photos — the behaviour before the selection feature.
 	private serializeAlbum(
 		album: { id: number; [k: string]: any },
-		{ photos, titlePhotos }: { photos?: Photo[]; titlePhotos?: Photo[] } = {},
+		{ photos, titlePhoto }: { photos?: Photo[]; titlePhoto?: Photo | null } = {},
 	) {
 		const serializedPhotos = photos?.map((photo) => this.serializePhoto(photo));
-		const titleSource = titlePhotos?.length ? titlePhotos : (photos?.slice(0, 3) ?? []);
-		const serializedTitlePhotos = titleSource.map((photo) => this.serializePhoto(photo));
+		const serializedTitlePhotos = this.buildTitlePhotos(titlePhoto, photos).map((photo) =>
+			this.serializePhoto(photo),
+		);
 
 		return {
 			_id: String(album.id),

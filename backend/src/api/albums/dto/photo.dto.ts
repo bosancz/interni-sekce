@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { ArrayMaxSize, IsInt, IsOptional, IsString } from "class-validator";
+import { IsInt, IsOptional, IsString } from "class-validator";
 import { WithLinks } from "src/access-control/access-control-lib";
 import { UserResponse } from "src/api/users/dto/user.dto";
 import { Album } from "src/models/albums/entities/album.entity";
@@ -21,7 +21,7 @@ export class PhotoResponse {
 	@ApiProperty() name!: string;
 
 	@ApiPropertyOptional({ type: "number" }) order!: number | null;
-	@ApiPropertyOptional({ type: "number" }) titlePhotoOrder!: number | null;
+	@ApiProperty({ type: "boolean" }) titlePhoto!: boolean;
 	@ApiPropertyOptional({ type: "number" }) width!: number | null;
 	@ApiPropertyOptional({ type: "number" }) height!: number | null;
 	@ApiPropertyOptional({ type: "number" }) uploadedById!: number | null;
@@ -61,11 +61,11 @@ export class AlbumPhotosOrderBody {
 	photoIds!: number[];
 }
 
-export class AlbumTitlePhotosBody {
-	// The album's title photos, in display order. Replaces the whole selection; an empty array
-	// clears it. Capped at three — the public website shows at most three preview thumbnails.
-	@ApiProperty({ type: "number", isArray: true })
-	@IsInt({ each: true })
-	@ArrayMaxSize(3)
-	photoIds!: number[];
+export class AlbumTitlePhotoBody {
+	// The album's single title photo (its preview on the public website). Pass a photo id to set it,
+	// or null to clear the selection.
+	@ApiPropertyOptional({ type: "number", nullable: true })
+	@IsOptional()
+	@IsInt()
+	photoId!: number | null;
 }

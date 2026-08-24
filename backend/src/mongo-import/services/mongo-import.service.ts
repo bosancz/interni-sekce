@@ -12,7 +12,7 @@ import { MemberContact } from "src/models/members/entities/member-contact.entity
 import { Member, MemberRanks, MemberRoles, MembershipStates } from "src/models/members/entities/member.entity";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import { User, UserRoles } from "src/models/users/entities/user.entity";
-import { EntityManager, EntityTarget, In, ObjectLiteral } from "typeorm";
+import { EntityManager, EntityTarget, ObjectLiteral } from "typeorm";
 import { MongoMemberGroups } from "../data/member-groups";
 import { MongoAlbum, MongoAlbumSchema } from "../models/album";
 import { MongoEvent, MongoEventSchema } from "../models/event";
@@ -76,12 +76,12 @@ export class MongoImportService {
 	/**
 	 * Backfill *only* the album title-photo selection from Mongo onto the already-imported Postgres
 	 * data — used when a full reimport is no longer possible because the data is live and has since
-	 * been edited. The legacy selection lives in `album.titlePhotos` (older single `titlePhoto` as a
-	 * fallback); each entry is a Mongo photo ObjectId, which maps onto the existing rows through
-	 * `photos.srcId` (the legacy id kept at import time). Touches nothing but `title_photo_order`.
+	 * been edited. The legacy title photo is the first of `album.titlePhotos` (older single
+	 * `titlePhoto` as a fallback); that Mongo photo ObjectId maps onto the existing row through
+	 * `photos.srcId` (the legacy id kept at import time). Touches nothing but `title_photo`.
 	 *
-	 * By default albums that already have a selection are left untouched (so an editor's choice made
-	 * in the app is never clobbered); pass `overwrite` to replace those too. Safe to re-run.
+	 * By default albums that already have a title photo are left untouched (so an editor's choice
+	 * made in the app is never clobbered); pass `overwrite` to replace those too. Safe to re-run.
 	 */
 	async importTitlePhotosOnly(options: { overwrite?: boolean } = {}) {
 		this.logger.log(`Starting title-photo backfill from ${this.config.mongoDb.uri}...`);
@@ -93,7 +93,6 @@ export class MongoImportService {
 		this.albumsModel = connection.model(MongoAlbum.name, MongoAlbumSchema);
 
 		let albumsSet = 0;
-		let photosSet = 0;
 		let skipped = 0;
 		let unresolved = 0;
 
@@ -102,57 +101,39 @@ export class MongoImportService {
 			this.logger.debug(` - Found ${mongoAlbums.length} albums in mongo.`);
 
 			for (const mongoAlbum of mongoAlbums) {
-				// prefer the newer ordered array, fall back to the single legacy field
-				const mongoTitleIds = mongoAlbum.titlePhotos?.length
-					? mongoAlbum.titlePhotos
-					: mongoAlbum.titlePhoto
-						? [mongoAlbum.titlePhoto]
-						: [];
-				if (!mongoTitleIds.length) continue;
+				// the album's title photo: the first of the newer array, else the single legacy field
+				const mongoTitleId = (
+					mongoAlbum.titlePhotos?.length ? mongoAlbum.titlePhotos[0] : mongoAlbum.titlePhoto
+				)?.toString();
+				if (!mongoTitleId) continue;
 
-				// map the legacy photo ObjectIds onto the already-imported rows via photos.srcId
-				const srcIds = mongoTitleIds.map((id) => id.toString());
-				const existingPhotos = await this.entityManager.find(Photo, { where: { srcId: In(srcIds) } });
-				const bySrcId = new Map(existingPhotos.map((photo) => [photo.srcId, photo]));
-
-				// preserve the legacy order, dedupe, cap at three
-				const ordered: Photo[] = [];
-				for (const srcId of srcIds) {
-					const photo = bySrcId.get(srcId);
-					if (photo && !ordered.some((item) => item.id === photo.id)) ordered.push(photo);
-					if (ordered.length === 3) break;
-				}
-
-				if (!ordered.length) {
-					// the album referenced title photos, but none of them still exist in Postgres
+				// map the legacy photo ObjectId onto the already-imported row via photos.srcId
+				const photo = await this.entityManager.findOne(Photo, { where: { srcId: mongoTitleId } });
+				if (!photo) {
+					// the album referenced a title photo that no longer exists in Postgres
 					unresolved++;
 					continue;
 				}
 
-				// the selection belongs to one album; ignore stray references to other albums' photos
-				const albumId = ordered[0].albumId;
-				const photoIds = ordered.filter((photo) => photo.albumId === albumId).map((photo) => photo.id);
-
 				if (!options.overwrite) {
-					const current = await this.photosRepository.getTitlePhotos(albumId);
-					if (current.length) {
+					const current = await this.photosRepository.getTitlePhoto(photo.albumId);
+					if (current) {
 						skipped++;
 						continue;
 					}
 				}
 
-				await this.photosRepository.setTitlePhotos(albumId, photoIds);
+				await this.photosRepository.setTitlePhoto(photo.albumId, photo.id);
 				albumsSet++;
-				photosSet += photoIds.length;
 			}
 		} finally {
 			await connection.close();
 		}
 
 		this.logger.log(
-			`Title-photo backfill finished: set ${photosSet} title photos across ${albumsSet} albums` +
-				(skipped ? `, skipped ${skipped} with an existing selection` : "") +
-				(unresolved ? `, ${unresolved} albums referenced photos no longer present` : "") +
+			`Title-photo backfill finished: set the title photo on ${albumsSet} albums` +
+				(skipped ? `, skipped ${skipped} that already had one` : "") +
+				(unresolved ? `, ${unresolved} referenced a photo no longer present` : "") +
 				".",
 		);
 	}
@@ -498,7 +479,7 @@ export class MongoImportService {
 				tags: mongoPhoto.tags ?? null,
 				timestamp: mongoPhoto.date ?? new Date(),
 				order: null, // imported photos fall back to timestamp ordering
-				titlePhotoOrder: null, // title-photo selection is applied in a later pass (see importTitlePhotos)
+				titlePhoto: false, // the title photo is flagged in a later pass (see importTitlePhotos)
 				title: mongoPhoto.title ?? null,
 				uploadedById: mongoPhoto.uploadedBy ? userIds[mongoPhoto.uploadedBy.toString()] : null,
 				width,
@@ -522,10 +503,9 @@ export class MongoImportService {
 	}
 
 	/**
-	 * Reinstate the legacy album preview selection: the old records kept up to three chosen photos
-	 * per album in `titlePhotos` (with an older single `titlePhoto` as fallback). Map those Mongo
-	 * photo ids to their imported rows and write their 1-based position into `titlePhotoOrder`, so
-	 * the public website shows the same preview thumbnails again.
+	 * Reinstate the legacy album title photo: the old records kept the chosen photo as the first of
+	 * `titlePhotos` (with an older single `titlePhoto` as fallback). Map that Mongo photo id to its
+	 * imported row and flag it, so the public website shows the same preview again.
 	 */
 	private async importTitlePhotos(
 		t: EntityManager,
@@ -541,26 +521,18 @@ export class MongoImportService {
 			const albumId = albumIds[mongoAlbum._id.toString()];
 			if (!albumId) continue;
 
-			// prefer the newer ordered array, fall back to the single legacy field
-			const mongoTitleIds = mongoAlbum.titlePhotos?.length
-				? mongoAlbum.titlePhotos
-				: mongoAlbum.titlePhoto
-					? [mongoAlbum.titlePhoto]
-					: [];
+			// the title photo: the first of the newer array, else the single legacy field
+			const mongoTitleId = (
+				mongoAlbum.titlePhotos?.length ? mongoAlbum.titlePhotos[0] : mongoAlbum.titlePhoto
+			)?.toString();
+			if (!mongoTitleId) continue;
 
-			// resolve to imported photo ids, drop unknown/missing ones, dedupe, cap at three
-			const titlePhotoIds: number[] = [];
-			for (const mongoTitleId of mongoTitleIds) {
-				const photoId = photoIds[mongoTitleId.toString()];
-				if (photoId && !titlePhotoIds.includes(photoId)) titlePhotoIds.push(photoId);
-				if (titlePhotoIds.length === 3) break;
-			}
+			const photoId = photoIds[mongoTitleId];
+			if (!photoId) continue;
 
-			for (const [index, photoId] of titlePhotoIds.entries()) {
-				// the album guard ignores a stray selection that points at another album's photo
-				await t.update(Photo, { id: photoId, albumId }, { titlePhotoOrder: index + 1 });
-				c++;
-			}
+			// the album guard ignores a stray selection that points at another album's photo
+			await t.update(Photo, { id: photoId, albumId }, { titlePhoto: true });
+			c++;
 		}
 
 		this.logger.debug(` - Imported ${c} album title photos.`);

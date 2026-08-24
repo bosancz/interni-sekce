@@ -484,7 +484,7 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof AlbumResponseLinks
          */
-        'setAlbumTitlePhotos': AcLink;
+        'setAlbumTitlePhoto': AcLink;
     }
     
         /**
@@ -584,15 +584,15 @@ export namespace SDK {
         /**
      * 
      * @export
-     * @interface AlbumTitlePhotosBody
+     * @interface AlbumTitlePhotoBody
      */
-    export interface AlbumTitlePhotosBody {
+    export interface AlbumTitlePhotoBody {
         /**
          * 
-         * @type {Array<number>}
-         * @memberof AlbumTitlePhotosBody
+         * @type {number}
+         * @memberof AlbumTitlePhotoBody
          */
-        'photoIds': Array<number>;
+        'photoId'?: number | null;
     }
     
         /**
@@ -3883,10 +3883,10 @@ export namespace SDK {
         'order': number | null;
         /**
          * 
-         * @type {number}
+         * @type {boolean}
          * @memberof Photo
          */
-        'titlePhotoOrder': number | null;
+        'titlePhoto': boolean;
         /**
          * 
          * @type {number}
@@ -4057,10 +4057,10 @@ export namespace SDK {
         'order'?: number | null;
         /**
          * 
-         * @type {number}
+         * @type {boolean}
          * @memberof PhotoResponseWithLinks
          */
-        'titlePhotoOrder'?: number | null;
+        'titlePhoto': boolean;
         /**
          * 
          * @type {number}
@@ -9588,19 +9588,19 @@ export namespace SDK {
          * @memberof PhotoGalleryApi
          */
         
-        public async setAlbumTitlePhotos(
+        public async setAlbumTitlePhoto(
             id: number,
-            body: AlbumTitlePhotosBody,
+            body: AlbumTitlePhotoBody,
             options: AxiosRequestConfig = {}
         ) {
     
             // verify required parameter 'id' is not null or undefined
-            assertParamExists('setAlbumTitlePhotos', 'id', id)
-            assertParamExists('setAlbumTitlePhotos', 'albumTitlePhotosBody', body)
+            assertParamExists('setAlbumTitlePhoto', 'id', id)
+            assertParamExists('setAlbumTitlePhoto', 'albumTitlePhotoBody', body)
             
-            // verify required parameter 'albumTitlePhotosBody' is not null or undefined
-            assertParamExists('setAlbumTitlePhotos', 'id', id)
-            assertParamExists('setAlbumTitlePhotos', 'albumTitlePhotosBody', body)
+            // verify required parameter 'albumTitlePhotoBody' is not null or undefined
+            assertParamExists('setAlbumTitlePhoto', 'id', id)
+            assertParamExists('setAlbumTitlePhoto', 'albumTitlePhotoBody', body)
             
             const localVarPath = `/api/albums/{id}/photos/title`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
