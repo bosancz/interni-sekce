@@ -70,16 +70,6 @@ export class MongoImportService {
 		this.logger.log(`Mongo import finished.`);
 	}
 
-	/**
-	 * Backfill *only* the album title-photo selection from Mongo onto the already-imported Postgres
-	 * data — used when a full reimport is no longer possible because the data is live and has since
-	 * been edited. The legacy title photo is the first of `album.titlePhotos` (older single
-	 * `titlePhoto` as a fallback); that Mongo photo ObjectId maps onto the existing row through
-	 * `photos.srcId` (the legacy id kept at import time). Touches nothing but `title_photo`.
-	 *
-	 * By default albums that already have a title photo are left untouched (so an editor's choice
-	 * made in the app is never clobbered); pass `overwrite` to replace those too. Safe to re-run.
-	 */
 	async importTitlePhotosOnly(options: { overwrite?: boolean } = {}) {
 		this.logger.log(`Starting title-photo backfill from ${this.config.mongoDb.uri}...`);
 
@@ -98,16 +88,13 @@ export class MongoImportService {
 			this.logger.debug(` - Found ${mongoAlbums.length} albums in mongo.`);
 
 			for (const mongoAlbum of mongoAlbums) {
-				// the album's title photo: the first of the newer array, else the single legacy field
 				const mongoTitleId = (
 					mongoAlbum.titlePhotos?.length ? mongoAlbum.titlePhotos[0] : mongoAlbum.titlePhoto
 				)?.toString();
 				if (!mongoTitleId) continue;
 
-				// map the legacy photo ObjectId onto the already-imported row via photos.srcId
 				const photo = await this.entityManager.findOne(Photo, { where: { srcId: mongoTitleId } });
 				if (!photo) {
-					// the album referenced a title photo that no longer exists in Postgres
 					unresolved++;
 					continue;
 				}
@@ -487,11 +474,6 @@ export class MongoImportService {
 		await this.importTitlePhotos(t, mongoAlbums, albumIds, photoIds);
 	}
 
-	/**
-	 * Reinstate the legacy album title photo: the old records kept the chosen photo as the first of
-	 * `titlePhotos` (with an older single `titlePhoto` as fallback). Map that Mongo photo id to its
-	 * imported row and flag it, so the public website shows the same preview again.
-	 */
 	private async importTitlePhotos(
 		t: EntityManager,
 		mongoAlbums: MongoAlbum[],
@@ -506,7 +488,6 @@ export class MongoImportService {
 			const albumId = albumIds[mongoAlbum._id.toString()];
 			if (!albumId) continue;
 
-			// the title photo: the first of the newer array, else the single legacy field
 			const mongoTitleId = (
 				mongoAlbum.titlePhotos?.length ? mongoAlbum.titlePhotos[0] : mongoAlbum.titlePhoto
 			)?.toString();
@@ -515,7 +496,6 @@ export class MongoImportService {
 			const photoId = photoIds[mongoTitleId];
 			if (!photoId) continue;
 
-			// the album guard ignores a stray selection that points at another album's photo
 			await t.update(Photo, { id: photoId, albumId }, { titlePhoto: true });
 			c++;
 		}

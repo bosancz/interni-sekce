@@ -29,9 +29,6 @@ export class Photo {
 	@Column({ type: "timestamp with time zone", nullable: false }) timestamp!: Date;
 	@Column({ type: "integer", nullable: true }) order!: number | null;
 
-	// True for the one photo chosen as the album's title photo (the preview shown on the public
-	// website); at most one photo per album is flagged. When none is set, the public API falls back
-	// to the first photo by album order.
 	@Column({ type: "boolean", nullable: false, default: false }) titlePhoto!: boolean;
 	@Column({ type: "integer", nullable: true }) width!: number | null;
 	@Column({ type: "integer", nullable: true }) height!: number | null;

@@ -58,8 +58,6 @@ export class AlbumPhotosOrderBody {
 }
 
 export class AlbumTitlePhotoBody {
-	// The album's single title photo (its preview on the public website). Pass a photo id to set it,
-	// or null to clear the selection.
 	@ApiPropertyOptional({ type: "number", nullable: true })
 	@IsOptional()
 	@IsInt()

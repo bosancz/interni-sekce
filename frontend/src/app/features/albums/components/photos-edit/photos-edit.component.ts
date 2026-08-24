@@ -90,7 +90,15 @@ export class PhotosEditComponent implements OnInit {
 		private router: Router,
 		private platformService: PlatformService,
 	) {
-		addIcons({ createOutline, checkmarkOutline, chevronBackOutline, chevronForwardOutline, imageOutline, star, starOutline });
+		addIcons({
+			createOutline,
+			checkmarkOutline,
+			chevronBackOutline,
+			chevronForwardOutline,
+			imageOutline,
+			star,
+			starOutline,
+		});
 	}
 
 	ngOnInit(): void {
@@ -205,8 +213,6 @@ export class PhotosEditComponent implements OnInit {
 		this.editingCaption.set(false);
 	}
 
-	// Set this photo as the album's single title photo, or unset it if it already is. Each album has
-	// at most one; picking a new one replaces the previous.
 	async toggleTitlePhoto() {
 		const photo = this.photo();
 		if (!photo) return;
@@ -221,7 +227,6 @@ export class PhotosEditComponent implements OnInit {
 			return;
 		}
 
-		// mirror the new selection onto the shared photo objects so the album gallery reflects it too
 		for (const item of this.photos) item.titlePhoto = false;
 		if (!isTitle) photo.titlePhoto = true;
 

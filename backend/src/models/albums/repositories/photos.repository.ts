@@ -99,11 +99,6 @@ export class PhotosRepository {
 		);
 	}
 
-	/**
-	 * Set (or clear) the album's single title photo. Any previously flagged photo in the album is
-	 * unset first, then the given one — when it belongs to the album — is flagged, all in one
-	 * transaction so the album never briefly has two or none. Pass null to just clear the selection.
-	 */
 	async setTitlePhoto(albumId: Photo["albumId"], photoId: Photo["id"] | null) {
 		await this.repository.manager.transaction(async (t) => {
 			await t.query(`UPDATE "photos" SET "title_photo" = false WHERE "album_id" = $1`, [albumId]);
@@ -117,12 +112,10 @@ export class PhotosRepository {
 		});
 	}
 
-	/** The album's title photo (its preview thumbnail), or null when none is chosen. */
 	async getTitlePhoto(albumId: Photo["albumId"]) {
 		return this.repository.findOne({ where: { albumId, titlePhoto: true } });
 	}
 
-	/** The title photo of each of the given albums, keyed by album id (albums without one are absent). */
 	async getTitlePhotosByAlbums(albumIds: Photo["albumId"][]) {
 		const map = new Map<number, Photo>();
 		if (!albumIds.length) return map;

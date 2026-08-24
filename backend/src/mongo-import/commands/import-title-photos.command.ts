@@ -5,10 +5,6 @@ interface ImportTitlePhotosOptions {
 	overwrite?: boolean;
 }
 
-/**
- * Imports only the album title-photo selection from Mongo and maps it onto the existing Postgres
- * data (via `photos.srcId`), without a full reimport — for when the data is already live and edited.
- */
 @Command({
 	name: "mongo-import-title-photos",
 	arguments: "",

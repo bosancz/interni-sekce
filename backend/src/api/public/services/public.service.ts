@@ -157,8 +157,6 @@ export class PublicService {
 		return this.serializeAlbum(album, { photos, titlePhoto });
 	}
 
-	// Build the up-to-three preview list: the chosen title photo first (if any), then the album's
-	// other photos (in the order they were passed) until three are collected, de-duplicated.
 	private buildTitlePhotos(titlePhoto: Photo | null | undefined, photos: Photo[] | undefined): Photo[] {
 		const list: Photo[] = [];
 		if (titlePhoto) list.push(titlePhoto);
@@ -171,9 +169,6 @@ export class PublicService {
 		return list;
 	}
 
-	// `titlePhotos` is the album preview the website renders (up to three thumbnails). The editor's
-	// chosen title photo leads, then the album's first photos (by order) fill the rest; when nothing
-	// is chosen it is simply the first few photos — the behaviour before the selection feature.
 	private serializeAlbum(
 		album: { id: number; [k: string]: any },
 		{ photos, titlePhoto }: { photos?: Photo[]; titlePhoto?: Photo | null } = {},
