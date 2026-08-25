@@ -2,14 +2,6 @@
 	<ion-toolbar class="top-toolbar" [class.controls-hidden]="!controlsVisible()">
 		<ion-buttons slot="end">
 			@if (photo()) {
-				<ion-button
-					fill="clear"
-					[color]="photo()!.titlePhoto ? 'warning' : undefined"
-					(click)="toggleTitlePhoto()"
-					[boTooltip]="photo()!.titlePhoto ? 'Odebrat titulní fotku' : 'Nastavit jako titulní fotku'"
-				>
-					<ion-icon slot="icon-only" [name]="photo()!.titlePhoto ? 'star' : 'star-outline'"></ion-icon>
-				</ion-button>
 				<ion-button color="danger" fill="clear" (click)="delete(photo()!)">Smazat</ion-button>
 				<ion-button fill="clear" id="info-trigger" (keydown.enter)="$event.preventDefault()">Info</ion-button>
 			}
@@ -70,9 +62,13 @@
 	}
 	@if (photo()) {
 		<div class="image-viewer" (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
-			@if (photo()!.titlePhoto) {
-				<ion-icon class="title-badge" name="star"></ion-icon>
-			}
+			<ion-icon
+				class="title-badge"
+				[class.active]="photo()!.titlePhoto"
+				[name]="photo()!.titlePhoto ? 'star' : 'star-outline'"
+				(click)="$event.stopPropagation(); toggleTitlePhoto()"
+				[boTooltip]="photo()!.titlePhoto ? 'Odebrat titulní fotku' : 'Nastavit jako titulní fotku'"
+			></ion-icon>
 
 			@if (isLg() && currentIndex() > 0) {
 				<ion-button class="nav prev" fill="clear" (click)="previousPhoto()">

@@ -227,10 +227,9 @@ export class PhotosEditComponent implements OnInit {
 			return;
 		}
 
-		for (const item of this.photos) item.titlePhoto = false;
-		if (!isTitle) photo.titlePhoto = true;
+		for (const item of this.photos) item.titlePhoto = !isTitle && item.id === photo.id;
 
-		this.photo.set({ ...photo });
+		this.photo.set({ ...photo, titlePhoto: !isTitle });
 
 		this.toastService.toast(isTitle ? "Odebráno z titulní fotky." : "Nastaveno jako titulní fotka.");
 	}

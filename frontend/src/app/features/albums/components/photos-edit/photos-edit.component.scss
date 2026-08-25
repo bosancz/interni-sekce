@@ -120,9 +120,13 @@ ion-toolbar {
 	left: 1rem;
 	z-index: 10;
 	font-size: 1.75rem;
-	color: var(--ion-color-warning, #ffc409);
-	pointer-events: none;
+	color: #fff;
+	cursor: pointer;
 	filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.7));
+
+	&.active {
+		color: var(--ion-color-warning, #ffc409);
+	}
 }
 
 .image-viewer .nav {
