@@ -1,36 +1,27 @@
-.title-photo-col {
-	position: relative;
+.album-top {
+	display: flex;
+	align-items: stretch;
+	gap: 1rem;
+}
+
+.album-top-info {
+	flex: 1;
+	min-width: 0;
 }
 
 .title-photo {
-	position: absolute;
-	inset: 0;
-	display: flex;
-	flex-direction: column;
-	background-color: var(--bo-white);
+	position: relative;
+	flex: 0 0 auto;
+	max-width: 40%;
 	border-radius: var(--bo-radius-card);
 	box-shadow: var(--bo-shadow-card);
-	padding: 0.5rem 1rem 1rem;
-
-	h2 {
-		font-size: 1rem;
-		font-weight: 600;
-		margin: 0.5rem 0;
-	}
+	overflow: hidden;
 
 	img {
-		flex: 1;
-		min-height: 0;
-		width: auto;
-		max-width: 100%;
-		align-self: center;
-		object-fit: contain;
-		border-radius: var(--bo-radius-card);
-		display: block;
-	}
-
-	.empty {
-		color: var(--ion-color-medium);
-		margin: 0;
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 }
