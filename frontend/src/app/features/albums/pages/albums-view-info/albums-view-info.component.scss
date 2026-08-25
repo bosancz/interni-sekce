@@ -1,4 +1,7 @@
 .title-photo {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
 	background-color: var(--bo-white);
 	border-radius: var(--bo-radius-card);
 	box-shadow: var(--bo-shadow-card);
@@ -11,7 +14,10 @@
 	}
 
 	img {
+		flex: 1;
+		min-height: 0;
 		width: 100%;
+		object-fit: cover;
 		border-radius: var(--bo-radius-card);
 		display: block;
 	}
