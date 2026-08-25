@@ -1,79 +1,93 @@
 <bo-page-header [title]="'Upravit: ' + (album()?.name ?? '')" [actions]="actions()" actionsHeader="Upravit galerii" />
-<p>hello</p>
-<p>{{ album()?.description }}</p>
 <ion-content>
-	<form #albumForm="ngForm">
-		<div class="row">
-			<div class="col-12">
-				<ion-item>
-					<ion-label position="stacked">Název alba</ion-label>
-					<ion-input
-						type="text"
-						name="name"
-						[ngModel]="album()?.name"
-						placeholder="Neočekávaný dýchánek"
-						required
-					></ion-input>
-				</ion-item>
-			</div>
+	<div class="row">
+		<div class="col-12 col-lg-8">
+			<form #albumForm="ngForm">
+				<div class="row">
+					<div class="col-12">
+						<ion-item>
+							<ion-label position="stacked">Název alba</ion-label>
+							<ion-input
+								type="text"
+								name="name"
+								[ngModel]="album()?.name"
+								placeholder="Neočekávaný dýchánek"
+								required
+							></ion-input>
+						</ion-item>
+					</div>
 
-			<div class="col-12">
-				<ion-item>
-					<ion-label position="stacked">Akce v programu</ion-label>
-					<bo-event-selector
-						name="event"
-						placeholder="Neočekávaný dýchánek"
-						[ngModel]="album()?.eventId"
-						(eventOutput)="eventUpdated($event)"
-					></bo-event-selector>
-				</ion-item>
-			</div>
+					<div class="col-12">
+						<ion-item>
+							<ion-label position="stacked">Akce v programu</ion-label>
+							<bo-event-selector
+								name="event"
+								placeholder="Neočekávaný dýchánek"
+								[ngModel]="album()?.eventId"
+								(eventOutput)="eventUpdated($event)"
+							></bo-event-selector>
+						</ion-item>
+					</div>
 
-			<div class="col-12 col-lg-4">
-				<ion-item>
-					<ion-label position="stacked">Datum od</ion-label>
-					<ion-input
-						type="date"
-						[ngModel]="album()?.dateFrom"
-						name="dateFrom"
-						placeholder="Začátek"
-						required
-					></ion-input>
-				</ion-item>
-			</div>
+					<div class="col-12 col-lg-4">
+						<ion-item>
+							<ion-label position="stacked">Datum od</ion-label>
+							<ion-input
+								type="date"
+								[ngModel]="album()?.dateFrom"
+								name="dateFrom"
+								placeholder="Začátek"
+								required
+							></ion-input>
+						</ion-item>
+					</div>
 
-			<div class="col-12 col-lg-4">
-				<ion-item>
-					<ion-label position="stacked">Datum do</ion-label>
-					<ion-input
-						type="date"
-						[ngModel]="album()?.dateTill | date: 'yyyy-MM-dd'"
-						name="dateTill"
-						placeholder="Konec"
-						required
-					></ion-input>
-				</ion-item>
-			</div>
+					<div class="col-12 col-lg-4">
+						<ion-item>
+							<ion-label position="stacked">Datum do</ion-label>
+							<ion-input
+								type="date"
+								[ngModel]="album()?.dateTill | date: 'yyyy-MM-dd'"
+								name="dateTill"
+								placeholder="Konec"
+								required
+							></ion-input>
+						</ion-item>
+					</div>
 
-			<div class="col-12 col-lg-4">
-				<ion-item>
-					<ion-label position="stacked">Publikováno</ion-label>
-					<ion-input
-						type="date"
-						[ngModel]="album()?.datePublished | date: 'yyyy-MM-dd'"
-						name="datePublished"
-						placeholder="Pubikováno"
-						required
-					></ion-input>
-				</ion-item>
-			</div>
+					<div class="col-12 col-lg-4">
+						<ion-item>
+							<ion-label position="stacked">Publikováno</ion-label>
+							<ion-input
+								type="date"
+								[ngModel]="album()?.datePublished | date: 'yyyy-MM-dd'"
+								name="datePublished"
+								placeholder="Pubikováno"
+								required
+							></ion-input>
+						</ion-item>
+					</div>
 
-			<div class="col-12">
-				<ion-item>
-					<ion-label position="stacked">Popis</ion-label>
-					<ion-textarea name="description" autoGrow [ngModel]="album()?.description"></ion-textarea>
-				</ion-item>
+					<div class="col-12">
+						<ion-item>
+							<ion-label position="stacked">Popis</ion-label>
+							<ion-textarea name="description" autoGrow [ngModel]="album()?.description"></ion-textarea>
+						</ion-item>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<div class="col-lg-4 d-none d-lg-block">
+			<div class="title-photo">
+				<h2>Titulní fotka</h2>
+
+				@if (titlePhoto()) {
+					<img [src]="titlePhoto() | photoImageUrl: 'big'" [style.background-color]="titlePhoto()!.bg" />
+				} @else {
+					<p class="empty">Album nemá vybranou titulní fotku.</p>
+				}
 			</div>
 		</div>
-	</form>
+	</div>
 </ion-content>

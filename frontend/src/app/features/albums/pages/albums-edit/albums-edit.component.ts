@@ -8,6 +8,7 @@ import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 import { EventSelectorComponent } from "../../components/event-selector/event-selector.component";
 
@@ -27,10 +28,12 @@ import { EventSelectorComponent } from "../../components/event-selector/event-se
 		IonItem,
 		IonLabel,
 		DatePipe,
+		PhotoImageUrlPipe,
 	],
 })
 export class AlbumsEditComponent {
 	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
+	titlePhoto = signal<SDK.PhotoResponseWithLinks | undefined>(undefined);
 
 	actions = signal<Action[]>([
 		{
@@ -56,6 +59,9 @@ export class AlbumsEditComponent {
 	private async loadAlbum(albumId: number) {
 		const album = await this.api.PhotoGalleryApi.getAlbum(albumId).then((res) => res.data);
 		this.album.set(album);
+
+		const photos = await this.api.PhotoGalleryApi.getAlbumPhotos(albumId).then((res) => res.data);
+		this.titlePhoto.set(photos.find((photo) => photo.titlePhoto));
 	}
 
 	eventUpdated(event: SDK.EventResponseWithLinks) {
