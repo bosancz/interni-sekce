@@ -32,6 +32,7 @@ import {
 import { AlbumStatuses } from "src/app/core/config/album-statuses";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
+import { UserSettingsService } from "src/app/core/services/user-settings.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -86,7 +87,11 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	years = signal<string[]>([]);
 	albums = signal<SDK.AlbumResponseWithLinks[] | undefined>(undefined);
 
-	view = signal<"table" | "grid">(localStorage.getItem("albumsListView") === "grid" ? "grid" : "table");
+	private userSettings = inject(UserSettingsService);
+
+	private albumsListView = this.userSettings.watch("albumsListView");
+
+	view = computed<"table" | "grid">(() => this.albumsListView() ?? "table");
 
 	isDesktop = signal(true);
 
@@ -236,8 +241,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	}
 
 	setView(view: "table" | "grid") {
-		this.view.set(view);
-		localStorage.setItem("albumsListView", view);
+		this.userSettings.set("albumsListView", view);
 	}
 
 	ionViewWillLeave(): void {

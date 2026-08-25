@@ -10,6 +10,7 @@ import { HeaderComponent } from "./core/components/header/header.component";
 import { LoginComponent } from "./core/components/login/login.component";
 import { SidebarComponent } from "./core/components/sidebar/sidebar.component";
 import { ApiService } from "./core/services/api.service";
+import { DarkModeService } from "./core/services/dark-mode.service";
 import { PlatformService } from "./core/services/platform.service";
 import { PwaInstallService } from "./core/services/pwa-install.service";
 import { ToastService } from "./core/services/toast.service";
@@ -36,6 +37,7 @@ export class AppComponent implements OnInit {
 		private readonly platformService: PlatformService,
 		private readonly pwaInstall: PwaInstallService,
 		private readonly toastService: ToastService,
+		private readonly darkModeService: DarkModeService,
 	) {
 		addIcons({ homeSharp, calendarSharp, downloadOutline });
 

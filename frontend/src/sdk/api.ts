@@ -194,6 +194,34 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface AccountSettingsBody
+     */
+    export interface AccountSettingsBody {
+        /**
+         * 
+         * @type {{ [key: string]: any; }}
+         * @memberof AccountSettingsBody
+         */
+        'settings': { [key: string]: any; };
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface AccountSettingsResponse
+     */
+    export interface AccountSettingsResponse {
+        /**
+         * 
+         * @type {{ [key: string]: any; }}
+         * @memberof AccountSettingsResponse
+         */
+        'settings': { [key: string]: any; };
+    }
+    
+        /**
+     * 
+     * @export
      * @interface Album
      */
     export interface Album {
@@ -5057,6 +5085,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for loginUsingLink operation in AccountApi.
      * @export
@@ -5071,6 +5103,10 @@ export namespace SDK {
          */
         code: string
     }
+    
+    
+    
+    
     
     
     
@@ -5131,6 +5167,44 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<AccountResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof AccountApi
+         */
+        
+        public async getMySettings(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/account/settings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<AccountSettingsResponse>(axiosRequestConfig);
         }
     
         /**
@@ -5327,6 +5401,51 @@ export namespace SDK {
             const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof AccountApi
+         */
+        
+        public async setMySettings(
+            body: AccountSettingsBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'accountSettingsBody' is not null or undefined
+            assertParamExists('setMySettings', 'accountSettingsBody', body)
+            
+            const localVarPath = `/api/account/settings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
     
     
     

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { FindOptionsWhere, Repository } from "typeorm";
-import { User } from "../entities/user.entity";
+import { User, UserSettings } from "../entities/user.entity";
 
 @Injectable()
 export class UsersRepository {
@@ -46,6 +46,15 @@ export class UsersRepository {
 				: undefined,
 			where,
 		});
+	}
+
+	async getUserSettings(id: number): Promise<UserSettings> {
+		const user = await this.repository.findOne({ where: { id }, select: { id: true, settings: true } });
+		return user?.settings ?? {};
+	}
+
+	async setUserSettings(id: number, settings: UserSettings) {
+		return this.repository.update(id, { settings });
 	}
 
 	async updateUser(id: number, data: Partial<User>) {
