@@ -1,21 +1,34 @@
 import { DatePipe, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { ActivatedRoute, Params, Router } from "@angular/router";
+import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
 import {
 	AlertController,
 	InfiniteScrollCustomEvent,
+	IonIcon,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
 	IonItemDivider,
 	IonList,
+	IonSegment,
+	IonSegmentButton,
+	IonSkeletonText,
 	NavController,
 	ViewWillEnter,
 	ViewWillLeave,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline, eyeOffOutline, eyeOutline, openOutline, trashOutline } from "ionicons/icons";
+import {
+	addOutline,
+	eyeOffOutline,
+	eyeOutline,
+	gridOutline,
+	imagesOutline,
+	listOutline,
+	openOutline,
+	trashOutline,
+} from "ionicons/icons";
 import { AlbumStatuses } from "src/app/core/config/album-statuses";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -32,6 +45,7 @@ import { FilterModel, FilterValues } from "src/app/shared/components/filter/filt
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { AlbumPipe } from "src/app/shared/pipes/album.pipe";
+import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 
 import { UrlParams } from "src/helpers/typings";
 import { SDK } from "src/sdk";
@@ -45,10 +59,15 @@ import { SDK } from "src/sdk";
 	imports: [
 		FormsModule,
 		DatePipe,
+		RouterLink,
+		IonIcon,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
 		IonItemDivider,
 		IonList,
+		IonSegment,
+		IonSegmentButton,
+		IonSkeletonText,
 		PageHeaderComponent,
 		PageContentComponent,
 		FilterComponent,
@@ -58,6 +77,7 @@ import { SDK } from "src/sdk";
 		AdminTableColumnComponent,
 		AdminTableCellDirective,
 		AlbumPipe,
+		PhotoImageUrlPipe,
 		NgTemplateOutlet,
 	],
 	providers: [FilterModel],
@@ -66,7 +86,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	years = signal<string[]>([]);
 	albums = signal<SDK.AlbumResponseWithLinks[] | undefined>(undefined);
 
-	view = signal<"table" | "grid">(this.platformService.isPortrait.value ? "grid" : "table");
+	view = signal<"table" | "grid">(localStorage.getItem("albumsListView") === "grid" ? "grid" : "table");
 
 	isDesktop = signal(true);
 
@@ -192,7 +212,16 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		private route: ActivatedRoute,
 		private router: Router,
 	) {
-		addIcons({ addOutline, eyeOutline, eyeOffOutline, openOutline, trashOutline });
+		addIcons({
+			addOutline,
+			eyeOutline,
+			eyeOffOutline,
+			gridOutline,
+			imagesOutline,
+			listOutline,
+			openOutline,
+			trashOutline,
+		});
 
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 	}
@@ -204,10 +233,11 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	ionViewWillEnter() {
 		this.loadYears();
+	}
 
-		this.platformService.isPortrait.pipe(untilDestroyed(this, "ionViewWillLeave")).subscribe((isPortrait) => {
-			this.view.set(isPortrait ? "grid" : "table");
-		});
+	setView(view: "table" | "grid") {
+		this.view.set(view);
+		localStorage.setItem("albumsListView", view);
 	}
 
 	ionViewWillLeave(): void {

@@ -409,6 +409,12 @@ export namespace SDK {
          * @memberof AlbumResponse
          */
         'photos'?: Array<PhotoResponseWithLinks>;
+        /**
+         * 
+         * @type {PhotoResponseWithLinks}
+         * @memberof AlbumResponse
+         */
+        'coverPhoto'?: PhotoResponseWithLinks;
     }
     
     export const AlbumResponseStatusEnum = {
@@ -565,6 +571,12 @@ export namespace SDK {
          * @memberof AlbumResponseWithLinks
          */
         'photos'?: Array<PhotoResponseWithLinks>;
+        /**
+         * 
+         * @type {PhotoResponseWithLinks}
+         * @memberof AlbumResponseWithLinks
+         */
+        'coverPhoto'?: PhotoResponseWithLinks;
         /**
          * 
          * @type {AlbumResponseLinks}
@@ -2783,7 +2795,7 @@ export namespace SDK {
          */
         'dateTill': string;
         /**
-         * Dětodny this single event was worth — children on it × how many days it lasted.
+         * 
          * @type {number}
          * @memberof LeaderEventResponse
          */
@@ -4345,7 +4357,8 @@ export namespace SDK {
          */
         'image': string;
     }
-    /**
+    
+        /**
      * 
      * @export
      * @interface RegistrationTemplateResponse
@@ -4586,13 +4599,13 @@ export namespace SDK {
          */
         'groupId': number;
         /**
-         * \"děťodny\" — children × days, summed over the events the member led. The ranking score.
+         * 
          * @type {number}
          * @memberof TopLeaderResponse
          */
         'childDays': number;
         /**
-         * How many events that score comes from.
+         * 
          * @type {number}
          * @memberof TopLeaderResponse
          */
@@ -4630,13 +4643,13 @@ export namespace SDK {
          */
         'year': number;
         /**
-         * děťodny of every event of the year, each event counted once — not once per leader.
+         * 
          * @type {number}
          * @memberof TopLeadersResponse
          */
         'childDays': number;
         /**
-         * Oldest and newest year with a finished event, so the year switcher knows where to stop.
+         * 
          * @type {number}
          * @memberof TopLeadersResponse
          */
@@ -10082,7 +10095,7 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} albumId 
+         * @param {number} id 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
@@ -10135,7 +10148,7 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi
