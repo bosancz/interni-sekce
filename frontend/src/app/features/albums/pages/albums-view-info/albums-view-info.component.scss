@@ -1,7 +1,12 @@
+.title-photo-col {
+	position: relative;
+}
+
 .title-photo {
+	position: absolute;
+	inset: 0;
 	display: flex;
 	flex-direction: column;
-	height: 100%;
 	background-color: var(--bo-white);
 	border-radius: var(--bo-radius-card);
 	box-shadow: var(--bo-shadow-card);
