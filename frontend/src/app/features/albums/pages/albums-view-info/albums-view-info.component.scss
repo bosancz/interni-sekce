@@ -1,0 +1,23 @@
+.title-photo {
+	background-color: var(--bo-white);
+	border-radius: var(--bo-radius-card);
+	box-shadow: var(--bo-shadow-card);
+	padding: 0.5rem 1rem 1rem;
+
+	h2 {
+		font-size: 1rem;
+		font-weight: 600;
+		margin: 0.5rem 0;
+	}
+
+	img {
+		width: 100%;
+		border-radius: var(--bo-radius-card);
+		display: block;
+	}
+
+	.empty {
+		color: var(--ion-color-medium);
+		margin: 0;
+	}
+}

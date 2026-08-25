@@ -11,6 +11,7 @@ import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 import { AlbumGalleryComponent } from "../../components/album-gallery/album-gallery.component";
 import { AlbumInfoComponent } from "../../components/album-info/album-info.component";
@@ -21,8 +22,9 @@ import { PhotosUploadComponent } from "../../components/photos-upload/photos-upl
 @Component({
 	selector: "bo-albums-view-info",
 	templateUrl: "./albums-view-info.component.html",
+	styleUrl: "./albums-view-info.component.scss",
 
-	imports: [PageHeaderComponent, PageContentComponent, AlbumInfoComponent, AlbumGalleryComponent],
+	imports: [PageHeaderComponent, PageContentComponent, AlbumInfoComponent, AlbumGalleryComponent, PhotoImageUrlPipe],
 })
 export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
@@ -34,6 +36,8 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	selecting = signal(false);
 
 	selectedPhotos = signal<SDK.PhotoResponseWithLinks[]>([]);
+
+	titlePhoto = computed(() => this.photos()?.find((photo) => photo.titlePhoto));
 
 	headerActions = computed<Action[]>(() => {
 		const album = this.album();

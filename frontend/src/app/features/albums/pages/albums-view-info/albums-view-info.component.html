@@ -1,7 +1,23 @@
 <bo-page-header [title]="album()?.name" backUrl="/galerie" [actions]="headerActions()" actionsHeader="Album" />
 
 <bo-page-content [padding]="true">
-	<bo-album-info [album]="album()" (update)="updateAlbum($event)" />
+	<div class="row">
+		<div class="col-12 col-lg-8">
+			<bo-album-info [album]="album()" (update)="updateAlbum($event)" />
+		</div>
+
+		<div class="col-lg-4 d-none d-lg-block">
+			<div class="title-photo">
+				<h2>Titulní fotka</h2>
+
+				@if (titlePhoto(); as photo) {
+					<img [src]="photo | photoImageUrl: 'big'" [style.background-color]="photo.bg" />
+				} @else {
+					<p class="empty">Album nemá vybranou titulní fotku.</p>
+				}
+			</div>
+		</div>
+	</div>
 
 	<bo-album-gallery
 		[photos]="photos()"
