@@ -1,3 +1,7 @@
+## v4.8.1 — 2026-08-25
+
+- <span class="changelog-type" title="style">🎨</span> [Ztlumení fotek nepublikovaných alb v dlaždicovém zobrazení](https://github.com/bosancz/interni-sekce/commit/4e97bf99e2317d4967f0daa20951c41f20e4e4fa) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.8.0 — 2026-08-25
 
 - <span class="changelog-type" title="feat">✨</span> [Pamatovat si nastavení přihlášeného uživatele](https://github.com/bosancz/interni-sekce/commit/2cc576d3a221855db4838167c003295498fb447a) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
