@@ -64,7 +64,10 @@ export class AlbumsController {
 			order: query.order,
 		};
 
-		return this.albums.getAlbums(options, where);
+		const albums = await this.albums.getAlbums(options, where);
+		const coverPhotoByAlbum = await this.photos.getCoverPhotosByAlbums(albums.map((album) => album.id));
+
+		return albums.map((album) => ({ ...album, coverPhoto: coverPhotoByAlbum.get(album.id) }));
 	}
 
 	@Post()

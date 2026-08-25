@@ -64,6 +64,10 @@
 - **Filtering never touches the selection** — the footer count is the source of truth. Search is diacritics-insensitive substring over nickname + first/last name; group chips come from the groups actually present in the loaded list. Group tags tint the group's own colour (`rgba` + a fixed-lightness `hsl`, both themes as `--mp-tag-*` custom properties) instead of the solid badge used in lists.
 - **Content projection ignores `slot=` on elements inside `@if`** — the footer must be projected unconditionally, with the branch inside it, or it silently lands in the default slot. The host also needs `display: flex; max-height: 100%`, or the list overflows past the footer instead of scrolling.
 
+## Albums
+
+- `GET /albums` returns each album's `coverPhoto` — the title photo, else the album's first photo (`PhotosRepository.getCoverPhotosByAlbums`, `DISTINCT ON`); the public gallery keeps its own title-photo-only lookup. `albums-list` has a table/grid segment toggle at the toolbar's right (choice in `localStorage.albumsListView`); the grid shows cover photos, and the pills over them get a solid backing because the dark theme's `--bo-*-tint` backgrounds are semi-transparent. `ion-segment` is `display: grid; grid-auto-columns: 1fr`, so a compact segment needs `grid-auto-columns: max-content` + `width: fit-content`.
+
 ## API routes & links
 
 - **Route parameters are named after their entity, never `id`** — `:eventId`, `:memberId`, `:albumId`, … The `Public API` controllers are the exception: their `:id` params are in URLs bosan.cz already calls. Renaming a param changes the SDK signature, so regenerate it.

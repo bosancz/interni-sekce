@@ -116,6 +116,25 @@ export class PhotosRepository {
 		return this.repository.findOne({ where: { albumId, titlePhoto: true } });
 	}
 
+	async getCoverPhotosByAlbums(albumIds: Photo["albumId"][]) {
+		const map = new Map<number, Photo>();
+		if (!albumIds.length) return map;
+
+		const photos = await this.repository
+			.createQueryBuilder("photos")
+			.distinctOn(["photos.albumId"])
+			.where("photos.album_id IN (:...albumIds)", { albumIds })
+			.orderBy("photos.albumId", "ASC")
+			.addOrderBy("photos.titlePhoto", "DESC")
+			.addOrderBy("photos.order", "ASC", "NULLS LAST")
+			.addOrderBy("photos.timestamp", "ASC")
+			.getMany();
+
+		for (const photo of photos) map.set(photo.albumId, photo);
+
+		return map;
+	}
+
 	async getTitlePhotosByAlbums(albumIds: Photo["albumId"][]) {
 		const map = new Map<number, Photo>();
 		if (!albumIds.length) return map;
