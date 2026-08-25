@@ -1,4 +1,14 @@
-import { Component, computed, OnInit, signal } from "@angular/core";
+import {
+	AfterViewInit,
+	Component,
+	computed,
+	ElementRef,
+	NgZone,
+	OnDestroy,
+	OnInit,
+	signal,
+	viewChild,
+} from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ActionSheetController, AlertController, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -11,6 +21,7 @@ import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 import { AlbumGalleryComponent } from "../../components/album-gallery/album-gallery.component";
 import { AlbumInfoComponent } from "../../components/album-info/album-info.component";
@@ -21,10 +32,11 @@ import { PhotosUploadComponent } from "../../components/photos-upload/photos-upl
 @Component({
 	selector: "bo-albums-view-info",
 	templateUrl: "./albums-view-info.component.html",
+	styleUrl: "./albums-view-info.component.scss",
 
-	imports: [PageHeaderComponent, PageContentComponent, AlbumInfoComponent, AlbumGalleryComponent],
+	imports: [PageHeaderComponent, PageContentComponent, AlbumInfoComponent, AlbumGalleryComponent, PhotoImageUrlPipe],
 })
-export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
+export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy, ViewWillLeave {
 	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
 
 	photos = signal<SDK.PhotoResponseWithLinks[] | undefined>(undefined);
@@ -34,6 +46,21 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	selecting = signal(false);
 
 	selectedPhotos = signal<SDK.PhotoResponseWithLinks[]>([]);
+
+	titlePhoto = computed(() => this.photos()?.find((photo) => photo.titlePhoto));
+
+	titlePhotoWidth = computed(() => {
+		const photo = this.titlePhoto();
+		const height = this.albumInfoHeight();
+		if (!photo?.width || !photo.height || !height) return null;
+		return (height * photo.width) / photo.height;
+	});
+
+	private albumInfo = viewChild.required("albumInfo", { read: ElementRef<HTMLElement> });
+
+	private albumInfoHeight = signal(0);
+
+	private resizeObserver?: ResizeObserver;
 
 	headerActions = computed<Action[]>(() => {
 		const album = this.album();
@@ -54,6 +81,7 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		private actionSheetController: ActionSheetController,
 		private modalService: ModalService,
 		private platformService: PlatformService,
+		private ngZone: NgZone,
 	) {
 		addIcons({
 			openOutline,
@@ -71,6 +99,19 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 			await this.loadAlbum(params["album"]);
 			this.openPhotoFromUrl();
 		});
+	}
+
+	ngAfterViewInit() {
+		this.resizeObserver = new ResizeObserver(() => {
+			const height = this.albumInfo().nativeElement.offsetHeight;
+			this.ngZone.run(() => this.albumInfoHeight.set(height));
+		});
+
+		this.resizeObserver.observe(this.albumInfo().nativeElement);
+	}
+
+	ngOnDestroy() {
+		this.resizeObserver?.disconnect();
 	}
 
 	ionViewWillLeave() {
