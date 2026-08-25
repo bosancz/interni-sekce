@@ -21,8 +21,10 @@
 	img {
 		flex: 1;
 		min-height: 0;
-		width: 100%;
-		object-fit: cover;
+		width: auto;
+		max-width: 100%;
+		align-self: center;
+		object-fit: contain;
 		border-radius: var(--bo-radius-card);
 		display: block;
 	}
