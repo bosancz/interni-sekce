@@ -129,6 +129,13 @@
 		height: 100%;
 		margin: 0;
 	}
+
+	&.albums-grid-photo-unpublished {
+		img,
+		> ion-icon {
+			opacity: 0.45;
+		}
+	}
 }
 
 a.albums-grid-item:hover .albums-grid-photo {

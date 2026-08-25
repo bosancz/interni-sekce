@@ -61,7 +61,7 @@
 			@if (albums(); as albumList) {
 				@for (album of albumList; track album.id) {
 					<a class="albums-grid-item" [routerLink]="rowLink(album)">
-						<div class="albums-grid-photo">
+						<div class="albums-grid-photo" [class.albums-grid-photo-unpublished]="album.status !== 'public'">
 							@if (album.coverPhoto) {
 								<img
 									[src]="album.coverPhoto | photoImageUrl: 'small'"
