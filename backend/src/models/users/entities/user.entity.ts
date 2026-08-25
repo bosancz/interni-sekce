@@ -2,6 +2,8 @@ import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Member } from "src/models/members/entities/member.entity";
 import { Column, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
+export type UserSettings = Record<string, any>;
+
 export enum UserRoles {
 	"admin" = "admin",
 	"revizor" = "revizor",
@@ -44,6 +46,10 @@ export class User {
 	@Column({ type: "enum", enum: UserRoles, array: true, nullable: true })
 	@ApiProperty({ enum: UserRoles, enumName: "UserRolesEnum", isArray: true, nullable: true })
 	roles!: UserRoles[] | null;
+
+	@Column({ type: "jsonb", default: () => "'{}'", select: false })
+	@ApiHideProperty()
+	settings?: UserSettings;
 
 	@Column({ type: "varchar", unique: true, nullable: true, select: false }) loginCode!: string | null;
 	@Column({ type: "timestamp with time zone", nullable: true, select: false }) loginCodeExp!: string | null;

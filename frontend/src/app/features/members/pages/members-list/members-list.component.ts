@@ -1,5 +1,5 @@
 import { DatePipe, KeyValue, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
-import { AfterViewInit, Component, computed, inject, OnInit, signal } from "@angular/core";
+import { Component, computed, effect, inject, OnInit, signal, untracked } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
@@ -25,6 +25,7 @@ import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { UserSettingsService } from "src/app/core/services/user-settings.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
@@ -48,6 +49,21 @@ const COLUMNS_ICON =
 	'<rect x="64" y="80" width="384" height="352" rx="24" fill="none" stroke="currentColor" stroke-width="32"/>' +
 	'<line x1="192" y1="80" x2="192" y2="432" stroke="currentColor" stroke-width="32"/>' +
 	'<line x1="320" y1="80" x2="320" y2="432" stroke="currentColor" stroke-width="32"/></svg>';
+
+const MEMBERS_LIST_COLUMNS: { [key: string]: boolean } = {
+	nickname: true,
+	name: true,
+	group: true,
+	role: true,
+	age: true,
+	membership: false,
+	birthday: false,
+	addressCity: false,
+	addressStreet: false,
+	firstTelephone: false,
+	firstEmail: false,
+	status: false,
+};
 
 @UntilDestroy()
 @Component({
@@ -84,8 +100,12 @@ const COLUMNS_ICON =
 	],
 	providers: [FilterModel],
 })
-export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnter {
+export class MembersListComponent implements OnInit, ViewWillEnter {
 	private model = inject(FilterModel);
+
+	private userSettings = inject(UserSettingsService);
+
+	private savedColumns = this.userSettings.watch("membersListColumns");
 
 	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
 	groups = signal<SDK.GroupResponseWithLinks[]>([]);
@@ -190,7 +210,7 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 
 	private latestLoadId = 0;
 
-	viewSelections = signal<{ [key: string]: boolean }>({});
+	viewSelections = signal<{ [key: string]: boolean }>(this.mergeColumns(this.savedColumns()));
 
 	constructor(
 		private api: ApiService,
@@ -203,6 +223,11 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	) {
 		addIcons({ addOutline, arrowUndoOutline, downloadOutline, eyeOutline, trashOutline, columns: COLUMNS_ICON });
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
+
+		effect(() => {
+			const saved = this.savedColumns();
+			untracked(() => this.applySavedColumns(saved));
+		});
 	}
 
 	isDesktop = signal(true);
@@ -212,10 +237,6 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 	ngOnInit() {
 		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onParams(params));
 		this.model.apply$.pipe(untilDestroyed(this)).subscribe((filter) => this.applyFilter(filter));
-	}
-
-	ngAfterViewInit(): void {
-		this.loadViewSelections();
 	}
 
 	ionViewWillEnter() {
@@ -394,36 +415,28 @@ export class MembersListComponent implements OnInit, AfterViewInit, ViewWillEnte
 		return 0;
 	};
 
-	private loadViewSelections() {
-		this.viewSelections.set({
-			nickname: true,
-			name: true,
-			group: true,
-			role: true,
-			age: true,
-			membership: false,
-			birthday: false,
-			addressCity: false,
-			addressStreet: false,
-			firstTelephone: false,
-			firstEmail: false,
-			status: false,
-		});
-	}
-
 	setViewSelection(key: string, value: boolean) {
-		this.applyViewSelections({ ...this.viewSelections(), [key]: value });
+		this.userSettings.set("membersListColumns", { ...this.viewSelections(), [key]: value });
 	}
 
 	setColumnSelection(keys: string[]) {
 		const selected = new Set(keys);
-		this.applyViewSelections(
+		this.userSettings.set(
+			"membersListColumns",
 			Object.fromEntries(Object.keys(this.viewSelections()).map((key) => [key, selected.has(key)])),
 		);
 	}
 
-	private applyViewSelections(selections: { [key: string]: boolean }) {
+	private mergeColumns(saved: { [key: string]: boolean } | undefined): { [key: string]: boolean } {
+		return Object.fromEntries(
+			Object.entries(MEMBERS_LIST_COLUMNS).map(([key, visible]) => [key, saved?.[key] ?? visible]),
+		);
+	}
+
+	private applySavedColumns(saved: { [key: string]: boolean } | undefined) {
 		const previous = this.viewSelections();
+		const selections = this.mergeColumns(saved);
+
 		this.viewSelections.set(selections);
 
 		const contactColumnAdded = ["firstTelephone", "firstEmail"].some((key) => selections[key] && !previous[key]);
