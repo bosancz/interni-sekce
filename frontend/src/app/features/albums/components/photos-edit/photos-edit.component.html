@@ -62,6 +62,14 @@
 	}
 	@if (photo()) {
 		<div class="image-viewer" (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
+			<ion-icon
+				class="title-badge"
+				[class.active]="photo()!.titlePhoto"
+				[name]="photo()!.titlePhoto ? 'star' : 'star-outline'"
+				(click)="$event.stopPropagation(); toggleTitlePhoto()"
+				[boTooltip]="photo()!.titlePhoto ? 'Odebrat titulní fotku' : 'Nastavit jako titulní fotku'"
+			></ion-icon>
+
 			@if (isLg() && currentIndex() > 0) {
 				<ion-button class="nav prev" fill="clear" (click)="previousPhoto()">
 					<ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>

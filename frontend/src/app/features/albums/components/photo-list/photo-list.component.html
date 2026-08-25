@@ -24,7 +24,12 @@
 					</ion-avatar>
 
 					<ion-label>
-						<h2 [class.nocaption]="!photo.caption">{{ photo.caption || "Bez popisku" }}</h2>
+						<h2 [class.nocaption]="!photo.caption">
+							@if (photo.titlePhoto) {
+								<ion-icon name="star" color="warning" title="Titulní fotka"></ion-icon>
+							}
+							{{ photo.caption || "Bez popisku" }}
+						</h2>
 						<p class="row no-gutters info">
 							<span class="col-12 col-lg-4 col-xl-3"
 								>Datum: {{ photo.timestamp | date: "d. M. y H:mm:ss" }}</span
@@ -84,6 +89,9 @@
 							[style.background-color]="photo.bg"
 							loading="lazy"
 						/>
+						@if (photo.titlePhoto) {
+							<ion-icon class="title-badge" name="star" color="warning" title="Titulní fotka"></ion-icon>
+						}
 						<ion-ripple-effect></ion-ripple-effect>
 					</div>
 					<ion-checkbox

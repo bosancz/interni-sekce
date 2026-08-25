@@ -29,13 +29,14 @@ import {
 	AlbumReadPermission,
 	AlbumReorderPhotosPermission,
 	AlbumRestorePermission,
+	AlbumSetTitlePhotoPermission,
 	AlbumsDeletedListPermission,
 	AlbumsListPermission,
 	AlbumsYearsPermission,
 	AlbumUnpublishPermission,
 } from "../acl/albums.acl";
 import { AlbumCreateBody, AlbumListQuery, AlbumResponse, AlbumUpdateBody } from "../dto/album.dto";
-import { AlbumPhotosOrderBody, PhotoResponse } from "../dto/photo.dto";
+import { AlbumPhotosOrderBody, AlbumTitlePhotoBody, PhotoResponse } from "../dto/photo.dto";
 
 @Controller("albums")
 @Authenticated()
@@ -212,5 +213,21 @@ export class AlbumsController {
 		AlbumReorderPhotosPermission.canOrThrow(req, album);
 
 		await this.photos.reorderPhotos(album.id, body.photoIds);
+	}
+
+	@Patch(":id/photos/title")
+	@AcLinks(AlbumSetTitlePhotoPermission)
+	@ApiResponse({ status: 204 })
+	async setAlbumTitlePhoto(
+		@Param("id", ParseIntPipe) id: number,
+		@Req() req: Request,
+		@Body() body: AlbumTitlePhotoBody,
+	): Promise<void> {
+		const album = await this.albums.getAlbum(id);
+		if (!album) throw new NotFoundException();
+
+		AlbumSetTitlePhotoPermission.canOrThrow(req, album);
+
+		await this.photos.setTitlePhoto(album.id, body.photoId);
 	}
 }

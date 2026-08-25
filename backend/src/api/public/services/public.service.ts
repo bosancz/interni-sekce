@@ -124,7 +124,8 @@ export class PublicService {
 
 	async getGallery() {
 		const albums = await this.albums.getAlbums({ status: [AlbumStatus.public], limit: 1000 });
-		return albums.map((album) => this.serializeAlbum(album));
+		const titlePhotoByAlbum = await this.photos.getTitlePhotosByAlbums(albums.map((album) => album.id));
+		return albums.map((album) => this.serializeAlbum(album, { titlePhoto: titlePhotoByAlbum.get(album.id) }));
 	}
 
 	async getRecentGallery(limit = 5) {
@@ -135,8 +136,11 @@ export class PublicService {
 
 		return Promise.all(
 			albums.map(async (album) => {
-				const photos = await this.photos.getPhotos({ album: album.id, limit: 3 });
-				return this.serializeAlbum(album, photos);
+				const [photos, titlePhoto] = await Promise.all([
+					this.photos.getPhotos({ album: album.id, limit: 3 }),
+					this.photos.getTitlePhoto(album.id),
+				]);
+				return this.serializeAlbum(album, { photos, titlePhoto });
 			}),
 		);
 	}
@@ -145,17 +149,34 @@ export class PublicService {
 		const album = await this.albums.getAlbum(id);
 		if (!album || album.status !== AlbumStatus.public) throw new NotFoundException();
 
-		const photos = await this.photos.getPhotos({
-			album: album.id,
-			limit: options.preview ? 3 : undefined,
-		});
+		const [photos, titlePhoto] = await Promise.all([
+			this.photos.getPhotos({ album: album.id, limit: options.preview ? 3 : undefined }),
+			this.photos.getTitlePhoto(album.id),
+		]);
 
-		return this.serializeAlbum(album, photos);
+		return this.serializeAlbum(album, { photos, titlePhoto });
 	}
 
-	private serializeAlbum(album: { id: number; [k: string]: any }, photos?: Photo[]) {
+	private buildTitlePhotos(titlePhoto: Photo | null | undefined, photos: Photo[] | undefined): Photo[] {
+		const list: Photo[] = [];
+		if (titlePhoto) list.push(titlePhoto);
+
+		for (const photo of photos ?? []) {
+			if (list.length >= 3) break;
+			if (!list.some((item) => item.id === photo.id)) list.push(photo);
+		}
+
+		return list;
+	}
+
+	private serializeAlbum(
+		album: { id: number; [k: string]: any },
+		{ photos, titlePhoto }: { photos?: Photo[]; titlePhoto?: Photo | null } = {},
+	) {
 		const serializedPhotos = photos?.map((photo) => this.serializePhoto(photo));
-		const titlePhotos = serializedPhotos?.slice(0, 3) ?? [];
+		const serializedTitlePhotos = this.buildTitlePhotos(titlePhoto, photos).map((photo) =>
+			this.serializePhoto(photo),
+		);
 
 		return {
 			_id: String(album.id),
@@ -166,7 +187,7 @@ export class PublicService {
 			datePublished: album.datePublished ?? null,
 			dateFrom: album.dateFrom ?? null,
 			dateTill: album.dateTill ?? null,
-			titlePhotos,
+			titlePhotos: serializedTitlePhotos,
 			photos: serializedPhotos,
 			_links: {
 				self: { href: `${this.apiBase}/public/gallery/${album.id}`, method: "GET", allowed: { GET: true } },

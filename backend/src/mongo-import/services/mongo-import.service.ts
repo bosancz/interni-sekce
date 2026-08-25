@@ -10,6 +10,7 @@ import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member, MemberRanks, MemberRoles, MembershipStates } from "src/models/members/entities/member.entity";
+import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import { User, UserRoles } from "src/models/users/entities/user.entity";
 import { EntityManager, EntityTarget, ObjectLiteral } from "typeorm";
 import { MongoMemberGroups } from "../data/member-groups";
@@ -34,6 +35,7 @@ export class MongoImportService {
 	constructor(
 		private entityManager: EntityManager,
 		private config: Config,
+		private photosRepository: PhotosRepository,
 	) {}
 
 	async importData() {
@@ -66,6 +68,58 @@ export class MongoImportService {
 		}
 
 		this.logger.log(`Mongo import finished.`);
+	}
+
+	async importTitlePhotosOnly(options: { overwrite?: boolean } = {}) {
+		this.logger.log(`Starting title-photo backfill from ${this.config.mongoDb.uri}...`);
+
+		const connection = await mongoose
+			.createConnection(this.config.mongoDb.uri, { connectTimeoutMS: 1000 })
+			.asPromise();
+
+		this.albumsModel = connection.model(MongoAlbum.name, MongoAlbumSchema);
+
+		let albumsSet = 0;
+		let skipped = 0;
+		let unresolved = 0;
+
+		try {
+			const mongoAlbums = await this.albumsModel.find({}).lean();
+			this.logger.debug(` - Found ${mongoAlbums.length} albums in mongo.`);
+
+			for (const mongoAlbum of mongoAlbums) {
+				const mongoTitleId = (
+					mongoAlbum.titlePhotos?.length ? mongoAlbum.titlePhotos[0] : mongoAlbum.titlePhoto
+				)?.toString();
+				if (!mongoTitleId) continue;
+
+				const photo = await this.entityManager.findOne(Photo, { where: { srcId: mongoTitleId } });
+				if (!photo) {
+					unresolved++;
+					continue;
+				}
+
+				if (!options.overwrite) {
+					const current = await this.photosRepository.getTitlePhoto(photo.albumId);
+					if (current) {
+						skipped++;
+						continue;
+					}
+				}
+
+				await this.photosRepository.setTitlePhoto(photo.albumId, photo.id);
+				albumsSet++;
+			}
+		} finally {
+			await connection.close();
+		}
+
+		this.logger.log(
+			`Title-photo backfill finished: set the title photo on ${albumsSet} albums` +
+				(skipped ? `, skipped ${skipped} that already had one` : "") +
+				(unresolved ? `, ${unresolved} referenced a photo no longer present` : "") +
+				".",
+		);
 	}
 
 	async init(t: EntityManager) {
@@ -375,6 +429,10 @@ export class MongoImportService {
 
 		c = 0;
 
+		// mongo photo ObjectId -> imported postgres photo id, so the album title-photo selection
+		// (which references photos by their Mongo id) can be resolved after all photos are imported
+		const photoIds: Record<string, number> = {};
+
 		for (let mongoPhoto of mongoPhotos) {
 			const albumId = albumIds[mongoPhoto.album.toString()];
 
@@ -395,6 +453,7 @@ export class MongoImportService {
 				tags: mongoPhoto.tags ?? null,
 				timestamp: mongoPhoto.date ?? new Date(),
 				order: null,
+				titlePhoto: false,
 				title: mongoPhoto.title ?? null,
 				uploadedById: mongoPhoto.uploadedBy ? userIds[mongoPhoto.uploadedBy.toString()] : null,
 				width,
@@ -403,12 +462,45 @@ export class MongoImportService {
 				srcId: mongoPhoto._id.toString(),
 			};
 
-			await t.save(Photo, photoData);
+			const photo = await t.save(Photo, photoData);
+
+			photoIds[mongoPhoto._id.toString()] = photo.id;
 
 			c++;
 		}
 
 		this.logger.debug(` - Imported ${c} photos.`);
+
+		await this.importTitlePhotos(t, mongoAlbums, albumIds, photoIds);
+	}
+
+	private async importTitlePhotos(
+		t: EntityManager,
+		mongoAlbums: MongoAlbum[],
+		albumIds: Record<string, number>,
+		photoIds: Record<string, number>,
+	) {
+		this.logger.debug("Importing album title photos...");
+
+		let c = 0;
+
+		for (const mongoAlbum of mongoAlbums) {
+			const albumId = albumIds[mongoAlbum._id.toString()];
+			if (!albumId) continue;
+
+			const mongoTitleId = (
+				mongoAlbum.titlePhotos?.length ? mongoAlbum.titlePhotos[0] : mongoAlbum.titlePhoto
+			)?.toString();
+			if (!mongoTitleId) continue;
+
+			const photoId = photoIds[mongoTitleId];
+			if (!photoId) continue;
+
+			await t.update(Photo, { id: photoId, albumId }, { titlePhoto: true });
+			c++;
+		}
+
+		this.logger.debug(` - Imported ${c} album title photos.`);
 	}
 
 	private async getGroupId(t: EntityManager, oldGroupId: string) {

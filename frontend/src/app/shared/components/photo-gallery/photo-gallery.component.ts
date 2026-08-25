@@ -10,6 +10,9 @@ import {
 	output,
 	signal,
 } from "@angular/core";
+import { IonIcon } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { star } from "ionicons/icons";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 
@@ -27,7 +30,7 @@ class PhotoRow {
 	selector: "bo-photo-gallery",
 	templateUrl: "./photo-gallery.component.html",
 	styleUrls: ["./photo-gallery.component.scss"],
-	imports: [PhotoImageUrlPipe],
+	imports: [IonIcon, PhotoImageUrlPipe],
 })
 export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 	photos = input<SDK.PhotoResponseWithLinks[]>([]);
@@ -48,6 +51,8 @@ export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 		private elRef: ElementRef<HTMLElement>,
 		private ngZone: NgZone,
 	) {
+		addIcons({ star });
+
 		effect(() => {
 			const photos = this.photos();
 			if (photos) this.createRows();

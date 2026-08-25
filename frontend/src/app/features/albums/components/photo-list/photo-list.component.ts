@@ -5,6 +5,7 @@ import {
 	IonAvatar,
 	IonCheckbox,
 	IonChip,
+	IonIcon,
 	IonItem,
 	IonLabel,
 	IonReorder,
@@ -13,6 +14,8 @@ import {
 	IonSkeletonText,
 } from "@ionic/angular/standalone";
 import { ItemReorderEventDetail } from "@ionic/core";
+import { addIcons } from "ionicons";
+import { star } from "ionicons/icons";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
@@ -30,6 +33,7 @@ import { SDK } from "src/sdk";
 		IonCheckbox,
 		IonChip,
 		IonAvatar,
+		IonIcon,
 		IonLabel,
 		IonReorder,
 		IonSkeletonText,
@@ -56,7 +60,9 @@ export class PhotoListComponent implements OnInit {
 	private longPressStart?: { x: number; y: number };
 	private longPressFired = false;
 
-	constructor() {}
+	constructor() {
+		addIcons({ star });
+	}
 
 	ngOnInit(): void {}
 

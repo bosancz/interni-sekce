@@ -99,6 +99,38 @@ export class PhotosRepository {
 		);
 	}
 
+	async setTitlePhoto(albumId: Photo["albumId"], photoId: Photo["id"] | null) {
+		await this.repository.manager.transaction(async (t) => {
+			await t.query(`UPDATE "photos" SET "title_photo" = false WHERE "album_id" = $1`, [albumId]);
+
+			if (photoId != null) {
+				await t.query(`UPDATE "photos" SET "title_photo" = true WHERE "id" = $1 AND "album_id" = $2`, [
+					photoId,
+					albumId,
+				]);
+			}
+		});
+	}
+
+	async getTitlePhoto(albumId: Photo["albumId"]) {
+		return this.repository.findOne({ where: { albumId, titlePhoto: true } });
+	}
+
+	async getTitlePhotosByAlbums(albumIds: Photo["albumId"][]) {
+		const map = new Map<number, Photo>();
+		if (!albumIds.length) return map;
+
+		const photos = await this.repository
+			.createQueryBuilder("photos")
+			.where("photos.album_id IN (:...albumIds)", { albumIds })
+			.andWhere("photos.title_photo = true")
+			.getMany();
+
+		for (const photo of photos) map.set(photo.albumId, photo);
+
+		return map;
+	}
+
 	async deletePhoto(id: Photo["id"]) {
 		const photo = await this.repository.findOneBy({ id });
 		if (!photo) return;

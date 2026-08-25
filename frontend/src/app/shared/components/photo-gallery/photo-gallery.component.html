@@ -10,6 +10,9 @@
 				[style.background-color]="item.photo.bg"
 			>
 				<img [src]="item.photo | photoImageUrl: 'small'" loading="lazy" (error)="onImgError($event)" />
+				@if (item.photo.titlePhoto) {
+					<ion-icon class="title-badge" name="star" color="warning" title="Titulní fotka"></ion-icon>
+				}
 				@if (item.photo.caption) {
 					<span class="caption">{{ item.photo.caption }}</span>
 				}

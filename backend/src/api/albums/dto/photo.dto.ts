@@ -21,6 +21,7 @@ export class PhotoResponse {
 	@ApiProperty() name!: string;
 
 	@ApiPropertyOptional({ type: "number" }) order!: number | null;
+	@ApiProperty({ type: "boolean" }) titlePhoto!: boolean;
 	@ApiPropertyOptional({ type: "number" }) width!: number | null;
 	@ApiPropertyOptional({ type: "number" }) height!: number | null;
 	@ApiPropertyOptional({ type: "number" }) uploadedById!: number | null;
@@ -54,4 +55,11 @@ export class AlbumPhotosOrderBody {
 	@ApiProperty({ type: "number", isArray: true })
 	@IsInt({ each: true })
 	photoIds!: number[];
+}
+
+export class AlbumTitlePhotoBody {
+	@ApiPropertyOptional({ type: "number", nullable: true })
+	@IsOptional()
+	@IsInt()
+	photoId!: number | null;
 }

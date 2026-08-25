@@ -479,6 +479,12 @@ export namespace SDK {
          * @memberof AlbumResponseLinks
          */
         'reorderAlbumPhotos': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
+        'setAlbumTitlePhoto': AcLink;
     }
     
         /**
@@ -574,6 +580,20 @@ export namespace SDK {
     
     export type AlbumResponseWithLinksStatusEnum = typeof AlbumResponseWithLinksStatusEnum[keyof typeof AlbumResponseWithLinksStatusEnum];
     
+    
+        /**
+     * 
+     * @export
+     * @interface AlbumTitlePhotoBody
+     */
+    export interface AlbumTitlePhotoBody {
+        /**
+         * 
+         * @type {number}
+         * @memberof AlbumTitlePhotoBody
+         */
+        'photoId'?: number | null;
+    }
     
         /**
      * 
@@ -4040,6 +4060,12 @@ export namespace SDK {
         'order': number | null;
         /**
          * 
+         * @type {boolean}
+         * @memberof Photo
+         */
+        'titlePhoto': boolean;
+        /**
+         * 
          * @type {number}
          * @memberof Photo
          */
@@ -4206,6 +4232,12 @@ export namespace SDK {
          * @memberof PhotoResponseWithLinks
          */
         'order'?: number | null;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof PhotoResponseWithLinks
+         */
+        'titlePhoto': boolean;
         /**
          * 
          * @type {number}
@@ -9287,6 +9319,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * PhotoGalleryApi - object-oriented interface
      * @export
@@ -10047,6 +10083,59 @@ export namespace SDK {
          * 
     
          * @param {number} albumId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async setAlbumTitlePhoto(
+            id: number,
+            body: AlbumTitlePhotoBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('setAlbumTitlePhoto', 'id', id)
+            assertParamExists('setAlbumTitlePhoto', 'albumTitlePhotoBody', body)
+            
+            // verify required parameter 'albumTitlePhotoBody' is not null or undefined
+            assertParamExists('setAlbumTitlePhoto', 'id', id)
+            assertParamExists('setAlbumTitlePhoto', 'albumTitlePhotoBody', body)
+            
+            const localVarPath = `/api/albums/{id}/photos/title`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof PhotoGalleryApi

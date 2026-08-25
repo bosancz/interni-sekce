@@ -10,6 +10,7 @@ import { Member } from "src/models/members/entities/member.entity";
 import { MembersModelModule } from "src/models/members/members-model.module";
 import { User } from "src/models/users/entities/user.entity";
 import { UsersModelModule } from "src/models/users/users-model.module";
+import { ImportTitlePhotosCommand } from "./commands/import-title-photos.command";
 import { StartImportCommand } from "./commands/import-mongo-data.command";
 import { MongoImportService } from "./services/mongo-import.service";
 
@@ -24,8 +25,8 @@ import { MongoImportService } from "./services/mongo-import.service";
 		AlbumsModelModule,
 		UsersModelModule,
 	],
-	providers: [MongoImportService, StartImportCommand],
-	exports: [StartImportCommand],
+	providers: [MongoImportService, StartImportCommand, ImportTitlePhotosCommand],
+	exports: [StartImportCommand, ImportTitlePhotosCommand],
 })
 export class MongoImportModule {
 	constructor() {}

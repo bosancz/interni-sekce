@@ -25,6 +25,8 @@ import {
 	chevronForwardOutline,
 	createOutline,
 	imageOutline,
+	star,
+	starOutline,
 } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
@@ -88,7 +90,15 @@ export class PhotosEditComponent implements OnInit {
 		private router: Router,
 		private platformService: PlatformService,
 	) {
-		addIcons({ createOutline, checkmarkOutline, chevronBackOutline, chevronForwardOutline, imageOutline });
+		addIcons({
+			createOutline,
+			checkmarkOutline,
+			chevronBackOutline,
+			chevronForwardOutline,
+			imageOutline,
+			star,
+			starOutline,
+		});
 	}
 
 	ngOnInit(): void {
@@ -201,6 +211,27 @@ export class PhotosEditComponent implements OnInit {
 		photo.caption = caption;
 		if (this.photo()?.id === photo.id) this.photo.set({ ...photo });
 		this.editingCaption.set(false);
+	}
+
+	async toggleTitlePhoto() {
+		const photo = this.photo();
+		if (!photo) return;
+
+		const isTitle = photo.titlePhoto;
+		const photoId = isTitle ? null : photo.id;
+
+		try {
+			await this.api.PhotoGalleryApi.setAlbumTitlePhoto(photo.albumId, { photoId });
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit titulní fotku.", { color: "warning" });
+			return;
+		}
+
+		for (const item of this.photos) item.titlePhoto = !isTitle && item.id === photo.id;
+
+		this.photo.set({ ...photo, titlePhoto: !isTitle });
+
+		this.toastService.toast(isTitle ? "Odebráno z titulní fotky." : "Nastaveno jako titulní fotka.");
 	}
 
 	async saveTags(tags: string[]) {
