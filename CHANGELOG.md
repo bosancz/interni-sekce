@@ -1,3 +1,8 @@
+## v4.8.2 — 2026-08-26
+
+- <span class="changelog-type" title="style">🎨</span> [Odbarvení fotek nepublikovaných alb v dlaždicovém zobrazení](https://github.com/bosancz/interni-sekce/commit/c6d71d47b17caee4bf0978828ef924dee97de798) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+- <span class="changelog-type" title="style">🎨</span> [Karta nejlepších vedoucích na poloviční šířku na desktopu](https://github.com/bosancz/interni-sekce/commit/0f0efd1809221072374f71b5a5a0c2b8253cf3f2) (#332) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.8.1 — 2026-08-25
 
 - <span class="changelog-type" title="style">🎨</span> [Ztlumení fotek nepublikovaných alb v dlaždicovém zobrazení](https://github.com/bosancz/interni-sekce/commit/4e97bf99e2317d4967f0daa20951c41f20e4e4fa) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
