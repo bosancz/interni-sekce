@@ -28,6 +28,8 @@ import { AlbumInfoComponent } from "../../components/album-info/album-info.compo
 import { PhotosEditComponent } from "../../components/photos-edit/photos-edit.component";
 import { PhotosUploadComponent } from "../../components/photos-upload/photos-upload.component";
 
+const TITLE_PHOTO_ASPECT_RATIO = 350 / 200;
+
 @UntilDestroy()
 @Component({
 	selector: "bo-albums-view-info",
@@ -50,10 +52,9 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 	titlePhoto = computed(() => this.photos()?.find((photo) => photo.titlePhoto));
 
 	titlePhotoWidth = computed(() => {
-		const photo = this.titlePhoto();
 		const height = this.albumInfoHeight();
-		if (!photo?.width || !photo.height || !height) return null;
-		return (height * photo.width) / photo.height;
+		if (!height) return null;
+		return height * TITLE_PHOTO_ASPECT_RATIO;
 	});
 
 	private albumInfo = viewChild.required("albumInfo", { read: ElementRef<HTMLElement> });
