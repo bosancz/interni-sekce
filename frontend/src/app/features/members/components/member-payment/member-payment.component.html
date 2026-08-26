@@ -1,0 +1,75 @@
+@if (visible()) {
+	<bo-card>
+		<bo-card-header>
+			<bo-card-title>
+				<span class="bo-card-section-title">
+					<ion-icon name="card-outline" />
+					Členský příspěvek
+				</span>
+			</bo-card-title>
+		</bo-card-header>
+
+		<bo-card-content>
+			@if (payment() === undefined) {
+				<div class="bo-info-list">
+					<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+				</div>
+			}
+
+			@if (payment() === null) {
+				<div class="bo-info-list">
+					<div class="bo-info-row">
+						<span class="bo-info-label">Platební údaje se nepodařilo načíst.</span>
+					</div>
+				</div>
+			}
+
+			@if (payment(); as paymentValue) {
+				<div class="payment">
+					<div class="bo-info-list selectable">
+						<div class="bo-info-row">
+							<span class="bo-info-label">Částka</span>
+							<span class="bo-info-action">
+								<span class="bo-info-value">{{ amount() }}</span>
+							</span>
+						</div>
+
+						<div class="bo-info-row">
+							<span class="bo-info-label">Číslo účtu</span>
+							<span class="bo-info-action">
+								<span class="bo-info-value">{{ accountNumber() }}</span>
+								<bo-copy-button [text]="accountNumber()" />
+							</span>
+						</div>
+
+						<div class="bo-info-row">
+							<span class="bo-info-label">Variabilní symbol</span>
+							<span class="bo-info-action">
+								<span class="bo-info-value">{{ paymentValue.variableSymbol }}</span>
+								<bo-copy-button [text]="paymentValue.variableSymbol" />
+							</span>
+						</div>
+					</div>
+
+					<div class="qr">
+						<img [src]="paymentValue.qrCodeUrl" alt="QR platba členského příspěvku" loading="lazy" />
+						<span class="qr-hint">Naskenujte v bankovní aplikaci</span>
+					</div>
+				</div>
+			}
+		</bo-card-content>
+
+		@if (payment()) {
+			<bo-card-footer>
+				<ion-buttons>
+					<ion-button [href]="mailto()" color="primary" aria-label="Poslat výzvu k platbě e-mailem">
+						Poslat e-mailem
+					</ion-button>
+					<ion-button (click)="openQrCode()" color="primary" aria-label="Otevřít QR kód v novém okně">
+						Otevřít QR kód
+					</ion-button>
+				</ion-buttons>
+			</bo-card-footer>
+		}
+	</bo-card>
+}

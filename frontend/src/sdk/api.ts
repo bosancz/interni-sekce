@@ -28,6 +28,7 @@ export class SDK {
         EventsApi: SDK.EventsApi;
         FeedbackApi: SDK.FeedbackApi;
         MembersApi: SDK.MembersApi;
+        PaymentsApi: SDK.PaymentsApi;
         PhotoGalleryApi: SDK.PhotoGalleryApi;
         PublicAPIApi: SDK.PublicAPIApi;
         RootApi: SDK.RootApi;
@@ -43,6 +44,7 @@ export class SDK {
             this.EventsApi = new SDK.EventsApi(configuration, axios!);
             this.FeedbackApi = new SDK.FeedbackApi(configuration, axios!);
             this.MembersApi = new SDK.MembersApi(configuration, axios!);
+            this.PaymentsApi = new SDK.PaymentsApi(configuration, axios!);
             this.PhotoGalleryApi = new SDK.PhotoGalleryApi(configuration, axios!);
             this.PublicAPIApi = new SDK.PublicAPIApi(configuration, axios!);
             this.RootApi = new SDK.RootApi(configuration, axios!);
@@ -3229,6 +3231,74 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface MemberPaymentRequestResponseWithLinks
+     */
+    export interface MemberPaymentRequestResponseWithLinks {
+        /**
+         * `<last two digits of the year><member id padded to 5>`, e.g. `2600409`.
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'variableSymbol': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'accountNumber': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'bankCode': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'iban': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'amount': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'currency': string;
+        /**
+         * Czech QR platba payload (SPAYD 1.0) encoded in the QR code.
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'spayd': string;
+        /**
+         * Payment message — the member\'s name without diacritics, uppercased.
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'message': string;
+        /**
+         * Absolute URL of the QR code image; openable without a session, so it can be mailed.
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'qrCodeUrl': string;
+        /**
+         * 
+         * @type {object}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        '_links': object;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface MemberPaymentResponse
      */
     export interface MemberPaymentResponse {
@@ -3545,6 +3615,12 @@ export namespace SDK {
          * @memberof MemberResponseLinks
          */
         'updatePayment': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'getMemberPaymentRequest': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -3996,6 +4072,50 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface PaymentSettingsResponseWithLinks
+     */
+    export interface PaymentSettingsResponseWithLinks {
+        /**
+         * 
+         * @type {string}
+         * @memberof PaymentSettingsResponseWithLinks
+         */
+        'accountNumber': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof PaymentSettingsResponseWithLinks
+         */
+        'bankCode': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof PaymentSettingsResponseWithLinks
+         */
+        'iban': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof PaymentSettingsResponseWithLinks
+         */
+        'amount': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof PaymentSettingsResponseWithLinks
+         */
+        'currency': string;
+        /**
+         * 
+         * @type {object}
+         * @memberof PaymentSettingsResponseWithLinks
+         */
+        '_links': object;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface Photo
      */
     export interface Photo {
@@ -4431,6 +4551,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'exportMembersXlsx': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getPaymentSettings': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -7448,6 +7574,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for listGroups operation in MembersApi.
      * @export
@@ -8360,6 +8490,50 @@ export namespace SDK {
          * @memberof MembersApi
          */
         
+        public async getMemberPaymentRequest(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getMemberPaymentRequest', 'id', id)
+            
+            const localVarPath = `/api/members/{id}/payment-request`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<MemberPaymentRequestResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
         public async listContacts(
             id: number,
             options: AxiosRequestConfig = {}
@@ -9066,6 +9240,64 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    }
+    
+        
+        
+    
+    
+    
+    
+    
+    /**
+     * PaymentsApi - object-oriented interface
+     * @export
+     * @class PaymentsApi
+     * @extends {BaseAPI}
+     */
+    export class PaymentsApi extends BaseAPI {
+    
+        constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
+            super(configuration, configuration.basePath, axios);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PaymentsApi
+         */
+        
+        public async getPaymentSettings(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/payments/settings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<PaymentSettingsResponseWithLinks>(axiosRequestConfig);
         }
     }
     

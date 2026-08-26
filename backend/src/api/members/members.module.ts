@@ -8,6 +8,7 @@ import { GroupsController } from "./controllers/groups.controller";
 import { MemberContactsController } from "./controllers/member-contacts.controller";
 import { MemberInsuranceCardController } from "./controllers/member-insurance-card.controller";
 import { MemberPaymentController } from "./controllers/member-payment.controller";
+import { MemberPaymentRequestController } from "./controllers/member-payment-request.controller";
 import { MembersController } from "./controllers/members.controller";
 import { MembersExportController } from "./controllers/members-export.controller";
 
@@ -18,6 +19,7 @@ import { MembersExportController } from "./controllers/members-export.controller
 		MemberInsuranceCardController,
 		MemberContactsController,
 		MemberPaymentController,
+		MemberPaymentRequestController,
 		MembersExportController,
 	],
 	imports: [MembersModelModule, TypeOrmModule.forFeature([Member, Group]), FilesModule],

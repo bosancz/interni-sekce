@@ -27,6 +27,7 @@ import MemberContactsComponent from "../../components/member-contacts/member-con
 import { MemberHealthComponent } from "../../components/member-health/member-health.component";
 import { MemberInfoComponent } from "../../components/member-info/member-info.component";
 import { MemberMembershipComponent } from "../../components/member-membership/member-membership.component";
+import { MemberPaymentComponent } from "../../components/member-payment/member-payment.component";
 import { MemberProfileComponent } from "../../components/member-profile/member-profile.component";
 
 @UntilDestroy()
@@ -49,6 +50,7 @@ import { MemberProfileComponent } from "../../components/member-profile/member-p
 		MemberContactComponent,
 		MemberAddressComponent,
 		MemberMembershipComponent,
+		MemberPaymentComponent,
 		MemberHealthComponent,
 		MemberContactsComponent,
 	],

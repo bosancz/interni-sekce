@@ -36,6 +36,10 @@
 					<bo-member-membership [member]="member()" (update)="updateMember($event)" />
 				</div>
 
+				<div class="card-col d-lg-block" [class.d-none]="view() !== 'profile'">
+					<bo-member-payment [member]="member()" />
+				</div>
+
 				<div class="card-col d-lg-block" [class.d-none]="view() !== 'health'">
 					<bo-member-health
 						[member]="member()"

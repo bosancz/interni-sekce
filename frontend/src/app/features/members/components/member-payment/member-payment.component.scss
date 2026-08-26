@@ -1,0 +1,45 @@
+:host {
+	display: block;
+}
+
+/* rows provide their own padding – drop the default p-3 from bo-card-content */
+::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+/* Side by side once the card is wide enough (desktop masonry column), stacked below
+   each other on a phone – the QR keeps its size either way so it stays scannable. */
+.payment {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+
+	.bo-info-list {
+		flex: 1 1 16rem;
+		min-width: 0;
+	}
+}
+
+.qr {
+	flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	margin: 0 auto;
+	padding: 13px 20px;
+
+	img {
+		width: 160px;
+		max-width: 100%;
+		/* the QR is generated with a white quiet zone, keep it readable in dark mode */
+		background: #fff;
+		border-radius: 4px;
+	}
+}
+
+.qr-hint {
+	color: var(--bo-muted);
+	font-size: 0.8rem;
+	text-align: center;
+}
