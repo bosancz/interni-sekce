@@ -3,7 +3,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { RouterLink } from "@angular/router";
 import { IonIcon, IonItem, IonLabel, IonList, NavController, PopoverController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { bugOutline, logOut, person, settings } from "ionicons/icons";
+import { bugOutline, logOut, notificationsOutline, person, settings } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { LoginService } from "src/app/core/services/login.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -36,7 +36,7 @@ export class AccountMenuModalComponent {
 		private readonly modalService: ModalService,
 		private readonly toastService: ToastService,
 	) {
-		addIcons({ person, settings, logOut, bugOutline });
+		addIcons({ person, settings, logOut, bugOutline, notificationsOutline });
 	}
 
 	async navigate(path: string) {

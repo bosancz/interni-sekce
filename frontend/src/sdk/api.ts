@@ -4064,6 +4064,78 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface NotificationResponseLinks
+     */
+    export interface NotificationResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof NotificationResponseLinks
+         */
+        'markNotificationRead': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface NotificationResponseWithLinks
+     */
+    export interface NotificationResponseWithLinks {
+        /**
+         * 
+         * @type {NotificationTypesEnum}
+         * @memberof NotificationResponseWithLinks
+         */
+        'type': NotificationTypesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationResponseWithLinks
+         */
+        'body': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationResponseWithLinks
+         */
+        'path': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationResponseWithLinks
+         */
+        'readAt': string | null;
+        /**
+         * 
+         * @type {NotificationResponseLinks}
+         * @memberof NotificationResponseWithLinks
+         */
+        '_links': NotificationResponseLinks;
+        /**
+         * 
+         * @type {number}
+         * @memberof NotificationResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationResponseWithLinks
+         */
+        'title': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationResponseWithLinks
+         */
+        'createdAt': string;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
      * @interface NotificationSettingUpdateBody
      */
     export interface NotificationSettingUpdateBody {
@@ -4777,6 +4849,18 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'exportMembersXlsx': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listNotifications': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'markAllNotificationsRead': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -9595,6 +9679,18 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * NotificationsApi - object-oriented interface
      * @export
@@ -9725,6 +9821,126 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<NotificationDeviceResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof NotificationsApi
+         */
+        
+        public async listNotifications(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/account/notifications/items`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<NotificationResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof NotificationsApi
+         */
+        
+        public async markAllNotificationsRead(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/account/notifications/items/read-all`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} notificationId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof NotificationsApi
+         */
+        
+        public async markNotificationRead(
+            notificationId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'notificationId' is not null or undefined
+            assertParamExists('markNotificationRead', 'notificationId', notificationId)
+            
+            const localVarPath = `/api/account/notifications/items/{notificationId}/read`
+                .replace(`{${"notificationId"}}`, encodeURIComponent(String(notificationId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
         }
     
         /**

@@ -9,6 +9,7 @@ import { In, Repository } from "typeorm";
 import { NotificationMailTemplate } from "../mail-templates/notification/notification.mail-template";
 import { NotificationSettingsRepository } from "../repositories/notification-settings.repository";
 import { NotificationSubscriptionsRepository } from "../repositories/notification-subscriptions.repository";
+import { NotificationsRepository } from "../repositories/notifications.repository";
 import {
 	NotificationChannels,
 	NotificationMessage,
@@ -25,6 +26,7 @@ export class NotificationsService {
 		@InjectRepository(User) private users: Repository<User>,
 		private notificationSubscriptions: NotificationSubscriptionsRepository,
 		private notificationSettings: NotificationSettingsRepository,
+		private notifications: NotificationsRepository,
 		private pushService: PushService,
 		private mailService: MailService,
 		private config: Config,
@@ -115,14 +117,20 @@ export class NotificationsService {
 
 		const pushUsers: User[] = [];
 		const emailUsers: User[] = [];
+		const inAppUsers: User[] = [];
 
 		for (const user of recipients) {
 			const channels = overrides.get(user.id) ?? defaultChannels;
 			if (channels.includes(NotificationChannels.push)) pushUsers.push(user);
 			if (channels.includes(NotificationChannels.email)) emailUsers.push(user);
+			if (channels.includes(NotificationChannels.inApp)) inAppUsers.push(user);
 		}
 
-		await Promise.all([this.sendPush(pushUsers, message), this.sendEmails(emailUsers, message)]);
+		await Promise.all([
+			this.sendPush(pushUsers, message),
+			this.sendEmails(emailUsers, message),
+			this.saveInApp(type, inAppUsers, message),
+		]);
 	}
 
 	private async sendPush(users: User[], message: NotificationMessage) {
@@ -132,10 +140,13 @@ export class NotificationsService {
 			users.map((user) => user.id),
 		);
 
+		const url = message.path ? this.config.app.baseUrl + message.path : undefined;
 		const payload = {
-			title: message.title,
-			body: message.body,
-			url: message.path ? this.config.app.baseUrl + message.path : undefined,
+			notification: {
+				title: message.title,
+				body: message.body,
+				data: url ? { onActionClick: { default: { operation: "navigateLastFocusedOrOpen", url } } } : undefined,
+			},
 		};
 
 		for (const subscription of subscriptions) {
@@ -154,6 +165,18 @@ export class NotificationsService {
 				this.logger.error(`Failed to send push notification: ${(err as Error).message}`);
 			}
 		}
+	}
+
+	private async saveInApp(type: NotificationTypes, users: User[], message: NotificationMessage) {
+		await this.notifications.createNotifications(
+			users.map((user) => ({
+				userId: user.id,
+				type,
+				title: message.title,
+				body: message.body ?? null,
+				path: message.path ?? null,
+			})),
+		);
 	}
 
 	private async sendEmails(users: User[], message: NotificationMessage) {

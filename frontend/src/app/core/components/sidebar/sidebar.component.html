@@ -42,6 +42,11 @@
 		<ion-label>Můj účet</ion-label>
 	</ion-item>
 
+	<ion-item routerLink="/ucet/notifikace" routerLinkActive="active">
+		<ion-icon class="me-3" name="notifications-outline"></ion-icon>
+		<ion-label>Notifikace</ion-label>
+	</ion-item>
+
 	@if (canAccessAdmin()) {
 		<ion-item routerLink="/admin" routerLinkActive="active">
 			<ion-icon class="me-3" name="settings"></ion-icon>

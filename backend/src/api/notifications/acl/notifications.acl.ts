@@ -2,9 +2,36 @@ import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
 import {
 	NotificationDeviceResponse,
+	NotificationResponse,
 	NotificationSettingsResponse,
 	NotificationTypeSettingResponse,
 } from "../dto/notifications.dto";
+
+export const NotificationsListPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: NotificationResponse,
+
+	allowed: {
+		uzivatel: true,
+	},
+});
+
+export const NotificationReadPermission = new Permission<NotificationResponse>({
+	linkTo: NotificationResponse,
+	params: { notificationId: "id" },
+
+	allowed: {
+		uzivatel: true,
+	},
+});
+
+export const NotificationsReadAllPermission = new Permission<void>({
+	linkTo: RootResponse,
+
+	allowed: {
+		uzivatel: true,
+	},
+});
 
 export const NotificationSettingsReadPermission = new Permission<void>({
 	linkTo: RootResponse,

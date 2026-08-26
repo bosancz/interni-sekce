@@ -1,0 +1,66 @@
+.notifications-layout {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	max-width: 760px;
+	margin: 0 auto;
+}
+
+:host ::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+.device-row,
+.type-row {
+	flex-wrap: wrap;
+}
+
+.device-info,
+.type-info {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 200px;
+	flex: 1;
+}
+
+.device-name,
+.type-title {
+	color: var(--bo-ink);
+	font-weight: 600;
+}
+
+.device-sub,
+.type-description {
+	color: var(--bo-muted);
+	font-size: 13px;
+}
+
+.device-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex: 0 0 auto;
+}
+
+.type-channels {
+	display: flex;
+	align-items: flex-start;
+	gap: 18px;
+	flex: 0 0 auto;
+
+	ion-toggle {
+		font-size: 12px;
+		color: var(--bo-muted);
+	}
+}
+
+.notifications-muted {
+	color: var(--bo-muted);
+}
+
+@media (min-width: 992px) {
+	.notifications-layout {
+		gap: 20px;
+	}
+}

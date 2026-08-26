@@ -3,6 +3,7 @@ import { Type } from "class-transformer";
 import { IsArray, IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { NotificationSubscription } from "src/models/notifications/entities/notification-subscription.entity";
+import { Notification } from "src/models/notifications/entities/notification.entity";
 import { NotificationChannels, NotificationTypes } from "src/models/notifications/schema/notification-types";
 
 export class NotificationTypeSettingResponse {
@@ -38,6 +39,16 @@ export class NotificationDeviceResponse implements Omit<
 	deviceName!: string | null;
 	createdAt!: Date;
 	updatedAt!: Date;
+}
+
+export class NotificationResponse implements Omit<Notification, "user" | "userId"> {
+	id!: number;
+	@ApiProperty({ enum: NotificationTypes, enumName: "NotificationTypesEnum" }) type!: NotificationTypes;
+	title!: string;
+	@ApiProperty({ type: "string", nullable: true }) body!: string | null;
+	@ApiProperty({ type: "string", nullable: true }) path!: string | null;
+	createdAt!: Date;
+	@ApiProperty({ type: "string", format: "date-time", nullable: true }) readAt!: Date | null;
 }
 
 export class NotificationSubscriptionKeysBody {

@@ -24,6 +24,7 @@ import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { SessionUser } from "src/auth/schema/user-token";
 import { NotificationSettingsRepository } from "src/models/notifications/repositories/notification-settings.repository";
 import { NotificationSubscriptionsRepository } from "src/models/notifications/repositories/notification-subscriptions.repository";
+import { NotificationsRepository } from "src/models/notifications/repositories/notifications.repository";
 import { PushService } from "src/models/notifications/services/push.service";
 import {
 	NotificationChannels,
@@ -35,11 +36,15 @@ import {
 	NotificationDeviceSubscribePermission,
 	NotificationDevicesListPermission,
 	NotificationDeviceTestPermission,
+	NotificationReadPermission,
 	NotificationSettingsReadPermission,
 	NotificationSettingUpdatePermission,
+	NotificationsListPermission,
+	NotificationsReadAllPermission,
 } from "../acl/notifications.acl";
 import {
 	NotificationDeviceResponse,
+	NotificationResponse,
 	NotificationSettingsResponse,
 	NotificationSettingUpdateBody,
 	NotificationSubscribeBody,
@@ -53,8 +58,45 @@ export class AccountNotificationsController {
 	constructor(
 		private notificationSubscriptions: NotificationSubscriptionsRepository,
 		private notificationSettings: NotificationSettingsRepository,
+		private notifications: NotificationsRepository,
 		private pushService: PushService,
 	) {}
+
+	@Get("items")
+	@AcLinks(NotificationsListPermission)
+	@ApiResponse({ status: 200, type: WithLinks(NotificationResponse), isArray: true })
+	async listNotifications(@Req() req: Request, @AuthUser() authUser: SessionUser): Promise<NotificationResponse[]> {
+		NotificationsListPermission.canOrThrow(req);
+
+		return this.notifications.listNotifications(authUser.userId);
+	}
+
+	@Post("items/read-all")
+	@HttpCode(204)
+	@AcLinks(NotificationsReadAllPermission)
+	@ApiResponse({ status: 204 })
+	async markAllNotificationsRead(@Req() req: Request, @AuthUser() authUser: SessionUser): Promise<void> {
+		NotificationsReadAllPermission.canOrThrow(req);
+
+		await this.notifications.markAllRead(authUser.userId);
+	}
+
+	@Post("items/:notificationId/read")
+	@HttpCode(204)
+	@AcLinks(NotificationReadPermission)
+	@ApiResponse({ status: 204 })
+	async markNotificationRead(
+		@Req() req: Request,
+		@AuthUser() authUser: SessionUser,
+		@Param("notificationId", ParseIntPipe) notificationId: number,
+	): Promise<void> {
+		const notification = await this.notifications.getNotification(authUser.userId, notificationId);
+		if (!notification) throw new NotFoundException();
+
+		NotificationReadPermission.canOrThrow(req, notification);
+
+		await this.notifications.markRead(authUser.userId, notificationId);
+	}
 
 	@Get()
 	@AcLinks(NotificationSettingsReadPermission)
@@ -162,7 +204,7 @@ export class AccountNotificationsController {
 		try {
 			alive = await this.pushService.send(
 				{ endpoint: device.endpoint!, keyP256dh: device.keyP256dh!, keyAuth: device.keyAuth! },
-				{ title: "Zkušební upozornění", body: "Upozornění na tomto zařízení fungují." },
+				{ notification: { title: "Zkušební upozornění", body: "Upozornění na tomto zařízení fungují." } },
 			);
 		} catch (err) {
 			throw new BadGatewayException(`Failed to send the test notification: ${(err as Error).message}`);
