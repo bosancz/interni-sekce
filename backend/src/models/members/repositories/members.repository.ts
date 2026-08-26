@@ -5,6 +5,7 @@ import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
 import { Brackets, FindOneOptions, Repository } from "typeorm";
 import { MemberContact } from "../entities/member-contact.entity";
+import { MemberPayment } from "../entities/member-payment.entity";
 import { Member } from "../entities/member.entity";
 
 export interface GetMembersOptions extends PaginationOptions {
@@ -23,6 +24,7 @@ export class MembersRepository {
 	constructor(
 		@InjectRepository(Member) private membersRepository: Repository<Member>,
 		@InjectRepository(MemberContact) private membersContactsRepository: Repository<MemberContact>,
+		@InjectRepository(MemberPayment) private membersPaymentsRepository: Repository<MemberPayment>,
 	) {}
 
 	async getMembers(options: GetMembersOptions = {}, where: Brackets | string = "1=1") {
@@ -168,5 +170,21 @@ export class MembersRepository {
 
 	async deleteContact(memberId: number, contactId: number) {
 		return this.membersContactsRepository.delete({ id: contactId, memberId });
+	}
+
+	async createPayment(memberId: number, paymentData: Partial<Omit<MemberPayment, "id">>) {
+		return this.membersPaymentsRepository.save({ ...paymentData, memberId });
+	}
+
+	async getPayment(memberId: number, paymentId: number) {
+		return this.membersPaymentsRepository.findOne({ where: { id: paymentId, memberId } });
+	}
+
+	async updatePayment(memberId: number, paymentId: number, paymentData: Partial<Omit<MemberPayment, "id">>) {
+		return this.membersPaymentsRepository.save({ ...paymentData, id: paymentId, memberId });
+	}
+
+	async deletePayment(memberId: number, paymentId: number) {
+		return this.membersPaymentsRepository.delete({ id: paymentId, memberId });
 	}
 }

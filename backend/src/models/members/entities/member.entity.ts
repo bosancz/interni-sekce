@@ -16,6 +16,8 @@ import { Group } from "./group.entity";
 import { MemberAchievement } from "./member-achievements.entity";
 import { MemberContact } from "./member-contact.entity";
 
+import { MemberPayment } from "./member-payment.entity";
+
 export enum MemberRoles {
 	"dite" = "dite",
 	"instruktor" = "instruktor",
@@ -98,6 +100,9 @@ export class Member {
 
 	@OneToMany(() => MemberContact, (mb) => mb.member)
 	contacts?: MemberContact[];
+
+	@OneToMany(() => MemberPayment, (mb) => mb.member)
+	payments?: MemberPayment[];
 
 	@OneToMany(() => MemberAchievement, (mb) => mb.member)
 	achievements?: MemberAchievement[];

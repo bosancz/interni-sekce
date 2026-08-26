@@ -764,6 +764,26 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface CreatePaymentBody
+     */
+    export interface CreatePaymentBody {
+        /**
+         * 
+         * @type {number}
+         * @memberof CreatePaymentBody
+         */
+        'amount': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof CreatePaymentBody
+         */
+        'paymentDate'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface Event
      */
     export interface Event {
@@ -2863,6 +2883,12 @@ export namespace SDK {
         'contacts'?: Array<MemberContact>;
         /**
          * 
+         * @type {Array<MemberPayment>}
+         * @memberof Member
+         */
+        'payments'?: Array<MemberPayment>;
+        /**
+         * 
          * @type {Array<MemberAchievement>}
          * @memberof Member
          */
@@ -3171,6 +3197,122 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface MemberPayment
+     */
+    export interface MemberPayment {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPayment
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPayment
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPayment
+         */
+        'amount': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPayment
+         */
+        'paymentDate'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MemberPaymentResponse
+     */
+    export interface MemberPaymentResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPaymentResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPaymentResponse
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPaymentResponse
+         */
+        'amount': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPaymentResponse
+         */
+        'paymentDate'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MemberPaymentResponseLinks
+     */
+    export interface MemberPaymentResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberPaymentResponseLinks
+         */
+        'deletePayment': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MemberPaymentResponseWithLinks
+     */
+    export interface MemberPaymentResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPaymentResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPaymentResponseWithLinks
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPaymentResponseWithLinks
+         */
+        'amount': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPaymentResponseWithLinks
+         */
+        'paymentDate'?: string | null;
+        /**
+         * 
+         * @type {MemberPaymentResponseLinks}
+         * @memberof MemberPaymentResponseWithLinks
+         */
+        '_links': MemberPaymentResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
      * @enum {string}
      */
     
@@ -3329,6 +3471,12 @@ export namespace SDK {
         'contacts'?: Array<MemberContact>;
         /**
          * 
+         * @type {Array<MemberPayment>}
+         * @memberof MemberResponse
+         */
+        'payments'?: Array<MemberPayment>;
+        /**
+         * 
          * @type {Array<MemberAchievement>}
          * @memberof MemberResponse
          */
@@ -3379,6 +3527,24 @@ export namespace SDK {
          * @memberof MemberResponseLinks
          */
         'deleteInsuranceCard': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'listPayments': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'createPayment': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'updatePayment': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -3555,6 +3721,12 @@ export namespace SDK {
          * @memberof MemberResponseWithLinks
          */
         'contacts'?: Array<MemberContact>;
+        /**
+         * 
+         * @type {Array<MemberPayment>}
+         * @memberof MemberResponseWithLinks
+         */
+        'payments'?: Array<MemberPayment>;
         /**
          * 
          * @type {Array<MemberAchievement>}
@@ -4365,6 +4537,26 @@ export namespace SDK {
          * @memberof UpdateGroupBody
          */
         'active'?: boolean;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface UpdatePaymentBody
+     */
+    export interface UpdatePaymentBody {
+        /**
+         * 
+         * @type {number}
+         * @memberof UpdatePaymentBody
+         */
+        'amount': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof UpdatePaymentBody
+         */
+        'paymentDate'?: string | null;
     }
     
         /**
@@ -7101,6 +7293,14 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * @export
      */
@@ -7439,6 +7639,14 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * MembersApi - object-oriented interface
      * @export
@@ -7592,6 +7800,59 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<MemberResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async createPayment(
+            id: number,
+            body: CreatePaymentBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('createPayment', 'id', id)
+            assertParamExists('createPayment', 'createPaymentBody', body)
+            
+            // verify required parameter 'createPaymentBody' is not null or undefined
+            assertParamExists('createPayment', 'id', id)
+            assertParamExists('createPayment', 'createPaymentBody', body)
+            
+            const localVarPath = `/api/members/{id}/payments`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<MemberPaymentResponse>(axiosRequestConfig);
         }
     
         /**
@@ -7797,6 +8058,58 @@ export namespace SDK {
             
             const localVarPath = `/api/members/{id}/permanent`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {number} paymentId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async deletePayment(
+            id: number,
+            paymentId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('deletePayment', 'id', id)
+            assertParamExists('deletePayment', 'paymentId', paymentId)
+            
+            // verify required parameter 'paymentId' is not null or undefined
+            assertParamExists('deletePayment', 'id', id)
+            assertParamExists('deletePayment', 'paymentId', paymentId)
+            
+            const localVarPath = `/api/members/{id}/payments/{paymentId}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"paymentId"}}`, encodeURIComponent(String(paymentId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8303,6 +8616,50 @@ export namespace SDK {
          * @memberof MembersApi
          */
         
+        public async listPayments(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('listPayments', 'id', id)
+            
+            const localVarPath = `/api/members/{id}/payments`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<MemberPaymentResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
         public async permanentlyDeleteGroup(
             id: number,
             options: AxiosRequestConfig = {}
@@ -8593,6 +8950,69 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {number} paymentId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async updatePayment(
+            id: number,
+            paymentId: number,
+            body: UpdatePaymentBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updatePayment', 'id', id)
+            assertParamExists('updatePayment', 'paymentId', paymentId)
+            assertParamExists('updatePayment', 'updatePaymentBody', body)
+            
+            // verify required parameter 'paymentId' is not null or undefined
+            assertParamExists('updatePayment', 'id', id)
+            assertParamExists('updatePayment', 'paymentId', paymentId)
+            assertParamExists('updatePayment', 'updatePaymentBody', body)
+            
+            // verify required parameter 'updatePaymentBody' is not null or undefined
+            assertParamExists('updatePayment', 'id', id)
+            assertParamExists('updatePayment', 'paymentId', paymentId)
+            assertParamExists('updatePayment', 'updatePaymentBody', body)
+            
+            const localVarPath = `/api/members/{id}/payments/{paymentId}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"paymentId"}}`, encodeURIComponent(String(paymentId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<MemberPaymentResponse>(axiosRequestConfig);
         }
     
         /**

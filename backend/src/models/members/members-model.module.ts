@@ -3,13 +3,14 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Group } from "./entities/group.entity";
 import { MemberAchievement } from "./entities/member-achievements.entity";
 import { MemberContact } from "./entities/member-contact.entity";
+import { MemberPayment } from "./entities/member-payment.entity";
 import { Member } from "./entities/member.entity";
 import { GroupsRepository } from "./repositories/groups.repository";
 import { MembersRepository } from "./repositories/members.repository";
 import { MembersExportService } from "./services/members-export.service";
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Member, MemberContact, MemberAchievement, Group])],
+	imports: [TypeOrmModule.forFeature([Member, MemberContact, MemberAchievement, MemberPayment, Group])],
 	providers: [MembersRepository, GroupsRepository, MembersExportService],
 	exports: [MembersRepository, GroupsRepository, MembersExportService],
 })

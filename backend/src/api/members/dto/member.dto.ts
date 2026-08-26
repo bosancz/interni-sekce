@@ -5,6 +5,7 @@ import { PaginationQuery } from "src/api/helpers/dto";
 import { EnsureArray, EnsureBoolean } from "src/helpers/validation";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
+import { MemberPayment } from "src/models/members/entities/member-payment.entity";
 import {
 	HealthEntry,
 	HealthSeverity,
@@ -68,6 +69,9 @@ export class MemberResponse implements Member {
 	contacts?: MemberContact[] | undefined;
 
 	@ApiPropertyOptional()
+	payments?: MemberPayment[] | undefined;
+
+	@ApiPropertyOptional()
 	achievements?: MemberAchievement[] | undefined;
 }
 
@@ -82,7 +86,7 @@ export class MemberCreateBody implements Pick<
 	@ApiProperty() @IsString() @IsOptional() lastName!: string | null;
 }
 
-export class MemberUpdateBody extends PartialType(OmitType(MemberResponse, ["contacts", "achievements", "id"])) {}
+export class MemberUpdateBody extends PartialType(OmitType(MemberResponse, ["contacts", "achievements", "id", "payments"])) {}
 
 export class MembersListQuery extends PaginationQuery {
 	@EnsureArray({ split: "," })
