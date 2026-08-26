@@ -3,6 +3,17 @@ import { access, mkdir, readdir, rename, rmdir, unlink, writeFile } from "fs/pro
 import { dirname, join } from "path";
 import { Config } from "src/config";
 
+function isEnoent(err: unknown): boolean {
+	return typeof err === "object" && err !== null && (err as NodeJS.ErrnoException).code === "ENOENT";
+}
+
+function ignoreEnoent<T>(fallback: T) {
+	return (err: unknown): T => {
+		if (isEnoent(err)) return fallback;
+		throw err;
+	};
+}
+
 @Injectable()
 export class FilesService implements OnApplicationBootstrap {
 	constructor(private readonly config: Config) {}
@@ -36,7 +47,6 @@ export class FilesService implements OnApplicationBootstrap {
 		return readdir(path);
 	}
 
-	/** Remove a directory. Fails if it is not empty. */
 	async deleteDir(path: string) {
 		return rmdir(path);
 	}
@@ -47,10 +57,12 @@ export class FilesService implements OnApplicationBootstrap {
 	}
 
 	async deleteFilesByPrefix(directoryPath: string, prefix: string): Promise<void> {
-		const files = await readdir(directoryPath);
+		const files = await readdir(directoryPath).catch(ignoreEnoent<string[]>([]));
 		const matchingFiles = files.filter((file) => file.startsWith(prefix));
 
-		await Promise.all(matchingFiles.map((file) => unlink(join(directoryPath, file))));
+		await Promise.all(
+			matchingFiles.map((file) => unlink(join(directoryPath, file)).catch(ignoreEnoent<void>(undefined))),
+		);
 	}
 
 	async getFilesByPrefx(directoryPath: string, prefix: string): Promise<string[]> {

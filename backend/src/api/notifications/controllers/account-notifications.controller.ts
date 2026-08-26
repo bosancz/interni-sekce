@@ -99,7 +99,6 @@ export class AccountNotificationsController {
 
 		const channels = [...body.channels];
 
-		// push and e-mail notifications always show on the in-app notifications page too
 		const forcesInApp =
 			channels.includes(NotificationChannels.push) || channels.includes(NotificationChannels.email);
 		if (forcesInApp && !channels.includes(NotificationChannels.inApp)) channels.push(NotificationChannels.inApp);
@@ -156,7 +155,8 @@ export class AccountNotificationsController {
 
 		NotificationDeviceTestPermission.canOrThrow(req, device);
 
-		if (!this.pushService.isConfigured) throw new ServiceUnavailableException("Push notifications are not configured.");
+		if (!this.pushService.isConfigured)
+			throw new ServiceUnavailableException("Push notifications are not configured.");
 
 		let alive: boolean;
 		try {

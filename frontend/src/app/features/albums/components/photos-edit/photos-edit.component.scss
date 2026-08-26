@@ -31,7 +31,6 @@ ion-toolbar {
 		transform 0.2s ease;
 }
 
-// tap-to-hide on mobile: slide the bars out of view and let taps fall through to the image
 .top-toolbar.controls-hidden {
 	opacity: 0;
 	pointer-events: none;
@@ -58,8 +57,6 @@ ion-toolbar {
 		--ion-item-color: #fff;
 	}
 
-	// the toolbars sit on black, so buttons without an explicit colour have to
-	// be white rather than the default primary
 	ion-button:not([color]) {
 		--color: #fff;
 	}
@@ -69,8 +66,6 @@ ion-toolbar {
 	font-style: italic;
 }
 
-// tag chips sit just above the caption row; they wrap onto multiple lines and
-// scroll if the album has a lot of tags, so they never crowd out the image
 .tags-bar {
 	padding: 4px 12px 0;
 	max-height: 25vh;
@@ -83,8 +78,6 @@ ion-toolbar {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	// let horizontal swipes reach our pointer handlers instead of being
-	// consumed by the browser (which would fire pointercancel, not pointerup)
 	touch-action: none;
 }
 
@@ -118,6 +111,21 @@ ion-toolbar {
 	p {
 		margin: 0;
 		opacity: 0.7;
+	}
+}
+
+.image-viewer .title-badge {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	z-index: 10;
+	font-size: 1.75rem;
+	color: #fff;
+	cursor: pointer;
+	filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.7));
+
+	&.active {
+		color: var(--ion-color-warning, #ffc409);
 	}
 }
 

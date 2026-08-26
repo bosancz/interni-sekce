@@ -27,16 +27,12 @@ import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 	],
 })
 export class GlobalSearchComponent implements AfterViewInit {
-	/** Two-way bindable: whether the searchbar is expanded on small screens. */
 	showCancelButton = input(false);
 
-	/** Focus the searchbar as soon as the component shows up. */
 	autofocus = input(false);
 
-	/** The user dismissed the search (cancel button) or picked a result. */
 	close = output<void>();
 
-	/** The searchbar lost focus — consumers that float the results decide whether to hide them. */
 	searchBlur = output<void>();
 
 	private readonly searchbar = viewChild(IonSearchbar);
@@ -46,7 +42,6 @@ export class GlobalSearchComponent implements AfterViewInit {
 
 	resultsOpen = signal(false);
 
-	/** How many results each section previews before "Zobrazit vše". */
 	private readonly previewLimit = 3;
 
 	membersSearchResults = resource({
@@ -79,13 +74,8 @@ export class GlobalSearchComponent implements AfterViewInit {
 	constructor(
 		private readonly globalSearch: GlobalSearchService,
 		private readonly router: Router,
-	) {
-		// close/open results based on whether there's a search string, but only after the user stops typing for a bit (debounceTime)
-		// this.searchString.pipe(distinctUntilChanged()).subscribe((s) => this.resultsOpen.set(!!s));
-	}
+	) {}
 
-	// the searchbar only takes focus once its web component has rendered, which is a tick after
-	// the view is initialised
 	private static readonly AUTOFOCUS_DELAY_MS = 100;
 
 	ngAfterViewInit() {
@@ -94,7 +84,6 @@ export class GlobalSearchComponent implements AfterViewInit {
 		setTimeout(() => void this.searchbar()?.setFocus(), GlobalSearchComponent.AUTOFOCUS_DELAY_MS);
 	}
 
-	/** Empty the searchbar, which also drops the results. */
 	clear() {
 		this.query.next("");
 		this.resultsOpen.set(false);
@@ -111,7 +100,6 @@ export class GlobalSearchComponent implements AfterViewInit {
 		await this.router.navigate(commands, queryParams ? { queryParams } : undefined);
 	}
 
-	/** Open a full list page with the current query prefilled into its own search filter. */
 	async showAll(commands: unknown[]) {
 		await this.navigate(commands, { search: this.debouncedQuery() });
 	}

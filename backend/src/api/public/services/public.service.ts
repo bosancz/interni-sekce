@@ -13,11 +13,6 @@ import { EventsRepository } from "src/models/events/repositories/events.reposito
 import { FilesService } from "src/models/files/services/files.service";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
 
-/**
- * Builds the legacy (routesjs-era) response shapes the bosan.cz website expects:
- * string `_id`s, photo `sizes` objects with URLs, and `_links` with `{id}`-style hrefs.
- * This is deliberately decoupled from the internal AC-lib response format.
- */
 @Injectable()
 export class PublicService {
 	constructor(
@@ -34,26 +29,14 @@ export class PublicService {
 		return `${this.config.app.baseUrl}/api`;
 	}
 
-	// ---- Downloads (registration PDF / album ZIP) ----
-
-	/**
-	 * Resolves the registration PDF for a publicly visible event. Mirrors the internal
-	 * storage layout used by EventsRegistrationsController (a single `prihlaska*` file
-	 * per event). Throws NotFound when the event is not public, has no registration, or
-	 * the file is missing on disk.
-	 */
 	async getRegistrationFile(eventId: number): Promise<{ path: string; filename: string }> {
 		const event = await this.events.getEvent(eventId);
 		if (!event || !this.isPubliclyVisible(event) || !event.hasRegistration) throw new NotFoundException();
 
-		// Mirror EventsRegistrationsController: events imported from the old server keep their legacy
-		// Mongo ObjectId in `srcId` and store the PDF in a folder keyed by that ObjectId (named
-		// `registration.pdf`); natively-created events use the numeric-id folder (`prihlaska_<name>.pdf`).
 		const folder = join(this.config.fs.eventsDir, event.srcId ?? String(event.id));
 
 		let matches: string[];
 		try {
-			// Prefer the new `prihlaska*` file, fall back to the legacy `registration*` one.
 			matches = await this.files.getFilesByPrefx(folder, "prihlaska");
 			if (matches.length === 0) {
 				matches = await this.files.getFilesByPrefx(folder, "registration");
@@ -66,13 +49,6 @@ export class PublicService {
 		return { path: join(folder, matches[0]), filename: matches[0] };
 	}
 
-	/**
-	 * Collects the original image files of a published album for a ZIP download.
-	 * Files are not stat-ed here — archiver skips missing ones on its own (emitting an
-	 * ENOENT warning the controller logs), which avoids a serial round-trip per photo
-	 * that scales badly on slow/networked storage. Unique names are enforced so photos
-	 * sharing an original filename don't overwrite each other inside the archive.
-	 */
 	async getAlbumDownload(albumId: number): Promise<{ filename: string; files: { path: string; name: string }[] }> {
 		const album = await this.albums.getAlbum(albumId);
 		if (!album || album.status !== AlbumStatus.public) throw new NotFoundException();
@@ -101,8 +77,6 @@ export class PublicService {
 	private isPubliclyVisible(event: Event): boolean {
 		return event.status === EventStates.public || event.status === EventStates.cancelled;
 	}
-
-	// ---- Program (events) ----
 
 	async getProgram(options: { limit?: number; dateFrom?: string; dateTill?: string }) {
 		const [events, groups] = await Promise.all([this.events.getPublicProgram(options), this.groups.getGroups()]);
@@ -148,11 +122,10 @@ export class PublicService {
 		};
 	}
 
-	// ---- Gallery (albums / photos) ----
-
 	async getGallery() {
 		const albums = await this.albums.getAlbums({ status: [AlbumStatus.public], limit: 1000 });
-		return albums.map((album) => this.serializeAlbum(album));
+		const titlePhotoByAlbum = await this.photos.getTitlePhotosByAlbums(albums.map((album) => album.id));
+		return albums.map((album) => this.serializeAlbum(album, { titlePhoto: titlePhotoByAlbum.get(album.id) }));
 	}
 
 	async getRecentGallery(limit = 5) {
@@ -163,8 +136,11 @@ export class PublicService {
 
 		return Promise.all(
 			albums.map(async (album) => {
-				const photos = await this.photos.getPhotos({ album: album.id, limit: 3 });
-				return this.serializeAlbum(album, photos);
+				const [photos, titlePhoto] = await Promise.all([
+					this.photos.getPhotos({ album: album.id, limit: 3 }),
+					this.photos.getTitlePhoto(album.id),
+				]);
+				return this.serializeAlbum(album, { photos, titlePhoto });
 			}),
 		);
 	}
@@ -173,17 +149,34 @@ export class PublicService {
 		const album = await this.albums.getAlbum(id);
 		if (!album || album.status !== AlbumStatus.public) throw new NotFoundException();
 
-		const photos = await this.photos.getPhotos({
-			album: album.id,
-			limit: options.preview ? 3 : undefined,
-		});
+		const [photos, titlePhoto] = await Promise.all([
+			this.photos.getPhotos({ album: album.id, limit: options.preview ? 3 : undefined }),
+			this.photos.getTitlePhoto(album.id),
+		]);
 
-		return this.serializeAlbum(album, photos);
+		return this.serializeAlbum(album, { photos, titlePhoto });
 	}
 
-	private serializeAlbum(album: { id: number; [k: string]: any }, photos?: Photo[]) {
+	private buildTitlePhotos(titlePhoto: Photo | null | undefined, photos: Photo[] | undefined): Photo[] {
+		const list: Photo[] = [];
+		if (titlePhoto) list.push(titlePhoto);
+
+		for (const photo of photos ?? []) {
+			if (list.length >= 3) break;
+			if (!list.some((item) => item.id === photo.id)) list.push(photo);
+		}
+
+		return list;
+	}
+
+	private serializeAlbum(
+		album: { id: number; [k: string]: any },
+		{ photos, titlePhoto }: { photos?: Photo[]; titlePhoto?: Photo | null } = {},
+	) {
 		const serializedPhotos = photos?.map((photo) => this.serializePhoto(photo));
-		const titlePhotos = serializedPhotos?.slice(0, 3) ?? [];
+		const serializedTitlePhotos = this.buildTitlePhotos(titlePhoto, photos).map((photo) =>
+			this.serializePhoto(photo),
+		);
 
 		return {
 			_id: String(album.id),
@@ -194,12 +187,10 @@ export class PublicService {
 			datePublished: album.datePublished ?? null,
 			dateFrom: album.dateFrom ?? null,
 			dateTill: album.dateTill ?? null,
-			titlePhotos,
+			titlePhotos: serializedTitlePhotos,
 			photos: serializedPhotos,
 			_links: {
 				self: { href: `${this.apiBase}/public/gallery/${album.id}`, method: "GET", allowed: { GET: true } },
-				// bosan.cz always renders the album download link, so the href must exist even
-				// though the ZIP endpoint is not implemented yet (see PublicController.downloadAlbum).
 				download: {
 					href: `${this.apiBase}/public/gallery/${album.id}/download`,
 					method: "GET",
@@ -230,7 +221,6 @@ export class PublicService {
 		};
 	}
 
-	/** Compute the on-screen dimensions of a resized variant (fit: inside, never upscales). */
 	private scaledSize(photo: Photo, max: { width: number; height: number } | null) {
 		if (!photo.width || !photo.height) {
 			return { width: max?.width ?? null, height: max?.height ?? null };

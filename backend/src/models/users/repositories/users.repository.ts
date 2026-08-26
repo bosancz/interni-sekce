@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { FindOptionsWhere, Repository } from "typeorm";
-import { User } from "../entities/user.entity";
+import { User, UserSettings } from "../entities/user.entity";
 
 @Injectable()
 export class UsersRepository {
@@ -22,11 +22,6 @@ export class UsersRepository {
 		});
 	}
 
-	/**
-	 * Minimal load used to authorize every request: the user id, linked member id
-	 * and the member's active state, plus roles. Fetched by primary key, so it
-	 * stays cheap enough to run on each request.
-	 */
 	async getSessionUser(id: number) {
 		return this.repository.findOne({
 			where: { id },
@@ -51,6 +46,15 @@ export class UsersRepository {
 				: undefined,
 			where,
 		});
+	}
+
+	async getUserSettings(id: number): Promise<UserSettings> {
+		const user = await this.repository.findOne({ where: { id }, select: { id: true, settings: true } });
+		return user?.settings ?? {};
+	}
+
+	async setUserSettings(id: number, settings: UserSettings) {
+		return this.repository.update(id, { settings });
 	}
 
 	async updateUser(id: number, data: Partial<User>) {

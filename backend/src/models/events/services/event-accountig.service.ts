@@ -1,15 +1,13 @@
-import { Injectable } from "@nestjs/common"; // <-- ADD THIS LINE
+import { Injectable } from "@nestjs/common";
 import { Event } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import xlsxPopulate from "xlsx-populate";
 import { markdownToRichText } from "../../../helpers/markdown2richtext";
 import { sanitizeFilename } from "../../../helpers/sanitizefilename";
 import { string2Date } from "../../../helpers/string2date";
-@Injectable() // <-- Now this will work
+@Injectable()
 export class EventAccountingService {
-	constructor() {
-		// Inject other services you might need
-	}
+	constructor() {}
 
 	async generateAccounting(event: Event): Promise<{ fileBuffer: Buffer; fileName: string }> {
 		const fileName = `Uctovani_${sanitizeFilename(event.name)}.xlsx`;
@@ -20,7 +18,6 @@ export class EventAccountingService {
 		const expenseSheet = xlsx.sheet("Soupis výdajů");
 		const reportSheet = xlsx.sheet("Report z akce");
 
-		// filling up memberssheet
 		const leadersString =
 			event?.leaders?.[0]?.firstName && event?.leaders?.[0]?.lastName
 				? event.leaders[0].firstName + " " + event?.leaders[0].lastName
@@ -53,7 +50,6 @@ export class EventAccountingService {
 		attendeeSheet.cell("A2").value(event.name || "");
 		attendeeSheet.cell("B4").value(event.place || "");
 
-		// ugly but its working .cell cant store Dateformat
 		attendeeSheet.range("B5:B5").value(string2Date(event.dateFrom) || "");
 		attendeeSheet.range("B6:B6").value(string2Date(event.dateTill) || "");
 		attendeeSheet.cell("B7").value(leadersString);
@@ -89,7 +85,6 @@ export class EventAccountingService {
 			expenseSheet.range(`${startCol}${startRow}:${endCol}${endRow}`).value(expensesString);
 		}
 
-		// range().value() accepts the RichText object (untyped `any`), unlike the stricter cell().value()
 		reportSheet.range("A10:A10").value(markdownToRichText(event.report));
 
 		const fileBuffer = (await xlsx.outputAsync("buffer")) as Buffer;

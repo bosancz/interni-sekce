@@ -1,4 +1,3 @@
-// problem rows live in soft white cards
 ion-list {
 	background-color: var(--bo-white);
 	border-radius: var(--bo-radius-card);
@@ -14,7 +13,6 @@ bo-item {
 	font-size: 1.8rem;
 }
 
-// summary card with counts
 .summary {
 	background-color: var(--bo-white);
 	border-radius: var(--bo-radius-card);

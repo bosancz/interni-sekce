@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, Req } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	NotFoundException,
+	Param,
+	ParseIntPipe,
+	Patch,
+	Post,
+	Query,
+	Req,
+} from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { DateTime } from "luxon";
@@ -17,13 +29,14 @@ import {
 	AlbumReadPermission,
 	AlbumReorderPhotosPermission,
 	AlbumRestorePermission,
+	AlbumSetTitlePhotoPermission,
 	AlbumsDeletedListPermission,
 	AlbumsListPermission,
 	AlbumsYearsPermission,
 	AlbumUnpublishPermission,
 } from "../acl/albums.acl";
 import { AlbumCreateBody, AlbumListQuery, AlbumResponse, AlbumUpdateBody } from "../dto/album.dto";
-import { AlbumPhotosOrderBody, PhotoResponse } from "../dto/photo.dto";
+import { AlbumPhotosOrderBody, AlbumTitlePhotoBody, PhotoResponse } from "../dto/photo.dto";
 
 @Controller("albums")
 @Authenticated()
@@ -51,7 +64,10 @@ export class AlbumsController {
 			order: query.order,
 		};
 
-		return this.albums.getAlbums(options, where);
+		const albums = await this.albums.getAlbums(options, where);
+		const coverPhotoByAlbum = await this.photos.getCoverPhotosByAlbums(albums.map((album) => album.id));
+
+		return albums.map((album) => ({ ...album, coverPhoto: coverPhotoByAlbum.get(album.id) }));
 	}
 
 	@Post()
@@ -98,7 +114,11 @@ export class AlbumsController {
 	@Patch(":albumId")
 	@AcLinks(AlbumEditPermission)
 	@ApiResponse({ status: 204 })
-	async updateAlbum(@Param("albumId", ParseIntPipe) albumId: number, @Req() req: Request, @Body() body: AlbumUpdateBody): Promise<void> {
+	async updateAlbum(
+		@Param("albumId", ParseIntPipe) albumId: number,
+		@Req() req: Request,
+		@Body() body: AlbumUpdateBody,
+	): Promise<void> {
 		const album = await this.albums.getAlbum(albumId);
 		if (!album) throw new NotFoundException();
 
@@ -140,7 +160,6 @@ export class AlbumsController {
 
 		AlbumDeletePermanentPermission.canOrThrow(req, album);
 
-		// removes the photo rows and their image files on disk along with the album
 		await this.albums.hardDeleteAlbum(albumId);
 	}
 
@@ -171,7 +190,10 @@ export class AlbumsController {
 	@Get(":albumId/photos")
 	@AcLinks(AlbumPhotosPermission)
 	@ApiResponse({ status: 200, type: WithLinks(PhotoResponse), isArray: true })
-	async getAlbumPhotos(@Param("albumId", ParseIntPipe) albumId: number, @Req() req: Request): Promise<PhotoResponse[]> {
+	async getAlbumPhotos(
+		@Param("albumId", ParseIntPipe) albumId: number,
+		@Req() req: Request,
+	): Promise<PhotoResponse[]> {
 		const album = await this.albums.getAlbum(albumId);
 		if (!album) throw new NotFoundException();
 
@@ -194,5 +216,21 @@ export class AlbumsController {
 		AlbumReorderPhotosPermission.canOrThrow(req, album);
 
 		await this.photos.reorderPhotos(album.id, body.photoIds);
+	}
+
+	@Patch(":id/photos/title")
+	@AcLinks(AlbumSetTitlePhotoPermission)
+	@ApiResponse({ status: 204 })
+	async setAlbumTitlePhoto(
+		@Param("id", ParseIntPipe) id: number,
+		@Req() req: Request,
+		@Body() body: AlbumTitlePhotoBody,
+	): Promise<void> {
+		const album = await this.albums.getAlbum(id);
+		if (!album) throw new NotFoundException();
+
+		AlbumSetTitlePhotoPermission.canOrThrow(req, album);
+
+		await this.photos.setTitlePhoto(album.id, body.photoId);
 	}
 }

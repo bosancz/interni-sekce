@@ -22,7 +22,6 @@ export const EventsDeletedListPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: EventResponse,
 
-	// Anyone who can list events can also list deleted events (admin is always allowed implicitly).
 	allowed: {
 		vedouci: true,
 	},
@@ -94,7 +93,6 @@ export const EventRestorePermission = new Permission({
 export const EventDeletePermanentPermission = new Permission({
 	linkTo: EventResponse,
 	params: { eventId: "id" },
-	// Permanent deletion is irreversible and reserved for admins only.
 	allowed: {
 		admin: true,
 	},
@@ -120,7 +118,8 @@ export const EventSubmitPermission = new Permission({
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
 
-	applicable: ({ doc }) => doc.status === EventStates.draft && !doc.deletedAt && !!doc.leaders?.length,
+	applicable: ({ doc }) =>
+		[EventStates.draft, EventStates.rejected].includes(doc.status) && !doc.deletedAt && !!doc.leaders?.length,
 });
 
 export const EventPublishPermission = new Permission({
@@ -130,7 +129,9 @@ export const EventPublishPermission = new Permission({
 		program: true,
 	},
 	applicable: ({ doc }) =>
-		[EventStates.pending, EventStates.draft].includes(doc.status) && !!doc.leaders?.length && !doc.deletedAt,
+		[EventStates.pending, EventStates.draft, EventStates.rejected].includes(doc.status) &&
+		!!doc.leaders?.length &&
+		!doc.deletedAt,
 });
 
 export const EventRejectPermission = new Permission({
@@ -174,7 +175,7 @@ export const EventRegistrationReadPermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
-	applicable: ({ doc }) => doc.hasRegistration
+	applicable: ({ doc }) => doc.hasRegistration,
 });
 
 export const EventRegistrationEditPermission = new Permission({
@@ -182,6 +183,7 @@ export const EventRegistrationEditPermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
+	applicable: ({ doc }) => !doc.hasRegistration,
 });
 
 export const EventRegistrationGeneratePermission = new Permission({
@@ -189,9 +191,7 @@ export const EventRegistrationGeneratePermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
-	// The form prints the leader's name, phone and email — with no leader there is nothing to
-	// generate, and EventRegistrationService.assertGeneratable() would reject it anyway.
-	applicable: ({ doc }) => !!doc.attendees?.some((a) => a.type === "leader"),
+	applicable: ({ doc }) => !doc.hasRegistration && !!doc.attendees?.some((a) => a.type === "leader"),
 });
 
 export const EventRegistrationDeletePermission = new Permission({
@@ -199,7 +199,7 @@ export const EventRegistrationDeletePermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventEditPermission,
-	applicable: ({ doc }) => doc.hasRegistration
+	applicable: ({ doc }) => doc.hasRegistration,
 });
 
 export const EventReportReadPermission = new Permission({
@@ -223,6 +223,38 @@ export const EventAnnouncementGetPermission = new Permission({
 		revizor: true,
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
+});
+
+export const EventAnnouncementSentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => doc.status === EventStates.public && !doc.announcementSentAt && !doc.deletedAt,
+});
+
+export const EventAnnouncementUnsentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => !!doc.announcementSentAt && !doc.deletedAt,
+});
+
+export const EventAccountingSentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => doc.status === EventStates.public && !doc.accountingSentAt && !doc.deletedAt,
+});
+
+export const EventAccountingUnsentPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => !!doc.accountingSentAt && !doc.deletedAt,
 });
 
 export const EventAccountingGetPermission = new Permission({

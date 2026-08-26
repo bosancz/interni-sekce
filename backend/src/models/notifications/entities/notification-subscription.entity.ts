@@ -27,8 +27,6 @@ export class NotificationSubscription {
 	@Column({ type: "varchar" }) deviceId!: string;
 	@Column({ type: "varchar", nullable: true }) deviceName!: string | null;
 
-	// The endpoint is a capability URL and the keys encrypt the payloads for the device,
-	// so none of them ever leaves the backend.
 	@Column({ type: "text", unique: true, select: false }) @ApiHideProperty() endpoint?: string;
 	@Column({ type: "text", select: false }) @ApiHideProperty() keyP256dh?: string;
 	@Column({ type: "text", select: false }) @ApiHideProperty() keyAuth?: string;

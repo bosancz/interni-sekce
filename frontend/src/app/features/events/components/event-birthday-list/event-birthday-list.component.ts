@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, effect, input, signal } from "@angular/core";
 import { IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
-import { DateTime } from "luxon";
+import { getAge, hasBirthdayBetween } from "src/helpers/age";
 import { SDK } from "src/sdk";
 
 @Component({
@@ -27,15 +27,11 @@ export class EventBirthdayListComponent {
 	updateBirthdays(event: SDK.EventResponseWithLinks) {
 		const members = this.members();
 
-		const dateFrom = DateTime.fromISO(event.dateFrom).set({ hour: 0, minute: 0 });
-		const dateTill = DateTime.fromISO(event.dateTill).set({ hour: 23, minute: 59 });
-
 		const birthdays: Array<{ age: number; date: string; member: SDK.MemberResponse }> = [];
 		members.forEach((member) => {
 			if (!member.birthday) return;
-			var ageStart = Math.floor(-1 * DateTime.fromISO(member.birthday).diff(dateFrom, "years").toObject().years!);
-			var ageEnd = Math.floor(-1 * DateTime.fromISO(member.birthday).diff(dateTill, "years").toObject().years!);
-			if (ageStart < ageEnd) birthdays.push({ age: ageEnd, date: member.birthday, member: member });
+			if (!hasBirthdayBetween(member.birthday, event.dateFrom, event.dateTill)) return;
+			birthdays.push({ age: getAge(member.birthday, event.dateTill)!, date: member.birthday, member });
 		});
 
 		this.birthdays.set(birthdays);

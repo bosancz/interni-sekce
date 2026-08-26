@@ -23,8 +23,8 @@ export class MongoAlbum {
 	@Prop({ type: Date }) dateFrom!: Date;
 	@Prop({ type: Date }) dateTill!: Date;
 	@Prop({ type: SchemaTypes.ObjectId, ref: "MongoEvent" }) event!: Types.ObjectId;
-	@Prop({ type: SchemaTypes.ObjectId, ref: "MongoPhoto" }) titlePhoto!: string;
-	@Prop({ type: [{ type: SchemaTypes.ObjectId, ref: "MongoPhoto" }] }) titlePhotos!: string;
+	@Prop({ type: SchemaTypes.ObjectId, ref: "MongoPhoto" }) titlePhoto!: Types.ObjectId;
+	@Prop({ type: [{ type: SchemaTypes.ObjectId, ref: "MongoPhoto" }] }) titlePhotos!: Types.ObjectId[];
 	@Prop([{ type: SchemaTypes.ObjectId, ref: "MongoPhoto" }]) photos!: [];
 }
 

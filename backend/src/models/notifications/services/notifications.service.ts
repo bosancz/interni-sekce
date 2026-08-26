@@ -128,7 +128,9 @@ export class NotificationsService {
 	private async sendPush(users: User[], message: NotificationMessage) {
 		if (!this.pushService.isConfigured || !users.length) return;
 
-		const subscriptions = await this.notificationSubscriptions.getSendableSubscriptions(users.map((user) => user.id));
+		const subscriptions = await this.notificationSubscriptions.getSendableSubscriptions(
+			users.map((user) => user.id),
+		);
 
 		const payload = {
 			title: message.title,
@@ -147,7 +149,6 @@ export class NotificationsService {
 					payload,
 				);
 
-				// expired subscriptions are cleaned up here, since only sending discovers them
 				if (!alive) await this.notificationSubscriptions.deleteSubscription(subscription.id);
 			} catch (err) {
 				this.logger.error(`Failed to send push notification: ${(err as Error).message}`);

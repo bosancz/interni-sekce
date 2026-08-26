@@ -13,9 +13,7 @@ export interface SubscriptionData {
 
 @Injectable()
 export class NotificationSubscriptionsRepository {
-	constructor(
-		@InjectRepository(NotificationSubscription) private repository: Repository<NotificationSubscription>,
-	) {}
+	constructor(@InjectRepository(NotificationSubscription) private repository: Repository<NotificationSubscription>) {}
 
 	async listDevices(userId: number) {
 		return this.repository.find({ where: { userId }, order: { createdAt: "ASC" } });
@@ -26,8 +24,6 @@ export class NotificationSubscriptionsRepository {
 	}
 
 	async upsertSubscription(userId: number, data: SubscriptionData) {
-		// the endpoint is globally unique — when a device re-subscribes under another account or
-		// with a fresh deviceId, the stale row would collide with the upsert below
 		await this.repository
 			.createQueryBuilder()
 			.delete()
@@ -53,7 +49,15 @@ export class NotificationSubscriptionsRepository {
 
 	async getSendableDevice(userId: number, id: number) {
 		return this.repository.findOne({
-			select: { id: true, userId: true, deviceId: true, deviceName: true, endpoint: true, keyP256dh: true, keyAuth: true },
+			select: {
+				id: true,
+				userId: true,
+				deviceId: true,
+				deviceName: true,
+				endpoint: true,
+				keyP256dh: true,
+				keyAuth: true,
+			},
 			where: { userId, id },
 		});
 	}

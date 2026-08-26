@@ -129,7 +129,11 @@ export class UsersController {
 	@Patch(":userId")
 	@AcLinks(UserEditPermission)
 	@ApiResponse({ status: 204 })
-	async updateUser(@Req() req: Request, @Param("userId", ParseIntPipe) userId: number, @Body() body: UserUpdateBody): Promise<void> {
+	async updateUser(
+		@Req() req: Request,
+		@Param("userId", ParseIntPipe) userId: number,
+		@Body() body: UserUpdateBody,
+	): Promise<void> {
 		const user = await this.userService.getUser(userId);
 		if (!user) throw new NotFoundException();
 
@@ -163,7 +167,6 @@ export class UsersController {
 
 		UserSetPassword.canOrThrow(req, user);
 
-		// the password column stores a bcrypt hash, never the plaintext
 		const password = await this.hashService.generateHash(body.password);
 		await this.userService.updateUser(userId, { password });
 	}
@@ -180,8 +183,6 @@ export class UsersController {
 
 		UserImpersonatePermission.canOrThrow(req, user);
 
-		// replaces the caller's token cookie, remembering who they really are so logging out
-		// returns to that account; chained impersonations keep pointing at the original user
 		const impersonatorId = req.user!.impersonatorId ?? req.user!.userId;
 
 		await this.tokenService.setToken(res, user.id, impersonatorId !== user.id ? impersonatorId : undefined);

@@ -1,10 +1,7 @@
-// Count of missing items, sitting at the end of the card title.
 .missing-count {
 	margin-left: auto;
 }
 
-// One member per row: who they are on the left, what is missing in the middle, the link on the right.
-// Wraps on narrow screens so the pills keep their own line instead of squeezing the name.
 .missing-row {
 	flex-wrap: wrap;
 	align-items: flex-start;
@@ -46,9 +43,6 @@
 	}
 }
 
-// Phones show the icon alone (see the template), so the pill drops the label padding and
-// becomes a round badge instead of a wide oval with a single glyph in it. Sized in rem, not
-// em — the pill's own 0.8em font size is meant for text and leaves the glyph too small.
 @media (max-width: 767.98px) {
 	.missing-label {
 		width: 2.25rem;
@@ -68,7 +62,6 @@
 	--padding-end: 8px;
 }
 
-// Empty state — nothing is missing in this group.
 .missing-empty {
 	justify-content: flex-start;
 	color: var(--bo-muted);

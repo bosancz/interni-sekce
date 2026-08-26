@@ -17,7 +17,6 @@ import { EventAgeHistogramComponent } from "../event-age-histogram/event-age-his
 import { EventAttendeesListComponent } from "../event-attendees-list/event-attendees-list.component";
 import { EventBirthdayListComponent } from "../event-birthday-list/event-birthday-list.component";
 
-// vedoucím akce může být jen instruktor nebo vedoucí, ne dítě
 const LEADER_ROLES: SDK.MemberRolesEnum[] = [SDK.MemberRolesEnum.Instruktor, SDK.MemberRolesEnum.Vedouci];
 
 @UntilDestroy()
@@ -109,27 +108,19 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		const event = this.event();
 		if (!event) return;
 
-		const addSelectedMember = async (member?: SDK.MemberResponse | null) => {
-			if (!member?.id) return;
+		const selectedAttendees = computed(() => (type === "leader" ? this.leaders() : this.attendees()) ?? []);
+		const selectedIds = computed(() => selectedAttendees().map((attendee) => attendee.memberId));
 
+		const addSelectedMember = async (member: SDK.MemberResponse) => {
 			try {
-				const existingAttendee = [...(this.attendees() ?? []), ...(this.leaders() ?? [])].find(
-					(item) => item.member && item.member.id === member.id,
-				);
-				if (existingAttendee && existingAttendee.type === type) {
-					this.toastService.toast("Účastník už v seznamu je.");
-					return;
-				}
-
-				if (existingAttendee) {
+				if (this.findAttendee(member.id)) {
 					await this.api.EventsApi.updateEventAttendee(event.id, member.id, { type });
 				} else {
 					await this.api.EventsApi.addEventAttendee(event.id, member.id, { type });
 				}
-
-				this.toastService.toast("Účastník přidán.");
 			} catch (e) {
-				this.toastService.toast("Nepodařilo se přidat účastníka." + e);
+				this.toastService.toast("Nepodařilo se přidat účastníka.", { color: "danger" });
+				return;
 			}
 
 			await this.loadAttendees(event);
@@ -137,11 +128,77 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			this.change.emit();
 		};
 
-		await this.modalService.componentModal(MemberSelectorModalComponent, {
-			keepOpenAfterSelect: true,
-			roles: type === "leader" ? LEADER_ROLES : undefined,
-			onSelect: (member: SDK.MemberResponse) => void addSelectedMember(member),
-		});
+		const removeSelectedMember = async (member: SDK.MemberResponse) => {
+			const attendee = this.findAttendee(member.id);
+			if (!attendee) return;
+
+			if (!attendee._links.deleteEventAttendee.allowed) {
+				this.toastService.toast("Tohoto účastníka nemůžete odebrat.", { color: "danger" });
+				return;
+			}
+
+			try {
+				await this.api.EventsApi.deleteEventAttendee(event.id, member.id);
+			} catch (e) {
+				this.toastService.toast("Nepodařilo se odebrat účastníka.", { color: "danger" });
+				return;
+			}
+
+			await this.loadAttendees(event);
+
+			this.change.emit();
+		};
+
+		const clearAllMembers = async () => {
+			const removable = (selectedAttendees() ?? []).filter(
+				(attendee) => attendee._links.deleteEventAttendee.allowed,
+			);
+			if (!removable.length) return;
+
+			const confirmation = await this.modalService.deleteConfirmationModal(
+				type === "leader"
+					? "Opravdu chcete odebrat všechny vedoucí akce?"
+					: "Opravdu chcete odebrat všechny účastníky akce?",
+				{ header: "Odebrat vše?", buttonText: "Odebrat" },
+			);
+			if (!confirmation) return;
+
+			try {
+				for (const attendee of removable) {
+					await this.api.EventsApi.deleteEventAttendee(event.id, attendee.memberId);
+				}
+			} catch (e) {
+				this.toastService.toast("Nepodařilo se odebrat účastníky.", { color: "danger" });
+			}
+
+			await this.loadAttendees(event);
+
+			this.change.emit();
+		};
+
+		await this.modalService.componentModal(
+			MemberSelectorModalComponent,
+			{
+				keepOpenAfterSelect: true,
+				roles: type === "leader" ? LEADER_ROLES : undefined,
+				title: type === "leader" ? "Přidat vedoucí" : "Přidat účastníky",
+				subtitle:
+					type === "leader"
+						? "Vyber vedoucí a instruktory ze svého oddílu."
+						: "Vyber účastníky ze svého oddílu.",
+				selectedIds,
+				onSelect: addSelectedMember,
+				onDeselect: removeSelectedMember,
+				onClearAll: clearAllMembers,
+			},
+			{ cssClass: "dialog-picker" },
+		);
+	}
+
+	private findAttendee(memberId: number) {
+		return [...(this.attendees() ?? []), ...(this.leaders() ?? [])].find(
+			(attendee) => attendee.memberId === memberId,
+		);
 	}
 
 	async removeAttendee(attendee: SDK.EventAttendeeResponseWithLinks) {
@@ -156,7 +213,6 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		}
 
 		try {
-			// optimistic update
 			this.attendees.set(this.attendees()?.filter((item) => item.memberId !== attendee.memberId));
 
 			await this.api.EventsApi.deleteEventAttendee(event.id, attendee.memberId);
@@ -167,7 +223,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			this.change.emit();
 		} catch (e) {
 			this.toastService.toast("Nepodařilo se odebrat účastníka.");
-			this.attendees.set([...(this.attendees() ?? []), attendee]); // rollback
+			this.attendees.set([...(this.attendees() ?? []), attendee]);
 		}
 	}
 

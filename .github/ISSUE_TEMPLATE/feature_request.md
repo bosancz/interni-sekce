@@ -1,10 +1,9 @@
 ---
 name: Nápad
 about: Nápad na novou funkci
-title: ''
+title: ""
 labels: nápad
-assignees: ''
-
+assignees: ""
 ---
 
 **Jaký problém tvůj nápad řeší?**

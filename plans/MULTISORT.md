@@ -62,9 +62,7 @@ export function applySort<T extends ObjectLiteral>(
 ): SelectQueryBuilder<T> {
 	const specs = parseSort(options, whitelist);
 	const applied = specs.length ? specs : [fallback].flat();
-	applied.forEach((spec, i) =>
-		i === 0 ? q.orderBy(spec.column, spec.order) : q.addOrderBy(spec.column, spec.order),
-	);
+	applied.forEach((spec, i) => (i === 0 ? q.orderBy(spec.column, spec.order) : q.addOrderBy(spec.column, spec.order)));
 	return q;
 }
 ```
@@ -108,7 +106,7 @@ generated `SDK.List*OrderEnum` types disappear — see step 5.
   [
   	{ column: "(SELECT g.name FROM groups g WHERE g.id = members.group_id)", order: "ASC" },
   	{ column: "members.role", order: "DESC" },
-  ]
+  ];
   ```
 
   Pull the group subquery and the nickname expression into named consts so the whitelist and the
@@ -157,11 +155,11 @@ sortIndex(key: string): number;
 
 New `onSort` cycle:
 
-| current state of clicked column | next state                        |
-| ------------------------------- | --------------------------------- |
-| not in the list                 | appended at the end, ASC          |
-| in the list, ASC                | same position, DESC               |
-| in the list, DESC               | removed (later keys shift up)     |
+| current state of clicked column | next state                    |
+| ------------------------------- | ----------------------------- |
+| not in the list                 | appended at the end, ASC      |
+| in the list, ASC                | same position, DESC           |
+| in the list, DESC               | removed (later keys shift up) |
 
 ```ts
 onSort(column: AdminTableColumnComponent) {
@@ -194,12 +192,11 @@ lookup, and add the priority badge:
 <button type="button" class="admin-table-sort" [class.admin-table-sort-active]="idx >= 0" (click)="onSort(column)">
 	<span>{{ column.header() }}</span>
 	@if (idx >= 0) {
-		<ion-icon [name]="activeSort()[idx].order === 'ASC' ? 'caret-up' : 'caret-down'"></ion-icon>
-		@if (activeSort().length > 1) {
-			<span class="admin-table-sort-index">{{ idx + 1 }}</span>
-		}
-	} @else {
-		<ion-icon name="swap-vertical" class="admin-table-sort-idle"></ion-icon>
+	<ion-icon [name]="activeSort()[idx].order === 'ASC' ? 'caret-up' : 'caret-down'"></ion-icon>
+	@if (activeSort().length > 1) {
+	<span class="admin-table-sort-index">{{ idx + 1 }}</span>
+	} } @else {
+	<ion-icon name="swap-vertical" class="admin-table-sort-idle"></ion-icon>
 	}
 </button>
 ```
@@ -250,7 +247,7 @@ Stays single-column, with two defensive tweaks for the case where a URL carries 
 - Selecting a column emits a **single** key/order pair, replacing whatever multi-key sort was
   active. This is the "custom sorting overrides the default and continues with single sort only"
   behaviour.
-- The `[sort]`/`[order]` inputs may now contain commas: show the *first* key as the selected option
+- The `[sort]`/`[order]` inputs may now contain commas: show the _first_ key as the selected option
   and the first direction in the segment, so the control never renders a value that isn't in its
   option list (`ion-select` would show blank).
 
@@ -289,14 +286,14 @@ the requested behaviour.
 
 ## File checklist
 
-| File                                                              | Change                                             |
-| ----------------------------------------------------------------- | -------------------------------------------------- |
-| `backend/src/helpers/sort.ts`                                      | list parsing, `addOrderBy`, list fallback, `parseSortKeys` |
-| `backend/src/api/helpers/dto.ts`                                   | `order` regex validation                            |
-| `backend/src/models/members/repositories/members.repository.ts`    | group+role fallback, generalised nickname tie-break |
-| `frontend/src/sdk/api.ts`                                          | regenerated (`npm run generate:sdk`)                |
-| `frontend/…/admin-table/admin-table.component.ts`                  | parsed multi-key state, three-state `onSort`        |
-| `frontend/…/admin-table/admin-table.component.html`                | index-based active check, priority badge            |
-| `frontend/…/admin-table/admin-table.component.scss`                | badge styling                                       |
-| `frontend/…/sort-select/sort-select.component.ts` + `.html`        | tolerate comma input, emit single key               |
-| `frontend/…/members-list`, `albums-list`, `events-list`, `group-members` | widen order type, drop enum casts, keep raw param |
+| File                                                                     | Change                                                     |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `backend/src/helpers/sort.ts`                                            | list parsing, `addOrderBy`, list fallback, `parseSortKeys` |
+| `backend/src/api/helpers/dto.ts`                                         | `order` regex validation                                   |
+| `backend/src/models/members/repositories/members.repository.ts`          | group+role fallback, generalised nickname tie-break        |
+| `frontend/src/sdk/api.ts`                                                | regenerated (`npm run generate:sdk`)                       |
+| `frontend/…/admin-table/admin-table.component.ts`                        | parsed multi-key state, three-state `onSort`               |
+| `frontend/…/admin-table/admin-table.component.html`                      | index-based active check, priority badge                   |
+| `frontend/…/admin-table/admin-table.component.scss`                      | badge styling                                              |
+| `frontend/…/sort-select/sort-select.component.ts` + `.html`              | tolerate comma input, emit single key                      |
+| `frontend/…/members-list`, `albums-list`, `events-list`, `group-members` | widen order type, drop enum casts, keep raw param          |

@@ -8,19 +8,10 @@ config({ override: true, debug: true });
 
 const logger = new Logger("CONFIG");
 
-/**
- * Sets environment type (production/development) for use in other configurations
- */
 const environment = process.env.NODE_ENV || "development";
 
 const production = ["production", "staging"].includes(environment);
 
-/**
- * Sets server startup settings
- * @property host - Server listening hostname
- * @property port - Server listening port
- * @property basePath - Server base directory
- */
 const server = {
 	host: process.env.HOST || "127.0.0.1",
 	port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
@@ -28,8 +19,6 @@ const server = {
 	staticRoot: process.env.STATIC_ROOT || path.join(__dirname, "../../frontend/dist/browser"),
 	globalPrefix: process.env.GLOBAL_PREFIX ?? "api",
 	cors: environment === "development",
-	// Cross-origin allow-list for first-party sites that consume the public API from a
-	// different origin (the bosan.cz website). In development any origin is reflected.
 	corsOrigins: (process.env["CORS_ORIGINS"] ?? "https://bosan.cz,https://www.bosan.cz")
 		.split(",")
 		.map((origin) => origin.trim())
@@ -46,24 +35,17 @@ const logging: { level: LogLevel[]; query: boolean } = {
 	query: process.env["LOG_QUERY"] === "true" || process.env["LOG_QUERY"] === "1",
 };
 
-/**
- * App
- */
 const app = {
 	name: "Bošán",
 	baseUrl:
 		process.env["BASE_URL"] || `http://${server.host}${server.port ? ":" + server.port : ""}${server.basePath}`,
 	version: process.env["VERSION"] || "DEV",
 	environmentTitle: process.env["ENV_TITLE"] ?? (environment === "production" ? "" : environment.toUpperCase()),
-	// Repo-root CHANGELOG.md, served at GET /api/changelog. The "../../" resolves to the repo
-	// root in dev and to /app in the Docker image (mirrors the staticRoot idiom above).
 	changelogPath: process.env["CHANGELOG_PATH"] || path.join(__dirname, "../../CHANGELOG.md"),
 };
 
 const jwtSecret = process.env["JWT_SECRET"];
 
-// A predictable secret lets anyone forge admin session cookies, so never allow the
-// insecure development fallback outside of local development.
 if (production && (!jwtSecret || jwtSecret.length < 32)) {
 	throw new Error("JWT_SECRET environment variable must be set to a strong (>=32 char) value in production.");
 }
@@ -87,6 +69,11 @@ const db: DataSourceOptions = {
 	namingStrategy: new SnakeNamingStrategy(),
 };
 
+const seed = {
+	onStart: ["true", "1"].includes(process.env["SEED_ON_START"] ?? ""),
+	password: process.env["SEED_PASSWORD"] || null,
+};
+
 const mongoDb = {
 	uri: process.env["MONGODB_URI"] ?? "",
 };
@@ -97,9 +84,6 @@ const fs = {
 	dataDir,
 	keysDir: path.resolve(process.env["KEYS_DIR"] ?? "../keys"),
 	photosDir: path.resolve(process.env["PHOTOS_DIR"] ?? path.join(dataDir, "photos")),
-	// Same directories the old server used ("photos" / "thumbs"). Photos imported from the
-	// old server keep their existing files there, keyed by Mongo ObjectId; new uploads are
-	// written alongside them keyed by numeric id (see PhotosFilesService).
 	thumbnailsDir: path.resolve(process.env["THUMBNAILS_DIR"] ?? path.join(dataDir, "thumbs")),
 	eventsDir: path.resolve(process.env["EVENTS_DIR"] ?? path.join(dataDir, "events")),
 	membersDir: path.resolve(process.env["MEMBERS_DIR"] ?? path.join(dataDir, "members")),
@@ -113,19 +97,6 @@ const photos = {
 	},
 };
 
-/**
- * Google.
- *
- * The whole Google setup runs off a single mounted service-account key file (default
- * `keys/google.json`), exactly like the old server: it is used to send mail through the
- * Gmail API, and login only *verifies* the token the frontend obtains, which needs no
- * client secret and no code exchange. So there is deliberately no GOOGLE_CLIENT_SECRET.
- *
- * `clientId` is the public "Web application" OAuth client id. It is not a secret (it ships
- * in the frontend and is delivered to it via the API), so it carries a sensible default and
- * is used only to check that login tokens were issued for this app. Override with
- * GOOGLE_CLIENT_ID if the deployment uses a different Google Cloud OAuth client.
- */
 const GOOGLE_CLIENT_ID = "249555539983-j8rvff7bovgnecsmjffe0a3dj55j33hh.apps.googleusercontent.com";
 
 const google = {
@@ -138,40 +109,16 @@ const mapy = {
 	apiKey: process.env["MAPY_CZ_API_KEY"] ?? "",
 };
 
-/**
- * Web Push (VAPID). The key pair is provided at runtime — generate one with
- * `npx web-push generate-vapid-keys`. With the keys unset the push integration
- * is disabled: no public key is served to the frontend and sending is skipped.
- */
 const push = {
 	publicKey: process.env["VAPID_PUBLIC_KEY"] ?? "",
 	privateKey: process.env["VAPID_PRIVATE_KEY"] ?? "",
 	subject: process.env["VAPID_SUBJECT"] ?? `mailto:${process.env["GOOGLE_IMPERSONATE"] ?? "interni@bosan.cz"}`,
 };
 
-/**
- * Feedback / bug reports
- */
 const feedback = {
-	// Recipient of the in-app bug reports (see FeedbackController).
 	bugReportRecipient: process.env["BUG_REPORT_RECIPIENT"] ?? "lef@bosan.cz",
 };
 
-/**
- * GitHub App.
- *
- * In-app bug reports are additionally filed as GitHub issues (see FeedbackController /
- * GithubService). Authentication uses a GitHub App: the App ID + private key sign a JWT
- * that is exchanged for a short-lived installation access token (all handled by
- * @octokit/auth-app), so issues are created as the app — no personal account or PAT.
- *
- * Set up: create a GitHub App with "Issues: Read & write" permission, generate a private
- * key, and install it on the target repo. Provide the key either inline via
- * GITHUB_APP_PRIVATE_KEY (PEM, literal `\n` escapes are accepted) or as a file mounted in
- * the keys dir via GITHUB_APP_PRIVATE_KEY_FILE. The installation id is auto-discovered
- * from the repo, so GITHUB_APP_INSTALLATION_ID is optional. When appId/privateKey are
- * unset the integration is simply disabled and bug reports fall back to email only.
- */
 const github = {
 	appId: process.env["GITHUB_APP_ID"] ?? "",
 	privateKey: (process.env["GITHUB_APP_PRIVATE_KEY"] ?? "").replace(/\\n/g, "\n"),
@@ -179,15 +126,10 @@ const github = {
 		? path.resolve(fs.keysDir, process.env["GITHUB_APP_PRIVATE_KEY_FILE"])
 		: "",
 	installationId: process.env["GITHUB_APP_INSTALLATION_ID"] ?? "",
-	// Repository that in-app bug reports are filed into, as "owner/repo".
 	bugReportRepo: process.env["GITHUB_BUG_REPORT_REPO"] ?? "bosancz/interni-sekce",
-	// Label applied to every issue created from an in-app bug report.
 	bugReportLabel: process.env["GITHUB_BUG_REPORT_LABEL"] ?? "user-reported",
 };
 
-/**
- * Public iCalendar feed of the event program (GET /api/public/program/ical).
- */
 const ical = {
 	name: process.env["ICAL_NAME"] ?? `${app.name} – program akcí`,
 	description: process.env["ICAL_DESCRIPTION"] ?? "Program akcí oddílu Bošán",
@@ -197,19 +139,10 @@ const ical = {
 	ttlSeconds: process.env["ICAL_TTL_SECONDS"] ? parseInt(process.env["ICAL_TTL_SECONDS"], 10) : 3600,
 };
 
-/**
- * OAuth2 identity-provider settings.
- *
- * The backend acts as an OAuth2 provider (authorization-code flow) so external
- * first-party apps – currently the Wiki.js wiki – can log users in via SSO
- * without a second login. See WIKI-SSO.md for the Wiki.js configuration.
- */
 const oauth = {
 	wiki: {
 		clientId: process.env["OAUTH_WIKI_CLIENT_ID"] ?? "",
 		clientSecret: process.env["OAUTH_WIKI_CLIENT_SECRET"] ?? "",
-		// Exact callback URL registered in the Wiki.js strategy, e.g.
-		// https://wiki.bosan.cz/login/<strategyKey>/callback
 		redirectUri: process.env["OAUTH_WIKI_REDIRECT_URI"] ?? "",
 	},
 };
@@ -229,6 +162,7 @@ export class Config {
 	oauth = oauth;
 	production = production;
 	push = push;
+	seed = seed;
 	server = server;
 	fs = fs;
 	mapy = mapy;

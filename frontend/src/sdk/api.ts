@@ -196,6 +196,34 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface AccountSettingsBody
+     */
+    export interface AccountSettingsBody {
+        /**
+         * 
+         * @type {{ [key: string]: any; }}
+         * @memberof AccountSettingsBody
+         */
+        'settings': { [key: string]: any; };
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface AccountSettingsResponse
+     */
+    export interface AccountSettingsResponse {
+        /**
+         * 
+         * @type {{ [key: string]: any; }}
+         * @memberof AccountSettingsResponse
+         */
+        'settings': { [key: string]: any; };
+    }
+    
+        /**
+     * 
+     * @export
      * @interface Album
      */
     export interface Album {
@@ -411,6 +439,12 @@ export namespace SDK {
          * @memberof AlbumResponse
          */
         'photos'?: Array<PhotoResponseWithLinks>;
+        /**
+         * 
+         * @type {PhotoResponseWithLinks}
+         * @memberof AlbumResponse
+         */
+        'coverPhoto'?: PhotoResponseWithLinks;
     }
     
     export const AlbumResponseStatusEnum = {
@@ -481,6 +515,12 @@ export namespace SDK {
          * @memberof AlbumResponseLinks
          */
         'reorderAlbumPhotos': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
+        'setAlbumTitlePhoto': AcLink;
     }
     
         /**
@@ -563,6 +603,12 @@ export namespace SDK {
         'photos'?: Array<PhotoResponseWithLinks>;
         /**
          * 
+         * @type {PhotoResponseWithLinks}
+         * @memberof AlbumResponseWithLinks
+         */
+        'coverPhoto'?: PhotoResponseWithLinks;
+        /**
+         * 
          * @type {AlbumResponseLinks}
          * @memberof AlbumResponseWithLinks
          */
@@ -576,6 +622,20 @@ export namespace SDK {
     
     export type AlbumResponseWithLinksStatusEnum = typeof AlbumResponseWithLinksStatusEnum[keyof typeof AlbumResponseWithLinksStatusEnum];
     
+    
+        /**
+     * 
+     * @export
+     * @interface AlbumTitlePhotoBody
+     */
+    export interface AlbumTitlePhotoBody {
+        /**
+         * 
+         * @type {number}
+         * @memberof AlbumTitlePhotoBody
+         */
+        'photoId'?: number | null;
+    }
     
         /**
      * 
@@ -927,6 +987,18 @@ export namespace SDK {
         'report': string | null;
         /**
          * 
+         * @type {object}
+         * @memberof Event
+         */
+        'announcementSentAt': object;
+        /**
+         * 
+         * @type {object}
+         * @memberof Event
+         */
+        'accountingSentAt': object;
+        /**
+         * 
          * @type {string}
          * @memberof Event
          */
@@ -948,6 +1020,7 @@ export namespace SDK {
     export const EventStatusEnum = {
         Draft: 'draft',
         Pending: 'pending',
+        Rejected: 'rejected',
         Public: 'public',
         Cancelled: 'cancelled'
     } as const;
@@ -1529,6 +1602,18 @@ export namespace SDK {
         'status': EventStatesEnum;
         /**
          * 
+         * @type {string}
+         * @memberof EventResponse
+         */
+        'announcementSentAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponse
+         */
+        'accountingSentAt'?: string;
+        /**
+         * 
          * @type {Album}
          * @memberof EventResponse
          */
@@ -1710,7 +1795,31 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof EventResponseLinks
          */
+        'markAccountingSent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'unmarkAccountingSent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
         'getEventAnnouncement': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'markAnnouncementSent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'unmarkAnnouncementSent': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -1869,6 +1978,18 @@ export namespace SDK {
          * @memberof EventResponseWithLinks
          */
         'status': EventStatesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'announcementSentAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'accountingSentAt'?: string;
         /**
          * 
          * @type {Album}
@@ -2050,6 +2171,7 @@ export namespace SDK {
     export const EventStatesEnum = {
         Draft: 'draft',
         Pending: 'pending',
+        Rejected: 'rejected',
         Public: 'public',
         Cancelled: 'cancelled'
     } as const;
@@ -2208,6 +2330,7 @@ export namespace SDK {
     export const EventUpdateBodyStatusEnum = {
         Draft: 'draft',
         Pending: 'pending',
+        Rejected: 'rejected',
         Public: 'public',
         Cancelled: 'cancelled'
     } as const;
@@ -2702,7 +2825,7 @@ export namespace SDK {
          */
         'dateTill': string;
         /**
-         * Dětodny this single event was worth — children on it × how many days it lasted.
+         * 
          * @type {number}
          * @memberof LeaderEventResponse
          */
@@ -4246,6 +4369,12 @@ export namespace SDK {
         'order': number | null;
         /**
          * 
+         * @type {boolean}
+         * @memberof Photo
+         */
+        'titlePhoto': boolean;
+        /**
+         * 
          * @type {number}
          * @memberof Photo
          */
@@ -4414,6 +4543,12 @@ export namespace SDK {
         'order'?: number | null;
         /**
          * 
+         * @type {boolean}
+         * @memberof PhotoResponseWithLinks
+         */
+        'titlePhoto': boolean;
+        /**
+         * 
          * @type {number}
          * @memberof PhotoResponseWithLinks
          */
@@ -4498,6 +4633,26 @@ export namespace SDK {
          * @memberof PhotoUpdateBody
          */
         'tags'?: Array<string> | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface RegistrationPreviewResponse
+     */
+    export interface RegistrationPreviewResponse {
+        /**
+         * PDF přihlášky v base64
+         * @type {string}
+         * @memberof RegistrationPreviewResponse
+         */
+        'pdf': string;
+        /**
+         * Náhled přihlášky jako JPEG v base64
+         * @type {string}
+         * @memberof RegistrationPreviewResponse
+         */
+        'image': string;
     }
     
         /**
@@ -4747,13 +4902,13 @@ export namespace SDK {
          */
         'groupId': number;
         /**
-         * \"děťodny\" — children × days, summed over the events the member led. The ranking score.
+         * 
          * @type {number}
          * @memberof TopLeaderResponse
          */
         'childDays': number;
         /**
-         * How many events that score comes from.
+         * 
          * @type {number}
          * @memberof TopLeaderResponse
          */
@@ -4791,13 +4946,13 @@ export namespace SDK {
          */
         'year': number;
         /**
-         * děťodny of every event of the year, each event counted once — not once per leader.
+         * 
          * @type {number}
          * @memberof TopLeadersResponse
          */
         'childDays': number;
         /**
-         * Oldest and newest year with a finished event, so the year switcher knows where to stop.
+         * 
          * @type {number}
          * @memberof TopLeadersResponse
          */
@@ -5205,6 +5360,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for loginUsingLink operation in AccountApi.
      * @export
@@ -5219,6 +5378,10 @@ export namespace SDK {
          */
         code: string
     }
+    
+    
+    
+    
     
     
     
@@ -5279,6 +5442,44 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<AccountResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof AccountApi
+         */
+        
+        public async getMySettings(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/account/settings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<AccountSettingsResponse>(axiosRequestConfig);
         }
     
         /**
@@ -5475,6 +5676,51 @@ export namespace SDK {
             const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof AccountApi
+         */
+        
+        public async setMySettings(
+            body: AccountSettingsBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'accountSettingsBody' is not null or undefined
+            assertParamExists('setMySettings', 'accountSettingsBody', body)
+            
+            const localVarPath = `/api/account/settings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
     
     
     
@@ -5729,6 +5975,22 @@ export namespace SDK {
          */
         deleted?: boolean
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -6302,7 +6564,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<void>(axiosRequestConfig);
+            return this.axios.request<RegistrationPreviewResponse>(axiosRequestConfig);
         }
     
         /**
@@ -6950,6 +7212,94 @@ export namespace SDK {
          * @memberof EventsApi
          */
         
+        public async markAccountingSent(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('markAccountingSent', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/accounting/sent`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async markAnnouncementSent(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('markAnnouncementSent', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/announcement/sent`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
         public async publishEvent(
             eventId: number,
             body: EventStatusChangeBody,
@@ -7243,6 +7593,94 @@ export namespace SDK {
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async unmarkAccountingSent(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('unmarkAccountingSent', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/accounting/sent`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async unmarkAnnouncementSent(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('unmarkAnnouncementSent', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/announcement/sent`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
     
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
@@ -9590,6 +10028,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * PhotoGalleryApi - object-oriented interface
      * @export
@@ -10339,6 +10781,59 @@ export namespace SDK {
             setSearchParams(requestUrlObj, requestQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async setAlbumTitlePhoto(
+            id: number,
+            body: AlbumTitlePhotoBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('setAlbumTitlePhoto', 'id', id)
+            assertParamExists('setAlbumTitlePhoto', 'albumTitlePhotoBody', body)
+            
+            // verify required parameter 'albumTitlePhotoBody' is not null or undefined
+            assertParamExists('setAlbumTitlePhoto', 'id', id)
+            assertParamExists('setAlbumTitlePhoto', 'albumTitlePhotoBody', body)
+            
+            const localVarPath = `/api/albums/{id}/photos/title`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
     
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;

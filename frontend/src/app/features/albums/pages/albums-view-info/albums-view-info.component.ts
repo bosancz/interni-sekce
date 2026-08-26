@@ -1,4 +1,14 @@
-import { Component, computed, OnInit, signal } from "@angular/core";
+import {
+	AfterViewInit,
+	Component,
+	computed,
+	ElementRef,
+	NgZone,
+	OnDestroy,
+	OnInit,
+	signal,
+	viewChild,
+} from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ActionSheetController, AlertController, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -11,6 +21,7 @@ import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 import { AlbumGalleryComponent } from "../../components/album-gallery/album-gallery.component";
 import { AlbumInfoComponent } from "../../components/album-info/album-info.component";
@@ -21,10 +32,11 @@ import { PhotosUploadComponent } from "../../components/photos-upload/photos-upl
 @Component({
 	selector: "bo-albums-view-info",
 	templateUrl: "./albums-view-info.component.html",
+	styleUrl: "./albums-view-info.component.scss",
 
-	imports: [PageHeaderComponent, PageContentComponent, AlbumInfoComponent, AlbumGalleryComponent],
+	imports: [PageHeaderComponent, PageContentComponent, AlbumInfoComponent, AlbumGalleryComponent, PhotoImageUrlPipe],
 })
-export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
+export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy, ViewWillLeave {
 	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
 
 	photos = signal<SDK.PhotoResponseWithLinks[] | undefined>(undefined);
@@ -35,8 +47,21 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 	selectedPhotos = signal<SDK.PhotoResponseWithLinks[]>([]);
 
-	// the gallery controls live inline next to the Galerie heading on every size,
-	// so the header menu only ever holds the album actions
+	titlePhoto = computed(() => this.photos()?.find((photo) => photo.titlePhoto));
+
+	titlePhotoWidth = computed(() => {
+		const photo = this.titlePhoto();
+		const height = this.albumInfoHeight();
+		if (!photo?.width || !photo.height || !height) return null;
+		return (height * photo.width) / photo.height;
+	});
+
+	private albumInfo = viewChild.required("albumInfo", { read: ElementRef<HTMLElement> });
+
+	private albumInfoHeight = signal(0);
+
+	private resizeObserver?: ResizeObserver;
+
 	headerActions = computed<Action[]>(() => {
 		const album = this.album();
 		if (!album) return [];
@@ -56,6 +81,7 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		private actionSheetController: ActionSheetController,
 		private modalService: ModalService,
 		private platformService: PlatformService,
+		private ngZone: NgZone,
 	) {
 		addIcons({
 			openOutline,
@@ -73,6 +99,19 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 			await this.loadAlbum(params["album"]);
 			this.openPhotoFromUrl();
 		});
+	}
+
+	ngAfterViewInit() {
+		this.resizeObserver = new ResizeObserver(() => {
+			const height = this.albumInfo().nativeElement.offsetHeight;
+			this.ngZone.run(() => this.albumInfoHeight.set(height));
+		});
+
+		this.resizeObserver.observe(this.albumInfo().nativeElement);
+	}
+
+	ngOnDestroy() {
+		this.resizeObserver?.disconnect();
 	}
 
 	ionViewWillLeave() {
@@ -103,7 +142,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		this.photos.set(photos);
 	}
 
-	// deep link: only on the first load of an album, reloads after edits must not reopen the modal
 	private openPhotoFromUrl() {
 		if (this.photosModal) return;
 
@@ -130,10 +168,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		const photos = this.photos();
 		const originalCount = photos?.length;
 
-		// the open photo is reflected in the URL for deep-linking, but on the synthetic
-		// history entry ModalService pushes — so the modal writes it once it is presented.
-		// The entry we come back to on close must not carry it, or closing (which is a
-		// history.back()) would restore the URL of the photo just closed.
 		await this.router.navigate([], {
 			queryParams: { photo: null },
 			queryParamsHandling: "merge",
@@ -152,23 +186,18 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 			const album = this.album();
 			const photos = this.photos();
 			if (photos?.length !== originalCount && album) {
-				this.loadAlbum(album.id); // album must be present when closing modal
+				this.loadAlbum(album.id);
 			} else if (photos) {
-				// tag/caption edits in the modal mutate photo objects in place; refresh the
-				// signal reference so the gallery's derived tag filter reflects them
 				this.photos.set([...photos]);
 			}
 		});
 	}
-
-	// --- Ordering -----------------------------------------------------------
 
 	async onReorder(photos: SDK.PhotoResponseWithLinks[]) {
 		this.photos.set(photos);
 		await this.persistOrder(photos);
 	}
 
-	// picking an option is itself the confirmation that the custom order can go
 	async sortPhotos() {
 		const options = [
 			{
@@ -186,7 +215,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 			},
 		];
 
-		// the action sheet slides up from the bottom edge, which only reads well on a phone
 		if (this.platformService.isLg.value) {
 			this.alert = await this.alertController.create({
 				header: "Seřadit fotky",
@@ -247,8 +275,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 		}
 	}
 
-	// --- Selecting & deleting -------------------------------------------------
-
 	startSelecting() {
 		this.selecting.set(true);
 		this.selectedPhotos.set([]);
@@ -290,15 +316,13 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 
 		const album = this.album();
 		if (album) {
-			await this.loadAlbum(album.id); // wouldnt be able to delete photos if no album was present
+			await this.loadAlbum(album.id);
 		}
 
 		toast.dismiss();
 		this.toastService.toast("Fotky smazány");
 		this.cancelSelecting();
 	}
-
-	// --- Album actions ------------------------------------------------------
 
 	async uploadPhotos() {
 		const album = this.album();
@@ -359,8 +383,6 @@ export class AlbumsViewInfoComponent implements OnInit, ViewWillLeave {
 	}
 
 	private getAlbumActions(album: SDK.AlbumResponseWithLinks): Action[] {
-		// actions that do not apply to the album in its current state are hidden,
-		// actions that apply but the user is not permitted to use are shown disabled
 		return [
 			{
 				text: "Publikovat",

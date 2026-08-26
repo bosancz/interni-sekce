@@ -64,9 +64,6 @@ export class Member {
 	@Column({ type: "varchar", nullable: true }) firstName?: string | null;
 	@Column({ type: "varchar", nullable: true }) lastName?: string | null;
 
-	// Diacritic- and case-insensitive full-text vector, maintained by Postgres as a stored generated
-	// column (see SearchVectorColumns migration). Matched with `searchVector @@ to_tsquery(...)`.
-	// The GIN index is created in that migration; synchronize:false because TypeORM cannot express it.
 	@Index("IDX_members_search_vector", { synchronize: false })
 	@Column({
 		type: "tsvector",

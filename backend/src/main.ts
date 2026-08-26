@@ -6,6 +6,7 @@ import { AppModule } from "./app.module";
 import { Config, StaticConfig } from "./config";
 import { runMigrations } from "./database/run-migrations";
 import { registerOpenAPI } from "./openapi";
+import { SeedService } from "./seed/services/seed.service";
 
 async function bootstrap() {
 	const logger = new Logger("MAIN");
@@ -29,18 +30,21 @@ async function bootstrap() {
 
 	const config = app.get(Config);
 
+	if (config.seed.onStart) {
+		logger.log("SEED_ON_START je zapnuté, plním databázi testovacími daty...");
+		await app.get(SeedService).seedOnStart();
+	}
+
 	if (config.server.globalPrefix) {
 		app.setGlobalPrefix(config.server.globalPrefix);
 	}
 
 	if (config.server.cors) {
-		// development: reflect any origin for convenience
 		app.enableCors({
 			origin: true,
 			credentials: true,
 		});
 	} else if (config.server.corsOrigins.length) {
-		// production: only the explicitly allow-listed first-party origins (e.g. the bosan.cz website)
 		app.enableCors({
 			origin: config.server.corsOrigins,
 			credentials: true,
@@ -56,11 +60,9 @@ async function bootstrap() {
 		}),
 	);
 
-	// comment to disable OpenAPI and Swagger
 	registerOpenAPI("api/openapi", app, config);
 
 	if (!config.production) {
-		// make JSONs nice for debugging
 		app.getHttpAdapter().getInstance().set("json spaces", 2);
 	}
 

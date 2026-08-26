@@ -10,6 +10,7 @@ import { HeaderComponent } from "./core/components/header/header.component";
 import { LoginComponent } from "./core/components/login/login.component";
 import { SidebarComponent } from "./core/components/sidebar/sidebar.component";
 import { ApiService } from "./core/services/api.service";
+import { DarkModeService } from "./core/services/dark-mode.service";
 import { PlatformService } from "./core/services/platform.service";
 import { PwaInstallService } from "./core/services/pwa-install.service";
 import { ToastService } from "./core/services/toast.service";
@@ -36,11 +37,10 @@ export class AppComponent implements OnInit {
 		private readonly platformService: PlatformService,
 		private readonly pwaInstall: PwaInstallService,
 		private readonly toastService: ToastService,
+		private readonly darkModeService: DarkModeService,
 	) {
 		addIcons({ homeSharp, calendarSharp, downloadOutline });
 
-		// Offer the native install prompt automatically once the browser reports the app is
-		// installable and the user is logged in. Shown at most once per session.
 		effect(() => {
 			if (this.autoPromptShown) return;
 			if (!this.user()) return;
@@ -71,8 +71,6 @@ export class AppComponent implements OnInit {
 			],
 		});
 
-		// Snooze whenever the banner is dismissed without starting the install (the "Teď ne"
-		// button or a swipe/backdrop dismiss both carry the "cancel" role).
 		toast.onDidDismiss().then((event) => {
 			if (event.role === "cancel") this.pwaInstall.snoozeAutoPrompt();
 		});

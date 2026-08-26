@@ -18,7 +18,6 @@ export interface NotificationTypeMetadata {
 	title: string;
 	description: string;
 	defaultChannels: NotificationChannels[];
-	/** Roles that receive and may configure this notification type; null = every registered user. */
 	roles: Roles[] | null;
 }
 

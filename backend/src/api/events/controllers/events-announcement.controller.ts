@@ -1,14 +1,31 @@
-import { Controller, Get, HttpCode, NotFoundException, Param, ParseIntPipe, Req, Res, StreamableFile } from "@nestjs/common";
+import {
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	NotFoundException,
+	Param,
+	ParseIntPipe,
+	Post,
+	Req,
+	Res,
+	StreamableFile,
+} from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
+import { contentDispositionFilename } from "src/helpers/sanitizefilename";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { EventAnnouncementService } from "src/models/events/services/event-announcement.service";
 import { Repository } from "typeorm";
-import { EventAnnouncementGetPermission } from "../acl/events.acl";
+import {
+	EventAnnouncementGetPermission,
+	EventAnnouncementSentPermission,
+	EventAnnouncementUnsentPermission,
+} from "../acl/events.acl";
 
 @Controller("events")
 @Authenticated()
@@ -30,11 +47,9 @@ export class EventsAnnouncementController {
 		@Param("eventId", ParseIntPipe) eventId: number,
 		@Res({ passthrough: true }) res: Response,
 	): Promise<StreamableFile> {
-		//const event = await this.events.getEvent(eventId);
-
 		const event = await this.eventsRepository.findOne({
 			where: { id: eventId },
-			relations: { attendees: { member: { contacts: true } } }, // Important: load nested member relation
+			relations: { attendees: { member: { contacts: true } } },
 		});
 
 		if (!event) throw new NotFoundException();
@@ -45,9 +60,35 @@ export class EventsAnnouncementController {
 
 		res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
-		res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+		res.setHeader("Content-Disposition", `attachment; ${contentDispositionFilename(fileName)}`);
 		res.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 
 		return new StreamableFile(fileBuffer);
+	}
+
+	@Post(":eventId/announcement/sent")
+	@HttpCode(204)
+	@AcLinks(EventAnnouncementSentPermission)
+	@ApiResponse({ status: 204 })
+	async markAnnouncementSent(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<void> {
+		const event = await this.events.getEvent(eventId, { leaders: true });
+		if (!event) throw new NotFoundException();
+
+		EventAnnouncementSentPermission.canOrThrow(req, event);
+
+		await this.events.updateEvent(eventId, { announcementSentAt: new Date() });
+	}
+
+	@Delete(":eventId/announcement/sent")
+	@HttpCode(204)
+	@AcLinks(EventAnnouncementUnsentPermission)
+	@ApiResponse({ status: 204 })
+	async unmarkAnnouncementSent(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<void> {
+		const event = await this.events.getEvent(eventId, { leaders: true });
+		if (!event) throw new NotFoundException();
+
+		EventAnnouncementUnsentPermission.canOrThrow(req, event);
+
+		await this.events.updateEvent(eventId, { announcementSentAt: null });
 	}
 }

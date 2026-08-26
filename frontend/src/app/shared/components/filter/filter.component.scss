@@ -6,17 +6,12 @@
 ion-toolbar {
 	padding-top: 0.25rem;
 	padding-bottom: 0.25rem;
-	// align the search row to the same 16px page gutter as the table card below
 	--padding-start: 16px;
 	--padding-end: 16px;
 	--background: transparent;
 	--ion-toolbar-background: transparent;
 }
 
-// Lay the controls out as a wrapping row rather than a single non-wrapping ion-toolbar slot.
-// The search box grows to fill the row on desktop, pushing the actions to the right; on narrow
-// screens it keeps a usable width and the pills/buttons wrap onto the next line instead of
-// squeezing the search box.
 .bo-filter-bar {
 	display: flex;
 	flex-wrap: wrap;
@@ -37,7 +32,6 @@ ion-toolbar {
 	align-items: center;
 }
 
-// search input as a white rounded pill on the paper background
 ion-searchbar {
 	--background: var(--bo-white);
 	--box-shadow: var(--bo-shadow-card);

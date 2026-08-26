@@ -28,7 +28,6 @@ export class PushService {
 		return this.isConfigured ? this.config.push.publicKey : null;
 	}
 
-	/** @returns false when the subscription is expired or gone (HTTP 404/410) and should be removed */
 	async send(subscription: PushSubscriptionKeys, payload: object): Promise<boolean> {
 		if (!this.isConfigured) return true;
 

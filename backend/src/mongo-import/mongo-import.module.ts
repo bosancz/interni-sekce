@@ -10,15 +10,12 @@ import { Member } from "src/models/members/entities/member.entity";
 import { MembersModelModule } from "src/models/members/members-model.module";
 import { User } from "src/models/users/entities/user.entity";
 import { UsersModelModule } from "src/models/users/users-model.module";
+import { ImportTitlePhotosCommand } from "./commands/import-title-photos.command";
 import { StartImportCommand } from "./commands/import-mongo-data.command";
 import { MongoImportService } from "./services/mongo-import.service";
 
 @Module({
 	imports: [
-		// The Mongo connection is intentionally NOT established here: MongooseModule.forRootAsync
-		// would connect at module init, which happens on every CLI startup regardless of the
-		// command being run. MongoImportService opens (and closes) the connection lazily, so Mongo
-		// is only contacted when the `mongo-import` command actually runs.
 		TypeOrmModule.forFeature([Album, Photo, Event, Member, User]),
 
 		AuthModule,
@@ -28,8 +25,8 @@ import { MongoImportService } from "./services/mongo-import.service";
 		AlbumsModelModule,
 		UsersModelModule,
 	],
-	providers: [MongoImportService, StartImportCommand],
-	exports: [StartImportCommand],
+	providers: [MongoImportService, StartImportCommand, ImportTitlePhotosCommand],
+	exports: [StartImportCommand, ImportTitlePhotosCommand],
 })
 export class MongoImportModule {
 	constructor() {}

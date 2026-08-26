@@ -30,21 +30,16 @@ ion-item {
 		font-size: 1.6rem;
 	}
 
-	// custom brand-glyph icons, masked so they follow the same muted/active
-	// coloring as the ionicons instead of their baked-in brand colors
 	.nav-icon {
 		display: inline-block;
 		width: 1.6rem;
 		height: 1.6rem;
 		background-color: var(--bo-muted);
 
-		// these glyphs are fine line-art, so a single mask reads too thin.
-		// stack the mask at 1px offsets in 8 directions and union them
-		// (mask-composite: add) to dilate the shape — the CSS equivalent of
-		// a heavier weight — then anchor a centered copy on top.
 		--nav-icon-mask: var(--nav-icon-src) no-repeat center / contain;
 		-webkit-mask: var(--nav-icon-mask);
-		mask: var(--nav-icon-mask), var(--nav-icon-mask), var(--nav-icon-mask), var(--nav-icon-mask),
+		mask:
+			var(--nav-icon-mask), var(--nav-icon-mask), var(--nav-icon-mask), var(--nav-icon-mask),
 			var(--nav-icon-mask), var(--nav-icon-mask), var(--nav-icon-mask), var(--nav-icon-mask);
 		mask-position:
 			calc(50% - 0.5px) calc(50% - 0.5px),
@@ -71,7 +66,6 @@ ion-item {
 		--nav-icon-src: url("/assets/img/button-program.svg");
 	}
 
-	// active nav item — yellow tint background + blue bold text
 	&.active {
 		--background: var(--bo-nav-active-bg);
 		--color: var(--bo-nav-active-fg);

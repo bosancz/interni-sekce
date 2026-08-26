@@ -6,7 +6,6 @@ import { firstValueFrom } from "rxjs";
 import { filter, take } from "rxjs/operators";
 import { ModalTemplateComponent } from "../../shared/components/modal-template/modal-template.component";
 
-// overlays we can present, back-close and dismiss uniformly
 type DismissableOverlay = HTMLIonModalElement | HTMLIonAlertElement;
 
 interface BaseModalOptions {
@@ -57,11 +56,8 @@ type ModalComponentData<C extends InputModalComponent> = C extends { submit: Eve
 	providedIn: "root",
 })
 export class ModalService {
-	// overlays (modals + alerts) kept open by a synthetic history entry, top-most last
 	private backStack: DismissableOverlay[] = [];
 	private popstateListenerBound = false;
-	// set right before we pop our own synthetic entry, so the resulting popstate
-	// (from closing an overlay by button/submit) is not treated as a user back-press
 	private suppressPopstate = false;
 
 	constructor(
@@ -70,12 +66,6 @@ export class ModalService {
 		private router: Router,
 	) {}
 
-	/**
-	 * Creates a modal, presents it with browser-back-to-close wired up, and returns
-	 * the modal handle. Use this for modals that need the element itself (e.g. to
-	 * dismiss them externally); prefer {@link componentModal} when you only need the
-	 * dismiss result.
-	 */
 	async modal<C>(
 		component: Type<C>,
 		componentProps?: ComponentProps<C>,
@@ -86,14 +76,6 @@ export class ModalService {
 		return modal;
 	}
 
-	/**
-	 * Presents an overlay (modal or alert) and wires the browser back button to close
-	 * it with no data (the same result as cancelling). On present we push a synthetic
-	 * history entry pointing at the current URL; a back-press then consumes that entry
-	 * — closing the overlay without navigating the page. When the overlay is instead
-	 * closed from within (button/submit/backdrop) we consume the same entry ourselves
-	 * so the history stays balanced and the page never moves.
-	 */
 	private async presentWithBackClose(overlay: DismissableOverlay) {
 		this.ensurePopstateListener();
 
@@ -102,9 +84,8 @@ export class ModalService {
 
 		overlay.onDidDismiss().then(() => {
 			const index = this.backStack.indexOf(overlay);
-			if (index === -1) return; // already removed by the back-navigation path
+			if (index === -1) return;
 
-			// closed from within: drop the synthetic entry we added on present.
 			this.backStack.splice(index, 1);
 			this.suppressPopstate = true;
 			history.back();
@@ -113,14 +94,6 @@ export class ModalService {
 		await overlay.present();
 	}
 
-	/**
-	 * Resolves once the overlay has closed *and* the back-close it triggers (the history.back in
-	 * presentWithBackClose) has settled in the router. For a stationary page that settling event is a
-	 * NavigationSkipped. A caller that navigates on the modal result (the filter modal's replaceUrl)
-	 * must wait for this so its navigation runs last and replaces the restored pre-open entry, instead
-	 * of stacking on top of the synthetic one — which would make browser-back cycle through every
-	 * change. A short fallback guards against no event ever arriving.
-	 */
 	private async waitForBackCloseToSettle(overlay: DismissableOverlay): Promise<void> {
 		await overlay.onDidDismiss();
 		const settled = firstValueFrom(
@@ -148,7 +121,6 @@ export class ModalService {
 				return;
 			}
 
-			// user pressed back: close the top-most overlay with no data
 			this.backStack.pop()?.dismiss();
 		});
 	}
@@ -172,7 +144,6 @@ export class ModalService {
 				],
 			});
 
-			// back / backdrop dismissal counts as cancel
 			alert.onDidDismiss().then(() => resolve(false));
 			await this.presentWithBackClose(alert);
 		});
@@ -195,7 +166,6 @@ export class ModalService {
 				],
 			});
 
-			// back / backdrop dismissal counts as cancel
 			alert.onDidDismiss().then(() => resolve(null));
 			await this.presentWithBackClose(alert);
 		});
@@ -205,7 +175,7 @@ export class ModalService {
 		return new Promise<D | null>(async (resolve, reject) => {
 			const alert = await this.alertController.create({
 				header: options.header,
-				cssClass: "alert-wide", // <--- Automatically applies the wide style
+				cssClass: "alert-wide",
 				inputs: Object.entries(options.inputs).map(([name, input]) => ({ ...input, name })),
 				buttons: [
 					{
@@ -219,7 +189,6 @@ export class ModalService {
 				],
 			});
 
-			// back / backdrop dismissal counts as cancel
 			alert.onDidDismiss().then(() => resolve(null));
 			await this.presentWithBackClose(alert);
 		});
@@ -246,7 +215,6 @@ export class ModalService {
 				],
 			});
 
-			// back / backdrop dismissal counts as cancel
 			alert.onDidDismiss().then(() => resolve(null));
 			await this.presentWithBackClose(alert);
 		});
@@ -273,7 +241,6 @@ export class ModalService {
 				],
 			});
 
-			// back / backdrop dismissal counts as cancel
 			alert.onDidDismiss().then(() => resolve(null));
 			await this.presentWithBackClose(alert);
 		});
@@ -302,8 +269,6 @@ export class ModalService {
 
 			await this.presentWithBackClose(modal);
 
-			// Resolve only once the back-close has fully settled in the router, so a caller can navigate
-			// on the result (e.g. the filter modal applying on "Hotovo") without the back reverting it.
 			await this.waitForBackCloseToSettle(modal);
 			resolve(await data);
 		});

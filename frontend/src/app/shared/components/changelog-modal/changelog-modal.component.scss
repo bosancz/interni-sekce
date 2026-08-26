@@ -1,29 +1,20 @@
 .changelog {
-	// Long changelogs scroll within the dialog body rather than growing the modal.
 	max-height: 60vh;
 	overflow-y: auto;
-	// the modal layout's content slot has no padding of its own, so the changelog supplies it
 	padding: 16px;
-	// Ionic sets user-select:none app-wide for a native feel; the changelog is prose meant to be
-	// read and copied, so opt its text back into selection.
 	user-select: text !important;
 
-	// the markdown is injected with [innerHTML], so it carries no view-encapsulation attribute —
-	// without ::ng-deep none of these rules would reach it
 	::ng-deep {
 		h2 {
 			font-size: 1.1rem;
 			margin: 2.5rem 0 1rem;
 
-			// a rule between version blocks; the first version needs none, it already sits
-			// under the heading and intro paragraph
 			&:not(:first-of-type) {
 				border-top: 1px solid var(--bo-line);
 				padding-top: 1.5rem;
 			}
 		}
 
-		// the "---" in CHANGELOG.md marking the boundary between major versions (v3 → v4)
 		hr {
 			border: none;
 			border-top: 4px solid var(--black);
@@ -31,7 +22,6 @@
 			opacity: 1;
 		}
 
-		// the version heading right under it would otherwise double up the line
 		hr + h2 {
 			border-top: none;
 			padding-top: 0;
@@ -42,22 +32,18 @@
 			margin: 0 0 1rem;
 		}
 
-		// each entry opens with the gitmoji of its commit type, which stands in for the bullet
 		ul {
 			margin: 0 0 0.5rem;
 			padding-inline-start: 0;
 			list-style: none;
 		}
 
-		// hanging indent, so a wrapped entry lines up with the text rather than with the emoji
 		li {
 			margin: 0.15rem 0;
 			padding-inline-start: 1.75rem;
 			text-indent: -1.75rem;
 		}
 
-		// every entry links to its commit — the link is not meant to look like one, it just
-		// underlines on hover so it is discoverable
 		a {
 			color: inherit;
 			text-decoration: none;
@@ -67,14 +53,11 @@
 			}
 		}
 
-		// issue references ("#123") do read as links, so they keep the accent colour
 		a.issue-ref {
 			color: var(--ion-color-primary);
 			white-space: nowrap;
 		}
 
-		// the credit closing each entry: the commit author, and behind them the committer when the
-		// two differ. A wrapped entry keeps the stack on the text line, not in the hanging indent.
 		.changelog-credit {
 			--avatar-size: 1rem;
 
@@ -82,19 +65,14 @@
 			align-items: center;
 			vertical-align: -0.2rem;
 			margin-inline-start: 0.25rem;
-			// the entries hang their wrapped lines on a negative text-indent, which an inline-flex
-			// would otherwise inherit and apply to its own content
 			text-indent: 0;
 		}
 
-		// the author is the one on top and the only one that links anywhere — unlike GitHub's own
-		// stack, this one does not open up on hover
 		.changelog-author {
 			position: relative;
 			z-index: 1;
 		}
 
-		// the committer sits behind the author, mostly covered, the way GitHub collapses an avatar stack
 		.changelog-committer {
 			margin-inline-start: calc(var(--avatar-size) * -0.6);
 		}
@@ -109,11 +87,9 @@
 			width: var(--avatar-size);
 			height: var(--avatar-size);
 			border-radius: 50%;
-			// keeps the sliver of the avatar underneath readable as a separate one
 			box-shadow: 0 0 0 1px var(--ion-background-color, #fff);
 		}
 
-		// people GitHub does not know: their initials in a circle of the same size
 		.changelog-initials {
 			background: var(--ion-color-light);
 			color: var(--ion-color-medium);
@@ -125,14 +101,12 @@
 	}
 }
 
-// Záhlaví modalu: nadpis vlevo, odkaz na GitHub vpravo
 .changelog-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 12px;
 
-	// inherit the modal-layout .title sizing (1.5em bold) instead of the UA h1 defaults
 	h1 {
 		margin: 0;
 		font-size: inherit;

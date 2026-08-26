@@ -16,7 +16,12 @@ import { EventsController } from "./controllers/events.controller";
 import { CPVEventsService } from "./services/cpv-events.service";
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Event, EventAttendee]), EventsModelModule, FilesModule, NotificationsModelModule],
+	imports: [
+		TypeOrmModule.forFeature([Event, EventAttendee]),
+		EventsModelModule,
+		FilesModule,
+		NotificationsModelModule,
+	],
 	controllers: [
 		EventsController,
 		EventsAttendeesController,

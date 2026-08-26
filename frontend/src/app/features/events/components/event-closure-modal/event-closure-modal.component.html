@@ -1,0 +1,47 @@
+<bo-modal-layout>
+	<h4 slot="title">Uzavření akce</h4>
+
+	<div class="bm-body">
+		<label class="bm-check-row" [class.checked]="accountingSent()" [class.disabled]="!accountingEditable()">
+			<input
+				type="checkbox"
+				class="bm-visually-hidden"
+				[checked]="accountingSent()"
+				[disabled]="!accountingEditable()"
+				(change)="accountingSent.set($any($event.target).checked)"
+			/>
+			<span class="bm-checkbox">
+				@if (accountingSent()) {
+					<ion-icon name="checkmark-outline"></ion-icon>
+				}
+			</span>
+			<span class="bm-row-text">
+				<span class="bm-row-label">Vyúčtování odesláno</span>
+				<span class="bm-row-helper">Vyúčtování se odevzdává e-mailem — po odeslání ho tady zaškrtni.</span>
+			</span>
+		</label>
+
+		@for (item of autoItems(); track item.key) {
+			<div class="bm-auto-row" [class.done]="item.done">
+				<span class="bm-status-dot">
+					@if (item.done) {
+						<ion-icon name="checkmark-outline"></ion-icon>
+					} @else {
+						<span class="bm-dash">·</span>
+					}
+				</span>
+				<span class="bm-row-text">
+					<span class="bm-row-label">{{ item.label }}</span>
+					@if (item.helper) {
+						<span class="bm-row-helper">{{ item.helper }}</span>
+					}
+				</span>
+			</div>
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button type="button" class="bm-btn-primary" [disabled]="!accountingEditable()" (click)="save()">Uložit</button>
+	</div>
+</bo-modal-layout>

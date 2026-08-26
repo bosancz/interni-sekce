@@ -29,9 +29,10 @@ export class NotificationSettingUpdateBody {
 	channels!: NotificationChannels[];
 }
 
-export class NotificationDeviceResponse
-	implements Omit<NotificationSubscription, "user" | "userId" | "endpoint" | "keyP256dh" | "keyAuth">
-{
+export class NotificationDeviceResponse implements Omit<
+	NotificationSubscription,
+	"user" | "userId" | "endpoint" | "keyP256dh" | "keyAuth"
+> {
 	id!: number;
 	deviceId!: string;
 	deviceName!: string | null;

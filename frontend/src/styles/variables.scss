@@ -20,7 +20,6 @@ $blue: #2a3478;
 $lightBlue: #eef1fb;
 $linkBlue: #4a58b0;
 
-// brand colours ("žlutá na modré" identity + team colours)
 $sanblue: #2a3478;
 $sangreen: #799f3d;
 $sanyellow: #e28f26;
@@ -44,7 +43,6 @@ $font-san: SanGrotesk, "Baloo 2", "Roboto Condensed", Helvetica, Verdana, sans-s
 
 $circle-size: 2rem;
 
-// css variables
 body {
 	--san-blue: #2a3478;
 	--san-blue-rgb: 42, 52, 120;
@@ -58,7 +56,6 @@ body {
 	--san-red: #d2232a;
 	--san-red-rgb: 210, 35, 42;
 
-	// brand accents & tints
 	--bo-blue: #2a3478;
 	--bo-blue-mid: #4a58b0;
 	--bo-blue-tint: #eef1fb;
@@ -80,17 +77,14 @@ body {
 	--bo-neutral-pill-text: #6b7185;
 	--bo-paper: #f6f7fb;
 
-	// subtle divider between rows inside a card (lighter than --bo-line)
 	--bo-card-line: #f0f2f7;
 
-	// semantic
 	--bo-heading: var(--bo-blue);
 	--bo-link: var(--bo-blue);
 	--bo-link-hover: var(--bo-yellow);
 	--bo-nav-active-bg: var(--bo-yellow-tint);
 	--bo-nav-active-fg: var(--bo-blue);
 
-	// shape
 	--bo-radius-card: 16px;
 	--bo-radius-btn: 10px;
 	--bo-radius-pill: 999px;
@@ -118,7 +112,6 @@ body.dark {
 	--bo-dark: #f6f7fb;
 	--bo-light: #1f2430;
 
-	// tints become translucent brand washes on dark backgrounds
 	--bo-blue-tint: rgba(74, 88, 176, 0.18);
 	--bo-blue-tint-2: rgba(74, 88, 176, 0.28);
 	--bo-yellow-tint: rgba(226, 143, 38, 0.16);

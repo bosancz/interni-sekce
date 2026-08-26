@@ -1,4 +1,4 @@
-@if (view() === 'list') {
+@if (view() === "list") {
 	<ion-reorder-group (ionItemReorder)="onReorder($any($event))" [disabled]="!sortable()">
 		@if (photos() !== undefined) {
 			@for (photo of photos(); track photo.id) {
@@ -16,16 +16,29 @@
 						<ion-checkbox slot="start" [ngModel]="isPhotoChecked(photo)"> </ion-checkbox>
 					}
 					<ion-avatar slot="start">
-						<img [src]="photo | photoImageUrl: 'small'" [style.background-color]="photo.bg" loading="lazy" />
+						<img
+							[src]="photo | photoImageUrl: 'small'"
+							[style.background-color]="photo.bg"
+							loading="lazy"
+						/>
 					</ion-avatar>
 
 					<ion-label>
-						<h2 [class.nocaption]="!photo.caption">{{ photo.caption || "Bez popisku" }}</h2>
+						<h2 [class.nocaption]="!photo.caption">
+							@if (photo.titlePhoto) {
+								<ion-icon name="star" color="warning" title="Titulní fotka"></ion-icon>
+							}
+							{{ photo.caption || "Bez popisku" }}
+						</h2>
 						<p class="row no-gutters info">
-							<span class="col-12 col-lg-4 col-xl-3">Datum: {{ photo.timestamp | date: "d. M. y H:mm:ss" }}</span>
+							<span class="col-12 col-lg-4 col-xl-3"
+								>Datum: {{ photo.timestamp | date: "d. M. y H:mm:ss" }}</span
+							>
 							@if (photo.width && photo.height) {
 								<span class="col-12 col-lg-4 col-xl-3 d-none d-lg-block">
-									Velikost: {{ photo.width }}×{{ photo.height }} ({{ getMpix(photo.width, photo.height) }}
+									Velikost: {{ photo.width }}×{{ photo.height }} ({{
+										getMpix(photo.width, photo.height)
+									}}
 									MP)
 								</span>
 							}
@@ -65,16 +78,26 @@
 	</ion-reorder-group>
 }
 
-@if (view() === 'grid') {
+@if (view() === "grid") {
 	<div class="grid" [class.selectable]="selectable()">
 		@if (photos()) {
 			@for (photo of photos()!; track photo.id) {
 				<div class="square" [class.checked]="isPhotoChecked(photo)">
 					<div class="photo ion-activatable ripple-parent" (click)="onPhotoClick(photo, $event)">
-						<img [src]="photo | photoImageUrl: 'small'" [style.background-color]="photo.bg" loading="lazy" />
+						<img
+							[src]="photo | photoImageUrl: 'small'"
+							[style.background-color]="photo.bg"
+							loading="lazy"
+						/>
+						@if (photo.titlePhoto) {
+							<ion-icon class="title-badge" name="star" color="warning" title="Titulní fotka"></ion-icon>
+						}
 						<ion-ripple-effect></ion-ripple-effect>
 					</div>
-					<ion-checkbox [ngModel]="isPhotoChecked(photo)" (ngModelChange)="onPhotoCheck(photo, $event)"></ion-checkbox>
+					<ion-checkbox
+						[ngModel]="isPhotoChecked(photo)"
+						(ngModelChange)="onPhotoCheck(photo, $event)"
+					></ion-checkbox>
 				</div>
 			}
 		}

@@ -33,7 +33,6 @@
 	width: 16%;
 }
 
-// Desktop: filter pills laid out inline in the filter toolbar.
 .albums-filter-actions {
 	display: flex;
 	flex-wrap: wrap;
@@ -41,7 +40,6 @@
 	gap: 4px;
 }
 
-// Mobile: the same pills collected inside the filter modal, stacked full-width.
 .albums-filter-modal {
 	.albums-filter-modal-pills {
 		display: flex;
@@ -58,6 +56,110 @@
 			margin-inline: 0;
 			justify-content: space-between;
 		}
+	}
+}
+
+.albums-view-toggle {
+	width: fit-content;
+	flex: 0 0 auto;
+	margin-inline-start: auto;
+	grid-auto-columns: max-content;
+
+	ion-segment-button {
+		min-width: 44px;
+		max-width: 56px;
+		--padding-start: 8px;
+		--padding-end: 8px;
+	}
+
+	ion-icon {
+		font-size: 20px;
+	}
+}
+
+.albums-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: 16px;
+	padding: 16px;
+}
+
+.albums-grid-item {
+	display: block;
+	text-decoration: none;
+	color: inherit;
+}
+
+.albums-grid-photo {
+	position: relative;
+	aspect-ratio: 4 / 3;
+	border-radius: 8px;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.06);
+
+	img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	> ion-icon {
+		font-size: 48px;
+		color: var(--ion-color-medium);
+	}
+
+	.bo-pill {
+		position: absolute;
+		top: 8px;
+		right: 8px;
+		background-color: var(--ion-background-color);
+		background-image: linear-gradient(var(--bo-neutral-pill), var(--bo-neutral-pill));
+
+		&.bo-pill-green {
+			background-image: linear-gradient(var(--bo-green-tint), var(--bo-green-tint));
+		}
+	}
+
+	ion-skeleton-text {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+	}
+
+	&.albums-grid-photo-unpublished {
+		img,
+		> ion-icon {
+			opacity: 0.45;
+			filter: grayscale(1);
+		}
+	}
+}
+
+a.albums-grid-item:hover .albums-grid-photo {
+	filter: brightness(1.05);
+}
+
+.albums-grid-info {
+	padding: 8px 2px 0;
+
+	h3 {
+		margin: 0;
+		font-size: 15px;
+		font-weight: 600;
+		overflow: hidden;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+	}
+
+	p {
+		margin: 2px 0 0;
+		font-size: 13px;
+		color: var(--ion-color-medium);
 	}
 }
 
