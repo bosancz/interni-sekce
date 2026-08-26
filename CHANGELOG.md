@@ -1,3 +1,7 @@
+## v4.8.3 — 2026-08-26
+
+- <span class="changelog-type" title="style">🎨</span> [Titulní fotka alba v poměru 350×200 jako na webu](https://github.com/bosancz/interni-sekce/commit/0fe74a759673263d5a74448c204a607413eb64dc) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.8.2 — 2026-08-26
 
 - <span class="changelog-type" title="style">🎨</span> [Odbarvení fotek nepublikovaných alb v dlaždicovém zobrazení](https://github.com/bosancz/interni-sekce/commit/c6d71d47b17caee4bf0978828ef924dee97de798) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
