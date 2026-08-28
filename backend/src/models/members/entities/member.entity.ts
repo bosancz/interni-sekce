@@ -86,6 +86,7 @@ export class Member {
 	@Column({ type: "jsonb", nullable: true }) knownProblems?: HealthEntry[] | null;
 	@Column({ type: "jsonb", nullable: true }) allergies?: HealthEntry[] | null;
 	@Column({ type: "varchar", nullable: true }) insuranceCardFile?: string | null;
+	@Column({ type: "date", nullable: true }) insuranceCardExpiration?: string | null;
 
 	@DeleteDateColumn() deletedAt?: Date;
 
