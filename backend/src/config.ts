@@ -115,6 +115,10 @@ const push = {
 	subject: process.env["VAPID_SUBJECT"] ?? `mailto:${process.env["GOOGLE_IMPERSONATE"] ?? "interni@bosan.cz"}`,
 };
 
+const notifications = {
+	notifyActor: process.env["NOTIFY_ACTOR"] === "true" || process.env["NOTIFY_ACTOR"] === "1",
+};
+
 const feedback = {
 	bugReportRecipient: process.env["BUG_REPORT_RECIPIENT"] ?? "lef@bosan.cz",
 };
@@ -159,6 +163,7 @@ export class Config {
 	jwt = jwt;
 	logging = logging;
 	mongoDb = mongoDb;
+	notifications = notifications;
 	oauth = oauth;
 	production = production;
 	push = push;

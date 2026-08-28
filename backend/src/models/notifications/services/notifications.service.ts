@@ -30,7 +30,10 @@ export class NotificationsService {
 		private pushService: PushService,
 		private mailService: MailService,
 		private config: Config,
-	) {}
+	) {
+		if (this.config.notifications.notifyActor)
+			this.logger.warn("NOTIFY_ACTOR is enabled, users receive notifications for their own actions.");
+	}
 
 	async onEventSubmitted(event: Event, actorUserId?: number) {
 		const recipients = await this.getUsersByRoles([UserRoles.program, UserRoles.admin]);
@@ -105,7 +108,9 @@ export class NotificationsService {
 		actorUserId: number | undefined,
 		message: NotificationMessage,
 	) {
-		const recipients = users.filter((user) => user.id !== actorUserId);
+		const recipients = this.config.notifications.notifyActor
+			? users
+			: users.filter((user) => user.id !== actorUserId);
 		if (!recipients.length) return;
 
 		const settings = await this.notificationSettings.getUsersSettings(
