@@ -1,3 +1,7 @@
+## v4.10.1 — 2026-08-28
+
+- <span class="changelog-type" title="feat">✨</span> [Vypnout ve výchozím stavu akce ke schválení a nové uživatele](https://github.com/bosancz/interni-sekce/commit/529c9fa0b58c3bddee149bc926b5268ab4577d08) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.10.0 — 2026-08-28
 
 - <span class="changelog-type" title="feat">✨</span> [Datum platnosti kartičky pojištěnce a upozornění na obnovu](https://github.com/bosancz/interni-sekce/commit/3f12a2537eda147e0a79b0f2730a808c92c6b2a6) (#393) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
