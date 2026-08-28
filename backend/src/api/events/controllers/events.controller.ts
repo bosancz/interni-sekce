@@ -24,6 +24,7 @@ import { SessionUser } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventPlaceGeometry, EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository, GetEventsOptions } from "src/models/events/repositories/events.repository";
+import { NotificationsService } from "src/models/notifications/services/notifications.service";
 import {
 	EventCancelPermission,
 	EventCreatePermission,
@@ -53,7 +54,10 @@ import { ListEventsQuery } from "../dto/events.dto";
 export class EventsController {
 	private logger = new Logger(EventsController.name);
 
-	constructor(private events: EventsRepository) {}
+	constructor(
+		private events: EventsRepository,
+		private notificationsService: NotificationsService,
+	) {}
 
 	@Get()
 	@AcLinks(EventsListPermission)
@@ -234,6 +238,10 @@ export class EventsController {
 		EventSubmitPermission.canOrThrow(req, event);
 
 		await this.events.updateEvent(eventId, { status: EventStates.pending, statusNote: body.statusNote });
+
+		this.notificationsService
+			.onEventSubmitted(event, req.user?.userId)
+			.catch((err) => this.logger.error(`Failed to send event submitted notifications: ${err.message}`));
 	}
 
 	@Post(":eventId/reject")
@@ -251,6 +259,10 @@ export class EventsController {
 		EventRejectPermission.canOrThrow(req, event);
 
 		await this.events.updateEvent(eventId, { status: EventStates.rejected, statusNote: body.statusNote });
+
+		this.notificationsService
+			.onEventRejected(event, body.statusNote, req.user?.userId)
+			.catch((err) => this.logger.error(`Failed to send event rejected notifications: ${err.message}`));
 	}
 
 	@Post(":eventId/publish")
@@ -268,6 +280,10 @@ export class EventsController {
 		EventPublishPermission.canOrThrow(req, event);
 
 		await this.events.updateEvent(eventId, { status: EventStates.public, statusNote: body.statusNote });
+
+		this.notificationsService
+			.onEventPublished(event, req.user?.userId)
+			.catch((err) => this.logger.error(`Failed to send event published notifications: ${err.message}`));
 	}
 
 	@Post(":eventId/unpublish")
@@ -302,6 +318,10 @@ export class EventsController {
 		EventCancelPermission.canOrThrow(req, event);
 
 		await this.events.updateEvent(eventId, { status: EventStates.cancelled, statusNote: body.statusNote });
+
+		this.notificationsService
+			.onEventCancelled(event, body.statusNote, req.user?.userId)
+			.catch((err) => this.logger.error(`Failed to send event cancelled notifications: ${err.message}`));
 	}
 
 	@Post(":eventId/uncancel")
@@ -319,5 +339,9 @@ export class EventsController {
 		EventUncancelPermission.canOrThrow(req, event);
 
 		await this.events.updateEvent(eventId, { status: EventStates.public, statusNote: body.statusNote });
+
+		this.notificationsService
+			.onEventUncancelled(event, req.user?.userId)
+			.catch((err) => this.logger.error(`Failed to send event uncancelled notifications: ${err.message}`));
 	}
 }

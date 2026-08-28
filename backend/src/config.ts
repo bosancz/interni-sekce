@@ -109,6 +109,16 @@ const mapy = {
 	apiKey: process.env["MAPY_CZ_API_KEY"] ?? "",
 };
 
+const push = {
+	publicKey: process.env["VAPID_PUBLIC_KEY"] ?? "",
+	privateKey: process.env["VAPID_PRIVATE_KEY"] ?? "",
+	subject: process.env["VAPID_SUBJECT"] ?? `mailto:${process.env["GOOGLE_IMPERSONATE"] ?? "interni@bosan.cz"}`,
+};
+
+const notifications = {
+	notifyActor: process.env["NOTIFY_ACTOR"] === "true" || process.env["NOTIFY_ACTOR"] === "1",
+};
+
 const feedback = {
 	bugReportRecipient: process.env["BUG_REPORT_RECIPIENT"] ?? "lef@bosan.cz",
 };
@@ -153,8 +163,10 @@ export class Config {
 	jwt = jwt;
 	logging = logging;
 	mongoDb = mongoDb;
+	notifications = notifications;
 	oauth = oauth;
 	production = production;
+	push = push;
 	seed = seed;
 	server = server;
 	fs = fs;
