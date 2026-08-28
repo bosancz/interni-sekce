@@ -31,7 +31,7 @@ export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTy
 	[NotificationTypes.submittedEvents]: {
 		title: "Akce ke schválení",
 		description: "Akce odeslaná ke schválení programu",
-		defaultChannels: [NotificationChannels.push, NotificationChannels.inApp],
+		defaultChannels: [],
 		roles: [UserRoles.program, UserRoles.admin],
 	},
 	[NotificationTypes.newEvents]: {
@@ -43,7 +43,7 @@ export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTy
 	[NotificationTypes.newUsers]: {
 		title: "Noví uživatelé",
 		description: "Nově založené uživatelské účty",
-		defaultChannels: [NotificationChannels.push, NotificationChannels.inApp],
+		defaultChannels: [],
 		roles: [UserRoles.admin],
 	},
 };
