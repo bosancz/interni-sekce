@@ -17,6 +17,7 @@ import { CardHeaderComponent } from "src/app/shared/components/card-header/card-
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
+import { getInsuranceCardExpirationState } from "src/helpers/insurance-card";
 import { SDK } from "src/sdk";
 
 interface MissingDataCheck {
@@ -60,6 +61,12 @@ const MISSING_DATA_CHECKS: MissingDataCheck[] = [
 		label: "Kartička pojištěnce",
 		icon: "card-outline",
 		missing: (member) => member.role === "dite" && !member.insuranceCardFile,
+	},
+	{
+		label: "Platnost kartičky",
+		icon: "card-outline",
+		missing: (member) =>
+			!!member.insuranceCardFile && getInsuranceCardExpirationState(member.insuranceCardExpiration) !== "valid",
 	},
 ];
 

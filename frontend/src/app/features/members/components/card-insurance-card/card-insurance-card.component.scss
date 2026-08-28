@@ -25,3 +25,19 @@
 .file-input {
 	display: none;
 }
+
+.expiration {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	flex-wrap: wrap;
+	padding-top: 1em;
+}
+
+.expiration-label {
+	color: var(--bo-muted);
+}
+
+.expiration-value {
+	font-weight: 700;
+}

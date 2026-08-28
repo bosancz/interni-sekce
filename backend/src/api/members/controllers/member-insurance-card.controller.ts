@@ -150,7 +150,10 @@ export class MemberInsuranceCardController {
 		try {
 			await this.filesService.deleteFile(path);
 
-			await this.membersService.updateMember(member.id, { insuranceCardFile: null });
+			await this.membersService.updateMember(member.id, {
+				insuranceCardFile: null,
+				insuranceCardExpiration: null,
+			});
 		} catch (e) {
 			this.logger.error(e);
 			this.filesService.deleteFile(path).catch(() => {});

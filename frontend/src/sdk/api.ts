@@ -3017,6 +3017,12 @@ export namespace SDK {
          * @type {string}
          * @memberof Member
          */
+        'insuranceCardExpiration'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Member
+         */
         'deletedAt'?: string;
         /**
          * 
@@ -3483,6 +3489,12 @@ export namespace SDK {
          * @type {string}
          * @memberof MemberResponse
          */
+        'insuranceCardExpiration'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponse
+         */
         'deletedAt'?: string;
         /**
          * 
@@ -3711,6 +3723,12 @@ export namespace SDK {
          * @type {string}
          * @memberof MemberResponseWithLinks
          */
+        'insuranceCardExpiration'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
         'deletedAt'?: string;
         /**
          * 
@@ -3875,6 +3893,12 @@ export namespace SDK {
          * @memberof MemberUpdateBody
          */
         'insuranceCardFile'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberUpdateBody
+         */
+        'insuranceCardExpiration'?: string | null;
         /**
          * 
          * @type {string}

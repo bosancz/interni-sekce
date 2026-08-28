@@ -1,4 +1,5 @@
-import { Component, effect, input, OnDestroy, output, signal } from "@angular/core";
+import { DatePipe } from "@angular/common";
+import { Component, computed, effect, input, OnDestroy, output, signal } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { Platform } from "@ionic/angular";
 import { IonButton, IonButtons, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
@@ -7,12 +8,18 @@ import { cardOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import {
+	getInsuranceCardExpirationLabel,
+	getInsuranceCardExpirationState,
+	InsuranceCardExpirationState,
+} from "src/helpers/insurance-card";
 import { SDK } from "src/sdk";
 import { CardContentComponent } from "../../../../shared/components/card-content/card-content.component";
 import { CardFooterComponent } from "../../../../shared/components/card-footer/card-footer.component";
 import { CardHeaderComponent } from "../../../../shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "../../../../shared/components/card-title/card-title.component";
 import { CardComponent } from "../../../../shared/components/card/card.component";
+import { EditButtonDateComponent } from "../../../../shared/components/edit-button-date/edit-button-date.component";
 import { InsuranceCardCameraModalComponent } from "../insurance-card-camera-modal/insurance-card-camera-modal.component";
 
 @Component({
@@ -30,11 +37,20 @@ import { InsuranceCardCameraModalComponent } from "../insurance-card-camera-moda
 		IonSkeletonText,
 		IonButton,
 		IonButtons,
+		EditButtonDateComponent,
+		DatePipe,
 	],
 })
 export class CardInsuranceCardComponent implements OnDestroy {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
-	update = output<void>();
+	update = output<Partial<SDK.MemberUpdateBody>>();
+	reload = output<void>();
+
+	expirationState = computed<InsuranceCardExpirationState>(() =>
+		getInsuranceCardExpirationState(this.member()?.insuranceCardExpiration),
+	);
+
+	expirationLabel = computed(() => getInsuranceCardExpirationLabel(this.member()?.insuranceCardExpiration));
 
 	insuranceCardUrl = signal<string | null | undefined>(undefined);
 	insuranceCardSafeUrl = signal<SafeResourceUrl | null | undefined>(undefined);
@@ -141,12 +157,16 @@ export class CardInsuranceCardComponent implements OnDestroy {
 
 		const uploadToast = await this.toastService.toast("Nahrávám kartičku pojištěnce...");
 
+		let uploaded = false;
+
 		try {
 			await this.api.MembersApi.uploadInsuranceCard(member.id, file);
 
 			this.loadedKey = null;
 			this.insuranceCardUrl.set(undefined);
-			this.update.emit();
+			this.reload.emit();
+
+			uploaded = true;
 
 			this.toastService.toast("Karta byla nahrána", { color: "success" });
 		} catch (e) {
@@ -154,6 +174,23 @@ export class CardInsuranceCardComponent implements OnDestroy {
 		} finally {
 			uploadToast.dismiss();
 		}
+
+		if (uploaded) await this.askExpiration();
+	}
+
+	private async askExpiration() {
+		const result = await this.modalService.inputModal<{ insuranceCardExpiration: string | null }>({
+			header: "Platnost kartičky",
+			inputs: {
+				insuranceCardExpiration: {
+					type: "date",
+					placeholder: "Datum expirace",
+					value: this.member()?.insuranceCardExpiration,
+				},
+			},
+		});
+
+		if (result) this.update.emit({ insuranceCardExpiration: result.insuranceCardExpiration || null });
 	}
 
 	openCard() {
@@ -177,7 +214,7 @@ export class CardInsuranceCardComponent implements OnDestroy {
 			this.revokeObjectUrl();
 			this.insuranceCardUrl.set(null);
 			this.insuranceCardSafeUrl.set(null);
-			this.update.emit();
+			this.reload.emit();
 
 			this.toastService.toast("Karta byla smazána", { color: "success" });
 		}

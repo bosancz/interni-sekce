@@ -78,6 +78,10 @@
 
 - `GET /albums` returns each album's `coverPhoto` — the title photo, else the album's first photo (`PhotosRepository.getCoverPhotosByAlbums`, `DISTINCT ON`); the public gallery keeps its own title-photo-only lookup. `albums-list` has a table/grid segment toggle at the toolbar's right (choice in `localStorage.albumsListView`); the grid shows cover photos, and the pills over them get a solid backing because the dark theme's `--bo-*-tint` backgrounds are semi-transparent. `ion-segment` is `display: grid; grid-auto-columns: 1fr`, so a compact segment needs `grid-auto-columns: max-content` + `width: fit-content`.
 
+## Kartička pojištěnce
+
+- `Member.insuranceCardExpiration` (`date`, nullable) drží platnost kartičky; ukládá se běžným `PATCH /members/:memberId`, smazání kartičky ji nuluje. Stav počítá `getInsuranceCardExpirationState()` (`src/helpers/insurance-card.ts`) — `unknown` / `expired` / `expiring` (do `INSURANCE_CARD_EXPIRATION_WARNING_DAYS` = 30 dní) / `valid`. Upozorňuje se na dvou místech: pilulka v kartě `bo-card-insurance-card` (červená jen u `expired`) a položka „Platnost kartičky“ v `bo-group-missing-data`, kde platí pro každého člena s nahranou kartičkou. Po nahrání kartičky se rovnou zeptáme na datum.
+
 ## API routes & links
 
 - **Route parameters are named after their entity, never `id`** — `:eventId`, `:memberId`, `:albumId`, … The `Public API` controllers are the exception: their `:id` params are in URLs bosan.cz already calls. Renaming a param changes the SDK signature, so regenerate it.

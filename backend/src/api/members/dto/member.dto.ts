@@ -56,6 +56,7 @@ export class MemberResponse implements Member {
 	@Type(() => HealthEntryDto)
 	allergies?: HealthEntryDto[] | null;
 	@ApiPropertyOptional({ type: "string" }) insuranceCardFile?: string | null;
+	@ApiPropertyOptional({ type: "string" }) insuranceCardExpiration?: string | null;
 
 	@ApiPropertyOptional({ type: "string" }) deletedAt?: Date;
 
