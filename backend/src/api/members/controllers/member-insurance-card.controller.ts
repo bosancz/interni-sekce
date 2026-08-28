@@ -64,11 +64,25 @@ export class MemberInsuranceCardController {
 		if (!member.insuranceCardFile) throw new NotFoundException("Insurance card not found");
 		const path = this.getInsuraceCardPath(member.id, member.insuranceCardFile);
 
+		try {
+			await this.filesService.fileAccessible(path);
+		} catch {
+			throw new NotFoundException("Insurance card file not found");
+		}
+
 		res.setHeader("Content-Disposition", `inline; filename="insurance_card.${member.insuranceCardFile}"`);
 		res.setHeader("Content-Type", contentType(member.insuranceCardFile) || "application/octet-stream");
 		res.setHeader("X-Content-Type-Options", "nosniff");
 
-		createReadStream(path).pipe(res);
+		const stream = createReadStream(path);
+
+		stream.on("error", (err) => {
+			this.logger.error(err);
+			if (!res.headersSent) res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+			res.end();
+		});
+
+		stream.pipe(res);
 	}
 
 	@Put("")
