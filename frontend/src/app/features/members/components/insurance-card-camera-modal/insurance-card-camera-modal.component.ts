@@ -1,7 +1,14 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, signal, viewChild } from "@angular/core";
 import { IonButton, IonButtons, IonIcon, IonSpinner, ModalController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { cameraOutline, checkmarkOutline, flashOffOutline, flashOutline, refreshOutline } from "ionicons/icons";
+import {
+	cameraOutline,
+	cameraReverseOutline,
+	checkmarkOutline,
+	flashOffOutline,
+	flashOutline,
+	refreshOutline,
+} from "ionicons/icons";
 import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 
@@ -10,6 +17,8 @@ const CARD_ASPECT_RATIO = 85.6 / 53.98;
 const OUTPUT_MAX_WIDTH = 1600;
 
 type CaptureState = "initializing" | "live" | "preview" | "error";
+
+type CameraFacing = "environment" | "user";
 
 @Component({
 	selector: "bo-insurance-card-camera-modal",
@@ -30,6 +39,9 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 	torchAvailable = signal(false);
 	torchOn = signal(false);
 
+	facing = signal<CameraFacing>("environment");
+	cameraSwitchAvailable = signal(false);
+
 	previewUrl = signal<string | null>(null);
 
 	private stream: MediaStream | null = null;
@@ -37,7 +49,14 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 
 	constructor(modalController: ModalController) {
 		super(modalController);
-		addIcons({ cameraOutline, checkmarkOutline, refreshOutline, flashOutline, flashOffOutline });
+		addIcons({
+			cameraOutline,
+			cameraReverseOutline,
+			checkmarkOutline,
+			refreshOutline,
+			flashOutline,
+			flashOffOutline,
+		});
 	}
 
 	async ngAfterViewInit() {
@@ -50,6 +69,7 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 
 	private async startCamera() {
 		this.state.set("initializing");
+		this.stopCamera();
 
 		if (!navigator.mediaDevices?.getUserMedia) {
 			this.fail("Tento prohlížeč nepodporuje přístup ke kameře.");
@@ -59,7 +79,7 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		try {
 			this.stream = await navigator.mediaDevices.getUserMedia({
 				video: {
-					facingMode: { ideal: "environment" },
+					facingMode: { ideal: this.facing() },
 					width: { ideal: 1920 },
 					height: { ideal: 1080 },
 				},
@@ -76,6 +96,7 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 			await videoEl.play();
 
 			this.detectTorch();
+			await this.detectCameraSwitch();
 			this.state.set("live");
 		} catch (e) {
 			this.fail("Nepodařilo se získat přístup ke kameře. Zkontrolujte oprávnění a zkuste to znovu.");
@@ -86,6 +107,21 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		const track = this.stream?.getVideoTracks()[0];
 		const capabilities = track?.getCapabilities?.() as (MediaTrackCapabilities & { torch?: boolean }) | undefined;
 		this.torchAvailable.set(!!capabilities?.torch);
+	}
+
+	private async detectCameraSwitch() {
+		try {
+			const devices = await navigator.mediaDevices.enumerateDevices();
+			const cameras = devices.filter((device) => device.kind === "videoinput");
+			this.cameraSwitchAvailable.set(cameras.length > 1);
+		} catch {
+			this.cameraSwitchAvailable.set(false);
+		}
+	}
+
+	async switchCamera() {
+		this.facing.update((facing) => (facing === "environment" ? "user" : "environment"));
+		await this.startCamera();
 	}
 
 	async toggleTorch() {
@@ -105,6 +141,7 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		this.stream?.getTracks().forEach((track) => track.stop());
 		this.stream = null;
 		this.torchOn.set(false);
+		this.torchAvailable.set(false);
 	}
 
 	private fail(message: string) {
