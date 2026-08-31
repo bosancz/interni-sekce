@@ -48,6 +48,18 @@ export const MemberUpdatePermission = new Permission({
 	},
 });
 
+/**
+ * Changing the membership fee is the treasurer's job, so it is reserved for admins. This is the
+ * only route that writes `membership` (the member update body cannot carry it), which is what makes
+ * the restriction hold everywhere rather than just in the pages that happen to respect it.
+ */
+export const MemberMembershipUpdatePermission = new Permission({
+	linkTo: MemberResponse,
+	allowed: {
+		admin: true,
+	},
+});
+
 export const MemberDeletePermission = new Permission({
 	linkTo: MemberResponse,
 	allowed: {

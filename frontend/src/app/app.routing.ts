@@ -52,7 +52,7 @@ export const appRoutes: Routes = [
 	{
 		path: "admin",
 		title: "Administrace",
-		canMatch: [linkGuard("listUsers", "listEvents")],
+		canMatch: [linkGuard("listUsers", "listEvents", "listMembers")],
 		loadChildren: () => import("./features/admin/admin.routing").then((m) => m.adminRoutes),
 	},
 

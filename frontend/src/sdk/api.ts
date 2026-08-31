@@ -3166,6 +3166,26 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface MemberMembershipUpdateBody
+     */
+    export interface MemberMembershipUpdateBody {
+        /**
+         * The year the fee is being recorded for. The bounds only keep nonsense out of a smallint column.
+         * @type {number}
+         * @memberof MemberMembershipUpdateBody
+         */
+        'year': number;
+        /**
+         * `true` = zaplaceno, `false` = nezaplaceno.
+         * @type {boolean}
+         * @memberof MemberMembershipUpdateBody
+         */
+        'paid': boolean;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface MemberPaymentRequestResponseWithLinks
      */
     export interface MemberPaymentRequestResponseWithLinks {
@@ -3435,6 +3455,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof MemberResponseLinks
          */
+        'updateMemberMembership': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
         'getMemberPaymentRequest': AcLink;
         /**
          * 
@@ -3673,12 +3699,6 @@ export namespace SDK {
          * @memberof MemberUpdateBody
          */
         'active'?: boolean;
-        /**
-         * 
-         * @type {Array<number>}
-         * @memberof MemberUpdateBody
-         */
-        'membership'?: Array<number>;
         /**
          * 
          * @type {string}
@@ -7266,6 +7286,14 @@ export namespace SDK {
          */
         membership?: Array<MembershipPaymentStatesEnum>
     
+        //membershipYear
+        /**
+         * Which year the membership filter and the membership sort look at. Defaults to the current one.
+         * @type {number}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        membershipYear?: number
+    
         //contacts
         /**
          * 
@@ -7445,6 +7473,14 @@ export namespace SDK {
          */
         membership?: Array<MembershipPaymentStatesEnum>
     
+        //membershipYear
+        /**
+         * Which year the membership filter and the membership sort look at. Defaults to the current one.
+         * @type {number}
+         * @memberof MembersApiListMembers
+         */
+        membershipYear?: number
+    
         //contacts
         /**
          * 
@@ -7493,6 +7529,10 @@ export namespace SDK {
          */
         active?: boolean
     }
+    
+    
+    
+    
     
     
     
@@ -7956,6 +7996,10 @@ export namespace SDK {
                 requestQueryParameter['membership'] = queryParams.membership;
             }
     
+            if (queryParams.membershipYear !== undefined) {
+                requestQueryParameter['membershipYear'] = queryParams.membershipYear;
+            }
+    
             if (queryParams.contacts !== undefined) {
                 requestQueryParameter['contacts'] = queryParams.contacts;
             }
@@ -8388,6 +8432,10 @@ export namespace SDK {
                 requestQueryParameter['membership'] = queryParams.membership;
             }
     
+            if (queryParams.membershipYear !== undefined) {
+                requestQueryParameter['membershipYear'] = queryParams.membershipYear;
+            }
+    
             if (queryParams.contacts !== undefined) {
                 requestQueryParameter['contacts'] = queryParams.contacts;
             }
@@ -8696,6 +8744,59 @@ export namespace SDK {
             assertParamExists('updateMember', 'memberUpdateBody', body)
             
             const localVarPath = `/api/members/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async updateMemberMembership(
+            id: number,
+            body: MemberMembershipUpdateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateMemberMembership', 'id', id)
+            assertParamExists('updateMemberMembership', 'memberMembershipUpdateBody', body)
+            
+            // verify required parameter 'memberMembershipUpdateBody' is not null or undefined
+            assertParamExists('updateMemberMembership', 'id', id)
+            assertParamExists('updateMemberMembership', 'memberMembershipUpdateBody', body)
+            
+            const localVarPath = `/api/members/{id}/membership`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);

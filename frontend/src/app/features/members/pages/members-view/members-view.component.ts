@@ -150,6 +150,29 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		await this.loadMember(this.member()!.id);
 	}
 
+	/**
+	 * The membership fee has its own admin-only route (see MemberMembershipUpdatePermission), so it
+	 * is saved separately from the rest of the member's fields.
+	 */
+	async updateMemberMembership(data: SDK.MemberMembershipUpdateBody) {
+		const member = this.member();
+		if (!member) return;
+
+		const toast = await this.toastService.toast("Ukládám...");
+
+		try {
+			await this.api.MembersApi.updateMemberMembership(member.id, data);
+
+			toast.dismiss();
+			this.toastService.toast("Uloženo.");
+		} catch (e) {
+			toast.dismiss();
+			this.toastService.toast("Chyba při ukládání.", { color: "danger" });
+		}
+
+		await this.loadMember(member.id);
+	}
+
 	async delete() {
 		if (!this.member()) return;
 

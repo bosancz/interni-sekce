@@ -88,7 +88,9 @@ export class MemberCreateBody implements Pick<
 	@ApiProperty() @IsString() @IsOptional() lastName!: string | null;
 }
 
-export class MemberUpdateBody extends PartialType(OmitType(MemberResponse, ["contacts", "achievements", "id"])) {}
+export class MemberUpdateBody extends PartialType(
+	OmitType(MemberResponse, ["contacts", "achievements", "id", "membership"]),
+) {}
 
 export class MembersListQuery extends PaginationQuery {
 	@EnsureArray({ split: "," })
@@ -103,7 +105,7 @@ export class MembersListQuery extends PaginationQuery {
 	@IsOptional()
 	roles?: MemberRoles[];
 
-	// Filters on the membership of the *current* year, not on the whole array.
+	// Filters on the membership of `membershipYear`, not on the whole list.
 	@ApiPropertyOptional({
 		enum: MembershipPaymentStates,
 		enumName: "MembershipPaymentStatesEnum",
@@ -119,6 +121,15 @@ export class MembersListQuery extends PaginationQuery {
 	@IsNumber({}, { each: true })
 	@IsOptional()
 	age?: number[];
+
+	/** Which year the membership filter and the membership sort look at. Defaults to the current one. */
+	@ApiPropertyOptional({ type: "number" })
+	@Type(() => Number)
+	@IsInt()
+	@Min(1900)
+	@Max(2200)
+	@IsOptional()
+	membershipYear?: number;
 
 	@EnsureBoolean() @IsOptional() active?: boolean;
 

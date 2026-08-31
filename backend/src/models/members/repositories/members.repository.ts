@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { MembershipPaymentStates, membershipPaidExpression } from "src/helpers/membership";
+import { currentMembershipYear, MembershipPaymentStates, membershipPaidExpression } from "src/helpers/membership";
 import { PaginationOptions } from "src/helpers/pagination";
 import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
@@ -12,8 +12,10 @@ export interface GetMembersOptions extends PaginationOptions {
 	groups?: number[];
 	search?: string;
 	roles?: string[];
-	// "zaplaceno" / "nezaplaceno" for the current year (see helpers/membership.ts)
+	// "zaplaceno" / "nezaplaceno" (see helpers/membership.ts), asked about membershipYear
 	membership?: string[];
+	// Which year the membership filter and sort look at; defaults to the current one.
+	membershipYear?: number;
 	age?: number[];
 	active?: boolean;
 	// eagerly load each member's contacts in the same query (avoids N+1 per-member fetches)
@@ -28,6 +30,13 @@ export class MembersRepository {
 	) {}
 
 	async getMembers(options: GetMembersOptions = {}, where: Brackets | string = "1=1") {
+		// Everything membership-related on this list — the filter, the sort — is asked about one
+		// year, so the treasurer view can look back at previous seasons.
+		const membershipPaid = membershipPaidExpression(
+			"members.membership",
+			options.membershipYear ?? currentMembershipYear(),
+		);
+
 		const q = this.membersRepository
 			.createQueryBuilder("members")
 			// row-level permission filter (see Permission.canWhere)
@@ -48,9 +57,9 @@ export class MembersRepository {
 			// so embedded numbers order naturally: "3. oddíl" precedes "22. oddíl", and
 			// non-numeric names ("Klub přátel", …) sort after them.
 			.addSelect("(SELECT g.name FROM groups g WHERE g.id = members.group_id)", "sort_group")
-			// Membership is an array of years, so it is sorted by the one value the list shows:
-			// whether the fee for the current year is paid.
-			.addSelect(membershipPaidExpression("members.membership"), "sort_membership");
+			// Membership is a list of years, so it is sorted by the one value the list shows:
+			// whether the fee for the year in question is paid.
+			.addSelect(membershipPaid, "sort_membership");
 
 		applySort(
 			q,
@@ -92,10 +101,7 @@ export class MembersRepository {
 		if (options.membership?.length) {
 			const paid = options.membership.includes(MembershipPaymentStates.zaplaceno);
 			const unpaid = options.membership.includes(MembershipPaymentStates.nezaplaceno);
-			if (paid !== unpaid)
-				q.andWhere(`${membershipPaidExpression("members.membership")} = :membershipPaid`, {
-					membershipPaid: paid,
-				});
+			if (paid !== unpaid) q.andWhere(`${membershipPaid} = :membershipPaid`, { membershipPaid: paid });
 		}
 
 		if (options.age?.length)

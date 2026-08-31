@@ -1,0 +1,278 @@
+<bo-page-header [title]="'Pokladna ' + year()" />
+
+<bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
+	@if (isDesktop()) {
+		<!-- Desktop: year, filters, columns and view options laid out inline in the toolbar. -->
+		<div toolbar-actions slot="end" class="treasurer-filter-actions">
+			<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+
+			<ion-button fill="clear" size="small" id="treasurer-columns-trigger" boTooltip="Sloupce">
+				<ion-icon slot="icon-only" name="columns"></ion-icon>
+			</ion-button>
+
+			<ion-button fill="clear" size="small" id="treasurer-view-trigger" boTooltip="Zobrazení">
+				<ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+			</ion-button>
+		</div>
+	} @else {
+		<!-- Mobile: the same year, filters, columns and view options collected inside the filter modal. -->
+		<div class="treasurer-filter-modal">
+			<ion-list lines="full">
+				<ion-item-divider>Filtry</ion-item-divider>
+				<div class="treasurer-filter-modal-pills">
+					<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+				</div>
+			</ion-list>
+
+			<bo-sort-select
+				[options]="sortOptions"
+				[sort]="sortColumn()"
+				[order]="sortOrder()"
+				(sortChange)="onSortChange($event)"
+			/>
+
+			<ion-list lines="full">
+				<ion-item-divider>Sloupce</ion-item-divider>
+				<div class="treasurer-filter-modal-pills">
+					<bo-filter-pill
+						label="Vybrat sloupce"
+						[options]="columnOptions()"
+						[selected]="selectedColumns()"
+						[columns]="2"
+						(selectedChange)="setColumnSelection($event)"
+					/>
+				</div>
+			</ion-list>
+
+			<ion-list lines="full">
+				<ng-container [ngTemplateOutlet]="viewOptionsList"></ng-container>
+			</ion-list>
+		</div>
+	}
+</bo-filter>
+
+<!-- Filter pills, shared between the desktop toolbar and the mobile filter modal. The year comes
+     first: it decides which season everything else on the page is about. -->
+<ng-template #filterPills>
+	<bo-filter-pill
+		label="Rok"
+		[multiple]="false"
+		[options]="yearOptions"
+		[selected]="selectedYear()"
+		(selectedChange)="setFilterParam('year', $event)"
+	/>
+	<bo-filter-pill
+		label="Oddíl"
+		[multiple]="false"
+		[options]="groupOptions()"
+		[selected]="selectedGroups()"
+		(selectedChange)="setFilterParam('groups', $event)"
+	/>
+	<bo-filter-pill
+		label="Role"
+		[options]="roleOptions"
+		[selected]="selectedRoles()"
+		(selectedChange)="setFilterParam('roles', $event)"
+	/>
+	<bo-filter-pill
+		label="Příspěvek"
+		[options]="membershipOptions"
+		[selected]="selectedMembership()"
+		(selectedChange)="setFilterParam('membership', $event)"
+	/>
+</ng-template>
+
+<!-- Column picker, shared between the desktop popover and the mobile filter modal. The fee column
+     is the point of the page, so it is always on and not listed here. -->
+<ng-template #columnsList>
+	<ion-item-divider>Sloupce</ion-item-divider>
+	@for (selection of viewSelections() | keyvalue: originalViewOrder; track selection.key) {
+		<ion-item>
+			<ion-checkbox
+				[checked]="viewSelections()[selection.key]"
+				(ionChange)="setViewSelection(selection.key, $event.detail.checked)"
+				justify="space-between"
+			>
+				{{ getViewSelectionLabel(selection.key) }}
+			</ion-checkbox>
+		</ion-item>
+	}
+</ng-template>
+
+<!-- View options, shared between the desktop popover and the mobile filter modal. -->
+<ng-template #viewOptionsList>
+	<ion-item-divider>Zobrazení</ion-item-divider>
+	<ion-item lines="none">
+		<ion-toggle
+			[checked]="showInactive()"
+			(ionChange)="setFilterParam('active', $event.detail.checked ? 'all' : null)"
+			justify="space-between"
+		>
+			Zobrazit i neaktivní
+		</ion-toggle>
+	</ion-item>
+</ng-template>
+
+<!-- Column picker popover (desktop). -->
+<ion-popover
+	trigger="treasurer-columns-trigger"
+	triggerAction="click"
+	cssClass="view-options-popover"
+	[dismissOnSelect]="false"
+>
+	<ng-template>
+		<ion-content>
+			<ion-list lines="full">
+				<ng-container [ngTemplateOutlet]="columnsList"></ng-container>
+			</ion-list>
+		</ion-content>
+	</ng-template>
+</ion-popover>
+
+<!-- View options popover (desktop). -->
+<ion-popover
+	trigger="treasurer-view-trigger"
+	triggerAction="click"
+	cssClass="view-options-popover"
+	[dismissOnSelect]="false"
+>
+	<ng-template>
+		<ion-content>
+			<ion-list lines="full">
+				<ng-container [ngTemplateOutlet]="viewOptionsList"></ng-container>
+			</ion-list>
+		</ion-content>
+	</ng-template>
+</ion-popover>
+
+<ion-content>
+	<admin-table
+		[class]="'treasurer-table'"
+		[rows]="members()"
+		[loading]="members() === undefined"
+		[rowLink]="rowLink"
+		[rowClass]="rowClass"
+		[sort]="sortColumn()"
+		[order]="sortOrder()"
+		(sortChange)="onSortChange($event)"
+	>
+		@if (viewSelections().nickname) {
+			<admin-table-column header="Přezdívka" sort="nickname" [primary]="true" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{ member.nickname || member.firstName }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().name) {
+			<admin-table-column header="Jméno" sort="name" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{ member.firstName }} {{ member.lastName }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().group) {
+			<admin-table-column header="Oddíl" sort="group" headerClass="align-middle">
+				<ng-container *adminCell="let member">
+					<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
+				</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().role) {
+			<admin-table-column header="Role" sort="role" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{ member | member: "role" }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().age) {
+			<admin-table-column header="Věk" sort="age" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{ member | member: "age" }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().birthday) {
+			<admin-table-column header="Datum narození" sort="birthday" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{
+					member.birthday ? (member.birthday | date: "d. M. y") : ""
+				}}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().addressCity) {
+			<admin-table-column header="Město" sort="city" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{ member.addressCity }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().addressStreet) {
+			<admin-table-column header="Ulice" sort="street" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{ member.addressStreet }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().firstTelephone) {
+			<admin-table-column header="Telefon" headerClass="align-middle">
+				<ng-container *adminCell="let member">
+					<strong>{{ member.contacts?.[0]?.relationship || "" }}</strong>
+					{{ member.contacts?.[0]?.mobile || "" }}
+				</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().firstEmail) {
+			<admin-table-column header="E-mail" headerClass="align-middle">
+				<ng-container *adminCell="let member">
+					<strong>{{ member.contacts?.[0]?.relationship || "" }}</strong>
+					{{ member.contacts?.[0]?.email || "" }}
+				</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().status) {
+			<admin-table-column header="Stav" sort="status" headerClass="align-middle">
+				<ng-container *adminCell="let member">
+					@if (member.active) {
+						<span class="bo-pill bo-pill-green">AKTIVNÍ</span>
+					} @else {
+						<span class="bo-pill">NEAKTIVNÍ</span>
+					}
+				</ng-container>
+			</admin-table-column>
+		}
+
+		<!-- The fee of the selected year: always shown, and on mobile it is the column that sits on
+		     the right of each item so it stays within thumb reach. -->
+		<admin-table-column
+			[header]="'Příspěvek ' + year()"
+			sort="membership"
+			[right]="true"
+			[hideMobileLabel]="true"
+			cellClass="treasurer-membership-column"
+			headerClass="align-middle treasurer-membership-column"
+		>
+			<ng-container *adminCell="let member">
+				@if (canEditMembership(member)) {
+					<button
+						type="button"
+						class="bo-pill treasurer-membership-toggle"
+						[class.bo-pill-green]="isPaid(member)"
+						[disabled]="isSaving(member)"
+						[attr.aria-pressed]="isPaid(member)"
+						[title]="isPaid(member) ? 'Označit jako nezaplacené' : 'Označit jako zaplacené'"
+						(click)="toggleMembership(member, $event)"
+					>
+						{{ membershipLabel(member) }}
+					</button>
+				} @else {
+					<span class="bo-pill" [class.bo-pill-green]="isPaid(member)">{{ membershipLabel(member) }}</span>
+				}
+			</ng-container>
+		</admin-table-column>
+	</admin-table>
+
+	@if (members()?.length === 0) {
+		<p class="ion-padding">Žádní členové neodpovídají zvolenému filtru.</p>
+	}
+
+	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
+</ion-content>

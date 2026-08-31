@@ -38,8 +38,17 @@ export class UserService {
 	 */
 	readonly canAccessUsers = computed(() => this.api.links()?.listUsers.allowed ?? false);
 
+	/**
+	 * May open the treasurer view (whoever the backend lets list members). Recording a fee is
+	 * admin-only and stays gated per member by that member's own `_links`, so everyone else gets a
+	 * read-only overview of who has paid.
+	 */
+	readonly canAccessTreasurer = computed(() => this.api.links()?.listMembers.allowed ?? false);
+
 	/** Whether the administration section should be visible at all. */
-	readonly canAccessAdmin = computed(() => this.canAccessProgram() || this.canAccessUsers());
+	readonly canAccessAdmin = computed(
+		() => this.canAccessProgram() || this.canAccessUsers() || this.canAccessTreasurer(),
+	);
 
 	constructor(
 		private api: ApiService,

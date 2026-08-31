@@ -1,0 +1,77 @@
+// Row-state styling (`member-inactive`, `member-vedouci`, …) is global — see
+// src/styles/member-rows.scss — so every member list renders it identically.
+
+:host ::ng-deep .treasurer-table {
+	width: 100%;
+}
+
+// The fee column keeps its width whatever the label says, so the toggles line up.
+::ng-deep .treasurer-membership-column {
+	width: 1%;
+	white-space: nowrap;
+	text-align: right;
+}
+
+// The fee toggle is a pill that flips between paid and unpaid. It sits inside a row that links to
+// the member, so it has to read as its own control: hover/focus lift it, and the click is stopped
+// in the component before it reaches the row.
+.treasurer-membership-toggle {
+	// A visible border is what separates the editable pill from the read-only one everyone else
+	// sees — on touch there is no hover to discover it with.
+	border: 1px solid currentColor;
+	cursor: pointer;
+	font-family: inherit;
+	transition:
+		filter 0.15s ease,
+		border-color 0.15s ease;
+
+	&:hover:not(:disabled) {
+		filter: brightness(0.95);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--bo-blue, #3880ff);
+		outline-offset: 2px;
+	}
+
+	&:disabled {
+		cursor: progress;
+		opacity: 0.6;
+	}
+}
+
+// Desktop: year, filters, columns and view options laid out inline in the filter toolbar.
+.treasurer-filter-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px;
+
+	ion-button ion-icon {
+		font-size: 28px;
+	}
+}
+
+// Mobile: the same controls collected inside the filter modal.
+.treasurer-filter-modal {
+	.treasurer-filter-modal-pills {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 8px 12px 4px;
+
+		bo-filter-pill {
+			display: block;
+		}
+
+		::ng-deep .filter-pill-button {
+			width: 100%;
+			margin-inline: 0;
+			justify-content: space-between;
+		}
+	}
+
+	ion-list:not(:first-child) {
+		margin-top: 8px;
+	}
+}

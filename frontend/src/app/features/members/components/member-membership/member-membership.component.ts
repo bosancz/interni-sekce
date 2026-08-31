@@ -4,7 +4,7 @@ import { addIcons } from "ionicons";
 import { peopleOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipPaymentStates } from "src/app/core/config/membership";
-import { currentMembershipYear, isMembershipPaid, setMembershipPaid } from "src/app/core/helpers/membership";
+import { currentMembershipYear, isMembershipPaid } from "src/app/core/helpers/membership";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { SDK } from "src/sdk";
@@ -35,7 +35,9 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 })
 export class MemberMembershipComponent {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
-	update = output<Partial<SDK.MemberResponse>>();
+	update = output<SDK.MemberUpdateBody>();
+	/** One year of the membership fee — the page saves it through its own admin-only route. */
+	updateMembership = output<SDK.MemberMembershipUpdateBody>();
 
 	memberRolesOptions = Object.entries(MemberRoles).map(([id, role]) => ({
 		label: role.title,
@@ -112,8 +114,7 @@ export class MemberMembershipComponent {
 			value: paid,
 		});
 
-		// Only the current year changes; the rest of the preallocated years stay as they are.
-		if (result !== null)
-			this.update.emit({ membership: setMembershipPaid(member?.membership, result, this.membershipYear) });
+		// Only the current year is sent; the server keeps the rest of the list as it is stored.
+		if (result !== null) this.updateMembership.emit({ year: this.membershipYear, paid: result });
 	}
 }

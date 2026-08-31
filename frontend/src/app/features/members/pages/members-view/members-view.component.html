@@ -33,7 +33,11 @@
 				</div>
 
 				<div class="card-col d-lg-block" [class.d-none]="view() !== 'profile'">
-					<bo-member-membership [member]="member()" (update)="updateMember($event)" />
+					<bo-member-membership
+						[member]="member()"
+						(update)="updateMember($event)"
+						(updateMembership)="updateMemberMembership($event)"
+					/>
 				</div>
 
 				<div class="card-col d-lg-block" [class.d-none]="view() !== 'profile'">
