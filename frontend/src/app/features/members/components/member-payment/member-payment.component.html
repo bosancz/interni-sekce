@@ -35,7 +35,7 @@
 						</div>
 
 						<div class="bo-info-row">
-							<span class="bo-info-label">Číslo účtu</span>
+							<span class="bo-info-label">Účet</span>
 							<span class="bo-info-action">
 								<span class="bo-info-value">{{ accountNumber() }}</span>
 								<bo-copy-button [text]="accountNumber()" />
@@ -53,7 +53,6 @@
 
 					<div class="qr">
 						<img [src]="paymentValue.qrCodeUrl" alt="QR platba členského příspěvku" loading="lazy" />
-						<span class="qr-hint">Naskenujte v bankovní aplikaci</span>
 					</div>
 				</div>
 			}

@@ -145,7 +145,7 @@ export class MemberPaymentComponent {
 		const body = [
 			"Dobrý den,",
 			"",
-			`prosím vás o zaplacení členského příspěvku ve výši ${amount}.`,
+			`prosím vás o zaplacení členského příspěvku na příští kalendářní rok ve výši ${amount}.`,
 			"",
 			`Číslo účtu: ${payment.accountNumber}/${payment.bankCode}`,
 			`Variabilní symbol: ${payment.variableSymbol}`,
@@ -155,6 +155,8 @@ export class MemberPaymentComponent {
 			payment.qrCodeUrl,
 			"",
 			"Děkujeme.",
+			"",
+			"Dětská vodácká skupina ŠÁN"
 		].join("\r\n");
 
 		// `mailto:` cannot carry an attachment, hence the QR as a link in the body above.
