@@ -85,14 +85,22 @@ export class MemberPaymentRequestService {
 	/**
 	 * URL of the QR platba image for this payment. Every value comes from the stored settings,
 	 * and the generator turns them into the SPAYD code the banking apps read.
+	 *
+	 * `currency` MUST stay first, right behind the `?`. This URL is also pasted into the payment
+	 * e-mail as plain text, and mail clients that render the body as HTML decode `&curren` — a
+	 * legacy HTML character reference that needs no semicolon — into "¤". `&currency=CZK` then
+	 * arrives as `¤cy=CZK` (percent-encoded `%C2%A4cy=CZK`) and the generator answers with an
+	 * error instead of a QR code. First position is the one place an `&` cannot precede it.
+	 * Of every parameter this API takes, `currency` is the only one that collides with an
+	 * entity name, so the remaining order is free.
 	 */
 	getQrCodeUrl(settings: PaymentSettings, variableSymbol: string, message: string): string {
 		const params = new URLSearchParams({
+			currency: settings.currency,
 			accountNumber: settings.accountNumber,
 			bankCode: settings.bankCode,
 			// the generator expects a decimal amount, and the fee is stored in whole units
 			amount: settings.amount.toFixed(2),
-			currency: settings.currency,
 			vs: variableSymbol,
 			message,
 			size: String(QR_CODE_SIZE),
