@@ -3938,6 +3938,32 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface PaymentSettingsUpdateBody
+     */
+    export interface PaymentSettingsUpdateBody {
+        /**
+         * Account number, with an optional prefix — e.g. \"2301695140\" or \"19-2000145399\".
+         * @type {string}
+         * @memberof PaymentSettingsUpdateBody
+         */
+        'accountNumber'?: string;
+        /**
+         * Four-digit Czech bank code, e.g. \"2010\".
+         * @type {string}
+         * @memberof PaymentSettingsUpdateBody
+         */
+        'bankCode'?: string;
+        /**
+         * Membership fee in whole units of the stored currency.
+         * @type {number}
+         * @memberof PaymentSettingsUpdateBody
+         */
+        'amount'?: number;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface Photo
      */
     export interface Photo {
@@ -4379,6 +4405,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'getPaymentSettings': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'updatePaymentSettings': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -8887,6 +8919,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * PaymentsApi - object-oriented interface
      * @export
@@ -8930,6 +8966,51 @@ export namespace SDK {
             setSearchParams(requestUrlObj, requestQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<PaymentSettingsResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PaymentsApi
+         */
+        
+        public async updatePaymentSettings(
+            body: PaymentSettingsUpdateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'paymentSettingsUpdateBody' is not null or undefined
+            assertParamExists('updatePaymentSettings', 'paymentSettingsUpdateBody', body)
+            
+            const localVarPath = `/api/payments/settings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
     
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;

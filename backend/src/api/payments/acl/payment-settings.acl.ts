@@ -14,3 +14,15 @@ export const PaymentSettingsReadPermission = new Permission<void>({
 		vedouci: true,
 	},
 });
+
+/**
+ * Who may change the bank account and the fee. Reserved for admins — the same audience the
+ * treasurer view as a whole is meant for, and the link the frontend gates that page on.
+ */
+export const PaymentSettingsUpdatePermission = new Permission<void>({
+	linkTo: RootResponse,
+
+	allowed: {
+		admin: true,
+	},
+});

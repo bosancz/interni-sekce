@@ -1,5 +1,9 @@
 <bo-page-header [title]="'Pokladna ' + year()" />
 
+<!-- The account and the fee every member's QR payment is built from — editable right here, since
+     this is the page the treasurer works on. -->
+<bo-payment-settings class="treasurer-settings" />
+
 <bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
 	@if (isDesktop()) {
 		<!-- Desktop: year, filters, columns and view options laid out inline in the toolbar. -->
