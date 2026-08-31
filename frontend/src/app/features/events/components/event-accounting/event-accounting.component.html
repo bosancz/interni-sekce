@@ -1,5 +1,10 @@
 <div class="row">
 	<div class="order-2 order-lg-1 col-12 col-xl-8">
+		<div class="list-header">
+			<h3>Účtenky</h3>
+			<bo-event-expense-types-info></bo-event-expense-types-info>
+		</div>
+
 		<ion-list>
 			@for (expense of expenses(); track expense.id) {
 			<bo-item (click)="editExpense(expense)">
