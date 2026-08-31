@@ -4,7 +4,6 @@ import { SettingsModelModule } from "src/models/settings/settings-model.module";
 import { Group } from "./entities/group.entity";
 import { MemberAchievement } from "./entities/member-achievements.entity";
 import { MemberContact } from "./entities/member-contact.entity";
-import { MemberPayment } from "./entities/member-payment.entity";
 import { Member } from "./entities/member.entity";
 import { GroupsRepository } from "./repositories/groups.repository";
 import { MembersRepository } from "./repositories/members.repository";
@@ -12,7 +11,7 @@ import { MemberPaymentRequestService } from "./services/member-payment-request.s
 import { MembersExportService } from "./services/members-export.service";
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Member, MemberContact, MemberAchievement, MemberPayment, Group]), SettingsModelModule],
+	imports: [TypeOrmModule.forFeature([Member, MemberContact, MemberAchievement, Group]), SettingsModelModule],
 	providers: [MembersRepository, GroupsRepository, MembersExportService, MemberPaymentRequestService],
 	exports: [MembersRepository, GroupsRepository, MembersExportService, MemberPaymentRequestService],
 })

@@ -1,21 +1,23 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
+/** The season the club switched from a membership state to a fee paid per year. */
+const FIRST_FEE_YEAR = 2026;
+
 export class MembershipPerYear1788166776745 implements MigrationInterface {
 	name = "MembershipPerYear1788166776745";
 
-	// The membership enum (clen/neclen/pozastaveno) becomes one flag per year, index 1 (Postgres
-	// arrays are 1-based) being MEMBERSHIP_FIRST_YEAR = 2026 — see helpers/membership.ts.
+	// The membership enum (clen/neclen/pozastaveno) becomes the list of years the fee is paid for.
 	//
 	// The generator emits a plain DROP + ADD, which would throw the existing membership away. The
 	// old column is therefore kept alongside the new one until the values are carried over: a member
-	// who was `clen` has the fee for the first year paid, `neclen`/`pozastaveno` start unpaid.
+	// who was `clen` has the fee for the first year paid, `neclen`/`pozastaveno` start with none.
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(`ALTER TABLE "members" RENAME COLUMN "membership" TO "membership_old"`);
+		await queryRunner.query(`ALTER TABLE "members" ADD "membership" smallint array NOT NULL DEFAULT '{}'`);
 		await queryRunner.query(
-			`ALTER TABLE "members" ADD "membership" boolean array NOT NULL DEFAULT array_fill(false, ARRAY[101])`,
+			`UPDATE "members" SET "membership" = ARRAY[${FIRST_FEE_YEAR}]::smallint[] WHERE "membership_old" = 'clen'`,
 		);
-		await queryRunner.query(`UPDATE "members" SET "membership"[1] = true WHERE "membership_old" = 'clen'`);
 		await queryRunner.query(`ALTER TABLE "members" DROP COLUMN "membership_old"`);
 		await queryRunner.query(`DROP TYPE "public"."members_membership_enum"`);
 	}
@@ -31,7 +33,7 @@ export class MembershipPerYear1788166776745 implements MigrationInterface {
 			`ALTER TABLE "members" ADD "membership" "public"."members_membership_enum" NOT NULL DEFAULT 'clen'`,
 		);
 		await queryRunner.query(
-			`UPDATE "members" SET "membership" = 'neclen' WHERE NOT COALESCE("membership_old"[1], false)`,
+			`UPDATE "members" SET "membership" = 'neclen' WHERE NOT "membership_old" @> ARRAY[${FIRST_FEE_YEAR}]::smallint[]`,
 		);
 		await queryRunner.query(`ALTER TABLE "members" DROP COLUMN "membership_old"`);
 	}

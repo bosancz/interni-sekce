@@ -1,12 +1,11 @@
 import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min, ValidateNested } from "class-validator";
 import { PaginationQuery } from "src/api/helpers/dto";
 import { MembershipPaymentStates } from "src/helpers/membership";
 import { EnsureArray, EnsureBoolean } from "src/helpers/validation";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
-import { MemberPayment } from "src/models/members/entities/member-payment.entity";
 import {
 	HealthEntry,
 	HealthSeverity,
@@ -28,11 +27,14 @@ export class MemberResponse implements Member {
 	@ApiProperty({ type: "string" }) nickname!: string;
 	@ApiProperty({ type: "string", enum: MemberRoles, enumName: "MemberRolesEnum" }) role!: MemberRoles;
 	@ApiProperty({ type: "boolean" }) active!: boolean;
-	// One flag per year (see helpers/membership.ts); ask isMembershipPaid() for the current year.
-	@ApiProperty({ type: "boolean", isArray: true })
+	// The years the fee is paid for (see helpers/membership.ts); ask isMembershipPaid() about one.
+	// The bounds only keep nonsense out of a smallint column — any real year passes.
+	@ApiProperty({ type: "number", isArray: true })
 	@IsArray()
-	@IsBoolean({ each: true })
-	membership!: boolean[];
+	@IsInt({ each: true })
+	@Min(1900, { each: true })
+	@Max(2200, { each: true })
+	membership!: number[];
 
 	@ApiPropertyOptional({ type: "string" }) function?: string | null;
 	@ApiPropertyOptional({ type: "string" }) firstName?: string | null;
@@ -72,9 +74,6 @@ export class MemberResponse implements Member {
 	contacts?: MemberContact[] | undefined;
 
 	@ApiPropertyOptional()
-	payments?: MemberPayment[] | undefined;
-
-	@ApiPropertyOptional()
 	achievements?: MemberAchievement[] | undefined;
 }
 
@@ -89,9 +88,7 @@ export class MemberCreateBody implements Pick<
 	@ApiProperty() @IsString() @IsOptional() lastName!: string | null;
 }
 
-export class MemberUpdateBody extends PartialType(
-	OmitType(MemberResponse, ["contacts", "achievements", "id", "payments"]),
-) {}
+export class MemberUpdateBody extends PartialType(OmitType(MemberResponse, ["contacts", "achievements", "id"])) {}
 
 export class MembersListQuery extends PaginationQuery {
 	@EnsureArray({ split: "," })

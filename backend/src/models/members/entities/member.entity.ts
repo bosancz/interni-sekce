@@ -1,5 +1,4 @@
 import { ApiHideProperty } from "@nestjs/swagger";
-import { MEMBERSHIP_YEARS_COUNT } from "src/helpers/membership";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { User } from "src/models/users/entities/user.entity";
 import {
@@ -16,8 +15,6 @@ import {
 import { Group } from "./group.entity";
 import { MemberAchievement } from "./member-achievements.entity";
 import { MemberContact } from "./member-contact.entity";
-
-import { MemberPayment } from "./member-payment.entity";
 
 export enum MemberRoles {
 	"dite" = "dite",
@@ -53,16 +50,10 @@ export class Member {
 	@Column({ type: "varchar", nullable: false }) nickname!: string;
 	@Column({ type: "enum", enum: MemberRoles, nullable: false }) role!: MemberRoles;
 	@Column({ type: "boolean", nullable: false, default: true }) active!: boolean;
-	// Membership fee per year: index 0 is MEMBERSHIP_FIRST_YEAR, preallocated up to
-	// MEMBERSHIP_LAST_YEAR, `true` = paid ("zaplaceno"). Read it through isMembershipPaid()
-	// (helpers/membership.ts) rather than indexing it here and there.
-	@Column({
-		type: "boolean",
-		array: true,
-		nullable: false,
-		default: () => `array_fill(false, ARRAY[${MEMBERSHIP_YEARS_COUNT}])`,
-	})
-	membership!: boolean[];
+	// The years the membership fee is paid for, e.g. [2026, 2028]. Read it through
+	// isMembershipPaid() (helpers/membership.ts) rather than searching the list here and there.
+	@Column({ type: "smallint", array: true, nullable: false, default: () => "'{}'" })
+	membership!: number[];
 
 	@Column({ type: "enum", enum: MemberRanks, nullable: true }) rank?: MemberRanks | null;
 	@Column({ type: "varchar", nullable: true }) function?: string | null;
@@ -104,9 +95,6 @@ export class Member {
 
 	@OneToMany(() => MemberContact, (mb) => mb.member)
 	contacts?: MemberContact[];
-
-	@OneToMany(() => MemberPayment, (mb) => mb.member)
-	payments?: MemberPayment[];
 
 	@OneToMany(() => MemberAchievement, (mb) => mb.member)
 	achievements?: MemberAchievement[];

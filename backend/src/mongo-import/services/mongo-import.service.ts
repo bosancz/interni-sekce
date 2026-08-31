@@ -2,7 +2,6 @@ import { Injectable, Logger } from "@nestjs/common";
 import { DateTime } from "luxon";
 import mongoose, { Model } from "mongoose";
 import { Config } from "src/config";
-import { createMembership } from "src/helpers/membership";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
@@ -169,8 +168,8 @@ export class MongoImportService {
 				groupId,
 				active: mongoMember.inactive === false ? true : false,
 				// The legacy database has no per-year membership fees — imported members start
-				// with every year unpaid and the fees are recorded here from now on.
-				membership: createMembership(),
+				// with no year paid and the fees are recorded here from now on.
+				membership: [],
 				role,
 				rank: Object.values(MemberRanks).includes(<any>mongoMember.rank) ? <MemberRanks>mongoMember.rank : null,
 				nickname: mongoMember.nickname ?? mongoMember.name?.first ?? "???",
