@@ -50,7 +50,7 @@ const COLUMNS_ICON =
 	'<line x1="320" y1="80" x2="320" y2="432" stroke="currentColor" stroke-width="32"/></svg>';
 
 /** How far back and forward the year picker reaches around the current season. */
-const YEARS_BACK = 6;
+const YEARS_BACK = 10;
 const YEARS_AHEAD = 1;
 
 /**
@@ -397,6 +397,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	// The fee column is the point of the page, so it is always on and is not offered here.
 	private loadViewSelections() {
 		this.viewSelections.set({
+			variableSymbol: true,
 			nickname: true,
 			name: true,
 			group: true,
@@ -408,7 +409,6 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			firstTelephone: false,
 			firstEmail: false,
 			status: false,
-			variableSymbol: true,
 		});
 	}
 
@@ -451,6 +451,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 
 	public getViewSelectionLabel(key: string): string {
 		const labels: { [key: string]: string } = {
+			variableSymbol: "VS",
 			nickname: "Přezdívka",
 			name: "Jméno",
 			group: "Oddíl",
@@ -462,7 +463,6 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			firstTelephone: "První telefon",
 			firstEmail: "První email",
 			status: "Stav",
-			variableSymbol: "VS",
 		};
 
 		return labels[key] || key;
