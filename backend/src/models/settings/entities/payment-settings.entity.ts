@@ -5,9 +5,8 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
  *
  * A single-row table (seeded by the PaymentSettings migration) so the account can be
  * changed in the database without a deploy — nothing about it is hardcoded in the app.
- * `iban` is deliberately a plain stored column, not something derived from
- * `accountNumber`/`bankCode`: the app never computes an IBAN, it only reads the one
- * the club entered.
+ * There is no IBAN column: the QR platba generator derives one from the account number and
+ * bank code, so the app neither stores nor computes it.
  */
 @Entity("payment_settings")
 export class PaymentSettings {
@@ -18,9 +17,6 @@ export class PaymentSettings {
 
 	/** Four-digit Czech bank code, e.g. "2010". */
 	@Column({ type: "varchar", nullable: false }) bankCode!: string;
-
-	/** IBAN of the same account, stored as entered — never derived. */
-	@Column({ type: "varchar", nullable: false }) iban!: string;
 
 	/** Membership fee amount in whole units of `currency`. */
 	@Column({ type: "integer", nullable: false }) amount!: number;

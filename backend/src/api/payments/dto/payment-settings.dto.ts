@@ -9,7 +9,6 @@ import { PaymentSettings } from "src/models/settings/entities/payment-settings.e
 export class PaymentSettingsResponse implements Omit<PaymentSettings, "id"> {
 	@ApiProperty() accountNumber!: string;
 	@ApiProperty() bankCode!: string;
-	@ApiProperty() iban!: string;
 	@ApiProperty() amount!: number;
 	@ApiProperty() currency!: string;
 }

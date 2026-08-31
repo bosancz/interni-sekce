@@ -3254,12 +3254,6 @@ export namespace SDK {
         'bankCode': string;
         /**
          * 
-         * @type {string}
-         * @memberof MemberPaymentRequestResponseWithLinks
-         */
-        'iban': string;
-        /**
-         * 
          * @type {number}
          * @memberof MemberPaymentRequestResponseWithLinks
          */
@@ -3271,19 +3265,13 @@ export namespace SDK {
          */
         'currency': string;
         /**
-         * Czech QR platba payload (SPAYD 1.0) encoded in the QR code.
-         * @type {string}
-         * @memberof MemberPaymentRequestResponseWithLinks
-         */
-        'spayd': string;
-        /**
-         * Payment message — the member\'s name without diacritics, uppercased.
+         * Payment message — `prispevky <name>`, without diacritics.
          * @type {string}
          * @memberof MemberPaymentRequestResponseWithLinks
          */
         'message': string;
         /**
-         * Absolute URL of the QR code image; openable without a session, so it can be mailed.
+         * Public URL of the QR platba image; openable without a session, so it can be mailed.
          * @type {string}
          * @memberof MemberPaymentRequestResponseWithLinks
          */
@@ -4087,12 +4075,6 @@ export namespace SDK {
          * @memberof PaymentSettingsResponseWithLinks
          */
         'bankCode': string;
-        /**
-         * 
-         * @type {string}
-         * @memberof PaymentSettingsResponseWithLinks
-         */
-        'iban': string;
         /**
          * 
          * @type {number}

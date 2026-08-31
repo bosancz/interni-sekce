@@ -20,8 +20,8 @@ export class PaymentSettingsController {
 	async getPaymentSettings(@Req() req: Request): Promise<PaymentSettingsResponse> {
 		PaymentSettingsReadPermission.canOrThrow(req);
 
-		const { accountNumber, bankCode, iban, amount, currency } = await this.paymentSettings.getPaymentSettings();
+		const { accountNumber, bankCode, amount, currency } = await this.paymentSettings.getPaymentSettings();
 
-		return { accountNumber, bankCode, iban, amount, currency };
+		return { accountNumber, bankCode, amount, currency };
 	}
 }
