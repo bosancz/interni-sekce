@@ -125,6 +125,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "membership", label: "Příspěvek" },
+		{ key: "variableSymbol", label: "VS" },
 		{ key: "nickname", label: "Přezdívka" },
 		{ key: "name", label: "Jméno" },
 		{ key: "group", label: "Oddíl" },

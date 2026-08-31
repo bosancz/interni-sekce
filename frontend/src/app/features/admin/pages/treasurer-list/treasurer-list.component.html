@@ -247,6 +247,16 @@
 			</admin-table-column>
 		}
 
+		@if (viewSelections().variableSymbol) {
+			<admin-table-column
+				header="VS"
+				sort="variableSymbol"
+				headerClass="align-middle treasurer-vs-column"
+				cellClass="treasurer-vs-column"
+			>
+				<ng-container *adminCell="let member">{{ variableSymbol(member) }}</ng-container>
+			</admin-table-column>
+		}
 
 		<!-- The fee of the selected year: always shown, and on mobile it is the column that sits on
 		     the right of each item so it stays within thumb reach. -->
