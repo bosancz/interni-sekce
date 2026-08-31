@@ -1,0 +1,15 @@
+:host {
+	display: block;
+}
+
+/* rows provide their own padding – drop the default p-3 from bo-card-content */
+::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+// The page holds this one card, so keep it to a readable width rather than letting it stretch
+// across a desktop viewport.
+.payment-settings-page {
+	max-width: 640px;
+	padding: 16px;
+}
