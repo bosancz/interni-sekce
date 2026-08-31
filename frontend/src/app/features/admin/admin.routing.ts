@@ -13,9 +13,10 @@ import { UsersViewComponent } from "./pages/users-view/users-view.component";
 // only for the program section cannot open them by typing the URL.
 const canAccessUsers = [linkGuard("listUsers")];
 
-// The treasurer view lists members, so it is open to whoever may see the member database — the
-// fees themselves are only editable by an admin, which the API enforces per member.
-const canAccessTreasurer = [linkGuard("listMembers")];
+// The treasurer view is admin-only, top to bottom: it shows the club's bank account and records
+// the fees. `updatePaymentSettings` is the root link the backend grants to admins alone, so it is
+// what the page is gated on.
+const canAccessTreasurer = [linkGuard("updatePaymentSettings")];
 
 export const adminRoutes: Routes = [
 	{ path: "", component: AdminHomeComponent },

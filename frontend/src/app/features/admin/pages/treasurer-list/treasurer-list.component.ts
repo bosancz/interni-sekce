@@ -37,6 +37,7 @@ import { PageHeaderComponent } from "src/app/shared/components/page-header/page-
 import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
+import { PaymentSettingsComponent } from "../../components/payment-settings/payment-settings.component";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 
@@ -72,6 +73,7 @@ const YEARS_AHEAD = 1;
 
 	imports: [
 		PageHeaderComponent,
+		PaymentSettingsComponent,
 		FilterComponent,
 		IonContent,
 		IonList,

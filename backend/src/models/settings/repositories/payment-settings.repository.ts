@@ -19,4 +19,11 @@ export class PaymentSettingsRepository {
 
 		return settings;
 	}
+
+	/** Update the single settings row in place, leaving whatever the caller did not send. */
+	async updatePaymentSettings(data: Partial<Omit<PaymentSettings, "id">>): Promise<PaymentSettings> {
+		const settings = await this.getPaymentSettings();
+
+		return this.paymentSettingsRepository.save({ ...settings, ...data });
+	}
 }
