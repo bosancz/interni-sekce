@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { getVariableSymbol } from "src/helpers/variable-symbol";
 import { PaymentSettings } from "src/models/settings/entities/payment-settings.entity";
 import { PaymentSettingsRepository } from "src/models/settings/repositories/payment-settings.repository";
 import { Member } from "../entities/member.entity";
@@ -37,7 +38,7 @@ export class MemberPaymentRequestService {
 	async getPaymentRequest(member: Member): Promise<MemberPaymentRequest> {
 		const settings = await this.paymentSettings.getPaymentSettings();
 
-		const variableSymbol = this.getVariableSymbol(member.id);
+		const variableSymbol = getVariableSymbol(member);
 		const message = this.getMessage(member);
 
 		return {
@@ -49,17 +50,6 @@ export class MemberPaymentRequestService {
 			message,
 			qrCodeUrl: this.getQrCodeUrl(settings, variableSymbol, message),
 		};
-	}
-
-	/**
-	 * Variable symbol of a member's fee: the last two digits of the current year followed by
-	 * the member id padded to five digits (member 1 in 2026 → `2600001`). Always derived,
-	 * never entered by hand, so the treasurer can map any incoming payment back to a member.
-	 */
-	getVariableSymbol(memberId: number, date = new Date()): string {
-		const year = String(date.getFullYear()).slice(-2);
-
-		return year + String(memberId).padStart(5, "0");
 	}
 
 	/**

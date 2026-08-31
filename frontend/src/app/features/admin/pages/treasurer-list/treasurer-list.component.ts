@@ -22,6 +22,7 @@ import { eyeOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipPaymentStates } from "src/app/core/config/membership";
 import { currentMembershipYear, isMembershipPaid, setMembershipPaid } from "src/app/core/helpers/membership";
+import { getVariableSymbol } from "src/app/core/helpers/variable-symbol";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -215,6 +216,11 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		this.loadGroups();
 	}
 
+	/** The variable symbol the member pays the selected year's fee under. */
+	variableSymbol(member: SDK.MemberResponse): string {
+		return getVariableSymbol(member, this.year());
+	}
+
 	/** Is this member's fee for the year on screen paid? */
 	isPaid(member: SDK.MemberResponse): boolean {
 		return isMembershipPaid(member.membership, this.year());
@@ -402,6 +408,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			firstTelephone: false,
 			firstEmail: false,
 			status: false,
+			variableSymbol: true,
 		});
 	}
 
@@ -455,6 +462,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			firstTelephone: "První telefon",
 			firstEmail: "První email",
 			status: "Stav",
+			variableSymbol: "VS",
 		};
 
 		return labels[key] || key;

@@ -12,6 +12,13 @@
 	text-align: right;
 }
 
+// The variable symbol is a fixed-width number — tabular figures keep the digits aligned down the
+// column so a treasurer can scan it against a bank statement.
+::ng-deep .treasurer-vs-column {
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
 // The fee toggle is a pill that flips between paid and unpaid. It sits inside a row that links to
 // the member, so it has to read as its own control: hover/focus lift it, and the click is stopped
 // in the component before it reaches the row.
