@@ -2777,10 +2777,10 @@ export namespace SDK {
         'active': boolean;
         /**
          * 
-         * @type {string}
+         * @type {Array<boolean>}
          * @memberof Member
          */
-        'membership': MemberMembershipEnum;
+        'membership': Array<boolean>;
         /**
          * 
          * @type {string}
@@ -2916,13 +2916,6 @@ export namespace SDK {
     } as const;
     
     export type MemberRoleEnum = typeof MemberRoleEnum[keyof typeof MemberRoleEnum];
-    export const MemberMembershipEnum = {
-        Clen: 'clen',
-        Neclen: 'neclen',
-        Pozastaveno: 'pozastaveno'
-    } as const;
-    
-    export type MemberMembershipEnum = typeof MemberMembershipEnum[keyof typeof MemberMembershipEnum];
     export const MemberRankEnum = {
         Dite: 'dite',
         Instruktor: 'instruktor',
@@ -3421,10 +3414,10 @@ export namespace SDK {
         'active': boolean;
         /**
          * 
-         * @type {MembershipStatesEnum}
+         * @type {Array<boolean>}
          * @memberof MemberResponse
          */
-        'membership': MembershipStatesEnum;
+        'membership': Array<boolean>;
         /**
          * 
          * @type {string}
@@ -3679,10 +3672,10 @@ export namespace SDK {
         'active': boolean;
         /**
          * 
-         * @type {MembershipStatesEnum}
+         * @type {Array<boolean>}
          * @memberof MemberResponseWithLinks
          */
-        'membership': MembershipStatesEnum;
+        'membership': Array<boolean>;
         /**
          * 
          * @type {string}
@@ -3854,10 +3847,10 @@ export namespace SDK {
         'active'?: boolean;
         /**
          * 
-         * @type {MembershipStatesEnum}
+         * @type {Array<boolean>}
          * @memberof MemberUpdateBody
          */
-        'membership'?: MembershipStatesEnum;
+        'membership'?: Array<boolean>;
         /**
          * 
          * @type {string}
@@ -3990,13 +3983,12 @@ export namespace SDK {
      * @enum {string}
      */
     
-    export const MembershipStatesEnum = {
-        Clen: 'clen',
-        Neclen: 'neclen',
-        Pozastaveno: 'pozastaveno'
+    export const MembershipPaymentStatesEnum = {
+        Zaplaceno: 'zaplaceno',
+        Nezaplaceno: 'nezaplaceno'
     } as const;
     
-    export type MembershipStatesEnum = typeof MembershipStatesEnum[keyof typeof MembershipStatesEnum];
+    export type MembershipPaymentStatesEnum = typeof MembershipPaymentStatesEnum[keyof typeof MembershipPaymentStatesEnum];
     
     
         /**
@@ -7426,15 +7418,6 @@ export namespace SDK {
         Vedouci: 'vedouci'
     } as const;
     export type ExportMembersXlsxRolesEnum = typeof ExportMembersXlsxRolesEnum[keyof typeof ExportMembersXlsxRolesEnum];
-    /**
-     * @export
-     */
-    export const ExportMembersXlsxMembershipEnum = {
-        Clen: 'clen',
-        Neclen: 'neclen',
-        Pozastaveno: 'pozastaveno'
-    } as const;
-    export type ExportMembersXlsxMembershipEnum = typeof ExportMembersXlsxMembershipEnum[keyof typeof ExportMembersXlsxMembershipEnum];
     
     
     /**
@@ -7475,6 +7458,14 @@ export namespace SDK {
          */
         order?: ExportMembersXlsxOrderEnum
     
+        //membership
+        /**
+         * 
+         * @type {Array<MembershipPaymentStatesEnum>}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        membership?: Array<MembershipPaymentStatesEnum>
+    
         //contacts
         /**
          * 
@@ -7506,14 +7497,6 @@ export namespace SDK {
          * @memberof MembersApiExportMembersXlsx
          */
         roles?: Array<ExportMembersXlsxRolesEnum>
-    
-        //membershipisEnumMembershipEnum
-        /**
-         * 
-         * @type {Array<'clen' | 'neclen' | 'pozastaveno'>}
-         * @memberof MembersApiExportMembersXlsx
-         */
-        membership?: Array<ExportMembersXlsxMembershipEnum>
     
         //age
         /**
@@ -7614,15 +7597,6 @@ export namespace SDK {
         Vedouci: 'vedouci'
     } as const;
     export type ListMembersRolesEnum = typeof ListMembersRolesEnum[keyof typeof ListMembersRolesEnum];
-    /**
-     * @export
-     */
-    export const ListMembersMembershipEnum = {
-        Clen: 'clen',
-        Neclen: 'neclen',
-        Pozastaveno: 'pozastaveno'
-    } as const;
-    export type ListMembersMembershipEnum = typeof ListMembersMembershipEnum[keyof typeof ListMembersMembershipEnum];
     
     
     /**
@@ -7663,6 +7637,14 @@ export namespace SDK {
          */
         order?: ListMembersOrderEnum
     
+        //membership
+        /**
+         * 
+         * @type {Array<MembershipPaymentStatesEnum>}
+         * @memberof MembersApiListMembers
+         */
+        membership?: Array<MembershipPaymentStatesEnum>
+    
         //contacts
         /**
          * 
@@ -7694,14 +7676,6 @@ export namespace SDK {
          * @memberof MembersApiListMembers
          */
         roles?: Array<ListMembersRolesEnum>
-    
-        //membershipisEnumMembershipEnum
-        /**
-         * 
-         * @type {Array<'clen' | 'neclen' | 'pozastaveno'>}
-         * @memberof MembersApiListMembers
-         */
-        membership?: Array<ListMembersMembershipEnum>
     
         //age
         /**
@@ -8291,6 +8265,10 @@ export namespace SDK {
                 requestQueryParameter['order'] = queryParams.order;
             }
     
+            if (queryParams.membership) {
+                requestQueryParameter['membership'] = queryParams.membership;
+            }
+    
             if (queryParams.contacts !== undefined) {
                 requestQueryParameter['contacts'] = queryParams.contacts;
             }
@@ -8305,10 +8283,6 @@ export namespace SDK {
     
             if (queryParams.roles) {
                 requestQueryParameter['roles'] = queryParams.roles;
-            }
-    
-            if (queryParams.membership) {
-                requestQueryParameter['membership'] = queryParams.membership;
             }
     
             if (queryParams.age) {
@@ -8723,6 +8697,10 @@ export namespace SDK {
                 requestQueryParameter['order'] = queryParams.order;
             }
     
+            if (queryParams.membership) {
+                requestQueryParameter['membership'] = queryParams.membership;
+            }
+    
             if (queryParams.contacts !== undefined) {
                 requestQueryParameter['contacts'] = queryParams.contacts;
             }
@@ -8737,10 +8715,6 @@ export namespace SDK {
     
             if (queryParams.roles) {
                 requestQueryParameter['roles'] = queryParams.roles;
-            }
-    
-            if (queryParams.membership) {
-                requestQueryParameter['membership'] = queryParams.membership;
             }
     
             if (queryParams.age) {

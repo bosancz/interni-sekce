@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsArray, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
 import { PaginationQuery } from "src/api/helpers/dto";
+import { MembershipPaymentStates } from "src/helpers/membership";
 import { EnsureArray, EnsureBoolean } from "src/helpers/validation";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
@@ -12,7 +13,6 @@ import {
 	Member,
 	MemberRanks,
 	MemberRoles,
-	MembershipStates,
 } from "src/models/members/entities/member.entity";
 
 export class HealthEntryDto implements HealthEntry {
@@ -28,8 +28,11 @@ export class MemberResponse implements Member {
 	@ApiProperty({ type: "string" }) nickname!: string;
 	@ApiProperty({ type: "string", enum: MemberRoles, enumName: "MemberRolesEnum" }) role!: MemberRoles;
 	@ApiProperty({ type: "boolean" }) active!: boolean;
-	@ApiProperty({ type: "string", enum: MembershipStates, enumName: "MembershipStatesEnum" })
-	membership!: MembershipStates;
+	// One flag per year (see helpers/membership.ts); ask isMembershipPaid() for the current year.
+	@ApiProperty({ type: "boolean", isArray: true })
+	@IsArray()
+	@IsBoolean({ each: true })
+	membership!: boolean[];
 
 	@ApiPropertyOptional({ type: "string" }) function?: string | null;
 	@ApiPropertyOptional({ type: "string" }) firstName?: string | null;
@@ -86,7 +89,9 @@ export class MemberCreateBody implements Pick<
 	@ApiProperty() @IsString() @IsOptional() lastName!: string | null;
 }
 
-export class MemberUpdateBody extends PartialType(OmitType(MemberResponse, ["contacts", "achievements", "id", "payments"])) {}
+export class MemberUpdateBody extends PartialType(
+	OmitType(MemberResponse, ["contacts", "achievements", "id", "payments"]),
+) {}
 
 export class MembersListQuery extends PaginationQuery {
 	@EnsureArray({ split: "," })
@@ -101,10 +106,16 @@ export class MembersListQuery extends PaginationQuery {
 	@IsOptional()
 	roles?: MemberRoles[];
 
+	// Filters on the membership of the *current* year, not on the whole array.
+	@ApiPropertyOptional({
+		enum: MembershipPaymentStates,
+		enumName: "MembershipPaymentStatesEnum",
+		isArray: true,
+	})
 	@EnsureArray({ split: "," })
-	@IsEnum(MembershipStates, { each: true })
+	@IsEnum(MembershipPaymentStates, { each: true })
 	@IsOptional()
-	membership?: MembershipStates[];
+	membership?: MembershipPaymentStates[];
 
 	@EnsureArray({ split: "," })
 	@Type(() => Number, {})

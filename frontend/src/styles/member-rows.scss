@@ -6,7 +6,7 @@
 // encapsulation. Keeping them global means every member list looks the same and
 // there is a single place to change it.
 
-// Inactive / paused members are dimmed.
+// Inactive members are dimmed.
 .member-inactive {
 	color: var(--bo-muted);
 	opacity: 0.65;
@@ -14,10 +14,6 @@
 
 ion-item.member-inactive {
 	--color: var(--bo-muted);
-}
-
-tr.member-paused {
-	color: var(--bo-muted);
 }
 
 // Leaders and instructors get a light role tint. On tables this goes through

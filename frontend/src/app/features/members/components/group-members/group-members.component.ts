@@ -27,7 +27,7 @@ const COLUMNS_ICON =
 	'<line x1="320" y1="80" x2="320" y2="432" stroke="currentColor" stroke-width="32"/></svg>';
 
 import { MemberRoles } from "src/app/core/config/member-roles";
-import { MembershipStates } from "src/app/core/config/membership-states";
+import { MembershipPaymentStates } from "src/app/core/config/membership";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
@@ -79,7 +79,6 @@ export class GroupMembersComponent implements OnInit {
 	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
 
 	roles = MemberRoles;
-	membershipStates = MembershipStates;
 
 	// Wrapper model that owns the whole filter (declared first so the computeds below can read it).
 	// This page keeps its filters in local state (no URL), so `applied` is the committed filter the
@@ -122,7 +121,7 @@ export class GroupMembersComponent implements OnInit {
 		value: key,
 		label: role.title,
 	}));
-	readonly membershipOptions: FilterPillOption[] = Object.entries(MembershipStates).map(([key, state]) => ({
+	readonly membershipOptions: FilterPillOption[] = Object.entries(MembershipPaymentStates).map(([key, state]) => ({
 		value: key,
 		label: state.title,
 	}));
@@ -148,7 +147,6 @@ export class GroupMembersComponent implements OnInit {
 	rowLink = (member: SDK.MemberResponseWithLinks) => ["/databaze/clenove", member.id];
 	rowClass = (member: SDK.MemberResponseWithLinks) => ({
 		"member-inactive": !member.active,
-		"member-paused": member.membership === "pozastaveno",
 		"member-vedouci": member.role === "vedouci",
 		"member-instruktor": member.role === "instruktor",
 	});
@@ -244,7 +242,7 @@ export class GroupMembersComponent implements OnInit {
 		const params: SDK.MembersApiListMembersQueryParams = {
 			search: this.search() || undefined,
 			roles: this.asArray(applied["roles"]) as SDK.ListMembersRolesEnum[],
-			membership: this.asArray(applied["membership"]) as SDK.ListMembersMembershipEnum[],
+			membership: this.asArray(applied["membership"]) as SDK.MembershipPaymentStatesEnum[],
 			groups: [this.groupId],
 			// No pagination UI here — load the whole group in one request.
 			limit: 1000,

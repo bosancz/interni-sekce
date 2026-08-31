@@ -1,4 +1,5 @@
 import { ApiHideProperty } from "@nestjs/swagger";
+import { MEMBERSHIP_YEARS_COUNT } from "src/helpers/membership";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { User } from "src/models/users/entities/user.entity";
 import {
@@ -31,12 +32,6 @@ export enum MemberRanks {
 	"vedouci" = "vedouci",
 }
 
-export enum MembershipStates {
-	"clen" = "clen",
-	"neclen" = "neclen",
-	"pozastaveno" = "pozastaveno",
-}
-
 export enum HealthSeverity {
 	"unknown" = "unknown",
 	"low" = "low",
@@ -58,8 +53,16 @@ export class Member {
 	@Column({ type: "varchar", nullable: false }) nickname!: string;
 	@Column({ type: "enum", enum: MemberRoles, nullable: false }) role!: MemberRoles;
 	@Column({ type: "boolean", nullable: false, default: true }) active!: boolean;
-	@Column({ type: "enum", enum: MembershipStates, nullable: false, default: MembershipStates.clen })
-	membership!: MembershipStates;
+	// Membership fee per year: index 0 is MEMBERSHIP_FIRST_YEAR, preallocated up to
+	// MEMBERSHIP_LAST_YEAR, `true` = paid ("zaplaceno"). Read it through isMembershipPaid()
+	// (helpers/membership.ts) rather than indexing it here and there.
+	@Column({
+		type: "boolean",
+		array: true,
+		nullable: false,
+		default: () => `array_fill(false, ARRAY[${MEMBERSHIP_YEARS_COUNT}])`,
+	})
+	membership!: boolean[];
 
 	@Column({ type: "enum", enum: MemberRanks, nullable: true }) rank?: MemberRanks | null;
 	@Column({ type: "varchar", nullable: true }) function?: string | null;
@@ -74,7 +77,8 @@ export class Member {
 		type: "tsvector",
 		nullable: true,
 		select: false,
-		asExpression: "to_tsvector('simple_unaccent', coalesce(nickname, '') || ' ' || coalesce(first_name, '') || ' ' || coalesce(last_name, ''))",
+		asExpression:
+			"to_tsvector('simple_unaccent', coalesce(nickname, '') || ' ' || coalesce(first_name, '') || ' ' || coalesce(last_name, ''))",
 		generatedType: "STORED",
 	})
 	@ApiHideProperty()

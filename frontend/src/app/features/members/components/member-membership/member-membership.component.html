@@ -43,7 +43,7 @@
 				</div>
 
 				<div class="bo-info-row">
-					<span class="bo-info-label">Stav členství</span>
+					<span class="bo-info-label">Členský příspěvek {{ membershipYear }}</span>
 					<span class="bo-info-action">
 						<span class="bo-info-value">{{ (memberValue | member: "membership") || "-" }}</span>
 						<bo-edit-button [disabled]="!memberValue._links.updateMember.allowed" (click)="editMembership()" />

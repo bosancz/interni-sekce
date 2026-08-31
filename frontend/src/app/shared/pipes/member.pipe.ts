@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/core/config/member-roles";
-import { MembershipStates } from "src/app/core/config/membership-states";
+import { MembershipPaymentStates } from "src/app/core/config/membership";
+import { membershipState } from "src/app/core/helpers/membership";
 import { SDK } from "src/sdk";
 
 @Pipe({
@@ -28,7 +29,8 @@ export class MemberPipe implements PipeTransform {
 				return String(Math.floor(birthday.diffNow("years").years * -1));
 
 			case "membership":
-				return MembershipStates[member.membership].title;
+				// The membership of the current year — see core/helpers/membership.ts.
+				return MembershipPaymentStates[membershipState(member.membership)].title;
 
 			case "role":
 				return MemberRoles[member.role]?.title || member.role;

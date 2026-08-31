@@ -4,7 +4,8 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { informationCircleOutline, statsChartOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
-import { MembershipStates } from "src/app/core/config/membership-states";
+import { MembershipPaymentStates } from "src/app/core/config/membership";
+import { currentMembershipYear, membershipState } from "src/app/core/helpers/membership";
 import { ApiService } from "src/app/core/services/api.service";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
@@ -57,12 +58,13 @@ export class GroupInfoComponent implements OnInit {
 		}));
 	});
 
-	// Active members broken down by membership state, in the config's order.
+	// Active members broken down by this year's membership fee, in the config's order.
 	membershipStats = computed<StatRow[]>(() => {
 		const active = this.activeMembers();
-		return Object.entries(MembershipStates).map(([state, meta]) => ({
-			label: meta.title,
-			value: active.filter((member) => member.membership === state).length,
+		const year = currentMembershipYear();
+		return Object.entries(MembershipPaymentStates).map(([state, meta]) => ({
+			label: `${meta.title} (${year})`,
+			value: active.filter((member) => membershipState(member.membership) === state).length,
 		}));
 	});
 

@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { MembershipPaymentStates, membershipPaidExpression } from "src/helpers/membership";
 import { PaginationOptions } from "src/helpers/pagination";
 import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
@@ -12,6 +13,7 @@ export interface GetMembersOptions extends PaginationOptions {
 	groups?: number[];
 	search?: string;
 	roles?: string[];
+	// "zaplaceno" / "nezaplaceno" for the current year (see helpers/membership.ts)
 	membership?: string[];
 	age?: number[];
 	active?: boolean;
@@ -47,7 +49,10 @@ export class MembersRepository {
 			// id. `groups.name` carries the `natural_numeric` ICU collation (see Group entity),
 			// so embedded numbers order naturally: "3. oddíl" precedes "22. oddíl", and
 			// non-numeric names ("Klub přátel", …) sort after them.
-			.addSelect("(SELECT g.name FROM groups g WHERE g.id = members.group_id)", "sort_group");
+			.addSelect("(SELECT g.name FROM groups g WHERE g.id = members.group_id)", "sort_group")
+			// Membership is an array of years, so it is sorted by the one value the list shows:
+			// whether the fee for the current year is paid.
+			.addSelect(membershipPaidExpression("members.membership"), "sort_membership");
 
 		applySort(
 			q,
@@ -56,7 +61,7 @@ export class MembersRepository {
 				nickname: "sort_nickname",
 				name: "sort_name",
 				role: "members.role",
-				membership: "members.membership",
+				membership: "sort_membership",
 				age: "sort_age",
 				birthday: "members.birthday",
 				group: "sort_group",
@@ -85,7 +90,15 @@ export class MembersRepository {
 
 		if (options.roles) q.andWhere("members.role IN (:...roles)", { roles: options.roles });
 
-		if (options.membership?.length) q.andWhere("members.membership IN (:...membership)", { membership: options.membership });
+		// The filter offers the two membership values; picking both is the same as no filter.
+		if (options.membership?.length) {
+			const paid = options.membership.includes(MembershipPaymentStates.zaplaceno);
+			const unpaid = options.membership.includes(MembershipPaymentStates.nezaplaceno);
+			if (paid !== unpaid)
+				q.andWhere(`${membershipPaidExpression("members.membership")} = :membershipPaid`, {
+					membershipPaid: paid,
+				});
+		}
 
 		if (options.age?.length)
 			q.andWhere(

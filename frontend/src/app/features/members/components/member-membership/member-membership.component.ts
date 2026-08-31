@@ -3,7 +3,8 @@ import { IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { peopleOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
-import { MembershipStates } from "src/app/core/config/membership-states";
+import { MembershipPaymentStates } from "src/app/core/config/membership";
+import { currentMembershipYear, isMembershipPaid, setMembershipPaid } from "src/app/core/helpers/membership";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { SDK } from "src/sdk";
@@ -41,10 +42,8 @@ export class MemberMembershipComponent {
 		value: id as SDK.MemberRolesEnum,
 	}));
 
-	memberMembershipOptions = Object.entries(MembershipStates).map(([id, state]) => ({
-		label: state.title,
-		value: id as SDK.MembershipStatesEnum,
-	}));
+	// The membership year the card shows and edits.
+	membershipYear = currentMembershipYear();
 
 	constructor(
 		private readonly api: ApiService,
@@ -101,17 +100,20 @@ export class MemberMembershipComponent {
 
 	async editMembership() {
 		const member = this.member();
-		const result = await this.modalService.selectModal({
-			header: "Změnit stav členství",
+		const paid = isMembershipPaid(member?.membership, this.membershipYear);
+
+		const result = await this.modalService.selectModal<boolean>({
+			header: `Členský příspěvek ${this.membershipYear}`,
 			buttonText: "Uložit",
-			values: Object.entries(MembershipStates).map(([id, role]) => ({
-				label: role.title,
-				value: id as SDK.MembershipStatesEnum,
-				checked: member?.role === id,
-			})),
-			value: member?.membership,
+			values: [
+				{ label: MembershipPaymentStates.zaplaceno.title, value: true },
+				{ label: MembershipPaymentStates.nezaplaceno.title, value: false },
+			],
+			value: paid,
 		});
 
-		if (result !== null) this.update.emit({ membership: result });
+		// Only the current year changes; the rest of the preallocated years stay as they are.
+		if (result !== null)
+			this.update.emit({ membership: setMembershipPaid(member?.membership, result, this.membershipYear) });
 	}
 }
