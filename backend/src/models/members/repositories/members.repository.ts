@@ -69,6 +69,10 @@ export class MembersRepository {
 				name: "sort_name",
 				role: "members.role",
 				membership: "sort_membership",
+				// The variable symbol is the year plus the member id (see helpers/variable-symbol.ts),
+				// and every row of one list carries the same year — so ordering by the id orders by
+				// the symbol, without building the string in SQL.
+				variableSymbol: "members.id",
 				age: "sort_age",
 				birthday: "members.birthday",
 				group: "sort_group",
