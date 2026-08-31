@@ -18,7 +18,7 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { eyeOutline } from "ionicons/icons";
+import { chevronBackOutline, chevronForwardOutline, eyeOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipPaymentStates } from "src/app/core/config/membership";
 import { currentMembershipYear, isMembershipPaid, setMembershipPaid } from "src/app/core/helpers/membership";
@@ -49,16 +49,19 @@ const COLUMNS_ICON =
 	'<line x1="192" y1="80" x2="192" y2="432" stroke="currentColor" stroke-width="32"/>' +
 	'<line x1="320" y1="80" x2="320" y2="432" stroke="currentColor" stroke-width="32"/></svg>';
 
-/** How far back and forward the year picker reaches around the current season. */
-const YEARS_BACK = 10;
-const YEARS_AHEAD = 1;
+/**
+ * The years the stepper can reach. They only stop it running away — every year in between is one
+ * click apart — and they match what the API accepts for `membershipYear`.
+ */
+const FIRST_YEAR = 1900;
+const LAST_YEAR = 2200;
 
 /**
  * Treasurer view: the member list seen through one year's membership fee.
  *
  * It deliberately mirrors the members list (same filters, sort keys, column picker, infinite
  * scroll, table on desktop / list on mobile) and adds the two things the treasurer needs: a year
- * to look at, and a fee column that is edited straight in the table.
+ * to step through, and a fee column that is edited straight in the table.
  *
  * Everyone who may list members may open the page; only an admin may change a fee, which the API
  * decides — the toggle follows each row's `updateMemberMembership` link rather than a role check
@@ -116,9 +119,11 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	/** The year the whole page is about: the fee column, the fee filter and the fee sort. */
 	year = computed(() => {
 		const value = Number(this.model.value("year"));
-		return this.years.includes(value) ? value : currentMembershipYear();
+		return Number.isInteger(value) && value >= FIRST_YEAR && value <= LAST_YEAR ? value : currentMembershipYear();
 	});
-	selectedYear = computed(() => [String(this.year())]);
+
+	canStepBack = computed(() => this.year() > FIRST_YEAR);
+	canStepForward = computed(() => this.year() < LAST_YEAR);
 
 	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? null);
 	sortOrder = computed<"ASC" | "DESC">(() => (this.model.value("order") === "DESC" ? "DESC" : "ASC"));
@@ -136,17 +141,6 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		{ key: "street", label: "Ulice" },
 		{ key: "status", label: "Stav" },
 	];
-
-	// Newest first: the current season is what the treasurer needs most of the time, the years
-	// before it are the history.
-	private readonly years = Array.from(
-		{ length: YEARS_BACK + YEARS_AHEAD + 1 },
-		(_, index) => currentMembershipYear() + YEARS_AHEAD - index,
-	);
-	readonly yearOptions: FilterPillOption[] = this.years.map((year) => ({
-		value: String(year),
-		label: String(year),
-	}));
 
 	groupOptions = computed<FilterPillOption[]>(() => {
 		const showInactive = this.showInactive();
@@ -200,7 +194,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		private groupPipe: GroupPipe,
 		private platformService: PlatformService,
 	) {
-		addIcons({ eyeOutline, columns: COLUMNS_ICON });
+		addIcons({ chevronBackOutline, chevronForwardOutline, eyeOutline, columns: COLUMNS_ICON });
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 	}
 
@@ -277,6 +271,14 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		this.members.update((members) =>
 			members?.map((member) => (member.id === memberId ? { ...member, membership } : member)),
 		);
+	}
+
+	/** Move the whole page one year back or forward. */
+	stepYear(delta: number) {
+		const year = this.year() + delta;
+		if (year < FIRST_YEAR || year > LAST_YEAR) return;
+
+		this.setFilterParam("year", String(year));
 	}
 
 	onSortChange(sort: AdminTableSort) {

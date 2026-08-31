@@ -1,8 +1,35 @@
-<bo-page-header [title]="'Příspěvky ' + year()" />
+<bo-page-header title="Příspěvky">
+	<!-- The year the page is about, one click per year in either direction — it sits in the header
+	     so it is visible (and reachable) on desktop and mobile alike, rather than hiding in the
+	     mobile filter modal the way a filter pill would. -->
+	<div class="treasurer-year">
+		<ion-button
+			fill="clear"
+			size="small"
+			aria-label="Předchozí rok"
+			[disabled]="!canStepBack()"
+			(click)="stepYear(-1)"
+		>
+			<ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+		</ion-button>
+
+		<span class="treasurer-year-value" aria-live="polite">{{ year() }}</span>
+
+		<ion-button
+			fill="clear"
+			size="small"
+			aria-label="Následující rok"
+			[disabled]="!canStepForward()"
+			(click)="stepYear(1)"
+		>
+			<ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
+		</ion-button>
+	</div>
+</bo-page-header>
 
 <bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
 	@if (isDesktop()) {
-		<!-- Desktop: year, filters, columns and view options laid out inline in the toolbar. -->
+		<!-- Desktop: filters, columns and view options laid out inline in the toolbar. -->
 		<div toolbar-actions slot="end" class="treasurer-filter-actions">
 			<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
 
@@ -15,7 +42,7 @@
 			</ion-button>
 		</div>
 	} @else {
-		<!-- Mobile: the same year, filters, columns and view options collected inside the filter modal. -->
+		<!-- Mobile: the same filters, columns and view options collected inside the filter modal. -->
 		<div class="treasurer-filter-modal">
 			<ion-list lines="full">
 				<ion-item-divider>Filtry</ion-item-divider>
@@ -51,16 +78,9 @@
 	}
 </bo-filter>
 
-<!-- Filter pills, shared between the desktop toolbar and the mobile filter modal. The year comes
-     first: it decides which season everything else on the page is about. -->
+<!-- Filter pills, shared between the desktop toolbar and the mobile filter modal. The year is not
+     among them — it is the page's own control, in the header. -->
 <ng-template #filterPills>
-	<bo-filter-pill
-		label="Rok"
-		[multiple]="false"
-		[options]="yearOptions"
-		[selected]="selectedYear()"
-		(selectedChange)="setFilterParam('year', $event)"
-	/>
 	<bo-filter-pill
 		label="Oddíl"
 		[multiple]="false"

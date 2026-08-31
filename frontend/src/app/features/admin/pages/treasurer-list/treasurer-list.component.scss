@@ -12,6 +12,40 @@
 	text-align: right;
 }
 
+// Year stepper in the page header: a pill in the same shape as the filter pills, with a chevron
+// button on each side. The value is tabular so the pill does not twitch as the digits change.
+.treasurer-year {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	min-height: 42px;
+	padding-inline: 4px;
+	border: 1px solid var(--bo-line);
+	border-radius: var(--bo-radius-pill);
+	background: var(--bo-white);
+
+	ion-button {
+		--padding-start: 6px;
+		--padding-end: 6px;
+		--color: var(--bo-muted);
+		margin: 0;
+		height: 32px;
+	}
+
+	ion-icon {
+		font-size: 18px;
+	}
+}
+
+.treasurer-year-value {
+	min-width: 4ch;
+	text-align: center;
+	font-size: 0.9375rem;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	color: var(--bo-heading);
+}
+
 // The variable symbol is a fixed-width number — tabular figures keep the digits aligned down the
 // column so a treasurer can scan it against a bank statement.
 ::ng-deep .treasurer-vs-column {
