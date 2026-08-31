@@ -10,6 +10,7 @@ import { CardTitleComponent } from "src/app/shared/components/card-title/card-ti
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { CopyButtonComponent } from "src/app/shared/components/copy-button/copy-button.component";
 import { SDK } from "src/sdk";
+import { currentMembershipYear } from "src/app/core/helpers/membership";
 
 /**
  * Membership fee card: what the member owes, where to send it, the QR platba code and a
@@ -48,6 +49,9 @@ export class MemberPaymentComponent {
 
 	/** E-mails of the member's contacts (parents), loaded alongside the payment details. */
 	private contactEmails = signal<string[]>([]);
+
+	readonly currentMembershipYear = currentMembershipYear;
+
 
 	/**
 	 * Hidden outright for anyone who may not read the member's payment details; while the member
@@ -167,3 +171,5 @@ export class MemberPaymentComponent {
 		return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 	}
 }
+
+
