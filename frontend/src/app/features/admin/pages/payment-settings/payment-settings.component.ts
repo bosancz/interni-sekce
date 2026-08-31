@@ -1,5 +1,5 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
-import { IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonContent, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { cardOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -10,13 +10,14 @@ import { CardTitleComponent } from "src/app/shared/components/card-title/card-ti
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { EditButtonNumberComponent } from "src/app/shared/components/edit-button-number/edit-button-number.component";
 import { EditButtonTextComponent } from "src/app/shared/components/edit-button-text/edit-button-text.component";
+import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
 
 /**
- * The club's bank account and the membership fee, as shown and edited at the top of the treasurer
- * view. The values live in the database (see the PaymentSettings entity) and are what the QR
- * payment and the payment e-mail are built from, so a change here reaches every member's payment
- * card without a deploy.
+ * The club's bank account and the membership fee — one box, its own page in the administration
+ * next to the treasurer view. The values live in the database (see the PaymentSettings entity) and
+ * are what the QR payment and the payment e-mail are built from, so a change here reaches every
+ * member's payment card without a deploy.
  *
  * Editing is admin-only, which the API decides — the buttons follow the root `updatePaymentSettings`
  * link (the settings are a single row, so its permission hangs off the API root) rather than a role
@@ -28,6 +29,8 @@ import { SDK } from "src/sdk";
 	styleUrl: "./payment-settings.component.scss",
 
 	imports: [
+		PageHeaderComponent,
+		IonContent,
 		CardComponent,
 		CardHeaderComponent,
 		CardTitleComponent,

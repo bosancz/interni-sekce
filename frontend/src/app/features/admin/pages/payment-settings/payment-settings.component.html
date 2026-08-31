@@ -1,0 +1,75 @@
+<bo-page-header title="Platební údaje" />
+
+<ion-content>
+	<div class="payment-settings-page">
+		<bo-card>
+			<bo-card-header>
+				<bo-card-title>
+					<span class="bo-card-section-title">
+						<ion-icon name="card-outline" />
+						Účet a příspěvek
+					</span>
+				</bo-card-title>
+			</bo-card-header>
+
+			<bo-card-content>
+				@if (settings() === undefined) {
+					<div class="bo-info-list">
+						<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+					</div>
+				}
+
+				@if (settings(); as settingsValue) {
+					<div class="bo-info-list selectable">
+						<div class="bo-info-row">
+							<span class="bo-info-label">Číslo účtu</span>
+							<span class="bo-info-action">
+								<span class="bo-info-value">{{ accountDisplay() }}</span>
+								@if (canEdit()) {
+									<bo-edit-button-text
+										label="Číslo účtu"
+										placeholder="2301695140"
+										[value]="settingsValue.accountNumber"
+										(update)="updateAccountNumber($event)"
+									/>
+								}
+							</span>
+						</div>
+
+						<div class="bo-info-row">
+							<span class="bo-info-label">Kód banky</span>
+							<span class="bo-info-action">
+								<span class="bo-info-value">{{ settingsValue.bankCode }}</span>
+								@if (canEdit()) {
+									<bo-edit-button-text
+										label="Kód banky"
+										placeholder="2010"
+										[value]="settingsValue.bankCode"
+										(update)="updateBankCode($event)"
+									/>
+								}
+							</span>
+						</div>
+
+						<div class="bo-info-row">
+							<span class="bo-info-label">Příspěvek</span>
+							<span class="bo-info-action">
+								<span class="bo-info-value"
+									>{{ settingsValue.amount }} {{ settingsValue.currency }}</span
+								>
+								@if (canEdit()) {
+									<bo-edit-button-number
+										label="Příspěvek"
+										placeholder="1500"
+										[value]="settingsValue.amount"
+										(update)="updateAmount($event)"
+									/>
+								}
+							</span>
+						</div>
+					</div>
+				}
+			</bo-card-content>
+		</bo-card>
+	</div>
+</ion-content>

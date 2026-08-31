@@ -25,6 +25,17 @@
 					></bo-button-square>
 				</div>
 			}
+			@if (canAccessTreasurer()) {
+				<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
+					<bo-button-square
+						routerLink="/admin/platebni-udaje"
+						label="Platební údaje"
+						color="var(--san-blue)"
+						tint="var(--bo-blue-tint)"
+						image="assets/img/button-wiki.svg"
+					></bo-button-square>
+				</div>
+			}
 			@if (canAccessProgram()) {
 				<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
 					<bo-button-square
