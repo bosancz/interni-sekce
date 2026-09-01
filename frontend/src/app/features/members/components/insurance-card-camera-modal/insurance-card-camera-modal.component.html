@@ -33,6 +33,15 @@
 			<img class="feed" [src]="previewUrl()!" alt="Náhled vyfocené kartičky" />
 		}
 
+		@if (state() === "live" && cameraSwitchAvailable()) {
+			<button class="camera-switch" type="button" (click)="switchCamera()" aria-label="Přepnout kameru">
+				<ion-icon name="camera-reverse-outline"></ion-icon>
+				@if (cameraLabel()) {
+					<span class="camera-name">{{ cameraLabel() }}</span>
+				}
+			</button>
+		}
+
 		@if (state() === "live" && torchAvailable()) {
 			<ion-button
 				class="torch"

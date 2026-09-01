@@ -1,7 +1,14 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, signal, viewChild } from "@angular/core";
+import { AfterViewInit, Component, computed, ElementRef, OnDestroy, signal, viewChild } from "@angular/core";
 import { IonButton, IonButtons, IonIcon, IonSpinner, ModalController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { cameraOutline, checkmarkOutline, flashOffOutline, flashOutline, refreshOutline } from "ionicons/icons";
+import {
+	cameraOutline,
+	cameraReverseOutline,
+	checkmarkOutline,
+	flashOffOutline,
+	flashOutline,
+	refreshOutline,
+} from "ionicons/icons";
 import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 
@@ -30,6 +37,18 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 	torchAvailable = signal(false);
 	torchOn = signal(false);
 
+	cameras = signal<MediaDeviceInfo[]>([]);
+	cameraDeviceId = signal<string | null>(null);
+
+	cameraSwitchAvailable = computed(() => this.cameras().length > 1);
+
+	cameraLabel = computed(() => {
+		const cameras = this.cameras();
+		const index = cameras.findIndex((camera) => camera.deviceId === this.cameraDeviceId());
+		if (index < 0) return "";
+		return cameras[index].label || `Kamera ${index + 1}`;
+	});
+
 	previewUrl = signal<string | null>(null);
 
 	private stream: MediaStream | null = null;
@@ -37,7 +56,14 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 
 	constructor(modalController: ModalController) {
 		super(modalController);
-		addIcons({ cameraOutline, checkmarkOutline, refreshOutline, flashOutline, flashOffOutline });
+		addIcons({
+			cameraOutline,
+			cameraReverseOutline,
+			checkmarkOutline,
+			refreshOutline,
+			flashOutline,
+			flashOffOutline,
+		});
 	}
 
 	async ngAfterViewInit() {
@@ -48,23 +74,23 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		this.stopCamera();
 	}
 
-	private async startCamera() {
+	private async startCamera(deviceId?: string) {
 		this.state.set("initializing");
+		this.stopCamera();
 
 		if (!navigator.mediaDevices?.getUserMedia) {
 			this.fail("Tento prohlížeč nepodporuje přístup ke kameře.");
 			return;
 		}
 
+		const video: MediaTrackConstraints = {
+			width: { ideal: 1920 },
+			height: { ideal: 1080 },
+			...(deviceId ? { deviceId: { exact: deviceId } } : { facingMode: { ideal: "environment" } }),
+		};
+
 		try {
-			this.stream = await navigator.mediaDevices.getUserMedia({
-				video: {
-					facingMode: { ideal: "environment" },
-					width: { ideal: 1920 },
-					height: { ideal: 1080 },
-				},
-				audio: false,
-			});
+			this.stream = await navigator.mediaDevices.getUserMedia({ video, audio: false });
 
 			const videoEl = this.video()?.nativeElement;
 			if (!videoEl) {
@@ -76,6 +102,7 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 			await videoEl.play();
 
 			this.detectTorch();
+			await this.loadCameras();
 			this.state.set("live");
 		} catch (e) {
 			this.fail("Nepodařilo se získat přístup ke kameře. Zkontrolujte oprávnění a zkuste to znovu.");
@@ -86,6 +113,31 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		const track = this.stream?.getVideoTracks()[0];
 		const capabilities = track?.getCapabilities?.() as (MediaTrackCapabilities & { torch?: boolean }) | undefined;
 		this.torchAvailable.set(!!capabilities?.torch);
+	}
+
+	private async loadCameras() {
+		const track = this.stream?.getVideoTracks()[0];
+
+		try {
+			const devices = await navigator.mediaDevices.enumerateDevices();
+			this.cameras.set(devices.filter((device) => device.kind === "videoinput" && !!device.deviceId));
+		} catch {
+			this.cameras.set([]);
+		}
+
+		const settingsDeviceId = track?.getSettings?.().deviceId;
+		const byLabel = this.cameras().find((camera) => camera.label && camera.label === track?.label);
+		this.cameraDeviceId.set(settingsDeviceId ?? byLabel?.deviceId ?? null);
+	}
+
+	async switchCamera() {
+		const cameras = this.cameras();
+		if (cameras.length < 2) return;
+
+		const index = cameras.findIndex((camera) => camera.deviceId === this.cameraDeviceId());
+		const next = cameras[(index + 1) % cameras.length];
+
+		await this.startCamera(next.deviceId);
 	}
 
 	async toggleTorch() {
@@ -105,6 +157,7 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		this.stream?.getTracks().forEach((track) => track.stop());
 		this.stream = null;
 		this.torchOn.set(false);
+		this.torchAvailable.set(false);
 	}
 
 	private fail(message: string) {
@@ -163,7 +216,7 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 	async retake() {
 		this.capturedFile = null;
 		this.previewUrl.set(null);
-		await this.startCamera();
+		await this.startCamera(this.cameraDeviceId() ?? undefined);
 	}
 
 	confirm() {
