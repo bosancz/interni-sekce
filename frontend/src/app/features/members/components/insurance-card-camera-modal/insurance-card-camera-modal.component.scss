@@ -113,21 +113,42 @@
 	max-width: 32ch;
 }
 
-.torch,
-.camera-switch {
+.torch {
 	position: absolute;
 	top: 8px;
+	right: 8px;
 	--color: #fff;
 	--background: rgba(0, 0, 0, 0.4);
 	font-size: 1.3em;
 }
 
-.torch {
-	right: 8px;
+.camera-switch {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	max-width: calc(100% - 60px);
+	display: flex;
+	align-items: center;
+	gap: 0.4em;
+	padding: 0.4em 0.7em;
+	border: none;
+	border-radius: 999px;
+	background: rgba(0, 0, 0, 0.5);
+	color: #fff;
+	cursor: pointer;
+	font: inherit;
+	font-size: 0.8em;
 }
 
-.camera-switch {
-	left: 8px;
+.camera-switch ion-icon {
+	font-size: 1.5em;
+	flex-shrink: 0;
+}
+
+.camera-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .tips {
