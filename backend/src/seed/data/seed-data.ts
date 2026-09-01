@@ -15,6 +15,7 @@ export interface SeedGroup {
 	name: string;
 	color: string;
 	active: boolean;
+	children: boolean;
 }
 
 export interface SeedMemberContact {
@@ -108,9 +109,9 @@ export interface SeedUser {
 }
 
 export const SeedGroups: SeedGroup[] = [
-	{ shortName: "T", name: "Trpaslíci", color: "#FEC503", active: true },
-	{ shortName: "N", name: "Nepřátelé", color: "#8B0000", active: true },
-	{ shortName: "KP", name: "Klub přátel", color: "#0F0F0F", active: true },
+	{ shortName: "T", name: "Trpaslíci", color: "#FEC503", active: true, children: true },
+	{ shortName: "N", name: "Nepřátelé", color: "#8B0000", active: true, children: true },
+	{ shortName: "KP", name: "Klub přátel", color: "#0F0F0F", active: true, children: false },
 ];
 
 export const SeedUsers: SeedUser[] = [

@@ -1837,6 +1837,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof EventResponseLinks
          */
+        'addEventLeader': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
         'listEventExpenses': AcLink;
         /**
          * 
@@ -2564,6 +2570,12 @@ export namespace SDK {
         'active': boolean;
         /**
          * 
+         * @type {boolean}
+         * @memberof Group
+         */
+        'children': boolean;
+        /**
+         * 
          * @type {string}
          * @memberof Group
          */
@@ -2606,6 +2618,12 @@ export namespace SDK {
          * @memberof GroupResponse
          */
         'active': boolean;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof GroupResponse
+         */
+        'children': boolean;
         /**
          * 
          * @type {string}
@@ -2706,6 +2724,12 @@ export namespace SDK {
          * @memberof GroupResponseWithLinks
          */
         'active': boolean;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof GroupResponseWithLinks
+         */
+        'children': boolean;
         /**
          * 
          * @type {string}
@@ -5109,6 +5133,12 @@ export namespace SDK {
          * @memberof UpdateGroupBody
          */
         'active'?: boolean;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof UpdateGroupBody
+         */
+        'children'?: boolean;
     }
     
         /**
@@ -5886,6 +5916,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for generateEventRegistration operation in EventsApi.
      * @export
@@ -6269,6 +6303,58 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<EventExpenseResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {number} memberId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async addEventLeader(
+            eventId: number,
+            memberId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('addEventLeader', 'eventId', eventId)
+            assertParamExists('addEventLeader', 'memberId', memberId)
+            
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('addEventLeader', 'eventId', eventId)
+            assertParamExists('addEventLeader', 'memberId', memberId)
+            
+            const localVarPath = `/api/events/{eventId}/leaders/{memberId}`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)))
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
         }
     
         /**

@@ -283,11 +283,11 @@ export class EventsRepository {
 	}
 
 	async createEventAttendee(eventId: number, memberId: number, data: Omit<EventAttendee, "eventId" | "memberId">) {
-		this.eventAttendeesRepository.save({ ...data, eventId, memberId });
+		await this.eventAttendeesRepository.save({ ...data, eventId, memberId });
 	}
 
 	async updateEventAttendee(eventId: number, memberId: number, data: Partial<EventAttendee>) {
-		this.eventAttendeesRepository.update({ eventId, memberId }, data);
+		await this.eventAttendeesRepository.update({ eventId, memberId }, data);
 	}
 
 	async deleteEventAttendee(eventId: number, memberId: number) {

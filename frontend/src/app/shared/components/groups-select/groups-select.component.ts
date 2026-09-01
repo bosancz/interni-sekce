@@ -1,5 +1,6 @@
-import { AfterViewInit, Component, ElementRef, forwardRef, input, OnInit, signal } from "@angular/core";
+import { AfterViewInit, Component, computed, ElementRef, forwardRef, input, OnInit, signal } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { IonCheckbox } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 
@@ -7,6 +8,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-group-select",
 	templateUrl: "./groups-select.component.html",
 	styleUrls: ["./groups-select.component.scss"],
+	imports: [IonCheckbox],
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,
@@ -23,6 +25,8 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	groups = signal<SDK.GroupResponseWithLinks[] | undefined>(undefined);
 
 	selectedGroups = signal<number[]>([]);
+
+	childrenGroups = computed(() => this.groups()?.filter((group) => group.children) ?? []);
 
 	disabled = signal<boolean>(false);
 	readonly = input<boolean>(false);
@@ -62,17 +66,20 @@ export class GroupsSelectComponent implements OnInit, ControlValueAccessor, Afte
 	selectAll(checked: boolean): void {
 		if (this.disabled() || this.readonly() || !this.multiple()) return;
 
+		const childrenIds = this.childrenGroups().map((group) => group.id);
+
 		if (checked) {
-			this.selectedGroups.set(this.groups()?.map((group) => group.id) ?? []);
+			this.selectedGroups.update((groups) => [...groups, ...childrenIds.filter((id) => !groups.includes(id))]);
 		} else {
-			this.selectedGroups.set([]);
+			this.selectedGroups.update((groups) => groups.filter((id) => !childrenIds.includes(id)));
 		}
 
 		this.emitChange();
 	}
 
 	isSelectedAll(): boolean {
-		return this.groups()?.every((group) => this.selectedGroups().includes(group.id)) ?? false;
+		const children = this.childrenGroups();
+		return children.length > 0 && children.every((group) => this.selectedGroups().includes(group.id));
 	}
 
 	toggleGroup(groupId: number) {

@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
+import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { EventAttendeeResponse } from "../dto/event-attendee.dto";
 import { EventExpenseResponse } from "../dto/event-expense.dto";
@@ -331,10 +332,19 @@ export const EventAttendeeCreatePermission = new Permission({
 	},
 });
 
+export const EventLeaderCreatePermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => !doc.deletedAt,
+});
+
 export const EventAttendeeEditPermission = new Permission({
 	linkTo: EventAttendeeResponse,
 
 	allowed: {
+		program: ({ doc }) => doc.type === EventAttendeeType.leader,
 		vedouci: ({ doc, req }) => isMyEvent(doc.event, req),
 	},
 });

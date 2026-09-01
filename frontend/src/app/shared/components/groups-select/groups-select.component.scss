@@ -34,8 +34,10 @@
 	display: inline-block;
 }
 
-.selectAll {
+.select-all {
 	display: inline-block;
+	vertical-align: middle;
+	margin-left: 0.5rem;
 	cursor: pointer;
 }
 
@@ -65,4 +67,5 @@
 
 ion-checkbox {
 	width: auto;
+	--size: 18px;
 }
