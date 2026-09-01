@@ -1,12 +1,7 @@
 <h3>
 	Report z akce
-	@if (event()?._links?.updateEvent?.allowed && event()?.report) {
-		<bo-edit-button-markdown
-			slot="end"
-			label="Report"
-			[value]="event()?.report"
-			(update)="update.emit({ report: $event })"
-		/>
+	@if (canEditReport() && event()?.report) {
+		<bo-edit-button-markdown slot="end" label="Report" [value]="event()?.report" (update)="saveReport($event)" />
 	}
 </h3>
 
@@ -17,9 +12,15 @@
 		<ion-icon name="document-text-outline"></ion-icon>
 		<strong>Report je zatím prázdný</strong>
 		<p>Sepište, jak akce proběhla.</p>
-		@if (event()?._links?.updateEvent?.allowed) {
-			<ion-button fill="solid" color="warning" (click)="writeReport()">Napsat report</ion-button>
-		}
+		<ion-button
+			fill="solid"
+			color="warning"
+			[disabled]="!canEditReport()"
+			[boTooltip]="canEditReport() ? null : noPermissionText"
+			(click)="writeReport()"
+		>
+			Napsat report
+		</ion-button>
 	</div>
 } @else {
 	<p><ion-skeleton-text animated></ion-skeleton-text></p>
@@ -34,7 +35,7 @@
 			<h2>{{ album.name }}</h2>
 			<p>{{ album.dateFrom | date: "d. M. y" }} – {{ album.dateTill | date: "d. M. y" }}</p>
 		</ion-label>
-		@if (event()?._links?.updateEvent?.allowed) {
+		@if (canEditAlbum()) {
 			<ion-button
 				slot="end"
 				fill="clear"
@@ -49,11 +50,18 @@
 	</ion-item>
 } @else if (!event()) {
 	<p><ion-skeleton-text animated></ion-skeleton-text></p>
-} @else if (event()?._links?.updateEvent?.allowed) {
+} @else {
 	<div class="bo-empty-state">
 		<ion-icon name="images-outline"></ion-icon>
 		<strong>Zatím žádná fotogalerie</strong>
 		<p>Vytvořte nové album, nebo připojte existující.</p>
-		<ion-button fill="solid" [disabled]="addingAlbum()" (click)="addAlbum()">Přidat album</ion-button>
+		<ion-button
+			fill="solid"
+			[disabled]="addingAlbum() || !canEditAlbum()"
+			[boTooltip]="canEditAlbum() ? null : noPermissionText"
+			(click)="addAlbum()"
+		>
+			Přidat album
+		</ion-button>
 	</div>
 }

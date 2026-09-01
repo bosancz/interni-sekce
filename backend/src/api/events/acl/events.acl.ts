@@ -212,8 +212,32 @@ export const EventReportReadPermission = new Permission({
 
 export const EventReportEditPermission = new Permission({
 	linkTo: EventResponse,
+	params: { eventId: "id" },
 
-	inherit: EventEditPermission,
+	allowed: {
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
+
+	applicable: ({ doc }) => !doc.deletedAt,
+});
+
+export const EventAlbumSetPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	allowed: {
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
+
+	applicable: ({ doc }) => !doc.deletedAt,
+});
+
+export const EventAlbumUnsetPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventAlbumSetPermission,
+	applicable: ({ doc }) => !!doc.album && !doc.deletedAt,
 });
 
 export const EventAnnouncementGetPermission = new Permission({

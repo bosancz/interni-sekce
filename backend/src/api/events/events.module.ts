@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { AlbumsModelModule } from "src/models/albums/albums-model.module";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsModelModule } from "src/models/events/events-model.module";
@@ -7,6 +8,7 @@ import { FilesModule } from "src/models/files/files.module";
 import { NotificationsModelModule } from "src/models/notifications/notifications-model.module";
 import { CPVEventsController } from "./controllers/cpv-events.controller";
 import { EventsAccountingController } from "./controllers/events-accounting.controller";
+import { EventsAlbumsController } from "./controllers/events-albums.controller";
 import { EventsAnnouncementController } from "./controllers/events-announcement.controller";
 import { EventsAttendeesController } from "./controllers/events-attendees.controller";
 import { EventsExpensesController } from "./controllers/events-expenses.controller";
@@ -19,6 +21,7 @@ import { CPVEventsService } from "./services/cpv-events.service";
 	imports: [
 		TypeOrmModule.forFeature([Event, EventAttendee]),
 		EventsModelModule,
+		AlbumsModelModule,
 		FilesModule,
 		NotificationsModelModule,
 	],
@@ -31,6 +34,7 @@ import { CPVEventsService } from "./services/cpv-events.service";
 		EventsRegistrationsController,
 		EventsAnnouncementController,
 		EventsAccountingController,
+		EventsAlbumsController,
 	],
 	providers: [CPVEventsService],
 })

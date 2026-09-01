@@ -84,6 +84,10 @@ export class EventUpdateBody {
 	@IsOptional() @IsString() report?: string | null;
 }
 
+export class EventReportUpdateBody {
+	@IsOptional() @IsString() report!: string | null;
+}
+
 export class EventStatusChangeBody {
 	@IsString() @IsOptional() statusNote?: string;
 }

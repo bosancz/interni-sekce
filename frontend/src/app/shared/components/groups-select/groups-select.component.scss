@@ -1,5 +1,8 @@
 :host {
-	display: inline-block;
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	column-gap: 0.5rem;
 }
 
 .group-badge {
@@ -35,9 +38,6 @@
 }
 
 .select-all {
-	display: inline-block;
-	vertical-align: middle;
-	margin-left: 0.5rem;
 	cursor: pointer;
 }
 

@@ -35,6 +35,7 @@ import {
 	EventPublishPermission,
 	EventReadPermission,
 	EventRejectPermission,
+	EventReportEditPermission,
 	EventRestorePermission,
 	EventsDeletedListPermission,
 	EventsListPermission,
@@ -150,6 +151,8 @@ export class EventsController {
 		if (!event) throw new NotFoundException();
 
 		EventEditPermission.canOrThrow(req, event);
+
+		if (body.report !== undefined) EventReportEditPermission.canOrThrow(req, event);
 
 		const { placeCoordinates, ...eventData } = body;
 
