@@ -14,7 +14,7 @@ export class EventAccountingService {
 
 	async generateAccounting(event: Event): Promise<{ fileBuffer: Buffer; fileName: string }> {
 		const fileName = `Uctovani_${sanitizeFilename(event.name)}.xlsx`;
-		const templatePath = "assets/uctovani-v6.xlsx";
+		const templatePath = "assets/uctovani-v7.xlsx";
 		const xlsx = await xlsxPopulate.fromFileAsync(templatePath);
 
 		const attendeeSheet = xlsx.sheet("Seznam účastníků");
