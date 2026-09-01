@@ -1,17 +1,17 @@
 <ion-list lines="none" mode="md">
-	<ion-item routerLink="/ucet">
+	<ion-item routerLink="/ucet" (click)="close()">
 		<ion-icon class="me-3" name="person"></ion-icon>
 		<ion-label>Můj účet</ion-label>
 	</ion-item>
 
 	@if (canAccessAdmin()) {
-		<ion-item routerLink="/admin">
+		<ion-item routerLink="/admin" (click)="close()">
 			<ion-icon class="me-3" name="settings"></ion-icon>
 			<ion-label>Administrace</ion-label>
 		</ion-item>
 	}
 
-	<ion-item routerLink="/ucet/notifikace">
+	<ion-item routerLink="/ucet/notifikace" (click)="close()">
 		<ion-icon class="me-3" name="notifications-outline"></ion-icon>
 		<ion-label>Notifikace</ion-label>
 	</ion-item>
@@ -21,7 +21,7 @@
 		<ion-label>Nahlásit chybu</ion-label>
 	</ion-item>
 
-	<ion-item [button]="true" (click)="logout(); this.close()">
+	<ion-item [button]="true" (click)="logout(); close()">
 		<ion-icon class="me-3" name="log-out"></ion-icon>
 		<ion-label>Odhlásit se</ion-label>
 	</ion-item>
