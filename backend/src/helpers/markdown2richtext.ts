@@ -32,17 +32,27 @@ interface FragmentStyle {
 const MONOSPACE = "Courier New";
 const LINK_COLOR = "0563C1";
 const HEADING_SIZES: Record<number, number> = { 1: 16, 2: 14, 3: 13, 4: 12, 5: 11, 6: 11 };
+// Excel počítá výšku řádku v bodech; poměr k velikosti písma odpovídá běžnému řádkování.
+const LINE_HEIGHT_RATIO = 1.35;
 
 /**
  * Converts a Markdown string into an xlsx-populate {@link RichText} instance so that bold, italic,
  * headings, lists, etc. render as real Excel formatting inside a single cell instead of raw Markdown.
  *
  * Tables and images are not representable as single-cell rich text and are flattened to their text.
+ *
+ * @param options.fontFamily písmo pro celý text. Fragmenty rich textu bez vlastního písma nedědí
+ *   font buňky spolehlivě — Excel ano, LibreOffice sáhne po svém výchozím patkovém —, takže když
+ *   má text zapadnout do zbytku sešitu, je potřeba písmo předat.
  */
-export function markdownToRichText(markdown: string | null | undefined): RichText {
+export function markdownToRichText(
+	markdown: string | null | undefined,
+	options: { fontFamily?: string } = {},
+): RichText {
 	const richText = new RichTextCtor();
 	if (!markdown || !markdown.trim()) return richText;
 
+	const base: FragmentStyle = options.fontFamily ? { fontFamily: options.fontFamily } : {};
 	const tokens = marked.lexer(markdown);
 
 	const add = (text: string, style: FragmentStyle = {}) => {
@@ -100,19 +110,19 @@ export function markdownToRichText(markdown: string | null | undefined): RichTex
 			switch (token.type) {
 				case "heading": {
 					const h = token as Tokens.Heading;
-					walkInline(h.tokens, { bold: true, fontSize: HEADING_SIZES[h.depth] ?? 11 });
+					walkInline(h.tokens, { ...base, bold: true, fontSize: HEADING_SIZES[h.depth] ?? 11 });
 					newline();
 					break;
 				}
 				case "paragraph": {
-					walkInline((token as Tokens.Paragraph).tokens, {});
+					walkInline((token as Tokens.Paragraph).tokens, base);
 					newline();
 					break;
 				}
 				case "text": {
 					const t = token as Tokens.Text;
-					if (t.tokens?.length) walkInline(t.tokens, {});
-					else add(t.text);
+					if (t.tokens?.length) walkInline(t.tokens, base);
+					else add(t.text, base);
 					newline();
 					break;
 				}
@@ -121,27 +131,27 @@ export function markdownToRichText(markdown: string | null | undefined): RichTex
 					const start = typeof list.start === "number" ? list.start : 1;
 					list.items.forEach((item, i) => {
 						const prefix = list.ordered ? `${start + i}. ` : "• ";
-						add(prefix);
-						walkInline(item.tokens, {});
+						add(prefix, base);
+						walkInline(item.tokens, base);
 						newline();
 					});
 					break;
 				}
 				case "blockquote": {
-					walkInline((token as Tokens.Blockquote).tokens, { italic: true });
+					walkInline((token as Tokens.Blockquote).tokens, { ...base, italic: true });
 					newline();
 					break;
 				}
 				case "code": {
 					const code = token as Tokens.Code;
 					code.text.split("\n").forEach((line) => {
-						add(line, { fontFamily: MONOSPACE });
+						add(line, { ...base, fontFamily: MONOSPACE });
 						newline();
 					});
 					break;
 				}
 				case "hr":
-					add("────────");
+					add("────────", base);
 					newline();
 					break;
 				case "space":
@@ -152,7 +162,7 @@ export function markdownToRichText(markdown: string | null | undefined): RichTex
 					// Tables, html, defs, etc.: keep the textual content rather than dropping it.
 					const t = token as { text?: string; raw?: string };
 					if (t.text || t.raw) {
-						add(t.text ?? t.raw ?? "");
+						add(t.text ?? t.raw ?? "", base);
 						newline();
 					}
 				}
@@ -162,4 +172,43 @@ export function markdownToRichText(markdown: string | null | undefined): RichTex
 
 	walkBlocks(tokens);
 	return richText;
+}
+
+/**
+ * Excel neumí u sloučené buňky dopočítat výšku podle obsahu (autofit funguje jen na běžných
+ * buňkách), takže si ji musíme odhadnout sami — jinak se delší report v šabloně účtování oříznul.
+ *
+ * @param richText text, který do buňky půjde
+ * @param charsPerLine kolik znaků základní velikosti písma se vejde na řádek sloučené buňky
+ * @param baseFontSize velikost písma buňky; nadpisy jsou větší a vejde se jich na řádek méně
+ * @returns potřebná výška v bodech
+ */
+export function estimateRichTextHeight(richText: RichText, charsPerLine: number, baseFontSize = 10): number {
+	const lines: { chars: number; fontSize: number }[] = [{ chars: 0, fontSize: baseFontSize }];
+
+	for (let index = 0; index < richText.length; index++) {
+		const fragment = richText.get(index);
+		const fontSize = Number(fragment.style(["fontSize"]).fontSize) || baseFontSize;
+
+		// jeden fragment může obsahovat i konce řádků, které rich text vkládá mezi bloky
+		// (xlsx-populate je při zápisu normalizuje na CRLF, tak počítáme s oběma podobami)
+		fragment
+			.value()
+			.split(/\r\n|[\r\n]/)
+			.forEach((part, partIndex) => {
+				if (partIndex > 0) lines.push({ chars: 0, fontSize: baseFontSize });
+
+				const line = lines[lines.length - 1];
+				line.chars += part.length;
+				line.fontSize = Math.max(line.fontSize, fontSize);
+			});
+	}
+
+	return lines.reduce((height, line) => {
+		// větší písmo = méně znaků na řádek, takže se text zalomí dřív
+		const lineCapacity = Math.max(1, (charsPerLine * baseFontSize) / line.fontSize);
+		const wrappedLines = Math.max(1, Math.ceil(line.chars / lineCapacity));
+
+		return height + wrappedLines * line.fontSize * LINE_HEIGHT_RATIO;
+	}, 0);
 }

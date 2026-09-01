@@ -15,8 +15,32 @@ import { SDK } from "src/sdk";
 import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 import { AlbumSelectorModalComponent, CREATE_ALBUM } from "../album-selector-modal/album-selector-modal.component";
 
-/** Prefilled outline offered when writing a report for an event that doesn't have one yet. */
-const EVENT_REPORT_TEMPLATE = ["# Průběh akce", "", "# Problémy", "", "# Pochvaly pro členy"].join("\n");
+/**
+ * Prefilled outline offered when writing a report for an event that doesn't have one yet.
+ *
+ * Vedle vlastního průběhu akce obsahuje otázky, které hospodář potřebuje mít v účtování
+ * zodpovězené — dřív byly natvrdo v šabloně účtování, i s odpovědí "žádné", takže je nikdo
+ * nikdy nevyplnil. Odpovědi jsou předvyplněné tak, aby stačilo přepsat, co se skutečně stalo.
+ *
+ * Nadpisy jsou úmyslně až úrovně 3: report se vypisuje pod nadpisem sekce a v účtování do jedné
+ * buňky, kde by h1 vedle desetibodového textu působilo jako překlep.
+ */
+const EVENT_REPORT_TEMPLATE = [
+	"### Průběh akce",
+	"",
+	"",
+	"### Zdravotní komplikace některého z účastníků",
+	"žádné",
+	"",
+	"### Nevhodné chování účastníků (jak dětí, tak dospělých)",
+	"žádné",
+	"",
+	"### Stížnosti rodičů či dětí, jiné komplikace při průběhu akce",
+	"žádné",
+	"",
+	"### Pochvala pro jakéhokoliv účastníka akce (se zdůvodněním)",
+	"žádná",
+].join("\n");
 
 @UntilDestroy()
 @Component({

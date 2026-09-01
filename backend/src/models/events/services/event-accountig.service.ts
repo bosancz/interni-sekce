@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common"; // <-- ADD THIS LINE
 import { Event } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import xlsxPopulate from "xlsx-populate";
-import { markdownToRichText } from "../../../helpers/markdown2richtext";
+import { estimateRichTextHeight, markdownToRichText } from "../../../helpers/markdown2richtext";
 import { sanitizeFilename } from "../../../helpers/sanitizefilename";
 import { string2Date } from "../../../helpers/string2date";
 import { EventExpenseTypeTitles, EventExpenseTypes } from "../entities/event-expense.entity";
@@ -25,6 +25,19 @@ const CATEGORY_SUMMARY_TYPES: EventExpenseTypes[] = [
 	EventExpenseTypes.admission, // Vstupné
 ];
 const UNCATEGORIZED_LABEL = "Bez kategorie";
+
+// Report se sází do jedné sloučené buňky (A10:J29 v listu "Report z akce"). Sloučená buňka si
+// výšku podle obsahu nedopočítá, takže ji rozpočítáme mezi řádky bloku podle délky reportu.
+const REPORT_CELL = "A10";
+const REPORT_FIRST_ROW = 10;
+const REPORT_LAST_ROW = 29;
+// Šířka sloučené buňky (A + B:J) v jednotkách šířky sloupce, tedy zhruba počet znaků na řádek.
+const REPORT_CHARS_PER_LINE = 110;
+const REPORT_MIN_ROW_HEIGHT = 12.75;
+// Excel výš než na 409,5 bodu řádek nepustí.
+const REPORT_MAX_ROW_HEIGHT = 409.5;
+// Základní písmo formuláře; bez něj by report vyšel patkovým výchozím písmem prohlížeče sešitu.
+const REPORT_FONT = "Arial";
 
 // Stejný formát jako sloupec s částkami účtenek, aby souhrn vypadal stejně jako soupis.
 const AMOUNT_NUMBER_FORMAT = "#,##0.00\\ [$Kč-405];[RED]\\-#,##0.00\\ [$Kč-405]";
@@ -155,8 +168,26 @@ export class EventAccountingService {
 			}
 		}
 
-		// range().value() accepts the RichText object (untyped `any`), unlike the stricter cell().value()
-		reportSheet.range("A10:A10").value(markdownToRichText(event.report));
+		const reportRichText = markdownToRichText(event.report, { fontFamily: REPORT_FONT });
+
+		// Prázdný rich text se do sešitu uloží jako prázdný sdílený řetězec (<si/>), přes který se
+		// pak čtení souboru láme — akce bez reportu proto nechá buňku i její řádky beze změny.
+		if (reportRichText.length > 0) {
+			// range().value() accepts the RichText object (untyped `any`), unlike the stricter cell().value()
+			reportSheet.range(`${REPORT_CELL}:${REPORT_CELL}`).value(reportRichText);
+
+			const reportRows = REPORT_LAST_ROW - REPORT_FIRST_ROW + 1;
+			// jeden řádek navíc jako rezerva, ať se poslední řádek reportu neschová pod okrajem buňky
+			const reportHeight = estimateRichTextHeight(reportRichText, REPORT_CHARS_PER_LINE) + REPORT_MIN_ROW_HEIGHT;
+			const reportRowHeight = Math.min(
+				REPORT_MAX_ROW_HEIGHT,
+				Math.max(REPORT_MIN_ROW_HEIGHT, Math.ceil(reportHeight / reportRows)),
+			);
+
+			for (let row = REPORT_FIRST_ROW; row <= REPORT_LAST_ROW; row++) {
+				reportSheet.row(row).height(reportRowHeight);
+			}
+		}
 
 		const fileBuffer = (await xlsx.outputAsync("buffer")) as Buffer;
 		return { fileBuffer, fileName };
