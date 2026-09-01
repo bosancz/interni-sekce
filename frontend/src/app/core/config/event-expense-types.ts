@@ -10,11 +10,6 @@ export interface EventExpenseTypesMetadata {
 // Účetní kategorie výdajů podle metodiky hospodáře, řazené abecedně podle názvu.
 // Barvy jsou sladěné s brandem (chipy + graf výdajů).
 export const EventExpenseTypes: { [id in SDK.EventExpenseTypesEnum]: EventExpenseTypesMetadata } = {
-	travelAllowance: {
-		title: "Cestovní náhrady",
-		color: "#8e6bb0",
-		description: "Cestovní příkazy za soukromá auta.",
-	},
 	transport: {
 		title: "Doprava",
 		color: "#e28f26",
@@ -23,27 +18,17 @@ export const EventExpenseTypes: { [id in SDK.EventExpenseTypesEnum]: EventExpens
 	material: {
 		title: "Materiál",
 		color: "#4a58b0",
-		description: "Nákup materiálu.",
+		description: "Toaleťák, svíčky, krabice.",
 	},
 	other: {
 		title: "Ostatní služby",
 		color: "#6b7185",
-		description: "Zapůjčení lodí, zapůjčení vleku, pronájem kanálu, skipasy, lékařská pohotovost atd.",
-	},
-	fuel: {
-		title: "PHM auto",
-		color: "#a0642a",
-		description: "Nafta do skupinového auta.",
+		description: "Zapůjčení lodí, vleku, pronájem kanálu, skipasy, lékařská pohotovost",
 	},
 	food: {
 		title: "Potraviny",
 		color: "#799f3d",
 		description: "Nákup potravin.",
-	},
-	catering: {
-		title: "Stravování",
-		color: "#3f9e8c",
-		description: "Jídlo jako služba, restaurace.",
 	},
 	accommodation: {
 		title: "Ubytování",
@@ -53,6 +38,21 @@ export const EventExpenseTypes: { [id in SDK.EventExpenseTypesEnum]: EventExpens
 	admission: {
 		title: "Vstupné",
 		color: "#c2286f",
-		description: "Startovné, splavenky, vstupenky do kina, muzea atd.",
+		description: "Startovné, splavenky, vstupenky do kina, muzea",
+	},
+	fuel: {
+		title: "Palivo do auta",
+		color: "#a0642a",
+		description: "Pohoné hmoty do skupinového auta.",
+	},
+	travelAllowance: {
+		title: "Cestovní náhrady",
+		color: "#8e6bb0",
+		description: "Cestovní příkazy za soukromá auta.",
+	},
+	catering: {
+		title: "Stravování",
+		color: "#3f9e8c",
+		description: "Jídlo jako služba, restaurace.",
 	},
 };

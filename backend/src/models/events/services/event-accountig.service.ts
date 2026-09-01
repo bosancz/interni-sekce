@@ -5,6 +5,7 @@ import xlsxPopulate from "xlsx-populate";
 import { markdownToRichText } from "../../../helpers/markdown2richtext";
 import { sanitizeFilename } from "../../../helpers/sanitizefilename";
 import { string2Date } from "../../../helpers/string2date";
+import { EventExpenseTypeTitles } from "../entities/event-expense.entity";
 @Injectable() // <-- Now this will work
 export class EventAccountingService {
 	constructor() {
@@ -75,11 +76,16 @@ export class EventAccountingService {
 			}) || [];
 
 		const expensesString =
-			sortedExpenses.map((exp) => [
-				exp?.receiptNumber || missing,
-				exp?.description || missing,
-				Number(exp?.amount) || missing,
-			]) || [];
+			sortedExpenses.map((exp) => {
+				const typeTitle = (exp?.type != null && EventExpenseTypeTitles[exp.type]) || missing;
+
+				return [
+					exp?.receiptNumber || missing,
+					exp?.description || missing,
+					Number(exp?.amount) || missing,
+					typeTitle,
+				];
+			}) || [];
 
 		if (expensesString.length > 0) {
 			const startCol = "B";
