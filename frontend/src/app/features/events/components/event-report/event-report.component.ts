@@ -43,9 +43,7 @@ export class EventReportComponent {
 	readonly noPermissionText = "K této akci nemáš oprávnění.";
 
 	canEditReport = computed(() => this.event()?._links?.updateEventReport?.allowed ?? false);
-	canEditAlbum = computed(
-		() => (this.event()?._links?.setEventAlbum?.allowed || this.event()?._links?.unsetEventAlbum?.allowed) ?? false,
-	);
+	canEditAlbum = computed(() => this.event()?._links?.updateEvent?.allowed ?? false);
 
 	addingAlbum = signal(false);
 	removingAlbum = signal(false);
@@ -102,7 +100,7 @@ export class EventReportComponent {
 						}).then((res) => res.data.id)
 					: result.id;
 
-			await this.api.EventsApi.setEventAlbum(event.id, albumId);
+			await this.api.PhotoGalleryApi.updateAlbum(albumId, { eventId: event.id });
 
 			this.toastService.toast(
 				result === CREATE_ALBUM ? "Album vytvořeno a připojeno k akci." : "Album připojeno k akci.",
@@ -122,8 +120,7 @@ export class EventReportComponent {
 		mouseEvent?.stopPropagation();
 		mouseEvent?.preventDefault();
 
-		const event = this.event();
-		if (!event || this.removingAlbum()) return;
+		if (this.removingAlbum()) return;
 
 		const confirmed = await this.modalService.deleteConfirmationModal(
 			`Opravdu chcete odpojit album „${album.name}“ od této akce? Album zůstane zachováno.`,
@@ -133,7 +130,7 @@ export class EventReportComponent {
 
 		this.removingAlbum.set(true);
 		try {
-			await this.api.EventsApi.unsetEventAlbum(event.id, album.id);
+			await this.api.PhotoGalleryApi.updateAlbum(album.id, { eventId: null });
 			this.toastService.toast("Album odpojeno od akce.");
 			this.change.emit();
 		} catch (e) {

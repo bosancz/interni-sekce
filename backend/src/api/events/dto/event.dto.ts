@@ -81,7 +81,6 @@ export class EventUpdateBody {
 	@IsOptional() @IsString() meetingPlaceEnd?: string | null;
 	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsString() waterKm?: number | null;
 	@IsOptional() @IsString() river?: string | null;
-	@IsOptional() @IsString() report?: string | null;
 }
 
 export class EventReportUpdateBody {

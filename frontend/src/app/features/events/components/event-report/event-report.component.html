@@ -50,18 +50,11 @@
 	</ion-item>
 } @else if (!event()) {
 	<p><ion-skeleton-text animated></ion-skeleton-text></p>
-} @else {
+} @else if (canEditAlbum()) {
 	<div class="bo-empty-state">
 		<ion-icon name="images-outline"></ion-icon>
 		<strong>Zatím žádná fotogalerie</strong>
 		<p>Vytvořte nové album, nebo připojte existující.</p>
-		<ion-button
-			fill="solid"
-			[disabled]="addingAlbum() || !canEditAlbum()"
-			[boTooltip]="canEditAlbum() ? null : noPermissionText"
-			(click)="addAlbum()"
-		>
-			Přidat album
-		</ion-button>
+		<ion-button fill="solid" [disabled]="addingAlbum()" (click)="addAlbum()">Přidat album</ion-button>
 	</div>
 }
