@@ -18,6 +18,7 @@ import { AuthModule } from "./auth/auth.module";
 import { Config, ConfigModule } from "./config";
 import { DatabaseModule } from "./database/database.module";
 import { AlbumsModelModule } from "./models/albums/albums-model.module";
+import { BugReportsModelModule } from "./models/bug-reports/bug-reports-model.module";
 import { FilesModule } from "./models/files/files.module";
 import { GoogleModelModule } from "./models/google/google-model.module";
 import { MailService } from "./models/mail/services/mail.service";
@@ -52,6 +53,7 @@ import { SeedModule } from "./seed/seed.module";
 		AlbumsModelModule,
 		UsersModelModule,
 		NotificationsModelModule,
+		BugReportsModelModule,
 		NotificationsModule,
 		AlbumsModule,
 		AccessControlModule,

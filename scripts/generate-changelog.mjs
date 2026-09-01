@@ -2,6 +2,7 @@
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 
 function parseArgs(argv) {
 	const args = {};
@@ -85,6 +86,11 @@ const GITHUB_API = "https://api.github.com";
 function apiRepo(repoUrl) {
 	const match = /^https:\/\/github\.com\/([^/]+)\/([^/]+)$/.exec(repoUrl);
 	return match ? { owner: match[1], repo: match[2] } : null;
+}
+
+function repoSlug(repoUrl) {
+	const repo = apiRepo(repoUrl);
+	return repo ? `${repo.owner}/${repo.repo}` : null;
 }
 
 function avatarUrl(url) {
@@ -457,6 +463,42 @@ function sectionContents(lines, { start, end }) {
 	return { texts, hashes, placeholder, generated: hashes.size > 0 || placeholder !== -1 };
 }
 
+const RELEASE_ISSUES_FILE = "release-issues.json";
+
+const RENDERED_ENTRY_BODY = /^\[(?<text>[^\]]*)\]\((?<url>[^)]*)\)(?<rest>.*)$/;
+
+const ISSUE_REF = /#(\d+)/g;
+
+// Every issue the changelog has ever recorded, not just the new section's: a release the running
+// container never booted (two releases in quick succession) would otherwise never notify anyone.
+function collectReleaseIssues(file) {
+	const lines = readFileSync(file, "utf8").split("\n");
+	const issues = new Map();
+
+	for (const section of readSections(lines)) {
+		for (const line of lines.slice(section.start, section.end)) {
+			const body = WRITTEN_ENTRY.exec(line)?.groups.body;
+			const entry = body && RENDERED_ENTRY_BODY.exec(body)?.groups;
+			if (!entry) continue;
+
+			// sections run newest first, so the last write leaves the earliest release that carried the issue
+			for (const number of collectIssues(entry.rest, ISSUE_REF)) {
+				issues.set(number, { number, version: section.version, text: unescapeMarkdown(entry.text) });
+			}
+		}
+	}
+
+	return [...issues.values()].sort((a, b) => a.number - b.number);
+}
+
+function writeReleaseIssues(file, version, date, repoUrl) {
+	const target = join(dirname(file), RELEASE_ISSUES_FILE);
+	const issues = collectReleaseIssues(file);
+
+	writeFileSync(target, `${JSON.stringify({ version, date, repo: repoSlug(repoUrl), issues }, null, "\t")}\n`);
+	console.error(`Wrote ${issues.length} issue references to ${target}.`);
+}
+
 async function backfillOther(file, repoUrl, { useApi, token }) {
 	if (!existsSync(file)) {
 		console.error(`Error: ${file} does not exist.`);
@@ -557,6 +599,8 @@ async function main() {
 
 	writeFileSync(file, prepend(file, section));
 	console.error(`Prepended ${version} (${range}) to ${file}.`);
+
+	writeReleaseIssues(file, version, date, repoUrl);
 }
 
 await main();
