@@ -22,23 +22,23 @@ import { AlbumSelectorModalComponent, CREATE_ALBUM } from "../album-selector-mod
  * zodpovězené — dřív byly natvrdo v šabloně účtování, i s odpovědí "žádné", takže je nikdo
  * nikdy nevyplnil. Odpovědi jsou předvyplněné tak, aby stačilo přepsat, co se skutečně stalo.
  *
- * Nadpisy jsou úmyslně až úrovně 3: report se vypisuje pod nadpisem sekce a v účtování do jedné
- * buňky, kde by h1 vedle desetibodového textu působilo jako překlep.
+ * Nadpisy jsou úmyslně až úrovně 4: report se vypisuje pod nadpisem sekce, takže se má držet pod
+ * ním, a v účtování jde do jedné buňky, kde by h1 vedle desetibodového textu působilo jako překlep.
  */
 const EVENT_REPORT_TEMPLATE = [
-	"### Průběh akce",
+	"#### Průběh akce",
 	"",
 	"",
-	"### Zdravotní komplikace některého z účastníků",
+	"#### Zdravotní komplikace některého z účastníků",
 	"žádné",
 	"",
-	"### Nevhodné chování účastníků (jak dětí, tak dospělých)",
+	"#### Nevhodné chování účastníků (jak dětí, tak dospělých)",
 	"žádné",
 	"",
-	"### Stížnosti rodičů či dětí, jiné komplikace při průběhu akce",
+	"#### Stížnosti rodičů či dětí, jiné komplikace při průběhu akce",
 	"žádné",
 	"",
-	"### Pochvala pro jakéhokoliv účastníka akce (se zdůvodněním)",
+	"#### Pochvala pro jakéhokoliv účastníka akce (se zdůvodněním)",
 	"žádná",
 ].join("\n");
 
