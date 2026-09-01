@@ -110,7 +110,14 @@ export class SeedService {
 			return;
 		}
 
-		await this.seed();
+		try {
+			await this.seed();
+		} catch (err) {
+			this.logger.error(
+				`Seeding test data failed, continuing without it: ${err instanceof Error ? err.message : String(err)}`,
+				err instanceof Error ? err.stack : undefined,
+			);
+		}
 	}
 
 	async seed() {
