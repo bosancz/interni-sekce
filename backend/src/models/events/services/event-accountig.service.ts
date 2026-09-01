@@ -38,6 +38,8 @@ const REPORT_MIN_ROW_HEIGHT = 12.75;
 const REPORT_MAX_ROW_HEIGHT = 409.5;
 // Základní písmo formuláře; bez něj by report vyšel patkovým výchozím písmem prohlížeče sešitu.
 const REPORT_FONT = "Arial";
+// Stejná velikost jako zbytek formuláře. Nadpisy se od ní odvozují, nejmenší jí jsou rovné.
+const REPORT_FONT_SIZE = 10;
 
 // Stejný formát jako sloupec s částkami účtenek, aby souhrn vypadal stejně jako soupis.
 const AMOUNT_NUMBER_FORMAT = "#,##0.00\\ [$Kč-405];[RED]\\-#,##0.00\\ [$Kč-405]";
@@ -168,7 +170,10 @@ export class EventAccountingService {
 			}
 		}
 
-		const reportRichText = markdownToRichText(event.report, { fontFamily: REPORT_FONT });
+		const reportRichText = markdownToRichText(event.report, {
+			fontFamily: REPORT_FONT,
+			fontSize: REPORT_FONT_SIZE,
+		});
 
 		// Prázdný rich text se do sešitu uloží jako prázdný sdílený řetězec (<si/>), přes který se
 		// pak čtení souboru láme — akce bez reportu proto nechá buňku i její řádky beze změny.
@@ -178,7 +183,8 @@ export class EventAccountingService {
 
 			const reportRows = REPORT_LAST_ROW - REPORT_FIRST_ROW + 1;
 			// jeden řádek navíc jako rezerva, ať se poslední řádek reportu neschová pod okrajem buňky
-			const reportHeight = estimateRichTextHeight(reportRichText, REPORT_CHARS_PER_LINE) + REPORT_MIN_ROW_HEIGHT;
+			const reportHeight =
+				estimateRichTextHeight(reportRichText, REPORT_CHARS_PER_LINE, REPORT_FONT_SIZE) + REPORT_MIN_ROW_HEIGHT;
 			const reportRowHeight = Math.min(
 				REPORT_MAX_ROW_HEIGHT,
 				Math.max(REPORT_MIN_ROW_HEIGHT, Math.ceil(reportHeight / reportRows)),

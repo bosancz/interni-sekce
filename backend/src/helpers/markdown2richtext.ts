@@ -31,7 +31,10 @@ interface FragmentStyle {
 
 const MONOSPACE = "Courier New";
 const LINK_COLOR = "0563C1";
-const HEADING_SIZES: Record<number, number> = { 1: 16, 2: 14, 3: 13, 4: 12, 5: 11, 6: 11 };
+const DEFAULT_FONT_SIZE = 10;
+// O kolik bodů je nadpis větší než běžný text. Nejmenší nadpisy zůstávají ve velikosti textu a
+// odliší je jen tučné písmo — přesně tak, jak měl popisky i původní papírový formulář.
+const HEADING_SIZE_OFFSETS: Record<number, number> = { 1: 4, 2: 2, 3: 1, 4: 0, 5: 0, 6: 0 };
 // Excel počítá výšku řádku v bodech; poměr k velikosti písma odpovídá běžnému řádkování.
 const LINE_HEIGHT_RATIO = 1.35;
 
@@ -44,15 +47,17 @@ const LINE_HEIGHT_RATIO = 1.35;
  * @param options.fontFamily písmo pro celý text. Fragmenty rich textu bez vlastního písma nedědí
  *   font buňky spolehlivě — Excel ano, LibreOffice sáhne po svém výchozím patkovém —, takže když
  *   má text zapadnout do zbytku sešitu, je potřeba písmo předat.
+ * @param options.fontSize velikost běžného textu v bodech; nadpisy se odvozují od ní.
  */
 export function markdownToRichText(
 	markdown: string | null | undefined,
-	options: { fontFamily?: string } = {},
+	options: { fontFamily?: string; fontSize?: number } = {},
 ): RichText {
 	const richText = new RichTextCtor();
 	if (!markdown || !markdown.trim()) return richText;
 
-	const base: FragmentStyle = options.fontFamily ? { fontFamily: options.fontFamily } : {};
+	const fontSize = options.fontSize ?? DEFAULT_FONT_SIZE;
+	const base: FragmentStyle = { fontSize, ...(options.fontFamily ? { fontFamily: options.fontFamily } : {}) };
 	const tokens = marked.lexer(markdown);
 
 	const add = (text: string, style: FragmentStyle = {}) => {
@@ -110,7 +115,11 @@ export function markdownToRichText(
 			switch (token.type) {
 				case "heading": {
 					const h = token as Tokens.Heading;
-					walkInline(h.tokens, { ...base, bold: true, fontSize: HEADING_SIZES[h.depth] ?? 11 });
+					walkInline(h.tokens, {
+						...base,
+						bold: true,
+						fontSize: fontSize + (HEADING_SIZE_OFFSETS[h.depth] ?? 0),
+					});
 					newline();
 					break;
 				}
@@ -183,7 +192,11 @@ export function markdownToRichText(
  * @param baseFontSize velikost písma buňky; nadpisy jsou větší a vejde se jich na řádek méně
  * @returns potřebná výška v bodech
  */
-export function estimateRichTextHeight(richText: RichText, charsPerLine: number, baseFontSize = 10): number {
+export function estimateRichTextHeight(
+	richText: RichText,
+	charsPerLine: number,
+	baseFontSize = DEFAULT_FONT_SIZE,
+): number {
 	const lines: { chars: number; fontSize: number }[] = [{ chars: 0, fontSize: baseFontSize }];
 
 	for (let index = 0; index < richText.length; index++) {
