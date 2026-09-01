@@ -5,7 +5,30 @@ import xlsxPopulate from "xlsx-populate";
 import { markdownToRichText } from "../../../helpers/markdown2richtext";
 import { sanitizeFilename } from "../../../helpers/sanitizefilename";
 import { string2Date } from "../../../helpers/string2date";
-import { EventExpenseTypeTitles } from "../entities/event-expense.entity";
+import { EventExpenseTypeTitles, EventExpenseTypes } from "../entities/event-expense.entity";
+
+// Souhrn výdajů po kategoriích v listu "Soupis výdajů": šablona má popisky kategorií napevno
+// ve sloupci H od řádku 12, součty patří vedle nich do sloupce I. Pořadí kategorií proto musí
+// odpovídat popiskům v šabloně — při přidání kategorie je potřeba přidat řádek i tam.
+const CATEGORY_SUMMARY_LABEL_COLUMN = "H";
+const CATEGORY_SUMMARY_VALUE_COLUMN = "I";
+const CATEGORY_SUMMARY_FIRST_ROW = 12;
+const CATEGORY_SUMMARY_TYPES: EventExpenseTypes[] = [
+	EventExpenseTypes.travelAllowance, // Cestovní náhrady
+	EventExpenseTypes.transport, // Doprava
+	EventExpenseTypes.material, // Materiál
+	EventExpenseTypes.other, // Ostatní služby
+	EventExpenseTypes.fuel, // PHM auto
+	EventExpenseTypes.food, // Potraviny
+	EventExpenseTypes.catering, // Stravování
+	EventExpenseTypes.accommodation, // Ubytování
+	EventExpenseTypes.admission, // Vstupné
+];
+const UNCATEGORIZED_LABEL = "Bez kategorie";
+
+// Stejný formát jako sloupec s částkami účtenek, aby souhrn vypadal stejně jako soupis.
+const AMOUNT_NUMBER_FORMAT = "#,##0.00\\ [$Kč-405];[RED]\\-#,##0.00\\ [$Kč-405]";
+
 @Injectable() // <-- Now this will work
 export class EventAccountingService {
 	constructor() {
@@ -93,6 +116,43 @@ export class EventAccountingService {
 			const endCol = String.fromCharCode(startCol.charCodeAt(0) + expensesString[0].length);
 			const endRow = startRow + expensesString.length;
 			expenseSheet.range(`${startCol}${startRow}:${endCol}${endRow}`).value(expensesString);
+		}
+
+		// Souhrn po kategoriích vedle soupisu. Bez jediné účtenky ho necháme prázdný, stejně jako
+		// zůstává prázdný soupis sám — devět nul by jen mátlo.
+		if (sortedExpenses.length > 0) {
+			const totalsByType = new Map<EventExpenseTypes, number>();
+			// null = žádná účtenka bez kategorie, souhrn ten řádek pak vůbec nepotřebuje
+			let uncategorizedTotal: number | null = null;
+
+			for (const expense of sortedExpenses) {
+				const amount = Number(expense?.amount) || 0;
+
+				if (expense?.type != null) {
+					totalsByType.set(expense.type, (totalsByType.get(expense.type) || 0) + amount);
+				} else {
+					uncategorizedTotal = (uncategorizedTotal || 0) + amount;
+				}
+			}
+
+			CATEGORY_SUMMARY_TYPES.forEach((type, index) => {
+				expenseSheet
+					.cell(`${CATEGORY_SUMMARY_VALUE_COLUMN}${CATEGORY_SUMMARY_FIRST_ROW + index}`)
+					.value(totalsByType.get(type) || 0)
+					.style("numberFormat", AMOUNT_NUMBER_FORMAT);
+			});
+
+			// Účtenky bez kategorie by se jinak do souhrnu nezapočítaly a nesedělo by na celkové výdaje,
+			// takže dostanou vlastní řádek hned pod kategoriemi ze šablony.
+			if (uncategorizedTotal !== null) {
+				const uncategorizedRow = CATEGORY_SUMMARY_FIRST_ROW + CATEGORY_SUMMARY_TYPES.length;
+
+				expenseSheet.cell(`${CATEGORY_SUMMARY_LABEL_COLUMN}${uncategorizedRow}`).value(UNCATEGORIZED_LABEL);
+				expenseSheet
+					.cell(`${CATEGORY_SUMMARY_VALUE_COLUMN}${uncategorizedRow}`)
+					.value(uncategorizedTotal)
+					.style("numberFormat", AMOUNT_NUMBER_FORMAT);
+			}
 		}
 
 		// range().value() accepts the RichText object (untyped `any`), unlike the stricter cell().value()
