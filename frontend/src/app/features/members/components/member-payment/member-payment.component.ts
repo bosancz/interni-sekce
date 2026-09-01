@@ -72,9 +72,9 @@ export class MemberPaymentComponent {
 		return payment ? this.formatAmount(payment) : "";
 	});
 
-	/** The member's own e-mail first, then their contacts' (parents), without duplicates. */
+	/** The member's contacts' (parents), without duplicates. */
 	private recipients = computed(() => {
-		const emails = [this.member()?.email, ...this.contactEmails()];
+		const emails = [...this.contactEmails()];
 
 		return [...new Set(emails.filter((email): email is string => !!email))];
 	});
