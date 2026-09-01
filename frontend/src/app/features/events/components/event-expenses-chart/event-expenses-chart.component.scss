@@ -38,9 +38,10 @@
 	}
 }
 
+// above xl the card sits in the narrow sidebar column, where the two totals do not
+// fit next to each other — stack them instead
 @media (min-width: 1200px) {
 	.stats {
-		height: 100%;
 		flex-direction: column;
 		justify-content: space-evenly;
 		span {

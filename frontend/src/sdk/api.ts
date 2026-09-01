@@ -1252,11 +1252,15 @@ export namespace SDK {
     }
     
     export const EventExpenseTypeEnum = {
-        Food: 'food',
+        TravelAllowance: 'travelAllowance',
         Transport: 'transport',
         Material: 'material',
+        Other: 'other',
+        Fuel: 'fuel',
+        Food: 'food',
+        Catering: 'catering',
         Accommodation: 'accommodation',
-        Other: 'other'
+        Admission: 'admission'
     } as const;
     
     export type EventExpenseTypeEnum = typeof EventExpenseTypeEnum[keyof typeof EventExpenseTypeEnum];
@@ -1295,11 +1299,15 @@ export namespace SDK {
     }
     
     export const EventExpenseCreateBodyTypeEnum = {
-        Food: 'food',
+        TravelAllowance: 'travelAllowance',
         Transport: 'transport',
         Material: 'material',
+        Other: 'other',
+        Fuel: 'fuel',
+        Food: 'food',
+        Catering: 'catering',
         Accommodation: 'accommodation',
-        Other: 'other'
+        Admission: 'admission'
     } as const;
     
     export type EventExpenseCreateBodyTypeEnum = typeof EventExpenseCreateBodyTypeEnum[keyof typeof EventExpenseCreateBodyTypeEnum];
@@ -1442,11 +1450,15 @@ export namespace SDK {
      */
     
     export const EventExpenseTypesEnum = {
-        Food: 'food',
+        TravelAllowance: 'travelAllowance',
         Transport: 'transport',
         Material: 'material',
+        Other: 'other',
+        Fuel: 'fuel',
+        Food: 'food',
+        Catering: 'catering',
         Accommodation: 'accommodation',
-        Other: 'other'
+        Admission: 'admission'
     } as const;
     
     export type EventExpenseTypesEnum = typeof EventExpenseTypesEnum[keyof typeof EventExpenseTypesEnum];
@@ -1485,11 +1497,15 @@ export namespace SDK {
     }
     
     export const EventExpenseUpdateBodyTypeEnum = {
-        Food: 'food',
+        TravelAllowance: 'travelAllowance',
         Transport: 'transport',
         Material: 'material',
+        Other: 'other',
+        Fuel: 'fuel',
+        Food: 'food',
+        Catering: 'catering',
         Accommodation: 'accommodation',
-        Other: 'other'
+        Admission: 'admission'
     } as const;
     
     export type EventExpenseUpdateBodyTypeEnum = typeof EventExpenseUpdateBodyTypeEnum[keyof typeof EventExpenseUpdateBodyTypeEnum];
