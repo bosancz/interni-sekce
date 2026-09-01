@@ -3,13 +3,56 @@ import { SDK } from "src/sdk";
 export interface EventExpenseTypesMetadata {
 	title: string;
 	color: string;
+	/** Co do kategorie patří — zobrazuje se v nápovědě u účtování. */
+	description: string;
 }
 
-// brand-aligned category colours (chips + expense chart)
+// Účetní kategorie výdajů podle metodiky hospodáře, řazené abecedně podle názvu.
+// Barvy jsou sladěné s brandem (chipy + graf výdajů).
 export const EventExpenseTypes: { [id in SDK.EventExpenseTypesEnum]: EventExpenseTypesMetadata } = {
-	food: { title: "Potraviny", color: "#799f3d" },
-	transport: { title: "Doprava", color: "#e28f26" },
-	material: { title: "Materiál", color: "#4a58b0" },
-	accommodation: { title: "Ubytování", color: "#d2232a" },
-	other: { title: "Ostatní", color: "#6b7185" },
+	transport: {
+		title: "Doprava",
+		color: "#e28f26",
+		description: "Hromadná doprava — bus, vlak.",
+	},
+	material: {
+		title: "Materiál",
+		color: "#4a58b0",
+		description: "Toaleťák, svíčky, krabice.",
+	},
+	other: {
+		title: "Ostatní služby",
+		color: "#6b7185",
+		description: "Zapůjčení lodí, vleku, pronájem kanálu, skipasy, lékařská pohotovost",
+	},
+	food: {
+		title: "Potraviny",
+		color: "#799f3d",
+		description: "Nákup potravin.",
+	},
+	accommodation: {
+		title: "Ubytování",
+		color: "#d2232a",
+		description: "Kempy, chaty.",
+	},
+	admission: {
+		title: "Vstupné",
+		color: "#c2286f",
+		description: "Startovné, splavenky, vstupenky do kina, muzea",
+	},
+	fuel: {
+		title: "Palivo do auta",
+		color: "#a0642a",
+		description: "Pohoné hmoty do skupinového auta.",
+	},
+	travelAllowance: {
+		title: "Cestovní náhrady",
+		color: "#8e6bb0",
+		description: "Cestovní příkazy za soukromá auta.",
+	},
+	catering: {
+		title: "Stravování",
+		color: "#3f9e8c",
+		description: "Jídlo jako služba, restaurace.",
+	},
 };

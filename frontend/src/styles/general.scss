@@ -237,6 +237,56 @@ ion-select.filter-pill {
 	}
 }
 
+// expense category help popover (bo-event-expense-types-info) — the popover content is
+// rendered outside the component, so its panel is styled here
+.expense-types-info-popover {
+	--width: 320px;
+	--max-height: 70vh;
+
+	&::part(content) {
+		border-radius: 14px;
+		box-shadow: var(--bo-shadow);
+		border: 1px solid var(--bo-line);
+	}
+
+	.expense-types-info-panel {
+		padding: 12px 14px;
+
+		h4 {
+			margin: 0 0 0.5rem;
+			font-family: var(--font-san);
+			color: var(--bo-ink);
+			font-size: 0.95rem;
+		}
+	}
+
+	.expense-types-info-row {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		padding: 5px 0;
+
+		strong {
+			color: var(--bo-ink);
+			font-size: 0.8125rem;
+		}
+
+		p {
+			margin: 0;
+			color: var(--bo-muted);
+			font-size: 0.8125rem;
+			line-height: 1.35;
+		}
+	}
+
+	.expense-types-info-dot {
+		flex: 0 0 auto;
+		width: 0.6em;
+		height: 0.6em;
+		border-radius: 50%;
+	}
+}
+
 // the "eye" view-options popover (column toggles + inactive filter)
 .view-options-popover {
 	--width: 240px;

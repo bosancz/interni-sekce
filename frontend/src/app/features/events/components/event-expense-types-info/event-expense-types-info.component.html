@@ -1,0 +1,34 @@
+<button
+	type="button"
+	class="info-button"
+	title="Co patří do které kategorie?"
+	aria-label="Nápověda ke kategoriím výdajů"
+	(click)="open($event)"
+>
+	<ion-icon name="information-circle-outline" aria-hidden="true"></ion-icon>
+</button>
+
+<ion-popover
+	cssClass="expense-types-info-popover"
+	[isOpen]="popoverOpen()"
+	[event]="popoverEvent()"
+	(didDismiss)="popoverOpen.set(false)"
+>
+	<ng-template>
+		<ion-content>
+			<div class="expense-types-info-panel">
+				<h4>Kategorie výdajů</h4>
+
+				@for (type of types; track type.title) {
+					<div class="expense-types-info-row">
+						<span class="expense-types-info-dot" [style.background-color]="type.color"></span>
+						<div>
+							<strong>{{ type.title }}</strong>
+							<p>{{ type.description }}</p>
+						</div>
+					</div>
+				}
+			</div>
+		</ion-content>
+	</ng-template>
+</ion-popover>

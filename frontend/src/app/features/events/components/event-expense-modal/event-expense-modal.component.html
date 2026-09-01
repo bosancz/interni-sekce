@@ -20,10 +20,12 @@
 				name="type"
 				[ngModel]="expense?.type"
 			>
-				@for (type of types | keyvalue; track type.key) {
+				@for (type of types | keyvalue: keepOrder; track type.key) {
 					<ion-select-option [value]="type.key" required>{{ type.value.title }}</ion-select-option>
 				}
 			</ion-select>
+
+			<bo-event-expense-types-info slot="end"></bo-event-expense-types-info>
 		</ion-item>
 		<ion-item>
 			<ion-input
