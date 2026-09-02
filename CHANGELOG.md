@@ -1,3 +1,8 @@
+## v4.10.4 — 2026-09-02
+
+- <span class="changelog-type" title="feat">✨</span> [Stránka s mými nahlášenými chybami](https://github.com/bosancz/interni-sekce/commit/676c4b3284742db8c897a84136d9778bce5f3669) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+- <span class="changelog-type" title="fix">🐛</span> [Rozlišit chybějící telefon a e-mail v nevyplněných datech](https://github.com/bosancz/interni-sekce/commit/ee184f0ac8dd0e9dc200b942f87574329eafc3cc) (#417) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.10.3 — 2026-09-02
 
 - <span class="changelog-type" title="feat">✨</span> [Upozornit nahlašovatele chyby na nasazení opravy](https://github.com/bosancz/interni-sekce/commit/d4c3b1e0a4cd28736f881a3eb90f4417b962bc3d) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
