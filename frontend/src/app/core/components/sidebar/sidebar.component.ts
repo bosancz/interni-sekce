@@ -36,6 +36,13 @@ export class SidebarComponent {
 		fragment: "ignored",
 	};
 
+	readonly exactPathLinkActiveOptions: IsActiveMatchOptions = {
+		paths: "exact",
+		queryParams: "ignored",
+		matrixParams: "ignored",
+		fragment: "ignored",
+	};
+
 	readonly pathLinkActiveOptions: IsActiveMatchOptions = {
 		paths: "subset",
 		queryParams: "ignored",
