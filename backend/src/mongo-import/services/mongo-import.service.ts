@@ -512,6 +512,7 @@ export class MongoImportService {
 		const groupData: Partial<Group> = {
 			shortName: oldGroupId,
 			active: oldGroupData?.active ?? true,
+			children: oldGroupData?.children ?? true,
 			name: oldGroupData?.name ?? oldGroupId,
 			color: oldGroupData?.color,
 			darkColor: oldGroupData?.color,

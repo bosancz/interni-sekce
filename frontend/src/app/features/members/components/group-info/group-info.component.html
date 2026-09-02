@@ -38,6 +38,17 @@
 				</div>
 
 				<div class="bo-info-row">
+					<span class="bo-info-label">Typ</span>
+					<span class="bo-info-value">
+						@if (groupValue.children) {
+							<span class="bo-pill">DĚTSKÝ ODDÍL</span>
+						} @else {
+							<span class="bo-pill">OSTATNÍ</span>
+						}
+					</span>
+				</div>
+
+				<div class="bo-info-row">
 					<span class="bo-info-label">Stav</span>
 					<span class="bo-info-value">
 						@if (groupValue.active) {

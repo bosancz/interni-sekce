@@ -3,6 +3,7 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
+import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 
 import {
@@ -10,6 +11,7 @@ import {
 	EventAttendeeDeletePermission,
 	EventAttendeeEditPermission,
 	EventAttendeesListPermission,
+	EventLeaderCreatePermission,
 } from "../acl/events.acl";
 import { EventAttendeeCreateBody, EventAttendeeResponse, EventAttendeeUpdateBody } from "../dto/event-attendee.dto";
 
@@ -50,6 +52,25 @@ export class EventsAttendeesController {
 		EventAttendeeCreatePermission.canOrThrow(req, event);
 
 		await this.events.createEventAttendee(eventId, memberId, body);
+	}
+
+	@Put(":eventId/leaders/:memberId")
+	@AcLinks(EventLeaderCreatePermission)
+	@ApiResponse({ status: 204 })
+	async addEventLeader(
+		@Req() req: Request,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@Param("memberId", ParseIntPipe) memberId: number,
+	) {
+		const event = await this.events.getEvent(eventId);
+		if (!event) throw new NotFoundException();
+
+		EventLeaderCreatePermission.canOrThrow(req, event);
+
+		const attendee = await this.events.getEventAttendee(eventId, memberId);
+
+		if (attendee) await this.events.updateEventAttendee(eventId, memberId, { type: EventAttendeeType.leader });
+		else await this.events.createEventAttendee(eventId, memberId, { type: EventAttendeeType.leader });
 	}
 
 	@Patch(":eventId/attendees/:memberId")

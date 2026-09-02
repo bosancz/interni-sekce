@@ -1,5 +1,8 @@
 :host {
-	display: inline-block;
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	column-gap: 0.5rem;
 }
 
 .group-badge {
@@ -34,8 +37,7 @@
 	display: inline-block;
 }
 
-.selectAll {
-	display: inline-block;
+.select-all {
 	cursor: pointer;
 }
 
@@ -65,4 +67,5 @@
 
 ion-checkbox {
 	width: auto;
+	--size: 18px;
 }

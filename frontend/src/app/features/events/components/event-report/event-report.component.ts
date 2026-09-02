@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, input, output, signal } from "@angular/core";
+import { Component, computed, input, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonButton, IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
@@ -38,8 +38,12 @@ const EVENT_REPORT_TEMPLATE = ["# Průběh akce", "", "# Problémy", "", "# Poch
 })
 export class EventReportComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>();
-	update = output<SDK.EventUpdateBody>();
 	change = output<void>();
+
+	readonly noPermissionText = "K této akci nemáš oprávnění.";
+
+	canEditReport = computed(() => this.event()?._links?.updateEventReport?.allowed ?? false);
+	canEditAlbum = computed(() => this.event()?._links?.updateEvent?.allowed ?? false);
 
 	addingAlbum = signal(false);
 	removingAlbum = signal(false);
@@ -58,7 +62,20 @@ export class EventReportComponent {
 			value: this.event()?.report || EVENT_REPORT_TEMPLATE,
 		});
 
-		if (result !== null) this.update.emit({ report: result });
+		if (result !== null) await this.saveReport(result);
+	}
+
+	async saveReport(report: string | null) {
+		const event = this.event();
+		if (!event) return;
+
+		try {
+			await this.api.EventsApi.updateEventReport(event.id, { report });
+			this.toastService.toast("Uloženo.");
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit report.", { color: "warning" });
+		}
 	}
 
 	async addAlbum() {

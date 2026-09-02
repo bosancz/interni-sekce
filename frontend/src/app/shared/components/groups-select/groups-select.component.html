@@ -10,3 +10,15 @@
 		</span>
 	}
 </div>
+
+@if (multiple() && !readonly() && childrenGroups().length > 1) {
+	<ion-checkbox
+		class="select-all"
+		labelPlacement="end"
+		[disabled]="disabled()"
+		[checked]="isSelectedAll()"
+		(ionChange)="selectAll($any($event).detail.checked)"
+	>
+		Všechny oddíly
+	</ion-checkbox>
+}

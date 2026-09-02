@@ -151,6 +151,7 @@ export class SeedService {
 				color: seedGroup.color,
 				darkColor: seedGroup.color,
 				active: seedGroup.active,
+				children: seedGroup.children,
 			});
 
 			groupIds.set(seedGroup.shortName, group.id);

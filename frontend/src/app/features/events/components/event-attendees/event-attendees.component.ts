@@ -46,6 +46,9 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 	attendees = signal<SDK.EventAttendeeResponseWithLinks[] | undefined>(undefined);
 	leaders = signal<SDK.EventAttendeeResponseWithLinks[] | undefined>(undefined);
 
+	canAddLeader = computed(() => this.event()?._links?.addEventLeader?.allowed ?? false);
+	canAddAttendee = computed(() => this.event()?._links?.addEventAttendee?.allowed ?? false);
+
 	attendeesCount = computed(() => {
 		const attendees = this.attendees();
 		const leaders = this.leaders();
@@ -113,13 +116,18 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 		const addSelectedMember = async (member: SDK.MemberResponse) => {
 			try {
-				if (this.findAttendee(member.id)) {
+				if (type === "leader") {
+					await this.api.EventsApi.addEventLeader(event.id, member.id);
+				} else if (this.findAttendee(member.id)) {
 					await this.api.EventsApi.updateEventAttendee(event.id, member.id, { type });
 				} else {
 					await this.api.EventsApi.addEventAttendee(event.id, member.id, { type });
 				}
 			} catch (e) {
-				this.toastService.toast("Nepodařilo se přidat účastníka.", { color: "danger" });
+				this.toastService.toast(
+					type === "leader" ? "Nepodařilo se přidat vedoucího." : "Nepodařilo se přidat účastníka.",
+					{ color: "danger" },
+				);
 				return;
 			}
 
@@ -140,7 +148,10 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			try {
 				await this.api.EventsApi.deleteEventAttendee(event.id, member.id);
 			} catch (e) {
-				this.toastService.toast("Nepodařilo se odebrat účastníka.", { color: "danger" });
+				this.toastService.toast(
+					type === "leader" ? "Nepodařilo se odebrat vedoucího." : "Nepodařilo se odebrat účastníka.",
+					{ color: "danger" },
+				);
 				return;
 			}
 
