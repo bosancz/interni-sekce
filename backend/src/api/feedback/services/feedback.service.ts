@@ -2,7 +2,8 @@ import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common
 import { Config } from "src/config";
 import { BugReportsRepository } from "src/models/bug-reports/repositories/bug-reports.repository";
 import { BugReportStates } from "src/models/bug-reports/schema/bug-report-states";
-import { GithubIssueState, GithubService } from "src/models/github/services/github.service";
+import { ReleaseIssuesService } from "src/models/bug-reports/services/release-issues.service";
+import { GithubService } from "src/models/github/services/github.service";
 import { MailService } from "src/models/mail/services/mail.service";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { BugReportBody } from "../dto/bug-report-body.dto";
@@ -35,6 +36,7 @@ export class FeedbackService {
 		private readonly github: GithubService,
 		private readonly users: UsersRepository,
 		private readonly bugReports: BugReportsRepository,
+		private readonly releaseIssuesService: ReleaseIssuesService,
 		private readonly config: Config,
 	) {}
 
@@ -103,37 +105,32 @@ export class FeedbackService {
 		const reports = await this.bugReports.listBugReports(userId);
 		if (!reports.length) return [];
 
-		const states = new Map<string, GithubIssueState>();
+		const released = new Map<string, string>();
 
 		for (const repo of new Set(reports.map((report) => report.repo))) {
-			const issueNumbers = reports.filter((report) => report.repo === repo).map((report) => report.issueNumber);
-
-			for (const [issueNumber, state] of await this.github.getIssueStates(repo, issueNumbers)) {
-				states.set(this.issueKey(repo, issueNumber), state);
+			for (const [issueNumber, issue] of await this.releaseIssuesService.getReleasedIssues(repo)) {
+				released.set(this.issueKey(repo, issueNumber), issue.version);
 			}
 		}
 
-		return reports.map((report) => ({
-			id: report.id,
-			issueNumber: report.issueNumber,
-			title: report.title,
-			url: `https://github.com/${report.repo}/issues/${report.issueNumber}`,
-			state: this.resolveState(report.notifiedAt, states.get(this.issueKey(report.repo, report.issueNumber))),
-			createdAt: report.createdAt,
-			notifiedAt: report.notifiedAt,
-		}));
+		return reports.map((report) => {
+			const releasedVersion = released.get(this.issueKey(report.repo, report.issueNumber)) ?? null;
+
+			return {
+				id: report.id,
+				issueNumber: report.issueNumber,
+				title: report.title,
+				url: `https://github.com/${report.repo}/issues/${report.issueNumber}`,
+				state: releasedVersion || report.notifiedAt ? BugReportStates.released : BugReportStates.open,
+				releasedVersion,
+				createdAt: report.createdAt,
+				notifiedAt: report.notifiedAt,
+			};
+		});
 	}
 
 	private issueKey(repo: string, issueNumber: number): string {
 		return `${repo}#${issueNumber}`;
-	}
-
-	private resolveState(notifiedAt: Date | null, issue?: GithubIssueState): BugReportStates {
-		if (notifiedAt) return BugReportStates.released;
-		if (!issue) return BugReportStates.unknown;
-		if (issue.state === "open") return BugReportStates.open;
-
-		return issue.stateReason === "not_planned" ? BugReportStates.rejected : BugReportStates.fixed;
 	}
 
 	private issueBody(report: BugReport, description: string): string {

@@ -2,7 +2,7 @@ import { DatePipe } from "@angular/common";
 import { Component, OnInit, computed, signal } from "@angular/core";
 import { IonBackButton, IonButtons, IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { bugOutline, openOutline } from "ionicons/icons";
+import { bugOutline, logoGithub } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { BugReportService } from "src/app/core/services/bug-report.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -11,14 +11,6 @@ import { CardComponent } from "src/app/shared/components/card/card.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
-
-const BUG_REPORT_STATES: Record<SDK.BugReportStatesEnum, { label: string; pill: string; note?: string }> = {
-	open: { label: "Otevřeno", pill: "bo-pill bo-pill-blue" },
-	fixed: { label: "Opraveno", pill: "bo-pill bo-pill-yellow", note: "čeká na nasazení" },
-	released: { label: "Nasazeno", pill: "bo-pill bo-pill-green" },
-	rejected: { label: "Zamítnuto", pill: "bo-pill" },
-	unknown: { label: "Nahlášeno", pill: "bo-pill" },
-};
 
 @Component({
 	selector: "bo-bug-reports",
@@ -39,7 +31,11 @@ export class BugReportsComponent implements OnInit {
 	bugReports = signal<SDK.BugReportResponseWithLinks[] | undefined>(undefined);
 
 	rows = computed(() =>
-		this.bugReports()?.map((bugReport) => ({ ...bugReport, ...BUG_REPORT_STATES[bugReport.state] })),
+		this.bugReports()?.map((bugReport) => ({
+			...bugReport,
+			released: bugReport.state === "released",
+			note: bugReport.releasedVersion ? `nasazeno ve verzi ${bugReport.releasedVersion}` : undefined,
+		})),
 	);
 
 	actions = computed<Action[]>(() => [
@@ -56,7 +52,7 @@ export class BugReportsComponent implements OnInit {
 		private api: ApiService,
 		private bugReportService: BugReportService,
 	) {
-		addIcons({ bugOutline, openOutline });
+		addIcons({ bugOutline, logoGithub });
 	}
 
 	ngOnInit() {
