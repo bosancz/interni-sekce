@@ -1,0 +1,36 @@
+@use "./../../../../styles/brand-modal" as *;
+
+.bug-report-input {
+	width: 100%;
+	padding: 12px 14px;
+	border: 2px solid var(--bm-border);
+	border-radius: 14px;
+	background: transparent;
+	color: var(--bm-text);
+	font-family: inherit;
+	font-size: 15px;
+	line-height: 1.45;
+	resize: vertical;
+
+	&::placeholder {
+		color: var(--bm-muted-2);
+	}
+
+	&:focus {
+		outline: none;
+		border-color: var(--bm-blue);
+	}
+}
+
+.bug-report-hint {
+	color: var(--bm-muted);
+	font-size: 13px;
+}
+
+.bug-report-buttons {
+	flex-wrap: wrap;
+}
+
+.bug-report-list-button {
+	margin-right: auto;
+}

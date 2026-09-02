@@ -1,0 +1,28 @@
+<bo-modal-layout>
+	<h4 slot="title">Nahlásit chybu</h4>
+
+	<div class="bm-body">
+		<textarea
+			class="bug-report-input"
+			rows="6"
+			placeholder="Popiš, co nefunguje..., ideálně co nejvíc detailně a s kroky, jak chybu vyvolat."
+			[value]="description()"
+			(input)="description.set($any($event.target).value)"
+		></textarea>
+
+		<span class="bug-report-hint">Chyba se založí jako úkol pro vývojáře. Až ji opravíme, dáme ti vědět.</span>
+	</div>
+
+	<div slot="buttons" class="bm-buttons bug-report-buttons">
+		@if (canListBugReports()) {
+			<button type="button" class="bm-btn-ghost bug-report-list-button" (click)="openList()">
+				Moje nahlášené chyby
+			</button>
+		}
+
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button type="button" class="bm-btn-primary" [disabled]="!description().trim()" (click)="send()">
+			Odeslat
+		</button>
+	</div>
+</bo-modal-layout>

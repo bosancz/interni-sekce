@@ -1,0 +1,41 @@
+<bo-page-header title="Nahlášené chyby" [actions]="actions()">
+	<ion-buttons slot="start">
+		<ion-back-button defaultHref="/ucet" />
+	</ion-buttons>
+</bo-page-header>
+
+<bo-page-content [padding]="true">
+	@if (rows(); as rows) {
+		<div class="bug-reports-layout">
+			<bo-card>
+				<bo-card-content>
+					<div class="bo-info-list">
+						@for (bugReport of rows; track bugReport.id) {
+							<a class="bo-info-row bug-report-row" [href]="bugReport.url" target="_blank" rel="noopener">
+								<span class="bug-report-info">
+									<span class="bug-report-title">{{ bugReport.title }}</span>
+									<span class="bug-report-meta">
+										{{ bugReport.createdAt | date: "d. M. yyyy" }}
+										@if (bugReport.note) {
+											· {{ bugReport.note }}
+										}
+									</span>
+								</span>
+
+								<span class="bug-report-state">
+									<span [class]="bugReport.pill">{{ bugReport.label }}</span>
+									<ion-icon name="open-outline" />
+								</span>
+							</a>
+						} @empty {
+							<div class="bo-info-row bug-reports-empty">
+								<ion-icon name="bug-outline" />
+								<span>Zatím jsi nenahlásil žádnou chybu.</span>
+							</div>
+						}
+					</div>
+				</bo-card-content>
+			</bo-card>
+		</div>
+	}
+</bo-page-content>

@@ -106,6 +106,7 @@ export class NotificationsService {
 		await this.notifyUsers(NotificationTypes.myBugReports, [user], undefined, {
 			title: `Opraveno: ${fix.title}`,
 			body: `Nasazeno ve verzi ${fix.version} — ${fix.description}`,
+			path: "/ucet/chyby",
 		});
 	}
 
