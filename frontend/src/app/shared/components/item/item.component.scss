@@ -19,11 +19,18 @@
 }
 
 @media (max-width: 1200px) {
-	:host ::ng-deep > *:not(.label):not(.end):not(.spacer):not(.start) {
+	:host(:not(.inline)) ::ng-deep > *:not(.label):not(.end):not(.spacer):not(.start) {
 		order: 999;
 		flex: 0 0 100%;
 		color: var(--darkGrey);
 		gap: 0 0.5em;
+	}
+	:host(.inline) ::ng-deep > *:not(.label):not(.end):not(.spacer):not(.start) {
+		margin-left: auto;
+		text-align: right;
+	}
+	:host(.inline) .spacer {
+		flex: none;
 	}
 	:host {
 		flex-wrap: wrap;
