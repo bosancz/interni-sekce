@@ -704,6 +704,81 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface BugReportResponseWithLinks
+     */
+    export interface BugReportResponseWithLinks {
+        /**
+         * 
+         * @type {BugReportStatesEnum}
+         * @memberof BugReportResponseWithLinks
+         */
+        'state': BugReportStatesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof BugReportResponseWithLinks
+         */
+        'notifiedAt': string | null;
+        /**
+         * 
+         * @type {object}
+         * @memberof BugReportResponseWithLinks
+         */
+        '_links': object;
+        /**
+         * 
+         * @type {number}
+         * @memberof BugReportResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof BugReportResponseWithLinks
+         */
+        'issueNumber': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof BugReportResponseWithLinks
+         */
+        'title': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof BugReportResponseWithLinks
+         */
+        'url': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof BugReportResponseWithLinks
+         */
+        'createdAt': string;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const BugReportStatesEnum = {
+        Open: 'open',
+        Fixed: 'fixed',
+        Released: 'released',
+        Rejected: 'rejected',
+        Unknown: 'unknown'
+    } as const;
+    
+    export type BugReportStatesEnum = typeof BugReportStatesEnum[keyof typeof BugReportStatesEnum];
+    
+    
+        /**
+     * 
+     * @export
      * @interface CPVEventResponseWithLinks
      */
     export interface CPVEventResponseWithLinks {
@@ -4881,6 +4956,18 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'sendBugReport': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listBugReports': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'listGroups': AcLink;
         /**
          * 
@@ -8194,6 +8281,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * FeedbackApi - object-oriented interface
      * @export
@@ -8204,6 +8295,44 @@ export namespace SDK {
     
         constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
             super(configuration, configuration.basePath, axios);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof FeedbackApi
+         */
+        
+        public async listBugReports(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/feedback/bugs`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<BugReportResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**

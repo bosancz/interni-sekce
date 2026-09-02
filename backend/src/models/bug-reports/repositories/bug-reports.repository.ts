@@ -18,6 +18,14 @@ export class BugReportsRepository {
 		await this.repository.createQueryBuilder().insert().values(data).orIgnore().execute();
 	}
 
+	async listBugReports(userId: number, limit = 100) {
+		return this.repository.find({
+			where: { userId },
+			order: { createdAt: "DESC", id: "DESC" },
+			take: limit,
+		});
+	}
+
 	async getUnnotifiedBugReports(repo: string, issueNumbers: number[]) {
 		if (!issueNumbers.length) return [];
 
