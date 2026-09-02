@@ -2,7 +2,7 @@ import { DatePipe } from "@angular/common";
 import { Component, OnInit, computed, signal } from "@angular/core";
 import { IonBackButton, IonButtons, IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { bugOutline, openOutline } from "ionicons/icons";
+import { bugOutline, logoGithub } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { BugReportService } from "src/app/core/services/bug-report.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -11,11 +11,6 @@ import { CardComponent } from "src/app/shared/components/card/card.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
-
-const BUG_REPORT_STATES: Record<SDK.BugReportStatesEnum, { label: string; pill: string }> = {
-	open: { label: "Nahlášeno", pill: "bo-pill bo-pill-blue" },
-	released: { label: "Opraveno", pill: "bo-pill bo-pill-green" },
-};
 
 @Component({
 	selector: "bo-bug-reports",
@@ -38,7 +33,7 @@ export class BugReportsComponent implements OnInit {
 	rows = computed(() =>
 		this.bugReports()?.map((bugReport) => ({
 			...bugReport,
-			...BUG_REPORT_STATES[bugReport.state],
+			released: bugReport.state === "released",
 			note: bugReport.releasedVersion ? `nasazeno ve verzi ${bugReport.releasedVersion}` : undefined,
 		})),
 	);
@@ -57,7 +52,7 @@ export class BugReportsComponent implements OnInit {
 		private api: ApiService,
 		private bugReportService: BugReportService,
 	) {
-		addIcons({ bugOutline, openOutline });
+		addIcons({ bugOutline, logoGithub });
 	}
 
 	ngOnInit() {

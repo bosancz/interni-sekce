@@ -12,12 +12,6 @@
 .bug-report-row {
 	justify-content: space-between;
 	gap: 12px;
-	color: inherit;
-	text-decoration: none;
-
-	&:hover {
-		background: var(--bo-hover, rgba(0, 0, 0, 0.03));
-	}
 }
 
 .bug-report-info {
@@ -41,10 +35,22 @@
 	align-items: center;
 	gap: 8px;
 	flex: 0 0 auto;
+}
+
+.bug-report-link {
+	display: flex;
+	align-items: center;
+	padding: 4px;
+	border-radius: 6px;
+	color: var(--bo-muted);
+
+	&:hover {
+		color: var(--bo-ink);
+		background: var(--bo-hover, rgba(0, 0, 0, 0.06));
+	}
 
 	ion-icon {
-		color: var(--bo-muted);
-		font-size: 16px;
+		font-size: 20px;
 	}
 }
 

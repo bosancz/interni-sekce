@@ -11,7 +11,7 @@
 				<bo-card-content>
 					<div class="bo-info-list">
 						@for (bugReport of rows; track bugReport.id) {
-							<a class="bo-info-row bug-report-row" [href]="bugReport.url" target="_blank" rel="noopener">
+							<div class="bo-info-row bug-report-row">
 								<span class="bug-report-info">
 									<span class="bug-report-title">{{ bugReport.title }}</span>
 									<span class="bug-report-meta">
@@ -23,10 +23,21 @@
 								</span>
 
 								<span class="bug-report-state">
-									<span [class]="bugReport.pill">{{ bugReport.label }}</span>
-									<ion-icon name="open-outline" />
+									@if (bugReport.released) {
+										<span class="bo-pill bo-pill-green">Opraveno</span>
+									}
+
+									<a
+										class="bug-report-link"
+										[href]="bugReport.url"
+										target="_blank"
+										rel="noopener"
+										[attr.aria-label]="'Otevřít issue #' + bugReport.issueNumber + ' na GitHubu'"
+									>
+										<ion-icon name="logo-github" />
+									</a>
 								</span>
-							</a>
+							</div>
 						} @empty {
 							<div class="bo-info-row bug-reports-empty">
 								<ion-icon name="bug-outline" />
