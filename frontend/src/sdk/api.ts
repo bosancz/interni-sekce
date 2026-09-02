@@ -718,6 +718,12 @@ export namespace SDK {
          * @type {string}
          * @memberof BugReportResponseWithLinks
          */
+        'releasedVersion': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BugReportResponseWithLinks
+         */
         'notifiedAt': string | null;
         /**
          * 
@@ -767,10 +773,7 @@ export namespace SDK {
     
     export const BugReportStatesEnum = {
         Open: 'open',
-        Fixed: 'fixed',
-        Released: 'released',
-        Rejected: 'rejected',
-        Unknown: 'unknown'
+        Released: 'released'
     } as const;
     
     export type BugReportStatesEnum = typeof BugReportStatesEnum[keyof typeof BugReportStatesEnum];

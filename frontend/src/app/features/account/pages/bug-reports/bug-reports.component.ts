@@ -12,12 +12,9 @@ import { PageContentComponent } from "src/app/shared/components/page-content/pag
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
 
-const BUG_REPORT_STATES: Record<SDK.BugReportStatesEnum, { label: string; pill: string; note?: string }> = {
-	open: { label: "Otevřeno", pill: "bo-pill bo-pill-blue" },
-	fixed: { label: "Opraveno", pill: "bo-pill bo-pill-yellow", note: "čeká na nasazení" },
-	released: { label: "Nasazeno", pill: "bo-pill bo-pill-green" },
-	rejected: { label: "Zamítnuto", pill: "bo-pill" },
-	unknown: { label: "Nahlášeno", pill: "bo-pill" },
+const BUG_REPORT_STATES: Record<SDK.BugReportStatesEnum, { label: string; pill: string }> = {
+	open: { label: "Nahlášeno", pill: "bo-pill bo-pill-blue" },
+	released: { label: "Opraveno", pill: "bo-pill bo-pill-green" },
 };
 
 @Component({
@@ -39,7 +36,11 @@ export class BugReportsComponent implements OnInit {
 	bugReports = signal<SDK.BugReportResponseWithLinks[] | undefined>(undefined);
 
 	rows = computed(() =>
-		this.bugReports()?.map((bugReport) => ({ ...bugReport, ...BUG_REPORT_STATES[bugReport.state] })),
+		this.bugReports()?.map((bugReport) => ({
+			...bugReport,
+			...BUG_REPORT_STATES[bugReport.state],
+			note: bugReport.releasedVersion ? `nasazeno ve verzi ${bugReport.releasedVersion}` : undefined,
+		})),
 	);
 
 	actions = computed<Action[]>(() => [

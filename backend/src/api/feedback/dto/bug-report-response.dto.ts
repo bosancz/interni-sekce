@@ -9,6 +9,8 @@ export class BugReportResponse {
 
 	@ApiProperty({ enum: BugReportStates, enumName: "BugReportStatesEnum" }) state!: BugReportStates;
 
+	@ApiProperty({ type: "string", nullable: true }) releasedVersion!: string | null;
+
 	createdAt!: Date;
 
 	@ApiProperty({ type: "string", format: "date-time", nullable: true }) notifiedAt!: Date | null;

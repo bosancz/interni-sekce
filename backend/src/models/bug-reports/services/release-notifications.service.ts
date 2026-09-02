@@ -1,21 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { readFile } from "fs/promises";
 import { Config } from "src/config";
 import { NotificationsService } from "src/models/notifications/services/notifications.service";
 import { BugReportsRepository } from "../repositories/bug-reports.repository";
-
-interface ReleaseIssue {
-	number: number;
-	version: string;
-	text: string;
-}
-
-interface ReleaseIssues {
-	version: string;
-	date: string;
-	repo: string;
-	issues: ReleaseIssue[];
-}
+import { ReleaseIssuesService } from "./release-issues.service";
 
 const RELEASED_VERSION = /^v\d/;
 
@@ -26,11 +13,12 @@ export class ReleaseNotificationsService {
 	constructor(
 		private bugReports: BugReportsRepository,
 		private notificationsService: NotificationsService,
+		private releaseIssuesService: ReleaseIssuesService,
 		private config: Config,
 	) {}
 
 	async notifyResolvedBugReports() {
-		const release = await this.readReleaseIssues();
+		const release = await this.releaseIssuesService.getRelease();
 		if (!release) return;
 
 		if (!RELEASED_VERSION.test(release.version)) return;
@@ -70,16 +58,5 @@ export class ReleaseNotificationsService {
 		await this.bugReports.markNotified(notified);
 
 		this.logger.log(`Notified ${notified.length} of ${reports.length} bug reporters about a released fix.`);
-	}
-
-	private async readReleaseIssues(): Promise<ReleaseIssues | null> {
-		try {
-			return JSON.parse(await readFile(this.config.app.releaseIssuesPath, "utf-8")) as ReleaseIssues;
-		} catch (err) {
-			if ((err as NodeJS.ErrnoException).code === "ENOENT") return null;
-
-			this.logger.error(`Failed to read ${this.config.app.releaseIssuesPath}: ${(err as Error).message}`);
-			return null;
-		}
 	}
 }

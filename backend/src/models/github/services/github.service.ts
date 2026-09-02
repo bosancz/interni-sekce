@@ -4,11 +4,6 @@ import { Octokit } from "@octokit/rest";
 import { readFileSync } from "fs";
 import { Config } from "src/config";
 
-export interface GithubIssueState {
-	state: "open" | "closed";
-	stateReason: string | null;
-}
-
 @Injectable()
 export class GithubService {
 	private readonly logger = new Logger(GithubService.name);
@@ -52,38 +47,6 @@ export class GithubService {
 		});
 
 		return { number: res.data.number, url: res.data.html_url };
-	}
-
-	async getIssueStates(repo: string, issueNumbers: number[]): Promise<Map<number, GithubIssueState>> {
-		const states = new Map<number, GithubIssueState>();
-
-		if (!this.isConfigured || !issueNumbers.length) return states;
-
-		const [owner, name] = repo.split("/");
-		if (!owner || !name) return states;
-
-		try {
-			const client = await this.getInstallationClient(owner, name);
-
-			const results = await Promise.allSettled(
-				issueNumbers.map((issueNumber) =>
-					client.rest.issues.get({ owner, repo: name, issue_number: issueNumber }),
-				),
-			);
-
-			results.forEach((result, index) => {
-				if (result.status !== "fulfilled") return;
-
-				states.set(issueNumbers[index]!, {
-					state: result.value.data.state === "closed" ? "closed" : "open",
-					stateReason: result.value.data.state_reason ?? null,
-				});
-			});
-		} catch (err) {
-			this.logger.error(`Failed to read issue states from "${repo}": ${(err as Error).message}`);
-		}
-
-		return states;
 	}
 
 	private resolvePrivateKey(): string {
