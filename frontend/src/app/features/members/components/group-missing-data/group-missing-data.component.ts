@@ -9,6 +9,7 @@ import {
 	checkmarkCircleOutline,
 	chevronForwardOutline,
 	homeOutline,
+	mailOutline,
 	medkitOutline,
 	cardOutline,
 } from "ionicons/icons";
@@ -43,9 +44,14 @@ const MISSING_DATA_CHECKS: MissingDataCheck[] = [
 		missing: (member) => member.role === "dite" && !member.contacts?.length,
 	},
 	{
-		label: "Kontakt",
+		label: "Telefon",
 		icon: "call-outline",
-		missing: (member) => member.role !== "dite" && (!member.mobile || !member.email),
+		missing: (member) => member.role !== "dite" && !member.mobile,
+	},
+	{
+		label: "E-mail",
+		icon: "mail-outline",
+		missing: (member) => member.role !== "dite" && !member.email,
 	},
 	{
 		label: "Datum narození",
@@ -115,6 +121,7 @@ export class GroupMissingDataComponent {
 			checkmarkCircleOutline,
 			chevronForwardOutline,
 			callOutline,
+			mailOutline,
 			calendarOutline,
 			homeOutline,
 			cardOutline,
