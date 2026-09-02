@@ -4339,7 +4339,8 @@ export namespace SDK {
         MyEvents: 'myEvents',
         SubmittedEvents: 'submittedEvents',
         NewEvents: 'newEvents',
-        NewUsers: 'newUsers'
+        NewUsers: 'newUsers',
+        MyBugReports: 'myBugReports'
     } as const;
     
     export type NotificationTypesEnum = typeof NotificationTypesEnum[keyof typeof NotificationTypesEnum];

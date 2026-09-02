@@ -63,6 +63,10 @@ COPY --from=build-frontend /app/frontend/dist /app/frontend/dist
 # changelog served at GET /api/changelog (see ChangelogService); path resolves via config.app.changelogPath
 COPY CHANGELOG.md /app/CHANGELOG.md
 
+# issues released so far, written next to the changelog by scripts/generate-changelog.mjs and read at
+# startup to notify their reporters; the glob keeps the build working when the generator has not run
+COPY release-issues.jso[n] /app/
+
 # run
 WORKDIR /app/backend
 

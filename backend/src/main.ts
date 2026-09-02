@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
 import { Config, StaticConfig } from "./config";
 import { runMigrations } from "./database/run-migrations";
+import { ReleaseNotificationsService } from "./models/bug-reports/services/release-notifications.service";
 import { registerOpenAPI } from "./openapi";
 import { SeedService } from "./seed/services/seed.service";
 
@@ -71,5 +72,9 @@ async function bootstrap() {
 	await app.listen(config.server.port, config.server.host);
 
 	logger.log(`Server running on http://${config.server.host}:${config.server.port}`);
+
+	app.get(ReleaseNotificationsService)
+		.notifyResolvedBugReports()
+		.catch((err) => logger.error(`Failed to notify bug reporters about released fixes: ${err.message}`));
 }
 bootstrap();

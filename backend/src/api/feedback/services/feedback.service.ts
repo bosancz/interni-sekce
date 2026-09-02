@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { Config } from "src/config";
+import { BugReportsRepository } from "src/models/bug-reports/repositories/bug-reports.repository";
 import { GithubService } from "src/models/github/services/github.service";
 import { MailService } from "src/models/mail/services/mail.service";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
@@ -7,6 +8,7 @@ import { BugReportBody } from "../dto/bug-report-body.dto";
 import { BugReportMailTemplate } from "../mail-templates/bug-report/bug-report.mail-template";
 
 export interface BugReport {
+	userId: number;
 	reporter: string;
 	reporterName: string;
 	reporterUrl: string;
@@ -30,6 +32,7 @@ export class FeedbackService {
 		private readonly mailService: MailService,
 		private readonly github: GithubService,
 		private readonly users: UsersRepository,
+		private readonly bugReports: BugReportsRepository,
 		private readonly config: Config,
 	) {}
 
@@ -42,6 +45,7 @@ export class FeedbackService {
 			[user?.member?.nickname, user?.login && `(${user.login})`].filter(Boolean).join(" ") || "neznámý";
 
 		return {
+			userId,
 			reporter,
 			reporterName,
 			reporterUrl: `${this.config.app.baseUrl}/admin/uzivatele/${userId}`,
@@ -72,14 +76,18 @@ export class FeedbackService {
 	async fileBugReportIssue(report: BugReport): Promise<BugReportIssue | null> {
 		if (!this.github.isConfigured) return null;
 
-		const { title, body } = this.splitDescription(report.description, report.reporterName);
+		const suffix = ` (${report.reporterName})`;
+		const { title, body } = this.splitDescription(report.description, suffix);
+		const repo = this.config.github.bugReportRepo;
 
 		try {
-			const issue = await this.github.createIssue(this.config.github.bugReportRepo, {
-				title,
+			const issue = await this.github.createIssue(repo, {
+				title: `${title}${suffix}`,
 				body: this.issueBody(report, body),
 				labels: [this.config.github.bugReportLabel],
 			});
+
+			await this.recordBugReport(report.userId, repo, issue.number, title);
 
 			this.logger.verbose(`Bug report filed as GitHub issue #${issue.number} (${issue.url}).`);
 			return issue;
@@ -102,25 +110,32 @@ export class FeedbackService {
 			.join("\n");
 	}
 
-	private splitDescription(description: string, reporterName: string): { title: string; body: string } {
+	private async recordBugReport(userId: number, repo: string, issueNumber: number, title: string) {
+		try {
+			await this.bugReports.createBugReport({ userId, repo, issueNumber, title });
+		} catch (err) {
+			this.logger.error(`Failed to record bug report for issue #${issueNumber}: ${(err as Error).message}`);
+		}
+	}
+
+	private splitDescription(description: string, titleSuffix: string): { title: string; body: string } {
 		const text = description.replace(/\r\n/g, "\n").trim();
 		const breakIndex = text.indexOf("\n");
 
 		const firstLine = (breakIndex === -1 ? text : text.slice(0, breakIndex)).trim();
 		const otherLines = breakIndex === -1 ? "" : text.slice(breakIndex + 1).trim();
 
-		const suffix = ` (${reporterName})`;
-		const maxLength = Math.max(ISSUE_TITLE_MIN_TEXT_LENGTH, ISSUE_TITLE_MAX_LENGTH - suffix.length);
+		const maxLength = Math.max(ISSUE_TITLE_MIN_TEXT_LENGTH, ISSUE_TITLE_MAX_LENGTH - titleSuffix.length);
 
-		if (!firstLine) return { title: `Nahlášená chyba${suffix}`, body: otherLines };
+		if (!firstLine) return { title: "Nahlášená chyba", body: otherLines };
 
-		if (firstLine.length <= maxLength) return { title: `${firstLine}${suffix}`, body: otherLines };
+		if (firstLine.length <= maxLength) return { title: firstLine, body: otherLines };
 
 		const lastSpace = firstLine.lastIndexOf(" ", maxLength - 1);
 		const cut = lastSpace > maxLength / 2 ? lastSpace : maxLength - 1;
 
 		return {
-			title: `${firstLine.slice(0, cut).trimEnd()}…${suffix}`,
+			title: `${firstLine.slice(0, cut).trimEnd()}…`,
 			body: [`…${firstLine.slice(cut).trim()}`, otherLines].filter(Boolean).join("\n"),
 		};
 	}

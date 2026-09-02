@@ -42,6 +42,7 @@ const app = {
 	version: process.env["VERSION"] || "DEV",
 	environmentTitle: process.env["ENV_TITLE"] ?? (environment === "production" ? "" : environment.toUpperCase()),
 	changelogPath: process.env["CHANGELOG_PATH"] || path.join(__dirname, "../../CHANGELOG.md"),
+	releaseIssuesPath: process.env["RELEASE_ISSUES_PATH"] || path.join(__dirname, "../../release-issues.json"),
 };
 
 const jwtSecret = process.env["JWT_SECRET"];

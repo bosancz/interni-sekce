@@ -6,6 +6,7 @@ export enum NotificationTypes {
 	"submittedEvents" = "submittedEvents",
 	"newEvents" = "newEvents",
 	"newUsers" = "newUsers",
+	"myBugReports" = "myBugReports",
 }
 
 export enum NotificationChannels {
@@ -45,6 +46,12 @@ export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTy
 		description: "Nově založené uživatelské účty",
 		defaultChannels: [],
 		roles: [UserRoles.admin],
+	},
+	[NotificationTypes.myBugReports]: {
+		title: "Moje nahlášené chyby",
+		description: "Nasazení opravy chyby, kterou jsem nahlásil",
+		defaultChannels: [NotificationChannels.push, NotificationChannels.inApp],
+		roles: null,
 	},
 };
 

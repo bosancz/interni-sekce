@@ -102,6 +102,13 @@ export class NotificationsService {
 		});
 	}
 
+	async onBugReportResolved(user: User, fix: { title: string; version: string; description: string }) {
+		await this.notifyUsers(NotificationTypes.myBugReports, [user], undefined, {
+			title: `Opraveno: ${fix.title}`,
+			body: `Nasazeno ve verzi ${fix.version} — ${fix.description}`,
+		});
+	}
+
 	private async notifyUsers(
 		type: NotificationTypes,
 		users: User[],
