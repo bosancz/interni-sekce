@@ -52,9 +52,7 @@ jobs:
           echo "New tag: $NEW_TAG"
           echo "Old tag: $OLD_TAG"
           {
-            echo "## Resolved version"
-            echo
-            echo "### \`$NEW_TAG\`"
+            echo "## Resolved version: \`$NEW_TAG\`"
             echo
             echo "| | |"
             echo "| --- | --- |"
