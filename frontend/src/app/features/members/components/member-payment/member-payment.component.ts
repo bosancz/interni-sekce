@@ -1,7 +1,7 @@
 import { Component, computed, effect, input, signal } from "@angular/core";
 import { IonButton, IonButtons, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { cardOutline } from "ionicons/icons";
+import { cardOutline, shareSocialOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardFooterComponent } from "src/app/shared/components/card-footer/card-footer.component";
@@ -12,6 +12,14 @@ import { CopyButtonComponent } from "src/app/shared/components/copy-button/copy-
 import { SDK } from "src/sdk";
 import { currentMembershipYear } from "src/app/core/helpers/membership";
 import { getVariableSymbolYear } from "src/app/core/helpers/variable-symbol";
+import { ToastService } from "src/app/core/services/toast.service";
+
+/**
+ * How long the QR image may take to arrive before the share falls back to plain text. It is
+ * normally fetched ahead of the tap, so this is a ceiling on a background request rather than on
+ * anything the user is waiting for.
+ */
+const QR_FETCH_TIMEOUT = 5000;
 
 /**
  * Membership fee card: what the member owes, where to send it, the QR platba code and a
@@ -51,6 +59,22 @@ export class MemberPaymentComponent {
 	/** E-mails of the member's contacts (parents), loaded alongside the payment details. */
 	private contactEmails = signal<string[]>([]);
 
+	/**
+	 * Whether this browser can hand the QR code to another app. Web Share is a mobile API, so on
+	 * a desktop browser the button simply is not there — "Otevřít QR kód" covers that case.
+	 */
+	readonly shareSupported = typeof navigator !== "undefined" && typeof navigator.share === "function";
+
+	/** True while the share sheet is being prepared, so the button cannot be pressed twice. */
+	readonly sharing = signal(false);
+
+	/**
+	 * The QR image, fetched as soon as the payment is known so the share sheet opens on the tap.
+	 * `navigator.share()` needs the tap's user activation, which does not survive waiting for a
+	 * slow third-party image, and the same URL is already being loaded by the `<img>` anyway.
+	 */
+	private qrCodeFiles: Promise<File[] | null> | null = null;
+
 	readonly currentMembershipYear = currentMembershipYear;
 
 	/**
@@ -87,8 +111,11 @@ export class MemberPaymentComponent {
 		return this.getMailto(payment, this.recipients());
 	});
 
-	constructor(private readonly api: ApiService) {
-		addIcons({ cardOutline });
+	constructor(
+		private readonly api: ApiService,
+		private readonly toasts: ToastService,
+	) {
+		addIcons({ cardOutline, shareSocialOutline });
 
 		effect(() => {
 			this.load(this.member());
@@ -103,6 +130,65 @@ export class MemberPaymentComponent {
 		window.open(payment.qrCodeUrl, "_blank", "noopener,noreferrer");
 	}
 
+	/**
+	 * Hands the QR code over to another app through the Web Share API. On a phone the share sheet
+	 * lists the banking apps, and they read the payment straight out of the shared image — so the
+	 * fee can be paid without ever scanning anything.
+	 *
+	 * The image itself is shared wherever the browser takes files; where it does not — and where
+	 * the generator did not answer in time — the payment details and the link to the QR go out as
+	 * text instead, which every share sheet accepts.
+	 */
+	async shareQrCode() {
+		const payment = this.payment();
+		if (!payment || this.sharing()) return;
+
+		this.sharing.set(true);
+
+		try {
+			const files = await (this.qrCodeFiles ?? this.fetchQrCodeFiles(payment));
+			const title = `Členský příspěvek ${this.paymentYear(payment)}`;
+			const text = this.getShareText(payment);
+
+			if (files && navigator.canShare?.({ files })) await navigator.share({ files, title, text });
+			else await navigator.share({ title, text, url: payment.qrCodeUrl });
+		} catch (e) {
+			// closing the share sheet without picking an app rejects with AbortError – not a failure
+			if ((e as Error)?.name !== "AbortError") this.toasts.toast("QR kód se nepodařilo sdílet.");
+		} finally {
+			this.sharing.set(false);
+		}
+	}
+
+	/** The QR image as a file to share, or `null` when it cannot be fetched. */
+	private async fetchQrCodeFiles(payment: SDK.MemberPaymentRequestResponseWithLinks): Promise<File[] | null> {
+		try {
+			const response = await fetch(payment.qrCodeUrl, { signal: AbortSignal.timeout(QR_FETCH_TIMEOUT) });
+			if (!response.ok) return null;
+
+			const blob = await response.blob();
+
+			return [
+				new File([blob], `qr-platba-${payment.variableSymbol}.png`, {
+					type: blob.type || "image/png",
+				}),
+			];
+		} catch {
+			// the generator is a third-party service – a hiccup there just falls back to sharing text
+			return null;
+		}
+	}
+
+	/** Payment details accompanying the shared QR, for apps that show the text next to it. */
+	private getShareText(payment: SDK.MemberPaymentRequestResponseWithLinks): string {
+		return [
+			`Členský příspěvek ${this.paymentYear(payment)}`,
+			`Účet: ${payment.accountNumber}/${payment.bankCode}`,
+			`Variabilní symbol: ${payment.variableSymbol}`,
+			`Částka: ${this.formatAmount(payment)}`,
+		].join("\n");
+	}
+
 	private async load(member?: SDK.MemberResponseWithLinks | null) {
 		// nothing to load until the member is there, and nothing to show without the permission
 		const memberId = member?._links?.getMemberPaymentRequest?.allowed ? member.id : null;
@@ -111,6 +197,7 @@ export class MemberPaymentComponent {
 		this.loadedMemberId = memberId;
 		this.payment.set(undefined);
 		this.contactEmails.set([]);
+		this.qrCodeFiles = null;
 
 		if (!memberId) return;
 
@@ -121,6 +208,7 @@ export class MemberPaymentComponent {
 			]);
 
 			this.payment.set(payment);
+			if (this.shareSupported) this.qrCodeFiles = this.fetchQrCodeFiles(payment);
 			this.contactEmails.set(
 				contacts.map((contact) => contact.email).filter((email): email is string => !!email),
 			);
