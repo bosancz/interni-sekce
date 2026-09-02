@@ -4,9 +4,10 @@ import { currentMembershipYear, MembershipPaymentStates, membershipPaidExpressio
 import { PaginationOptions } from "src/helpers/pagination";
 import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
-import { Brackets, FindOneOptions, Repository } from "typeorm";
+import { Brackets, FindOneOptions, FindOptionsRelations, Repository } from "typeorm";
 import { MemberContact } from "../entities/member-contact.entity";
 import { Member } from "../entities/member.entity";
+import { MembershipPayment } from "../entities/membership-payment.entity";
 
 export interface GetMembersOptions extends PaginationOptions {
 	groups?: number[];
@@ -27,13 +28,14 @@ export class MembersRepository {
 	constructor(
 		@InjectRepository(Member) private membersRepository: Repository<Member>,
 		@InjectRepository(MemberContact) private membersContactsRepository: Repository<MemberContact>,
+		@InjectRepository(MembershipPayment) private membershipPaymentsRepository: Repository<MembershipPayment>,
 	) {}
 
 	async getMembers(options: GetMembersOptions = {}, where: Brackets | string = "1=1") {
 		// Everything membership-related on this list — the filter, the sort — is asked about one
 		// year, so the treasurer view can look back at previous seasons.
 		const membershipPaid = membershipPaidExpression(
-			"members.membership",
+			"members.id",
 			options.membershipYear ?? currentMembershipYear(),
 		);
 
@@ -57,7 +59,7 @@ export class MembersRepository {
 			// so embedded numbers order naturally: "3. oddíl" precedes "22. oddíl", and
 			// non-numeric names ("Klub přátel", …) sort after them.
 			.addSelect("(SELECT g.name FROM groups g WHERE g.id = members.group_id)", "sort_group")
-			// Membership is a list of years, so it is sorted by the one value the list shows:
+			// Membership is a list of payments, so it is sorted by the one value the list shows:
 			// whether the fee for the year in question is paid.
 			.addSelect(membershipPaid, "sort_membership");
 
@@ -88,8 +90,12 @@ export class MembersRepository {
 			q.addOrderBy("sort_nickname", "ASC");
 		}
 
+		// The membership is part of every member the API hands out, so its payments are joined
+		// unconditionally rather than fetched per member afterwards. TypeORM keeps pagination
+		// correct with a distinct-id subquery despite the one-to-many join.
+		q.leftJoinAndSelect("members.membership", "membership");
+
 		// Join contacts up-front only when requested (i.e. the contacts column is visible).
-		// TypeORM keeps pagination correct with a distinct-id subquery despite the one-to-many join.
 		if (options.contacts) q.leftJoinAndSelect("members.contacts", "contacts");
 
 		if (options.groups) q.andWhere("members.groupId IN (:...groupIds)", { groupIds: options.groups });
@@ -133,8 +139,17 @@ export class MembersRepository {
 		return rows.map((row) => Number(row.age)).filter((age) => Number.isFinite(age));
 	}
 
-	async getMember(id: number, options?: FindOneOptions<Member>) {
-		return this.membersRepository.findOne({ where: { id }, ...options });
+	async getMember(
+		id: number,
+		options?: Omit<FindOneOptions<Member>, "relations"> & { relations?: FindOptionsRelations<Member> },
+	) {
+		return this.membersRepository.findOne({
+			where: { id },
+			...options,
+			// The membership is part of every member the API hands out (see getMembers), so it is
+			// always loaded — a caller's relations only add to it.
+			relations: { membership: true, ...options?.relations },
+		});
 	}
 
 	// Soft-deleted members only (deletedAt IS NOT NULL). withDeleted() lifts TypeORM's default
@@ -143,6 +158,7 @@ export class MembersRepository {
 		return this.membersRepository
 			.createQueryBuilder("members")
 			.withDeleted()
+			.leftJoinAndSelect("members.membership", "membership")
 			.where(where)
 			.andWhere("members.deletedAt IS NOT NULL")
 			.orderBy("members.deletedAt", "DESC")
@@ -191,5 +207,29 @@ export class MembersRepository {
 
 	async deleteContact(memberId: number, contactId: number) {
 		return this.membersContactsRepository.delete({ id: contactId, memberId });
+	}
+
+	/**
+	 * Record the fee of one season. `upsert` on (member_id, for_year) rather than insert, so two
+	 * treasurers clicking the same row cannot get past the unique index with an error — the second
+	 * write simply overwrites the first with the same values.
+	 */
+	async createMembershipPayment(payment: Omit<MembershipPayment, "id" | "member">) {
+		await this.membershipPaymentsRepository.upsert(payment, ["memberId", "forYear"]);
+
+		return this.getMembershipPayment(payment.memberId, payment.forYear);
+	}
+
+	async getMembershipPayment(memberId: number, forYear: number) {
+		return this.membershipPaymentsRepository.findOne({ where: { memberId, forYear } });
+	}
+
+	async getMembershipPayments(memberId: number) {
+		return this.membershipPaymentsRepository.find({ where: { memberId }, order: { forYear: "DESC" } });
+	}
+
+	/** Un-record the fee of one season. Deleting a season that was never paid is a no-op. */
+	async deleteMembershipPayment(memberId: number, forYear: number) {
+		return this.membershipPaymentsRepository.delete({ memberId, forYear });
 	}
 }

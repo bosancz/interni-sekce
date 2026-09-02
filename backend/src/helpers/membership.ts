@@ -1,9 +1,12 @@
+import { MembershipPayment } from "src/models/members/entities/membership-payment.entity";
+
 /**
  * Membership = the yearly membership fee ("členský příspěvek").
  *
- * `Member.membership` lists the years the fee is paid for — `[2026, 2028]` means paid for 2026 and
- * 2028 ("zaplaceno") and unpaid for everything else ("nezaplaceno"). The years are stored as
- * themselves, so nothing has to know where the list starts and there is no last year it can reach.
+ * `Member.membership` is the list of fees the member has paid — one {@link MembershipPayment} per
+ * season, carrying the variable symbol, the amount and the day it was recorded. A season is
+ * "zaplaceno" exactly when it has a payment and "nezaplaceno" when it has none, so there is no
+ * first or last season the list can reach and nothing to keep in step with a separate flag.
  *
  * Nothing outside this file should search the list by hand — go through {@link isMembershipPaid}
  * (or {@link membershipPaidExpression} in SQL) so "is the membership paid?" is answered in one place.
@@ -21,37 +24,34 @@ export function currentMembershipYear(): number {
 	return new Date().getFullYear();
 }
 
-/**
- * The universal membership check: is the fee for `year` (the current year by default) paid?
- */
-export function isMembershipPaid(membership?: number[] | null, year: number = currentMembershipYear()): boolean {
-	return membership?.includes(year) === true;
+/** The payment of `year` (the current year by default), or undefined when the fee is unpaid. */
+export function membershipPaymentOf(
+	membership?: MembershipPayment[] | null,
+	year: number = currentMembershipYear(),
+): MembershipPayment | undefined {
+	return membership?.find((payment) => payment.forYear === year);
 }
 
 /**
- * Copy of `membership` with `year` (the current year by default) added when paid and removed when
- * not — kept sorted and without duplicates, so the stored list always reads as a list of years.
+ * The universal membership check: is the fee for `year` (the current year by default) paid?
  */
-export function setMembershipPaid(
-	membership: number[] | null | undefined,
-	paid: boolean,
+export function isMembershipPaid(
+	membership?: MembershipPayment[] | null,
 	year: number = currentMembershipYear(),
-): number[] {
-	const years = new Set(membership ?? []);
-
-	if (paid) years.add(year);
-	else years.delete(year);
-
-	return [...years].sort((a, b) => a - b);
+): boolean {
+	return !!membershipPaymentOf(membership, year);
 }
 
 /**
  * SQL counterpart of {@link isMembershipPaid} for query builders — a boolean expression over the
- * membership column. `@>` (array contains) is used rather than `= ANY(…)` because it is the form a
- * GIN index can serve, should the members table ever grow enough to want one.
+ * membership payments of the member the query is about. It is a correlated EXISTS rather than a
+ * join so it can be used next to pagination without multiplying the rows it filters.
  */
-export function membershipPaidExpression(column: string, year: number = currentMembershipYear()): string {
+export function membershipPaidExpression(memberIdColumn: string, year: number = currentMembershipYear()): string {
 	if (!Number.isInteger(year)) throw new Error(`Membership year must be an integer, got ${year}`);
 
-	return `${column} @> ARRAY[${year}]::smallint[]`;
+	return `EXISTS (
+		SELECT 1 FROM membership_payments mp
+		WHERE mp.member_id = ${memberIdColumn} AND mp.for_year = ${year}
+	)`;
 }

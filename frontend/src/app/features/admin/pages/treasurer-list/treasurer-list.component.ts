@@ -21,7 +21,7 @@ import { addIcons } from "ionicons";
 import { chevronBackOutline, chevronForwardOutline, eyeOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipPaymentStates } from "src/app/core/config/membership";
-import { currentMembershipYear, isMembershipPaid, setMembershipPaid } from "src/app/core/helpers/membership";
+import { currentMembershipYear, isMembershipPaid, membershipPaymentOf } from "src/app/core/helpers/membership";
 import { getVariableSymbol } from "src/app/core/helpers/variable-symbol";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
@@ -211,9 +211,20 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		this.loadGroups();
 	}
 
-	/** The variable symbol the member pays the selected year's fee under. */
+	/**
+	 * The variable symbol the member pays the selected year's fee under. A fee already recorded
+	 * shows the symbol it was actually paid with; an unpaid one shows the symbol to pay it under.
+	 */
 	variableSymbol(member: SDK.MemberResponse): string {
-		return getVariableSymbol(member, this.year());
+		return (
+			membershipPaymentOf(member.membership, this.year())?.variableSymbol ??
+			getVariableSymbol(member, this.year())
+		);
+	}
+
+	/** The fee recorded for the year on screen, if it is paid — the amount and date columns read it. */
+	payment(member: SDK.MemberResponse): SDK.MembershipPaymentResponse | undefined {
+		return membershipPaymentOf(member.membership, this.year());
 	}
 
 	/** Is this member's fee for the year on screen paid? */
@@ -250,11 +261,16 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		const paid = !this.isPaid(member);
 		const previous = member.membership;
 
-		this.setMemberMembership(member.id, setMembershipPaid(previous, paid, year));
+		// The row flips straight away on a placeholder payment; the server then answers with the
+		// list as it recorded it (the amount and date come from there) and it is swapped in.
+		this.setMemberMembership(member.id, this.optimisticMembership(member, paid, year));
 		this.saving.update((ids) => new Set(ids).add(member.id));
 
 		try {
-			await this.api.MembersApi.updateMemberMembership(member.id, { year, paid });
+			const membership = await this.api.MembersApi.updateMemberMembership(member.id, { year, paid }).then(
+				(res) => res.data,
+			);
+			this.setMemberMembership(member.id, membership);
 		} catch {
 			this.setMemberMembership(member.id, previous);
 			this.toasts.toast("Příspěvek se nepodařilo uložit.");
@@ -267,7 +283,33 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		}
 	}
 
-	private setMemberMembership(memberId: number, membership: number[]) {
+	/**
+	 * The membership as it will look once saved. Only the year on screen changes, and the stand-in
+	 * payment carries only what the page itself knows: the season and the variable symbol it
+	 * derives the same way the server does. The amount and the date are the server's to fill in —
+	 * left empty here so nothing invented is on screen — and its answer replaces this at once.
+	 */
+	private optimisticMembership(
+		member: SDK.MemberResponse,
+		paid: boolean,
+		year: number,
+	): SDK.MembershipPaymentResponse[] {
+		const rest = (member.membership ?? []).filter((payment) => payment.forYear !== year);
+		if (!paid) return rest;
+
+		const pending: SDK.MembershipPaymentResponse = {
+			id: 0,
+			memberId: member.id,
+			forYear: year,
+			variableSymbol: getVariableSymbol(member, year),
+			amount: 0,
+			date: null,
+		};
+
+		return [pending, ...rest];
+	}
+
+	private setMemberMembership(memberId: number, membership: SDK.MembershipPaymentResponse[] | undefined) {
 		this.members.update((members) =>
 			members?.map((member) => (member.id === memberId ? { ...member, membership } : member)),
 		);
@@ -404,6 +446,8 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			nickname: true,
 			name: true,
 			group: true,
+			amount: false,
+			paymentDate: false,
 			role: false,
 			age: false,
 			birthday: false,
@@ -458,6 +502,8 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			nickname: "Přezdívka",
 			name: "Jméno",
 			group: "Oddíl",
+			amount: "Částka",
+			paymentDate: "Zaplaceno dne",
 			role: "Role",
 			age: "Věk",
 			birthday: "Narozeniny",

@@ -2773,12 +2773,6 @@ export namespace SDK {
         'active': boolean;
         /**
          * 
-         * @type {Array<number>}
-         * @memberof Member
-         */
-        'membership': Array<number>;
-        /**
-         * 
          * @type {string}
          * @memberof Member
          */
@@ -2879,6 +2873,12 @@ export namespace SDK {
          * @memberof Member
          */
         'contacts'?: Array<MemberContact>;
+        /**
+         * 
+         * @type {Array<MembershipPayment>}
+         * @memberof Member
+         */
+        'membership'?: Array<MembershipPayment>;
         /**
          * 
          * @type {Array<MemberAchievement>}
@@ -3308,10 +3308,10 @@ export namespace SDK {
         'active': boolean;
         /**
          * 
-         * @type {Array<number>}
+         * @type {Array<MembershipPaymentResponse>}
          * @memberof MemberResponse
          */
-        'membership': Array<number>;
+        'membership'?: Array<MembershipPaymentResponse>;
         /**
          * 
          * @type {string}
@@ -3548,10 +3548,10 @@ export namespace SDK {
         'active': boolean;
         /**
          * 
-         * @type {Array<number>}
+         * @type {Array<MembershipPaymentResponse>}
          * @memberof MemberResponseWithLinks
          */
-        'membership': Array<number>;
+        'membership'?: Array<MembershipPaymentResponse>;
         /**
          * 
          * @type {string}
@@ -3839,6 +3839,94 @@ export namespace SDK {
          * @memberof MembersReportResponse
          */
         'ages': { [key: string]: { [key: string]: number; }; };
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MembershipPayment
+     */
+    export interface MembershipPayment {
+        /**
+         * 
+         * @type {number}
+         * @memberof MembershipPayment
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MembershipPayment
+         */
+        'memberId': number;
+        /**
+         * The season the fee is paid for — the year the treasurer had on screen when recording it.
+         * @type {number}
+         * @memberof MembershipPayment
+         */
+        'forYear': number;
+        /**
+         * Variable symbol the payment came in under, derived by `getVariableSymbol()` from the member and the season. Stored rather than derived on read so a payment still shows the symbol it was actually made with, should the derivation ever change.
+         * @type {string}
+         * @memberof MembershipPayment
+         */
+        'variableSymbol': string;
+        /**
+         * Amount in whole currency units, taken from the payment settings when the fee is recorded.
+         * @type {number}
+         * @memberof MembershipPayment
+         */
+        'amount': number;
+        /**
+         * The day the fee was recorded. Nullable because the fees migrated from the old list of years carry no date — nothing recorded one back then.
+         * @type {string}
+         * @memberof MembershipPayment
+         */
+        'date'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MembershipPaymentResponse
+     */
+    export interface MembershipPaymentResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof MembershipPaymentResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MembershipPaymentResponse
+         */
+        'memberId': number;
+        /**
+         * The season the fee is paid for.
+         * @type {number}
+         * @memberof MembershipPaymentResponse
+         */
+        'forYear': number;
+        /**
+         * Variable symbol the fee was paid under, e.g. `2600001`.
+         * @type {string}
+         * @memberof MembershipPaymentResponse
+         */
+        'variableSymbol': string;
+        /**
+         * Amount in whole units of the payment settings\' currency.
+         * @type {number}
+         * @memberof MembershipPaymentResponse
+         */
+        'amount': number;
+        /**
+         * The day the fee was recorded; null for fees carried over from before they were dated.
+         * @type {string}
+         * @memberof MembershipPaymentResponse
+         */
+        'date'?: string | null;
     }
     
         /**
@@ -8871,7 +8959,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<void>(axiosRequestConfig);
+            return this.axios.request<Array<MembershipPaymentResponse>>(axiosRequestConfig);
         }
     
         /**
