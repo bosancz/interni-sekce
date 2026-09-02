@@ -11,6 +11,7 @@ import { CardComponent } from "src/app/shared/components/card/card.component";
 import { CopyButtonComponent } from "src/app/shared/components/copy-button/copy-button.component";
 import { SDK } from "src/sdk";
 import { currentMembershipYear } from "src/app/core/helpers/membership";
+import { getVariableSymbolYear } from "src/app/core/helpers/variable-symbol";
 
 /**
  * Membership fee card: what the member owes, where to send it, the QR platba code and a
@@ -51,7 +52,6 @@ export class MemberPaymentComponent {
 	private contactEmails = signal<string[]>([]);
 
 	readonly currentMembershipYear = currentMembershipYear;
-
 
 	/**
 	 * Hidden outright for anyone who may not read the member's payment details; while the member
@@ -139,17 +139,27 @@ export class MemberPaymentComponent {
 		return `${payment.amount} ${payment.currency === "CZK" ? "Kč" : payment.currency}`;
 	}
 
+	/**
+	 * The year the payment is for. It is read back out of the variable symbol rather than taken
+	 * from today's date: the symbol is what the recipient will type into their bank, so the year
+	 * named in the e-mail is by definition the year that symbol was issued for.
+	 */
+	private paymentYear(payment: SDK.MemberPaymentRequestResponseWithLinks): number {
+		return getVariableSymbolYear(payment.variableSymbol) ?? currentMembershipYear();
+	}
+
 	private getMailto(payment: SDK.MemberPaymentRequestResponseWithLinks, recipients: string[]) {
 		const member = this.member();
 		const name = member?.nickname ? ` – ${member.nickname}` : "";
 		const amount = this.formatAmount(payment);
+		const year = this.paymentYear(payment);
 
-		const subject = `Členský příspěvek${name}`;
+		const subject = `Členský příspěvek ${year}${name}`;
 
 		const body = [
 			"Dobrý den,",
 			"",
-			`prosím vás o zaplacení členského příspěvku na příští kalendářní rok ve výši ${amount}.`,
+			`prosím vás o zaplacení členského příspěvku na kalendářní rok ${year} ve výši ${amount}.`,
 			"",
 			`Číslo účtu: ${payment.accountNumber}/${payment.bankCode}`,
 			`Variabilní symbol: ${payment.variableSymbol}`,
@@ -160,7 +170,11 @@ export class MemberPaymentComponent {
 			"",
 			"Děkujeme.",
 			"",
-			"Dětská vodácká skupina ŠÁN"
+			// the club's official footer, as it appears on the rest of its correspondence
+			"KONDOR Skupina ŠÁN z.s.",
+			"Podolské nábřeží 1180/5, Praha 4, 147 00",
+			"(E-mail: info@bosan.cz)",
+			"IČ: 47610727",
 		].join("\r\n");
 
 		// `mailto:` cannot carry an attachment, hence the QR as a link in the body above.
@@ -171,5 +185,3 @@ export class MemberPaymentComponent {
 		return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 	}
 }
-
-
