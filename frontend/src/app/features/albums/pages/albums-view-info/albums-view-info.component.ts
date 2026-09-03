@@ -49,7 +49,10 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 
 	selectedPhotos = signal<SDK.PhotoResponseWithLinks[]>([]);
 
-	titlePhoto = computed(() => this.photos()?.find((photo) => photo.titlePhoto));
+	titlePhoto = computed(() => {
+		const photos = this.photos();
+		return photos?.find((photo) => photo.titlePhoto) ?? photos?.[0];
+	});
 
 	titlePhotoWidth = computed(() => {
 		const height = this.albumInfoHeight();
