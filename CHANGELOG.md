@@ -1,3 +1,8 @@
+## v4.10.6 — 2026-09-03
+
+- <span class="changelog-type" title="feat">✨</span> [Použij první fotku jako titulní, když žádná není nastavená](https://github.com/bosancz/interni-sekce/commit/6fa63d1a133ad35b0e3d1997f6cfd7d0d1b11c0e) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+- <span class="changelog-type" title="ci">👷</span> [Update version formatting in github ci](https://github.com/bosancz/interni-sekce/commit/2681701386146cec0f444ce270c19d7156244d17) <span class="changelog-credit" title="Martin Kopeček"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Martin Kopeček"></a></span>
+
 ## v4.10.5 — 2026-09-02
 
 - <span class="changelog-type" title="fix">🐛</span> [Zobrazit stav publikování na mobilu vedle popisku](https://github.com/bosancz/interni-sekce/commit/dd40b7d764d15fb4376f392639d57a21eb9f3f61) (#403) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
