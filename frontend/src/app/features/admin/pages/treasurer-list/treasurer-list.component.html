@@ -217,7 +217,7 @@
 		}
 
 		@if (viewSelections().paymentDate) {
-			<admin-table-column header="Zaplaceno dne" headerClass="align-middle">
+			<admin-table-column header="Zapsáno dne" headerClass="align-middle">
 				<ng-container *adminCell="let member">{{
 					payment(member)?.date ? (payment(member)!.date | date: "d. M. y") : ""
 				}}</ng-container>

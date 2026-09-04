@@ -261,7 +261,7 @@ export class MemberPaymentComponent {
 			// the club's official footer, as it appears on the rest of its correspondence
 			"KONDOR Skupina ŠÁN z.s.",
 			"Podolské nábřeží 1180/5, Praha 4, 147 00",
-			"(E-mail: info@bosan.cz)",
+			"E-mail: info@bosan.cz",
 			"IČ: 47610727",
 		].join("\r\n");
 
