@@ -1,0 +1,80 @@
+:host {
+	display: block;
+}
+
+.header-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.year-nav {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.year-nav-value {
+	font-family: var(--font-san);
+	font-weight: 700;
+	font-size: 1rem;
+	min-width: 3ch;
+	text-align: center;
+}
+
+.header-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: none;
+	border-radius: var(--bo-radius-btn);
+	background-color: transparent;
+	color: var(--bo-dark);
+	cursor: pointer;
+
+	&:hover:not(:disabled) {
+		background-color: var(--bo-light);
+	}
+
+	&:disabled {
+		opacity: 0.3;
+		cursor: default;
+	}
+
+	ion-icon {
+		font-size: 1.25rem;
+	}
+}
+
+::ng-deep .leaderboard-popover {
+	--width: 320px;
+	--max-height: 60vh;
+
+	&::part(content) {
+		border-radius: 14px;
+		box-shadow: var(--bo-shadow);
+		border: 1px solid var(--bo-line);
+	}
+
+	.popover-panel {
+		padding: 12px 14px;
+		font-size: 0.85rem;
+
+		h4 {
+			margin: 0 0 0.5rem;
+			color: var(--bo-heading);
+			font-size: 1rem;
+		}
+
+		p {
+			margin: 0 0 0.5rem;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+	}
+}

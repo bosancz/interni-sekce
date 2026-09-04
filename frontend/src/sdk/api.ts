@@ -846,6 +846,44 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface ChildEventResponse
+     */
+    export interface ChildEventResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof ChildEventResponse
+         */
+        'eventId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof ChildEventResponse
+         */
+        'name': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof ChildEventResponse
+         */
+        'dateFrom': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof ChildEventResponse
+         */
+        'dateTill': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof ChildEventResponse
+         */
+        'days': number;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface CreateContactBody
      */
     export interface CreateContactBody {
@@ -5061,6 +5099,18 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'getTopChildren': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getTopEvents': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'getTopLeaders': AcLink;
         /**
          * 
@@ -5112,6 +5162,200 @@ export namespace SDK {
          * @memberof RootResponseWithLinks
          */
         '_links': RootResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface TopChildResponse
+     */
+    export interface TopChildResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildResponse
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopChildResponse
+         */
+        'nickname': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildResponse
+         */
+        'groupId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildResponse
+         */
+        'days': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildResponse
+         */
+        'eventsCount': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildResponse
+         */
+        'rank': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopChildResponse
+         */
+        'firstName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopChildResponse
+         */
+        'lastName'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface TopChildrenResponse
+     */
+    export interface TopChildrenResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildrenResponse
+         */
+        'year': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildrenResponse
+         */
+        'childDays': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildrenResponse
+         */
+        'firstYear': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildrenResponse
+         */
+        'lastYear': number;
+        /**
+         * 
+         * @type {Array<TopChildResponse>}
+         * @memberof TopChildrenResponse
+         */
+        'children': Array<TopChildResponse>;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface TopEventResponse
+     */
+    export interface TopEventResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventResponse
+         */
+        'eventId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopEventResponse
+         */
+        'name': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopEventResponse
+         */
+        'dateFrom': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopEventResponse
+         */
+        'dateTill': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventResponse
+         */
+        'days': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventResponse
+         */
+        'childrenCount': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventResponse
+         */
+        'childDays': number;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof TopEventResponse
+         */
+        'leaders': Array<string>;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventResponse
+         */
+        'rank': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface TopEventsResponse
+     */
+    export interface TopEventsResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventsResponse
+         */
+        'year': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventsResponse
+         */
+        'childDays': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventsResponse
+         */
+        'firstYear': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventsResponse
+         */
+        'lastYear': number;
+        /**
+         * 
+         * @type {Array<TopEventResponse>}
+         * @memberof TopEventsResponse
+         */
+        'events': Array<TopEventResponse>;
     }
     
         /**
@@ -12312,6 +12556,25 @@ export namespace SDK {
         
     
     
+    /**
+     * Query parameters for getChildEvents operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetChildEventsQueryParams
+     */
+    export interface StatisticsApiGetChildEventsQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetChildEvents
+         */
+        year?: number
+    }
+    
+    
+    
+    
+    
     
     
     
@@ -12360,6 +12623,60 @@ export namespace SDK {
     
     
     /**
+     * Query parameters for getTopChildren operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetTopChildrenQueryParams
+     */
+    export interface StatisticsApiGetTopChildrenQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetTopChildren
+         */
+        year?: number
+    
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof StatisticsApiGetTopChildren
+         */
+        limit?: number
+    }
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for getTopEvents operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetTopEventsQueryParams
+     */
+    export interface StatisticsApiGetTopEventsQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetTopEvents
+         */
+        year?: number
+    
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof StatisticsApiGetTopEvents
+         */
+        limit?: number
+    }
+    
+    
+    
+    
+    
+    /**
      * Query parameters for getTopLeaders operation in StatisticsApi.
      * @export
      * @interface StatisticsApiGetTopLeadersQueryParams
@@ -12395,6 +12712,56 @@ export namespace SDK {
     
         constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
             super(configuration, configuration.basePath, axios);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {StatisticsApiGetChildEventsQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof StatisticsApi
+         */
+        
+        public async getChildEvents(
+            memberId: number,
+            queryParams: StatisticsApiGetChildEventsQueryParams,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('getChildEvents', 'memberId', memberId)
+            
+            const localVarPath = `/api/statistics/children/{memberId}/events`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<ChildEventResponse>>(axiosRequestConfig);
         }
     
         /**
@@ -12717,6 +13084,102 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<PadlersTotalsResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {StatisticsApiGetTopChildrenQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof StatisticsApi
+         */
+        
+        public async getTopChildren(
+            queryParams: StatisticsApiGetTopChildrenQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/statistics/children/top`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<TopChildrenResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {StatisticsApiGetTopEventsQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof StatisticsApi
+         */
+        
+        public async getTopEvents(
+            queryParams: StatisticsApiGetTopEventsQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/statistics/events/top`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<TopEventsResponse>(axiosRequestConfig);
         }
     
         /**

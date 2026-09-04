@@ -1,0 +1,92 @@
+@if (canSeeChildren()) {
+	<bo-home-leaderboard-card
+		title="Nejlepší děti"
+		infoTitle="Jak se počítají dny na akcích"
+		[infoLines]="infoLines"
+		[year]="year()"
+		[canGoBack]="canGoBack()"
+		[canGoForward]="canGoForward()"
+		(previousYear)="previousYear()"
+		(nextYear)="nextYear()"
+	>
+		@if (statistics(); as statistics) {
+			<div class="total">
+				<span class="total-value">{{ statistics.childDays }}</span>
+				<span class="total-label">
+					{{ statistics.childDays | i18nPlural: childDaysPluralMap }} na akcích roku
+					{{ statistics.year }}
+				</span>
+			</div>
+
+			@if (statistics.children.length) {
+				<ion-list lines="full">
+					@for (child of statistics.children; track child.memberId) {
+						<ion-item button [detail]="false" (click)="openChildEvents($event, child)">
+							<div class="rank" [class.rank-first]="child.rank === 1" slot="start">{{ child.rank }}.</div>
+							<ion-label>
+								<h4>
+									<strong>{{ child.nickname }}</strong>
+								</h4>
+								<p>{{ child.eventsCount }} {{ child.eventsCount | i18nPlural: eventsPluralMap }}</p>
+							</ion-label>
+							<div class="score" slot="end">
+								<span class="score-value">{{ child.days }}</span>
+								<span class="score-label">{{ child.days | i18nPlural: daysPluralMap }}</span>
+							</div>
+						</ion-item>
+					}
+				</ion-list>
+			} @else {
+				<p class="m-0 mt-2 mb-3 text-center">V tomto roce nebylo na akci žádné dítě.</p>
+			}
+		} @else {
+			<ion-list lines="full">
+				@for (row of skeletonRows; track $index) {
+					<ion-item>
+						<ion-label><ion-skeleton-text [animated]="true"></ion-skeleton-text></ion-label>
+					</ion-item>
+				}
+			</ion-list>
+		}
+	</bo-home-leaderboard-card>
+
+	<ion-popover
+		cssClass="leaderboard-popover"
+		[isOpen]="childEventsOpen()"
+		[event]="childEventsEvent()"
+		(didDismiss)="childEventsOpen.set(false)"
+	>
+		<ng-template>
+			<ion-content>
+				<div class="popover-panel">
+					@if (openedChild(); as opened) {
+						<h4>{{ opened.child.nickname }} — {{ opened.year }}</h4>
+					}
+
+					@if (childEvents(); as events) {
+						@if (events.length) {
+							<ul class="member-events">
+								@for (event of events; track event.eventId) {
+									<li>
+										<span class="member-event-name">{{ event.name }}</span>
+										<span class="member-event-meta">
+											<span>{{ [event.dateFrom, event.dateTill] | dateRange }}</span>
+											<span class="member-event-score">
+												{{ event.days }}
+												{{ event.days | i18nPlural: daysPluralMap }}
+											</span>
+										</span>
+									</li>
+								}
+							</ul>
+						} @else {
+							<p>Žádné akce.</p>
+						}
+					} @else {
+						<p>Načítání…</p>
+					}
+				</div>
+			</ion-content>
+		</ng-template>
+	</ion-popover>
+}

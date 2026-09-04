@@ -1,0 +1,106 @@
+ion-list {
+	--ion-item-background: none;
+}
+
+.total {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5rem;
+	padding: 0.6rem 0.9rem;
+	border-radius: var(--bo-radius-btn);
+	background-color: var(--bo-blue-tint);
+}
+
+.total-value {
+	font-family: var(--font-san);
+	font-weight: 800;
+	font-size: 1.9rem;
+	line-height: 1;
+	color: var(--bo-heading);
+}
+
+.total-label {
+	color: var(--bo-muted);
+	font-size: 0.85rem;
+}
+
+.rank {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	margin-inline-end: 0.9rem;
+	border-radius: var(--bo-radius-pill);
+	background-color: var(--bo-neutral-pill);
+	color: var(--bo-neutral-pill-text);
+	font-family: var(--font-san);
+	font-weight: 800;
+	font-size: 0.85rem;
+}
+
+.rank-first {
+	background-color: var(--bo-yellow);
+	color: #fff;
+	box-shadow: 0 2px 8px rgba(var(--san-yellow-rgb), 0.35);
+}
+
+.score {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	line-height: 1.1;
+}
+
+.score-value {
+	font-family: var(--font-san);
+	font-weight: 800;
+	font-size: 1.4rem;
+	color: var(--bo-heading);
+}
+
+.score-label {
+	font-size: 0.75rem;
+	color: var(--bo-muted);
+}
+
+@mixin leaderboard-events-popover {
+	.member-events {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+
+		li {
+			padding: 0.45rem 0;
+			border-top: 1px solid var(--bo-card-line);
+		}
+
+		li:first-child {
+			border-top: none;
+			padding-top: 0;
+		}
+
+		li:last-child {
+			padding-bottom: 0;
+		}
+	}
+
+	.member-event-name {
+		display: block;
+		font-weight: 700;
+	}
+
+	.member-event-meta {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.75rem;
+		color: var(--bo-muted);
+		font-size: 0.8rem;
+	}
+
+	.member-event-score {
+		white-space: nowrap;
+		font-weight: 700;
+		color: var(--bo-heading);
+	}
+}
