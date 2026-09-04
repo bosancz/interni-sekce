@@ -1,87 +1,125 @@
 @if (visible()) {
-	<bo-card>
+	<bo-card [color]="cardColor()" [class.is-paid]="paid()" [class.is-open]="detailsOpen()">
 		<bo-card-header>
 			<bo-card-title>
 				<span class="bo-card-section-title">
-					<ion-icon name="card-outline" />
+					<ion-icon [name]="paid() ? 'checkmark-circle' : 'card-outline'" />
 					Příspěvek {{ currentMembershipYear() }}
 				</span>
 			</bo-card-title>
+
+			<!-- A paid fee collapses to this row; the chevron is the only way back to the details,
+			     and deliberately small – there is nothing left to do with them. -->
+			@if (paid()) {
+				<button
+					slot="buttons"
+					type="button"
+					class="paid-toggle"
+					[attr.aria-expanded]="detailsOpen()"
+					[attr.aria-label]="detailsOpen() ? 'Skrýt platební údaje' : 'Zobrazit platební údaje'"
+					(click)="toggleDetails()"
+				>
+					<span class="bo-pill" [class.bo-pill-green]="!detailsOpen()">Zaplaceno</span>
+					<ion-icon class="paid-chevron" name="chevron-down" aria-hidden="true" />
+				</button>
+			}
 		</bo-card-header>
 
-		<bo-card-content>
-			@if (payment() === undefined) {
-				<div class="bo-info-list">
-					<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
-				</div>
-			}
-
-			@if (payment() === null) {
-				<div class="bo-info-list">
-					<div class="bo-info-row">
-						<span class="bo-info-label">Platební údaje se nepodařilo načíst.</span>
+		@if (detailsVisible()) {
+			<bo-card-content>
+				@if (payment() === undefined) {
+					<div class="bo-info-list">
+						<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
 					</div>
-				</div>
-			}
+				}
 
-			@if (payment(); as paymentValue) {
-				<div class="payment">
-					<div class="bo-info-list selectable">
+				@if (payment() === null) {
+					<div class="bo-info-list">
 						<div class="bo-info-row">
-							<span class="bo-info-label">Částka</span>
-							<span class="bo-info-action">
-								<span class="bo-info-value">{{ amount() }}</span>
-							</span>
-						</div>
-
-						<div class="bo-info-row">
-							<span class="bo-info-label">Účet</span>
-							<span class="bo-info-action">
-								<span class="bo-info-value">{{ accountNumber() }}</span>
-								<bo-copy-button [text]="accountNumber()" />
-							</span>
-						</div>
-
-						<div class="bo-info-row">
-							<span class="bo-info-label">Variabilní symbol</span>
-							<span class="bo-info-action">
-								<span class="bo-info-value">{{ paymentValue.variableSymbol }}</span>
-								<bo-copy-button [text]="paymentValue.variableSymbol" />
-							</span>
+							<span class="bo-info-label">Platební údaje se nepodařilo načíst.</span>
 						</div>
 					</div>
+				}
 
-					<div class="qr">
-						<img [src]="paymentValue.qrCodeUrl" alt="QR platba členského příspěvku" loading="lazy" />
+				@if (payment(); as paymentValue) {
+					<div class="payment">
+						<div class="bo-info-list selectable">
+							@if (paidPayment(); as paidValue) {
+								<div class="bo-info-row">
+									<span class="bo-info-label">Zaplaceno dne</span>
+									<span class="bo-info-action">
+										<span class="bo-info-value">
+											{{ paidValue.date ? (paidValue.date | date: "d. M. y") : "Ano" }}
+										</span>
+									</span>
+								</div>
+							}
 
-						<!-- Only where the browser has the Web Share API, i.e. on a phone: the share sheet
-						     is what offers the banking apps, and they take the payment out of the QR. -->
-						@if (shareSupported) {
-							<ion-button
-								size="small"
-								fill="outline"
-								color="primary"
-								class="qr-share"
-								[disabled]="sharing()"
-								(click)="shareQrCode()"
-								aria-label="Sdílet QR kód do bankovní aplikace"
-							>
-								<ion-icon slot="start" name="share-social-outline" />
-								Zaplatit v bance
-							</ion-button>
-						}
+							<div class="bo-info-row">
+								<span class="bo-info-label">Částka</span>
+								<span class="bo-info-action">
+									<span class="bo-info-value">{{ amount() }}</span>
+								</span>
+							</div>
+
+							<div class="bo-info-row">
+								<span class="bo-info-label">Účet</span>
+								<span class="bo-info-action">
+									<span class="bo-info-value">{{ accountNumber() }}</span>
+									<bo-copy-button [text]="accountNumber()" />
+								</span>
+							</div>
+
+							<div class="bo-info-row">
+								<span class="bo-info-label">Variabilní symbol</span>
+								<span class="bo-info-action">
+									<span class="bo-info-value">{{ paymentValue.variableSymbol }}</span>
+									<bo-copy-button [text]="paymentValue.variableSymbol" />
+								</span>
+							</div>
+						</div>
+
+						<div class="qr">
+							<img [src]="paymentValue.qrCodeUrl" alt="QR platba členského příspěvku" loading="lazy" />
+
+							<!-- Only where the browser has the Web Share API, i.e. on a phone: the share sheet
+							     is what offers the banking apps, and they take the payment out of the QR.
+							     A fee that is already paid is not offered for payment again. -->
+							@if (shareSupported && !paid()) {
+								<ion-button
+									size="small"
+									fill="outline"
+									color="primary"
+									class="qr-share"
+									[disabled]="sharing()"
+									(click)="shareQrCode()"
+									aria-label="Sdílet QR kód do bankovní aplikace"
+								>
+									<ion-icon slot="start" name="share-social-outline" />
+									Zaplatit v bance
+								</ion-button>
+							}
+						</div>
 					</div>
-				</div>
-			}
-		</bo-card-content>
+				}
+			</bo-card-content>
+		}
 
-		@if (payment()) {
+		@if (payment() && detailsVisible()) {
 			<bo-card-footer>
 				<ion-buttons>
-					<ion-button [href]="mailto()" color="primary" aria-label="Poslat výzvu k platbě e-mailem">
+					<ion-button
+						[href]="mailto()"
+						[color]="paid() ? 'medium' : 'primary'"
+						aria-label="Poslat výzvu k platbě e-mailem"
+					>
 						Poslat e-mailem
 					</ion-button>
-					<ion-button (click)="openQrCode()" color="primary" aria-label="Otevřít QR kód v novém okně">
+					<ion-button
+						(click)="openQrCode()"
+						[color]="paid() ? 'medium' : 'primary'"
+						aria-label="Otevřít QR kód v novém okně"
+					>
 						Otevřít QR kód
 					</ion-button>
 				</ion-buttons>

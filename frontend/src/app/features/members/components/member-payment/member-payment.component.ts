@@ -1,7 +1,8 @@
+import { DatePipe } from "@angular/common";
 import { Component, computed, effect, input, signal } from "@angular/core";
 import { IonButton, IonButtons, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { cardOutline, shareSocialOutline } from "ionicons/icons";
+import { cardOutline, checkmarkCircle, chevronDown, shareSocialOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardFooterComponent } from "src/app/shared/components/card-footer/card-footer.component";
@@ -45,6 +46,7 @@ const QR_FETCH_TIMEOUT = 5000;
 		IonSkeletonText,
 		IonButton,
 		IonButtons,
+		DatePipe,
 	],
 })
 export class MemberPaymentComponent {
@@ -76,6 +78,44 @@ export class MemberPaymentComponent {
 	private qrCodeFiles: Promise<File[] | null> | null = null;
 
 	readonly currentMembershipYear = currentMembershipYear;
+
+	/**
+	 * Whether the details of an already paid fee are unfolded. Only ever read while the fee is
+	 * paid — an unpaid one is always shown in full.
+	 */
+	readonly detailsOpen = signal(false);
+
+	/**
+	 * The recorded fee this card is showing the QR for: the member's payment made under exactly
+	 * the variable symbol printed here. Matching on the symbol rather than on the year is how the
+	 * treasurer reconciles the bank statement — the symbol is what identifies the payment — and it
+	 * keeps the card honest if the two ever disagree.
+	 */
+	readonly paidPayment = computed(() => {
+		const variableSymbol = this.payment()?.variableSymbol;
+		if (!variableSymbol) return undefined;
+
+		return this.member()?.membership?.find((payment) => payment.variableSymbol === variableSymbol);
+	});
+
+	/** True once the fee this card asks for has been recorded as paid. */
+	readonly paid = computed(() => !!this.paidPayment());
+
+	/**
+	 * A paid fee is folded away to its header — there is nothing left to pay — and the account,
+	 * the symbol and the QR are one chevron away for when someone wants to look them up anyway.
+	 */
+	readonly detailsVisible = computed(() => !this.paid() || this.detailsOpen());
+
+	/**
+	 * Green while the fee stands ticked off, grey once its details are unfolded: what is on show
+	 * then is a record of a payment that has already been made, not an invitation to make one.
+	 */
+	readonly cardColor = computed(() => {
+		if (!this.paid()) return undefined;
+
+		return this.detailsOpen() ? "var(--bo-muted)" : "var(--bo-green)";
+	});
 
 	/**
 	 * Hidden outright for anyone who may not read the member's payment details; while the member
@@ -115,11 +155,16 @@ export class MemberPaymentComponent {
 		private readonly api: ApiService,
 		private readonly toasts: ToastService,
 	) {
-		addIcons({ cardOutline, shareSocialOutline });
+		addIcons({ cardOutline, checkmarkCircle, chevronDown, shareSocialOutline });
 
 		effect(() => {
 			this.load(this.member());
 		});
+	}
+
+	/** Folds the details of a paid fee in and out. */
+	toggleDetails() {
+		this.detailsOpen.update((open) => !open);
 	}
 
 	/** Opens the QR code on its own – handy for showing it to a parent or printing it. */
@@ -195,6 +240,7 @@ export class MemberPaymentComponent {
 		if (memberId === this.loadedMemberId) return;
 
 		this.loadedMemberId = memberId;
+		this.detailsOpen.set(false);
 		this.payment.set(undefined);
 		this.contactEmails.set([]);
 		this.qrCodeFiles = null;
