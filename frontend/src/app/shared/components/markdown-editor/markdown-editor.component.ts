@@ -1,6 +1,8 @@
-import { Component, input, model, signal, viewChild } from "@angular/core";
+import { Component, computed, inject, input, model, signal, viewChild } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
 import { IonButton, IonSegment, IonSegmentButton, IonTextarea } from "@ionic/angular/standalone";
+import { PlatformService } from "src/app/core/services/platform.service";
 import { TooltipDirective } from "../../directives/tooltip.directive";
 import { MarkdownPipe } from "../../pipes/markdown.pipe";
 
@@ -19,6 +21,12 @@ export class MarkdownEditorComponent {
 	editor = viewChild(IonTextarea);
 
 	view = signal<"edit" | "preview" | "help">("edit");
+
+	sideView = computed(() => (this.view() === "help" ? "help" : "preview"));
+
+	private readonly platformService = inject(PlatformService);
+
+	isLg = toSignal(this.platformService.isLg, { initialValue: this.platformService.isLg.value });
 
 	onEditorKeydown(event: KeyboardEvent) {
 		if (!(event.ctrlKey || event.metaKey) || event.altKey || event.shiftKey) return;
