@@ -1,3 +1,7 @@
+## v4.10.9 — 2026-09-04
+
+- <span class="changelog-type" title="fix">🐛</span> [Řídit náhled akce podle typu ukazovátka, ne podle media dotazů](https://github.com/bosancz/interni-sekce/commit/8a9dddf5ce4fcb2ce3f7a472b7ba0d8ffc34f753) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.10.8 — 2026-09-04
 
 - <span class="changelog-type" title="feat">✨</span> [Dva sloupce v editoru markdownu na desktopu](https://github.com/bosancz/interni-sekce/commit/731bd8cef038ac5b6cb4d2411158fd3cb2b7b90f) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
