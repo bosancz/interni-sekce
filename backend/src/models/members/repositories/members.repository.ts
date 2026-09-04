@@ -3,8 +3,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationOptions } from "src/helpers/pagination";
 import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
-import { Brackets, FindOneOptions, Repository } from "typeorm";
+import { Brackets, FindOneOptions, Not, Repository } from "typeorm";
 import { MemberContact } from "../entities/member-contact.entity";
+import { sortMemberContacts } from "../helpers/member-contacts";
 import { Member } from "../entities/member.entity";
 
 export interface GetMembersOptions extends PaginationOptions {
@@ -90,7 +91,13 @@ export class MembersRepository {
 
 		if (options.active !== undefined) q.andWhere("members.active = :active", { active: options.active });
 
-		return q.getMany();
+		const members = await q.getMany();
+
+		for (const member of members) {
+			if (member.contacts) member.contacts = sortMemberContacts(member.contacts);
+		}
+
+		return members;
 	}
 
 	async getMemberAges(where: Brackets | string = "1=1"): Promise<number[]> {
@@ -143,8 +150,15 @@ export class MembersRepository {
 		return this.membersRepository.softDelete({ id });
 	}
 
+	async getContacts(memberId: number) {
+		const contacts = await this.membersContactsRepository.find({ where: { memberId } });
+		return sortMemberContacts(contacts);
+	}
+
 	async createContact(memberId: number, contactData: Partial<Omit<MemberContact, "id">>) {
-		return this.membersContactsRepository.save({ ...contactData, memberId });
+		const contact = await this.membersContactsRepository.save({ ...contactData, memberId });
+		if (contact.isDefault) await this.clearOtherDefaultContacts(memberId, contact.id);
+		return contact;
 	}
 
 	async getContact(memberId: number, contactId: number) {
@@ -152,10 +166,16 @@ export class MembersRepository {
 	}
 
 	async updateContact(memberId: number, contactId: number, contactData: Partial<Omit<MemberContact, "id">>) {
-		return this.membersContactsRepository.save({ ...contactData, id: contactId, memberId });
+		const contact = await this.membersContactsRepository.save({ ...contactData, id: contactId, memberId });
+		if (contact.isDefault) await this.clearOtherDefaultContacts(memberId, contactId);
+		return contact;
 	}
 
 	async deleteContact(memberId: number, contactId: number) {
 		return this.membersContactsRepository.delete({ id: contactId, memberId });
+	}
+
+	private async clearOtherDefaultContacts(memberId: number, contactId: number) {
+		await this.membersContactsRepository.update({ memberId, id: Not(contactId), isDefault: true }, { isDefault: false });
 	}
 }

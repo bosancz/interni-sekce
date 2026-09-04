@@ -38,6 +38,7 @@ import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
 import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
+import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 import { GroupsService } from "../../services/groups.service";
@@ -68,6 +69,7 @@ import { GroupsService } from "../../services/groups.service";
 		DatePipe,
 		NgTemplateOutlet,
 		MemberPipe,
+		DefaultContactPipe,
 		TooltipDirective,
 	],
 	providers: [FilterModel],
@@ -298,8 +300,8 @@ export class GroupMembersComponent implements OnInit {
 			birthday: "Narozeniny",
 			addressCity: "Město",
 			addressStreet: "Ulice",
-			firstTelephone: "První telefon",
-			firstEmail: "První email",
+			firstTelephone: "Telefon na rodiče",
+			firstEmail: "Email na rodiče",
 			status: "Stav",
 		};
 

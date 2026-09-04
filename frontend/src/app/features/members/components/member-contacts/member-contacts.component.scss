@@ -25,6 +25,24 @@
 	color: var(--bo-muted);
 }
 
+.default-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	margin-left: 6px;
+	padding: 1px 8px;
+	border-radius: 99px;
+	background: var(--bo-yellow-tint);
+	color: var(--bo-yellow-deep);
+	font-size: 12px;
+	font-weight: 600;
+	vertical-align: middle;
+
+	ion-icon {
+		font-size: 12px;
+	}
+}
+
 .relationship,
 ion-label {
 	user-select: text !important;

@@ -17,6 +17,12 @@
 						@if (contact.name) {
 							<span class="name">({{ contact.name }})</span>
 						}
+						@if (contact.isDefault) {
+							<span class="default-badge">
+								<ion-icon name="star-outline"></ion-icon>
+								Výchozí
+							</span>
+						}
 					</span>
 					<span class="contact-actions">
 						<bo-edit-button (click)="openContactForm(contact)"></bo-edit-button>
@@ -25,20 +31,20 @@
 				</div>
 
 				<ion-list lines="none">
-					@if (contact.mobile) {
+					@for (mobile of contact.mobile; track $index) {
 						<ion-item [detail]="false">
 							<ion-icon name="call-outline" slot="start"></ion-icon>
-							<ion-label>{{ contact.mobile }}</ion-label>
-							<bo-icon-button icon="call-outline" [href]="'tel:' + contact.mobile"></bo-icon-button>
-							<bo-copy-button [text]="contact.mobile"></bo-copy-button>
+							<ion-label>{{ mobile }}</ion-label>
+							<bo-icon-button icon="call-outline" [href]="'tel:' + mobile"></bo-icon-button>
+							<bo-copy-button [text]="mobile"></bo-copy-button>
 						</ion-item>
 					}
-					@if (contact.email) {
+					@for (email of contact.email; track $index) {
 						<ion-item [detail]="false">
 							<ion-icon name="mail-outline" slot="start"></ion-icon>
-							<ion-label>{{ contact.email }}</ion-label>
-							<bo-icon-button icon="mail-outline" [href]="'mailto:' + contact.email"></bo-icon-button>
-							<bo-copy-button [text]="contact.email"></bo-copy-button>
+							<ion-label>{{ email }}</ion-label>
+							<bo-icon-button icon="mail-outline" [href]="'mailto:' + email"></bo-icon-button>
+							<bo-copy-button [text]="email"></bo-copy-button>
 						</ion-item>
 					}
 					@if (contact.other) {

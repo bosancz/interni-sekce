@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { sanitizeFilename } from "src/helpers/sanitizefilename";
 import { Event } from "src/models/events/entities/event.entity";
+import { getDefaultMemberContact } from "src/models/members/helpers/member-contacts";
 import { Member } from "src/models/members/entities/member.entity";
 import xlsxPopulate from "xlsx-populate";
 import { string2Date } from "../../../helpers/string2date";
@@ -39,6 +40,8 @@ export class EventAnnouncementService {
 
 		const attendeesString =
 			event.attendees?.map((ea) => {
+				const contact = getDefaultMemberContact(ea?.member?.contacts);
+
 				return [
 					ea?.member?.firstName || missing,
 					ea?.member?.lastName || missing,
@@ -46,9 +49,9 @@ export class EventAnnouncementService {
 					(ea?.member?.addressStreet || missing) + " " + (ea?.member?.addressStreetNo || ""),
 					ea?.member?.addressCity || missing,
 					ea?.member?.addressPostalCode || missing,
-					(ea?.member?.contacts?.[0]?.mobile || missing) +
+					(contact?.mobile?.join(", ") || missing) +
 						" " +
-						(ea?.member?.contacts?.[0]?.relationship ? ` (${ea.member.contacts[0].relationship})` : ""),
+						(contact?.relationship ? ` (${contact.relationship})` : ""),
 				];
 			}) || [];
 
