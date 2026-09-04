@@ -53,6 +53,23 @@
 
 					<div class="qr">
 						<img [src]="paymentValue.qrCodeUrl" alt="QR platba členského příspěvku" loading="lazy" />
+
+						<!-- Only where the browser has the Web Share API, i.e. on a phone: the share sheet
+						     is what offers the banking apps, and they take the payment out of the QR. -->
+						@if (shareSupported) {
+							<ion-button
+								size="small"
+								fill="outline"
+								color="primary"
+								class="qr-share"
+								[disabled]="sharing()"
+								(click)="shareQrCode()"
+								aria-label="Sdílet QR kód do bankovní aplikace"
+							>
+								<ion-icon slot="start" name="share-social-outline" />
+								Zaplatit v bance
+							</ion-button>
+						}
 					</div>
 				</div>
 			}

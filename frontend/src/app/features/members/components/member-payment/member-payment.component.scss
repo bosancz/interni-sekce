@@ -43,3 +43,12 @@
 	font-size: 0.8rem;
 	text-align: center;
 }
+
+/* "Zaplatit v bance" sits right under the QR it shares, as narrow as its label. */
+.qr-share {
+	margin-top: 8px;
+	--padding-start: 10px;
+	--padding-end: 10px;
+	font-size: 0.8rem;
+	text-transform: none;
+}
