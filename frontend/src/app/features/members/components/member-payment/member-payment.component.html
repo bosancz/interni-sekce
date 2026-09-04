@@ -84,7 +84,7 @@
 							<!-- Only where the browser has the Web Share API, i.e. on a phone: the share sheet
 							     is what offers the banking apps, and they take the payment out of the QR.
 							     A fee that is already paid is not offered for payment again. -->
-							@if (shareSupported && !paid()) {
+							@if (shareSupported) {
 								<ion-button
 									size="small"
 									fill="outline"
