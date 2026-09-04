@@ -51,9 +51,9 @@
 <bo-page-content>
 	<div
 		class="events-table-wrapper"
-		(mouseover)="onRowHover($event)"
-		(mousemove)="onRowHover($event)"
-		(mouseleave)="clearHover()"
+		(pointerover)="onRowHover($event)"
+		(pointermove)="onRowHover($event)"
+		(pointerleave)="clearHover()"
 		(pointerdown)="clearHover()"
 	>
 		<admin-table

@@ -500,8 +500,9 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		this.events.set(loadMore ? [...this.events(), ...events] : events);
 	}
 
-	onRowHover(e: MouseEvent) {
+	onRowHover(e: PointerEvent) {
 		if (this.previewPaused) return;
+		if (e.pointerType !== "mouse" && e.pointerType !== "pen") return;
 
 		const row = (e.target as HTMLElement | null)?.closest?.("[id^='event-']") as HTMLElement | null;
 		if (!row) {
@@ -539,7 +540,7 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private positionPreview(e: MouseEvent) {
+	private positionPreview(e: PointerEvent) {
 		const cardWidth = 360;
 		const offset = 16;
 		const margin = 12;

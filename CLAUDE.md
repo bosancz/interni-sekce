@@ -71,6 +71,10 @@
 - **Karta akce (`event-card`) je v záložce Info vidět v každé šířce** — `order-first order-xl-last`, na mobilu tedy nad seznamem údajů. Je to jediné místo, kde je bez rozkliknutí vidět „Vede …“ (#415).
 - **A modal's "can I edit this" flag must read the persisted value, not its own checkbox signal** — `unmarkX.allowed` is false while `xSentAt` is null, so deriving it from the checkbox disables the save button the instant the box is ticked.
 
+## Seznam akcí
+
+- **Náhled akce po najetí myší (`event-hover-preview`) se řídí `PointerEvent.pointerType`, ne media dotazy.** Původní `@media (hover: none), (pointer: coarse)` (ani varianta s `any-hover`/`any-pointer`) nefunguje: prohlížeč umí své ukazovátko hlásit špatně — Vivaldi na notebooku s dotykovým displejem hlásil `any-pointer: fine: false`, tedy „žádná myš“, dokud ho uživatel nerestartoval. Handlery jsou proto `pointerover`/`pointermove` a pouštějí dál jen `mouse` a `pen`; dotyk se odfiltruje sám a `pointerdown` náhled zavírá. Náhled se ukazuje s prodlevou 500 ms (`previewDelayMs`).
+
 ## People picker
 
 - **`MemberSelectorModalComponent` is the only picker on people.** It wraps `bo-modal-layout` like every other modal — title/subtitle + ✕ in the title slot, sticky search and group chips above the scrolling list, count and buttons in the footer (design handoff "Výběr lidí", #357). `dialog-picker` pins it to 560 px / 720 px.
