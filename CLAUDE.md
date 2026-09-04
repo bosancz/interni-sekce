@@ -71,6 +71,10 @@
 - **Karta akce (`event-card`) je v záložce Info vidět v každé šířce** — `order-first order-xl-last`, na mobilu tedy nad seznamem údajů. Je to jediné místo, kde je bez rozkliknutí vidět „Vede …“ (#415).
 - **A modal's "can I edit this" flag must read the persisted value, not its own checkbox signal** — `unmarkX.allowed` is false while `xSentAt` is null, so deriving it from the checkbox disables the save button the instant the box is ticked.
 
+## Přihlášky (PDF)
+
+- Šablony z `backend/assets/registration-templates` renderuje `EventRegistrationService` systémovým Chromiem přes Puppeteer (PDF i JPEG náhled). **Emoji potřebují emoji font přímo v image** — jinak Chromium sáhne po Unifontu a v PDF je čtvereček (`font-noto-emoji` v `Dockerfile`, `fonts-noto-color-emoji` v `.devcontainer/Dockerfile`). Font si Chromium najde sám přes fontconfig, v šablonách se nic nenastavuje — webfont by ve fallbacku stejně nefungoval, musel by být vypsaný v každém `font-family`.
+
 ## Seznam akcí
 
 - **Náhled akce po najetí myší (`event-hover-preview`) se řídí `PointerEvent.pointerType`, ne media dotazy.** Původní `@media (hover: none), (pointer: coarse)` (ani varianta s `any-hover`/`any-pointer`) nefunguje: prohlížeč umí své ukazovátko hlásit špatně — Vivaldi na notebooku s dotykovým displejem hlásil `any-pointer: fine: false`, tedy „žádná myš“, dokud ho uživatel nerestartoval. Handlery jsou proto `pointerover`/`pointermove` a pouštějí dál jen `mouse` a `pen`; dotyk se odfiltruje sám a `pointerdown` náhled zavírá. Náhled se ukazuje s prodlevou 500 ms (`previewDelayMs`).
