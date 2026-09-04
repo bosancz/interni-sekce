@@ -2,7 +2,16 @@ import { Component } from "@angular/core";
 import { IsActiveMatchOptions, RouterLink, RouterLinkActive } from "@angular/router";
 import { IonIcon, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { bugOutline, homeSharp, logOut, notificationsOutline, person, settings } from "ionicons/icons";
+import {
+	bugOutline,
+	globeOutline,
+	homeSharp,
+	logOut,
+	notificationsOutline,
+	openOutline,
+	person,
+	settings,
+} from "ionicons/icons";
 import { map } from "rxjs";
 import { ApiService } from "src/app/core/services/api.service";
 import { BugReportService } from "src/app/core/services/bug-report.service";
@@ -65,6 +74,8 @@ export class SidebarComponent {
 			logOut,
 			bugOutline,
 			notificationsOutline,
+			globeOutline,
+			openOutline,
 		});
 	}
 

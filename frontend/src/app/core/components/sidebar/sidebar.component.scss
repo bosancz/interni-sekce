@@ -66,6 +66,11 @@ ion-item {
 		--nav-icon-src: url("/assets/img/button-program.svg");
 	}
 
+	.external-icon {
+		font-size: 1rem;
+		opacity: 0.6;
+	}
+
 	&.active {
 		--background: var(--bo-nav-active-bg);
 		--color: var(--bo-nav-active-fg);

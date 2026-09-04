@@ -2,7 +2,9 @@ import { Component, OnInit, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule, NgForm } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
-import { IonButton, IonContent, IonInput, IonItem, IonLabel, NavController } from "@ionic/angular/standalone";
+import { IonButton, IonContent, IonIcon, IonInput, IonItem, IonLabel, NavController } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { globeOutline } from "ionicons/icons";
 import { map } from "rxjs/operators";
 import { LoginError, LoginErrorCode, LoginService } from "src/app/core/services/login.service";
 
@@ -11,7 +13,7 @@ import { LoginError, LoginErrorCode, LoginService } from "src/app/core/services/
 	templateUrl: "./login.component.html",
 	styleUrls: ["./login.component.scss"],
 
-	imports: [IonContent, IonItem, IonInput, IonButton, IonLabel, FormsModule],
+	imports: [IonContent, IonItem, IonInput, IonButton, IonLabel, IonIcon, FormsModule],
 })
 export class LoginComponent implements OnInit {
 	expired = toSignal(this.route.params.pipe(map((params) => params.expired)), { initialValue: false });
@@ -27,7 +29,9 @@ export class LoginComponent implements OnInit {
 		private navController: NavController,
 		private route: ActivatedRoute,
 		private loginService: LoginService,
-	) {}
+	) {
+		addIcons({ globeOutline });
+	}
 
 	ngOnInit() {}
 
