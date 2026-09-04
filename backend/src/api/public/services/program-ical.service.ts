@@ -3,6 +3,7 @@ import { Response } from "express";
 import ical, { ICalCalendarMethod, ICalEventStatus, ICalEventTransparency } from "ical-generator";
 import { DateTime } from "luxon";
 import { Config } from "src/config";
+import { markdownToPlainText } from "src/helpers/markdown2plaintext";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 
@@ -71,7 +72,7 @@ export class ProgramIcalService {
 		].filter(Boolean);
 
 		return [
-			event.description?.trim() || null,
+			markdownToPlainText(event.description) || null,
 			meeting.length ? meeting.join(", ") : null,
 			groups.length ? `Oddíly: ${groups.join(", ")}` : null,
 			leaders.length ? `Vedoucí: ${leaders.join(", ")}` : null,
