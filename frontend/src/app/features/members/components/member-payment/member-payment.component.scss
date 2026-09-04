@@ -52,3 +52,47 @@
 	font-size: 0.8rem;
 	text-transform: none;
 }
+
+/* ── Zaplaceno ────────────────────────────────────────────────────────────────
+   A fee that is already recorded as paid has nothing left to ask for, so the card
+   folds away to its header and stands there ticked off in green. The details are
+   one small chevron away, and the card keeps its green whether they are folded or
+   not — the fee stays paid either way. The card's own colour (heading, section
+   icon) follows along through `[color]`, see `cardColor()`. */
+bo-card.is-paid {
+	background: var(--bo-green-tint);
+
+	/* The folded card is a one-line summary, so its heading is dialled back — that is what
+	   leaves "Zaplaceno" room beside it on the narrowest phone instead of wrapping. */
+	::ng-deep h3 {
+		font-size: 1.1rem;
+	}
+
+	.bo-pill {
+		font-size: 0.75rem;
+		padding: 0.2em 0.7em;
+	}
+
+	&.is-open .paid-chevron {
+		transform: rotate(180deg);
+	}
+}
+
+/* The whole "Zaplaceno ⌄" row is the target — a chevron alone is a poor one on a
+   phone — while the chevron itself stays as small as the gesture it stands for. */
+.paid-toggle {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 6px;
+	border: 0;
+	background: none;
+	color: inherit;
+	cursor: pointer;
+}
+
+.paid-chevron {
+	font-size: 0.85rem;
+	color: var(--bo-green);
+	transition: transform 0.15s ease-in-out;
+}
