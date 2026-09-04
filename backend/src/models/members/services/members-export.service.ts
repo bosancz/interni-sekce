@@ -3,12 +3,18 @@ import { DateTime } from "luxon";
 import { Schema } from "write-excel-file";
 import writeXlsxFile from "write-excel-file/node";
 import { Member } from "../entities/member.entity";
+import { sortMemberContacts } from "../helpers/member-contacts";
 
 @Injectable()
 export class MembersExportService {
 	constructor() {}
 
 	async exportXlsx(members?: Member[]) {
+		const contactMobiles = (member: Member) =>
+			sortMemberContacts(member.contacts ?? [])
+				.map((contact) => contact.mobile[0])
+				.filter((mobile) => !!mobile);
+
 		const schema: Schema<Member> = [
 			{
 				column: "Oddíl",
@@ -61,13 +67,13 @@ export class MembersExportService {
 				column: "Mobil otec",
 				type: String,
 				width: 15,
-				value: (member) => member.contacts?.filter((c) => c.mobile)[0]?.mobile,
+				value: (member) => contactMobiles(member)[0],
 			},
 			{
 				column: "Mobil matka",
 				type: String,
 				width: 15,
-				value: (member) => member.contacts?.filter((c) => c.mobile)[1]?.mobile,
+				value: (member) => contactMobiles(member)[1],
 			},
 			{
 				column: "E-mail",

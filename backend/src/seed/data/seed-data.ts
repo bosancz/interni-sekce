@@ -21,9 +21,10 @@ export interface SeedGroup {
 export interface SeedMemberContact {
 	relationship: string;
 	name?: string;
-	mobile?: string;
-	email?: string;
+	mobile?: string[];
+	email?: string[];
 	other?: string;
+	isDefault?: boolean;
 }
 
 export interface SeedMember {
@@ -233,7 +234,15 @@ export const SeedMembers: SeedMember[] = [
 		addressStreetNo: "7",
 		addressCity: "Ered Luin",
 		addressPostalCode: "333 03",
-		contacts: [{ relationship: "Matka", name: "Dís", mobile: "777 000 010", email: "dis@bosan.cz" }],
+		contacts: [
+			{
+				relationship: "Matka",
+				name: "Dís",
+				mobile: ["777 000 010", "608 000 010"],
+				email: ["dis@bosan.cz"],
+				isDefault: true,
+			},
+		],
 	},
 	{
 		nickname: "Kíli",
@@ -246,7 +255,15 @@ export const SeedMembers: SeedMember[] = [
 		addressStreetNo: "7",
 		addressCity: "Ered Luin",
 		addressPostalCode: "333 03",
-		contacts: [{ relationship: "Matka", name: "Dís", mobile: "777 000 010", email: "dis@bosan.cz" }],
+		contacts: [
+			{
+				relationship: "Matka",
+				name: "Dís",
+				mobile: ["777 000 010", "608 000 010"],
+				email: ["dis@bosan.cz"],
+				isDefault: true,
+			},
+		],
 	},
 	{
 		nickname: "Bombur",
@@ -258,8 +275,14 @@ export const SeedMembers: SeedMember[] = [
 		allergies: [{ name: "lískové oříšky", severity: HealthSeverity.high }],
 		knownProblems: [{ name: "nesnáší dlouhý pochod bez druhé snídaně", severity: HealthSeverity.low }],
 		contacts: [
-			{ relationship: "Otec", name: "Bofur", mobile: "777 000 011" },
-			{ relationship: "Matka", name: "Bifur", mobile: "777 000 012", email: "bifur@bosan.cz" },
+			{ relationship: "Otec", name: "Bofur", mobile: ["777 000 011"] },
+			{
+				relationship: "Matka",
+				name: "Bifur",
+				mobile: ["777 000 012"],
+				email: ["bifur@bosan.cz", "bifur@ereborsko.cz"],
+				isDefault: true,
+			},
 		],
 	},
 	{
@@ -270,7 +293,7 @@ export const SeedMembers: SeedMember[] = [
 		lastName: "Dorisson",
 		birthday: "2015-08-19",
 		membership: MembershipStates.pozastaveno,
-		contacts: [{ relationship: "Otec", name: "Dori", mobile: "777 000 013" }],
+		contacts: [{ relationship: "Otec", name: "Dori", mobile: ["777 000 013"] }],
 	},
 	{
 		nickname: "Šmak",
@@ -319,7 +342,7 @@ export const SeedMembers: SeedMember[] = [
 		firstName: "Bolg",
 		lastName: "Azogsson",
 		birthday: "2012-09-09",
-		contacts: [{ relationship: "Otec", name: "Azog", mobile: "777 000 021", email: "azog@bosan.cz" }],
+		contacts: [{ relationship: "Otec", name: "Azog", mobile: ["777 000 021"], email: ["azog@bosan.cz"] }],
 	},
 	{
 		nickname: "Glum",

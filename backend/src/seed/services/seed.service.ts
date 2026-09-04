@@ -199,7 +199,13 @@ export class SeedService {
 			await t.delete(MemberContact, { memberId: member.id });
 
 			for (const seedContact of seedMember.contacts ?? []) {
-				await t.insert(MemberContact, { memberId: member.id, ...seedContact });
+				await t.insert(MemberContact, {
+					memberId: member.id,
+					...seedContact,
+					mobile: seedContact.mobile ?? [],
+					email: seedContact.email ?? [],
+					isDefault: seedContact.isDefault ?? false,
+				});
 			}
 		}
 

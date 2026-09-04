@@ -1,0 +1,119 @@
+<bo-modal-layout>
+	<h4 slot="title">{{ isNew() ? "Přidat kontakt" : "Upravit kontakt" }}</h4>
+
+	<div class="bm-body">
+		<label class="mc-field">
+			<span class="mc-label">Vztah</span>
+			<input
+				type="text"
+				class="mc-input"
+				placeholder="Matka, otec, babička…"
+				[value]="relationship()"
+				(input)="relationship.set($any($event.target).value)"
+			/>
+		</label>
+
+		<label class="mc-field">
+			<span class="mc-label">Jméno</span>
+			<input
+				type="text"
+				class="mc-input"
+				placeholder="Jméno a příjmení"
+				[value]="name()"
+				(input)="name.set($any($event.target).value)"
+			/>
+		</label>
+
+		<div class="mc-field">
+			<span class="mc-label">Telefony</span>
+			@for (value of mobile(); track $index) {
+				<div class="mc-multi-row">
+					<input
+						type="tel"
+						class="mc-input"
+						placeholder="777 123 456"
+						[value]="value"
+						(input)="setValue('mobile', $index, $any($event.target).value)"
+					/>
+					<button
+						type="button"
+						class="mc-icon-btn"
+						aria-label="Odebrat telefon"
+						(click)="removeValue('mobile', $index)"
+					>
+						<ion-icon name="close-outline"></ion-icon>
+					</button>
+				</div>
+			}
+			<button type="button" class="mc-add-btn" (click)="addValue('mobile')">
+				<ion-icon name="add-outline"></ion-icon>
+				Přidat telefon
+			</button>
+		</div>
+
+		<div class="mc-field">
+			<span class="mc-label">Emaily</span>
+			@for (value of email(); track $index) {
+				<div class="mc-multi-row">
+					<input
+						type="email"
+						class="mc-input"
+						placeholder="rodic@bosan.cz"
+						[value]="value"
+						(input)="setValue('email', $index, $any($event.target).value)"
+					/>
+					<button
+						type="button"
+						class="mc-icon-btn"
+						aria-label="Odebrat email"
+						(click)="removeValue('email', $index)"
+					>
+						<ion-icon name="close-outline"></ion-icon>
+					</button>
+				</div>
+			}
+			<button type="button" class="mc-add-btn" (click)="addValue('email')">
+				<ion-icon name="add-outline"></ion-icon>
+				Přidat email
+			</button>
+		</div>
+
+		<label class="mc-field">
+			<span class="mc-label">Jiný kontakt</span>
+			<input
+				type="text"
+				class="mc-input"
+				placeholder="Datová schránka, adresa…"
+				[value]="other()"
+				(input)="other.set($any($event.target).value)"
+			/>
+		</label>
+
+		<label class="bm-check-row" [class.checked]="isDefault()">
+			<input
+				type="checkbox"
+				class="bm-visually-hidden"
+				[checked]="isDefault()"
+				(change)="isDefault.set($any($event.target).checked)"
+			/>
+			<span class="bm-checkbox">
+				@if (isDefault()) {
+					<ion-icon name="checkmark-outline"></ion-icon>
+				}
+			</span>
+			<span class="bm-row-text">
+				<span class="bm-row-label">Výchozí kontakt</span>
+				<span class="bm-row-helper">Používá se v seznamech členů, ohlášce a exportu.</span>
+			</span>
+		</label>
+
+		@if (error(); as errorText) {
+			<p class="mc-error">{{ errorText }}</p>
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button type="button" class="bm-btn-primary" (click)="save()">{{ isNew() ? "Přidat" : "Uložit" }}</button>
+	</div>
+</bo-modal-layout>
