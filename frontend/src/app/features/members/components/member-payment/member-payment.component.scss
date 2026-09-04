@@ -56,10 +56,9 @@
 /* ── Zaplaceno ────────────────────────────────────────────────────────────────
    A fee that is already recorded as paid has nothing left to ask for, so the card
    folds away to its header and stands there ticked off in green. The details are
-   one small chevron away — and once they are unfolded the whole box turns grey:
-   what it then shows is the record of a payment already made, not a request for
-   one. The card's own colour (heading, section icon) follows along through
-   `[color]`, see `cardColor()`. */
+   one small chevron away, and the card keeps its green whether they are folded or
+   not — the fee stays paid either way. The card's own colour (heading, section
+   icon) follows along through `[color]`, see `cardColor()`. */
 bo-card.is-paid {
 	background: var(--bo-green-tint);
 
@@ -74,25 +73,8 @@ bo-card.is-paid {
 		padding: 0.2em 0.7em;
 	}
 
-	/* Unfolded details of a paid fee: readable, but visibly out of service. */
-	.bo-info-label,
-	.bo-info-value {
-		color: var(--bo-muted);
-	}
-
-	/* Faded rather than hidden: the code still scans, it just no longer asks to be
-	   scanned. Kept mild so the white quiet zone does not go translucent in dark mode. */
-	.qr img {
-		filter: grayscale(1);
-		opacity: 0.75;
-	}
-
-	&.is-open {
-		background: var(--bo-paper);
-
-		.paid-chevron {
-			transform: rotate(180deg);
-		}
+	&.is-open .paid-chevron {
+		transform: rotate(180deg);
 	}
 }
 
@@ -111,6 +93,6 @@ bo-card.is-paid {
 
 .paid-chevron {
 	font-size: 0.85rem;
-	color: var(--bo-muted);
+	color: var(--bo-green);
 	transition: transform 0.15s ease-in-out;
 }

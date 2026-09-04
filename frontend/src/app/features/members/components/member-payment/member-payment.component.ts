@@ -107,15 +107,8 @@ export class MemberPaymentComponent {
 	 */
 	readonly detailsVisible = computed(() => !this.paid() || this.detailsOpen());
 
-	/**
-	 * Green while the fee stands ticked off, grey once its details are unfolded: what is on show
-	 * then is a record of a payment that has already been made, not an invitation to make one.
-	 */
-	readonly cardColor = computed(() => {
-		if (!this.paid()) return undefined;
-
-		return this.detailsOpen() ? "var(--bo-muted)" : "var(--bo-green)";
-	});
+	/** Green for as long as the fee is paid — folded away or unfolded, it stays ticked off. */
+	readonly cardColor = computed(() => (this.paid() ? "var(--bo-green)" : undefined));
 
 	/**
 	 * Hidden outright for anyone who may not read the member's payment details; while the member

@@ -19,7 +19,7 @@
 					[attr.aria-label]="detailsOpen() ? 'Skrýt platební údaje' : 'Zobrazit platební údaje'"
 					(click)="toggleDetails()"
 				>
-					<span class="bo-pill" [class.bo-pill-green]="!detailsOpen()">Zaplaceno</span>
+					<span class="bo-pill bo-pill-green">Zaplaceno</span>
 					<ion-icon class="paid-chevron" name="chevron-down" aria-hidden="true" />
 				</button>
 			}
@@ -108,18 +108,10 @@
 		@if (payment() && detailsVisible()) {
 			<bo-card-footer>
 				<ion-buttons>
-					<ion-button
-						[href]="mailto()"
-						[color]="paid() ? 'medium' : 'primary'"
-						aria-label="Poslat výzvu k platbě e-mailem"
-					>
+					<ion-button [href]="mailto()" color="primary" aria-label="Poslat výzvu k platbě e-mailem">
 						Poslat e-mailem
 					</ion-button>
-					<ion-button
-						(click)="openQrCode()"
-						[color]="paid() ? 'medium' : 'primary'"
-						aria-label="Otevřít QR kód v novém okně"
-					>
+					<ion-button (click)="openQrCode()" color="primary" aria-label="Otevřít QR kód v novém okně">
 						Otevřít QR kód
 					</ion-button>
 				</ion-buttons>
