@@ -1,3 +1,7 @@
+## v4.10.7 — 2026-09-04
+
+- <span class="changelog-type" title="feat">✨</span> [Přidat odkaz na veřejný web Bošán.cz](https://github.com/bosancz/interni-sekce/commit/51950a2a370ba834a1d9b10779bd35ad3debdaba) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.10.6 — 2026-09-03
 
 - <span class="changelog-type" title="feat">✨</span> [Použij první fotku jako titulní, když žádná není nastavená](https://github.com/bosancz/interni-sekce/commit/6fa63d1a133ad35b0e3d1997f6cfd7d0d1b11c0e) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
