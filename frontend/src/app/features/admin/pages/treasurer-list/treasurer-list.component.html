@@ -176,8 +176,6 @@
 		[order]="sortOrder()"
 		(sortChange)="onSortChange($event)"
 	>
-
-
 		@if (viewSelections().variableSymbol) {
 			<admin-table-column
 				header="VS"
@@ -188,7 +186,7 @@
 				<ng-container *adminCell="let member">{{ variableSymbol(member) }}</ng-container>
 			</admin-table-column>
 		}
-		
+
 		@if (viewSelections().nickname) {
 			<admin-table-column header="Přezdívka" sort="nickname" [primary]="true" headerClass="align-middle">
 				<ng-container *adminCell="let member">{{ member.nickname || member.firstName }}</ng-container>
@@ -206,6 +204,23 @@
 				<ng-container *adminCell="let member">
 					<bo-group-badge [groupId]="member.groupId"></bo-group-badge>
 				</ng-container>
+			</admin-table-column>
+		}
+
+		<!-- What the recorded fee actually says. Both are empty for a season that is not paid, so
+		     they are off by default and turned on from the column picker when the treasurer is
+		     reconciling rather than just ticking members off. -->
+		@if (viewSelections().amount) {
+			<admin-table-column header="Částka" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{ payment(member)?.amount || "" }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().paymentDate) {
+			<admin-table-column header="Zaplaceno dne" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{
+					payment(member)?.date ? (payment(member)!.date | date: "d. M. y") : ""
+				}}</ng-container>
 			</admin-table-column>
 		}
 
@@ -270,7 +285,6 @@
 				</ng-container>
 			</admin-table-column>
 		}
-
 
 		<!-- The fee of the selected year: always shown, and on mobile it is the column that sits on
 		     the right of each item so it stays within thumb reach. -->

@@ -15,6 +15,7 @@ import {
 import { Group } from "./group.entity";
 import { MemberAchievement } from "./member-achievements.entity";
 import { MemberContact } from "./member-contact.entity";
+import { MembershipPayment } from "./membership-payment.entity";
 
 export enum MemberRoles {
 	"dite" = "dite",
@@ -50,11 +51,6 @@ export class Member {
 	@Column({ type: "varchar", nullable: false }) nickname!: string;
 	@Column({ type: "enum", enum: MemberRoles, nullable: false }) role!: MemberRoles;
 	@Column({ type: "boolean", nullable: false, default: true }) active!: boolean;
-	// The years the membership fee is paid for, e.g. [2026, 2028]. Read it through
-	// isMembershipPaid() (helpers/membership.ts) rather than searching the list here and there.
-	@Column({ type: "smallint", array: true, nullable: false, default: () => "'{}'" })
-	membership!: number[];
-
 	@Column({ type: "enum", enum: MemberRanks, nullable: true }) rank?: MemberRanks | null;
 	@Column({ type: "varchar", nullable: true }) function?: string | null;
 	@Column({ type: "varchar", nullable: true }) firstName?: string | null;
@@ -95,6 +91,11 @@ export class Member {
 
 	@OneToMany(() => MemberContact, (mb) => mb.member)
 	contacts?: MemberContact[];
+
+	// The membership fees this member has paid, one row per season. Read it through
+	// isMembershipPaid() (helpers/membership.ts) rather than searching the list here and there.
+	@OneToMany(() => MembershipPayment, (payment) => payment.member, { cascade: false })
+	membership?: MembershipPayment[];
 
 	@OneToMany(() => MemberAchievement, (mb) => mb.member)
 	achievements?: MemberAchievement[];

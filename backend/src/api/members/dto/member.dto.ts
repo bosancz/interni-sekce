@@ -6,6 +6,7 @@ import { MembershipPaymentStates } from "src/helpers/membership";
 import { EnsureArray, EnsureBoolean } from "src/helpers/validation";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
+import { MembershipPayment } from "src/models/members/entities/membership-payment.entity";
 import {
 	HealthEntry,
 	HealthSeverity,
@@ -13,6 +14,7 @@ import {
 	MemberRanks,
 	MemberRoles,
 } from "src/models/members/entities/member.entity";
+import { MembershipPaymentResponse } from "./membership-payment.dto";
 
 export class HealthEntryDto implements HealthEntry {
 	@ApiProperty({ type: "string" }) @IsString() name!: string;
@@ -27,14 +29,11 @@ export class MemberResponse implements Member {
 	@ApiProperty({ type: "string" }) nickname!: string;
 	@ApiProperty({ type: "string", enum: MemberRoles, enumName: "MemberRolesEnum" }) role!: MemberRoles;
 	@ApiProperty({ type: "boolean" }) active!: boolean;
-	// The years the fee is paid for (see helpers/membership.ts); ask isMembershipPaid() about one.
-	// The bounds only keep nonsense out of a smallint column — any real year passes.
-	@ApiProperty({ type: "number", isArray: true })
-	@IsArray()
-	@IsInt({ each: true })
-	@Min(1900, { each: true })
-	@Max(2200, { each: true })
-	membership!: number[];
+	// The fees the member has paid, one per season (see helpers/membership.ts); ask
+	// isMembershipPaid() about a year rather than searching the list. Written only through
+	// PATCH /members/:id/membership, so no update body carries it.
+	@ApiPropertyOptional({ type: MembershipPaymentResponse, isArray: true })
+	membership?: MembershipPayment[];
 
 	@ApiPropertyOptional({ type: "string" }) function?: string | null;
 	@ApiPropertyOptional({ type: "string" }) firstName?: string | null;
