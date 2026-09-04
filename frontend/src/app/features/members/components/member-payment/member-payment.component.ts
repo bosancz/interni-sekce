@@ -268,6 +268,11 @@ export class MemberPaymentComponent {
 		// `mailto:` cannot carry an attachment, hence the QR as a link in the body above.
 		// Addresses keep their `@` (allowed unencoded in a mailto address per RFC 6068) so the
 		// comma-separated recipient list stays readable to every mail client.
+		//
+		// Nothing put in the subject or the body may contain `&` or `=`, percent-encoded or not:
+		// Android's mailto parser decodes the whole URI before splitting it on those, so a mail app
+		// built on it drops everything from the first one onwards. That is why the QR code arrives
+		// as `payment.qrCodeUrl`, a link whose parameters are all path segments.
 		const to = recipients.map((email) => encodeURIComponent(email).replace(/%40/g, "@")).join(",");
 
 		return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;

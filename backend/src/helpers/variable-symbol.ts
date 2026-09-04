@@ -11,3 +11,19 @@
 export function getVariableSymbol(member: { id: number }, year: number = new Date().getFullYear()): string {
 	return String(year).slice(-2) + String(member.id).padStart(5, "0");
 }
+
+/**
+ * The member a variable symbol was issued for — the inverse of {@link getVariableSymbol}.
+ *
+ * Returns `null` for anything that is not a symbol this app generated, so a caller handed one
+ * from the outside can answer 404 rather than look up a nonsensical member. The frontend mirrors
+ * the year half of the same parse in `src/app/core/helpers/variable-symbol.ts`.
+ *
+ * Used by the public QR platba link, which is addressed by variable symbol: it is the number the
+ * recipient already has in front of them in the payment e-mail.
+ */
+export function getVariableSymbolMemberId(variableSymbol: string): number | null {
+	if (!/^\d{7}$/.test(variableSymbol)) return null;
+
+	return Number(variableSymbol.slice(2)) || null;
+}
