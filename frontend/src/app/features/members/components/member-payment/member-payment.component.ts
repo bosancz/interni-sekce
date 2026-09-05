@@ -11,7 +11,7 @@ import { CardTitleComponent } from "src/app/shared/components/card-title/card-ti
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { CopyButtonComponent } from "src/app/shared/components/copy-button/copy-button.component";
 import { SDK } from "src/sdk";
-import { currentMembershipYear } from "src/app/core/helpers/membership";
+import { currentMembershipYear, membershipPaymentOf } from "src/app/core/helpers/membership";
 import { getVariableSymbolYear } from "src/app/core/helpers/variable-symbol";
 import { ToastService } from "src/app/core/services/toast.service";
 
@@ -86,17 +86,16 @@ export class MemberPaymentComponent {
 	readonly detailsOpen = signal(false);
 
 	/**
-	 * The recorded fee this card is showing the QR for: the member's payment made under exactly
-	 * the variable symbol printed here. Matching on the symbol rather than on the year is how the
-	 * treasurer reconciles the bank statement — the symbol is what identifies the payment — and it
-	 * keeps the card honest if the two ever disagree.
+	 * The recorded fee of the season this card is titled with, or undefined while it is unpaid —
+	 * the same question the "Členství" row of the membership card asks, asked of the same helper
+	 * and about the same year, so the two can never disagree about one member.
+	 *
+	 * It used to look the member's payments up by the variable symbol printed on this card
+	 * instead. That reads like the stricter test and is a weaker one: the symbol keeps only the
+	 * last two digits of the year, and the one shown here is minted by the server, so the card
+	 * went green off a season the rest of the app was not even asking about.
 	 */
-	readonly paidPayment = computed(() => {
-		const variableSymbol = this.payment()?.variableSymbol;
-		if (!variableSymbol) return undefined;
-
-		return this.member()?.membership?.find((payment) => payment.variableSymbol === variableSymbol);
-	});
+	readonly paidPayment = computed(() => membershipPaymentOf(this.member()?.membership, this.currentMembershipYear()));
 
 	/** True once the fee this card asks for has been recorded as paid. */
 	readonly paid = computed(() => !!this.paidPayment());
