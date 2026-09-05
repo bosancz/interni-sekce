@@ -4,7 +4,7 @@ import { SDK } from "src/sdk";
  * Membership = the yearly membership fee ("členský příspěvek").
  *
  * `member.membership` is the list of fees the member has paid — one payment per season, carrying
- * the variable symbol, the amount and the day it was recorded. A season is "zaplaceno" exactly
+ * the variable symbol and the day the treasurer recorded it. A season is "zaplaceno" exactly
  * when it has a payment and "nezaplaceno" when it has none, so there is no first or last season
  * the list can reach.
  *

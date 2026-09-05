@@ -15,9 +15,9 @@ export class MembershipPaymentResponse implements MembershipPayment {
 	/** Variable symbol the fee was paid under, e.g. `2600001`. */
 	@ApiProperty({ type: "string" }) variableSymbol!: string;
 
-	/** Amount in whole units of the payment settings' currency. */
-	@ApiProperty() amount!: number;
-
-	/** The day the fee was recorded; null for fees carried over from before they were dated. */
-	@ApiPropertyOptional({ type: "string" }) date?: string | null;
+	/**
+	 * The day the treasurer recorded the fee, not the day it was paid; null for fees carried over
+	 * from before they were dated.
+	 */
+	@ApiPropertyOptional({ type: "string" }) recordedOn?: string | null;
 }

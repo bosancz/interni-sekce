@@ -222,7 +222,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		);
 	}
 
-	/** The fee recorded for the year on screen, if it is paid — the amount and date columns read it. */
+	/** The fee recorded for the year on screen, if it is paid — the "zapsáno dne" column reads it. */
 	payment(member: SDK.MemberResponse): SDK.MembershipPaymentResponse | undefined {
 		return membershipPaymentOf(member.membership, this.year());
 	}
@@ -262,7 +262,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		const previous = member.membership;
 
 		// The row flips straight away on a placeholder payment; the server then answers with the
-		// list as it recorded it (the amount and date come from there) and it is swapped in.
+		// list as it recorded it (the day it was recorded comes from there) and it is swapped in.
 		this.setMemberMembership(member.id, this.optimisticMembership(member, paid, year));
 		this.saving.update((ids) => new Set(ids).add(member.id));
 
@@ -286,7 +286,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	/**
 	 * The membership as it will look once saved. Only the year on screen changes, and the stand-in
 	 * payment carries only what the page itself knows: the season and the variable symbol it
-	 * derives the same way the server does. The amount and the date are the server's to fill in —
+	 * derives the same way the server does. The day it is recorded on is the server's to fill in —
 	 * left empty here so nothing invented is on screen — and its answer replaces this at once.
 	 */
 	private optimisticMembership(
@@ -302,8 +302,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			memberId: member.id,
 			forYear: year,
 			variableSymbol: getVariableSymbol(member, year),
-			amount: 0,
-			date: null,
+			recordedOn: null,
 		};
 
 		return [pending, ...rest];
@@ -446,8 +445,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			nickname: true,
 			name: true,
 			group: true,
-			amount: true,
-			paymentDate: true,
+			recordedOn: true,
 			role: false,
 			age: false,
 			birthday: false,
@@ -502,8 +500,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			nickname: "Přezdívka",
 			name: "Jméno",
 			group: "Oddíl",
-			amount: "Částka",
-			paymentDate: "Zapsáno dne",
+			recordedOn: "Zapsáno dne",
 			role: "Role",
 			age: "Věk",
 			birthday: "Narozeniny",
