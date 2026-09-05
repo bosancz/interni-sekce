@@ -3872,17 +3872,11 @@ export namespace SDK {
          */
         'variableSymbol': string;
         /**
-         * Amount in whole currency units, taken from the payment settings when the fee is recorded.
-         * @type {number}
-         * @memberof MembershipPayment
-         */
-        'amount': number;
-        /**
-         * The day the fee was recorded. Nullable because the fees migrated from the old list of years carry no date — nothing recorded one back then.
+         * The day the treasurer recorded the fee — not the day the member paid it, which nothing here knows. Named for what it is so the two are never taken for one another. Nullable because the fees migrated from the old list of years carry no date: nothing recorded one back then.
          * @type {string}
          * @memberof MembershipPayment
          */
-        'date'?: string | null;
+        'recordedOn'?: string | null;
     }
     
         /**
@@ -3916,17 +3910,11 @@ export namespace SDK {
          */
         'variableSymbol': string;
         /**
-         * Amount in whole units of the payment settings\' currency.
-         * @type {number}
-         * @memberof MembershipPaymentResponse
-         */
-        'amount': number;
-        /**
-         * The day the fee was recorded; null for fees carried over from before they were dated.
+         * The day the treasurer recorded the fee, not the day it was paid; null for fees carried over from before they were dated.
          * @type {string}
          * @memberof MembershipPaymentResponse
          */
-        'date'?: string | null;
+        'recordedOn'?: string | null;
     }
     
         /**

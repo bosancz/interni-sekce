@@ -4,7 +4,7 @@ import { MembershipPayment } from "src/models/members/entities/membership-paymen
  * Membership = the yearly membership fee ("členský příspěvek").
  *
  * `Member.membership` is the list of fees the member has paid — one {@link MembershipPayment} per
- * season, carrying the variable symbol, the amount and the day it was recorded. A season is
+ * season, carrying the variable symbol and the day the treasurer recorded it. A season is
  * "zaplaceno" exactly when it has a payment and "nezaplaceno" when it has none, so there is no
  * first or last season the list can reach and nothing to keep in step with a separate flag.
  *

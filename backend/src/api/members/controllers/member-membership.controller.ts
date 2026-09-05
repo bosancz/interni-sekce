@@ -42,7 +42,7 @@ export class MemberMembershipController {
 		else await this.membershipPayments.setUnpaid(member, body.year);
 
 		// The whole list comes back so a caller (the treasurer view above all) can show the payment
-		// exactly as it was recorded — symbol, amount and date included — without a second request.
+		// exactly as it was recorded — symbol and date included — without a second request.
 		return this.membershipPayments.getMembership(member);
 	}
 }
