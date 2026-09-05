@@ -43,12 +43,16 @@
 				@if (payment(); as paymentValue) {
 					<div class="payment">
 						<div class="bo-info-list selectable">
+							<!-- The day the treasurer ticked the fee off, which is all the club records —
+							     not the day the money left the payer's account. -->
 							@if (paidPayment(); as paidValue) {
 								<div class="bo-info-row">
-									<span class="bo-info-label">Zaplaceno dne</span>
+									<span class="bo-info-label">Zapsáno</span>
 									<span class="bo-info-action">
 										<span class="bo-info-value">
-											{{ paidValue.date ? (paidValue.date | date: "d. M. y") : "Ano" }}
+											{{
+												paidValue.recordedOn ? (paidValue.recordedOn | date: "d. M. y") : "Ano"
+											}}
 										</span>
 									</span>
 								</div>

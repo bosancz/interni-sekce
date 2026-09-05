@@ -207,19 +207,12 @@
 			</admin-table-column>
 		}
 
-		<!-- What the recorded fee actually says. Both are empty for a season that is not paid, so
-		     they are off by default and turned on from the column picker when the treasurer is
-		     reconciling rather than just ticking members off. -->
-		@if (viewSelections().amount) {
-			<admin-table-column header="Částka" headerClass="align-middle">
-				<ng-container *adminCell="let member">{{ payment(member)?.amount || "" }}</ng-container>
-			</admin-table-column>
-		}
-
-		@if (viewSelections().paymentDate) {
+		<!-- The day the treasurer ticked the fee off, not the day it was paid — empty for a season
+		     that is not recorded, and for the fees carried over from before they were dated. -->
+		@if (viewSelections().recordedOn) {
 			<admin-table-column header="Zapsáno dne" headerClass="align-middle">
 				<ng-container *adminCell="let member">{{
-					payment(member)?.date ? (payment(member)!.date | date: "d. M. y") : ""
+					payment(member)?.recordedOn ? (payment(member)!.recordedOn | date: "d. M. y") : ""
 				}}</ng-container>
 			</admin-table-column>
 		}
