@@ -81,6 +81,94 @@
 	}
 }
 
+// The fee cell: the note marker and the fee pill on one line, the pill outermost so the pills stay
+// flush with the right edge of the column whether or not a row has a note. On mobile the same cell
+// is what sits in the item's end slot, so the two controls stay side by side there as well.
+.treasurer-membership-cell {
+	display: inline-flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 6px;
+}
+
+// The note button is deliberately quieter than the fee pill next to it — the fee is the point of
+// the row, the note is what hangs off it. A filled glyph (rather than a second colour) is what says
+// a note is there, so a scan down the column reads at a glance.
+.treasurer-note-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--bo-muted);
+	cursor: pointer;
+	transition:
+		background-color 0.15s ease,
+		color 0.15s ease;
+
+	ion-icon {
+		font-size: 17px;
+	}
+
+	&:hover:not(:disabled) {
+		background: var(--bo-blue-tint);
+		color: var(--bo-blue);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--bo-blue, #3880ff);
+		outline-offset: 2px;
+	}
+
+	&:disabled {
+		cursor: progress;
+		opacity: 0.6;
+	}
+}
+
+.treasurer-note-filled {
+	color: var(--bo-blue);
+}
+
+// The same marker for everyone who may not edit the fee: it only says a note is there, and the
+// tooltip reads it out.
+.treasurer-note-mark {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	color: var(--bo-muted);
+
+	ion-icon {
+		font-size: 17px;
+	}
+}
+
+// The note column, when it is switched on: one line in the table, however long the note is — the
+// full text is in the tooltip (and in the edit box). On mobile the same value is a line of the
+// item, where it may wrap instead of being cut off.
+.treasurer-note-text {
+	display: inline-block;
+	max-width: 22rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	vertical-align: bottom;
+}
+
+@media (max-width: 991.98px) {
+	.treasurer-note-text {
+		max-width: 100%;
+		overflow: visible;
+		white-space: normal;
+	}
+}
+
 // Desktop: year, filters, columns and view options laid out inline in the filter toolbar.
 .treasurer-filter-actions {
 	display: flex;

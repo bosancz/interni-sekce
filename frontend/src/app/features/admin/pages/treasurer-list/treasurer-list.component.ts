@@ -18,12 +18,19 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { chevronBackOutline, chevronForwardOutline, eyeOutline } from "ionicons/icons";
+import {
+	chevronBackOutline,
+	chevronForwardOutline,
+	documentText,
+	documentTextOutline,
+	eyeOutline,
+} from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipPaymentStates } from "src/app/core/config/membership";
 import { currentMembershipYear, isMembershipPaid, membershipPaymentOf } from "src/app/core/helpers/membership";
 import { getVariableSymbol } from "src/app/core/helpers/variable-symbol";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
@@ -191,10 +198,18 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		private route: ActivatedRoute,
 		private router: Router,
 		private toasts: ToastService,
+		private modalService: ModalService,
 		private groupPipe: GroupPipe,
 		private platformService: PlatformService,
 	) {
-		addIcons({ chevronBackOutline, chevronForwardOutline, eyeOutline, columns: COLUMNS_ICON });
+		addIcons({
+			chevronBackOutline,
+			chevronForwardOutline,
+			documentText,
+			documentTextOutline,
+			eyeOutline,
+			columns: COLUMNS_ICON,
+		});
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 	}
 
@@ -225,6 +240,20 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	/** The fee recorded for the year on screen, if it is paid — the "zapsáno dne" column reads it. */
 	payment(member: SDK.MemberResponse): SDK.MembershipPaymentResponse | undefined {
 		return membershipPaymentOf(member.membership, this.year());
+	}
+
+	/** What the treasurer noted about the fee on screen, if anything. */
+	note(member: SDK.MemberResponse): string | null {
+		return this.payment(member)?.note || null;
+	}
+
+	hasNote(member: SDK.MemberResponse): boolean {
+		return !!this.note(member);
+	}
+
+	/** The note itself is the tooltip; an empty one says what the button would do instead. */
+	noteTooltip(member: SDK.MemberResponse): string {
+		return this.note(member) ?? "Přidat poznámku";
 	}
 
 	/** Is this member's fee for the year on screen paid? */
@@ -284,6 +313,81 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	}
 
 	/**
+	 * Write the treasurer's note on the fee of the year on screen. The note hangs on the payment, so
+	 * only a recorded fee has one to edit — the button is not offered for a season that is unpaid.
+	 * Like the toggle, this sits inside a row that links to the member, so the click stops here.
+	 */
+	async editNote(member: SDK.MemberResponseWithLinks, event: Event) {
+		event.stopPropagation();
+		event.preventDefault();
+
+		if (!this.canEditMembership(member) || !this.isPaid(member) || this.isSaving(member)) return;
+
+		const year = this.year();
+		const result = await this.modalService.inputModal<{ note: string }>({
+			header: `Poznámka k příspěvku ${year}`,
+			cssClass: "alert-note",
+			inputs: {
+				note: {
+					type: "textarea",
+					placeholder: "Např. zaplaceno na táboře, sourozenecká sleva…",
+					value: this.note(member) ?? "",
+				},
+			},
+		});
+
+		// Cancelled (or dismissed): the note stays as it was. An emptied box is a real answer —
+		// it clears the note.
+		if (!result) return;
+
+		await this.saveNote(member, result.note ?? "");
+	}
+
+	/**
+	 * The note is saved the way the fee itself is: the row shows it at once and the server's answer
+	 * — the payment as it recorded it — replaces that, or the previous state does if it fails.
+	 */
+	private async saveNote(member: SDK.MemberResponseWithLinks, note: string) {
+		const year = this.year();
+		const previous = member.membership;
+		const value = note.trim() || null;
+
+		if (value === this.note(member)) return;
+
+		this.setMemberMembership(member.id, this.membershipWithNote(member, year, value));
+		this.saving.update((ids) => new Set(ids).add(member.id));
+
+		try {
+			// `paid: true` is what the year already is — the note is the only value that changes,
+			// the day it was recorded and the symbol it was paid under stay as they were recorded.
+			const membership = await this.api.MembersApi.updateMemberMembership(member.id, {
+				year,
+				paid: true,
+				note: value,
+			}).then((res) => res.data);
+			this.setMemberMembership(member.id, membership);
+		} catch {
+			this.setMemberMembership(member.id, previous);
+			this.toasts.toast("Poznámku se nepodařilo uložit.");
+		} finally {
+			this.saving.update((ids) => {
+				const next = new Set(ids);
+				next.delete(member.id);
+				return next;
+			});
+		}
+	}
+
+	/** The membership with the note of one season replaced — the other seasons are untouched. */
+	private membershipWithNote(
+		member: SDK.MemberResponse,
+		year: number,
+		note: string | null,
+	): SDK.MembershipPaymentResponse[] {
+		return (member.membership ?? []).map((payment) => (payment.forYear === year ? { ...payment, note } : payment));
+	}
+
+	/**
 	 * The membership as it will look once saved. Only the year on screen changes, and the stand-in
 	 * payment carries only what the page itself knows: the season and the variable symbol it
 	 * derives the same way the server does. The day it is recorded on is the server's to fill in —
@@ -303,6 +407,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			forYear: year,
 			variableSymbol: getVariableSymbol(member, year),
 			recordedOn: null,
+			note: null,
 		};
 
 		return [pending, ...rest];
@@ -446,6 +551,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			name: true,
 			group: true,
 			recordedOn: true,
+			note: false,
 			role: false,
 			age: false,
 			birthday: false,
@@ -501,6 +607,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			name: "Jméno",
 			group: "Oddíl",
 			recordedOn: "Zapsáno dne",
+			note: "Poznámka",
 			role: "Role",
 			age: "Věk",
 			birthday: "Narozeniny",

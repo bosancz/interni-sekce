@@ -20,4 +20,7 @@ export class MembershipPaymentResponse implements MembershipPayment {
 	 * from before they were dated.
 	 */
 	@ApiPropertyOptional({ type: "string" }) recordedOn?: string | null;
+
+	/** Whatever the treasurer noted about this fee; null when nothing was noted. */
+	@ApiPropertyOptional({ type: "string" }) note?: string | null;
 }

@@ -217,6 +217,16 @@
 			</admin-table-column>
 		}
 
+		<!-- What the treasurer wrote down about the fee, for reading down the list; it is written
+		     through the note button in the fee column, not here. -->
+		@if (viewSelections().note) {
+			<admin-table-column header="Poznámka" headerClass="align-middle">
+				<ng-container *adminCell="let member">
+					<span class="treasurer-note-text" [boTooltip]="note(member)">{{ note(member) }}</span>
+				</ng-container>
+			</admin-table-column>
+		}
+
 		@if (viewSelections().role) {
 			<admin-table-column header="Role" sort="role" headerClass="align-middle">
 				<ng-container *adminCell="let member">{{ member | member: "role" }}</ng-container>
@@ -290,21 +300,51 @@
 			headerClass="align-middle treasurer-membership-column"
 		>
 			<ng-container *adminCell="let member">
-				@if (canEditMembership(member)) {
-					<button
-						type="button"
-						class="bo-pill treasurer-membership-toggle"
-						[class.bo-pill-green]="isPaid(member)"
-						[disabled]="isSaving(member)"
-						[attr.aria-pressed]="isPaid(member)"
-						[title]="isPaid(member) ? 'Označit jako nezaplacené' : 'Označit jako zaplacené'"
-						(click)="toggleMembership(member, $event)"
-					>
-						{{ membershipLabel(member) }}
-					</button>
-				} @else {
-					<span class="bo-pill" [class.bo-pill-green]="isPaid(member)">{{ membershipLabel(member) }}</span>
-				}
+				<!-- The note sits left of the fee pill, so the pills stay flush right down the column.
+				     It hangs on the recorded fee, so the button is offered only where there is one to
+				     write it on: a paid season. Everyone who may not record fees sees the marker
+				     alone, and only when a note is actually there. -->
+				<div class="treasurer-membership-cell">
+					@if (canEditMembership(member)) {
+						@if (isPaid(member)) {
+							<button
+								type="button"
+								class="treasurer-note-button"
+								[class.treasurer-note-filled]="hasNote(member)"
+								[disabled]="isSaving(member)"
+								[boTooltip]="noteTooltip(member)"
+								[attr.aria-label]="hasNote(member) ? 'Upravit poznámku' : 'Přidat poznámku'"
+								(click)="editNote(member, $event)"
+							>
+								<ion-icon
+									[name]="hasNote(member) ? 'document-text' : 'document-text-outline'"
+								></ion-icon>
+							</button>
+						}
+
+						<button
+							type="button"
+							class="bo-pill treasurer-membership-toggle"
+							[class.bo-pill-green]="isPaid(member)"
+							[disabled]="isSaving(member)"
+							[attr.aria-pressed]="isPaid(member)"
+							[title]="isPaid(member) ? 'Označit jako nezaplacené' : 'Označit jako zaplacené'"
+							(click)="toggleMembership(member, $event)"
+						>
+							{{ membershipLabel(member) }}
+						</button>
+					} @else {
+						@if (hasNote(member)) {
+							<span class="treasurer-note-mark" [boTooltip]="note(member)" aria-label="Poznámka">
+								<ion-icon name="document-text"></ion-icon>
+							</span>
+						}
+
+						<span class="bo-pill" [class.bo-pill-green]="isPaid(member)">{{
+							membershipLabel(member)
+						}}</span>
+					}
+				</div>
 			</ng-container>
 		</admin-table-column>
 	</admin-table>
