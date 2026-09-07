@@ -45,7 +45,8 @@ FROM node:24-alpine
 ARG VERSION
 
 # Chromium used by Puppeteer to render registration PDFs from HTML templates.
-RUN apk add --no-cache chromium nss freetype harfbuzz ca-certificates ttf-freefont
+# font-noto-emoji: without it Chromium has no emoji glyphs and renders tofu boxes in the PDF.
+RUN apk add --no-cache chromium nss freetype harfbuzz ca-certificates ttf-freefont font-noto-emoji
 ENV PUPPETEER_SKIP_DOWNLOAD=true \
 	PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
