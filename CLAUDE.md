@@ -71,6 +71,10 @@
 - **Karta akce (`event-card`) je v záložce Info vidět v každé šířce** — `order-first order-xl-last`, na mobilu tedy nad seznamem údajů. Je to jediné místo, kde je bez rozkliknutí vidět „Vede …“ (#415).
 - **A modal's "can I edit this" flag must read the persisted value, not its own checkbox signal** — `unmarkX.allowed` is false while `xSentAt` is null, so deriving it from the checkbox disables the save button the instant the box is ticked.
 
+## Přihlášky (PDF)
+
+- Šablony z `backend/assets/registration-templates` renderuje `EventRegistrationService` systémovým Chromiem přes Puppeteer (PDF i JPEG náhled). **Emoji potřebují emoji font přímo v image** — jinak Chromium sáhne po Unifontu a v PDF je čtvereček (`font-noto-emoji` v `Dockerfile`, `fonts-noto-color-emoji` v `.devcontainer/Dockerfile`). Font si Chromium najde sám přes fontconfig, v šablonách se nic nenastavuje — webfont by ve fallbacku stejně nefungoval, musel by být vypsaný v každém `font-family`.
+
 ## Žebříčky na homepagi
 
 - Tři karty: **Nejlepší vedoucí** (`statistics/leaders/top`), **Nejlepší akce** (`statistics/events/top`) a **Nejlepší děti** (`statistics/children/top`), všechny za `vedouci` a linkované z kořene API. Chrome karty (nadpis, ⓘ popover s vysvětlením, přepínání roku) drží sdílená `bo-home-leaderboard-card` — info text se předává jako `infoTitle` + `infoLines`, obsah se projektuje; sdílené styly řádků (`.total`, `.rank`, `.score`) jsou v `styles/_leaderboard-card.scss`, mixin `leaderboard-events-popover` stylizuje popover se seznamem akcí.
