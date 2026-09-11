@@ -19,8 +19,6 @@ export class TopEventResponse {
 export class TopEventsResponse {
 	@ApiProperty() year!: number;
 
-	@ApiProperty() childDays!: number;
-
 	@ApiProperty() firstYear!: number;
 	@ApiProperty() lastYear!: number;
 

@@ -47,7 +47,6 @@ export class HomeCardTopChildrenComponent {
 		"Dítě je člen mladší 15 let v době konání akce. Počítají se jen skončené a nezrušené akce.",
 	];
 
-	childDaysPluralMap = { "=1": "děťoden", "=2": "děťodny", "=3": "děťodny", "=4": "děťodny", other: "děťodní" };
 	daysPluralMap = { "=1": "den", "=2": "dny", "=3": "dny", "=4": "dny", other: "dní" };
 	eventsPluralMap = { "=1": "akce", "=2": "akce", "=3": "akce", "=4": "akce", other: "akcí" };
 

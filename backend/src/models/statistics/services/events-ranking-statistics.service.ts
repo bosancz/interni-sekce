@@ -10,7 +10,6 @@ import {
 	EVENT_YEAR_CONDITION,
 	FINISHED_EVENT_CONDITION,
 	getEventYearRange,
-	getTotalChildDays,
 	setRanks,
 } from "../statistics.helpers";
 
@@ -28,7 +27,6 @@ export interface TopEvent {
 
 export interface TopEventsStatistics {
 	year: number;
-	childDays: number;
 	firstYear: number;
 	lastYear: number;
 	events: TopEvent[];
@@ -42,8 +40,7 @@ export class EventsRankingStatisticsService {
 	) {}
 
 	async getTopEventsStatistics(year: number, limit: number): Promise<TopEventsStatistics> {
-		const [childDays, ranking, { firstYear, lastYear }] = await Promise.all([
-			getTotalChildDays(this.eventsRepository, year),
+		const [ranking, { firstYear, lastYear }] = await Promise.all([
 			this.getRankedEvents(year, limit),
 			getEventYearRange(this.eventsRepository),
 		]);
@@ -52,7 +49,7 @@ export class EventsRankingStatisticsService {
 
 		const events = ranking.map((event) => ({ ...event, leaders: leaders.get(event.eventId) ?? [] }));
 
-		return { year, childDays, firstYear, lastYear, events };
+		return { year, firstYear, lastYear, events };
 	}
 
 	private async getRankedEvents(year: number, limit: number): Promise<Omit<TopEvent, "leaders">[]> {

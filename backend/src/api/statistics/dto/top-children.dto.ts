@@ -18,8 +18,6 @@ export class TopChildResponse {
 export class TopChildrenResponse {
 	@ApiProperty() year!: number;
 
-	@ApiProperty() childDays!: number;
-
 	@ApiProperty() firstYear!: number;
 	@ApiProperty() lastYear!: number;
 

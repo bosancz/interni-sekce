@@ -10,14 +10,6 @@
 		(nextYear)="nextYear()"
 	>
 		@if (statistics(); as statistics) {
-			<div class="total">
-				<span class="total-value">{{ statistics.childDays }}</span>
-				<span class="total-label">
-					{{ statistics.childDays | i18nPlural: childDaysPluralMap }} na akcích roku
-					{{ statistics.year }}
-				</span>
-			</div>
-
 			@if (statistics.leaders.length) {
 				<ion-list lines="full">
 					@for (leader of statistics.leaders; track leader.memberId) {

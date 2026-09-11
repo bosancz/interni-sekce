@@ -10,7 +10,6 @@ import {
 	EVENT_YEAR_CONDITION,
 	FINISHED_EVENT_CONDITION,
 	getEventYearRange,
-	getTotalChildDays,
 	setRanks,
 } from "../statistics.helpers";
 
@@ -37,7 +36,6 @@ export interface LeaderEvent {
 
 export interface LeadersStatistics {
 	year: number;
-	childDays: number;
 	firstYear: number;
 	lastYear: number;
 	leaders: TopLeader[];
@@ -53,8 +51,7 @@ export class LeadersStatisticsService {
 	) {}
 
 	async getLeadersStatistics(year: number, limit: number, memberId?: number): Promise<LeadersStatistics> {
-		const [childDays, ranking, { firstYear, lastYear }] = await Promise.all([
-			getTotalChildDays(this.eventsRepository, year),
+		const [ranking, { firstYear, lastYear }] = await Promise.all([
 			this.getRankedLeaders(year),
 			getEventYearRange(this.eventsRepository),
 		]);
@@ -62,7 +59,7 @@ export class LeadersStatisticsService {
 		const leaders = ranking.slice(0, limit);
 		const me = memberId !== undefined ? await this.getMyRanking(ranking, memberId) : undefined;
 
-		return { year, childDays, firstYear, lastYear, leaders, me };
+		return { year, firstYear, lastYear, leaders, me };
 	}
 
 	private async getMyRanking(ranking: TopLeader[], memberId: number): Promise<MyRanking | undefined> {
