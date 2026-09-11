@@ -846,38 +846,6 @@ export namespace SDK {
         /**
      * 
      * @export
-     * @interface ChildDaysResponse
-     */
-    export interface ChildDaysResponse {
-        /**
-         * 
-         * @type {number}
-         * @memberof ChildDaysResponse
-         */
-        'year': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof ChildDaysResponse
-         */
-        'childDays': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof ChildDaysResponse
-         */
-        'firstYear': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof ChildDaysResponse
-         */
-        'lastYear': number;
-    }
-    
-        /**
-     * 
-     * @export
      * @interface ChildEventResponse
      */
     export interface ChildEventResponse {
@@ -5131,12 +5099,6 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
-        'getChildDays': AcLink;
-        /**
-         * 
-         * @type {AcLink}
-         * @memberof RootResponseLinks
-         */
         'getTopChildren': AcLink;
         /**
          * 
@@ -5150,6 +5112,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'getTopLeaders': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getSummary': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -5200,6 +5168,50 @@ export namespace SDK {
          * @memberof RootResponseWithLinks
          */
         '_links': RootResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface SummaryResponse
+     */
+    export interface SummaryResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof SummaryResponse
+         */
+        'year': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof SummaryResponse
+         */
+        'activeChildren': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof SummaryResponse
+         */
+        'activeLeaders': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof SummaryResponse
+         */
+        'childDays': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof SummaryResponse
+         */
+        'firstYear': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof SummaryResponse
+         */
+        'lastYear': number;
     }
     
         /**
@@ -12577,25 +12589,6 @@ export namespace SDK {
     
     
     /**
-     * Query parameters for getChildDays operation in StatisticsApi.
-     * @export
-     * @interface StatisticsApiGetChildDaysQueryParams
-     */
-    export interface StatisticsApiGetChildDaysQueryParams {
-        //year
-        /**
-         * Defaults to the current year.
-         * @type {number}
-         * @memberof StatisticsApiGetChildDays
-         */
-        year?: number
-    }
-    
-    
-    
-    
-    
-    /**
      * Query parameters for getChildEvents operation in StatisticsApi.
      * @export
      * @interface StatisticsApiGetChildEventsQueryParams
@@ -12656,6 +12649,25 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for getSummary operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetSummaryQueryParams
+     */
+    export interface StatisticsApiGetSummaryQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetSummary
+         */
+        year?: number
+    }
     
     
     
@@ -12751,50 +12763,6 @@ export namespace SDK {
     
         constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
             super(configuration, configuration.basePath, axios);
-        }
-    
-        /**
-         * 
-    
-         * @param {StatisticsApiGetChildDaysQueryParams} queryParams Query parameters.
-         * @param {AxiosRequestConfig} [options] Override http request option.
-         * @throws {RequiredError}
-         * @memberof StatisticsApi
-         */
-        
-        public async getChildDays(
-            queryParams: StatisticsApiGetChildDaysQueryParams = {},
-            options: AxiosRequestConfig = {}
-        ) {
-    
-            const localVarPath = `/api/statistics/child-days`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (this.configuration) {
-                baseOptions = this.configuration.baseOptions;
-            }
-    
-            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
-            const requestHeaderParameter = {} as any;
-            const requestQueryParameter = {} as any;
-    
-            // authentication cookieAuth required
-    
-            if (queryParams.year !== undefined) {
-                requestQueryParameter['year'] = queryParams.year;
-            }
-    
-    
-    
-            setSearchParams(requestUrlObj, requestQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-    
-            axiosRequestConfig["url"] = toPathString(requestUrlObj);
-            axiosRequestConfig["baseURL"] = this.configuration.basePath;
-            
-            return this.axios.request<ChildDaysResponse>(axiosRequestConfig);
         }
     
         /**
@@ -13167,6 +13135,50 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<PadlersTotalsResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {StatisticsApiGetSummaryQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof StatisticsApi
+         */
+        
+        public async getSummary(
+            queryParams: StatisticsApiGetSummaryQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/statistics/summary`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<SummaryResponse>(axiosRequestConfig);
         }
     
         /**

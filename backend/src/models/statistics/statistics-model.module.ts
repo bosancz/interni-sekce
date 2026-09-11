@@ -3,11 +3,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { EventAttendee } from "../events/entities/event-attendee.entity";
 import { Event } from "../events/entities/event.entity";
 import { Member } from "../members/entities/member.entity";
-import { ChildDaysStatisticsService } from "./services/child-days-statistics.service";
 import { ChildrenStatisticsService } from "./services/children-statistics.service";
 import { EventsRankingStatisticsService } from "./services/events-ranking-statistics.service";
 import { LeadersStatisticsService } from "./services/leaders-statistics.service";
 import { PaddlersStatisticsService } from "./services/paddlers-statistics.service";
+import { SummaryStatisticsService } from "./services/summary-statistics.service";
 
 @Module({
 	providers: [
@@ -15,7 +15,7 @@ import { PaddlersStatisticsService } from "./services/paddlers-statistics.servic
 		LeadersStatisticsService,
 		EventsRankingStatisticsService,
 		ChildrenStatisticsService,
-		ChildDaysStatisticsService,
+		SummaryStatisticsService,
 	],
 	imports: [TypeOrmModule.forFeature([Member, Event, EventAttendee])],
 	exports: [
@@ -23,7 +23,7 @@ import { PaddlersStatisticsService } from "./services/paddlers-statistics.servic
 		LeadersStatisticsService,
 		EventsRankingStatisticsService,
 		ChildrenStatisticsService,
-		ChildDaysStatisticsService,
+		SummaryStatisticsService,
 	],
 })
 export class StatisticsModelModule {}
