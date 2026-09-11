@@ -33,8 +33,6 @@ export class MyRankingResponse {
 export class TopLeadersResponse {
 	@ApiProperty() year!: number;
 
-	@ApiProperty() childDays!: number;
-
 	@ApiProperty() firstYear!: number;
 	@ApiProperty() lastYear!: number;
 

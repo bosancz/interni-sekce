@@ -13,7 +13,10 @@ import { PageContentComponent } from "src/app/shared/components/page-content/pag
 import { SDK } from "src/sdk";
 import { HomeCardMyEventsComponent } from "../home-card-my-events/home-card-my-events.component";
 import { HomeCardNoleaderEventsComponent } from "../home-card-noleader-events/home-card-noleader-events.component";
+import { HomeCardTopChildrenComponent } from "../home-card-top-children/home-card-top-children.component";
+import { HomeCardTopEventsComponent } from "../home-card-top-events/home-card-top-events.component";
 import { HomeCardTopLeadersComponent } from "../home-card-top-leaders/home-card-top-leaders.component";
+import { HomeCardStatisticsComponent } from "../home-card-statistics/home-card-statistics.component";
 
 const months = [
 	"Leden",
@@ -39,7 +42,10 @@ const months = [
 		EventCalendarComponent,
 		HomeCardMyEventsComponent,
 		HomeCardNoleaderEventsComponent,
+		HomeCardStatisticsComponent,
 		HomeCardTopLeadersComponent,
+		HomeCardTopEventsComponent,
+		HomeCardTopChildrenComponent,
 		PageContentComponent,
 		ButtonSquareComponent,
 		IonIcon,

@@ -1,23 +1,10 @@
 import { I18nPluralPipe } from "@angular/common";
 import { Component, computed, effect, signal } from "@angular/core";
-import {
-	IonContent,
-	IonIcon,
-	IonItem,
-	IonLabel,
-	IonList,
-	IonPopover,
-	IonSkeletonText,
-} from "@ionic/angular/standalone";
-import { addIcons } from "ionicons";
-import { chevronBackOutline, chevronForwardOutline, informationCircleOutline } from "ionicons/icons";
+import { IonContent, IonItem, IonLabel, IonList, IonPopover, IonSkeletonText } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
-import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
-import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
-import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
-import { CardComponent } from "src/app/shared/components/card/card.component";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
+import { HomeLeaderboardCardComponent } from "../home-leaderboard-card/home-leaderboard-card.component";
 
 const TOP_LEADERS_LIMIT = 5;
 
@@ -32,16 +19,12 @@ export type RankedLeader = SDK.TopLeaderResponse | SDK.MyRankingResponse;
 		DateRangePipe,
 		I18nPluralPipe,
 		IonContent,
-		IonIcon,
 		IonList,
 		IonItem,
 		IonLabel,
 		IonPopover,
 		IonSkeletonText,
-		CardComponent,
-		CardHeaderComponent,
-		CardTitleComponent,
-		CardContentComponent,
+		HomeLeaderboardCardComponent,
 	],
 })
 export class HomeCardTopLeadersComponent {
@@ -70,9 +53,6 @@ export class HomeCardTopLeadersComponent {
 	canGoBack = computed(() => this.year() > (this.statistics()?.firstYear ?? this.year()));
 	canGoForward = computed(() => this.year() < (this.statistics()?.lastYear ?? this.year()));
 
-	infoOpen = signal(false);
-	infoEvent = signal<Event | undefined>(undefined);
-
 	openedLeader = signal<{ leader: RankedLeader; year: number } | undefined>(undefined);
 	leaderEventsOpen = signal(false);
 	leaderEventsEvent = signal<Event | undefined>(undefined);
@@ -80,12 +60,15 @@ export class HomeCardTopLeadersComponent {
 
 	skeletonRows = Array.from({ length: TOP_LEADERS_LIMIT });
 
+	infoLines = [
+		"Děťoden = jedno dítě na jednom dni akce.",
+		"Dvoudenní akce se třemi dětmi má 6 děťodní. Celé skóre akce dostane každý její vedoucí.",
+	];
+
 	childDaysPluralMap = { "=1": "děťoden", "=2": "děťodny", "=3": "děťodny", "=4": "děťodny", other: "děťodní" };
 	eventsPluralMap = { "=1": "akce", "=2": "akce", "=3": "akce", "=4": "akce", other: "akcí" };
 
 	constructor(private api: ApiService) {
-		addIcons({ chevronBackOutline, chevronForwardOutline, informationCircleOutline });
-
 		effect(() => {
 			const year = this.year();
 			if (this.canSeeLeaders()) this.loadStatistics(year);
@@ -100,11 +83,6 @@ export class HomeCardTopLeadersComponent {
 	nextYear() {
 		this.year.update((year) => year + 1);
 		this.leaderEventsOpen.set(false);
-	}
-
-	openInfo(event: Event) {
-		this.infoEvent.set(event);
-		this.infoOpen.set(true);
 	}
 
 	async openLeaderEvents(event: Event, leader: RankedLeader) {
