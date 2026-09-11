@@ -1,17 +1,15 @@
 import { Component, effect, input, output, signal } from "@angular/core";
-import {
-	AlertButton,
-	AlertController,
-	IonButtons,
-	IonIcon,
-	IonItem,
-	IonLabel,
-	IonList,
-	IonSkeletonText,
-} from "@ionic/angular/standalone";
+import { IonButtons, IonIcon, IonItem, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { callOutline, informationCircleOutline, mailOutline, peopleOutline, personOutline } from "ionicons/icons";
+import {
+	callOutline,
+	informationCircleOutline,
+	mailOutline,
+	peopleOutline,
+	personOutline,
+	starOutline,
+} from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -25,6 +23,10 @@ import { DeleteButtonComponent } from "src/app/shared/components/delete-button/d
 import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
 import { IconButtonComponent } from "src/app/shared/components/icon-button/icon-button.component";
 import { SDK } from "src/sdk";
+import {
+	MemberContactFormData,
+	MemberContactModalComponent,
+} from "../member-contact-modal/member-contact-modal.component";
 
 @UntilDestroy()
 @Component({
@@ -58,10 +60,9 @@ export default class MemberContactsComponent {
 	constructor(
 		private toastService: ToastService,
 		private api: ApiService,
-		private alertController: AlertController,
 		private modalService: ModalService,
 	) {
-		addIcons({ callOutline, mailOutline, informationCircleOutline, personOutline, peopleOutline });
+		addIcons({ callOutline, mailOutline, informationCircleOutline, personOutline, peopleOutline, starOutline });
 		effect(() => {
 			const member = this.member();
 			this.loadContacts(member?.id ?? null);
@@ -150,88 +151,23 @@ export default class MemberContactsComponent {
 	}
 
 	async openContactForm(contact: SDK.MemberContactResponseWithLinks | null) {
-		const buttons: AlertButton[] = [
-			{
-				text: "Zrušit",
-				role: "cancel",
-			},
-			{
-				text: contact ? "Uložit" : "Přidat",
-				handler: async (data) => {
-					if (!data.relationship) {
-						this.toastService.toast("Chybí vztah", { color: "danger" });
-						return false;
-					} else if (!data.email && !data.mobile && !data.other) {
-						this.toastService.toast("Musí být vyplněn alespoň jeden kontakt", { color: "danger" });
-						return false;
-					} else {
-						await this.saveContact(contact?.id ?? null, data);
-					}
-				},
-			},
-		];
+		const data = await this.modalService.componentModal(
+			MemberContactModalComponent,
+			{ contact },
+			{ cssClass: "dialog-brand" },
+		);
 
-		const alert = await this.alertController.create({
-			header: contact ? "Upravit kontakt" : "Přidat kontakt",
-			inputs: [
-				{
-					name: "relationship",
-					type: "text",
-					attributes: {
-						required: true,
-					},
-					placeholder: "Vztah",
-					value: contact?.relationship,
-				},
-				{
-					name: "name",
-					type: "text",
-					placeholder: "Jméno",
-					value: contact?.name,
-				},
-				{
-					name: "email",
-					type: "email",
-					placeholder: "Email",
-					value: contact?.email,
-				},
-				{
-					name: "mobile",
-					type: "tel",
-					placeholder: "Mobil",
-					value: contact?.mobile,
-				},
-				{
-					name: "other",
-					type: "text",
-					placeholder: "Jiný",
-					value: contact?.other,
-				},
-			],
-			buttons,
-		});
-
-		await alert.present();
+		if (data) await this.saveContact(contact?.id ?? null, data);
 	}
 
-	private async saveContact(
-		contactId: number | null,
-		data: { relationship: string; name?: string; email?: string; mobile?: string; other?: string },
-	) {
+	private async saveContact(contactId: number | null, data: MemberContactFormData) {
 		const member = this.member();
 		if (!member) return;
 
-		if (contactId) {
-			const { data: updated } = await this.api.MembersApi.updateContact(member.id, contactId, data);
-			this.contacts.set(
-				(this.contacts() ?? []).map((c) =>
-					c.id === contactId ? (updated as SDK.MemberContactResponseWithLinks) : c,
-				),
-			);
-		} else {
-			const { data: created } = await this.api.MembersApi.createContact(member.id, data);
-			this.contacts.set([...(this.contacts() ?? []), created as SDK.MemberContactResponseWithLinks]);
-		}
+		if (contactId) await this.api.MembersApi.updateContact(member.id, contactId, data);
+		else await this.api.MembersApi.createContact(member.id, data);
+
+		await this.loadContacts(member.id);
 
 		await this.toastService.toast(contactId ? "Kontakt byl upraven" : "Kontakt byl přidán");
 	}

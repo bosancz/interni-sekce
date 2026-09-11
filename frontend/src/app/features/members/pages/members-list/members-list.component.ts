@@ -38,6 +38,7 @@ import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
+import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 import { MembershipStates } from "../../../../core/config/membership-states";
@@ -89,6 +90,7 @@ const MEMBERS_LIST_COLUMNS: { [key: string]: boolean } = {
 		FormsModule,
 		KeyValuePipe,
 		MemberPipe,
+		DefaultContactPipe,
 		GroupBadgeComponent,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
@@ -468,8 +470,8 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 			birthday: "Narozeniny",
 			addressCity: "Město",
 			addressStreet: "Ulice",
-			firstTelephone: "První telefon",
-			firstEmail: "První email",
+			firstTelephone: "Telefon na rodiče",
+			firstEmail: "Email na rodiče",
 			status: "Stav",
 		};
 

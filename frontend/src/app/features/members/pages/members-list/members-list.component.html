@@ -208,8 +208,16 @@
 		@if (viewSelections().firstTelephone) {
 			<admin-table-column header="Telefon" headerClass="align-middle">
 				<ng-container *adminCell="let member">
-					<strong>{{ member.contacts?.[0]?.relationship || "" }}</strong>
-					{{ member.contacts?.[0]?.mobile || "" }}
+					@if (member.contacts | defaultContact; as contact) {
+						@for (value of contact.mobile; track $index) {
+							<div>
+								@if ($first) {
+									<strong>{{ contact.relationship }}</strong>
+								}
+								{{ value }}
+							</div>
+						}
+					}
 				</ng-container>
 			</admin-table-column>
 		}
@@ -217,8 +225,16 @@
 		@if (viewSelections().firstEmail) {
 			<admin-table-column header="E-mail" headerClass="align-middle">
 				<ng-container *adminCell="let member">
-					<strong>{{ member.contacts?.[0]?.relationship || "" }}</strong>
-					{{ member.contacts?.[0]?.email || "" }}
+					@if (member.contacts | defaultContact; as contact) {
+						@for (value of contact.email; track $index) {
+							<div>
+								@if ($first) {
+									<strong>{{ contact.relationship }}</strong>
+								}
+								{{ value }}
+							</div>
+						}
+					}
 				</ng-container>
 			</admin-table-column>
 		}

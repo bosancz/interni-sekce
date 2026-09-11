@@ -863,22 +863,28 @@ export namespace SDK {
         'name'?: string;
         /**
          * 
-         * @type {string}
+         * @type {Array<string>}
          * @memberof CreateContactBody
          */
-        'mobile'?: string;
+        'mobile'?: Array<string>;
         /**
          * 
-         * @type {string}
+         * @type {Array<string>}
          * @memberof CreateContactBody
          */
-        'email'?: string;
+        'email'?: Array<string>;
         /**
          * 
          * @type {string}
          * @memberof CreateContactBody
          */
         'other'?: string;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof CreateContactBody
+         */
+        'isDefault'?: boolean;
     }
     
         /**
@@ -3268,22 +3274,28 @@ export namespace SDK {
         'name'?: string;
         /**
          * 
-         * @type {string}
+         * @type {Array<string>}
          * @memberof MemberContact
          */
-        'mobile'?: string;
+        'mobile': Array<string>;
         /**
          * 
-         * @type {string}
+         * @type {Array<string>}
          * @memberof MemberContact
          */
-        'email'?: string;
+        'email': Array<string>;
         /**
          * 
          * @type {string}
          * @memberof MemberContact
          */
         'other'?: string;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MemberContact
+         */
+        'isDefault': boolean;
     }
     
         /**
@@ -3312,22 +3324,28 @@ export namespace SDK {
         'relationship': string;
         /**
          * 
+         * @type {Array<string>}
+         * @memberof MemberContactResponse
+         */
+        'mobile': Array<string>;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof MemberContactResponse
+         */
+        'email': Array<string>;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MemberContactResponse
+         */
+        'isDefault': boolean;
+        /**
+         * 
          * @type {string}
          * @memberof MemberContactResponse
          */
         'name'?: string;
-        /**
-         * 
-         * @type {string}
-         * @memberof MemberContactResponse
-         */
-        'mobile'?: string;
-        /**
-         * 
-         * @type {string}
-         * @memberof MemberContactResponse
-         */
-        'email'?: string;
         /**
          * 
          * @type {string}
@@ -3376,22 +3394,28 @@ export namespace SDK {
         'relationship': string;
         /**
          * 
+         * @type {Array<string>}
+         * @memberof MemberContactResponseWithLinks
+         */
+        'mobile': Array<string>;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof MemberContactResponseWithLinks
+         */
+        'email': Array<string>;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MemberContactResponseWithLinks
+         */
+        'isDefault': boolean;
+        /**
+         * 
          * @type {string}
          * @memberof MemberContactResponseWithLinks
          */
         'name'?: string;
-        /**
-         * 
-         * @type {string}
-         * @memberof MemberContactResponseWithLinks
-         */
-        'mobile'?: string;
-        /**
-         * 
-         * @type {string}
-         * @memberof MemberContactResponseWithLinks
-         */
-        'email'?: string;
         /**
          * 
          * @type {string}
@@ -5212,6 +5236,50 @@ export namespace SDK {
          * @memberof TopLeadersResponse
          */
         'me'?: MyRankingResponse;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface UpdateContactBody
+     */
+    export interface UpdateContactBody {
+        /**
+         * 
+         * @type {string}
+         * @memberof UpdateContactBody
+         */
+        'relationship': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof UpdateContactBody
+         */
+        'name'?: string;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof UpdateContactBody
+         */
+        'mobile'?: Array<string>;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof UpdateContactBody
+         */
+        'email'?: Array<string>;
+        /**
+         * 
+         * @type {string}
+         * @memberof UpdateContactBody
+         */
+        'other'?: string;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof UpdateContactBody
+         */
+        'isDefault'?: boolean;
     }
     
         /**
@@ -9756,24 +9824,24 @@ export namespace SDK {
         public async updateContact(
             memberId: number,
             contactId: number,
-            body: CreateContactBody,
+            body: UpdateContactBody,
             options: AxiosRequestConfig = {}
         ) {
     
             // verify required parameter 'memberId' is not null or undefined
             assertParamExists('updateContact', 'memberId', memberId)
             assertParamExists('updateContact', 'contactId', contactId)
-            assertParamExists('updateContact', 'createContactBody', body)
+            assertParamExists('updateContact', 'updateContactBody', body)
             
             // verify required parameter 'contactId' is not null or undefined
             assertParamExists('updateContact', 'memberId', memberId)
             assertParamExists('updateContact', 'contactId', contactId)
-            assertParamExists('updateContact', 'createContactBody', body)
+            assertParamExists('updateContact', 'updateContactBody', body)
             
-            // verify required parameter 'createContactBody' is not null or undefined
+            // verify required parameter 'updateContactBody' is not null or undefined
             assertParamExists('updateContact', 'memberId', memberId)
             assertParamExists('updateContact', 'contactId', contactId)
-            assertParamExists('updateContact', 'createContactBody', body)
+            assertParamExists('updateContact', 'updateContactBody', body)
             
             const localVarPath = `/api/members/{memberId}/contacts/{contactId}`
                 .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)))

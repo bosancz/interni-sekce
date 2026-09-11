@@ -1,0 +1,97 @@
+@use "./../../../../../styles/brand-modal" as *;
+
+.mc-field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.mc-label {
+	font-size: 13.5px;
+	font-weight: 700;
+	color: var(--bm-muted);
+}
+
+.mc-input {
+	width: 100%;
+	padding: 10px 14px;
+	border: 2px solid var(--bm-border);
+	border-radius: 12px;
+	background: transparent;
+	color: var(--bm-text);
+	font-family: inherit;
+	font-size: 15px;
+
+	&::placeholder {
+		color: var(--bm-muted-2);
+	}
+
+	&:focus {
+		outline: none;
+		border-color: var(--bm-blue);
+	}
+}
+
+.mc-multi-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.mc-icon-btn {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	border: none;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--bm-muted);
+	cursor: pointer;
+
+	ion-icon {
+		font-size: 20px;
+	}
+
+	&:hover {
+		background: var(--bm-surface-hover);
+		color: var(--bm-text);
+	}
+}
+
+.mc-add-btn {
+	align-self: flex-start;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 12px 6px 8px;
+	border: none;
+	border-radius: 99px;
+	background: transparent;
+	color: var(--bm-blue);
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 700;
+	cursor: pointer;
+
+	ion-icon {
+		font-size: 18px;
+	}
+
+	&:hover {
+		background: var(--bm-surface-hover);
+	}
+}
+
+:host-context(body.dark) .mc-add-btn {
+	color: var(--bm-yellow-on-blue);
+}
+
+.mc-error {
+	margin: 0;
+	color: var(--ion-color-danger);
+	font-size: 14px;
+	font-weight: 600;
+}

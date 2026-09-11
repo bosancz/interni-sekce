@@ -20,7 +20,16 @@ import {
 	MemberContactsDeletePermission,
 	MemberContactsListPermission,
 } from "../acl/member-contacts.acl";
-import { CreateContactBody, MemberContactResponse } from "../dto/member-contact.dto";
+import { CreateContactBody, MemberContactResponse, UpdateContactBody } from "../dto/member-contact.dto";
+
+function toContactData(body: CreateContactBody) {
+	return {
+		...body,
+		mobile: body.mobile ?? [],
+		email: body.email ?? [],
+		isDefault: body.isDefault ?? false,
+	};
+}
 
 @Controller("members/:memberId/contacts")
 @Authenticated()
@@ -36,12 +45,12 @@ export class MemberContactsController {
 		@Req() req: Request,
 		@Param("memberId", ParseIntPipe) memberId: number,
 	): Promise<MemberContactResponse[]> {
-		const member = await this.membersRepository.getMember(memberId, { relations: { contacts: true } });
+		const member = await this.membersRepository.getMember(memberId);
 		if (!member) throw new NotFoundException();
 
 		MemberContactsListPermission.canOrThrow(req, member);
 
-		return member.contacts!;
+		return this.membersRepository.getContacts(member.id);
 	}
 
 	@Post()
@@ -57,7 +66,7 @@ export class MemberContactsController {
 
 		MemberContactsCreatePermission.canOrThrow(req, member);
 
-		return this.membersRepository.createContact(member.id, body);
+		return this.membersRepository.createContact(member.id, toContactData(body));
 	}
 
 	@Patch(":contactId")
@@ -67,14 +76,14 @@ export class MemberContactsController {
 		@Req() req: Request,
 		@Param("memberId", ParseIntPipe) memberId: number,
 		@Param("contactId", ParseIntPipe) contactId: number,
-		@Body() body: CreateContactBody,
+		@Body() body: UpdateContactBody,
 	): Promise<MemberContactResponse> {
 		const member = await this.membersRepository.getMember(memberId);
 		if (!member) throw new NotFoundException();
 
 		MemberContactsCreatePermission.canOrThrow(req, member);
 
-		return this.membersRepository.updateContact(member.id, contactId, body);
+		return this.membersRepository.updateContact(member.id, contactId, toContactData(body));
 	}
 
 	@Delete(":contactId")

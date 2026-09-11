@@ -19,3 +19,14 @@ export function EnsureBoolean(): PropertyDecorator {
 		return !!originalValue;
 	});
 }
+
+export function EnsureStringArray(): PropertyDecorator {
+	return Transform((param) => {
+		if (param.value === undefined || param.value === null) return undefined;
+		const values = Array.isArray(param.value) ? param.value : [param.value];
+		return values
+			.filter((value): value is string => typeof value === "string")
+			.map((value) => value.trim())
+			.filter((value) => value.length > 0);
+	});
+}
