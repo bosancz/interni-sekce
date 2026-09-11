@@ -20,6 +20,7 @@ export class SearchVectorColumns1784914934807 implements MigrationInterface {
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "unaccent"`);
+		await queryRunner.query(`DROP TEXT SEARCH CONFIGURATION IF EXISTS "simple_unaccent"`);
 		await queryRunner.query(`CREATE TEXT SEARCH CONFIGURATION "simple_unaccent" (COPY = "simple")`);
 		await queryRunner.query(`
             ALTER TEXT SEARCH CONFIGURATION "simple_unaccent"
