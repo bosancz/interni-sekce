@@ -81,6 +81,78 @@
 	}
 }
 
+// The note column: the pencil first, so the pencils line up down the column whatever the notes say,
+// and the note itself after it. Centred, so on mobile — where this pair is one line of the item —
+// the label, the pencil and the note all sit on the same line.
+.treasurer-note-cell {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	max-width: 100%;
+}
+
+// The pencil is the quiet kind of edit button the rest of the app uses — it says the note can be
+// written without competing with the note itself.
+.treasurer-note-button {
+	display: inline-flex;
+	flex-shrink: 0;
+	// A note long enough to wrap (mobile) keeps the pencil at its first line instead of floating in
+	// the middle of the block; with a note on one line this is where the centring puts it anyway.
+	align-self: flex-start;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--bo-muted);
+	cursor: pointer;
+	transition:
+		background-color 0.15s ease,
+		color 0.15s ease;
+
+	ion-icon {
+		font-size: 16px;
+	}
+
+	&:hover:not(:disabled) {
+		background: var(--bo-blue-tint);
+		color: var(--bo-blue);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--bo-blue, #3880ff);
+		outline-offset: 2px;
+	}
+
+	&:disabled {
+		cursor: progress;
+		opacity: 0.6;
+	}
+}
+
+// One line in the table, however long the note is — the full text is in the tooltip (and in the
+// edit box). On mobile the same value is a line of the item, where it may wrap instead of being
+// cut off.
+.treasurer-note-text {
+	display: inline-block;
+	max-width: 22rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	vertical-align: bottom;
+}
+
+@media (max-width: 991.98px) {
+	.treasurer-note-text {
+		max-width: 100%;
+		overflow: visible;
+		white-space: normal;
+	}
+}
+
 // Desktop: year, filters, columns and view options laid out inline in the filter toolbar.
 .treasurer-filter-actions {
 	display: flex;

@@ -3197,6 +3197,12 @@ export namespace SDK {
          * @memberof MemberMembershipUpdateBody
          */
         'paid': boolean;
+        /**
+         * The treasurer\'s note on the fee, which only a recorded one can carry — sent with `paid: true` to write it. Left out entirely, the note already recorded stays as it is (that is how the paid/unpaid toggle sends it); `null` or an empty string clear it.
+         * @type {string}
+         * @memberof MemberMembershipUpdateBody
+         */
+        'note'?: string | null;
     }
     
         /**
@@ -3877,6 +3883,12 @@ export namespace SDK {
          * @memberof MembershipPayment
          */
         'recordedOn'?: string | null;
+        /**
+         * What the treasurer wrote down about this fee — \"zaplaceno na táboře\", \"sourozenecká sleva\", \"doplatí v lednu\". Free text, because the things worth noting about a payment are exactly the ones the columns cannot hold; nothing reads it but the person looking at the list.  It hangs on the payment, so it exists only for a season that is recorded as paid — un-record the fee and the note goes with it, the same way its date and symbol do.
+         * @type {string}
+         * @memberof MembershipPayment
+         */
+        'note'?: string | null;
     }
     
         /**
@@ -3915,6 +3927,12 @@ export namespace SDK {
          * @memberof MembershipPaymentResponse
          */
         'recordedOn'?: string | null;
+        /**
+         * Whatever the treasurer noted about this fee; null when nothing was noted.
+         * @type {string}
+         * @memberof MembershipPaymentResponse
+         */
+        'note'?: string | null;
     }
     
         /**

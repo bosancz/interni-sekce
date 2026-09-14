@@ -147,6 +147,15 @@ ion-searchbar {
 	--border-radius: var(--bo-radius-pill) !important;
 }
 
+// A note-sized alert: a few sentences, not a paragraph (that is what .alert-wide is for). Ionic
+// gives an alert textarea two rows, which cuts a note off mid-line — this is room for about five,
+// so the whole note is on screen at once on a phone as well.
+.alert-note {
+	textarea {
+		min-height: 6.5rem !important;
+	}
+}
+
 .alert-wide {
 	--width: 90vw;
 	--max-width: 1100px;

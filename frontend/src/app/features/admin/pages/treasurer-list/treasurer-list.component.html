@@ -217,6 +217,33 @@
 			</admin-table-column>
 		}
 
+		<!-- What the treasurer wrote down about the fee, and the pencil that writes it — the note
+		     lives in its own column, so switching the column off takes the editing with it. The note
+		     hangs on the recorded fee, so the pencil is offered only where there is one to write it
+		     on: a paid season, to someone who may record fees. -->
+		@if (viewSelections().note) {
+			<admin-table-column header="Poznámka" headerClass="align-middle">
+				<ng-container *adminCell="let member">
+					<span class="treasurer-note-cell">
+						@if (canEditMembership(member) && isPaid(member)) {
+							<button
+								type="button"
+								class="treasurer-note-button"
+								[disabled]="isSaving(member)"
+								[boTooltip]="hasNote(member) ? 'Upravit poznámku' : 'Přidat poznámku'"
+								[attr.aria-label]="hasNote(member) ? 'Upravit poznámku' : 'Přidat poznámku'"
+								(click)="editNote(member, $event)"
+							>
+								<ion-icon name="create-outline"></ion-icon>
+							</button>
+						}
+
+						<span class="treasurer-note-text" [boTooltip]="note(member)">{{ note(member) }}</span>
+					</span>
+				</ng-container>
+			</admin-table-column>
+		}
+
 		@if (viewSelections().role) {
 			<admin-table-column header="Role" sort="role" headerClass="align-middle">
 				<ng-container *adminCell="let member">{{ member | member: "role" }}</ng-container>

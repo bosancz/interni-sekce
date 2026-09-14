@@ -148,9 +148,13 @@ ion-item ion-label h3 {
 	gap: 0.25rem;
 }
 
+// A line of the mobile item: "label: value". Centred, so a value that is taller than its label —
+// a group badge, a pill — sits on the label's line rather than below it. A value too long to fit
+// wraps onto a line of its own, where the label is above it and the centring does not show.
 .admin-table-line {
 	display: flex;
 	flex-wrap: wrap;
+	align-items: center;
 	gap: 0.35em;
 }
 

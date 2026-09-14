@@ -22,8 +22,18 @@ export class TooltipDirective implements OnDestroy {
 
 	constructor(private el: ElementRef<HTMLElement>) {}
 
-	@HostListener("mouseenter")
+	/**
+	 * Focus opens the tooltip only when the focus is *visible* — when the keyboard put it there.
+	 * A tap leaves the control focused as well, and an overlay closing hands the focus back to the
+	 * control that opened it (an Ionic alert does), which would otherwise leave the bubble standing
+	 * over the page with no hover to end it.
+	 */
 	@HostListener("focusin")
+	showOnFocus() {
+		if (this.el.nativeElement.matches(":focus-visible")) this.show();
+	}
+
+	@HostListener("mouseenter")
 	show() {
 		const text = this.boTooltip()?.trim();
 		if (!text || this.tooltip) return;
