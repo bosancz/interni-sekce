@@ -18,13 +18,7 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import {
-	chevronBackOutline,
-	chevronForwardOutline,
-	documentText,
-	documentTextOutline,
-	eyeOutline,
-} from "ionicons/icons";
+import { chevronBackOutline, chevronForwardOutline, createOutline, eyeOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipPaymentStates } from "src/app/core/config/membership";
 import { currentMembershipYear, isMembershipPaid, membershipPaymentOf } from "src/app/core/helpers/membership";
@@ -202,14 +196,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		private groupPipe: GroupPipe,
 		private platformService: PlatformService,
 	) {
-		addIcons({
-			chevronBackOutline,
-			chevronForwardOutline,
-			documentText,
-			documentTextOutline,
-			eyeOutline,
-			columns: COLUMNS_ICON,
-		});
+		addIcons({ chevronBackOutline, chevronForwardOutline, createOutline, eyeOutline, columns: COLUMNS_ICON });
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 	}
 
@@ -249,11 +236,6 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 
 	hasNote(member: SDK.MemberResponse): boolean {
 		return !!this.note(member);
-	}
-
-	/** The note itself is the tooltip; an empty one says what the button would do instead. */
-	noteTooltip(member: SDK.MemberResponse): string {
-		return this.note(member) ?? "Přidat poznámku";
 	}
 
 	/** Is this member's fee for the year on screen paid? */
@@ -313,9 +295,10 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	}
 
 	/**
-	 * Write the treasurer's note on the fee of the year on screen. The note hangs on the payment, so
-	 * only a recorded fee has one to edit — the button is not offered for a season that is unpaid.
-	 * Like the toggle, this sits inside a row that links to the member, so the click stops here.
+	 * Write the treasurer's note on the fee of the year on screen, from the pencil in the note
+	 * column. The note hangs on the payment, so only a recorded fee has one to edit — the pencil is
+	 * not offered for a season that is unpaid. Like the toggle, this sits inside a row that links to
+	 * the member, so the click stops here.
 	 */
 	async editNote(member: SDK.MemberResponseWithLinks, event: Event) {
 		event.stopPropagation();
@@ -551,7 +534,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			name: true,
 			group: true,
 			recordedOn: true,
-			note: false,
+			note: true,
 			role: false,
 			age: false,
 			birthday: false,
