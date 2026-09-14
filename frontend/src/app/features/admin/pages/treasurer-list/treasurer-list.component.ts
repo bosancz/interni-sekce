@@ -330,7 +330,6 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			inputs: {
 				note: {
 					type: "textarea",
-					placeholder: "Např. zaplaceno na táboře, sourozenecká sleva…",
 					value: this.note(member) ?? "",
 				},
 			},
