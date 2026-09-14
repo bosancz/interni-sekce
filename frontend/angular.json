@@ -29,6 +29,9 @@
 							}
 						],
 						"scripts": [],
+						"define": {
+							"APP_VERSION": "'DEV'"
+						},
 						"browser": "src/main.ts",
 						"stylePreprocessorOptions": {
 							"includePaths": ["."]

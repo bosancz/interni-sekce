@@ -1,0 +1,68 @@
+.notifications-layout {
+	display: flex;
+	flex-direction: column;
+	max-width: 760px;
+	margin: 0 auto;
+}
+
+:host ::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+.notification-row {
+	justify-content: flex-start;
+	cursor: pointer;
+
+	&:hover {
+		background: var(--bo-hover, rgba(0, 0, 0, 0.03));
+	}
+}
+
+.notification-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	flex: 0 0 auto;
+	align-self: flex-start;
+	margin-top: 7px;
+	background: transparent;
+
+	.unread & {
+		background: var(--ion-color-primary);
+	}
+}
+
+.notification-info {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.notification-title {
+	color: var(--bo-ink);
+
+	.unread & {
+		font-weight: 700;
+	}
+}
+
+.notification-body {
+	color: var(--bo-muted);
+	font-size: 14px;
+}
+
+.notification-date {
+	color: var(--bo-muted);
+	font-size: 12px;
+}
+
+.notifications-empty {
+	justify-content: flex-start;
+	color: var(--bo-muted);
+
+	ion-icon {
+		font-size: 20px;
+		flex: 0 0 auto;
+	}
+}

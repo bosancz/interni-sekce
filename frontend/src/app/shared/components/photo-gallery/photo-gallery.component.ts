@@ -10,6 +10,9 @@ import {
 	output,
 	signal,
 } from "@angular/core";
+import { IonIcon } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { star } from "ionicons/icons";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 
@@ -27,7 +30,7 @@ class PhotoRow {
 	selector: "bo-photo-gallery",
 	templateUrl: "./photo-gallery.component.html",
 	styleUrls: ["./photo-gallery.component.scss"],
-	imports: [PhotoImageUrlPipe],
+	imports: [IonIcon, PhotoImageUrlPipe],
 })
 export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 	photos = input<SDK.PhotoResponseWithLinks[]>([]);
@@ -48,6 +51,8 @@ export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 		private elRef: ElementRef<HTMLElement>,
 		private ngZone: NgZone,
 	) {
+		addIcons({ star });
+
 		effect(() => {
 			const photos = this.photos();
 			if (photos) this.createRows();
@@ -87,7 +92,6 @@ export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 			let row = new PhotoRow();
 			let photo: SDK.PhotoResponseWithLinks | undefined;
 
-			// add photos to row, stop when first photo over limit
 			while (rowWidth <= this.width && (photo = photos.shift())) {
 				const ratio = photo.width && photo.height ? photo.width / photo.height : 3 / 2;
 				rowWidth += maxHeight * ratio;
@@ -116,8 +120,6 @@ export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.rows.set(rows);
 	}
 
-	// transparent 1x1 pixel — replaces a failed image so the browser stops
-	// drawing its broken-image glyph while the placeholder colour stays visible
 	private static readonly TRANSPARENT_PX =
 		"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 

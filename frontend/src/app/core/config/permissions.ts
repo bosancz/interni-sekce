@@ -1,4 +1,3 @@
-// ACL
 export const permissions = {
 	login: { roles: ["spravce", "guest"] },
 	logout: { roles: ["spravce", "user"] },

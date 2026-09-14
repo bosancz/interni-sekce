@@ -1,12 +1,17 @@
-<bo-page-header
-	[title]="album()?.name"
-	backUrl="/galerie"
-	[actions]="headerActions()"
-	actionsHeader="Album"
-/>
+<bo-page-header [title]="album()?.name" backUrl="/galerie" [actions]="headerActions()" actionsHeader="Album" />
 
 <bo-page-content [padding]="true">
-	<bo-album-info [album]="album()" (update)="updateAlbum($event)" />
+	<div class="album-top">
+		<div class="album-top-info">
+			<bo-album-info #albumInfo [album]="album()" (update)="updateAlbum($event)" />
+		</div>
+
+		@if (titlePhoto(); as photo) {
+			<div class="title-photo d-none d-lg-block" [style.width.px]="titlePhotoWidth()">
+				<img [src]="photo | photoImageUrl: 'big'" [style.background-color]="photo.bg" />
+			</div>
+		}
+	</div>
 
 	<bo-album-gallery
 		[photos]="photos()"

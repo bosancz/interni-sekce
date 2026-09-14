@@ -1,0 +1,40 @@
+:host {
+	display: block;
+}
+
+.tiles {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 0.5rem;
+}
+
+.tile {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.8rem 0.5rem;
+	border-radius: var(--bo-radius-btn);
+	background-color: var(--bo-blue-tint);
+	text-align: center;
+}
+
+.tile-value {
+	font-family: var(--font-san);
+	font-weight: 800;
+	font-size: 2.2rem;
+	line-height: 1;
+	color: var(--bo-heading);
+}
+
+.tile-label {
+	color: var(--bo-muted);
+	font-size: 0.8rem;
+	line-height: 1.2;
+}
+
+.tile-skeleton {
+	width: 100%;
+	height: 2.2rem;
+	margin: 0;
+}

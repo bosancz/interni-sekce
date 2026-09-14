@@ -1,6 +1,3 @@
-// Row-state styling (`member-inactive`, `member-vedouci`, …) is global — see
-// src/styles/member-rows.scss — so every member list renders it identically.
-
 :host ::ng-deep .members-table {
 	table-layout: fixed;
 	width: 100%;
@@ -10,7 +7,6 @@ ion-select::part(text) {
 	font-weight: normal;
 }
 
-// Desktop: filters, columns and view options laid out inline in the filter toolbar.
 .members-filter-actions {
 	display: flex;
 	flex-wrap: wrap;
@@ -22,7 +18,6 @@ ion-select::part(text) {
 	}
 }
 
-// Mobile: the same controls collected inside the filter modal.
 .members-filter-modal {
 	.members-filter-modal-pills {
 		display: flex;

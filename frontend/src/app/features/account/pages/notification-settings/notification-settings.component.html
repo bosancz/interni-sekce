@@ -1,0 +1,151 @@
+<bo-page-header title="Nastavení notifikací">
+	<ion-buttons slot="start">
+		<ion-back-button defaultHref="/ucet/notifikace" />
+	</ion-buttons>
+</bo-page-header>
+
+<bo-page-content [padding]="true">
+	@if (settings(); as settings) {
+		<div class="notifications-layout">
+			<bo-card>
+				<bo-card-header>
+					<bo-card-title>
+						<span class="bo-card-section-title">
+							<ion-icon name="phone-portrait-outline" />
+							Zařízení s upozorněními
+						</span>
+					</bo-card-title>
+				</bo-card-header>
+				<bo-card-content>
+					<div class="bo-info-list">
+						@for (device of devices(); track device.id) {
+							<div class="bo-info-row device-row">
+								<span class="device-info">
+									<span class="device-name">{{ device.deviceName ?? "Neznámé zařízení" }}</span>
+									<span class="device-sub">Přidáno {{ device.createdAt | date: "d. M. yyyy" }}</span>
+								</span>
+								<span class="device-actions">
+									@if (device.deviceId === currentDevice()?.deviceId) {
+										<span class="bo-pill bo-pill-green">Toto zařízení</span>
+									}
+									@if (device._links.testNotificationDevice.allowed) {
+										<ion-button
+											fill="outline"
+											size="default"
+											[disabled]="testingDevices().includes(device.id)"
+											(click)="testDevice(device)"
+										>
+											@if (testingDevices().includes(device.id)) {
+												<ion-spinner name="crescent" slot="start" />
+											} @else {
+												<ion-icon name="paper-plane-outline" slot="start" />
+											}
+											Vyzkoušet
+										</ion-button>
+									}
+									@if (device._links.deleteNotificationDevice.allowed) {
+										<bo-delete-button (click)="deleteDevice(device)" />
+									}
+								</span>
+							</div>
+						} @empty {
+							<div class="bo-info-row">
+								<span class="notifications-muted"
+									>Push upozornění zatím nemáš zapnutá na žádném zařízení.</span
+								>
+							</div>
+						}
+
+						<div class="bo-info-row device-add">
+							@if (!settings.pushEnabled) {
+								<span class="notifications-muted">Push upozornění nejsou na serveru nastavená.</span>
+							} @else if (!pushSupported) {
+								<span class="notifications-muted">Tento prohlížeč push upozornění nepodporuje.</span>
+							} @else if (permission() === "denied") {
+								<span class="notifications-muted">
+									Upozornění jsou v prohlížeči zablokovaná. Povol je v nastavení stránky a zkus to
+									znovu.
+								</span>
+							} @else if (!currentDevice() && settings._links.subscribeNotificationDevice.allowed) {
+								<ion-button
+									fill="outline"
+									size="default"
+									[disabled]="subscribing()"
+									(click)="subscribeCurrentDevice()"
+								>
+									@if (subscribing()) {
+										<ion-spinner name="crescent" slot="start" />
+									} @else {
+										<ion-icon name="add-outline" slot="start" />
+									}
+									Zapnout na tomto zařízení
+								</ion-button>
+							} @else {
+								<span class="notifications-muted">Na tomto zařízení jsou upozornění zapnutá.</span>
+							}
+						</div>
+					</div>
+				</bo-card-content>
+			</bo-card>
+
+			<bo-card>
+				<bo-card-header>
+					<bo-card-title>
+						<span class="bo-card-section-title">
+							<ion-icon name="notifications-outline" />
+							Druhy upozornění
+						</span>
+					</bo-card-title>
+				</bo-card-header>
+				<bo-card-content>
+					<div class="bo-info-list">
+						@for (type of settings.types; track type.type) {
+							<div class="bo-info-row type-row">
+								<span class="type-info">
+									<span class="type-title">{{ type.title }}</span>
+									<span class="type-description">{{ type.description }}</span>
+								</span>
+								<span class="type-channels">
+									<ion-toggle
+										labelPlacement="stacked"
+										[checked]="hasChannel(type, channels.Push)"
+										[disabled]="
+											!type._links.updateNotificationSetting.allowed ||
+											savingTypes().includes(type.type)
+										"
+										(ionChange)="setChannel(type, channels.Push, $event.detail.checked)"
+									>
+										Push
+									</ion-toggle>
+									<ion-toggle
+										labelPlacement="stacked"
+										[checked]="hasChannel(type, channels.Email)"
+										[disabled]="
+											!type._links.updateNotificationSetting.allowed ||
+											savingTypes().includes(type.type)
+										"
+										(ionChange)="setChannel(type, channels.Email, $event.detail.checked)"
+									>
+										E-mail
+									</ion-toggle>
+									<ion-toggle
+										labelPlacement="stacked"
+										[checked]="hasChannel(type, channels.InApp)"
+										[disabled]="
+											!type._links.updateNotificationSetting.allowed ||
+											savingTypes().includes(type.type) ||
+											isChannelForced(type, channels.InApp)
+										"
+										(ionChange)="setChannel(type, channels.InApp, $event.detail.checked)"
+									>
+										V aplikaci
+									</ion-toggle>
+								</span>
+							</div>
+						}
+					</div>
+				</bo-card-content>
+			</bo-card>
+		</div>
+	}
+</bo-page-content>

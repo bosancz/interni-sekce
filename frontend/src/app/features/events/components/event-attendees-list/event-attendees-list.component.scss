@@ -1,22 +1,14 @@
 @use "src/styles/variables" as *;
 
-// person rows live in a soft white card
 ion-list {
 	background-color: var(--bo-white);
 	border-radius: var(--bo-radius-card);
 	box-shadow: var(--bo-shadow-card);
 	padding: 0.25rem 0.75rem;
 
-	// The row layout follows the width of the list, not the viewport: the list
-	// sits behind the app sidebar, the event menu and a col-xl-8, so it is only
-	// ~500px wide on a 1265px screen — a viewport media query would keep the
-	// wide layout long after the row stopped fitting.
 	container: attendees / inline-size;
 }
 
-// The bits on the right are fixed-width columns, so the group and role badges
-// line up across rows no matter how long the role title is or which of the
-// optional bits (delete button) a row has.
 bo-item {
 	--label-width: 80px;
 	--group-column: 2.5rem;
@@ -30,7 +22,6 @@ bo-item {
 	line-height: 0;
 }
 
-// roles are NOT teams → neutral grey pill, spelled out
 .role {
 	flex: 0 0 var(--role-column);
 	line-height: 0;
@@ -66,8 +57,6 @@ bo-item {
 	font-size: $font-small;
 }
 
-// Wide list: nickname | name | badge columns on a single line. The name gives
-// way (ellipsis) instead of pushing the columns out of alignment.
 @container attendees (min-width: 641px) {
 	bo-item {
 		::ng-deep > *:not(.label):not(.end):not(.spacer):not(.start) {
@@ -84,8 +73,6 @@ bo-item {
 	}
 }
 
-// Narrow list: nickname + badges + delete on the first line, name/age and the
-// birthday on the lines below.
 @container attendees (max-width: 640px) {
 	bo-item {
 		flex-wrap: wrap;
@@ -96,9 +83,6 @@ bo-item {
 			flex: 0 0 100%;
 		}
 
-		// the nickname takes whatever the badge columns leave over and truncates
-		// rather than pushing them onto a second line (flex-basis has to be 0 —
-		// with `auto` a long nickname wraps the row instead of shrinking)
 		::ng-deep .label {
 			flex: 1 1 0;
 			min-width: 0;
@@ -114,7 +98,6 @@ bo-item {
 	}
 }
 
-// … and keep that first line on one row down to 360 dp
 @container attendees (max-width: 400px) {
 	bo-item {
 		--group-column: 2.25rem;

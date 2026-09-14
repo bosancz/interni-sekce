@@ -3,13 +3,10 @@
 <bo-page-content>
 	<bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
 		@if (isDesktop()) {
-			<!-- Desktop: filter pills laid out inline in the toolbar. -->
 			<div toolbar-actions slot="end" class="albums-filter-actions">
 				<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
 			</div>
 		} @else {
-			<!-- Mobile: the same filter pills collected inside the filter modal, plus a sort control
-			     (the sortable table headers aren't available in the mobile grid view). -->
 			<div class="albums-filter-modal">
 				<ion-list lines="full">
 					<ion-item-divider>Filtry</ion-item-divider>
@@ -26,9 +23,22 @@
 				/>
 			</div>
 		}
+
+		<ion-segment
+			toolbar-actions
+			class="albums-view-toggle"
+			[value]="view()"
+			(ionChange)="setView($any($event).detail.value)"
+		>
+			<ion-segment-button value="table" aria-label="Tabulka">
+				<ion-icon name="list-outline"></ion-icon>
+			</ion-segment-button>
+			<ion-segment-button value="grid" aria-label="Titulní fotky">
+				<ion-icon name="grid-outline"></ion-icon>
+			</ion-segment-button>
+		</ion-segment>
 	</bo-filter>
 
-	<!-- Filter pills, shared between the desktop toolbar and the mobile filter modal. -->
 	<ng-template #filterPills>
 		<bo-filter-pill
 			label="Rok"
@@ -46,42 +56,103 @@
 		/>
 	</ng-template>
 
-	<admin-table
-		[class]="'albums-table'"
-		[display]="view() === 'table' ? 'table' : 'list'"
-		[rows]="albums()"
-		[loading]="albums() === undefined"
-		[rowLink]="rowLink"
-		[actions]="albumActions"
-		[actionsHeader]="rowActionsHeader"
-		[sort]="sortColumn()"
-		[order]="sortOrder()"
-		(sortChange)="onSortChange($event)"
-	>
-		<admin-table-column header="Název alba" sort="name" [primary]="true" cellClass="albums-name-column" headerClass="align-middle albums-name-column">
-			<ng-container *adminCell="let album">{{ album.name }}</ng-container>
-		</admin-table-column>
+	@if (view() === "grid") {
+		<div class="albums-grid">
+			@if (albums(); as albumList) {
+				@for (album of albumList; track album.id) {
+					<a class="albums-grid-item" [routerLink]="rowLink(album)">
+						<div class="albums-grid-photo" [class.albums-grid-photo-unpublished]="album.status !== 'public'">
+							@if (album.coverPhoto) {
+								<img
+									[src]="album.coverPhoto | photoImageUrl: 'small'"
+									[style.background-color]="album.coverPhoto.bg"
+									[alt]="album.name"
+									loading="lazy"
+								/>
+							} @else {
+								<ion-icon name="images-outline"></ion-icon>
+							}
+							<span class="bo-pill" [class.bo-pill-green]="album.status === 'public'">
+								{{ album | album: "status" }}
+							</span>
+						</div>
+						<div class="albums-grid-info">
+							<h3>{{ album.name }}</h3>
+							<p>{{ album.dateFrom | date: "d. M. y" }} – {{ album.dateTill | date: "d. M. y" }}</p>
+						</div>
+					</a>
+				}
+			} @else {
+				@for (item of [1, 2, 3, 4, 5, 6, 7, 8]; track item) {
+					<div class="albums-grid-item">
+						<div class="albums-grid-photo">
+							<ion-skeleton-text [animated]="true"></ion-skeleton-text>
+						</div>
+						<div class="albums-grid-info">
+							<h3><ion-skeleton-text [animated]="true" style="width: 70%"></ion-skeleton-text></h3>
+							<p><ion-skeleton-text [animated]="true" style="width: 50%"></ion-skeleton-text></p>
+						</div>
+					</div>
+				}
+			}
+		</div>
+	} @else {
+		<admin-table
+			[class]="'albums-table'"
+			[rows]="albums()"
+			[loading]="albums() === undefined"
+			[rowLink]="rowLink"
+			[actions]="albumActions"
+			[actionsHeader]="rowActionsHeader"
+			[sort]="sortColumn()"
+			[order]="sortOrder()"
+			(sortChange)="onSortChange($event)"
+		>
+			<admin-table-column
+				header="Název alba"
+				sort="name"
+				[primary]="true"
+				cellClass="albums-name-column"
+				headerClass="align-middle albums-name-column"
+			>
+				<ng-container *adminCell="let album">{{ album.name }}</ng-container>
+			</admin-table-column>
 
-		<admin-table-column header="Datum" sort="dateFrom" cellClass="date albums-date-column" headerClass="align-middle albums-date-column">
-			<ng-container *adminCell="let album">
-				{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }}
-			</ng-container>
-		</admin-table-column>
+			<admin-table-column
+				header="Datum"
+				sort="dateFrom"
+				cellClass="date albums-date-column"
+				headerClass="align-middle albums-date-column"
+			>
+				<ng-container *adminCell="let album">
+					{{ album.dateFrom | date: "d. M. y" }} - {{ album.dateTill | date: "d. M. y" }}
+				</ng-container>
+			</admin-table-column>
 
-		<!-- Stav keeps its column position in the desktop table, but is flagged [right] so it
-		     renders on the right of each item in the mobile list. -->
-		<admin-table-column header="Stav" sort="status" [right]="true" cellClass="albums-status-column" headerClass="align-middle albums-status-column">
-			<ng-container *adminCell="let album">
-				<span class="bo-pill" [class.bo-pill-green]="album.status === 'public'">
-					{{ album | album: "status" }}
-				</span>
-			</ng-container>
-		</admin-table-column>
+			<admin-table-column
+				header="Stav"
+				sort="status"
+				[right]="true"
+				cellClass="albums-status-column"
+				headerClass="align-middle albums-status-column"
+			>
+				<ng-container *adminCell="let album">
+					<span class="bo-pill" [class.bo-pill-green]="album.status === 'public'">
+						{{ album | album: "status" }}
+					</span>
+				</ng-container>
+			</admin-table-column>
 
-		<admin-table-column header="Publikováno" sort="datePublished" cellClass="albums-published-column" headerClass="align-middle albums-published-column">
-			<ng-container *adminCell="let album">{{ album.datePublished | date: "d. M. y" }}</ng-container>
-		</admin-table-column>
-	</admin-table>
+			<admin-table-column
+				header="Publikováno"
+				sort="datePublished"
+				cellClass="albums-published-column"
+				headerClass="align-middle albums-published-column"
+			>
+				<ng-container *adminCell="let album">{{ album.datePublished | date: "d. M. y" }}</ng-container>
+			</admin-table-column>
+		</admin-table>
+	}
 
 	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
 		<ion-infinite-scroll-content></ion-infinite-scroll-content>

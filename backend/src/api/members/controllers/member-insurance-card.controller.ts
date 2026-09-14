@@ -33,11 +33,9 @@ import {
 	MemberInsuranceCardUploadPermission,
 } from "../acl/member-insurance-card.acl";
 
-// Restrict to non-active document types. Serving an uploaded .svg/.html inline on the
-// app origin would let it run as stored XSS, so those must never be accepted.
 const ALLOWED_INSURANCE_CARD_TYPES = ["pdf", "jpg", "jpeg", "png"];
 
-@Controller("members/:id/insurance-card")
+@Controller("members/:memberId/insurance-card")
 @Authenticated()
 @AcController()
 @ApiTags("Members")
@@ -53,7 +51,11 @@ export class MemberInsuranceCardController {
 	@Get("")
 	@AcLinks(MemberInsuranceCardReadPermission)
 	@ApiResponse({})
-	async getInsuranceCard(@Req() req: Request, @Res() res: Response, @Param("id", ParseIntPipe) memberId: number) {
+	async getInsuranceCard(
+		@Req() req: Request,
+		@Res() res: Response,
+		@Param("memberId", ParseIntPipe) memberId: number,
+	) {
 		const member = await this.membersService.getMember(memberId);
 		if (!member) throw new NotFoundException("Member not found");
 
@@ -62,12 +64,25 @@ export class MemberInsuranceCardController {
 		if (!member.insuranceCardFile) throw new NotFoundException("Insurance card not found");
 		const path = this.getInsuraceCardPath(member.id, member.insuranceCardFile);
 
+		try {
+			await this.filesService.fileAccessible(path);
+		} catch {
+			throw new NotFoundException("Insurance card file not found");
+		}
+
 		res.setHeader("Content-Disposition", `inline; filename="insurance_card.${member.insuranceCardFile}"`);
 		res.setHeader("Content-Type", contentType(member.insuranceCardFile) || "application/octet-stream");
-		// never let the browser sniff/execute the stored file as something active
 		res.setHeader("X-Content-Type-Options", "nosniff");
 
-		createReadStream(path).pipe(res);
+		const stream = createReadStream(path);
+
+		stream.on("error", (err) => {
+			this.logger.error(err);
+			if (!res.headersSent) res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+			res.end();
+		});
+
+		stream.pipe(res);
 	}
 
 	@Put("")
@@ -89,7 +104,7 @@ export class MemberInsuranceCardController {
 	@ApiResponse({ status: HttpStatus.NO_CONTENT })
 	async uploadInsuranceCard(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) memberId: number,
+		@Param("memberId", ParseIntPipe) memberId: number,
 		@UploadedFile() file: Express.Multer.File,
 	) {
 		const member = await this.membersService.getMember(memberId);
@@ -101,7 +116,9 @@ export class MemberInsuranceCardController {
 
 		const ext = extname(file.originalname).slice(1).toLowerCase();
 		if (!ALLOWED_INSURANCE_CARD_TYPES.includes(ext)) {
-			throw new BadRequestException(`Unsupported file type. Allowed: ${ALLOWED_INSURANCE_CARD_TYPES.join(", ")}.`);
+			throw new BadRequestException(
+				`Unsupported file type. Allowed: ${ALLOWED_INSURANCE_CARD_TYPES.join(", ")}.`,
+			);
 		}
 
 		const path = this.getInsuraceCardPath(member.id, ext);
@@ -120,7 +137,7 @@ export class MemberInsuranceCardController {
 	@Delete("")
 	@AcLinks(MemberInsuranceCardDeletePermission)
 	@ApiResponse({ status: HttpStatus.NO_CONTENT })
-	async deleteInsuranceCard(@Req() req: Request, @Param("id", ParseIntPipe) memberId: number) {
+	async deleteInsuranceCard(@Req() req: Request, @Param("memberId", ParseIntPipe) memberId: number) {
 		const member = await this.membersService.getMember(memberId);
 		if (!member) throw new NotFoundException("Member not found");
 
@@ -133,7 +150,10 @@ export class MemberInsuranceCardController {
 		try {
 			await this.filesService.deleteFile(path);
 
-			await this.membersService.updateMember(member.id, { insuranceCardFile: null });
+			await this.membersService.updateMember(member.id, {
+				insuranceCardFile: null,
+				insuranceCardExpiration: null,
+			});
 		} catch (e) {
 			this.logger.error(e);
 			this.filesService.deleteFile(path).catch(() => {});

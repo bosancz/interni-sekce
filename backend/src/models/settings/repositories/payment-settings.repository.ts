@@ -5,9 +5,7 @@ import { PaymentSettings } from "../entities/payment-settings.entity";
 
 @Injectable()
 export class PaymentSettingsRepository {
-	constructor(
-		@InjectRepository(PaymentSettings) private paymentSettingsRepository: Repository<PaymentSettings>,
-	) {}
+	constructor(@InjectRepository(PaymentSettings) private paymentSettingsRepository: Repository<PaymentSettings>) {}
 
 	/**
 	 * The single settings row. It is seeded by the PaymentSettings migration, so a missing

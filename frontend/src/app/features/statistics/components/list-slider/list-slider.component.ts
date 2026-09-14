@@ -56,8 +56,6 @@ export class ListSliderComponent implements ControlValueAccessor {
 		}
 	}
 
-	/* NgModel (ControlValueAccessor) */
-
 	setValue(value: any) {
 		this.value.set(value);
 		this.onChange(this.value());

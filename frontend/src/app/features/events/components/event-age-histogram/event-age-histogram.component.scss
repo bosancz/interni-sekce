@@ -42,3 +42,13 @@
 	color: $blue;
 	font-size: $font-small;
 }
+
+@media (max-width: 575.98px) {
+	.histogram .chart .bar .label,
+	.histogram .chart .bar .count {
+		font-size: 0.65rem;
+	}
+	.histogram .chart .bar {
+		margin: 0 1px;
+	}
+}

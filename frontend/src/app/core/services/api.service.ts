@@ -37,21 +37,11 @@ export class ApiService extends SDK {
 		shareReplay(1),
 	);
 
-	/**
-	 * Raw CHANGELOG.md markdown, shown in the version changelog modal. Deliberately not
-	 * `shareReplay`ed — each subscription (i.e. each modal open) refetches, so the modal always
-	 * shows the current file.
-	 */
 	public changelog = this.watch((signal) => this.RootApi.getChangelog({ signal })).pipe(
 		map((res) => res.data.content),
 	);
 	public rootLinks = new ReplaySubject<SDK.RootResponseLinks>(1);
 
-	/**
-	 * Signal mirror of the API root `_links`, for reactive permission checks. Each link carries an
-	 * `allowed` flag computed by the backend from the caller's roles, so it is the single source of
-	 * truth for what the current user may do — used to gate navigation links and route access.
-	 */
 	public links: Signal<SDK.RootResponseLinks | undefined> = toSignal(this.rootLinks);
 
 	constructor(config: Config) {
@@ -76,26 +66,20 @@ export class ApiService extends SDK {
 	): WatchedRequest<T, D, H> {
 		const trigger = new ReplaySubject<void>(1);
 
-		// reload on window/tab blur+focus
 		if (options.onFocus !== false) this.tabFocusEvent.subscribe(() => trigger.next());
 
-		// reload on manual API reload trigger
 		if (options.onApiReload !== false) this.reloadApiEvent.subscribe(() => trigger.next());
 
-		// reload on provided custom trigger
 		if (options.customTrigger) options.customTrigger.subscribe(() => trigger.next());
 
-		// load data on initialization
 		trigger.next();
 
 		let abortController: AbortController | null = null;
 
 		return trigger.pipe(
 			switchMap(() => {
-				// abort previous request if not finished yet
 				abortController?.abort();
 				abortController = new AbortController();
-				// issue new request
 				return request(abortController.signal);
 			}),
 		);

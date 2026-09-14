@@ -19,7 +19,6 @@ export interface GetMembersOptions extends PaginationOptions {
 	membershipYear?: number;
 	age?: number[];
 	active?: boolean;
-	// eagerly load each member's contacts in the same query (avoids N+1 per-member fetches)
 	contacts?: boolean;
 }
 
@@ -41,16 +40,10 @@ export class MembersRepository {
 
 		const q = this.membersRepository
 			.createQueryBuilder("members")
-			// row-level permission filter (see Permission.canWhere)
 			.where(where)
 			.take(options.limit)
 			.skip(options.offset);
 
-		// Sorts that are an expression rather than a plain column are selected under an alias and
-		// ordered by that alias. Combining the contacts join below with take/skip makes TypeORM
-		// paginate through a distinct-id subquery, and it can only carry an ORDER BY over into that
-		// subquery when it is either `alias.column` or a selected alias — a bare expression is parsed
-		// as an alias name and the query fails ("CONCAT(members" alias was not found).
 		q.addSelect("CONCAT(members.nickname,members.first_name,members.last_name)", "sort_nickname")
 			.addSelect("CONCAT(members.last_name,members.first_name)", "sort_name")
 			.addSelect("DATE_PART('year', AGE(CURRENT_DATE, members.birthday))", "sort_age")
@@ -85,7 +78,6 @@ export class MembersRepository {
 			{ column: "sort_nickname", order: "ASC" },
 		);
 
-		// Keep members within the same group in a readable order.
 		if (options.sort === "group") {
 			q.addOrderBy("sort_nickname", "ASC");
 		}
@@ -102,7 +94,17 @@ export class MembersRepository {
 
 		if (options.search) {
 			const search = toPrefixTsQuery(options.search);
-			if (search) q.andWhere("members.searchVector @@ to_tsquery('simple_unaccent', :search)", { search });
+			if (search)
+				q.andWhere(
+					new Brackets((qb) =>
+						qb
+							.where("members.searchVector @@ to_tsquery('simple_unaccent', :search)")
+							.orWhere(
+								"EXISTS (SELECT 1 FROM members_contacts mc WHERE mc.member_id = members.id AND mc.search_vector @@ to_tsquery('simple_unaccent', :search))",
+							),
+					),
+					{ search },
+				);
 		}
 
 		if (options.roles) q.andWhere("members.role IN (:...roles)", { roles: options.roles });
@@ -125,8 +127,6 @@ export class MembersRepository {
 		return q.getMany();
 	}
 
-	// Distinct ages across all members in a single query, so the age filter no longer
-	// needs to page through the entire members table client-side.
 	async getMemberAges(where: Brackets | string = "1=1"): Promise<number[]> {
 		const rows = await this.membersRepository
 			.createQueryBuilder("members")
@@ -152,8 +152,6 @@ export class MembersRepository {
 		});
 	}
 
-	// Soft-deleted members only (deletedAt IS NOT NULL). withDeleted() lifts TypeORM's default
-	// filter that hides them, and the explicit condition keeps the live members out.
 	async getDeletedMembers(where: Brackets | string = "1=1") {
 		return this.membersRepository
 			.createQueryBuilder("members")
@@ -165,18 +163,14 @@ export class MembersRepository {
 			.getMany();
 	}
 
-	// Fetch a single member including soft-deleted ones, so restore/permanent-delete can run their
-	// permission checks against a member the normal (non-deleted) query would no longer return.
 	async getDeletedMember(id: number) {
 		return this.membersRepository.findOne({ where: { id }, withDeleted: true });
 	}
 
-	// Clear deletedAt, bringing a soft-deleted member back to life.
 	async restoreMember(id: number) {
 		return this.membersRepository.restore({ id });
 	}
 
-	// Irreversibly remove the row from the database (as opposed to deleteMember's soft delete).
 	async hardDeleteMember(id: number) {
 		return this.membersRepository.delete({ id });
 	}

@@ -80,11 +80,11 @@ export class MembersController {
 		return await this.members.createMember(body);
 	}
 
-	@Get(":id")
+	@Get(":memberId")
 	@AcLinks(MemberReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(MemberResponse) })
-	async getMember(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<MemberResponse> {
-		const member = await this.members.getMember(id);
+	async getMember(@Param("memberId", ParseIntPipe) memberId: number, @Req() req: Request): Promise<MemberResponse> {
+		const member = await this.members.getMember(memberId);
 		if (!member) throw new NotFoundException();
 
 		MemberReadPermission.canOrThrow(req, member);
@@ -92,51 +92,55 @@ export class MembersController {
 		return member;
 	}
 
-	@Patch(":id")
+	@Patch(":memberId")
 	@AcLinks(MemberUpdatePermission)
 	@ApiResponse({ status: 204 })
-	async updateMember(@Req() req: Request, @Param("id", ParseIntPipe) id: number, @Body() body: MemberUpdateBody) {
-		const member = await this.members.getMember(id);
+	async updateMember(
+		@Req() req: Request,
+		@Param("memberId", ParseIntPipe) memberId: number,
+		@Body() body: MemberUpdateBody,
+	) {
+		const member = await this.members.getMember(memberId);
 		if (!member) throw new NotFoundException();
 
 		MemberUpdatePermission.canOrThrow(req, member);
 
-		await this.members.updateMember(id, body);
+		await this.members.updateMember(memberId, body);
 	}
 
-	@Delete(":id")
+	@Delete(":memberId")
 	@AcLinks(MemberDeletePermission)
 	@ApiResponse({ status: 204 })
-	async deleteMember(@Req() req: Request, @Param("id", ParseIntPipe) id: number) {
-		const member = await this.members.getMember(id);
+	async deleteMember(@Req() req: Request, @Param("memberId", ParseIntPipe) memberId: number) {
+		const member = await this.members.getMember(memberId);
 		if (!member) throw new NotFoundException();
 
 		MemberDeletePermission.canOrThrow(req, member);
 
-		await this.members.deleteMember(id);
+		await this.members.deleteMember(memberId);
 	}
 
-	@Post(":id/restore")
+	@Post(":memberId/restore")
 	@AcLinks(MemberRestorePermission)
 	@ApiResponse({ status: 204 })
-	async restoreMember(@Req() req: Request, @Param("id", ParseIntPipe) id: number) {
-		const member = await this.members.getDeletedMember(id);
+	async restoreMember(@Req() req: Request, @Param("memberId", ParseIntPipe) memberId: number) {
+		const member = await this.members.getDeletedMember(memberId);
 		if (!member) throw new NotFoundException();
 
 		MemberRestorePermission.canOrThrow(req, member);
 
-		await this.members.restoreMember(id);
+		await this.members.restoreMember(memberId);
 	}
 
-	@Delete(":id/permanent")
+	@Delete(":memberId/permanent")
 	@AcLinks(MemberDeletePermanentPermission)
 	@ApiResponse({ status: 204 })
-	async deleteMemberPermanent(@Req() req: Request, @Param("id", ParseIntPipe) id: number) {
-		const member = await this.members.getDeletedMember(id);
+	async deleteMemberPermanent(@Req() req: Request, @Param("memberId", ParseIntPipe) memberId: number) {
+		const member = await this.members.getDeletedMember(memberId);
 		if (!member) throw new NotFoundException();
 
 		MemberDeletePermanentPermission.canOrThrow(req, member);
 
-		await this.members.hardDeleteMember(id);
+		await this.members.hardDeleteMember(memberId);
 	}
 }

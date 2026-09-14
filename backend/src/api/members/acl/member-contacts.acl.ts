@@ -6,12 +6,14 @@ import { MemberReadPermission, MemberUpdatePermission } from "./members.acl";
 export const MemberContactsListPermission = new Permission({
 	linkTo: MemberResponse,
 	contains: MemberContactResponse,
+	params: { memberId: "id" },
 	inherit: MemberReadPermission,
 });
 
 export const MemberContactsCreatePermission = new Permission({
 	linkTo: MemberResponse,
 	contains: MemberContactResponse,
+	params: { memberId: "id" },
 	inherit: MemberUpdatePermission,
 });
 
@@ -23,5 +25,6 @@ export const MemberContactsUpdatePermission = new Permission({
 
 export const MemberContactsDeletePermission = new Permission({
 	linkTo: MemberContactResponse,
+	params: { contactId: "id" },
 	allowed: { vedouci: true },
 });

@@ -14,6 +14,7 @@ export const PhotosListPermission = new Permission<void>({
 export const PhotoReadPermission = new Permission({
 	linkTo: PhotoResponse,
 	contains: PhotoResponse,
+	params: { photoId: "id" },
 
 	allowed: {
 		vedouci: true,
@@ -30,6 +31,7 @@ export const PhotoCreatePermission = new Permission<void>({
 
 export const PhotoEditPermission = new Permission({
 	linkTo: PhotoResponse,
+	params: { photoId: "id" },
 	allowed: {
 		vedouci: true,
 	},
@@ -37,10 +39,12 @@ export const PhotoEditPermission = new Permission({
 
 export const PhotoDeletePermission = new Permission({
 	linkTo: PhotoResponse,
+	params: { photoId: "id" },
 	inherit: PhotoEditPermission,
 });
 
 export const PhotoReadFilePermission = new Permission({
 	linkTo: PhotoResponse,
+	params: { photoId: "id" },
 	inherit: PhotoReadPermission,
 });

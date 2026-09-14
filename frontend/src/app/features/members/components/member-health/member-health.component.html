@@ -101,5 +101,9 @@
 		</bo-card-content>
 	</bo-card>
 
-	<bo-card-insurance-card [member]="member()" (update)="reload.emit()"></bo-card-insurance-card>
+	<bo-card-insurance-card
+		[member]="member()"
+		(update)="update.emit($event)"
+		(reload)="reload.emit()"
+	></bo-card-insurance-card>
 </div>

@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, input, output, signal } from "@angular/core";
+import { Component, computed, input, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonButton, IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
@@ -63,8 +63,12 @@ const EVENT_REPORT_TEMPLATE = [
 })
 export class EventReportComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>();
-	update = output<SDK.EventUpdateBody>();
 	change = output<void>();
+
+	readonly noPermissionText = "K této akci nemáš oprávnění.";
+
+	canEditReport = computed(() => this.event()?._links?.updateEventReport?.allowed ?? false);
+	canEditAlbum = computed(() => this.event()?._links?.updateEvent?.allowed ?? false);
 
 	addingAlbum = signal(false);
 	removingAlbum = signal(false);
@@ -77,21 +81,28 @@ export class EventReportComponent {
 		addIcons({ imagesOutline, chevronForwardOutline, documentTextOutline, closeOutline });
 	}
 
-	/** opens the same markdown editor as the pencil edit button */
 	async writeReport() {
 		const result = await this.modalService.componentModal(MarkdownEditorModalComponent, {
 			header: "Report",
 			value: this.event()?.report || EVENT_REPORT_TEMPLATE,
 		});
 
-		if (result !== null) this.update.emit({ report: result });
+		if (result !== null) await this.saveReport(result);
 	}
 
-	/**
-	 * Single entry point for adding a gallery to the event. The selector is pre-searched with the
-	 * event name so a likely-matching album surfaces immediately: the user either links that existing
-	 * album or creates a new one (pre-filled from the event) — both paths from one modal.
-	 */
+	async saveReport(report: string | null) {
+		const event = this.event();
+		if (!event) return;
+
+		try {
+			await this.api.EventsApi.updateEventReport(event.id, { report });
+			this.toastService.toast("Uloženo.");
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se uložit report.", { color: "warning" });
+		}
+	}
+
 	async addAlbum() {
 		const event = this.event();
 		if (!event || this.addingAlbum()) return;
@@ -130,12 +141,7 @@ export class EventReportComponent {
 		}
 	}
 
-	/**
-	 * Detaches the linked album from the event. The album itself is kept — only the link is cleared
-	 * by nulling the album's `eventId` (albums own the relation, so there is no event-side field).
-	 */
 	async removeAlbum(album: SDK.Album, mouseEvent?: Event) {
-		// the album row is itself a router link; keep the click from navigating away
 		mouseEvent?.stopPropagation();
 		mouseEvent?.preventDefault();
 

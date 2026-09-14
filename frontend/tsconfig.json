@@ -1,26 +1,26 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "baseUrl": "./",
-    "ignoreDeprecations": "6.0",
-    "outDir": "./dist",
-    "typeRoots": ["node_modules/@types"],
-    "types": ["google.accounts"],
-    "esModuleInterop": true,
-    "module": "es2020",
-    "target": "ES2022",
-    "moduleResolution": "bundler",
-    "importHelpers": true,
-    "sourceMap": true,
-    "declaration": false,
-    "experimentalDecorators": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "useDefineForClassFields": false
-  },
-  "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true,
-    "strictTemplates": true
-  }
+	"compileOnSave": false,
+	"compilerOptions": {
+		"baseUrl": "./",
+		"ignoreDeprecations": "6.0",
+		"outDir": "./dist",
+		"typeRoots": ["node_modules/@types"],
+		"types": ["google.accounts"],
+		"esModuleInterop": true,
+		"module": "es2020",
+		"target": "ES2022",
+		"moduleResolution": "bundler",
+		"importHelpers": true,
+		"sourceMap": true,
+		"declaration": false,
+		"experimentalDecorators": true,
+		"strict": true,
+		"skipLibCheck": true,
+		"useDefineForClassFields": false
+	},
+	"angularCompilerOptions": {
+		"fullTemplateTypeCheck": true,
+		"strictInjectionParameters": true,
+		"strictTemplates": true
+	}
 }

@@ -31,11 +31,8 @@ import { SDK } from "src/sdk";
 export class DeletedMembersListComponent implements ViewWillEnter {
 	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
 
-	// Header shown above the actions on the mobile ActionSheet.
 	rowActionsHeader = (member: SDK.MemberResponseWithLinks) => this.memberName(member);
 
-	// Arrow property (stable reference + bound `this`) so it can be passed as the
-	// admin-table `[actions]` input and invoked from there per row.
 	memberActions = (member: SDK.MemberResponseWithLinks): Action[] => [
 		{
 			text: "Obnovit",

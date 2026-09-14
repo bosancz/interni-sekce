@@ -55,11 +55,11 @@ export class GroupsController {
 		return this.groups.createGroup(groupData);
 	}
 
-	@Get(":id")
+	@Get(":groupId")
 	@AcLinks(GroupReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(GroupResponse) })
-	async getGroup(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
-		const group = await this.groups.getGroup(id);
+	async getGroup(@Param("groupId", ParseIntPipe) groupId: number, @Req() req: Request) {
+		const group = await this.groups.getGroup(groupId);
 		if (!group) throw new NotFoundException();
 
 		GroupReadPermission.canOrThrow(req, group);
@@ -67,57 +67,61 @@ export class GroupsController {
 		return group;
 	}
 
-	@Patch(":id")
+	@Patch(":groupId")
 	@AcLinks(GroupEditPermission)
 	@ApiResponse({ status: HttpStatus.OK })
-	async updateGroup(@Param("id", ParseIntPipe) id: number, @Req() req: Request, @Body() body: UpdateGroupBody) {
-		const group = await this.groups.getGroup(id);
+	async updateGroup(
+		@Param("groupId", ParseIntPipe) groupId: number,
+		@Req() req: Request,
+		@Body() body: UpdateGroupBody,
+	) {
+		const group = await this.groups.getGroup(groupId);
 		if (!group) throw new NotFoundException();
 
 		GroupEditPermission.canOrThrow(req, group);
 
-		await this.groups.updateGroup(id, body);
+		await this.groups.updateGroup(groupId, body);
 	}
 
-	@Delete(":id")
+	@Delete(":groupId")
 	@AcLinks(GroupDeletePermission)
-	async deleteGroup(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
-		const group = await this.groups.getGroup(id);
+	async deleteGroup(@Param("groupId", ParseIntPipe) groupId: number, @Req() req: Request): Promise<void> {
+		const group = await this.groups.getGroup(groupId);
 		if (!group) throw new NotFoundException();
 
 		GroupDeletePermission.canOrThrow(req, group);
 
-		await this.groups.deleteGroup(id);
+		await this.groups.deleteGroup(groupId);
 	}
 
-	@Post(":id/restore")
+	@Post(":groupId/restore")
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@AcLinks(GroupRestorePermission)
 	@ApiResponse({ status: HttpStatus.NO_CONTENT })
-	async restoreGroup(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
-		const group = await this.groups.getGroup(id, { withDeleted: true });
+	async restoreGroup(@Param("groupId", ParseIntPipe) groupId: number, @Req() req: Request): Promise<void> {
+		const group = await this.groups.getGroup(groupId, { withDeleted: true });
 		if (!group) throw new NotFoundException();
 
 		GroupRestorePermission.canOrThrow(req, group);
 
-		await this.groups.restoreGroup(id);
+		await this.groups.restoreGroup(groupId);
 	}
 
-	@Delete(":id/permanent")
+	@Delete(":groupId/permanent")
 	@AcLinks(GroupPermanentDeletePermission)
-	async permanentlyDeleteGroup(@Param("id", ParseIntPipe) id: number, @Req() req: Request): Promise<void> {
-		const group = await this.groups.getGroup(id, { withDeleted: true });
+	async permanentlyDeleteGroup(@Param("groupId", ParseIntPipe) groupId: number, @Req() req: Request): Promise<void> {
+		const group = await this.groups.getGroup(groupId, { withDeleted: true });
 		if (!group) throw new NotFoundException();
 
 		GroupPermanentDeletePermission.canOrThrow(req, group);
 
 		try {
-			await this.groups.hardDeleteGroup(id);
+			await this.groups.hardDeleteGroup(groupId);
 		} catch (err) {
-			// Postgres foreign-key violation (23503): the members→groups FK (onDelete RESTRICT)
-			// still references this group, so it can't be permanently removed
 			if (err instanceof QueryFailedError && (err.driverError as { code?: string }).code === "23503") {
-				throw new ConflictException("Oddíl nelze trvale smazat, protože jsou na něj navázané záznamy (např. členové).");
+				throw new ConflictException(
+					"Oddíl nelze trvale smazat, protože jsou na něj navázané záznamy (např. členové).",
+				);
 			}
 			throw err;
 		}

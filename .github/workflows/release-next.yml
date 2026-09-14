@@ -52,7 +52,7 @@ jobs:
 
   tag:
     name: Tag release
-    needs: deploy
+    needs: build
     uses: ./.github/workflows/tag.yml
     with:
       tag: NEXT

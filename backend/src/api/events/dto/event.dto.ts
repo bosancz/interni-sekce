@@ -12,8 +12,6 @@ import { Member } from "src/models/members/entities/member.entity";
 import { EventAttendeeResponse } from "./event-attendee.dto";
 import { EventExpenseResponse } from "./event-expense.dto";
 
-// srcId is the legacy Mongo ObjectId used only for backend file resolution (registration PDFs of
-// imported events); like PhotoResponse omits Photo.srcId/srcAlbumId, it is not exposed in the API.
 export class EventResponse implements Omit<Event, "setLeaders" | "srcId"> {
 	id!: number;
 	name!: string;
@@ -39,6 +37,8 @@ export class EventResponse implements Omit<Event, "setLeaders" | "srcId"> {
 	river!: string | null;
 	deletedAt?: Date | null;
 	report!: string | null;
+	@ApiPropertyOptional({ type: "string" }) announcementSentAt!: Date | string | null;
+	@ApiPropertyOptional({ type: "string" }) accountingSentAt!: Date | string | null;
 
 	@ApiPropertyOptional({ type: AlbumResponse }) album?: Album | undefined;
 	@ApiPropertyOptional({ type: GroupResponse, isArray: true }) groups?: Group[] | undefined;
@@ -81,7 +81,10 @@ export class EventUpdateBody {
 	@IsOptional() @IsString() meetingPlaceEnd?: string | null;
 	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsString() waterKm?: number | null;
 	@IsOptional() @IsString() river?: string | null;
-	@IsOptional() @IsString() report?: string | null;
+}
+
+export class EventReportUpdateBody {
+	@IsOptional() @IsString() report!: string | null;
 }
 
 export class EventStatusChangeBody {

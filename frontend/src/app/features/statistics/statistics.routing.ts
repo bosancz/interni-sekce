@@ -1,4 +1,5 @@
 import { Routes } from "@angular/router";
+import { provideCharts, withDefaultRegisterables } from "ng2-charts";
 
 import { StatisticsComponent } from "./statistics.component";
 
@@ -10,6 +11,7 @@ export const statisticsRoutes: Routes = [
 	{
 		path: "",
 		component: StatisticsComponent,
+		providers: [provideCharts(withDefaultRegisterables())],
 		children: [
 			{ path: "akce", component: EventsDashboardComponent },
 

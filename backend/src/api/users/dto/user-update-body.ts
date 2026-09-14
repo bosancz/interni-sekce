@@ -3,7 +3,6 @@ import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { User, UserRoles } from "src/models/users/entities/user.entity";
 
 export class UserUpdateBody implements Partial<User> {
-	// null unlinks the member; @IsOptional also skips validation for null
 	@ApiPropertyOptional({ type: Number, nullable: true })
 	@IsNumber()
 	@IsOptional()

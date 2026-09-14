@@ -24,7 +24,6 @@ import { InputModalComponent } from "src/app/core/services/modal.service";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
 
-/** sentinel dismissed by the modal when the user opts to create a new album instead of linking an existing one */
 export const CREATE_ALBUM = "create" as const;
 
 @Component({
@@ -54,18 +53,14 @@ export class AlbumSelectorModalComponent
 	extends InputModalComponent<SDK.AlbumResponseWithLinks | typeof CREATE_ALBUM>
 	implements OnInit
 {
-	/** when true, shows a hint to verify the album does not exist yet and a button to create a new one */
 	allowCreate = false;
 
-	/** pre-fills the search (e.g. with the event name) so likely-matching albums surface immediately */
 	initialSearch?: string;
 
-	/** name of the album that "create new" would produce — shown on the create button when set */
 	createName?: string;
 
 	albums = signal<SDK.AlbumResponseWithLinks[] | undefined>(undefined);
 
-	/** album highlighted in the list; the "Připojit" button links this one */
 	selected = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
 
 	pageSize = 20;

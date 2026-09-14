@@ -1,7 +1,6 @@
 export interface EventStatus {
 	name: string;
 	color: string;
-	/** status pill colours — blue = in preparation, yellow = needs attention, neutral = informational */
 	background: string;
 	foreground: string;
 }

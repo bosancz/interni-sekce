@@ -78,7 +78,6 @@ export class GroupsDeletedComponent implements ViewWillEnter {
 		try {
 			await this.api.MembersApi.permanentlyDeleteGroup(group.id);
 		} catch (err: any) {
-			// backend returns 409 with a reason (e.g. linked members) — surface it to the user
 			const message = err?.response?.data?.message ?? "Oddíl se nepodařilo trvale smazat.";
 			await this.toastService.toast(message, { color: "danger", duration: 4000 });
 			return;

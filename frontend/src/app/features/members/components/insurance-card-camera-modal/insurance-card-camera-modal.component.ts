@@ -1,18 +1,19 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, signal, viewChild } from "@angular/core";
+import { AfterViewInit, Component, computed, ElementRef, OnDestroy, signal, viewChild } from "@angular/core";
 import { IonButton, IonButtons, IonIcon, IonSpinner, ModalController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { cameraOutline, checkmarkOutline, flashOffOutline, flashOutline, refreshOutline } from "ionicons/icons";
+import {
+	cameraOutline,
+	cameraReverseOutline,
+	checkmarkOutline,
+	flashOffOutline,
+	flashOutline,
+	refreshOutline,
+} from "ionicons/icons";
 import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 
-/**
- * Aspect ratio of an ID-1 card (bank / insurance card): 85.6mm × 53.98mm ≈ 1.586.
- * The on-screen guide frame and the captured crop both use this ratio so that the
- * photo matches exactly what the user framed.
- */
 const CARD_ASPECT_RATIO = 85.6 / 53.98;
 
-/** Longest edge of the produced image, keeps the upload small while staying sharp. */
 const OUTPUT_MAX_WIDTH = 1600;
 
 type CaptureState = "initializing" | "live" | "preview" | "error";
@@ -36,16 +37,33 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 	torchAvailable = signal(false);
 	torchOn = signal(false);
 
-	/** Data URL of the freshly cropped photo, shown in the preview step. */
+	cameras = signal<MediaDeviceInfo[]>([]);
+	cameraDeviceId = signal<string | null>(null);
+
+	cameraSwitchAvailable = computed(() => this.cameras().length > 1);
+
+	cameraLabel = computed(() => {
+		const cameras = this.cameras();
+		const index = cameras.findIndex((camera) => camera.deviceId === this.cameraDeviceId());
+		if (index < 0) return "";
+		return cameras[index].label || `Kamera ${index + 1}`;
+	});
+
 	previewUrl = signal<string | null>(null);
 
 	private stream: MediaStream | null = null;
-	/** The cropped photo, produced on capture and uploaded when confirmed. */
 	private capturedFile: File | null = null;
 
 	constructor(modalController: ModalController) {
 		super(modalController);
-		addIcons({ cameraOutline, checkmarkOutline, refreshOutline, flashOutline, flashOffOutline });
+		addIcons({
+			cameraOutline,
+			cameraReverseOutline,
+			checkmarkOutline,
+			refreshOutline,
+			flashOutline,
+			flashOffOutline,
+		});
 	}
 
 	async ngAfterViewInit() {
@@ -56,24 +74,23 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		this.stopCamera();
 	}
 
-	private async startCamera() {
+	private async startCamera(deviceId?: string) {
 		this.state.set("initializing");
+		this.stopCamera();
 
 		if (!navigator.mediaDevices?.getUserMedia) {
 			this.fail("Tento prohlížeč nepodporuje přístup ke kameře.");
 			return;
 		}
 
+		const video: MediaTrackConstraints = {
+			width: { ideal: 1920 },
+			height: { ideal: 1080 },
+			...(deviceId ? { deviceId: { exact: deviceId } } : { facingMode: { ideal: "environment" } }),
+		};
+
 		try {
-			// Prefer the rear camera at a high resolution – best for reading small print off a card.
-			this.stream = await navigator.mediaDevices.getUserMedia({
-				video: {
-					facingMode: { ideal: "environment" },
-					width: { ideal: 1920 },
-					height: { ideal: 1080 },
-				},
-				audio: false,
-			});
+			this.stream = await navigator.mediaDevices.getUserMedia({ video, audio: false });
 
 			const videoEl = this.video()?.nativeElement;
 			if (!videoEl) {
@@ -85,6 +102,7 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 			await videoEl.play();
 
 			this.detectTorch();
+			await this.loadCameras();
 			this.state.set("live");
 		} catch (e) {
 			this.fail("Nepodařilo se získat přístup ke kameře. Zkontrolujte oprávnění a zkuste to znovu.");
@@ -97,6 +115,31 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		this.torchAvailable.set(!!capabilities?.torch);
 	}
 
+	private async loadCameras() {
+		const track = this.stream?.getVideoTracks()[0];
+
+		try {
+			const devices = await navigator.mediaDevices.enumerateDevices();
+			this.cameras.set(devices.filter((device) => device.kind === "videoinput" && !!device.deviceId));
+		} catch {
+			this.cameras.set([]);
+		}
+
+		const settingsDeviceId = track?.getSettings?.().deviceId;
+		const byLabel = this.cameras().find((camera) => camera.label && camera.label === track?.label);
+		this.cameraDeviceId.set(settingsDeviceId ?? byLabel?.deviceId ?? null);
+	}
+
+	async switchCamera() {
+		const cameras = this.cameras();
+		if (cameras.length < 2) return;
+
+		const index = cameras.findIndex((camera) => camera.deviceId === this.cameraDeviceId());
+		const next = cameras[(index + 1) % cameras.length];
+
+		await this.startCamera(next.deviceId);
+	}
+
 	async toggleTorch() {
 		const track = this.stream?.getVideoTracks()[0];
 		if (!track) return;
@@ -106,7 +149,6 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 			await track.applyConstraints({ advanced: [{ torch: next } as MediaTrackConstraintSet] });
 			this.torchOn.set(next);
 		} catch {
-			// Some devices report torch support but reject the constraint – just hide the option.
 			this.torchAvailable.set(false);
 		}
 	}
@@ -115,6 +157,7 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		this.stream?.getTracks().forEach((track) => track.stop());
 		this.stream = null;
 		this.torchOn.set(false);
+		this.torchAvailable.set(false);
 	}
 
 	private fail(message: string) {
@@ -122,12 +165,6 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		this.state.set("error");
 	}
 
-	/**
-	 * Grabs the current video frame and crops it to the region covered by the guide
-	 * frame. The video is rendered with `object-fit: cover`, so the mapping between
-	 * the displayed frame and the intrinsic camera pixels has to account for the
-	 * scaling and centering the browser applies.
-	 */
 	capture() {
 		const videoEl = this.video()?.nativeElement;
 		const frameEl = this.frame()?.nativeElement;
@@ -140,14 +177,12 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		const videoRect = videoEl.getBoundingClientRect();
 		const frameRect = frameEl.getBoundingClientRect();
 
-		// object-fit: cover scales the video up until it fills the box, cropping the overflow.
 		const scale = Math.max(videoRect.width / intrinsicW, videoRect.height / intrinsicH);
 		const visibleW = videoRect.width / scale;
 		const visibleH = videoRect.height / scale;
 		const offsetX = (intrinsicW - visibleW) / 2;
 		const offsetY = (intrinsicH - visibleH) / 2;
 
-		// Guide frame position relative to the video element, mapped into intrinsic pixels.
 		const cropX = offsetX + (frameRect.left - videoRect.left) / scale;
 		const cropY = offsetY + (frameRect.top - videoRect.top) / scale;
 		const cropW = frameRect.width / scale;
@@ -178,14 +213,12 @@ export class InsuranceCardCameraModalComponent extends InputModalComponent<File>
 		);
 	}
 
-	/** Discard the captured photo and go back to the live camera. */
 	async retake() {
 		this.capturedFile = null;
 		this.previewUrl.set(null);
-		await this.startCamera();
+		await this.startCamera(this.cameraDeviceId() ?? undefined);
 	}
 
-	/** Confirm the captured photo – hands the file back to the caller for upload. */
 	confirm() {
 		if (this.capturedFile) this.submit.emit(this.capturedFile);
 	}

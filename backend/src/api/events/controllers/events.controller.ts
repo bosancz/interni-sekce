@@ -24,6 +24,7 @@ import { SessionUser } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventPlaceGeometry, EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository, GetEventsOptions } from "src/models/events/repositories/events.repository";
+import { NotificationsService } from "src/models/notifications/services/notifications.service";
 import {
 	EventCancelPermission,
 	EventCreatePermission,
@@ -53,7 +54,10 @@ import { ListEventsQuery } from "../dto/events.dto";
 export class EventsController {
 	private logger = new Logger(EventsController.name);
 
-	constructor(private events: EventsRepository) {}
+	constructor(
+		private events: EventsRepository,
+		private notificationsService: NotificationsService,
+	) {}
 
 	@Get()
 	@AcLinks(EventsListPermission)
@@ -63,7 +67,6 @@ export class EventsController {
 		@AuthUser() authUser: SessionUser,
 		@Query() query: ListEventsQuery,
 	): Promise<EventResponse[]> {
-		// canWhere both authorizes (throws if not allowed) and returns the row-level filter
 		const where = EventsListPermission.canWhere(req, "events");
 
 		const options: GetEventsOptions = {
@@ -122,11 +125,11 @@ export class EventsController {
 		return this.events.getEventsStatuses();
 	}
 
-	@Get(":id")
+	@Get(":eventId")
 	@AcLinks(EventReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(EventResponse) })
-	async getEvent(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<EventResponse> {
-		const event = await this.events.getEvent(id, { leaders: true });
+	async getEvent(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<EventResponse> {
+		const event = await this.events.getEvent(eventId, { leaders: true });
 		if (!event) throw new NotFoundException();
 
 		EventReadPermission.canOrThrow(req, event);
@@ -134,12 +137,16 @@ export class EventsController {
 		return event;
 	}
 
-	@Patch(":id")
+	@Patch(":eventId")
 	@HttpCode(204)
 	@AcLinks(EventEditPermission)
 	@ApiResponse({ status: 204 })
-	async updateEvent(@Req() req: Request, @Param("id", ParseIntPipe) id: number, @Body() body: EventUpdateBody): Promise<void> {
-		const event = await this.events.getEvent(id, { leaders: true });
+	async updateEvent(
+		@Req() req: Request,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@Body() body: EventUpdateBody,
+	): Promise<void> {
+		const event = await this.events.getEvent(eventId, { leaders: true });
 		if (!event) throw new NotFoundException();
 
 		EventEditPermission.canOrThrow(req, event);
@@ -155,162 +162,186 @@ export class EventsController {
 			placeGeometry,
 		};
 
-		await this.events.updateEvent(id, updateData);
+		await this.events.updateEvent(eventId, updateData);
 	}
 
-	@Delete(":id")
+	@Delete(":eventId")
 	@HttpCode(204)
 	@AcLinks(EventDeletePermission)
 	@ApiResponse({ status: 204 })
-	async deleteEvent(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
-		const event = await this.events.getEvent(id, { leaders: true });
+	async deleteEvent(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<void> {
+		const event = await this.events.getEvent(eventId, { leaders: true });
 		if (!event) throw new NotFoundException();
 
 		EventDeletePermission.canOrThrow(req, event);
 
-		return this.events.deleteEvent(id);
+		return this.events.deleteEvent(eventId);
 	}
 
-	@Post(":id/restore")
+	@Post(":eventId/restore")
 	@HttpCode(204)
 	@AcLinks(EventRestorePermission)
 	@ApiResponse({ status: 204 })
-	async restoreEvent(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
-		const event = await this.events.getEvent(id, { leaders: true });
+	async restoreEvent(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<void> {
+		const event = await this.events.getEvent(eventId, { leaders: true });
 		if (!event) throw new NotFoundException();
 
 		EventRestorePermission.canOrThrow(req, event);
 
-		return this.events.restoreEvent(id);
+		return this.events.restoreEvent(eventId);
 	}
 
-	@Delete(":id/permanent")
+	@Delete(":eventId/permanent")
 	@HttpCode(204)
 	@AcLinks(EventDeletePermanentPermission)
 	@ApiResponse({ status: 204 })
-	async deleteEventPermanent(@Req() req: Request, @Param("id", ParseIntPipe) id: number): Promise<void> {
-		const event = await this.events.getEvent(id, { leaders: true });
+	async deleteEventPermanent(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<void> {
+		const event = await this.events.getEvent(eventId, { leaders: true });
 		if (!event) throw new NotFoundException();
 
 		EventDeletePermanentPermission.canOrThrow(req, event);
 
-		return this.events.hardDeleteEvent(id);
+		return this.events.hardDeleteEvent(eventId);
 	}
 
-	@Post(":id/lead")
+	@Post(":eventId/lead")
 	@HttpCode(204)
 	@AcLinks(EventLeadPermission)
 	@ApiResponse({ status: 204 })
-	async leadEvent(@Req() req: Request, @Param("id", ParseIntPipe) id: number, @AuthUser() authUser: SessionUser): Promise<void> {
+	async leadEvent(
+		@Req() req: Request,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@AuthUser() authUser: SessionUser,
+	): Promise<void> {
 		if (authUser.memberId === undefined) throw new ConflictException("User is not linked to a member.");
 
-		const event = await this.events.getEvent(id, { leaders: true });
+		const event = await this.events.getEvent(eventId, { leaders: true });
 		if (!event) throw new NotFoundException();
 
 		EventLeadPermission.canOrThrow(req, event);
 
-		await this.events.createEventAttendee(id, authUser.memberId, { type: EventAttendeeType.leader });
+		await this.events.createEventAttendee(eventId, authUser.memberId, { type: EventAttendeeType.leader });
 	}
 
-	@Post(":id/submit")
+	@Post(":eventId/submit")
 	@HttpCode(204)
 	@AcLinks(EventSubmitPermission)
 	@ApiResponse({ status: 204 })
 	async submitEvent(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) id: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
 		@Body() body: EventStatusChangeBody,
 	): Promise<void> {
-		const event = await this.events.getEvent(id, { leaders: true });
+		const event = await this.events.getEvent(eventId, { leaders: true });
 		if (!event) throw new NotFoundException();
 
 		EventSubmitPermission.canOrThrow(req, event);
 
-		await this.events.updateEvent(id, { status: EventStates.pending, statusNote: body.statusNote });
+		await this.events.updateEvent(eventId, { status: EventStates.pending, statusNote: body.statusNote });
+
+		this.notificationsService
+			.onEventSubmitted(event, req.user?.userId)
+			.catch((err) => this.logger.error(`Failed to send event submitted notifications: ${err.message}`));
 	}
 
-	@Post(":id/reject")
+	@Post(":eventId/reject")
 	@HttpCode(204)
 	@AcLinks(EventRejectPermission)
 	@ApiResponse({ status: 204 })
 	async rejectEvent(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) id: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
 		@Body() body: EventStatusChangeBody,
 	): Promise<void> {
-		const event = await this.events.getEvent(id, { leaders: true });
+		const event = await this.events.getEvent(eventId, { leaders: true });
 		if (!event) throw new NotFoundException();
 
 		EventRejectPermission.canOrThrow(req, event);
 
-		await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
+		await this.events.updateEvent(eventId, { status: EventStates.rejected, statusNote: body.statusNote });
+
+		this.notificationsService
+			.onEventRejected(event, body.statusNote, req.user?.userId)
+			.catch((err) => this.logger.error(`Failed to send event rejected notifications: ${err.message}`));
 	}
 
-	@Post(":id/publish")
+	@Post(":eventId/publish")
 	@HttpCode(204)
 	@AcLinks(EventPublishPermission)
 	@ApiResponse({ status: 204 })
 	async publishEvent(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) id: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
 		@Body() body: EventStatusChangeBody,
 	): Promise<void> {
-		const event = await this.events.getEvent(id, { leaders: true });
+		const event = await this.events.getEvent(eventId, { leaders: true });
 		if (!event) throw new NotFoundException();
 
 		EventPublishPermission.canOrThrow(req, event);
 
-		await this.events.updateEvent(id, { status: EventStates.public, statusNote: body.statusNote });
+		await this.events.updateEvent(eventId, { status: EventStates.public, statusNote: body.statusNote });
+
+		this.notificationsService
+			.onEventPublished(event, req.user?.userId)
+			.catch((err) => this.logger.error(`Failed to send event published notifications: ${err.message}`));
 	}
 
-	@Post(":id/unpublish")
+	@Post(":eventId/unpublish")
 	@HttpCode(204)
 	@AcLinks(EventUnpublishPermission)
 	@ApiResponse({ status: 204 })
 	async unpublishEvent(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) id: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
 		@Body() body: EventStatusChangeBody,
 	): Promise<void> {
-		const event = await this.events.getEvent(id, { leaders: true });
+		const event = await this.events.getEvent(eventId, { leaders: true });
 		if (!event) throw new NotFoundException();
 
 		EventUnpublishPermission.canOrThrow(req, event);
 
-		await this.events.updateEvent(id, { status: EventStates.draft, statusNote: body.statusNote });
+		await this.events.updateEvent(eventId, { status: EventStates.draft, statusNote: body.statusNote });
 	}
 
-	@Post(":id/cancel")
+	@Post(":eventId/cancel")
 	@HttpCode(204)
 	@AcLinks(EventCancelPermission)
 	@ApiResponse({ status: 204 })
 	async cancelEvent(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) id: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
 		@Body() body: EventStatusChangeBody,
 	): Promise<void> {
-		const event = await this.events.getEvent(id, { leaders: true });
+		const event = await this.events.getEvent(eventId, { leaders: true });
 		if (!event) throw new NotFoundException();
 
 		EventCancelPermission.canOrThrow(req, event);
 
-		await this.events.updateEvent(id, { status: EventStates.cancelled, statusNote: body.statusNote });
+		await this.events.updateEvent(eventId, { status: EventStates.cancelled, statusNote: body.statusNote });
+
+		this.notificationsService
+			.onEventCancelled(event, body.statusNote, req.user?.userId)
+			.catch((err) => this.logger.error(`Failed to send event cancelled notifications: ${err.message}`));
 	}
 
-	@Post(":id/uncancel")
+	@Post(":eventId/uncancel")
 	@HttpCode(204)
 	@AcLinks(EventUncancelPermission)
 	@ApiResponse({ status: 204 })
 	async uncancelEvent(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) id: number,
+		@Param("eventId", ParseIntPipe) eventId: number,
 		@Body() body: EventStatusChangeBody,
 	): Promise<void> {
-		const event = await this.events.getEvent(id, { leaders: true });
+		const event = await this.events.getEvent(eventId, { leaders: true });
 		if (!event) throw new NotFoundException();
 
 		EventUncancelPermission.canOrThrow(req, event);
 
-		await this.events.updateEvent(id, { status: EventStates.public, statusNote: body.statusNote });
+		await this.events.updateEvent(eventId, { status: EventStates.public, statusNote: body.statusNote });
+
+		this.notificationsService
+			.onEventUncancelled(event, req.user?.userId)
+			.catch((err) => this.logger.error(`Failed to send event uncancelled notifications: ${err.message}`));
 	}
 }

@@ -19,11 +19,7 @@
 			<ion-list>
 				@if (users()) {
 					@for (user of users()!; track user.id) {
-						<ion-item
-							[routerLink]="['/admin/uzivatele', user.id]"
-							[button]="true"
-							[detail]="true"
-						>
+						<ion-item [routerLink]="['/admin/uzivatele', user.id]" [button]="true" [detail]="true">
 							<ion-label>
 								<h3>{{ user.login }}</h3>
 								@if (user.email) {
@@ -31,7 +27,8 @@
 								}
 								@if (user.member) {
 									<p class="d-lg-none">
-										{{ user.member.nickname || "-" }} ({{ user.member.firstName }} {{ user.member.lastName }})
+										{{ user.member.nickname || "-" }} ({{ user.member.firstName }}
+										{{ user.member.lastName }})
 									</p>
 								}
 								<p class="d-lg-none">
@@ -84,9 +81,7 @@
 								<td>{{ user.login }}</td>
 								<td>
 									@for (role of user.roles; track role) {
-										<ion-badge class="me-1">{{
-											userRoles[role].title
-										}}</ion-badge>
+										<ion-badge class="me-1">{{ userRoles[role].title }}</ion-badge>
 									}
 								</td>
 							</tr>

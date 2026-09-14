@@ -1,16 +1,14 @@
-import { Component, input, OnInit } from "@angular/core";
+import { Component, input } from "@angular/core";
 import { SDK } from "src/sdk";
+import { MemberPipe } from "../../pipes/member.pipe";
 
 @Component({
 	selector: "bo-member-item-detail",
 	templateUrl: "./member-item-detail.component.html",
 	styleUrls: ["./member-item-detail.component.scss"],
-	imports: [],
+	imports: [MemberPipe],
 })
-export class MemberItemDetailComponent implements OnInit {
+export class MemberItemDetailComponent {
 	member = input.required<SDK.MemberResponse>();
-
-	constructor() {}
-
-	ngOnInit(): void {}
+	referenceDate = input<string | null | undefined>();
 }

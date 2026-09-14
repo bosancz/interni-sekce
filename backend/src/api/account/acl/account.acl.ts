@@ -10,3 +10,15 @@ export const AccountReadPermission = new Permission<User>({
 		verejnost: true,
 	},
 });
+
+export const AccountSettingsReadPermission = new Permission<void>({
+	allowed: {
+		uzivatel: true,
+	},
+});
+
+export const AccountSettingsUpdatePermission = new Permission<void>({
+	allowed: {
+		uzivatel: true,
+	},
+});

@@ -46,9 +46,14 @@
 		outline: 2px solid var(--ion-color-primary);
 		outline-offset: 2px;
 	}
+
+	.tag-hint {
+		margin-left: 0.5rem;
+		font-size: 0.85rem;
+		color: var(--ion-color-medium);
+	}
 }
 
-// without a label the buttons are icons only, so drop the padding the label took
 @media (max-width: 991.98px) {
 	.gallery-header .actions ion-button {
 		--padding-start: 6px;

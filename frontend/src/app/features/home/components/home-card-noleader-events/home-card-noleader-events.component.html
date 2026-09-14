@@ -1,7 +1,10 @@
 <bo-card>
 	<bo-card-header>
 		<bo-card-title> Volné akce </bo-card-title>
-		<bo-card-open-button routerLink="/akce" [queryParams]="{ leaders: 'noleader', year: 'budouci' }"></bo-card-open-button>
+		<bo-card-open-button
+			routerLink="/akce"
+			[queryParams]="{ leaders: 'noleader', year: 'budouci' }"
+		></bo-card-open-button>
 	</bo-card-header>
 	<bo-card-content>
 		@if (events().length) {

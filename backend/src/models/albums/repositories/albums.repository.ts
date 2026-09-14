@@ -38,7 +38,6 @@ export class AlbumsRepository {
 				"albums.datePublished",
 				"albums.createdById",
 			])
-			// row-level permission filter (see Permission.canWhere)
 			.where(where)
 			.take(options.limit || 25)
 			.skip(options.offset || 0);
@@ -91,8 +90,6 @@ export class AlbumsRepository {
 		return this.repository.findOne({ where: { id }, relations });
 	}
 
-	// Soft-deleted albums only (deletedAt IS NOT NULL). withDeleted() lifts TypeORM's default
-	// filter that hides them, and the explicit condition keeps the live albums out.
 	async getDeletedAlbums(where: Brackets | string = "1=1") {
 		return this.repository
 			.createQueryBuilder("albums")
@@ -113,22 +110,18 @@ export class AlbumsRepository {
 			.getMany();
 	}
 
-	// Fetch a single album including soft-deleted ones, so restore/permanent-delete can run their
-	// permission checks against an album the normal (non-deleted) query would no longer return.
 	async getDeletedAlbum(id: Album["id"]) {
 		return this.repository.findOne({ where: { id }, withDeleted: true });
 	}
 
 	async createAlbum(album: Partial<Album>) {
 		const saved = await this.repository.save(album);
-		// Mirror the album's metadata into its photos directory as a DB-independent backup.
 		await this.albumsMetadata.writeAlbumMetadataById(saved.id);
 		return saved;
 	}
 
 	async updateAlbum(id: Album["id"], album: Partial<Album>) {
 		const saved = await this.repository.save({ ...album, id });
-		// Keep the on-disk metadata.json in sync with the album's persisted state.
 		await this.albumsMetadata.writeAlbumMetadataById(id);
 		return saved;
 	}
@@ -137,14 +130,10 @@ export class AlbumsRepository {
 		return this.repository.softDelete({ id });
 	}
 
-	// Clear deletedAt, bringing a soft-deleted album back to life.
 	async restoreAlbum(id: Album["id"]) {
 		return this.repository.restore({ id });
 	}
 
-	// Irreversibly remove the album from the database (as opposed to deleteAlbum's soft delete).
-	// The photos have to go first — both their rows (photos.album_id is ON DELETE RESTRICT) and
-	// their image files on disk, which nothing else would ever clean up.
 	async hardDeleteAlbum(id: Album["id"]) {
 		await this.photosService.deletePhotosByAlbum(id);
 

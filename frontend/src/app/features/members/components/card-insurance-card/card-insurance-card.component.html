@@ -30,6 +30,31 @@
 				}
 			</div>
 		}
+		@if (member()?.insuranceCardFile) {
+			<div class="expiration">
+				<span class="expiration-label">Platnost do</span>
+				<span class="expiration-value">{{
+					member()?.insuranceCardExpiration ? (member()!.insuranceCardExpiration | date: "d. M. y") : "-"
+				}}</span>
+
+				@if (expirationLabel()) {
+					<span
+						class="bo-pill expiration-pill"
+						[class.bo-pill-red]="expirationState() === 'expired'"
+						[class.bo-pill-yellow]="expirationState() !== 'expired'"
+						>{{ expirationLabel() }}</span
+					>
+				}
+
+				<bo-edit-button-date
+					label="Platnost kartičky"
+					[disabled]="!member()?._links?.updateMember?.allowed"
+					[value]="member()?.insuranceCardExpiration"
+					(update)="update.emit({ insuranceCardExpiration: $event })"
+				/>
+			</div>
+		}
+
 		@if (insuranceCardUrl() === null) {
 			<div class="upload" #dropzone>
 				<ion-button fill="clear" color="primary" (click)="fileInput.click()">Nahrát ze souboru</ion-button>

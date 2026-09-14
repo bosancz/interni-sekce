@@ -3,11 +3,6 @@ import { ToastController } from "@ionic/angular/standalone";
 import { ToastOptions } from "@ionic/core";
 import { Observable } from "rxjs";
 
-/**
- * Service to manage warning toasts
- *
- * toast() - create new toast
- */
 @Injectable({
 	providedIn: "root",
 })

@@ -3,7 +3,9 @@
 		@for (status of statuses | keyvalue; track status.key) {
 			<ion-item>
 				<ion-label
-					><bo-dot [color]="status.value.color" class="me-1"></bo-dot>&nbsp;{{ status.value.name || status.key }}
+					><bo-dot [color]="status.value.color" class="me-1"></bo-dot>&nbsp;{{
+						status.value.name || status.key
+					}}
 				</ion-label>
 			</ion-item>
 		}

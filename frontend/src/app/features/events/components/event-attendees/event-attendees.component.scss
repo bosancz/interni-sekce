@@ -1,0 +1,7 @@
+@use "src/styles/variables" as *;
+
+.attendees-note {
+	margin-top: 1rem;
+	font-size: $font-small;
+	font-style: italic;
+}

@@ -14,6 +14,5 @@ export class ButtonSquareComponent {
 	label = input.required<string>();
 	image = input.required<string>();
 	color = input.required<string>();
-	/** soft tinted tile background in the section colour */
 	tint = input<string>();
 }

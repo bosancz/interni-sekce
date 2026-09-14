@@ -6,11 +6,12 @@ import { filter, map } from "rxjs/operators";
 	providedIn: "root",
 })
 export class LocalStorageService {
-	private readonly changes = new Subject<{ key: string; value: any }>();
+	private readonly changes = new Subject<{ key: string; value: any; external: boolean }>();
 
 	constructor() {
 		addEventListener("storage", (event) => {
-			if (event.key) this.changes.next({ key: event.key, value: event.newValue });
+			if (event.storageArea !== localStorage || !event.key) return;
+			this.changes.next({ key: event.key, value: this.parse(event.newValue), external: true });
 		});
 	}
 
@@ -27,9 +28,19 @@ export class LocalStorageService {
 		return subject;
 	}
 
+	watchExternal<T>(name: string): Observable<T | null> {
+		return this.changes.pipe(
+			filter((change) => change.external && change.key === name),
+			map((change) => <T>change.value),
+		);
+	}
+
 	get<T>(name: string) {
+		return this.parse<T>(localStorage.getItem(name));
+	}
+
+	private parse<T>(data: string | null) {
 		try {
-			const data = localStorage.getItem(name);
 			if (!data) return null;
 			return <T>JSON.parse(data);
 		} catch (e) {
@@ -39,6 +50,6 @@ export class LocalStorageService {
 
 	set<T>(key: string, value: T) {
 		localStorage.setItem(key, JSON.stringify(value));
-		this.changes.next({ key, value });
+		this.changes.next({ key, value, external: false });
 	}
 }

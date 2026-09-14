@@ -3,7 +3,6 @@ import { EventStatus, EventStatusID, EventStatuses } from "src/app/core/config/e
 
 @Pipe({
 	name: "eventStatus",
-	
 })
 export class EventStatusPipe implements PipeTransform {
 	statuses = EventStatuses;
@@ -15,7 +14,6 @@ export class EventStatusPipe implements PipeTransform {
 	};
 
 	transform(status: EventStatusID | undefined, property: keyof EventStatus): string | undefined {
-		// if group properties not loaded yet or not present for group, return default values
 		if (!status) return this.defaultValues[property];
 
 		switch (property) {

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common"; // <-- ADD THIS LINE
+import { Injectable } from "@nestjs/common";
 import { Event } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import xlsxPopulate from "xlsx-populate";
@@ -46,9 +46,7 @@ const AMOUNT_NUMBER_FORMAT = "#,##0.00\\ [$Kč-405];[RED]\\-#,##0.00\\ [$Kč-405
 
 @Injectable() // <-- Now this will work
 export class EventAccountingService {
-	constructor() {
-		// Inject other services you might need
-	}
+	constructor() {}
 
 	async generateAccounting(event: Event): Promise<{ fileBuffer: Buffer; fileName: string }> {
 		const fileName = `Uctovani_${sanitizeFilename(event.name)}.xlsx`;
@@ -59,7 +57,6 @@ export class EventAccountingService {
 		const expenseSheet = xlsx.sheet("Soupis výdajů");
 		const reportSheet = xlsx.sheet("Report z akce");
 
-		// filling up memberssheet
 		const leadersString =
 			event?.leaders?.[0]?.firstName && event?.leaders?.[0]?.lastName
 				? event.leaders[0].firstName + " " + event?.leaders[0].lastName
@@ -92,7 +89,6 @@ export class EventAccountingService {
 		attendeeSheet.cell("A2").value(event.name || "");
 		attendeeSheet.cell("B4").value(event.place || "");
 
-		// ugly but its working .cell cant store Dateformat
 		attendeeSheet.range("B5:B5").value(string2Date(event.dateFrom) || "");
 		attendeeSheet.range("B6:B6").value(string2Date(event.dateTill) || "");
 		attendeeSheet.cell("B7").value(leadersString);

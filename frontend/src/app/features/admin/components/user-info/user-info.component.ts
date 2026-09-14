@@ -32,7 +32,6 @@ export class UserInfoComponent {
 	constructor(private readonly modalService: ModalService) {}
 
 	updateLogin(login: string | null) {
-		// login is NOT NULL + unique in the database, never send an empty value
 		if (login) this.update.emit({ login });
 	}
 
@@ -48,7 +47,6 @@ export class UserInfoComponent {
 			},
 		});
 
-		// never send an empty password
 		if (result?.value) this.setPassword.emit(result.value);
 	}
 }

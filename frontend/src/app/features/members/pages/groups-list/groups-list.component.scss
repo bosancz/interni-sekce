@@ -1,4 +1,3 @@
-// blue hero card with yellow title and a faint yellow circle bleed
 .hero {
 	position: relative;
 	overflow: hidden;
@@ -64,7 +63,6 @@
 	}
 }
 
-// team cards — colour = team identity
 .group {
 	display: flex;
 	flex-direction: row;
@@ -83,7 +81,6 @@
 	}
 }
 
-// deactivated teams — dimmed so they read as inactive but stay reachable for re-activation
 .group-inactive {
 	opacity: 0.5;
 }

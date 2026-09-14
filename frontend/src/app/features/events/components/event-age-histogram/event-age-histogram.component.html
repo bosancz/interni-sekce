@@ -9,9 +9,7 @@
 				>
 					<div class="full" [style.height]="countMax() ? (bar.count / countMax()!) * 100 + '%' : '0%'">
 						<span class="label">{{ bar.label }}</span>
-						@if (bar.count > 0) {
-							<span class="count">{{ bar.count }}</span>
-						}
+						<span class="count">{{ bar.count }}</span>
 					</div>
 				</div>
 			}

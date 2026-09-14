@@ -1,0 +1,52 @@
+<bo-page-header title="Nahlášené chyby" [actions]="actions()">
+	<ion-buttons slot="start">
+		<ion-back-button defaultHref="/ucet" />
+	</ion-buttons>
+</bo-page-header>
+
+<bo-page-content [padding]="true">
+	@if (rows(); as rows) {
+		<div class="bug-reports-layout">
+			<bo-card>
+				<bo-card-content>
+					<div class="bo-info-list">
+						@for (bugReport of rows; track bugReport.id) {
+							<div class="bo-info-row bug-report-row">
+								<span class="bug-report-info">
+									<span class="bug-report-title">{{ bugReport.title }}</span>
+									<span class="bug-report-meta">
+										{{ bugReport.createdAt | date: "d. M. yyyy" }}
+										@if (bugReport.note) {
+											· {{ bugReport.note }}
+										}
+									</span>
+								</span>
+
+								<span class="bug-report-state">
+									@if (bugReport.released) {
+										<span class="bo-pill bo-pill-green">Opraveno</span>
+									}
+
+									<a
+										class="bug-report-link"
+										[href]="bugReport.url"
+										target="_blank"
+										rel="noopener"
+										[attr.aria-label]="'Otevřít issue #' + bugReport.issueNumber + ' na GitHubu'"
+									>
+										<ion-icon name="logo-github" />
+									</a>
+								</span>
+							</div>
+						} @empty {
+							<div class="bo-info-row bug-reports-empty">
+								<ion-icon name="bug-outline" />
+								<span>Zatím jsi nenahlásil žádnou chybu.</span>
+							</div>
+						}
+					</div>
+				</bo-card-content>
+			</bo-card>
+		</div>
+	}
+</bo-page-content>

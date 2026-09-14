@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { IonIcon } from "@ionic/angular/standalone";
+import { RouterLink } from "@angular/router";
+import { IonButtons, IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { mailOutline, peopleOutline } from "ionicons/icons";
 import { UserRoles } from "src/app/core/config/user-roles";
@@ -11,6 +12,7 @@ import { UserService } from "src/app/core/services/user.service";
 import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
+import { CardOpenButtonComponent } from "src/app/shared/components/card-open-button/card-open-button.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
@@ -31,11 +33,14 @@ import { AccountCredentialsComponent } from "../components/account-credentials/a
 		PageHeaderComponent,
 		PageContentComponent,
 		IonIcon,
+		IonButtons,
+		RouterLink,
 		AvatarComponent,
 		CardComponent,
 		CardHeaderComponent,
 		CardTitleComponent,
 		CardContentComponent,
+		CardOpenButtonComponent,
 		AccountCredentialsComponent,
 		AccountAppComponent,
 		EditButtonComponent,

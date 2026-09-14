@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, ElementRef, input, output, signal, ViewChild } from "@angular/core";
+import { Component, computed, ElementRef, input, output, signal, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
 import { AlertController, IonButton, IonIcon } from "@ionic/angular/standalone";
@@ -10,6 +10,7 @@ import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { MarkdownEditorModalComponent } from "src/app/shared/components/markdown-editor-modal/markdown-editor-modal.component";
+import { EventRegistrationPreviewModalComponent } from "../event-registration-preview-modal/event-registration-preview-modal.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
 import { EventsService } from "../../services/events.service";
@@ -26,6 +27,9 @@ export class EventRegistrationComponent {
 	update = output<void>();
 
 	uploadingRegistration = signal(false);
+	generatingRegistration = signal(false);
+
+	busy = computed(() => this.uploadingRegistration() || this.generatingRegistration());
 
 	private readonly colors = [
 		{ id: "black", name: "Černá" },
@@ -83,8 +87,6 @@ export class EventRegistrationComponent {
 		const event = this.event();
 		if (!event) return;
 
-		// The generated form is built around the leader's contacts — say so up front instead of
-		// walking the user through the color/template/note dialogs only to fail on the request.
 		if (!event.leaders?.length) {
 			this.toastService.toast("Akce nemá vedoucího, přihlášku nelze vygenerovat.");
 			return;
@@ -140,7 +142,6 @@ export class EventRegistrationComponent {
 		await templateAlert.present();
 	}
 
-	/** Third step: optional ad-hoc note (e.g. payment instructions). Not stored — only injected into this generation. */
 	private async promptNoteAndGenerate(eventId: number, template: string, color: string) {
 		const note = await this.modalService.componentModal(MarkdownEditorModalComponent, {
 			header: "Doplňující informace (nepovinné)",
@@ -152,18 +153,74 @@ export class EventRegistrationComponent {
 	}
 
 	private async generateWithTemplate(eventId: number, template: string, color: string, note?: string) {
+		this.generatingRegistration.set(true);
+
+		let preview: SDK.RegistrationPreviewResponse;
+		try {
+			preview = (await this.api.EventsApi.generateEventRegistration(eventId, { template, color, note })).data;
+		} catch (err: any) {
+			this.toastService.toast("Nastala chyba při generování: " + (await this.errorMessage(err)));
+			return;
+		} finally {
+			this.generatingRegistration.set(false);
+		}
+
+		await this.previewRegistration(eventId, preview);
+	}
+
+	private async previewRegistration(eventId: number, preview: SDK.RegistrationPreviewResponse) {
+		const registration = this.base64ToBlob(preview.pdf, "application/pdf");
+		const url = window.URL.createObjectURL(registration);
+
+		try {
+			const publish = await this.modalService.componentModal(
+				EventRegistrationPreviewModalComponent,
+				{ image: `data:image/jpeg;base64,${preview.image}`, url },
+				{ cssClass: "dialog-preview", backdropDismiss: false },
+			);
+
+			if (publish) await this.publishRegistration(eventId, registration);
+		} finally {
+			setTimeout(() => window.URL.revokeObjectURL(url), 60_000);
+		}
+	}
+
+	private base64ToBlob(base64: string, type: string): Blob {
+		const binary = atob(base64);
+		const bytes = new Uint8Array(binary.length);
+
+		for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+		return new Blob([bytes], { type });
+	}
+
+	private async publishRegistration(eventId: number, registration: Blob) {
 		this.uploadingRegistration.set(true);
 
 		try {
-			await this.api.EventsApi.generateEventRegistration(eventId, { template, color, note });
+			const file = new File([registration], "prihlaska.pdf", { type: "application/pdf" });
+			await this.api.EventsApi.saveEventRegistration(eventId, file);
 			this.update.emit();
-			this.toastService.toast("Přihláška vygenerována.");
+			this.toastService.toast("Přihláška publikována.");
 		} catch (err: any) {
-			const message = err?.response?.data?.message ?? err.message;
-			this.toastService.toast("Nastala chyba při generování: " + message);
+			this.toastService.toast("Nastala chyba při publikování: " + (await this.errorMessage(err)));
 		} finally {
 			this.uploadingRegistration.set(false);
 		}
+	}
+
+	private async errorMessage(err: any): Promise<string> {
+		const data = err?.response?.data;
+
+		if (data instanceof Blob) {
+			try {
+				return JSON.parse(await data.text()).message ?? err.message;
+			} catch {
+				return err.message;
+			}
+		}
+
+		return data?.message ?? err.message;
 	}
 
 	async deleteRegistration() {
@@ -196,8 +253,6 @@ export class EventRegistrationComponent {
 
 		document.body.removeChild(link);
 
-		// Opening a blob URL in a new tab is async — revoking right away kills it before
-		// the tab fetches it (Chrome then shows ERR_FILE_NOT_FOUND), so release it later.
 		setTimeout(() => window.URL.revokeObjectURL(fileUrl), 60_000);
 	}
 }

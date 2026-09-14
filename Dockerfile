@@ -3,6 +3,7 @@
 FROM node:24-alpine AS build-frontend
 
 ARG NG_CONFIGURATION=production
+ARG VERSION
 
 WORKDIR /app/frontend
 
@@ -12,6 +13,7 @@ RUN npm ci
 
 # build
 COPY ./frontend .
+ENV VERSION=$VERSION
 RUN npm run build
 
 
@@ -43,7 +45,8 @@ FROM node:24-alpine
 ARG VERSION
 
 # Chromium used by Puppeteer to render registration PDFs from HTML templates.
-RUN apk add --no-cache chromium nss freetype harfbuzz ca-certificates ttf-freefont
+# font-noto-emoji: without it Chromium has no emoji glyphs and renders tofu boxes in the PDF.
+RUN apk add --no-cache chromium nss freetype harfbuzz ca-certificates ttf-freefont font-noto-emoji
 ENV PUPPETEER_SKIP_DOWNLOAD=true \
 	PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
@@ -60,6 +63,10 @@ COPY --from=build-frontend /app/frontend/dist /app/frontend/dist
 
 # changelog served at GET /api/changelog (see ChangelogService); path resolves via config.app.changelogPath
 COPY CHANGELOG.md /app/CHANGELOG.md
+
+# issues released so far, written next to the changelog by scripts/generate-changelog.mjs and read at
+# startup to notify their reporters; the glob keeps the build working when the generator has not run
+COPY release-issues.jso[n] /app/
 
 # run
 WORKDIR /app/backend

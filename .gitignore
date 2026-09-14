@@ -11,3 +11,6 @@ node_modules
 
 # dev server log (npm run dev tees FE/BE output here)
 dev.log
+
+# generated into the docker image by scripts/generate-changelog.mjs, never committed
+/release-issues.json

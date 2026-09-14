@@ -66,10 +66,6 @@ export class EventCardComponent implements OnInit {
 	}
 
 	getEvent(): SDK.EventResponseWithLinks | undefined {
-		// Prefer the freshly reloaded event over the bound input: after a status
-		// action we reload() into _loadedEvent, and the card (and the event it
-		// emits to the parent) must reflect the new status/_links, otherwise the
-		// stale buttons re-trigger no-longer-applicable actions and 403.
 		return this._loadedEvent() ?? this.event();
 	}
 

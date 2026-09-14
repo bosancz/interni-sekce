@@ -107,7 +107,6 @@ export class ProgramWorkflowComponent implements OnInit {
 	ngOnInit() {
 		this.loadEvents();
 
-		// Subscribe to the BehaviorSubject instead of the signal
 		this.events
 			.pipe(untilDestroyed(this))
 			.pipe(

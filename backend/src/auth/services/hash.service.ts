@@ -12,7 +12,6 @@ export class HashService {
 		return compare(s, hash);
 	}
 
-	/** Cryptographically secure random token (URL-safe). Used for e.g. e-mailed login codes. */
 	generateRandomString(bytes = 32) {
 		return randomBytes(bytes).toString("base64url");
 	}

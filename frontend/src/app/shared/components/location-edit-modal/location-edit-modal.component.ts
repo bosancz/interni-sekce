@@ -1,13 +1,5 @@
 import { CommonModule } from "@angular/common";
-import {
-	AfterViewInit,
-	Component,
-	ElementRef,
-	inject,
-	OnDestroy,
-	OnInit,
-	signal,
-} from "@angular/core";
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, signal } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import {
 	IonButton,
@@ -33,9 +25,6 @@ export interface LocationData {
 	placeCoordinates: { lat: number; lng: number } | undefined;
 }
 
-// Leaflet's default marker icon URLs are resolved relative to its CSS file at runtime,
-// which breaks under bundlers (it auto-detects an `imagePath` and prepends it).
-// Override _getIconUrl on the default icon so it returns our copied assets directly.
 const leafletIconUrls: Record<string, string> = {
 	icon: "/assets/leaflet/marker-icon.png",
 	iconRetina: "/assets/leaflet/marker-icon-2x.png",
@@ -108,7 +97,6 @@ export class LocationEditModalComponent
 			this.searchLocation();
 		});
 
-		// Load Mapy.cz API key from root endpoint
 		this.apiKeyReady = this.api.RootApi.getApiInfo()
 			.then((rootInfo) => {
 				this.mapyCzApiKey = rootInfo.data.mapyCzApiKey || "";
@@ -121,9 +109,6 @@ export class LocationEditModalComponent
 	}
 
 	ngAfterViewInit() {
-		// Wait for the modal animation to finish AND the API key to load before
-		// initializing the map. Initializing earlier causes Leaflet to compute tile
-		// positions from the still-animating (transformed) container, leaving gaps.
 		const ionModal = this.hostEl.nativeElement.closest("ion-modal");
 		const presented = ionModal
 			? new Promise<void>((resolve) =>
@@ -143,16 +128,14 @@ export class LocationEditModalComponent
 	}
 
 	private initMap() {
-		if (this.map) return; // Already initialized
+		if (this.map) return;
 
 		const defaultCenter: L.LatLngExpression = this.data.placeCoordinates
 			? [this.data.placeCoordinates.lat, this.data.placeCoordinates.lng]
-			: [49.8175, 15.473]; // Center of Czech Republic
+			: [49.8175, 15.473];
 
 		this.map = L.map("location-map").setView(defaultCenter, this.data.placeCoordinates ? 13 : 7);
 
-		// Use Mapy.cz tourist map as base layer
-		// Reference: https://api.mapy.cz/view?page=tiles
 		const mapyCzTileLayer = L.tileLayer(
 			`https://api.mapy.cz/v1/maptiles/outdoor/256/{z}/{x}/{y}?apikey=${this.mapyCzApiKey}`,
 			{
@@ -163,24 +146,20 @@ export class LocationEditModalComponent
 
 		mapyCzTileLayer.addTo(this.map);
 
-		// Recompute size when the container resizes (modal animation, layout shifts)
 		const mapEl = document.getElementById("location-map");
 		if (mapEl) {
 			this.resizeObserver = new ResizeObserver(() => this.map?.invalidateSize());
 			this.resizeObserver.observe(mapEl);
 		}
 
-		// Add marker if coordinates exist
 		if (this.data.placeCoordinates) {
 			this.marker = L.marker([this.data.placeCoordinates.lat, this.data.placeCoordinates.lng]).addTo(this.map);
 			this.selectedCoords.set({ ...this.data.placeCoordinates });
 		}
 
-		// Add click handler to map
 		this.map.on("click", (e: L.LeafletMouseEvent) => {
 			const { lat, lng } = e.latlng;
 
-			// Update or create marker
 			if (this.marker) {
 				this.marker.setLatLng([lat, lng]);
 			} else {
@@ -188,25 +167,20 @@ export class LocationEditModalComponent
 			}
 			this.selectedCoords.set({ lat, lng });
 
-			// Reverse geocode to get place name
 			this.reverseGeocode(lat, lng);
 		});
 	}
 
 	private async reverseGeocode(lat: number, lng: number) {
 		try {
-			// Use Mapy.cz Geocoding API
-			// Reference: https://api.mapy.cz/view?page=geocode
 			const response = await fetch(
 				`https://api.mapy.cz/v1/geocode/reverse?lat=${lat}&lon=${lng}&lang=cs&apikey=${this.mapyCzApiKey}`,
 			);
 
 			if (response.ok) {
 				const data = await response.json();
-				// Extract place name from response
 				if (data.items && data.items.length > 0) {
 					const placeName = data.items[0].name || data.items[0].label;
-					// Only update place field if it's empty
 					if (!this.form.value.place) {
 						this.suppressNextSearch = true;
 						this.form.patchValue({ place: placeName });
@@ -237,8 +211,6 @@ export class LocationEditModalComponent
 		}
 
 		try {
-			// Use Mapy.cz Suggest API for location search
-			// Reference: https://api.mapy.cz/view?page=suggest
 			const response = await fetch(
 				`https://api.mapy.cz/v1/suggest?lang=cs&limit=5&type=regional&query=${encodeURIComponent(query)}&apikey=${this.mapyCzApiKey}`,
 			);
@@ -287,7 +259,6 @@ export class LocationEditModalComponent
 		const place = this.form.value.place || undefined;
 		let placeCoordinates: { lat: number; lng: number } | undefined = undefined;
 
-		// Get coordinates from marker if it exists
 		if (this.marker) {
 			const latLng = this.marker.getLatLng();
 			placeCoordinates = { lat: latLng.lat, lng: latLng.lng };

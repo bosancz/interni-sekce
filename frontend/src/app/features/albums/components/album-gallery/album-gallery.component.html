@@ -2,14 +2,13 @@
 	<h2>Galerie</h2>
 
 	@if (photos()?.length) {
-		<!-- labels collapse into plain icons below lg, like the page header actions -->
 		<div class="actions">
 			<ion-button (click)="upload.emit()" fill="clear">
 				<ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
 				<span class="d-none d-lg-inline">Nahrát fotky</span>
 			</ion-button>
 
-			@if (view() === 'gallery') {
+			@if (view() === "gallery") {
 				<ion-button (click)="viewChange.emit('manage')" fill="clear">
 					<ion-icon slot="start" name="create-outline"></ion-icon>
 					<span class="d-none d-lg-inline">Upravit</span>
@@ -24,21 +23,23 @@
 	}
 </div>
 
-@if (photos()?.length && view() === 'manage') {
+@if (photos()?.length && view() === "manage") {
 	<div class="buttons">
 		@if (!selecting()) {
-			<!-- the sort options live in a sheet/dialog, picking one there is the confirmation -->
 			<ion-button (click)="sort.emit()" fill="clear">
 				<ion-icon slot="start" name="swap-vertical-outline"></ion-icon> Seřadit
 			</ion-button>
 
-			<!-- deleting starts by selecting, which a long touch on a photo also does -->
 			<ion-button (click)="selectingStart.emit()" fill="clear" color="danger">
 				<ion-icon slot="start" name="trash-outline"></ion-icon> Smazat
 			</ion-button>
 		} @else {
-			<!-- sorting is out of the way while selecting, the row is about the selection now -->
-			<ion-button (click)="deleteSelected.emit()" [disabled]="!selectedPhotos().length" fill="clear" color="danger">
+			<ion-button
+				(click)="deleteSelected.emit()"
+				[disabled]="!selectedPhotos().length"
+				fill="clear"
+				color="danger"
+			>
 				<ion-icon slot="start" name="trash-outline"></ion-icon> Smazat ({{ selectedPhotos().length }})
 			</ion-button>
 
@@ -49,8 +50,7 @@
 	</div>
 }
 
-@if (view() === 'gallery' && allTags().length) {
-	<!-- filter the gallery by tag, mirroring the public site's tag buttons -->
+@if (view() === "gallery" && photos()?.length) {
 	<div class="tag-filter" role="group" aria-label="Filtrovat podle štítku">
 		<ion-chip
 			role="button"
@@ -78,11 +78,14 @@
 				#{{ tag }}
 			</ion-chip>
 		}
+		@if (!allTags().length) {
+			<span class="tag-hint">Štítky přidáte po kliknutí na fotku.</span>
+		}
 	</div>
 }
 
 <div class="gallery">
-	@if (view() === 'gallery') {
+	@if (view() === "gallery") {
 		@if (photos()?.length) {
 			<bo-photo-gallery
 				[photos]="displayPhotos()!"

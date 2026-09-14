@@ -4,7 +4,6 @@ export class MemberHealthSeverity1781164329806 implements MigrationInterface {
 	name = "MemberHealthSeverity1781164329806";
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
-		// allergies: character varying[] -> jsonb array of { name, severity }
 		await queryRunner.query(`ALTER TABLE "members" ADD "allergies_new" jsonb`);
 		await queryRunner.query(`
 			UPDATE "members" m
@@ -17,7 +16,6 @@ export class MemberHealthSeverity1781164329806 implements MigrationInterface {
 		await queryRunner.query(`ALTER TABLE "members" DROP COLUMN "allergies"`);
 		await queryRunner.query(`ALTER TABLE "members" RENAME COLUMN "allergies_new" TO "allergies"`);
 
-		// known_problems: text -> jsonb array of { name, severity }
 		await queryRunner.query(`ALTER TABLE "members" ADD "known_problems_new" jsonb`);
 		await queryRunner.query(`
 			UPDATE "members"
@@ -29,7 +27,6 @@ export class MemberHealthSeverity1781164329806 implements MigrationInterface {
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
-		// known_problems: jsonb -> text (join entry names with newlines)
 		await queryRunner.query(`ALTER TABLE "members" ADD "known_problems_old" text`);
 		await queryRunner.query(`
 			UPDATE "members" m
@@ -42,7 +39,6 @@ export class MemberHealthSeverity1781164329806 implements MigrationInterface {
 		await queryRunner.query(`ALTER TABLE "members" DROP COLUMN "known_problems"`);
 		await queryRunner.query(`ALTER TABLE "members" RENAME COLUMN "known_problems_old" TO "known_problems"`);
 
-		// allergies: jsonb -> character varying[] (keep only the names)
 		await queryRunner.query(`ALTER TABLE "members" ADD "allergies_old" character varying array`);
 		await queryRunner.query(`
 			UPDATE "members" m

@@ -46,7 +46,6 @@ export class AccountEditModalComponent extends InputModalComponent<SDK.UserUpdat
 		super(modalController);
 	}
 
-	/** Called by ModalService via componentProps to seed the form. */
 	set user(user: SDK.AccountResponseWithLinks | null | undefined) {
 		this.form.reset({
 			email: user?.email ?? "",
@@ -62,7 +61,6 @@ export class AccountEditModalComponent extends InputModalComponent<SDK.UserUpdat
 		const value = this.form.getRawValue();
 
 		const data: SDK.UserUpdateBody = {
-			// omit email entirely when left blank, to avoid clearing an existing address
 			...(value.email ? { email: value.email } : {}),
 			roles: value.roles,
 		};

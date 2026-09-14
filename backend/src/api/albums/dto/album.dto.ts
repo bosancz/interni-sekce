@@ -28,6 +28,10 @@ export class AlbumResponse {
 	@AcEntity(PhotoResponse)
 	@ApiPropertyOptional({ type: WithLinks(() => PhotoResponse), isArray: true })
 	photos?: PhotoResponse[];
+
+	@AcEntity(PhotoResponse)
+	@ApiPropertyOptional({ type: WithLinks(() => PhotoResponse) })
+	coverPhoto?: PhotoResponse;
 }
 
 export class AlbumListQuery extends PaginationQuery {

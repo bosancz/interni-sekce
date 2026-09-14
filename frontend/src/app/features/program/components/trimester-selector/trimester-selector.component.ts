@@ -9,7 +9,7 @@ export type TrimesterDateRange = [string, string];
 	selector: "bo-trimester-selector",
 	templateUrl: "./trimester-selector.component.html",
 	styleUrls: ["./trimester-selector.component.scss"],
-	
+
 	imports: [FormsModule, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption],
 	providers: [
 		{
@@ -30,9 +30,8 @@ export class TrimesterSelectorComponent implements OnInit, ControlValueAccessor 
 		[1, 4],
 		[5, 8],
 		[9, 12],
-	]; // trimster months (jan-may, ...)
+	];
 
-	/* ControlValueAccessor, implements the ngModel interface */
 	private onTouched = () => {};
 	private onChange = (value: TrimesterDateRange) => {};
 	disabled = signal(false);
@@ -41,7 +40,6 @@ export class TrimesterSelectorComponent implements OnInit, ControlValueAccessor 
 		this.setTrimesterByDate(DateTime.local());
 	}
 
-	/* ControlValueAccessor, implements the ngModel interface */
 	writeValue(obj?: TrimesterDateRange): void {
 		const dateFrom = obj?.[0];
 		this.setTrimesterByDate(dateFrom ? DateTime.fromISO(dateFrom) : undefined);

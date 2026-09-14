@@ -28,9 +28,23 @@
 				<div class="bo-info-row">
 					<span class="bo-info-label">Zkratka</span>
 					<span class="bo-info-value">
-						<span class="group-badge" [style.background-color]="groupValue.color || 'var(--bo-neutral-badge)'">
+						<span
+							class="group-badge"
+							[style.background-color]="groupValue.color || 'var(--bo-neutral-badge)'"
+						>
 							{{ groupValue.shortName }}
 						</span>
+					</span>
+				</div>
+
+				<div class="bo-info-row">
+					<span class="bo-info-label">Typ</span>
+					<span class="bo-info-value">
+						@if (groupValue.children) {
+							<span class="bo-pill">DĚTSKÝ ODDÍL</span>
+						} @else {
+							<span class="bo-pill">OSTATNÍ</span>
+						}
 					</span>
 				</div>
 

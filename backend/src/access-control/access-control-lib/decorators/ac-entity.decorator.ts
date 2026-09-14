@@ -18,7 +18,7 @@ export function AcEntity(
 			: { ...entityOrOptions };
 
 	return (target: Object, propertyKey: string | symbol) => {
-		let entity = EntityStore.find((e) => e.entity === target);
+		let entity = EntityStore.find((e) => e.entity === target.constructor);
 
 		if (!entity) {
 			entity = {

@@ -55,16 +55,12 @@ export class UsersCreateComponent implements OnInit {
 	ngOnInit() {}
 
 	async createUser() {
-		// get data from form
 		const userData = this.form.value;
 
-		// create the user and wait for confirmation
 		const user = await this.api.UsersApi.createUser(userData).then((res) => res.data);
 
-		// show the confrmation
 		this.toastService.toast("Uživatel vytvořen.");
 
-		// open the user
 		this.router.navigate(["/uzivatele", user.id], { replaceUrl: true });
 	}
 }

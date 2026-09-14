@@ -32,7 +32,6 @@ export class EditButtonNumberComponent {
 
 		if (!result) return;
 
-		// The alert returns the raw input value, which may be a string ("" when cleared).
 		const raw = result.value;
 		this.update.emit(raw === null || raw === undefined || `${raw}`.trim() === "" ? null : Number(raw));
 	}

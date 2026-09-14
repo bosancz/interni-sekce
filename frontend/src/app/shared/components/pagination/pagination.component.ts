@@ -5,7 +5,7 @@ import { IonButton, IonButtons } from "@ionic/angular/standalone";
 	selector: "bo-pagination",
 	templateUrl: "./pagination.component.html",
 	styleUrls: ["./pagination.component.scss"],
-	
+
 	imports: [IonButtons, IonButton],
 })
 export class PaginationComponent {

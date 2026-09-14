@@ -1,0 +1,242 @@
+/* Shared look of the ŠÁN-branded event dialogs (announcement, closure). Values come from the
+   design handoff; they are declared as tokens so dark mode can restate the surfaces alone. */
+:host {
+	--bm-blue: #2a3478;
+	--bm-yellow: #e28f26;
+	--bm-yellow-on-blue: #f5b445;
+	--bm-green: #799f3d;
+	--bm-text: #22284f;
+	--bm-muted: #6b6f87;
+	--bm-muted-2: #8a8ea6;
+	--bm-surface-alt: #f4f5f9;
+	--bm-surface-hover: #eef0f8;
+	--bm-border: #dfe1ec;
+	--bm-border-soft: #ecedf4;
+	--bm-checkbox-border: #a9aec9;
+	--bm-checked-bg: #f2f4fc;
+	--bm-dot-idle: #c3c6d8;
+	--bm-chip-bg: #e6e8f2;
+	--bm-chip-fg: #7a7f9c;
+
+	display: block;
+	font-family: var(--font-regular);
+}
+
+:host-context(body.dark) {
+	--bm-text: #f2f3f7;
+	--bm-muted: #aab0c2;
+	--bm-muted-2: #9aa0b5;
+	--bm-surface-alt: #23262f;
+	--bm-surface-hover: #2a2d3a;
+	--bm-border: #343846;
+	--bm-border-soft: #2a2d3a;
+	--bm-checkbox-border: #5a5f78;
+	--bm-checked-bg: rgba(74, 88, 176, 0.22);
+	--bm-dot-idle: #4a4f63;
+	--bm-chip-bg: #2f3342;
+	--bm-chip-fg: #aab0c2;
+}
+
+.bm-body {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.bm-buttons {
+	display: flex;
+	gap: 12px;
+}
+
+.bm-visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	border: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+.bm-check-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 14px;
+	padding: 14px 16px;
+	border: 2px solid var(--bm-border);
+	border-radius: 14px;
+	background: transparent;
+	cursor: pointer;
+	transition:
+		border-color 150ms,
+		background-color 150ms;
+
+	&:hover {
+		border-color: var(--bm-blue);
+	}
+
+	&.checked {
+		border-color: var(--bm-blue);
+		background: var(--bm-checked-bg);
+	}
+
+	&.disabled {
+		cursor: default;
+		opacity: 0.65;
+
+		&:hover {
+			border-color: var(--bm-border);
+		}
+	}
+
+	&:focus-within {
+		outline: 2px solid var(--bm-blue);
+		outline-offset: 2px;
+	}
+}
+
+.bm-checkbox {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	margin-top: 1px;
+	border: 2px solid var(--bm-checkbox-border);
+	border-radius: 7px;
+	transition:
+		background-color 150ms,
+		border-color 150ms;
+
+	ion-icon {
+		font-size: 15px;
+		color: #ffffff;
+	}
+}
+
+.bm-check-row.checked .bm-checkbox {
+	border-color: var(--bm-blue);
+	background: var(--bm-blue);
+}
+
+.bm-auto-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 14px;
+	padding: 14px 16px;
+	border-radius: 14px;
+	background: var(--bm-surface-alt);
+}
+
+.bm-status-dot {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	margin-top: 1px;
+	border-radius: 50%;
+	background: var(--bm-dot-idle);
+
+	ion-icon {
+		font-size: 14px;
+		color: #ffffff;
+	}
+
+	.bm-dash {
+		color: #ffffff;
+		font-size: 14px;
+		font-weight: 900;
+		line-height: 1;
+	}
+}
+
+.bm-auto-row.done .bm-status-dot {
+	background: var(--bm-green);
+}
+
+.bm-row-text {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	min-width: 0;
+}
+
+.bm-row-label {
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--bm-text);
+}
+
+.bm-auto-row .bm-row-label {
+	color: var(--bm-muted-2);
+}
+
+.bm-auto-row.done .bm-row-label {
+	color: #4a4f70;
+}
+
+:host-context(body.dark) .bm-auto-row.done .bm-row-label {
+	color: var(--bm-text);
+}
+
+.bm-row-helper {
+	font-size: 13.5px;
+	line-height: 1.45;
+	color: var(--bm-muted);
+}
+
+.bm-auto-row .bm-row-helper {
+	color: var(--bm-muted-2);
+}
+
+.bm-btn-ghost,
+.bm-btn-primary {
+	font-family: inherit;
+	border: none;
+	border-radius: 99px;
+	cursor: pointer;
+	transition:
+		background-color 150ms,
+		opacity 150ms;
+
+	&:focus-visible {
+		outline: 2px solid var(--bm-blue);
+		outline-offset: 2px;
+	}
+}
+
+.bm-btn-ghost {
+	padding: 11px 20px;
+	background: transparent;
+	color: var(--bo-heading);
+	font-size: 15px;
+	font-weight: 700;
+
+	&:hover {
+		background: var(--bm-surface-hover);
+	}
+}
+
+.bm-btn-primary {
+	padding: 11px 28px;
+	background: var(--bm-blue);
+	color: var(--bm-yellow-on-blue);
+	font-size: 15px;
+	font-weight: 800;
+	box-shadow: 0 4px 14px rgba(42, 52, 120, 0.35);
+
+	&:hover:not(:disabled) {
+		background: #343f8f;
+	}
+
+	&:disabled {
+		cursor: default;
+		opacity: 0.5;
+		box-shadow: none;
+	}
+}

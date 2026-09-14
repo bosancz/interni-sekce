@@ -3,7 +3,7 @@
 		<ion-icon [name]="icon()"></ion-icon>
 	}
 	<ion-label>{{ label() }}</ion-label>
-	@if (badge() || badgeColor()) {
-		<ion-badge [color]="badgeColor()">{{ badge() || "&nbsp;&nbsp;" }}</ion-badge>
+	@if (badge() !== undefined) {
+		<ion-badge [class.badge-attention]="badgeVariant() === 'attention'">{{ badge() }}</ion-badge>
 	}
 </ion-tab-button>

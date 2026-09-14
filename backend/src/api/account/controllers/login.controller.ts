@@ -110,7 +110,6 @@ export class LoginController {
 
 		LoginLinkPermission.canOrThrow(req);
 
-		// invalidate the code first so it is strictly single-use even if issuing the session below fails
 		await this.users.updateUser(user.id, {
 			loginCode: null,
 			loginCodeExp: null,
@@ -127,7 +126,6 @@ export class LoginController {
 
 	@Post("logout")
 	async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-		// logging out of an impersonated session returns to the account that started it
 		const impersonatorId = req.user?.impersonatorId;
 
 		if (impersonatorId) {

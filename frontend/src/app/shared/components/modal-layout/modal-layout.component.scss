@@ -1,5 +1,3 @@
-/* The host is a flex column (Ionic's .ion-page) bounded by the modal's max height, so the
-   title and buttons stay put and only the projected content scrolls when it is too tall. */
 :host {
 	display: flex;
 	flex-direction: column;
@@ -8,14 +6,45 @@
 	overflow: hidden;
 }
 
+/* Brand dialog chrome per the ŠÁN identity: heading in the body font with a yellow accent bar
+   under it, projected headings restyled through ::ng-deep since they carry the caller's scope. */
 .title {
 	flex: 0 0 auto;
-	padding: 16px;
-	font-size: 1.5em;
-	font-weight: bold;
+	padding: 24px 28px 18px;
+	font-family: var(--font-regular);
+	font-size: 22px;
+	font-weight: 800;
+	letter-spacing: -0.01em;
+	color: var(--bo-heading);
+
+	/* projected headings carry the caller's scope, so they need ::ng-deep to pick the title up */
+	::ng-deep {
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			margin: 0;
+			font-family: inherit;
+			font-size: inherit;
+			font-weight: inherit;
+			letter-spacing: inherit;
+			color: inherit;
+		}
+	}
+
+	&::after {
+		content: "";
+		display: block;
+		width: 44px;
+		height: 5px;
+		margin-top: 8px;
+		border-radius: var(--bo-radius-pill);
+		background: var(--bo-yellow);
+	}
 }
 
-/* modals without a title (e.g. the filter sheet) should not pay for its padding */
 .title:empty {
 	display: none;
 }
@@ -24,13 +53,20 @@
 	flex: 1 1 auto;
 	min-height: 0;
 	overflow-y: auto;
+	padding: 6px 28px 22px;
 }
 
 .footer {
 	flex: 0 0 auto;
-	padding: 1em;
+	padding: 16px 28px 22px;
 	text-align: right;
 	display: flex;
 	flex-direction: row;
 	justify-content: flex-end;
+	gap: 12px;
+	border-top: 1px solid var(--bo-card-line);
+}
+
+.footer:empty {
+	display: none;
 }

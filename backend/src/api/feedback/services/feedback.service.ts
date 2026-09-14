@@ -1,18 +1,31 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { Config } from "src/config";
+import { BugReportsRepository } from "src/models/bug-reports/repositories/bug-reports.repository";
+import { BugReportStates } from "src/models/bug-reports/schema/bug-report-states";
+import { ReleaseIssuesService } from "src/models/bug-reports/services/release-issues.service";
 import { GithubService } from "src/models/github/services/github.service";
 import { MailService } from "src/models/mail/services/mail.service";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { BugReportBody } from "../dto/bug-report-body.dto";
+import { BugReportResponse } from "../dto/bug-report-response.dto";
 import { BugReportMailTemplate } from "../mail-templates/bug-report/bug-report.mail-template";
 
-/** A bug report resolved into everything the email and issue need. */
 export interface BugReport {
+	userId: number;
 	reporter: string;
-	environment: string;
+	reporterName: string;
+	reporterUrl: string;
 	url?: string;
 	description: string;
 }
+
+export interface BugReportIssue {
+	number: number;
+	url: string;
+}
+
+const ISSUE_TITLE_MAX_LENGTH = 80;
+const ISSUE_TITLE_MIN_TEXT_LENGTH = 20;
 
 @Injectable()
 export class FeedbackService {
@@ -22,96 +35,144 @@ export class FeedbackService {
 		private readonly mailService: MailService,
 		private readonly github: GithubService,
 		private readonly users: UsersRepository,
+		private readonly bugReports: BugReportsRepository,
+		private readonly releaseIssuesService: ReleaseIssuesService,
 		private readonly config: Config,
 	) {}
 
-	/**
-	 * Resolve a submitted bug report into the context the email and issue share: the
-	 * reporter's identity (from the authenticated user) and the current environment.
-	 */
 	async buildBugReport(userId: number, body: BugReportBody): Promise<BugReport> {
 		const user = await this.users.getUser(userId, { includeMember: true });
 
+		const reporterName = user?.member?.nickname || user?.login || "neznámý";
+
 		const reporter =
-			[user?.member?.nickname, user?.login && `<${user.login}>`].filter(Boolean).join(" ") || "neznámý";
+			[user?.member?.nickname, user?.login && `(${user.login})`].filter(Boolean).join(" ") || "neznámý";
 
 		return {
+			userId,
 			reporter,
-			environment: this.config.app.environmentTitle || this.config.environment,
+			reporterName,
+			reporterUrl: `${this.config.app.baseUrl}/admin/uzivatele/${userId}`,
 			url: body.url,
 			description: body.description,
 		};
 	}
 
-	/**
-	 * Construct and send the bug-report email to the configured recipient.
-	 * Returns whether the email was actually sent; delivery failures are logged, not thrown,
-	 * so the caller can fall back to the other channel.
-	 */
-	async sendBugReportEmail(report: BugReport): Promise<boolean> {
+	async sendBugReportEmail(report: BugReport, issue?: BugReportIssue | null): Promise<void> {
 		const mail = BugReportMailTemplate(this.config.feedback.bugReportRecipient, {
 			reporter: report.reporter,
-			environment: report.environment,
+			reporterUrl: report.reporterUrl,
 			url: report.url,
 			description: report.description,
+			issueNumber: issue?.number,
+			issueUrl: issue?.url,
 		});
 
 		try {
 			await this.mailService.sendMail(mail);
 			this.logger.verbose("Bug report email sent");
-			return true;
 		} catch (err) {
 			this.logger.error(`Failed to send bug report email: ${(err as Error).message}`);
-			return false;
+			throw err;
 		}
 	}
 
-	/**
-	 * Construct and file the bug report as a GitHub issue.
-	 * Returns whether an issue was actually created — false when GitHub is not configured or
-	 * the API call fails (logged, not thrown), so the caller can fall back to the email.
-	 */
-	async fileBugReportIssue(report: BugReport): Promise<boolean> {
-		if (!this.github.isConfigured) return false;
+	async fileBugReportIssue(report: BugReport): Promise<BugReportIssue | null> {
+		if (!this.github.isConfigured) return null;
+
+		const suffix = ` (${report.reporterName})`;
+		const { title, body } = this.splitDescription(report.description, suffix);
+		const repo = this.config.github.bugReportRepo;
 
 		try {
-			const issue = await this.github.createIssue(this.config.github.bugReportRepo, {
-				title: this.issueTitle(report.description, this.config.app.environmentTitle),
-				body: this.issueBody(report),
+			const issue = await this.github.createIssue(repo, {
+				title: `${title}${suffix}`,
+				body: this.issueBody(report, body),
 				labels: [this.config.github.bugReportLabel],
 			});
 
+			await this.recordBugReport(report.userId, repo, issue.number, title);
+
 			this.logger.verbose(`Bug report filed as GitHub issue #${issue.number} (${issue.url}).`);
-			return true;
+			return issue;
 		} catch (err) {
 			this.logger.error(`Failed to file bug report as a GitHub issue: ${(err as Error).message}`);
-			return false;
+			throw new InternalServerErrorException("Bug report could not be filed as a GitHub issue.");
 		}
 	}
 
-	private issueBody(report: BugReport): string {
+	async listBugReports(userId: number): Promise<BugReportResponse[]> {
+		const reports = await this.bugReports.listBugReports(userId);
+		if (!reports.length) return [];
+
+		const released = new Map<string, string>();
+
+		for (const repo of new Set(reports.map((report) => report.repo))) {
+			for (const [issueNumber, issue] of await this.releaseIssuesService.getReleasedIssues(repo)) {
+				released.set(this.issueKey(repo, issueNumber), issue.version);
+			}
+		}
+
+		return reports.map((report) => {
+			const releasedVersion = released.get(this.issueKey(report.repo, report.issueNumber)) ?? null;
+
+			return {
+				id: report.id,
+				issueNumber: report.issueNumber,
+				title: report.title,
+				url: `https://github.com/${report.repo}/issues/${report.issueNumber}`,
+				state: releasedVersion || report.notifiedAt ? BugReportStates.released : BugReportStates.open,
+				releasedVersion,
+				createdAt: report.createdAt,
+				notifiedAt: report.notifiedAt,
+			};
+		});
+	}
+
+	private issueKey(repo: string, issueNumber: number): string {
+		return `${repo}#${issueNumber}`;
+	}
+
+	private issueBody(report: BugReport, description: string): string {
 		return [
-			`**Nahlásil:** ${report.reporter}`,
-			`**Prostředí:** ${report.environment}`,
+			description || null,
+			description ? "" : null,
+			description ? "---" : null,
+			description ? "" : null,
+			`**Nahlásil:** [${report.reporter}](${report.reporterUrl})`,
 			report.url ? `**URL:** ${report.url}` : null,
-			"",
-			"---",
-			"",
-			report.description,
 		]
 			.filter((line) => line !== null)
 			.join("\n");
 	}
 
-	/**
-	 * Build a concise issue title from the free-text description (first line, truncated).
-	 * Non-production environments (ENV_TITLE set, e.g. "TEST") are prefixed so a report from
-	 * the testing environment is recognizable straight from the issue list.
-	 */
-	private issueTitle(description: string, environmentTitle: string): string {
-		const firstLine = description.trim().split("\n")[0].trim();
-		const summary = firstLine.length > 80 ? `${firstLine.slice(0, 77)}…` : firstLine;
-		const prefix = environmentTitle ? `[${environmentTitle}] ` : "";
-		return `${prefix}Nahlášená chyba: ${summary}`;
+	private async recordBugReport(userId: number, repo: string, issueNumber: number, title: string) {
+		try {
+			await this.bugReports.createBugReport({ userId, repo, issueNumber, title });
+		} catch (err) {
+			this.logger.error(`Failed to record bug report for issue #${issueNumber}: ${(err as Error).message}`);
+		}
+	}
+
+	private splitDescription(description: string, titleSuffix: string): { title: string; body: string } {
+		const text = description.replace(/\r\n/g, "\n").trim();
+		const breakIndex = text.indexOf("\n");
+
+		const firstLine = (breakIndex === -1 ? text : text.slice(0, breakIndex)).trim();
+		const otherLines = breakIndex === -1 ? "" : text.slice(breakIndex + 1).trim();
+
+		const maxLength = Math.max(ISSUE_TITLE_MIN_TEXT_LENGTH, ISSUE_TITLE_MAX_LENGTH - titleSuffix.length);
+
+		if (!firstLine) return { title: "Nahlášená chyba", body: otherLines };
+
+		if (firstLine.length <= maxLength) return { title: firstLine, body: otherLines };
+
+		const lastSpace = firstLine.lastIndexOf(" ", maxLength - 1);
+		const cut = lastSpace > maxLength / 2 ? lastSpace : maxLength - 1;
+
+		return {
+			title: `${firstLine.slice(0, cut).trimEnd()}…`,
+			body: [`…${firstLine.slice(cut).trim()}`, otherLines].filter(Boolean).join("\n"),
+		};
 	}
 }

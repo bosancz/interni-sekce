@@ -18,10 +18,8 @@ import { ModalLayoutComponent } from "../modal-layout/modal-layout.component";
 export class ChangelogModalComponent extends InputModalComponent<void> {
 	private readonly api = inject(ApiService);
 
-	/** Odkaz na zdrojový repozitář, otevřený z ikony v záhlaví changelogu. */
 	readonly repositoryUrl = "https://github.com/bosancz/interni-sekce";
 
-	/** `undefined` while loading, the markdown once loaded (may be "" if the file is missing). */
 	content = toSignal(this.api.changelog);
 
 	constructor() {

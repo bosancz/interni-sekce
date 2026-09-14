@@ -83,7 +83,6 @@ export class UsersEditComponent implements OnInit {
 		this.loadMembers();
 	}
 
-	// DB interaction
 	async loadUser(userId: number) {
 		const user = await this.api.UsersApi.getUser(userId, {}).then((res: any) => res.data);
 		this.user.set(user);

@@ -39,10 +39,8 @@ export class AlbumGalleryComponent {
 	listClick = output<CustomEvent<SDK.PhotoResponseWithLinks | undefined>>();
 	longPress = output<SDK.PhotoResponseWithLinks>();
 
-	// currently selected tag filter (null = show all photos)
 	activeTag = signal<string | null>(null);
 
-	// every distinct tag across the album's photos, in first-seen order — the filter chips
 	allTags = computed(() => {
 		const seen = new Set<string>();
 		for (const photo of this.photos() ?? []) {
@@ -51,14 +49,11 @@ export class AlbumGalleryComponent {
 		return [...seen];
 	});
 
-	// ignore a stale selection (e.g. after switching to an album without that tag)
 	effectiveTag = computed(() => {
 		const tag = this.activeTag();
 		return tag && this.allTags().includes(tag) ? tag : null;
 	});
 
-	// the photos actually shown: filtered by the active tag, but only while browsing —
-	// managing (sort/delete/reorder) always operates on the full set
 	displayPhotos = computed(() => {
 		const photos = this.photos();
 		const tag = this.effectiveTag();
@@ -70,7 +65,6 @@ export class AlbumGalleryComponent {
 		this.activeTag.set(tag);
 	}
 
-	// clicking the active tag again clears the filter
 	toggleTag(tag: string) {
 		this.activeTag.set(this.effectiveTag() === tag ? null : tag);
 	}

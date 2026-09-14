@@ -2,11 +2,11 @@ import { DatePipe } from "@angular/common";
 import { Component, computed, input, output } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonBadge, IonList, IonSkeletonText } from "@ionic/angular/standalone";
-import { DateTime } from "luxon";
 import { DeleteButtonComponent } from "src/app/shared/components/delete-button/delete-button.component";
 import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
 import { ItemComponent } from "src/app/shared/components/item/item.component";
 import { MemberItemDetailComponent } from "src/app/shared/components/member-item-detail/member-item-detail.component";
+import { hasBirthdayBetween } from "src/helpers/age";
 import { SDK } from "src/sdk";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 import { RolePipe } from "../../../../shared/pipes/role.pipe";
@@ -39,20 +39,10 @@ export class EventAttendeesListComponent {
 
 	loadingArray = new Array(10).fill(null);
 
-	// The delete button is a fixed-width column, so it is either reserved on every
-	// row or on none — otherwise the badge columns would not line up.
 	canRemoveAny = computed(() => !!this.attendees()?.some((a) => a._links.deleteEventAttendee.allowed));
 
 	hasBirthday(attendee: SDK.EventAttendeeResponseWithLinks) {
 		const event = this.event();
-		if (!attendee.member?.birthday || !event?.dateFrom || !event?.dateTill) return false;
-
-		const eventFrom = DateTime.fromISO(event.dateFrom);
-		const eventTill = DateTime.fromISO(event.dateTill);
-
-		let birthday = DateTime.fromISO(attendee.member.birthday).set({ year: eventFrom.year });
-		if (birthday < eventFrom) birthday = birthday.plus({ years: 1 });
-
-		return birthday <= eventTill;
+		return hasBirthdayBetween(attendee.member?.birthday, event?.dateFrom, event?.dateTill);
 	}
 }

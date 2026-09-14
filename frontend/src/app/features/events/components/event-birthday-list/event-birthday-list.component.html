@@ -3,7 +3,9 @@
 		@for (birthday of birthdays(); track birthday.member.id) {
 			<ion-item>
 				<ion-label>
-					<h4><strong>{{ birthday.member.nickname }}</strong></h4>
+					<h4>
+						<strong>{{ birthday.member.nickname }}</strong>
+					</h4>
 					<p>{{ birthday.date | date: "d. M." }} ({{ birthday.age }} let)</p>
 				</ion-label>
 			</ion-item>

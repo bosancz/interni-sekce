@@ -35,19 +35,19 @@
 						<p>{{ uploadItem.file.size | prettyBytes }}</p>
 						<p>
 							@switch (uploadItem.status) {
-								@case ('pending') {
+								@case ("pending") {
 									Připraven
 								}
-								@case ('uploading') {
+								@case ("uploading") {
 									Nahrávám... {{ uploadItem.progress }} %
 								}
-								@case ('processing') {
+								@case ("processing") {
 									Zpracovávám...
 								}
-								@case ('finished') {
+								@case ("finished") {
 									Hotovo
 								}
-								@case ('error') {
+								@case ("error") {
 									Chyba: {{ uploadItem.error?.message || "Neznámá chyba." }}
 								}
 							}

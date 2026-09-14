@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseIntPipe, Patch, Post, Req } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	NotFoundException,
+	Param,
+	ParseIntPipe,
+	Patch,
+	Post,
+	Req,
+} from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
@@ -22,7 +34,10 @@ export class EventsExpensesController {
 	@Get("")
 	@AcLinks(EventExpensesListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(EventExpenseResponse), isArray: true })
-	async listEventExpenses(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<EventExpenseResponse[]> {
+	async listEventExpenses(
+		@Req() req: Request,
+		@Param("eventId", ParseIntPipe) eventId: number,
+	): Promise<EventExpenseResponse[]> {
 		const event = await this.events.getEvent(eventId);
 		if (!event) throw new NotFoundException();
 

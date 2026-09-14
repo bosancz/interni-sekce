@@ -3,8 +3,6 @@
 	margin: 0 auto;
 }
 
-/* masonry-style packing so shorter cards don't leave a gap under them:
-   each column fills independently, no per-row height barrier */
 .cards {
 	@media (min-width: 992px) {
 		column-count: 2;
@@ -12,13 +10,11 @@
 	}
 }
 
-/* uniform gap between cards, matching the health sub-card stack (.health-cards) */
 .card-col {
 	break-inside: avoid;
 	margin-bottom: 1.25rem;
 }
 
-/* end the left column here so the following cards flow into the right column */
 .card-col--break-after {
 	@media (min-width: 992px) {
 		break-after: column;
@@ -34,7 +30,6 @@ ion-tab-button {
 	--color: var(--bo-muted);
 	--color-selected: var(--bo-nav-active-fg);
 
-	// inset, rounded highlight that clearly marks the active tab
 	&::part(native) {
 		margin: 6px;
 		border-radius: var(--bo-radius-pill);

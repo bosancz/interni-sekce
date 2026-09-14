@@ -2,12 +2,20 @@ import { Component } from "@angular/core";
 import { IsActiveMatchOptions, RouterLink, RouterLinkActive } from "@angular/router";
 import { IonIcon, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { bugOutline, homeSharp, logOut, person, settings } from "ionicons/icons";
+import {
+	bugOutline,
+	globeOutline,
+	homeSharp,
+	logOut,
+	notificationsOutline,
+	openOutline,
+	person,
+	settings,
+} from "ionicons/icons";
 import { map } from "rxjs";
 import { ApiService } from "src/app/core/services/api.service";
+import { BugReportService } from "src/app/core/services/bug-report.service";
 import { LoginService } from "src/app/core/services/login.service";
-import { ModalService } from "src/app/core/services/modal.service";
-import { ToastService } from "src/app/core/services/toast.service";
 import { UserService } from "src/app/core/services/user.service";
 import { DarkModeToggleComponent } from "src/app/shared/components/dark-mode-toggle/dark-mode-toggle.component";
 import { VersionComponent } from "src/app/shared/components/version/version.component";
@@ -16,12 +24,20 @@ import { VersionComponent } from "src/app/shared/components/version/version.comp
 	selector: "bo-sidebar",
 	templateUrl: "./sidebar.component.html",
 	styleUrl: "./sidebar.component.scss",
-	imports: [RouterLink, RouterLinkActive, IonList, IonItem, IonIcon, IonLabel, DarkModeToggleComponent, VersionComponent],
+	imports: [
+		RouterLink,
+		RouterLinkActive,
+		IonList,
+		IonItem,
+		IonIcon,
+		IonLabel,
+		DarkModeToggleComponent,
+		VersionComponent,
+	],
 })
 export class SidebarComponent {
 	title = this.api.info.pipe(map((info) => "Bošán" + (info.environmentTitle ? ` ${info.environmentTitle}` : "")));
 
-	// exact matching for home tabs (they differ only in the ?tab= query param)
 	readonly tabLinkActiveOptions: IsActiveMatchOptions = {
 		paths: "exact",
 		queryParams: "exact",
@@ -29,8 +45,13 @@ export class SidebarComponent {
 		fragment: "ignored",
 	};
 
-	// links that carry a default filter in the query params (e.g. "Akce" → ?year=budouci) still
-	// count as active once the user changes that filter on the target page
+	readonly exactPathLinkActiveOptions: IsActiveMatchOptions = {
+		paths: "exact",
+		queryParams: "ignored",
+		matrixParams: "ignored",
+		fragment: "ignored",
+	};
+
 	readonly pathLinkActiveOptions: IsActiveMatchOptions = {
 		paths: "subset",
 		queryParams: "ignored",
@@ -44,8 +65,7 @@ export class SidebarComponent {
 		private readonly api: ApiService,
 		private readonly loginService: LoginService,
 		private readonly userService: UserService,
-		private readonly modalService: ModalService,
-		private readonly toastService: ToastService,
+		private readonly bugReportService: BugReportService,
 	) {
 		addIcons({
 			homeSharp,
@@ -53,6 +73,9 @@ export class SidebarComponent {
 			settings,
 			logOut,
 			bugOutline,
+			notificationsOutline,
+			globeOutline,
+			openOutline,
 		});
 	}
 
@@ -61,27 +84,6 @@ export class SidebarComponent {
 	}
 
 	async reportBug() {
-		const url = window.location.href;
-
-		const result = await this.modalService.wideInputModal<{ description: string }>({
-			header: "Nahlásit chybu",
-			buttonText: "Odeslat",
-			inputs: {
-				description: {
-					type: "textarea",
-					placeholder: "Popiš, co nefunguje..., ideálně co nejvíc detailně a s kroky, jak chybu vyvolat.",
-				},
-			},
-		});
-
-		const description = result?.description?.trim();
-		if (!description) return;
-
-		try {
-			await this.api.FeedbackApi.sendBugReport({ description, url });
-			await this.toastService.toast("Díky! Chyba byla odeslána.");
-		} catch {
-			await this.toastService.toast("Chybu se nepodařilo odeslat.");
-		}
+		return this.bugReportService.reportBug();
 	}
 }

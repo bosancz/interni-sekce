@@ -116,7 +116,6 @@ export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 	}
 
 	private async loadGroups() {
-		// default: active only; the toggle reveals inactive (deactivated) groups too so they can be re-activated
 		const groups = await this.api.MembersApi.listGroups({
 			includeMemberCounts: true,
 			active: this.showInactive() ? undefined : true,

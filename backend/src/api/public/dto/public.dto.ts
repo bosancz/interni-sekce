@@ -9,6 +9,5 @@ export class PublicProgramQuery {
 
 export class PublicGalleryQuery {
 	@IsOptional() @Type(() => Number) @IsInt() limit?: number;
-	// accepted for backwards compatibility with the website (e.g. "-dateFrom"); ordering is fixed server-side
 	@IsOptional() @IsString() sort?: string;
 }

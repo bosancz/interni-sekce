@@ -10,8 +10,6 @@ import { UsersEditComponent } from "./pages/users-edit/users-edit.component";
 import { UsersListComponent } from "./pages/users-list/users-list.component";
 import { UsersViewComponent } from "./pages/users-view/users-view.component";
 
-// The user-management pages are gated on the `listUsers` link so that someone who can reach `/admin`
-// only for the program section cannot open them by typing the URL.
 const canAccessUsers = [linkGuard("listUsers")];
 
 // The treasurer view records the membership fees and the payment settings hold the club's bank

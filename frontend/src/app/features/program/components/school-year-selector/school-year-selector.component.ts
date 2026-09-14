@@ -23,9 +23,8 @@ export class SchoolYearSelectorComponent implements OnInit, ControlValueAccessor
 	lines = input<string | undefined>(undefined);
 	labelPosition = input<string | undefined>(undefined);
 
-	year?: number; // The year when the school year starts (e.g., 2024 for 2024/2025)
+	year?: number;
 
-	/* ControlValueAccessor, implements the ngModel interface */
 	private onTouched = () => {};
 	private onChange = (value: SchoolYearDateRange) => {};
 	disabled: boolean = false;
@@ -34,7 +33,6 @@ export class SchoolYearSelectorComponent implements OnInit, ControlValueAccessor
 		this.setYearByDate(DateTime.local());
 	}
 
-	/* ControlValueAccessor, implements the ngModel interface */
 	writeValue(obj?: SchoolYearDateRange): void {
 		const dateFrom = obj?.[0];
 		this.setYearByDate(dateFrom ? DateTime.fromISO(dateFrom) : undefined);
@@ -54,9 +52,7 @@ export class SchoolYearSelectorComponent implements OnInit, ControlValueAccessor
 	setSchoolYear() {
 		if (!this.year) return;
 
-		// School year starts in September of the given year
 		const dateFrom = DateTime.local(this.year, 9, 1);
-		// School year ends in August of the next year
 		const dateTill = DateTime.local(this.year + 1, 8, 31);
 
 		const value: SchoolYearDateRange = [dateFrom.toISODate()!, dateTill.toISODate()!];
@@ -68,7 +64,6 @@ export class SchoolYearSelectorComponent implements OnInit, ControlValueAccessor
 	setYearByDate(dateFrom?: DateTime) {
 		if (!dateFrom || !dateFrom.isValid) dateFrom = DateTime.local();
 
-		// If we're before September, use the previous year as the school year start
 		if (dateFrom.month < 9) {
 			this.year = dateFrom.year - 1;
 		} else {

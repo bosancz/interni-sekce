@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Post, Req } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	NotFoundException,
+	Param,
+	ParseIntPipe,
+	Patch,
+	Post,
+	Req,
+} from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
@@ -11,7 +22,7 @@ import {
 } from "../acl/member-contacts.acl";
 import { CreateContactBody, MemberContactResponse } from "../dto/member-contact.dto";
 
-@Controller("members/:id/contacts")
+@Controller("members/:memberId/contacts")
 @Authenticated()
 @AcController()
 @ApiTags("Members")
@@ -21,7 +32,10 @@ export class MemberContactsController {
 	@Get()
 	@AcLinks(MemberContactsListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(MemberContactResponse), isArray: true })
-	async listContacts(@Req() req: Request, @Param("id", ParseIntPipe) memberId: number): Promise<MemberContactResponse[]> {
+	async listContacts(
+		@Req() req: Request,
+		@Param("memberId", ParseIntPipe) memberId: number,
+	): Promise<MemberContactResponse[]> {
 		const member = await this.membersRepository.getMember(memberId, { relations: { contacts: true } });
 		if (!member) throw new NotFoundException();
 
@@ -35,7 +49,7 @@ export class MemberContactsController {
 	@ApiResponse({ type: WithLinks(MemberContactResponse) })
 	async createContact(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) memberId: number,
+		@Param("memberId", ParseIntPipe) memberId: number,
 		@Body() body: CreateContactBody,
 	): Promise<MemberContactResponse> {
 		const member = await this.membersRepository.getMember(memberId);
@@ -51,7 +65,7 @@ export class MemberContactsController {
 	@ApiResponse({ type: WithLinks(MemberContactResponse) })
 	async updateContact(
 		@Req() req: Request,
-		@Param("id", ParseIntPipe) memberId: number,
+		@Param("memberId", ParseIntPipe) memberId: number,
 		@Param("contactId", ParseIntPipe) contactId: number,
 		@Body() body: CreateContactBody,
 	): Promise<MemberContactResponse> {
@@ -66,7 +80,11 @@ export class MemberContactsController {
 	@Delete(":contactId")
 	@AcLinks(MemberContactsDeletePermission)
 	@ApiResponse({ type: WithLinks(MemberContactResponse) })
-	async deleteContact(@Req() req: Request, @Param("id", ParseIntPipe) memberId: number, @Param("contactId", ParseIntPipe) contactId: number) {
+	async deleteContact(
+		@Req() req: Request,
+		@Param("memberId", ParseIntPipe) memberId: number,
+		@Param("contactId", ParseIntPipe) contactId: number,
+	) {
 		const memberContact = await this.membersRepository.getContact(memberId, contactId);
 		if (!memberContact) throw new NotFoundException();
 

@@ -9,6 +9,16 @@
 	flex-grow: 1;
 }
 
+.title-end {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+
+	&:empty {
+		display: none;
+	}
+}
+
 .actions {
 	display: flex;
 	align-items: center;
@@ -21,8 +31,8 @@
 	}
 }
 
-h2{
-	margin:0;
+h2 {
+	margin: 0;
 	min-width: 0;
 	white-space: nowrap;
 	overflow: hidden;

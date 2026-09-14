@@ -21,6 +21,7 @@ import { EventExpense } from "./event-expense.entity";
 export enum EventStates {
 	"draft" = "draft",
 	"pending" = "pending",
+	"rejected" = "rejected",
 	"public" = "public",
 	"cancelled" = "cancelled",
 }
@@ -42,9 +43,6 @@ export class Event {
 	@RelationId((event: Event) => event.groups)
 	groupsIds!: number[];
 
-	// events_groups is mapped *only* by this @JoinTable — there must be no @Entity("events_groups")
-	// alongside it, or TypeORM builds two metadata objects for the table and every generated
-	// migration drops and recreates its indexes.
 	@ManyToMany(() => Group, { onDelete: "CASCADE", onUpdate: "CASCADE" })
 	@JoinTable({ name: "events_groups", joinColumn: { name: "event_id" }, inverseJoinColumn: { name: "group_id" } })
 	groups?: Group[];
@@ -57,9 +55,6 @@ export class Event {
 
 	@Column({ type: "text", nullable: false }) name!: string;
 
-	// Diacritic- and case-insensitive full-text vector, maintained by Postgres as a stored generated
-	// column (see SearchVectorColumns migration). Matched with `searchVector @@ to_tsquery(...)`.
-	// The GIN index is created in that migration; synchronize:false because TypeORM cannot express it.
 	@Index("IDX_events_search_vector", { synchronize: false })
 	@Column({
 		type: "tsvector",
@@ -91,11 +86,9 @@ export class Event {
 	@Column({ type: "boolean", nullable: false, default: false }) leadersEvent!: boolean;
 	@Column({ type: "boolean", nullable: false, default: false }) hasRegistration!: boolean;
 	@Column({ type: "varchar", nullable: true }) report!: string | null;
+	@Column({ type: "timestamp with time zone", nullable: true }) announcementSentAt!: Date | string | null;
+	@Column({ type: "timestamp with time zone", nullable: true }) accountingSentAt!: Date | string | null;
 
-	// Legacy Mongo ObjectId of the event, set only for events imported from the old server
-	// (mongo-import). When present, the registration PDF lives in the legacy on-disk layout
-	// (folder keyed by this ObjectId, file named registration.pdf) rather than the numeric-id
-	// layout; see EventsRegistrationsController.registrationFolder.
 	@Column({ type: "varchar", nullable: true }) srcId!: string | null;
 
 	@DeleteDateColumn() deletedAt?: Date | null;

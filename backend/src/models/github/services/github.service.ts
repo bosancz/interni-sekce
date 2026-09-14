@@ -4,18 +4,6 @@ import { Octokit } from "@octokit/rest";
 import { readFileSync } from "fs";
 import { Config } from "src/config";
 
-/**
- * Thin wrapper around the GitHub REST API, authenticated as a GitHub App installation.
- *
- * The app's App ID + private key sign a JWT that @octokit/auth-app exchanges for a
- * short-lived installation access token (auto-refreshed), so everything created here is
- * authored by the app itself — no personal account or PAT. Currently used to file in-app
- * bug reports as issues (see FeedbackController).
- *
- * When the app is not configured (missing App ID / private key), the service stays
- * disabled: `isConfigured` is false and callers skip it, so bug reports fall back to
- * email only instead of failing.
- */
 @Injectable()
 export class GithubService {
 	private readonly logger = new Logger(GithubService.name);
@@ -23,7 +11,6 @@ export class GithubService {
 	private readonly appId: string;
 	private readonly privateKey: string;
 
-	/** Installation client, created lazily and cached after the first successful auth. */
 	private installationClient: Octokit | null = null;
 
 	constructor(private readonly config: Config) {
@@ -38,15 +25,10 @@ export class GithubService {
 		}
 	}
 
-	/** Whether the GitHub App credentials are present and issue creation can be attempted. */
 	get isConfigured(): boolean {
 		return Boolean(this.appId && this.privateKey);
 	}
 
-	/**
-	 * Create an issue in the given "owner/repo" and return its number and html url.
-	 * Any label that does not yet exist in the repo is created automatically by GitHub.
-	 */
 	async createIssue(
 		repo: string,
 		params: { title: string; body: string; labels?: string[] },
@@ -67,7 +49,6 @@ export class GithubService {
 		return { number: res.data.number, url: res.data.html_url };
 	}
 
-	/** Read the private key from the inline env var or the mounted key file. */
 	private resolvePrivateKey(): string {
 		if (this.config.github.privateKey) return this.config.github.privateKey;
 
@@ -82,10 +63,6 @@ export class GithubService {
 		}
 	}
 
-	/**
-	 * Build (and cache) an Octokit client scoped to the app's installation on the repo.
-	 * The installation id is taken from config when set, otherwise discovered from the repo.
-	 */
 	private async getInstallationClient(owner: string, repo: string): Promise<Octokit> {
 		if (this.installationClient) return this.installationClient;
 

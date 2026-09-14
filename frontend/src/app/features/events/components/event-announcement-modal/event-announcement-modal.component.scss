@@ -1,0 +1,8 @@
+@use "./../../../../../styles/brand-modal" as *;
+
+.bm-sent-note {
+	margin: 0;
+	padding: 0 2px;
+	font-size: 13.5px;
+	color: var(--bm-muted);
+}

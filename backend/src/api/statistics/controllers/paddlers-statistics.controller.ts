@@ -23,7 +23,10 @@ export class PaddlersStatisticsController {
 
 	@Get(":year/ranking")
 	@ApiResponse({ status: 200, type: PaddlersRankingResponse, isArray: true })
-	getPaddlersRanking(@Req() req: Request, @Param("year", ParseIntPipe) year: number): Promise<PaddlersRankingResponse[]> {
+	getPaddlersRanking(
+		@Req() req: Request,
+		@Param("year", ParseIntPipe) year: number,
+	): Promise<PaddlersRankingResponse[]> {
 		PadlersRankingPermission.canOrThrow(req);
 
 		return this.statistics.getPaddlersRanking(year);

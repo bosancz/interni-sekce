@@ -30,8 +30,15 @@
 		<h4>Věk vedoucích</h4>
 
 		@if (chartData().leaders) {
-		<canvas baseChart chartType="bar" width="400" height="200" [datasets]="chartData().leaders.data"
-			[labels]="chartData().leaders.labels" [legend]="false"></canvas>
+			<canvas
+				baseChart
+				chartType="bar"
+				width="400"
+				height="200"
+				[datasets]="chartData().leaders.data"
+				[labels]="chartData().leaders.labels"
+				[legend]="false"
+			></canvas>
 		}
 	</div>
 
@@ -39,8 +46,15 @@
 		<h4>Věk účastníků</h4>
 
 		@if (chartData().attendees) {
-		<canvas baseChart chartType="bar" width="400" height="200" [datasets]="chartData().attendees.data"
-			[labels]="chartData().attendees.labels" [legend]="false"></canvas>
+			<canvas
+				baseChart
+				chartType="bar"
+				width="400"
+				height="200"
+				[datasets]="chartData().attendees.data"
+				[labels]="chartData().attendees.labels"
+				[legend]="false"
+			></canvas>
 		}
 	</div>
 </div>
@@ -51,18 +65,18 @@
 		<table class="table">
 			<tbody>
 				@if (leadersReport()?.top) {
-				@for (leader of leadersReport()!.top; track leader.member.nickname || $index) {
-				<tr>
-					<td>{{ leader.member.nickname }}</td>
-					<td>
-						<ul>
-							@for (event of leader.events; track event.id) {
-							<li>{{ event.name }}</li>
-							}
-						</ul>
-					</td>
-				</tr>
-				}
+					@for (leader of leadersReport()!.top; track leader.member.nickname || $index) {
+						<tr>
+							<td>{{ leader.member.nickname }}</td>
+							<td>
+								<ul>
+									@for (event of leader.events; track event.id) {
+										<li>{{ event.name }}</li>
+									}
+								</ul>
+							</td>
+						</tr>
+					}
 				}
 			</tbody>
 		</table>
@@ -72,13 +86,13 @@
 		<table class="table">
 			<tbody>
 				@if (eventsReport()?.top) {
-				@for (event of eventsReport()!.top; track event.name || $index) {
-				<tr>
-					<td>{{ event.name }}</td>
-					<td>{{ event.count }}</td>
-					<td>{{ joinMembers(event.leaders) }}</td>
-				</tr>
-				}
+					@for (event of eventsReport()!.top; track event.name || $index) {
+						<tr>
+							<td>{{ event.name }}</td>
+							<td>{{ event.count }}</td>
+							<td>{{ joinMembers(event.leaders) }}</td>
+						</tr>
+					}
 				}
 			</tbody>
 		</table>

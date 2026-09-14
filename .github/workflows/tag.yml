@@ -44,9 +44,5 @@ jobs:
       - name: Create Version Tag
         if: inputs.version
         run: |
-          if git ls-remote --exit-code --tags origin "refs/tags/${{ inputs.version }}" >/dev/null 2>&1; then
-            echo "Tag ${{ inputs.version }} already exists, leaving it untouched."
-            exit 0
-          fi
-          git tag ${{ inputs.version }}
-          git push origin ${{ inputs.version }}
+          git tag --force ${{ inputs.version }}
+          git push origin --force ${{ inputs.version }}
