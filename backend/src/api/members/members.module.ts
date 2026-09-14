@@ -7,6 +7,9 @@ import { MembersModelModule } from "src/models/members/members-model.module";
 import { GroupsController } from "./controllers/groups.controller";
 import { MemberContactsController } from "./controllers/member-contacts.controller";
 import { MemberInsuranceCardController } from "./controllers/member-insurance-card.controller";
+import { MemberMembershipController } from "./controllers/member-membership.controller";
+import { MemberPaymentQrController } from "./controllers/member-payment-qr.controller";
+import { MemberPaymentRequestController } from "./controllers/member-payment-request.controller";
 import { MembersController } from "./controllers/members.controller";
 import { MembersExportController } from "./controllers/members-export.controller";
 
@@ -16,6 +19,9 @@ import { MembersExportController } from "./controllers/members-export.controller
 		GroupsController,
 		MemberInsuranceCardController,
 		MemberContactsController,
+		MemberMembershipController,
+		MemberPaymentRequestController,
+		MemberPaymentQrController,
 		MembersExportController,
 	],
 	imports: [MembersModelModule, TypeOrmModule.forFeature([Member, Group]), FilesModule],

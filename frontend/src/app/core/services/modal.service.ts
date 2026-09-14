@@ -11,6 +11,8 @@ type DismissableOverlay = HTMLIonModalElement | HTMLIonAlertElement;
 interface BaseModalOptions {
 	header?: string;
 	buttonText?: string;
+	/** Extra class on the alert, for the odd input that needs more room than the default gives. */
+	cssClass?: string;
 }
 
 interface DeleteConfirmationModalOptions extends BaseModalOptions {}
@@ -153,6 +155,7 @@ export class ModalService {
 		return new Promise<D | null>(async (resolve, reject) => {
 			const alert = await this.alertController.create({
 				header: options.header,
+				cssClass: options.cssClass,
 				inputs: Object.entries(options.inputs).map(([name, input]) => ({ ...input, name })),
 				buttons: [
 					{

@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { MemberRoles } from "src/app/core/config/member-roles";
-import { MembershipStates } from "src/app/core/config/membership-states";
+import { MembershipPaymentStates } from "src/app/core/config/membership";
+import { membershipState } from "src/app/core/helpers/membership";
 import { getAge, getAgeLabel } from "src/helpers/age";
 import { SDK } from "src/sdk";
 
@@ -28,7 +29,8 @@ export class MemberPipe implements PipeTransform {
 				return getAgeLabel(member.birthday, referenceDate);
 
 			case "membership":
-				return MembershipStates[member.membership].title;
+				// The membership of the current year — see core/helpers/membership.ts.
+				return MembershipPaymentStates[membershipState(member.membership)].title;
 
 			case "role":
 				return MemberRoles[member.role]?.title || member.role;

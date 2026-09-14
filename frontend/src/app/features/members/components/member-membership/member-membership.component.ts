@@ -3,7 +3,8 @@ import { IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { peopleOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
-import { MembershipStates } from "src/app/core/config/membership-states";
+import { MembershipPaymentStates } from "src/app/core/config/membership";
+import { currentMembershipYear, isMembershipPaid } from "src/app/core/helpers/membership";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { SDK } from "src/sdk";
@@ -34,17 +35,17 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 })
 export class MemberMembershipComponent {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
-	update = output<Partial<SDK.MemberResponse>>();
+	update = output<SDK.MemberUpdateBody>();
+	/** One year of the membership fee — the page saves it through its own admin-only route. */
+	updateMembership = output<SDK.MemberMembershipUpdateBody>();
 
 	memberRolesOptions = Object.entries(MemberRoles).map(([id, role]) => ({
 		label: role.title,
 		value: id as SDK.MemberRolesEnum,
 	}));
 
-	memberMembershipOptions = Object.entries(MembershipStates).map(([id, state]) => ({
-		label: state.title,
-		value: id as SDK.MembershipStatesEnum,
-	}));
+	// The membership year the card shows and edits.
+	membershipYear = currentMembershipYear();
 
 	constructor(
 		private readonly api: ApiService,
@@ -101,17 +102,19 @@ export class MemberMembershipComponent {
 
 	async editMembership() {
 		const member = this.member();
-		const result = await this.modalService.selectModal({
-			header: "Změnit stav členství",
+		const paid = isMembershipPaid(member?.membership, this.membershipYear);
+
+		const result = await this.modalService.selectModal<boolean>({
+			header: `Členský příspěvek ${this.membershipYear}`,
 			buttonText: "Uložit",
-			values: Object.entries(MembershipStates).map(([id, role]) => ({
-				label: role.title,
-				value: id as SDK.MembershipStatesEnum,
-				checked: member?.role === id,
-			})),
-			value: member?.membership,
+			values: [
+				{ label: MembershipPaymentStates.zaplaceno.title, value: true },
+				{ label: MembershipPaymentStates.nezaplaceno.title, value: false },
+			],
+			value: paid,
 		});
 
-		if (result !== null) this.update.emit({ membership: result });
+		// Only the current year is sent; the server keeps the rest of the list as it is stored.
+		if (result !== null) this.updateMembership.emit({ year: this.membershipYear, paid: result });
 	}
 }

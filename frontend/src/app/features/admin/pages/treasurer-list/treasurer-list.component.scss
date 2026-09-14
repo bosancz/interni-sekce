@@ -1,0 +1,190 @@
+// Row-state styling (`member-inactive`, `member-vedouci`, …) is global — see
+// src/styles/member-rows.scss — so every member list renders it identically.
+
+:host ::ng-deep .treasurer-table {
+	width: 100%;
+}
+
+// The fee column keeps its width whatever the label says, so the toggles line up.
+::ng-deep .treasurer-membership-column {
+	width: 1%;
+	white-space: nowrap;
+	text-align: right;
+}
+
+// Year stepper in the page header: a pill in the same shape as the filter pills, with a chevron
+// button on each side. The value is tabular so the pill does not twitch as the digits change.
+.treasurer-year {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	min-height: 42px;
+	padding-inline: 4px;
+	border: 1px solid var(--bo-line);
+	border-radius: var(--bo-radius-pill);
+	background: var(--bo-white);
+
+	ion-button {
+		--padding-start: 6px;
+		--padding-end: 6px;
+		--color: var(--bo-muted);
+		margin: 0;
+		height: 32px;
+	}
+
+	ion-icon {
+		font-size: 18px;
+	}
+}
+
+.treasurer-year-value {
+	min-width: 4ch;
+	text-align: center;
+	font-size: 0.9375rem;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	color: var(--bo-heading);
+}
+
+// The variable symbol is a fixed-width number — tabular figures keep the digits aligned down the
+// column so a treasurer can scan it against a bank statement.
+::ng-deep .treasurer-vs-column {
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+// The fee toggle is a pill that flips between paid and unpaid. It sits inside a row that links to
+// the member, so it has to read as its own control: hover/focus lift it, and the click is stopped
+// in the component before it reaches the row.
+.treasurer-membership-toggle {
+	// A visible border is what separates the editable pill from the read-only one everyone else
+	// sees — on touch there is no hover to discover it with.
+	border: 1px solid currentColor;
+	cursor: pointer;
+	font-family: inherit;
+	transition:
+		filter 0.15s ease,
+		border-color 0.15s ease;
+
+	&:hover:not(:disabled) {
+		filter: brightness(0.95);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--bo-blue, #3880ff);
+		outline-offset: 2px;
+	}
+
+	&:disabled {
+		cursor: progress;
+		opacity: 0.6;
+	}
+}
+
+// The note column: the pencil first, so the pencils line up down the column whatever the notes say,
+// and the note itself after it. Centred, so on mobile — where this pair is one line of the item —
+// the label, the pencil and the note all sit on the same line.
+.treasurer-note-cell {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	max-width: 100%;
+}
+
+// The pencil is the quiet kind of edit button the rest of the app uses — it says the note can be
+// written without competing with the note itself.
+.treasurer-note-button {
+	display: inline-flex;
+	flex-shrink: 0;
+	// A note long enough to wrap (mobile) keeps the pencil at its first line instead of floating in
+	// the middle of the block; with a note on one line this is where the centring puts it anyway.
+	align-self: flex-start;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--bo-muted);
+	cursor: pointer;
+	transition:
+		background-color 0.15s ease,
+		color 0.15s ease;
+
+	ion-icon {
+		font-size: 16px;
+	}
+
+	&:hover:not(:disabled) {
+		background: var(--bo-blue-tint);
+		color: var(--bo-blue);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--bo-blue, #3880ff);
+		outline-offset: 2px;
+	}
+
+	&:disabled {
+		cursor: progress;
+		opacity: 0.6;
+	}
+}
+
+// One line in the table, however long the note is — the full text is in the tooltip (and in the
+// edit box). On mobile the same value is a line of the item, where it may wrap instead of being
+// cut off.
+.treasurer-note-text {
+	display: inline-block;
+	max-width: 22rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	vertical-align: bottom;
+}
+
+@media (max-width: 991.98px) {
+	.treasurer-note-text {
+		max-width: 100%;
+		overflow: visible;
+		white-space: normal;
+	}
+}
+
+// Desktop: year, filters, columns and view options laid out inline in the filter toolbar.
+.treasurer-filter-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px;
+
+	ion-button ion-icon {
+		font-size: 28px;
+	}
+}
+
+// Mobile: the same controls collected inside the filter modal.
+.treasurer-filter-modal {
+	.treasurer-filter-modal-pills {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 8px 12px 4px;
+
+		bo-filter-pill {
+			display: block;
+		}
+
+		::ng-deep .filter-pill-button {
+			width: 100%;
+			margin-inline: 0;
+			justify-content: space-between;
+		}
+	}
+
+	ion-list:not(:first-child) {
+		margin-top: 8px;
+	}
+}

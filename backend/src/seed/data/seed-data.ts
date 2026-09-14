@@ -1,13 +1,7 @@
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
 import { EventExpenseTypes } from "src/models/events/entities/event-expense.entity";
 import { EventStates } from "src/models/events/entities/event.entity";
-import {
-	HealthEntry,
-	HealthSeverity,
-	MemberRanks,
-	MemberRoles,
-	MembershipStates,
-} from "src/models/members/entities/member.entity";
+import { HealthEntry, HealthSeverity, MemberRanks, MemberRoles } from "src/models/members/entities/member.entity";
 import { UserRoles } from "src/models/users/entities/user.entity";
 
 export interface SeedGroup {
@@ -41,7 +35,12 @@ export interface SeedMember {
 	addressStreetNo?: string;
 	addressCity?: string;
 	addressPostalCode?: string;
-	membership?: MembershipStates;
+	/**
+	 * Whether this season's membership fee is recorded as paid. Defaults to true — the seeded club
+	 * is mid-season, so most members have paid; the few left unpaid give the treasurer view and the
+	 * membership filter something to show on both sides.
+	 */
+	membershipPaid?: boolean;
 	active?: boolean;
 	knownProblems?: HealthEntry[];
 	allergies?: HealthEntry[];
@@ -269,7 +268,7 @@ export const SeedMembers: SeedMember[] = [
 		firstName: "Ori",
 		lastName: "Dorisson",
 		birthday: "2015-08-19",
-		membership: MembershipStates.pozastaveno,
+		membershipPaid: false,
 		contacts: [{ relationship: "Otec", name: "Dori", mobile: "777 000 013" }],
 	},
 	{
@@ -327,7 +326,7 @@ export const SeedMembers: SeedMember[] = [
 		role: MemberRoles.dite,
 		firstName: "Sméagol",
 		birthday: "2011-01-13",
-		membership: MembershipStates.neclen,
+		membershipPaid: false,
 		allergies: [{ name: "sluneční světlo", severity: HealthSeverity.medium }],
 		knownProblems: [{ name: "mluví sám se sebou, ztrácí prsteny", severity: HealthSeverity.low }],
 		contacts: [{ relationship: "Jiný", name: "Děagol", other: "nedostupný" }],

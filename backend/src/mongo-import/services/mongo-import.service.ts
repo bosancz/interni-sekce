@@ -9,7 +9,7 @@ import { EventExpense, EventExpenseTypes } from "src/models/events/entities/even
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
-import { Member, MemberRanks, MemberRoles, MembershipStates } from "src/models/members/entities/member.entity";
+import { Member, MemberRanks, MemberRoles } from "src/models/members/entities/member.entity";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import { User, UserRoles } from "src/models/users/entities/user.entity";
 import { EntityManager, EntityTarget, ObjectLiteral } from "typeorm";
@@ -202,23 +202,10 @@ export class MongoImportService {
 			instruktor: MemberRoles.instruktor,
 		};
 
-		const membershipTransform: { [membership: string]: MembershipStates } = {
-			člen: MembershipStates.clen,
-			clen: MembershipStates.clen,
-			nečlen: MembershipStates.neclen,
-			neclen: MembershipStates.neclen,
-			pozastaveno: MembershipStates.pozastaveno,
-		};
-
 		for (let mongoMember of mongoMembers) {
 			const groupId = mongoMember.group
 				? await this.getGroupId(t, mongoMember.group)
 				: await this.getGroupId(t, "KP");
-
-			const membership =
-				mongoMember.membership && mongoMember.membership in membershipTransform
-					? membershipTransform[mongoMember.membership]
-					: MembershipStates.clen;
 
 			const role =
 				mongoMember.role && mongoMember.role in roleTransform
@@ -229,7 +216,9 @@ export class MongoImportService {
 				function: mongoMember.function ?? null,
 				groupId,
 				active: mongoMember.inactive === false ? true : false,
-				membership,
+				// The legacy database has no per-year membership fees — imported members start
+				// with no year paid and the fees are recorded here from now on.
+				membership: [],
 				role,
 				rank: Object.values(MemberRanks).includes(<any>mongoMember.rank) ? <MemberRanks>mongoMember.rank : null,
 				nickname: mongoMember.nickname ?? mongoMember.name?.first ?? "???",

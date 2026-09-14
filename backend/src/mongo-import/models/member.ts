@@ -14,7 +14,6 @@ export class MongoMember {
 	@Prop() function?: string;
 	@Prop() rank?: string;
 	@Prop({ type: Boolean, default: false }) inactive?: boolean;
-	@Prop() membership?: string;
 	@Prop() birthday?: Date;
 
 	@Prop(

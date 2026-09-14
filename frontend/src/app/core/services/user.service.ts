@@ -19,7 +19,17 @@ export class UserService {
 
 	readonly canAccessUsers = computed(() => this.api.links()?.listUsers.allowed ?? false);
 
-	readonly canAccessAdmin = computed(() => this.canAccessProgram() || this.canAccessUsers());
+	/**
+	 * May open the treasurer view. The page shows the club's bank account and records the membership
+	 * fees, so it is admin-only — `updatePaymentSettings` is the root link the backend grants to
+	 * admins alone, and the page's route guard is gated on the same one.
+	 */
+	readonly canAccessTreasurer = computed(() => this.api.links()?.updatePaymentSettings.allowed ?? false);
+
+	/** Whether the administration section should be visible at all. */
+	readonly canAccessAdmin = computed(
+		() => this.canAccessProgram() || this.canAccessUsers() || this.canAccessTreasurer(),
+	);
 
 	constructor(
 		private api: ApiService,

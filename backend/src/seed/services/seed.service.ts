@@ -2,6 +2,8 @@ import { Injectable, Logger } from "@nestjs/common";
 import { DateTime } from "luxon";
 import { HashService } from "src/auth/services/hash.service";
 import { Config } from "src/config";
+import { currentMembershipYear } from "src/helpers/membership";
+import { getVariableSymbol } from "src/helpers/variable-symbol";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
@@ -11,6 +13,7 @@ import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member } from "src/models/members/entities/member.entity";
+import { MembershipPayment } from "src/models/members/entities/membership-payment.entity";
 import { User } from "src/models/users/entities/user.entity";
 import { EntityManager } from "typeorm";
 import { readFile } from "fs/promises";
@@ -179,7 +182,6 @@ export class SeedService {
 				rank: seedMember.rank ?? null,
 				function: seedMember.function ?? null,
 				active: seedMember.active ?? true,
-				membership: seedMember.membership ?? undefined,
 				firstName: seedMember.firstName ?? null,
 				lastName: seedMember.lastName ?? null,
 				birthday: seedMember.birthday ?? null,
@@ -195,6 +197,21 @@ export class SeedService {
 			});
 
 			memberIds.set(seedMember.nickname, member.id);
+
+			// Membership is the list of fees the member has paid — one row per season, so a seeded
+			// member is "zaplaceno" for this year exactly when that row exists (helpers/membership.ts).
+			await t.delete(MembershipPayment, { memberId: member.id });
+
+			if (seedMember.membershipPaid ?? true) {
+				const forYear = currentMembershipYear();
+
+				await t.insert(MembershipPayment, {
+					memberId: member.id,
+					forYear,
+					variableSymbol: getVariableSymbol(member, forYear),
+					recordedOn: DateTime.now().toISODate(),
+				});
+			}
 
 			await t.delete(MemberContact, { memberId: member.id });
 

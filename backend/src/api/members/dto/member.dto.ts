@@ -1,18 +1,20 @@
 import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsArray, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min, ValidateNested } from "class-validator";
 import { PaginationQuery } from "src/api/helpers/dto";
+import { MembershipPaymentStates } from "src/helpers/membership";
 import { EnsureArray, EnsureBoolean } from "src/helpers/validation";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
+import { MembershipPayment } from "src/models/members/entities/membership-payment.entity";
 import {
 	HealthEntry,
 	HealthSeverity,
 	Member,
 	MemberRanks,
 	MemberRoles,
-	MembershipStates,
 } from "src/models/members/entities/member.entity";
+import { MembershipPaymentResponse } from "./membership-payment.dto";
 
 export class HealthEntryDto implements HealthEntry {
 	@ApiProperty({ type: "string" }) @IsString() name!: string;
@@ -27,8 +29,11 @@ export class MemberResponse implements Member {
 	@ApiProperty({ type: "string" }) nickname!: string;
 	@ApiProperty({ type: "string", enum: MemberRoles, enumName: "MemberRolesEnum" }) role!: MemberRoles;
 	@ApiProperty({ type: "boolean" }) active!: boolean;
-	@ApiProperty({ type: "string", enum: MembershipStates, enumName: "MembershipStatesEnum" })
-	membership!: MembershipStates;
+	// The fees the member has paid, one per season (see helpers/membership.ts); ask
+	// isMembershipPaid() about a year rather than searching the list. Written only through
+	// PATCH /members/:id/membership, so no update body carries it.
+	@ApiPropertyOptional({ type: MembershipPaymentResponse, isArray: true })
+	membership?: MembershipPayment[];
 
 	@ApiPropertyOptional({ type: "string" }) function?: string | null;
 	@ApiPropertyOptional({ type: "string" }) firstName?: string | null;
@@ -78,7 +83,9 @@ export class MemberCreateBody implements Pick<
 	@ApiProperty() @IsString() @IsOptional() lastName!: string | null;
 }
 
-export class MemberUpdateBody extends PartialType(OmitType(MemberResponse, ["contacts", "achievements", "id"])) {}
+export class MemberUpdateBody extends PartialType(
+	OmitType(MemberResponse, ["contacts", "achievements", "id", "membership"]),
+) {}
 
 export class MembersListQuery extends PaginationQuery {
 	@EnsureArray({ split: "," })
@@ -93,16 +100,31 @@ export class MembersListQuery extends PaginationQuery {
 	@IsOptional()
 	roles?: MemberRoles[];
 
+	// Filters on the membership of `membershipYear`, not on the whole list.
+	@ApiPropertyOptional({
+		enum: MembershipPaymentStates,
+		enumName: "MembershipPaymentStatesEnum",
+		isArray: true,
+	})
 	@EnsureArray({ split: "," })
-	@IsEnum(MembershipStates, { each: true })
+	@IsEnum(MembershipPaymentStates, { each: true })
 	@IsOptional()
-	membership?: MembershipStates[];
+	membership?: MembershipPaymentStates[];
 
 	@EnsureArray({ split: "," })
 	@Type(() => Number, {})
 	@IsNumber({}, { each: true })
 	@IsOptional()
 	age?: number[];
+
+	/** Which year the membership filter and the membership sort look at. Defaults to the current one. */
+	@ApiPropertyOptional({ type: "number" })
+	@Type(() => Number)
+	@IsInt()
+	@Min(1900)
+	@Max(2200)
+	@IsOptional()
+	membershipYear?: number;
 
 	@EnsureBoolean() @IsOptional() active?: boolean;
 
