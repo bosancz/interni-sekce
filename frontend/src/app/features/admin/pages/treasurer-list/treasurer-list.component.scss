@@ -82,8 +82,8 @@
 }
 
 // The note column: the pencil first, so the pencils line up down the column whatever the notes say,
-// and the note itself after it. On mobile the same pair is one line of the item, where a long note
-// wraps under the pencil.
+// and the note itself after it. Centred, so on mobile — where this pair is one line of the item —
+// the label, the pencil and the note all sit on the same line.
 .treasurer-note-cell {
 	display: inline-flex;
 	align-items: center;
@@ -96,6 +96,9 @@
 .treasurer-note-button {
 	display: inline-flex;
 	flex-shrink: 0;
+	// A note long enough to wrap (mobile) keeps the pencil at its first line instead of floating in
+	// the middle of the block; with a note on one line this is where the centring puts it anyway.
+	align-self: flex-start;
 	align-items: center;
 	justify-content: center;
 	width: 26px;
@@ -143,12 +146,6 @@
 }
 
 @media (max-width: 991.98px) {
-	// The note wraps here, so the pencil sits at its first line rather than floating in the middle
-	// of the block.
-	.treasurer-note-cell {
-		align-items: flex-start;
-	}
-
 	.treasurer-note-text {
 		max-width: 100%;
 		overflow: visible;
