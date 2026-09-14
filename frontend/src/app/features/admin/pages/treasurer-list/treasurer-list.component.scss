@@ -81,25 +81,25 @@
 	}
 }
 
-// The fee cell: the note marker and the fee pill on one line, the pill outermost so the pills stay
-// flush with the right edge of the column whether or not a row has a note. On mobile the same cell
-// is what sits in the item's end slot, so the two controls stay side by side there as well.
-.treasurer-membership-cell {
+// The note column: the pencil first, so the pencils line up down the column whatever the notes say,
+// and the note itself after it. On mobile the same pair is one line of the item, where a long note
+// wraps under the pencil.
+.treasurer-note-cell {
 	display: inline-flex;
 	align-items: center;
-	justify-content: flex-end;
-	gap: 6px;
+	gap: 4px;
+	max-width: 100%;
 }
 
-// The note button is deliberately quieter than the fee pill next to it — the fee is the point of
-// the row, the note is what hangs off it. A filled glyph (rather than a second colour) is what says
-// a note is there, so a scan down the column reads at a glance.
+// The pencil is the quiet kind of edit button the rest of the app uses — it says the note can be
+// written without competing with the note itself.
 .treasurer-note-button {
 	display: inline-flex;
+	flex-shrink: 0;
 	align-items: center;
 	justify-content: center;
-	width: 28px;
-	height: 28px;
+	width: 26px;
+	height: 26px;
 	padding: 0;
 	border: none;
 	border-radius: 50%;
@@ -111,7 +111,7 @@
 		color 0.15s ease;
 
 	ion-icon {
-		font-size: 17px;
+		font-size: 16px;
 	}
 
 	&:hover:not(:disabled) {
@@ -130,28 +130,9 @@
 	}
 }
 
-.treasurer-note-filled {
-	color: var(--bo-blue);
-}
-
-// The same marker for everyone who may not edit the fee: it only says a note is there, and the
-// tooltip reads it out.
-.treasurer-note-mark {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 28px;
-	height: 28px;
-	color: var(--bo-muted);
-
-	ion-icon {
-		font-size: 17px;
-	}
-}
-
-// The note column, when it is switched on: one line in the table, however long the note is — the
-// full text is in the tooltip (and in the edit box). On mobile the same value is a line of the
-// item, where it may wrap instead of being cut off.
+// One line in the table, however long the note is — the full text is in the tooltip (and in the
+// edit box). On mobile the same value is a line of the item, where it may wrap instead of being
+// cut off.
 .treasurer-note-text {
 	display: inline-block;
 	max-width: 22rem;
@@ -162,6 +143,12 @@
 }
 
 @media (max-width: 991.98px) {
+	// The note wraps here, so the pencil sits at its first line rather than floating in the middle
+	// of the block.
+	.treasurer-note-cell {
+		align-items: flex-start;
+	}
+
 	.treasurer-note-text {
 		max-width: 100%;
 		overflow: visible;
