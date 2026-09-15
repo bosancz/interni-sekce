@@ -115,10 +115,17 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		const selectedIds = computed(() => selectedAttendees().map((attendee) => attendee.memberId));
 
 		const addSelectedMember = async (member: SDK.MemberResponse) => {
+			const existing = this.findAttendee(member.id);
+
+			if (type !== "leader" && existing?.type === "leader") {
+				const confirmation = await this.confirmLeaderDemotion(member);
+				if (!confirmation) return;
+			}
+
 			try {
 				if (type === "leader") {
 					await this.api.EventsApi.addEventLeader(event.id, member.id);
-				} else if (this.findAttendee(member.id)) {
+				} else if (existing) {
 					await this.api.EventsApi.updateEventAttendee(event.id, member.id, { type });
 				} else {
 					await this.api.EventsApi.addEventAttendee(event.id, member.id, { type });
@@ -143,6 +150,11 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			if (!attendee._links.deleteEventAttendee.allowed) {
 				this.toastService.toast("Tohoto účastníka nemůžete odebrat.", { color: "danger" });
 				return;
+			}
+
+			if (attendee.type === "leader") {
+				const confirmation = await this.confirmLeaderRemoval(member);
+				if (!confirmation) return;
 			}
 
 			try {
@@ -206,6 +218,30 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		);
 	}
 
+	private memberName(member?: SDK.MemberResponse | null) {
+		return member ? member.nickname || member.firstName || member.lastName || null : null;
+	}
+
+	private confirmLeaderRemoval(member?: SDK.MemberResponse | null) {
+		const name = this.memberName(member);
+
+		return this.modalService.deleteConfirmationModal(
+			name ? `Opravdu chcete odebrat vedoucího akce ${name}?` : "Opravdu chcete odebrat vedoucího akce?",
+			{ header: "Odebrat vedoucího?", buttonText: "Odebrat" },
+		);
+	}
+
+	private confirmLeaderDemotion(member: SDK.MemberResponse) {
+		const name = this.memberName(member);
+
+		return this.modalService.deleteConfirmationModal(
+			name
+				? `${name} je vedoucí akce. Přidáním mezi účastníky přestane být vedoucí.`
+				: "Tento člověk je vedoucí akce. Přidáním mezi účastníky přestane být vedoucí.",
+			{ header: "Odebrat z vedoucích?", buttonText: "Přidat mezi účastníky" },
+		);
+	}
+
 	private findAttendee(memberId: number) {
 		return [...(this.attendees() ?? []), ...(this.leaders() ?? [])].find(
 			(attendee) => attendee.memberId === memberId,
@@ -217,9 +253,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		if (!event) return;
 
 		if (attendee.type === "leader") {
-			const confirmation = await this.modalService.deleteConfirmationModal(
-				"Opravdu chcete odebrat vedoucího akce?",
-			);
+			const confirmation = await this.confirmLeaderRemoval(attendee.member);
 			if (!confirmation) return;
 		}
 

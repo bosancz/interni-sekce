@@ -12,7 +12,6 @@ import {
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { callOutline, heartOutline, personCircleOutline } from "ionicons/icons";
-import { MembershipStates } from "src/app/core/config/membership-states";
 import { ApiService } from "src/app/core/services/api.service";
 import { TitleService } from "src/app/core/services/title.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -27,6 +26,7 @@ import MemberContactsComponent from "../../components/member-contacts/member-con
 import { MemberHealthComponent } from "../../components/member-health/member-health.component";
 import { MemberInfoComponent } from "../../components/member-info/member-info.component";
 import { MemberMembershipComponent } from "../../components/member-membership/member-membership.component";
+import { MemberPaymentComponent } from "../../components/member-payment/member-payment.component";
 import { MemberProfileComponent } from "../../components/member-profile/member-profile.component";
 
 @UntilDestroy()
@@ -48,6 +48,7 @@ import { MemberProfileComponent } from "../../components/member-profile/member-p
 		MemberInfoComponent,
 		MemberContactComponent,
 		MemberMembershipComponent,
+		MemberPaymentComponent,
 		MemberHealthComponent,
 		MemberContactsComponent,
 		GroupBadgeComponent,
@@ -57,8 +58,8 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	member = signal<SDK.MemberResponseWithLinks | undefined>(undefined);
 	view = signal<"info" | "health" | "contacts" | "profile" | undefined>("info");
 
-	membershipStates = MembershipStates;
-
+	// actions that do not apply to the member are hidden,
+	// actions that apply but the user is not permitted to use are shown disabled
 	actions = computed<Action[]>(() => {
 		const links = this.member()?._links;
 
@@ -147,6 +148,29 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		}
 
 		await this.loadMember(this.member()!.id);
+	}
+
+	/**
+	 * The membership fee has its own admin-only route (see MemberMembershipUpdatePermission), so it
+	 * is saved separately from the rest of the member's fields.
+	 */
+	async updateMemberMembership(data: SDK.MemberMembershipUpdateBody) {
+		const member = this.member();
+		if (!member) return;
+
+		const toast = await this.toastService.toast("Ukládám...");
+
+		try {
+			await this.api.MembersApi.updateMemberMembership(member.id, data);
+
+			toast.dismiss();
+			this.toastService.toast("Uloženo.");
+		} catch (e) {
+			toast.dismiss();
+			this.toastService.toast("Chyba při ukládání.", { color: "danger" });
+		}
+
+		await this.loadMember(member.id);
 	}
 
 	async delete() {

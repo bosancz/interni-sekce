@@ -1,0 +1,55 @@
+<bo-card>
+	<bo-card-header>
+		<bo-card-title>{{ title() }}</bo-card-title>
+
+		<div class="header-actions" slot="buttons">
+			<button type="button" class="header-button" [attr.aria-label]="infoTitle()" (click)="openInfo($event)">
+				<ion-icon name="information-circle-outline"></ion-icon>
+			</button>
+
+			<div class="year-nav">
+				<button
+					type="button"
+					class="header-button"
+					aria-label="Předchozí rok"
+					[disabled]="!canGoBack()"
+					(click)="previousYear.emit()"
+				>
+					<ion-icon name="chevron-back-outline"></ion-icon>
+				</button>
+				<span class="year-nav-value">{{ year() }}</span>
+				<button
+					type="button"
+					class="header-button"
+					aria-label="Následující rok"
+					[disabled]="!canGoForward()"
+					(click)="nextYear.emit()"
+				>
+					<ion-icon name="chevron-forward-outline"></ion-icon>
+				</button>
+			</div>
+		</div>
+	</bo-card-header>
+
+	<bo-card-content>
+		<ng-content></ng-content>
+	</bo-card-content>
+</bo-card>
+
+<ion-popover
+	cssClass="leaderboard-popover"
+	[isOpen]="infoOpen()"
+	[event]="infoEvent()"
+	(didDismiss)="infoOpen.set(false)"
+>
+	<ng-template>
+		<ion-content>
+			<div class="popover-panel">
+				<h4>{{ infoTitle() }}</h4>
+				@for (line of infoLines(); track $index) {
+					<p>{{ line }}</p>
+				}
+			</div>
+		</ion-content>
+	</ng-template>
+</ion-popover>

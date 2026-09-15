@@ -7,6 +7,13 @@ import { EventExpenseTypes } from "src/app/core/config/event-expense-types";
 import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 
+/** Zero total for every configured expense category, so the record follows EventExpenseTypes. */
+const emptyTotalByType = () =>
+	Object.fromEntries(Object.keys(EventExpenseTypes).map((type) => [type, 0])) as Record<
+		SDK.EventExpenseTypesEnum,
+		number
+	>;
+
 @Component({
 	selector: "bo-event-expenses-chart",
 	templateUrl: "./event-expenses-chart.component.html",
@@ -23,13 +30,7 @@ export class EventExpensesChartComponent implements OnInit {
 
 	total = signal(0);
 
-	totalByType: Record<SDK.EventExpenseTypesEnum, number> = {
-		accommodation: 0,
-		food: 0,
-		material: 0,
-		other: 0,
-		transport: 0,
-	};
+	totalByType: Record<SDK.EventExpenseTypesEnum, number> = emptyTotalByType();
 
 	chartData = signal<ChartData<"doughnut"> | undefined>(undefined);
 
@@ -60,13 +61,7 @@ export class EventExpensesChartComponent implements OnInit {
 	ngOnInit() {}
 
 	private async updateChart(event: SDK.EventResponseWithLinks, expenses: SDK.EventExpenseResponseWithLinks[]) {
-		this.totalByType = {
-			accommodation: 0,
-			food: 0,
-			material: 0,
-			other: 0,
-			transport: 0,
-		};
+		this.totalByType = emptyTotalByType();
 
 		const dateFrom = DateTime.fromISO(event.dateFrom).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
 		const dateTill = DateTime.fromISO(event.dateTill)

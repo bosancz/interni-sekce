@@ -41,7 +41,7 @@ import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
-import { MembershipStates } from "../../../../core/config/membership-states";
+import { MembershipPaymentStates } from "../../../../core/config/membership";
 import { MemberCreateModalComponent } from "../../components/member-create-modal/member-create-modal.component";
 
 const COLUMNS_ICON =
@@ -112,7 +112,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
 	groups = signal<SDK.GroupResponseWithLinks[]>([]);
 	roles = MemberRoles;
-	membershipStates = MembershipStates;
 
 	selectedGroups = computed(() => this.normalizeFilterValueToArray(this.model.value("groups")));
 	selectedRoles = computed(() => this.normalizeFilterValueToArray(this.model.value("roles")));
@@ -150,7 +149,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 		value: key,
 		label: role.title,
 	}));
-	readonly membershipOptions: FilterPillOption[] = Object.entries(MembershipStates).map(([key, state]) => ({
+	readonly membershipOptions: FilterPillOption[] = Object.entries(MembershipPaymentStates).map(([key, state]) => ({
 		value: key,
 		label: state.title,
 	}));
@@ -158,7 +157,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 	rowLink = (member: SDK.MemberResponseWithLinks) => "" + member.id;
 	rowClass = (member: SDK.MemberResponseWithLinks) => ({
 		"member-inactive": !member.active,
-		"member-paused": member.membership === "pozastaveno",
 		"member-vedouci": member.role === "vedouci",
 		"member-instruktor": member.role === "instruktor",
 	});
@@ -252,7 +250,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 			roles: this.normalizeFilterValueToArray((this.filter as any)["roles"]) as SDK.ExportMembersXlsxRolesEnum[],
 			membership: this.normalizeFilterValueToArray(
 				(this.filter as any)["membership"],
-			) as SDK.ExportMembersXlsxMembershipEnum[],
+			) as SDK.MembershipPaymentStatesEnum[],
 			groups: this.normalizeFilterValueToArray((this.filter as any)["groups"]).map((group) =>
 				parseInt(group, 10),
 			),
@@ -346,7 +344,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 			search: filter.search || undefined,
 			offset: (this.page - 1) * this.pageSize,
 			roles: this.normalizeFilterValueToArray(filter["roles"]) as SDK.ListMembersRolesEnum[],
-			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.ListMembersMembershipEnum[],
+			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.MembershipPaymentStatesEnum[],
 			limit: this.pageSize,
 			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
 			active: ((filter["active"] as string) || "active") === "all" ? undefined : true,

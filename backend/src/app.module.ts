@@ -10,6 +10,7 @@ import { FeedbackModule } from "./api/feedback/feedback.module";
 import { MembersModule } from "./api/members/members.module";
 import { NotificationsModule } from "./api/notifications/notifications.module";
 import { OauthModule } from "./api/oauth/oauth.module";
+import { PaymentsModule } from "./api/payments/payments.module";
 import { PublicModule } from "./api/public/public.module";
 import { RootModule } from "./api/root/root.module";
 import { StatisticsModule } from "./api/statistics/statistics.module";
@@ -24,6 +25,7 @@ import { GoogleModelModule } from "./models/google/google-model.module";
 import { MailService } from "./models/mail/services/mail.service";
 import { MembersModelModule } from "./models/members/members-model.module";
 import { NotificationsModelModule } from "./models/notifications/notifications-model.module";
+import { SettingsModelModule } from "./models/settings/settings-model.module";
 import { StatisticsModelModule } from "./models/statistics/statistics-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
 import { SeedModule } from "./seed/seed.module";
@@ -47,9 +49,11 @@ import { SeedModule } from "./seed/seed.module";
 		FeedbackModule,
 		PublicModule,
 		MembersModule,
+		PaymentsModule,
 		AuthModule,
 		UsersModule,
 		MembersModelModule,
+		SettingsModelModule,
 		AlbumsModelModule,
 		UsersModelModule,
 		NotificationsModelModule,

@@ -1,0 +1,9 @@
+@use "./../../../../../styles/leaderboard-card" as *;
+
+:host {
+	display: block;
+}
+
+.event-leaders {
+	color: var(--bo-muted);
+}

@@ -1,0 +1,37 @@
+@if (canSeeStatistics()) {
+	<bo-home-leaderboard-card
+		title="Statistika"
+		infoTitle="Jak se statistika počítá"
+		[infoLines]="infoLines"
+		[year]="year()"
+		[canGoBack]="canGoBack()"
+		[canGoForward]="canGoForward()"
+		(previousYear)="previousYear()"
+		(nextYear)="nextYear()"
+	>
+		@if (statistics(); as statistics) {
+			<div class="tiles">
+				<div class="tile">
+					<span class="tile-value">{{ statistics.activeChildren }}</span>
+					<span class="tile-label">{{ statistics.activeChildren | i18nPlural: childrenPluralMap }}</span>
+				</div>
+				<div class="tile">
+					<span class="tile-value">{{ statistics.activeLeaders }}</span>
+					<span class="tile-label">{{ statistics.activeLeaders | i18nPlural: leadersPluralMap }}</span>
+				</div>
+				<div class="tile">
+					<span class="tile-value">{{ statistics.childDays }}</span>
+					<span class="tile-label">{{ statistics.childDays | i18nPlural: childDaysPluralMap }}</span>
+				</div>
+			</div>
+		} @else {
+			<div class="tiles">
+				@for (tile of skeletonTiles; track $index) {
+					<div class="tile">
+						<ion-skeleton-text class="tile-skeleton" [animated]="true"></ion-skeleton-text>
+					</div>
+				}
+			</div>
+		}
+	</bo-home-leaderboard-card>
+}

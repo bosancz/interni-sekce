@@ -1,0 +1,9 @@
+@use "./../../../../../styles/leaderboard-card" as *;
+
+:host {
+	display: block;
+}
+
+::ng-deep .leaderboard-popover {
+	@include leaderboard-events-popover;
+}

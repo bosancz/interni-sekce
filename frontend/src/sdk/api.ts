@@ -29,6 +29,7 @@ export class SDK {
         FeedbackApi: SDK.FeedbackApi;
         MembersApi: SDK.MembersApi;
         NotificationsApi: SDK.NotificationsApi;
+        PaymentsApi: SDK.PaymentsApi;
         PhotoGalleryApi: SDK.PhotoGalleryApi;
         PublicAPIApi: SDK.PublicAPIApi;
         RootApi: SDK.RootApi;
@@ -45,6 +46,7 @@ export class SDK {
             this.FeedbackApi = new SDK.FeedbackApi(configuration, axios!);
             this.MembersApi = new SDK.MembersApi(configuration, axios!);
             this.NotificationsApi = new SDK.NotificationsApi(configuration, axios!);
+            this.PaymentsApi = new SDK.PaymentsApi(configuration, axios!);
             this.PhotoGalleryApi = new SDK.PhotoGalleryApi(configuration, axios!);
             this.PublicAPIApi = new SDK.PublicAPIApi(configuration, axios!);
             this.RootApi = new SDK.RootApi(configuration, axios!);
@@ -846,6 +848,44 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface ChildEventResponse
+     */
+    export interface ChildEventResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof ChildEventResponse
+         */
+        'eventId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof ChildEventResponse
+         */
+        'name': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof ChildEventResponse
+         */
+        'dateFrom': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof ChildEventResponse
+         */
+        'dateTill': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof ChildEventResponse
+         */
+        'days': number;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface CreateContactBody
      */
     export interface CreateContactBody {
@@ -1409,11 +1449,15 @@ export namespace SDK {
     }
     
     export const EventExpenseTypeEnum = {
-        Food: 'food',
+        TravelAllowance: 'travelAllowance',
         Transport: 'transport',
         Material: 'material',
+        Other: 'other',
+        Fuel: 'fuel',
+        Food: 'food',
+        Catering: 'catering',
         Accommodation: 'accommodation',
-        Other: 'other'
+        Admission: 'admission'
     } as const;
     
     export type EventExpenseTypeEnum = typeof EventExpenseTypeEnum[keyof typeof EventExpenseTypeEnum];
@@ -1452,11 +1496,15 @@ export namespace SDK {
     }
     
     export const EventExpenseCreateBodyTypeEnum = {
-        Food: 'food',
+        TravelAllowance: 'travelAllowance',
         Transport: 'transport',
         Material: 'material',
+        Other: 'other',
+        Fuel: 'fuel',
+        Food: 'food',
+        Catering: 'catering',
         Accommodation: 'accommodation',
-        Other: 'other'
+        Admission: 'admission'
     } as const;
     
     export type EventExpenseCreateBodyTypeEnum = typeof EventExpenseCreateBodyTypeEnum[keyof typeof EventExpenseCreateBodyTypeEnum];
@@ -1599,11 +1647,15 @@ export namespace SDK {
      */
     
     export const EventExpenseTypesEnum = {
-        Food: 'food',
+        TravelAllowance: 'travelAllowance',
         Transport: 'transport',
         Material: 'material',
+        Other: 'other',
+        Fuel: 'fuel',
+        Food: 'food',
+        Catering: 'catering',
         Accommodation: 'accommodation',
-        Other: 'other'
+        Admission: 'admission'
     } as const;
     
     export type EventExpenseTypesEnum = typeof EventExpenseTypesEnum[keyof typeof EventExpenseTypesEnum];
@@ -1642,11 +1694,15 @@ export namespace SDK {
     }
     
     export const EventExpenseUpdateBodyTypeEnum = {
-        Food: 'food',
+        TravelAllowance: 'travelAllowance',
         Transport: 'transport',
         Material: 'material',
+        Other: 'other',
+        Fuel: 'fuel',
+        Food: 'food',
+        Catering: 'catering',
         Accommodation: 'accommodation',
-        Other: 'other'
+        Admission: 'admission'
     } as const;
     
     export type EventExpenseUpdateBodyTypeEnum = typeof EventExpenseUpdateBodyTypeEnum[keyof typeof EventExpenseUpdateBodyTypeEnum];
@@ -3043,12 +3099,6 @@ export namespace SDK {
          * @type {string}
          * @memberof Member
          */
-        'membership': MemberMembershipEnum;
-        /**
-         * 
-         * @type {string}
-         * @memberof Member
-         */
         'rank'?: MemberRankEnum | null;
         /**
          * 
@@ -3154,6 +3204,12 @@ export namespace SDK {
         'contacts'?: Array<MemberContact>;
         /**
          * 
+         * @type {Array<MembershipPayment>}
+         * @memberof Member
+         */
+        'membership'?: Array<MembershipPayment>;
+        /**
+         * 
          * @type {Array<MemberAchievement>}
          * @memberof Member
          */
@@ -3179,13 +3235,6 @@ export namespace SDK {
     } as const;
     
     export type MemberRoleEnum = typeof MemberRoleEnum[keyof typeof MemberRoleEnum];
-    export const MemberMembershipEnum = {
-        Clen: 'clen',
-        Neclen: 'neclen',
-        Pozastaveno: 'pozastaveno'
-    } as const;
-    
-    export type MemberMembershipEnum = typeof MemberMembershipEnum[keyof typeof MemberMembershipEnum];
     export const MemberRankEnum = {
         Dite: 'dite',
         Instruktor: 'instruktor',
@@ -3480,6 +3529,88 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface MemberMembershipUpdateBody
+     */
+    export interface MemberMembershipUpdateBody {
+        /**
+         * The year the fee is being recorded for. The bounds only keep nonsense out of a smallint column.
+         * @type {number}
+         * @memberof MemberMembershipUpdateBody
+         */
+        'year': number;
+        /**
+         * `true` = zaplaceno, `false` = nezaplaceno.
+         * @type {boolean}
+         * @memberof MemberMembershipUpdateBody
+         */
+        'paid': boolean;
+        /**
+         * The treasurer\'s note on the fee, which only a recorded one can carry — sent with `paid: true` to write it. Left out entirely, the note already recorded stays as it is (that is how the paid/unpaid toggle sends it); `null` or an empty string clear it.
+         * @type {string}
+         * @memberof MemberMembershipUpdateBody
+         */
+        'note'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MemberPaymentRequestResponseWithLinks
+     */
+    export interface MemberPaymentRequestResponseWithLinks {
+        /**
+         * `<last two digits of the year><member id padded to 5>`, e.g. `2600409`.
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'variableSymbol': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'accountNumber': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'bankCode': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'amount': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'currency': string;
+        /**
+         * Payment message — `prispevky <name>`, without diacritics.
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'message': string;
+        /**
+         * Public URL of the QR platba image; openable without a session, so it can be mailed.
+         * @type {string}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        'qrCodeUrl': string;
+        /**
+         * 
+         * @type {object}
+         * @memberof MemberPaymentRequestResponseWithLinks
+         */
+        '_links': object;
+    }
+    
+        /**
+     * 
+     * @export
      * @enum {string}
      */
     
@@ -3530,10 +3661,10 @@ export namespace SDK {
         'active': boolean;
         /**
          * 
-         * @type {MembershipStatesEnum}
+         * @type {Array<MembershipPaymentResponse>}
          * @memberof MemberResponse
          */
-        'membership': MembershipStatesEnum;
+        'membership'?: Array<MembershipPaymentResponse>;
         /**
          * 
          * @type {string}
@@ -3699,6 +3830,18 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof MemberResponseLinks
          */
+        'updateMemberMembership': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'getMemberPaymentRequest': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
         'getMember': AcLink;
         /**
          * 
@@ -3764,10 +3907,10 @@ export namespace SDK {
         'active': boolean;
         /**
          * 
-         * @type {MembershipStatesEnum}
+         * @type {Array<MembershipPaymentResponse>}
          * @memberof MemberResponseWithLinks
          */
-        'membership': MembershipStatesEnum;
+        'membership'?: Array<MembershipPaymentResponse>;
         /**
          * 
          * @type {string}
@@ -3939,12 +4082,6 @@ export namespace SDK {
         'active'?: boolean;
         /**
          * 
-         * @type {MembershipStatesEnum}
-         * @memberof MemberUpdateBody
-         */
-        'membership'?: MembershipStatesEnum;
-        /**
-         * 
          * @type {string}
          * @memberof MemberUpdateBody
          */
@@ -4078,16 +4215,103 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface MembershipPayment
+     */
+    export interface MembershipPayment {
+        /**
+         * 
+         * @type {number}
+         * @memberof MembershipPayment
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MembershipPayment
+         */
+        'memberId': number;
+        /**
+         * The season the fee is paid for — the year the treasurer had on screen when recording it.
+         * @type {number}
+         * @memberof MembershipPayment
+         */
+        'forYear': number;
+        /**
+         * Variable symbol the payment came in under, derived by `getVariableSymbol()` from the member and the season. Stored rather than derived on read so a payment still shows the symbol it was actually made with, should the derivation ever change.
+         * @type {string}
+         * @memberof MembershipPayment
+         */
+        'variableSymbol': string;
+        /**
+         * The day the treasurer recorded the fee — not the day the member paid it, which nothing here knows. Named for what it is so the two are never taken for one another. Nullable because the fees migrated from the old list of years carry no date: nothing recorded one back then.
+         * @type {string}
+         * @memberof MembershipPayment
+         */
+        'recordedOn'?: string | null;
+        /**
+         * What the treasurer wrote down about this fee — \"zaplaceno na táboře\", \"sourozenecká sleva\", \"doplatí v lednu\". Free text, because the things worth noting about a payment are exactly the ones the columns cannot hold; nothing reads it but the person looking at the list.  It hangs on the payment, so it exists only for a season that is recorded as paid — un-record the fee and the note goes with it, the same way its date and symbol do.
+         * @type {string}
+         * @memberof MembershipPayment
+         */
+        'note'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MembershipPaymentResponse
+     */
+    export interface MembershipPaymentResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof MembershipPaymentResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MembershipPaymentResponse
+         */
+        'memberId': number;
+        /**
+         * The season the fee is paid for.
+         * @type {number}
+         * @memberof MembershipPaymentResponse
+         */
+        'forYear': number;
+        /**
+         * Variable symbol the fee was paid under, e.g. `2600001`.
+         * @type {string}
+         * @memberof MembershipPaymentResponse
+         */
+        'variableSymbol': string;
+        /**
+         * The day the treasurer recorded the fee, not the day it was paid; null for fees carried over from before they were dated.
+         * @type {string}
+         * @memberof MembershipPaymentResponse
+         */
+        'recordedOn'?: string | null;
+        /**
+         * Whatever the treasurer noted about this fee; null when nothing was noted.
+         * @type {string}
+         * @memberof MembershipPaymentResponse
+         */
+        'note'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
      * @enum {string}
      */
     
-    export const MembershipStatesEnum = {
-        Clen: 'clen',
-        Neclen: 'neclen',
-        Pozastaveno: 'pozastaveno'
+    export const MembershipPaymentStatesEnum = {
+        Zaplaceno: 'zaplaceno',
+        Nezaplaceno: 'nezaplaceno'
     } as const;
     
-    export type MembershipStatesEnum = typeof MembershipStatesEnum[keyof typeof MembershipStatesEnum];
+    export type MembershipPaymentStatesEnum = typeof MembershipPaymentStatesEnum[keyof typeof MembershipPaymentStatesEnum];
     
     
         /**
@@ -4542,6 +4766,70 @@ export namespace SDK {
          * @memberof PadlersTotalsResponse
          */
         'years': Array<number>;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PaymentSettingsResponseWithLinks
+     */
+    export interface PaymentSettingsResponseWithLinks {
+        /**
+         * 
+         * @type {string}
+         * @memberof PaymentSettingsResponseWithLinks
+         */
+        'accountNumber': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof PaymentSettingsResponseWithLinks
+         */
+        'bankCode': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof PaymentSettingsResponseWithLinks
+         */
+        'amount': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof PaymentSettingsResponseWithLinks
+         */
+        'currency': string;
+        /**
+         * 
+         * @type {object}
+         * @memberof PaymentSettingsResponseWithLinks
+         */
+        '_links': object;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PaymentSettingsUpdateBody
+     */
+    export interface PaymentSettingsUpdateBody {
+        /**
+         * Account number, with an optional prefix — e.g. \"2301695140\" or \"19-2000145399\".
+         * @type {string}
+         * @memberof PaymentSettingsUpdateBody
+         */
+        'accountNumber'?: string;
+        /**
+         * Four-digit Czech bank code, e.g. \"2010\".
+         * @type {string}
+         * @memberof PaymentSettingsUpdateBody
+         */
+        'bankCode'?: string;
+        /**
+         * Membership fee in whole units of the stored currency.
+         * @type {number}
+         * @memberof PaymentSettingsUpdateBody
+         */
+        'amount'?: number;
     }
     
         /**
@@ -5049,6 +5337,18 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'getPaymentSettings': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'updatePaymentSettings': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'getProgram': AcLink;
         /**
          * 
@@ -5085,7 +5385,25 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'getTopChildren': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getTopEvents': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'getTopLeaders': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getSummary': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -5136,6 +5454,232 @@ export namespace SDK {
          * @memberof RootResponseWithLinks
          */
         '_links': RootResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface SummaryResponse
+     */
+    export interface SummaryResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof SummaryResponse
+         */
+        'year': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof SummaryResponse
+         */
+        'activeChildren': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof SummaryResponse
+         */
+        'activeLeaders': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof SummaryResponse
+         */
+        'childDays': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof SummaryResponse
+         */
+        'firstYear': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof SummaryResponse
+         */
+        'lastYear': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface TopChildResponse
+     */
+    export interface TopChildResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildResponse
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopChildResponse
+         */
+        'nickname': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildResponse
+         */
+        'groupId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildResponse
+         */
+        'days': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildResponse
+         */
+        'eventsCount': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildResponse
+         */
+        'rank': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopChildResponse
+         */
+        'firstName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopChildResponse
+         */
+        'lastName'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface TopChildrenResponse
+     */
+    export interface TopChildrenResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildrenResponse
+         */
+        'year': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildrenResponse
+         */
+        'firstYear': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopChildrenResponse
+         */
+        'lastYear': number;
+        /**
+         * 
+         * @type {Array<TopChildResponse>}
+         * @memberof TopChildrenResponse
+         */
+        'children': Array<TopChildResponse>;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface TopEventResponse
+     */
+    export interface TopEventResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventResponse
+         */
+        'eventId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopEventResponse
+         */
+        'name': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopEventResponse
+         */
+        'dateFrom': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof TopEventResponse
+         */
+        'dateTill': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventResponse
+         */
+        'days': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventResponse
+         */
+        'childrenCount': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventResponse
+         */
+        'childDays': number;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof TopEventResponse
+         */
+        'leaders': Array<string>;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventResponse
+         */
+        'rank': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface TopEventsResponse
+     */
+    export interface TopEventsResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventsResponse
+         */
+        'year': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventsResponse
+         */
+        'firstYear': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof TopEventsResponse
+         */
+        'lastYear': number;
+        /**
+         * 
+         * @type {Array<TopEventResponse>}
+         * @memberof TopEventsResponse
+         */
+        'events': Array<TopEventResponse>;
     }
     
         /**
@@ -5206,12 +5750,6 @@ export namespace SDK {
          * @memberof TopLeadersResponse
          */
         'year': number;
-        /**
-         * 
-         * @type {number}
-         * @memberof TopLeadersResponse
-         */
-        'childDays': number;
         /**
          * 
          * @type {number}
@@ -8503,15 +9041,6 @@ export namespace SDK {
         Vedouci: 'vedouci'
     } as const;
     export type ExportMembersXlsxRolesEnum = typeof ExportMembersXlsxRolesEnum[keyof typeof ExportMembersXlsxRolesEnum];
-    /**
-     * @export
-     */
-    export const ExportMembersXlsxMembershipEnum = {
-        Clen: 'clen',
-        Neclen: 'neclen',
-        Pozastaveno: 'pozastaveno'
-    } as const;
-    export type ExportMembersXlsxMembershipEnum = typeof ExportMembersXlsxMembershipEnum[keyof typeof ExportMembersXlsxMembershipEnum];
     
     
     /**
@@ -8552,6 +9081,22 @@ export namespace SDK {
          */
         order?: ExportMembersXlsxOrderEnum
     
+        //membership
+        /**
+         * 
+         * @type {Array<MembershipPaymentStatesEnum>}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        membership?: Array<MembershipPaymentStatesEnum>
+    
+        //membershipYear
+        /**
+         * Which year the membership filter and the membership sort look at. Defaults to the current one.
+         * @type {number}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        membershipYear?: number
+    
         //contacts
         /**
          * 
@@ -8584,14 +9129,6 @@ export namespace SDK {
          */
         roles?: Array<ExportMembersXlsxRolesEnum>
     
-        //membershipisEnumMembershipEnum
-        /**
-         * 
-         * @type {Array<'clen' | 'neclen' | 'pozastaveno'>}
-         * @memberof MembersApiExportMembersXlsx
-         */
-        membership?: Array<ExportMembersXlsxMembershipEnum>
-    
         //age
         /**
          * 
@@ -8608,6 +9145,10 @@ export namespace SDK {
          */
         active?: boolean
     }
+    
+    
+    
+    
     
     
     
@@ -8687,15 +9228,6 @@ export namespace SDK {
         Vedouci: 'vedouci'
     } as const;
     export type ListMembersRolesEnum = typeof ListMembersRolesEnum[keyof typeof ListMembersRolesEnum];
-    /**
-     * @export
-     */
-    export const ListMembersMembershipEnum = {
-        Clen: 'clen',
-        Neclen: 'neclen',
-        Pozastaveno: 'pozastaveno'
-    } as const;
-    export type ListMembersMembershipEnum = typeof ListMembersMembershipEnum[keyof typeof ListMembersMembershipEnum];
     
     
     /**
@@ -8736,6 +9268,22 @@ export namespace SDK {
          */
         order?: ListMembersOrderEnum
     
+        //membership
+        /**
+         * 
+         * @type {Array<MembershipPaymentStatesEnum>}
+         * @memberof MembersApiListMembers
+         */
+        membership?: Array<MembershipPaymentStatesEnum>
+    
+        //membershipYear
+        /**
+         * Which year the membership filter and the membership sort look at. Defaults to the current one.
+         * @type {number}
+         * @memberof MembersApiListMembers
+         */
+        membershipYear?: number
+    
         //contacts
         /**
          * 
@@ -8768,14 +9316,6 @@ export namespace SDK {
          */
         roles?: Array<ListMembersRolesEnum>
     
-        //membershipisEnumMembershipEnum
-        /**
-         * 
-         * @type {Array<'clen' | 'neclen' | 'pozastaveno'>}
-         * @memberof MembersApiListMembers
-         */
-        membership?: Array<ListMembersMembershipEnum>
-    
         //age
         /**
          * 
@@ -8792,6 +9332,10 @@ export namespace SDK {
          */
         active?: boolean
     }
+    
+    
+    
+    
     
     
     
@@ -9251,6 +9795,14 @@ export namespace SDK {
                 requestQueryParameter['order'] = queryParams.order;
             }
     
+            if (queryParams.membership) {
+                requestQueryParameter['membership'] = queryParams.membership;
+            }
+    
+            if (queryParams.membershipYear !== undefined) {
+                requestQueryParameter['membershipYear'] = queryParams.membershipYear;
+            }
+    
             if (queryParams.contacts !== undefined) {
                 requestQueryParameter['contacts'] = queryParams.contacts;
             }
@@ -9265,10 +9817,6 @@ export namespace SDK {
     
             if (queryParams.roles) {
                 requestQueryParameter['roles'] = queryParams.roles;
-            }
-    
-            if (queryParams.membership) {
-                requestQueryParameter['membership'] = queryParams.membership;
             }
     
             if (queryParams.age) {
@@ -9421,6 +9969,50 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<MemberResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async getMemberPaymentRequest(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getMemberPaymentRequest', 'id', id)
+            
+            const localVarPath = `/api/members/{id}/payment-request`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<MemberPaymentRequestResponseWithLinks>(axiosRequestConfig);
         }
     
         /**
@@ -9639,6 +10231,14 @@ export namespace SDK {
                 requestQueryParameter['order'] = queryParams.order;
             }
     
+            if (queryParams.membership) {
+                requestQueryParameter['membership'] = queryParams.membership;
+            }
+    
+            if (queryParams.membershipYear !== undefined) {
+                requestQueryParameter['membershipYear'] = queryParams.membershipYear;
+            }
+    
             if (queryParams.contacts !== undefined) {
                 requestQueryParameter['contacts'] = queryParams.contacts;
             }
@@ -9653,10 +10253,6 @@ export namespace SDK {
     
             if (queryParams.roles) {
                 requestQueryParameter['roles'] = queryParams.roles;
-            }
-    
-            if (queryParams.membership) {
-                requestQueryParameter['membership'] = queryParams.membership;
             }
     
             if (queryParams.age) {
@@ -9978,6 +10574,59 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async updateMemberMembership(
+            id: number,
+            body: MemberMembershipUpdateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateMemberMembership', 'id', id)
+            assertParamExists('updateMemberMembership', 'memberMembershipUpdateBody', body)
+            
+            // verify required parameter 'memberMembershipUpdateBody' is not null or undefined
+            assertParamExists('updateMemberMembership', 'id', id)
+            assertParamExists('updateMemberMembership', 'memberMembershipUpdateBody', body)
+            
+            const localVarPath = `/api/members/{id}/membership`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<MembershipPaymentResponse>>(axiosRequestConfig);
         }
     
         /**
@@ -10465,6 +11114,113 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    }
+    
+        
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * PaymentsApi - object-oriented interface
+     * @export
+     * @class PaymentsApi
+     * @extends {BaseAPI}
+     */
+    export class PaymentsApi extends BaseAPI {
+    
+        constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
+            super(configuration, configuration.basePath, axios);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PaymentsApi
+         */
+        
+        public async getPaymentSettings(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/payments/settings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<PaymentSettingsResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PaymentsApi
+         */
+        
+        public async updatePaymentSettings(
+            body: PaymentSettingsUpdateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'paymentSettingsUpdateBody' is not null or undefined
+            assertParamExists('updatePaymentSettings', 'paymentSettingsUpdateBody', body)
+            
+            const localVarPath = `/api/payments/settings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<PaymentSettingsResponseWithLinks>(axiosRequestConfig);
         }
     }
     
@@ -12380,6 +13136,25 @@ export namespace SDK {
         
     
     
+    /**
+     * Query parameters for getChildEvents operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetChildEventsQueryParams
+     */
+    export interface StatisticsApiGetChildEventsQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetChildEvents
+         */
+        year?: number
+    }
+    
+    
+    
+    
+    
     
     
     
@@ -12428,6 +13203,79 @@ export namespace SDK {
     
     
     /**
+     * Query parameters for getSummary operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetSummaryQueryParams
+     */
+    export interface StatisticsApiGetSummaryQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetSummary
+         */
+        year?: number
+    }
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for getTopChildren operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetTopChildrenQueryParams
+     */
+    export interface StatisticsApiGetTopChildrenQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetTopChildren
+         */
+        year?: number
+    
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof StatisticsApiGetTopChildren
+         */
+        limit?: number
+    }
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for getTopEvents operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetTopEventsQueryParams
+     */
+    export interface StatisticsApiGetTopEventsQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetTopEvents
+         */
+        year?: number
+    
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof StatisticsApiGetTopEvents
+         */
+        limit?: number
+    }
+    
+    
+    
+    
+    
+    /**
      * Query parameters for getTopLeaders operation in StatisticsApi.
      * @export
      * @interface StatisticsApiGetTopLeadersQueryParams
@@ -12463,6 +13311,56 @@ export namespace SDK {
     
         constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
             super(configuration, configuration.basePath, axios);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {StatisticsApiGetChildEventsQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof StatisticsApi
+         */
+        
+        public async getChildEvents(
+            memberId: number,
+            queryParams: StatisticsApiGetChildEventsQueryParams,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('getChildEvents', 'memberId', memberId)
+            
+            const localVarPath = `/api/statistics/children/{memberId}/events`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<ChildEventResponse>>(axiosRequestConfig);
         }
     
         /**
@@ -12785,6 +13683,146 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<PadlersTotalsResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {StatisticsApiGetSummaryQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof StatisticsApi
+         */
+        
+        public async getSummary(
+            queryParams: StatisticsApiGetSummaryQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/statistics/summary`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<SummaryResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {StatisticsApiGetTopChildrenQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof StatisticsApi
+         */
+        
+        public async getTopChildren(
+            queryParams: StatisticsApiGetTopChildrenQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/statistics/children/top`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<TopChildrenResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {StatisticsApiGetTopEventsQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof StatisticsApi
+         */
+        
+        public async getTopEvents(
+            queryParams: StatisticsApiGetTopEventsQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/statistics/events/top`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<TopEventsResponse>(axiosRequestConfig);
         }
     
         /**

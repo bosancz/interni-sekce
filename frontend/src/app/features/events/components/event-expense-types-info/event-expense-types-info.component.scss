@@ -1,0 +1,28 @@
+:host {
+	display: inline-flex;
+}
+
+// the popover body itself is styled globally (.expense-types-info-popover in styles/general.scss),
+// because Ionic moves the popover content out of this component's DOM subtree
+.info-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--bo-muted);
+	cursor: pointer;
+
+	ion-icon {
+		font-size: 20px;
+	}
+
+	&:hover {
+		background: var(--bo-neutral-pill);
+		color: var(--bo-ink);
+	}
+}

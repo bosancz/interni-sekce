@@ -16,6 +16,7 @@ import { DeleteButtonComponent } from "src/app/shared/components/delete-button/d
 import { ItemComponent } from "src/app/shared/components/item/item.component";
 import { EventExpensePipe } from "src/app/shared/pipes/event-expense.pipe";
 import { SDK } from "src/sdk";
+import { EventExpenseTypesInfoComponent } from "../event-expense-types-info/event-expense-types-info.component";
 import { EventExpensesChartComponent } from "../event-expenses-chart/event-expenses-chart.component";
 
 @UntilDestroy()
@@ -34,6 +35,7 @@ import { EventExpensesChartComponent } from "../event-expenses-chart/event-expen
 		AddButtonComponent,
 		EventExpensePipe,
 		EventExpensesChartComponent,
+		EventExpenseTypesInfoComponent,
 		CardComponent,
 		CardHeaderComponent,
 		CardTitleComponent,
