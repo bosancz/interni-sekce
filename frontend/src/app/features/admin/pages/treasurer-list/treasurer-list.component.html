@@ -1,4 +1,4 @@
-<bo-page-header title="Příspěvky">
+<bo-page-header title="Příspěvky" [actions]="actions()">
 	<!-- The year the page is about, one click per year in either direction — it sits in the header
 	     so it is visible (and reachable) on desktop and mobile alike, rather than hiding in the
 	     mobile filter modal the way a filter pill would. -->
@@ -26,6 +26,32 @@
 		</ion-button>
 	</div>
 </bo-page-header>
+
+<!-- The season's totals over the whole club. They sit above the filters and the table, outside the
+     scrolling content, so they stay in view, and they take no filter on purpose: what the club has
+     collected must not move as the table below is narrowed to one group. -->
+<div class="treasurer-summary">
+	@if (summary(); as summaryValue) {
+		<div class="treasurer-summary-item">
+			<span class="treasurer-summary-label">Platících</span>
+			<span class="treasurer-summary-value">{{ summaryValue.paidCount }}</span>
+		</div>
+
+		<div class="treasurer-summary-item">
+			<span class="treasurer-summary-label">Vybráno {{ summaryValue.year }}</span>
+			<span class="treasurer-summary-value">
+				{{ summaryValue.totalAmount | number: "1.0-0" : "cs" }}&nbsp;{{ currencyLabel() }}
+			</span>
+		</div>
+	} @else {
+		<div class="treasurer-summary-item">
+			<ion-skeleton-text [animated]="true" class="treasurer-summary-skeleton"></ion-skeleton-text>
+		</div>
+		<div class="treasurer-summary-item">
+			<ion-skeleton-text [animated]="true" class="treasurer-summary-skeleton"></ion-skeleton-text>
+		</div>
+	}
+</div>
 
 <bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
 	@if (isDesktop()) {
@@ -207,6 +233,38 @@
 			</admin-table-column>
 		}
 
+		<!-- What the fee was worth, and the pencil that corrects it. Recording a fee gives it the
+		     club's fee from the payment settings, so the column is filled in without anyone typing;
+		     the pencil is offered where there is a recorded fee to write on, as with the note. -->
+		@if (viewSelections().amount) {
+			<admin-table-column
+				header="Částka"
+				headerClass="align-middle treasurer-amount-column"
+				cellClass="treasurer-amount-column"
+			>
+				<ng-container *adminCell="let member">
+					<span class="treasurer-amount-cell">
+						<span class="treasurer-amount-value">{{
+							amount(member) === null ? "" : (amount(member) | number: "1.0-0" : "cs") + " Kč"
+						}}</span>
+
+						@if (canEditMembership(member) && isPaid(member)) {
+							<button
+								type="button"
+								class="treasurer-edit-button"
+								[disabled]="isSaving(member)"
+								[boTooltip]="amount(member) === null ? 'Zapsat částku' : 'Upravit částku'"
+								[attr.aria-label]="amount(member) === null ? 'Zapsat částku' : 'Upravit částku'"
+								(click)="editAmount(member, $event)"
+							>
+								<ion-icon name="create-outline"></ion-icon>
+							</button>
+						}
+					</span>
+				</ng-container>
+			</admin-table-column>
+		}
+
 		<!-- The day the treasurer ticked the fee off, not the day it was paid — empty for a season
 		     that is not recorded, and for the fees carried over from before they were dated. -->
 		@if (viewSelections().recordedOn) {
@@ -228,7 +286,7 @@
 						@if (canEditMembership(member) && isPaid(member)) {
 							<button
 								type="button"
-								class="treasurer-note-button"
+								class="treasurer-edit-button"
 								[disabled]="isSaving(member)"
 								[boTooltip]="hasNote(member) ? 'Upravit poznámku' : 'Přidat poznámku'"
 								[attr.aria-label]="hasNote(member) ? 'Upravit poznámku' : 'Přidat poznámku'"

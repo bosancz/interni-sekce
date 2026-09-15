@@ -19,7 +19,11 @@ export interface GetMembersOptions extends PaginationOptions {
 	membershipYear?: number;
 	age?: number[];
 	active?: boolean;
+	// Keep the members who paid the fee of membershipYear even where `active` would drop them.
+	includeMembershipPaid?: boolean;
 	contacts?: boolean;
+	// Join the member's group, for the readers that need its name rather than its id.
+	withGroup?: boolean;
 }
 
 @Injectable()
@@ -90,6 +94,10 @@ export class MembersRepository {
 		// Join contacts up-front only when requested (i.e. the contacts column is visible).
 		if (options.contacts) q.leftJoinAndSelect("members.contacts", "contacts");
 
+		// Same for the group: the lists resolve it from their own copy of the groups, only the
+		// exports need the name on the member itself.
+		if (options.withGroup) q.leftJoinAndSelect("members.group", "group");
+
 		if (options.groups) q.andWhere("members.groupId IN (:...groupIds)", { groupIds: options.groups });
 
 		if (options.search) {
@@ -122,9 +130,59 @@ export class MembersRepository {
 				{ ages: options.age },
 			);
 
-		if (options.active !== undefined) q.andWhere("members.active = :active", { active: options.active });
+		// The treasurer view hides inactive members like every other list, with one exception: the
+		// ones who paid the season's fee stay. Their money is in the totals above the table, so the
+		// row it came from cannot be missing from the table itself — it is shown dimmed, as inactive
+		// members are everywhere.
+		if (options.active !== undefined) {
+			if (options.includeMembershipPaid)
+				q.andWhere(
+					new Brackets((qb) =>
+						qb.where("members.active = :active", { active: options.active }).orWhere(membershipPaid),
+					),
+				);
+			else q.andWhere("members.active = :active", { active: options.active });
+		}
 
 		return q.getMany();
+	}
+
+	/**
+	 * The membership summary of one season over every member the caller may see: how many have the
+	 * fee recorded and what those fees add up to.
+	 *
+	 * It deliberately ignores what the list above it is filtered or searched by. The figures are the
+	 * club's takings for the season, so they must not move as someone narrows the table to one group
+	 * — and a paginated list could not be summed by its reader anyway.
+	 */
+	async getMembershipSummary(
+		year: number = currentMembershipYear(),
+		where: Brackets | string = "1=1",
+	): Promise<{ year: number; paidCount: number; totalAmount: number }> {
+		const membershipPaid = membershipPaidExpression("members.id", year);
+
+		// The join can never multiply a member's row — a member has at most one payment per season
+		// (see the unique index on MembershipPayment) — so the fees are summed over the members
+		// themselves. Whether a fee counts as paid is asked the one way it is asked everywhere:
+		// through membershipPaidExpression, the SQL side of isMembershipPaid.
+		const row = await this.membersRepository
+			.createQueryBuilder("members")
+			.where(where)
+			.leftJoin(
+				MembershipPayment,
+				"summary_payment",
+				"summary_payment.member_id = members.id AND summary_payment.for_year = :summaryYear",
+				{ summaryYear: year },
+			)
+			.select(`COUNT(*) FILTER (WHERE ${membershipPaid})`, "paid_count")
+			.addSelect("COALESCE(SUM(summary_payment.amount), 0)", "total_amount")
+			.getRawOne<{ paid_count: string; total_amount: string }>();
+
+		return {
+			year,
+			paidCount: Number(row?.paid_count ?? 0),
+			totalAmount: Number(row?.total_amount ?? 0),
+		};
 	}
 
 	async getMemberAges(where: Brackets | string = "1=1"): Promise<number[]> {

@@ -36,10 +36,10 @@ export class MemberMembershipController {
 
 		MemberMembershipUpdatePermission.canOrThrow(req, member);
 
-		// Only the given year changes: "zaplaceno" records a payment for it (and writes the note it
-		// carries, if the body sent one), "nezaplaceno" removes the one that is there — together with
-		// its note, which belongs to the payment. The other seasons' payments are left untouched.
-		if (body.paid) await this.membershipPayments.setPaid(member, body.year, body.note);
+		// Only the given year changes: "zaplaceno" records a payment for it (and writes the note and
+		// the amount it carries, if the body sent them), "nezaplaceno" removes the one that is there —
+		// together with them, as they belong to the payment. The other seasons are left untouched.
+		if (body.paid) await this.membershipPayments.setPaid(member, body.year, body);
 		else await this.membershipPayments.setUnpaid(member, body.year);
 
 		// The whole list comes back so a caller (the treasurer view above all) can show the payment

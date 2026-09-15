@@ -91,9 +91,9 @@
 	max-width: 100%;
 }
 
-// The pencil is the quiet kind of edit button the rest of the app uses — it says the note can be
-// written without competing with the note itself.
-.treasurer-note-button {
+// The pencil is the quiet kind of edit button the rest of the app uses — it says the value can be
+// written without competing with the value itself. Shared by the amount and the note.
+.treasurer-edit-button {
 	display: inline-flex;
 	flex-shrink: 0;
 	// A note long enough to wrap (mobile) keeps the pencil at its first line instead of floating in
@@ -151,6 +151,65 @@
 		overflow: visible;
 		white-space: normal;
 	}
+}
+
+// The amount column: the number first and the pencil after it, so the figures line up down the
+// column and can be scanned against a bank statement — the opposite order to the note, whose text
+// is what has to line up. Tabular figures for the same reason as the variable symbol.
+::ng-deep .treasurer-amount-column {
+	width: 1%;
+	white-space: nowrap;
+	text-align: right;
+}
+
+.treasurer-amount-cell {
+	display: inline-flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 4px;
+}
+
+.treasurer-amount-value {
+	font-variant-numeric: tabular-nums;
+}
+
+// The season's totals above the table. Two figures side by side on every width — there are only
+// two, so they fit on a phone without becoming a list of their own.
+.treasurer-summary {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 24px;
+	padding: 12px 32px;
+	border-bottom: 1px solid var(--bo-line);
+	background: var(--bo-white);
+}
+
+.treasurer-summary-item {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 7rem;
+}
+
+.treasurer-summary-label {
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--bo-muted);
+}
+
+.treasurer-summary-value {
+	font-size: 1.125rem;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	color: var(--bo-heading);
+}
+
+.treasurer-summary-skeleton {
+	width: 6rem;
+	height: 2.25rem;
+	margin: 0;
 }
 
 // Desktop: year, filters, columns and view options laid out inline in the filter toolbar.

@@ -14,6 +14,7 @@ import { Group } from "src/models/members/entities/group.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { MembershipPayment } from "src/models/members/entities/membership-payment.entity";
+import { PaymentSettings } from "src/models/settings/entities/payment-settings.entity";
 import { User } from "src/models/users/entities/user.entity";
 import { EntityManager } from "typeorm";
 import { readFile } from "fs/promises";
@@ -168,6 +169,10 @@ export class SeedService {
 	private async seedMembers(t: EntityManager, groupIds: Map<string, number>) {
 		const memberIds = new Map<string, number>();
 
+		// A recorded fee is worth the club's fee, the same way the treasurer's first click records
+		// it — so the totals above the treasurer's table have something to add up.
+		const paymentSettings = await t.findOne(PaymentSettings, { where: {}, order: { id: "ASC" } });
+
 		for (const seedMember of SeedMembers) {
 			const groupId = groupIds.get(seedMember.group);
 			if (!groupId) throw new Error(`Unknown group '${seedMember.group}' for member '${seedMember.nickname}'.`);
@@ -210,6 +215,7 @@ export class SeedService {
 					forYear,
 					variableSymbol: getVariableSymbol(member, forYear),
 					recordedOn: DateTime.now().toISODate(),
+					amount: paymentSettings?.amount ?? null,
 				});
 			}
 

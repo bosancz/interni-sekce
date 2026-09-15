@@ -3526,6 +3526,12 @@ export namespace SDK {
          * @memberof MemberMembershipUpdateBody
          */
         'note'?: string | null;
+        /**
+         * What the fee was worth, sent with `paid: true` to write it. Left out entirely, a fee already recorded keeps its amount and a fee recorded now takes the one from the payment settings; `null` clears it.
+         * @type {number}
+         * @memberof MemberMembershipUpdateBody
+         */
+        'amount'?: number | null;
     }
     
         /**
@@ -4230,6 +4236,12 @@ export namespace SDK {
          * @memberof MembershipPayment
          */
         'note'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof MembershipPayment
+         */
+        'amount'?: number | null;
     }
     
         /**
@@ -4274,6 +4286,12 @@ export namespace SDK {
          * @memberof MembershipPaymentResponse
          */
         'note'?: string | null;
+        /**
+         * How much the fee was, in whole units of the payment settings\' currency; null for fees carried over from before they were recorded with one.
+         * @type {number}
+         * @memberof MembershipPaymentResponse
+         */
+        'amount'?: number | null;
     }
     
         /**
@@ -4289,6 +4307,38 @@ export namespace SDK {
     
     export type MembershipPaymentStatesEnum = typeof MembershipPaymentStatesEnum[keyof typeof MembershipPaymentStatesEnum];
     
+    
+        /**
+     * 
+     * @export
+     * @interface MembershipSummaryResponse
+     */
+    export interface MembershipSummaryResponse {
+        /**
+         * The season the figures are about.
+         * @type {number}
+         * @memberof MembershipSummaryResponse
+         */
+        'year': number;
+        /**
+         * How many members have the fee of `year` recorded as paid.
+         * @type {number}
+         * @memberof MembershipSummaryResponse
+         */
+        'paidCount': number;
+        /**
+         * What the recorded fees add up to, in whole units of `currency`.
+         * @type {number}
+         * @memberof MembershipSummaryResponse
+         */
+        'totalAmount': number;
+        /**
+         * Currency of `totalAmount`, taken from the club\'s payment settings.
+         * @type {string}
+         * @memberof MembershipSummaryResponse
+         */
+        'currency': string;
+    }
     
         /**
      * 
@@ -5277,6 +5327,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'getMembershipSummary': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'listDeletedMembers': AcLink;
         /**
          * 
@@ -5290,6 +5346,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'exportMembersXlsx': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'exportMembershipXlsx': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -9029,6 +9091,14 @@ export namespace SDK {
          */
         membershipYear?: number
     
+        //includeMembershipPaid
+        /**
+         * Keeps the members who paid the fee of &#x60;membershipYear&#x60; in the list even when &#x60;active&#x60; would drop them — what the treasurer view asks for, so a fee it counts always has a row.
+         * @type {boolean}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        includeMembershipPaid?: boolean
+    
         //contacts
         /**
          * 
@@ -9080,6 +9150,135 @@ export namespace SDK {
     
     
     
+    /**
+     * @export
+     */
+    export const ExportMembershipXlsxOrderEnum = {
+        Asc: 'ASC',
+        Desc: 'DESC'
+    } as const;
+    export type ExportMembershipXlsxOrderEnum = typeof ExportMembershipXlsxOrderEnum[keyof typeof ExportMembershipXlsxOrderEnum];
+    /**
+     * @export
+     */
+    export const ExportMembershipXlsxRolesEnum = {
+        Dite: 'dite',
+        Instruktor: 'instruktor',
+        Vedouci: 'vedouci'
+    } as const;
+    export type ExportMembershipXlsxRolesEnum = typeof ExportMembershipXlsxRolesEnum[keyof typeof ExportMembershipXlsxRolesEnum];
+    
+    
+    /**
+     * Query parameters for exportMembershipXlsx operation in MembersApi.
+     * @export
+     * @interface MembersApiExportMembershipXlsxQueryParams
+     */
+    export interface MembersApiExportMembershipXlsxQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        limit?: number
+    
+        //offset
+        /**
+         * 
+         * @type {number}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        offset?: number
+    
+        //sort
+        /**
+         * 
+         * @type {string}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        sort?: string
+    
+        //orderisEnumOrderEnum
+        /**
+         * 
+         * @type {'ASC' | 'DESC'}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        order?: ExportMembershipXlsxOrderEnum
+    
+        //membership
+        /**
+         * 
+         * @type {Array<MembershipPaymentStatesEnum>}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        membership?: Array<MembershipPaymentStatesEnum>
+    
+        //membershipYear
+        /**
+         * Which year the membership filter and the membership sort look at. Defaults to the current one.
+         * @type {number}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        membershipYear?: number
+    
+        //includeMembershipPaid
+        /**
+         * Keeps the members who paid the fee of &#x60;membershipYear&#x60; in the list even when &#x60;active&#x60; would drop them — what the treasurer view asks for, so a fee it counts always has a row.
+         * @type {boolean}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        includeMembershipPaid?: boolean
+    
+        //contacts
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        contacts?: boolean
+    
+        //groups
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        groups?: Array<number>
+    
+        //search
+        /**
+         * 
+         * @type {string}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        search?: string
+    
+        //rolesisEnumRolesEnum
+        /**
+         * 
+         * @type {Array<'dite' | 'instruktor' | 'vedouci'>}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        roles?: Array<ExportMembershipXlsxRolesEnum>
+    
+        //age
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        age?: Array<number>
+    
+        //active
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        active?: boolean
+    }
     
     
     
@@ -9093,6 +9292,28 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for getMembershipSummary operation in MembersApi.
+     * @export
+     * @interface MembersApiGetMembershipSummaryQueryParams
+     */
+    export interface MembersApiGetMembershipSummaryQueryParams {
+        //year
+        /**
+         * 
+         * @type {number}
+         * @memberof MembersApiGetMembershipSummary
+         */
+        year?: number
+    }
     
     
     
@@ -9215,6 +9436,14 @@ export namespace SDK {
          * @memberof MembersApiListMembers
          */
         membershipYear?: number
+    
+        //includeMembershipPaid
+        /**
+         * Keeps the members who paid the fee of &#x60;membershipYear&#x60; in the list even when &#x60;active&#x60; would drop them — what the treasurer view asks for, so a fee it counts always has a row.
+         * @type {boolean}
+         * @memberof MembersApiListMembers
+         */
+        includeMembershipPaid?: boolean
     
         //contacts
         /**
@@ -9735,6 +9964,103 @@ export namespace SDK {
                 requestQueryParameter['membershipYear'] = queryParams.membershipYear;
             }
     
+            if (queryParams.includeMembershipPaid !== undefined) {
+                requestQueryParameter['includeMembershipPaid'] = queryParams.includeMembershipPaid;
+            }
+    
+            if (queryParams.contacts !== undefined) {
+                requestQueryParameter['contacts'] = queryParams.contacts;
+            }
+    
+            if (queryParams.groups) {
+                requestQueryParameter['groups'] = queryParams.groups;
+            }
+    
+            if (queryParams.search !== undefined) {
+                requestQueryParameter['search'] = queryParams.search;
+            }
+    
+            if (queryParams.roles) {
+                requestQueryParameter['roles'] = queryParams.roles;
+            }
+    
+            if (queryParams.age) {
+                requestQueryParameter['age'] = queryParams.age;
+            }
+    
+            if (queryParams.active !== undefined) {
+                requestQueryParameter['active'] = queryParams.active;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<File>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+         * @summary The treasurer view as a sheet — the same members the page lists, so it takes the page\'s own filters, and the columns it shows by default. The season is `membershipYear`, the year the page is on.
+    
+         * @param {MembersApiExportMembershipXlsxQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async exportMembershipXlsx(
+            queryParams: MembersApiExportMembershipXlsxQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/members/export/membership-xlsx`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.offset !== undefined) {
+                requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+            if (queryParams.sort !== undefined) {
+                requestQueryParameter['sort'] = queryParams.sort;
+            }
+    
+            if (queryParams.order !== undefined) {
+                requestQueryParameter['order'] = queryParams.order;
+            }
+    
+            if (queryParams.membership) {
+                requestQueryParameter['membership'] = queryParams.membership;
+            }
+    
+            if (queryParams.membershipYear !== undefined) {
+                requestQueryParameter['membershipYear'] = queryParams.membershipYear;
+            }
+    
+            if (queryParams.includeMembershipPaid !== undefined) {
+                requestQueryParameter['includeMembershipPaid'] = queryParams.includeMembershipPaid;
+            }
+    
             if (queryParams.contacts !== undefined) {
                 requestQueryParameter['contacts'] = queryParams.contacts;
             }
@@ -9945,6 +10271,51 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<MemberPaymentRequestResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+         * @summary The season\'s fees added up over the whole club — the figures above the treasurer\'s table. The season is all it takes: the totals are the club\'s takings, not the list\'s, so filtering the table below them must not move them.
+    
+         * @param {MembersApiGetMembershipSummaryQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async getMembershipSummary(
+            queryParams: MembersApiGetMembershipSummaryQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/members/membership/summary`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<MembershipSummaryResponse>(axiosRequestConfig);
         }
     
         /**
@@ -10169,6 +10540,10 @@ export namespace SDK {
     
             if (queryParams.membershipYear !== undefined) {
                 requestQueryParameter['membershipYear'] = queryParams.membershipYear;
+            }
+    
+            if (queryParams.includeMembershipPaid !== undefined) {
+                requestQueryParameter['includeMembershipPaid'] = queryParams.includeMembershipPaid;
             }
     
             if (queryParams.contacts !== undefined) {
