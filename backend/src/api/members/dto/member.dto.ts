@@ -128,6 +128,15 @@ export class MembersListQuery extends PaginationQuery {
 
 	@EnsureBoolean() @IsOptional() active?: boolean;
 
+	/**
+	 * Keeps the members who paid the fee of `membershipYear` in the list even when `active` would
+	 * drop them — what the treasurer view asks for, so a fee it counts always has a row.
+	 */
+	@ApiPropertyOptional({ type: "boolean" })
+	@EnsureBoolean()
+	@IsOptional()
+	includeMembershipPaid?: boolean;
+
 	@ApiPropertyOptional({ type: "boolean" })
 	@EnsureBoolean()
 	@IsOptional()

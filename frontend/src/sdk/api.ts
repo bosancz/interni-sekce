@@ -9091,6 +9091,14 @@ export namespace SDK {
          */
         membershipYear?: number
     
+        //includeMembershipPaid
+        /**
+         * Keeps the members who paid the fee of &#x60;membershipYear&#x60; in the list even when &#x60;active&#x60; would drop them — what the treasurer view asks for, so a fee it counts always has a row.
+         * @type {boolean}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        includeMembershipPaid?: boolean
+    
         //contacts
         /**
          * 
@@ -9214,6 +9222,14 @@ export namespace SDK {
          * @memberof MembersApiExportMembershipXlsx
          */
         membershipYear?: number
+    
+        //includeMembershipPaid
+        /**
+         * Keeps the members who paid the fee of &#x60;membershipYear&#x60; in the list even when &#x60;active&#x60; would drop them — what the treasurer view asks for, so a fee it counts always has a row.
+         * @type {boolean}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        includeMembershipPaid?: boolean
     
         //contacts
         /**
@@ -9420,6 +9436,14 @@ export namespace SDK {
          * @memberof MembersApiListMembers
          */
         membershipYear?: number
+    
+        //includeMembershipPaid
+        /**
+         * Keeps the members who paid the fee of &#x60;membershipYear&#x60; in the list even when &#x60;active&#x60; would drop them — what the treasurer view asks for, so a fee it counts always has a row.
+         * @type {boolean}
+         * @memberof MembersApiListMembers
+         */
+        includeMembershipPaid?: boolean
     
         //contacts
         /**
@@ -9940,6 +9964,10 @@ export namespace SDK {
                 requestQueryParameter['membershipYear'] = queryParams.membershipYear;
             }
     
+            if (queryParams.includeMembershipPaid !== undefined) {
+                requestQueryParameter['includeMembershipPaid'] = queryParams.includeMembershipPaid;
+            }
+    
             if (queryParams.contacts !== undefined) {
                 requestQueryParameter['contacts'] = queryParams.contacts;
             }
@@ -10027,6 +10055,10 @@ export namespace SDK {
     
             if (queryParams.membershipYear !== undefined) {
                 requestQueryParameter['membershipYear'] = queryParams.membershipYear;
+            }
+    
+            if (queryParams.includeMembershipPaid !== undefined) {
+                requestQueryParameter['includeMembershipPaid'] = queryParams.includeMembershipPaid;
             }
     
             if (queryParams.contacts !== undefined) {
@@ -10508,6 +10540,10 @@ export namespace SDK {
     
             if (queryParams.membershipYear !== undefined) {
                 requestQueryParameter['membershipYear'] = queryParams.membershipYear;
+            }
+    
+            if (queryParams.includeMembershipPaid !== undefined) {
+                requestQueryParameter['includeMembershipPaid'] = queryParams.includeMembershipPaid;
             }
     
             if (queryParams.contacts !== undefined) {

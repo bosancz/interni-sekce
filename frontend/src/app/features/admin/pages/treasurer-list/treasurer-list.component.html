@@ -27,6 +27,9 @@
 	</div>
 </bo-page-header>
 
+<!-- The season's totals over the whole club. They sit above the filters and the table, outside the
+     scrolling content, so they stay in view, and they take no filter on purpose: what the club has
+     collected must not move as the table below is narrowed to one group. -->
 <div class="treasurer-summary">
 	@if (summary(); as summaryValue) {
 		<div class="treasurer-summary-item">
@@ -189,10 +192,6 @@
 </ion-popover>
 
 <ion-content>
-	<!-- The season's totals over the whole club, above the whole table on every width. They take no
-	     filter on purpose: what the club has collected must not move as the table below is narrowed
-	     to one group, and the list is paginated anyway, so only the server can add it up. -->
-
 	<admin-table
 		[class]="'treasurer-table'"
 		[rows]="members()"
