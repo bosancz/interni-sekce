@@ -1,18 +1,29 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsInt, IsOptional, Max, Min } from "class-validator";
+
+/** Which season the totals are about. Defaults to the current one. */
+export class MembershipSummaryQuery {
+	@ApiPropertyOptional({ type: "number" })
+	@Type(() => Number)
+	@IsInt()
+	@Min(1900)
+	@Max(2200)
+	@IsOptional()
+	year?: number;
+}
 
 /**
- * The membership fees of one season added up over the members a list shows — the figures at the
- * top of the treasurer view. It is counted server-side because the list is paginated: a page of
- * fifty members says nothing about what the club has collected.
+ * The membership fees of one season added up over the whole club — the figures above the treasurer
+ * view. They are the club's takings, so they take no filter: narrowing the table below them to one
+ * group must not change what the season has brought in. Counted server-side because the list is
+ * paginated, and a page of fifty members says nothing about the whole.
  */
 export class MembershipSummaryResponse {
 	/** The season the figures are about. */
 	@ApiProperty() year!: number;
 
-	/** Members the filter matches, whether their fee is paid or not. */
-	@ApiProperty() memberCount!: number;
-
-	/** How many of them have the fee of `year` recorded as paid. */
+	/** How many members have the fee of `year` recorded as paid. */
 	@ApiProperty() paidCount!: number;
 
 	/** What the recorded fees add up to, in whole units of `currency`. */

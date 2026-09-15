@@ -115,8 +115,8 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	private saving = signal<ReadonlySet<number>>(new Set());
 
 	/**
-	 * The season's totals over the whole filtered list, not over the page on screen — the list is
-	 * paginated, so the figures above it are the server's to count. `undefined` while they load.
+	 * The season's totals over the whole club — what the fees add up to and how many are recorded.
+	 * They ignore the filters below them on purpose (see loadSummary). `undefined` while they load.
 	 */
 	summary = signal<SDK.MembershipSummaryResponse | undefined>(undefined);
 
@@ -308,7 +308,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 				(res) => res.data,
 			);
 			this.setMemberMembership(member.id, membership);
-			this.loadSummary(this.filter, true);
+			this.loadSummary(true);
 		} catch {
 			this.setMemberMembership(member.id, previous);
 			this.toasts.toast("Příspěvek se nepodařilo uložit.");
@@ -453,7 +453,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 				amount,
 			}).then((res) => res.data);
 			this.setMemberMembership(member.id, membership);
-			this.loadSummary(this.filter, true);
+			this.loadSummary(true);
 		} catch {
 			this.setMemberMembership(member.id, previous);
 			this.toasts.toast("Částku se nepodařilo uložit.");
@@ -541,7 +541,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		this.model.setCommitted(this.modelFromParams(params));
 		this.filter = { ...params };
 		this.loadMembers(this.filter);
-		this.loadSummary(this.filter);
+		this.loadSummary();
 	}
 
 	private modelFromParams(p: Params): FilterValues {
@@ -596,9 +596,16 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		const loadId = ++this.latestLoadId;
 
 		const params: SDK.MembersApiListMembersQueryParams = {
-			...this.filterParams(filter),
+			search: filter.search || undefined,
 			offset: (this.page - 1) * this.pageSize,
 			limit: this.pageSize,
+			roles: this.normalizeFilterValueToArray(filter["roles"]) as SDK.ListMembersRolesEnum[],
+			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.MembershipPaymentStatesEnum[],
+			// The fee filter and the fee sort are asked about the year on screen, not about today.
+			membershipYear: this.year(),
+			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
+			// default: active only; "all" reveals inactive members too
+			active: ((filter["active"] as string) || "active") === "all" ? undefined : true,
 			contacts: this.needsContacts() || undefined,
 			sort: (filter["sort"] as string) || undefined,
 			order: (filter["order"] as SDK.ListMembersOrderEnum) || undefined,
@@ -612,37 +619,25 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	}
 
 	/**
-	 * The season's totals, asked with the list's own filters so the figures and the rows under them
-	 * are about the same members. Out-of-order answers are discarded the way the list's are.
+	 * The season's totals. They are the club's takings, not the list's, so they are asked about the
+	 * year alone — a filter, a search or a sort changes the rows below them and leaves them be.
+	 * Loading them again is worth it only for a new year, or after a fee was written here.
 	 */
-	private async loadSummary(filter: FilterData, refresh: boolean = false) {
+	private async loadSummary(refresh: boolean = false) {
+		const year = this.year();
+		if (!refresh && this.summary()?.year === year) return;
+
 		const loadId = ++this.latestSummaryId;
 
-		// A new filter is a new question, so the old figures go; a refresh after a fee was written is
+		// A new year is a new question, so the old figures go; a refresh after a fee was written is
 		// the same question asked again, and its answer replaces them without a flash of skeletons.
 		if (!refresh) this.summary.set(undefined);
 
-		const summary = await this.api.MembersApi.getMembershipSummary(this.filterParams(filter)).then(
-			(res) => res.data,
-		);
+		const summary = await this.api.MembersApi.getMembershipSummary({ year }).then((res) => res.data);
 
 		if (loadId !== this.latestSummaryId) return;
 
 		this.summary.set(summary);
-	}
-
-	/** What narrows the list — shared by the list itself and by the totals above it. */
-	private filterParams(filter: FilterData) {
-		return {
-			search: filter.search || undefined,
-			roles: this.normalizeFilterValueToArray(filter["roles"]) as SDK.ListMembersRolesEnum[],
-			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.MembershipPaymentStatesEnum[],
-			// The fee filter and the fee sort are asked about the year on screen, not about today.
-			membershipYear: this.year(),
-			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
-			// default: active only; "all" reveals inactive members too
-			active: ((filter["active"] as string) || "active") === "all" ? undefined : true,
-		};
 	}
 
 	// Contacts are only needed when the phone/email columns are shown.

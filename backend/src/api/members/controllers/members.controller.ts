@@ -29,7 +29,7 @@ import {
 	MemberUpdatePermission,
 } from "../acl/members.acl";
 import { MemberCreateBody, MemberResponse, MemberUpdateBody, MembersListQuery } from "../dto/member.dto";
-import { MembershipSummaryResponse } from "../dto/membership-summary.dto";
+import { MembershipSummaryQuery, MembershipSummaryResponse } from "../dto/membership-summary.dto";
 
 @Controller("members")
 @Authenticated()
@@ -67,21 +67,21 @@ export class MembersController {
 	}
 
 	/**
-	 * The season's fees added up over the members the same query would list — the figures above the
-	 * treasurer's table. It takes the list's own filters so the two always talk about the same
-	 * members; pagination is the one thing it ignores, since that is the point of asking.
+	 * The season's fees added up over the whole club — the figures above the treasurer's table. The
+	 * season is all it takes: the totals are the club's takings, not the list's, so filtering the
+	 * table below them must not move them.
 	 */
 	@Get("membership/summary")
 	@AcLinks(MembershipSummaryPermission)
 	@ApiResponse({ status: 200, type: MembershipSummaryResponse })
 	async getMembershipSummary(
 		@Req() req: Request,
-		@Query() query: MembersListQuery,
+		@Query() query: MembershipSummaryQuery,
 	): Promise<MembershipSummaryResponse> {
 		const where = MembershipSummaryPermission.canWhere(req, "members");
 
 		const { currency } = await this.paymentSettings.getPaymentSettings();
-		const summary = await this.members.getMembershipSummary(query, where);
+		const summary = await this.members.getMembershipSummary(query.year, where);
 
 		return { ...summary, currency };
 	}

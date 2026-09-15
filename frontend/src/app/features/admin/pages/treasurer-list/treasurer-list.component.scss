@@ -206,14 +206,6 @@
 	color: var(--bo-heading);
 }
 
-// "z 15" is the size of the list the paid count is out of — context for the figure, not a figure
-// of its own, so it stays in the muted weight next to it.
-.treasurer-summary-of {
-	font-size: 0.875rem;
-	font-weight: 500;
-	color: var(--bo-muted);
-}
-
 .treasurer-summary-skeleton {
 	width: 6rem;
 	height: 2.25rem;
