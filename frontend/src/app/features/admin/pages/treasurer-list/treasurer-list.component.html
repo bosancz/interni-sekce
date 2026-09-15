@@ -246,7 +246,7 @@
 				<ng-container *adminCell="let member">
 					<span class="treasurer-amount-cell">
 						<span class="treasurer-amount-value">{{
-							amount(member) === null ? "" : (amount(member) | number: "1.0-0" : "cs")
+							amount(member) === null ? "" : (amount(member) | number: "1.0-0" : "cs") + " Kč"
 						}}</span>
 
 						@if (canEditMembership(member) && isPaid(member)) {
