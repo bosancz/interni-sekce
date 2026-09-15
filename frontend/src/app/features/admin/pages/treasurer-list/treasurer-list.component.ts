@@ -677,7 +677,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	private loadViewSelections() {
 		this.viewSelections.set({
 			variableSymbol: true,
-			nickname: true,
+			nickname: false,
 			name: true,
 			group: true,
 			amount: true,
