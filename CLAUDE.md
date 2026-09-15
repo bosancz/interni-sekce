@@ -75,6 +75,12 @@
 
 - Šablony z `backend/assets/registration-templates` renderuje `EventRegistrationService` systémovým Chromiem přes Puppeteer (PDF i JPEG náhled). **Emoji potřebují emoji font přímo v image** — jinak Chromium sáhne po Unifontu a v PDF je čtvereček (`font-noto-emoji` v `Dockerfile`, `fonts-noto-color-emoji` v `.devcontainer/Dockerfile`). Font si Chromium najde sám přes fontconfig, v šablonách se nic nenastavuje — webfont by ve fallbacku stejně nefungoval, musel by být vypsaný v každém `font-family`.
 
+## QR platba
+
+- **Kód si generujeme sami** — externí generátor (`api.paylibo.com`) je pryč. `getSpayd()` (`helpers/spayd.ts`) složí payload, IBAN k němu dopočítá `getCzechIban()` (`helpers/iban.ts`, ISO 7064 MOD 97-10; `2301695140`/`2010` → `CZ1120100000002301695140`, tedy hodnota, kterou zná migrace `PaymentSettingsDropIban`) a `renderQrCodeSvg()` (`helpers/qr-code-svg.ts`) z toho udělá SVG — matici vrací balík `qrcode` (`create()`), kreslení je naše.
+- Uprostřed sedí `assets/img/san-emblem.svg` (znak bez nápisu, vyříznutý ze `sanlogo-07.svg` viewBoxem `27.2 76.8 103 103`) vložený jako vnořené `<svg>`. **Moduly pod ním se zahazují, proto korekce `H`** — s ní se přečte i nejdelší `MSG:`. Modul je navy `#2a3478`, oči zaoblené, klidová zóna 4 moduly.
+- `GET /api/qr-platba/…` vrací SVG, s `?format=png` rastr přes `sharp`. **Bankovní aplikace z nasdíleného SVG platbu nepřečtou**, takže „Zaplatit v bance“ (`member-payment.component`) si stahuje PNG; `<img>` i odkaz v e-mailu berou SVG.
+
 ## Žebříčky na homepagi
 
 - Čtyři karty: **Statistika** (`statistics/summary` — tři čísla za rok: aktivní děti = byly aspoň na jedné akci, aktivní vedoucí = vedli aspoň jednu akci, a celkem děťodní; žebříčky tenhle součet v odpovědi vůbec nenesou), **Nejlepší vedoucí** (`statistics/leaders/top`), **Nejlepší akce** (`statistics/events/top`) a **Nejlepší děti** (`statistics/children/top`), všechny za `vedouci` a linkované z kořene API. Chrome karty (nadpis, ⓘ popover s vysvětlením, přepínání roku) drží sdílená `bo-home-leaderboard-card` — info text se předává jako `infoTitle` + `infoLines`, obsah se projektuje; sdílené styly řádků (`.total`, `.rank`, `.score`) jsou v `styles/_leaderboard-card.scss`, mixin `leaderboard-events-popover` stylizuje popover se seznamem akcí.

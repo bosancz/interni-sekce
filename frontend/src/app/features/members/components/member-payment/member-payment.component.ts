@@ -23,6 +23,12 @@ import { ToastService } from "src/app/core/services/toast.service";
 const QR_FETCH_TIMEOUT = 5000;
 
 /**
+ * Query that asks the QR platba link for a raster of the code instead of its SVG. Banking apps
+ * read the payment out of a shared image, and an SVG is not an image to them.
+ */
+const QR_PNG_QUERY = "?format=png";
+
+/**
  * Membership fee card: what the member owes, where to send it, the QR platba code and a
  * ready-made e-mail asking for the payment.
  *
@@ -72,8 +78,8 @@ export class MemberPaymentComponent {
 
 	/**
 	 * The QR image, fetched as soon as the payment is known so the share sheet opens on the tap.
-	 * `navigator.share()` needs the tap's user activation, which does not survive waiting for a
-	 * slow third-party image, and the same URL is already being loaded by the `<img>` anyway.
+	 * `navigator.share()` needs the tap's user activation, which does not survive waiting for the
+	 * request.
 	 */
 	private qrCodeFiles: Promise<File[] | null> | null = null;
 
@@ -173,8 +179,8 @@ export class MemberPaymentComponent {
 	 * fee can be paid without ever scanning anything.
 	 *
 	 * The image itself is shared wherever the browser takes files; where it does not — and where
-	 * the generator did not answer in time — the payment details and the link to the QR go out as
-	 * text instead, which every share sheet accepts.
+	 * the code did not arrive in time — the payment details and the link to the QR go out as text
+	 * instead, which every share sheet accepts.
 	 */
 	async shareQrCode() {
 		const payment = this.payment();
@@ -200,7 +206,8 @@ export class MemberPaymentComponent {
 	/** The QR image as a file to share, or `null` when it cannot be fetched. */
 	private async fetchQrCodeFiles(payment: SDK.MemberPaymentRequestResponseWithLinks): Promise<File[] | null> {
 		try {
-			const response = await fetch(payment.qrCodeUrl, { signal: AbortSignal.timeout(QR_FETCH_TIMEOUT) });
+			const url = payment.qrCodeUrl + QR_PNG_QUERY;
+			const response = await fetch(url, { signal: AbortSignal.timeout(QR_FETCH_TIMEOUT) });
 			if (!response.ok) return null;
 
 			const blob = await response.blob();
@@ -211,7 +218,7 @@ export class MemberPaymentComponent {
 				}),
 			];
 		} catch {
-			// the generator is a third-party service – a hiccup there just falls back to sharing text
+			// a hiccup fetching the code just falls back to sharing text
 			return null;
 		}
 	}
