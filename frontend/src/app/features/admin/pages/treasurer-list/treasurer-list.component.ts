@@ -691,6 +691,9 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
 			// default: active only; "all" reveals inactive members too
 			active: ((filter["active"] as string) || "active") === "all" ? undefined : true,
+			// …except an inactive member who paid the season's fee, who stays in the table (dimmed)
+			// whatever the toggle says: their money is in the totals above it.
+			includeMembershipPaid: true,
 		};
 	}
 

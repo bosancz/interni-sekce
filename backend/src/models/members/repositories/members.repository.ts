@@ -19,6 +19,8 @@ export interface GetMembersOptions extends PaginationOptions {
 	membershipYear?: number;
 	age?: number[];
 	active?: boolean;
+	// Keep the members who paid the fee of membershipYear even where `active` would drop them.
+	includeMembershipPaid?: boolean;
 	contacts?: boolean;
 	// Join the member's group, for the readers that need its name rather than its id.
 	withGroup?: boolean;
@@ -128,7 +130,19 @@ export class MembersRepository {
 				{ ages: options.age },
 			);
 
-		if (options.active !== undefined) q.andWhere("members.active = :active", { active: options.active });
+		// The treasurer view hides inactive members like every other list, with one exception: the
+		// ones who paid the season's fee stay. Their money is in the totals above the table, so the
+		// row it came from cannot be missing from the table itself — it is shown dimmed, as inactive
+		// members are everywhere.
+		if (options.active !== undefined) {
+			if (options.includeMembershipPaid)
+				q.andWhere(
+					new Brackets((qb) =>
+						qb.where("members.active = :active", { active: options.active }).orWhere(membershipPaid),
+					),
+				);
+			else q.andWhere("members.active = :active", { active: options.active });
+		}
 
 		return q.getMany();
 	}
