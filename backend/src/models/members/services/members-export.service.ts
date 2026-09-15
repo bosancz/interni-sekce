@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { DateTime } from "luxon";
+import { currentMembershipYear, isMembershipPaid, membershipPaymentOf } from "src/helpers/membership";
+import { getVariableSymbol } from "src/helpers/variable-symbol";
 import { Schema } from "write-excel-file";
 import writeXlsxFile from "write-excel-file/node";
 import { Member } from "../entities/member.entity";
@@ -90,6 +92,86 @@ export class MembersExportService {
 				align: "center",
 			},
 			sheet: "Členská databáze",
+			stickyRowsCount: 1,
+			stickyColumnsCount: 2,
+		});
+	}
+
+	/**
+	 * The treasurer view as a sheet: one row per member, the columns the page shows by default and
+	 * in the order it shows them. Everything is about one season, so the fee, the day it was
+	 * recorded and the note are the ones of `year` — which is also what the variable symbol and the
+	 * last column's header name.
+	 */
+	async exportMembershipXlsx(members: Member[], year: number = currentMembershipYear()) {
+		const paymentOf = (member: Member) => membershipPaymentOf(member.membership, year);
+
+		const schema: Schema<Member> = [
+			{
+				column: "VS",
+				type: String,
+				width: 12,
+				align: "right",
+				value: (member) => paymentOf(member)?.variableSymbol ?? getVariableSymbol(member, year),
+			},
+			{
+				column: "Přezdívka",
+				type: String,
+				width: 20,
+				fontWeight: "bold",
+				value: (member) => member.nickname || member.firstName || undefined,
+			},
+			{
+				column: "Jméno",
+				type: String,
+				width: 25,
+				value: (member) => [member.firstName, member.lastName].filter((part) => part).join(" ") || undefined,
+			},
+			{
+				column: "Oddíl",
+				type: String,
+				width: 20,
+				value: (member) => member.group?.name ?? member.group?.shortName,
+			},
+			{
+				column: "Částka",
+				type: Number,
+				width: 12,
+				align: "right",
+				value: (member) => paymentOf(member)?.amount ?? undefined,
+			},
+			{
+				column: "Zapsáno dne",
+				type: String,
+				width: 15,
+				align: "right",
+				value: (member) => {
+					const recordedOn = paymentOf(member)?.recordedOn;
+					return recordedOn ? DateTime.fromISO(recordedOn).toFormat("d. M. yyyy") : undefined;
+				},
+			},
+			{
+				column: "Poznámka",
+				type: String,
+				width: 40,
+				value: (member) => paymentOf(member)?.note ?? undefined,
+			},
+			{
+				column: `Příspěvek ${year}`,
+				type: String,
+				width: 15,
+				// The one question the sheet is about is answered the way it is answered everywhere.
+				value: (member) => (isMembershipPaid(member.membership, year) ? "Zaplaceno" : "Nezaplaceno"),
+			},
+		];
+
+		return writeXlsxFile<Member>(members, {
+			schema,
+			headerStyle: {
+				fontWeight: "bold",
+				align: "center",
+			},
+			sheet: `Příspěvky ${year}`,
 			stickyRowsCount: 1,
 			stickyColumnsCount: 2,
 		});
