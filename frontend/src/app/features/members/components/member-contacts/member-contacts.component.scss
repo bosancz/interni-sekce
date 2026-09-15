@@ -16,6 +16,11 @@
 }
 
 .relationship {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px;
+	min-width: 0;
 	font-weight: 600;
 	color: var(--bo-heading);
 }
@@ -23,6 +28,22 @@
 .relationship .name {
 	font-weight: 400;
 	color: var(--bo-muted);
+}
+
+.default-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	padding: 1px 8px;
+	border-radius: 99px;
+	background: var(--bo-yellow-tint);
+	color: var(--bo-yellow-deep);
+	font-size: 12px;
+	font-weight: 600;
+
+	ion-icon {
+		font-size: 12px;
+	}
 }
 
 .relationship,

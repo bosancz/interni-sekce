@@ -38,6 +38,7 @@ import { PageHeaderComponent } from "src/app/shared/components/page-header/page-
 import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
+import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 
@@ -97,6 +98,7 @@ const LAST_YEAR = 2200;
 		KeyValuePipe,
 		DatePipe,
 		MemberPipe,
+		DefaultContactPipe,
 		NgTemplateOutlet,
 		TooltipDirective,
 	],
@@ -595,8 +597,8 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			birthday: "Narozeniny",
 			addressCity: "Město",
 			addressStreet: "Ulice",
-			firstTelephone: "První telefon",
-			firstEmail: "První email",
+			firstTelephone: "Telefon na rodiče",
+			firstEmail: "Email na rodiče",
 			status: "Stav",
 		};
 

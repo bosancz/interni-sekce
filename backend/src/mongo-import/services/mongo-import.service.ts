@@ -242,7 +242,9 @@ export class MongoImportService {
 				const contactData: Omit<MemberContact, "id"> = {
 					memberId: member.id,
 					relationship: "Otec",
-					mobile: mongoMember.contacts?.father,
+					mobile: [mongoMember.contacts.father],
+					email: [],
+					isDefault: false,
 				};
 
 				await t.save(MemberContact, contactData);
@@ -252,7 +254,9 @@ export class MongoImportService {
 				const contactData: Omit<MemberContact, "id"> = {
 					memberId: member.id,
 					relationship: "Matka",
-					mobile: mongoMember.contacts?.mother,
+					mobile: [mongoMember.contacts.mother],
+					email: [],
+					isDefault: false,
 				};
 
 				await t.save(MemberContact, contactData);

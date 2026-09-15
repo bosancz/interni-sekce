@@ -247,9 +247,7 @@ export class MemberPaymentComponent {
 
 			this.payment.set(payment);
 			if (this.shareSupported) this.qrCodeFiles = this.fetchQrCodeFiles(payment);
-			this.contactEmails.set(
-				contacts.map((contact) => contact.email).filter((email): email is string => !!email),
-			);
+			this.contactEmails.set(contacts.flatMap((contact) => contact.email).filter((email) => !!email));
 		} catch (e) {
 			// let a later member change retry rather than leaving the card stuck on the error
 			this.loadedMemberId = null;
