@@ -30,7 +30,7 @@
 	padding: 13px 20px;
 
 	img {
-		width: 180px;
+		width: 200px;
 		max-width: 100%;
 		/* the QR is generated with a white quiet zone, keep it readable in dark mode */
 		background: #fff;
@@ -42,15 +42,6 @@
 	color: var(--bo-muted);
 	font-size: 0.8rem;
 	text-align: center;
-}
-
-/* "Zaplatit v bance" sits right under the QR it shares, as narrow as its label. */
-.qr-share {
-	margin-top: 8px;
-	--padding-start: 10px;
-	--padding-end: 10px;
-	font-size: 0.8rem;
-	text-transform: none;
 }
 
 /* ── Zaplaceno ────────────────────────────────────────────────────────────────

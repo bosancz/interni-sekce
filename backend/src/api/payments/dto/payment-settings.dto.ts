@@ -16,7 +16,7 @@ export class PaymentSettingsResponse implements Omit<PaymentSettings, "id"> {
 
 /**
  * The values the treasurer may change. The currency is not among them: it is seeded with the
- * account and the QR generator is built around it, so changing it is a migration, not a setting.
+ * account and the QR platba is built around it, so changing it is a migration, not a setting.
  */
 export class PaymentSettingsUpdateBody {
 	/** Account number, with an optional prefix — e.g. "2301695140" or "19-2000145399". */

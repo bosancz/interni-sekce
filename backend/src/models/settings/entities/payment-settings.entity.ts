@@ -5,8 +5,8 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
  *
  * A single-row table (seeded by the PaymentSettings migration) so the account can be
  * changed in the database without a deploy — nothing about it is hardcoded in the app.
- * There is no IBAN column: the QR platba generator derives one from the account number and
- * bank code, so the app neither stores nor computes it.
+ * There is no IBAN column: `getCzechIban()` derives one from the account number and bank code
+ * wherever a QR platba needs it, so there is no second copy of the account to keep in step.
  */
 @Entity("payment_settings")
 export class PaymentSettings {
