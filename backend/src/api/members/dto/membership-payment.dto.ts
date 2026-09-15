@@ -23,4 +23,10 @@ export class MembershipPaymentResponse implements MembershipPayment {
 
 	/** Whatever the treasurer noted about this fee; null when nothing was noted. */
 	@ApiPropertyOptional({ type: "string" }) note?: string | null;
+
+	/**
+	 * How much the fee was, in whole units of the payment settings' currency; null for fees carried
+	 * over from before they were recorded with one.
+	 */
+	@ApiPropertyOptional({ type: "number" }) amount?: number | null;
 }

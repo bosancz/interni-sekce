@@ -4,7 +4,7 @@ import { currentMembershipYear, MembershipPaymentStates, membershipPaidExpressio
 import { PaginationOptions } from "src/helpers/pagination";
 import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
-import { Brackets, FindOneOptions, FindOptionsRelations, Repository } from "typeorm";
+import { Brackets, FindOneOptions, FindOptionsRelations, Repository, SelectQueryBuilder } from "typeorm";
 import { MemberContact } from "../entities/member-contact.entity";
 import { Member } from "../entities/member.entity";
 import { MembershipPayment } from "../entities/membership-payment.entity";
@@ -90,6 +90,60 @@ export class MembersRepository {
 		// Join contacts up-front only when requested (i.e. the contacts column is visible).
 		if (options.contacts) q.leftJoinAndSelect("members.contacts", "contacts");
 
+		this.applyMemberFilters(q, options, membershipPaid);
+
+		return q.getMany();
+	}
+
+	/**
+	 * The membership summary of one season over the members a list would show: how many of them have
+	 * the fee recorded and what those fees add up to. It answers about the whole filtered set rather
+	 * than the page on screen, which is the point — a paginated list cannot be summed by its reader.
+	 */
+	async getMembershipSummary(
+		options: GetMembersOptions = {},
+		where: Brackets | string = "1=1",
+	): Promise<{ year: number; memberCount: number; paidCount: number; totalAmount: number }> {
+		const year = options.membershipYear ?? currentMembershipYear();
+		const membershipPaid = membershipPaidExpression("members.id", year);
+
+		const q = this.membersRepository.createQueryBuilder("members").where(where);
+
+		this.applyMemberFilters(q, options, membershipPaid);
+
+		// The join can never multiply a member's row — a member has at most one payment per season
+		// (see the unique index on MembershipPayment) — so the members are still counted by COUNT(*)
+		// and the fees summed over the same rows. Whether a fee counts as paid is asked the one way
+		// it is asked everywhere: through membershipPaidExpression, the SQL side of isMembershipPaid.
+		const row = await q
+			.leftJoin(
+				MembershipPayment,
+				"summary_payment",
+				"summary_payment.member_id = members.id AND summary_payment.for_year = :summaryYear",
+				{ summaryYear: year },
+			)
+			.select("COUNT(*)", "member_count")
+			.addSelect(`COUNT(*) FILTER (WHERE ${membershipPaid})`, "paid_count")
+			.addSelect("COALESCE(SUM(summary_payment.amount), 0)", "total_amount")
+			.getRawOne<{ member_count: string; paid_count: string; total_amount: string }>();
+
+		return {
+			year,
+			memberCount: Number(row?.member_count ?? 0),
+			paidCount: Number(row?.paid_count ?? 0),
+			totalAmount: Number(row?.total_amount ?? 0),
+		};
+	}
+
+	/**
+	 * The filters a member list is narrowed by, shared by the list itself and by the summary above
+	 * it — they have to answer about the same members or the summary is about something else.
+	 */
+	private applyMemberFilters(
+		q: SelectQueryBuilder<Member>,
+		options: GetMembersOptions,
+		membershipPaid: string,
+	): void {
 		if (options.groups) q.andWhere("members.groupId IN (:...groupIds)", { groupIds: options.groups });
 
 		if (options.search) {
@@ -123,8 +177,6 @@ export class MembersRepository {
 			);
 
 		if (options.active !== undefined) q.andWhere("members.active = :active", { active: options.active });
-
-		return q.getMany();
 	}
 
 	async getMemberAges(where: Brackets | string = "1=1"): Promise<number[]> {

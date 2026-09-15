@@ -16,6 +16,7 @@ import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
+import { PaymentSettingsRepository } from "src/models/settings/repositories/payment-settings.repository";
 import {
 	MemberCreatePermission,
 	MemberDeletePermanentPermission,
@@ -24,16 +25,21 @@ import {
 	MemberRestorePermission,
 	MembersDeletedListPermission,
 	MembersListPermission,
+	MembershipSummaryPermission,
 	MemberUpdatePermission,
 } from "../acl/members.acl";
 import { MemberCreateBody, MemberResponse, MemberUpdateBody, MembersListQuery } from "../dto/member.dto";
+import { MembershipSummaryResponse } from "../dto/membership-summary.dto";
 
 @Controller("members")
 @Authenticated()
 @AcController()
 @ApiTags("Members")
 export class MembersController {
-	constructor(private members: MembersRepository) {}
+	constructor(
+		private members: MembersRepository,
+		private paymentSettings: PaymentSettingsRepository,
+	) {}
 
 	@Get()
 	@AcLinks(MembersListPermission)
@@ -58,6 +64,26 @@ export class MembersController {
 		const where = MembersListPermission.canWhere(req, "members");
 
 		return this.members.getMemberAges(where);
+	}
+
+	/**
+	 * The season's fees added up over the members the same query would list — the figures above the
+	 * treasurer's table. It takes the list's own filters so the two always talk about the same
+	 * members; pagination is the one thing it ignores, since that is the point of asking.
+	 */
+	@Get("membership/summary")
+	@AcLinks(MembershipSummaryPermission)
+	@ApiResponse({ status: 200, type: MembershipSummaryResponse })
+	async getMembershipSummary(
+		@Req() req: Request,
+		@Query() query: MembersListQuery,
+	): Promise<MembershipSummaryResponse> {
+		const where = MembershipSummaryPermission.canWhere(req, "members");
+
+		const { currency } = await this.paymentSettings.getPaymentSettings();
+		const summary = await this.members.getMembershipSummary(query, where);
+
+		return { ...summary, currency };
 	}
 
 	@Get("deleted")

@@ -25,6 +25,15 @@ export const MembersDeletedListPermission = new Permission<void>({
 	},
 });
 
+/**
+ * Who may see the season's totals above the member list: whoever may see the list they are counted
+ * over, so the summary cannot say more than the list itself does.
+ */
+export const MembershipSummaryPermission = new Permission<void>({
+	linkTo: RootResponse,
+	inherit: MembersListPermission,
+});
+
 export const MemberCreatePermission = new Permission<void>({
 	linkTo: RootResponse,
 	allowed: {

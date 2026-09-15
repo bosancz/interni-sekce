@@ -3526,6 +3526,12 @@ export namespace SDK {
          * @memberof MemberMembershipUpdateBody
          */
         'note'?: string | null;
+        /**
+         * What the fee was worth, sent with `paid: true` to write it. Left out entirely, a fee already recorded keeps its amount and a fee recorded now takes the one from the payment settings; `null` clears it.
+         * @type {number}
+         * @memberof MemberMembershipUpdateBody
+         */
+        'amount'?: number | null;
     }
     
         /**
@@ -4230,6 +4236,12 @@ export namespace SDK {
          * @memberof MembershipPayment
          */
         'note'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof MembershipPayment
+         */
+        'amount'?: number | null;
     }
     
         /**
@@ -4274,6 +4286,12 @@ export namespace SDK {
          * @memberof MembershipPaymentResponse
          */
         'note'?: string | null;
+        /**
+         * How much the fee was, in whole units of the payment settings\' currency; null for fees carried over from before they were recorded with one.
+         * @type {number}
+         * @memberof MembershipPaymentResponse
+         */
+        'amount'?: number | null;
     }
     
         /**
@@ -4289,6 +4307,44 @@ export namespace SDK {
     
     export type MembershipPaymentStatesEnum = typeof MembershipPaymentStatesEnum[keyof typeof MembershipPaymentStatesEnum];
     
+    
+        /**
+     * 
+     * @export
+     * @interface MembershipSummaryResponse
+     */
+    export interface MembershipSummaryResponse {
+        /**
+         * The season the figures are about.
+         * @type {number}
+         * @memberof MembershipSummaryResponse
+         */
+        'year': number;
+        /**
+         * Members the filter matches, whether their fee is paid or not.
+         * @type {number}
+         * @memberof MembershipSummaryResponse
+         */
+        'memberCount': number;
+        /**
+         * How many of them have the fee of `year` recorded as paid.
+         * @type {number}
+         * @memberof MembershipSummaryResponse
+         */
+        'paidCount': number;
+        /**
+         * What the recorded fees add up to, in whole units of `currency`.
+         * @type {number}
+         * @memberof MembershipSummaryResponse
+         */
+        'totalAmount': number;
+        /**
+         * Currency of `totalAmount`, taken from the club\'s payment settings.
+         * @type {string}
+         * @memberof MembershipSummaryResponse
+         */
+        'currency': string;
+    }
     
         /**
      * 
@@ -5272,6 +5328,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'listMembers': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getMembershipSummary': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -9096,6 +9158,130 @@ export namespace SDK {
     
     
     
+    /**
+     * @export
+     */
+    export const GetMembershipSummaryOrderEnum = {
+        Asc: 'ASC',
+        Desc: 'DESC'
+    } as const;
+    export type GetMembershipSummaryOrderEnum = typeof GetMembershipSummaryOrderEnum[keyof typeof GetMembershipSummaryOrderEnum];
+    /**
+     * @export
+     */
+    export const GetMembershipSummaryRolesEnum = {
+        Dite: 'dite',
+        Instruktor: 'instruktor',
+        Vedouci: 'vedouci'
+    } as const;
+    export type GetMembershipSummaryRolesEnum = typeof GetMembershipSummaryRolesEnum[keyof typeof GetMembershipSummaryRolesEnum];
+    
+    
+    /**
+     * Query parameters for getMembershipSummary operation in MembersApi.
+     * @export
+     * @interface MembersApiGetMembershipSummaryQueryParams
+     */
+    export interface MembersApiGetMembershipSummaryQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof MembersApiGetMembershipSummary
+         */
+        limit?: number
+    
+        //offset
+        /**
+         * 
+         * @type {number}
+         * @memberof MembersApiGetMembershipSummary
+         */
+        offset?: number
+    
+        //sort
+        /**
+         * 
+         * @type {string}
+         * @memberof MembersApiGetMembershipSummary
+         */
+        sort?: string
+    
+        //orderisEnumOrderEnum
+        /**
+         * 
+         * @type {'ASC' | 'DESC'}
+         * @memberof MembersApiGetMembershipSummary
+         */
+        order?: GetMembershipSummaryOrderEnum
+    
+        //membership
+        /**
+         * 
+         * @type {Array<MembershipPaymentStatesEnum>}
+         * @memberof MembersApiGetMembershipSummary
+         */
+        membership?: Array<MembershipPaymentStatesEnum>
+    
+        //membershipYear
+        /**
+         * Which year the membership filter and the membership sort look at. Defaults to the current one.
+         * @type {number}
+         * @memberof MembersApiGetMembershipSummary
+         */
+        membershipYear?: number
+    
+        //contacts
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MembersApiGetMembershipSummary
+         */
+        contacts?: boolean
+    
+        //groups
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof MembersApiGetMembershipSummary
+         */
+        groups?: Array<number>
+    
+        //search
+        /**
+         * 
+         * @type {string}
+         * @memberof MembersApiGetMembershipSummary
+         */
+        search?: string
+    
+        //rolesisEnumRolesEnum
+        /**
+         * 
+         * @type {Array<'dite' | 'instruktor' | 'vedouci'>}
+         * @memberof MembersApiGetMembershipSummary
+         */
+        roles?: Array<GetMembershipSummaryRolesEnum>
+    
+        //age
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof MembersApiGetMembershipSummary
+         */
+        age?: Array<number>
+    
+        //active
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MembersApiGetMembershipSummary
+         */
+        active?: boolean
+    }
+    
+    
+    
     
     
     
@@ -9945,6 +10131,95 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<MemberPaymentRequestResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+         * @summary The season\'s fees added up over the members the same query would list — the figures above the treasurer\'s table. It takes the list\'s own filters so the two always talk about the same members; pagination is the one thing it ignores, since that is the point of asking.
+    
+         * @param {MembersApiGetMembershipSummaryQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async getMembershipSummary(
+            queryParams: MembersApiGetMembershipSummaryQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/members/membership/summary`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.offset !== undefined) {
+                requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+            if (queryParams.sort !== undefined) {
+                requestQueryParameter['sort'] = queryParams.sort;
+            }
+    
+            if (queryParams.order !== undefined) {
+                requestQueryParameter['order'] = queryParams.order;
+            }
+    
+            if (queryParams.membership) {
+                requestQueryParameter['membership'] = queryParams.membership;
+            }
+    
+            if (queryParams.membershipYear !== undefined) {
+                requestQueryParameter['membershipYear'] = queryParams.membershipYear;
+            }
+    
+            if (queryParams.contacts !== undefined) {
+                requestQueryParameter['contacts'] = queryParams.contacts;
+            }
+    
+            if (queryParams.groups) {
+                requestQueryParameter['groups'] = queryParams.groups;
+            }
+    
+            if (queryParams.search !== undefined) {
+                requestQueryParameter['search'] = queryParams.search;
+            }
+    
+            if (queryParams.roles) {
+                requestQueryParameter['roles'] = queryParams.roles;
+            }
+    
+            if (queryParams.age) {
+                requestQueryParameter['age'] = queryParams.age;
+            }
+    
+            if (queryParams.active !== undefined) {
+                requestQueryParameter['active'] = queryParams.active;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<MembershipSummaryResponse>(axiosRequestConfig);
         }
     
         /**
