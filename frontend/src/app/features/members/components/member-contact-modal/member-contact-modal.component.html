@@ -26,25 +26,33 @@
 
 		<div class="mc-field">
 			<span class="mc-label">Telefony</span>
-			@for (value of mobile(); track $index) {
-				<div class="mc-multi-row">
-					<input
-						type="tel"
-						class="mc-input"
-						placeholder="777 123 456"
-						[value]="value"
-						(input)="setValue('mobile', $index, $any($event.target).value)"
-					/>
-					<button
-						type="button"
-						class="mc-icon-btn"
-						aria-label="Odebrat telefon"
-						(click)="removeValue('mobile', $index)"
-					>
-						<ion-icon name="close-outline"></ion-icon>
-					</button>
-				</div>
-			}
+			<ion-reorder-group
+				[disabled]="mobile().length < 2"
+				(ionItemReorder)="reorderValues('mobile', $any($event))"
+			>
+				@for (value of mobile(); track $index) {
+					<div class="mc-multi-row">
+						@if (mobile().length > 1) {
+							<ion-reorder class="mc-handle"></ion-reorder>
+						}
+						<input
+							type="tel"
+							class="mc-input"
+							placeholder="777 123 456"
+							[value]="value"
+							(input)="setValue('mobile', $index, $any($event.target).value)"
+						/>
+						<button
+							type="button"
+							class="mc-icon-btn"
+							aria-label="Odebrat telefon"
+							(click)="removeValue('mobile', $index)"
+						>
+							<ion-icon name="close-outline"></ion-icon>
+						</button>
+					</div>
+				}
+			</ion-reorder-group>
 			<button type="button" class="mc-add-btn" (click)="addValue('mobile')">
 				<ion-icon name="add-outline"></ion-icon>
 				Přidat telefon
@@ -53,25 +61,30 @@
 
 		<div class="mc-field">
 			<span class="mc-label">Emaily</span>
-			@for (value of email(); track $index) {
-				<div class="mc-multi-row">
-					<input
-						type="email"
-						class="mc-input"
-						placeholder="rodic@bosan.cz"
-						[value]="value"
-						(input)="setValue('email', $index, $any($event.target).value)"
-					/>
-					<button
-						type="button"
-						class="mc-icon-btn"
-						aria-label="Odebrat email"
-						(click)="removeValue('email', $index)"
-					>
-						<ion-icon name="close-outline"></ion-icon>
-					</button>
-				</div>
-			}
+			<ion-reorder-group [disabled]="email().length < 2" (ionItemReorder)="reorderValues('email', $any($event))">
+				@for (value of email(); track $index) {
+					<div class="mc-multi-row">
+						@if (email().length > 1) {
+							<ion-reorder class="mc-handle"></ion-reorder>
+						}
+						<input
+							type="email"
+							class="mc-input"
+							placeholder="rodic@bosan.cz"
+							[value]="value"
+							(input)="setValue('email', $index, $any($event.target).value)"
+						/>
+						<button
+							type="button"
+							class="mc-icon-btn"
+							aria-label="Odebrat email"
+							(click)="removeValue('email', $index)"
+						>
+							<ion-icon name="close-outline"></ion-icon>
+						</button>
+					</div>
+				}
+			</ion-reorder-group>
 			<button type="button" class="mc-add-btn" (click)="addValue('email')">
 				<ion-icon name="add-outline"></ion-icon>
 				Přidat email

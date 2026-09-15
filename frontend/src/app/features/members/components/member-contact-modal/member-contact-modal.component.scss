@@ -32,10 +32,27 @@
 	}
 }
 
+ion-reorder-group {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
 .mc-multi-row {
 	display: flex;
 	align-items: center;
 	gap: 8px;
+}
+
+.mc-handle {
+	flex: 0 0 auto;
+	color: var(--bm-muted-2);
+	font-size: 20px;
+	cursor: grab;
+
+	&:active {
+		cursor: grabbing;
+	}
 }
 
 .mc-icon-btn {

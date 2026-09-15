@@ -1,5 +1,6 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
-import { IonIcon, ModalController } from "@ionic/angular/standalone";
+import { IonIcon, IonReorder, IonReorderGroup, ModalController } from "@ionic/angular/standalone";
+import { ItemReorderEventDetail } from "@ionic/core";
 import { addIcons } from "ionicons";
 import { addOutline, checkmarkOutline, closeOutline } from "ionicons/icons";
 import { InputModalComponent } from "src/app/core/services/modal.service";
@@ -19,7 +20,7 @@ export interface MemberContactFormData {
 	selector: "bo-member-contact-modal",
 	templateUrl: "./member-contact-modal.component.html",
 	styleUrl: "./member-contact-modal.component.scss",
-	imports: [IonIcon, ModalLayoutComponent],
+	imports: [IonIcon, IonReorder, IonReorderGroup, ModalLayoutComponent],
 })
 export class MemberContactModalComponent extends InputModalComponent<MemberContactFormData> implements OnInit {
 	contact?: SDK.MemberContactResponseWithLinks | null;
@@ -55,6 +56,10 @@ export class MemberContactModalComponent extends InputModalComponent<MemberConta
 
 	addValue(field: "mobile" | "email") {
 		this[field].update((values) => [...values, ""]);
+	}
+
+	reorderValues(field: "mobile" | "email", event: CustomEvent<ItemReorderEventDetail>) {
+		this[field].update((values) => event.detail.complete([...values]) as string[]);
 	}
 
 	removeValue(field: "mobile" | "email", index: number) {
