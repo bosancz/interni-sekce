@@ -27,6 +27,29 @@
 	</div>
 </bo-page-header>
 
+<div class="treasurer-summary">
+	@if (summary(); as summaryValue) {
+		<div class="treasurer-summary-item">
+			<span class="treasurer-summary-label">Zaplaceno</span>
+			<span class="treasurer-summary-value">{{ summaryValue.paidCount }}</span>
+		</div>
+
+		<div class="treasurer-summary-item">
+			<span class="treasurer-summary-label">Vybráno {{ summaryValue.year }}</span>
+			<span class="treasurer-summary-value">
+				{{ summaryValue.totalAmount | number: "1.0-0" : "cs" }}&nbsp;{{ currencyLabel() }}
+			</span>
+		</div>
+	} @else {
+		<div class="treasurer-summary-item">
+			<ion-skeleton-text [animated]="true" class="treasurer-summary-skeleton"></ion-skeleton-text>
+		</div>
+		<div class="treasurer-summary-item">
+			<ion-skeleton-text [animated]="true" class="treasurer-summary-skeleton"></ion-skeleton-text>
+		</div>
+	}
+</div>
+
 <bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
 	@if (isDesktop()) {
 		<!-- Desktop: filters, columns and view options laid out inline in the toolbar. -->
@@ -169,28 +192,6 @@
 	<!-- The season's totals over the whole club, above the whole table on every width. They take no
 	     filter on purpose: what the club has collected must not move as the table below is narrowed
 	     to one group, and the list is paginated anyway, so only the server can add it up. -->
-	<div class="treasurer-summary">
-		@if (summary(); as summaryValue) {
-			<div class="treasurer-summary-item">
-				<span class="treasurer-summary-label">Zaplaceno</span>
-				<span class="treasurer-summary-value">{{ summaryValue.paidCount }}</span>
-			</div>
-
-			<div class="treasurer-summary-item">
-				<span class="treasurer-summary-label">Vybráno {{ summaryValue.year }}</span>
-				<span class="treasurer-summary-value">
-					{{ summaryValue.totalAmount | number: "1.0-0" : "cs" }}&nbsp;{{ currencyLabel() }}
-				</span>
-			</div>
-		} @else {
-			<div class="treasurer-summary-item">
-				<ion-skeleton-text [animated]="true" class="treasurer-summary-skeleton"></ion-skeleton-text>
-			</div>
-			<div class="treasurer-summary-item">
-				<ion-skeleton-text [animated]="true" class="treasurer-summary-skeleton"></ion-skeleton-text>
-			</div>
-		}
-	</div>
 
 	<admin-table
 		[class]="'treasurer-table'"
