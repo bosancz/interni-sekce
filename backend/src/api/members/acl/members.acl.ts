@@ -26,6 +26,15 @@ export const MembersDeletedListPermission = new Permission<void>({
 });
 
 /**
+ * Who may export the treasurer view. Same audience as the member export it sits next to — it is the
+ * same members, seen through one season's fee.
+ */
+export const MembershipExportPermission = new Permission<void>({
+	linkTo: RootResponse,
+	inherit: MembersExportPermission,
+});
+
+/**
  * Who may see the season's totals above the member list: whoever may see the list they are counted
  * over, so the summary cannot say more than the list itself does.
  */

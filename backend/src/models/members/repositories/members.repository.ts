@@ -20,6 +20,8 @@ export interface GetMembersOptions extends PaginationOptions {
 	age?: number[];
 	active?: boolean;
 	contacts?: boolean;
+	// Join the member's group, for the readers that need its name rather than its id.
+	withGroup?: boolean;
 }
 
 @Injectable()
@@ -89,6 +91,10 @@ export class MembersRepository {
 
 		// Join contacts up-front only when requested (i.e. the contacts column is visible).
 		if (options.contacts) q.leftJoinAndSelect("members.contacts", "contacts");
+
+		// Same for the group: the lists resolve it from their own copy of the groups, only the
+		// exports need the name on the member itself.
+		if (options.withGroup) q.leftJoinAndSelect("members.group", "group");
 
 		if (options.groups) q.andWhere("members.groupId IN (:...groupIds)", { groupIds: options.groups });
 
