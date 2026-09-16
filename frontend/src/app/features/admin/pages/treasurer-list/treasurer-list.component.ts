@@ -317,6 +317,11 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 
 		const year = this.year();
 		const paid = !this.isPaid(member);
+
+		// Recording a fee costs nothing — the same click takes it back. Un-recording it deletes what
+		// was written down, so it is asked about first.
+		if (!paid && !(await this.confirmUnpaid(member, year))) return;
+
 		const previous = member.membership;
 
 		// The row flips straight away on a placeholder payment; the server then answers with the
@@ -340,6 +345,27 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 				return next;
 			});
 		}
+	}
+
+	/**
+	 * Un-recording a fee deletes the payment, and the amount, the note and the day it was recorded
+	 * go with it — so the treasurer is told what they are about to lose. Recording it again is not
+	 * the same fee: it gets today's date and the club's fee from the payment settings.
+	 */
+	private async confirmUnpaid(member: SDK.MemberResponse, year: number): Promise<boolean> {
+		const amount = this.amount(member);
+		const amountText =
+			amount === null
+				? ""
+				: " ve výši " + [new Intl.NumberFormat("cs").format(amount), this.currencyLabel()].join(" ").trim();
+
+		return this.modalService.deleteConfirmationModal(
+			`Zapsaný příspěvek${amountText} se smaže i s poznámkou a datem zápisu. Zapsat ho jde znovu, ale s dnešním datem a s částkou podle platebních údajů.`,
+			{
+				header: `Odepsat příspěvek ${year}?`,
+				buttonText: "Odepsat",
+			},
+		);
 	}
 
 	/**
