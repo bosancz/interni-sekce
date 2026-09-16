@@ -353,17 +353,13 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	 * the same fee: it gets today's date and the club's fee from the payment settings.
 	 */
 	private async confirmUnpaid(member: SDK.MemberResponse, year: number): Promise<boolean> {
-		const amount = this.amount(member);
-		const amountText =
-			amount === null
-				? ""
-				: " ve výši " + [new Intl.NumberFormat("cs").format(amount), this.currencyLabel()].join(" ").trim();
-
+		const fullname = `${member.firstName || ""} ${member.lastName || ""}`;
+		
 		return this.modalService.deleteConfirmationModal(
-			`Zapsaný příspěvek${amountText} se smaže i s poznámkou a datem zápisu. Zapsat ho jde znovu, ale s dnešním datem a s částkou podle platebních údajů.`,
+			`Opravdu chcete odebrat příspěvek členovi ${fullname} za rok  ${year}?`,
 			{
-				header: `Odepsat příspěvek ${year}?`,
-				buttonText: "Odepsat",
+				header: `Odstranit příspěvek`,
+				buttonText: "Ok",
 			},
 		);
 	}
