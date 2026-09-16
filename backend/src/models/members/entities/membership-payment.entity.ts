@@ -11,11 +11,10 @@ import { Member } from "./member.entity";
  * recording a fee means inserting one and un-recording it means deleting it; there is no separate
  * paid flag that could disagree with the payment.
  *
- * Deliberately no amount: the fee is not always the one in the payment settings (a member joining
- * mid-season pays less, a camp can cover the rest of the year, some pay in instalments), so a
- * number copied from the settings would claim to know something it does not. What was actually
- * sent is in the bank statement, which this table does not try to mirror — it only records that
- * the treasurer matched a payment to a season.
+ * The amount is what the treasurer says came in: the club's fee from the payment settings when the
+ * payment is recorded, and whatever the treasurer writes over it afterwards (a member joining
+ * mid-season pays less, a camp can cover the rest of the year, some pay in instalments). Nullable
+ * because the fees migrated from the old list of years carry no amount — nobody recorded one.
  *
  * A member has at most one payment per season, enforced by the unique (member_id, for_year) index
  * rather than left to the callers — see helpers/membership.ts for the readers.
@@ -64,4 +63,7 @@ export class MembershipPayment {
 	 */
 	@Column({ type: "text", nullable: true })
 	note?: string | null;
+
+	@Column({ type: "integer", nullable: true })
+	amount?: number | null;
 }

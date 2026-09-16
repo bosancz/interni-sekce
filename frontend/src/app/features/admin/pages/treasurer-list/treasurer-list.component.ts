@@ -1,4 +1,4 @@
-import { DatePipe, KeyValue, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
+import { DatePipe, DecimalPipe, KeyValue, KeyValuePipe, NgTemplateOutlet } from "@angular/common";
 import { AfterViewInit, Component, computed, inject, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
@@ -13,12 +13,13 @@ import {
 	IonItemDivider,
 	IonList,
 	IonPopover,
+	IonSkeletonText,
 	IonToggle,
 	ViewWillEnter,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { chevronBackOutline, chevronForwardOutline, createOutline, eyeOutline } from "ionicons/icons";
+import { chevronBackOutline, chevronForwardOutline, createOutline, downloadOutline, eyeOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipPaymentStates } from "src/app/core/config/membership";
 import { currentMembershipYear, isMembershipPaid, membershipPaymentOf } from "src/app/core/helpers/membership";
@@ -29,6 +30,7 @@ import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
 import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
 import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
@@ -87,6 +89,7 @@ const LAST_YEAR = 2200;
 		IonCheckbox,
 		IonToggle,
 		IonIcon,
+		IonSkeletonText,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
 		AdminTableComponent,
@@ -97,6 +100,7 @@ const LAST_YEAR = 2200;
 		GroupBadgeComponent,
 		KeyValuePipe,
 		DatePipe,
+		DecimalPipe,
 		MemberPipe,
 		DefaultContactPipe,
 		NgTemplateOutlet,
@@ -113,6 +117,12 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	/** Members whose fee is being saved right now — their toggle is disabled meanwhile. */
 	private saving = signal<ReadonlySet<number>>(new Set());
 
+	/**
+	 * The season's totals over the whole club — what the fees add up to and how many are recorded.
+	 * They ignore the filters below them on purpose (see loadSummary). `undefined` while they load.
+	 */
+	summary = signal<SDK.MembershipSummaryResponse | undefined>(undefined);
+
 	// Display state derives from the model: staged draft while the mobile modal is open, else the
 	// committed filter (which lives in the URL, so a view can be linked to and survives a reload).
 	selectedGroups = computed(() => this.normalizeFilterValueToArray(this.model.value("groups")));
@@ -124,6 +134,30 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		const value = Number(this.model.value("year"));
 		return Number.isInteger(value) && value >= FIRST_YEAR && value <= LAST_YEAR ? value : currentMembershipYear();
 	});
+
+	/**
+	 * The club's currency as it is written next to a number. It comes with the totals, so there is
+	 * nothing to show next to them until they arrive.
+	 */
+	currencyLabel = computed(() => {
+		const currency = this.summary()?.currency;
+		if (!currency) return "";
+
+		return currency === "CZK" ? "Kč" : currency;
+	});
+
+	/**
+	 * The page's actions, as in the members list: a text button on a wide screen, in the ⋯ menu on
+	 * anything narrower — bo-action-buttons decides which.
+	 */
+	actions = signal<Action[]>([
+		{
+			text: "Export do XLSX",
+			icon: "download-outline",
+			pinned: false,
+			handler: () => this.export(),
+		},
+	]);
 
 	canStepBack = computed(() => this.year() > FIRST_YEAR);
 	canStepForward = computed(() => this.year() < LAST_YEAR);
@@ -180,6 +214,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	pageSize = 50;
 
 	private latestLoadId = 0;
+	private latestSummaryId = 0;
 
 	viewSelections = signal<{ [key: string]: boolean }>({});
 
@@ -198,7 +233,14 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		private groupPipe: GroupPipe,
 		private platformService: PlatformService,
 	) {
-		addIcons({ chevronBackOutline, chevronForwardOutline, createOutline, eyeOutline, columns: COLUMNS_ICON });
+		addIcons({
+			chevronBackOutline,
+			chevronForwardOutline,
+			createOutline,
+			downloadOutline,
+			eyeOutline,
+			columns: COLUMNS_ICON,
+		});
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 	}
 
@@ -240,6 +282,11 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		return !!this.note(member);
 	}
 
+	/** What the fee on screen was worth, if it is recorded with an amount at all. */
+	amount(member: SDK.MemberResponse): number | null {
+		return this.payment(member)?.amount ?? null;
+	}
+
 	/** Is this member's fee for the year on screen paid? */
 	isPaid(member: SDK.MemberResponse): boolean {
 		return isMembershipPaid(member.membership, this.year());
@@ -272,6 +319,11 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 
 		const year = this.year();
 		const paid = !this.isPaid(member);
+
+		// Recording a fee costs nothing — the same click takes it back. Un-recording it deletes what
+		// was written down, so it is asked about first.
+		if (!paid && !(await this.confirmUnpaid(member, year))) return;
+
 		const previous = member.membership;
 
 		// The row flips straight away on a placeholder payment; the server then answers with the
@@ -284,6 +336,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 				(res) => res.data,
 			);
 			this.setMemberMembership(member.id, membership);
+			this.loadSummary(true);
 		} catch {
 			this.setMemberMembership(member.id, previous);
 			this.toasts.toast("Příspěvek se nepodařilo uložit.");
@@ -294,6 +347,27 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 				return next;
 			});
 		}
+	}
+
+	/**
+	 * Un-recording a fee deletes the payment, and the amount, the note and the day it was recorded
+	 * go with it — so the treasurer is told what they are about to lose. Recording it again is not
+	 * the same fee: it gets today's date and the club's fee from the payment settings.
+	 */
+	private async confirmUnpaid(member: SDK.MemberResponse, year: number): Promise<boolean> {
+		const amount = this.amount(member);
+		const amountText =
+			amount === null
+				? ""
+				: " ve výši " + [new Intl.NumberFormat("cs").format(amount), this.currencyLabel()].join(" ").trim();
+
+		return this.modalService.deleteConfirmationModal(
+			`Zapsaný příspěvek${amountText} se smaže i s poznámkou a datem zápisu. Zapsat ho jde znovu, ale s dnešním datem a s částkou podle platebních údajů.`,
+			{
+				header: `Odepsat příspěvek ${year}?`,
+				buttonText: "Odepsat",
+			},
+		);
 	}
 
 	/**
@@ -362,6 +436,96 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		}
 	}
 
+	/**
+	 * Write what the fee of the year on screen was worth, from the pencil in the amount column. Like
+	 * the note, the amount hangs on the payment, so only a recorded fee has one to edit, and the
+	 * click stops here rather than opening the member the row links to.
+	 */
+	async editAmount(member: SDK.MemberResponseWithLinks, event: Event) {
+		event.stopPropagation();
+		event.preventDefault();
+
+		if (!this.canEditMembership(member) || !this.isPaid(member) || this.isSaving(member)) return;
+
+		const year = this.year();
+		const current = this.amount(member);
+		const result = await this.modalService.inputModal<{ amount: number }>({
+			header: `Částka příspěvku ${year}`,
+			inputs: {
+				amount: {
+					type: "number",
+					value: current ?? undefined,
+				},
+			},
+		});
+
+		// Cancelled (or dismissed): the amount stays as it was. An emptied box is a real answer —
+		// it leaves the fee without one, the way the fees from before amounts were recorded are.
+		if (!result) return;
+
+		await this.saveAmount(member, this.parseAmount(result.amount));
+	}
+
+	/**
+	 * An emptied box is no amount at all; anything else is whole units, since that is what the fee
+	 * is stored in. A box that cannot be read as a number is not an answer and is left alone.
+	 */
+	private parseAmount(value: unknown): number | null | undefined {
+		if (value === null || value === undefined || String(value).trim() === "") return null;
+
+		const amount = Math.round(Number(value));
+
+		return Number.isFinite(amount) && amount >= 0 ? amount : undefined;
+	}
+
+	/** Saved the way the note is: shown at once, replaced by the server's answer, rolled back if it fails. */
+	private async saveAmount(member: SDK.MemberResponseWithLinks, amount: number | null | undefined) {
+		if (amount === undefined) {
+			this.toasts.toast("Částka musí být číslo od nuly výš.");
+			return;
+		}
+
+		const year = this.year();
+		const previous = member.membership;
+
+		if (amount === this.amount(member)) return;
+
+		this.setMemberMembership(member.id, this.membershipWithAmount(member, year, amount));
+		this.saving.update((ids) => new Set(ids).add(member.id));
+
+		try {
+			// `paid: true` is what the year already is — the amount is the only value that changes,
+			// the note, the day it was recorded and the symbol it was paid under stay as they were.
+			const membership = await this.api.MembersApi.updateMemberMembership(member.id, {
+				year,
+				paid: true,
+				amount,
+			}).then((res) => res.data);
+			this.setMemberMembership(member.id, membership);
+			this.loadSummary(true);
+		} catch {
+			this.setMemberMembership(member.id, previous);
+			this.toasts.toast("Částku se nepodařilo uložit.");
+		} finally {
+			this.saving.update((ids) => {
+				const next = new Set(ids);
+				next.delete(member.id);
+				return next;
+			});
+		}
+	}
+
+	/** The membership with the amount of one season replaced — the other seasons are untouched. */
+	private membershipWithAmount(
+		member: SDK.MemberResponse,
+		year: number,
+		amount: number | null,
+	): SDK.MembershipPaymentResponse[] {
+		return (member.membership ?? []).map((payment) =>
+			payment.forYear === year ? { ...payment, amount } : payment,
+		);
+	}
+
 	/** The membership with the note of one season replaced — the other seasons are untouched. */
 	private membershipWithNote(
 		member: SDK.MemberResponse,
@@ -392,6 +556,9 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			variableSymbol: getVariableSymbol(member, year),
 			recordedOn: null,
 			note: null,
+			// The club's fee is the server's to fill in, the same way the date is — this is only a
+			// stand-in until its answer arrives.
+			amount: null,
 		};
 
 		return [pending, ...rest];
@@ -400,6 +567,29 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	private setMemberMembership(memberId: number, membership: SDK.MembershipPaymentResponse[] | undefined) {
 		this.members.update((members) =>
 			members?.map((member) => (member.id === memberId ? { ...member, membership } : member)),
+		);
+	}
+
+	/**
+	 * The table as a sheet. It is the table that is exported, so it goes out under the filters on
+	 * screen and the year on screen — the server builds the same columns the page shows by default.
+	 */
+	export() {
+		const year = this.year();
+
+		this.api.MembersApi.exportMembershipXlsx(this.filterParams(this.filter), { responseType: "blob" }).then(
+			(res) => {
+				const blob = new Blob([res.data], {
+					type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+				});
+
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement("a");
+				a.href = url;
+				a.download = `prispevky-${year}.xlsx`;
+				a.click();
+				URL.revokeObjectURL(url);
+			},
 		);
 	}
 
@@ -423,6 +613,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		this.model.setCommitted(this.modelFromParams(params));
 		this.filter = { ...params };
 		this.loadMembers(this.filter);
+		this.loadSummary();
 	}
 
 	private modelFromParams(p: Params): FilterValues {
@@ -477,16 +668,9 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		const loadId = ++this.latestLoadId;
 
 		const params: SDK.MembersApiListMembersQueryParams = {
-			search: filter.search || undefined,
+			...this.filterParams(filter),
 			offset: (this.page - 1) * this.pageSize,
 			limit: this.pageSize,
-			roles: this.normalizeFilterValueToArray(filter["roles"]) as SDK.ListMembersRolesEnum[],
-			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.MembershipPaymentStatesEnum[],
-			// The fee filter and the fee sort are asked about the year on screen, not about today.
-			membershipYear: this.year(),
-			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
-			// default: active only; "all" reveals inactive members too
-			active: ((filter["active"] as string) || "active") === "all" ? undefined : true,
 			contacts: this.needsContacts() || undefined,
 			sort: (filter["sort"] as string) || undefined,
 			order: (filter["order"] as SDK.ListMembersOrderEnum) || undefined,
@@ -497,6 +681,48 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		if (loadId !== this.latestLoadId) return;
 
 		this.members.set([...(loadMore ? (this.members() ?? []) : []), ...members]);
+	}
+
+	/**
+	 * The season's totals. They are the club's takings, not the list's, so they are asked about the
+	 * year alone — a filter, a search or a sort changes the rows below them and leaves them be.
+	 * Loading them again is worth it only for a new year, or after a fee was written here.
+	 */
+	private async loadSummary(refresh: boolean = false) {
+		const year = this.year();
+		if (!refresh && this.summary()?.year === year) return;
+
+		const loadId = ++this.latestSummaryId;
+
+		// A new year is a new question, so the old figures go; a refresh after a fee was written is
+		// the same question asked again, and its answer replaces them without a flash of skeletons.
+		if (!refresh) this.summary.set(undefined);
+
+		const summary = await this.api.MembersApi.getMembershipSummary({ year }).then((res) => res.data);
+
+		if (loadId !== this.latestSummaryId) return;
+
+		this.summary.set(summary);
+	}
+
+	/**
+	 * What narrows the list — shared by the list itself and by the export of it, which has to go out
+	 * under the same filters. The totals above the table deliberately take none of it (loadSummary).
+	 */
+	private filterParams(filter: FilterData) {
+		return {
+			search: filter.search || undefined,
+			roles: this.normalizeFilterValueToArray(filter["roles"]) as SDK.ListMembersRolesEnum[],
+			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.MembershipPaymentStatesEnum[],
+			// The fee filter and the fee sort are asked about the year on screen, not about today.
+			membershipYear: this.year(),
+			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
+			// default: active only; "all" reveals inactive members too
+			active: ((filter["active"] as string) || "active") === "all" ? undefined : true,
+			// …except an inactive member who paid the season's fee, who stays in the table (dimmed)
+			// whatever the toggle says: their money is in the totals above it.
+			includeMembershipPaid: true,
+		};
 	}
 
 	// Contacts are only needed when the phone/email columns are shown.
@@ -531,9 +757,10 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	private loadViewSelections() {
 		this.viewSelections.set({
 			variableSymbol: true,
-			nickname: true,
+			nickname: false,
 			name: true,
 			group: true,
+			amount: true,
 			recordedOn: true,
 			note: true,
 			role: false,
@@ -590,6 +817,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			nickname: "Přezdívka",
 			name: "Jméno",
 			group: "Oddíl",
+			amount: "Částka",
 			recordedOn: "Zapsáno dne",
 			note: "Poznámka",
 			role: "Role",

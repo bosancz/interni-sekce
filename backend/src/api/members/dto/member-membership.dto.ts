@@ -21,4 +21,15 @@ export class MemberMembershipUpdateBody {
 	@IsOptional()
 	@IsString()
 	note?: string | null;
+
+	/**
+	 * What the fee was worth, sent with `paid: true` to write it. Left out entirely, a fee already
+	 * recorded keeps its amount and a fee recorded now takes the one from the payment settings;
+	 * `null` clears it.
+	 */
+	@ApiPropertyOptional({ type: "number", nullable: true })
+	@IsOptional()
+	@IsInt()
+	@Min(0)
+	amount?: number | null;
 }
