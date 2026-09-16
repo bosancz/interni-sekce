@@ -1,3 +1,8 @@
+## v4.12.2 — 2026-09-16
+
+- <span class="changelog-type" title="feat">✨</span> [Migrace doplní 1500 Kč k existujícím příspěvkům](https://github.com/bosancz/interni-sekce/commit/f7bef79acaf5cfceda32b5c06d82a5cdd8215d59) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+- <span class="changelog-type" title="fix">🐛</span> [Better text in delete payment alert](https://github.com/bosancz/interni-sekce/commit/77b44362cb3dddd1a2170e76a04689001c4570aa) <span class="changelog-credit" title="Jiří Kubíček"><a class="changelog-author" href="https://github.com/jirik22"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/93734521?v=4&amp;s=48" alt="Jiří Kubíček"></a></span>
+
 ## v4.12.1 — 2026-09-16
 
 - <span class="changelog-type" title="feat">✨</span> [Odepsání příspěvku se v pokladně potvrzuje](https://github.com/bosancz/interni-sekce/commit/158c854bc2a31ee7ed66e9329b4545ba5889eacc) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
