@@ -14,6 +14,7 @@
 	<ion-item routerLink="/ucet/notifikace" (click)="close()">
 		<ion-icon class="me-3" name="notifications-outline"></ion-icon>
 		<ion-label>Notifikace</ion-label>
+		<bo-unread-badge slot="end" [count]="unreadCount()"></bo-unread-badge>
 	</ion-item>
 
 	<ion-item [button]="true" (click)="reportBug()">

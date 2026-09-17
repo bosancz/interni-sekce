@@ -4,4 +4,8 @@
 		[color]="user.member?.groupId | group: 'color'"
 		(click)="openAccountMenu($event)"
 	/>
+
+	@if (unreadCount() > 0) {
+		<span class="unread-dot" [attr.aria-label]="unreadCount() + ' nepřečtených upozornění'"></span>
+	}
 }

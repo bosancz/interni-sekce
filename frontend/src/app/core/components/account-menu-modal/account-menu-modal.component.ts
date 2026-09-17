@@ -6,16 +6,27 @@ import { addIcons } from "ionicons";
 import { bugOutline, logOut, notificationsOutline, person, settings } from "ionicons/icons";
 import { BugReportService } from "src/app/core/services/bug-report.service";
 import { LoginService } from "src/app/core/services/login.service";
+import { NotificationsService } from "src/app/core/services/notifications.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { UserService } from "src/app/core/services/user.service";
 import { DarkModeToggleComponent } from "src/app/shared/components/dark-mode-toggle/dark-mode-toggle.component";
+import { UnreadBadgeComponent } from "src/app/shared/components/unread-badge/unread-badge.component";
 import { VersionComponent } from "src/app/shared/components/version/version.component";
 
 @Component({
 	selector: "bo-account-menu-modal",
 	templateUrl: "./account-menu-modal.component.html",
 	styleUrl: "./account-menu-modal.component.scss",
-	imports: [IonList, IonItem, IonIcon, IonLabel, RouterLink, DarkModeToggleComponent, VersionComponent],
+	imports: [
+		IonList,
+		IonItem,
+		IonIcon,
+		IonLabel,
+		RouterLink,
+		DarkModeToggleComponent,
+		VersionComponent,
+		UnreadBadgeComponent,
+	],
 })
 export class AccountMenuModalComponent {
 	user = this.userService.user;
@@ -24,6 +35,8 @@ export class AccountMenuModalComponent {
 
 	isLg = toSignal(this.platformService.isLg);
 
+	unreadCount = this.notificationsService.unreadCount;
+
 	constructor(
 		private readonly platformService: PlatformService,
 		private readonly userService: UserService,
@@ -31,6 +44,7 @@ export class AccountMenuModalComponent {
 		private readonly popoverController: PopoverController,
 		private readonly navController: NavController,
 		private readonly bugReportService: BugReportService,
+		private readonly notificationsService: NotificationsService,
 	) {
 		addIcons({ person, settings, logOut, bugOutline, notificationsOutline });
 	}

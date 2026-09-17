@@ -41,6 +41,7 @@ import {
 	NotificationSettingUpdatePermission,
 	NotificationsListPermission,
 	NotificationsReadAllPermission,
+	NotificationsUnreadCountPermission,
 } from "../acl/notifications.acl";
 import {
 	NotificationDeviceResponse,
@@ -48,6 +49,7 @@ import {
 	NotificationSettingsResponse,
 	NotificationSettingUpdateBody,
 	NotificationSubscribeBody,
+	NotificationsUnreadCountResponse,
 } from "../dto/notifications.dto";
 
 @Controller("account/notifications")
@@ -69,6 +71,18 @@ export class AccountNotificationsController {
 		NotificationsListPermission.canOrThrow(req);
 
 		return this.notifications.listNotifications(authUser.userId);
+	}
+
+	@Get("items/unread-count")
+	@AcLinks(NotificationsUnreadCountPermission)
+	@ApiResponse({ status: 200, type: WithLinks(NotificationsUnreadCountResponse) })
+	async getUnreadNotificationsCount(
+		@Req() req: Request,
+		@AuthUser() authUser: SessionUser,
+	): Promise<NotificationsUnreadCountResponse> {
+		NotificationsUnreadCountPermission.canOrThrow(req);
+
+		return { count: await this.notifications.countUnread(authUser.userId) };
 	}
 
 	@Post("items/read-all")
