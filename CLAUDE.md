@@ -92,6 +92,11 @@
 - **Náhled akce po najetí myší (`event-hover-preview`) se řídí `PointerEvent.pointerType`, ne media dotazy.** Původní `@media (hover: none), (pointer: coarse)` (ani varianta s `any-hover`/`any-pointer`) nefunguje: prohlížeč umí své ukazovátko hlásit špatně — Vivaldi na notebooku s dotykovým displejem hlásil `any-pointer: fine: false`, tedy „žádná myš“, dokud ho uživatel nerestartoval. Handlery jsou proto `pointerover`/`pointermove` a pouštějí dál jen `mouse` a `pen`; dotyk se odfiltruje sám a `pointerdown` náhled zavírá. Náhled se ukazuje s prodlevou 500 ms (`previewDelayMs`).
 - **`PlatformService.isMobile` je `is("android") || is("ios")`, ne Ionicovo `is("mobile")`** — to je pouhé `matchMedia('(any-pointer:coarse)')`, tedy přesně ten nespolehlivý dotaz výše (notebook s dotykovým displejem se hlásí jako mobil). Ionic si výsledek cachuje do `win.Ionic.platforms` a `isMobile`/`isIos` nemají trigger, takže se po startu nemění — čte se z nich `.value` (na rozdíl od `isLg`/`isPortrait`, které jedou přes `platform.resize`). Řídí se tím automatické otevření výběru fotek (`photos-upload`) a tlačítko „Zaplatit v bance“ (`member-payment`), které sdílí QR do bankovní aplikace přes Web Share — to má dnes i desktop, ale bez banky za ním.
 
+## Pokladna
+
+- **Na dotykovém ovládání je zápis příspěvku zamčený** (#472) — přepínač „Povolit úpravy“ vpravo v řádku se souhrnem (Platících / Vybráno) ho odemkne, do té doby je pilulka příspěvku i obě tužky (částka, poznámka) jen ke čtení. Gate je `canChangeMembership()` = právo z `_links` + odemčeno; hlídají ho i handlery, ne jen šablona. Zámek je stav komponenty, takže se při každém otevření stránky vrací zpátky — persistovat ho by ochranu zrušilo.
+- **Dotyk pozná `PlatformService.isTouch`** (signál): `navigator.maxTouchPoints > 0` plus globální `pointerdown` s `pointerType === "touch"`, protože media dotazy lžou (viz _Seznam akcí_) a `isMobile` je jen android/ios — hlásící se notebook s dotykovým displejem je přesně ten případ z #472. Myš přepínač nikdy neuvidí.
+
 ## People picker
 
 - **`MemberSelectorModalComponent` is the only picker on people.** It wraps `bo-modal-layout` like every other modal — title/subtitle + ✕ in the title slot, sticky search and group chips above the scrolling list, count and buttons in the footer (design handoff "Výběr lidí", #357). `dialog-picker` pins it to 560 px / 720 px.

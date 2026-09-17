@@ -212,6 +212,18 @@
 	margin: 0;
 }
 
+.treasurer-summary-edit {
+	display: flex;
+	align-items: center;
+	margin-inline-start: auto;
+
+	ion-toggle {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--bo-heading);
+	}
+}
+
 // Desktop: year, filters, columns and view options laid out inline in the filter toolbar.
 .treasurer-filter-actions {
 	display: flex;

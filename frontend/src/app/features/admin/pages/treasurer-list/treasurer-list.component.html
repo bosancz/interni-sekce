@@ -51,6 +51,18 @@
 			<ion-skeleton-text [animated]="true" class="treasurer-summary-skeleton"></ion-skeleton-text>
 		</div>
 	}
+
+	@if (isTouch()) {
+		<div class="treasurer-summary-edit">
+			<ion-toggle
+				[checked]="editsUnlocked()"
+				(ionChange)="setEditsUnlocked($event.detail.checked)"
+				labelPlacement="start"
+			>
+				Povolit úpravy
+			</ion-toggle>
+		</div>
+	}
 </div>
 
 <bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
@@ -248,7 +260,7 @@
 							amount(member) === null ? "" : (amount(member) | number: "1.0-0" : "cs") + " Kč"
 						}}</span>
 
-						@if (canEditMembership(member) && isPaid(member)) {
+						@if (canChangeMembership(member) && isPaid(member)) {
 							<button
 								type="button"
 								class="treasurer-edit-button"
@@ -283,7 +295,7 @@
 			<admin-table-column header="Poznámka" headerClass="align-middle">
 				<ng-container *adminCell="let member">
 					<span class="treasurer-note-cell">
-						@if (canEditMembership(member) && isPaid(member)) {
+						@if (canChangeMembership(member) && isPaid(member)) {
 							<button
 								type="button"
 								class="treasurer-edit-button"
@@ -391,7 +403,7 @@
 			headerClass="align-middle treasurer-membership-column"
 		>
 			<ng-container *adminCell="let member">
-				@if (canEditMembership(member)) {
+				@if (canChangeMembership(member)) {
 					<button
 						type="button"
 						class="bo-pill treasurer-membership-toggle"
