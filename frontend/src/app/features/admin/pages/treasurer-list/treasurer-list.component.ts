@@ -117,6 +117,10 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	/** Members whose fee is being saved right now — their toggle is disabled meanwhile. */
 	private saving = signal<ReadonlySet<number>>(new Set());
 
+	editsUnlocked = signal(false);
+	isTouch = computed(() => this.platformService.isTouch());
+	canEdit = computed(() => !this.isTouch() || this.editsUnlocked());
+
 	/**
 	 * The season's totals over the whole club — what the fees add up to and how many are recorded.
 	 * They ignore the filters below them on purpose (see loadSummary). `undefined` while they load.
@@ -303,6 +307,14 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		return !!member._links?.updateMemberMembership?.allowed;
 	}
 
+	canChangeMembership(member: SDK.MemberResponseWithLinks): boolean {
+		return this.canEditMembership(member) && this.canEdit();
+	}
+
+	setEditsUnlocked(unlocked: boolean) {
+		this.editsUnlocked.set(unlocked);
+	}
+
 	isSaving(member: SDK.MemberResponse): boolean {
 		return this.saving().has(member.id);
 	}
@@ -315,7 +327,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		event.stopPropagation();
 		event.preventDefault();
 
-		if (!this.canEditMembership(member) || this.isSaving(member)) return;
+		if (!this.canChangeMembership(member) || this.isSaving(member)) return;
 
 		const year = this.year();
 		const paid = !this.isPaid(member);
@@ -356,7 +368,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	 */
 	private async confirmUnpaid(member: SDK.MemberResponse, year: number): Promise<boolean> {
 		const fullname = `${member.firstName || ""} ${member.lastName || ""}`;
-		
+
 		return this.modalService.deleteConfirmationModal(
 			`Opravdu chcete odebrat příspěvek členovi ${fullname} za rok  ${year}?`,
 			{

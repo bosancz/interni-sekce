@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, signal } from "@angular/core";
 import { Platform } from "@ionic/angular/standalone";
 import { BehaviorSubject, Observable } from "rxjs";
 import { Logger } from "src/logger";
@@ -31,5 +31,15 @@ export class PlatformService {
 	isMobile = new TriggerSubject(() => this.platform.is("android") || this.platform.is("ios"));
 	isIos = new TriggerSubject(() => this.platform.is("ios"));
 
-	constructor(private readonly platform: Platform) {}
+	isTouch = signal(typeof navigator !== "undefined" && navigator.maxTouchPoints > 0);
+
+	constructor(private readonly platform: Platform) {
+		window.addEventListener(
+			"pointerdown",
+			(event: PointerEvent) => {
+				if (event.pointerType === "touch") this.isTouch.set(true);
+			},
+			{ capture: true, passive: true },
+		);
+	}
 }
