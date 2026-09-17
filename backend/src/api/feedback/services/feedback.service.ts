@@ -36,8 +36,6 @@ export interface BugReportIssue {
 	url: string;
 }
 
-const CSS_PIXELS_PER_INCH = 96;
-
 const ISSUE_TITLE_MAX_LENGTH = 80;
 const ISSUE_TITLE_MIN_TEXT_LENGTH = 20;
 
@@ -165,16 +163,12 @@ export class FeedbackService {
 	private formatScreen(width?: number, height?: number, pixelRatio?: number): string | undefined {
 		const css = this.formatSize(width, height);
 
-		if (!css || !width || !height || !pixelRatio) return css;
+		if (!css || !width || !height || !pixelRatio || pixelRatio === 1) return css;
 
 		const ratio = String(Number(pixelRatio.toFixed(2))).replace(".", ",");
-		const dpi = `${Math.round(CSS_PIXELS_PER_INCH * pixelRatio)} DPI`;
-
-		if (pixelRatio === 1) return `${css} (${dpi})`;
-
 		const physical = `${Math.round(width * pixelRatio)} × ${Math.round(height * pixelRatio)} px`;
 
-		return `≈ ${physical} (${css} @ ${ratio}×, ${dpi})`;
+		return `≈ ${physical} (${css} @ ${ratio}×)`;
 	}
 
 	private formatSize(width?: number, height?: number): string | undefined {
