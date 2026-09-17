@@ -720,6 +720,30 @@ export namespace SDK {
          */
         'screenHeight'?: number;
         /**
+         * Počet fyzických pixelů na jeden CSS pixel.
+         * @type {number}
+         * @memberof BugReportBody
+         */
+        'pixelRatio'?: number;
+        /**
+         * Šířka okna aplikace v CSS pixelech.
+         * @type {number}
+         * @memberof BugReportBody
+         */
+        'viewportWidth'?: number;
+        /**
+         * Výška okna aplikace v CSS pixelech.
+         * @type {number}
+         * @memberof BugReportBody
+         */
+        'viewportHeight'?: number;
+        /**
+         * Režim zobrazení aplikace.
+         * @type {BugReportDisplayModesEnum}
+         * @memberof BugReportBody
+         */
+        'displayMode'?: BugReportDisplayModesEnum;
+        /**
          * Ukazovací zařízení, která má zařízení k dispozici.
          * @type {BugReportPointerTypesEnum}
          * @memberof BugReportBody
@@ -727,6 +751,22 @@ export namespace SDK {
         'pointer'?: BugReportPointerTypesEnum;
     }
     
+    
+    
+        /**
+     * Režim zobrazení aplikace.
+     * @export
+     * @enum {string}
+     */
+    
+    export const BugReportDisplayModesEnum = {
+        Browser: 'browser',
+        Standalone: 'standalone',
+        MinimalUi: 'minimalUi',
+        Fullscreen: 'fullscreen'
+    } as const;
+    
+    export type BugReportDisplayModesEnum = typeof BugReportDisplayModesEnum[keyof typeof BugReportDisplayModesEnum];
     
     
         /**
