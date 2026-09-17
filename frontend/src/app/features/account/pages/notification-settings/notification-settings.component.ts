@@ -1,6 +1,6 @@
 import { Component, OnInit, computed, signal } from "@angular/core";
 import { DatePipe } from "@angular/common";
-import { IonBackButton, IonButton, IonButtons, IonIcon, IonSpinner, IonToggle } from "@ionic/angular/standalone";
+import { IonButton, IonIcon, IonSpinner, IonToggle } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
 	addOutline,
@@ -28,9 +28,7 @@ import { SDK } from "src/sdk";
 	styleUrls: ["./notification-settings.component.scss"],
 	imports: [
 		DatePipe,
-		IonBackButton,
 		IonButton,
-		IonButtons,
 		IonIcon,
 		IonSpinner,
 		IonToggle,
