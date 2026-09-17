@@ -1,7 +1,7 @@
 import { Component, OnInit, computed, signal } from "@angular/core";
 import { DatePipe } from "@angular/common";
 import { Router } from "@angular/router";
-import { IonBackButton, IonButtons, IonIcon } from "@ionic/angular/standalone";
+import { IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { checkmarkDoneOutline, notificationsOffOutline, settingsOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -16,16 +16,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-notifications",
 	templateUrl: "./notifications.component.html",
 	styleUrls: ["./notifications.component.scss"],
-	imports: [
-		DatePipe,
-		IonBackButton,
-		IonButtons,
-		IonIcon,
-		PageHeaderComponent,
-		PageContentComponent,
-		CardComponent,
-		CardContentComponent,
-	],
+	imports: [DatePipe, IonIcon, PageHeaderComponent, PageContentComponent, CardComponent, CardContentComponent],
 })
 export class NotificationsComponent implements OnInit {
 	notifications = signal<SDK.NotificationResponseWithLinks[] | undefined>(undefined);
