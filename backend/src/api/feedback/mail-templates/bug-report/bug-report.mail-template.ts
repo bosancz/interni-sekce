@@ -10,6 +10,8 @@ export const BugReportMailTemplate = createMailTemplate<{
 	system?: string;
 	browser?: string;
 	screen?: string;
+	viewport?: string;
+	display?: string;
 	pointer?: string;
 	issueNumber?: number;
 	issueUrl?: string;

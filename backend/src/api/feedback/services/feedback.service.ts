@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common
 import { Config } from "src/config";
 import { parseUserAgent } from "src/helpers/user-agent";
 import { BugReportsRepository } from "src/models/bug-reports/repositories/bug-reports.repository";
+import { BugReportDisplayModeLabels } from "src/models/bug-reports/schema/bug-report-display-modes";
 import { BugReportPointerLabels } from "src/models/bug-reports/schema/bug-report-pointer-types";
 import { BugReportStates } from "src/models/bug-reports/schema/bug-report-states";
 import { ReleaseIssuesService } from "src/models/bug-reports/services/release-issues.service";
@@ -24,6 +25,8 @@ export interface BugReport {
 	system?: string;
 	browser?: string;
 	screen?: string;
+	viewport?: string;
+	display?: string;
 	pointer?: string;
 	userAgent?: string;
 }
@@ -32,6 +35,8 @@ export interface BugReportIssue {
 	number: number;
 	url: string;
 }
+
+const CSS_PIXELS_PER_INCH = 96;
 
 const ISSUE_TITLE_MAX_LENGTH = 80;
 const ISSUE_TITLE_MIN_TEXT_LENGTH = 20;
@@ -70,7 +75,9 @@ export class FeedbackService {
 			backendVersion: this.config.app.version,
 			system: system ?? undefined,
 			browser: browser ?? undefined,
-			screen: this.formatScreen(body.screenWidth, body.screenHeight),
+			screen: this.formatScreen(body.screenWidth, body.screenHeight, body.pixelRatio),
+			viewport: this.formatSize(body.viewportWidth, body.viewportHeight),
+			display: body.displayMode ? BugReportDisplayModeLabels[body.displayMode] : undefined,
 			pointer: body.pointer ? BugReportPointerLabels[body.pointer] : undefined,
 			userAgent: userAgent || undefined,
 		};
@@ -87,6 +94,8 @@ export class FeedbackService {
 			system: report.system,
 			browser: report.browser,
 			screen: report.screen,
+			viewport: report.viewport,
+			display: report.display,
 			pointer: report.pointer,
 			issueNumber: issue?.number,
 			issueUrl: issue?.url,
@@ -153,7 +162,22 @@ export class FeedbackService {
 		});
 	}
 
-	private formatScreen(width?: number, height?: number): string | undefined {
+	private formatScreen(width?: number, height?: number, pixelRatio?: number): string | undefined {
+		const css = this.formatSize(width, height);
+
+		if (!css || !width || !height || !pixelRatio) return css;
+
+		const ratio = String(Number(pixelRatio.toFixed(2))).replace(".", ",");
+		const dpi = `${Math.round(CSS_PIXELS_PER_INCH * pixelRatio)} DPI`;
+
+		if (pixelRatio === 1) return `${css} (${dpi})`;
+
+		const physical = `${Math.round(width * pixelRatio)} × ${Math.round(height * pixelRatio)} px`;
+
+		return `≈ ${physical} (${css} @ ${ratio}×, ${dpi})`;
+	}
+
+	private formatSize(width?: number, height?: number): string | undefined {
 		return width && height ? `${width} × ${height} px` : undefined;
 	}
 
@@ -173,7 +197,9 @@ export class FeedbackService {
 			report.system ? `**Systém:** ${report.system}` : null,
 			report.browser ? `**Prohlížeč:** ${report.browser}` : null,
 			report.screen ? `**Obrazovka:** ${report.screen}` : null,
-			report.pointer ? `**Ukazovátko:** ${report.pointer}` : null,
+			report.viewport ? `**Okno:** ${report.viewport}` : null,
+			report.display ? `**Zobrazení:** ${report.display}` : null,
+			report.pointer ? `**Ovládání:** ${report.pointer}` : null,
 			report.userAgent ? `**User agent:** \`${report.userAgent}\`` : null,
 		]
 			.filter((line) => line !== null)
