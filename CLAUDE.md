@@ -94,7 +94,7 @@
 
 ## Pokladna
 
-- **Na dotykovém ovládání je zápis příspěvku zamčený** (#472) — přepínač „Povolit úpravy“ vpravo v řádku se souhrnem (Platících / Vybráno) ho odemkne, do té doby je pilulka příspěvku i obě tužky (částka, poznámka) jen ke čtení. Gate je `canChangeMembership()` = právo z `_links` + odemčeno; hlídají ho i handlery, ne jen šablona. Zámek je stav komponenty, takže se při každém otevření stránky vrací zpátky — persistovat ho by ochranu zrušilo.
+- **Na dotykovém ovládání je pilulka zaplaceno/nezaplaceno zamčená** (#472) — přepínač „Povolit úpravy“ vpravo v řádku se souhrnem (Platících / Vybráno) ji odemkne, do té doby je jen ke čtení. Gate je `canChangeMembership()` = právo z `_links` + odemčeno (hlídá ho i `toggleMembership()`, ne jen šablona); **tužky u částky a poznámky zámek nedrží** — ty jdou přes `canEditMembership()` a otevírají dialog, takže omyl nic nepřepíše. Zámek je stav komponenty, takže se při každém otevření stránky vrací zpátky — persistovat ho by ochranu zrušilo.
 - **Dotyk pozná `PlatformService.isTouch`** (signál): `navigator.maxTouchPoints > 0` plus globální `pointerdown` s `pointerType === "touch"`, protože media dotazy lžou (viz _Seznam akcí_) a `isMobile` je jen android/ios — hlásící se notebook s dotykovým displejem je přesně ten případ z #472. Myš přepínač nikdy neuvidí.
 
 ## People picker

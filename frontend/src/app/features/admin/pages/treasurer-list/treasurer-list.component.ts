@@ -388,7 +388,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		event.stopPropagation();
 		event.preventDefault();
 
-		if (!this.canChangeMembership(member) || !this.isPaid(member) || this.isSaving(member)) return;
+		if (!this.canEditMembership(member) || !this.isPaid(member) || this.isSaving(member)) return;
 
 		const year = this.year();
 		const result = await this.modalService.inputModal<{ note: string }>({
@@ -453,7 +453,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		event.stopPropagation();
 		event.preventDefault();
 
-		if (!this.canChangeMembership(member) || !this.isPaid(member) || this.isSaving(member)) return;
+		if (!this.canEditMembership(member) || !this.isPaid(member) || this.isSaving(member)) return;
 
 		const year = this.year();
 		const current = this.amount(member);

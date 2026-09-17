@@ -260,7 +260,7 @@
 							amount(member) === null ? "" : (amount(member) | number: "1.0-0" : "cs") + " Kč"
 						}}</span>
 
-						@if (canChangeMembership(member) && isPaid(member)) {
+						@if (canEditMembership(member) && isPaid(member)) {
 							<button
 								type="button"
 								class="treasurer-edit-button"
@@ -295,7 +295,7 @@
 			<admin-table-column header="Poznámka" headerClass="align-middle">
 				<ng-container *adminCell="let member">
 					<span class="treasurer-note-cell">
-						@if (canChangeMembership(member) && isPaid(member)) {
+						@if (canEditMembership(member) && isPaid(member)) {
 							<button
 								type="button"
 								class="treasurer-edit-button"
