@@ -18,7 +18,11 @@
 	--bm-chip-bg: #e6e8f2;
 	--bm-chip-fg: #7a7f9c;
 
-	display: block;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	max-height: 100%;
+	overflow: hidden;
 	font-family: var(--font-regular);
 }
 
