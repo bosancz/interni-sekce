@@ -4,6 +4,7 @@ import {
 	NotificationDeviceResponse,
 	NotificationResponse,
 	NotificationSettingsResponse,
+	NotificationsUnreadCountResponse,
 	NotificationTypeSettingResponse,
 } from "../dto/notifications.dto";
 
@@ -19,6 +20,15 @@ export const NotificationsListPermission = new Permission<void>({
 export const NotificationReadPermission = new Permission<NotificationResponse>({
 	linkTo: NotificationResponse,
 	params: { notificationId: "id" },
+
+	allowed: {
+		uzivatel: true,
+	},
+});
+
+export const NotificationsUnreadCountPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: NotificationsUnreadCountResponse,
 
 	allowed: {
 		uzivatel: true,

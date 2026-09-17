@@ -5,6 +5,7 @@ import { IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { checkmarkDoneOutline, notificationsOffOutline, settingsOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { NotificationsService } from "src/app/core/services/notifications.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
@@ -42,6 +43,7 @@ export class NotificationsComponent implements OnInit {
 	constructor(
 		private api: ApiService,
 		private router: Router,
+		private notificationsService: NotificationsService,
 	) {
 		addIcons({ settingsOutline, checkmarkDoneOutline, notificationsOffOutline });
 	}
@@ -53,6 +55,7 @@ export class NotificationsComponent implements OnInit {
 	async loadNotifications() {
 		const notifications = await this.api.NotificationsApi.listNotifications().then((res) => res.data);
 		this.notifications.set(notifications);
+		this.notificationsService.setUnreadCount(this.unreadCount());
 	}
 
 	async openNotification(notification: SDK.NotificationResponseWithLinks) {
@@ -63,6 +66,7 @@ export class NotificationsComponent implements OnInit {
 					item.id === notification.id ? { ...item, readAt: new Date().toISOString() } : item,
 				),
 			);
+			this.notificationsService.setUnreadCount(this.unreadCount());
 		}
 
 		if (notification.path) await this.router.navigateByUrl(notification.path);
@@ -73,5 +77,6 @@ export class NotificationsComponent implements OnInit {
 		this.notifications.update((items) =>
 			items?.map((item) => (item.readAt ? item : { ...item, readAt: new Date().toISOString() })),
 		);
+		this.notificationsService.setUnreadCount(0);
 	}
 }

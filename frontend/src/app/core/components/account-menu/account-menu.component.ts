@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { PopoverController } from "@ionic/angular/standalone";
 import { AccountMenuModalComponent } from "src/app/core/components/account-menu-modal/account-menu-modal.component";
+import { NotificationsService } from "src/app/core/services/notifications.service";
 import { UserService } from "src/app/core/services/user.service";
 import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
@@ -15,9 +16,12 @@ import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 export class AccountMenuComponent {
 	user = this.userService.currentUser;
 
+	unreadCount = this.notificationsService.unreadCount;
+
 	constructor(
 		private readonly userService: UserService,
 		private readonly popoverController: PopoverController,
+		private readonly notificationsService: NotificationsService,
 	) {}
 
 	async openAccountMenu(e: Event) {

@@ -29,6 +29,10 @@ export class NotificationsRepository {
 		});
 	}
 
+	async countUnread(userId: number) {
+		return this.repository.count({ where: { userId, readAt: IsNull() } });
+	}
+
 	async getNotification(userId: number, id: number) {
 		return this.repository.findOne({ where: { userId, id } });
 	}

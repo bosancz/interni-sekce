@@ -16,8 +16,10 @@ import { map } from "rxjs";
 import { ApiService } from "src/app/core/services/api.service";
 import { BugReportService } from "src/app/core/services/bug-report.service";
 import { LoginService } from "src/app/core/services/login.service";
+import { NotificationsService } from "src/app/core/services/notifications.service";
 import { UserService } from "src/app/core/services/user.service";
 import { DarkModeToggleComponent } from "src/app/shared/components/dark-mode-toggle/dark-mode-toggle.component";
+import { UnreadBadgeComponent } from "src/app/shared/components/unread-badge/unread-badge.component";
 import { VersionComponent } from "src/app/shared/components/version/version.component";
 
 @Component({
@@ -33,6 +35,7 @@ import { VersionComponent } from "src/app/shared/components/version/version.comp
 		IonLabel,
 		DarkModeToggleComponent,
 		VersionComponent,
+		UnreadBadgeComponent,
 	],
 })
 export class SidebarComponent {
@@ -61,11 +64,14 @@ export class SidebarComponent {
 
 	canAccessAdmin = this.userService.canAccessAdmin;
 
+	unreadCount = this.notificationsService.unreadCount;
+
 	constructor(
 		private readonly api: ApiService,
 		private readonly loginService: LoginService,
 		private readonly userService: UserService,
 		private readonly bugReportService: BugReportService,
+		private readonly notificationsService: NotificationsService,
 	) {
 		addIcons({
 			homeSharp,

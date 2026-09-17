@@ -51,6 +51,10 @@ export class NotificationResponse implements Omit<Notification, "user" | "userId
 	@ApiProperty({ type: "string", format: "date-time", nullable: true }) readAt!: Date | null;
 }
 
+export class NotificationsUnreadCountResponse {
+	count!: number;
+}
+
 export class NotificationSubscriptionKeysBody {
 	@IsString() p256dh!: string;
 	@IsString() auth!: string;
