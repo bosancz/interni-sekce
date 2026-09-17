@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param, Res } from "@nestjs/common";
+import { Controller, Get, NotFoundException, Param, Query, Res } from "@nestjs/common";
 import { ApiExcludeController } from "@nestjs/swagger";
 import { Response } from "express";
 import { getVariableSymbolMemberId } from "src/helpers/variable-symbol";
@@ -6,9 +6,8 @@ import { MembersRepository } from "src/models/members/repositories/members.repos
 import { MemberPaymentRequestService } from "src/models/members/services/member-payment-request.service";
 
 /**
- * The QR platba link that goes out in the payment e-mail, redirecting to the image the generator
- * builds (see MemberPaymentRequestService.getQrCodeLinkUrl for why the generator's own URL cannot
- * be put in a mail body).
+ * The QR platba link that goes out in the payment e-mail, answering with the code it names (see
+ * MemberPaymentRequestService.getQrCodeLinkUrl for why the payment cannot ride in a query string).
  *
  * The payment is spelled out in the path and signed there, so the QR still asks for the account
  * and the amount the e-mail named, however the club's settings have moved on since.
@@ -37,6 +36,7 @@ export class MemberPaymentQrController {
 		@Param("amount") amount: string,
 		@Param("currency") currency: string,
 		@Param("signature") signature: string,
+		@Query("format") format: string | undefined,
 		@Res() res: Response,
 	): Promise<void> {
 		const memberId = getVariableSymbolMemberId(variableSymbol);
@@ -59,8 +59,21 @@ export class MemberPaymentQrController {
 		const member = await this.members.getMember(memberId);
 		if (!member) throw new NotFoundException();
 
-		// Temporary, because the `MSG:` is still built from the member's current name and the
-		// generator's URL is nothing this link promises to keep.
-		res.redirect(302, this.paymentRequests.getQrCodeImageUrl(member, payment));
+		const svg = this.paymentRequests.getQrCodeSvg(member, payment);
+
+		// The `MSG:` is built from the member's current name, so a corrected name has to reach the
+		// next reader rather than sit in a cache for a day.
+		res.setHeader("Cache-Control", "public, max-age=300");
+
+		if (format === "png") {
+			res.type("image/png");
+			res.setHeader("Content-Disposition", `inline; filename="qr-platba-${variableSymbol}.png"`);
+			res.send(await this.paymentRequests.getQrCodePng(svg));
+			return;
+		}
+
+		res.type("image/svg+xml");
+		res.setHeader("Content-Disposition", `inline; filename="qr-platba-${variableSymbol}.svg"`);
+		res.send(svg);
 	}
 }
