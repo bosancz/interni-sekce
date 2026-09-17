@@ -1,3 +1,7 @@
+## v4.12.3 — 2026-09-17
+
+- <span class="changelog-type" title="feat">✨</span> [QR platba jako vlastní SVG s logem uprostřed](https://github.com/bosancz/interni-sekce/commit/8edcbea8be23a2a06886b0ac575231eaee4ee705) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.12.2 — 2026-09-16
 
 - <span class="changelog-type" title="feat">✨</span> [Migrace doplní 1500 Kč k existujícím příspěvkům](https://github.com/bosancz/interni-sekce/commit/f7bef79acaf5cfceda32b5c06d82a5cdd8215d59) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
