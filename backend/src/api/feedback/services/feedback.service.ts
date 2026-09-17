@@ -1,6 +1,8 @@
 import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { Config } from "src/config";
+import { parseUserAgent } from "src/helpers/user-agent";
 import { BugReportsRepository } from "src/models/bug-reports/repositories/bug-reports.repository";
+import { BugReportPointerLabels } from "src/models/bug-reports/schema/bug-report-pointer-types";
 import { BugReportStates } from "src/models/bug-reports/schema/bug-report-states";
 import { ReleaseIssuesService } from "src/models/bug-reports/services/release-issues.service";
 import { GithubService } from "src/models/github/services/github.service";
@@ -17,6 +19,13 @@ export interface BugReport {
 	reporterUrl: string;
 	url?: string;
 	description: string;
+	frontendVersion?: string;
+	backendVersion: string;
+	system?: string;
+	browser?: string;
+	screen?: string;
+	pointer?: string;
+	userAgent?: string;
 }
 
 export interface BugReportIssue {
@@ -40,13 +49,15 @@ export class FeedbackService {
 		private readonly config: Config,
 	) {}
 
-	async buildBugReport(userId: number, body: BugReportBody): Promise<BugReport> {
+	async buildBugReport(userId: number, body: BugReportBody, userAgent?: string): Promise<BugReport> {
 		const user = await this.users.getUser(userId, { includeMember: true });
 
 		const reporterName = user?.member?.nickname || user?.login || "neznámý";
 
 		const reporter =
 			[user?.member?.nickname, user?.login && `(${user.login})`].filter(Boolean).join(" ") || "neznámý";
+
+		const { system, browser } = parseUserAgent(userAgent);
 
 		return {
 			userId,
@@ -55,6 +66,13 @@ export class FeedbackService {
 			reporterUrl: `${this.config.app.baseUrl}/admin/uzivatele/${userId}`,
 			url: body.url,
 			description: body.description,
+			frontendVersion: body.frontendVersion || undefined,
+			backendVersion: this.config.app.version,
+			system: system ?? undefined,
+			browser: browser ?? undefined,
+			screen: this.formatScreen(body.screenWidth, body.screenHeight),
+			pointer: body.pointer ? BugReportPointerLabels[body.pointer] : undefined,
+			userAgent: userAgent || undefined,
 		};
 	}
 
@@ -64,6 +82,12 @@ export class FeedbackService {
 			reporterUrl: report.reporterUrl,
 			url: report.url,
 			description: report.description,
+			frontendVersion: report.frontendVersion,
+			backendVersion: report.backendVersion,
+			system: report.system,
+			browser: report.browser,
+			screen: report.screen,
+			pointer: report.pointer,
 			issueNumber: issue?.number,
 			issueUrl: issue?.url,
 		});
@@ -129,6 +153,10 @@ export class FeedbackService {
 		});
 	}
 
+	private formatScreen(width?: number, height?: number): string | undefined {
+		return width && height ? `${width} × ${height} px` : undefined;
+	}
+
 	private issueKey(repo: string, issueNumber: number): string {
 		return `${repo}#${issueNumber}`;
 	}
@@ -141,6 +169,12 @@ export class FeedbackService {
 			description ? "" : null,
 			`**Nahlásil:** [${report.reporter}](${report.reporterUrl})`,
 			report.url ? `**URL:** ${report.url}` : null,
+			`**Verze:** frontend ${report.frontendVersion ?? "neznámá"}, backend ${report.backendVersion}`,
+			report.system ? `**Systém:** ${report.system}` : null,
+			report.browser ? `**Prohlížeč:** ${report.browser}` : null,
+			report.screen ? `**Obrazovka:** ${report.screen}` : null,
+			report.pointer ? `**Ukazovátko:** ${report.pointer}` : null,
+			report.userAgent ? `**User agent:** \`${report.userAgent}\`` : null,
 		]
 			.filter((line) => line !== null)
 			.join("\n");

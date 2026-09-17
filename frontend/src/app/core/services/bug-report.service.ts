@@ -1,5 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
+import { Config } from "src/config";
+import { SDK } from "src/sdk";
 import { BugReportModalComponent } from "../components/bug-report-modal/bug-report-modal.component";
 import { ApiService } from "./api.service";
 import { ModalService } from "./modal.service";
@@ -14,6 +16,7 @@ export class BugReportService {
 		private modalService: ModalService,
 		private toastService: ToastService,
 		private router: Router,
+		private config: Config,
 	) {}
 
 	async reportBug() {
@@ -33,10 +36,30 @@ export class BugReportService {
 		}
 
 		try {
-			await this.api.FeedbackApi.sendBugReport({ description: result.description, url });
+			await this.api.FeedbackApi.sendBugReport({
+				description: result.description,
+				url,
+				frontendVersion: this.config.version,
+				screenWidth: window.screen?.width,
+				screenHeight: window.screen?.height,
+				pointer: this.getPointerType(),
+			});
 			await this.toastService.toast("Díky! Chyba byla odeslána.");
 		} catch {
 			await this.toastService.toast("Chybu se nepodařilo odeslat.");
 		}
+	}
+
+	private getPointerType(): SDK.BugReportPointerTypesEnum | undefined {
+		if (!window.matchMedia) return undefined;
+
+		const fine = window.matchMedia("(any-pointer: fine)").matches;
+		const coarse = window.matchMedia("(any-pointer: coarse)").matches;
+
+		if (fine && coarse) return SDK.BugReportPointerTypesEnum.Both;
+		if (fine) return SDK.BugReportPointerTypesEnum.Fine;
+		if (coarse) return SDK.BugReportPointerTypesEnum.Coarse;
+
+		return SDK.BugReportPointerTypesEnum.None;
 	}
 }
