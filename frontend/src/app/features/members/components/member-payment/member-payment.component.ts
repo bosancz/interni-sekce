@@ -1,5 +1,5 @@
 import { DatePipe } from "@angular/common";
-import { Component, computed, effect, input, signal } from "@angular/core";
+import { Component, computed, effect, inject, input, signal } from "@angular/core";
 import { IonButton, IonButtons, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { cardOutline, checkmarkCircle, chevronDown, shareSocialOutline } from "ionicons/icons";
@@ -13,6 +13,7 @@ import { CopyButtonComponent } from "src/app/shared/components/copy-button/copy-
 import { SDK } from "src/sdk";
 import { currentMembershipYear, membershipPaymentOf } from "src/app/core/helpers/membership";
 import { getVariableSymbolYear } from "src/app/core/helpers/variable-symbol";
+import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 
 /**
@@ -67,11 +68,17 @@ export class MemberPaymentComponent {
 	/** E-mails of the member's contacts (parents), loaded alongside the payment details. */
 	private contactEmails = signal<string[]>([]);
 
+	private readonly platformService = inject(PlatformService);
+
 	/**
-	 * Whether this browser can hand the QR code to another app. Web Share is a mobile API, so on
-	 * a desktop browser the button simply is not there — "Otevřít QR kód" covers that case.
+	 * Whether the QR code can be handed to a banking app on this device. Desktop browsers do
+	 * implement Web Share by now, but there is no banking app behind it there, so the button is
+	 * offered on a mobile device only — "Otevřít QR kód" covers the rest.
 	 */
-	readonly shareSupported = typeof navigator !== "undefined" && typeof navigator.share === "function";
+	readonly shareSupported =
+		this.platformService.isMobile.value &&
+		typeof navigator !== "undefined" &&
+		typeof navigator.share === "function";
 
 	/** True while the share sheet is being prepared, so the button cannot be pressed twice. */
 	readonly sharing = signal(false);

@@ -85,7 +85,7 @@
 						<div class="qr">
 							<img [src]="paymentValue.qrCodeUrl" alt="QR platba členského příspěvku" loading="lazy" />
 
-							<!-- Only where the browser has the Web Share API, i.e. on a phone: the share sheet
+							<!-- Mobile only, and only where the browser has the Web Share API: the share sheet
 							     is what offers the banking apps, and they take the payment out of the QR.
 							     A fee that is already paid is not offered for payment again. -->
 							@if (shareSupported && !paid()) {
