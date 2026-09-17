@@ -1,3 +1,7 @@
+## v4.12.4 — 2026-09-17
+
+- <span class="changelog-type" title="feat">✨</span> [Přidat do hlášení chyby systém, prohlížeč, obrazovku a verze](https://github.com/bosancz/interni-sekce/commit/a75b6f4e99dcf371e71f843621edae5d50dd77c8) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.12.3 — 2026-09-17
 
 - <span class="changelog-type" title="feat">✨</span> [QR platba jako vlastní SVG s logem uprostřed](https://github.com/bosancz/interni-sekce/commit/8edcbea8be23a2a06886b0ac575231eaee4ee705) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
