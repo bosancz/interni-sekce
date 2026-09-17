@@ -1,6 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit, computed, signal } from "@angular/core";
-import { IonBackButton, IonButtons, IonIcon } from "@ionic/angular/standalone";
+import { IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { bugOutline, logoGithub } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -16,16 +16,7 @@ import { SDK } from "src/sdk";
 	selector: "bo-bug-reports",
 	templateUrl: "./bug-reports.component.html",
 	styleUrls: ["./bug-reports.component.scss"],
-	imports: [
-		DatePipe,
-		IonBackButton,
-		IonButtons,
-		IonIcon,
-		PageHeaderComponent,
-		PageContentComponent,
-		CardComponent,
-		CardContentComponent,
-	],
+	imports: [DatePipe, IonIcon, PageHeaderComponent, PageContentComponent, CardComponent, CardContentComponent],
 })
 export class BugReportsComponent implements OnInit {
 	bugReports = signal<SDK.BugReportResponseWithLinks[] | undefined>(undefined);
