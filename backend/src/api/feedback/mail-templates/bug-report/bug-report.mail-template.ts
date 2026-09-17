@@ -5,6 +5,12 @@ export const BugReportMailTemplate = createMailTemplate<{
 	reporterUrl: string;
 	url?: string;
 	description: string;
+	frontendVersion?: string;
+	backendVersion?: string;
+	system?: string;
+	browser?: string;
+	screen?: string;
+	pointer?: string;
 	issueNumber?: number;
 	issueUrl?: string;
 }>({

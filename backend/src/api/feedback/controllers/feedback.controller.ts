@@ -22,7 +22,7 @@ export class FeedbackController {
 	async sendBugReport(@Req() req: Request, @AuthUser() authUser: SessionUser, @Body() body: BugReportBody) {
 		SendBugReportPermission.canOrThrow(req);
 
-		const report = await this.feedback.buildBugReport(authUser.userId, body);
+		const report = await this.feedback.buildBugReport(authUser.userId, body, req.headers["user-agent"]);
 
 		const issue = await this.feedback.fileBugReportIssue(report);
 

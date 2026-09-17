@@ -701,7 +701,49 @@ export namespace SDK {
          * @memberof BugReportBody
          */
         'url'?: string;
+        /**
+         * Verze frontendu, ze které se chyba hlásí.
+         * @type {string}
+         * @memberof BugReportBody
+         */
+        'frontendVersion'?: string;
+        /**
+         * Šířka obrazovky v CSS pixelech.
+         * @type {number}
+         * @memberof BugReportBody
+         */
+        'screenWidth'?: number;
+        /**
+         * Výška obrazovky v CSS pixelech.
+         * @type {number}
+         * @memberof BugReportBody
+         */
+        'screenHeight'?: number;
+        /**
+         * Ukazovací zařízení, která má zařízení k dispozici.
+         * @type {BugReportPointerTypesEnum}
+         * @memberof BugReportBody
+         */
+        'pointer'?: BugReportPointerTypesEnum;
     }
+    
+    
+    
+        /**
+     * Ukazovací zařízení, která má zařízení k dispozici.
+     * @export
+     * @enum {string}
+     */
+    
+    export const BugReportPointerTypesEnum = {
+        Fine: 'fine',
+        Coarse: 'coarse',
+        Both: 'both',
+        None: 'none'
+    } as const;
+    
+    export type BugReportPointerTypesEnum = typeof BugReportPointerTypesEnum[keyof typeof BugReportPointerTypesEnum];
+    
     
         /**
      * 
