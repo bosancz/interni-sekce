@@ -1,3 +1,7 @@
+## v4.12.7 — 2026-09-17
+
+- <span class="changelog-type" title="feat">✨</span> [Odznak s počtem nepřečtených upozornění v menu](https://github.com/bosancz/interni-sekce/commit/e176032869f0cb7a9580ab70cbdefcc6afee37ae) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.12.6 — 2026-09-17
 
 - <span class="changelog-type" title="feat">✨</span> [Zamknout úpravy příspěvků na dotykovém ovládání](https://github.com/bosancz/interni-sekce/commit/dc45e8b104600ebe67a2d3de4dbc01f363adf218) (#472) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
