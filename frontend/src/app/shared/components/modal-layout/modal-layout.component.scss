@@ -70,3 +70,18 @@
 .footer:empty {
 	display: none;
 }
+
+@media (max-width: 576px) {
+	.title {
+		padding: 18px 20px 14px;
+		font-size: 20px;
+	}
+
+	.content {
+		padding: 4px 20px 16px;
+	}
+
+	.footer {
+		padding: 12px 20px 16px;
+	}
+}
