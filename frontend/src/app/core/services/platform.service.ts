@@ -28,7 +28,7 @@ export class PlatformService {
 	isPortrait = new TriggerSubject<boolean>(() => this.platform.isPortrait(), this.platform.resize);
 	isLandscape = new TriggerSubject<boolean>(() => this.platform.isLandscape(), this.platform.resize);
 
-	isMobile = new TriggerSubject(() => this.platform.is("mobile"));
+	isMobile = new TriggerSubject(() => this.platform.is("android") || this.platform.is("ios"));
 	isIos = new TriggerSubject(() => this.platform.is("ios"));
 
 	constructor(private readonly platform: Platform) {}
