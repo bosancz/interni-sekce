@@ -90,6 +90,7 @@
 ## Seznam akcí
 
 - **Náhled akce po najetí myší (`event-hover-preview`) se řídí `PointerEvent.pointerType`, ne media dotazy.** Původní `@media (hover: none), (pointer: coarse)` (ani varianta s `any-hover`/`any-pointer`) nefunguje: prohlížeč umí své ukazovátko hlásit špatně — Vivaldi na notebooku s dotykovým displejem hlásil `any-pointer: fine: false`, tedy „žádná myš“, dokud ho uživatel nerestartoval. Handlery jsou proto `pointerover`/`pointermove` a pouštějí dál jen `mouse` a `pen`; dotyk se odfiltruje sám a `pointerdown` náhled zavírá. Náhled se ukazuje s prodlevou 500 ms (`previewDelayMs`).
+- **`PlatformService.isMobile` je `is("android") || is("ios")`, ne Ionicovo `is("mobile")`** — to je pouhé `matchMedia('(any-pointer:coarse)')`, tedy přesně ten nespolehlivý dotaz výše (notebook s dotykovým displejem se hlásí jako mobil). Ionic si výsledek cachuje do `win.Ionic.platforms` a `isMobile`/`isIos` nemají trigger, takže se po startu nemění — čte se z nich `.value` (na rozdíl od `isLg`/`isPortrait`, které jedou přes `platform.resize`). Řídí se tím automatické otevření výběru fotek (`photos-upload`) a tlačítko „Zaplatit v bance“ (`member-payment`), které sdílí QR do bankovní aplikace přes Web Share — to má dnes i desktop, ale bez banky za ním.
 
 ## People picker
 
