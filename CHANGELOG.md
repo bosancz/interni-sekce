@@ -1,3 +1,8 @@
+## v4.12.9 — 2026-09-18
+
+- <span class="changelog-type" title="feat">✨</span> [Datum platby příspěvku místo data zapsání](https://github.com/bosancz/interni-sekce/commit/58c6255554440c029d9a12748903a89aa2c85c24) (#479) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+- <span class="changelog-type" title="fix">🐛</span> [Přepínač úprav je na telefonu vlastní řádek](https://github.com/bosancz/interni-sekce/commit/f0dfe5f605cc33724c9a0c0df7e060235bf48626) (#481) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.12.8 — 2026-09-18
 
 - <span class="changelog-type" title="fix">🐛</span> [Moje nahlášené chyby jako ikona v hlavičce dialogu](https://github.com/bosancz/interni-sekce/commit/81be7999758838b628ffc11a47e06009ec8faae7) (#478) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
