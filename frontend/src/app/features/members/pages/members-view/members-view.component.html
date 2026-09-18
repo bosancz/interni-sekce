@@ -36,7 +36,7 @@
 				</div>
 
 				<div class="card-col d-lg-block" [class.d-none]="view() !== 'profile'">
-					<bo-member-payment [member]="member()" />
+					<bo-member-payment [member]="member()" (updateMembership)="updateMemberMembership($event)" />
 				</div>
 
 				<div class="card-col d-lg-block" [class.d-none]="view() !== 'health'">

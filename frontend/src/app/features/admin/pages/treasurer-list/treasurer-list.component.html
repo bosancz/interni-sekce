@@ -278,13 +278,28 @@
 			</admin-table-column>
 		}
 
-		<!-- The day the treasurer ticked the fee off, not the day it was paid — empty for a season
-		     that is not recorded, and for the fees carried over from before they were dated. -->
-		@if (viewSelections().recordedOn) {
-			<admin-table-column header="Zapsáno dne" headerClass="align-middle">
-				<ng-container *adminCell="let member">{{
-					payment(member)?.recordedOn ? (payment(member)!.recordedOn | date: "d. M. y") : ""
-				}}</ng-container>
+		<!-- The day the money came in, as the treasurer filled it in — nothing fills it in itself, so
+		     it is empty until someone does, and the pencil writes it as with the amount and the note. -->
+		@if (viewSelections().paidOn) {
+			<admin-table-column header="Datum platby" headerClass="align-middle">
+				<ng-container *adminCell="let member">
+					<span class="treasurer-date-cell">
+						<span>{{ paidOn(member) ? (paidOn(member) | date: "d. M. y") : "" }}</span>
+
+						@if (canEditMembership(member) && isPaid(member)) {
+							<button
+								type="button"
+								class="treasurer-edit-button"
+								[disabled]="isSaving(member)"
+								[boTooltip]="paidOn(member) ? 'Upravit datum platby' : 'Zapsat datum platby'"
+								[attr.aria-label]="paidOn(member) ? 'Upravit datum platby' : 'Zapsat datum platby'"
+								(click)="editPaidOn(member, $event)"
+							>
+								<ion-icon name="create-outline"></ion-icon>
+							</button>
+						}
+					</span>
+				</ng-container>
 			</admin-table-column>
 		}
 

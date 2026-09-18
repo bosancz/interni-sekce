@@ -214,7 +214,7 @@ export class SeedService {
 					memberId: member.id,
 					forYear,
 					variableSymbol: getVariableSymbol(member, forYear),
-					recordedOn: DateTime.now().toISODate(),
+					paidOn: DateTime.now().toISODate(),
 					amount: paymentSettings?.amount ?? null,
 				});
 			}

@@ -1,5 +1,5 @@
 import { DatePipe } from "@angular/common";
-import { Component, computed, effect, inject, input, signal } from "@angular/core";
+import { Component, computed, effect, inject, input, output, signal } from "@angular/core";
 import { IonButton, IonButtons, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { cardOutline, checkmarkCircle, chevronDown, shareSocialOutline } from "ionicons/icons";
@@ -10,6 +10,7 @@ import { CardHeaderComponent } from "src/app/shared/components/card-header/card-
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { CopyButtonComponent } from "src/app/shared/components/copy-button/copy-button.component";
+import { EditButtonDateComponent } from "src/app/shared/components/edit-button-date/edit-button-date.component";
 import { SDK } from "src/sdk";
 import { currentMembershipYear, membershipPaymentOf } from "src/app/core/helpers/membership";
 import { getVariableSymbolYear } from "src/app/core/helpers/variable-symbol";
@@ -49,6 +50,7 @@ const QR_PNG_QUERY = "?format=png";
 		CardContentComponent,
 		CardFooterComponent,
 		CopyButtonComponent,
+		EditButtonDateComponent,
 		IonIcon,
 		IonSkeletonText,
 		IonButton,
@@ -58,6 +60,9 @@ const QR_PNG_QUERY = "?format=png";
 })
 export class MemberPaymentComponent {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
+
+	/** One year of the membership fee — the page saves it through its own admin-only route. */
+	updateMembership = output<SDK.MemberMembershipUpdateBody>();
 
 	/** `undefined` while loading, `null` when the payment details could not be loaded. */
 	payment = signal<SDK.MemberPaymentRequestResponseWithLinks | null | undefined>(undefined);
@@ -119,6 +124,12 @@ export class MemberPaymentComponent {
 	 */
 	readonly detailsVisible = computed(() => !this.paid() || this.detailsOpen());
 
+	/**
+	 * Who may write the day the fee was paid: whoever may record the fee itself, the API saying so
+	 * per member through the same link the "Členství" row goes by.
+	 */
+	readonly canEditMembership = computed(() => !!this.member()?._links?.updateMemberMembership?.allowed);
+
 	/** Green for as long as the fee is paid — folded away or unfolded, it stays ticked off. */
 	readonly cardColor = computed(() => (this.paid() ? "var(--bo-green)" : undefined));
 
@@ -165,6 +176,17 @@ export class MemberPaymentComponent {
 		effect(() => {
 			this.load(this.member());
 		});
+	}
+
+	/**
+	 * Write the day the fee on this card was paid. Nothing fills it in on its own — the treasurer
+	 * types it, an emptied box clears it — and it hangs on the recorded fee, so `paid: true` only
+	 * repeats what the season already is.
+	 */
+	setPaidOn(paidOn: string | null) {
+		if (!this.canEditMembership() || !this.paid()) return;
+
+		this.updateMembership.emit({ year: this.currentMembershipYear(), paid: true, paidOn });
 	}
 
 	/** Folds the details of a paid fee in and out. */
