@@ -95,7 +95,7 @@
 
 ## Pokladna
 
-- **Na dotykovém ovládání je pilulka zaplaceno/nezaplaceno zamčená** (#472) — přepínač „Povolit úpravy“ vpravo v řádku se souhrnem (Platících / Vybráno) ji odemkne, do té doby je jen ke čtení. Gate je `canChangeMembership()` = právo z `_links` + odemčeno (hlídá ho i `toggleMembership()`, ne jen šablona); **tužky u částky a poznámky zámek nedrží** — ty jdou přes `canEditMembership()` a otevírají dialog, takže omyl nic nepřepíše. Zámek je stav komponenty, takže se při každém otevření stránky vrací zpátky — persistovat ho by ochranu zrušilo.
+- **Na dotykovém ovládání je pilulka zaplaceno/nezaplaceno zamčená** (#472) — přepínač „Povolit úpravy“ vpravo v řádku se souhrnem (Platících / Vybráno) ji odemkne. Zamčená pilulka **zůstává tlačítkem** (bez rámečku, `treasurer-membership-pill` sám vs. s `-toggle`, `aria-disabled`), takže ťuknutí nezmizí do prázdna: `toggleMembership()` místo překlopení ukáže toast s tlačítkem „Odemknout“ (#477) — na dotyku není tooltip, ze kterého by se zámek dal přečíst. Gate je `canEdit()` = bez dotyku nebo odemčeno, hlídá ho `toggleMembership()`, ne jen šablona; **tužky u částky a poznámky zámek nedrží** — ty jdou přes `canEditMembership()` a otevírají dialog, takže omyl nic nepřepíše. Zámek je stav komponenty, takže se při každém otevření stránky vrací zpátky — persistovat ho by ochranu zrušilo.
 - **Dotyk pozná `PlatformService.isTouch`** (signál): `navigator.maxTouchPoints > 0` plus globální `pointerdown` s `pointerType === "touch"`, protože media dotazy lžou (viz _Seznam akcí_) a `isMobile` je jen android/ios — hlásící se notebook s dotykovým displejem je přesně ten případ z #472. Myš přepínač nikdy neuvidí.
 
 ## People picker
