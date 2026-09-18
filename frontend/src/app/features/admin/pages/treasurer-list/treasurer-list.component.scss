@@ -178,6 +178,15 @@
 	font-variant-numeric: tabular-nums;
 }
 
+// The payment date column: the date first and the pencil after it, the way the amount column reads,
+// but left-aligned like the plain text column it replaced.
+.treasurer-date-cell {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	white-space: nowrap;
+}
+
 // The season's totals above the table. Two figures side by side on every width — there are only
 // two, so they fit on a phone without becoming a list of their own.
 .treasurer-summary {

@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsBoolean, IsInt, IsOptional, IsString, Max, Min } from "class-validator";
+import { IsBoolean, IsInt, IsOptional, IsString, Matches, Max, Min } from "class-validator";
 
 /**
  * One year of a member's membership fee. The year is set (or cleared) server-side through
@@ -21,6 +21,16 @@ export class MemberMembershipUpdateBody {
 	@IsOptional()
 	@IsString()
 	note?: string | null;
+
+	@ApiPropertyOptional({
+		type: "string",
+		nullable: true,
+		description: "Den, kdy byl příspěvek zaplacen (YYYY-MM-DD). Vynechané pole nechá datum beze změny.",
+	})
+	@IsOptional()
+	@IsString()
+	@Matches(/^(\d{4}-\d{2}-\d{2})?$/, { message: "paidOn must be a date in the YYYY-MM-DD format" })
+	paidOn?: string | null;
 
 	/**
 	 * What the fee was worth, sent with `paid: true` to write it. Left out entirely, a fee already

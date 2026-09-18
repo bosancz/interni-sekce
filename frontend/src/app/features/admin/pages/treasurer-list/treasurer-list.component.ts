@@ -273,9 +273,14 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		);
 	}
 
-	/** The fee recorded for the year on screen, if it is paid — the "zapsáno dne" column reads it. */
+	/** The fee recorded for the year on screen, if it is paid — the "datum platby" column reads it. */
 	payment(member: SDK.MemberResponse): SDK.MembershipPaymentResponse | undefined {
 		return membershipPaymentOf(member.membership, this.year());
+	}
+
+	/** The day the fee on screen was paid, as the treasurer filled it in — nothing fills it in itself. */
+	paidOn(member: SDK.MemberResponse): string | null {
+		return this.payment(member)?.paidOn ?? null;
 	}
 
 	/** What the treasurer noted about the fee on screen, if anything. */
@@ -385,6 +390,77 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 				header: `Odstranit příspěvek`,
 				buttonText: "Ok",
 			},
+		);
+	}
+
+	/**
+	 * Write the day the fee of the year on screen was paid, from the pencil in its column — the same
+	 * date box the member's page opens. Only a recorded fee carries the day it was paid on, so the
+	 * pencil is not offered for a season that is unpaid, and the click stops here rather than
+	 * opening the member the row links to.
+	 */
+	async editPaidOn(member: SDK.MemberResponseWithLinks, event: Event) {
+		event.stopPropagation();
+		event.preventDefault();
+
+		if (!this.canEditMembership(member) || !this.isPaid(member) || this.isSaving(member)) return;
+
+		const year = this.year();
+		const result = await this.modalService.inputModal<{ paidOn: string }>({
+			header: `Datum platby příspěvku ${year}`,
+			inputs: {
+				paidOn: {
+					placeholder: "Datum",
+					type: "date",
+					value: this.paidOn(member) ?? undefined,
+				},
+			},
+		});
+
+		// Cancelled (or dismissed): the date stays as it was. An emptied box is a real answer — it
+		// leaves the fee without one again.
+		if (!result) return;
+
+		await this.savePaidOn(member, result.paidOn || null);
+	}
+
+	/** Saved the way the note is: shown at once, replaced by the server's answer, rolled back if it fails. */
+	private async savePaidOn(member: SDK.MemberResponseWithLinks, paidOn: string | null) {
+		const year = this.year();
+		const previous = member.membership;
+
+		if (paidOn === this.paidOn(member)) return;
+
+		this.setMemberMembership(member.id, this.membershipWithPaidOn(member, year, paidOn));
+		this.saving.update((ids) => new Set(ids).add(member.id));
+
+		try {
+			const membership = await this.api.MembersApi.updateMemberMembership(member.id, {
+				year,
+				paid: true,
+				paidOn,
+			}).then((res) => res.data);
+			this.setMemberMembership(member.id, membership);
+		} catch {
+			this.setMemberMembership(member.id, previous);
+			this.toasts.toast("Datum platby se nepodařilo uložit.");
+		} finally {
+			this.saving.update((ids) => {
+				const next = new Set(ids);
+				next.delete(member.id);
+				return next;
+			});
+		}
+	}
+
+	/** The membership with the payment date of one season replaced — the other seasons are untouched. */
+	private membershipWithPaidOn(
+		member: SDK.MemberResponse,
+		year: number,
+		paidOn: string | null,
+	): SDK.MembershipPaymentResponse[] {
+		return (member.membership ?? []).map((payment) =>
+			payment.forYear === year ? { ...payment, paidOn } : payment,
 		);
 	}
 
@@ -556,8 +632,8 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	/**
 	 * The membership as it will look once saved. Only the year on screen changes, and the stand-in
 	 * payment carries only what the page itself knows: the season and the variable symbol it
-	 * derives the same way the server does. The day it is recorded on is the server's to fill in —
-	 * left empty here so nothing invented is on screen — and its answer replaces this at once.
+	 * derives the same way the server does. The day it was paid on is nobody's to guess — it stays
+	 * empty until the treasurer fills it in — and the server's answer replaces this at once.
 	 */
 	private optimisticMembership(
 		member: SDK.MemberResponse,
@@ -572,10 +648,10 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			memberId: member.id,
 			forYear: year,
 			variableSymbol: getVariableSymbol(member, year),
-			recordedOn: null,
+			paidOn: null,
 			note: null,
-			// The club's fee is the server's to fill in, the same way the date is — this is only a
-			// stand-in until its answer arrives.
+			// The club's fee is the server's to fill in — this is only a stand-in until its answer
+			// arrives.
 			amount: null,
 		};
 
@@ -779,7 +855,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			name: true,
 			group: true,
 			amount: true,
-			recordedOn: true,
+			paidOn: true,
 			note: true,
 			role: false,
 			age: false,
@@ -836,7 +912,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			name: "Jméno",
 			group: "Oddíl",
 			amount: "Částka",
-			recordedOn: "Zapsáno dne",
+			paidOn: "Datum platby",
 			note: "Poznámka",
 			role: "Role",
 			age: "Věk",
