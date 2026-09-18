@@ -9,10 +9,11 @@ import { MembersRepository } from "../repositories/members.repository";
 /**
  * The values of a recorded fee the treasurer writes themselves. Everything else a payment carries
  * is derived here rather than sent by the client — the variable symbol from the member and the
- * season, the day it is recorded from today — so a client cannot book a member in under a symbol
- * of its own choosing. Undefined leaves a value as it is; null clears it.
+ * season — so a client cannot book a member in under a symbol of its own choosing. Undefined
+ * leaves a value as it is; null clears it.
  */
 export interface MembershipPaymentValues {
+	paidOn?: string | null;
 	note?: string | null;
 	amount?: number | null;
 }
@@ -28,10 +29,11 @@ export class MembershipPaymentService {
 	 * Record the fee of `year` as paid, optionally with the values the treasurer writes on it.
 	 *
 	 * Recording a fee that is already recorded is not recording it again: what is stored wins over
-	 * what today would derive, so the symbol it was paid under and the day it was written down
-	 * survive — this is also the way a note or an amount is edited. A fee recorded for the first
-	 * time takes the club's fee from the payment settings, so a season ticked off says what it was
-	 * worth without the treasurer typing anything.
+	 * what today would derive, so the symbol it was paid under survives — this is also the way the
+	 * day of the payment, a note or an amount is edited. A fee recorded for the first time takes
+	 * the club's fee from the payment settings, so a season ticked off says what it was worth
+	 * without the treasurer typing anything; the day it was paid on nothing can know, so it stays
+	 * empty until someone fills it in.
 	 */
 	async setPaid(
 		member: Member,
@@ -44,9 +46,7 @@ export class MembershipPaymentService {
 			memberId: member.id,
 			forYear: year,
 			variableSymbol: recorded?.variableSymbol ?? getVariableSymbol(member, year),
-			// A fee migrated from the old list of years has no date and does not get one now — only
-			// a fee recorded here and now is dated, which is what the column claims to say.
-			recordedOn: recorded ? (recorded.recordedOn ?? null) : this.today(),
+			paidOn: values.paidOn === undefined ? (recorded?.paidOn ?? null) : this.normalizeDate(values.paidOn),
 			note: values.note === undefined ? (recorded?.note ?? null) : this.normalizeNote(values.note),
 			amount: values.amount === undefined ? await this.recordedAmount(recorded) : values.amount,
 		});
@@ -82,14 +82,8 @@ export class MembershipPaymentService {
 		return note?.trim() || null;
 	}
 
-	/** Today as a `date` column takes it (YYYY-MM-DD), in the server's own timezone. */
-	private today(): string {
-		const now = new Date();
-
-		return [
-			now.getFullYear(),
-			String(now.getMonth() + 1).padStart(2, "0"),
-			String(now.getDate()).padStart(2, "0"),
-		].join("-");
+	/** An emptied date box is no date at all, the way an emptied note is no note. */
+	private normalizeDate(date: string | null): string | null {
+		return date?.trim() || null;
 	}
 }

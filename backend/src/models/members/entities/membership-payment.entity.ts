@@ -45,13 +45,8 @@ export class MembershipPayment {
 	@Column({ type: "varchar", nullable: false })
 	variableSymbol!: string;
 
-	/**
-	 * The day the treasurer recorded the fee — not the day the member paid it, which nothing here
-	 * knows. Named for what it is so the two are never taken for one another. Nullable because the
-	 * fees migrated from the old list of years carry no date: nothing recorded one back then.
-	 */
 	@Column({ type: "date", nullable: true })
-	recordedOn?: string | null;
+	paidOn?: string | null;
 
 	/**
 	 * What the treasurer wrote down about this fee — "zaplaceno na táboře", "sourozenecká sleva",

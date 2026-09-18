@@ -153,13 +153,13 @@ export class MembersExportService {
 				value: (member) => paymentOf(member)?.amount ?? undefined,
 			},
 			{
-				column: "Zapsáno dne",
+				column: "Datum platby",
 				type: String,
 				width: 15,
 				align: "right",
 				value: (member) => {
-					const recordedOn = paymentOf(member)?.recordedOn;
-					return recordedOn ? DateTime.fromISO(recordedOn).toFormat("d. M. yyyy") : undefined;
+					const paidOn = paymentOf(member)?.paidOn;
+					return paidOn ? DateTime.fromISO(paidOn).toFormat("d. M. yyyy") : undefined;
 				},
 			},
 			{
