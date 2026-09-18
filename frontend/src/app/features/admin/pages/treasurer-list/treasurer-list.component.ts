@@ -690,8 +690,6 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			offset: (this.page - 1) * this.pageSize,
 			limit: this.pageSize,
 			contacts: this.needsContacts() || undefined,
-			sort: (filter["sort"] as string) || undefined,
-			order: (filter["order"] as SDK.ListMembersOrderEnum) || undefined,
 		};
 
 		const members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
@@ -724,12 +722,15 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	}
 
 	/**
-	 * What narrows the list — shared by the list itself and by the export of it, which has to go out
-	 * under the same filters. The totals above the table deliberately take none of it (loadSummary).
+	 * What narrows the list and what orders it — shared by the list itself and by the export of it,
+	 * which has to go out under the same filters and in the same order. The totals above the table
+	 * deliberately take none of it (loadSummary).
 	 */
 	private filterParams(filter: FilterData) {
 		return {
 			search: filter.search || undefined,
+			sort: (filter["sort"] as string) || undefined,
+			order: (filter["order"] as SDK.ListMembersOrderEnum) || undefined,
 			roles: this.normalizeFilterValueToArray(filter["roles"]) as SDK.ListMembersRolesEnum[],
 			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.MembershipPaymentStatesEnum[],
 			// The fee filter and the fee sort are asked about the year on screen, not about today.

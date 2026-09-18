@@ -255,6 +255,8 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 				parseInt(group, 10),
 			),
 			active: (((this.filter as any)["active"] as string) || "active") === "all" ? undefined : true,
+			sort: ((this.filter as any)["sort"] as string) || undefined,
+			order: ((this.filter as any)["order"] as SDK.ExportMembersXlsxOrderEnum) || undefined,
 		};
 
 		this.api.MembersApi.exportMembersXlsx(params, { responseType: "blob" }).then((res) => {

@@ -105,9 +105,9 @@ export class MembersExportService {
 
 	/**
 	 * The treasurer view as a sheet: one row per member, the columns the page shows by default and
-	 * in the order it shows them. Everything is about one season, so the fee, the day it was
-	 * recorded and the note are the ones of `year` — which is also what the variable symbol and the
-	 * last column's header name.
+	 * in the order it shows them, the rows in the order the caller handed them over. Everything is
+	 * about one season, so the fee, the day it was recorded and the note are the ones of `year` —
+	 * which is also what the variable symbol and the last column's header name.
 	 */
 	async exportMembershipXlsx(members: Member[], year: number = currentMembershipYear()) {
 		const paymentOf = (member: Member) => membershipPaymentOf(member.membership, year);
@@ -130,8 +130,14 @@ export class MembersExportService {
 			{
 				column: "Jméno",
 				type: String,
-				width: 25,
-				value: (member) => [member.firstName, member.lastName].filter((part) => part).join(" ") || undefined,
+				width: 20,
+				value: (member) => member.firstName || undefined,
+			},
+			{
+				column: "Příjmení",
+				type: String,
+				width: 20,
+				value: (member) => member.lastName || undefined,
 			},
 			{
 				column: "Oddíl",
