@@ -229,6 +229,23 @@
 	}
 }
 
+@media (max-width: 575.98px) {
+	.treasurer-summary {
+		padding-inline: 16px;
+	}
+
+	.treasurer-summary-edit {
+		flex-basis: 100%;
+		margin-inline-start: 0;
+		padding-top: 10px;
+		border-top: 1px solid var(--bo-line);
+
+		ion-toggle {
+			width: 100%;
+		}
+	}
+}
+
 // Desktop: year, filters, columns and view options laid out inline in the filter toolbar.
 .treasurer-filter-actions {
 	display: flex;
