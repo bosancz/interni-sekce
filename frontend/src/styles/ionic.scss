@@ -152,6 +152,11 @@ ion-toast.install-toast {
 	}
 }
 
+ion-toast.bo-toast-action::part(button) {
+	color: var(--san-yellow);
+	font-weight: 700;
+}
+
 ion-searchbar {
 	--border-radius: var(--bo-radius-pill) !important;
 }

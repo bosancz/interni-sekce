@@ -27,10 +27,39 @@
 	font-size: 13px;
 }
 
-.bug-report-buttons {
-	flex-wrap: wrap;
+.bug-report-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
 }
 
 .bug-report-list-button {
-	margin-right: auto;
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	margin: -4px -6px 0 0;
+	padding: 0;
+	border: none;
+	border-radius: 9px;
+	background: transparent;
+	color: var(--bm-yellow);
+	cursor: pointer;
+	transition: background-color 150ms;
+
+	ion-icon {
+		font-size: 24px;
+	}
+
+	&:hover {
+		background: var(--bm-surface-hover);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--bm-blue);
+		outline-offset: 2px;
+	}
 }

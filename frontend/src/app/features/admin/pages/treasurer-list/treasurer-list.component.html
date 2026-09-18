@@ -403,14 +403,22 @@
 			headerClass="align-middle treasurer-membership-column"
 		>
 			<ng-container *adminCell="let member">
-				@if (canChangeMembership(member)) {
+				@if (canEditMembership(member)) {
 					<button
 						type="button"
-						class="bo-pill treasurer-membership-toggle"
+						class="bo-pill treasurer-membership-pill"
+						[class.treasurer-membership-toggle]="canEdit()"
 						[class.bo-pill-green]="isPaid(member)"
 						[disabled]="isSaving(member)"
 						[attr.aria-pressed]="isPaid(member)"
-						[title]="isPaid(member) ? 'Označit jako nezaplacené' : 'Označit jako zaplacené'"
+						[attr.aria-disabled]="!canEdit()"
+						[title]="
+							canEdit()
+								? isPaid(member)
+									? 'Označit jako nezaplacené'
+									: 'Označit jako zaplacené'
+								: lockedHint
+						"
 						(click)="toggleMembership(member, $event)"
 					>
 						{{ membershipLabel(member) }}

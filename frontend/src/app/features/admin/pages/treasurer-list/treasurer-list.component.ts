@@ -120,6 +120,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	editsUnlocked = signal(false);
 	isTouch = computed(() => this.platformService.isTouch());
 	canEdit = computed(() => !this.isTouch() || this.editsUnlocked());
+	lockedHint = "Úpravy příspěvků jsou zamčené — odemkni je přepínačem „Povolit úpravy“.";
 
 	/**
 	 * The season's totals over the whole club — what the fees add up to and how many are recorded.
@@ -307,12 +308,16 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		return !!member._links?.updateMemberMembership?.allowed;
 	}
 
-	canChangeMembership(member: SDK.MemberResponseWithLinks): boolean {
-		return this.canEditMembership(member) && this.canEdit();
-	}
-
 	setEditsUnlocked(unlocked: boolean) {
 		this.editsUnlocked.set(unlocked);
+	}
+
+	private remindLocked() {
+		this.toasts.toast(this.lockedHint, {
+			duration: 4000,
+			cssClass: "bo-toast-action",
+			buttons: [{ text: "Odemknout", handler: () => this.setEditsUnlocked(true) }],
+		});
 	}
 
 	isSaving(member: SDK.MemberResponse): boolean {
@@ -327,7 +332,12 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		event.stopPropagation();
 		event.preventDefault();
 
-		if (!this.canChangeMembership(member) || this.isSaving(member)) return;
+		if (!this.canEditMembership(member) || this.isSaving(member)) return;
+
+		if (!this.canEdit()) {
+			this.remindLocked();
+			return;
+		}
 
 		const year = this.year();
 		const paid = !this.isPaid(member);

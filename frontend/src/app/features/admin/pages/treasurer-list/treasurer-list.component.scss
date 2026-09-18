@@ -56,19 +56,10 @@
 // The fee toggle is a pill that flips between paid and unpaid. It sits inside a row that links to
 // the member, so it has to read as its own control: hover/focus lift it, and the click is stopped
 // in the component before it reaches the row.
-.treasurer-membership-toggle {
-	// A visible border is what separates the editable pill from the read-only one everyone else
-	// sees — on touch there is no hover to discover it with.
-	border: 1px solid currentColor;
-	cursor: pointer;
+.treasurer-membership-pill {
+	border: 1px solid transparent;
+	cursor: default;
 	font-family: inherit;
-	transition:
-		filter 0.15s ease,
-		border-color 0.15s ease;
-
-	&:hover:not(:disabled) {
-		filter: brightness(0.95);
-	}
 
 	&:focus-visible {
 		outline: 2px solid var(--bo-blue, #3880ff);
@@ -78,6 +69,20 @@
 	&:disabled {
 		cursor: progress;
 		opacity: 0.6;
+	}
+}
+
+.treasurer-membership-toggle {
+	// A visible border is what separates the editable pill from the read-only one everyone else
+	// sees — on touch there is no hover to discover it with.
+	border-color: currentColor;
+	cursor: pointer;
+	transition:
+		filter 0.15s ease,
+		border-color 0.15s ease;
+
+	&:hover:not(:disabled) {
+		filter: brightness(0.95);
 	}
 }
 
