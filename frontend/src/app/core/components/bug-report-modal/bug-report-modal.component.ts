@@ -1,5 +1,7 @@
 import { Component, computed, signal } from "@angular/core";
-import { ModalController } from "@ionic/angular/standalone";
+import { IonIcon, ModalController } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { timeOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
@@ -10,7 +12,7 @@ export type BugReportModalResult = { action: "submit"; description: string } | {
 	selector: "bo-bug-report-modal",
 	templateUrl: "./bug-report-modal.component.html",
 	styleUrl: "./bug-report-modal.component.scss",
-	imports: [ModalLayoutComponent],
+	imports: [ModalLayoutComponent, IonIcon],
 })
 export class BugReportModalComponent extends InputModalComponent<BugReportModalResult> {
 	description = signal("");
@@ -22,6 +24,7 @@ export class BugReportModalComponent extends InputModalComponent<BugReportModalR
 		private api: ApiService,
 	) {
 		super(modalController);
+		addIcons({ timeOutline });
 	}
 
 	send() {
