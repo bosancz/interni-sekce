@@ -6125,7 +6125,8 @@ export namespace SDK {
     export const UserCreateBodyRolesEnum = {
         Admin: 'admin',
         Revizor: 'revizor',
-        Program: 'program'
+        Program: 'program',
+        Pokladnik: 'pokladnik'
     } as const;
     
     export type UserCreateBodyRolesEnum = typeof UserCreateBodyRolesEnum[keyof typeof UserCreateBodyRolesEnum];
@@ -6308,7 +6309,8 @@ export namespace SDK {
     export const UserRolesEnum = {
         Admin: 'admin',
         Revizor: 'revizor',
-        Program: 'program'
+        Program: 'program',
+        Pokladnik: 'pokladnik'
     } as const;
     
     export type UserRolesEnum = typeof UserRolesEnum[keyof typeof UserRolesEnum];
@@ -6363,7 +6365,8 @@ export namespace SDK {
     export const UserUpdateBodyRolesEnum = {
         Admin: 'admin',
         Revizor: 'revizor',
-        Program: 'program'
+        Program: 'program',
+        Pokladnik: 'pokladnik'
     } as const;
     
     export type UserUpdateBodyRolesEnum = typeof UserUpdateBodyRolesEnum[keyof typeof UserUpdateBodyRolesEnum];

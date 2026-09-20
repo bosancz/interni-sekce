@@ -139,6 +139,12 @@ export const SeedUsers: SeedUser[] = [
 		roles: [UserRoles.program],
 		member: "Gandalf (správce programu)",
 	},
+	{
+		login: "pokladnik",
+		email: "pokladnik@bosan.cz",
+		roles: [UserRoles.pokladnik],
+		member: "Glóin (pokladník)",
+	},
 ];
 
 export const SeedMembers: SeedMember[] = [
@@ -193,6 +199,18 @@ export const SeedMembers: SeedMember[] = [
 		birthday: "1950-01-01",
 		mobile: "777 000 001",
 		email: "gandalf@bosan.cz",
+	},
+	{
+		nickname: "Glóin (pokladník)",
+		group: "KP",
+		role: MemberRoles.vedouci,
+		rank: MemberRanks.vedouci,
+		function: "hospodář",
+		firstName: "Glóin",
+		lastName: "Gróinsson",
+		birthday: "1972-11-05",
+		mobile: "777 000 102",
+		email: "gloin@bosan.cz",
 	},
 	{
 		nickname: "Thorin",

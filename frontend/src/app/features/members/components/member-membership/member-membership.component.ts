@@ -36,7 +36,7 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 export class MemberMembershipComponent {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
 	update = output<SDK.MemberUpdateBody>();
-	/** One year of the membership fee — the page saves it through its own admin-only route. */
+	/** One year of the membership fee — the page saves it through its own treasurer-only route. */
 	updateMembership = output<SDK.MemberMembershipUpdateBody>();
 
 	memberRolesOptions = Object.entries(MemberRoles).map(([id, role]) => ({

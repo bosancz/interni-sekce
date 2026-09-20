@@ -21,8 +21,8 @@ export class UserService {
 
 	/**
 	 * May open the treasurer view. The page shows the club's bank account and records the membership
-	 * fees, so it is admin-only — `updatePaymentSettings` is the root link the backend grants to
-	 * admins alone, and the page's route guard is gated on the same one.
+	 * fees, so it is for the treasurer — `updatePaymentSettings` is the root link the backend grants
+	 * to `pokladnik` and admins, and the page's route guard is gated on the same one.
 	 */
 	readonly canAccessTreasurer = computed(() => this.api.links()?.updatePaymentSettings.allowed ?? false);
 

@@ -61,7 +61,7 @@ const QR_PNG_QUERY = "?format=png";
 export class MemberPaymentComponent {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
 
-	/** One year of the membership fee — the page saves it through its own admin-only route. */
+	/** One year of the membership fee — the page saves it through its own treasurer-only route. */
 	updateMembership = output<SDK.MemberMembershipUpdateBody>();
 
 	/** `undefined` while loading, `null` when the payment details could not be loaded. */

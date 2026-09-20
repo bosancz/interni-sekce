@@ -19,7 +19,7 @@ import { SDK } from "src/sdk";
  * are what the QR payment and the payment e-mail are built from, so a change here reaches every
  * member's payment card without a deploy.
  *
- * Editing is admin-only, which the API decides — the buttons follow the root `updatePaymentSettings`
+ * Who may edit is the API's decision — the buttons follow the root `updatePaymentSettings`
  * link (the settings are a single row, so its permission hangs off the API root) rather than a role
  * check here.
  */
