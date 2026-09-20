@@ -28,9 +28,6 @@ const addressesLabel = (count: number) => `${count} ${count === 1 ? "adresa" : c
 const withoutEmailLabel = (count: number) =>
 	count === 1 ? "1 člověk nemá e-mail" : count < 5 ? `${count} lidé nemají e-mail` : `${count} lidí nemá e-mail`;
 
-const withoutEmailToast = (count: number) =>
-	`${withoutEmailLabel(count)}, zpráva ${count === 1 ? "mu" : "jim"} nepřijde.`;
-
 @UntilDestroy()
 @Component({
 	selector: "bo-event-attendees",
@@ -78,23 +75,20 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 	mailRecipients = computed(() => [...new Set(this.allMembers().flatMap((member) => getMemberEmails(member)))]);
 
-	membersWithoutEmail = computed(() => this.allMembers().filter((member) => !getMemberEmails(member).length).length);
+	membersWithoutEmail = computed(() => this.allMembers().filter((member) => !getMemberEmails(member).length));
 
 	mailto = computed(() => {
 		const recipients = this.mailRecipients();
-		if (!recipients.length) return undefined;
+		if (this.membersWithoutEmail().length || !recipients.length) return undefined;
 
 		return `mailto:${recipients.map((email) => encodeURIComponent(email).replace(/%40/g, "@")).join(",")}`;
 	});
 
 	mailTooltip = computed(() => {
-		const recipients = this.mailRecipients();
-		if (!recipients.length) return "Nikdo na akci nemá vyplněný e-mail.";
+		const missing = this.membersWithoutEmail().length;
+		if (missing) return `${withoutEmailLabel(missing)}, zprávu zatím nejde odeslat.`;
 
-		const missing = this.membersWithoutEmail();
-		const text = `Napsat e-mail všem na akci (${addressesLabel(recipients.length)}). U dětí se použije výchozí kontakt na rodiče.`;
-
-		return missing ? `${text} ${withoutEmailLabel(missing)}.` : text;
+		return `Napsat e-mail všem na akci (${addressesLabel(this.mailRecipients().length)}). U dětí se použije výchozí kontakt na rodiče.`;
 	});
 
 	actions: Action[] = [];
@@ -144,11 +138,16 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		this.leaders.set(attendees.filter((a) => a.type === "leader"));
 	}
 
-	notifyMissingEmails() {
+	async sendMail() {
 		const missing = this.membersWithoutEmail();
-		if (!missing) return;
+		if (!missing.length) return;
 
-		this.toastService.toast(withoutEmailToast(missing), { color: "warning" });
+		const names = missing.map((member) => this.memberName(member) ?? "člen bez jména").join(", ");
+
+		await this.modalService.alertModal(
+			`E-mail nemá vyplněný: ${names}. Doplň ho v kartě člena — u dětí ve výchozím kontaktu na rodiče — a zkus to znovu.`,
+			{ header: "Nejde napsat všem" },
+		);
 	}
 
 	async addAttendee(type: SDK.EventAttendeeCreateBodyTypeEnum) {

@@ -127,6 +127,18 @@ export class ModalService {
 		});
 	}
 
+	async alertModal(message: string, options: BaseModalOptions = {}) {
+		const alert = await this.alertController.create({
+			header: options.header,
+			cssClass: options.cssClass,
+			message,
+			buttons: [{ text: options.buttonText ?? "Rozumím", role: "cancel" }],
+		});
+
+		await this.presentWithBackClose(alert);
+		await alert.onDidDismiss();
+	}
+
 	async deleteConfirmationModal(message: string, options: DeleteConfirmationModalOptions = {}) {
 		return new Promise<boolean>(async (resolve, reject) => {
 			const alert = await this.alertController.create({

@@ -17,15 +17,14 @@
 		<div class="list-header">
 			<h3>Účastníci</h3>
 
-			@if (attendeesCount()) {
+			@if (allMembers().length) {
 				<ion-button
 					fill="clear"
 					size="small"
 					color="primary"
 					[href]="mailto()"
-					[disabled]="!mailRecipients().length"
 					[boTooltip]="mailTooltip()"
-					(click)="notifyMissingEmails()"
+					(click)="sendMail()"
 					aria-label="Napsat e-mail všem na akci"
 				>
 					<ion-icon name="mail-outline" slot="start"></ion-icon>
