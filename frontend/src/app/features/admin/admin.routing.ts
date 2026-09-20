@@ -13,8 +13,8 @@ import { UsersViewComponent } from "./pages/users-view/users-view.component";
 const canAccessUsers = [linkGuard("listUsers")];
 
 // The treasurer view records the membership fees and the payment settings hold the club's bank
-// account, so both are admin-only. `updatePaymentSettings` is the root link the backend grants to
-// admins alone, so it is what they are gated on.
+// account, so both are the treasurer's. `updatePaymentSettings` is the root link the backend grants
+// to `pokladnik` and admins, so it is what they are gated on.
 const canAccessTreasurer = [linkGuard("updatePaymentSettings")];
 
 export const adminRoutes: Routes = [
