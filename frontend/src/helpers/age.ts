@@ -35,3 +35,15 @@ export function hasBirthdayBetween(birthday: DateInput, from: DateInput, till: D
 
 	return next <= tillDate;
 }
+
+export type BirthdayDuring<T> = { age: number; date: string; member: T };
+
+export function getBirthdaysBetween<T extends { birthday?: string | null }>(
+	members: T[],
+	from: DateInput,
+	till: DateInput,
+): BirthdayDuring<T>[] {
+	return members
+		.filter((member) => hasBirthdayBetween(member.birthday, from, till))
+		.map((member) => ({ age: getAge(member.birthday, till)!, date: member.birthday!, member }));
+}
