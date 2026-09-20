@@ -150,20 +150,18 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		if (!missing.length) return;
 
 		const names = missing.map((member) => this.memberName(member) ?? "člen bez jména").join(", ");
-		const hint = "Doplň ho v kartě člena, u dětí ve výchozím kontaktu na rodiče.";
+		const message = `E-mail nemá vyplněný: ${names}. Doplň ho v databázi.`;
 		const uri = this.mailUri();
 
 		if (!uri) {
-			await this.modalService.alertModal(`E-mail nemá vyplněný nikdo na akci: ${names}. ${hint}`, {
-				header: "Není komu napsat",
-			});
+			await this.modalService.alertModal(message, { header: "Není komu napsat" });
 			return;
 		}
 
-		const confirmed = await this.modalService.confirmationModal(
-			`E-mail nemá vyplněný: ${names}, takže ${notDeliveredLabel(missing.length)}. ${hint}`,
-			{ header: "Někomu chybí e-mail", buttonText: "Napsat ostatním" },
-		);
+		const confirmed = await this.modalService.confirmationModal(message, {
+			header: "Někomu chybí e-mail",
+			buttonText: "Napsat ostatním",
+		});
 		if (!confirmed) return;
 
 		window.location.href = uri;
