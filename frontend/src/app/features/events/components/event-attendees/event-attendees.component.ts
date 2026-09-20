@@ -30,6 +30,9 @@ const withoutEmailLabel = (count: number) =>
 
 const notDeliveredLabel = (count: number) => `zpráva ${count === 1 ? "mu" : "jim"} nepřijde`;
 
+const mailAddresses = (emails: string[]) =>
+	emails.map((email) => encodeURIComponent(email).replace(/%40/g, "@")).join(",");
+
 @UntilDestroy()
 @Component({
 	selector: "bo-event-attendees",
@@ -75,25 +78,43 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			.filter((m): m is SDK.MemberResponse => !!m),
 	);
 
-	mailRecipients = computed(() => [...new Set(this.allMembers().flatMap((member) => getMemberEmails(member)))]);
+	private attendeeEmails = computed(() => this.emailsOf(this.attendees()));
+
+	private leaderEmails = computed(() => this.emailsOf(this.leaders()));
+
+	mailTo = computed(() => (this.attendeeEmails().length ? this.attendeeEmails() : this.leaderEmails()));
+
+	mailCc = computed(() => {
+		const to = this.mailTo();
+		return this.leaderEmails().filter((email) => !to.includes(email));
+	});
+
+	mailRecipients = computed(() => [...this.mailTo(), ...this.mailCc()]);
 
 	membersWithoutEmail = computed(() => this.allMembers().filter((member) => !getMemberEmails(member).length));
 
 	private mailUri = computed(() => {
-		const recipients = this.mailRecipients();
-		if (!recipients.length) return undefined;
+		const to = this.mailTo();
+		if (!to.length) return undefined;
 
-		return `mailto:${recipients.map((email) => encodeURIComponent(email).replace(/%40/g, "@")).join(",")}`;
+		const cc = this.mailCc();
+		const uri = `mailto:${mailAddresses(to)}`;
+
+		return cc.length ? `${uri}?cc=${mailAddresses(cc)}` : uri;
 	});
 
 	mailto = computed(() => (this.membersWithoutEmail().length ? undefined : this.mailUri()));
 
 	mailTooltip = computed(() => {
-		const recipients = this.mailRecipients();
-		if (!recipients.length) return "Nikdo na akci nemá vyplněný e-mail.";
+		const to = this.mailTo();
+		if (!to.length) return "Nikdo na akci nemá vyplněný e-mail.";
 
+		const cc = this.mailCc();
 		const missing = this.membersWithoutEmail().length;
-		const text = `Napsat e-mail všem na akci (${addressesLabel(recipients.length)}). U dětí se použije výchozí kontakt na rodiče.`;
+
+		const text = cc.length
+			? `Napsat e-mail účastníkům akce (${addressesLabel(to.length)}), vedoucí jdou do kopie (${addressesLabel(cc.length)}). U dětí se použije výchozí kontakt na rodiče.`
+			: `Napsat e-mail všem na akci (${addressesLabel(to.length)}). U dětí se použije výchozí kontakt na rodiče.`;
 
 		return missing ? `${text} ${withoutEmailLabel(missing)}, ${notDeliveredLabel(missing)}.` : text;
 	});
@@ -143,6 +164,10 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 		this.attendees.set(attendees.filter((a) => a.type === "attendee"));
 		this.leaders.set(attendees.filter((a) => a.type === "leader"));
+	}
+
+	private emailsOf(attendees?: SDK.EventAttendeeResponseWithLinks[]) {
+		return [...new Set((attendees ?? []).flatMap((attendee) => getMemberEmails(attendee.member)))];
 	}
 
 	async sendMail() {
