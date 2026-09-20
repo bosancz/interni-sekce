@@ -37,11 +37,20 @@ export interface MissingDataEntry {
 	items: MissingDataItem[];
 }
 
+function hasParentContact(member: SDK.MemberResponse, field: "mobile" | "email"): boolean {
+	return !!member.contacts?.some((contact) => contact[field].some((value) => !!value.trim()));
+}
+
 const MISSING_DATA_CHECKS: MissingDataCheck[] = [
 	{
-		label: "Kontakt na rodiče",
+		label: "Telefon na rodiče",
 		icon: "call-outline",
-		missing: (member) => member.role === "dite" && !member.contacts?.length,
+		missing: (member) => member.role === "dite" && !hasParentContact(member, "mobile"),
+	},
+	{
+		label: "E-mail na rodiče",
+		icon: "mail-outline",
+		missing: (member) => member.role === "dite" && !hasParentContact(member, "email"),
 	},
 	{
 		label: "Telefon",
