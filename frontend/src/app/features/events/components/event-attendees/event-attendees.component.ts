@@ -28,6 +28,8 @@ const addressesLabel = (count: number) => `${count} ${count === 1 ? "adresa" : c
 const withoutEmailLabel = (count: number) =>
 	count === 1 ? "1 člověk nemá e-mail" : count < 5 ? `${count} lidé nemají e-mail` : `${count} lidí nemá e-mail`;
 
+const notDeliveredLabel = (count: number) => `zpráva ${count === 1 ? "mu" : "jim"} nepřijde`;
+
 @UntilDestroy()
 @Component({
 	selector: "bo-event-attendees",
@@ -77,18 +79,23 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 	membersWithoutEmail = computed(() => this.allMembers().filter((member) => !getMemberEmails(member).length));
 
-	mailto = computed(() => {
+	private mailUri = computed(() => {
 		const recipients = this.mailRecipients();
-		if (this.membersWithoutEmail().length || !recipients.length) return undefined;
+		if (!recipients.length) return undefined;
 
 		return `mailto:${recipients.map((email) => encodeURIComponent(email).replace(/%40/g, "@")).join(",")}`;
 	});
 
-	mailTooltip = computed(() => {
-		const missing = this.membersWithoutEmail().length;
-		if (missing) return `${withoutEmailLabel(missing)}, zprávu zatím nejde odeslat.`;
+	mailto = computed(() => (this.membersWithoutEmail().length ? undefined : this.mailUri()));
 
-		return `Napsat e-mail všem na akci (${addressesLabel(this.mailRecipients().length)}). U dětí se použije výchozí kontakt na rodiče.`;
+	mailTooltip = computed(() => {
+		const recipients = this.mailRecipients();
+		if (!recipients.length) return "Nikdo na akci nemá vyplněný e-mail.";
+
+		const missing = this.membersWithoutEmail().length;
+		const text = `Napsat e-mail všem na akci (${addressesLabel(recipients.length)}). U dětí se použije výchozí kontakt na rodiče.`;
+
+		return missing ? `${text} ${withoutEmailLabel(missing)}, ${notDeliveredLabel(missing)}.` : text;
 	});
 
 	actions: Action[] = [];
@@ -143,11 +150,23 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		if (!missing.length) return;
 
 		const names = missing.map((member) => this.memberName(member) ?? "člen bez jména").join(", ");
+		const hint = "Doplň ho v kartě člena, u dětí ve výchozím kontaktu na rodiče.";
+		const uri = this.mailUri();
 
-		await this.modalService.alertModal(
-			`E-mail nemá vyplněný: ${names}. Doplň ho v kartě člena — u dětí ve výchozím kontaktu na rodiče — a zkus to znovu.`,
-			{ header: "Nejde napsat všem" },
+		if (!uri) {
+			await this.modalService.alertModal(`E-mail nemá vyplněný nikdo na akci: ${names}. ${hint}`, {
+				header: "Není komu napsat",
+			});
+			return;
+		}
+
+		const confirmed = await this.modalService.confirmationModal(
+			`E-mail nemá vyplněný: ${names}, takže ${notDeliveredLabel(missing.length)}. ${hint}`,
+			{ header: "Někomu chybí e-mail", buttonText: "Napsat ostatním" },
 		);
+		if (!confirmed) return;
+
+		window.location.href = uri;
 	}
 
 	async addAttendee(type: SDK.EventAttendeeCreateBodyTypeEnum) {

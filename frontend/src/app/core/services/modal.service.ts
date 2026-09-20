@@ -139,6 +139,23 @@ export class ModalService {
 		await alert.onDidDismiss();
 	}
 
+	async confirmationModal(message: string, options: BaseModalOptions = {}) {
+		return new Promise<boolean>(async (resolve) => {
+			const alert = await this.alertController.create({
+				header: options.header,
+				cssClass: options.cssClass,
+				message,
+				buttons: [
+					{ text: "Zrušit", role: "cancel", handler: () => resolve(false) },
+					{ text: options.buttonText ?? "Pokračovat", handler: () => resolve(true) },
+				],
+			});
+
+			alert.onDidDismiss().then(() => resolve(false));
+			await this.presentWithBackClose(alert);
+		});
+	}
+
 	async deleteConfirmationModal(message: string, options: DeleteConfirmationModalOptions = {}) {
 		return new Promise<boolean>(async (resolve, reject) => {
 			const alert = await this.alertController.create({
