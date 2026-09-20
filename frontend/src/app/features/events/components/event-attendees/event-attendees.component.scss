@@ -5,3 +5,14 @@
 	font-size: $font-small;
 	font-style: italic;
 }
+
+.list-header {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	margin-bottom: 0.5rem;
+
+	h3 {
+		margin-bottom: 0;
+	}
+}

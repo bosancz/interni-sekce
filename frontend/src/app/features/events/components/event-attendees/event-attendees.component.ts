@@ -1,7 +1,9 @@
 import { CommonModule } from "@angular/common";
 import { Component, computed, effect, input, OnDestroy, OnInit, output, signal } from "@angular/core";
-import { IonButton } from "@ionic/angular/standalone";
+import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { mailOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -12,12 +14,22 @@ import { CardContentComponent } from "src/app/shared/components/card-content/car
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
+import { getMemberEmails } from "src/helpers/member-contacts";
 import { SDK } from "src/sdk";
 import { EventAgeHistogramComponent } from "../event-age-histogram/event-age-histogram.component";
 import { EventAttendeesListComponent } from "../event-attendees-list/event-attendees-list.component";
 import { EventBirthdayListComponent } from "../event-birthday-list/event-birthday-list.component";
 
 const LEADER_ROLES: SDK.MemberRolesEnum[] = [SDK.MemberRolesEnum.Instruktor, SDK.MemberRolesEnum.Vedouci];
+
+const addressesLabel = (count: number) => `${count} ${count === 1 ? "adresa" : count < 5 ? "adresy" : "adres"}`;
+
+const withoutEmailLabel = (count: number) =>
+	count === 1 ? "1 člověk nemá e-mail" : count < 5 ? `${count} lidé nemají e-mail` : `${count} lidí nemá e-mail`;
+
+const withoutEmailToast = (count: number) =>
+	`${withoutEmailLabel(count)}, zpráva ${count === 1 ? "mu" : "jim"} nepřijde.`;
 
 @UntilDestroy()
 @Component({
@@ -28,6 +40,8 @@ const LEADER_ROLES: SDK.MemberRolesEnum[] = [SDK.MemberRolesEnum.Instruktor, SDK
 	imports: [
 		CommonModule,
 		IonButton,
+		IonIcon,
+		TooltipDirective,
 		EventAttendeesListComponent,
 		AddButtonComponent,
 		EventAgeHistogramComponent,
@@ -62,6 +76,27 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			.filter((m): m is SDK.MemberResponse => !!m),
 	);
 
+	mailRecipients = computed(() => [...new Set(this.allMembers().flatMap((member) => getMemberEmails(member)))]);
+
+	membersWithoutEmail = computed(() => this.allMembers().filter((member) => !getMemberEmails(member).length).length);
+
+	mailto = computed(() => {
+		const recipients = this.mailRecipients();
+		if (!recipients.length) return undefined;
+
+		return `mailto:${recipients.map((email) => encodeURIComponent(email).replace(/%40/g, "@")).join(",")}`;
+	});
+
+	mailTooltip = computed(() => {
+		const recipients = this.mailRecipients();
+		if (!recipients.length) return "Nikdo na akci nemá vyplněný e-mail.";
+
+		const missing = this.membersWithoutEmail();
+		const text = `Napsat e-mail všem na akci (${addressesLabel(recipients.length)}). U dětí se použije výchozí kontakt na rodiče.`;
+
+		return missing ? `${text} ${withoutEmailLabel(missing)}.` : text;
+	});
+
 	actions: Action[] = [];
 
 	modal?: HTMLIonModalElement;
@@ -71,6 +106,8 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		private toastService: ToastService,
 		private modalService: ModalService,
 	) {
+		addIcons({ mailOutline });
+
 		effect(() => {
 			const event = this.event();
 			this.loadAttendees(event);
@@ -105,6 +142,13 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 		this.attendees.set(attendees.filter((a) => a.type === "attendee"));
 		this.leaders.set(attendees.filter((a) => a.type === "leader"));
+	}
+
+	notifyMissingEmails() {
+		const missing = this.membersWithoutEmail();
+		if (!missing) return;
+
+		this.toastService.toast(withoutEmailToast(missing), { color: "warning" });
 	}
 
 	async addAttendee(type: SDK.EventAttendeeCreateBodyTypeEnum) {
