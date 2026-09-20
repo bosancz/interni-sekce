@@ -55,3 +55,12 @@ export function membershipPaidExpression(memberIdColumn: string, year: number = 
 		WHERE mp.member_id = ${memberIdColumn} AND mp.for_year = ${year}
 	)`;
 }
+
+export function membershipPaidOnExpression(memberIdColumn: string, year: number = currentMembershipYear()): string {
+	if (!Number.isInteger(year)) throw new Error(`Membership year must be an integer, got ${year}`);
+
+	return `(
+		SELECT mp.paid_on FROM membership_payments mp
+		WHERE mp.member_id = ${memberIdColumn} AND mp.for_year = ${year}
+	)`;
+}

@@ -281,7 +281,7 @@
 		<!-- The day the money came in, as the treasurer filled it in — nothing fills it in itself, so
 		     it is empty until someone does, and the pencil writes it as with the amount and the note. -->
 		@if (viewSelections().paidOn) {
-			<admin-table-column header="Datum platby" headerClass="align-middle">
+			<admin-table-column header="Datum platby" sort="paidOn" headerClass="align-middle">
 				<ng-container *adminCell="let member">
 					<span class="treasurer-date-cell">
 						<span>{{ paidOn(member) ? (paidOn(member) | date: "d. M. y") : "" }}</span>
