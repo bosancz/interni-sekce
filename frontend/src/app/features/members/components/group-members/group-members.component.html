@@ -134,9 +134,15 @@
 		</admin-table-column>
 	}
 
-	@if (viewSelections().name) {
-		<admin-table-column header="Jméno" sort="name" headerClass="align-middle members-name-column">
-			<ng-container *adminCell="let member">{{ member.firstName }} {{ member.lastName }}</ng-container>
+	@if (viewSelections().firstName) {
+		<admin-table-column header="Jméno" sort="firstName" headerClass="align-middle members-name-column">
+			<ng-container *adminCell="let member">{{ member.firstName }}</ng-container>
+		</admin-table-column>
+	}
+
+	@if (viewSelections().lastName) {
+		<admin-table-column header="Příjmení" sort="lastName" headerClass="align-middle members-name-column">
+			<ng-container *adminCell="let member">{{ member.lastName }}</ng-container>
 		</admin-table-column>
 	}
 
