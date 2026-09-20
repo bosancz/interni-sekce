@@ -54,7 +54,8 @@ export class MembersRepository {
 			.skip(options.offset);
 
 		q.addSelect("CONCAT(members.nickname,members.first_name,members.last_name)", "sort_nickname")
-			.addSelect("CONCAT(members.last_name,members.first_name)", "sort_name")
+			.addSelect("CONCAT(members.first_name,members.last_name)", "sort_first_name")
+			.addSelect("CONCAT(members.last_name,members.first_name)", "sort_last_name")
 			.addSelect("DATE_PART('year', AGE(CURRENT_DATE, members.birthday))", "sort_age")
 			// Sort by the *displayed* group (its name, e.g. "6. oddíl"), not the internal group
 			// id. `groups.name` carries the `natural_numeric` ICU collation (see Group entity),
@@ -71,7 +72,9 @@ export class MembersRepository {
 			options,
 			{
 				nickname: "sort_nickname",
-				name: "sort_name",
+				firstName: "sort_first_name",
+				lastName: "sort_last_name",
+				name: "sort_last_name",
 				role: "members.role",
 				membership: "sort_membership",
 				paidOn: { column: "sort_paid_on", nulls: "NULLS LAST" },

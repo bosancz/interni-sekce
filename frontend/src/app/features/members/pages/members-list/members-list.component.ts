@@ -53,7 +53,8 @@ const COLUMNS_ICON =
 
 const MEMBERS_LIST_COLUMNS: { [key: string]: boolean } = {
 	nickname: true,
-	name: true,
+	firstName: true,
+	lastName: true,
 	group: true,
 	role: true,
 	age: true,
@@ -122,7 +123,8 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "nickname", label: "Přezdívka" },
-		{ key: "name", label: "Jméno" },
+		{ key: "firstName", label: "Jméno" },
+		{ key: "lastName", label: "Příjmení" },
 		{ key: "group", label: "Oddíl" },
 		{ key: "role", label: "Role" },
 		{ key: "age", label: "Věk" },
@@ -462,7 +464,8 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 	public getViewSelectionLabel(key: string): string {
 		const labels: { [key: string]: string } = {
 			nickname: "Přezdívka",
-			name: "Jméno",
+			firstName: "Jméno",
+			lastName: "Příjmení",
 			group: "Oddíl",
 			role: "Role",
 			age: "Věk",
