@@ -10,9 +10,25 @@
 	display: flex;
 	align-items: center;
 	gap: 0.25rem;
-	margin-bottom: 0.5rem;
+	margin: 16px 0 10px;
 
 	h3 {
-		margin-bottom: 0;
+		margin: 0;
+	}
+}
+
+@media (max-width: 575.98px) {
+	.mail-label {
+		display: none;
+	}
+
+	.list-header ion-button {
+		--padding-start: 0.5rem;
+		--padding-end: 0.5rem;
+	}
+
+	.list-header ion-icon {
+		margin-inline-end: 0;
+		font-size: 1.25rem;
 	}
 }
