@@ -1,6 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { currentMembershipYear, MembershipPaymentStates, membershipPaidExpression } from "src/helpers/membership";
+import {
+	currentMembershipYear,
+	MembershipPaymentStates,
+	membershipPaidExpression,
+	membershipPaidOnExpression,
+} from "src/helpers/membership";
 import { PaginationOptions } from "src/helpers/pagination";
 import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
@@ -38,10 +43,9 @@ export class MembersRepository {
 	async getMembers(options: GetMembersOptions = {}, where: Brackets | string = "1=1") {
 		// Everything membership-related on this list — the filter, the sort — is asked about one
 		// year, so the treasurer view can look back at previous seasons.
-		const membershipPaid = membershipPaidExpression(
-			"members.id",
-			options.membershipYear ?? currentMembershipYear(),
-		);
+		const membershipYear = options.membershipYear ?? currentMembershipYear();
+		const membershipPaid = membershipPaidExpression("members.id", membershipYear);
+		const membershipPaidOn = membershipPaidOnExpression("members.id", membershipYear);
 
 		const q = this.membersRepository
 			.createQueryBuilder("members")
@@ -50,7 +54,8 @@ export class MembersRepository {
 			.skip(options.offset);
 
 		q.addSelect("CONCAT(members.nickname,members.first_name,members.last_name)", "sort_nickname")
-			.addSelect("CONCAT(members.last_name,members.first_name)", "sort_name")
+			.addSelect("CONCAT(members.first_name,members.last_name)", "sort_first_name")
+			.addSelect("CONCAT(members.last_name,members.first_name)", "sort_last_name")
 			.addSelect("DATE_PART('year', AGE(CURRENT_DATE, members.birthday))", "sort_age")
 			// Sort by the *displayed* group (its name, e.g. "6. oddíl"), not the internal group
 			// id. `groups.name` carries the `natural_numeric` ICU collation (see Group entity),
@@ -59,16 +64,20 @@ export class MembersRepository {
 			.addSelect("(SELECT g.name FROM groups g WHERE g.id = members.group_id)", "sort_group")
 			// Membership is a list of payments, so it is sorted by the one value the list shows:
 			// whether the fee for the year in question is paid.
-			.addSelect(membershipPaid, "sort_membership");
+			.addSelect(membershipPaid, "sort_membership")
+			.addSelect(membershipPaidOn, "sort_paid_on");
 
 		applySort(
 			q,
 			options,
 			{
 				nickname: "sort_nickname",
-				name: "sort_name",
+				firstName: "sort_first_name",
+				lastName: "sort_last_name",
+				name: "sort_last_name",
 				role: "members.role",
 				membership: "sort_membership",
+				paidOn: { column: "sort_paid_on", nulls: "NULLS LAST" },
 				// The variable symbol is the year plus the member id (see helpers/variable-symbol.ts),
 				// and every row of one list carries the same year — so ordering by the id orders by
 				// the symbol, without building the string in SQL.
@@ -83,7 +92,7 @@ export class MembersRepository {
 			{ column: "sort_nickname", order: "ASC" },
 		);
 
-		if (options.sort === "group") {
+		if (options.sort && options.sort !== "nickname") {
 			q.addOrderBy("sort_nickname", "ASC");
 		}
 

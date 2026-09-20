@@ -172,9 +172,11 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "membership", label: "Příspěvek" },
+		{ key: "paidOn", label: "Datum platby" },
 		{ key: "variableSymbol", label: "VS" },
 		{ key: "nickname", label: "Přezdívka" },
-		{ key: "name", label: "Jméno" },
+		{ key: "firstName", label: "Jméno" },
+		{ key: "lastName", label: "Příjmení" },
 		{ key: "group", label: "Oddíl" },
 		{ key: "role", label: "Role" },
 		{ key: "age", label: "Věk" },
@@ -853,7 +855,8 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		this.viewSelections.set({
 			variableSymbol: true,
 			nickname: false,
-			name: true,
+			firstName: true,
+			lastName: true,
 			group: true,
 			amount: true,
 			paidOn: true,
@@ -910,7 +913,8 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		const labels: { [key: string]: string } = {
 			variableSymbol: "VS",
 			nickname: "Přezdívka",
-			name: "Jméno",
+			firstName: "Jméno",
+			lastName: "Příjmení",
 			group: "Oddíl",
 			amount: "Částka",
 			paidOn: "Datum platby",

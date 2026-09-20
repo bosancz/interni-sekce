@@ -97,7 +97,8 @@ export class GroupMembersComponent implements OnInit {
 
 	readonly sortOptions: SortOption[] = [
 		{ key: "nickname", label: "Přezdívka" },
-		{ key: "name", label: "Jméno" },
+		{ key: "firstName", label: "Jméno" },
+		{ key: "lastName", label: "Příjmení" },
 		{ key: "role", label: "Role" },
 		{ key: "age", label: "Věk" },
 		{ key: "membership", label: "Členství" },
@@ -123,7 +124,8 @@ export class GroupMembersComponent implements OnInit {
 
 	viewSelections = signal<{ [key: string]: boolean }>({
 		nickname: true,
-		name: true,
+		firstName: true,
+		lastName: true,
 		role: true,
 		age: true,
 		membership: false,
@@ -291,7 +293,8 @@ export class GroupMembersComponent implements OnInit {
 	public getViewSelectionLabel(key: string): string {
 		const labels: { [key: string]: string } = {
 			nickname: "Přezdívka",
-			name: "Jméno",
+			firstName: "Jméno",
+			lastName: "Příjmení",
 			role: "Role",
 			age: "Věk",
 			membership: "Členství",

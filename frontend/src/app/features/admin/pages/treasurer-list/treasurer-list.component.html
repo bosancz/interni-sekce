@@ -232,9 +232,15 @@
 			</admin-table-column>
 		}
 
-		@if (viewSelections().name) {
-			<admin-table-column header="Jméno" sort="name" headerClass="align-middle">
-				<ng-container *adminCell="let member">{{ member.firstName }} {{ member.lastName }}</ng-container>
+		@if (viewSelections().firstName) {
+			<admin-table-column header="Jméno" sort="firstName" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{ member.firstName }}</ng-container>
+			</admin-table-column>
+		}
+
+		@if (viewSelections().lastName) {
+			<admin-table-column header="Příjmení" sort="lastName" headerClass="align-middle">
+				<ng-container *adminCell="let member">{{ member.lastName }}</ng-container>
 			</admin-table-column>
 		}
 
@@ -281,7 +287,7 @@
 		<!-- The day the money came in, as the treasurer filled it in — nothing fills it in itself, so
 		     it is empty until someone does, and the pencil writes it as with the amount and the note. -->
 		@if (viewSelections().paidOn) {
-			<admin-table-column header="Datum platby" headerClass="align-middle">
+			<admin-table-column header="Datum platby" sort="paidOn" headerClass="align-middle">
 				<ng-container *adminCell="let member">
 					<span class="treasurer-date-cell">
 						<span>{{ paidOn(member) ? (paidOn(member) | date: "d. M. y") : "" }}</span>
