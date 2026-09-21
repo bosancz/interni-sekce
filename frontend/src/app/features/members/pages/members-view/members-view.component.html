@@ -19,7 +19,7 @@
 					<bo-member-info [member]="member()" (update)="updateMember($event)" />
 				</div>
 
-				<div class="card-col d-lg-block" [class.d-none]="view() !== 'profile' && view() !== 'contacts'">
+				<div class="card-col d-lg-block" [class.d-none]="view() !== 'contacts'">
 					<bo-member-contact [member]="member()" (update)="updateMember($event)" />
 				</div>
 
