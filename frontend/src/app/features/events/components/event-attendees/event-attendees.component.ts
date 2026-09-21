@@ -84,6 +84,8 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		if (!event) return [];
 
 		return getBirthdaysBetween(this.allMembers(), event.dateFrom, event.dateTill);
+	});
+
 	private attendeeEmails = computed(() => this.emailsOf(this.attendees()));
 
 	private leaderEmails = computed(() => this.emailsOf(this.leaders()));
