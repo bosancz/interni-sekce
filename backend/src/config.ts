@@ -153,7 +153,6 @@ export class Config {
 	app = app;
 	db = db;
 	environment = environment;
-	feedback = feedback;
 	github = github;
 	google = google;
 	ical = ical;

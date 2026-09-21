@@ -7,11 +7,9 @@ import { BugReportPointerLabels } from "src/models/bug-reports/schema/bug-report
 import { BugReportStates } from "src/models/bug-reports/schema/bug-report-states";
 import { ReleaseIssuesService } from "src/models/bug-reports/services/release-issues.service";
 import { GithubService } from "src/models/github/services/github.service";
-import { MailService } from "src/models/mail/services/mail.service";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { BugReportBody } from "../dto/bug-report-body.dto";
 import { BugReportResponse } from "../dto/bug-report-response.dto";
-import { BugReportMailTemplate } from "../mail-templates/bug-report/bug-report.mail-template";
 
 export interface BugReport {
 	userId: number;
@@ -44,7 +42,6 @@ export class FeedbackService {
 	private readonly logger = new Logger(FeedbackService.name);
 
 	constructor(
-		private readonly mailService: MailService,
 		private readonly github: GithubService,
 		private readonly users: UsersRepository,
 		private readonly bugReports: BugReportsRepository,
@@ -80,7 +77,6 @@ export class FeedbackService {
 			userAgent: userAgent || undefined,
 		};
 	}
-
 
 	async fileBugReportIssue(report: BugReport): Promise<BugReportIssue | null> {
 		if (!this.github.isConfigured) return null;

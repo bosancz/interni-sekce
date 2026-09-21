@@ -24,8 +24,7 @@ export class FeedbackController {
 
 		const report = await this.feedback.buildBugReport(authUser.userId, body, req.headers["user-agent"]);
 
-		const issue = await this.feedback.fileBugReportIssue(report);
-
+		await this.feedback.fileBugReportIssue(report);
 	}
 
 	@Get("bugs")
