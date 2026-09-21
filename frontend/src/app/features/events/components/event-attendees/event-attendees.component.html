@@ -14,7 +14,24 @@
 			</div>
 		}
 
-		<h3>Účastníci</h3>
+		<div class="list-header">
+			<h3>Účastníci</h3>
+
+			@if (allMembers().length) {
+				<ion-button
+					fill="clear"
+					size="small"
+					color="primary"
+					[href]="mailto()"
+					[boTooltip]="mailTooltip()"
+					(click)="sendMail()"
+					aria-label="Napsat e-mail všem na akci"
+				>
+					<ion-icon name="mail-outline" slot="start"></ion-icon>
+					<span class="mail-label">Napsat všem</span>
+				</ion-button>
+			}
+		</div>
 
 		<bo-event-attendees-list
 			[event]="event()"
