@@ -7,9 +7,11 @@ import { BugReportPointerLabels } from "src/models/bug-reports/schema/bug-report
 import { BugReportStates } from "src/models/bug-reports/schema/bug-report-states";
 import { ReleaseIssuesService } from "src/models/bug-reports/services/release-issues.service";
 import { GithubService } from "src/models/github/services/github.service";
+import { MailService } from "src/models/mail/services/mail.service";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { BugReportBody } from "../dto/bug-report-body.dto";
 import { BugReportResponse } from "../dto/bug-report-response.dto";
+import { BugReportMailTemplate } from "../mail-templates/bug-report/bug-report.mail-template";
 
 export interface BugReport {
 	userId: number;
@@ -42,6 +44,7 @@ export class FeedbackService {
 	private readonly logger = new Logger(FeedbackService.name);
 
 	constructor(
+		private readonly mailService: MailService,
 		private readonly github: GithubService,
 		private readonly users: UsersRepository,
 		private readonly bugReports: BugReportsRepository,
@@ -76,6 +79,33 @@ export class FeedbackService {
 			pointer: body.pointer ? BugReportPointerLabels[body.pointer] : undefined,
 			userAgent: userAgent || undefined,
 		};
+	}
+
+	async sendBugReportEmail(report: BugReport, issue?: BugReportIssue | null): Promise<void> {
+		const mail = BugReportMailTemplate(this.config.feedback.bugReportRecipient, {
+			reporter: report.reporter,
+			reporterUrl: report.reporterUrl,
+			url: report.url,
+			description: report.description,
+			frontendVersion: report.frontendVersion,
+			backendVersion: report.backendVersion,
+			system: report.system,
+			browser: report.browser,
+			screen: report.screen,
+			viewport: report.viewport,
+			display: report.display,
+			pointer: report.pointer,
+			issueNumber: issue?.number,
+			issueUrl: issue?.url,
+		});
+
+		try {
+			await this.mailService.sendMail(mail);
+			this.logger.verbose("Bug report email sent");
+		} catch (err) {
+			this.logger.error(`Failed to send bug report email: ${(err as Error).message}`);
+			throw err;
+		}
 	}
 
 	async fileBugReportIssue(report: BugReport): Promise<BugReportIssue | null> {

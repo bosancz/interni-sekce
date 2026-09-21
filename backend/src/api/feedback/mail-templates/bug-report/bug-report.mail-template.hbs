@@ -1,0 +1,46 @@
+<p>Ahoj!</p>
+
+<p>Uživatel nahlásil chybu v bošánovské aplikaci.</p>
+
+<p><strong>Nahlásil/a:</strong> <a href="{{reporterUrl}}">{{reporter}}</a></p>
+
+{{#if url}}
+	<p><strong>Stránka:</strong> <a href="{{url}}">{{url}}</a></p>
+{{/if}}
+
+<p><strong>Verze:</strong>
+	frontend
+	{{#if frontendVersion}}{{frontendVersion}}{{else}}neznámá{{/if}}, backend
+	{{backendVersion}}</p>
+
+{{#if system}}
+	<p><strong>Systém:</strong> {{system}}</p>
+{{/if}}
+
+{{#if browser}}
+	<p><strong>Prohlížeč:</strong> {{browser}}</p>
+{{/if}}
+
+{{#if screen}}
+	<p><strong>Obrazovka:</strong> {{screen}}</p>
+{{/if}}
+
+{{#if viewport}}
+	<p><strong>Okno:</strong> {{viewport}}</p>
+{{/if}}
+
+{{#if display}}
+	<p><strong>Zobrazení:</strong> {{display}}</p>
+{{/if}}
+
+{{#if pointer}}
+	<p><strong>Ovládání:</strong> {{pointer}}</p>
+{{/if}}
+
+{{#if issueUrl}}
+	<p><strong>GitHub issue:</strong> <a href="{{issueUrl}}">#{{issueNumber}}</a></p>
+{{/if}}
+
+<p><strong>Popis chyby:</strong></p>
+
+<blockquote style="white-space: pre-wrap;">{{description}}</blockquote>

@@ -24,7 +24,9 @@ export class FeedbackController {
 
 		const report = await this.feedback.buildBugReport(authUser.userId, body, req.headers["user-agent"]);
 
-		await this.feedback.fileBugReportIssue(report);
+		const issue = await this.feedback.fileBugReportIssue(report);
+
+		if (!issue) await this.feedback.sendBugReportEmail(report).catch(() => undefined);
 	}
 
 	@Get("bugs")
