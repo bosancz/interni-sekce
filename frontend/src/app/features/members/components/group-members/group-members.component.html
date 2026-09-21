@@ -1,6 +1,6 @@
 <bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true" (change)="onFilterChange($event)">
-	@if (isDesktop()) {
-		<div toolbar-actions slot="end" class="members-filter-actions">
+	<div toolbar-actions slot="end" class="members-filter-actions">
+		@if (isDesktop()) {
 			<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
 
 			<ion-button fill="clear" size="small" id="group-columns-popover-trigger" boTooltip="Sloupce">
@@ -10,8 +10,26 @@
 			<ion-button fill="clear" size="small" id="group-inactive-popover-trigger" boTooltip="Zobrazení">
 				<ion-icon slot="icon-only" name="eye-outline"></ion-icon>
 			</ion-button>
-		</div>
-	} @else {
+		}
+
+		@if (members()?.length) {
+			<ion-button
+				class="members-mail-button"
+				fill="clear"
+				size="small"
+				color="primary"
+				[href]="mailto()"
+				[boTooltip]="mailTooltip()"
+				(click)="sendMail()"
+				aria-label="Napsat e-mail všem v oddíle"
+			>
+				<ion-icon name="mail-outline" slot="start"></ion-icon>
+				<span class="mail-label">Napsat všem</span>
+			</ion-button>
+		}
+	</div>
+
+	@if (!isDesktop()) {
 		<div class="members-filter-modal">
 			<ion-list lines="full">
 				<ion-item-divider>Filtry</ion-item-divider>

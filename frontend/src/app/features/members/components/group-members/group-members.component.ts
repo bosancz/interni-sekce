@@ -14,7 +14,7 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { arrowUndoOutline, eyeOutline, trashOutline } from "ionicons/icons";
+import { arrowUndoOutline, eyeOutline, mailOutline, trashOutline } from "ionicons/icons";
 
 const COLUMNS_ICON =
 	"data:image/svg+xml;utf8," +
@@ -40,8 +40,21 @@ import { FilterModel, FilterValues } from "src/app/shared/components/filter/filt
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
+import { getMemberEmails } from "src/helpers/member-contacts";
 import { SDK } from "src/sdk";
 import { GroupsService } from "../../services/groups.service";
+
+const LEADER_ROLES: SDK.MemberRolesEnum[] = [SDK.MemberRolesEnum.Instruktor, SDK.MemberRolesEnum.Vedouci];
+
+const addressesLabel = (count: number) => `${count} ${count === 1 ? "adresa" : count < 5 ? "adresy" : "adres"}`;
+
+const withoutEmailLabel = (count: number) =>
+	count === 1 ? "1 člověk nemá e-mail" : count < 5 ? `${count} lidé nemají e-mail` : `${count} lidí nemá e-mail`;
+
+const notDeliveredLabel = (count: number) => `zpráva ${count === 1 ? "mu" : "jim"} nepřijde`;
+
+const mailAddresses = (emails: string[]) =>
+	emails.map((email) => encodeURIComponent(email).replace(/%40/g, "@")).join(",");
 
 @UntilDestroy()
 @Component({
@@ -110,6 +123,53 @@ export class GroupMembersComponent implements OnInit {
 	showInactive = computed(() => !!this.model.value("showInactive"));
 	search = signal<string>("");
 
+	private listedMembers = computed(() => this.members() ?? []);
+
+	private childEmails = computed(() =>
+		this.emailsOf(this.listedMembers().filter((member) => !LEADER_ROLES.includes(member.role))),
+	);
+
+	private leaderEmails = computed(() =>
+		this.emailsOf(this.listedMembers().filter((member) => LEADER_ROLES.includes(member.role))),
+	);
+
+	private mailTo = computed(() => (this.childEmails().length ? this.childEmails() : this.leaderEmails()));
+
+	private mailCc = computed(() => {
+		const to = this.mailTo();
+		return this.leaderEmails().filter((email) => !to.includes(email));
+	});
+
+	private membersWithoutEmail = computed(() =>
+		this.listedMembers().filter((member) => !getMemberEmails(member).length),
+	);
+
+	private mailUri = computed(() => {
+		const to = this.mailTo();
+		if (!to.length) return undefined;
+
+		const cc = this.mailCc();
+		const uri = `mailto:${mailAddresses(to)}`;
+
+		return cc.length ? `${uri}?cc=${mailAddresses(cc)}` : uri;
+	});
+
+	mailto = computed(() => (this.membersWithoutEmail().length ? undefined : this.mailUri()));
+
+	mailTooltip = computed(() => {
+		const to = this.mailTo();
+		if (!to.length) return "Nikdo ze zobrazených členů nemá vyplněný e-mail.";
+
+		const cc = this.mailCc();
+		const missing = this.membersWithoutEmail().length;
+
+		const text = cc.length
+			? `Napsat e-mail dětem v oddíle (${addressesLabel(to.length)}), vedoucí jdou do kopie (${addressesLabel(cc.length)}). U dětí se použije výchozí kontakt na rodiče.`
+			: `Napsat e-mail všem zobrazeným členům (${addressesLabel(to.length)}). U dětí se použije výchozí kontakt na rodiče.`;
+
+		return missing ? `${text} ${withoutEmailLabel(missing)}, ${notDeliveredLabel(missing)}.` : text;
+	});
+
 	private groupId?: number;
 	private latestLoadId = 0;
 
@@ -173,7 +233,7 @@ export class GroupMembersComponent implements OnInit {
 		private toasts: ToastService,
 		private platformService: PlatformService,
 	) {
-		addIcons({ arrowUndoOutline, eyeOutline, trashOutline, columns: COLUMNS_ICON });
+		addIcons({ arrowUndoOutline, eyeOutline, mailOutline, trashOutline, columns: COLUMNS_ICON });
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 
 		this.model.setCommitted(this.defaultFilter);
@@ -233,7 +293,7 @@ export class GroupMembersComponent implements OnInit {
 			groups: [this.groupId],
 			limit: 1000,
 			active: applied["showInactive"] ? undefined : true,
-			contacts: this.needsContacts() || undefined,
+			contacts: true,
 			sort,
 			order: sort ? ((applied["order"] as SDK.ListMembersOrderEnum) ?? "ASC") : undefined,
 		};
@@ -254,9 +314,30 @@ export class GroupMembersComponent implements OnInit {
 			.filter(Boolean);
 	}
 
-	private needsContacts(): boolean {
-		const selections = this.viewSelections();
-		return !!selections["firstTelephone"] || !!selections["firstEmail"];
+	private emailsOf(members: SDK.MemberResponseWithLinks[]) {
+		return [...new Set(members.flatMap((member) => getMemberEmails(member)))];
+	}
+
+	async sendMail() {
+		const missing = this.membersWithoutEmail();
+		if (!missing.length) return;
+
+		const names = missing.map((member) => member.nickname || member.firstName || "člen bez jména").join(", ");
+		const message = `E-mail nemá vyplněný: ${names}. Doplň ho v databázi.`;
+		const uri = this.mailUri();
+
+		if (!uri) {
+			await this.modalService.alertModal(message, { header: "Není komu napsat" });
+			return;
+		}
+
+		const confirmed = await this.modalService.confirmationModal(message, {
+			header: "Někomu chybí e-mail",
+			buttonText: "Napsat ostatním",
+		});
+		if (!confirmed) return;
+
+		window.location.href = uri;
 	}
 
 	private async deleteMember(member: SDK.MemberResponseWithLinks) {
@@ -282,12 +363,6 @@ export class GroupMembersComponent implements OnInit {
 
 	setViewSelection(key: string, value: boolean) {
 		this.viewSelections.update((selections) => ({ ...selections, [key]: value }));
-
-		if (value && (key === "firstTelephone" || key === "firstEmail")) {
-			const members = this.members();
-			const contactsLoaded = !!members?.some((member) => member.contacts !== undefined);
-			if (!contactsLoaded) this.loadMembers();
-		}
 	}
 
 	public getViewSelectionLabel(key: string): string {
