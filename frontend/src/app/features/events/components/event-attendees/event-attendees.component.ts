@@ -14,6 +14,7 @@ import { CardContentComponent } from "src/app/shared/components/card-content/car
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
+import { getBirthdaysBetween } from "src/helpers/age";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { getMemberEmails } from "src/helpers/member-contacts";
 import { SDK } from "src/sdk";
@@ -78,6 +79,11 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			.filter((m): m is SDK.MemberResponse => !!m),
 	);
 
+	birthdays = computed(() => {
+		const event = this.event();
+		if (!event) return [];
+
+		return getBirthdaysBetween(this.allMembers(), event.dateFrom, event.dateTill);
 	private attendeeEmails = computed(() => this.emailsOf(this.attendees()));
 
 	private leaderEmails = computed(() => this.emailsOf(this.leaders()));

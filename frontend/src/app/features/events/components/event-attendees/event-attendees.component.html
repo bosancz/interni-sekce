@@ -48,17 +48,19 @@
 		<p class="attendees-note text-muted">Věk je uvedený ke dni začátku akce.</p>
 	</div>
 	<div class="order-1 order-lg-2 col-12 col-xl-4">
-		@if (event()) {
+		@if (birthdays().length) {
 			<bo-card class="mb-3">
 				<bo-card-header>
 					<bo-card-title>Narozeniny během akce</bo-card-title>
 				</bo-card-header>
 				<bo-card-content>
-					<event-birthday-list [event]="event()!" [members]="allMembers()"></event-birthday-list>
+					<event-birthday-list [birthdays]="birthdays()"></event-birthday-list>
 				</bo-card-content>
 			</bo-card>
+		}
 
-			<bo-card class="mb-3">
+		@if (event()) {
+			<bo-card class="mb-3 d-none d-lg-flex">
 				<bo-card-header>
 					<bo-card-title>Věk účastníků</bo-card-title>
 				</bo-card-header>
