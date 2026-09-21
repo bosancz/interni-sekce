@@ -1,7 +1,9 @@
 import { CommonModule } from "@angular/common";
 import { Component, computed, effect, input, OnDestroy, OnInit, output, signal } from "@angular/core";
-import { IonButton } from "@ionic/angular/standalone";
+import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
+import { addIcons } from "ionicons";
+import { mailOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -12,12 +14,24 @@ import { CardContentComponent } from "src/app/shared/components/card-content/car
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
+import { getMemberEmails } from "src/helpers/member-contacts";
 import { SDK } from "src/sdk";
 import { EventAgeHistogramComponent } from "../event-age-histogram/event-age-histogram.component";
 import { EventAttendeesListComponent } from "../event-attendees-list/event-attendees-list.component";
 import { EventBirthdayListComponent } from "../event-birthday-list/event-birthday-list.component";
 
 const LEADER_ROLES: SDK.MemberRolesEnum[] = [SDK.MemberRolesEnum.Instruktor, SDK.MemberRolesEnum.Vedouci];
+
+const addressesLabel = (count: number) => `${count} ${count === 1 ? "adresa" : count < 5 ? "adresy" : "adres"}`;
+
+const withoutEmailLabel = (count: number) =>
+	count === 1 ? "1 člověk nemá e-mail" : count < 5 ? `${count} lidé nemají e-mail` : `${count} lidí nemá e-mail`;
+
+const notDeliveredLabel = (count: number) => `zpráva ${count === 1 ? "mu" : "jim"} nepřijde`;
+
+const mailAddresses = (emails: string[]) =>
+	emails.map((email) => encodeURIComponent(email).replace(/%40/g, "@")).join(",");
 
 @UntilDestroy()
 @Component({
@@ -28,6 +42,8 @@ const LEADER_ROLES: SDK.MemberRolesEnum[] = [SDK.MemberRolesEnum.Instruktor, SDK
 	imports: [
 		CommonModule,
 		IonButton,
+		IonIcon,
+		TooltipDirective,
 		EventAttendeesListComponent,
 		AddButtonComponent,
 		EventAgeHistogramComponent,
@@ -62,6 +78,47 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			.filter((m): m is SDK.MemberResponse => !!m),
 	);
 
+	private attendeeEmails = computed(() => this.emailsOf(this.attendees()));
+
+	private leaderEmails = computed(() => this.emailsOf(this.leaders()));
+
+	mailTo = computed(() => (this.attendeeEmails().length ? this.attendeeEmails() : this.leaderEmails()));
+
+	mailCc = computed(() => {
+		const to = this.mailTo();
+		return this.leaderEmails().filter((email) => !to.includes(email));
+	});
+
+	mailRecipients = computed(() => [...this.mailTo(), ...this.mailCc()]);
+
+	membersWithoutEmail = computed(() => this.allMembers().filter((member) => !getMemberEmails(member).length));
+
+	private mailUri = computed(() => {
+		const to = this.mailTo();
+		if (!to.length) return undefined;
+
+		const cc = this.mailCc();
+		const uri = `mailto:${mailAddresses(to)}`;
+
+		return cc.length ? `${uri}?cc=${mailAddresses(cc)}` : uri;
+	});
+
+	mailto = computed(() => (this.membersWithoutEmail().length ? undefined : this.mailUri()));
+
+	mailTooltip = computed(() => {
+		const to = this.mailTo();
+		if (!to.length) return "Nikdo na akci nemá vyplněný e-mail.";
+
+		const cc = this.mailCc();
+		const missing = this.membersWithoutEmail().length;
+
+		const text = cc.length
+			? `Napsat e-mail účastníkům akce (${addressesLabel(to.length)}), vedoucí jdou do kopie (${addressesLabel(cc.length)}). U dětí se použije výchozí kontakt na rodiče.`
+			: `Napsat e-mail všem na akci (${addressesLabel(to.length)}). U dětí se použije výchozí kontakt na rodiče.`;
+
+		return missing ? `${text} ${withoutEmailLabel(missing)}, ${notDeliveredLabel(missing)}.` : text;
+	});
+
 	actions: Action[] = [];
 
 	modal?: HTMLIonModalElement;
@@ -71,6 +128,8 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		private toastService: ToastService,
 		private modalService: ModalService,
 	) {
+		addIcons({ mailOutline });
+
 		effect(() => {
 			const event = this.event();
 			this.loadAttendees(event);
@@ -105,6 +164,32 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 		this.attendees.set(attendees.filter((a) => a.type === "attendee"));
 		this.leaders.set(attendees.filter((a) => a.type === "leader"));
+	}
+
+	private emailsOf(attendees?: SDK.EventAttendeeResponseWithLinks[]) {
+		return [...new Set((attendees ?? []).flatMap((attendee) => getMemberEmails(attendee.member)))];
+	}
+
+	async sendMail() {
+		const missing = this.membersWithoutEmail();
+		if (!missing.length) return;
+
+		const names = missing.map((member) => this.memberName(member) ?? "člen bez jména").join(", ");
+		const message = `E-mail nemá vyplněný: ${names}. Doplň ho v databázi.`;
+		const uri = this.mailUri();
+
+		if (!uri) {
+			await this.modalService.alertModal(message, { header: "Není komu napsat" });
+			return;
+		}
+
+		const confirmed = await this.modalService.confirmationModal(message, {
+			header: "Někomu chybí e-mail",
+			buttonText: "Napsat ostatním",
+		});
+		if (!confirmed) return;
+
+		window.location.href = uri;
 	}
 
 	async addAttendee(type: SDK.EventAttendeeCreateBodyTypeEnum) {

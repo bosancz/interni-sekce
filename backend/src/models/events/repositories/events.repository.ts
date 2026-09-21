@@ -4,6 +4,7 @@ import { PaginationOptions } from "src/helpers/pagination";
 import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
 import { Group } from "src/models/members/entities/group.entity";
+import { sortMemberContacts } from "src/models/members/helpers/member-contacts";
 import { Brackets, FindOptionsSelect, Repository } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "../entities/event-attendee.entity";
 import { EventExpense } from "../entities/event-expense.entity";
@@ -266,12 +267,19 @@ export class EventsRepository {
 			.createQueryBuilder("attendee")
 			.where("attendee.event_id = :id", { id })
 			.leftJoinAndSelect("attendee.member", "member")
+			.leftJoinAndSelect("member.contacts", "contacts")
 			.leftJoinAndSelect("attendee.event", "event")
 			.leftJoinAndSelect("event.attendees", "leaders", "leaders.type = :type", { type: "leader" })
-			.select(["attendee", "member", "event.id", "leaders"])
+			.select(["attendee", "member", "contacts", "event.id", "leaders"])
 			.withDeleted();
 
-		return q.getMany();
+		const attendees = await q.getMany();
+
+		for (const attendee of attendees) {
+			if (attendee.member?.contacts) attendee.member.contacts = sortMemberContacts(attendee.member.contacts);
+		}
+
+		return attendees;
 	}
 
 	async getEventAttendee(eventId: number, memberId: number) {
