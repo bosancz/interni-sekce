@@ -81,32 +81,6 @@ export class FeedbackService {
 		};
 	}
 
-	async sendBugReportEmail(report: BugReport, issue?: BugReportIssue | null): Promise<void> {
-		const mail = BugReportMailTemplate(this.config.feedback.bugReportRecipient, {
-			reporter: report.reporter,
-			reporterUrl: report.reporterUrl,
-			url: report.url,
-			description: report.description,
-			frontendVersion: report.frontendVersion,
-			backendVersion: report.backendVersion,
-			system: report.system,
-			browser: report.browser,
-			screen: report.screen,
-			viewport: report.viewport,
-			display: report.display,
-			pointer: report.pointer,
-			issueNumber: issue?.number,
-			issueUrl: issue?.url,
-		});
-
-		try {
-			await this.mailService.sendMail(mail);
-			this.logger.verbose("Bug report email sent");
-		} catch (err) {
-			this.logger.error(`Failed to send bug report email: ${(err as Error).message}`);
-			throw err;
-		}
-	}
 
 	async fileBugReportIssue(report: BugReport): Promise<BugReportIssue | null> {
 		if (!this.github.isConfigured) return null;

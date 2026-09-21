@@ -120,10 +120,6 @@ const notifications = {
 	notifyActor: process.env["NOTIFY_ACTOR"] === "true" || process.env["NOTIFY_ACTOR"] === "1",
 };
 
-const feedback = {
-	bugReportRecipient: process.env["BUG_REPORT_RECIPIENT"] ?? "lef@bosan.cz",
-};
-
 const github = {
 	appId: process.env["GITHUB_APP_ID"] ?? "",
 	privateKey: (process.env["GITHUB_APP_PRIVATE_KEY"] ?? "").replace(/\\n/g, "\n"),
