@@ -16,6 +16,7 @@ import { currentMembershipYear, membershipPaymentOf } from "src/app/core/helpers
 import { getVariableSymbolYear } from "src/app/core/helpers/variable-symbol";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { getDefaultContact } from "src/helpers/member-contacts";
 
 /**
  * How long the QR image may take to arrive before the share falls back to plain text. It is
@@ -70,7 +71,7 @@ export class MemberPaymentComponent {
 	/** Member whose details are loaded, so unrelated edits of the member do not refetch. */
 	private loadedMemberId: number | null = null;
 
-	/** E-mails of the member's contacts (parents), loaded alongside the payment details. */
+	/** E-mails of the member's default contact, loaded alongside the payment details. */
 	private contactEmails = signal<string[]>([]);
 
 	private readonly platformService = inject(PlatformService);
@@ -152,7 +153,7 @@ export class MemberPaymentComponent {
 		return payment ? this.formatAmount(payment) : "";
 	});
 
-	/** The member's contacts' (parents), without duplicates. */
+	/** The default contact's e-mails, without duplicates. */
 	private recipients = computed(() => {
 		const emails = [...this.contactEmails()];
 
@@ -283,7 +284,7 @@ export class MemberPaymentComponent {
 
 			this.payment.set(payment);
 			if (this.shareSupported) this.qrCodeFiles = this.fetchQrCodeFiles(payment);
-			this.contactEmails.set(contacts.flatMap((contact) => contact.email).filter((email) => !!email));
+			this.contactEmails.set((getDefaultContact(contacts)?.email ?? []).filter((email) => !!email));
 		} catch (e) {
 			// let a later member change retry rather than leaving the card stuck on the error
 			this.loadedMemberId = null;
