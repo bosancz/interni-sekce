@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, effect, input, OnInit, signal } from "@angular/core";
+import { Component, computed, effect, input, signal } from "@angular/core";
 import { ChartData, ChartOptions } from "chart.js";
 import { DateTime } from "luxon";
 import { BaseChartDirective } from "ng2-charts";
@@ -7,12 +7,8 @@ import { EventExpenseTypes } from "src/app/core/config/event-expense-types";
 import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
 
-/** Zero total for every configured expense category, so the record follows EventExpenseTypes. */
-const emptyTotalByType = () =>
-	Object.fromEntries(Object.keys(EventExpenseTypes).map((type) => [type, 0])) as Record<
-		SDK.EventExpenseTypesEnum,
-		number
-	>;
+const formatAmount = (amount: number) =>
+	amount.toLocaleString("cs", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " Kč";
 
 @Component({
 	selector: "bo-event-expenses-chart",
@@ -21,18 +17,56 @@ const emptyTotalByType = () =>
 
 	imports: [CommonModule, BaseChartDirective],
 })
-export class EventExpensesChartComponent implements OnInit {
+export class EventExpensesChartComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>();
 	expenses = input<SDK.EventExpenseResponseWithLinks[] | undefined>();
 
-	days = signal(0);
-	persons = signal(0);
+	persons = signal<number | undefined>(undefined);
 
-	total = signal(0);
+	days = computed(() => {
+		const event = this.event();
+		if (!event) return undefined;
 
-	totalByType: Record<SDK.EventExpenseTypesEnum, number> = emptyTotalByType();
+		const dateFrom = DateTime.fromISO(event.dateFrom).startOf("day");
+		const dateTill = DateTime.fromISO(event.dateTill).startOf("day").plus({ days: 1 });
+		const days = Math.ceil(dateTill.diff(dateFrom, "days").days);
 
-	chartData = signal<ChartData<"doughnut"> | undefined>(undefined);
+		return Number.isFinite(days) && days > 0 ? days : undefined;
+	});
+
+	totalByType = computed(() => {
+		const expenses = this.expenses() ?? [];
+
+		return (Object.keys(EventExpenseTypes) as SDK.EventExpenseTypesEnum[])
+			.map((type) => ({
+				type,
+				total: expenses.filter((e) => e.type === type).reduce((acc, e) => acc + this.parseAmount(e), 0),
+			}))
+			.filter((entry) => entry.total > 0);
+	});
+
+	total = computed(() => (this.expenses() ?? []).reduce((acc, e) => acc + this.parseAmount(e), 0));
+
+	perPersonDay = computed(() => {
+		const persons = this.persons();
+		const days = this.days();
+		return persons && days ? this.total() / persons / days : undefined;
+	});
+
+	chartData = computed<ChartData<"doughnut">>(() => {
+		const usedTypes = this.totalByType();
+
+		return {
+			labels: usedTypes.map((entry) => EventExpenseTypes[entry.type].title),
+			datasets: [
+				{
+					data: usedTypes.map((entry) => entry.total),
+					borderRadius: 4,
+					backgroundColor: usedTypes.map((entry) => EventExpenseTypes[entry.type].color),
+				},
+			],
+		};
+	});
 
 	chartOptions: ChartOptions<"doughnut"> = {
 		responsive: true,
@@ -45,57 +79,27 @@ export class EventExpensesChartComponent implements OnInit {
 					useBorderRadius: true,
 				},
 			},
+			tooltip: {
+				callbacks: {
+					label: (context) => `${context.label}: ${formatAmount(context.parsed)}`,
+				},
+			},
 		},
 	};
 
+	private eventId = computed(() => this.event()?.id);
+
 	constructor(private api: ApiService) {
 		effect(() => {
-			const event = this.event();
-			const expenses = this.expenses();
-			if (event && expenses) {
-				this.updateChart(event, expenses);
-			}
+			const eventId = this.eventId();
+			this.persons.set(undefined);
+			if (eventId !== undefined) this.loadPersons(eventId);
 		});
 	}
 
-	ngOnInit() {}
-
-	private async updateChart(event: SDK.EventResponseWithLinks, expenses: SDK.EventExpenseResponseWithLinks[]) {
-		this.totalByType = emptyTotalByType();
-
-		const dateFrom = DateTime.fromISO(event.dateFrom).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-		const dateTill = DateTime.fromISO(event.dateTill)
-			.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-			.plus({ days: 1 });
-
-		const days = Math.ceil(dateTill.diff(dateFrom, "days").days);
-		this.days.set(days);
-
-		const attendees = await this.api.EventsApi.listEventAttendees(event.id).then((res) => res.data);
-
-		const persons = attendees?.length || 1;
-		this.persons.set(persons);
-
-		const usedTypes = (Object.keys(EventExpenseTypes) as SDK.EventExpenseTypesEnum[])
-			.map((type) => ({ type, total: this.getTotalExpenseByType(expenses, type) }))
-			.filter((entry) => entry.total > 0);
-
-		this.chartData.set({
-			labels: usedTypes.map((entry) => EventExpenseTypes[entry.type].title),
-			datasets: [
-				{
-					data: usedTypes.map((entry) => entry.total / persons / days),
-					borderRadius: 4,
-					backgroundColor: usedTypes.map((entry) => EventExpenseTypes[entry.type].color),
-				},
-			],
-		});
-
-		this.total.set(expenses.reduce((acc, e) => acc + this.parseAmount(e), 0));
-	}
-
-	private getTotalExpenseByType(expenses: SDK.EventExpenseResponseWithLinks[], type: SDK.EventExpenseTypesEnum) {
-		return expenses.filter((e) => e.type === type).reduce((acc, e) => acc + this.parseAmount(e), 0);
+	private async loadPersons(eventId: number) {
+		const attendees = await this.api.EventsApi.listEventAttendees(eventId).then((res) => res.data);
+		if (this.eventId() === eventId) this.persons.set(attendees.length || 1);
 	}
 
 	private parseAmount(expense: SDK.EventExpenseResponseWithLinks): number {
