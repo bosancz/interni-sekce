@@ -72,6 +72,10 @@
 - **Karta akce (`event-card`) je v záložce Info vidět v každé šířce** — `order-first order-xl-last`, na mobilu tedy nad seznamem údajů. Je to jediné místo, kde je bez rozkliknutí vidět „Vede …“ (#415).
 - **A modal's "can I edit this" flag must read the persisted value, not its own checkbox signal** — `unmarkX.allowed` is false while `xSentAt` is null, so deriving it from the checkbox disables the save button the instant the box is ticked.
 
+## Písma
+
+- **Každé písmo z `font-family` se musí opravdu načíst** — `SanGrotesk` je v `assets/fonts`, `Nunito Sans` (`$font-regular`) a Roboto jdou z Google Fonts v `index.html` (a jsou i v `ngsw-config.json`). Nenačtená rodina se hledá v písmech nainstalovaných v systému: Chrome si u kopie bez složeného `ř` rozložil znak na `r` + háček bez ukotvení a vykreslil „Uzavrěná“ (#502), u koho písmo nainstalované nebylo, ten viděl fallback a chybu nereprodukoval. Webový `@font-face` má před systémovým písmem stejného jména přednost.
+
 ## Přihlášky (PDF)
 
 - Šablony z `backend/assets/registration-templates` renderuje `EventRegistrationService` systémovým Chromiem přes Puppeteer (PDF i JPEG náhled). **Emoji potřebují emoji font přímo v image** — jinak Chromium sáhne po Unifontu a v PDF je čtvereček (`font-noto-emoji` v `Dockerfile`, `fonts-noto-color-emoji` v `.devcontainer/Dockerfile`). Font si Chromium najde sám přes fontconfig, v šablonách se nic nenastavuje — webfont by ve fallbacku stejně nefungoval, musel by být vypsaný v každém `font-family`.
