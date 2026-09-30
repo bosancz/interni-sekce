@@ -1,3 +1,7 @@
+## v4.13.1 — 2026-09-30
+
+- <span class="changelog-type" title="refactor">♻️</span> [Odebrat dlaždici Platební údaje z administrace](https://github.com/bosancz/interni-sekce/commit/0e5dfd0f00081c250bbac82a44e874a4d82c4381) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.13.0 — 2026-09-30
 
 _Bez uživatelských změn._
