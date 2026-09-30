@@ -24,6 +24,7 @@
   - **Angular needs Node 24**; the sandbox default (22.x) fails every `ng` command on the engines check. `nvm install 24` (`NVM_DIR=/opt/nvm`).
   - `npm ci` works in `frontend/` and `backend/`. Do **not** run the root `npm ci` — `scripts/install.sh` also builds the backend and runs migrations, so it needs a database. Don't commit lockfile churn from `npm install`.
   - Frontend-only change: `cd frontend && npm ci && npm run dev`. Backend change or the full root `npm run dev`: bring up Postgres first (below).
+- **Whenever you run the web app to test a change, take a screenshot of the affected page and show it to the user** (Playwright + preinstalled Chromium, log in as a seed user, `SendUserFile`). Keep screenshots in the scratchpad, never commit them.
 - **`.mcp.json` registers the Angular CLI MCP server** (`npx -y @angular/cli mcp`) — docs/best-practices plus workspace tools, run from the repo root, Node 24 like every `ng` command; its `devserver_start` falls under the one-server rule.
 
 ## Testovací data
