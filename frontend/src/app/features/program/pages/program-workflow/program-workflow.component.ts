@@ -1,5 +1,5 @@
 import { formatDate, NgTemplateOutlet } from "@angular/common";
-import { Component, computed, OnInit, signal } from "@angular/core";
+import { Component, computed, OnInit, signal, viewChild } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { Router } from "@angular/router";
@@ -10,6 +10,7 @@ import { map } from "rxjs/operators";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { EventHoverPreviewComponent } from "src/app/shared/components/event-hover-preview/event-hover-preview.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
@@ -32,6 +33,7 @@ import { EventCreateModalComponent } from "../../../events/components/event-crea
 		IonIcon,
 		EventListItemComponent,
 		EventReviewCardComponent,
+		EventHoverPreviewComponent,
 		PageHeaderComponent,
 		PageContentComponent,
 		PageFooterComponent,
@@ -44,7 +46,7 @@ export class ProgramWorkflowComponent implements OnInit {
 
 	events = new BehaviorSubject<undefined | SDK.EventResponseWithLinks[]>([]);
 
-	private allEvents = toSignal(this.events.pipe(map((events) => events ?? [])), { initialValue: [] });
+	allEvents = toSignal(this.events.pipe(map((events) => events ?? [])), { initialValue: [] });
 
 	draftEvents = computed(() =>
 		this.allEvents()
@@ -75,6 +77,8 @@ export class ProgramWorkflowComponent implements OnInit {
 
 	loading = signal(true);
 
+	private hoverPreview = viewChild(EventHoverPreviewComponent);
+
 	constructor(
 		private api: ApiService,
 		private modalService: ModalService,
@@ -86,6 +90,14 @@ export class ProgramWorkflowComponent implements OnInit {
 
 	ngOnInit() {
 		this.loadEvents();
+	}
+
+	ionViewWillEnter(): void {
+		this.hoverPreview()?.resume();
+	}
+
+	ionViewWillLeave(): void {
+		this.hoverPreview()?.pause();
 	}
 
 	async loadEvents() {

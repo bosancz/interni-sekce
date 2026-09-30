@@ -1,16 +1,5 @@
 import { CommonModule } from "@angular/common";
-import {
-	afterNextRender,
-	Component,
-	computed,
-	ElementRef,
-	inject,
-	Injector,
-	OnDestroy,
-	OnInit,
-	signal,
-	viewChild,
-} from "@angular/core";
+import { Component, computed, inject, OnInit, signal, viewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
@@ -43,7 +32,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
 import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
-import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
+import { EventHoverPreviewComponent } from "src/app/shared/components/event-hover-preview/event-hover-preview.component";
 import { EventStatusBadgeComponent } from "src/app/shared/components/event-status-badge/event-status-badge.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
 import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
@@ -76,7 +65,7 @@ type EventStatusActions = ExtractExisting<
 		IonItemDivider,
 		IonList,
 		EventStatusBadgeComponent,
-		EventCardComponent,
+		EventHoverPreviewComponent,
 		GroupPipe,
 		MemberPipe,
 		AdminTableComponent,
@@ -90,7 +79,7 @@ type EventStatusActions = ExtractExisting<
 	],
 	providers: [FilterModel],
 })
-export class EventsListComponent implements OnInit, OnDestroy {
+export class EventsListComponent implements OnInit {
 	private model = inject(FilterModel);
 
 	events = signal<SDK.EventResponseWithLinks[]>([]);
@@ -166,23 +155,12 @@ export class EventsListComponent implements OnInit, OnDestroy {
 	rowLink = (event: SDK.EventResponseWithLinks) => "" + event.id;
 	rowId = (event: SDK.EventResponseWithLinks) => "event-" + event.id;
 
-	hoveredEvent = signal<SDK.EventResponseWithLinks | undefined>(undefined);
-	previewPosition = signal<{ top: number; left: number } | null>(null);
-
-	private readonly previewDelayMs = 500;
-	private previewTimer: ReturnType<typeof setTimeout> | null = null;
-	private pendingEventId: number | null = null;
-
-	private previewPaused = false;
-
-	private previewOverlay = viewChild<ElementRef<HTMLElement>>("previewOverlay");
-	private previewOverlayEl: HTMLElement | null = null;
+	private hoverPreview = viewChild(EventHoverPreviewComponent);
 
 	constructor(
 		private api: ApiService,
 		private router: Router,
 		private route: ActivatedRoute,
-		private injector: Injector,
 		private modalService: ModalService,
 		private toasts: ToastService,
 		private platformService: PlatformService,
@@ -200,32 +178,14 @@ export class EventsListComponent implements OnInit, OnDestroy {
 			arrowUndoOutline,
 			trashOutline,
 		});
-
-		afterNextRender(
-			() => {
-				const overlay = this.previewOverlay()?.nativeElement;
-				if (overlay) {
-					this.previewOverlayEl = overlay;
-					document.body.appendChild(overlay);
-				}
-			},
-			{ injector: this.injector },
-		);
 	}
 
 	ionViewWillEnter(): void {
-		this.previewPaused = false;
+		this.hoverPreview()?.resume();
 	}
 
 	ionViewWillLeave(): void {
-		this.previewPaused = true;
-		this.clearHover();
-	}
-
-	ngOnDestroy(): void {
-		this.clearTimer();
-		this.previewOverlayEl?.remove();
-		this.previewOverlayEl = null;
+		this.hoverPreview()?.pause();
 	}
 
 	rowActionsHeader = (event: SDK.EventResponseWithLinks) => event.name;
@@ -498,58 +458,6 @@ export class EventsListComponent implements OnInit, OnDestroy {
 		if (token !== this.loadToken) return;
 
 		this.events.set(loadMore ? [...this.events(), ...events] : events);
-	}
-
-	onRowHover(e: PointerEvent) {
-		if (this.previewPaused) return;
-		if (e.pointerType !== "mouse" && e.pointerType !== "pen") return;
-
-		const row = (e.target as HTMLElement | null)?.closest?.("[id^='event-']") as HTMLElement | null;
-		if (!row) {
-			this.clearHover();
-			return;
-		}
-
-		const id = Number(row.id.slice("event-".length));
-		const event = this.events().find((item) => item.id === id);
-		if (!event) return;
-
-		this.positionPreview(e);
-
-		if (this.hoveredEvent()?.id === id || this.pendingEventId === id) return;
-
-		this.hoveredEvent.set(undefined);
-		this.pendingEventId = id;
-		this.clearTimer();
-		this.previewTimer = setTimeout(() => {
-			this.pendingEventId = null;
-			this.hoveredEvent.set(event);
-		}, this.previewDelayMs);
-	}
-
-	clearHover() {
-		this.clearTimer();
-		this.pendingEventId = null;
-		this.hoveredEvent.set(undefined);
-	}
-
-	private clearTimer() {
-		if (this.previewTimer) {
-			clearTimeout(this.previewTimer);
-			this.previewTimer = null;
-		}
-	}
-
-	private positionPreview(e: PointerEvent) {
-		const cardWidth = 360;
-		const offset = 16;
-		const margin = 12;
-
-		let left = e.clientX + offset;
-		if (left + cardWidth > window.innerWidth) left = Math.max(margin, e.clientX - cardWidth - offset);
-
-		const top = Math.max(margin, Math.min(e.clientY + offset, window.innerHeight - 240));
-		this.previewPosition.set({ top, left });
 	}
 
 	private getFilterKey(params: Params): string {
