@@ -1,5 +1,8 @@
 # runtime files
 **/node_modules
+**/__pycache__
+worker/.venv
+worker/models
 **/dist
 **/.angular/cache
 

@@ -33,12 +33,13 @@ jobs:
     with:
       semver: ${{ github.event.inputs.semver }}
 
-  build:
-    name: Build and publish
+  build-app:
+    name: Build APP
     needs: version
     uses: ./.github/workflows/build.yml
     with:
       context: .
+      target: app
       image-name: bosancz/interni-sekce
       registry: ghcr.io
       tag: latest
@@ -54,11 +55,12 @@ jobs:
       password: ${{ secrets.GITHUB_TOKEN }}
 
   build-worker:
-    name: Build and publish the worker
+    name: Build WORKER
     needs: version
     uses: ./.github/workflows/build.yml
     with:
-      context: worker
+      context: .
+      target: worker
       image-name: bosancz/interni-sekce-worker
       registry: ghcr.io
       tag: latest
@@ -70,21 +72,21 @@ jobs:
   deploy:
     name: Deploy
     needs:
-      - build
+      - build-app
       - build-worker
     uses: ./.github/workflows/deploy.yml
     with:
-      images: ${{ needs.build.outputs.images }},${{ needs.build-worker.outputs.images }}
+      images: ${{ needs.build-app.outputs.images }},${{ needs.build-worker.outputs.images }}
     secrets: inherit
 
   tag:
     name: Tag release
     needs:
       - version
-      - build
+      - build-app
       - build-worker
     uses: ./.github/workflows/tag.yml
     with:
       tag: PRODUCTION
       version: ${{ needs.version.outputs.new_tag }}
-      ref: ${{ needs.build.outputs.sha }}
+      ref: ${{ needs.build-app.outputs.sha }}
