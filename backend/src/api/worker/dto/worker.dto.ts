@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsInt, IsOptional, Max, Min } from "class-validator";
 import { FaceEmotionsResponse } from "src/api/albums/dto/photo-face.dto";
-import { FaceEmotion, FaceEmotions } from "src/models/albums/schema/detected-faces";
+import { FaceEmotion, FaceEmotions, PhotoFaceAssignment } from "src/models/albums/schema/detected-faces";
 import { WorkerCurrentJob, WorkerHeartbeat, WorkerStatus } from "src/models/worker/schema/worker-heartbeat";
 
 export class WorkerCurrentJobResponse implements WorkerCurrentJob {
@@ -31,6 +31,7 @@ export class WorkerResponse implements WorkerHeartbeat {
 export class FaceDetectionScheduleResponse {
 	@ApiProperty() cron!: string;
 	@ApiProperty() stopCron!: string;
+	@ApiProperty() matchCron!: string;
 	@ApiProperty() timezone!: string;
 	@ApiProperty() batchSize!: number;
 }
@@ -46,6 +47,7 @@ export class FaceDetectionPhotosStatsResponse {
 export class FaceDetectionFacesStatsResponse {
 	@ApiProperty() total!: number;
 	@ApiProperty() assigned!: number;
+	@ApiProperty() autoAssigned!: number;
 }
 
 export class FaceDetectionQueueResponse {
@@ -55,6 +57,7 @@ export class FaceDetectionQueueResponse {
 	@ApiProperty() failed!: number;
 	@ApiPropertyOptional({ type: "string", nullable: true }) nextBatchAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string", nullable: true }) nextStopAt!: Date | string | null;
+	@ApiPropertyOptional({ type: "string", nullable: true }) nextMatchAt!: Date | string | null;
 }
 
 export class FaceDetectionSummaryResponse {
@@ -72,6 +75,8 @@ export class FaceDetectionLogFaceResponse {
 	@ApiPropertyOptional({ type: "number", nullable: true }) score!: number | null;
 	@ApiPropertyOptional({ type: "integer", nullable: true }) memberId!: number | null;
 	@ApiPropertyOptional({ type: "string", nullable: true }) memberNickname!: string | null;
+	@ApiPropertyOptional({ enum: PhotoFaceAssignment, enumName: "FaceAssignmentEnum", nullable: true })
+	assignment!: PhotoFaceAssignment | null;
 	@ApiPropertyOptional({ type: FaceEmotionsResponse, nullable: true }) emotions!: FaceEmotions | null;
 	@ApiPropertyOptional({ enum: FaceEmotion, enumName: "FaceEmotionEnum", nullable: true })
 	emotion!: FaceEmotion | null;

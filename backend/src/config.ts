@@ -151,6 +151,7 @@ const redis = {
 const faces = {
 	cron: process.env["FACES_CRON"] ?? "0 1 * * *",
 	stopCron: process.env["FACES_STOP_CRON"] ?? "0 3 * * *",
+	matchCron: process.env["FACES_MATCH_CRON"] ?? "5 3 * * *",
 	timezone: process.env["FACES_TIMEZONE"] ?? "Europe/Prague",
 	batchSize: process.env["FACES_BATCH_SIZE"] ? parseInt(process.env["FACES_BATCH_SIZE"], 10) : 300,
 };

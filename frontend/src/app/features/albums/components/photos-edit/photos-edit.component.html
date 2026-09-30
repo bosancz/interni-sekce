@@ -78,6 +78,24 @@
 						<ng-template>
 							@if (selectedFace(); as face) {
 								<ion-list lines="none">
+									@if (face.member && face.assignment === "auto") {
+										<ion-item
+											button
+											[detail]="false"
+											[disabled]="!face._links.updatePhotoFace.allowed"
+											(click)="confirmFace(face)"
+										>
+											<ion-icon
+												slot="start"
+												name="checkmark-circle-outline"
+												color="success"
+											></ion-icon>
+											<ion-label>
+												Potvrdit {{ face.member.nickname }}
+												<p>Přiřazeno automaticky{{ matchScoreLabel(face) }}</p>
+											</ion-label>
+										</ion-item>
+									}
 									<ion-item
 										button
 										[detail]="false"
@@ -101,7 +119,11 @@
 											(click)="unassignFace(face)"
 										>
 											<ion-icon slot="start" name="close-circle-outline"></ion-icon>
-											<ion-label>Zrušit přiřazení</ion-label>
+											<ion-label>{{
+												face.assignment === "auto"
+													? "Není to " + face.member.nickname
+													: "Zrušit přiřazení"
+											}}</ion-label>
 										</ion-item>
 									}
 									<ion-item
@@ -160,6 +182,7 @@
 								type="button"
 								class="face"
 								[class.assigned]="!!face.member"
+								[class.auto]="face.assignment === 'auto'"
 								[style.left.%]="face.x * 100"
 								[style.top.%]="face.y * 100"
 								[style.width.%]="face.width * 100"
@@ -172,7 +195,7 @@
 								@if (face.member) {
 									<span class="face-label"
 										>{{ face.emotion ? faceEmotions[face.emotion].emoji + " " : ""
-										}}{{ face.member.nickname }}</span
+										}}{{ face.member.nickname }}{{ face.assignment === "auto" ? "?" : "" }}</span
 									>
 								}
 							</button>
@@ -200,9 +223,17 @@
 			@if (assignedFaces().length) {
 				<div class="people-bar">
 					@for (face of assignedFaces(); track face.id) {
-						<ion-chip outline (click)="openFaceMenu($event, face)">
-							<ion-icon name="person-outline"></ion-icon>
-							<ion-label>{{ face.member!.nickname }}</ion-label>
+						<ion-chip
+							outline
+							[class.auto]="face.assignment === 'auto'"
+							(click)="openFaceMenu($event, face)"
+						>
+							<ion-icon
+								[name]="face.assignment === 'auto' ? 'help-circle-outline' : 'person-outline'"
+							></ion-icon>
+							<ion-label
+								>{{ face.member!.nickname }}{{ face.assignment === "auto" ? "?" : "" }}</ion-label
+							>
 						</ion-chip>
 					}
 				</div>
@@ -253,6 +284,20 @@
 							<ion-label>{{ emotion }}</ion-label>
 						</ion-item>
 					}
+					@if (face.member && face.assignment === "auto") {
+						<ion-item
+							button
+							[detail]="false"
+							[disabled]="!face._links.updatePhotoFace.allowed"
+							(click)="confirmFace(face)"
+						>
+							<ion-icon slot="start" name="checkmark-circle-outline" color="success"></ion-icon>
+							<ion-label>
+								Potvrdit {{ face.member.nickname }}
+								<p>Přiřazeno automaticky{{ matchScoreLabel(face) }}</p>
+							</ion-label>
+						</ion-item>
+					}
 					<ion-item
 						button
 						[detail]="false"
@@ -274,7 +319,9 @@
 							(click)="unassignFace(face)"
 						>
 							<ion-icon slot="start" name="close-circle-outline"></ion-icon>
-							<ion-label>Zrušit přiřazení</ion-label>
+							<ion-label>{{
+								face.assignment === "auto" ? "Není to " + face.member.nickname : "Zrušit přiřazení"
+							}}</ion-label>
 						</ion-item>
 					}
 					<ion-item

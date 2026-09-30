@@ -1,7 +1,7 @@
 import { Member } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { FaceEmotion, FaceEmotions } from "../schema/detected-faces";
+import { FaceEmotion, FaceEmotions, PhotoFaceAssignment } from "../schema/detected-faces";
 import { Photo } from "./photo.entity";
 
 @Entity("photo_faces")
@@ -36,6 +36,9 @@ export class PhotoFace {
 	@Column({ type: "varchar", nullable: true }) emotion!: FaceEmotion | null;
 
 	@Column({ type: "varchar", nullable: true }) model!: string | null;
+
+	@Column({ type: "varchar", nullable: true }) assignment!: PhotoFaceAssignment | null;
+	@Column({ type: "real", nullable: true }) matchScore!: number | null;
 
 	@Column({ type: "integer", nullable: true })
 	assignedById!: number | null;

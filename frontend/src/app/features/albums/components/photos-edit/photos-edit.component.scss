@@ -180,6 +180,14 @@ ion-toolbar {
 		border-style: solid;
 		border-color: var(--ion-color-warning, #ffc409);
 	}
+
+	&.auto {
+		border-style: dashed;
+
+		.face-label {
+			font-style: italic;
+		}
+	}
 }
 
 .face-label {
@@ -210,6 +218,11 @@ ion-toolbar {
 
 		ion-icon {
 			color: #fff;
+		}
+
+		&.auto {
+			border-style: dashed;
+			font-style: italic;
 		}
 	}
 }

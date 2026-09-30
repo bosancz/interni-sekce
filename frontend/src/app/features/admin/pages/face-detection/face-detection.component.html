@@ -38,7 +38,11 @@
 						<div class="bo-info-row">
 							<span class="bo-info-label">Obličeje</span>
 							<span class="bo-info-value">
-								{{ s.faces.total }} <span class="muted">(přiřazeno {{ s.faces.assigned }})</span>
+								{{ s.faces.total }}
+								<span class="muted"
+									>(přiřazeno ručně {{ s.faces.assigned }}, automaticky
+									{{ s.faces.autoAssigned }})</span
+								>
 							</span>
 						</div>
 						<div class="bo-info-row">
@@ -83,6 +87,12 @@
 									>
 								</span>
 							</div>
+							<div class="bo-info-row">
+								<span class="bo-info-label">Další přepočet přiřazení</span>
+								<span class="bo-info-value">{{
+									q.nextMatchAt ? (q.nextMatchAt | date: "d. M. H:mm") : "—"
+								}}</span>
+							</div>
 						}
 					</div>
 
@@ -102,6 +112,18 @@
 							Spustit dávku teď
 						</ion-button>
 						<span class="muted">Zařadí {{ s.schedule.batchSize }} nejnovějších nezpracovaných fotek.</span>
+					</div>
+					<div class="fd-actions">
+						<ion-button
+							fill="outline"
+							[disabled]="!canRunMatching() || matching()"
+							[boTooltip]="!canRunMatching() ? 'Na přepočet přiřazení nemáš oprávnění.' : ''"
+							(click)="runMatching()"
+						>
+							<ion-icon slot="start" name="people-outline"></ion-icon>
+							Přepočítat přiřazení
+						</ion-button>
+						<span class="muted">Porovná nepřiřazené obličeje s ručně přiřazenými.</span>
 					</div>
 				} @else {
 					<div class="bo-info-list">
@@ -155,6 +177,7 @@
 											<span
 												class="fd-face"
 												[class.assigned]="!!face.memberId"
+												[class.auto]="face.assignment === 'auto'"
 												[boTooltip]="faceTooltip(face)"
 											>
 												<img [src]="face | photoFaceImageUrl" loading="lazy" alt="" />

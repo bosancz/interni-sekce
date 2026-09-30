@@ -2817,6 +2817,20 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @enum {string}
+     */
+    
+    export const FaceAssignmentEnum = {
+        Manual: 'manual',
+        Auto: 'auto'
+    } as const;
+    
+    export type FaceAssignmentEnum = typeof FaceAssignmentEnum[keyof typeof FaceAssignmentEnum];
+    
+    
+        /**
+     * 
+     * @export
      * @interface FaceDetectionBatchBody
      */
     export interface FaceDetectionBatchBody {
@@ -2860,6 +2874,12 @@ export namespace SDK {
          * @memberof FaceDetectionFacesStatsResponse
          */
         'assigned': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionFacesStatsResponse
+         */
+        'autoAssigned': number;
     }
     
         /**
@@ -2956,6 +2976,12 @@ export namespace SDK {
         'memberNickname'?: string | null;
         /**
          * 
+         * @type {FaceAssignmentEnum}
+         * @memberof FaceDetectionLogFaceResponse
+         */
+        'assignment'?: FaceAssignmentEnum | null;
+        /**
+         * 
          * @type {FaceEmotionsResponse}
          * @memberof FaceDetectionLogFaceResponse
          */
@@ -3050,6 +3076,12 @@ export namespace SDK {
          * @memberof FaceDetectionQueueResponse
          */
         'nextStopAt'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionQueueResponse
+         */
+        'nextMatchAt'?: string | null;
     }
     
         /**
@@ -3070,6 +3102,12 @@ export namespace SDK {
          * @memberof FaceDetectionScheduleResponse
          */
         'stopCron': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionScheduleResponse
+         */
+        'matchCron': string;
         /**
          * 
          * @type {string}
@@ -5855,6 +5893,18 @@ export namespace SDK {
         'model': string | null;
         /**
          * 
+         * @type {string}
+         * @memberof PhotoFace
+         */
+        'assignment': PhotoFaceAssignmentEnum | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFace
+         */
+        'matchScore': number | null;
+        /**
+         * 
          * @type {number}
          * @memberof PhotoFace
          */
@@ -5884,6 +5934,12 @@ export namespace SDK {
     } as const;
     
     export type PhotoFaceEmotionEnum = typeof PhotoFaceEmotionEnum[keyof typeof PhotoFaceEmotionEnum];
+    export const PhotoFaceAssignmentEnum = {
+        Manual: 'manual',
+        Auto: 'auto'
+    } as const;
+    
+    export type PhotoFaceAssignmentEnum = typeof PhotoFaceAssignmentEnum[keyof typeof PhotoFaceAssignmentEnum];
     
     
         /**
@@ -5952,6 +6008,18 @@ export namespace SDK {
          * @memberof PhotoFaceResponse
          */
         'emotion'?: FaceEmotionEnum | null;
+        /**
+         * 
+         * @type {FaceAssignmentEnum}
+         * @memberof PhotoFaceResponse
+         */
+        'assignment'?: FaceAssignmentEnum | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponse
+         */
+        'matchScore'?: number | null;
         /**
          * 
          * @type {string}
@@ -6060,6 +6128,18 @@ export namespace SDK {
          * @memberof PhotoFaceResponseWithLinks
          */
         'emotion'?: FaceEmotionEnum | null;
+        /**
+         * 
+         * @type {FaceAssignmentEnum}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'assignment'?: FaceAssignmentEnum | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'matchScore'?: number | null;
         /**
          * 
          * @type {string}
@@ -6556,6 +6636,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'enqueueFaceDetectionBatch': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'runFaceMatching': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -16548,6 +16634,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * WorkerApi - object-oriented interface
      * @export
@@ -16727,6 +16817,44 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<WorkerResponse>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async runFaceMatching(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/face-detection/match`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
         }
     }
     

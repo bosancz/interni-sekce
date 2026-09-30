@@ -28,3 +28,8 @@ export const FaceDetectionBatchPermission = new Permission<void>({
 	linkTo: RootResponse,
 	inherit: FaceDetectionSummaryPermission,
 });
+
+export const FaceMatchingRunPermission = new Permission<void>({
+	linkTo: RootResponse,
+	inherit: FaceDetectionSummaryPermission,
+});

@@ -9,7 +9,13 @@ import { User } from "src/models/users/entities/user.entity";
 import { DataSource, Repository } from "typeorm";
 import { PhotoFace } from "../entities/photo-face.entity";
 import { Photo } from "../entities/photo.entity";
-import { DetectedFace, DetectFacesJob, FaceBox, FacesDetectedResult } from "../schema/detected-faces";
+import {
+	DetectedFace,
+	DetectFacesJob,
+	FaceBox,
+	FacesDetectedResult,
+	PhotoFaceAssignment,
+} from "../schema/detected-faces";
 import { PhotosFilesService } from "./photos-files.service";
 
 const ASSIGNED_OVERLAP_IOU = 0.5;
@@ -57,6 +63,8 @@ export class PhotoFacesService {
 	async assignPhotoFace(faceId: PhotoFace["id"], memberId: Member["id"] | null, assignedById: User["id"] | null) {
 		await this.photoFaces.update(faceId, {
 			memberId,
+			assignment: PhotoFaceAssignment.manual,
+			matchScore: null,
 			assignedById: memberId ? assignedById : null,
 			assignedAt: memberId ? new Date() : null,
 		});
@@ -91,7 +99,10 @@ export class PhotoFacesService {
 			FROM photos`,
 		);
 		const [faces] = await this.dataSource.query(
-			`SELECT count(*)::int AS "total", count(member_id)::int AS "assigned" FROM photo_faces`,
+			`SELECT count(*)::int AS "total",
+				count(member_id) FILTER (WHERE assignment = 'manual')::int AS "assigned",
+				count(member_id) FILTER (WHERE assignment = 'auto')::int AS "autoAssigned"
+			FROM photo_faces`,
 		);
 
 		return { photos, faces };
@@ -164,8 +175,8 @@ export class PhotoFacesService {
 			}
 
 			const existing = await t.findBy(PhotoFace, { photoId: photo.id });
-			const assigned = existing.filter((face) => face.memberId !== null);
-			const unassigned = existing.filter((face) => face.memberId === null);
+			const assigned = existing.filter((face) => face.assignment !== null);
+			const unassigned = existing.filter((face) => face.assignment === null);
 
 			if (unassigned.length)
 				await t.delete(
