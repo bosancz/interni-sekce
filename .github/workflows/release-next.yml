@@ -42,12 +42,27 @@ jobs:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 
+  build-worker:
+    name: Build and publish the worker
+    needs: version
+    uses: ./.github/workflows/build.yml
+    with:
+      context: worker
+      image-name: bosancz/interni-sekce-worker
+      registry: ghcr.io
+      tag: next
+    secrets:
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+
   deploy:
     name: Deploy
-    needs: build
+    needs:
+      - build
+      - build-worker
     uses: ./.github/workflows/deploy.yml
     with:
-      images: ${{ needs.build.outputs.images }}
+      images: ${{ needs.build.outputs.images }},${{ needs.build-worker.outputs.images }}
     secrets: inherit
 
   tag:
