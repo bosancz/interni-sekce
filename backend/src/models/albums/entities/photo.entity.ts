@@ -1,9 +1,10 @@
 import { User } from "src/models/users/entities/user.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Album } from "./album.entity";
 import { PhotoFace } from "./photo-face.entity";
 
 @Entity("photos")
+@Index("IDX_photos_faces_pending", ["timestamp", "id"], { where: "faces_detected_at IS NULL" })
 export class Photo {
 	@PrimaryGeneratedColumn()
 	id!: number;
@@ -36,6 +37,10 @@ export class Photo {
 	@Column({ type: "text", nullable: true }) caption!: string | null;
 	@Column({ type: "varchar", array: true, nullable: true }) tags!: string[] | null;
 	@Column({ type: "varchar", nullable: true }) bg!: string | null;
+
+	@Column({ type: "timestamp with time zone", nullable: true }) facesDetectedAt?: Date | null;
+	@Column({ type: "varchar", nullable: true }) facesModel?: string | null;
+	@Column({ type: "varchar", nullable: true }) facesError?: string | null;
 
 	@Column({ type: "varchar", nullable: true }) srcAlbumId!: string | null;
 	@Column({ type: "varchar", nullable: true }) srcId!: string | null;

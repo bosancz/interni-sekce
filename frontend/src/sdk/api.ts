@@ -3312,6 +3312,18 @@ export namespace SDK {
         'insuranceCardExpiration'?: string | null;
         /**
          * 
+         * @type {number}
+         * @memberof Member
+         */
+        'profilePhotoFaceId'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Member
+         */
+        'profilePhotoUpdatedAt'?: string | null;
+        /**
+         * 
          * @type {string}
          * @memberof Member
          */
@@ -3743,6 +3755,156 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface MemberPhotoResponseWithLinks
+     */
+    export interface MemberPhotoResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'albumId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'timestamp': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'name': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'order'?: number | null;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'titlePhoto': boolean;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'width'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'height'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'uploadedById'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'title'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'caption'?: string | null;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'tags'?: Array<string> | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'bg'?: string | null;
+        /**
+         * 
+         * @type {AlbumResponseWithLinks}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'album'?: AlbumResponseWithLinks;
+        /**
+         * 
+         * @type {UserResponseWithLinks}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'uploadedBy'?: UserResponseWithLinks | null;
+        /**
+         * 
+         * @type {PhotoFaceResponse}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'face': PhotoFaceResponse;
+        /**
+         * 
+         * @type {object}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        '_links': object;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MemberProfilePhotoBody
+     */
+    export interface MemberProfilePhotoBody {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberProfilePhotoBody
+         */
+        'faceId': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MemberProfilePhotoResponse
+     */
+    export interface MemberProfilePhotoResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberProfilePhotoResponse
+         */
+        'faceId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberProfilePhotoResponse
+         */
+        'photoId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberProfilePhotoResponse
+         */
+        'albumId': number;
+    }
+    
+        /**
+     * 
+     * @export
      * @enum {string}
      */
     
@@ -3895,6 +4057,24 @@ export namespace SDK {
         'insuranceCardExpiration'?: string | null;
         /**
          * 
+         * @type {number}
+         * @memberof MemberResponse
+         */
+        'profilePhotoFaceId'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponse
+         */
+        'profilePhotoUpdatedAt'?: string | null;
+        /**
+         * 
+         * @type {MemberProfilePhotoResponse}
+         * @memberof MemberResponse
+         */
+        'profilePhoto'?: MemberProfilePhotoResponse | null;
+        /**
+         * 
          * @type {string}
          * @memberof MemberResponse
          */
@@ -3957,6 +4137,30 @@ export namespace SDK {
          * @memberof MemberResponseLinks
          */
         'deleteInsuranceCard': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'listMemberPhotos': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'getMemberProfilePhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'updateMemberProfilePhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'deleteMemberProfilePhoto': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -4139,6 +4343,24 @@ export namespace SDK {
          * @memberof MemberResponseWithLinks
          */
         'insuranceCardExpiration'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberResponseWithLinks
+         */
+        'profilePhotoFaceId'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberResponseWithLinks
+         */
+        'profilePhotoUpdatedAt'?: string | null;
+        /**
+         * 
+         * @type {MemberProfilePhotoResponse}
+         * @memberof MemberResponseWithLinks
+         */
+        'profilePhoto'?: MemberProfilePhotoResponse | null;
         /**
          * 
          * @type {string}
@@ -5135,6 +5357,24 @@ export namespace SDK {
          * @type {string}
          * @memberof Photo
          */
+        'facesDetectedAt'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Photo
+         */
+        'facesModel'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Photo
+         */
+        'facesError'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Photo
+         */
         'srcAlbumId': string | null;
         /**
          * 
@@ -5179,19 +5419,249 @@ export namespace SDK {
          * @type {Member}
          * @memberof PhotoFace
          */
-        'member'?: Member;
+        'member'?: Member | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFace
+         */
+        'x': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFace
+         */
+        'y': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFace
+         */
+        'width': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFace
+         */
+        'height': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFace
+         */
+        'score': number | null;
         /**
          * 
          * @type {Array<number>}
          * @memberof PhotoFace
          */
-        'location': Array<number>;
+        'descriptor'?: Array<number> | null;
         /**
          * 
-         * @type {Array<number>}
+         * @type {string}
          * @memberof PhotoFace
          */
-        'descriptor': Array<number>;
+        'model': string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFace
+         */
+        'assignedById': number | null;
+        /**
+         * 
+         * @type {User}
+         * @memberof PhotoFace
+         */
+        'assignedBy'?: User | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoFace
+         */
+        'assignedAt': string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoFaceResponse
+     */
+    export interface PhotoFaceResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponse
+         */
+        'photoId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponse
+         */
+        'memberId'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponse
+         */
+        'x': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponse
+         */
+        'y': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponse
+         */
+        'width': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponse
+         */
+        'height': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponse
+         */
+        'score'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoFaceResponse
+         */
+        'assignedAt'?: string | null;
+        /**
+         * 
+         * @type {MemberResponse}
+         * @memberof PhotoFaceResponse
+         */
+        'member'?: MemberResponse | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoFaceResponseLinks
+     */
+    export interface PhotoFaceResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoFaceResponseLinks
+         */
+        'updatePhotoFace': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoFaceResponseLinks
+         */
+        'deletePhotoFace': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoFaceResponseLinks
+         */
+        'getPhotoFaceImage': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoFaceResponseWithLinks
+     */
+    export interface PhotoFaceResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'photoId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'memberId'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'x': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'y': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'width': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'height': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'score'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'assignedAt'?: string | null;
+        /**
+         * 
+         * @type {MemberResponse}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'member'?: MemberResponse | null;
+        /**
+         * 
+         * @type {PhotoFaceResponseLinks}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        '_links': PhotoFaceResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoFaceUpdateBody
+     */
+    export interface PhotoFaceUpdateBody {
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceUpdateBody
+         */
+        'memberId': number | null;
     }
     
         /**
@@ -5200,6 +5670,12 @@ export namespace SDK {
      * @interface PhotoResponseLinks
      */
     export interface PhotoResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoResponseLinks
+         */
+        'listPhotoFaces': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -9298,6 +9774,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * @export
      */
@@ -9580,6 +10060,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for getMembershipSummary operation in MembersApi.
      * @export
@@ -9641,6 +10125,33 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for listMemberPhotos operation in MembersApi.
+     * @export
+     * @interface MembersApiListMemberPhotosQueryParams
+     */
+    export interface MembersApiListMemberPhotosQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof MembersApiListMemberPhotos
+         */
+        limit?: number
+    
+        //offset
+        /**
+         * 
+         * @type {number}
+         * @memberof MembersApiListMemberPhotos
+         */
+        offset?: number
+    }
     
     
     
@@ -9773,6 +10284,10 @@ export namespace SDK {
          */
         active?: boolean
     }
+    
+    
+    
+    
     
     
     
@@ -10195,6 +10710,50 @@ export namespace SDK {
         /**
          * 
     
+         * @param {number} memberId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async deleteMemberProfilePhoto(
+            memberId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('deleteMemberProfilePhoto', 'memberId', memberId)
+            
+            const localVarPath = `/api/members/{memberId}/profile-photo`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {MembersApiExportMembersXlsxQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -10555,6 +11114,50 @@ export namespace SDK {
     
         /**
          * 
+    
+         * @param {number} memberId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async getMemberProfilePhoto(
+            memberId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('getMemberProfilePhoto', 'memberId', memberId)
+            
+            const localVarPath = `/api/members/{memberId}/profile-photo`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
          * @summary The season\'s fees added up over the whole club — the figures above the treasurer\'s table. The season is all it takes: the totals are the club\'s takings, not the list\'s, so filtering the table below them must not move them.
     
          * @param {MembersApiGetMembershipSummaryQueryParams} queryParams Query parameters.
@@ -10768,6 +11371,60 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<number>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {MembersApiListMemberPhotosQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async listMemberPhotos(
+            memberId: number,
+            queryParams: MembersApiListMemberPhotosQueryParams,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('listMemberPhotos', 'memberId', memberId)
+            
+            const localVarPath = `/api/members/{memberId}/photos`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.offset !== undefined) {
+                requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<MemberPhotoResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**
@@ -11214,6 +11871,59 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<MembershipPaymentResponse>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async updateMemberProfilePhoto(
+            memberId: number,
+            body: MemberProfilePhotoBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('updateMemberProfilePhoto', 'memberId', memberId)
+            assertParamExists('updateMemberProfilePhoto', 'memberProfilePhotoBody', body)
+            
+            // verify required parameter 'memberProfilePhotoBody' is not null or undefined
+            assertParamExists('updateMemberProfilePhoto', 'memberId', memberId)
+            assertParamExists('updateMemberProfilePhoto', 'memberProfilePhotoBody', body)
+            
+            const localVarPath = `/api/members/{memberId}/profile-photo`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
         }
     
         /**
@@ -11895,6 +12605,14 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * @export
      */
@@ -11975,6 +12693,14 @@ export namespace SDK {
          */
         year?: Array<number>
     }
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -12267,6 +12993,58 @@ export namespace SDK {
         /**
          * 
     
+         * @param {number} photoId 
+         * @param {number} faceId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async deletePhotoFace(
+            photoId: number,
+            faceId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('deletePhotoFace', 'photoId', photoId)
+            assertParamExists('deletePhotoFace', 'faceId', faceId)
+            
+            // verify required parameter 'faceId' is not null or undefined
+            assertParamExists('deletePhotoFace', 'photoId', photoId)
+            assertParamExists('deletePhotoFace', 'faceId', faceId)
+            
+            const localVarPath = `/api/photos/{photoId}/faces/{faceId}`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)))
+                .replace(`{${"faceId"}}`, encodeURIComponent(String(faceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -12438,6 +13216,58 @@ export namespace SDK {
          * 
     
          * @param {number} photoId 
+         * @param {number} faceId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async getPhotoFaceImage(
+            photoId: number,
+            faceId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('getPhotoFaceImage', 'photoId', photoId)
+            assertParamExists('getPhotoFaceImage', 'faceId', faceId)
+            
+            // verify required parameter 'faceId' is not null or undefined
+            assertParamExists('getPhotoFaceImage', 'photoId', photoId)
+            assertParamExists('getPhotoFaceImage', 'faceId', faceId)
+            
+            const localVarPath = `/api/photos/{photoId}/faces/{faceId}/image`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)))
+                .replace(`{${"faceId"}}`, encodeURIComponent(String(faceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} photoId 
          * @param {string} size 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -12590,6 +13420,50 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<AlbumResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} photoId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async listPhotoFaces(
+            photoId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('listPhotoFaces', 'photoId', photoId)
+            
+            const localVarPath = `/api/photos/{photoId}/faces`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<PhotoFaceResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**
@@ -12946,6 +13820,69 @@ export namespace SDK {
             
             const localVarPath = `/api/photos/{photoId}`
                 .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} photoId 
+         * @param {number} faceId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async updatePhotoFace(
+            photoId: number,
+            faceId: number,
+            body: PhotoFaceUpdateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('updatePhotoFace', 'photoId', photoId)
+            assertParamExists('updatePhotoFace', 'faceId', faceId)
+            assertParamExists('updatePhotoFace', 'photoFaceUpdateBody', body)
+            
+            // verify required parameter 'faceId' is not null or undefined
+            assertParamExists('updatePhotoFace', 'photoId', photoId)
+            assertParamExists('updatePhotoFace', 'faceId', faceId)
+            assertParamExists('updatePhotoFace', 'photoFaceUpdateBody', body)
+            
+            // verify required parameter 'photoFaceUpdateBody' is not null or undefined
+            assertParamExists('updatePhotoFace', 'photoId', photoId)
+            assertParamExists('updatePhotoFace', 'faceId', faceId)
+            assertParamExists('updatePhotoFace', 'photoFaceUpdateBody', body)
+            
+            const localVarPath = `/api/photos/{photoId}/faces/{faceId}`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)))
+                .replace(`{${"faceId"}}`, encodeURIComponent(String(faceId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

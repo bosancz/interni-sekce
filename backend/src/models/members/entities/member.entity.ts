@@ -1,4 +1,5 @@
 import { ApiHideProperty } from "@nestjs/swagger";
+import { PhotoFace } from "src/models/albums/entities/photo-face.entity";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { User } from "src/models/users/entities/user.entity";
 import {
@@ -79,6 +80,14 @@ export class Member {
 	@Column({ type: "jsonb", nullable: true }) allergies?: HealthEntry[] | null;
 	@Column({ type: "varchar", nullable: true }) insuranceCardFile?: string | null;
 	@Column({ type: "date", nullable: true }) insuranceCardExpiration?: string | null;
+
+	@Column({ type: "integer", nullable: true }) profilePhotoFaceId?: number | null;
+	@Column({ type: "timestamp with time zone", nullable: true }) profilePhotoUpdatedAt?: Date | null;
+
+	@ManyToOne(() => PhotoFace, { onDelete: "SET NULL", onUpdate: "CASCADE" })
+	@JoinColumn({ name: "profile_photo_face_id" })
+	@ApiHideProperty()
+	profilePhotoFace?: PhotoFace | null;
 
 	@DeleteDateColumn() deletedAt?: Date;
 

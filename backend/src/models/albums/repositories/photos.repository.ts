@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { extname } from "path";
 import { PaginationOptions } from "src/helpers/pagination";
-import { Member } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
 import { Brackets, Repository } from "typeorm";
 import { PhotoFace } from "../entities/photo-face.entity";
@@ -36,18 +35,6 @@ export class PhotosRepository {
 		else if (!options.album) q.take(50);
 
 		return q.getMany();
-	}
-
-	async getPhotosByMemberFace(memberId: Member["id"], options: { limit?: number } = {}) {
-		const query = this.repository
-			.createQueryBuilder("photos")
-			.innerJoin("photos.faces", "faces")
-			.where("faces.member_id = :member", { member: memberId })
-			.orderBy("date DESC");
-
-		if (options.limit) query.limit(options.limit);
-
-		return query.getMany();
 	}
 
 	async getPhoto(id: Photo["id"]) {
@@ -154,10 +141,11 @@ export class PhotosRepository {
 		const photo = await this.repository.findOneBy({ id });
 		if (!photo) return;
 
-		await this.facesRepository.delete({ photoId: id });
+		const faces = await this.facesRepository.find({ select: { id: true }, where: { photoId: id } });
 
 		await this.repository.delete(id);
 		await this.photosFiles.deletePhotoFiles(photo);
+		await Promise.all(faces.map((face) => this.photosFiles.deleteFaceImage(face.id)));
 	}
 
 	async deletePhotosByAlbum(albumId: Photo["albumId"]) {

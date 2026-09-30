@@ -110,12 +110,23 @@ export class MembersController {
 	@AcLinks(MemberReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(MemberResponse) })
 	async getMember(@Param("memberId", ParseIntPipe) memberId: number, @Req() req: Request): Promise<MemberResponse> {
-		const member = await this.members.getMember(memberId);
-		if (!member) throw new NotFoundException();
+		const found = await this.members.getMember(memberId, { relations: { profilePhotoFace: { photo: true } } });
+		if (!found) throw new NotFoundException();
 
-		MemberReadPermission.canOrThrow(req, member);
+		MemberReadPermission.canOrThrow(req, found);
 
-		return member;
+		const { profilePhotoFace, ...member } = found;
+
+		return {
+			...member,
+			profilePhoto: profilePhotoFace?.photo
+				? {
+						faceId: profilePhotoFace.id,
+						photoId: profilePhotoFace.photoId,
+						albumId: profilePhotoFace.photo.albumId,
+					}
+				: null,
+		};
 	}
 
 	@Patch(":memberId")

@@ -28,6 +28,7 @@ import { NotificationsModelModule } from "./models/notifications/notifications-m
 import { SettingsModelModule } from "./models/settings/settings-model.module";
 import { StatisticsModelModule } from "./models/statistics/statistics-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
+import { WorkerModelModule } from "./models/worker/worker-model.module";
 import { SeedModule } from "./seed/seed.module";
 
 @Module({
@@ -69,6 +70,7 @@ import { SeedModule } from "./seed/seed.module";
 		GoogleModelModule,
 		FilesModule,
 		SeedModule,
+		WorkerModelModule.forRoot({ processors: true }),
 	],
 	controllers: [],
 	providers: [MailService],

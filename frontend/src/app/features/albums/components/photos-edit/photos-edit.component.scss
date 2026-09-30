@@ -144,3 +144,69 @@ ion-toolbar {
 		right: 0.5rem;
 	}
 }
+
+.faces-toggle.active {
+	--color: var(--ion-color-warning, #ffc409);
+}
+
+.faces-layer {
+	position: absolute;
+	pointer-events: none;
+	z-index: 5;
+}
+
+.face {
+	position: absolute;
+	padding: 0;
+	margin: 0;
+	background: none;
+	border: 2px dashed rgba(255, 255, 255, 0.85);
+	border-radius: 6px;
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+	cursor: pointer;
+	pointer-events: auto;
+	transition: border-color 0.15s ease;
+
+	&:hover,
+	&:focus-visible {
+		border-color: var(--ion-color-warning, #ffc409);
+		outline: none;
+	}
+
+	&.assigned {
+		border-style: solid;
+		border-color: var(--ion-color-warning, #ffc409);
+	}
+}
+
+.face-label {
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	transform: translate(-50%, 4px);
+	padding: 1px 6px;
+	border-radius: 4px;
+	background: rgba(0, 0, 0, 0.75);
+	color: #fff;
+	font-size: 0.75rem;
+	line-height: 1.4;
+	white-space: nowrap;
+	pointer-events: none;
+}
+
+.people-bar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	padding: 4px 12px 0;
+
+	ion-chip {
+		--color: #fff;
+		margin: 0;
+		border-color: rgba(255, 255, 255, 0.5);
+
+		ion-icon {
+			color: #fff;
+		}
+	}
+}

@@ -1,25 +1,172 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { relative, resolve, sep } from "path";
+import { PhotoSizes } from "src/api/albums/dto/photo.dto";
+import { Config } from "src/config";
+import { FilesService } from "src/models/files/services/files.service";
 import { Member } from "src/models/members/entities/member.entity";
-import { Repository } from "typeorm";
+import { User } from "src/models/users/entities/user.entity";
+import { DataSource, Repository } from "typeorm";
 import { PhotoFace } from "../entities/photo-face.entity";
+import { Photo } from "../entities/photo.entity";
+import { DetectFacesJob, FaceBox, FacesDetectedResult } from "../schema/detected-faces";
+import { PhotosFilesService } from "./photos-files.service";
+
+const ASSIGNED_OVERLAP_IOU = 0.5;
+
+export function faceIou(a: FaceBox, b: FaceBox) {
+	const left = Math.max(a.x, b.x);
+	const top = Math.max(a.y, b.y);
+	const right = Math.min(a.x + a.width, b.x + b.width);
+	const bottom = Math.min(a.y + a.height, b.y + b.height);
+
+	const intersection = Math.max(0, right - left) * Math.max(0, bottom - top);
+	const union = a.width * a.height + b.width * b.height - intersection;
+
+	return union > 0 ? intersection / union : 0;
+}
 
 @Injectable()
 export class PhotoFacesService {
-	constructor(@InjectRepository(PhotoFace) private photoFacesRepository: Repository<PhotoFace>) {}
+	constructor(
+		@InjectRepository(PhotoFace) private photoFaces: Repository<PhotoFace>,
+		@InjectRepository(Photo) private photos: Repository<Photo>,
+		private dataSource: DataSource,
+		private photosFilesService: PhotosFilesService,
+		private filesService: FilesService,
+		private config: Config,
+	) {}
 
-	async getFacesByMember(memberId: Member["id"], options: { limit?: number } = {}) {
-		return this.photoFacesRepository.find({ where: { memberId }, take: options.limit });
+	async getPhotoFaces(photoId: Photo["id"]) {
+		return this.photoFaces
+			.createQueryBuilder("faces")
+			.leftJoinAndSelect("faces.member", "member")
+			.where("faces.photo_id = :photoId", { photoId })
+			.orderBy("faces.x", "ASC")
+			.getMany();
 	}
 
-	async getSimilarFaces(faceId: number, options: { limit?: number } = {}) {
-		const query = this.photoFacesRepository
+	async getPhotoFace(photoId: Photo["id"], faceId: PhotoFace["id"]) {
+		return this.photoFaces.findOne({ where: { id: faceId, photoId }, relations: { photo: true } });
+	}
+
+	async getFace(faceId: PhotoFace["id"]) {
+		return this.photoFaces.findOne({ where: { id: faceId }, relations: { photo: true } });
+	}
+
+	async assignPhotoFace(faceId: PhotoFace["id"], memberId: Member["id"] | null, assignedById: User["id"] | null) {
+		await this.photoFaces.update(faceId, {
+			memberId,
+			assignedById: memberId ? assignedById : null,
+			assignedAt: memberId ? new Date() : null,
+		});
+	}
+
+	async deletePhotoFace(faceId: PhotoFace["id"]) {
+		await this.photoFaces.delete(faceId);
+		await this.photosFilesService.deleteFaceImage(faceId);
+	}
+
+	async getMemberPhotos(memberId: Member["id"], options: { limit?: number; offset?: number } = {}) {
+		const faces = await this.photoFaces
 			.createQueryBuilder("faces")
-			.leftJoin("photo_faces", "face", "face.id = :face", { face: faceId })
-			.where("faces.descriptor <-> face.descriptor < :treshold", { treshold: 0.6 });
+			.innerJoinAndSelect("faces.photo", "photo")
+			.where("faces.member_id = :memberId", { memberId })
+			.orderBy("photo.timestamp", "DESC")
+			.addOrderBy("photo.id", "DESC")
+			.skip(options.offset ?? 0)
+			.take(options.limit ?? 50)
+			.getMany();
 
-		if (options.limit) query.limit(options.limit);
+		return faces.map(({ photo, ...face }) => ({ ...photo!, face }));
+	}
 
-		return query.getMany();
+	async getPhotosForDetection(limit: number) {
+		return this.photos
+			.createQueryBuilder("photos")
+			.where("photos.faces_detected_at IS NULL")
+			.orderBy("photos.timestamp", "DESC")
+			.addOrderBy("photos.id", "DESC")
+			.take(limit)
+			.getMany();
+	}
+
+	async getDetectionJob(photo: Photo): Promise<DetectFacesJob | null> {
+		for (const size of [PhotoSizes.big, PhotoSizes.original]) {
+			const path = this.photosFilesService.getPhotoImagePath(photo, size);
+
+			try {
+				await this.filesService.fileAccessible(path);
+			} catch {
+				continue;
+			}
+
+			const relativePath = relative(resolve(this.config.fs.dataDir), path);
+			if (relativePath.startsWith(".." + sep) || relativePath === "..") {
+				throw new Error(`Photo ${photo.id} is stored outside DATA_DIR, the worker cannot read it.`);
+			}
+
+			return { photoId: photo.id, path: relativePath.split(sep).join("/") };
+		}
+
+		return null;
+	}
+
+	async markDetectionFailed(photoId: Photo["id"], model: string | null, error: string) {
+		await this.photos.update(photoId, { facesDetectedAt: new Date(), facesModel: model, facesError: error });
+	}
+
+	async saveDetectedFaces(result: FacesDetectedResult) {
+		const removedFaceIds = await this.dataSource.transaction(async (t) => {
+			const photo = await t.findOneBy(Photo, { id: result.photoId });
+			if (!photo) return [];
+
+			if (result.error !== undefined) {
+				await t.update(Photo, photo.id, {
+					facesDetectedAt: new Date(),
+					facesModel: result.model,
+					facesError: result.error.slice(0, 1000),
+				});
+				return [];
+			}
+
+			const existing = await t.findBy(PhotoFace, { photoId: photo.id });
+			const assigned = existing.filter((face) => face.memberId !== null);
+			const unassigned = existing.filter((face) => face.memberId === null);
+
+			if (unassigned.length)
+				await t.delete(
+					PhotoFace,
+					unassigned.map((face) => face.id),
+				);
+
+			const faces = result.faces
+				.filter((face) => !assigned.some((a) => faceIou(a, face) > ASSIGNED_OVERLAP_IOU))
+				.map((face) =>
+					t.create(PhotoFace, {
+						photoId: photo.id,
+						memberId: null,
+						x: face.x,
+						y: face.y,
+						width: face.width,
+						height: face.height,
+						score: face.score,
+						descriptor: face.descriptor,
+						model: result.model,
+					}),
+				);
+
+			if (faces.length) await t.save(PhotoFace, faces);
+
+			await t.update(Photo, photo.id, {
+				facesDetectedAt: new Date(),
+				facesModel: result.model,
+				facesError: null,
+			});
+
+			return unassigned.map((face) => face.id);
+		});
+
+		await Promise.all(removedFaceIds.map((id) => this.photosFilesService.deleteFaceImage(id)));
 	}
 }

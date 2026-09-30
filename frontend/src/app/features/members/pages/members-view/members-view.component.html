@@ -9,6 +9,7 @@
 		<div class="col-12 col-xl-4 col-xxl-3 d-lg-block">
 			<bo-member-profile
 				[member]="member()"
+				(change)="reloadMember()"
 				class="d-lg-block mb-5"
 				[class.d-none]="view() !== 'profile'"
 			></bo-member-profile>
@@ -43,6 +44,12 @@
 					<bo-member-health [member]="member()" (update)="updateMember($event)" (reload)="reloadMember()" />
 				</div>
 			</div>
+
+			@if (member()?._links?.listMemberPhotos?.allowed) {
+				<div class="photos-col d-lg-block" [class.d-none]="view() !== 'photos'">
+					<bo-member-photos [member]="member()" />
+				</div>
+			}
 		</div>
 	</div>
 </bo-page-content>
@@ -52,5 +59,8 @@
 		<bo-tab name="profile" label="Profil" icon="person-circle-outline"></bo-tab>
 		<bo-tab name="health" label="Zdraví" icon="medkit-outline" color="var(--san-red)"></bo-tab>
 		<bo-tab name="contacts" label="Kontakty" icon="call-outline"></bo-tab>
+		@if (member()?._links?.listMemberPhotos?.allowed) {
+			<bo-tab name="photos" label="Fotky" icon="images-outline"></bo-tab>
+		}
 	</bo-tabs>
 </bo-page-footer>

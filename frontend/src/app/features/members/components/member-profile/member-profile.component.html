@@ -1,11 +1,37 @@
 <bo-card class="profile-card">
 	<bo-card-content>
 		<div class="profile">
-			<ion-avatar class="avatar">
-				@if (member()) {
-					<span>{{ member()! | member: "initials" }}</span>
+			<div class="avatar-wrapper">
+				<ion-avatar
+					class="avatar"
+					[class.clickable]="!!member()?.profilePhoto"
+					[attr.role]="member()?.profilePhoto ? 'button' : null"
+					(click)="openSourcePhoto()"
+				>
+					@if (member() | memberProfilePhotoUrl; as src) {
+						<img [src]="src" [alt]="member()!.nickname" />
+					} @else if (member()) {
+						<span>{{ member()! | member: "initials" }}</span>
+					}
+				</ion-avatar>
+
+				@if (member()?._links?.updateMemberProfilePhoto?.applicable) {
+					<button
+						type="button"
+						class="avatar-edit"
+						[class.disabled]="!member()!._links.updateMemberProfilePhoto.allowed"
+						[attr.aria-disabled]="!member()!._links.updateMemberProfilePhoto.allowed"
+						[boTooltip]="
+							member()!._links.updateMemberProfilePhoto.allowed
+								? 'Změnit profilovou fotku'
+								: 'Na změnu profilové fotky nemáš oprávnění.'
+						"
+						(click)="editProfilePhoto()"
+					>
+						<ion-icon name="camera-outline"></ion-icon>
+					</button>
 				}
-			</ion-avatar>
+			</div>
 
 			@if (member()?.nickname || member()?.firstName) {
 				<div class="profile-name san selectable d-none d-xl-block">

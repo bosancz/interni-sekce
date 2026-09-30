@@ -1,0 +1,51 @@
+<bo-modal-layout>
+	<h4 slot="title">Profilová fotka</h4>
+
+	<div class="bm-body">
+		@if (loading()) {
+			<div class="pp-loading"><ion-spinner name="dots"></ion-spinner></div>
+		} @else if (faces().length) {
+			<p class="pp-helper">Vyber obličej z fotek, na kterých je {{ member.nickname }} označený.</p>
+			<div class="pp-grid">
+				@for (face of faces(); track face.id) {
+					<button
+						type="button"
+						class="pp-face"
+						[class.selected]="selectedFaceId() === face.id"
+						[attr.aria-pressed]="selectedFaceId() === face.id"
+						(click)="selectedFaceId.set(face.id)"
+					>
+						<img [src]="face | photoFaceImageUrl" loading="lazy" alt="" />
+					</button>
+				}
+			</div>
+		} @else {
+			<p class="pp-helper">
+				{{ member.nickname }} zatím není označený na žádné fotce. Obličej přiřadíš v galerii — otevři fotku a
+				zapni „Obličeje“.
+			</p>
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		@if (member._links.deleteMemberProfilePhoto.applicable) {
+			<button
+				type="button"
+				class="bm-btn-ghost pp-remove"
+				[disabled]="!member._links.deleteMemberProfilePhoto.allowed"
+				(click)="remove()"
+			>
+				Odebrat
+			</button>
+		}
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button
+			type="button"
+			class="bm-btn-primary"
+			[disabled]="selectedFaceId() === null || selectedFaceId() === member.profilePhotoFaceId"
+			(click)="save()"
+		>
+			Uložit
+		</button>
+	</div>
+</bo-modal-layout>
