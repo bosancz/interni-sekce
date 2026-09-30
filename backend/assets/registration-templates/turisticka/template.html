@@ -2,245 +2,26 @@
 <html lang="cs">
 	<head>
 		<meta charset="utf-8" />
+		<link rel="stylesheet" href="../common.css" />
 		<style>
-			/* Brand headline font (sdílené fonty leží v ../../fonts) */
-			@font-face {
-				font-family: "SanGrotesk";
-				src: url("../../fonts/SanGrotesk-Regular.otf");
-			}
-
-			@font-face {
-				font-family: "NunitoSans";
-				src: url("../../fonts/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf");
-			}
-
-			/* --- barva šablony: stačí změnit tuto jednu hodnotu (při generování ji nahradí vybraná barva) --- */
 			:root {
 				--accent: #799f3d;
-			}
-
-			@page {
-				size: A4 landscape;
-				margin: 1.1cm;
-			}
-
-			* {
-				box-sizing: border-box;
-			}
-
-			body {
-				font-family: "NunitoSans", "Helvetica Neue", Arial, sans-serif;
-				font-size: 11px;
-				line-height: 1.4;
-				color: #1f2329;
-				margin: 0;
-			}
-
-			/* výška tisknutelné plochy A4 na šířku minus okraje @page (≈ 210 − 2×1,1 cm) */
-			.page {
-				position: relative;
-				min-height: 182mm;
-			}
-
-			/* logo SAN ve vlastních barvách – roh */
-			.sanlogo {
-				position: absolute;
-				bottom: 0%;
-				right: 0;
-				width: 126px;
-				height: auto;
-			}
-
-			/* hlavička s názvem akce */
-			.header {
-				margin-bottom: 20px;
-				padding-right: 110px;
-			}
-
-			.header h1 {
-				font-family: "SanGrotesk", sans-serif;
-				font-size: 32px;
-				line-height: 1.1;
-				color: var(--accent);
-				margin: 0;
-			}
-
-			/* tematické ikony – velký dekorativní shluk v levém dolním rohu (obarví se vybranou barvou, viz README) */
-
-
-			.icon {
-				position: absolute;
-				filter: brightness(0) invert(0.5);
-				top: 69%;
-				left: 2%;
-				width: 160px;
-
-			}
-
-			.icon svg {
-				display: block;
-				width: 100%;
-				height: 100%;
-
-			}
-
-			.flek-icon {
-				position: absolute;
-				top: 54%;
-				left: -12%;
-				width: 400px;
-			}
-
-			.flek-icon svg {
-				display: block;
-				width: 100%;
-				height: 100%;
-
-			}
-
-
-
-			.columns {
-				display: flex;
-				gap: 32px;
-			}
-
-			.col {
-				flex: 1 1 0;
-				min-width: 0;
-			}
-
-			h2 {
-				font-family: "SanGrotesk", sans-serif;
-				font-size: 17px;
-				color: var(--accent);
-				margin: 0 0 10px;
-			}
-
-			.description {
-				margin-bottom: 12px;
-			}
-
-			.info-box {
-				border: 1px solid #e1e1e6;
-				border-left: 3px solid var(--accent);
-				background: #fafafb;
-				border-radius: 4px;
-				padding: 10px 14px;
-			}
-
-			.info-box p {
-				margin: 4px 0;
-			}
-
-			.info-box .item-list > .label + p {
-				display: inline;
-			}
-
-			.info-box .item-list ul,
-			.info-box .item-list ol {
-				margin: 4px 0;
-				padding-left: 18px;
-			}
-
-			/* volitelný box s doplňující informací (např. platební instrukce) */
-			.note-box {
-				margin-top: 12px;
-				border: 1px solid #e1e1e6;
-				border-left: 3px solid var(--accent);
-				background: #fafafb;
-				border-radius: 4px;
-				padding: 10px 14px;
-			}
-
-			.note-box > :first-child {
-				margin-top: 0;
-			}
-
-			.note-box > :last-child {
-				margin-bottom: 0;
-			}
-
-			.label {
-				font-weight: 700;
-			}
-
-			.blank {
-				display: inline-block;
-				border-bottom: 1px solid #b6b6bd;
-				min-width: 170px;
-				height: 1em;
-				vertical-align: bottom;
-			}
-
-			/* registrační formulář */
-			.field {
-				display: flex;
-				align-items: flex-end;
-				gap: 8px;
-				margin-bottom: 16px;
-			}
-
-			.field .label {
-				white-space: nowrap;
-			}
-
-			.field .line {
-				flex: 1;
-				border-bottom: 1px solid #b6b6bd;
-				height: 1em;
-			}
-
-			/* rámeček na kartičku pojištěnce – velikost platební karty */
-			.card-box {
-				width: 85.6mm;
-				height: 53.98mm;
-				border: 1px dashed #b6b6bd;
-				border-radius: 6px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				color: #9a9aa2;
-				margin: 16px auto;
-			}
-
-			.declaration {
-				margin: 14px 0;
-				color: #44474d;
-			}
-
-			.signature {
-				display: flex;
-				gap: 24px;
-				margin-top: 22px;
-			}
-
-			.signature > div {
-				flex: 1;
-				display: flex;
-				align-items: flex-end;
-				gap: 8px;
-			}
-
-			.signature .line {
-				flex: 1;
-				border-bottom: 1px solid #b6b6bd;
-				height: 1em;
 			}
 		</style>
 	</head>
 	<body>
 		<div class="page">
-			<img class="sanlogo" src="../../img/sanlogo-07.svg" alt="šán" />
-
 			<header class="header">
 				<h1>{{name}}</h1>
+				<span class="pictogram">
+					<img class="icon flek" src="../../img/flek-3.svg" alt="" />
+					<img class="pictogram-symbol" src="../../img/taborak.svg" alt="táborák" />
+				</span>
 			</header>
 
 			<div class="columns">
-				<!-- LEVÝ SLOUPEC: info o akci -->
-				<div class="col">
-					<h2>O akci</h2>
+				<section class="col about">
+					<h2 class="section-title">O akci</h2>
 
 					{{#if descriptionHtml}}<div class="description">{{{descriptionHtml}}}</div>{{/if}}
 
@@ -254,11 +35,13 @@
 					</div>
 
 					{{#if noteHtml}}<div class="note-box">{{{noteHtml}}}</div>{{/if}}
-				</div>
 
-				<!-- PRAVÝ SLOUPEC: přihláška k vyplnění -->
-				<div class="col">
-					<h2>Přihláška</h2>
+					<img class="sanlogo" src="../../img/sanlogo-07.svg" alt="šán" />
+				</section>
+
+				<section class="col form">
+					<span class="scissors">✁</span>
+					<h2 class="section-title">Přihláška</h2>
 
 					<div class="field"><span class="label">Jméno a příjmení dítěte:</span><span class="line"></span></div>
 					<div class="field"><span class="label">Datum narození:</span><span class="line"></span></div>
@@ -271,20 +54,14 @@
 
 					<p class="declaration">
 						Podpisem prohlašuji, že lékař dítěti nenařídil změnu režimu, dítě nejeví známky akutního
-						onemocnění. Dítě je schopno zúčastnit se akce.
+						onemocnění a je schopno zúčastnit se akce.
 					</p>
 
 					<div class="signature">
 						<div><span class="label">Podpis:</span><span class="line"></span></div>
 						<div><span class="label">Datum:</span><span class="line"></span></div>
 					</div>
-				</div>
-			</div>
-
-			<div class="icons">
-				<img class="flek-icon" src="../../img/flek-3.svg" alt="" />
-				<img class="icon" src="../../img/taborak.svg" alt="" />
-
+				</section>
 			</div>
 		</div>
 	</body>

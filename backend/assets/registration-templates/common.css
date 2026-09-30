@@ -1,0 +1,219 @@
+@font-face {
+	font-family: "SanGrotesk";
+	src: url("../fonts/SanGrotesk-Regular.otf");
+}
+
+@font-face {
+	font-family: "NunitoSans";
+	src: url("../fonts/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf");
+}
+
+@page {
+	size: A4 landscape;
+	margin: 1.1cm;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	font-family: "NunitoSans", "Helvetica Neue", Arial, sans-serif;
+	font-size: 11px;
+	line-height: 1.4;
+	color: #1f2329;
+	margin: 0;
+}
+
+.page {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-height: 186mm;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	height: 96px;
+	margin-bottom: 14px;
+}
+
+.header h1 {
+	flex: 1;
+	min-width: 0;
+	font-family: "SanGrotesk", sans-serif;
+	font-size: 30px;
+	line-height: 1.05;
+	color: var(--accent);
+	margin: 0;
+}
+
+.pictogram {
+	position: relative;
+	flex: none;
+	width: 112px;
+	height: 96px;
+}
+
+.pictogram .flek {
+	position: absolute;
+	inset: 0;
+}
+
+.pictogram .flek svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.pictogram .pictogram-symbol {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 62px;
+	height: 62px;
+	object-fit: contain;
+	transform: translate(-50%, -50%) rotate(var(--pictogram-rotate, 0deg));
+	filter: brightness(0) invert(1);
+}
+
+.columns {
+	flex: 1;
+	display: flex;
+	gap: 30px;
+}
+
+.col {
+	flex: 1 1 0;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.col.form {
+	position: relative;
+	border-left: 1px dashed #c4c4cc;
+	padding-left: 30px;
+}
+
+.col.form .scissors {
+	position: absolute;
+	top: -2px;
+	left: -8px;
+	font-size: 14px;
+	line-height: 1;
+	color: #b6b6bd;
+	background: #fff;
+}
+
+.sanlogo {
+	display: block;
+	width: 110px;
+	height: auto;
+	margin-top: auto;
+	padding-top: 12px;
+}
+
+.section-title {
+	font-family: "SanGrotesk", sans-serif;
+	font-size: 17px;
+	color: var(--accent);
+	margin: 0 0 10px;
+}
+
+.description {
+	margin-bottom: 12px;
+}
+
+.description > :first-child {
+	margin-top: 0;
+}
+
+.info-box {
+	border: 1px solid #e1e1e6;
+	border-left: 3px solid var(--accent);
+	background: #fafafb;
+	border-radius: 6px;
+	padding: 10px 14px;
+}
+
+.info-box p {
+	margin: 4px 0;
+}
+
+.info-box .item-list ul,
+.info-box .item-list ol {
+	margin: 4px 0;
+	padding-left: 18px;
+}
+
+.note-box {
+	margin-top: 10px;
+	border: 1px dashed var(--accent);
+	background: #fff;
+	border-radius: 6px;
+	padding: 8px 12px;
+}
+
+.note-box > :first-child {
+	margin-top: 0;
+}
+
+.note-box > :last-child {
+	margin-bottom: 0;
+}
+
+.label {
+	font-weight: 700;
+}
+
+.field {
+	display: flex;
+	align-items: flex-end;
+	gap: 8px;
+	margin-bottom: 15px;
+}
+
+.field .label {
+	white-space: nowrap;
+}
+
+.field .line,
+.signature .line {
+	flex: 1;
+	border-bottom: 1px solid #b6b6bd;
+	height: 1em;
+}
+
+.card-box {
+	width: 85.6mm;
+	height: 53.98mm;
+	border: 1px dashed #b6b6bd;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	color: #9a9aa2;
+	margin: 16px auto;
+}
+
+.declaration {
+	margin: 14px 0;
+	color: #44474d;
+}
+
+.signature {
+	display: flex;
+	gap: 24px;
+	margin-top: 18px;
+}
+
+.signature > div {
+	flex: 1;
+	display: flex;
+	align-items: flex-end;
+	gap: 8px;
+}

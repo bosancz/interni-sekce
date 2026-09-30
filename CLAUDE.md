@@ -76,6 +76,7 @@
 ## Přihlášky (PDF)
 
 - Šablony z `backend/assets/registration-templates` renderuje `EventRegistrationService` systémovým Chromiem přes Puppeteer (PDF i JPEG náhled). **Emoji potřebují emoji font přímo v image** — jinak Chromium sáhne po Unifontu a v PDF je čtvereček (`font-noto-emoji` v `Dockerfile`, `fonts-noto-color-emoji` v `.devcontainer/Dockerfile`). Font si Chromium najde sám přes fontconfig, v šablonách se nic nenastavuje — webfont by ve fallbacku stejně nefungoval, musel by být vypsaný v každém `font-family`.
+- **Kostra všech šablon je ve sdíleném `registration-templates/common.css`** (#401) — nahoře název a piktogram (flek + bílý symbol), pod tím dva sloupce: vlevo O akci s logem šán dole, vpravo přihláška za čárkovanou linkou. Šablona si ve vlastním `<style>` mění jen vzhled (barva, nadpisy, rámečky). Fleky a symboly v `assets/img` mají `viewBox` oříznutý na kresbu, aby se daly skládat bez ručního posouvání.
 
 ## QR platba
 

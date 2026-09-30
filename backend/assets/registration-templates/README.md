@@ -14,7 +14,7 @@ po kliknutí na tlačítko **Generovat**.
    { "name": "Podzimky" }
    ```
    Bez něj se použije název složky.
-4. Obrázky/loga dej do stejné složky a odkazuj na ně relativně:
+4. Obrázky dej do stejné složky a odkazuj na ně relativně:
    `<img src="logo.png">` nebo `<img src="images/foto.jpg">`.
 
 ## Placeholdery (kam se doplní data akce)
@@ -41,42 +41,43 @@ linky k vyplnění rukou, rámeček na kartičku pojištěnce apod.).
 
 ## Barva přihlášky
 
-Při generování se nejdřív vybere barva (černá, modrá, zelená, červená, žlutá). Ta přepíše
+Při generování se nejdřív vybere barva (černá, modrá, zelená, červená, oranžová). Ta přepíše
 CSS proměnnou `--accent` v šabloně, takže stačí v šabloně používat `var(--accent)`. Hodnota
 `--accent` zapsaná přímo v šabloně slouží jen jako výchozí náhled v prohlížeči – při generování
 ji nahradí vybraná barva.
 
-## Ikony (obarví se vybranou barvou)
+## Společný vzhled (`common.css`)
 
-Obrázek s třídou `icon` se při generování nahradí vloženým SVG obarveným vybranou barvou:
+Všechny šablony mají stejné rozvržení stránky, které drží sdílený soubor **`common.css`**
+v tomto adresáři (šablona ho načte přes `<link rel="stylesheet" href="../common.css" />`):
 
-```html
-<img class="icon" src="../../img/vlny.svg" alt="" />
-```
+- nahoře **název akce** a vpravo od něj **piktogram** (barevný flek se symbolem),
+- pod tím **dva sloupce**: vlevo *O akci* (zůstává doma), vpravo *Přihláška* (na odstřižení,
+  oddělená svislou čárkovanou linkou s nůžkami),
+- **logo šán** vždy v levém dolním rohu, pod informacemi o akci.
 
-Funguje to jen pro SVG ze složky `../../img`. Soubory jsou pojmenované podle toho, co je na nich:
-`vlny.svg`, `plachetnice.svg`, `kajak.svg`, `stan.svg`, `taborak.svg`, `bota.svg`,
-`zachranny-kruh.svg`, `pastelka.svg` a barevné fleky `flek-1.svg`–`flek-4.svg`. V prohlížeči
-se ukáže původní (černý) obrázek, v PDF už obarvená verze. Velikost nastav přes CSS na `.icon`.
+Vlastní `<style>` v šabloně pak mění už jen vzhled – výchozí barvu, styl nadpisů sekcí, rámečků apod.
+Kostru stránky (třídy `page`, `header`, `pictogram`, `columns`, `col about`, `col form`, `sanlogo`)
+zachovej, ať vypadají všechny přihlášky stejně – nejjednodušší je zkopírovat některou vzorovou šablonu.
 
-Obrázek **bez** třídy `icon` (např. `<img class="sanlogo" src="../../img/sanlogo-07.svg">`) zůstane
-ve svých původních barvách – tak je v šablonách umístěné logo SAN v rohu.
-
-## Barevné „fleky" (chunk + ikona)
-
-Fleky (`flek-1.svg`–`flek-4.svg`) jsou plné kaňky. Daš-li jim třídu `icon`, obarví se vybranou
-barvou – a navrch můžeš překrýt tematickou ikonu (obyčejný `<img>` **bez** třídy `icon`, takže
-zůstane černá). Vznikne tak barevná skvrna se symbolem uvnitř:
+## Piktogram
 
 ```html
-<span class="chunk">
-	<img class="icon" src="../../img/flek-3.svg" alt="" />   <!-- kaňka ve vybrané barvě -->
-	<img class="chunk-icon" src="../../img/taborak.svg" alt="" />  <!-- symbol navrch -->
+<span class="pictogram">
+	<img class="icon flek" src="../../img/flek-3.svg" alt="" />
+	<img class="pictogram-symbol" src="../../img/taborak.svg" alt="táborák" />
 </span>
 ```
 
-Aby byl symbol čitelný i na tmavé kaňce, ve vzorových šablonách ho přebarvujeme na bílo přes CSS
-`filter: brightness(0) invert(1)` na `.chunk-icon`.
+Flek má třídu `icon`, takže se obarví vybranou barvou (viz níže), symbol navrch je bílý.
+K dispozici jsou fleky `flek-1.svg`–`flek-4.svg` a symboly `taborak.svg`, `stan.svg`, `bota.svg`,
+`kajak.svg`, `plachetnice.svg`, `zachranny-kruh.svg`, `pastelka.svg` a `kvetina.svg`, všechny ve
+složce `../../img` a oříznuté na velikost kresby. Úzký symbol (pastelka) jde natočit proměnnou
+`--pictogram-rotate` v `:root` šablony.
 
-Vzorové šablony najdeš ve složkách vedle tohoto souboru – nejjednodušší je jednu zkopírovat
-a upravit.
+## Ikony (obarví se vybranou barvou)
+
+Obrázek s třídou `icon` se při generování nahradí vloženým SVG obarveným vybranou barvou.
+Funguje to jen pro SVG ze složky `../../img`. V prohlížeči se ukáže původní (černý) obrázek,
+v PDF už obarvená verze. Obrázek **bez** třídy `icon` (logo šán, symbol piktogramu) zůstane
+ve svých původních barvách.
