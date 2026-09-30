@@ -9,6 +9,7 @@ import { Brackets, FindOptionsSelect, Repository } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "../entities/event-attendee.entity";
 import { EventExpense } from "../entities/event-expense.entity";
 import { Event, EventStates } from "../entities/event.entity";
+import { getEventLeaders } from "../helpers/event-leaders";
 
 export interface GetEventsOptions extends PaginationOptions {
 	year?: number[];
@@ -96,9 +97,7 @@ export class EventsRepository {
 		const events = await q.getMany();
 
 		for (const event of events) {
-			event.leaders = (event.attendees ?? [])
-				.filter((a) => a.member && a.type === EventAttendeeType.leader)
-				.map((a) => a.member!);
+			event.leaders = getEventLeaders(event.attendees);
 		}
 
 		return events;
@@ -150,9 +149,7 @@ export class EventsRepository {
 
 	private withLeaders(events: Event[]) {
 		for (const event of events) {
-			event.leaders = (event.attendees ?? [])
-				.filter((a) => a.member && a.type === EventAttendeeType.leader)
-				.map((a) => a.member!);
+			event.leaders = getEventLeaders(event.attendees);
 		}
 
 		return events;
@@ -179,7 +176,7 @@ export class EventsRepository {
 			withDeleted: true,
 		});
 		event.attendees = leaderAttendees;
-		event.leaders = leaderAttendees.map((ea) => ea.member!);
+		event.leaders = getEventLeaders(leaderAttendees);
 
 		return event;
 	}
@@ -207,9 +204,7 @@ export class EventsRepository {
 		const events = await q.getMany();
 
 		for (const event of events) {
-			event.leaders = (event.attendees ?? [])
-				.filter((a) => a.member && a.type === EventAttendeeType.leader)
-				.map((a) => a.member!);
+			event.leaders = getEventLeaders(event.attendees);
 		}
 
 		return events;
@@ -296,6 +291,14 @@ export class EventsRepository {
 
 	async updateEventAttendee(eventId: number, memberId: number, data: Partial<EventAttendee>) {
 		await this.eventAttendeesRepository.update({ eventId, memberId }, data);
+	}
+
+	async setEventLeadersOrder(eventId: number, memberIds: number[]) {
+		await this.eventAttendeesRepository.manager.transaction(async (t) => {
+			for (const [position, memberId] of memberIds.entries()) {
+				await t.update(EventAttendee, { eventId, memberId, type: EventAttendeeType.leader }, { position });
+			}
+		});
 	}
 
 	async deleteEventAttendee(eventId: number, memberId: number) {

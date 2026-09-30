@@ -345,6 +345,14 @@ export const EventLeaderCreatePermission = new Permission({
 	applicable: ({ doc }) => !doc.deletedAt,
 });
 
+export const EventLeadersOrderPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventEditPermission,
+	applicable: ({ doc }) => !doc.deletedAt,
+});
+
 export const EventAttendeeEditPermission = new Permission({
 	linkTo: EventAttendeeResponse,
 

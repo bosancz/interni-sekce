@@ -12,8 +12,14 @@ import {
 	EventAttendeeEditPermission,
 	EventAttendeesListPermission,
 	EventLeaderCreatePermission,
+	EventLeadersOrderPermission,
 } from "../acl/events.acl";
-import { EventAttendeeCreateBody, EventAttendeeResponse, EventAttendeeUpdateBody } from "../dto/event-attendee.dto";
+import {
+	EventAttendeeCreateBody,
+	EventAttendeeResponse,
+	EventAttendeeUpdateBody,
+	EventLeadersOrderBody,
+} from "../dto/event-attendee.dto";
 
 @Controller("events")
 @Authenticated()
@@ -69,8 +75,34 @@ export class EventsAttendeesController {
 
 		const attendee = await this.events.getEventAttendee(eventId, memberId);
 
-		if (attendee) await this.events.updateEventAttendee(eventId, memberId, { type: EventAttendeeType.leader });
-		else await this.events.createEventAttendee(eventId, memberId, { type: EventAttendeeType.leader });
+		if (attendee?.type === EventAttendeeType.leader) return;
+
+		if (attendee)
+			await this.events.updateEventAttendee(eventId, memberId, {
+				type: EventAttendeeType.leader,
+				position: null,
+			});
+		else
+			await this.events.createEventAttendee(eventId, memberId, {
+				type: EventAttendeeType.leader,
+				position: null,
+			});
+	}
+
+	@Put(":eventId/leaders")
+	@AcLinks(EventLeadersOrderPermission)
+	@ApiResponse({ status: 204 })
+	async updateEventLeadersOrder(
+		@Req() req: Request,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@Body() body: EventLeadersOrderBody,
+	) {
+		const event = await this.events.getEvent(eventId);
+		if (!event) throw new NotFoundException();
+
+		EventLeadersOrderPermission.canOrThrow(req, event);
+
+		await this.events.setEventLeadersOrder(eventId, body.memberIds);
 	}
 
 	@Patch(":eventId/attendees/:memberId")
@@ -87,9 +119,11 @@ export class EventsAttendeesController {
 
 		EventAttendeeEditPermission.canOrThrow(req, eventAttendee);
 
+		if (eventAttendee.type === body.type) return;
+
 		eventAttendee.type = body.type;
 
-		await this.events.updateEventAttendee(eventId, memberId, body);
+		await this.events.updateEventAttendee(eventId, memberId, { type: body.type, position: null });
 	}
 
 	@Delete(":eventId/attendees/:memberId")

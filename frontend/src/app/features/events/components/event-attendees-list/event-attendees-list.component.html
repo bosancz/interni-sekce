@@ -1,46 +1,54 @@
 <ion-list>
-	@for (attendee of attendees(); track attendee.eventId + "-" + attendee.memberId) {
-		<bo-item
-			[label]="attendee.member | member: 'nickname'"
-			[routerLink]="'/databaze/clenove/' + attendee.memberId"
-			[button]="true"
-		>
-			<p class="text-muted">
-				@if (attendee.member) {
-					<bo-member-item-detail
-						[member]="attendee.member"
-						[referenceDate]="event()?.dateFrom"
-					></bo-member-item-detail>
+	<ion-reorder-group [disabled]="!reorderable()" (ionItemReorder)="onReorder($any($event))">
+		@for (attendee of attendees(); track attendee.eventId + "-" + attendee.memberId) {
+			<bo-item
+				[label]="attendee.member | member: 'nickname'"
+				[routerLink]="'/databaze/clenove/' + attendee.memberId"
+				[button]="true"
+			>
+				<p class="text-muted">
+					@if (attendee.member) {
+						<bo-member-item-detail
+							[member]="attendee.member"
+							[referenceDate]="event()?.dateFrom"
+						></bo-member-item-detail>
+					}
+				</p>
+
+				@if (attendee.member?.birthday && hasBirthday(attendee)) {
+					<span class="birthday text-muted"> 🎉 {{ attendee.member.birthday | date: "d. M." }} </span>
 				}
-			</p>
 
-			@if (attendee.member?.birthday && hasBirthday(attendee)) {
-				<span class="birthday text-muted"> 🎉 {{ attendee.member.birthday | date: "d. M." }} </span>
-			}
-
-			<div class="group" slot="end">
-				@if (attendee.member) {
-					<bo-group-badge [short]="true" [groupId]="attendee.member.groupId"></bo-group-badge>
-				}
-			</div>
-
-			<div class="role" slot="end">
-				<ion-badge mode="ios">
-					{{ attendee.member?.role | role: "title" }}
-				</ion-badge>
-			</div>
-
-			@if (canRemoveAny()) {
-				<div class="delete" slot="end">
-					@if (attendee._links.deleteEventAttendee.allowed) {
-						<bo-delete-button
-							(click)="remove.emit(attendee); $event.preventDefault(); $event.stopPropagation()"
-						></bo-delete-button>
+				<div class="group" slot="end">
+					@if (attendee.member) {
+						<bo-group-badge [short]="true" [groupId]="attendee.member.groupId"></bo-group-badge>
 					}
 				</div>
-			}
-		</bo-item>
-	}
+
+				<div class="role" slot="end">
+					<ion-badge mode="ios">
+						{{ attendee.member?.role | role: "title" }}
+					</ion-badge>
+				</div>
+
+				@if (canRemoveAny()) {
+					<div class="delete" slot="end">
+						@if (attendee._links.deleteEventAttendee.allowed) {
+							<bo-delete-button
+								(click)="remove.emit(attendee); $event.preventDefault(); $event.stopPropagation()"
+							></bo-delete-button>
+						}
+					</div>
+				}
+
+				@if (reorderable()) {
+					<div class="reorder" slot="end" boTooltip="Přetažením změníš pořadí">
+						<ion-reorder></ion-reorder>
+					</div>
+				}
+			</bo-item>
+		}
+	</ion-reorder-group>
 
 	@if (attendees() === undefined) {
 		@for (item of loadingArray; track $index) {

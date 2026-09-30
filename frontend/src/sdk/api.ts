@@ -1270,6 +1270,12 @@ export namespace SDK {
          * @memberof EventAttendee
          */
         'type': EventAttendeeTypeEnum;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventAttendee
+         */
+        'position'?: number | null;
     }
     
     export const EventAttendeeTypeEnum = {
@@ -1326,6 +1332,12 @@ export namespace SDK {
          * @memberof EventAttendeeResponse
          */
         'type': EventAttendeeResponseTypeEnum;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventAttendeeResponse
+         */
+        'position'?: number | null;
         /**
          * 
          * @type {MemberResponse}
@@ -1392,6 +1404,12 @@ export namespace SDK {
          * @memberof EventAttendeeResponseWithLinks
          */
         'type': EventAttendeeResponseWithLinksTypeEnum;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventAttendeeResponseWithLinks
+         */
+        'position'?: number | null;
         /**
          * 
          * @type {MemberResponse}
@@ -1793,6 +1811,20 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface EventLeadersOrderBody
+     */
+    export interface EventLeadersOrderBody {
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof EventLeadersOrderBody
+         */
+        'memberIds': Array<number>;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface EventPlaceGeometry
      */
     export interface EventPlaceGeometry {
@@ -2074,6 +2106,12 @@ export namespace SDK {
          * @memberof EventResponseLinks
          */
         'addEventLeader': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'updateEventLeadersOrder': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -7071,6 +7109,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * EventsApi - object-oriented interface
      * @export
@@ -8988,6 +9030,59 @@ export namespace SDK {
             }
     
             const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async updateEventLeadersOrder(
+            eventId: number,
+            body: EventLeadersOrderBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('updateEventLeadersOrder', 'eventId', eventId)
+            assertParamExists('updateEventLeadersOrder', 'eventLeadersOrderBody', body)
+            
+            // verify required parameter 'eventLeadersOrderBody' is not null or undefined
+            assertParamExists('updateEventLeadersOrder', 'eventId', eventId)
+            assertParamExists('updateEventLeadersOrder', 'eventLeadersOrderBody', body)
+            
+            const localVarPath = `/api/events/{eventId}/leaders`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
     

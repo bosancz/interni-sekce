@@ -24,6 +24,11 @@ import { EventBirthdayListComponent } from "../event-birthday-list/event-birthda
 
 const LEADER_ROLES: SDK.MemberRolesEnum[] = [SDK.MemberRolesEnum.Instruktor, SDK.MemberRolesEnum.Vedouci];
 
+const compareLeaderPositions = (a: SDK.EventAttendeeResponseWithLinks, b: SDK.EventAttendeeResponseWithLinks) =>
+	(a.position ?? Infinity) - (b.position ?? Infinity) ||
+	(a.member?.nickname ?? "").localeCompare(b.member?.nickname ?? "", "cs") ||
+	a.memberId - b.memberId;
+
 const addressesLabel = (count: number) => `${count} ${count === 1 ? "adresa" : count < 5 ? "adresy" : "adres"}`;
 
 const withoutEmailLabel = (count: number) =>
@@ -64,6 +69,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 	leaders = signal<SDK.EventAttendeeResponseWithLinks[] | undefined>(undefined);
 
 	canAddLeader = computed(() => this.event()?._links?.addEventLeader?.allowed ?? false);
+	canReorderLeaders = computed(() => this.event()?._links?.updateEventLeadersOrder?.allowed ?? false);
 	canAddAttendee = computed(() => this.event()?._links?.addEventAttendee?.allowed ?? false);
 
 	attendeesCount = computed(() => {
@@ -171,7 +177,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		});
 
 		this.attendees.set(attendees.filter((a) => a.type === "attendee"));
-		this.leaders.set(attendees.filter((a) => a.type === "leader"));
+		this.leaders.set(attendees.filter((a) => a.type === "leader").sort(compareLeaderPositions));
 	}
 
 	private emailsOf(attendees?: SDK.EventAttendeeResponseWithLinks[]) {
@@ -339,6 +345,25 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		return [...(this.attendees() ?? []), ...(this.leaders() ?? [])].find(
 			(attendee) => attendee.memberId === memberId,
 		);
+	}
+
+	async reorderLeaders(leaders: SDK.EventAttendeeResponseWithLinks[]) {
+		const event = this.event();
+		if (!event) return;
+
+		this.leaders.set(leaders.map((leader, position) => ({ ...leader, position })));
+
+		try {
+			await this.api.EventsApi.updateEventLeadersOrder(event.id, {
+				memberIds: leaders.map((leader) => leader.memberId),
+			});
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se změnit pořadí vedoucích.", { color: "danger" });
+			await this.loadAttendees(event);
+			return;
+		}
+
+		this.change.emit();
 	}
 
 	async removeAttendee(attendee: SDK.EventAttendeeResponseWithLinks) {

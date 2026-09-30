@@ -5,8 +5,14 @@
 		<bo-event-attendees-list
 			[event]="event()"
 			[attendees]="leaders()"
+			[sortable]="canReorderLeaders()"
 			(remove)="removeAttendee($event)"
+			(reorder)="reorderLeaders($event)"
 		></bo-event-attendees-list>
+
+		@if (canReorderLeaders() && (leaders()?.length ?? 0) > 1) {
+			<p class="attendees-note text-muted">V tomto pořadí se zobrazí vedoucí na webu</p>
+		}
 
 		@if (canAddLeader()) {
 			<div class="text-center">
