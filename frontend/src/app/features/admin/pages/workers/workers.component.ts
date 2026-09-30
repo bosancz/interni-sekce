@@ -1,6 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnDestroy, OnInit, signal } from "@angular/core";
-import { IonButton, IonContent, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonButton, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { hardwareChipOutline, refreshOutline, serverOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -9,6 +9,7 @@ import { CardContentComponent } from "src/app/shared/components/card-content/car
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
@@ -27,7 +28,7 @@ const STATUS_LABELS: Record<SDK.WorkerStatusEnum, { label: string; pill: string 
 	styleUrl: "./workers.component.scss",
 	imports: [
 		PageHeaderComponent,
-		IonContent,
+		PageContentComponent,
 		IonButton,
 		IonIcon,
 		IonSkeletonText,

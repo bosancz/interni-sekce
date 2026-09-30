@@ -1,5 +1,5 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
-import { IonContent, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { cardOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -10,6 +10,7 @@ import { CardTitleComponent } from "src/app/shared/components/card-title/card-ti
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { EditButtonNumberComponent } from "src/app/shared/components/edit-button-number/edit-button-number.component";
 import { EditButtonTextComponent } from "src/app/shared/components/edit-button-text/edit-button-text.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
 
@@ -30,7 +31,7 @@ import { SDK } from "src/sdk";
 
 	imports: [
 		PageHeaderComponent,
-		IonContent,
+		PageContentComponent,
 		CardComponent,
 		CardHeaderComponent,
 		CardTitleComponent,
