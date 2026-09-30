@@ -42,6 +42,13 @@ jobs:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 
+  cleanup:
+    name: Clean up
+    needs: build
+    uses: ./.github/workflows/cleanup.yml
+    with:
+      package: interni-sekce
+
   deploy:
     name: Deploy
     needs: build

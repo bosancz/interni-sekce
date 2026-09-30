@@ -1,0 +1,30 @@
+name: Clean up untagged images
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Name of the container package to clean up"
+        type: string
+        required: true
+        default: interni-sekce
+  workflow_call:
+    inputs:
+      package:
+        description: "Name of the container package to clean up"
+        type: string
+        required: true
+
+jobs:
+  cleanup:
+    name: Delete untagged image versions
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Delete untagged image versions
+        uses: dataaxiom/ghcr-cleanup-action@v1
+        with:
+          package: ${{ inputs.package }}
+          delete-untagged: true
+          token: ${{ secrets.GITHUB_TOKEN }}
