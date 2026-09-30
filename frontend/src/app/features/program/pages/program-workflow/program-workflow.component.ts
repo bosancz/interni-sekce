@@ -1,19 +1,12 @@
 import { formatDate, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, OnInit, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import {
-	InfiniteScrollCustomEvent,
-	IonButton,
-	IonIcon,
-	IonInfiniteScroll,
-	IonInfiniteScrollContent,
-} from "@ionic/angular/standalone";
+import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { Router } from "@angular/router";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { addOutline, calendarOutline, createOutline, helpCircleOutline, hourglassOutline } from "ionicons/icons";
 import { BehaviorSubject } from "rxjs";
-import { filter, map } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -27,9 +20,7 @@ import { EventListItemComponent } from "../../components/event-list-item/event-l
 import { EventReviewCardComponent } from "../../components/event-review-card/event-review-card.component";
 import { ProgramEventAction } from "../../program-event-action";
 import { EventCreateModalComponent } from "../../../events/components/event-create-modal/event-create-modal.component";
-import { ProgramService } from "../../services/program.service";
 
-@UntilDestroy()
 @Component({
 	selector: "program-workflow",
 	templateUrl: "./program-workflow.component.html",
@@ -39,8 +30,6 @@ import { ProgramService } from "../../services/program.service";
 		NgTemplateOutlet,
 		IonButton,
 		IonIcon,
-		IonInfiniteScroll,
-		IonInfiniteScrollContent,
 		EventListItemComponent,
 		EventReviewCardComponent,
 		PageHeaderComponent,
@@ -64,14 +53,7 @@ export class ProgramWorkflowComponent implements OnInit {
 		this.allEvents().filter((event) => ["draft", "rejected"].includes(event.status) && !!event.leaders?.length),
 	);
 	pendingEvents = computed(() => this.allEvents().filter((event) => event.status === "pending"));
-	publicEvents = computed(() => {
-		const today = formatDate(new Date(), "yyyy-MM-dd", "cs");
-		return this.allEvents().filter(
-			(event) =>
-				["public", "cancelled"].includes(event.status) &&
-				(event.dateTill ?? event.dateFrom ?? today).slice(0, 10) >= today,
-		);
-	});
+	publicEvents = computed(() => this.allEvents().filter((event) => ["public", "cancelled"].includes(event.status)));
 
 	publicEventsByMonth = computed(() => {
 		const sorted = [...this.publicEvents()].sort((a, b) =>
@@ -93,14 +75,9 @@ export class ProgramWorkflowComponent implements OnInit {
 	});
 
 	loading = signal(true);
-	reachedEnd = signal(false);
-
-	page = 1;
-	readonly pageSize = 50;
 
 	constructor(
 		private api: ApiService,
-		private programService: ProgramService,
 		private modalService: ModalService,
 		private toastService: ToastService,
 		private router: Router,
@@ -110,44 +87,19 @@ export class ProgramWorkflowComponent implements OnInit {
 
 	ngOnInit() {
 		this.loadEvents();
-
-		this.events
-			.pipe(untilDestroyed(this))
-			.pipe(
-				map((events) => events?.filter((event) => event.status === "pending")),
-				filter((events) => events !== undefined),
-			)
-			.subscribe((events: SDK.EventResponseWithLinks[]) =>
-				this.programService.pendingEventsCount.next(events.length),
-			);
 	}
 
-	async loadEvents(loadMore = false) {
-		if (loadMore) {
-			if (this.reachedEnd()) return;
-			this.page++;
-		} else {
-			this.page = 1;
-			this.reachedEnd.set(false);
-			this.events.next([]);
-			this.loading.set(true);
-		}
+	async loadEvents() {
+		this.events.next([]);
+		this.loading.set(true);
 
 		const events = await this.api.EventsApi.listEvents({
-			offset: (this.page - 1) * this.pageSize,
-			limit: this.pageSize,
+			dateFrom: formatDate(new Date(), "yyyy-MM-dd", "cs"),
 		}).then((res) => res.data);
 
-		if (events.length < this.pageSize) this.reachedEnd.set(true);
-
-		this.events.next([...(this.events.value ?? []), ...events]);
+		this.events.next(events);
 
 		this.loading.set(false);
-	}
-
-	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
-		await this.loadEvents(true);
-		e.target.complete();
 	}
 
 	eventChanged(newEvent: SDK.EventResponseWithLinks) {
