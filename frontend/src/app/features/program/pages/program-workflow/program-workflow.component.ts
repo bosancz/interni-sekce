@@ -4,7 +4,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { Router } from "@angular/router";
 import { addIcons } from "ionicons";
-import { addOutline, calendarOutline, createOutline, helpCircleOutline, hourglassOutline } from "ionicons/icons";
+import { addOutline, calendarOutline, createOutline, hourglassOutline } from "ionicons/icons";
 import { BehaviorSubject } from "rxjs";
 import { map } from "rxjs/operators";
 import { ApiService } from "src/app/core/services/api.service";
@@ -46,11 +46,10 @@ export class ProgramWorkflowComponent implements OnInit {
 
 	private allEvents = toSignal(this.events.pipe(map((events) => events ?? [])), { initialValue: [] });
 
-	noLeaderEvents = computed(() =>
-		this.allEvents().filter((event) => ["draft", "rejected"].includes(event.status) && !event.leaders?.length),
-	);
 	draftEvents = computed(() =>
-		this.allEvents().filter((event) => ["draft", "rejected"].includes(event.status) && !!event.leaders?.length),
+		this.allEvents()
+			.filter((event) => ["draft", "rejected"].includes(event.status))
+			.sort((a, b) => (a.dateFrom ?? "9999").localeCompare(b.dateFrom ?? "9999")),
 	);
 	pendingEvents = computed(() => this.allEvents().filter((event) => event.status === "pending"));
 	publicEvents = computed(() => this.allEvents().filter((event) => ["public", "cancelled"].includes(event.status)));
@@ -82,7 +81,7 @@ export class ProgramWorkflowComponent implements OnInit {
 		private toastService: ToastService,
 		private router: Router,
 	) {
-		addIcons({ helpCircleOutline, createOutline, hourglassOutline, calendarOutline, addOutline });
+		addIcons({ createOutline, hourglassOutline, calendarOutline, addOutline });
 	}
 
 	ngOnInit() {

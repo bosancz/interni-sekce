@@ -86,7 +86,7 @@
 
 ## Schvalování akcí (`/program`)
 
-- **Varianta 1c** — plné karty (`bo-event-review-card`) jen ve žlutém sloupci Ke schválení, Bez vedoucího / V přípravě / V programu jsou seznamy řádků `bo-event-list-item` (`features/program/components`); V programu je seskupené po měsících `dateFrom` (`publicEventsByMonth`). Obě komponenty jsou prezentační a jen emitují `(action)`; volání API, prompt na `statusNote` a přesun akce mezi sloupci dělá `ProgramWorkflowComponent.eventAction()`. `eventChanged()` musí do `events` poslat **nové pole** — sloupce jsou `computed` nad `toSignal`, stejná reference by je nepřepočítala. `bo-card` promítá jen `bo-card-*` podkomponenty, takže obsah karty je v `bo-card-content` (s přebitým `p-3`). Pod 1200 px zůstávají záložky `bo-tabs`.
+- **Varianta 1c** — plné karty (`bo-event-review-card`) jen ve žlutém sloupci Ke schválení, V přípravě (akce bez vedoucího i s ním, řazené podle data, bez vedoucího s pilulkou a bez tlačítka ke schválení) a V programu jsou seznamy řádků `bo-event-list-item` (`features/program/components`); V programu je seskupené po měsících `dateFrom` (`publicEventsByMonth`). Obě komponenty jsou prezentační a jen emitují `(action)`; volání API, prompt na `statusNote` a přesun akce mezi sloupci dělá `ProgramWorkflowComponent.eventAction()`. `eventChanged()` musí do `events` poslat **nové pole** — sloupce jsou `computed` nad `toSignal`, stejná reference by je nepřepočítala. `bo-card` promítá jen `bo-card-*` podkomponenty, takže obsah karty je v `bo-card-content` (s přebitým `p-3`). Pod 1200 px zůstávají záložky `bo-tabs`.
 
 ## Žebříčky na homepagi
 

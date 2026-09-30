@@ -19,33 +19,20 @@
 	</ng-template>
 
 	<div class="board">
-		<div class="side" [class.mobile-hidden]="selectedColumn() !== 'noLeader' && selectedColumn() !== 'draft'">
-			<section class="panel panel-no-leader" [class.mobile-hidden]="selectedColumn() !== 'noLeader'">
-				<ng-container
-					*ngTemplateOutlet="panelHeader; context: { title: 'Bez vedoucího', count: noLeaderEvents().length }"
-				></ng-container>
-				@for (event of noLeaderEvents(); track event.id) {
-					<bo-event-list-item [event]="event"></bo-event-list-item>
-				} @empty {
-					<ng-container *ngTemplateOutlet="emptyRow"></ng-container>
-				}
-			</section>
-
-			<section class="panel panel-draft" [class.mobile-hidden]="selectedColumn() !== 'draft'">
-				<ng-container
-					*ngTemplateOutlet="panelHeader; context: { title: 'V přípravě', count: draftEvents().length }"
-				></ng-container>
-				@for (event of draftEvents(); track event.id) {
-					<bo-event-list-item
-						[event]="event"
-						actions="submit"
-						(action)="eventAction(event, $event)"
-					></bo-event-list-item>
-				} @empty {
-					<ng-container *ngTemplateOutlet="emptyRow"></ng-container>
-				}
-			</section>
-		</div>
+		<section class="panel panel-draft" [class.mobile-hidden]="selectedColumn() !== 'draft'">
+			<ng-container
+				*ngTemplateOutlet="panelHeader; context: { title: 'V přípravě', count: draftEvents().length }"
+			></ng-container>
+			@for (event of draftEvents(); track event.id) {
+				<bo-event-list-item
+					[event]="event"
+					[actions]="event.leaders?.length ? 'submit' : 'none'"
+					(action)="eventAction(event, $event)"
+				></bo-event-list-item>
+			} @empty {
+				<ng-container *ngTemplateOutlet="emptyRow"></ng-container>
+			}
+		</section>
 
 		<section class="pending" [class.mobile-hidden]="selectedColumn() !== 'pending'">
 			<div class="pending-header">
@@ -88,7 +75,6 @@
 
 <bo-page-footer class="d-xl-none">
 	<bo-tabs defaultTab="pending" (change)="selectedColumn.set($event)">
-		<bo-tab name="noLeader" icon="help-circle-outline" label="NIKDO"></bo-tab>
 		<bo-tab name="draft" icon="create-outline" label="V přípravě"></bo-tab>
 		<bo-tab name="pending" icon="hourglass-outline" label="Ke schválení"></bo-tab>
 		<bo-tab name="public" icon="calendar-outline" label="Program"></bo-tab>

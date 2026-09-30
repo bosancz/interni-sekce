@@ -17,23 +17,11 @@ $xl: 1200px;
 	}
 }
 
-.side {
-	display: flex;
-	flex-direction: column;
-	gap: 20px;
-}
-
 .panel {
 	background: var(--bo-white);
 	border-radius: var(--bo-radius-card);
 	box-shadow: var(--bo-shadow-card);
 	overflow: hidden;
-}
-
-.panel-no-leader {
-	--panel-accent: var(--bo-red);
-	--panel-tint: var(--bo-red-tint);
-	--panel-fg: var(--bo-red);
 }
 
 .panel-draft {
