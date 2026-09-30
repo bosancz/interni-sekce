@@ -7,27 +7,29 @@
 				<ion-icon name="information-circle-outline"></ion-icon>
 			</button>
 
-			<div class="year-nav">
-				<button
-					type="button"
-					class="header-button"
-					aria-label="Předchozí rok"
-					[disabled]="!canGoBack()"
-					(click)="previousYear.emit()"
-				>
-					<ion-icon name="chevron-back-outline"></ion-icon>
-				</button>
-				<span class="year-nav-value">{{ year() }}</span>
-				<button
-					type="button"
-					class="header-button"
-					aria-label="Následující rok"
-					[disabled]="!canGoForward()"
-					(click)="nextYear.emit()"
-				>
-					<ion-icon name="chevron-forward-outline"></ion-icon>
-				</button>
-			</div>
+			@if (year(); as year) {
+				<div class="year-nav">
+					<button
+						type="button"
+						class="header-button"
+						aria-label="Předchozí rok"
+						[disabled]="!canGoBack()"
+						(click)="previousYear.emit()"
+					>
+						<ion-icon name="chevron-back-outline"></ion-icon>
+					</button>
+					<span class="year-nav-value">{{ year }}</span>
+					<button
+						type="button"
+						class="header-button"
+						aria-label="Následující rok"
+						[disabled]="!canGoForward()"
+						(click)="nextYear.emit()"
+					>
+						<ion-icon name="chevron-forward-outline"></ion-icon>
+					</button>
+				</div>
+			}
 		</div>
 	</bo-card-header>
 

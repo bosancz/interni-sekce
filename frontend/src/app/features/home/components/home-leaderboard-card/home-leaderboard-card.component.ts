@@ -25,7 +25,7 @@ import { CardComponent } from "src/app/shared/components/card/card.component";
 export class HomeLeaderboardCardComponent {
 	title = input.required<string>();
 
-	year = input.required<number>();
+	year = input<number>();
 	canGoBack = input(false);
 	canGoForward = input(false);
 

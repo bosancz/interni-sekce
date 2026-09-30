@@ -1,5 +1,5 @@
 import { I18nPluralPipe } from "@angular/common";
-import { Component, computed, effect, signal } from "@angular/core";
+import { Component, computed, effect, input, signal } from "@angular/core";
 import { IonContent, IonItem, IonLabel, IonList, IonPopover, IonSkeletonText } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
@@ -30,7 +30,7 @@ export type RankedLeader = SDK.TopLeaderResponse | SDK.MyRankingResponse;
 export class HomeCardTopLeadersComponent {
 	statistics = signal<SDK.TopLeadersResponse | undefined>(undefined);
 
-	year = signal(new Date().getFullYear());
+	year = input.required<number>();
 
 	myRanking = computed(() => {
 		const statistics = this.statistics();
@@ -50,9 +50,6 @@ export class HomeCardTopLeadersComponent {
 
 	canSeeLeaders = computed(() => this.api.links()?.getTopLeaders?.allowed ?? false);
 
-	canGoBack = computed(() => this.year() > (this.statistics()?.firstYear ?? this.year()));
-	canGoForward = computed(() => this.year() < (this.statistics()?.lastYear ?? this.year()));
-
 	openedLeader = signal<{ leader: RankedLeader; year: number } | undefined>(undefined);
 	leaderEventsOpen = signal(false);
 	leaderEventsEvent = signal<Event | undefined>(undefined);
@@ -71,18 +68,9 @@ export class HomeCardTopLeadersComponent {
 	constructor(private api: ApiService) {
 		effect(() => {
 			const year = this.year();
+			this.leaderEventsOpen.set(false);
 			if (this.canSeeLeaders()) this.loadStatistics(year);
 		});
-	}
-
-	previousYear() {
-		this.year.update((year) => year - 1);
-		this.leaderEventsOpen.set(false);
-	}
-
-	nextYear() {
-		this.year.update((year) => year + 1);
-		this.leaderEventsOpen.set(false);
 	}
 
 	async openLeaderEvents(event: Event, leader: RankedLeader) {

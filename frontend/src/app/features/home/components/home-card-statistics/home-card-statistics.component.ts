@@ -1,5 +1,5 @@
 import { I18nPluralPipe } from "@angular/common";
-import { Component, computed, effect, signal } from "@angular/core";
+import { Component, computed, effect, model, signal } from "@angular/core";
 import { IonSkeletonText } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
@@ -15,7 +15,7 @@ import { HomeLeaderboardCardComponent } from "../home-leaderboard-card/home-lead
 export class HomeCardStatisticsComponent {
 	statistics = signal<SDK.SummaryResponse | undefined>(undefined);
 
-	year = signal(new Date().getFullYear());
+	year = model.required<number>();
 
 	canSeeStatistics = computed(() => this.api.links()?.getSummary?.allowed ?? false);
 

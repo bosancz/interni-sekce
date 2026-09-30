@@ -1,5 +1,5 @@
 import { I18nPluralPipe } from "@angular/common";
-import { Component, computed, effect, signal } from "@angular/core";
+import { Component, computed, effect, input, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonItem, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
@@ -28,12 +28,9 @@ const TOP_EVENTS_LIMIT = 5;
 export class HomeCardTopEventsComponent {
 	statistics = signal<SDK.TopEventsResponse | undefined>(undefined);
 
-	year = signal(new Date().getFullYear());
+	year = input.required<number>();
 
 	canSeeEvents = computed(() => this.api.links()?.getTopEvents?.allowed ?? false);
-
-	canGoBack = computed(() => this.year() > (this.statistics()?.firstYear ?? this.year()));
-	canGoForward = computed(() => this.year() < (this.statistics()?.lastYear ?? this.year()));
 
 	skeletonRows = Array.from({ length: TOP_EVENTS_LIMIT });
 
@@ -51,14 +48,6 @@ export class HomeCardTopEventsComponent {
 			const year = this.year();
 			if (this.canSeeEvents()) this.loadStatistics(year);
 		});
-	}
-
-	previousYear() {
-		this.year.update((year) => year - 1);
-	}
-
-	nextYear() {
-		this.year.update((year) => year + 1);
 	}
 
 	async loadStatistics(year: number) {

@@ -59,16 +59,28 @@
 
 				<div class="row pl-lg-2 statistics">
 					<div class="col-12">
-						<bo-home-card-statistics class="mb-3 mb-lg-3"></bo-home-card-statistics>
+						<bo-home-card-statistics
+							[(year)]="statisticsYear"
+							class="mb-3 mb-lg-3"
+						></bo-home-card-statistics>
 					</div>
 					<div class="col-12 col-xxl-4">
-						<bo-home-card-top-leaders class="mb-3 mb-lg-3"></bo-home-card-top-leaders>
+						<bo-home-card-top-leaders
+							[year]="statisticsYear()"
+							class="mb-3 mb-lg-3"
+						></bo-home-card-top-leaders>
 					</div>
 					<div class="col-12 col-xxl-4">
-						<bo-home-card-top-events class="mb-3 mb-lg-3"></bo-home-card-top-events>
+						<bo-home-card-top-events
+							[year]="statisticsYear()"
+							class="mb-3 mb-lg-3"
+						></bo-home-card-top-events>
 					</div>
 					<div class="col-12 col-xxl-4">
-						<bo-home-card-top-children class="mb-3 mb-lg-3"></bo-home-card-top-children>
+						<bo-home-card-top-children
+							[year]="statisticsYear()"
+							class="mb-3 mb-lg-3"
+						></bo-home-card-top-children>
 					</div>
 				</div>
 			</div>

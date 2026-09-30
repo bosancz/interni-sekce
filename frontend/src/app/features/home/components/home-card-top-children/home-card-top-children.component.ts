@@ -1,5 +1,5 @@
 import { I18nPluralPipe } from "@angular/common";
-import { Component, computed, effect, signal } from "@angular/core";
+import { Component, computed, effect, input, signal } from "@angular/core";
 import { IonContent, IonItem, IonLabel, IonList, IonPopover, IonSkeletonText } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
@@ -28,12 +28,9 @@ const TOP_CHILDREN_LIMIT = 5;
 export class HomeCardTopChildrenComponent {
 	statistics = signal<SDK.TopChildrenResponse | undefined>(undefined);
 
-	year = signal(new Date().getFullYear());
+	year = input.required<number>();
 
 	canSeeChildren = computed(() => this.api.links()?.getTopChildren?.allowed ?? false);
-
-	canGoBack = computed(() => this.year() > (this.statistics()?.firstYear ?? this.year()));
-	canGoForward = computed(() => this.year() < (this.statistics()?.lastYear ?? this.year()));
 
 	openedChild = signal<{ child: SDK.TopChildResponse; year: number } | undefined>(undefined);
 	childEventsOpen = signal(false);
@@ -53,18 +50,9 @@ export class HomeCardTopChildrenComponent {
 	constructor(private api: ApiService) {
 		effect(() => {
 			const year = this.year();
+			this.childEventsOpen.set(false);
 			if (this.canSeeChildren()) this.loadStatistics(year);
 		});
-	}
-
-	previousYear() {
-		this.year.update((year) => year - 1);
-		this.childEventsOpen.set(false);
-	}
-
-	nextYear() {
-		this.year.update((year) => year + 1);
-		this.childEventsOpen.set(false);
 	}
 
 	async openChildEvents(event: Event, child: SDK.TopChildResponse) {
