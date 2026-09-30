@@ -2,6 +2,7 @@ import { InjectQueue } from "@nestjs/bullmq";
 import { Injectable, Logger } from "@nestjs/common";
 import { Queue } from "bullmq";
 import { Config } from "src/config";
+import { Photo } from "src/models/albums/entities/photo.entity";
 import { DetectFacesJob } from "src/models/albums/schema/detected-faces";
 import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
 import { BACKEND_SCHEDULE_QUEUE, BackendScheduleJobs, WORKER_TASK_QUEUE, WorkerTasks } from "../worker-queues";
@@ -20,6 +21,14 @@ export class FacesDetectionService {
 	async enqueueBatch(limit: number = this.config.faces.batchSize) {
 		const photos = await this.photoFacesService.getPhotosForDetection(limit);
 
+		const count = await this.enqueuePhotos(photos);
+
+		this.logger.log(`Queued ${count} photos for face detection.`);
+
+		return count;
+	}
+
+	async enqueuePhotos(photos: Photo[]) {
 		const jobs: DetectFacesJob[] = [];
 
 		for (const photo of photos) {
@@ -42,8 +51,6 @@ export class FacesDetectionService {
 				},
 			})),
 		);
-
-		this.logger.log(`Queued ${jobs.length} photos for face detection.`);
 
 		return jobs.length;
 	}
