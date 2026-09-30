@@ -10,6 +10,7 @@ MODELS_DIR = Path(os.environ.get("MODELS_DIR", Path(__file__).resolve().parent.p
 
 RESULTS_QUEUE = "worker-results"
 JOB_LOCK_DURATION_MS = 60_000
+IDLE_RELEASE_S = 60
 
 HEARTBEAT_PREFIX = "worker-heartbeat:"
 NAME_CLAIM_PREFIX = "worker-name:"

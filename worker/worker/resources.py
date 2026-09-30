@@ -1,3 +1,5 @@
+import ctypes
+import gc
 import math
 import os
 from pathlib import Path
@@ -46,6 +48,25 @@ def memory_limit() -> int | None:
     return int(value)
 
 
+def _inactive_file() -> int:
+    stat = _read("/sys/fs/cgroup/memory.stat") or _read("/sys/fs/cgroup/memory/memory.stat") or ""
+    for line in stat.splitlines():
+        key, _, value = line.partition(" ")
+        if key in ("inactive_file", "total_inactive_file"):
+            return int(value)
+    return 0
+
+
 def memory_usage() -> int | None:
     value = _read("/sys/fs/cgroup/memory.current") or _read("/sys/fs/cgroup/memory/memory.usage_in_bytes")
-    return int(value) if value else None
+    if not value:
+        return None
+    return max(0, int(value) - _inactive_file())
+
+
+def release_memory() -> None:
+    gc.collect()
+    try:
+        ctypes.CDLL("libc.so.6").malloc_trim(0)
+    except (OSError, AttributeError):
+        pass

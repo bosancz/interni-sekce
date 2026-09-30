@@ -9,3 +9,7 @@ TaskHandler = Callable[[dict[str, Any], Queue], Awaitable[None]]
 TASKS: dict[str, TaskHandler] = {
     detect_faces.NAME: detect_faces.run,
 }
+
+UNLOADERS: list[Callable[[], None]] = [
+    detect_faces.unload,
+]

@@ -8,8 +8,8 @@ from bullmq import Queue, Worker
 
 from . import config
 from .heartbeat import Heartbeat
-from .resources import available_cpus
-from .tasks import TASKS, TaskHandler
+from .resources import available_cpus, release_memory
+from .tasks import TASKS, UNLOADERS, TaskHandler
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
 logger = logging.getLogger("worker")
@@ -41,9 +41,25 @@ async def main() -> None:
     await heartbeat.start()
     logger.info("Worker name: %s", heartbeat.id)
 
+    release_task: asyncio.Task | None = None
+
+    async def release_when_idle() -> None:
+        await asyncio.sleep(config.IDLE_RELEASE_S)
+        async with lock:
+            for unload in UNLOADERS:
+                unload()
+            release_memory()
+        logger.info("Idle, memory released")
+
+    def cancel_release() -> None:
+        if release_task:
+            release_task.cancel()
+
     def processor(name: str, handler: TaskHandler):
         async def process(job: Any, token: str) -> None:
+            nonlocal release_task
             async with lock:
+                cancel_release()
                 await heartbeat.job_started(name, job.id)
                 ok = False
                 try:
@@ -51,6 +67,8 @@ async def main() -> None:
                     ok = True
                 finally:
                     await heartbeat.job_finished(ok)
+                    cancel_release()
+                    release_task = asyncio.create_task(release_when_idle())
 
         return process
 
@@ -71,6 +89,7 @@ async def main() -> None:
     await stop.wait()
 
     logger.info("Shutting down")
+    cancel_release()
     await asyncio.gather(*(worker.close() for worker in workers))
     await results.close()
     await heartbeat.stop()
