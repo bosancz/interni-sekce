@@ -5,7 +5,9 @@
 		@if (loading()) {
 			<div class="pp-loading"><ion-spinner name="dots"></ion-spinner></div>
 		} @else if (faces().length) {
-			<p class="pp-helper">Vyber obličej z fotek, na kterých je {{ member.nickname }} označený.</p>
+			<p class="pp-helper">
+				Vyber obličej z fotek, na kterých je {{ member.nickname }} označený. Nejusměvavější jsou první.
+			</p>
 			<div class="pp-grid">
 				@for (face of faces(); track face.id) {
 					<button
@@ -16,6 +18,11 @@
 						(click)="selectedFaceId.set(face.id)"
 					>
 						<img [src]="face | photoFaceImageUrl" loading="lazy" alt="" />
+						@if (face.emotion) {
+							<span class="pp-emotion" [title]="faceEmotions[face.emotion].label">{{
+								faceEmotions[face.emotion].emoji
+							}}</span>
+						}
 					</button>
 				}
 			</div>

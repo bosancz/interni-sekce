@@ -170,7 +170,10 @@
 								(click)="openFaceMenu($event, face)"
 							>
 								@if (face.member) {
-									<span class="face-label">{{ face.member.nickname }}</span>
+									<span class="face-label"
+										>{{ face.emotion ? faceEmotions[face.emotion].emoji + " " : ""
+										}}{{ face.member.nickname }}</span
+									>
 								}
 							</button>
 						}
@@ -245,6 +248,11 @@
 		<ng-template>
 			@if (selectedFace(); as face) {
 				<ion-list lines="none">
+					@if (faceEmotionLabel(face); as emotion) {
+						<ion-item lines="full" class="face-emotion">
+							<ion-label>{{ emotion }}</ion-label>
+						</ion-item>
+					}
 					<ion-item
 						button
 						[detail]="false"

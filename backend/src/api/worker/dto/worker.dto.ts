@@ -1,6 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsInt, IsOptional, Max, Min } from "class-validator";
+import { FaceEmotionsResponse } from "src/api/albums/dto/photo-face.dto";
+import { FaceEmotion, FaceEmotions } from "src/models/albums/schema/detected-faces";
 import { WorkerCurrentJob, WorkerHeartbeat, WorkerStatus } from "src/models/worker/schema/worker-heartbeat";
 
 export class WorkerCurrentJobResponse implements WorkerCurrentJob {
@@ -70,6 +72,9 @@ export class FaceDetectionLogFaceResponse {
 	@ApiPropertyOptional({ type: "number", nullable: true }) score!: number | null;
 	@ApiPropertyOptional({ type: "integer", nullable: true }) memberId!: number | null;
 	@ApiPropertyOptional({ type: "string", nullable: true }) memberNickname!: string | null;
+	@ApiPropertyOptional({ type: FaceEmotionsResponse, nullable: true }) emotions!: FaceEmotions | null;
+	@ApiPropertyOptional({ enum: FaceEmotion, enumName: "FaceEmotionEnum", nullable: true })
+	emotion!: FaceEmotion | null;
 }
 
 export class FaceDetectionLogEntryResponse {

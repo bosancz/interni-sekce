@@ -1,6 +1,7 @@
 import { Member } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { FaceEmotion, FaceEmotions } from "../schema/detected-faces";
 import { Photo } from "./photo.entity";
 
 @Entity("photo_faces")
@@ -30,6 +31,9 @@ export class PhotoFace {
 
 	@Column({ type: "real", array: true, nullable: true, select: false })
 	descriptor?: number[] | null;
+
+	@Column({ type: "jsonb", nullable: true }) emotions!: FaceEmotions | null;
+	@Column({ type: "varchar", nullable: true }) emotion!: FaceEmotion | null;
 
 	@Column({ type: "varchar", nullable: true }) model!: string | null;
 

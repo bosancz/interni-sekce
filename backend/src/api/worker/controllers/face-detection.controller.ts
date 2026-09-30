@@ -80,6 +80,8 @@ export class FaceDetectionController {
 				score: face.score,
 				memberId: face.memberId,
 				memberNickname: face.member?.nickname ?? null,
+				emotions: face.emotions,
+				emotion: face.emotion,
 			})),
 		}));
 	}

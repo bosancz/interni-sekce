@@ -155,11 +155,7 @@
 											<span
 												class="fd-face"
 												[class.assigned]="!!face.memberId"
-												[boTooltip]="
-													(face.memberNickname || 'Nepřiřazeno') +
-													' · ' +
-													scorePercent(face.score)
-												"
+												[boTooltip]="faceTooltip(face)"
 											>
 												<img [src]="face | photoFaceImageUrl" loading="lazy" alt="" />
 											</span>

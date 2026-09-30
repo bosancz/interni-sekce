@@ -16,6 +16,7 @@ import { PageHeaderComponent } from "src/app/shared/components/page-header/page-
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoFaceImageUrlPipe } from "src/app/shared/pipes/photo-face-image-url.pipe";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
+import { faceEmotionLabel } from "src/helpers/face-emotions";
 import { SDK } from "src/sdk";
 
 const LOG_PAGE_SIZE = 30;
@@ -146,6 +147,12 @@ export class FaceDetectionComponent implements OnInit, OnDestroy {
 		} finally {
 			this.queueing.set(false);
 		}
+	}
+
+	faceTooltip(face: SDK.FaceDetectionLogFaceResponse) {
+		return [face.memberNickname || "Nepřiřazeno", this.scorePercent(face.score), faceEmotionLabel(face)]
+			.filter(Boolean)
+			.join(" · ");
 	}
 
 	scorePercent(score: number | null | undefined) {

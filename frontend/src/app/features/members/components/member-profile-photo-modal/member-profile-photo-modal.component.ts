@@ -4,6 +4,7 @@ import { ApiService } from "src/app/core/services/api.service";
 import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { PhotoFaceImageUrlPipe } from "src/app/shared/pipes/photo-face-image-url.pipe";
+import { FACE_EMOTIONS, faceHappiness } from "src/helpers/face-emotions";
 import { SDK } from "src/sdk";
 
 export interface MemberProfilePhotoModalResult {
@@ -26,6 +27,8 @@ export class MemberProfilePhotoModalComponent
 	loading = signal(true);
 	selectedFaceId = signal<number | null>(null);
 
+	faceEmotions = FACE_EMOTIONS;
+
 	constructor(
 		modalController: ModalController,
 		private api: ApiService,
@@ -40,7 +43,7 @@ export class MemberProfilePhotoModalComponent
 			const photos = await this.api.MembersApi.listMemberPhotos(this.member.id, { limit: 200 }).then(
 				(res) => res.data,
 			);
-			this.faces.set(photos.map((photo) => photo.face));
+			this.faces.set(photos.map((photo) => photo.face).sort((a, b) => faceHappiness(b) - faceHappiness(a)));
 		} finally {
 			this.loading.set(false);
 		}

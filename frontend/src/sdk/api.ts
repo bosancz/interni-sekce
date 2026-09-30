@@ -2954,7 +2954,21 @@ export namespace SDK {
          * @memberof FaceDetectionLogFaceResponse
          */
         'memberNickname'?: string | null;
+        /**
+         * 
+         * @type {FaceEmotionsResponse}
+         * @memberof FaceDetectionLogFaceResponse
+         */
+        'emotions'?: FaceEmotionsResponse | null;
+        /**
+         * 
+         * @type {FaceEmotionEnum}
+         * @memberof FaceDetectionLogFaceResponse
+         */
+        'emotion'?: FaceEmotionEnum | null;
     }
+    
+    
     
         /**
      * 
@@ -3106,6 +3120,75 @@ export namespace SDK {
          * @memberof FaceDetectionSummaryResponse
          */
         'queue'?: FaceDetectionQueueResponse | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const FaceEmotionEnum = {
+        Angry: 'angry',
+        Disgust: 'disgust',
+        Fearful: 'fearful',
+        Happy: 'happy',
+        Neutral: 'neutral',
+        Sad: 'sad',
+        Surprised: 'surprised'
+    } as const;
+    
+    export type FaceEmotionEnum = typeof FaceEmotionEnum[keyof typeof FaceEmotionEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @interface FaceEmotionsResponse
+     */
+    export interface FaceEmotionsResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceEmotionsResponse
+         */
+        'angry'?: number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceEmotionsResponse
+         */
+        'disgust'?: number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceEmotionsResponse
+         */
+        'fearful'?: number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceEmotionsResponse
+         */
+        'happy'?: number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceEmotionsResponse
+         */
+        'neutral'?: number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceEmotionsResponse
+         */
+        'sad'?: number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceEmotionsResponse
+         */
+        'surprised'?: number;
     }
     
         /**
@@ -5754,6 +5837,18 @@ export namespace SDK {
         'descriptor'?: Array<number> | null;
         /**
          * 
+         * @type {object}
+         * @memberof PhotoFace
+         */
+        'emotions': object | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoFace
+         */
+        'emotion': PhotoFaceEmotionEnum | null;
+        /**
+         * 
          * @type {string}
          * @memberof PhotoFace
          */
@@ -5777,6 +5872,19 @@ export namespace SDK {
          */
         'assignedAt': string | null;
     }
+    
+    export const PhotoFaceEmotionEnum = {
+        Angry: 'angry',
+        Disgust: 'disgust',
+        Fearful: 'fearful',
+        Happy: 'happy',
+        Neutral: 'neutral',
+        Sad: 'sad',
+        Surprised: 'surprised'
+    } as const;
+    
+    export type PhotoFaceEmotionEnum = typeof PhotoFaceEmotionEnum[keyof typeof PhotoFaceEmotionEnum];
+    
     
         /**
      * 
@@ -5834,6 +5942,18 @@ export namespace SDK {
         'score'?: number | null;
         /**
          * 
+         * @type {FaceEmotionsResponse}
+         * @memberof PhotoFaceResponse
+         */
+        'emotions'?: FaceEmotionsResponse | null;
+        /**
+         * 
+         * @type {FaceEmotionEnum}
+         * @memberof PhotoFaceResponse
+         */
+        'emotion'?: FaceEmotionEnum | null;
+        /**
+         * 
          * @type {string}
          * @memberof PhotoFaceResponse
          */
@@ -5845,6 +5965,8 @@ export namespace SDK {
          */
         'member'?: MemberResponse | null;
     }
+    
+    
     
         /**
      * 
@@ -5928,6 +6050,18 @@ export namespace SDK {
         'score'?: number | null;
         /**
          * 
+         * @type {FaceEmotionsResponse}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'emotions'?: FaceEmotionsResponse | null;
+        /**
+         * 
+         * @type {FaceEmotionEnum}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'emotion'?: FaceEmotionEnum | null;
+        /**
+         * 
          * @type {string}
          * @memberof PhotoFaceResponseWithLinks
          */
@@ -5945,6 +6079,8 @@ export namespace SDK {
          */
         '_links': PhotoFaceResponseLinks;
     }
+    
+    
     
         /**
      * 

@@ -9,7 +9,7 @@ import { User } from "src/models/users/entities/user.entity";
 import { DataSource, Repository } from "typeorm";
 import { PhotoFace } from "../entities/photo-face.entity";
 import { Photo } from "../entities/photo.entity";
-import { DetectFacesJob, FaceBox, FacesDetectedResult } from "../schema/detected-faces";
+import { DetectedFace, DetectFacesJob, FaceBox, FacesDetectedResult } from "../schema/detected-faces";
 import { PhotosFilesService } from "./photos-files.service";
 
 const ASSIGNED_OVERLAP_IOU = 0.5;
@@ -173,23 +173,37 @@ export class PhotoFacesService {
 					unassigned.map((face) => face.id),
 				);
 
-			const faces = result.faces
-				.filter((face) => !assigned.some((a) => faceIou(a, face) > ASSIGNED_OVERLAP_IOU))
-				.map((face) =>
-					t.create(PhotoFace, {
-						photoId: photo.id,
-						memberId: null,
-						x: face.x,
-						y: face.y,
-						width: face.width,
-						height: face.height,
-						score: face.score,
-						descriptor: face.descriptor,
-						model: result.model,
-					}),
-				);
+			const detected = (face: DetectedFace) => ({
+				x: face.x,
+				y: face.y,
+				width: face.width,
+				height: face.height,
+				score: face.score,
+				descriptor: face.descriptor,
+				emotions: face.emotions ?? null,
+				emotion: face.emotion ?? null,
+				model: result.model,
+			});
 
-			if (faces.length) await t.save(PhotoFace, faces);
+			const matched = new Set<number>();
+			const created: PhotoFace[] = [];
+
+			for (const face of result.faces) {
+				const match = assigned
+					.filter((a) => !matched.has(a.id))
+					.map((a) => ({ face: a, iou: faceIou(a, face) }))
+					.filter((m) => m.iou > ASSIGNED_OVERLAP_IOU)
+					.sort((a, b) => b.iou - a.iou)[0];
+
+				if (match) {
+					matched.add(match.face.id);
+					await t.update(PhotoFace, match.face.id, detected(face));
+				} else {
+					created.push(t.create(PhotoFace, { photoId: photo.id, memberId: null, ...detected(face) }));
+				}
+			}
+
+			if (created.length) await t.save(PhotoFace, created);
 
 			await t.update(Photo, photo.id, {
 				facesDetectedAt: new Date(),
@@ -197,7 +211,7 @@ export class PhotoFacesService {
 				facesError: null,
 			});
 
-			return unassigned.map((face) => face.id);
+			return [...unassigned.map((face) => face.id), ...matched];
 		});
 
 		await Promise.all(removedFaceIds.map((id) => this.photosFilesService.deleteFaceImage(id)));

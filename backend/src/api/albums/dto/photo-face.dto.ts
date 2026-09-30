@@ -1,8 +1,19 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsInt, IsOptional } from "class-validator";
 import { MemberResponse } from "src/api/members/dto/member.dto";
+import { FaceEmotion, FaceEmotions } from "src/models/albums/schema/detected-faces";
 import { Member } from "src/models/members/entities/member.entity";
 import { PhotoResponse } from "./photo.dto";
+
+export class FaceEmotionsResponse implements FaceEmotions {
+	@ApiPropertyOptional() angry?: number;
+	@ApiPropertyOptional() disgust?: number;
+	@ApiPropertyOptional() fearful?: number;
+	@ApiPropertyOptional() happy?: number;
+	@ApiPropertyOptional() neutral?: number;
+	@ApiPropertyOptional() sad?: number;
+	@ApiPropertyOptional() surprised?: number;
+}
 
 export class PhotoFaceResponse {
 	@ApiProperty() id!: number;
@@ -14,6 +25,9 @@ export class PhotoFaceResponse {
 	@ApiProperty({ type: "number" }) width!: number;
 	@ApiProperty({ type: "number" }) height!: number;
 	@ApiPropertyOptional({ type: "number", nullable: true }) score!: number | null;
+	@ApiPropertyOptional({ type: FaceEmotionsResponse, nullable: true }) emotions!: FaceEmotions | null;
+	@ApiPropertyOptional({ enum: FaceEmotion, enumName: "FaceEmotionEnum", nullable: true })
+	emotion!: FaceEmotion | null;
 
 	@ApiPropertyOptional({ type: "string", nullable: true }) assignedAt!: Date | string | null;
 

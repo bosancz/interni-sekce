@@ -19,11 +19,11 @@
 }
 
 .pp-face {
+	position: relative;
 	aspect-ratio: 1;
 	padding: 0;
 	border: 3px solid transparent;
 	border-radius: 50%;
-	overflow: hidden;
 	background: var(--bm-surface-alt);
 	cursor: pointer;
 	transition: border-color 0.15s ease;
@@ -33,6 +33,7 @@
 		height: 100%;
 		object-fit: cover;
 		display: block;
+		border-radius: 50%;
 	}
 
 	&:hover {
@@ -47,4 +48,13 @@
 .pp-remove {
 	margin-inline-end: auto;
 	color: var(--ion-color-danger);
+}
+
+.pp-emotion {
+	position: absolute;
+	right: -2px;
+	bottom: -2px;
+	font-size: 20px;
+	line-height: 1;
+	filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
 }

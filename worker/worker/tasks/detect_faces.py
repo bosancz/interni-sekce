@@ -16,10 +16,11 @@ logger = logging.getLogger(NAME)
 
 _detector: Any = None
 _recognizer: Any = None
+_expression: Any = None
 
 
 def _models():
-    global _detector, _recognizer
+    global _detector, _recognizer, _expression
     if _detector is None:
         _detector = cv2.FaceDetectorYN.create(
             str(config.FACES_DETECTOR_MODEL),
@@ -30,7 +31,18 @@ def _models():
             5000,
         )
         _recognizer = cv2.FaceRecognizerSF.create(str(config.FACES_RECOGNIZER_MODEL), "")
-    return _detector, _recognizer
+        _expression = cv2.dnn.readNet(str(config.FACES_EXPRESSION_MODEL))
+    return _detector, _recognizer, _expression
+
+
+def _emotions(expression: Any, aligned: np.ndarray) -> dict[str, float]:
+    image = cv2.cvtColor(aligned, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
+    image = (image - 0.5) / 0.5
+    expression.setInput(cv2.dnn.blobFromImage(image), "data")
+    logits = expression.forward("label").flatten().astype(np.float64)
+    probabilities = np.exp(logits - logits.max())
+    probabilities /= probabilities.sum()
+    return {name: round(float(p), 4) for name, p in zip(config.FACES_EMOTIONS, probabilities)}
 
 
 def _resolve(relative_path: str) -> Path:
@@ -51,7 +63,7 @@ def detect(path: Path) -> list[dict[str, Any]]:
         image = cv2.resize(image, (round(width * scale), round(height * scale)), interpolation=cv2.INTER_AREA)
         height, width = image.shape[:2]
 
-    detector, recognizer = _models()
+    detector, recognizer, expression = _models()
     detector.setInputSize((width, height))
     _, detected = detector.detect(image)
 
@@ -67,7 +79,9 @@ def detect(path: Path) -> list[dict[str, Any]]:
         if max(right - left, bottom - top) < config.FACES_MIN_SIZE * max(width, height):
             continue
 
-        descriptor = recognizer.feature(recognizer.alignCrop(image, row)).flatten()
+        aligned = recognizer.alignCrop(image, row)
+        descriptor = recognizer.feature(aligned).flatten()
+        emotions = _emotions(expression, aligned)
         norm = float(np.linalg.norm(descriptor))
         if norm > 0:
             descriptor = descriptor / norm
@@ -80,6 +94,8 @@ def detect(path: Path) -> list[dict[str, Any]]:
                 "height": (bottom - top) / height,
                 "score": score,
                 "descriptor": [round(float(v), 6) for v in descriptor],
+                "emotions": emotions,
+                "emotion": max(emotions, key=emotions.get),
             }
         )
 

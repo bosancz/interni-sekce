@@ -56,6 +56,8 @@ ADD --checksum=sha256:8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2
 	${OPENCV_ZOO}/face_detection_yunet/face_detection_yunet_2023mar.onnx models/
 ADD --checksum=sha256:0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79 \
 	${OPENCV_ZOO}/face_recognition_sface/face_recognition_sface_2021dec.onnx models/
+ADD --checksum=sha256:4f61307602fc089ce20488a31d4e4614e3c9753a7d6c41578c854858b183e1a9 \
+	${OPENCV_ZOO}/facial_expression_recognition/facial_expression_recognition_mobilefacenet_2022july.onnx models/
 
 COPY ./worker/worker ./worker
 

@@ -17,7 +17,9 @@ HEARTBEAT_TTL_S = 30
 
 FACES_DETECTOR_MODEL = MODELS_DIR / "face_detection_yunet_2023mar.onnx"
 FACES_RECOGNIZER_MODEL = MODELS_DIR / "face_recognition_sface_2021dec.onnx"
-FACES_MODEL = "yunet-2023mar+sface-2021dec"
+FACES_EXPRESSION_MODEL = MODELS_DIR / "facial_expression_recognition_mobilefacenet_2022july.onnx"
+FACES_EMOTIONS = ["angry", "disgust", "fearful", "happy", "neutral", "sad", "surprised"]
+FACES_MODEL = "yunet-2023mar+sface-2021dec+fer-2022july"
 FACES_MIN_SCORE = 0.8
 FACES_MIN_SIZE = 0.02
 FACES_NMS_THRESHOLD = 0.3

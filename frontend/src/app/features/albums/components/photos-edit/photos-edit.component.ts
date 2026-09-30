@@ -53,6 +53,7 @@ import { UserSettingsService } from "src/app/core/services/user-settings.service
 import { MemberSelectorModalComponent } from "src/app/features/events/components/member-selector-modal/member-selector-modal.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
+import { FACE_EMOTIONS, faceEmotionLabel } from "src/helpers/face-emotions";
 import { SDK } from "src/sdk";
 import { PhotoTagsEditorComponent } from "../photo-tags-editor/photo-tags-editor.component";
 
@@ -113,6 +114,9 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	faceMenuOpen = signal(false);
 	faceMenuEvent = signal<Event | undefined>(undefined);
 	selectedFace = signal<SDK.PhotoFaceResponseWithLinks | undefined>(undefined);
+
+	faceEmotions = FACE_EMOTIONS;
+	faceEmotionLabel = faceEmotionLabel;
 
 	private imageElement?: HTMLImageElement;
 	private resizeObserver = new ResizeObserver(() => this.measureImage());
