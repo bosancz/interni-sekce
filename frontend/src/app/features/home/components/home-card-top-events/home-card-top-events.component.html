@@ -10,11 +10,11 @@
 								<h4>
 									<strong>{{ event.name }}</strong>
 								</h4>
+								<p>{{ [event.dateFrom, event.dateTill] | dateRange }}</p>
 								<p>
-									{{ [event.dateFrom, event.dateTill] | dateRange }} · {{ event.childrenCount }}
-									{{ event.childrenCount | i18nPlural: childrenPluralMap }}
-									·
-									{{ event.days }} {{ event.days | i18nPlural: daysPluralMap }}
+									{{ event.childrenCount }}
+									{{ event.childrenCount | i18nPlural: childrenPluralMap }} · {{ event.days }}
+									{{ event.days | i18nPlural: daysPluralMap }}
 								</p>
 								@if (event.leaders.length) {
 									<p class="event-leaders">Vede {{ event.leaders.join(", ") }}</p>
