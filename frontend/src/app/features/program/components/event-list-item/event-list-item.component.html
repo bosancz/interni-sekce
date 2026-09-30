@@ -1,0 +1,93 @@
+@let e = event();
+<div class="row-item" [routerLink]="'/akce/' + e.id">
+	<div class="icon" [style.background-color]="(e | event: 'image') ? 'transparent' : (e | event: 'color') || '#ccc'">
+		@if (e | event: "image") {
+			<img [src]="e | event: 'image'" />
+		}
+	</div>
+
+	<div class="text">
+		<span class="name" [class.cancelled]="e.status === 'cancelled'">{{ e.name }}</span>
+		<span class="meta">
+			@if (e.status === "cancelled") {
+				<span class="bo-pill bo-pill-red">Zrušená</span>
+			}
+			@if (e.status === "rejected") {
+				<span class="bo-pill bo-pill-yellow">Vrácená</span>
+			}
+			{{ [e.dateFrom, e.dateTill] | dateRange: "d. M." }} ·
+			@if (e.leaders?.length) {
+				{{ e.leaders! | joinLeaders: false : false }}
+			} @else {
+				bez vedoucího
+			}
+		</span>
+	</div>
+
+	@if (actions() === "submit" && e._links.submitEvent.applicable) {
+		<button
+			type="button"
+			class="submit"
+			[disabled]="!e._links.submitEvent.allowed"
+			(click)="$event.stopPropagation(); action.emit('submitEvent')"
+		>
+			Ke schválení
+		</button>
+	}
+
+	@if (actions() === "menu") {
+		<button
+			type="button"
+			class="menu"
+			[id]="'program-event-menu-' + e.id"
+			aria-label="Další akce"
+			(click)="$event.stopPropagation()"
+		>
+			<ion-icon name="ellipsis-horizontal"></ion-icon>
+		</button>
+
+		<ion-popover
+			[trigger]="'program-event-menu-' + e.id"
+			triggerAction="click"
+			cssClass="view-options-popover"
+			[dismissOnSelect]="true"
+		>
+			<ng-template>
+				<ion-content>
+					<ion-list lines="full">
+						@if (e._links.unpublishEvent.applicable) {
+							<ion-item
+								[button]="true"
+								[detail]="false"
+								[disabled]="!e._links.unpublishEvent.allowed"
+								(click)="action.emit('unpublishEvent')"
+							>
+								<ion-label>Z programu</ion-label>
+							</ion-item>
+						}
+						@if (e._links.cancelEvent.applicable) {
+							<ion-item
+								[button]="true"
+								[detail]="false"
+								[disabled]="!e._links.cancelEvent.allowed"
+								(click)="action.emit('cancelEvent')"
+							>
+								<ion-label color="danger">Zrušit akci</ion-label>
+							</ion-item>
+						}
+						@if (e._links.uncancelEvent.applicable) {
+							<ion-item
+								[button]="true"
+								[detail]="false"
+								[disabled]="!e._links.uncancelEvent.allowed"
+								(click)="action.emit('uncancelEvent')"
+							>
+								<ion-label>Vrátit zrušení</ion-label>
+							</ion-item>
+						}
+					</ion-list>
+				</ion-content>
+			</ng-template>
+		</ion-popover>
+	}
+</div>
