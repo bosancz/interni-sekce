@@ -111,7 +111,9 @@ export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 			row.height = maxHeight * ratio;
 
 			if (!photos.length) {
-				const rowHeightAvg = rows.reduce((acc, cur) => acc + cur.height, 0) / rows.length;
+				const rowHeightAvg = rows.length
+					? rows.reduce((acc, cur) => acc + cur.height, 0) / rows.length
+					: maxHeight;
 				row.height = Math.min(rowHeightAvg, row.height);
 			}
 

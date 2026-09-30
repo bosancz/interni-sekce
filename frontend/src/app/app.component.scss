@@ -10,6 +10,7 @@ bo-login {
 
 .page {
 	flex-grow: 1;
+	min-height: 0;
 	display: flex;
 	flex-direction: row;
 	background-color: var(--bo-paper);
@@ -17,6 +18,7 @@ bo-login {
 
 .sidebar {
 	width: 230px;
+	overflow-y: auto;
 }
 
 main {

@@ -144,6 +144,17 @@ const ical = {
 	ttlSeconds: process.env["ICAL_TTL_SECONDS"] ? parseInt(process.env["ICAL_TTL_SECONDS"], 10) : 3600,
 };
 
+const redis = {
+	url: process.env["REDIS_URL"] ?? "",
+};
+
+const faces = {
+	cron: process.env["FACES_CRON"] ?? "0 1 * * *",
+	stopCron: process.env["FACES_STOP_CRON"] ?? "0 3 * * *",
+	timezone: process.env["FACES_TIMEZONE"] ?? "Europe/Prague",
+	batchSize: process.env["FACES_BATCH_SIZE"] ? parseInt(process.env["FACES_BATCH_SIZE"], 10) : 300,
+};
+
 const oauth = {
 	wiki: {
 		clientId: process.env["OAUTH_WIKI_CLIENT_ID"] ?? "",
@@ -157,6 +168,7 @@ export class Config {
 	app = app;
 	db = db;
 	environment = environment;
+	faces = faces;
 	feedback = feedback;
 	github = github;
 	google = google;
@@ -168,6 +180,7 @@ export class Config {
 	oauth = oauth;
 	production = production;
 	push = push;
+	redis = redis;
 	seed = seed;
 	server = server;
 	fs = fs;

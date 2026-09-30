@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { callOutline, medkitOutline, personCircleOutline } from "ionicons/icons";
+import { callOutline, imagesOutline, medkitOutline, personCircleOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { TitleService } from "src/app/core/services/title.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -21,6 +21,7 @@ import { MemberHealthComponent } from "../../components/member-health/member-hea
 import { MemberInfoComponent } from "../../components/member-info/member-info.component";
 import { MemberMembershipComponent } from "../../components/member-membership/member-membership.component";
 import { MemberPaymentComponent } from "../../components/member-payment/member-payment.component";
+import { MemberPhotosComponent } from "../../components/member-photos/member-photos.component";
 import { MemberProfileComponent } from "../../components/member-profile/member-profile.component";
 
 @UntilDestroy()
@@ -42,11 +43,12 @@ import { MemberProfileComponent } from "../../components/member-profile/member-p
 		MemberHealthComponent,
 		MemberContactsComponent,
 		GroupBadgeComponent,
+		MemberPhotosComponent,
 	],
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeave {
 	member = signal<SDK.MemberResponseWithLinks | undefined>(undefined);
-	view = signal<"health" | "contacts" | "profile">("profile");
+	view = signal<"health" | "contacts" | "profile" | "photos">("profile");
 
 	// actions that do not apply to the member are hidden,
 	// actions that apply but the user is not permitted to use are shown disabled
@@ -83,7 +85,7 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		private alertController: AlertController,
 		private titleService: TitleService,
 	) {
-		addIcons({ personCircleOutline, medkitOutline, callOutline });
+		addIcons({ personCircleOutline, medkitOutline, callOutline, imagesOutline });
 	}
 
 	ngOnInit() {

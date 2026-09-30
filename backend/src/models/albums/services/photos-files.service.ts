@@ -6,8 +6,12 @@ import sharp = require("sharp");
 import { FilesService } from "src/models/files/services/files.service";
 import { PhotoSizes } from "src/api/albums/dto/photo.dto";
 import { Photo } from "../entities/photo.entity";
+import { FaceBox } from "../schema/detected-faces";
 
 const MAX_INPUT_PIXELS = 24000 * 24000;
+
+const FACE_IMAGE_SIZE = 256;
+const FACE_IMAGE_PADDING = 0.3;
 
 export interface PhotoMetadata {
 	width: number | null;
@@ -112,6 +116,69 @@ export class PhotosFilesService {
 		await Promise.all(
 			sizes.map((size) => this.files.deleteFile(this.getPhotoImagePath(photo, size)).catch(() => {})),
 		);
+	}
+
+	getFaceImagePath(faceId: number): string {
+		return join(this.config.fs.thumbnailsDir, "faces", `${faceId}.jpg`);
+	}
+
+	async getFaceImage(photo: Photo, faceId: number, box: FaceBox): Promise<string> {
+		const path = this.getFaceImagePath(faceId);
+
+		try {
+			await this.files.fileAccessible(path);
+			return path;
+		} catch {}
+
+		const image = await this.cropFace(photo, box, {
+			size: FACE_IMAGE_SIZE,
+			padding: FACE_IMAGE_PADDING,
+			sizes: [PhotoSizes.big, PhotoSizes.original],
+		});
+		await this.files.saveFile(path, image);
+
+		return path;
+	}
+
+	async deleteFaceImage(faceId: number): Promise<void> {
+		await this.files.deleteFile(this.getFaceImagePath(faceId)).catch(() => {});
+	}
+
+	async cropFace(
+		photo: Photo,
+		box: FaceBox,
+		options: { size: number; padding: number; sizes: PhotoSizes[] },
+	): Promise<Buffer> {
+		for (const size of options.sizes) {
+			const path = this.getPhotoImagePath(photo, size);
+
+			try {
+				await this.files.fileAccessible(path);
+			} catch {
+				continue;
+			}
+
+			const oriented = await sharp(path, { limitInputPixels: MAX_INPUT_PIXELS })
+				.rotate()
+				.toBuffer({ resolveWithObject: true });
+
+			const { width, height } = oriented.info;
+			const side = Math.round(
+				Math.min(Math.max(box.width * width, box.height * height) * (1 + 2 * options.padding), width, height),
+			);
+			const centerX = (box.x + box.width / 2) * width;
+			const centerY = (box.y + box.height / 2) * height;
+			const left = Math.round(Math.min(Math.max(centerX - side / 2, 0), width - side));
+			const top = Math.round(Math.min(Math.max(centerY - side / 2, 0), height - side));
+
+			return sharp(oriented.data)
+				.extract({ left, top, width: Math.max(side, 1), height: Math.max(side, 1) })
+				.resize(options.size, options.size, { fit: "cover" })
+				.jpeg({ quality: 85 })
+				.toBuffer();
+		}
+
+		throw new Error(`No image file found for photo ${photo.id}.`);
 	}
 
 	private readCaptureDate(exif?: Buffer): Date | null {

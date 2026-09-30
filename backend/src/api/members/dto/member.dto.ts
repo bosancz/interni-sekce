@@ -63,6 +63,11 @@ export class MemberResponse implements Member {
 	@ApiPropertyOptional({ type: "string" }) insuranceCardFile?: string | null;
 	@ApiPropertyOptional({ type: "string" }) insuranceCardExpiration?: string | null;
 
+	@ApiPropertyOptional({ type: "integer", nullable: true }) profilePhotoFaceId?: number | null;
+	@ApiPropertyOptional({ type: "string", nullable: true }) profilePhotoUpdatedAt?: Date | null;
+	@ApiPropertyOptional({ type: () => MemberProfilePhotoResponse, nullable: true })
+	profilePhoto?: MemberProfilePhotoResponse | null;
+
 	@ApiPropertyOptional({ type: "string" }) deletedAt?: Date;
 
 	@ApiPropertyOptional()
@@ -84,7 +89,15 @@ export class MemberCreateBody implements Pick<
 }
 
 export class MemberUpdateBody extends PartialType(
-	OmitType(MemberResponse, ["contacts", "achievements", "id", "membership"]),
+	OmitType(MemberResponse, [
+		"contacts",
+		"achievements",
+		"id",
+		"membership",
+		"profilePhotoFaceId",
+		"profilePhotoUpdatedAt",
+		"profilePhoto",
+	]),
 ) {}
 
 export class MembersListQuery extends PaginationQuery {
@@ -141,4 +154,19 @@ export class MembersListQuery extends PaginationQuery {
 	@EnsureBoolean()
 	@IsOptional()
 	contacts?: boolean;
+}
+
+export class MemberProfilePhotoResponse {
+	@ApiProperty() faceId!: number;
+	@ApiProperty() photoId!: number;
+	@ApiProperty() albumId!: number;
+}
+
+export class MemberProfilePhotoBody {
+	@ApiProperty({ type: "integer" }) @IsInt() faceId!: number;
+}
+
+export class MemberPhotosQuery {
+	@ApiPropertyOptional() @Type(() => Number) @IsInt() @Min(1) @Max(200) @IsOptional() limit?: number;
+	@ApiPropertyOptional() @Type(() => Number) @IsInt() @Min(0) @IsOptional() offset?: number;
 }

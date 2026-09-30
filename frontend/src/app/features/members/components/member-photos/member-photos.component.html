@@ -1,0 +1,24 @@
+<bo-card>
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="images-outline" />
+				Fotky
+			</span>
+		</bo-card-title>
+	</bo-card-header>
+
+	<bo-card-content>
+		@if (photos().length) {
+			<bo-photo-gallery [photos]="photos()" [maxHeight]="160" [clickable]="true" (click)="openPhoto($event)" />
+		} @else if (!loading()) {
+			<p class="empty">Na žádné fotce zatím není označený. Obličeje se přiřazují v galerii.</p>
+		}
+
+		@if (loading()) {
+			<div class="loading"><ion-spinner name="dots"></ion-spinner></div>
+		} @else if (hasMore()) {
+			<ion-button fill="clear" expand="block" (click)="loadMore()">Zobrazit další</ion-button>
+		}
+	</bo-card-content>
+</bo-card>

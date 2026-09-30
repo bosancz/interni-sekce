@@ -11,10 +11,48 @@
 	padding: 0.5rem 0;
 }
 
+.avatar-wrapper {
+	position: relative;
+}
+
+.avatar-edit {
+	position: absolute;
+	right: 0.4em;
+	bottom: 0.4em;
+	width: 2.5em;
+	height: 2.5em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	border: 2px solid var(--ion-background-color, #fff);
+	border-radius: 50%;
+	background: var(--ion-color-primary);
+	color: var(--ion-color-primary-contrast);
+	font-size: 1.1rem;
+	cursor: pointer;
+	pointer-events: auto;
+
+	&.disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+}
+
 .avatar {
 	background-color: var(--lightGrey);
 	width: 11em;
 	height: 11em;
+
+	&.clickable {
+		cursor: zoom-in;
+	}
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
 
 	span {
 		width: 100%;
