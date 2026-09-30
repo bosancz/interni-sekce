@@ -27,6 +27,6 @@ import { PhotosMaintenanceService } from "./services/photos-maintenance.service"
 		CleanAlbumsMetadataCommand,
 		FixPhotoDimensionsCommand,
 	],
-	exports: [AlbumsRepository, PhotosRepository, PhotosFilesService],
+	exports: [AlbumsRepository, PhotosRepository, PhotosFilesService, PhotoFacesService],
 })
 export class AlbumsModelModule {}

@@ -1,0 +1,107 @@
+<bo-page-header title="Workery" backUrl="/admin" />
+
+<bo-page-content>
+	<div class="wk-page">
+		<div class="wk-toolbar">
+			<span class="muted">Stav se obnovuje každých 5 s.</span>
+			<ion-button fill="clear" size="small" (click)="load()" boTooltip="Obnovit">
+				<ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+			</ion-button>
+		</div>
+
+		@if (workers(); as list) {
+			<div class="wk-grid">
+				@for (worker of list; track worker.id) {
+					<bo-card>
+						<bo-card-header>
+							<bo-card-title>
+								<span class="bo-card-section-title wk-title">
+									<ion-icon name="hardware-chip-outline" />
+									<span class="wk-name">{{ worker.id }}</span>
+								</span>
+							</bo-card-title>
+							<span slot="buttons" class="bo-pill" [class]="statusLabels[worker.status].pill">
+								{{ statusLabels[worker.status].label }}
+							</span>
+						</bo-card-header>
+
+						<bo-card-content>
+							<div class="bo-info-list">
+								<div class="bo-info-row">
+									<span class="bo-info-label">Úloha</span>
+									<span class="bo-info-value">
+										@if (worker.current; as current) {
+											<strong>{{ current.task }}</strong>
+											<span class="muted">
+												· job {{ current.jobId }} · {{ duration(current.startedAt) }}</span
+											>
+										} @else {
+											<span class="muted">—</span>
+										}
+									</span>
+								</div>
+								<div class="bo-info-row">
+									<span class="bo-info-label">Přijímá</span>
+									<span class="bo-info-value wk-tasks">
+										@for (task of worker.tasks; track task) {
+											<span class="bo-pill bo-pill-blue">{{ task }}</span>
+										}
+									</span>
+								</div>
+								<div class="bo-info-row">
+									<span class="bo-info-label">CPU</span>
+									<span class="bo-info-value">{{ cpuLabel(worker) }}</span>
+								</div>
+								<div class="bo-info-row">
+									<span class="bo-info-label">Paměť</span>
+									<span class="bo-info-value wk-memory">
+										{{ memoryLabel(worker) }}
+										@if (memoryPercent(worker); as percent) {
+											<span class="wk-bar"><span [style.width.%]="percent"></span></span>
+										}
+									</span>
+								</div>
+								<div class="bo-info-row">
+									<span class="bo-info-label">Zpracováno</span>
+									<span class="bo-info-value">
+										{{ worker.processed }}
+										@if (worker.failed) {
+											<span class="bo-pill bo-pill-red">{{ worker.failed }} chyb</span>
+										}
+										@if (worker.lastJobAt) {
+											<span class="muted">
+												· naposledy {{ worker.lastJobAt | date: "d. M. H:mm:ss" }}</span
+											>
+										}
+									</span>
+								</div>
+								<div class="bo-info-row">
+									<span class="bo-info-label">Běží</span>
+									<span class="bo-info-value">
+										{{ duration(worker.startedAt) }}
+										<span class="muted"> · {{ worker.hostname }}</span>
+									</span>
+								</div>
+								<div class="bo-info-row">
+									<span class="bo-info-label">Poslední signál</span>
+									<span class="bo-info-value">před {{ duration(worker.updatedAt) }}</span>
+								</div>
+							</div>
+						</bo-card-content>
+					</bo-card>
+				} @empty {
+					<div class="wk-empty">
+						<ion-icon name="server-outline"></ion-icon>
+						<p>Žádný worker se nehlásí.</p>
+						<p class="muted">
+							Worker posílá stav do Redisu každých 10 s. Když tu žádný není, neběží, nebo backend nemá
+							nastavené <code>REDIS_URL</code>.
+						</p>
+					</div>
+				}
+			</div>
+		} @else {
+			<ion-skeleton-text [animated]="true" class="wk-skeleton"></ion-skeleton-text>
+		}
+	</div>
+</bo-page-content>

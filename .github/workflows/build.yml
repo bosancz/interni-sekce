@@ -7,6 +7,10 @@ on:
         description: "Context for the Docker build"
         type: string
         required: true
+      target:
+        description: "Dockerfile stage to build (defaults to the last one)"
+        type: string
+        required: false
       image-name:
         description: "Name of the published docker image"
         type: string
@@ -128,6 +132,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: ${{ inputs.context }}
+          target: ${{ inputs.target }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=gha,scope=${{ inputs.image-name }}

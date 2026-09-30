@@ -1,5 +1,16 @@
 import { DatePipe } from "@angular/common";
-import { Component, HostListener, Input, OnInit, signal, ViewChild } from "@angular/core";
+import {
+	Component,
+	computed,
+	ElementRef,
+	HostListener,
+	inject,
+	Input,
+	OnDestroy,
+	OnInit,
+	signal,
+	ViewChild,
+} from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
@@ -7,6 +18,7 @@ import {
 	AlertController,
 	IonButton,
 	IonButtons,
+	IonChip,
 	IonContent,
 	IonIcon,
 	IonInput,
@@ -23,16 +35,25 @@ import {
 	checkmarkOutline,
 	chevronBackOutline,
 	chevronForwardOutline,
+	closeCircleOutline,
 	createOutline,
+	happyOutline,
 	imageOutline,
+	personAddOutline,
+	personOutline,
+	trashOutline,
 	star,
 	starOutline,
 } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { UserSettingsService } from "src/app/core/services/user-settings.service";
+import { MemberSelectorModalComponent } from "src/app/features/events/components/member-selector-modal/member-selector-modal.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
+import { FACE_EMOTIONS, faceEmotionLabel } from "src/helpers/face-emotions";
 import { SDK } from "src/sdk";
 import { PhotoTagsEditorComponent } from "../photo-tags-editor/photo-tags-editor.component";
 
@@ -54,12 +75,13 @@ import { PhotoTagsEditorComponent } from "../photo-tags-editor/photo-tags-editor
 		IonLabel,
 		IonInputStandalone,
 		IonIcon,
+		IonChip,
 		PhotoImageUrlPipe,
 		TooltipDirective,
 		PhotoTagsEditorComponent,
 	],
 })
-export class PhotosEditComponent implements OnInit {
+export class PhotosEditComponent implements OnInit, OnDestroy {
 	photo = signal<SDK.PhotoResponseWithLinks | undefined>(undefined);
 	@Input() photos!: SDK.PhotoResponseWithLinks[];
 	@Input() startPhoto?: SDK.PhotoResponseWithLinks;
@@ -82,6 +104,23 @@ export class PhotosEditComponent implements OnInit {
 
 	@ViewChild("captionInput") captionInput!: IonInput;
 
+	faces = signal<SDK.PhotoFaceResponseWithLinks[]>([]);
+	assignedFaces = computed(() => this.faces().filter((face) => face.member));
+	private userSettings = inject(UserSettingsService);
+	private photoFacesVisible = this.userSettings.watch("photoFacesVisible");
+	facesVisible = computed(() => this.photoFacesVisible() ?? false);
+	imageRect = signal<{ left: number; top: number; width: number; height: number } | null>(null);
+
+	faceMenuOpen = signal(false);
+	faceMenuEvent = signal<Event | undefined>(undefined);
+	selectedFace = signal<SDK.PhotoFaceResponseWithLinks | undefined>(undefined);
+
+	faceEmotions = FACE_EMOTIONS;
+	faceEmotionLabel = faceEmotionLabel;
+
+	private imageElement?: HTMLImageElement;
+	private resizeObserver = new ResizeObserver(() => this.measureImage());
+
 	constructor(
 		private modalController: ModalController,
 		private api: ApiService,
@@ -89,8 +128,14 @@ export class PhotosEditComponent implements OnInit {
 		private alertController: AlertController,
 		private router: Router,
 		private platformService: PlatformService,
+		private modalService: ModalService,
 	) {
 		addIcons({
+			closeCircleOutline,
+			happyOutline,
+			personAddOutline,
+			personOutline,
+			trashOutline,
 			createOutline,
 			checkmarkOutline,
 			chevronBackOutline,
@@ -110,6 +155,111 @@ export class PhotosEditComponent implements OnInit {
 		this.openPhoto(index);
 	}
 
+	ngOnDestroy(): void {
+		this.resizeObserver.disconnect();
+	}
+
+	@ViewChild("image") set image(ref: ElementRef<HTMLImageElement> | undefined) {
+		if (this.imageElement) this.resizeObserver.unobserve(this.imageElement);
+		this.imageElement = ref?.nativeElement;
+		if (this.imageElement) this.resizeObserver.observe(this.imageElement);
+		this.measureImage();
+	}
+
+	measureImage() {
+		const image = this.imageElement;
+		if (!image || !image.complete || !image.naturalWidth) {
+			this.imageRect.set(null);
+			return;
+		}
+
+		this.imageRect.set({
+			left: image.offsetLeft,
+			top: image.offsetTop,
+			width: image.offsetWidth,
+			height: image.offsetHeight,
+		});
+	}
+
+	toggleFaces() {
+		this.userSettings.set("photoFacesVisible", !this.facesVisible());
+	}
+
+	private async loadFaces(photo: SDK.PhotoResponseWithLinks) {
+		this.faces.set([]);
+		if (!photo._links.listPhotoFaces.allowed) return;
+
+		try {
+			const faces = await this.api.PhotoGalleryApi.listPhotoFaces(photo.id).then((res) => res.data);
+			if (this.photo()?.id === photo.id) this.faces.set(faces);
+		} catch {
+			this.toastService.toast("Nepodařilo se načíst obličeje.", { color: "warning" });
+		}
+	}
+
+	openFaceMenu(event: Event, face: SDK.PhotoFaceResponseWithLinks) {
+		event.stopPropagation();
+		this.selectedFace.set(face);
+		this.faceMenuEvent.set(event);
+		this.faceMenuOpen.set(true);
+	}
+
+	async assignFace(face: SDK.PhotoFaceResponseWithLinks) {
+		this.faceMenuOpen.set(false);
+
+		const member = await this.modalService.componentModal(
+			MemberSelectorModalComponent,
+			{ title: "Kdo je na fotce?", subtitle: "Vyber člověka, kterému obličej patří." },
+			{ cssClass: "dialog-picker" },
+		);
+		if (!member) return;
+
+		await this.updateFace(face, member.id);
+	}
+
+	async unassignFace(face: SDK.PhotoFaceResponseWithLinks) {
+		this.faceMenuOpen.set(false);
+		await this.updateFace(face, null);
+	}
+
+	private async updateFace(face: SDK.PhotoFaceResponseWithLinks, memberId: number | null) {
+		const photo = this.photo();
+
+		try {
+			await this.api.PhotoGalleryApi.updatePhotoFace(face.photoId, face.id, { memberId });
+		} catch {
+			this.toastService.toast("Nepodařilo se uložit, kdo je na fotce.", { color: "warning" });
+			return;
+		}
+
+		if (photo) await this.loadFaces(photo);
+	}
+
+	async deleteFace(face: SDK.PhotoFaceResponseWithLinks) {
+		this.faceMenuOpen.set(false);
+
+		const confirmed = await this.modalService.deleteConfirmationModal(
+			"Označený výřez se z fotky odebere. Použij, když na něm žádný obličej není.",
+			{ header: "Není to obličej?", buttonText: "Odebrat" },
+		);
+		if (!confirmed) return;
+
+		try {
+			await this.api.PhotoGalleryApi.deletePhotoFace(face.photoId, face.id);
+		} catch {
+			this.toastService.toast("Obličej se nepodařilo odebrat.", { color: "warning" });
+			return;
+		}
+
+		this.faces.update((faces) => faces.filter((item) => item.id !== face.id));
+	}
+
+	async openMember(memberId: number) {
+		this.faceMenuOpen.set(false);
+		await this.modalController.dismiss();
+		await this.router.navigate(["/databaze/clenove", memberId]);
+	}
+
 	private rebuildAlbumTags() {
 		const seen = new Set<string>();
 		for (const photo of this.photos) {
@@ -120,7 +270,7 @@ export class PhotosEditComponent implements OnInit {
 
 	@HostListener("document:keyup", ["$event"])
 	onKeyUp(event: KeyboardEvent) {
-		if (!this.editingCaption() && !this.infoOpen()) {
+		if (!this.editingCaption() && !this.infoOpen() && !this.faceMenuOpen()) {
 			switch (event.code) {
 				case "ArrowLeft":
 					return this.previousPhoto();
@@ -180,7 +330,9 @@ export class PhotosEditComponent implements OnInit {
 		const photo = photos[index];
 		this.currentIndex.set(index);
 		this.imageError.set(false);
+		this.imageRect.set(null);
 		this.photo.set(photo);
+		this.loadFaces(photo);
 
 		this.router.navigate([], { queryParams: { photo: photo.id }, queryParamsHandling: "merge", replaceUrl: true });
 	}

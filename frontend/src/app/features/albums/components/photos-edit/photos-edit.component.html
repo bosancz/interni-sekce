@@ -2,6 +2,18 @@
 	<ion-toolbar class="top-toolbar" [class.controls-hidden]="!controlsVisible()">
 		<ion-buttons slot="end">
 			@if (photo()) {
+				@if (photo()!._links.listPhotoFaces.allowed) {
+					<ion-button
+						fill="clear"
+						class="faces-toggle"
+						[class.active]="facesVisible()"
+						(click)="toggleFaces()"
+						[boTooltip]="facesVisible() ? 'Skrýt obličeje' : 'Ukázat obličeje'"
+					>
+						<ion-icon slot="start" name="happy-outline"></ion-icon>
+						Obličeje{{ faces().length ? " (" + faces().length + ")" : "" }}
+					</ion-button>
+				}
 				<ion-button color="danger" fill="clear" (click)="delete(photo()!)">Smazat</ion-button>
 				<ion-button fill="clear" id="info-trigger" (keydown.enter)="$event.preventDefault()">Info</ion-button>
 			}
@@ -56,6 +68,55 @@
 							</ion-item>
 						}
 					</ion-list>
+
+					<ion-popover
+						[isOpen]="faceMenuOpen()"
+						[event]="faceMenuEvent()"
+						(didDismiss)="faceMenuOpen.set(false)"
+						class="face-menu"
+					>
+						<ng-template>
+							@if (selectedFace(); as face) {
+								<ion-list lines="none">
+									<ion-item
+										button
+										[detail]="false"
+										[disabled]="!face._links.updatePhotoFace.allowed"
+										(click)="assignFace(face)"
+									>
+										<ion-icon slot="start" name="person-add-outline"></ion-icon>
+										<ion-label>{{
+											face.member ? "Přiřadit někoho jiného…" : "Přiřadit člena…"
+										}}</ion-label>
+									</ion-item>
+									@if (face.member) {
+										<ion-item button [detail]="false" (click)="openMember(face.member.id)">
+											<ion-icon slot="start" name="person-outline"></ion-icon>
+											<ion-label>Otevřít {{ face.member.nickname }}</ion-label>
+										</ion-item>
+										<ion-item
+											button
+											[detail]="false"
+											[disabled]="!face._links.updatePhotoFace.allowed"
+											(click)="unassignFace(face)"
+										>
+											<ion-icon slot="start" name="close-circle-outline"></ion-icon>
+											<ion-label>Zrušit přiřazení</ion-label>
+										</ion-item>
+									}
+									<ion-item
+										button
+										[detail]="false"
+										[disabled]="!face._links.deletePhotoFace.allowed"
+										(click)="deleteFace(face)"
+									>
+										<ion-icon slot="start" name="trash-outline" color="danger"></ion-icon>
+										<ion-label color="danger">Není to obličej</ion-label>
+									</ion-item>
+								</ion-list>
+							}
+						</ng-template>
+					</ion-popover>
 				</ion-content>
 			</ng-template>
 		</ion-popover>
@@ -78,12 +139,46 @@
 
 			@if (!imageError()) {
 				<img
+					#image
 					class="image"
 					[src]="photo() | photoImageUrl: 'big'"
 					[style.background-color]="photo()!.bg"
 					[alt]="photo()!.caption || photo()!.name"
+					(load)="measureImage()"
 					(error)="imageError.set(true)"
 				/>
+				@if (facesVisible() && imageRect(); as rect) {
+					<div
+						class="faces-layer"
+						[style.left.px]="rect.left"
+						[style.top.px]="rect.top"
+						[style.width.px]="rect.width"
+						[style.height.px]="rect.height"
+					>
+						@for (face of faces(); track face.id) {
+							<button
+								type="button"
+								class="face"
+								[class.assigned]="!!face.member"
+								[style.left.%]="face.x * 100"
+								[style.top.%]="face.y * 100"
+								[style.width.%]="face.width * 100"
+								[style.height.%]="face.height * 100"
+								[attr.aria-label]="face.member?.nickname ?? 'Neznámý obličej'"
+								(pointerdown)="$event.stopPropagation()"
+								(pointerup)="$event.stopPropagation()"
+								(click)="openFaceMenu($event, face)"
+							>
+								@if (face.member) {
+									<span class="face-label"
+										>{{ face.emotion ? faceEmotions[face.emotion].emoji + " " : ""
+										}}{{ face.member.nickname }}</span
+									>
+								}
+							</button>
+						}
+					</div>
+				}
 			} @else {
 				<div class="image-error">
 					<ion-icon name="image-outline"></ion-icon>
@@ -102,6 +197,16 @@
 
 	@if (photo()) {
 		<ion-toolbar class="bottom-toolbar" [class.controls-hidden]="!controlsVisible()">
+			@if (assignedFaces().length) {
+				<div class="people-bar">
+					@for (face of assignedFaces(); track face.id) {
+						<ion-chip outline (click)="openFaceMenu($event, face)">
+							<ion-icon name="person-outline"></ion-icon>
+							<ion-label>{{ face.member!.nickname }}</ion-label>
+						</ion-chip>
+					}
+				</div>
+			}
 			<div class="tags-bar">
 				<bo-photo-tags-editor
 					[tags]="photo()!.tags ?? null"
@@ -133,4 +238,56 @@
 			}
 		</ion-toolbar>
 	}
+
+	<ion-popover
+		[isOpen]="faceMenuOpen()"
+		[event]="faceMenuEvent()"
+		(didDismiss)="faceMenuOpen.set(false)"
+		class="face-menu"
+	>
+		<ng-template>
+			@if (selectedFace(); as face) {
+				<ion-list lines="none">
+					@if (faceEmotionLabel(face); as emotion) {
+						<ion-item lines="full" class="face-emotion">
+							<ion-label>{{ emotion }}</ion-label>
+						</ion-item>
+					}
+					<ion-item
+						button
+						[detail]="false"
+						[disabled]="!face._links.updatePhotoFace.allowed"
+						(click)="assignFace(face)"
+					>
+						<ion-icon slot="start" name="person-add-outline"></ion-icon>
+						<ion-label>{{ face.member ? "Přiřadit někoho jiného…" : "Přiřadit člena…" }}</ion-label>
+					</ion-item>
+					@if (face.member) {
+						<ion-item button [detail]="false" (click)="openMember(face.member.id)">
+							<ion-icon slot="start" name="person-outline"></ion-icon>
+							<ion-label>Otevřít {{ face.member.nickname }}</ion-label>
+						</ion-item>
+						<ion-item
+							button
+							[detail]="false"
+							[disabled]="!face._links.updatePhotoFace.allowed"
+							(click)="unassignFace(face)"
+						>
+							<ion-icon slot="start" name="close-circle-outline"></ion-icon>
+							<ion-label>Zrušit přiřazení</ion-label>
+						</ion-item>
+					}
+					<ion-item
+						button
+						[detail]="false"
+						[disabled]="!face._links.deletePhotoFace.allowed"
+						(click)="deleteFace(face)"
+					>
+						<ion-icon slot="start" name="trash-outline" color="danger"></ion-icon>
+						<ion-label color="danger">Není to obličej</ion-label>
+					</ion-item>
+				</ion-list>
+			}
+		</ng-template>
+	</ion-popover>
 </ion-content>

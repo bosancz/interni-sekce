@@ -1,9 +1,5 @@
-:host {
-	display: block;
-}
-
 /* rows provide their own padding – drop the default p-3 from bo-card-content */
-::ng-deep bo-card-content {
+:host ::ng-deep bo-card-content {
 	padding: 0 !important;
 }
 
