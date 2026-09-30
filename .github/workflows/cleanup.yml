@@ -3,29 +3,33 @@ name: Clean up untagged images
 on:
   workflow_dispatch:
     inputs:
-      package:
-        description: "Name of the container package to clean up"
+      packages:
+        description: "JSON array of container packages to clean up"
         type: string
         required: true
-        default: interni-sekce
+        default: '["interni-sekce", "interni-sekce-worker"]'
   workflow_call:
     inputs:
-      package:
-        description: "Name of the container package to clean up"
+      packages:
+        description: "JSON array of container packages to clean up"
         type: string
         required: true
 
 jobs:
   cleanup:
-    name: Delete untagged image versions
+    name: Delete untagged ${{ matrix.package }} versions
     runs-on: ubuntu-latest
     permissions:
       packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(inputs.packages) }}
     steps:
       - name: Delete untagged image versions
         uses: actions/delete-package-versions@v5
         with:
-          package-name: ${{ inputs.package }}
+          package-name: ${{ matrix.package }}
           package-type: container
           delete-only-untagged-versions: "true"
           min-versions-to-keep: 0
