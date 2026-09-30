@@ -15,7 +15,8 @@ import {
 	PrimaryGeneratedColumn,
 	RelationId,
 } from "typeorm";
-import { EventAttendee, EventAttendeeType } from "./event-attendee.entity";
+import { getEventLeaders } from "../helpers/event-leaders";
+import { EventAttendee } from "./event-attendee.entity";
 import { EventExpense } from "./event-expense.entity";
 
 export enum EventStates {
@@ -97,8 +98,6 @@ export class Event {
 
 	@AfterLoad()
 	setLeaders() {
-		this.leaders = this.attendees
-			?.filter((a) => a.member && a.type === EventAttendeeType.leader)
-			.map((a) => a.member!);
+		this.leaders = this.attendees ? getEventLeaders(this.attendees) : undefined;
 	}
 }

@@ -318,11 +318,13 @@ export class SeedService {
 			];
 
 			for (const [nicknames, type] of attendees) {
-				for (const nickname of nicknames) {
+				for (const [index, nickname] of nicknames.entries()) {
 					const memberId = memberIds.get(nickname);
 					if (!memberId) throw new Error(`Unknown member '${nickname}' for event '${seedEvent.name}'.`);
 
-					await t.insert(EventAttendee, { eventId: event.id, memberId, type });
+					const position = type === EventAttendeeType.leader ? index : null;
+
+					await t.insert(EventAttendee, { eventId: event.id, memberId, type, position });
 				}
 			}
 

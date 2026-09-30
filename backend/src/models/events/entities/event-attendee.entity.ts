@@ -24,4 +24,5 @@ export class EventAttendee {
 	member?: Member;
 
 	@Column({ type: "enum", enum: EventAttendeeType, nullable: false }) type!: EventAttendeeType;
+	@Column({ type: "integer", nullable: true }) position?: number | null;
 }

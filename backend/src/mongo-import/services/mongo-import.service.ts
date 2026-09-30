@@ -364,7 +364,7 @@ export class MongoImportService {
 			}
 
 			if (mongoEvent.leaders) {
-				for (let mongoLeader of mongoEvent.leaders) {
+				for (const [position, mongoLeader] of mongoEvent.leaders.entries()) {
 					const memberId = mongoLeader ? memberIds[mongoLeader.toString()] : null;
 
 					if (!memberId) continue;
@@ -373,6 +373,7 @@ export class MongoImportService {
 						eventId: event.id,
 						memberId,
 						type: EventAttendeeType.leader,
+						position,
 					};
 
 					await t.save(EventAttendee, attendeeData);
