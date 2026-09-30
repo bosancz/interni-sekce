@@ -34,6 +34,18 @@
 		<span class="nav-icon nav-icon--program me-3"></span>
 		<ion-label>Kalendář</ion-label>
 	</ion-item>
+	@if (canAccessProgram()) {
+		<ion-item routerLink="/program" routerLinkActive="active">
+			<ion-icon name="clipboard-outline" class="me-3"></ion-icon>
+			<ion-label>Program</ion-label>
+		</ion-item>
+	}
+	@if (canAccessTreasurer()) {
+		<ion-item routerLink="/prispevky" routerLinkActive="active">
+			<ion-icon name="wallet-outline" class="me-3"></ion-icon>
+			<ion-label>Příspěvky</ion-label>
+		</ion-item>
+	}
 </ion-list>
 <hr />
 <ion-list lines="none" mode="md">

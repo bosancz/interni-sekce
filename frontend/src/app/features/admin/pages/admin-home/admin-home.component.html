@@ -3,50 +3,24 @@
 <bo-page-content [padding]="true">
 	<div class="p-1 p-lg-3">
 		<div class="row nav-buttons">
-			@if (canAccessUsers()) {
-				<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
-					<bo-button-square
-						routerLink="/admin/uzivatele"
-						label="Uživatelé"
-						color="var(--san-red)"
-						tint="var(--bo-red-tint)"
-						image="assets/img/button-databaze.svg"
-					></bo-button-square>
-				</div>
-			}
-			@if (canAccessTreasurer()) {
-				<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
-					<bo-button-square
-						routerLink="/admin/pokladna"
-						label="Příspěvky"
-						color="var(--san-yellow)"
-						tint="var(--bo-yellow-tint)"
-						image="assets/img/button-databaze.svg"
-					></bo-button-square>
-				</div>
-			}
-			@if (canAccessTreasurer()) {
-				<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
-					<bo-button-square
-						routerLink="/admin/platebni-udaje"
-						label="Platební údaje"
-						color="var(--san-blue)"
-						tint="var(--bo-blue-tint)"
-						image="assets/img/button-wiki.svg"
-					></bo-button-square>
-				</div>
-			}
-			@if (canAccessProgram()) {
-				<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
-					<bo-button-square
-						routerLink="/program"
-						label="Program"
-						color="var(--san-green)"
-						tint="var(--bo-green-tint)"
-						image="assets/img/button-program.svg"
-					></bo-button-square>
-				</div>
-			}
+			<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
+				<bo-button-square
+					routerLink="/admin/uzivatele"
+					label="Uživatelé"
+					color="var(--san-red)"
+					tint="var(--bo-red-tint)"
+					image="assets/img/button-databaze.svg"
+				></bo-button-square>
+			</div>
+			<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
+				<bo-button-square
+					routerLink="/prispevky/platebni-udaje"
+					label="Platební údaje"
+					color="var(--san-blue)"
+					tint="var(--bo-blue-tint)"
+					image="assets/img/button-wiki.svg"
+				></bo-button-square>
+			</div>
 		</div>
 	</div>
 </bo-page-content>
