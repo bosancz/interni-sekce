@@ -84,6 +84,10 @@
 - Uprostřed sedí `assets/img/san-emblem.svg` (znak bez nápisu, vyříznutý ze `sanlogo-07.svg` viewBoxem `27.2 76.8 103 103`) vložený jako vnořené `<svg>`. **Moduly pod ním se zahazují, proto korekce `H`** — s ní se přečte i nejdelší `MSG:`. Modul je navy `#2a3478`, oči zaoblené, klidová zóna 4 moduly.
 - `GET /api/qr-platba/…` vrací SVG, s `?format=png` rastr přes `sharp`. **Bankovní aplikace z nasdíleného SVG platbu nepřečtou**, takže „Zaplatit v bance“ (`member-payment.component`) si stahuje PNG; `<img>` i odkaz v e-mailu berou SVG.
 
+## Schvalování akcí (`/program`)
+
+- **Varianta 1c** — plné karty (`bo-event-review-card`) jen ve žlutém sloupci Ke schválení, Bez vedoucího / V přípravě / V programu jsou seznamy řádků `bo-event-list-item` (`features/program/components`); V programu je seskupené po měsících `dateFrom` (`publicEventsByMonth`). Obě komponenty jsou prezentační a jen emitují `(action)`; volání API, prompt na `statusNote` a přesun akce mezi sloupci dělá `ProgramWorkflowComponent.eventAction()`. `eventChanged()` musí do `events` poslat **nové pole** — sloupce jsou `computed` nad `toSignal`, stejná reference by je nepřepočítala. `bo-card` promítá jen `bo-card-*` podkomponenty, takže obsah karty je v `bo-card-content` (s přebitým `p-3`). Pod 1200 px zůstávají záložky `bo-tabs`.
+
 ## Žebříčky na homepagi
 
 - Čtyři karty: **Statistika** (`statistics/summary` — tři čísla za rok: aktivní děti = byly aspoň na jedné akci, aktivní vedoucí = vedli aspoň jednu akci, a celkem děťodní; žebříčky tenhle součet v odpovědi vůbec nenesou), **Nejlepší vedoucí** (`statistics/leaders/top`), **Nejlepší akce** (`statistics/events/top`) a **Nejlepší děti** (`statistics/children/top`), všechny za `vedouci` a linkované z kořene API. Chrome karty (nadpis, ⓘ popover s vysvětlením, přepínání roku) drží sdílená `bo-home-leaderboard-card` — info text se předává jako `infoTitle` + `infoLines`, obsah se projektuje; sdílené styly řádků (`.total`, `.rank`, `.score`) jsou v `styles/_leaderboard-card.scss`, mixin `leaderboard-events-popover` stylizuje popover se seznamem akcí.

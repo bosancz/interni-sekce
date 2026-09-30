@@ -1,5 +1,5 @@
-import { NgTemplateOutlet } from "@angular/common";
-import { Component, OnInit, signal } from "@angular/core";
+import { formatDate, NgTemplateOutlet } from "@angular/common";
+import { Component, computed, OnInit, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import {
 	InfiniteScrollCustomEvent,
@@ -7,8 +7,6 @@ import {
 	IonIcon,
 	IonInfiniteScroll,
 	IonInfiniteScrollContent,
-	IonItem,
-	IonLabel,
 } from "@ionic/angular/standalone";
 import { Router } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -19,13 +17,15 @@ import { filter, map } from "rxjs/operators";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
-import { EventCardComponent } from "src/app/shared/components/event-card/event-card.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { TabComponent } from "src/app/shared/components/tab/tab.component";
 import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { SDK } from "src/sdk";
+import { EventListItemComponent } from "../../components/event-list-item/event-list-item.component";
+import { EventReviewCardComponent } from "../../components/event-review-card/event-review-card.component";
+import { ProgramEventAction } from "../../program-event-action";
 import { EventCreateModalComponent } from "../../../events/components/event-create-modal/event-create-modal.component";
 import { ProgramService } from "../../services/program.service";
 
@@ -37,13 +37,12 @@ import { ProgramService } from "../../services/program.service";
 
 	imports: [
 		NgTemplateOutlet,
-		IonLabel,
-		IonItem,
 		IonButton,
 		IonIcon,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
-		EventCardComponent,
+		EventListItemComponent,
+		EventReviewCardComponent,
 		PageHeaderComponent,
 		PageContentComponent,
 		PageFooterComponent,
@@ -56,37 +55,35 @@ export class ProgramWorkflowComponent implements OnInit {
 
 	events = new BehaviorSubject<undefined | SDK.EventResponseWithLinks[]>([]);
 
-	noLeaderEvents = toSignal(
-		this.events.pipe(
-			map((events) =>
-				events?.filter(
-					(event) =>
-						["draft", "rejected"].indexOf(event.status) !== -1 && (!event.leaders || !event.leaders.length),
-				),
-			),
-		),
-		{ initialValue: [] },
+	private allEvents = toSignal(this.events.pipe(map((events) => events ?? [])), { initialValue: [] });
+
+	noLeaderEvents = computed(() =>
+		this.allEvents().filter((event) => ["draft", "rejected"].includes(event.status) && !event.leaders?.length),
 	);
-	draftEvents = toSignal(
-		this.events.pipe(
-			map((events) =>
-				events?.filter(
-					(event) =>
-						["draft", "rejected"].indexOf(event.status) !== -1 && event.leaders && event.leaders.length,
-				),
-			),
-		),
-		{ initialValue: [] },
+	draftEvents = computed(() =>
+		this.allEvents().filter((event) => ["draft", "rejected"].includes(event.status) && !!event.leaders?.length),
 	);
-	pendingEvents = toSignal(this.events.pipe(map((events) => events?.filter((event) => event.status === "pending"))), {
-		initialValue: [],
+	pendingEvents = computed(() => this.allEvents().filter((event) => event.status === "pending"));
+	publicEvents = computed(() => this.allEvents().filter((event) => ["public", "cancelled"].includes(event.status)));
+
+	publicEventsByMonth = computed(() => {
+		const sorted = [...this.publicEvents()].sort((a, b) =>
+			(a.dateFrom ?? "9999").localeCompare(b.dateFrom ?? "9999"),
+		);
+		const months: { label: string; events: SDK.EventResponseWithLinks[] }[] = [];
+		for (const event of sorted) {
+			const label = event.dateFrom ? this.monthLabel(event.dateFrom) : "Bez data";
+			const last = months[months.length - 1];
+			if (last?.label === label) last.events.push(event);
+			else months.push({ label, events: [event] });
+		}
+		return months;
 	});
-	publicEvents = toSignal(
-		this.events.pipe(
-			map((events) => events?.filter((event) => ["public", "cancelled"].indexOf(event.status) !== -1)),
-		),
-		{ initialValue: [] },
-	);
+
+	pendingLabel = computed(() => {
+		const count = this.pendingEvents().length;
+		return count >= 2 && count <= 4 ? "čekají" : "čeká";
+	});
 
 	loading = signal(true);
 	reachedEnd = signal(false);
@@ -147,7 +144,7 @@ export class ProgramWorkflowComponent implements OnInit {
 	}
 
 	eventChanged(newEvent: SDK.EventResponseWithLinks) {
-		const events = this.events.value || [];
+		const events = [...(this.events.value ?? [])];
 		const i = events.findIndex((event) => event.id === newEvent.id);
 		if (i >= 0) {
 			events.splice(i, 1, newEvent);
@@ -155,6 +152,25 @@ export class ProgramWorkflowComponent implements OnInit {
 			events.push(newEvent);
 		}
 		this.events.next(events);
+	}
+
+	async eventAction(event: SDK.EventResponseWithLinks, action: ProgramEventAction) {
+		const statusNote = window.prompt(
+			action === "rejectEvent"
+				? "Poznámka k vrácení akce:"
+				: "Poznámka pro správce programu (můžeš nechat prázdné):",
+		);
+		if (statusNote === null) return;
+
+		await this.api.EventsApi[action](event.id, { statusNote });
+
+		const updatedEvent = await this.api.EventsApi.getEvent(event.id).then((res) => res.data);
+		this.eventChanged(updatedEvent);
+	}
+
+	private monthLabel(date: string) {
+		const label = formatDate(date, "LLLL y", "cs");
+		return label.charAt(0).toUpperCase() + label.slice(1);
 	}
 
 	async createEvent() {
