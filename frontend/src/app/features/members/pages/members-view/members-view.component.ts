@@ -11,7 +11,7 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { callOutline, heartOutline, personCircleOutline } from "ionicons/icons";
+import { callOutline, medkitOutline, personCircleOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { TitleService } from "src/app/core/services/title.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -93,7 +93,7 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		private alertController: AlertController,
 		private titleService: TitleService,
 	) {
-		addIcons({ personCircleOutline, heartOutline, callOutline });
+		addIcons({ personCircleOutline, medkitOutline, callOutline });
 	}
 
 	ngOnInit() {
