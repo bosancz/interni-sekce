@@ -48,35 +48,9 @@
 </bo-page-content>
 
 <bo-page-footer class="d-lg-none">
-	<ion-toolbar>
-		<ion-tab-bar>
-			<ion-tab-button
-				routerLink="."
-				[queryParams]="{ view: 'profile' }"
-				routerLinkActive="tab-selected"
-				[replaceUrl]="true"
-			>
-				<ion-icon name="person-circle-outline"></ion-icon>
-			</ion-tab-button>
-
-			<ion-tab-button
-				routerLink="."
-				[queryParams]="{ view: 'health' }"
-				routerLinkActive="tab-selected"
-				[replaceUrl]="true"
-				class="tab-health"
-			>
-				<ion-icon name="medkit-outline"></ion-icon>
-			</ion-tab-button>
-
-			<ion-tab-button
-				routerLink="."
-				[queryParams]="{ view: 'contacts' }"
-				routerLinkActive="tab-selected"
-				[replaceUrl]="true"
-			>
-				<ion-icon name="call-outline"></ion-icon>
-			</ion-tab-button>
-		</ion-tab-bar>
-	</ion-toolbar>
+	<bo-tabs defaultTab="profile" (change)="view.set($any($event))">
+		<bo-tab name="profile" label="Profil" icon="person-circle-outline"></bo-tab>
+		<bo-tab name="health" label="Zdraví" icon="medkit-outline" color="var(--san-red)"></bo-tab>
+		<bo-tab name="contacts" label="Kontakty" icon="call-outline"></bo-tab>
+	</bo-tabs>
 </bo-page-footer>

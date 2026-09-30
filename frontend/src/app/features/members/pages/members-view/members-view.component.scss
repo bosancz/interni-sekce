@@ -20,23 +20,3 @@
 		break-after: column;
 	}
 }
-.tab-health {
-	ion-icon {
-		color: var(--san-red);
-	}
-}
-
-ion-tab-button {
-	--color: var(--bo-muted);
-	--color-selected: var(--bo-nav-active-fg);
-
-	&::part(native) {
-		margin: 6px;
-		border-radius: var(--bo-radius-pill);
-		transition: background-color 0.18s ease;
-	}
-
-	&.tab-selected::part(native) {
-		background: var(--bo-nav-active-bg);
-	}
-}

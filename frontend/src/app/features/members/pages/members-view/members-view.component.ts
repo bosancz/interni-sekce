@@ -1,14 +1,6 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
-import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from "@angular/router";
-import {
-	AlertController,
-	IonIcon,
-	IonTabBar,
-	IonTabButton,
-	IonToolbar,
-	ViewWillEnter,
-	ViewWillLeave,
-} from "@ionic/angular/standalone";
+import { ActivatedRoute, Router } from "@angular/router";
+import { AlertController, ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { callOutline, medkitOutline, personCircleOutline } from "ionicons/icons";
@@ -20,6 +12,8 @@ import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { TabComponent } from "src/app/shared/components/tab/tab.component";
+import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { SDK } from "src/sdk";
 import { MemberContactComponent } from "../../components/member-contact/member-contact.component";
 import MemberContactsComponent from "../../components/member-contacts/member-contacts.component";
@@ -35,12 +29,8 @@ import { MemberProfileComponent } from "../../components/member-profile/member-p
 	templateUrl: "./members-view.component.html",
 	styleUrls: ["./members-view.component.scss"],
 	imports: [
-		IonToolbar,
-		IonTabBar,
-		IonTabButton,
-		IonIcon,
-		RouterLink,
-		RouterLinkActive,
+		TabsComponent,
+		TabComponent,
 		PageHeaderComponent,
 		PageContentComponent,
 		PageFooterComponent,
@@ -56,7 +46,7 @@ import { MemberProfileComponent } from "../../components/member-profile/member-p
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeave {
 	member = signal<SDK.MemberResponseWithLinks | undefined>(undefined);
-	view = signal<"info" | "health" | "contacts" | "profile" | undefined>("info");
+	view = signal<"health" | "contacts" | "profile">("profile");
 
 	// actions that do not apply to the member are hidden,
 	// actions that apply but the user is not permitted to use are shown disabled
@@ -99,18 +89,6 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	ngOnInit() {
 		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {
 			if (this.member()?.id !== parseInt(params.member)) this.loadMember(parseInt(params.member));
-		});
-
-		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => {
-			if (params.view) {
-				this.view.set(params.view);
-			} else {
-				this.router.navigate([], {
-					relativeTo: this.route,
-					queryParams: { view: "profile" },
-					replaceUrl: true,
-				});
-			}
 		});
 	}
 
