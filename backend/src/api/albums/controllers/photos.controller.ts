@@ -4,7 +4,9 @@ import {
 	Controller,
 	Delete,
 	Get,
+	Logger,
 	NotFoundException,
+	Optional,
 	Param,
 	ParseIntPipe,
 	Patch,
@@ -24,6 +26,7 @@ import { AcController, AcLinks, WithLinks } from "src/access-control/access-cont
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
+import { FacesDetectionService } from "src/models/worker/services/faces-detection.service";
 import {
 	PhotoCreatePermission,
 	PhotoDeletePermission,
@@ -39,9 +42,12 @@ import { PhotoCreateBody, PhotoResponse, PhotoSizes, PhotoUpdateBody } from "../
 @AcController()
 @ApiTags("Photo gallery")
 export class PhotosController {
+	private logger = new Logger(PhotosController.name);
+
 	constructor(
 		private photos: PhotosRepository,
 		private photosFiles: PhotosFilesService,
+		@Optional() private facesDetectionService?: FacesDetectionService,
 	) {}
 
 	@Get()
@@ -71,7 +77,13 @@ export class PhotosController {
 		const ext = extname(file.originalname).slice(1).toLowerCase();
 		if (!this.photosFiles.isAllowedType(ext)) throw new BadRequestException("Unsupported file type.");
 
-		return this.photos.createPhoto(body.albumId, file, req.user?.userId ?? null);
+		const photo = await this.photos.createPhoto(body.albumId, file, req.user?.userId ?? null);
+
+		this.facesDetectionService
+			?.enqueuePhotos([photo])
+			.catch((err) => this.logger.error(`Failed to queue photo ${photo.id} for face detection.`, err));
+
+		return photo;
 	}
 
 	@Get(":photoId")
