@@ -49,5 +49,20 @@ export class EventExpenseModalComponent extends InputModalComponent<SDK.EventExp
 	 */
 	keepOrder = () => 0;
 
+	amountPattern = /^\s*-?\s*\d[\d\s]*([,.]\d+)?\s*$/;
+
 	ngOnInit(): void {}
+
+	formatAmount(amount: number | string | undefined) {
+		if (amount === undefined || amount === null || amount === "") return "";
+		return String(Number(amount)).replace(".", ",");
+	}
+
+	save(value: Omit<SDK.EventExpenseResponse, "amount"> & { amount: string }) {
+		this.submit.emit({ ...value, amount: this.parseAmount(value.amount) });
+	}
+
+	private parseAmount(amount: string) {
+		return Number(amount.replace(/\s/g, "").replace(",", "."));
+	}
 }
