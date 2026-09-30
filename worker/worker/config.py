@@ -12,6 +12,37 @@ RESULTS_QUEUE = "worker-results"
 JOB_LOCK_DURATION_MS = 60_000
 
 HEARTBEAT_PREFIX = "worker-heartbeat:"
+NAME_CLAIM_PREFIX = "worker-name:"
+NAME_MAX_ROUNDS = 100
+WORKER_NAMES = [
+    "thorin",
+    "balin",
+    "dwalin",
+    "fili",
+    "kili",
+    "dori",
+    "nori",
+    "ori",
+    "oin",
+    "gloin",
+    "bifur",
+    "bofur",
+    "bombur",
+    "gimli",
+    "dain",
+    "thrain",
+    "thror",
+    "durin",
+    "fundin",
+    "groin",
+    "nain",
+    "farin",
+    "borin",
+    "fror",
+    "gror",
+    "telchar",
+    "narvi",
+]
 HEARTBEAT_INTERVAL_S = 10
 HEARTBEAT_TTL_S = 30
 
