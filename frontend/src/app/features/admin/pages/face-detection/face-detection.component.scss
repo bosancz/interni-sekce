@@ -1,0 +1,133 @@
+:host {
+	display: block;
+}
+
+:host ::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+.fd-page {
+	max-width: 960px;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+.muted {
+	color: var(--bo-muted);
+}
+
+.queue-spinner {
+	width: 20px;
+	height: 14px;
+	vertical-align: middle;
+}
+
+.fd-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 16px;
+	padding: 13px 20px 16px;
+	border-top: 1px solid var(--bo-card-line);
+	font-size: 0.9em;
+}
+
+.fd-log-row {
+	display: flex;
+	gap: 14px;
+	padding: 12px 20px;
+	border-top: 1px solid var(--bo-card-line);
+}
+
+.fd-photo {
+	flex: 0 0 auto;
+	width: 96px;
+	height: 72px;
+	border-radius: 8px;
+	overflow: hidden;
+	background: var(--bo-card-line);
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+}
+
+.fd-info {
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.fd-title {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0 8px;
+	align-items: baseline;
+
+	a {
+		color: var(--bo-ink);
+		font-weight: 600;
+		text-decoration: none;
+		word-break: break-all;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+.fd-meta {
+	font-size: 0.85em;
+}
+
+.fd-error {
+	color: var(--bo-red);
+	font-size: 0.9em;
+}
+
+.fd-faces {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+}
+
+.fd-face {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	overflow: hidden;
+	border: 2px dashed var(--bo-muted);
+
+	&.assigned {
+		border: 2px solid var(--bo-green);
+	}
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+}
+
+.fd-count {
+	font-size: 0.85em;
+}
+
+.fd-empty {
+	margin: 0;
+	padding: 13px 20px;
+}
+
+.fd-loading {
+	display: flex;
+	justify-content: center;
+	padding: 12px 0;
+}

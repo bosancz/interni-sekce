@@ -26,9 +26,18 @@ export class UserService {
 	 */
 	readonly canAccessTreasurer = computed(() => this.api.links()?.updatePaymentSettings.allowed ?? false);
 
+	readonly canAccessFaceDetection = computed(() => this.api.links()?.getFaceDetectionSummary.allowed ?? false);
+
+	readonly canAccessWorkers = computed(() => this.api.links()?.listWorkers.allowed ?? false);
+
 	/** Whether the administration section should be visible at all. */
 	readonly canAccessAdmin = computed(
-		() => this.canAccessProgram() || this.canAccessUsers() || this.canAccessTreasurer(),
+		() =>
+			this.canAccessProgram() ||
+			this.canAccessUsers() ||
+			this.canAccessTreasurer() ||
+			this.canAccessFaceDetection() ||
+			this.canAccessWorkers(),
 	);
 
 	constructor(

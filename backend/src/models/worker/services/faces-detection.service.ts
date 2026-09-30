@@ -4,7 +4,7 @@ import { Queue } from "bullmq";
 import { Config } from "src/config";
 import { DetectFacesJob } from "src/models/albums/schema/detected-faces";
 import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
-import { WORKER_TASK_QUEUE, WorkerTasks } from "../worker-queues";
+import { BACKEND_SCHEDULE_QUEUE, BackendScheduleJobs, WORKER_TASK_QUEUE, WorkerTasks } from "../worker-queues";
 
 @Injectable()
 export class FacesDetectionService {
@@ -12,6 +12,7 @@ export class FacesDetectionService {
 
 	constructor(
 		@InjectQueue(WORKER_TASK_QUEUE(WorkerTasks.detectFaces)) private queue: Queue<DetectFacesJob>,
+		@InjectQueue(BACKEND_SCHEDULE_QUEUE) private scheduleQueue: Queue,
 		private photoFacesService: PhotoFacesService,
 		private config: Config,
 	) {}
@@ -52,5 +53,22 @@ export class FacesDetectionService {
 		await this.queue.drain(true);
 
 		this.logger.log(`Face detection window closed, ${waiting} photos left for the next night.`);
+	}
+
+	async getQueueStatus() {
+		const [counts, enqueue, stop] = await Promise.all([
+			this.queue.getJobCounts("waiting", "active", "delayed", "failed"),
+			this.scheduleQueue.getJobScheduler(BackendScheduleJobs.facesEnqueue),
+			this.scheduleQueue.getJobScheduler(BackendScheduleJobs.facesStop),
+		]);
+
+		return {
+			waiting: counts.waiting ?? 0,
+			active: counts.active ?? 0,
+			delayed: counts.delayed ?? 0,
+			failed: counts.failed ?? 0,
+			nextBatchAt: enqueue?.next ? new Date(enqueue.next) : null,
+			nextStopAt: stop?.next ? new Date(stop.next) : null,
+		};
 	}
 }

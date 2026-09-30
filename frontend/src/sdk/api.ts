@@ -35,6 +35,7 @@ export class SDK {
         RootApi: SDK.RootApi;
         StatisticsApi: SDK.StatisticsApi;
         UsersApi: SDK.UsersApi;
+        WorkerApi: SDK.WorkerApi;
     
         constructor(configurationParams: SDKConfiguration, axios?: AxiosInstance) {
             const configuration = Object.assign({}, defaultConfigurationParameters, configurationParams);
@@ -52,6 +53,7 @@ export class SDK {
             this.RootApi = new SDK.RootApi(configuration, axios!);
             this.StatisticsApi = new SDK.StatisticsApi(configuration, axios!);
             this.UsersApi = new SDK.UsersApi(configuration, axios!);
+            this.WorkerApi = new SDK.WorkerApi(configuration, axios!);
         };
 }
 
@@ -2810,6 +2812,300 @@ export namespace SDK {
          * @memberof EventsReportResponseEvents
          */
         'leaders': Array<MemberResponse>;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceDetectionBatchBody
+     */
+    export interface FaceDetectionBatchBody {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionBatchBody
+         */
+        'limit'?: number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceDetectionBatchResponse
+     */
+    export interface FaceDetectionBatchResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionBatchResponse
+         */
+        'queued': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceDetectionFacesStatsResponse
+     */
+    export interface FaceDetectionFacesStatsResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionFacesStatsResponse
+         */
+        'total': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionFacesStatsResponse
+         */
+        'assigned': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceDetectionLogEntryResponse
+     */
+    export interface FaceDetectionLogEntryResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionLogEntryResponse
+         */
+        'photoId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionLogEntryResponse
+         */
+        'photoName': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionLogEntryResponse
+         */
+        'albumId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionLogEntryResponse
+         */
+        'albumName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionLogEntryResponse
+         */
+        'detectedAt': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionLogEntryResponse
+         */
+        'model'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionLogEntryResponse
+         */
+        'error'?: string | null;
+        /**
+         * 
+         * @type {Array<FaceDetectionLogFaceResponse>}
+         * @memberof FaceDetectionLogEntryResponse
+         */
+        'faces': Array<FaceDetectionLogFaceResponse>;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceDetectionLogFaceResponse
+     */
+    export interface FaceDetectionLogFaceResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionLogFaceResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionLogFaceResponse
+         */
+        'photoId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionLogFaceResponse
+         */
+        'score'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionLogFaceResponse
+         */
+        'memberId'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionLogFaceResponse
+         */
+        'memberNickname'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceDetectionPhotosStatsResponse
+     */
+    export interface FaceDetectionPhotosStatsResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionPhotosStatsResponse
+         */
+        'total': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionPhotosStatsResponse
+         */
+        'processed': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionPhotosStatsResponse
+         */
+        'pending': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionPhotosStatsResponse
+         */
+        'failed': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionPhotosStatsResponse
+         */
+        'lastDetectedAt'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceDetectionQueueResponse
+     */
+    export interface FaceDetectionQueueResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionQueueResponse
+         */
+        'waiting': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionQueueResponse
+         */
+        'active': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionQueueResponse
+         */
+        'delayed': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionQueueResponse
+         */
+        'failed': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionQueueResponse
+         */
+        'nextBatchAt'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionQueueResponse
+         */
+        'nextStopAt'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceDetectionScheduleResponse
+     */
+    export interface FaceDetectionScheduleResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionScheduleResponse
+         */
+        'cron': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionScheduleResponse
+         */
+        'stopCron': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceDetectionScheduleResponse
+         */
+        'timezone': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceDetectionScheduleResponse
+         */
+        'batchSize': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceDetectionSummaryResponse
+     */
+    export interface FaceDetectionSummaryResponse {
+        /**
+         * 
+         * @type {boolean}
+         * @memberof FaceDetectionSummaryResponse
+         */
+        'enabled': boolean;
+        /**
+         * 
+         * @type {FaceDetectionScheduleResponse}
+         * @memberof FaceDetectionSummaryResponse
+         */
+        'schedule': FaceDetectionScheduleResponse;
+        /**
+         * 
+         * @type {FaceDetectionPhotosStatsResponse}
+         * @memberof FaceDetectionSummaryResponse
+         */
+        'photos': FaceDetectionPhotosStatsResponse;
+        /**
+         * 
+         * @type {FaceDetectionFacesStatsResponse}
+         * @memberof FaceDetectionSummaryResponse
+         */
+        'faces': FaceDetectionFacesStatsResponse;
+        /**
+         * 
+         * @type {FaceDetectionQueueResponse}
+         * @memberof FaceDetectionSummaryResponse
+         */
+        'queue'?: FaceDetectionQueueResponse | null;
     }
     
         /**
@@ -6106,6 +6402,30 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'createUser': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getFaceDetectionSummary': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listFaceDetectionLog': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'enqueueFaceDetectionBatch': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listWorkers': AcLink;
     }
     
         /**
@@ -6884,6 +7204,141 @@ export namespace SDK {
     } as const;
     
     export type UserUpdateBodyRolesEnum = typeof UserUpdateBodyRolesEnum[keyof typeof UserUpdateBodyRolesEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @interface WorkerCurrentJobResponse
+     */
+    export interface WorkerCurrentJobResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof WorkerCurrentJobResponse
+         */
+        'task': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof WorkerCurrentJobResponse
+         */
+        'jobId'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof WorkerCurrentJobResponse
+         */
+        'startedAt': string;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface WorkerResponse
+     */
+    export interface WorkerResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof WorkerResponse
+         */
+        'id': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof WorkerResponse
+         */
+        'hostname': string;
+        /**
+         * 
+         * @type {WorkerStatusEnum}
+         * @memberof WorkerResponse
+         */
+        'status': WorkerStatusEnum;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof WorkerResponse
+         */
+        'tasks': Array<string>;
+        /**
+         * 
+         * @type {WorkerCurrentJobResponse}
+         * @memberof WorkerResponse
+         */
+        'current'?: WorkerCurrentJobResponse | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerResponse
+         */
+        'cpus': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerResponse
+         */
+        'cpuLimit'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerResponse
+         */
+        'memoryLimit'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerResponse
+         */
+        'memoryUsage'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerResponse
+         */
+        'processed': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerResponse
+         */
+        'failed': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof WorkerResponse
+         */
+        'lastJobAt'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof WorkerResponse
+         */
+        'startedAt': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof WorkerResponse
+         */
+        'updatedAt': string;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const WorkerStatusEnum = {
+        Idle: 'idle',
+        Busy: 'busy',
+        Stale: 'stale'
+    } as const;
+    
+    export type WorkerStatusEnum = typeof WorkerStatusEnum[keyof typeof WorkerStatusEnum];
     
     
         
@@ -15912,6 +16367,230 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    }
+    
+        
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for listFaceDetectionLog operation in WorkerApi.
+     * @export
+     * @interface WorkerApiListFaceDetectionLogQueryParams
+     */
+    export interface WorkerApiListFaceDetectionLogQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerApiListFaceDetectionLog
+         */
+        limit?: number
+    
+        //offset
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerApiListFaceDetectionLog
+         */
+        offset?: number
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * WorkerApi - object-oriented interface
+     * @export
+     * @class WorkerApi
+     * @extends {BaseAPI}
+     */
+    export class WorkerApi extends BaseAPI {
+    
+        constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
+            super(configuration, configuration.basePath, axios);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async enqueueFaceDetectionBatch(
+            body: FaceDetectionBatchBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'faceDetectionBatchBody' is not null or undefined
+            assertParamExists('enqueueFaceDetectionBatch', 'faceDetectionBatchBody', body)
+            
+            const localVarPath = `/api/face-detection/batch`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<FaceDetectionBatchResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async getFaceDetectionSummary(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/face-detection`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<FaceDetectionSummaryResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {WorkerApiListFaceDetectionLogQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async listFaceDetectionLog(
+            queryParams: WorkerApiListFaceDetectionLogQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/face-detection/log`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.offset !== undefined) {
+                requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<FaceDetectionLogEntryResponse>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async listWorkers(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/workers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<WorkerResponse>>(axiosRequestConfig);
         }
     }
     

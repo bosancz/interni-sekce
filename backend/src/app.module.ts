@@ -15,6 +15,7 @@ import { PublicModule } from "./api/public/public.module";
 import { RootModule } from "./api/root/root.module";
 import { StatisticsModule } from "./api/statistics/statistics.module";
 import { UsersModule } from "./api/users/users.module";
+import { WorkerModule } from "./api/worker/worker.module";
 import { AuthModule } from "./auth/auth.module";
 import { Config, ConfigModule } from "./config";
 import { DatabaseModule } from "./database/database.module";
@@ -71,6 +72,7 @@ import { SeedModule } from "./seed/seed.module";
 		FilesModule,
 		SeedModule,
 		WorkerModelModule.forRoot({ processors: true }),
+		WorkerModule,
 	],
 	controllers: [],
 	providers: [MailService],

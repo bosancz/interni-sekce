@@ -16,6 +16,8 @@ export class AdminHomeComponent {
 	canAccessUsers = this.userService.canAccessUsers;
 	canAccessTreasurer = this.userService.canAccessTreasurer;
 	canAccessProgram = this.userService.canAccessProgram;
+	canAccessFaceDetection = this.userService.canAccessFaceDetection;
+	canAccessWorkers = this.userService.canAccessWorkers;
 
 	constructor(private readonly userService: UserService) {}
 }

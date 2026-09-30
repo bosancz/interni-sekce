@@ -1,0 +1,94 @@
+:host {
+	display: block;
+}
+
+:host ::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+.wk-page {
+	padding: 16px;
+}
+
+.wk-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+	font-size: 0.9em;
+}
+
+.muted {
+	color: var(--bo-muted);
+}
+
+.wk-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+	gap: 1.25rem;
+	align-items: start;
+}
+
+.wk-title {
+	min-width: 0;
+}
+
+.wk-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.wk-tasks {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 4px;
+}
+
+.wk-memory {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 4px;
+}
+
+.wk-bar {
+	display: block;
+	width: 120px;
+	height: 6px;
+	border-radius: 3px;
+	background: var(--bo-card-line);
+	overflow: hidden;
+
+	span {
+		display: block;
+		height: 100%;
+		background: var(--bo-yellow-deep, var(--san-yellow));
+	}
+}
+
+.wk-empty {
+	grid-column: 1 / -1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	padding: 3rem 1rem;
+
+	ion-icon {
+		font-size: 3rem;
+		color: var(--bo-muted);
+	}
+
+	p {
+		margin: 0.5rem 0 0;
+		max-width: 420px;
+	}
+}
+
+.wk-skeleton {
+	height: 200px;
+	max-width: 420px;
+	border-radius: 12px;
+}

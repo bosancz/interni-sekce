@@ -81,6 +81,39 @@ export class PhotoFacesService {
 		return faces.map(({ photo, ...face }) => ({ ...photo!, face }));
 	}
 
+	async getDetectionStats() {
+		const [photos] = await this.dataSource.query(
+			`SELECT count(*)::int AS "total",
+				count(faces_detected_at)::int AS "processed",
+				count(*) FILTER (WHERE faces_detected_at IS NULL)::int AS "pending",
+				count(faces_error)::int AS "failed",
+				max(faces_detected_at) AS "lastDetectedAt"
+			FROM photos`,
+		);
+		const [faces] = await this.dataSource.query(
+			`SELECT count(*)::int AS "total", count(member_id)::int AS "assigned" FROM photo_faces`,
+		);
+
+		return { photos, faces };
+	}
+
+	async getDetectionLog(options: { limit?: number; offset?: number } = {}) {
+		return this.photos
+			.createQueryBuilder("photos")
+			.leftJoin("photos.album", "album")
+			.addSelect(["album.id", "album.name"])
+			.leftJoinAndSelect("photos.faces", "faces")
+			.leftJoin("faces.member", "member")
+			.addSelect(["member.id", "member.nickname"])
+			.where("photos.faces_detected_at IS NOT NULL")
+			.orderBy("photos.facesDetectedAt", "DESC")
+			.addOrderBy("photos.id", "DESC")
+			.addOrderBy("faces.x", "ASC")
+			.skip(options.offset ?? 0)
+			.take(options.limit ?? 50)
+			.getMany();
+	}
+
 	async getPhotosForDetection(limit: number) {
 		return this.photos
 			.createQueryBuilder("photos")

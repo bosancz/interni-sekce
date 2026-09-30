@@ -6,6 +6,7 @@ import { FacesEnqueueCommand } from "./commands/faces-enqueue.command";
 import { BackendScheduleProcessor } from "./processors/backend-schedule.processor";
 import { WorkerResultsProcessor } from "./processors/worker-results.processor";
 import { FacesDetectionService } from "./services/faces-detection.service";
+import { WorkersService } from "./services/workers.service";
 import { BACKEND_SCHEDULE_QUEUE, WORKER_RESULTS_QUEUE, WORKER_TASK_QUEUE, WorkerTasks } from "./worker-queues";
 
 @Module({})
@@ -20,6 +21,7 @@ export class WorkerModelModule {
 
 		return {
 			module: WorkerModelModule,
+			global: true,
 			imports: [
 				BullModule.forRoot({ connection: { url: StaticConfig.redis.url } }),
 				BullModule.registerQueue(
@@ -29,8 +31,10 @@ export class WorkerModelModule {
 				),
 				AlbumsModelModule,
 			],
+			exports: [FacesDetectionService, WorkersService],
 			providers: [
 				FacesDetectionService,
+				WorkersService,
 				...(options.processors ? [BackendScheduleProcessor, WorkerResultsProcessor] : [FacesEnqueueCommand]),
 			],
 		};

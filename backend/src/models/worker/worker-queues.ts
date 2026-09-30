@@ -16,3 +16,5 @@ export enum BackendScheduleJobs {
 	facesEnqueue = "faces-enqueue",
 	facesStop = "faces-stop",
 }
+
+export const WORKER_HEARTBEAT_PREFIX = "worker-heartbeat:";

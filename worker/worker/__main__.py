@@ -7,7 +7,8 @@ import cv2
 from bullmq import Queue, Worker
 
 from . import config
-from .cpus import available_cpus
+from .heartbeat import Heartbeat
+from .resources import available_cpus
 from .tasks import TASKS, TaskHandler
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
@@ -36,12 +37,19 @@ async def main() -> None:
     connection = {"connection": config.REDIS_URL}
     results = Queue(config.RESULTS_QUEUE, connection)
     lock = asyncio.Lock()
+    heartbeat = Heartbeat(tasks)
+    heartbeat.start()
 
     def processor(name: str, handler: TaskHandler):
         async def process(job: Any, token: str) -> None:
             async with lock:
-                logger.debug("Job %s (%s)", job.id, name)
-                await handler(job.data, results)
+                await heartbeat.job_started(name, job.id)
+                ok = False
+                try:
+                    await handler(job.data, results)
+                    ok = True
+                finally:
+                    await heartbeat.job_finished(ok)
 
         return process
 
@@ -64,6 +72,7 @@ async def main() -> None:
     logger.info("Shutting down")
     await asyncio.gather(*(worker.close() for worker in workers))
     await results.close()
+    await heartbeat.stop()
 
 
 if __name__ == "__main__":

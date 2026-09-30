@@ -1,0 +1,174 @@
+<bo-page-header title="Rozpoznávání obličejů" backUrl="/admin" />
+
+<ion-content>
+	<div class="fd-page">
+		<bo-card>
+			<bo-card-header>
+				<bo-card-title>
+					<span class="bo-card-section-title">
+						<ion-icon name="happy-outline" />
+						Stav
+					</span>
+				</bo-card-title>
+				<ion-button slot="buttons" fill="clear" size="small" (click)="refresh()" boTooltip="Obnovit">
+					<ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+				</ion-button>
+			</bo-card-header>
+
+			<bo-card-content>
+				@if (summary(); as s) {
+					<div class="bo-info-list">
+						<div class="bo-info-row">
+							<span class="bo-info-label">Rozpoznávání</span>
+							<span class="bo-info-value">
+								@if (s.enabled) {
+									<span class="bo-pill bo-pill-green">Zapnuto</span>
+								} @else {
+									<span class="bo-pill bo-pill-red">Vypnuto — chybí REDIS_URL</span>
+								}
+							</span>
+						</div>
+						<div class="bo-info-row">
+							<span class="bo-info-label">Zpracované fotky</span>
+							<span class="bo-info-value">
+								{{ s.photos.processed }} z {{ s.photos.total }}
+								<span class="muted">(čeká {{ s.photos.pending }}, chyby {{ s.photos.failed }})</span>
+							</span>
+						</div>
+						<div class="bo-info-row">
+							<span class="bo-info-label">Obličeje</span>
+							<span class="bo-info-value">
+								{{ s.faces.total }} <span class="muted">(přiřazeno {{ s.faces.assigned }})</span>
+							</span>
+						</div>
+						<div class="bo-info-row">
+							<span class="bo-info-label">Naposledy</span>
+							<span class="bo-info-value">{{
+								s.photos.lastDetectedAt ? (s.photos.lastDetectedAt | date: "d. M. y H:mm") : "—"
+							}}</span>
+						</div>
+						@if (s.queue; as q) {
+							<div class="bo-info-row">
+								<span class="bo-info-label">Fronta</span>
+								<span class="bo-info-value">
+									@if (queueBusy()) {
+										<ion-spinner name="dots" class="queue-spinner"></ion-spinner>
+									}
+									čeká {{ q.waiting + q.delayed }}, zpracovává se {{ q.active }}
+									@if (q.failed) {
+										<span class="bo-pill bo-pill-red">{{ q.failed }} selhalo</span>
+									}
+								</span>
+							</div>
+							<div class="bo-info-row">
+								<span class="bo-info-label">Další noční dávka</span>
+								<span class="bo-info-value">
+									{{ q.nextBatchAt ? (q.nextBatchAt | date: "d. M. H:mm") : "—" }}
+									<span class="muted"
+										>({{ s.schedule.batchSize }} fotek, konec
+										{{ q.nextStopAt ? (q.nextStopAt | date: "H:mm") : "—" }})</span
+									>
+								</span>
+							</div>
+						}
+					</div>
+
+					<div class="fd-actions">
+						<ion-button
+							[disabled]="!s.enabled || !canRunBatch() || queueing()"
+							[boTooltip]="
+								!canRunBatch()
+									? 'Na spuštění dávky nemáš oprávnění.'
+									: !s.enabled
+										? 'Rozpoznávání není zapnuté.'
+										: ''
+							"
+							(click)="runBatch()"
+						>
+							<ion-icon slot="start" name="play-outline"></ion-icon>
+							Spustit dávku teď
+						</ion-button>
+						<span class="muted">Zařadí {{ s.schedule.batchSize }} nejnovějších nezpracovaných fotek.</span>
+					</div>
+				} @else {
+					<div class="bo-info-list">
+						<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+						<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+					</div>
+				}
+			</bo-card-content>
+		</bo-card>
+
+		<bo-card>
+			<bo-card-header>
+				<bo-card-title>
+					<span class="bo-card-section-title">
+						<ion-icon name="list-outline" />
+						Zpracované fotky
+					</span>
+				</bo-card-title>
+			</bo-card-header>
+
+			<bo-card-content>
+				<div class="fd-log">
+					@for (entry of log(); track entry.photoId) {
+						<div class="fd-log-row">
+							<a
+								class="fd-photo"
+								[routerLink]="['/galerie', entry.albumId, 'info']"
+								[queryParams]="{ photo: entry.photoId }"
+							>
+								<img [src]="{ id: entry.photoId } | photoImageUrl: 'small'" loading="lazy" alt="" />
+							</a>
+							<div class="fd-info">
+								<div class="fd-title">
+									<a
+										[routerLink]="['/galerie', entry.albumId, 'info']"
+										[queryParams]="{ photo: entry.photoId }"
+										>{{ entry.photoName }}</a
+									>
+									<span class="muted">{{ entry.albumName }}</span>
+								</div>
+								<div class="fd-meta muted">
+									{{ entry.detectedAt | date: "d. M. y H:mm:ss" }} · {{ entry.model || "—" }}
+								</div>
+								@if (entry.error) {
+									<div class="fd-error">{{ entry.error }}</div>
+								} @else if (!entry.faces.length) {
+									<div class="muted">Žádný obličej</div>
+								} @else {
+									<div class="fd-faces">
+										@for (face of entry.faces; track face.id) {
+											<span
+												class="fd-face"
+												[class.assigned]="!!face.memberId"
+												[boTooltip]="
+													(face.memberNickname || 'Nepřiřazeno') +
+													' · ' +
+													scorePercent(face.score)
+												"
+											>
+												<img [src]="face | photoFaceImageUrl" loading="lazy" alt="" />
+											</span>
+										}
+										<span class="muted fd-count">{{ entry.faces.length }}×</span>
+									</div>
+								}
+							</div>
+						</div>
+					} @empty {
+						@if (!logLoading()) {
+							<p class="muted fd-empty">Zatím nebyla zpracovaná žádná fotka.</p>
+						}
+					}
+
+					@if (logLoading()) {
+						<div class="fd-loading"><ion-spinner name="dots"></ion-spinner></div>
+					} @else if (logHasMore()) {
+						<ion-button fill="clear" expand="block" (click)="loadLog()">Zobrazit další</ion-button>
+					}
+				</div>
+			</bo-card-content>
+		</bo-card>
+	</div>
+</ion-content>

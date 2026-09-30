@@ -3,12 +3,14 @@ import { Routes } from "@angular/router";
 import { linkGuard } from "src/app/core/guards/link.guard";
 
 import { AdminHomeComponent } from "./pages/admin-home/admin-home.component";
+import { FaceDetectionComponent } from "./pages/face-detection/face-detection.component";
 import { PaymentSettingsComponent } from "./pages/payment-settings/payment-settings.component";
 import { TreasurerListComponent } from "./pages/treasurer-list/treasurer-list.component";
 import { UsersCreateComponent } from "./pages/users-create/users-create.component";
 import { UsersEditComponent } from "./pages/users-edit/users-edit.component";
 import { UsersListComponent } from "./pages/users-list/users-list.component";
 import { UsersViewComponent } from "./pages/users-view/users-view.component";
+import { WorkersComponent } from "./pages/workers/workers.component";
 
 const canAccessUsers = [linkGuard("listUsers")];
 
@@ -27,6 +29,14 @@ export const adminRoutes: Routes = [
 		component: PaymentSettingsComponent,
 		canMatch: canAccessTreasurer,
 	},
+
+	{
+		path: "obliceje",
+		title: "Rozpoznávání obličejů",
+		component: FaceDetectionComponent,
+		canMatch: [linkGuard("getFaceDetectionSummary")],
+	},
+	{ path: "workery", title: "Workery", component: WorkersComponent, canMatch: [linkGuard("listWorkers")] },
 
 	{ path: "uzivatele", component: UsersListComponent, canMatch: canAccessUsers },
 	{ path: "uzivatele/vytvorit", component: UsersCreateComponent, canMatch: canAccessUsers },
