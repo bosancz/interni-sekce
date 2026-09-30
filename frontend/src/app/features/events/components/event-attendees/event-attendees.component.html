@@ -11,7 +11,7 @@
 		></bo-event-attendees-list>
 
 		@if (canReorderLeaders() && (leaders()?.length ?? 0) > 1) {
-			<p class="attendees-note text-muted">Pořadí vedoucích přetažením změníš i v programu na webu.</p>
+			<p class="attendees-note text-muted">V tomto pořadí se zobrazí vedoucí na webu</p>
 		}
 
 		@if (canAddLeader()) {
