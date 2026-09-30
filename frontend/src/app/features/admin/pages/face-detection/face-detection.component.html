@@ -1,6 +1,6 @@
 <bo-page-header title="Rozpoznávání obličejů" backUrl="/admin" />
 
-<ion-content>
+<bo-page-content>
 	<div class="fd-page">
 		<bo-card>
 			<bo-card-header>
@@ -47,6 +47,19 @@
 								s.photos.lastDetectedAt ? (s.photos.lastDetectedAt | date: "d. M. y H:mm") : "—"
 							}}</span>
 						</div>
+						@if (workers(); as list) {
+							<a class="bo-info-row fd-link" routerLink="/admin/workery">
+								<span class="bo-info-label">Workery</span>
+								<span class="bo-info-value">
+									@if (liveWorkers()) {
+										<span class="bo-pill bo-pill-green">běží {{ liveWorkers() }}</span>
+									} @else {
+										<span class="bo-pill bo-pill-red">žádný neběží</span>
+									}
+									<ion-icon name="chevron-forward-outline" class="fd-link-icon"></ion-icon>
+								</span>
+							</a>
+						}
 						@if (s.queue; as q) {
 							<div class="bo-info-row">
 								<span class="bo-info-label">Fronta</span>
@@ -171,4 +184,4 @@
 			</bo-card-content>
 		</bo-card>
 	</div>
-</ion-content>
+</bo-page-content>

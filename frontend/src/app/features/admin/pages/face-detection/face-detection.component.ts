@@ -1,9 +1,9 @@
 import { DatePipe } from "@angular/common";
 import { Component, computed, OnDestroy, OnInit, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { IonButton, IonContent, IonIcon, IonSkeletonText, IonSpinner } from "@ionic/angular/standalone";
+import { IonButton, IonIcon, IonSkeletonText, IonSpinner } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { happyOutline, listOutline, playOutline, refreshOutline } from "ionicons/icons";
+import { chevronForwardOutline, happyOutline, listOutline, playOutline, refreshOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -11,6 +11,7 @@ import { CardContentComponent } from "src/app/shared/components/card-content/car
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
+import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoFaceImageUrlPipe } from "src/app/shared/pipes/photo-face-image-url.pipe";
@@ -26,7 +27,7 @@ const REFRESH_MS = 10_000;
 	styleUrl: "./face-detection.component.scss",
 	imports: [
 		PageHeaderComponent,
-		IonContent,
+		PageContentComponent,
 		IonButton,
 		IonIcon,
 		IonSpinner,
@@ -49,7 +50,11 @@ export class FaceDetectionComponent implements OnInit, OnDestroy {
 	logHasMore = signal(false);
 	queueing = signal(false);
 
+	workers = signal<SDK.WorkerResponse[] | undefined>(undefined);
+	liveWorkers = computed(() => this.workers()?.filter((worker) => worker.status !== "stale").length ?? 0);
+
 	canRunBatch = computed(() => this.api.links()?.enqueueFaceDetectionBatch.allowed ?? false);
+	canAccessWorkers = computed(() => this.api.links()?.listWorkers.allowed ?? false);
 	queueBusy = computed(() => {
 		const queue = this.summary()?.queue;
 		return !!queue && queue.waiting + queue.active + queue.delayed > 0;
@@ -62,7 +67,7 @@ export class FaceDetectionComponent implements OnInit, OnDestroy {
 		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
-		addIcons({ happyOutline, listOutline, playOutline, refreshOutline });
+		addIcons({ chevronForwardOutline, happyOutline, listOutline, playOutline, refreshOutline });
 	}
 
 	ngOnInit() {
@@ -86,7 +91,14 @@ export class FaceDetectionComponent implements OnInit, OnDestroy {
 
 	private async loadSummary() {
 		try {
-			this.summary.set(await this.api.WorkerApi.getFaceDetectionSummary().then((res) => res.data));
+			const [summary, workers] = await Promise.all([
+				this.api.WorkerApi.getFaceDetectionSummary().then((res) => res.data),
+				this.canAccessWorkers()
+					? this.api.WorkerApi.listWorkers().then((res) => res.data)
+					: Promise.resolve(undefined),
+			]);
+			this.summary.set(summary);
+			this.workers.set(workers);
 		} catch {
 			this.toastService.toast("Nepodařilo se načíst stav rozpoznávání.", { color: "warning" });
 		}
