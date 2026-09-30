@@ -54,6 +54,13 @@ jobs:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 
+  cleanup:
+    name: Clean up APP
+    needs: build-app
+    uses: ./.github/workflows/cleanup.yml
+    with:
+      package: interni-sekce
+
   build-worker:
     name: Build WORKER
     needs: version
@@ -68,6 +75,13 @@ jobs:
     secrets:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
+
+  cleanup-worker:
+    name: Clean up WORKER
+    needs: build-worker
+    uses: ./.github/workflows/cleanup.yml
+    with:
+      package: interni-sekce-worker
 
   deploy:
     name: Deploy
