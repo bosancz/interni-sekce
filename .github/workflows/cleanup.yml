@@ -23,8 +23,9 @@ jobs:
       packages: write
     steps:
       - name: Delete untagged image versions
-        uses: dataaxiom/ghcr-cleanup-action@v1
+        uses: actions/delete-package-versions@v5
         with:
-          package: ${{ inputs.package }}
-          delete-untagged: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          package-name: ${{ inputs.package }}
+          package-type: container
+          delete-only-untagged-versions: "true"
+          min-versions-to-keep: 0

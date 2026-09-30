@@ -133,6 +133,7 @@ jobs:
           cache-from: type=gha,scope=${{ inputs.image-name }}
           cache-to: type=gha,mode=max,scope=${{ inputs.image-name }}
           build-args: ${{ inputs.build-args }}
+          provenance: false
 
       # After the image is published, so a failed build never leaves a changelog section on the branch
       # for a version that was not released — the next attempt would then record that version twice.
