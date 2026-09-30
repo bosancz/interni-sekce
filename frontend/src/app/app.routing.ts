@@ -1,7 +1,7 @@
 import { Routes } from "@angular/router";
 
 import { NotFoundComponent } from "./core/pages/not-found/not-found.component";
-import { linkGuard } from "./core/guards/link.guard";
+import { roleGuard } from "./core/guards/role.guard";
 
 export const appRoutes: Routes = [
 	{
@@ -31,8 +31,15 @@ export const appRoutes: Routes = [
 	{
 		path: "program",
 		title: "Program",
-		canMatch: [linkGuard("listEvents")],
+		canMatch: [roleGuard("program")],
 		loadChildren: () => import("./features/program/program.routing").then((m) => m.programRoutes),
+	},
+
+	{
+		path: "prispevky",
+		title: "Příspěvky",
+		canMatch: [roleGuard("pokladnik")],
+		loadChildren: () => import("./features/treasurer/treasurer.routing").then((m) => m.treasurerRoutes),
 	},
 
 	{
@@ -52,7 +59,7 @@ export const appRoutes: Routes = [
 	{
 		path: "admin",
 		title: "Administrace",
-		canMatch: [linkGuard("listUsers", "listEvents")],
+		canMatch: [roleGuard("admin")],
 		loadChildren: () => import("./features/admin/admin.routing").then((m) => m.adminRoutes),
 	},
 
