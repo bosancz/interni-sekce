@@ -64,7 +64,14 @@ export class ProgramWorkflowComponent implements OnInit {
 		this.allEvents().filter((event) => ["draft", "rejected"].includes(event.status) && !!event.leaders?.length),
 	);
 	pendingEvents = computed(() => this.allEvents().filter((event) => event.status === "pending"));
-	publicEvents = computed(() => this.allEvents().filter((event) => ["public", "cancelled"].includes(event.status)));
+	publicEvents = computed(() => {
+		const today = formatDate(new Date(), "yyyy-MM-dd", "cs");
+		return this.allEvents().filter(
+			(event) =>
+				["public", "cancelled"].includes(event.status) &&
+				(event.dateTill ?? event.dateFrom ?? today).slice(0, 10) >= today,
+		);
+	});
 
 	publicEventsByMonth = computed(() => {
 		const sorted = [...this.publicEvents()].sort((a, b) =>
