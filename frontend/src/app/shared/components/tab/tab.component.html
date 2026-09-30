@@ -1,6 +1,6 @@
 <ion-tab-button (click)="openTab()" [class.tab-selected]="active()">
 	@if (icon()) {
-		<ion-icon [name]="icon()"></ion-icon>
+		<ion-icon [name]="icon()" [style.color]="color()"></ion-icon>
 	}
 	<ion-label>{{ label() }}</ion-label>
 	@if (badge() !== undefined) {
