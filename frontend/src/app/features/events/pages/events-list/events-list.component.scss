@@ -105,17 +105,3 @@ ion-select::part(text) {
 :host ::ng-deep .events-table tbody tr {
 	cursor: pointer;
 }
-
-.event-hover-preview {
-	position: fixed;
-	z-index: 1000;
-	width: 360px;
-	max-width: calc(100vw - 24px);
-	pointer-events: none;
-	filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.18));
-
-	event-card {
-		display: block;
-		margin: 0;
-	}
-}

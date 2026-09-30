@@ -51,10 +51,10 @@
 <bo-page-content>
 	<div
 		class="events-table-wrapper"
-		(pointerover)="onRowHover($event)"
-		(pointermove)="onRowHover($event)"
-		(pointerleave)="clearHover()"
-		(pointerdown)="clearHover()"
+		(pointerover)="preview.hover($event)"
+		(pointermove)="preview.hover($event)"
+		(pointerleave)="preview.clear()"
+		(pointerdown)="preview.clear()"
 	>
 		<admin-table
 			[class]="'events-table'"
@@ -124,13 +124,4 @@
 	</ion-infinite-scroll>
 </bo-page-content>
 
-<div
-	#previewOverlay
-	class="event-hover-preview"
-	[style.top.px]="previewPosition()?.top"
-	[style.left.px]="previewPosition()?.left"
->
-	@if (hoveredEvent(); as event) {
-		<event-card [event]="event"></event-card>
-	}
-</div>
+<bo-event-hover-preview #preview [events]="events()" />

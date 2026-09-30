@@ -1,0 +1,5 @@
+<div #overlay class="event-hover-preview" [style.top.px]="position()?.top" [style.left.px]="position()?.left">
+	@if (hoveredEvent(); as event) {
+		<event-card [event]="event"></event-card>
+	}
+</div>

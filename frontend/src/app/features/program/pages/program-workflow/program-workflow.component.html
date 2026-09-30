@@ -18,13 +18,20 @@
 		}
 	</ng-template>
 
-	<div class="board">
+	<div
+		class="board"
+		(pointerover)="preview.hover($event)"
+		(pointermove)="preview.hover($event)"
+		(pointerleave)="preview.clear()"
+		(pointerdown)="preview.clear()"
+	>
 		<section class="panel panel-draft" [class.mobile-hidden]="selectedColumn() !== 'draft'">
 			<ng-container
 				*ngTemplateOutlet="panelHeader; context: { title: 'V přípravě', count: draftEvents().length }"
 			></ng-container>
 			@for (event of draftEvents(); track event.id) {
 				<bo-event-list-item
+					[id]="'event-' + event.id"
 					[event]="event"
 					[actions]="event.leaders?.length ? 'submit' : 'none'"
 					(action)="eventAction(event, $event)"
@@ -61,6 +68,7 @@
 				<div class="month">{{ month.label }}</div>
 				@for (event of month.events; track event.id) {
 					<bo-event-list-item
+						[id]="'event-' + event.id"
 						[event]="event"
 						actions="menu"
 						(action)="eventAction(event, $event)"
@@ -72,6 +80,8 @@
 		</section>
 	</div>
 </bo-page-content>
+
+<bo-event-hover-preview #preview [events]="allEvents()" />
 
 <bo-page-footer class="d-xl-none">
 	<bo-tabs defaultTab="pending" (change)="selectedColumn.set($event)">
