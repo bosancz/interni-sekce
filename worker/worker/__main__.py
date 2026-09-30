@@ -38,7 +38,8 @@ async def main() -> None:
     results = Queue(config.RESULTS_QUEUE, connection)
     lock = asyncio.Lock()
     heartbeat = Heartbeat(tasks)
-    heartbeat.start()
+    await heartbeat.start()
+    logger.info("Worker name: %s", heartbeat.id)
 
     def processor(name: str, handler: TaskHandler):
         async def process(job: Any, token: str) -> None:

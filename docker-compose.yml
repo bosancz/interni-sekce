@@ -23,7 +23,6 @@ services:
       REDIS_URL: redis://redis:6379
       DATA_DIR: /data
       WORKER_TASKS: detect-faces
-      WORKER_NAME: worker-1
     volumes:
       - data:/data:ro
     cpus: 2
