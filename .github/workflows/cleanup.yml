@@ -19,17 +19,41 @@ jobs:
           base="/$OWNER_PATH/packages/container/interni-sekce/versions"
           ids=$(gh api --paginate "$base?per_page=100" --jq '.[] | select(.metadata.container.tags | length == 0) | .id')
           echo "Deleting $(echo -n "$ids" | grep -c . || true) untagged versions"
+          failed=0
           for id in $ids; do
-            gh api --method DELETE "$base/$id" --silent
+            if ! out=$(gh api --method DELETE "$base/$id" --silent 2>&1); then
+              if grep -q "HTTP 404" <<< "$out"; then
+                echo "Version $id already gone"
+              else
+                echo "::warning::Deleting version $id failed: $out"
+                failed=$((failed + 1))
+              fi
+            fi
             sleep 1
           done
+          if [ "$failed" -gt 0 ]; then
+            echo "::error::$failed versions could not be deleted"
+            exit 1
+          fi
 
       - name: Delete untagged WORKER image versions
         run: |
           base="/$OWNER_PATH/packages/container/interni-sekce-worker/versions"
           ids=$(gh api --paginate "$base?per_page=100" --jq '.[] | select(.metadata.container.tags | length == 0) | .id')
           echo "Deleting $(echo -n "$ids" | grep -c . || true) untagged versions"
+          failed=0
           for id in $ids; do
-            gh api --method DELETE "$base/$id" --silent
+            if ! out=$(gh api --method DELETE "$base/$id" --silent 2>&1); then
+              if grep -q "HTTP 404" <<< "$out"; then
+                echo "Version $id already gone"
+              else
+                echo "::warning::Deleting version $id failed: $out"
+                failed=$((failed + 1))
+              fi
+            fi
             sleep 1
           done
+          if [ "$failed" -gt 0 ]; then
+            echo "::error::$failed versions could not be deleted"
+            exit 1
+          fi
