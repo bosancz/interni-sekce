@@ -11,6 +11,7 @@ services:
       DB_SCHEMA: public
       DATA_DIR: /data
       REDIS_URL: redis://redis:6379
+      FACES_BATCH_SIZE: 300
     volumes:
       - data:/data
     depends_on:
