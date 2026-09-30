@@ -26,7 +26,7 @@
 					<ion-label>
 						<h2 [class.nocaption]="!photo.caption">
 							@if (photo.titlePhoto) {
-								<ion-icon name="star" color="warning" title="Titulní fotka"></ion-icon>
+								<ion-icon name="star" color="warning" boTooltip="Titulní fotka"></ion-icon>
 							}
 							{{ photo.caption || "Bez popisku" }}
 						</h2>
@@ -90,7 +90,9 @@
 							loading="lazy"
 						/>
 						@if (photo.titlePhoto) {
-							<span class="title-badge"><ion-icon name="star" color="warning"></ion-icon></span>
+							<span class="title-badge" boTooltip="Titulní fotka"
+								><ion-icon name="star" color="warning"></ion-icon
+							></span>
 						}
 						<ion-ripple-effect></ion-ripple-effect>
 					</div>

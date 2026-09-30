@@ -11,7 +11,9 @@
 			>
 				<img [src]="item.photo | photoImageUrl: 'small'" loading="lazy" (error)="onImgError($event)" />
 				@if (item.photo.titlePhoto) {
-					<span class="title-badge"><ion-icon name="star" color="warning"></ion-icon></span>
+					<span class="title-badge" boTooltip="Titulní fotka"
+						><ion-icon name="star" color="warning"></ion-icon
+					></span>
 				}
 				@if (item.photo.caption) {
 					<span class="caption">{{ item.photo.caption }}</span>

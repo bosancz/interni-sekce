@@ -13,6 +13,7 @@ import {
 import { IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { star } from "ionicons/icons";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 
@@ -30,7 +31,7 @@ class PhotoRow {
 	selector: "bo-photo-gallery",
 	templateUrl: "./photo-gallery.component.html",
 	styleUrls: ["./photo-gallery.component.scss"],
-	imports: [IonIcon, PhotoImageUrlPipe],
+	imports: [IonIcon, PhotoImageUrlPipe, TooltipDirective],
 })
 export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 	photos = input<SDK.PhotoResponseWithLinks[]>([]);
