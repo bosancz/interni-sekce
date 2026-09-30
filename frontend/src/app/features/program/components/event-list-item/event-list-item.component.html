@@ -15,11 +15,12 @@
 			@if (e.status === "rejected") {
 				<span class="bo-pill bo-pill-yellow">Vrácená</span>
 			}
-			{{ [e.dateFrom, e.dateTill] | dateRange: "d. M." }} ·
+			@if (!e.leaders?.length && e.status !== "cancelled") {
+				<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
+			}
+			{{ [e.dateFrom, e.dateTill] | dateRange: "d. M." }}
 			@if (e.leaders?.length) {
-				{{ e.leaders! | joinLeaders: false : false }}
-			} @else {
-				bez vedoucího
+				· {{ e.leaders! | joinLeaders: false : false }}
 			}
 		</span>
 	</div>
