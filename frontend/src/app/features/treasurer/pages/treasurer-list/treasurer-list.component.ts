@@ -19,7 +19,14 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { chevronBackOutline, chevronForwardOutline, createOutline, downloadOutline, eyeOutline } from "ionicons/icons";
+import {
+	cardOutline,
+	chevronBackOutline,
+	chevronForwardOutline,
+	createOutline,
+	downloadOutline,
+	eyeOutline,
+} from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipPaymentStates } from "src/app/core/config/membership";
 import { currentMembershipYear, isMembershipPaid, membershipPaymentOf } from "src/app/core/helpers/membership";
@@ -162,6 +169,12 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 			pinned: false,
 			handler: () => this.export(),
 		},
+		{
+			text: "Platební údaje",
+			icon: "card-outline",
+			pinned: false,
+			handler: () => this.router.navigate(["/prispevky/platebni-udaje"]),
+		},
 	]);
 
 	canStepBack = computed(() => this.year() > FIRST_YEAR);
@@ -241,6 +254,7 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		private platformService: PlatformService,
 	) {
 		addIcons({
+			cardOutline,
 			chevronBackOutline,
 			chevronForwardOutline,
 			createOutline,

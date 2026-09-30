@@ -7,6 +7,10 @@ import { ApiService } from "src/app/core/services/api.service";
 import axios from "axios";
 import { SDK } from "src/sdk";
 import { ToastService } from "./toast.service";
+export function hasUserRole(userRoles: SDK.UserRolesEnum[], roles: SDK.UserRolesEnum[]) {
+	return userRoles.includes("admin") || roles.some((role) => userRoles.includes(role));
+}
+
 @Injectable({
 	providedIn: "root",
 })
@@ -15,27 +19,25 @@ export class UserService {
 
 	readonly currentUser = toSignal(this.user);
 
-	readonly canAccessProgram = computed(() => this.api.links()?.listEvents.allowed ?? false);
+	readonly roles = computed(() => this.currentUser()?.roles ?? []);
 
-	readonly canAccessUsers = computed(() => this.api.links()?.listUsers.allowed ?? false);
+	readonly isAdmin = computed(() => this.roles().includes("admin"));
 
-	/**
-	 * May open the treasurer view. The page shows the club's bank account and records the membership
-	 * fees, so it is for the treasurer — `updatePaymentSettings` is the root link the backend grants
-	 * to `pokladnik` and admins, and the page's route guard is gated on the same one.
-	 */
-	readonly canAccessTreasurer = computed(() => this.api.links()?.updatePaymentSettings.allowed ?? false);
+	readonly canAccessProgram = computed(() => this.hasRole("program"));
 
-	/** Whether the administration section should be visible at all. */
-	readonly canAccessAdmin = computed(
-		() => this.canAccessProgram() || this.canAccessUsers() || this.canAccessTreasurer(),
-	);
+	readonly canAccessTreasurer = computed(() => this.hasRole("pokladnik"));
+
+	readonly canAccessAdmin = this.isAdmin;
 
 	constructor(
 		private api: ApiService,
 		private toastService: ToastService,
 	) {
 		this.loadUser();
+	}
+
+	hasRole(...roles: SDK.UserRolesEnum[]) {
+		return hasUserRole(this.roles(), roles);
 	}
 
 	clearUser() {

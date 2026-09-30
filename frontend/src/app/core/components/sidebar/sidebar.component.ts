@@ -4,6 +4,7 @@ import { IonIcon, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
 	bugOutline,
+	clipboardOutline,
 	globeOutline,
 	homeSharp,
 	logOut,
@@ -11,6 +12,7 @@ import {
 	openOutline,
 	person,
 	settings,
+	walletOutline,
 } from "ionicons/icons";
 import { map } from "rxjs";
 import { ApiService } from "src/app/core/services/api.service";
@@ -62,6 +64,8 @@ export class SidebarComponent {
 		fragment: "ignored",
 	};
 
+	canAccessProgram = this.userService.canAccessProgram;
+	canAccessTreasurer = this.userService.canAccessTreasurer;
 	canAccessAdmin = this.userService.canAccessAdmin;
 
 	unreadCount = this.notificationsService.unreadCount;
@@ -82,6 +86,8 @@ export class SidebarComponent {
 			notificationsOutline,
 			globeOutline,
 			openOutline,
+			clipboardOutline,
+			walletOutline,
 		});
 	}
 

@@ -14,8 +14,8 @@ import { PageHeaderComponent } from "src/app/shared/components/page-header/page-
 import { SDK } from "src/sdk";
 
 /**
- * The club's bank account and the membership fee — one box, its own page in the administration
- * next to the treasurer view. The values live in the database (see the PaymentSettings entity) and
+ * The club's bank account and the membership fee — one box, its own page under the treasurer
+ * view. The values live in the database (see the PaymentSettings entity) and
  * are what the QR payment and the payment e-mail are built from, so a change here reaches every
  * member's payment card without a deploy.
  *

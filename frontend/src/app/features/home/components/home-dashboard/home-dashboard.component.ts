@@ -68,6 +68,9 @@ export class HomeDashboardComponent implements OnInit {
 
 	user = this.userService.user;
 
+	canAccessProgram = this.userService.canAccessProgram;
+	canAccessTreasurer = this.userService.canAccessTreasurer;
+
 	constructor(
 		private api: ApiService,
 		private userService: UserService,
