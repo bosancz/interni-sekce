@@ -1,3 +1,7 @@
+## v4.14.0 — 2026-09-30
+
+- <span class="changelog-type" title="feat">✨</span> [Automatické přiřazování obličejů](https://github.com/bosancz/interni-sekce/commit/913784e1e84233b4841f059ad79a2f310369b074) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.13.4 — 2026-09-30
 
 - <span class="changelog-type" title="feat">✨</span> [Jména workerů podle trpaslíků z Pána prstenů](https://github.com/bosancz/interni-sekce/commit/b68d5295d153076b2b82efb16f32424688ee6ef1) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
