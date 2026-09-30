@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsInt, IsOptional } from "class-validator";
 import { MemberResponse } from "src/api/members/dto/member.dto";
-import { FaceEmotion, FaceEmotions } from "src/models/albums/schema/detected-faces";
+import { FaceEmotion, FaceEmotions, PhotoFaceAssignment } from "src/models/albums/schema/detected-faces";
 import { Member } from "src/models/members/entities/member.entity";
 import { PhotoResponse } from "./photo.dto";
 
@@ -28,6 +28,10 @@ export class PhotoFaceResponse {
 	@ApiPropertyOptional({ type: FaceEmotionsResponse, nullable: true }) emotions!: FaceEmotions | null;
 	@ApiPropertyOptional({ enum: FaceEmotion, enumName: "FaceEmotionEnum", nullable: true })
 	emotion!: FaceEmotion | null;
+
+	@ApiPropertyOptional({ enum: PhotoFaceAssignment, enumName: "FaceAssignmentEnum", nullable: true })
+	assignment!: PhotoFaceAssignment | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) matchScore!: number | null;
 
 	@ApiPropertyOptional({ type: "string", nullable: true }) assignedAt!: Date | string | null;
 

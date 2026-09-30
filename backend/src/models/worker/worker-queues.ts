@@ -15,6 +15,7 @@ export enum WorkerResults {
 export enum BackendScheduleJobs {
 	facesEnqueue = "faces-enqueue",
 	facesStop = "faces-stop",
+	facesMatch = "faces-match",
 }
 
 export const WORKER_HEARTBEAT_PREFIX = "worker-heartbeat:";

@@ -1,0 +1,123 @@
+import { PhotoFaceAssignment } from "../schema/detected-faces";
+
+export const FACE_MATCH_THRESHOLD = 0.45;
+export const FACE_MATCH_MARGIN = 0.05;
+
+export interface FaceReference {
+	memberId: number;
+	descriptor: Float32Array;
+}
+
+export interface FaceReferences {
+	members: number[];
+	memberIndexes: Int32Array;
+	descriptors: Float32Array;
+	dimensions: number;
+	count: number;
+}
+
+export interface MatchFace {
+	id: number;
+	memberId: number | null;
+	assignment: PhotoFaceAssignment | null;
+	matchScore: number | null;
+	descriptor: Float32Array | null;
+}
+
+export interface FaceMatch {
+	memberId: number;
+	score: number;
+}
+
+export interface FacesMatchStats {
+	photos: number;
+	assigned: number;
+	cleared: number;
+}
+
+export function toDescriptor(value: unknown): Float32Array | null {
+	if (!Array.isArray(value) || !value.length) return null;
+	return Float32Array.from(value.map(Number));
+}
+
+export function prepareReferences(references: FaceReference[]): FaceReferences {
+	const dimensions = references[0]?.descriptor.length ?? 0;
+	const valid = references.filter((reference) => reference.descriptor.length === dimensions);
+
+	const members = [...new Set(valid.map((reference) => reference.memberId))];
+	const indexes = new Map(members.map((memberId, index) => [memberId, index]));
+
+	const memberIndexes = new Int32Array(valid.length);
+	const descriptors = new Float32Array(valid.length * dimensions);
+
+	valid.forEach((reference, i) => {
+		memberIndexes[i] = indexes.get(reference.memberId)!;
+		descriptors.set(reference.descriptor, i * dimensions);
+	});
+
+	return { members, memberIndexes, descriptors, dimensions, count: valid.length };
+}
+
+export function matchPhotoFaces(faces: MatchFace[], references: FaceReferences): Map<number, FaceMatch | null> {
+	const { members, memberIndexes, descriptors, dimensions, count } = references;
+
+	const manualMembers = new Set(
+		faces.filter((face) => face.assignment === PhotoFaceAssignment.manual && face.memberId).map((f) => f.memberId!),
+	);
+	const excluded = new Uint8Array(members.length);
+	members.forEach((memberId, index) => (excluded[index] = manualMembers.has(memberId) ? 1 : 0));
+
+	const candidates = faces.filter(
+		(face) => face.descriptor && face.assignment !== PhotoFaceAssignment.manual,
+	) as (MatchFace & { descriptor: Float32Array })[];
+
+	const scores = new Float64Array(members.length);
+	const proposals: { faceId: number; memberId: number; score: number }[] = [];
+
+	for (const face of candidates) {
+		if (face.descriptor.length !== dimensions) continue;
+
+		scores.fill(-Infinity);
+		const descriptor = face.descriptor;
+
+		for (let r = 0; r < count; r++) {
+			const member = memberIndexes[r];
+			if (excluded[member]) continue;
+
+			const offset = r * dimensions;
+			let score = 0;
+			for (let i = 0; i < dimensions; i++) score += descriptor[i] * descriptors[offset + i];
+
+			if (score > scores[member]) scores[member] = score;
+		}
+
+		let best = -1;
+		let bestScore = -Infinity;
+		let secondScore = -Infinity;
+		for (let m = 0; m < scores.length; m++) {
+			if (scores[m] > bestScore) {
+				secondScore = bestScore;
+				bestScore = scores[m];
+				best = m;
+			} else if (scores[m] > secondScore) {
+				secondScore = scores[m];
+			}
+		}
+
+		if (best < 0 || bestScore < FACE_MATCH_THRESHOLD) continue;
+		if (bestScore - secondScore < FACE_MATCH_MARGIN) continue;
+
+		proposals.push({ faceId: face.id, memberId: members[best], score: bestScore });
+	}
+
+	const result = new Map<number, FaceMatch | null>(candidates.map((face) => [face.id, null]));
+	const usedMembers = new Set<number>();
+
+	for (const proposal of proposals.sort((a, b) => b.score - a.score)) {
+		if (usedMembers.has(proposal.memberId)) continue;
+		usedMembers.add(proposal.memberId);
+		result.set(proposal.faceId, { memberId: proposal.memberId, score: proposal.score });
+	}
+
+	return result;
+}

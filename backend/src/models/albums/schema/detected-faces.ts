@@ -8,6 +8,11 @@ export enum FaceEmotion {
 	surprised = "surprised",
 }
 
+export enum PhotoFaceAssignment {
+	manual = "manual",
+	auto = "auto",
+}
+
 export type FaceEmotions = Partial<Record<FaceEmotion, number>>;
 
 export interface DetectedFace {

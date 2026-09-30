@@ -32,12 +32,14 @@ import {
 } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
+	checkmarkCircleOutline,
 	checkmarkOutline,
 	chevronBackOutline,
 	chevronForwardOutline,
 	closeCircleOutline,
 	createOutline,
 	happyOutline,
+	helpCircleOutline,
 	imageOutline,
 	personAddOutline,
 	personOutline,
@@ -131,6 +133,8 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		private modalService: ModalService,
 	) {
 		addIcons({
+			checkmarkCircleOutline,
+			helpCircleOutline,
 			closeCircleOutline,
 			happyOutline,
 			personAddOutline,
@@ -215,6 +219,17 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		if (!member) return;
 
 		await this.updateFace(face, member.id);
+	}
+
+	matchScoreLabel(face: SDK.PhotoFaceResponseWithLinks) {
+		return face.matchScore !== null && face.matchScore !== undefined
+			? ` (shoda ${Math.round(face.matchScore * 100)} %)`
+			: "";
+	}
+
+	async confirmFace(face: SDK.PhotoFaceResponseWithLinks) {
+		this.faceMenuOpen.set(false);
+		if (face.memberId) await this.updateFace(face, face.memberId);
 	}
 
 	async unassignFace(face: SDK.PhotoFaceResponseWithLinks) {

@@ -63,10 +63,11 @@ export class FacesDetectionService {
 	}
 
 	async getQueueStatus() {
-		const [counts, enqueue, stop] = await Promise.all([
+		const [counts, enqueue, stop, match] = await Promise.all([
 			this.queue.getJobCounts("waiting", "active", "delayed", "failed"),
 			this.scheduleQueue.getJobScheduler(BackendScheduleJobs.facesEnqueue),
 			this.scheduleQueue.getJobScheduler(BackendScheduleJobs.facesStop),
+			this.scheduleQueue.getJobScheduler(BackendScheduleJobs.facesMatch),
 		]);
 
 		return {
@@ -76,6 +77,7 @@ export class FacesDetectionService {
 			failed: counts.failed ?? 0,
 			nextBatchAt: enqueue?.next ? new Date(enqueue.next) : null,
 			nextStopAt: stop?.next ? new Date(stop.next) : null,
+			nextMatchAt: match?.next ? new Date(match.next) : null,
 		};
 	}
 }

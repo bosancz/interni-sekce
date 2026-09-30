@@ -19,6 +19,7 @@ import { AcController, AcLinks, WithLinks } from "src/access-control/access-cont
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
+import { PhotoFacesMatchingService } from "src/models/albums/services/photo-faces-matching.service";
 import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import {
@@ -39,6 +40,7 @@ export class PhotoFacesController {
 	constructor(
 		private photos: PhotosRepository,
 		private photoFacesService: PhotoFacesService,
+		private photoFacesMatchingService: PhotoFacesMatchingService,
 		private photosFilesService: PhotosFilesService,
 		private members: MembersRepository,
 	) {}
@@ -78,6 +80,9 @@ export class PhotoFacesController {
 		}
 
 		await this.photoFacesService.assignPhotoFace(face.id, memberId, req.user?.userId ?? null);
+		await this.photoFacesMatchingService.matchPhoto(face.photoId);
+
+		this.photoFacesMatchingService.onFaceChanged(face, face.memberId);
 	}
 
 	@Delete(":faceId")
@@ -94,6 +99,8 @@ export class PhotoFacesController {
 		PhotoFaceDeletePermission.canOrThrow(req, face);
 
 		await this.photoFacesService.deletePhotoFace(face.id);
+
+		if (face.memberId !== null) this.photoFacesMatchingService.onFaceChanged(face, face.memberId);
 	}
 
 	@Get(":faceId/image")

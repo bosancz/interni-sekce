@@ -1,15 +1,29 @@
-import { Body, Controller, Get, Optional, Post, Query, Req, ServiceUnavailableException } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Logger,
+	Optional,
+	Post,
+	Query,
+	Req,
+	ServiceUnavailableException,
+} from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Config } from "src/config";
+import { PhotoFacesMatchingService } from "src/models/albums/services/photo-faces-matching.service";
 import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
 import { FacesDetectionService } from "src/models/worker/services/faces-detection.service";
 import {
 	FaceDetectionBatchPermission,
 	FaceDetectionLogPermission,
 	FaceDetectionSummaryPermission,
+	FaceMatchingRunPermission,
 } from "../acl/worker.acl";
 import {
 	FaceDetectionBatchBody,
@@ -24,8 +38,11 @@ import {
 @AcController()
 @ApiTags("Worker")
 export class FaceDetectionController {
+	private logger = new Logger(FaceDetectionController.name);
+
 	constructor(
 		private photoFacesService: PhotoFacesService,
+		private photoFacesMatchingService: PhotoFacesMatchingService,
 		private config: Config,
 		@Optional() private facesDetectionService?: FacesDetectionService,
 	) {}
@@ -46,6 +63,7 @@ export class FaceDetectionController {
 			schedule: {
 				cron: this.config.faces.cron,
 				stopCron: this.config.faces.stopCron,
+				matchCron: this.config.faces.matchCron,
 				timezone: this.config.faces.timezone,
 				batchSize: this.config.faces.batchSize,
 			},
@@ -80,6 +98,7 @@ export class FaceDetectionController {
 				score: face.score,
 				memberId: face.memberId,
 				memberNickname: face.member?.nickname ?? null,
+				assignment: face.assignment,
 				emotions: face.emotions,
 				emotion: face.emotion,
 			})),
@@ -100,5 +119,15 @@ export class FaceDetectionController {
 		const queued = await this.facesDetectionService.enqueueBatch(body.limit);
 
 		return { queued };
+	}
+
+	@Post("match")
+	@AcLinks(FaceMatchingRunPermission)
+	@HttpCode(HttpStatus.ACCEPTED)
+	@ApiResponse({ status: 202 })
+	async runFaceMatching(@Req() req: Request): Promise<void> {
+		FaceMatchingRunPermission.canOrThrow(req);
+
+		this.photoFacesMatchingService.matchAll().catch((err) => this.logger.error(`Face matching failed: ${err}`));
 	}
 }
