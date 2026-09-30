@@ -119,10 +119,13 @@ ion-toolbar {
 	top: 1rem;
 	left: 1rem;
 	z-index: 10;
-	font-size: 1.75rem;
+	box-sizing: content-box;
+	padding: 0.4rem;
+	border-radius: 50%;
+	background-color: rgba(0, 0, 0, 0.55);
+	font-size: 1.5rem;
 	color: #fff;
 	cursor: pointer;
-	filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.7));
 
 	&.active {
 		color: var(--ion-color-warning, #ffc409);
