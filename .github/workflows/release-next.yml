@@ -67,7 +67,9 @@ jobs:
 
   tag:
     name: Tag release
-    needs: build
+    needs:
+      - build
+      - build-worker
     uses: ./.github/workflows/tag.yml
     with:
       tag: NEXT

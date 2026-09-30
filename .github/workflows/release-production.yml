@@ -82,6 +82,7 @@ jobs:
     needs:
       - version
       - build
+      - build-worker
     uses: ./.github/workflows/tag.yml
     with:
       tag: PRODUCTION
