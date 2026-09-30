@@ -3,11 +3,10 @@ import { Component, computed, OnInit, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { Router } from "@angular/router";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { addOutline, calendarOutline, createOutline, helpCircleOutline, hourglassOutline } from "ionicons/icons";
 import { BehaviorSubject } from "rxjs";
-import { filter, map } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -21,9 +20,7 @@ import { EventListItemComponent } from "../../components/event-list-item/event-l
 import { EventReviewCardComponent } from "../../components/event-review-card/event-review-card.component";
 import { ProgramEventAction } from "../../program-event-action";
 import { EventCreateModalComponent } from "../../../events/components/event-create-modal/event-create-modal.component";
-import { ProgramService } from "../../services/program.service";
 
-@UntilDestroy()
 @Component({
 	selector: "program-workflow",
 	templateUrl: "./program-workflow.component.html",
@@ -81,7 +78,6 @@ export class ProgramWorkflowComponent implements OnInit {
 
 	constructor(
 		private api: ApiService,
-		private programService: ProgramService,
 		private modalService: ModalService,
 		private toastService: ToastService,
 		private router: Router,
@@ -91,16 +87,6 @@ export class ProgramWorkflowComponent implements OnInit {
 
 	ngOnInit() {
 		this.loadEvents();
-
-		this.events
-			.pipe(untilDestroyed(this))
-			.pipe(
-				map((events) => events?.filter((event) => event.status === "pending")),
-				filter((events) => events !== undefined),
-			)
-			.subscribe((events: SDK.EventResponseWithLinks[]) =>
-				this.programService.pendingEventsCount.next(events.length),
-			);
 	}
 
 	async loadEvents() {
