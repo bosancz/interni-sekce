@@ -1,14 +1,5 @@
 @if (canSeeLeaders()) {
-	<bo-home-leaderboard-card
-		title="Nejlepší vedoucí"
-		infoTitle="Jak se počítají děťodny"
-		[infoLines]="infoLines"
-		[year]="year()"
-		[canGoBack]="canGoBack()"
-		[canGoForward]="canGoForward()"
-		(previousYear)="previousYear()"
-		(nextYear)="nextYear()"
-	>
+	<bo-home-leaderboard-card title="Nejlepší vedoucí" infoTitle="Jak se počítají děťodny" [infoLines]="infoLines">
 		@if (statistics(); as statistics) {
 			@if (statistics.leaders.length) {
 				<ion-list lines="full">

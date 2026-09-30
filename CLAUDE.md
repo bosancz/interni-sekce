@@ -24,6 +24,7 @@
   - **Angular needs Node 24**; the sandbox default (22.x) fails every `ng` command on the engines check. `nvm install 24` (`NVM_DIR=/opt/nvm`).
   - `npm ci` works in `frontend/` and `backend/`. Do **not** run the root `npm ci` — `scripts/install.sh` also builds the backend and runs migrations, so it needs a database. Don't commit lockfile churn from `npm install`.
   - Frontend-only change: `cd frontend && npm ci && npm run dev`. Backend change or the full root `npm run dev`: bring up Postgres first (below).
+- **Whenever you run the web app to test a change, take a screenshot of the affected page and show it to the user** (Playwright + preinstalled Chromium, log in as a seed user, `SendUserFile`). Keep screenshots in the scratchpad, never commit them.
 - **`.mcp.json` registers the Angular CLI MCP server** (`npx -y @angular/cli mcp`) — docs/best-practices plus workspace tools, run from the repo root, Node 24 like every `ng` command; its `devserver_start` falls under the one-server rule.
 
 ## Testovací data
@@ -86,7 +87,7 @@
 ## Žebříčky na homepagi
 
 - Čtyři karty: **Statistika** (`statistics/summary` — tři čísla za rok: aktivní děti = byly aspoň na jedné akci, aktivní vedoucí = vedli aspoň jednu akci, a celkem děťodní; žebříčky tenhle součet v odpovědi vůbec nenesou), **Nejlepší vedoucí** (`statistics/leaders/top`), **Nejlepší akce** (`statistics/events/top`) a **Nejlepší děti** (`statistics/children/top`), všechny za `vedouci` a linkované z kořene API. Chrome karty (nadpis, ⓘ popover s vysvětlením, přepínání roku) drží sdílená `bo-home-leaderboard-card` — info text se předává jako `infoTitle` + `infoLines`, obsah se projektuje; sdílené styly řádků (`.total`, `.rank`, `.score`) jsou v `styles/_leaderboard-card.scss`, mixin `leaderboard-events-popover` stylizuje popover se seznamem akcí.
-- **Společné SQL je v `models/statistics/statistics.helpers.ts`** — `EVENT_DAYS`, `FINISHED_EVENT_CONDITION` (nesmazaná, nezrušená a už skončená akce), `EVENT_YEAR_CONDITION`, `childCondition()`/`childrenPerEvent()` (dítě = člen mladší 15 let v den začátku akce, u členů bez data narození role `dite`), `setRanks()` (shodné skóre = sdílené pořadí), `getEventYearRange()` a `getTotalChildDays()`. Každá karta si drží vlastní rok, takže se dají porovnávat dva roky vedle sebe.
+- **Společné SQL je v `models/statistics/statistics.helpers.ts`** — `EVENT_DAYS`, `FINISHED_EVENT_CONDITION` (nesmazaná, nezrušená a už skončená akce), `EVENT_YEAR_CONDITION`, `childCondition()`/`childrenPerEvent()` (dítě = člen mladší 15 let v den začátku akce, u členů bez data narození role `dite`), `setRanks()` (shodné skóre = sdílené pořadí), `getEventYearRange()` a `getTotalChildDays()`. Rok vybírá jen karta Statistika — drží ho `home-dashboard` (`statisticsYear`, u Statistiky `model`) a žebříčky ho dostávají jako `input`; `bo-home-leaderboard-card` bez `year` přepínač roku nekreslí.
 - Žebříček akcí řadí podle `počet dětí × počet dní`, řádek vede na detail akce a v podtitulu nese vedoucí. Žebříček dětí sčítá **dny na akcích** (ne děťodny) a po kliknutí ukáže popover s akcemi dítěte (`statistics/children/:memberId/events`). `me` má jen žebříček vedoucích — u dětí by u vedoucího pořád svítila nula.
 
 ## Seznam akcí

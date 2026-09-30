@@ -1,14 +1,5 @@
 @if (canSeeEvents()) {
-	<bo-home-leaderboard-card
-		title="Nejlepší akce"
-		infoTitle="Jak se počítají děťodny"
-		[infoLines]="infoLines"
-		[year]="year()"
-		[canGoBack]="canGoBack()"
-		[canGoForward]="canGoForward()"
-		(previousYear)="previousYear()"
-		(nextYear)="nextYear()"
-	>
+	<bo-home-leaderboard-card title="Nejlepší akce" infoTitle="Jak se počítají děťodny" [infoLines]="infoLines">
 		@if (statistics(); as statistics) {
 			@if (statistics.events.length) {
 				<ion-list lines="full">
@@ -19,11 +10,11 @@
 								<h4>
 									<strong>{{ event.name }}</strong>
 								</h4>
+								<p>{{ [event.dateFrom, event.dateTill] | dateRange }}</p>
 								<p>
-									{{ [event.dateFrom, event.dateTill] | dateRange }} · {{ event.childrenCount }}
-									{{ event.childrenCount | i18nPlural: childrenPluralMap }}
-									·
-									{{ event.days }} {{ event.days | i18nPlural: daysPluralMap }}
+									{{ event.childrenCount }}
+									{{ event.childrenCount | i18nPlural: childrenPluralMap }} · {{ event.days }}
+									{{ event.days | i18nPlural: daysPluralMap }}
 								</p>
 								@if (event.leaders.length) {
 									<p class="event-leaders">Vede {{ event.leaders.join(", ") }}</p>

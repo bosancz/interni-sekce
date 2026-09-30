@@ -64,6 +64,8 @@ export class HomeDashboardComponent implements OnInit {
 
 	events = signal<SDK.EventResponseWithLinks[]>([]);
 
+	statisticsYear = signal(new Date().getFullYear());
+
 	user = this.userService.user;
 
 	constructor(
