@@ -4,7 +4,7 @@ import logging
 import os
 import socket
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Iterator
 
 import redis.asyncio as redis
 
@@ -67,15 +67,23 @@ class Heartbeat:
     async def _claim_name(self, name: str) -> bool:
         return bool(await self.claim(keys=[self._claim_key(name)], args=[self.owner, config.HEARTBEAT_TTL_S]))
 
+    def _candidate_names(self) -> Iterator[str]:
+        if config.WORKER_NAME:
+            yield config.WORKER_NAME
+        for round in range(1, config.NAME_MAX_ROUNDS + 1):
+            for name in config.WORKER_NAMES:
+                yield name if round == 1 else f"{name}-{round}"
+
     async def _acquire_name(self) -> None:
-        for index in range(1, config.NAME_MAX_INDEX + 1):
-            name = f"{config.WORKER_NAME}-{index}"
+        for name in self._candidate_names():
             if await self._claim_name(name):
+                if config.WORKER_NAME and name != config.WORKER_NAME:
+                    logger.warning("Worker name %s is taken, using %s", config.WORKER_NAME, name)
                 self.id = name
                 self.key = f"{config.HEARTBEAT_PREFIX}{name}"
                 self.state["id"] = name
                 return
-        raise RuntimeError(f"No free worker name for {config.WORKER_NAME}")
+        raise RuntimeError("No free worker name")
 
     async def publish(self) -> None:
         self.state["memoryUsage"] = memory_usage()
