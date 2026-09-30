@@ -57,6 +57,7 @@ v tomto adresáři (šablona ho načte přes `<link rel="stylesheet" href="../co
 - **logo šán** vždy v levém dolním rohu, pod informacemi o akci.
 
 Vlastní `<style>` v šabloně pak mění už jen vzhled – výchozí barvu, styl nadpisů sekcí, rámečků apod.
+a přidává **dekorace** (vlny, stan, květina…).
 Kostru stránky (třídy `page`, `header`, `pictogram`, `columns`, `col about`, `col form`, `sanlogo`)
 zachovej, ať vypadají všechny přihlášky stejně – nejjednodušší je zkopírovat některou vzorovou šablonu.
 
@@ -81,3 +82,16 @@ Obrázek s třídou `icon` se při generování nahradí vloženým SVG obarven�
 Funguje to jen pro SVG ze složky `../../img`. V prohlížeči se ukáže původní (černý) obrázek,
 v PDF už obarvená verze. Obrázek **bez** třídy `icon` (logo šán, symbol piktogramu) zůstane
 ve svých původních barvách.
+
+## Dekorace
+
+Dekorace jsou obrázky s třídou `deco`, vložené na konec `.page` – leží pod obsahem (hlavička
+i sloupce jsou nad nimi) a pozici a velikost si nastavují vlastní třídou, např.:
+
+```html
+<img class="icon deco deco-tent" src="../../img/stan.svg" alt="" />
+```
+
+Dekorace musí zůstat **uvnitř stránky** (`bottom`/`right` ne záporné) a nepoužívej na ni
+`transform: translate(…)` k posunu – tisk počítá s neposunutým rámečkem a co přečnívá dolů,
+vyrobí prázdnou druhou stránku. Na vycentrování stačí `inset: 0; margin: auto;`.

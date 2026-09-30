@@ -7,6 +7,28 @@
 			:root {
 				--accent: #799f3d;
 			}
+
+			.deco-campfire {
+				left: 150px;
+				bottom: 0;
+				width: 230px;
+				height: 170px;
+			}
+
+			.deco-campfire .flek {
+				position: absolute;
+				inset: 0;
+			}
+
+			.deco-campfire .deco-symbol {
+				position: absolute;
+				inset: 0;
+				margin: auto;
+				width: 110px;
+				height: 110px;
+				object-fit: contain;
+				filter: brightness(0) invert(0.5);
+			}
 		</style>
 	</head>
 	<body>
@@ -62,6 +84,11 @@
 						<div><span class="label">Datum:</span><span class="line"></span></div>
 					</div>
 				</section>
+			</div>
+
+			<div class="deco deco-campfire">
+				<img class="icon flek" src="../../img/flek-3.svg" alt="" />
+				<img class="deco-symbol" src="../../img/taborak.svg" alt="" />
 			</div>
 		</div>
 	</body>

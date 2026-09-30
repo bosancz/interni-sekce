@@ -7,6 +7,31 @@
 			:root {
 				--accent: #2a3478;
 			}
+
+			.page {
+				overflow: hidden;
+			}
+
+			.deco-waves {
+				left: 0;
+				right: 0;
+				bottom: 0;
+				height: 120px;
+				overflow: hidden;
+				opacity: 0.45;
+			}
+
+			.deco-waves .icon {
+				position: absolute;
+				left: 50%;
+				bottom: -600px;
+				transform: translateX(-50%);
+				width: 1500px;
+			}
+
+			.deco-waves .icon svg {
+				height: auto;
+			}
 		</style>
 	</head>
 	<body>
@@ -63,6 +88,8 @@
 					</div>
 				</section>
 			</div>
+
+			<div class="deco deco-waves"><img class="icon" src="../../img/vlny.svg" alt="" /></div>
 		</div>
 	</body>
 </html>

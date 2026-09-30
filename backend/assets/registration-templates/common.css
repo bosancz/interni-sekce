@@ -33,6 +33,8 @@ body {
 }
 
 .header {
+	position: relative;
+	z-index: 1;
 	display: flex;
 	align-items: center;
 	gap: 16px;
@@ -70,16 +72,18 @@ body {
 
 .pictogram .pictogram-symbol {
 	position: absolute;
-	top: 50%;
-	left: 50%;
+	inset: 0;
+	margin: auto;
 	width: 62px;
 	height: 62px;
 	object-fit: contain;
-	transform: translate(-50%, -50%) rotate(var(--pictogram-rotate, 0deg));
+	transform: rotate(var(--pictogram-rotate, 0deg));
 	filter: brightness(0) invert(1);
 }
 
 .columns {
+	position: relative;
+	z-index: 1;
 	flex: 1;
 	display: flex;
 	gap: 30px;
@@ -216,4 +220,15 @@ body {
 	display: flex;
 	align-items: flex-end;
 	gap: 8px;
+}
+
+.deco {
+	position: absolute;
+	z-index: 0;
+}
+
+.deco svg {
+	display: block;
+	width: 100%;
+	height: 100%;
 }
