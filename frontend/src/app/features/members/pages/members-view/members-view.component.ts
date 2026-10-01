@@ -14,6 +14,8 @@ import { PageFooterComponent } from "src/app/shared/components/page-footer/page-
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { TabComponent } from "src/app/shared/components/tab/tab.component";
 import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
+import { VerticalMenuItemComponent } from "src/app/shared/components/vertical-menu-item/vertical-menu-item.component";
+import { VerticalMenuComponent } from "src/app/shared/components/vertical-menu/vertical-menu.component";
 import { SDK } from "src/sdk";
 import { MemberContactComponent } from "../../components/member-contact/member-contact.component";
 import MemberContactsComponent from "../../components/member-contacts/member-contacts.component";
@@ -44,6 +46,8 @@ import { MemberProfileComponent } from "../../components/member-profile/member-p
 		MemberContactsComponent,
 		GroupBadgeComponent,
 		MemberPhotosComponent,
+		VerticalMenuComponent,
+		VerticalMenuItemComponent,
 	],
 })
 export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeave {

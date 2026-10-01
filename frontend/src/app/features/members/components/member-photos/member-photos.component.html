@@ -15,10 +15,12 @@
 			<p class="empty">Na žádné fotce zatím není označený. Obličeje se přiřazují v galerii.</p>
 		}
 
-		@if (loading()) {
+		@if (loading() && !photos().length) {
 			<div class="loading"><ion-spinner name="dots"></ion-spinner></div>
-		} @else if (hasMore()) {
-			<ion-button fill="clear" expand="block" (click)="loadMore()">Zobrazit další</ion-button>
 		}
+
+		<ion-infinite-scroll [disabled]="!active() || !hasMore()" (ionInfinite)="onInfiniteScroll($any($event))">
+			<ion-infinite-scroll-content></ion-infinite-scroll-content>
+		</ion-infinite-scroll>
 	</bo-card-content>
 </bo-card>

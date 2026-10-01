@@ -1,5 +1,11 @@
 import { Component, effect, input, signal } from "@angular/core";
-import { IonButton, IonIcon, IonSpinner } from "@ionic/angular/standalone";
+import {
+	InfiniteScrollCustomEvent,
+	IonIcon,
+	IonInfiniteScroll,
+	IonInfiniteScrollContent,
+	IonSpinner,
+} from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { imagesOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -25,13 +31,15 @@ const PAGE_SIZE = 30;
 		CardTitleComponent,
 		CardContentComponent,
 		PhotoGalleryComponent,
-		IonButton,
 		IonIcon,
+		IonInfiniteScroll,
+		IonInfiniteScrollContent,
 		IonSpinner,
 	],
 })
 export class MemberPhotosComponent {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
+	active = input(true);
 
 	photos = signal<SDK.PhotoResponseWithLinks[]>([]);
 	loading = signal(false);
@@ -76,6 +84,11 @@ export class MemberPhotosComponent {
 		} finally {
 			this.loading.set(false);
 		}
+	}
+
+	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
+		await this.loadMore();
+		e.target.complete();
 	}
 
 	async openPhoto(photo: SDK.PhotoResponseWithLinks) {
