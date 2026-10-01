@@ -33,6 +33,7 @@ export class PhotoFaceResponse {
 	assignment!: PhotoFaceAssignment | null;
 	@ApiPropertyOptional({ type: "number", nullable: true }) matchScore!: number | null;
 
+	@ApiPropertyOptional({ type: "integer", nullable: true }) assignedById!: number | null;
 	@ApiPropertyOptional({ type: "string", nullable: true }) assignedAt!: Date | string | null;
 
 	@ApiPropertyOptional({ type: MemberResponse, nullable: true }) member?: Member | null;

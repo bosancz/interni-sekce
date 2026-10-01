@@ -167,7 +167,7 @@ export class FaceDetectionController {
 
 		const { face, remaining } = await this.photoFacesService.getFaceForReview(
 			query.order ?? FaceReviewOrder.uncertain,
-			{ excludePhotoIds: query.excludePhotoIds, memberId: query.memberId },
+			{ filter: query.filter, excludePhotoIds: query.excludePhotoIds, memberId: query.memberId },
 		);
 		if (!face?.photo) return { face: null, photo: null, remaining };
 

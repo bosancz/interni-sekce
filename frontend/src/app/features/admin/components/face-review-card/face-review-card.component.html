@@ -23,13 +23,18 @@
 					<ion-segment-button [value]="item.value">{{ item.label }}</ion-segment-button>
 				}
 			</ion-segment>
-			@if (order() === "member") {
+			<ion-segment [value]="filter() ?? 'all'" [scrollable]="true" (ionChange)="setFilter($event.detail.value)">
+				@for (item of filters; track item.value) {
+					<ion-segment-button [value]="item.value ?? 'all'">{{ item.label }}</ion-segment-button>
+				}
+			</ion-segment>
+			@if (filter() === "member") {
 				<ion-button size="small" fill="outline" [disabled]="busy()" (click)="selectMember()">
 					<ion-icon slot="start" name="person-outline"></ion-icon>
 					{{ member()?.nickname ?? "Vybrat člena…" }}
 				</ion-button>
 			}
-			<span class="muted">{{ orderDescription() }}</span>
+			<span class="muted">{{ description() }}</span>
 		</div>
 
 		@if (face() && photo()) {

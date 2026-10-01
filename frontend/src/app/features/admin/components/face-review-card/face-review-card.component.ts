@@ -49,18 +49,15 @@ const ORDERS: { value: SDK.FaceReviewOrderEnum; label: string; description: stri
 	{
 		value: "random",
 		label: "Náhodně",
-		description: "Automaticky přiřazené i nepřiřazené obličeje v náhodném pořadí.",
+		description: "Automaticky přiřazené i navržené obličeje v náhodném pořadí.",
 	},
-	{
-		value: "leaders",
-		label: "Vedoucí",
-		description: "Obličeje přiřazené nebo navržené vedoucím, nejdřív nejistá přiřazení, pak návrhy.",
-	},
-	{
-		value: "member",
-		label: "Člen",
-		description: "Obličeje přiřazené nebo navržené vybranému členovi, nejdřív nejistá přiřazení, pak návrhy.",
-	},
+];
+
+const FILTERS: { value: SDK.FaceReviewFilterEnum | null; label: string; description: string }[] = [
+	{ value: null, label: "Všichni", description: "" },
+	{ value: "leaders", label: "Vedoucí", description: "Jen vedoucí." },
+	{ value: "children", label: "Dítě", description: "Jen děti." },
+	{ value: "member", label: "Člen", description: "Jen vybraný člen." },
 ];
 
 @Component({
@@ -86,11 +83,20 @@ const ORDERS: { value: SDK.FaceReviewOrderEnum; label: string; description: stri
 })
 export class FaceReviewCardComponent implements OnInit {
 	orders = ORDERS;
+	filters = FILTERS;
 	order = signal<SDK.FaceReviewOrderEnum>("uncertain");
-	orderDescription = computed(() => ORDERS.find((order) => order.value === this.order())?.description);
+	filter = signal<SDK.FaceReviewFilterEnum | null>(null);
+	description = computed(() =>
+		[
+			ORDERS.find((order) => order.value === this.order())?.description,
+			FILTERS.find((filter) => filter.value === this.filter())?.description,
+		]
+			.filter(Boolean)
+			.join(" "),
+	);
 
 	member = signal<SDK.MemberResponse | undefined>(undefined);
-	memberMissing = computed(() => this.order() === "member" && !this.member());
+	memberMissing = computed(() => this.filter() === "member" && !this.member());
 
 	review = signal<SDK.FaceReviewResponse | undefined>(undefined);
 	loading = signal(false);
@@ -142,6 +148,14 @@ export class FaceReviewCardComponent implements OnInit {
 		if (!ORDERS.some((item) => item.value === order) || order === this.order()) return;
 		this.order.set(order as SDK.FaceReviewOrderEnum);
 		this.seenPhotoIds = [];
+		await this.load();
+	}
+
+	async setFilter(value: string | number | undefined) {
+		const filter = value === "all" ? null : (value as SDK.FaceReviewFilterEnum);
+		if (!FILTERS.some((item) => item.value === filter) || filter === this.filter()) return;
+		this.filter.set(filter);
+		this.seenPhotoIds = [];
 
 		if (this.memberMissing()) {
 			this.review.set(undefined);
@@ -180,7 +194,8 @@ export class FaceReviewCardComponent implements OnInit {
 		try {
 			const review = await this.api.WorkerApi.getFaceForReview({
 				order: this.order(),
-				memberId: this.order() === "member" ? this.member()?.id : undefined,
+				filter: this.filter() ?? undefined,
+				memberId: this.filter() === "member" ? this.member()?.id : undefined,
 				excludePhotoIds: this.seenPhotoIds.length ? this.seenPhotoIds : undefined,
 			}).then((res) => res.data);
 
