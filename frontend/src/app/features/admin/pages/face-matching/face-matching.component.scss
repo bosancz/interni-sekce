@@ -8,6 +8,20 @@
 	display: flex;
 	flex-direction: column;
 	gap: 1.25rem;
+
+	@media (min-width: 1400px) {
+		max-width: 1600px;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		align-items: start;
+	}
+}
+
+.fm-column {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+	min-width: 0;
 }
 
 .muted {

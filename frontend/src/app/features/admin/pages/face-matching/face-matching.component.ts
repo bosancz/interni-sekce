@@ -13,6 +13,7 @@ import { PageContentComponent } from "src/app/shared/components/page-content/pag
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
+import { FaceReviewCardComponent } from "../../components/face-review-card/face-review-card.component";
 
 const REFRESH_MS = 10_000;
 const REFRESH_RUNNING_MS = 2_000;
@@ -41,6 +42,7 @@ const TRIGGER_LABELS: Record<SDK.FaceMatchingTriggerEnum, string> = {
 		CardContentComponent,
 		DatePipe,
 		TooltipDirective,
+		FaceReviewCardComponent,
 	],
 })
 export class FaceMatchingComponent implements OnInit, OnDestroy {

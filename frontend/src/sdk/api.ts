@@ -3590,6 +3590,221 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface FaceReviewFaceResponse
+     */
+    export interface FaceReviewFaceResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewFaceResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewFaceResponse
+         */
+        'photoId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewFaceResponse
+         */
+        'memberId'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewFaceResponse
+         */
+        'x': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewFaceResponse
+         */
+        'y': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewFaceResponse
+         */
+        'width': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewFaceResponse
+         */
+        'height': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewFaceResponse
+         */
+        'score'?: number | null;
+        /**
+         * 
+         * @type {FaceEmotionsResponse}
+         * @memberof FaceReviewFaceResponse
+         */
+        'emotions'?: FaceEmotionsResponse | null;
+        /**
+         * 
+         * @type {FaceEmotionEnum}
+         * @memberof FaceReviewFaceResponse
+         */
+        'emotion'?: FaceEmotionEnum | null;
+        /**
+         * 
+         * @type {FaceAssignmentEnum}
+         * @memberof FaceReviewFaceResponse
+         */
+        'assignment'?: FaceAssignmentEnum | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewFaceResponse
+         */
+        'matchScore'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceReviewFaceResponse
+         */
+        'assignedAt'?: string | null;
+        /**
+         * 
+         * @type {MemberResponse}
+         * @memberof FaceReviewFaceResponse
+         */
+        'member'?: MemberResponse | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewFaceResponse
+         */
+        'candidateMemberId'?: number | null;
+        /**
+         * 
+         * @type {MemberResponse}
+         * @memberof FaceReviewFaceResponse
+         */
+        'candidateMember'?: MemberResponse | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewFaceResponse
+         */
+        'candidateScore'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewFaceResponse
+         */
+        'candidateSecondScore'?: number | null;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const FaceReviewOrderEnum = {
+        Uncertain: 'uncertain',
+        Candidates: 'candidates',
+        Random: 'random'
+    } as const;
+    
+    export type FaceReviewOrderEnum = typeof FaceReviewOrderEnum[keyof typeof FaceReviewOrderEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @interface FaceReviewPhotoResponse
+     */
+    export interface FaceReviewPhotoResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewPhotoResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceReviewPhotoResponse
+         */
+        'name': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewPhotoResponse
+         */
+        'albumId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceReviewPhotoResponse
+         */
+        'albumName'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewPhotoResponse
+         */
+        'width'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewPhotoResponse
+         */
+        'height'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceReviewPhotoResponse
+         */
+        'bg'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceReviewPhotoResponse
+         */
+        'timestamp': string;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceReviewResponse
+     */
+    export interface FaceReviewResponse {
+        /**
+         * 
+         * @type {FaceReviewFaceResponse}
+         * @memberof FaceReviewResponse
+         */
+        'face'?: FaceReviewFaceResponse | null;
+        /**
+         * 
+         * @type {FaceReviewPhotoResponse}
+         * @memberof FaceReviewResponse
+         */
+        'photo'?: FaceReviewPhotoResponse | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceReviewResponse
+         */
+        'remaining': number;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface Group
      */
     export interface Group {
@@ -7030,6 +7245,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'runFaceMatching': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getFaceForReview': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -16992,6 +17213,33 @@ export namespace SDK {
     
     
     
+    /**
+     * Query parameters for getFaceForReview operation in WorkerApi.
+     * @export
+     * @interface WorkerApiGetFaceForReviewQueryParams
+     */
+    export interface WorkerApiGetFaceForReviewQueryParams {
+        //order
+        /**
+         * 
+         * @type {FaceReviewOrderEnum}
+         * @memberof WorkerApiGetFaceForReview
+         */
+        order?: FaceReviewOrderEnum
+    
+        //excludePhotoIds
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof WorkerApiGetFaceForReview
+         */
+        excludePhotoIds?: Array<number>
+    }
+    
+    
+    
+    
+    
     
     
     
@@ -17123,6 +17371,54 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<FaceDetectionSummaryResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {WorkerApiGetFaceForReviewQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async getFaceForReview(
+            queryParams: WorkerApiGetFaceForReviewQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/face-detection/review`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.order !== undefined) {
+                requestQueryParameter['order'] = queryParams.order;
+            }
+    
+            if (queryParams.excludePhotoIds) {
+                requestQueryParameter['excludePhotoIds'] = queryParams.excludePhotoIds;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<FaceReviewResponse>(axiosRequestConfig);
         }
     
         /**
