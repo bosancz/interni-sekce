@@ -28,6 +28,8 @@ import { NotificationsRepository } from "src/models/notifications/repositories/n
 import { PushService } from "src/models/notifications/services/push.service";
 import {
 	NotificationChannels,
+	NotificationGroups,
+	NotificationGroupsMetadata,
 	NotificationTypes,
 	NotificationTypesMetadata,
 } from "src/models/notifications/schema/notification-types";
@@ -124,10 +126,15 @@ export class AccountNotificationsController {
 		const settings = await this.notificationSettings.getUserSettings(authUser.userId);
 		const userRoles = OptionsStore.getUserRoles(req);
 
+		const groups = Object.values(NotificationGroups);
+
 		const types = Object.entries(NotificationTypesMetadata)
 			.filter(([, metadata]) => !metadata.roles || metadata.roles.some((role) => userRoles.includes(role)))
+			.sort(([, a], [, b]) => groups.indexOf(a.group) - groups.indexOf(b.group))
 			.map(([type, metadata]) => ({
 				type: <NotificationTypes>type,
+				group: metadata.group,
+				groupTitle: NotificationGroupsMetadata[metadata.group].title,
 				title: metadata.title,
 				description: metadata.description,
 				channels: settings.find((setting) => setting.type === type)?.channels ?? metadata.defaultChannels,

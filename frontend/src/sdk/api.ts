@@ -5861,6 +5861,21 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @enum {string}
+     */
+    
+    export const NotificationGroupsEnum = {
+        Events: 'events',
+        Photos: 'photos',
+        Admin: 'admin'
+    } as const;
+    
+    export type NotificationGroupsEnum = typeof NotificationGroupsEnum[keyof typeof NotificationGroupsEnum];
+    
+    
+        /**
+     * 
+     * @export
      * @interface NotificationResponseLinks
      */
     export interface NotificationResponseLinks {
@@ -6076,6 +6091,12 @@ export namespace SDK {
         'type': NotificationTypesEnum;
         /**
          * 
+         * @type {NotificationGroupsEnum}
+         * @memberof NotificationTypeSettingResponseWithLinks
+         */
+        'group': NotificationGroupsEnum;
+        /**
+         * 
          * @type {Array<NotificationChannelsEnum>}
          * @memberof NotificationTypeSettingResponseWithLinks
          */
@@ -6086,6 +6107,12 @@ export namespace SDK {
          * @memberof NotificationTypeSettingResponseWithLinks
          */
         '_links': NotificationTypeSettingResponseLinks;
+        /**
+         * 
+         * @type {string}
+         * @memberof NotificationTypeSettingResponseWithLinks
+         */
+        'groupTitle': string;
         /**
          * 
          * @type {string}
@@ -6113,7 +6140,9 @@ export namespace SDK {
         SubmittedEvents: 'submittedEvents',
         NewEvents: 'newEvents',
         NewUsers: 'newUsers',
-        MyBugReports: 'myBugReports'
+        MyBugReports: 'myBugReports',
+        MyPhotos: 'myPhotos',
+        NewAlbums: 'newAlbums'
     } as const;
     
     export type NotificationTypesEnum = typeof NotificationTypesEnum[keyof typeof NotificationTypesEnum];
@@ -6539,6 +6568,18 @@ export namespace SDK {
          * @memberof PhotoFace
          */
         'assignedAt': string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFace
+         */
+        'notifiedMemberId': number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoFace
+         */
+        'notifiedAt': string | null;
     }
     
     export const PhotoFaceEmotionEnum = {
@@ -11476,6 +11517,14 @@ export namespace SDK {
          * @memberof MembersApiListMemberPhotos
          */
         offset?: number
+    
+        //notifiedAt
+        /**
+         * 
+         * @type {number}
+         * @memberof MembersApiListMemberPhotos
+         */
+        notifiedAt?: number
     }
     
     
@@ -12738,6 +12787,10 @@ export namespace SDK {
     
             if (queryParams.offset !== undefined) {
                 requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+            if (queryParams.notifiedAt !== undefined) {
+                requestQueryParameter['notifiedAt'] = queryParams.notifiedAt;
             }
     
     

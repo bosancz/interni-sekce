@@ -169,4 +169,5 @@ export class MemberProfilePhotoBody {
 export class MemberPhotosQuery {
 	@ApiPropertyOptional() @Type(() => Number) @IsInt() @Min(1) @Max(200) @IsOptional() limit?: number;
 	@ApiPropertyOptional() @Type(() => Number) @IsInt() @Min(0) @IsOptional() offset?: number;
+	@ApiPropertyOptional() @Type(() => Number) @IsInt() @Min(0) @IsOptional() notifiedAt?: number;
 }

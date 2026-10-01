@@ -1,0 +1,46 @@
+<bo-page-header [title]="title()">
+	@if (member(); as memberValue) {
+		<ion-button
+			fill="clear"
+			size="small"
+			[routerLink]="['/databaze/clenove', memberValue.id]"
+			[queryParams]="{ tab: 'photos' }"
+			aria-label="Všechny fotky"
+		>
+			<ion-icon slot="start" name="images-outline" />
+			<span class="all-label">Všechny fotky</span>
+		</ion-button>
+	}
+</bo-page-header>
+
+<bo-page-content [padding]="true">
+	<div class="new-photos">
+		@if (photos() === undefined) {
+			<div class="loading"><ion-spinner name="dots"></ion-spinner></div>
+		} @else if (!albums().length) {
+			<p class="empty">Tyhle fotky už u člena nejsou označené.</p>
+		}
+
+		@for (group of albums(); track group.album.id) {
+			<bo-card>
+				<bo-card-header>
+					<bo-card-title>
+						<span class="bo-card-section-title">
+							<ion-icon name="images-outline" />
+							{{ group.album.name }}
+						</span>
+					</bo-card-title>
+					<bo-card-open-button [routerLink]="['/galerie', group.album.id]" />
+				</bo-card-header>
+				<bo-card-content>
+					<bo-photo-gallery
+						[photos]="group.photos"
+						[maxHeight]="200"
+						[clickable]="true"
+						(click)="openPhoto(group, $event)"
+					/>
+				</bo-card-content>
+			</bo-card>
+		}
+	</div>
+</bo-page-content>
