@@ -3,8 +3,21 @@
 	margin: 0 auto;
 }
 
-.cards {
+.sidebar {
 	@media (min-width: 992px) {
+		flex: 0 0 260px;
+		position: sticky;
+		top: 0;
+		align-self: flex-start;
+	}
+}
+
+.content {
+	min-width: 0;
+}
+
+.cards {
+	@media (min-width: 1200px) {
 		column-count: 2;
 		column-gap: 1.25rem;
 	}
@@ -13,12 +26,6 @@
 .card-col {
 	break-inside: avoid;
 	margin-bottom: 1.25rem;
-}
-
-.card-col--break-after {
-	@media (min-width: 992px) {
-		break-after: column;
-	}
 }
 
 .photos-col {
