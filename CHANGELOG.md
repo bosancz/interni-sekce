@@ -1,3 +1,7 @@
+## v4.16.3 — 2026-10-01
+
+- <span class="changelog-type" title="patch">🚸</span> [Přepracovaná lišta a akce v kartě Kontrola obličejů](https://github.com/bosancz/interni-sekce/commit/6e8b2e22175d8400b68466be463af5054ce6576a) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.16.2 — 2026-10-01
 
 - <span class="changelog-type" title="patch">🚸</span> [Kontrola obličejů s nezávislým řazením a filtrem osob včetně dětí](https://github.com/bosancz/interni-sekce/commit/49ff194db67e14dc741a4221bb6f16fa2a01a800) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
