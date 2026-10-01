@@ -3714,7 +3714,9 @@ export namespace SDK {
     export const FaceReviewOrderEnum = {
         Uncertain: 'uncertain',
         Candidates: 'candidates',
-        Random: 'random'
+        Random: 'random',
+        Leaders: 'leaders',
+        Member: 'member'
     } as const;
     
     export type FaceReviewOrderEnum = typeof FaceReviewOrderEnum[keyof typeof FaceReviewOrderEnum];
@@ -17234,6 +17236,14 @@ export namespace SDK {
          * @memberof WorkerApiGetFaceForReview
          */
         excludePhotoIds?: Array<number>
+    
+        //memberId
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerApiGetFaceForReview
+         */
+        memberId?: number
     }
     
     
@@ -17407,6 +17417,10 @@ export namespace SDK {
     
             if (queryParams.excludePhotoIds) {
                 requestQueryParameter['excludePhotoIds'] = queryParams.excludePhotoIds;
+            }
+    
+            if (queryParams.memberId !== undefined) {
+                requestQueryParameter['memberId'] = queryParams.memberId;
             }
     
     

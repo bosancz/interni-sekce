@@ -4,9 +4,9 @@ import { relative, resolve, sep } from "path";
 import { PhotoSizes } from "src/api/albums/dto/photo.dto";
 import { Config } from "src/config";
 import { FilesService } from "src/models/files/services/files.service";
-import { Member } from "src/models/members/entities/member.entity";
+import { Member, MemberRoles } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, ObjectLiteral, Repository, SelectQueryBuilder } from "typeorm";
 import { PhotoFace } from "../entities/photo-face.entity";
 import { Photo } from "../entities/photo.entity";
 import {
@@ -90,7 +90,11 @@ export class PhotoFacesService {
 		return faces.map(({ photo, ...face }) => ({ ...photo!, face }));
 	}
 
-	async getFaceForReview(order: FaceReviewOrder, excludePhotoIds: Photo["id"][] = []) {
+	async getFaceForReview(
+		order: FaceReviewOrder,
+		options: { excludePhotoIds?: Photo["id"][]; memberId?: Member["id"] } = {},
+	) {
+		const excludePhotoIds = options.excludePhotoIds ?? [];
 		const query = this.photoFaces
 			.createQueryBuilder("faces")
 			.innerJoinAndSelect("faces.photo", "photo")
@@ -117,6 +121,16 @@ export class PhotoFacesService {
 					})
 					.orderBy("RANDOM()");
 				break;
+			case FaceReviewOrder.leaders:
+				this.whereSuggested(query, "member.role = :role", "candidateMember.role = :role", {
+					role: MemberRoles.vedouci,
+				});
+				break;
+			case FaceReviewOrder.member:
+				this.whereSuggested(query, "faces.member_id = :memberId", "faces.candidate_member_id = :memberId", {
+					memberId: options.memberId ?? null,
+				});
+				break;
 		}
 
 		const remaining = await query.clone().orderBy().getCount();
@@ -126,6 +140,26 @@ export class PhotoFacesService {
 		const face = await query.addOrderBy("faces.id", "ASC").limit(1).getOne();
 
 		return { face: face ?? null, remaining };
+	}
+
+	private whereSuggested(
+		query: SelectQueryBuilder<PhotoFace>,
+		memberCondition: string,
+		candidateCondition: string,
+		parameters: ObjectLiteral,
+	) {
+		query
+			.where(
+				`((faces.assignment = :auto AND ${memberCondition}) OR (faces.assignment IS NULL AND ${candidateCondition}))`,
+				{ ...parameters, auto: PhotoFaceAssignment.auto },
+			)
+			.addSelect("CASE WHEN faces.assignment = :auto THEN 0 ELSE 1 END", "review_group")
+			.addSelect(
+				"CASE WHEN faces.assignment = :auto THEN faces.match_score ELSE -faces.candidate_score END",
+				"review_score",
+			)
+			.orderBy("review_group", "ASC")
+			.addOrderBy("review_score", "ASC", "NULLS FIRST");
 	}
 
 	async getDetectionStats() {

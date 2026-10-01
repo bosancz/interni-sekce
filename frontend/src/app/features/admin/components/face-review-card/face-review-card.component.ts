@@ -15,6 +15,7 @@ import {
 	imagesOutline,
 	personAddOutline,
 	playForwardOutline,
+	personOutline,
 	scanOutline,
 	trashOutline,
 } from "ionicons/icons";
@@ -50,6 +51,16 @@ const ORDERS: { value: SDK.FaceReviewOrderEnum; label: string; description: stri
 		label: "Náhodně",
 		description: "Automaticky přiřazené i nepřiřazené obličeje v náhodném pořadí.",
 	},
+	{
+		value: "leaders",
+		label: "Vedoucí",
+		description: "Obličeje přiřazené nebo navržené vedoucím, nejdřív nejistá přiřazení, pak návrhy.",
+	},
+	{
+		value: "member",
+		label: "Člen",
+		description: "Obličeje přiřazené nebo navržené vybranému členovi, nejdřív nejistá přiřazení, pak návrhy.",
+	},
 ];
 
 @Component({
@@ -77,6 +88,9 @@ export class FaceReviewCardComponent implements OnInit {
 	orders = ORDERS;
 	order = signal<SDK.FaceReviewOrderEnum>("uncertain");
 	orderDescription = computed(() => ORDERS.find((order) => order.value === this.order())?.description);
+
+	member = signal<SDK.MemberResponse | undefined>(undefined);
+	memberMissing = computed(() => this.order() === "member" && !this.member());
 
 	review = signal<SDK.FaceReviewResponse | undefined>(undefined);
 	loading = signal(false);
@@ -113,6 +127,7 @@ export class FaceReviewCardComponent implements OnInit {
 			closeOutline,
 			imagesOutline,
 			personAddOutline,
+			personOutline,
 			playForwardOutline,
 			scanOutline,
 			trashOutline,
@@ -123,18 +138,49 @@ export class FaceReviewCardComponent implements OnInit {
 		this.load();
 	}
 
-	setOrder(order: SDK.FaceReviewOrderEnum | string | number | undefined) {
+	async setOrder(order: SDK.FaceReviewOrderEnum | string | number | undefined) {
 		if (!ORDERS.some((item) => item.value === order) || order === this.order()) return;
 		this.order.set(order as SDK.FaceReviewOrderEnum);
 		this.seenPhotoIds = [];
-		this.load();
+
+		if (this.memberMissing()) {
+			this.review.set(undefined);
+			await this.selectMember();
+			return;
+		}
+
+		await this.load();
+	}
+
+	async selectMember() {
+		this.pickerOpen = true;
+		try {
+			const member = await this.modalService.componentModal(
+				MemberSelectorModalComponent,
+				{
+					title: "Čí obličeje kontrolovat?",
+					subtitle: "Ukážou se obličeje přiřazené nebo navržené tomuto členovi.",
+				},
+				{ cssClass: "dialog-picker" },
+			);
+			if (!member) return;
+
+			this.member.set(member);
+			this.seenPhotoIds = [];
+			await this.load();
+		} finally {
+			this.pickerOpen = false;
+		}
 	}
 
 	async load(): Promise<void> {
+		if (this.memberMissing()) return;
+
 		this.loading.set(true);
 		try {
 			const review = await this.api.WorkerApi.getFaceForReview({
 				order: this.order(),
+				memberId: this.order() === "member" ? this.member()?.id : undefined,
 				excludePhotoIds: this.seenPhotoIds.length ? this.seenPhotoIds : undefined,
 			}).then((res) => res.data);
 

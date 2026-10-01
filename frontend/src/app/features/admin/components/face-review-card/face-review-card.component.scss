@@ -125,8 +125,11 @@
 	border-top: 1px solid var(--bo-card-line);
 }
 
-.fr-spacer {
-	flex: 1 1 auto;
+.fr-secondary {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 8px;
+	margin-inline-start: auto;
 }
 
 .fr-empty {
