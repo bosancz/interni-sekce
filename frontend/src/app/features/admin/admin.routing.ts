@@ -17,7 +17,7 @@ export const adminRoutes: Routes = [
 	{ path: "uzivatele/:user", component: UsersViewComponent },
 	{ path: "uzivatele/:user/upravit", component: UsersEditComponent },
 
-	{ path: "obliceje", title: "Rozpoznávání obličejů", component: FaceDetectionComponent },
+	{ path: "obliceje", title: "Detekce obličejů", component: FaceDetectionComponent },
 	{ path: "prirazovani-obliceju", title: "Přiřazování obličejů", component: FaceMatchingComponent },
 	{ path: "workery", title: "Workery", component: WorkersComponent },
 ];
