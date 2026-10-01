@@ -96,6 +96,13 @@ export class ModalService {
 		await overlay.present();
 	}
 
+	async dismissAndNavigate(overlay: DismissableOverlay, commands: any[]) {
+		const settled = this.waitForBackCloseToSettle(overlay);
+		await overlay.dismiss();
+		await settled;
+		return this.router.navigate(commands);
+	}
+
 	private async waitForBackCloseToSettle(overlay: DismissableOverlay): Promise<void> {
 		await overlay.onDidDismiss();
 		const settled = firstValueFrom(

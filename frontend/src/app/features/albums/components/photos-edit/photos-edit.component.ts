@@ -271,8 +271,9 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 
 	async openMember(memberId: number) {
 		this.faceMenuOpen.set(false);
-		await this.modalController.dismiss();
-		await this.router.navigate(["/databaze/clenove", memberId]);
+		const modal = await this.modalController.getTop();
+		if (modal) await this.modalService.dismissAndNavigate(modal, ["/databaze/clenove", memberId]);
+		else await this.router.navigate(["/databaze/clenove", memberId]);
 	}
 
 	private rebuildAlbumTags() {
