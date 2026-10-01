@@ -39,10 +39,6 @@
 							<span class="bo-info-label">Obličeje</span>
 							<span class="bo-info-value">
 								{{ s.faces.total }}
-								<span class="muted"
-									>(přiřazeno ručně {{ s.faces.assigned }}, automaticky
-									{{ s.faces.autoAssigned }})</span
-								>
 							</span>
 						</div>
 						<div class="bo-info-row">
@@ -51,14 +47,6 @@
 								s.photos.lastDetectedAt ? (s.photos.lastDetectedAt | date: "d. M. y H:mm") : "—"
 							}}</span>
 						</div>
-						@if (canAccessMatching()) {
-							<a class="bo-info-row fd-link" routerLink="/admin/prirazovani-obliceju">
-								<span class="bo-info-label">Přiřazování obličejů</span>
-								<span class="bo-info-value">
-									<ion-icon name="chevron-forward-outline" class="fd-link-icon"></ion-icon>
-								</span>
-							</a>
-						}
 						@if (workers(); as list) {
 							<a class="bo-info-row fd-link" routerLink="/admin/workery">
 								<span class="bo-info-label">Workery</span>
@@ -73,18 +61,20 @@
 							</a>
 						}
 						@if (s.queue; as q) {
-							<div class="bo-info-row">
+							<div class="bo-info-row fd-queue-row">
 								<span class="bo-info-label">Fronta</span>
 								<span class="bo-info-value">
-									@if (queueBusy()) {
-										<ion-spinner name="dots" class="queue-spinner"></ion-spinner>
-									}
 									čeká {{ q.waiting + q.delayed }}, zpracovává se {{ q.active }}
 									@if (q.failed) {
 										<span class="bo-pill bo-pill-red">{{ q.failed }} selhalo</span>
 									}
 								</span>
 							</div>
+							@if (queueBusy()) {
+								<div class="fd-progress">
+									<ion-progress-bar [value]="queueProgress()"></ion-progress-bar>
+								</div>
+							}
 							<div class="bo-info-row">
 								<span class="bo-info-label">Další noční dávka</span>
 								<span class="bo-info-value">
@@ -164,12 +154,7 @@
 								} @else {
 									<div class="fd-faces">
 										@for (face of entry.faces; track face.id) {
-											<span
-												class="fd-face"
-												[class.assigned]="!!face.memberId"
-												[class.auto]="face.assignment === 'auto'"
-												[boTooltip]="faceTooltip(face)"
-											>
+											<span class="fd-face" [boTooltip]="faceTooltip(face)">
 												<img [src]="face | photoFaceImageUrl" loading="lazy" alt="" />
 											</span>
 										}
