@@ -283,3 +283,11 @@
 .fr-empty {
 	padding: 13px 20px 16px;
 }
+
+.fr-empty-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}

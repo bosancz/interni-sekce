@@ -203,6 +203,12 @@ export class FaceReviewQuery {
 	@IsInt()
 	@ValidateIf((query: FaceReviewQuery) => query.filter === FaceReviewFilter.member || query.memberId !== undefined)
 	memberId?: number;
+
+	@ApiPropertyOptional({ type: "integer" })
+	@Type(() => Number)
+	@IsInt()
+	@IsOptional()
+	faceId?: number;
 }
 
 export class FaceReviewPhotoResponse {

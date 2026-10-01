@@ -146,12 +146,12 @@
 				@if (suggested()) {
 					<ion-button color="success" [disabled]="busy()" (click)="confirm()" boTooltip="Klávesa A">
 						<ion-icon slot="start" name="checkmark-outline"></ion-icon>
-						Potvrdit
+						Ano
 					</ion-button>
 				}
-				<ion-button fill="outline" [disabled]="busy()" (click)="pickMember()" boTooltip="Klávesa J">
+				<ion-button fill="outline" [disabled]="busy()" (click)="pickMember()" boTooltip="Klávesa V">
 					<ion-icon slot="start" name="person-add-outline"></ion-icon>
-					{{ suggested() ? "Někdo jiný…" : "Přiřadit…" }}
+					Vybrat
 				</ion-button>
 				<ion-button
 					fill="outline"
@@ -165,9 +165,21 @@
 					"
 				>
 					<ion-icon slot="start" name="close-outline"></ion-icon>
-					Odmítnout
+					Ne
 				</ion-button>
 				<div class="fr-secondary">
+					@if (history().length) {
+						<ion-button
+							fill="clear"
+							color="medium"
+							[disabled]="busy()"
+							(click)="undo()"
+							boTooltip="Klávesa Z – vrátí poslední rozhodnutí."
+						>
+							<ion-icon slot="start" name="arrow-undo-outline"></ion-icon>
+							Zpět
+						</ion-button>
+					}
 					<ion-button fill="clear" color="medium" [disabled]="busy()" (click)="deleteFace()">
 						<ion-icon slot="start" name="trash-outline"></ion-icon>
 						Není to obličej
@@ -181,7 +193,22 @@
 		} @else if (memberMissing()) {
 			<div class="fr-empty muted">Vyber člena, jehož obličeje chceš kontrolovat.</div>
 		} @else if (review()) {
-			<div class="fr-empty muted">Žádné obličeje ke kontrole.</div>
+			<div class="fr-empty fr-empty-row">
+				<span class="muted">Žádné obličeje ke kontrole.</span>
+				@if (history().length) {
+					<ion-button
+						fill="clear"
+						color="medium"
+						size="small"
+						[disabled]="busy()"
+						(click)="undo()"
+						boTooltip="Klávesa Z – vrátí poslední rozhodnutí."
+					>
+						<ion-icon slot="start" name="arrow-undo-outline"></ion-icon>
+						Zpět
+					</ion-button>
+				}
+			</div>
 		} @else {
 			<div class="fr-empty"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
 		}
