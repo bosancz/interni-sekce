@@ -51,6 +51,14 @@
 								s.photos.lastDetectedAt ? (s.photos.lastDetectedAt | date: "d. M. y H:mm") : "—"
 							}}</span>
 						</div>
+						@if (canAccessMatching()) {
+							<a class="bo-info-row fd-link" routerLink="/admin/prirazovani-obliceju">
+								<span class="bo-info-label">Přiřazování obličejů</span>
+								<span class="bo-info-value">
+									<ion-icon name="chevron-forward-outline" class="fd-link-icon"></ion-icon>
+								</span>
+							</a>
+						}
 						@if (workers(); as list) {
 							<a class="bo-info-row fd-link" routerLink="/admin/workery">
 								<span class="bo-info-label">Workery</span>
@@ -87,12 +95,6 @@
 									>
 								</span>
 							</div>
-							<div class="bo-info-row">
-								<span class="bo-info-label">Další přepočet přiřazení</span>
-								<span class="bo-info-value">{{
-									q.nextMatchAt ? (q.nextMatchAt | date: "d. M. H:mm") : "—"
-								}}</span>
-							</div>
 						}
 					</div>
 
@@ -112,18 +114,6 @@
 							Spustit dávku teď
 						</ion-button>
 						<span class="muted">Zařadí {{ s.schedule.batchSize }} nejnovějších nezpracovaných fotek.</span>
-					</div>
-					<div class="fd-actions">
-						<ion-button
-							fill="outline"
-							[disabled]="!canRunMatching() || matching()"
-							[boTooltip]="!canRunMatching() ? 'Na přepočet přiřazení nemáš oprávnění.' : ''"
-							(click)="runMatching()"
-						>
-							<ion-icon slot="start" name="people-outline"></ion-icon>
-							Přepočítat přiřazení
-						</ion-button>
-						<span class="muted">Porovná nepřiřazené obličeje s ručně přiřazenými.</span>
 					</div>
 				} @else {
 					<div class="bo-info-list">

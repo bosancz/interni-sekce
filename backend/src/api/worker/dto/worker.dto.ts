@@ -2,7 +2,12 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsInt, IsOptional, Max, Min } from "class-validator";
 import { FaceEmotionsResponse } from "src/api/albums/dto/photo-face.dto";
-import { FaceEmotion, FaceEmotions, PhotoFaceAssignment } from "src/models/albums/schema/detected-faces";
+import {
+	FaceEmotion,
+	FaceEmotions,
+	FacesMatchTrigger,
+	PhotoFaceAssignment,
+} from "src/models/albums/schema/detected-faces";
 import { WorkerCurrentJob, WorkerHeartbeat, WorkerStatus } from "src/models/worker/schema/worker-heartbeat";
 
 export class WorkerCurrentJobResponse implements WorkerCurrentJob {
@@ -104,4 +109,70 @@ export class FaceDetectionBatchBody {
 
 export class FaceDetectionBatchResponse {
 	@ApiProperty() queued!: number;
+}
+
+export class FaceMatchingSettingsResponse {
+	@ApiProperty() threshold!: number;
+	@ApiProperty() margin!: number;
+	@ApiProperty() minDetectionScore!: number;
+}
+
+export class FaceMatchingProgressResponse {
+	@ApiProperty({ enum: FacesMatchTrigger, enumName: "FaceMatchingTriggerEnum" }) trigger!: FacesMatchTrigger;
+	@ApiProperty({ type: "string" }) startedAt!: Date | string;
+	@ApiProperty() photos!: number;
+	@ApiProperty() processed!: number;
+	@ApiProperty() assigned!: number;
+	@ApiProperty() cleared!: number;
+}
+
+export class FaceMatchingRunResponse extends FaceMatchingProgressResponse {
+	@ApiProperty({ type: "string" }) finishedAt!: Date | string;
+	@ApiPropertyOptional({ type: "string", nullable: true }) error!: string | null;
+}
+
+export class FaceMatchingStatusResponse {
+	@ApiPropertyOptional({ type: FaceMatchingProgressResponse, nullable: true })
+	current!: FaceMatchingProgressResponse | null;
+	@ApiProperty() queued!: boolean;
+	@ApiPropertyOptional({ type: FaceMatchingRunResponse, nullable: true }) lastRun!: FaceMatchingRunResponse | null;
+}
+
+export class FaceMatchingFacesStatsResponse {
+	@ApiProperty() total!: number;
+	@ApiProperty() manual!: number;
+	@ApiProperty() rejected!: number;
+	@ApiProperty() auto!: number;
+	@ApiProperty() unassigned!: number;
+}
+
+export class FaceMatchingEvaluationResponse {
+	@ApiProperty() threshold!: number;
+	@ApiProperty() assigned!: number;
+	@ApiProperty() correct!: number;
+	@ApiProperty() wrong!: number;
+	@ApiPropertyOptional({ type: "number", nullable: true }) precision!: number | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) recall!: number | null;
+}
+
+export class FaceMatchingAnalysisResponse {
+	@ApiProperty() decisions!: number;
+	@ApiProperty() correctCandidates!: number;
+	@ApiProperty() wrongCandidates!: number;
+	@ApiProperty() targetPrecision!: number;
+	@ApiProperty() minDecisions!: number;
+	@ApiProperty() minWrongCandidates!: number;
+	@ApiProperty() enoughData!: boolean;
+	@ApiProperty({ type: FaceMatchingEvaluationResponse }) current!: FaceMatchingEvaluationResponse;
+	@ApiPropertyOptional({ type: FaceMatchingEvaluationResponse, nullable: true })
+	proposed!: FaceMatchingEvaluationResponse | null;
+	@ApiProperty({ type: FaceMatchingEvaluationResponse, isArray: true }) sweep!: FaceMatchingEvaluationResponse[];
+}
+
+export class FaceMatchingSummaryResponse {
+	@ApiProperty({ type: FaceMatchingSettingsResponse }) settings!: FaceMatchingSettingsResponse;
+	@ApiProperty({ type: FaceMatchingStatusResponse }) status!: FaceMatchingStatusResponse;
+	@ApiProperty({ type: FaceMatchingFacesStatsResponse }) faces!: FaceMatchingFacesStatsResponse;
+	@ApiProperty({ type: FaceMatchingAnalysisResponse }) analysis!: FaceMatchingAnalysisResponse;
+	@ApiPropertyOptional({ type: "string", nullable: true }) nextMatchAt!: Date | string | null;
 }

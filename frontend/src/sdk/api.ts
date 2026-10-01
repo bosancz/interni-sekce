@@ -3232,6 +3232,364 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface FaceMatchingAnalysisResponse
+     */
+    export interface FaceMatchingAnalysisResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingAnalysisResponse
+         */
+        'decisions': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingAnalysisResponse
+         */
+        'correctCandidates': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingAnalysisResponse
+         */
+        'wrongCandidates': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingAnalysisResponse
+         */
+        'targetPrecision': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingAnalysisResponse
+         */
+        'minDecisions': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingAnalysisResponse
+         */
+        'minWrongCandidates': number;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof FaceMatchingAnalysisResponse
+         */
+        'enoughData': boolean;
+        /**
+         * 
+         * @type {FaceMatchingEvaluationResponse}
+         * @memberof FaceMatchingAnalysisResponse
+         */
+        'current': FaceMatchingEvaluationResponse;
+        /**
+         * 
+         * @type {FaceMatchingEvaluationResponse}
+         * @memberof FaceMatchingAnalysisResponse
+         */
+        'proposed'?: FaceMatchingEvaluationResponse | null;
+        /**
+         * 
+         * @type {Array<FaceMatchingEvaluationResponse>}
+         * @memberof FaceMatchingAnalysisResponse
+         */
+        'sweep': Array<FaceMatchingEvaluationResponse>;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceMatchingEvaluationResponse
+     */
+    export interface FaceMatchingEvaluationResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingEvaluationResponse
+         */
+        'threshold': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingEvaluationResponse
+         */
+        'assigned': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingEvaluationResponse
+         */
+        'correct': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingEvaluationResponse
+         */
+        'wrong': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingEvaluationResponse
+         */
+        'precision'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingEvaluationResponse
+         */
+        'recall'?: number | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceMatchingFacesStatsResponse
+     */
+    export interface FaceMatchingFacesStatsResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingFacesStatsResponse
+         */
+        'total': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingFacesStatsResponse
+         */
+        'manual': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingFacesStatsResponse
+         */
+        'rejected': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingFacesStatsResponse
+         */
+        'auto': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingFacesStatsResponse
+         */
+        'unassigned': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceMatchingProgressResponse
+     */
+    export interface FaceMatchingProgressResponse {
+        /**
+         * 
+         * @type {FaceMatchingTriggerEnum}
+         * @memberof FaceMatchingProgressResponse
+         */
+        'trigger': FaceMatchingTriggerEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceMatchingProgressResponse
+         */
+        'startedAt': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingProgressResponse
+         */
+        'photos': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingProgressResponse
+         */
+        'processed': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingProgressResponse
+         */
+        'assigned': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingProgressResponse
+         */
+        'cleared': number;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @interface FaceMatchingRunResponse
+     */
+    export interface FaceMatchingRunResponse {
+        /**
+         * 
+         * @type {FaceMatchingTriggerEnum}
+         * @memberof FaceMatchingRunResponse
+         */
+        'trigger': FaceMatchingTriggerEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceMatchingRunResponse
+         */
+        'startedAt': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingRunResponse
+         */
+        'photos': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingRunResponse
+         */
+        'processed': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingRunResponse
+         */
+        'assigned': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingRunResponse
+         */
+        'cleared': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceMatchingRunResponse
+         */
+        'finishedAt': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceMatchingRunResponse
+         */
+        'error'?: string | null;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @interface FaceMatchingSettingsResponse
+     */
+    export interface FaceMatchingSettingsResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingSettingsResponse
+         */
+        'threshold': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingSettingsResponse
+         */
+        'margin': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingSettingsResponse
+         */
+        'minDetectionScore': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceMatchingStatusResponse
+     */
+    export interface FaceMatchingStatusResponse {
+        /**
+         * 
+         * @type {FaceMatchingProgressResponse}
+         * @memberof FaceMatchingStatusResponse
+         */
+        'current'?: FaceMatchingProgressResponse | null;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof FaceMatchingStatusResponse
+         */
+        'queued': boolean;
+        /**
+         * 
+         * @type {FaceMatchingRunResponse}
+         * @memberof FaceMatchingStatusResponse
+         */
+        'lastRun'?: FaceMatchingRunResponse | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface FaceMatchingSummaryResponse
+     */
+    export interface FaceMatchingSummaryResponse {
+        /**
+         * 
+         * @type {FaceMatchingSettingsResponse}
+         * @memberof FaceMatchingSummaryResponse
+         */
+        'settings': FaceMatchingSettingsResponse;
+        /**
+         * 
+         * @type {FaceMatchingStatusResponse}
+         * @memberof FaceMatchingSummaryResponse
+         */
+        'status': FaceMatchingStatusResponse;
+        /**
+         * 
+         * @type {FaceMatchingFacesStatsResponse}
+         * @memberof FaceMatchingSummaryResponse
+         */
+        'faces': FaceMatchingFacesStatsResponse;
+        /**
+         * 
+         * @type {FaceMatchingAnalysisResponse}
+         * @memberof FaceMatchingSummaryResponse
+         */
+        'analysis': FaceMatchingAnalysisResponse;
+        /**
+         * 
+         * @type {string}
+         * @memberof FaceMatchingSummaryResponse
+         */
+        'nextMatchAt'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const FaceMatchingTriggerEnum = {
+        All: 'all',
+        Changes: 'changes'
+    } as const;
+    
+    export type FaceMatchingTriggerEnum = typeof FaceMatchingTriggerEnum[keyof typeof FaceMatchingTriggerEnum];
+    
+    
+        /**
+     * 
+     * @export
      * @interface Group
      */
     export interface Group {
@@ -5908,6 +6266,30 @@ export namespace SDK {
          * @type {number}
          * @memberof PhotoFace
          */
+        'candidateMemberId': number | null;
+        /**
+         * 
+         * @type {Member}
+         * @memberof PhotoFace
+         */
+        'candidateMember'?: Member | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFace
+         */
+        'candidateScore': number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFace
+         */
+        'candidateSecondScore': number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFace
+         */
         'assignedById': number | null;
         /**
          * 
@@ -6636,6 +7018,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'enqueueFaceDetectionBatch': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getFaceMatchingSummary': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -16604,6 +16992,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for listFaceDetectionLog operation in WorkerApi.
      * @export
@@ -16731,6 +17123,44 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<FaceDetectionSummaryResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async getFaceMatchingSummary(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/face-detection/matching`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<FaceMatchingSummaryResponse>(axiosRequestConfig);
         }
     
         /**

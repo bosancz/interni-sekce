@@ -1,7 +1,20 @@
 import { PhotoFaceAssignment } from "../schema/detected-faces";
 
-export const FACE_MATCH_THRESHOLD = 0.45;
+export const FACE_MATCH_THRESHOLD = 0.5;
 export const FACE_MATCH_MARGIN = 0.05;
+export const FACE_MATCH_MIN_DETECTION_SCORE = 0.9;
+
+export interface FaceMatchSettings {
+	threshold: number;
+	margin: number;
+	minDetectionScore: number;
+}
+
+export const FACE_MATCH_SETTINGS: FaceMatchSettings = {
+	threshold: FACE_MATCH_THRESHOLD,
+	margin: FACE_MATCH_MARGIN,
+	minDetectionScore: FACE_MATCH_MIN_DETECTION_SCORE,
+};
 
 export interface FaceReference {
 	memberId: number;
@@ -21,12 +34,24 @@ export interface MatchFace {
 	memberId: number | null;
 	assignment: PhotoFaceAssignment | null;
 	matchScore: number | null;
+	detectionScore: number | null;
 	descriptor: Float32Array | null;
 }
 
 export interface FaceMatch {
 	memberId: number;
 	score: number;
+}
+
+export interface FaceCandidate {
+	memberId: number;
+	score: number;
+	secondScore: number | null;
+}
+
+export interface FaceMatchResult {
+	candidate: FaceCandidate | null;
+	match: FaceMatch | null;
 }
 
 export interface FacesMatchStats {
@@ -58,7 +83,7 @@ export function prepareReferences(references: FaceReference[]): FaceReferences {
 	return { members, memberIndexes, descriptors, dimensions, count: valid.length };
 }
 
-export function matchPhotoFaces(faces: MatchFace[], references: FaceReferences): Map<number, FaceMatch | null> {
+export function matchPhotoFaces(faces: MatchFace[], references: FaceReferences): Map<number, FaceMatchResult> {
 	const { members, memberIndexes, descriptors, dimensions, count } = references;
 
 	const manualMembers = new Set(
@@ -72,6 +97,7 @@ export function matchPhotoFaces(faces: MatchFace[], references: FaceReferences):
 	) as (MatchFace & { descriptor: Float32Array })[];
 
 	const scores = new Float64Array(members.length);
+	const candidatesByFace = new Map<number, FaceCandidate | null>(candidates.map((face) => [face.id, null]));
 	const proposals: { faceId: number; memberId: number; score: number }[] = [];
 
 	for (const face of candidates) {
@@ -104,20 +130,41 @@ export function matchPhotoFaces(faces: MatchFace[], references: FaceReferences):
 			}
 		}
 
-		if (best < 0 || bestScore < FACE_MATCH_THRESHOLD) continue;
-		if (bestScore - secondScore < FACE_MATCH_MARGIN) continue;
+		if (best < 0) continue;
+
+		candidatesByFace.set(face.id, {
+			memberId: members[best],
+			score: bestScore,
+			secondScore: secondScore === -Infinity ? null : secondScore,
+		});
+
+		if (!isMatch(bestScore, secondScore, face.detectionScore)) continue;
 
 		proposals.push({ faceId: face.id, memberId: members[best], score: bestScore });
 	}
 
-	const result = new Map<number, FaceMatch | null>(candidates.map((face) => [face.id, null]));
+	const result = new Map<number, FaceMatchResult>(
+		candidates.map((face) => [face.id, { candidate: candidatesByFace.get(face.id) ?? null, match: null }]),
+	);
 	const usedMembers = new Set<number>();
 
 	for (const proposal of proposals.sort((a, b) => b.score - a.score)) {
 		if (usedMembers.has(proposal.memberId)) continue;
 		usedMembers.add(proposal.memberId);
-		result.set(proposal.faceId, { memberId: proposal.memberId, score: proposal.score });
+		result.get(proposal.faceId)!.match = { memberId: proposal.memberId, score: proposal.score };
 	}
 
 	return result;
+}
+
+export function isMatch(
+	score: number,
+	secondScore: number | null,
+	detectionScore: number | null,
+	settings: FaceMatchSettings = FACE_MATCH_SETTINGS,
+) {
+	if (score < settings.threshold) return false;
+	if (secondScore !== null && score - secondScore < settings.margin) return false;
+	if (detectionScore !== null && detectionScore < settings.minDetectionScore) return false;
+	return true;
 }

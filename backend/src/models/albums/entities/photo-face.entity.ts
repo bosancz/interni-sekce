@@ -41,6 +41,16 @@ export class PhotoFace {
 	@Column({ type: "real", nullable: true }) matchScore!: number | null;
 
 	@Column({ type: "integer", nullable: true })
+	candidateMemberId!: number | null;
+
+	@ManyToOne(() => Member, { onDelete: "SET NULL", onUpdate: "CASCADE" })
+	@JoinColumn({ name: "candidate_member_id" })
+	candidateMember?: Member | null;
+
+	@Column({ type: "real", nullable: true }) candidateScore!: number | null;
+	@Column({ type: "real", nullable: true }) candidateSecondScore!: number | null;
+
+	@Column({ type: "integer", nullable: true })
 	assignedById!: number | null;
 
 	@ManyToOne(() => User, { onDelete: "SET NULL", onUpdate: "CASCADE" })

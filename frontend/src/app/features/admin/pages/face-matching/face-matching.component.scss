@@ -1,0 +1,87 @@
+:host ::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+.fm-page {
+	max-width: 960px;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+.muted {
+	color: var(--bo-muted);
+}
+
+.bo-pill {
+	margin-left: 6px;
+}
+
+.fm-progress {
+	padding: 0 20px 13px;
+}
+
+.fm-status-row + .fm-progress {
+	margin-top: -4px;
+}
+
+.fm-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 16px;
+	padding: 13px 20px 16px;
+	border-top: 1px solid var(--bo-card-line);
+	font-size: 0.9em;
+}
+
+.fm-note {
+	padding: 13px 20px 16px;
+	border-top: 1px solid var(--bo-card-line);
+	font-size: 0.9em;
+
+	p {
+		margin: 0;
+
+		& + p {
+			margin-top: 8px;
+		}
+	}
+}
+
+.fm-table-wrap {
+	overflow-x: auto;
+}
+
+.fm-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-variant-numeric: tabular-nums;
+
+	th,
+	td {
+		padding: 10px 20px;
+		border-top: 1px solid var(--bo-card-line);
+		text-align: right;
+		white-space: nowrap;
+
+		&:first-child {
+			text-align: left;
+		}
+	}
+
+	th {
+		color: var(--bo-muted);
+		font-weight: 600;
+	}
+
+	tr.current td,
+	tr.proposed td {
+		font-weight: 600;
+	}
+
+	tr.proposed td {
+		background: var(--bo-green-tint);
+	}
+}

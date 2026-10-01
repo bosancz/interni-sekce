@@ -3,14 +3,7 @@ import { Component, computed, OnDestroy, OnInit, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonButton, IonIcon, IonSkeletonText, IonSpinner } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import {
-	chevronForwardOutline,
-	happyOutline,
-	listOutline,
-	peopleOutline,
-	playOutline,
-	refreshOutline,
-} from "ionicons/icons";
+import { chevronForwardOutline, happyOutline, listOutline, playOutline, refreshOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -57,13 +50,12 @@ export class FaceDetectionComponent implements OnInit, OnDestroy {
 	logLoading = signal(false);
 	logHasMore = signal(false);
 	queueing = signal(false);
-	matching = signal(false);
 
 	workers = signal<SDK.WorkerResponse[] | undefined>(undefined);
 	liveWorkers = computed(() => this.workers()?.filter((worker) => worker.status !== "stale").length ?? 0);
 
 	canRunBatch = computed(() => this.api.links()?.enqueueFaceDetectionBatch.allowed ?? false);
-	canRunMatching = computed(() => this.api.links()?.runFaceMatching.allowed ?? false);
+	canAccessMatching = computed(() => this.api.links()?.getFaceMatchingSummary.allowed ?? false);
 	canAccessWorkers = computed(() => this.api.links()?.listWorkers.allowed ?? false);
 	queueBusy = computed(() => {
 		const queue = this.summary()?.queue;
@@ -77,7 +69,7 @@ export class FaceDetectionComponent implements OnInit, OnDestroy {
 		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
-		addIcons({ chevronForwardOutline, happyOutline, listOutline, peopleOutline, playOutline, refreshOutline });
+		addIcons({ chevronForwardOutline, happyOutline, listOutline, playOutline, refreshOutline });
 	}
 
 	ngOnInit() {
@@ -155,20 +147,6 @@ export class FaceDetectionComponent implements OnInit, OnDestroy {
 			this.toastService.toast("Dávku se nepodařilo spustit.", { color: "danger" });
 		} finally {
 			this.queueing.set(false);
-		}
-	}
-
-	async runMatching() {
-		if (!this.canRunMatching()) return;
-
-		this.matching.set(true);
-		try {
-			await this.api.WorkerApi.runFaceMatching();
-			this.toastService.toast("Přepočet přiřazení běží na pozadí, může trvat pár minut.");
-		} catch {
-			this.toastService.toast("Přepočet přiřazení se nepodařil.", { color: "danger" });
-		} finally {
-			this.matching.set(false);
 		}
 	}
 

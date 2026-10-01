@@ -16,6 +16,7 @@ import { Request } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Config } from "src/config";
+import { FACE_MATCH_SETTINGS } from "src/models/albums/helpers/face-matching";
 import { PhotoFacesMatchingService } from "src/models/albums/services/photo-faces-matching.service";
 import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
 import { FacesDetectionService } from "src/models/worker/services/faces-detection.service";
@@ -24,6 +25,7 @@ import {
 	FaceDetectionLogPermission,
 	FaceDetectionSummaryPermission,
 	FaceMatchingRunPermission,
+	FaceMatchingSummaryPermission,
 } from "../acl/worker.acl";
 import {
 	FaceDetectionBatchBody,
@@ -31,6 +33,7 @@ import {
 	FaceDetectionLogEntryResponse,
 	FaceDetectionLogQuery,
 	FaceDetectionSummaryResponse,
+	FaceMatchingSummaryResponse,
 } from "../dto/worker.dto";
 
 @Controller("face-detection")
@@ -119,6 +122,27 @@ export class FaceDetectionController {
 		const queued = await this.facesDetectionService.enqueueBatch(body.limit);
 
 		return { queued };
+	}
+
+	@Get("matching")
+	@AcLinks(FaceMatchingSummaryPermission)
+	@ApiResponse({ status: 200, type: FaceMatchingSummaryResponse })
+	async getFaceMatchingSummary(@Req() req: Request): Promise<FaceMatchingSummaryResponse> {
+		FaceMatchingSummaryPermission.canOrThrow(req);
+
+		const [faces, analysis, queue] = await Promise.all([
+			this.photoFacesMatchingService.getFacesStats(),
+			this.photoFacesMatchingService.getAnalysis(),
+			this.facesDetectionService?.getQueueStatus() ?? null,
+		]);
+
+		return {
+			settings: FACE_MATCH_SETTINGS,
+			status: this.photoFacesMatchingService.getStatus(),
+			faces,
+			analysis,
+			nextMatchAt: queue?.nextMatchAt ?? null,
+		};
 	}
 
 	@Post("match")
