@@ -1,7 +1,7 @@
 import { DatePipe } from "@angular/common";
 import { Component, computed, OnDestroy, OnInit, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { IonButton, IonIcon, IonSkeletonText, IonSpinner } from "@ionic/angular/standalone";
+import { IonButton, IonIcon, IonProgressBar, IonSkeletonText, IonSpinner } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { chevronForwardOutline, happyOutline, listOutline, playOutline, refreshOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -33,6 +33,7 @@ const REFRESH_MS = 10_000;
 		IonIcon,
 		IonSpinner,
 		IonSkeletonText,
+		IonProgressBar,
 		CardComponent,
 		CardHeaderComponent,
 		CardTitleComponent,
@@ -55,11 +56,16 @@ export class FaceDetectionComponent implements OnInit, OnDestroy {
 	liveWorkers = computed(() => this.workers()?.filter((worker) => worker.status !== "stale").length ?? 0);
 
 	canRunBatch = computed(() => this.api.links()?.enqueueFaceDetectionBatch.allowed ?? false);
-	canAccessMatching = computed(() => this.api.links()?.getFaceMatchingSummary.allowed ?? false);
 	canAccessWorkers = computed(() => this.api.links()?.listWorkers.allowed ?? false);
-	queueBusy = computed(() => {
+	queueRemaining = computed(() => {
 		const queue = this.summary()?.queue;
-		return !!queue && queue.waiting + queue.active + queue.delayed > 0;
+		return queue ? queue.waiting + queue.active + queue.delayed : 0;
+	});
+	queueBusy = computed(() => this.queueRemaining() > 0);
+	queuePeak = signal(0);
+	queueProgress = computed(() => {
+		const peak = this.queuePeak();
+		return peak ? 1 - this.queueRemaining() / peak : 0;
 	});
 
 	private timer?: ReturnType<typeof setInterval>;
@@ -100,6 +106,8 @@ export class FaceDetectionComponent implements OnInit, OnDestroy {
 					: Promise.resolve(undefined),
 			]);
 			this.summary.set(summary);
+			const remaining = this.queueRemaining();
+			this.queuePeak.set(remaining ? Math.max(this.queuePeak(), remaining) : 0);
 			this.workers.set(workers);
 		} catch {
 			this.toastService.toast("Nepodařilo se načíst stav rozpoznávání.", { color: "warning" });
@@ -151,11 +159,7 @@ export class FaceDetectionComponent implements OnInit, OnDestroy {
 	}
 
 	faceTooltip(face: SDK.FaceDetectionLogFaceResponse) {
-		const member =
-			face.memberNickname && face.assignment === "auto" ? `${face.memberNickname}?` : face.memberNickname;
-		return [member || "Nepřiřazeno", this.scorePercent(face.score), faceEmotionLabel(face)]
-			.filter(Boolean)
-			.join(" · ");
+		return [this.scorePercent(face.score), faceEmotionLabel(face)].filter(Boolean).join(" · ");
 	}
 
 	scorePercent(score: number | null | undefined) {

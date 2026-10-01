@@ -21,10 +21,12 @@
 	color: var(--bo-muted);
 }
 
-.queue-spinner {
-	width: 20px;
-	height: 14px;
-	vertical-align: middle;
+.fd-progress {
+	padding: 0 20px 13px;
+}
+
+.fd-queue-row + .fd-progress {
+	margin-top: -4px;
 }
 
 .fd-actions {
@@ -106,15 +108,7 @@
 	height: 36px;
 	border-radius: 50%;
 	overflow: hidden;
-	border: 2px dashed var(--bo-muted);
-
-	&.assigned {
-		border: 2px solid var(--bo-green);
-	}
-
-	&.auto {
-		border-style: dashed;
-	}
+	border: 2px solid var(--bo-muted);
 
 	img {
 		width: 100%;
