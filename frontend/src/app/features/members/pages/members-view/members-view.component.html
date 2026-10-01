@@ -54,7 +54,7 @@
 
 			@if (member()?._links?.listMemberPhotos?.allowed) {
 				<div class="photos-col" [class.d-none]="view() !== 'photos'">
-					<bo-member-photos [member]="member()" />
+					<bo-member-photos [member]="member()" [active]="view() === 'photos'" />
 				</div>
 			}
 		</div>
