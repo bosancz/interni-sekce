@@ -4,10 +4,12 @@ import { IonButton, IonIcon, IonSpinner, IonToggle } from "@ionic/angular/standa
 import { addIcons } from "ionicons";
 import {
 	addOutline,
+	calendarOutline,
+	imagesOutline,
 	laptopOutline,
-	notificationsOutline,
 	paperPlaneOutline,
 	phonePortraitOutline,
+	settingsOutline,
 } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -21,6 +23,12 @@ import { DeleteButtonComponent } from "src/app/shared/components/delete-button/d
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
+
+const GROUP_ICONS: Record<SDK.NotificationGroupsEnum, string> = {
+	events: "calendar-outline",
+	photos: "images-outline",
+	admin: "settings-outline",
+};
 
 @Component({
 	selector: "bo-notification-settings",
@@ -55,6 +63,23 @@ export class NotificationSettingsComponent implements OnInit {
 
 	pushSupported = this.pushNotificationsService.isSupported;
 
+	typeGroups = computed(() => {
+		const groups = new Map<
+			SDK.NotificationGroupsEnum,
+			{ title: string; icon: string; types: SDK.NotificationTypeSettingResponseWithLinks[] }
+		>();
+		for (const type of this.settings()?.types ?? []) {
+			const group = groups.get(type.group) ?? {
+				title: type.groupTitle,
+				icon: GROUP_ICONS[type.group],
+				types: [],
+			};
+			group.types.push(type);
+			groups.set(type.group, group);
+		}
+		return [...groups.values()];
+	});
+
 	currentDevice = computed(() =>
 		this.devices()?.find((device) => device.deviceId === this.pushNotificationsService.deviceId),
 	);
@@ -65,7 +90,15 @@ export class NotificationSettingsComponent implements OnInit {
 		private toastService: ToastService,
 		private modalService: ModalService,
 	) {
-		addIcons({ notificationsOutline, phonePortraitOutline, laptopOutline, paperPlaneOutline, addOutline });
+		addIcons({
+			phonePortraitOutline,
+			laptopOutline,
+			paperPlaneOutline,
+			addOutline,
+			calendarOutline,
+			imagesOutline,
+			settingsOutline,
+		});
 	}
 
 	ngOnInit() {

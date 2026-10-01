@@ -4,10 +4,16 @@ import { IsArray, IsEnum, IsOptional, IsString, ValidateNested } from "class-val
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { NotificationSubscription } from "src/models/notifications/entities/notification-subscription.entity";
 import { Notification } from "src/models/notifications/entities/notification.entity";
-import { NotificationChannels, NotificationTypes } from "src/models/notifications/schema/notification-types";
+import {
+	NotificationChannels,
+	NotificationGroups,
+	NotificationTypes,
+} from "src/models/notifications/schema/notification-types";
 
 export class NotificationTypeSettingResponse {
 	@ApiProperty({ enum: NotificationTypes, enumName: "NotificationTypesEnum" }) type!: NotificationTypes;
+	@ApiProperty({ enum: NotificationGroups, enumName: "NotificationGroupsEnum" }) group!: NotificationGroups;
+	groupTitle!: string;
 	title!: string;
 	description!: string;
 	@ApiProperty({ enum: NotificationChannels, enumName: "NotificationChannelsEnum", isArray: true })

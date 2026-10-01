@@ -1,0 +1,24 @@
+.new-photos {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	max-width: 1200px;
+	margin: 16px auto 0;
+}
+
+.empty {
+	margin: 0;
+	color: var(--colorMedium);
+}
+
+.loading {
+	display: flex;
+	justify-content: center;
+	padding: 1rem 0;
+}
+
+@media (max-width: 575.98px) {
+	.all-label {
+		display: none;
+	}
+}

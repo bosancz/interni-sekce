@@ -58,4 +58,7 @@ export class PhotoFace {
 	assignedBy?: User | null;
 
 	@Column({ type: "timestamp with time zone", nullable: true }) assignedAt!: Date | null;
+
+	@Column({ type: "integer", nullable: true }) notifiedMemberId!: number | null;
+	@Column({ type: "timestamp with time zone", nullable: true }) notifiedAt!: Date | null;
 }

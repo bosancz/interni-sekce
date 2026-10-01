@@ -87,11 +87,23 @@ export class PhotoFacesService {
 		await this.photosFilesService.deleteFaceImage(faceId);
 	}
 
-	async getMemberPhotos(memberId: Member["id"], options: { limit?: number; offset?: number } = {}) {
-		const faces = await this.photoFaces
+	async getMemberPhotos(
+		memberId: Member["id"],
+		options: { limit?: number; offset?: number; notifiedAt?: number } = {},
+	) {
+		const query = this.photoFaces
 			.createQueryBuilder("faces")
 			.innerJoinAndSelect("faces.photo", "photo")
-			.where("faces.member_id = :memberId", { memberId })
+			.innerJoinAndSelect("photo.album", "album")
+			.where("faces.member_id = :memberId", { memberId });
+
+		if (options.notifiedAt !== undefined) {
+			query.andWhere("faces.notified_member_id = :memberId AND faces.notified_at = :notifiedAt", {
+				notifiedAt: new Date(options.notifiedAt),
+			});
+		}
+
+		const faces = await query
 			.orderBy("photo.timestamp", "DESC")
 			.addOrderBy("photo.id", "DESC")
 			.skip(options.offset ?? 0)

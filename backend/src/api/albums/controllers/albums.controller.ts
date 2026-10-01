@@ -1,4 +1,5 @@
 import {
+	Logger,
 	Body,
 	Controller,
 	Delete,
@@ -19,6 +20,7 @@ import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
 import { AlbumsRepository, GetAlbumsOptions } from "src/models/albums/repositories/albums.repository";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
+import { NotificationsService } from "src/models/notifications/services/notifications.service";
 import {
 	AlbumCreatePermission,
 	AlbumDeletePermanentPermission,
@@ -43,9 +45,12 @@ import { AlbumPhotosOrderBody, AlbumTitlePhotoBody, PhotoResponse } from "../dto
 @AcController()
 @ApiTags("Photo gallery")
 export class AlbumsController {
+	private logger = new Logger(AlbumsController.name);
+
 	constructor(
 		private albums: AlbumsRepository,
 		private photos: PhotosRepository,
+		private notificationsService: NotificationsService,
 	) {}
 
 	@Get()
@@ -173,6 +178,10 @@ export class AlbumsController {
 		AlbumPublishPermission.canOrThrow(req, album);
 
 		await this.albums.updateAlbum(albumId, { status: AlbumStatus.public, datePublished: DateTime.local().toISO() });
+
+		this.notificationsService
+			.onAlbumPublished(album, req.user?.userId)
+			.catch((err) => this.logger.error(`Failed to send album published notifications: ${err.message}`));
 	}
 
 	@Post(":albumId/unpublish")

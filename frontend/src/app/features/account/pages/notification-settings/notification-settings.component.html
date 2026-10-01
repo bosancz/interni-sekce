@@ -84,64 +84,66 @@
 				</bo-card-content>
 			</bo-card>
 
-			<bo-card>
-				<bo-card-header>
-					<bo-card-title>
-						<span class="bo-card-section-title">
-							<ion-icon name="notifications-outline" />
-							Druhy upozornění
-						</span>
-					</bo-card-title>
-				</bo-card-header>
-				<bo-card-content>
-					<div class="bo-info-list">
-						@for (type of settings.types; track type.type) {
-							<div class="bo-info-row type-row">
-								<span class="type-info">
-									<span class="type-title">{{ type.title }}</span>
-									<span class="type-description">{{ type.description }}</span>
-								</span>
-								<span class="type-channels">
-									<ion-toggle
-										labelPlacement="stacked"
-										[checked]="hasChannel(type, channels.Push)"
-										[disabled]="
-											!type._links.updateNotificationSetting.allowed ||
-											savingTypes().includes(type.type)
-										"
-										(ionChange)="setChannel(type, channels.Push, $event.detail.checked)"
-									>
-										Push
-									</ion-toggle>
-									<ion-toggle
-										labelPlacement="stacked"
-										[checked]="hasChannel(type, channels.Email)"
-										[disabled]="
-											!type._links.updateNotificationSetting.allowed ||
-											savingTypes().includes(type.type)
-										"
-										(ionChange)="setChannel(type, channels.Email, $event.detail.checked)"
-									>
-										E-mail
-									</ion-toggle>
-									<ion-toggle
-										labelPlacement="stacked"
-										[checked]="hasChannel(type, channels.InApp)"
-										[disabled]="
-											!type._links.updateNotificationSetting.allowed ||
-											savingTypes().includes(type.type) ||
-											isChannelForced(type, channels.InApp)
-										"
-										(ionChange)="setChannel(type, channels.InApp, $event.detail.checked)"
-									>
-										V aplikaci
-									</ion-toggle>
-								</span>
-							</div>
-						}
-					</div>
-				</bo-card-content>
-			</bo-card>
+			@for (group of typeGroups(); track group.title) {
+				<bo-card>
+					<bo-card-header>
+						<bo-card-title>
+							<span class="bo-card-section-title">
+								<ion-icon [name]="group.icon" />
+								{{ group.title }}
+							</span>
+						</bo-card-title>
+					</bo-card-header>
+					<bo-card-content>
+						<div class="bo-info-list">
+							@for (type of group.types; track type.type) {
+								<div class="bo-info-row type-row">
+									<span class="type-info">
+										<span class="type-title">{{ type.title }}</span>
+										<span class="type-description">{{ type.description }}</span>
+									</span>
+									<span class="type-channels">
+										<ion-toggle
+											labelPlacement="stacked"
+											[checked]="hasChannel(type, channels.Push)"
+											[disabled]="
+												!type._links.updateNotificationSetting.allowed ||
+												savingTypes().includes(type.type)
+											"
+											(ionChange)="setChannel(type, channels.Push, $event.detail.checked)"
+										>
+											Push
+										</ion-toggle>
+										<ion-toggle
+											labelPlacement="stacked"
+											[checked]="hasChannel(type, channels.Email)"
+											[disabled]="
+												!type._links.updateNotificationSetting.allowed ||
+												savingTypes().includes(type.type)
+											"
+											(ionChange)="setChannel(type, channels.Email, $event.detail.checked)"
+										>
+											E-mail
+										</ion-toggle>
+										<ion-toggle
+											labelPlacement="stacked"
+											[checked]="hasChannel(type, channels.InApp)"
+											[disabled]="
+												!type._links.updateNotificationSetting.allowed ||
+												savingTypes().includes(type.type) ||
+												isChannelForced(type, channels.InApp)
+											"
+											(ionChange)="setChannel(type, channels.InApp, $event.detail.checked)"
+										>
+											V aplikaci
+										</ion-toggle>
+									</span>
+								</div>
+							}
+						</div>
+					</bo-card-content>
+				</bo-card>
+			}
 		</div>
 	}
 </bo-page-content>

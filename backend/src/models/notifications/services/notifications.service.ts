@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DateTime } from "luxon";
 import { Config } from "src/config";
+import { Album } from "src/models/albums/entities/album.entity";
 import { Event } from "src/models/events/entities/event.entity";
 import { MailService } from "src/models/mail/services/mail.service";
 import { User, UserRoles } from "src/models/users/entities/user.entity";
@@ -108,6 +109,31 @@ export class NotificationsService {
 			body: `Nasazeno ve verzi ${fix.version} — ${fix.description}`,
 			path: "/ucet/chyby",
 		});
+	}
+
+	async onAlbumPublished(album: Album, actorUserId?: number) {
+		const recipients = await this.getLeaderUsers();
+
+		await this.notifyUsers(NotificationTypes.newAlbums, recipients, actorUserId, {
+			title: `Nové album ve fotogalerii: ${album.name}`,
+			body:
+				album.dateFrom && album.dateTill
+					? this.formatEventDates({ dateFrom: album.dateFrom, dateTill: album.dateTill })
+					: undefined,
+			path: `/galerie/${album.id}`,
+		});
+	}
+
+	async onMemberPhotosMatched(memberId: number, photos: number, albums: string[], notifiedAt: Date) {
+		const users = await this.getLeaderUsers(memberId);
+
+		await this.notifyUsers(NotificationTypes.myPhotos, users, undefined, {
+			title: "Rozpoznali jsme tě na nových fotkách",
+			body: `${this.formatPhotosCount(photos)} v ${albums.length === 1 ? "albu" : "albech"} ${albums.join(", ")}`,
+			path: `/galerie/nove-fotky/${memberId}/${notifiedAt.getTime()}`,
+		});
+
+		return users.length;
 	}
 
 	private async notifyUsers(
@@ -218,10 +244,24 @@ export class NotificationsService {
 			.getMany();
 	}
 
+	private async getLeaderUsers(memberId?: number) {
+		const users = await this.users.find({
+			where: memberId !== undefined ? { memberId } : undefined,
+			relations: { member: true },
+		});
+		return users.filter((user) => user.member?.active || user.roles?.includes(UserRoles.admin));
+	}
+
 	private async getEventLeaderUsers(event: Event) {
 		const memberIds = event.leaders?.map((leader) => leader.id) ?? [];
 		if (!memberIds.length) return [];
 		return this.users.find({ where: { memberId: In(memberIds) } });
+	}
+
+	private formatPhotosCount(count: number) {
+		if (count === 1) return "1 fotka";
+		if (count >= 2 && count <= 4) return `${count} fotky`;
+		return `${count} fotek`;
 	}
 
 	private formatEventDates(event: Pick<Event, "dateFrom" | "dateTill">) {
