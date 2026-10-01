@@ -51,4 +51,6 @@ export enum FaceReviewOrder {
 	uncertain = "uncertain",
 	candidates = "candidates",
 	random = "random",
+	leaders = "leaders",
+	member = "member",
 }

@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
-import { IsEnum, IsInt, IsOptional, Max, Min } from "class-validator";
+import { IsEnum, IsInt, IsOptional, Max, Min, ValidateIf } from "class-validator";
 import { FaceEmotionsResponse, PhotoFaceResponse } from "src/api/albums/dto/photo-face.dto";
 import { MemberResponse } from "src/api/members/dto/member.dto";
 import { Member } from "src/models/members/entities/member.entity";
@@ -191,6 +191,12 @@ export class FaceReviewQuery {
 	@IsInt({ each: true })
 	@IsOptional()
 	excludePhotoIds?: number[];
+
+	@ApiPropertyOptional({ type: "integer" })
+	@Type(() => Number)
+	@IsInt()
+	@ValidateIf((query: FaceReviewQuery) => query.order === FaceReviewOrder.member || query.memberId !== undefined)
+	memberId?: number;
 }
 
 export class FaceReviewPhotoResponse {
