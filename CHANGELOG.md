@@ -1,3 +1,7 @@
+## v4.16.1 — 2026-10-01
+
+- <span class="changelog-type" title="feat">✨</span> [Kontrola obličejů vedoucích a vybraného člena](https://github.com/bosancz/interni-sekce/commit/ce0652e31d194ded49c0eeac913a0f2379727b0a) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.16.0 — 2026-10-01
 
 - <span class="changelog-type" title="feat">✨</span> [Kontrola obličejů na stránce přiřazování](https://github.com/bosancz/interni-sekce/commit/2260c0e4e79597d2a62c4979aad2818f559f2ef3) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
