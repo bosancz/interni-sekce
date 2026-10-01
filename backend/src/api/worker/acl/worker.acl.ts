@@ -1,6 +1,11 @@
 import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
-import { FaceDetectionLogEntryResponse, FaceDetectionSummaryResponse, WorkerResponse } from "../dto/worker.dto";
+import {
+	FaceDetectionLogEntryResponse,
+	FaceDetectionSummaryResponse,
+	FaceMatchingSummaryResponse,
+	WorkerResponse,
+} from "../dto/worker.dto";
 
 export const WorkersListPermission = new Permission<void>({
 	linkTo: RootResponse,
@@ -31,5 +36,11 @@ export const FaceDetectionBatchPermission = new Permission<void>({
 
 export const FaceMatchingRunPermission = new Permission<void>({
 	linkTo: RootResponse,
+	inherit: FaceDetectionSummaryPermission,
+});
+
+export const FaceMatchingSummaryPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: FaceMatchingSummaryResponse,
 	inherit: FaceDetectionSummaryPermission,
 });

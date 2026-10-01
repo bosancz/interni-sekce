@@ -8,6 +8,11 @@ export enum FaceEmotion {
 	surprised = "surprised",
 }
 
+export enum FacesMatchTrigger {
+	all = "all",
+	changes = "changes",
+}
+
 export enum PhotoFaceAssignment {
 	manual = "manual",
 	auto = "auto",

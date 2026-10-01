@@ -1,0 +1,246 @@
+<bo-page-header title="Přiřazování obličejů" backUrl="/admin" />
+
+<bo-page-content>
+	<div class="fm-page">
+		<bo-card>
+			<bo-card-header>
+				<bo-card-title>
+					<span class="bo-card-section-title">
+						<ion-icon name="people-outline" />
+						Stav
+					</span>
+				</bo-card-title>
+				<ion-button slot="buttons" fill="clear" size="small" (click)="refresh()" boTooltip="Obnovit">
+					<ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+				</ion-button>
+			</bo-card-header>
+
+			<bo-card-content>
+				@if (summary(); as s) {
+					<div class="bo-info-list">
+						<div class="bo-info-row">
+							<span class="bo-info-label">Obličeje</span>
+							<span class="bo-info-value">
+								{{ s.faces.total }}
+								<span class="muted"
+									>(ručně {{ s.faces.manual }}, automaticky {{ s.faces.auto }}, odmítnuto
+									{{ s.faces.rejected }}, nepřiřazeno {{ s.faces.unassigned }})</span
+								>
+							</span>
+						</div>
+						<div class="bo-info-row fm-status-row">
+							<span class="bo-info-label">Přepočet</span>
+							<span class="bo-info-value">
+								@if (s.status.current; as current) {
+									<span class="bo-pill bo-pill-blue">běží</span>
+									{{ current.processed }} z {{ current.photos }} fotek
+									<span class="muted"
+										>({{ triggerLabel(current.trigger) }}, přiřazeno {{ current.assigned }}, zrušeno
+										{{ current.cleared }})</span
+									>
+								} @else if (s.status.queued) {
+									<span class="bo-pill bo-pill-yellow">čeká ve frontě</span>
+								} @else {
+									<span class="muted">neběží</span>
+								}
+							</span>
+						</div>
+						@if (s.status.current) {
+							<div class="fm-progress">
+								@if (progress() !== undefined) {
+									<ion-progress-bar [value]="progress()"></ion-progress-bar>
+								} @else {
+									<ion-progress-bar type="indeterminate"></ion-progress-bar>
+								}
+							</div>
+						}
+						<div class="bo-info-row">
+							<span class="bo-info-label">Naposledy</span>
+							<span class="bo-info-value">
+								@if (s.status.lastRun; as run) {
+									{{ run.finishedAt | date: "d. M. y H:mm" }}
+									<span class="muted"
+										>({{ triggerLabel(run.trigger) }}, {{ duration(run) }}, {{ run.photos }} fotek,
+										přiřazeno {{ run.assigned }}, zrušeno {{ run.cleared }})</span
+									>
+									@if (run.error) {
+										<span class="bo-pill bo-pill-red" [boTooltip]="run.error">selhal</span>
+									}
+								} @else {
+									<span class="muted">od startu serveru neběžel</span>
+								}
+							</span>
+						</div>
+						<div class="bo-info-row">
+							<span class="bo-info-label">Další noční přepočet</span>
+							<span class="bo-info-value">{{
+								s.nextMatchAt ? (s.nextMatchAt | date: "d. M. H:mm") : "—"
+							}}</span>
+						</div>
+					</div>
+
+					<div class="fm-actions">
+						<ion-button
+							fill="outline"
+							[disabled]="!canRunMatching() || starting() || busy()"
+							[boTooltip]="
+								!canRunMatching()
+									? 'Na přepočet přiřazení nemáš oprávnění.'
+									: busy()
+										? 'Přepočet už běží.'
+										: ''
+							"
+							(click)="runMatching()"
+						>
+							<ion-icon slot="start" name="people-outline"></ion-icon>
+							Přepočítat přiřazení
+						</ion-button>
+						<span class="muted">Porovná nepřiřazené obličeje s ručně přiřazenými.</span>
+					</div>
+				} @else {
+					<div class="bo-info-list">
+						<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+						<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+					</div>
+				}
+			</bo-card-content>
+		</bo-card>
+
+		@if (summary(); as s) {
+			<bo-card>
+				<bo-card-header>
+					<bo-card-title>
+						<span class="bo-card-section-title">
+							<ion-icon name="options-outline" />
+							Nastavení
+						</span>
+					</bo-card-title>
+				</bo-card-header>
+
+				<bo-card-content>
+					<div class="bo-info-list">
+						<div class="bo-info-row">
+							<span class="bo-info-label">Hranice skóre</span>
+							<span class="bo-info-value">
+								{{ score(s.settings.threshold) }}
+								@if (s.analysis.proposed; as proposed) {
+									<span class="muted">→ navrženo {{ score(proposed.threshold) }}</span>
+									@if (thresholdOutdated()) {
+										<span class="bo-pill bo-pill-yellow">{{ signedScore(thresholdDiff()!) }}</span>
+									} @else {
+										<span class="bo-pill bo-pill-green">odpovídá</span>
+									}
+								}
+							</span>
+						</div>
+						<div class="bo-info-row">
+							<span class="bo-info-label">Náskok před druhým</span>
+							<span class="bo-info-value">{{ score(s.settings.margin) }}</span>
+						</div>
+						<div class="bo-info-row">
+							<span class="bo-info-label">Jistota detekce aspoň</span>
+							<span class="bo-info-value">{{ score(s.settings.minDetectionScore) }}</span>
+						</div>
+						@if (s.analysis.decisions) {
+							<div class="bo-info-row">
+								<span class="bo-info-label">Teď správně</span>
+								<span class="bo-info-value">
+									{{ percent(s.analysis.current.precision) }}
+									<span class="muted"
+										>přiřazení, zachytí {{ percent(s.analysis.current.recall) }}</span
+									>
+								</span>
+							</div>
+						}
+						@if (s.analysis.proposed; as proposed) {
+							@if (proposed.threshold !== s.settings.threshold) {
+								<div class="bo-info-row">
+									<span class="bo-info-label">S navrženou hranicí</span>
+									<span class="bo-info-value">
+										{{ percent(proposed.precision) }}
+										<span class="muted">přiřazení, zachytí {{ percent(proposed.recall) }}</span>
+									</span>
+								</div>
+							}
+						}
+					</div>
+
+					<div class="fm-note muted">
+						@if (!s.analysis.enoughData) {
+							<p>
+								Na návrh je zatím málo dat: potřeba aspoň {{ s.analysis.minDecisions }} ručních
+								rozhodnutí a {{ s.analysis.minWrongCandidates }} chybných kandidátů, teď je jich
+								{{ s.analysis.decisions }} a {{ s.analysis.wrongCandidates }}.
+							</p>
+						} @else if (!s.analysis.proposed) {
+							<p>
+								Cílové přesnosti {{ percent(s.analysis.targetPrecision) }} nedosahuje ani nejvyšší
+								zkoušená hranice.
+							</p>
+						}
+						<p>
+							Návrh vychází z {{ s.analysis.decisions }} ručních rozhodnutí o obličejích, u kterých systém
+							znal svého kandidáta ({{ s.analysis.correctCandidates }}× trefil,
+							{{ s.analysis.wrongCandidates }}× ne). Navržená je nejnižší hranice, nad kterou je správně
+							aspoň {{ percent(s.analysis.targetPrecision) }} přiřazení. Hodnoty jsou v kódu a samy se
+							nemění.
+						</p>
+					</div>
+				</bo-card-content>
+			</bo-card>
+
+			@if (sweepRows().length) {
+				<bo-card>
+					<bo-card-header>
+						<bo-card-title>
+							<span class="bo-card-section-title">
+								<ion-icon name="stats-chart-outline" />
+								Přesnost podle hranice
+							</span>
+						</bo-card-title>
+					</bo-card-header>
+
+					<bo-card-content>
+						<div class="fm-table-wrap">
+							<table class="fm-table">
+								<thead>
+									<tr>
+										<th>Hranice</th>
+										<th>Přiřazeno</th>
+										<th>Správně</th>
+										<th>Špatně</th>
+										<th>Přesnost</th>
+										<th>Zachytí</th>
+									</tr>
+								</thead>
+								<tbody>
+									@for (row of sweepRows(); track row.threshold) {
+										<tr
+											[class.current]="row.threshold === s.settings.threshold"
+											[class.proposed]="row.threshold === s.analysis.proposed?.threshold"
+										>
+											<td>
+												{{ score(row.threshold) }}
+												@if (row.threshold === s.settings.threshold) {
+													<span class="bo-pill bo-pill-blue">teď</span>
+												}
+												@if (row.threshold === s.analysis.proposed?.threshold) {
+													<span class="bo-pill bo-pill-green">návrh</span>
+												}
+											</td>
+											<td>{{ row.assigned }}</td>
+											<td>{{ row.correct }}</td>
+											<td>{{ row.wrong }}</td>
+											<td>{{ percent(row.precision) }}</td>
+											<td>{{ percent(row.recall) }}</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					</bo-card-content>
+				</bo-card>
+			}
+		}
+	</div>
+</bo-page-content>

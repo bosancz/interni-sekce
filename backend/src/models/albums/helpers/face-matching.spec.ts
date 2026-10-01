@@ -1,5 +1,11 @@
 import { PhotoFaceAssignment } from "../schema/detected-faces";
-import { FACE_MATCH_THRESHOLD, MatchFace, matchPhotoFaces, prepareReferences } from "./face-matching";
+import {
+	FACE_MATCH_MIN_DETECTION_SCORE,
+	FACE_MATCH_THRESHOLD,
+	MatchFace,
+	matchPhotoFaces,
+	prepareReferences,
+} from "./face-matching";
 
 function vector(...values: number[]) {
 	const length = Math.hypot(...values);
@@ -7,7 +13,7 @@ function vector(...values: number[]) {
 }
 
 function face(id: number, descriptor: Float32Array | null, overrides: Partial<MatchFace> = {}): MatchFace {
-	return { id, memberId: null, assignment: null, matchScore: null, descriptor, ...overrides };
+	return { id, memberId: null, assignment: null, matchScore: null, detectionScore: null, descriptor, ...overrides };
 }
 
 const alice = vector(1, 0, 0);
@@ -22,27 +28,27 @@ describe("matchPhotoFaces", () => {
 	it("assigns the most similar member above the threshold", () => {
 		const result = matchPhotoFaces([face(10, vector(1, 0.1, 0))], references);
 
-		expect(result.get(10)?.memberId).toBe(1);
-		expect(result.get(10)!.score).toBeGreaterThanOrEqual(FACE_MATCH_THRESHOLD);
+		expect(result.get(10)?.match?.memberId).toBe(1);
+		expect(result.get(10)!.match!.score).toBeGreaterThanOrEqual(FACE_MATCH_THRESHOLD);
 	});
 
 	it("leaves faces below the threshold unassigned", () => {
 		const result = matchPhotoFaces([face(10, vector(0, 0, 1))], references);
 
-		expect(result.get(10)).toBeNull();
+		expect(result.get(10)?.match).toBeNull();
 	});
 
 	it("leaves ambiguous faces unassigned", () => {
 		const result = matchPhotoFaces([face(10, vector(1, 1, 0))], references);
 
-		expect(result.get(10)).toBeNull();
+		expect(result.get(10)?.match).toBeNull();
 	});
 
 	it("assigns a member at most once per photo", () => {
 		const result = matchPhotoFaces([face(10, vector(1, 0.2, 0)), face(11, vector(1, 0.05, 0))], references);
 
-		expect(result.get(11)?.memberId).toBe(1);
-		expect(result.get(10)).toBeNull();
+		expect(result.get(11)?.match?.memberId).toBe(1);
+		expect(result.get(10)?.match).toBeNull();
 	});
 
 	it("skips members already assigned manually on the photo", () => {
@@ -51,7 +57,7 @@ describe("matchPhotoFaces", () => {
 			references,
 		);
 
-		expect(result.get(10)).toBeNull();
+		expect(result.get(10)?.match).toBeNull();
 		expect(result.has(11)).toBe(false);
 	});
 
@@ -64,6 +70,25 @@ describe("matchPhotoFaces", () => {
 	it("reassigns an auto face when a better reference appears", () => {
 		const faces = [face(10, vector(0.2, 1, 0), { memberId: 1, assignment: PhotoFaceAssignment.auto })];
 
-		expect(matchPhotoFaces(faces, references).get(10)?.memberId).toBe(2);
+		expect(matchPhotoFaces(faces, references).get(10)?.match?.memberId).toBe(2);
+	});
+
+	it("records the best candidate even below the threshold", () => {
+		const result = matchPhotoFaces([face(10, vector(0.3, 0.1, 1))], references);
+
+		expect(result.get(10)?.match).toBeNull();
+		expect(result.get(10)?.candidate?.memberId).toBe(1);
+		expect(result.get(10)!.candidate!.score).toBeLessThan(FACE_MATCH_THRESHOLD);
+		expect(result.get(10)!.candidate!.secondScore).toBeCloseTo(0.1 / Math.hypot(0.3, 0.1, 1));
+	});
+
+	it("leaves faces with a low detection score unassigned", () => {
+		const result = matchPhotoFaces(
+			[face(10, vector(1, 0.1, 0), { detectionScore: FACE_MATCH_MIN_DETECTION_SCORE - 0.01 })],
+			references,
+		);
+
+		expect(result.get(10)?.match).toBeNull();
+		expect(result.get(10)?.candidate?.memberId).toBe(1);
 	});
 });
