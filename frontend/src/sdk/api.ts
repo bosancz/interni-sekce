@@ -3667,6 +3667,12 @@ export namespace SDK {
         'matchScore'?: number | null;
         /**
          * 
+         * @type {number}
+         * @memberof FaceReviewFaceResponse
+         */
+        'assignedById'?: number | null;
+        /**
+         * 
          * @type {string}
          * @memberof FaceReviewFaceResponse
          */
@@ -3711,12 +3717,25 @@ export namespace SDK {
      * @enum {string}
      */
     
+    export const FaceReviewFilterEnum = {
+        Leaders: 'leaders',
+        Children: 'children',
+        Member: 'member'
+    } as const;
+    
+    export type FaceReviewFilterEnum = typeof FaceReviewFilterEnum[keyof typeof FaceReviewFilterEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
     export const FaceReviewOrderEnum = {
         Uncertain: 'uncertain',
         Candidates: 'candidates',
-        Random: 'random',
-        Leaders: 'leaders',
-        Member: 'member'
+        Random: 'random'
     } as const;
     
     export type FaceReviewOrderEnum = typeof FaceReviewOrderEnum[keyof typeof FaceReviewOrderEnum];
@@ -6621,6 +6640,12 @@ export namespace SDK {
         'matchScore'?: number | null;
         /**
          * 
+         * @type {number}
+         * @memberof PhotoFaceResponse
+         */
+        'assignedById'?: number | null;
+        /**
+         * 
          * @type {string}
          * @memberof PhotoFaceResponse
          */
@@ -6739,6 +6764,12 @@ export namespace SDK {
          * @memberof PhotoFaceResponseWithLinks
          */
         'matchScore'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceResponseWithLinks
+         */
+        'assignedById'?: number | null;
         /**
          * 
          * @type {string}
@@ -17229,6 +17260,14 @@ export namespace SDK {
          */
         order?: FaceReviewOrderEnum
     
+        //filter
+        /**
+         * 
+         * @type {FaceReviewFilterEnum}
+         * @memberof WorkerApiGetFaceForReview
+         */
+        filter?: FaceReviewFilterEnum
+    
         //excludePhotoIds
         /**
          * 
@@ -17413,6 +17452,10 @@ export namespace SDK {
     
             if (queryParams.order !== undefined) {
                 requestQueryParameter['order'] = queryParams.order;
+            }
+    
+            if (queryParams.filter !== undefined) {
+                requestQueryParameter['filter'] = queryParams.filter;
             }
     
             if (queryParams.excludePhotoIds) {

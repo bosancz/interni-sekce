@@ -6,7 +6,7 @@ import { Config } from "src/config";
 import { FilesService } from "src/models/files/services/files.service";
 import { Member, MemberRoles } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
-import { DataSource, ObjectLiteral, Repository, SelectQueryBuilder } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { PhotoFace } from "../entities/photo-face.entity";
 import { Photo } from "../entities/photo.entity";
 import {
@@ -14,6 +14,7 @@ import {
 	DetectFacesJob,
 	FaceBox,
 	FacesDetectedResult,
+	FaceReviewFilter,
 	FaceReviewOrder,
 	PhotoFaceAssignment,
 } from "../schema/detected-faces";
@@ -66,8 +67,8 @@ export class PhotoFacesService {
 			memberId,
 			assignment: PhotoFaceAssignment.manual,
 			matchScore: null,
-			assignedById: memberId ? assignedById : null,
-			assignedAt: memberId ? new Date() : null,
+			assignedById,
+			assignedAt: new Date(),
 		});
 	}
 
@@ -92,7 +93,7 @@ export class PhotoFacesService {
 
 	async getFaceForReview(
 		order: FaceReviewOrder,
-		options: { excludePhotoIds?: Photo["id"][]; memberId?: Member["id"] } = {},
+		options: { filter?: FaceReviewFilter; excludePhotoIds?: Photo["id"][]; memberId?: Member["id"] } = {},
 	) {
 		const excludePhotoIds = options.excludePhotoIds ?? [];
 		const query = this.photoFaces
@@ -101,35 +102,33 @@ export class PhotoFacesService {
 			.leftJoin("photo.album", "album")
 			.addSelect(["album.id", "album.name"])
 			.leftJoinAndSelect("faces.member", "member")
-			.leftJoinAndSelect("faces.candidateMember", "candidateMember");
+			.leftJoinAndSelect("faces.candidateMember", "candidateMember")
+			.setParameters({ auto: PhotoFaceAssignment.auto });
+
+		const filter = this.getReviewFilter(options.filter, options.memberId);
+		if (filter) query.setParameters(filter.parameters);
+		const auto = `faces.assignment = :auto${filter ? ` AND ${filter.condition("member", "faces.member_id")}` : ""}`;
+		const candidate = `faces.assignment IS NULL AND ${
+			filter
+				? filter.condition("candidateMember", "faces.candidate_member_id")
+				: "faces.candidate_member_id IS NOT NULL"
+		}`;
 
 		switch (order) {
 			case FaceReviewOrder.uncertain:
-				query
-					.where("faces.assignment = :auto", { auto: PhotoFaceAssignment.auto })
-					.orderBy("faces.matchScore", "ASC", "NULLS FIRST");
+				query.where(auto).orderBy("faces.matchScore", "ASC", "NULLS FIRST");
 				break;
 			case FaceReviewOrder.candidates:
-				query
-					.where("faces.assignment IS NULL AND faces.candidate_member_id IS NOT NULL")
-					.orderBy("faces.candidateScore", "DESC", "NULLS LAST");
+				query.where(candidate).orderBy("faces.candidateScore", "DESC", "NULLS LAST");
 				break;
 			case FaceReviewOrder.random:
 				query
-					.where("(faces.assignment IS NULL OR faces.assignment = :auto)", {
-						auto: PhotoFaceAssignment.auto,
-					})
+					.where(
+						filter
+							? `((${auto}) OR (${candidate}))`
+							: "(faces.assignment IS NULL OR faces.assignment = :auto)",
+					)
 					.orderBy("RANDOM()");
-				break;
-			case FaceReviewOrder.leaders:
-				this.whereSuggested(query, "member.role = :role", "candidateMember.role = :role", {
-					role: MemberRoles.vedouci,
-				});
-				break;
-			case FaceReviewOrder.member:
-				this.whereSuggested(query, "faces.member_id = :memberId", "faces.candidate_member_id = :memberId", {
-					memberId: options.memberId ?? null,
-				});
 				break;
 		}
 
@@ -142,24 +141,26 @@ export class PhotoFacesService {
 		return { face: face ?? null, remaining };
 	}
 
-	private whereSuggested(
-		query: SelectQueryBuilder<PhotoFace>,
-		memberCondition: string,
-		candidateCondition: string,
-		parameters: ObjectLiteral,
-	) {
-		query
-			.where(
-				`((faces.assignment = :auto AND ${memberCondition}) OR (faces.assignment IS NULL AND ${candidateCondition}))`,
-				{ ...parameters, auto: PhotoFaceAssignment.auto },
-			)
-			.addSelect("CASE WHEN faces.assignment = :auto THEN 0 ELSE 1 END", "review_group")
-			.addSelect(
-				"CASE WHEN faces.assignment = :auto THEN faces.match_score ELSE -faces.candidate_score END",
-				"review_score",
-			)
-			.orderBy("review_group", "ASC")
-			.addOrderBy("review_score", "ASC", "NULLS FIRST");
+	private getReviewFilter(filter: FaceReviewFilter | undefined, memberId: Member["id"] | undefined) {
+		switch (filter) {
+			case FaceReviewFilter.leaders:
+				return {
+					condition: (alias: string) => `${alias}.role = :reviewRole`,
+					parameters: { reviewRole: MemberRoles.vedouci },
+				};
+			case FaceReviewFilter.children:
+				return {
+					condition: (alias: string) => `${alias}.role = :reviewRole`,
+					parameters: { reviewRole: MemberRoles.dite },
+				};
+			case FaceReviewFilter.member:
+				return {
+					condition: (_alias: string, column: string) => `${column} = :reviewMemberId`,
+					parameters: { reviewMemberId: memberId ?? null },
+				};
+			default:
+				return null;
+		}
 	}
 
 	async getDetectionStats() {

@@ -8,6 +8,7 @@ import {
 	FaceEmotion,
 	FaceEmotions,
 	FacesMatchTrigger,
+	FaceReviewFilter,
 	FaceReviewOrder,
 	PhotoFaceAssignment,
 } from "src/models/albums/schema/detected-faces";
@@ -186,6 +187,11 @@ export class FaceReviewQuery {
 	@IsOptional()
 	order?: FaceReviewOrder;
 
+	@ApiPropertyOptional({ enum: FaceReviewFilter, enumName: "FaceReviewFilterEnum" })
+	@IsEnum(FaceReviewFilter)
+	@IsOptional()
+	filter?: FaceReviewFilter;
+
 	@ApiPropertyOptional({ type: "integer", isArray: true })
 	@Transform(({ value }) => (value === undefined ? undefined : String(value).split(",").filter(Boolean).map(Number)))
 	@IsInt({ each: true })
@@ -195,7 +201,7 @@ export class FaceReviewQuery {
 	@ApiPropertyOptional({ type: "integer" })
 	@Type(() => Number)
 	@IsInt()
-	@ValidateIf((query: FaceReviewQuery) => query.order === FaceReviewOrder.member || query.memberId !== undefined)
+	@ValidateIf((query: FaceReviewQuery) => query.filter === FaceReviewFilter.member || query.memberId !== undefined)
 	memberId?: number;
 }
 
