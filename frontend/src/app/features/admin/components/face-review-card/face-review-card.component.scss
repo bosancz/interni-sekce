@@ -6,12 +6,12 @@
 	padding: 0 !important;
 }
 
-.muted {
-	color: var(--bo-muted);
+::ng-deep .fr-scope-popover {
+	--width: 220px;
 }
 
-.bo-pill {
-	margin-left: 6px;
+.muted {
+	color: var(--bo-muted);
 }
 
 .fr-count {
@@ -21,16 +21,103 @@
 
 .fr-toolbar {
 	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 6px 20px 14px;
+}
+
+.fr-toolbar-row {
+	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 8px 16px;
-	padding: 0 20px 13px;
-	font-size: 0.9em;
+	justify-content: space-between;
+	gap: 8px 12px;
+}
 
-	ion-segment {
-		width: fit-content;
-		grid-auto-columns: max-content;
+.fr-segment {
+	display: flex;
+	gap: 2px;
+	padding: 3px;
+	background: var(--bo-paper);
+	border: 1px solid var(--bo-line);
+	border-radius: 12px;
+}
+
+.fr-segment-button {
+	height: 32px;
+	padding: 0 14px;
+	border: 0;
+	border-radius: 9px;
+	background: transparent;
+	color: var(--bo-muted);
+	font-family: inherit;
+	font-size: 0.8125rem;
+	font-weight: 700;
+	white-space: nowrap;
+	cursor: pointer;
+	transition:
+		background 0.12s ease,
+		color 0.12s ease;
+
+	&:hover {
+		color: var(--bo-heading);
 	}
+
+	&.active {
+		background: var(--bo-white);
+		color: var(--bo-heading);
+		font-weight: 800;
+		box-shadow: 0 1px 3px rgba(31, 36, 48, 0.12);
+	}
+}
+
+.fr-scope {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	max-width: 100%;
+	height: 38px;
+	padding: 0 12px 0 14px;
+	border: 1px solid var(--bo-line);
+	border-radius: var(--bo-radius-pill);
+	background: var(--bo-white);
+	color: var(--bo-muted);
+	font-family: inherit;
+	font-size: 0.8125rem;
+	font-weight: 700;
+	cursor: pointer;
+
+	ion-icon {
+		flex: 0 0 auto;
+		font-size: 16px;
+	}
+
+	.fr-scope-chevron {
+		font-size: 14px;
+		color: #c3c8d8;
+	}
+
+	&.has-value {
+		background: var(--bo-blue-tint);
+		border-color: var(--bo-blue);
+		color: var(--bo-heading);
+
+		.fr-scope-chevron {
+			color: inherit;
+		}
+	}
+}
+
+.fr-scope-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.fr-description {
+	color: var(--bo-muted);
+	font-size: 0.8125rem;
+	text-wrap: pretty;
 }
 
 .fr-stage {
@@ -84,52 +171,113 @@
 .fr-info {
 	display: flex;
 	align-items: center;
-	gap: 16px;
-	padding: 13px 20px;
+	gap: 14px;
+	padding: 14px 20px;
 }
 
 .fr-crop {
 	flex: 0 0 auto;
-	width: 72px;
-	height: 72px;
+	width: 60px;
+	height: 60px;
 	border-radius: 50%;
 	object-fit: cover;
 	background: var(--bo-card-line);
 }
 
 .fr-who {
+	flex: 1;
 	min-width: 0;
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: 3px;
+}
+
+.fr-name-line {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+
+	.bo-pill {
+		font-size: 0.75em;
+	}
 }
 
 .fr-name {
 	font-size: 1.15em;
-	font-weight: 600;
+	font-weight: 700;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .fr-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 12px;
+	color: var(--bo-muted);
+	font-size: 0.8125rem;
+
+	b {
+		color: var(--bo-ink);
+	}
+}
+
+.fr-album {
 	display: inline-flex;
 	align-items: center;
 	gap: 4px;
-	font-size: 0.85em;
+	color: var(--bo-link);
+
+	&:hover {
+		color: var(--bo-link-hover);
+	}
 }
 
 .fr-actions {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 4px 8px;
-	padding: 13px 20px 16px;
+	gap: 8px;
+	padding: 14px 20px 16px;
 	border-top: 1px solid var(--bo-card-line);
+
+	ion-button {
+		--padding-start: 14px;
+		--padding-end: 14px;
+		--border-width: 1.5px;
+		--box-shadow: none;
+		height: 38px;
+		margin: 0;
+		font-size: 0.875rem;
+		font-weight: 700;
+
+		ion-icon[slot="start"] {
+			margin-inline-end: 6px;
+			font-size: 18px;
+		}
+	}
+
+	ion-button[fill="outline"]:not([color]) {
+		--color: var(--bo-heading);
+		--border-color: var(--bo-blue);
+	}
 }
 
 .fr-secondary {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 4px 8px;
+	justify-content: flex-end;
+	gap: 2px;
 	margin-inline-start: auto;
+
+	ion-button {
+		--padding-start: 12px;
+		--padding-end: 12px;
+		--color: var(--bo-muted);
+		--background-hover: var(--bo-paper);
+		--background-hover-opacity: 1;
+	}
 }
 
 .fr-empty {

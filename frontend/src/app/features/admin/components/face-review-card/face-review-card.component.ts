@@ -1,21 +1,15 @@
 import { Component, computed, HostListener, OnInit, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import {
-	IonButton,
-	IonIcon,
-	IonSegment,
-	IonSegmentButton,
-	IonSkeletonText,
-	IonSpinner,
-} from "@ionic/angular/standalone";
+import { IonButton, IonContent, IonIcon, IonPopover, IonSkeletonText, IonSpinner } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
 	checkmarkOutline,
+	chevronDownOutline,
 	closeOutline,
 	imagesOutline,
+	peopleOutline,
 	personAddOutline,
 	playForwardOutline,
-	personOutline,
 	scanOutline,
 	trashOutline,
 } from "ionicons/icons";
@@ -53,11 +47,11 @@ const ORDERS: { value: SDK.FaceReviewOrderEnum; label: string; description: stri
 	},
 ];
 
-const FILTERS: { value: SDK.FaceReviewFilterEnum | null; label: string; description: string }[] = [
-	{ value: null, label: "Všichni", description: "" },
-	{ value: "leaders", label: "Vedoucí", description: "Jen vedoucí." },
-	{ value: "children", label: "Dítě", description: "Jen děti." },
-	{ value: "member", label: "Člen", description: "Jen vybraný člen." },
+const FILTERS: { value: SDK.FaceReviewFilterEnum | null; label: string; chip: string; description: string }[] = [
+	{ value: null, label: "Všichni", chip: "Všichni", description: "" },
+	{ value: "leaders", label: "Jen vedoucí", chip: "Jen vedoucí", description: "Jen vedoucí." },
+	{ value: "children", label: "Jen děti", chip: "Jen děti", description: "Jen děti." },
+	{ value: "member", label: "Vybrat člena…", chip: "Vybraný člen…", description: "Jen vybraný člen." },
 ];
 
 @Component({
@@ -66,9 +60,9 @@ const FILTERS: { value: SDK.FaceReviewFilterEnum | null; label: string; descript
 	styleUrl: "./face-review-card.component.scss",
 	imports: [
 		IonButton,
+		IonContent,
 		IonIcon,
-		IonSegment,
-		IonSegmentButton,
+		IonPopover,
 		IonSkeletonText,
 		IonSpinner,
 		RouterLink,
@@ -86,16 +80,28 @@ export class FaceReviewCardComponent implements OnInit {
 	filters = FILTERS;
 	order = signal<SDK.FaceReviewOrderEnum>("uncertain");
 	filter = signal<SDK.FaceReviewFilterEnum | null>(null);
-	description = computed(() =>
-		[
+	member = signal<SDK.MemberResponse | undefined>(undefined);
+
+	scopeOpen = signal(false);
+	scopeEvent = signal<Event | undefined>(undefined);
+	scopeLabel = computed(() => {
+		const filter = this.filter();
+		if (filter === "member" && this.member()) return this.member()!.nickname;
+		return FILTERS.find((item) => item.value === filter)?.label ?? "";
+	});
+
+	description = computed(() => {
+		const filter = this.filter();
+		const member = this.member();
+		return [
 			ORDERS.find((order) => order.value === this.order())?.description,
-			FILTERS.find((filter) => filter.value === this.filter())?.description,
+			filter === "member" && member
+				? `Jen ${member.nickname}.`
+				: FILTERS.find((item) => item.value === filter)?.description,
 		]
 			.filter(Boolean)
-			.join(" "),
-	);
-
-	member = signal<SDK.MemberResponse | undefined>(undefined);
+			.join(" ");
+	});
 	memberMissing = computed(() => this.filter() === "member" && !this.member());
 
 	review = signal<SDK.FaceReviewResponse | undefined>(undefined);
@@ -130,10 +136,11 @@ export class FaceReviewCardComponent implements OnInit {
 	) {
 		addIcons({
 			checkmarkOutline,
+			chevronDownOutline,
 			closeOutline,
 			imagesOutline,
+			peopleOutline,
 			personAddOutline,
-			personOutline,
 			playForwardOutline,
 			scanOutline,
 			trashOutline,
@@ -144,15 +151,28 @@ export class FaceReviewCardComponent implements OnInit {
 		this.load();
 	}
 
-	async setOrder(order: SDK.FaceReviewOrderEnum | string | number | undefined) {
-		if (!ORDERS.some((item) => item.value === order) || order === this.order()) return;
-		this.order.set(order as SDK.FaceReviewOrderEnum);
+	async setOrder(order: SDK.FaceReviewOrderEnum) {
+		if (order === this.order()) return;
+		this.order.set(order);
 		this.seenPhotoIds = [];
 		await this.load();
 	}
 
-	async setFilter(value: string | number | undefined) {
-		const filter = value === "all" ? null : (value as SDK.FaceReviewFilterEnum);
+	openScope(event: Event) {
+		this.scopeEvent.set(event);
+		this.scopeOpen.set(true);
+	}
+
+	async pickScope(filter: SDK.FaceReviewFilterEnum | null) {
+		this.scopeOpen.set(false);
+		if (filter === "member" && this.filter() === "member") {
+			await this.selectMember();
+			return;
+		}
+		await this.setFilter(filter);
+	}
+
+	async setFilter(filter: SDK.FaceReviewFilterEnum | null) {
 		if (!FILTERS.some((item) => item.value === filter) || filter === this.filter()) return;
 		this.filter.set(filter);
 		this.seenPhotoIds = [];
@@ -294,7 +314,8 @@ export class FaceReviewCardComponent implements OnInit {
 
 	@HostListener("document:keydown", ["$event"])
 	onKeyDown(event: KeyboardEvent) {
-		if (this.pickerOpen || event.ctrlKey || event.metaKey || event.altKey || event.repeat) return;
+		if (this.pickerOpen || this.scopeOpen() || event.ctrlKey || event.metaKey || event.altKey || event.repeat)
+			return;
 
 		const target = event.target as HTMLElement | null;
 		if (target?.closest("input, textarea, [contenteditable], ion-modal, ion-alert, ion-popover")) return;

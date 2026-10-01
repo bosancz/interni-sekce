@@ -18,23 +18,60 @@
 
 	<bo-card-content>
 		<div class="fr-toolbar">
-			<ion-segment [value]="order()" [scrollable]="true" (ionChange)="setOrder($event.detail.value)">
-				@for (item of orders; track item.value) {
-					<ion-segment-button [value]="item.value">{{ item.label }}</ion-segment-button>
-				}
-			</ion-segment>
-			<ion-segment [value]="filter() ?? 'all'" [scrollable]="true" (ionChange)="setFilter($event.detail.value)">
-				@for (item of filters; track item.value) {
-					<ion-segment-button [value]="item.value ?? 'all'">{{ item.label }}</ion-segment-button>
-				}
-			</ion-segment>
-			@if (filter() === "member") {
-				<ion-button size="small" fill="outline" [disabled]="busy()" (click)="selectMember()">
-					<ion-icon slot="start" name="person-outline"></ion-icon>
-					{{ member()?.nickname ?? "Vybrat člena…" }}
-				</ion-button>
-			}
-			<span class="muted">{{ description() }}</span>
+			<div class="fr-toolbar-row">
+				<div class="fr-segment" role="group" aria-label="Pořadí">
+					@for (item of orders; track item.value) {
+						<button
+							type="button"
+							class="fr-segment-button"
+							[class.active]="item.value === order()"
+							[attr.aria-pressed]="item.value === order()"
+							(click)="setOrder(item.value)"
+						>
+							{{ item.label }}
+						</button>
+					}
+				</div>
+				<button
+					type="button"
+					class="fr-scope"
+					[class.has-value]="filter() !== null"
+					(click)="openScope($event)"
+				>
+					<ion-icon name="people-outline" aria-hidden="true"></ion-icon>
+					<span class="fr-scope-label">{{ scopeLabel() }}</span>
+					<ion-icon class="fr-scope-chevron" name="chevron-down-outline" aria-hidden="true"></ion-icon>
+				</button>
+				<ion-popover
+					cssClass="filter-pill-chips-popover fr-scope-popover"
+					side="bottom"
+					alignment="end"
+					[dismissOnSelect]="false"
+					[isOpen]="scopeOpen()"
+					[event]="scopeEvent()"
+					(didDismiss)="scopeOpen.set(false)"
+				>
+					<ng-template>
+						<ion-content>
+							<div class="filter-pill-panel">
+								<div class="filter-pill-chips single-column">
+									@for (item of filters; track item.value) {
+										<button
+											type="button"
+											class="filter-pill-chip"
+											[class.selected]="item.value === filter()"
+											(click)="pickScope(item.value)"
+										>
+											{{ item.chip }}
+										</button>
+									}
+								</div>
+							</div>
+						</ion-content>
+					</ng-template>
+				</ion-popover>
+			</div>
+			<div class="fr-description">{{ description() }}</div>
 		</div>
 
 		@if (face() && photo()) {
@@ -65,40 +102,43 @@
 			<div class="fr-info">
 				<img class="fr-crop" [src]="face() | photoFaceImageUrl" alt="Výřez obličeje" />
 				<div class="fr-who">
-					@if (suggested(); as s) {
-						<div class="fr-name">
-							{{ s.member.nickname }}
+					<div class="fr-name-line">
+						@if (suggested(); as s) {
+							<span class="fr-name">{{ s.member.nickname }}</span>
 							@if (face()!.assignment === "auto") {
 								<span class="bo-pill bo-pill-blue">automaticky</span>
 							} @else {
 								<span class="bo-pill bo-pill-yellow">návrh</span>
 							}
-						</div>
-						<div class="muted">
-							shoda {{ score(s.score) }}
-							@if (face()!.candidateSecondScore != null) {
-								· druhý {{ score(face()!.candidateSecondScore) }}
-							}
-						</div>
-					} @else {
-						<div class="fr-name">Neznámý obličej</div>
-						<div class="muted">Systém nemá žádný návrh.</div>
-					}
-					<div class="muted fr-meta">
-						jistota detekce {{ score(face()!.score) }}
-						@if (emotion(); as e) {
-							· {{ e.emoji }} {{ e.label }}
+						} @else {
+							<span class="fr-name">Neznámý obličej</span>
 						}
 					</div>
-					<a
-						class="fr-meta"
-						[routerLink]="['/galerie', photo()!.albumId, 'info']"
-						[queryParams]="{ photo: photo()!.id }"
-						target="_blank"
-					>
-						<ion-icon name="images-outline"></ion-icon>
-						{{ photo()!.albumName || "Album" }}
-					</a>
+					<div class="fr-meta">
+						@if (suggested(); as s) {
+							<span>
+								shoda <b>{{ score(s.score) }}</b>
+								@if (face()!.candidateSecondScore != null) {
+									· druhý {{ score(face()!.candidateSecondScore) }}
+								}
+							</span>
+						} @else {
+							<span>Systém nemá žádný návrh.</span>
+						}
+						<span>detekce {{ score(face()!.score) }}</span>
+						@if (emotion(); as e) {
+							<span>{{ e.emoji }} {{ e.label }}</span>
+						}
+						<a
+							class="fr-album"
+							[routerLink]="['/galerie', photo()!.albumId, 'info']"
+							[queryParams]="{ photo: photo()!.id }"
+							target="_blank"
+						>
+							<ion-icon name="images-outline"></ion-icon>
+							{{ photo()!.albumName || "Album" }}
+						</a>
+					</div>
 				</div>
 			</div>
 
