@@ -45,6 +45,7 @@ function commitFromFields(fields) {
 
 const SECTIONS = [
 	{ type: "feat", emoji: "✨" },
+	{ type: "patch", emoji: "🚸" },
 	{ type: "fix", emoji: "🐛" },
 	{ type: "style", emoji: "🎨" },
 	{ type: "perf", emoji: "⚡️" },
