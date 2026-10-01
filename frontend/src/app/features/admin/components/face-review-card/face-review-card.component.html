@@ -1,0 +1,135 @@
+<bo-card>
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="scan-outline" />
+				Kontrola obličejů
+			</span>
+		</bo-card-title>
+		@if (review(); as r) {
+			<span slot="buttons" class="fr-count muted">
+				@if (reviewed()) {
+					hotovo {{ reviewed() }},
+				}
+				zbývá {{ r.remaining }}
+			</span>
+		}
+	</bo-card-header>
+
+	<bo-card-content>
+		<div class="fr-toolbar">
+			<ion-segment [value]="order()" (ionChange)="setOrder($event.detail.value)">
+				@for (item of orders; track item.value) {
+					<ion-segment-button [value]="item.value">{{ item.label }}</ion-segment-button>
+				}
+			</ion-segment>
+			<span class="muted">{{ orderDescription() }}</span>
+		</div>
+
+		@if (face() && photo()) {
+			<div class="fr-stage" [style.background-color]="photo()!.bg">
+				<div class="fr-frame">
+					<img
+						class="fr-image"
+						[src]="photo() | photoImageUrl: 'big'"
+						[alt]="photo()!.name"
+						[class.loaded]="imageLoaded()"
+						(load)="imageLoaded.set(true)"
+					/>
+					@if (imageLoaded()) {
+						<div
+							class="fr-face"
+							[style.left.%]="face()!.x * 100"
+							[style.top.%]="face()!.y * 100"
+							[style.width.%]="face()!.width * 100"
+							[style.height.%]="face()!.height * 100"
+						></div>
+					}
+				</div>
+				@if (busy()) {
+					<div class="fr-busy"><ion-spinner name="crescent"></ion-spinner></div>
+				}
+			</div>
+
+			<div class="fr-info">
+				<img class="fr-crop" [src]="face() | photoFaceImageUrl" alt="Výřez obličeje" />
+				<div class="fr-who">
+					@if (suggested(); as s) {
+						<div class="fr-name">
+							{{ s.member.nickname }}
+							@if (face()!.assignment === "auto") {
+								<span class="bo-pill bo-pill-blue">automaticky</span>
+							} @else {
+								<span class="bo-pill bo-pill-yellow">návrh</span>
+							}
+						</div>
+						<div class="muted">
+							shoda {{ score(s.score) }}
+							@if (face()!.candidateSecondScore != null) {
+								· druhý {{ score(face()!.candidateSecondScore) }}
+							}
+						</div>
+					} @else {
+						<div class="fr-name">Neznámý obličej</div>
+						<div class="muted">Systém nemá žádný návrh.</div>
+					}
+					<div class="muted fr-meta">
+						jistota detekce {{ score(face()!.score) }}
+						@if (emotion(); as e) {
+							· {{ e.emoji }} {{ e.label }}
+						}
+					</div>
+					<a
+						class="fr-meta"
+						[routerLink]="['/galerie', photo()!.albumId, 'info']"
+						[queryParams]="{ photo: photo()!.id }"
+						target="_blank"
+					>
+						<ion-icon name="images-outline"></ion-icon>
+						{{ photo()!.albumName || "Album" }}
+					</a>
+				</div>
+			</div>
+
+			<div class="fr-actions">
+				@if (suggested(); as s) {
+					<ion-button color="success" [disabled]="busy()" (click)="confirm()" boTooltip="Klávesa A">
+						<ion-icon slot="start" name="checkmark-outline"></ion-icon>
+						Je to {{ s.member.nickname }}
+					</ion-button>
+				}
+				<ion-button fill="outline" [disabled]="busy()" (click)="pickMember()" boTooltip="Klávesa J">
+					<ion-icon slot="start" name="person-add-outline"></ion-icon>
+					{{ suggested() ? "Je to někdo jiný…" : "Přiřadit…" }}
+				</ion-button>
+				<ion-button
+					fill="outline"
+					color="danger"
+					[disabled]="busy()"
+					(click)="reject()"
+					[boTooltip]="
+						suggested()
+							? 'Klávesa N – obličej se už nikomu automaticky nepřiřadí.'
+							: 'Klávesa N – nevím, kdo to je, a automatika ho nemá přiřazovat.'
+					"
+				>
+					<ion-icon slot="start" name="close-outline"></ion-icon>
+					{{ suggested() ? "Není to " + suggested()!.member.nickname : "Odmítnout" }}
+				</ion-button>
+				<span class="fr-spacer"></span>
+				<ion-button fill="clear" color="medium" [disabled]="busy()" (click)="deleteFace()">
+					<ion-icon slot="start" name="trash-outline"></ion-icon>
+					Není to obličej
+				</ion-button>
+				<ion-button fill="clear" color="medium" [disabled]="busy()" (click)="skip()" boTooltip="Klávesa S">
+					<ion-icon slot="start" name="play-forward-outline"></ion-icon>
+					Přeskočit
+				</ion-button>
+			</div>
+		} @else if (review()) {
+			<div class="fr-empty muted">Žádné obličeje ke kontrole.</div>
+		} @else {
+			<div class="fr-empty"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+		}
+	</bo-card-content>
+</bo-card>

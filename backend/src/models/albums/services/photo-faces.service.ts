@@ -14,6 +14,7 @@ import {
 	DetectFacesJob,
 	FaceBox,
 	FacesDetectedResult,
+	FaceReviewOrder,
 	PhotoFaceAssignment,
 } from "../schema/detected-faces";
 import { PhotosFilesService } from "./photos-files.service";
@@ -87,6 +88,44 @@ export class PhotoFacesService {
 			.getMany();
 
 		return faces.map(({ photo, ...face }) => ({ ...photo!, face }));
+	}
+
+	async getFaceForReview(order: FaceReviewOrder, excludePhotoIds: Photo["id"][] = []) {
+		const query = this.photoFaces
+			.createQueryBuilder("faces")
+			.innerJoinAndSelect("faces.photo", "photo")
+			.leftJoin("photo.album", "album")
+			.addSelect(["album.id", "album.name"])
+			.leftJoinAndSelect("faces.member", "member")
+			.leftJoinAndSelect("faces.candidateMember", "candidateMember");
+
+		switch (order) {
+			case FaceReviewOrder.uncertain:
+				query
+					.where("faces.assignment = :auto", { auto: PhotoFaceAssignment.auto })
+					.orderBy("faces.matchScore", "ASC", "NULLS FIRST");
+				break;
+			case FaceReviewOrder.candidates:
+				query
+					.where("faces.assignment IS NULL AND faces.candidate_member_id IS NOT NULL")
+					.orderBy("faces.candidateScore", "DESC", "NULLS LAST");
+				break;
+			case FaceReviewOrder.random:
+				query
+					.where("(faces.assignment IS NULL OR faces.assignment = :auto)", {
+						auto: PhotoFaceAssignment.auto,
+					})
+					.orderBy("RANDOM()");
+				break;
+		}
+
+		const remaining = await query.clone().orderBy().getCount();
+
+		if (excludePhotoIds.length) query.andWhere("faces.photo_id NOT IN (:...excludePhotoIds)", { excludePhotoIds });
+
+		const face = await query.addOrderBy("faces.id", "ASC").limit(1).getOne();
+
+		return { face: face ?? null, remaining };
 	}
 
 	async getDetectionStats() {

@@ -4,6 +4,7 @@ import {
 	FaceDetectionLogEntryResponse,
 	FaceDetectionSummaryResponse,
 	FaceMatchingSummaryResponse,
+	FaceReviewResponse,
 	WorkerResponse,
 } from "../dto/worker.dto";
 
@@ -42,5 +43,11 @@ export const FaceMatchingRunPermission = new Permission<void>({
 export const FaceMatchingSummaryPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: FaceMatchingSummaryResponse,
+	inherit: FaceDetectionSummaryPermission,
+});
+
+export const FaceReviewPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: FaceReviewResponse,
 	inherit: FaceDetectionSummaryPermission,
 });

@@ -1,11 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsInt, IsOptional, Max, Min } from "class-validator";
-import { FaceEmotionsResponse } from "src/api/albums/dto/photo-face.dto";
+import { Transform, Type } from "class-transformer";
+import { IsEnum, IsInt, IsOptional, Max, Min } from "class-validator";
+import { FaceEmotionsResponse, PhotoFaceResponse } from "src/api/albums/dto/photo-face.dto";
+import { MemberResponse } from "src/api/members/dto/member.dto";
+import { Member } from "src/models/members/entities/member.entity";
 import {
 	FaceEmotion,
 	FaceEmotions,
 	FacesMatchTrigger,
+	FaceReviewOrder,
 	PhotoFaceAssignment,
 } from "src/models/albums/schema/detected-faces";
 import { WorkerCurrentJob, WorkerHeartbeat, WorkerStatus } from "src/models/worker/schema/worker-heartbeat";
@@ -175,4 +178,41 @@ export class FaceMatchingSummaryResponse {
 	@ApiProperty({ type: FaceMatchingFacesStatsResponse }) faces!: FaceMatchingFacesStatsResponse;
 	@ApiProperty({ type: FaceMatchingAnalysisResponse }) analysis!: FaceMatchingAnalysisResponse;
 	@ApiPropertyOptional({ type: "string", nullable: true }) nextMatchAt!: Date | string | null;
+}
+
+export class FaceReviewQuery {
+	@ApiPropertyOptional({ enum: FaceReviewOrder, enumName: "FaceReviewOrderEnum" })
+	@IsEnum(FaceReviewOrder)
+	@IsOptional()
+	order?: FaceReviewOrder;
+
+	@ApiPropertyOptional({ type: "integer", isArray: true })
+	@Transform(({ value }) => (value === undefined ? undefined : String(value).split(",").filter(Boolean).map(Number)))
+	@IsInt({ each: true })
+	@IsOptional()
+	excludePhotoIds?: number[];
+}
+
+export class FaceReviewPhotoResponse {
+	@ApiProperty() id!: number;
+	@ApiProperty() name!: string;
+	@ApiProperty() albumId!: number;
+	@ApiPropertyOptional({ type: "string", nullable: true }) albumName!: string | null;
+	@ApiPropertyOptional({ type: "integer", nullable: true }) width!: number | null;
+	@ApiPropertyOptional({ type: "integer", nullable: true }) height!: number | null;
+	@ApiPropertyOptional({ type: "string", nullable: true }) bg!: string | null;
+	@ApiProperty({ type: "string" }) timestamp!: Date | string;
+}
+
+export class FaceReviewFaceResponse extends PhotoFaceResponse {
+	@ApiPropertyOptional({ type: "integer", nullable: true }) candidateMemberId!: number | null;
+	@ApiPropertyOptional({ type: MemberResponse, nullable: true }) candidateMember?: Member | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) candidateScore!: number | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) candidateSecondScore!: number | null;
+}
+
+export class FaceReviewResponse {
+	@ApiPropertyOptional({ type: FaceReviewFaceResponse, nullable: true }) face!: FaceReviewFaceResponse | null;
+	@ApiPropertyOptional({ type: FaceReviewPhotoResponse, nullable: true }) photo!: FaceReviewPhotoResponse | null;
+	@ApiProperty() remaining!: number;
 }

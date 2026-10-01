@@ -17,6 +17,7 @@ import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Config } from "src/config";
 import { FACE_MATCH_SETTINGS } from "src/models/albums/helpers/face-matching";
+import { FaceReviewOrder } from "src/models/albums/schema/detected-faces";
 import { PhotoFacesMatchingService } from "src/models/albums/services/photo-faces-matching.service";
 import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
 import { FacesDetectionService } from "src/models/worker/services/faces-detection.service";
@@ -26,6 +27,7 @@ import {
 	FaceDetectionSummaryPermission,
 	FaceMatchingRunPermission,
 	FaceMatchingSummaryPermission,
+	FaceReviewPermission,
 } from "../acl/worker.acl";
 import {
 	FaceDetectionBatchBody,
@@ -34,6 +36,8 @@ import {
 	FaceDetectionLogQuery,
 	FaceDetectionSummaryResponse,
 	FaceMatchingSummaryResponse,
+	FaceReviewQuery,
+	FaceReviewResponse,
 } from "../dto/worker.dto";
 
 @Controller("face-detection")
@@ -153,5 +157,35 @@ export class FaceDetectionController {
 		FaceMatchingRunPermission.canOrThrow(req);
 
 		this.photoFacesMatchingService.matchAll().catch((err) => this.logger.error(`Face matching failed: ${err}`));
+	}
+
+	@Get("review")
+	@AcLinks(FaceReviewPermission)
+	@ApiResponse({ status: 200, type: FaceReviewResponse })
+	async getFaceForReview(@Req() req: Request, @Query() query: FaceReviewQuery): Promise<FaceReviewResponse> {
+		FaceReviewPermission.canOrThrow(req);
+
+		const { face, remaining } = await this.photoFacesService.getFaceForReview(
+			query.order ?? FaceReviewOrder.uncertain,
+			query.excludePhotoIds ?? [],
+		);
+		if (!face?.photo) return { face: null, photo: null, remaining };
+
+		const { photo, ...faceData } = face;
+
+		return {
+			face: faceData,
+			photo: {
+				id: photo.id,
+				name: photo.name,
+				albumId: photo.albumId,
+				albumName: photo.album?.name ?? null,
+				width: photo.width,
+				height: photo.height,
+				bg: photo.bg,
+				timestamp: photo.timestamp,
+			},
+			remaining,
+		};
 	}
 }

@@ -46,3 +46,9 @@ export interface FaceBox {
 	width: number;
 	height: number;
 }
+
+export enum FaceReviewOrder {
+	uncertain = "uncertain",
+	candidates = "candidates",
+	random = "random",
+}
