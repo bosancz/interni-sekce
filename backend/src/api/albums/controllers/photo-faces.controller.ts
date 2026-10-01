@@ -23,6 +23,7 @@ import { PhotoFacesMatchingService } from "src/models/albums/services/photo-face
 import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import {
+	PhotoFaceAssignmentResetPermission,
 	PhotoFaceDeletePermission,
 	PhotoFaceEditPermission,
 	PhotoFaceReadFilePermission,
@@ -80,6 +81,25 @@ export class PhotoFacesController {
 		}
 
 		await this.photoFacesService.assignPhotoFace(face.id, memberId, req.user?.userId ?? null);
+		await this.photoFacesMatchingService.matchPhoto(face.photoId);
+
+		this.photoFacesMatchingService.onFaceChanged(face, face.memberId);
+	}
+
+	@Delete(":faceId/assignment")
+	@AcLinks(PhotoFaceAssignmentResetPermission)
+	@ApiResponse({ status: 204 })
+	async resetPhotoFaceAssignment(
+		@Param("photoId", ParseIntPipe) photoId: number,
+		@Param("faceId", ParseIntPipe) faceId: number,
+		@Req() req: Request,
+	): Promise<void> {
+		const face = await this.photoFacesService.getPhotoFace(photoId, faceId);
+		if (!face) throw new NotFoundException();
+
+		PhotoFaceAssignmentResetPermission.canOrThrow(req, face);
+
+		await this.photoFacesService.resetPhotoFaceAssignment(face.id);
 		await this.photoFacesMatchingService.matchPhoto(face.photoId);
 
 		this.photoFacesMatchingService.onFaceChanged(face, face.memberId);

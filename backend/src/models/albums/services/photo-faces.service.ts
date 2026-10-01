@@ -72,6 +72,16 @@ export class PhotoFacesService {
 		});
 	}
 
+	async resetPhotoFaceAssignment(faceId: PhotoFace["id"]) {
+		await this.photoFaces.update(faceId, {
+			memberId: null,
+			assignment: null,
+			matchScore: null,
+			assignedById: null,
+			assignedAt: null,
+		});
+	}
+
 	async deletePhotoFace(faceId: PhotoFace["id"]) {
 		await this.photoFaces.delete(faceId);
 		await this.photosFilesService.deleteFaceImage(faceId);
@@ -93,17 +103,15 @@ export class PhotoFacesService {
 
 	async getFaceForReview(
 		order: FaceReviewOrder,
-		options: { filter?: FaceReviewFilter; excludePhotoIds?: Photo["id"][]; memberId?: Member["id"] } = {},
+		options: {
+			filter?: FaceReviewFilter;
+			excludePhotoIds?: Photo["id"][];
+			memberId?: Member["id"];
+			faceId?: PhotoFace["id"];
+		} = {},
 	) {
 		const excludePhotoIds = options.excludePhotoIds ?? [];
-		const query = this.photoFaces
-			.createQueryBuilder("faces")
-			.innerJoinAndSelect("faces.photo", "photo")
-			.leftJoin("photo.album", "album")
-			.addSelect(["album.id", "album.name"])
-			.leftJoinAndSelect("faces.member", "member")
-			.leftJoinAndSelect("faces.candidateMember", "candidateMember")
-			.setParameters({ auto: PhotoFaceAssignment.auto });
+		const query = this.getReviewQuery().setParameters({ auto: PhotoFaceAssignment.auto });
 
 		const filter = this.getReviewFilter(options.filter, options.memberId);
 		if (filter) query.setParameters(filter.parameters);
@@ -134,11 +142,26 @@ export class PhotoFacesService {
 
 		const remaining = await query.clone().orderBy().getCount();
 
+		if (options.faceId !== undefined) {
+			const face = await this.getReviewQuery().where("faces.id = :faceId", { faceId: options.faceId }).getOne();
+			return { face: face ?? null, remaining };
+		}
+
 		if (excludePhotoIds.length) query.andWhere("faces.photo_id NOT IN (:...excludePhotoIds)", { excludePhotoIds });
 
 		const face = await query.addOrderBy("faces.id", "ASC").limit(1).getOne();
 
 		return { face: face ?? null, remaining };
+	}
+
+	private getReviewQuery() {
+		return this.photoFaces
+			.createQueryBuilder("faces")
+			.innerJoinAndSelect("faces.photo", "photo")
+			.leftJoin("photo.album", "album")
+			.addSelect(["album.id", "album.name"])
+			.leftJoinAndSelect("faces.member", "member")
+			.leftJoinAndSelect("faces.candidateMember", "candidateMember");
 	}
 
 	private getReviewFilter(filter: FaceReviewFilter | undefined, memberId: Member["id"] | undefined) {

@@ -3,6 +3,7 @@ import { RouterLink } from "@angular/router";
 import { IonButton, IonContent, IonIcon, IonPopover, IonSkeletonText, IonSpinner } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
+	arrowUndoOutline,
 	checkmarkOutline,
 	chevronDownOutline,
 	closeOutline,
@@ -28,6 +29,9 @@ import { FACE_EMOTIONS } from "src/helpers/face-emotions";
 import { SDK } from "src/sdk";
 
 const SEEN_PHOTOS_LIMIT = 300;
+const HISTORY_LIMIT = 50;
+
+type HistoryEntry = { review: SDK.FaceReviewResponse; decided: boolean };
 
 const ORDERS: { value: SDK.FaceReviewOrderEnum; label: string; description: string }[] = [
 	{
@@ -109,6 +113,7 @@ export class FaceReviewCardComponent implements OnInit {
 	saving = signal(false);
 	imageLoaded = signal(false);
 	reviewed = signal(0);
+	history = signal<HistoryEntry[]>([]);
 
 	face = computed(() => this.review()?.face ?? null);
 	photo = computed(() => this.review()?.photo ?? null);
@@ -135,6 +140,7 @@ export class FaceReviewCardComponent implements OnInit {
 		private toastService: ToastService,
 	) {
 		addIcons({
+			arrowUndoOutline,
 			checkmarkOutline,
 			chevronDownOutline,
 			closeOutline,
@@ -155,6 +161,7 @@ export class FaceReviewCardComponent implements OnInit {
 		if (order === this.order()) return;
 		this.order.set(order);
 		this.seenPhotoIds = [];
+		this.history.set([]);
 		await this.load();
 	}
 
@@ -176,6 +183,7 @@ export class FaceReviewCardComponent implements OnInit {
 		if (!FILTERS.some((item) => item.value === filter) || filter === this.filter()) return;
 		this.filter.set(filter);
 		this.seenPhotoIds = [];
+		this.history.set([]);
 
 		if (this.memberMissing()) {
 			this.review.set(undefined);
@@ -201,13 +209,14 @@ export class FaceReviewCardComponent implements OnInit {
 
 			this.member.set(member);
 			this.seenPhotoIds = [];
+			this.history.set([]);
 			await this.load();
 		} finally {
 			this.pickerOpen = false;
 		}
 	}
 
-	async load(): Promise<void> {
+	async load(faceId?: number): Promise<void> {
 		if (this.memberMissing()) return;
 
 		this.loading.set(true);
@@ -217,9 +226,10 @@ export class FaceReviewCardComponent implements OnInit {
 				filter: this.filter() ?? undefined,
 				memberId: this.filter() === "member" ? this.member()?.id : undefined,
 				excludePhotoIds: this.seenPhotoIds.length ? this.seenPhotoIds : undefined,
+				faceId,
 			}).then((res) => res.data);
 
-			if (!review.face && review.remaining && this.seenPhotoIds.length) {
+			if (faceId === undefined && !review.face && review.remaining && this.seenPhotoIds.length) {
 				this.seenPhotoIds = [];
 				return await this.load();
 			}
@@ -272,12 +282,36 @@ export class FaceReviewCardComponent implements OnInit {
 			.finally(() => (this.pickerOpen = false));
 		if (!confirmed) return;
 
-		await this.save(() => this.api.PhotoGalleryApi.deletePhotoFace(face.photoId, face.id));
+		await this.save(() => this.api.PhotoGalleryApi.deletePhotoFace(face.photoId, face.id), false);
 	}
 
 	skip() {
 		if (this.busy()) return;
+		this.remember(false);
 		this.next();
+	}
+
+	async undo() {
+		const entry = this.history().at(-1);
+		const face = entry?.review.face;
+		if (!entry || !face || this.busy()) return;
+
+		if (entry.decided) {
+			this.saving.set(true);
+			try {
+				await this.api.PhotoGalleryApi.resetPhotoFaceAssignment(face.photoId, face.id);
+			} catch {
+				this.toastService.toast("Nepodařilo se vrátit poslední rozhodnutí.", { color: "warning" });
+				return;
+			} finally {
+				this.saving.set(false);
+			}
+			this.reviewed.update((count) => Math.max(0, count - 1));
+		}
+
+		this.history.update((history) => history.slice(0, -1));
+		this.seenPhotoIds = this.seenPhotoIds.filter((id) => id !== face.photoId);
+		await this.load(face.id);
 	}
 
 	busy() {
@@ -291,7 +325,7 @@ export class FaceReviewCardComponent implements OnInit {
 		await this.save(() => this.api.PhotoGalleryApi.updatePhotoFace(face.photoId, face.id, { memberId }));
 	}
 
-	private async save(request: () => Promise<unknown>) {
+	private async save(request: () => Promise<unknown>, undoable = true) {
 		this.saving.set(true);
 		try {
 			await request();
@@ -303,7 +337,14 @@ export class FaceReviewCardComponent implements OnInit {
 		}
 
 		this.reviewed.update((count) => count + 1);
+		if (undoable) this.remember(true);
 		await this.next();
+	}
+
+	private remember(decided: boolean) {
+		const review = this.review();
+		if (!review?.face) return;
+		this.history.update((history) => [...history, { review, decided }].slice(-HISTORY_LIMIT));
 	}
 
 	private async next() {
@@ -314,24 +355,34 @@ export class FaceReviewCardComponent implements OnInit {
 
 	@HostListener("document:keydown", ["$event"])
 	onKeyDown(event: KeyboardEvent) {
-		if (this.pickerOpen || this.scopeOpen() || event.ctrlKey || event.metaKey || event.altKey || event.repeat)
-			return;
+		if (this.pickerOpen || this.scopeOpen() || event.altKey || event.repeat) return;
 
 		const target = event.target as HTMLElement | null;
 		if (target?.closest("input, textarea, [contenteditable], ion-modal, ion-alert, ion-popover")) return;
 
-		switch (event.key.toLowerCase()) {
+		const key = event.key.toLowerCase();
+		if (event.ctrlKey || event.metaKey) {
+			if (key !== "z" || event.shiftKey) return;
+			this.undo();
+			event.preventDefault();
+			return;
+		}
+
+		switch (key) {
 			case "a":
 				if (this.suggested()) this.confirm();
 				break;
 			case "n":
 				this.reject();
 				break;
-			case "j":
+			case "v":
 				this.pickMember();
 				break;
 			case "s":
 				this.skip();
+				break;
+			case "z":
+				this.undo();
 				break;
 			default:
 				return;

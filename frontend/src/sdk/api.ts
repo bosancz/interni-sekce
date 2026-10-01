@@ -6677,6 +6677,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof PhotoFaceResponseLinks
          */
+        'resetPhotoFaceAssignment': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoFaceResponseLinks
+         */
         'deletePhotoFace': AcLink;
         /**
          * 
@@ -14060,6 +14066,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * PhotoGalleryApi - object-oriented interface
      * @export
@@ -14913,6 +14923,58 @@ export namespace SDK {
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} photoId 
+         * @param {number} faceId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async resetPhotoFaceAssignment(
+            photoId: number,
+            faceId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('resetPhotoFaceAssignment', 'photoId', photoId)
+            assertParamExists('resetPhotoFaceAssignment', 'faceId', faceId)
+            
+            // verify required parameter 'faceId' is not null or undefined
+            assertParamExists('resetPhotoFaceAssignment', 'photoId', photoId)
+            assertParamExists('resetPhotoFaceAssignment', 'faceId', faceId)
+            
+            const localVarPath = `/api/photos/{photoId}/faces/{faceId}/assignment`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)))
+                .replace(`{${"faceId"}}`, encodeURIComponent(String(faceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
     
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
@@ -17283,6 +17345,14 @@ export namespace SDK {
          * @memberof WorkerApiGetFaceForReview
          */
         memberId?: number
+    
+        //faceId
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerApiGetFaceForReview
+         */
+        faceId?: number
     }
     
     
@@ -17464,6 +17534,10 @@ export namespace SDK {
     
             if (queryParams.memberId !== undefined) {
                 requestQueryParameter['memberId'] = queryParams.memberId;
+            }
+    
+            if (queryParams.faceId !== undefined) {
+                requestQueryParameter['faceId'] = queryParams.faceId;
             }
     
     

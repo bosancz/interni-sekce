@@ -31,3 +31,9 @@ export const PhotoFaceDeletePermission = new Permission({
 	params: { photoId: "photoId", faceId: "id" },
 	inherit: PhotoFaceEditPermission,
 });
+
+export const PhotoFaceAssignmentResetPermission = new Permission({
+	linkTo: PhotoFaceResponse,
+	params: { photoId: "photoId", faceId: "id" },
+	inherit: PhotoFaceEditPermission,
+});
