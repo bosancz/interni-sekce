@@ -1,3 +1,7 @@
+## v4.14.1 — 2026-10-01
+
+- <span class="changelog-type" title="fix">🐛</span> [„Otevřít“ u obličeje na fotce zůstane na kartě člena](https://github.com/bosancz/interni-sekce/commit/a9f878e467706c5d97ccf2fa5ead2f9aefa726ef) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.14.0 — 2026-09-30
 
 - <span class="changelog-type" title="feat">✨</span> [Automatické přiřazování obličejů](https://github.com/bosancz/interni-sekce/commit/913784e1e84233b4841f059ad79a2f310369b074) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
