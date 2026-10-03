@@ -2,10 +2,12 @@ import { Component, computed, ElementRef, inject, input, OnInit, Signal, signal,
 import { toSignal } from "@angular/core/rxjs-interop";
 import { IonIcon, IonSpinner, ModalController, ViewDidEnter } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { checkmarkOutline, closeOutline, searchOutline } from "ionicons/icons";
+import { checkmarkOutline, closeOutline, personAddOutline, searchOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { GroupsService } from "src/app/core/services/groups.service";
-import { InputModalComponent } from "src/app/core/services/modal.service";
+import { InputModalComponent, ModalService } from "src/app/core/services/modal.service";
+import { ToastService } from "src/app/core/services/toast.service";
+import { MemberCreateModalComponent } from "src/app/features/members/components/member-create-modal/member-create-modal.component";
 import { MemberItemDetailComponent } from "src/app/shared/components/member-item-detail/member-item-detail.component";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { SDK } from "src/sdk";
@@ -37,9 +39,14 @@ export class MemberSelectorModalComponent
 	loading = signal(true);
 	clearing = signal(false);
 	pendingIds = signal<number[]>([]);
+	creating = signal(false);
 
 	private api = inject(ApiService);
 	private groupsService = inject(GroupsService);
+	private modalService = inject(ModalService);
+	private toastService = inject(ToastService);
+
+	canCreate = computed(() => this.members().length === 0 && !!this.api.links()?.createMember?.allowed);
 
 	private allMembers = signal<SDK.MemberResponse[]>([]);
 	private groups = toSignal(this.groupsService.groups, { initialValue: [] as SDK.GroupResponseWithLinks[] });
@@ -91,7 +98,7 @@ export class MemberSelectorModalComponent
 
 	constructor() {
 		super(inject(ModalController));
-		addIcons({ checkmarkOutline, closeOutline, searchOutline });
+		addIcons({ checkmarkOutline, closeOutline, personAddOutline, searchOutline });
 	}
 
 	get selectable() {
@@ -162,6 +169,32 @@ export class MemberSelectorModalComponent
 			await this.onClearAll();
 		} finally {
 			this.clearing.set(false);
+		}
+	}
+
+	async createMember() {
+		const nickname = this.query().trim();
+		if (!this.canCreate() || !nickname || this.creating()) return;
+
+		this.creating.set(true);
+		try {
+			const memberData = await this.modalService.componentModal(MemberCreateModalComponent, {
+				defaultNickname: nickname,
+				defaultGroupId: this.groupFilter(),
+				allowedRoles: this.roles,
+			});
+			if (!memberData) return;
+
+			const member = await this.api.MembersApi.createMember(memberData).then((res) => res.data);
+			this.toastService.toast("Člen uložen.");
+
+			this.allMembers.update((members) => this.sort([...members, member]));
+			this.query.set("");
+			this.groupFilter.set(null);
+
+			await this.toggleMember(member);
+		} finally {
+			this.creating.set(false);
 		}
 	}
 
