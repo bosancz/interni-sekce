@@ -52,6 +52,40 @@ def _resolve(relative_path: str) -> Path:
     return path
 
 
+def _detect_scaled(detector: Any, image: np.ndarray, max_side: int | None) -> np.ndarray:
+    height, width = image.shape[:2]
+    scale = 1.0 if max_side is None else min(1.0, max_side / max(width, height))
+    pad = 0
+    if max_side is not None:
+        image = cv2.resize(image, (round(width * scale), round(height * scale)), interpolation=cv2.INTER_AREA)
+        pad = round(max(image.shape[:2]) * config.FACES_LARGE_PADDING)
+        image = cv2.copyMakeBorder(image, pad, pad, pad, pad, cv2.BORDER_CONSTANT, value=(0, 0, 0))
+
+    detector.setInputSize((image.shape[1], image.shape[0]))
+    _, detected = detector.detect(image)
+    if detected is None:
+        return np.empty((0, 15), dtype=np.float32)
+
+    detected = detected.copy()
+    detected[:, [0, 1, *range(4, 14)]] -= pad
+    detected[:, 0:14] /= scale
+    return detected
+
+
+def _detect_multiscale(detector: Any, image: np.ndarray) -> np.ndarray:
+    detected = np.concatenate(
+        [_detect_scaled(detector, image, None)]
+        + [_detect_scaled(detector, image, side) for side in config.FACES_LARGE_SCALES]
+    )
+    if len(detected) == 0:
+        return detected
+
+    boxes = [[float(v) for v in row[:4]] for row in detected]
+    scores = [float(row[-1]) for row in detected]
+    keep = cv2.dnn.NMSBoxes(boxes, scores, config.FACES_MIN_SCORE, config.FACES_NMS_THRESHOLD)
+    return detected[np.array(keep, dtype=int).flatten()]
+
+
 def detect(path: Path) -> list[dict[str, Any]]:
     image = cv2.imread(str(path), cv2.IMREAD_COLOR)
     if image is None:
@@ -64,11 +98,10 @@ def detect(path: Path) -> list[dict[str, Any]]:
         height, width = image.shape[:2]
 
     detector, recognizer, expression = _models()
-    detector.setInputSize((width, height))
-    _, detected = detector.detect(image)
+    detected = _detect_multiscale(detector, image)
 
     faces = []
-    for row in detected if detected is not None else []:
+    for row in detected:
         x, y, w, h = (float(v) for v in row[:4])
         score = float(row[-1])
 
