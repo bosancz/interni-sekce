@@ -130,7 +130,7 @@
 						<div class="fd-log-row">
 							<a
 								class="fd-photo"
-								[routerLink]="['/galerie', entry.albumId, 'info']"
+								[routerLink]="['/galerie', entry.albumId]"
 								[queryParams]="{ photo: entry.photoId }"
 							>
 								<img [src]="{ id: entry.photoId } | photoImageUrl: 'small'" loading="lazy" alt="" />
@@ -138,7 +138,7 @@
 							<div class="fd-info">
 								<div class="fd-title">
 									<a
-										[routerLink]="['/galerie', entry.albumId, 'info']"
+										[routerLink]="['/galerie', entry.albumId]"
 										[queryParams]="{ photo: entry.photoId }"
 										>{{ entry.photoName }}</a
 									>

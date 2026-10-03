@@ -9,9 +9,9 @@ export const albumsRoutes: Routes = [
 
 	{ path: "nove-fotky/:member/:notifiedAt", component: MemberNewPhotosComponent },
 
-	{ path: ":album/info", component: AlbumsViewInfoComponent },
+	{ path: ":album", component: AlbumsViewInfoComponent },
 
-	{ path: ":album", pathMatch: "full", redirectTo: ":album/info" },
+	{ path: ":album/info", redirectTo: ":album" },
 
 	{ path: "", component: AlbumsListComponent },
 ];
