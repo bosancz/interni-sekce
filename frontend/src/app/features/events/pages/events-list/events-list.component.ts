@@ -45,7 +45,7 @@ import { SDK } from "src/sdk";
 import { GroupPipe } from "../../../../shared/pipes/group.pipe";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 import { EventCreateModalComponent } from "../../components/event-create-modal/event-create-modal.component";
-import { getParamsKey } from "src/helpers/params";
+import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loading";
 
 type EventStatusActions = ExtractExisting<
 	keyof SDK.EventResponseWithLinks["_links"],
@@ -151,6 +151,8 @@ export class EventsListComponent implements OnInit {
 	private loadToken = 0;
 	private loadedFilterKey: string | null = null;
 
+	private hasLeft = false;
+
 	filter: UrlParams = {};
 
 	rowLink = (event: SDK.EventResponseWithLinks) => "" + event.id;
@@ -183,10 +185,12 @@ export class EventsListComponent implements OnInit {
 
 	ionViewWillEnter(): void {
 		this.hoverPreview()?.resume();
+		if (this.hasLeft) this.loadEvents(this.filter, "refresh");
 	}
 
 	ionViewWillLeave(): void {
 		this.hoverPreview()?.pause();
+		this.hasLeft = true;
 	}
 
 	rowActionsHeader = (event: SDK.EventResponseWithLinks) => event.name;
@@ -419,15 +423,15 @@ export class EventsListComponent implements OnInit {
 	}
 
 	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
-		await this.loadEvents(this.filter, true);
+		await this.loadEvents(this.filter, "more");
 		e.target.complete();
 	}
 
-	private async loadEvents(filter: UrlParams, loadMore: boolean = false) {
-		if (loadMore) {
+	private async loadEvents(filter: UrlParams, mode: ListLoadMode = "reset") {
+		if (mode === "more") {
 			if (this.events().length < this.page * this.pageSize) return;
 			this.page++;
-		} else {
+		} else if (mode === "reset") {
 			this.page = 1;
 			this.events.set([]);
 		}
@@ -448,17 +452,26 @@ export class EventsListComponent implements OnInit {
 			deleted: !!filter.deleted,
 			sort: (filter as any)["sort"] || this.defaultSortColumn,
 			order: (filter as any)["order"] || this.defaultSortOrder(dateFilters),
-			offset: (this.page - 1) * this.pageSize,
 			limit: this.pageSize,
 		};
 
 		const token = ++this.loadToken;
 
-		const events = await this.api.EventsApi.listEvents(params).then((res: any) => res.data);
+		const pages = await Promise.all(
+			getPagesToLoad(mode, this.page).map((page) =>
+				this.api.EventsApi.listEvents({ ...params, offset: (page - 1) * this.pageSize }).then(
+					(res: any) => res.data as SDK.EventResponseWithLinks[],
+				),
+			),
+		).catch((err) => {
+			if (mode === "refresh") return null;
+			throw err;
+		});
 
-		if (token !== this.loadToken) return;
+		if (token !== this.loadToken || !pages) return;
 
-		this.events.set(loadMore ? [...this.events(), ...events] : events);
+		const events = pages.flat();
+		this.events.set(mode === "more" ? [...this.events(), ...events] : events);
 	}
 
 	private normalizeFilterValueToArray(value: unknown): string[] {

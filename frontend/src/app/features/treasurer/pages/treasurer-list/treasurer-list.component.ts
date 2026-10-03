@@ -16,6 +16,7 @@ import {
 	IonSkeletonText,
 	IonToggle,
 	ViewWillEnter,
+	ViewWillLeave,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
@@ -50,7 +51,7 @@ import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
-import { getParamsKey } from "src/helpers/params";
+import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loading";
 
 // Custom "columns" glyph, same as the members list — see the note there on why it must be a
 // `data:image/svg+xml;utf8,` URI rather than a raw SVG string.
@@ -116,7 +117,7 @@ const LAST_YEAR = 2200;
 	],
 	providers: [FilterModel],
 })
-export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEnter {
+export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEnter, ViewWillLeave {
 	private model = inject(FilterModel);
 
 	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
@@ -277,6 +278,13 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 
 	ionViewWillEnter() {
 		this.loadGroups();
+		if (!this.hasLeft) return;
+		this.loadMembers(this.filter, "refresh");
+		this.loadSummary(true);
+	}
+
+	ionViewWillLeave() {
+		this.hasLeft = true;
 	}
 
 	/**
@@ -722,6 +730,8 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 
 	private loadedFilterKey: string | null = null;
 
+	private hasLeft = false;
+
 	onParams(params: Params) {
 		this.model.setCommitted(this.modelFromParams(params));
 
@@ -767,16 +777,16 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 	}
 
 	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
-		await this.loadMembers(this.filter, true);
+		await this.loadMembers(this.filter, "more");
 		e.target.complete();
 	}
 
-	private async loadMembers(filter: FilterData, loadMore: boolean = false) {
-		if (loadMore) {
+	private async loadMembers(filter: FilterData, mode: ListLoadMode = "reset") {
+		if (mode === "more") {
 			const memberList = this.members();
 			if (!memberList || memberList.length < this.page * this.pageSize) return;
 			this.page++;
-		} else {
+		} else if (mode === "reset") {
 			this.page = 1;
 			this.members.set(undefined);
 		}
@@ -787,16 +797,25 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 
 		const params: SDK.MembersApiListMembersQueryParams = {
 			...this.filterParams(filter),
-			offset: (this.page - 1) * this.pageSize,
 			limit: this.pageSize,
 			contacts: this.needsContacts() || undefined,
 		};
 
-		const members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
+		const pages = await Promise.all(
+			getPagesToLoad(mode, this.page).map((page) =>
+				this.api.MembersApi.listMembers({ ...params, offset: (page - 1) * this.pageSize }).then(
+					(res) => res.data,
+				),
+			),
+		).catch((err) => {
+			if (mode === "refresh") return null;
+			throw err;
+		});
 
-		if (loadId !== this.latestLoadId) return;
+		if (loadId !== this.latestLoadId || !pages) return;
 
-		this.members.set([...(loadMore ? (this.members() ?? []) : []), ...members]);
+		const members = pages.flat();
+		this.members.set(mode === "more" ? [...(this.members() ?? []), ...members] : members);
 	}
 
 	/**
