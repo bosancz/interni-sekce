@@ -29,13 +29,14 @@ import { PhotosRepository } from "src/models/albums/repositories/photos.reposito
 import { FacesDetectionService } from "src/models/worker/services/faces-detection.service";
 import {
 	PhotoCreatePermission,
+	PhotoDailyPermission,
 	PhotoDeletePermission,
 	PhotoEditPermission,
 	PhotoReadFilePermission,
 	PhotoReadPermission,
 	PhotosListPermission,
 } from "../acl/photo.acl";
-import { PhotoCreateBody, PhotoResponse, PhotoSizes, PhotoUpdateBody } from "../dto/photo.dto";
+import { PhotoCreateBody, PhotoDailyResponse, PhotoResponse, PhotoSizes, PhotoUpdateBody } from "../dto/photo.dto";
 
 @Controller("photos")
 @Authenticated()
@@ -84,6 +85,15 @@ export class PhotosController {
 			.catch((err) => this.logger.error(`Failed to queue photo ${photo.id} for face detection.`, err));
 
 		return photo;
+	}
+
+	@Get("daily")
+	@AcLinks(PhotoDailyPermission)
+	@ApiResponse({ status: 200, type: PhotoDailyResponse })
+	async getDailyPhoto(@Req() req: Request): Promise<PhotoDailyResponse> {
+		PhotoDailyPermission.canOrThrow(req);
+
+		return this.photos.getDailyPhoto();
 	}
 
 	@Get(":photoId")

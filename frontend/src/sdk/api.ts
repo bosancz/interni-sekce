@@ -6427,6 +6427,20 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface PhotoDailyResponse
+     */
+    export interface PhotoDailyResponse {
+        /**
+         * 
+         * @type {PhotoResponseWithLinks}
+         * @memberof PhotoDailyResponse
+         */
+        'photo'?: PhotoResponseWithLinks | null;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface PhotoFace
      */
     export interface PhotoFace {
@@ -7103,6 +7117,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'createPhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getDailyPhoto': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -13991,6 +14011,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * @export
      */
@@ -14548,6 +14572,44 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<number>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async getDailyPhoto(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/photos/daily`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<PhotoDailyResponse>(axiosRequestConfig);
         }
     
         /**

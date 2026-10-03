@@ -1,0 +1,42 @@
+@if (canSeePhoto() && daily()?.photo !== null) {
+	<bo-card>
+		<bo-card-header>
+			<bo-card-title>Fotka dne</bo-card-title>
+			@if (daily()?.photo; as photo) {
+				<bo-card-open-button [routerLink]="['/galerie', photo.albumId]"></bo-card-open-button>
+			}
+		</bo-card-header>
+
+		<bo-card-content>
+			@if (daily(); as daily) {
+				@if (daily.photo; as photo) {
+					<button
+						type="button"
+						class="photo"
+						[style.background-color]="photo.bg"
+						[attr.aria-label]="photo.title || 'Otevřít fotku'"
+						(click)="openPhoto(photo)"
+					>
+						<img [src]="photo | photoImageUrl: 'big'" [alt]="photo.title || photo.name" loading="lazy" />
+					</button>
+
+					@if (photo.title) {
+						<p class="title">{{ photo.title }}</p>
+					}
+
+					<p class="meta">
+						<span>{{ photo.timestamp | date: "d. M. y" }}</span>
+						@if (photo.album) {
+							<a class="album" [routerLink]="['/galerie', photo.album.id]">
+								<ion-icon name="images-outline"></ion-icon>
+								{{ photo.album.name }}
+							</a>
+						}
+					</p>
+				}
+			} @else {
+				<ion-skeleton-text class="photo-skeleton" [animated]="true"></ion-skeleton-text>
+			}
+		</bo-card-content>
+	</bo-card>
+}

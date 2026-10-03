@@ -2,8 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { extname } from "path";
 import { PaginationOptions } from "src/helpers/pagination";
+import { MemberRoles } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
 import { Brackets, Repository } from "typeorm";
+import { AlbumStatus } from "../entities/album.entity";
 import { PhotoFace } from "../entities/photo-face.entity";
 import { Photo } from "../entities/photo.entity";
 import { PhotosFilesService } from "../services/photos-files.service";
@@ -135,6 +137,27 @@ export class PhotosRepository {
 		for (const photo of photos) map.set(photo.albumId, photo);
 
 		return map;
+	}
+
+	async getDailyPhoto(timezone = "Europe/Prague") {
+		const photo = await this.repository
+			.createQueryBuilder("photos")
+			.innerJoinAndSelect("photos.album", "album")
+			.where("album.status = :status", { status: AlbumStatus.public })
+			.andWhere(
+				`EXISTS (
+					SELECT 1 FROM photo_faces faces
+					INNER JOIN members ON members.id = faces.member_id
+					WHERE faces.photo_id = photos.id AND members.role = :role AND members.deleted_at IS NULL
+				)`,
+				{ role: MemberRoles.vedouci },
+			)
+			.orderBy("md5(photos.id::text || (now() AT TIME ZONE :timezone)::date::text)")
+			.setParameter("timezone", timezone)
+			.limit(1)
+			.getOne();
+
+		return { photo: photo ?? null };
 	}
 
 	async deletePhoto(id: Photo["id"]) {
