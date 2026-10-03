@@ -303,8 +303,11 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	}
 
 	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
-		await this.loadAlbums(this.filter, true);
-		e.target.complete();
+		try {
+			await this.loadAlbums(this.filter, true);
+		} finally {
+			e.target.complete();
+		}
 	}
 
 	private async loadYears() {
@@ -316,7 +319,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	private async loadAlbums(filter: UrlParams, loadMore = false) {
 		if (loadMore) {
 			const currentAlbums = this.albums();
-			if (currentAlbums && currentAlbums.length < this.page() * this.pageSize) return;
+			if (!currentAlbums || currentAlbums.length < this.page() * this.pageSize) return;
 			this.page.set(this.page() + 1);
 		} else {
 			this.page.set(1);
@@ -335,7 +338,19 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 		const token = ++this.loadToken;
 
-		const newAlbums = await this.api.PhotoGalleryApi.listAlbums(params).then((res) => res.data);
+		let newAlbums: SDK.AlbumResponseWithLinks[];
+		try {
+			newAlbums = await this.api.PhotoGalleryApi.listAlbums(params).then((res) => res.data);
+		} catch (err) {
+			if (token !== this.loadToken) return;
+			if (loadMore) {
+				this.page.set(this.page() - 1);
+			} else {
+				this.albums.set([]);
+			}
+			this.toastService.toast("Nepodařilo se načíst alba.");
+			throw err;
+		}
 
 		if (token !== this.loadToken) return;
 
