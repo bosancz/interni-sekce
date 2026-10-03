@@ -40,8 +40,10 @@ import { SDK } from "src/sdk";
 })
 export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCreateBody> implements OnInit {
 	@Input() defaultGroupId?: number | null;
+	@Input() defaultNickname?: string;
+	@Input() allowedRoles?: SDK.MemberRolesEnum[];
 
-	roles = MemberRoles;
+	roles: Record<string, (typeof MemberRoles)[SDK.MemberRolesEnum]> = MemberRoles;
 
 	showValidationErrors = signal(false);
 
@@ -59,6 +61,15 @@ export class MemberCreateModalComponent extends InputModalComponent<SDK.MemberCr
 
 	ngOnInit() {
 		if (this.defaultGroupId != null) this.form.controls.groupId.setValue(this.defaultGroupId);
+		if (this.defaultNickname) this.form.controls.nickname.setValue(this.defaultNickname);
+
+		if (this.allowedRoles?.length) {
+			const allowedRoles = this.allowedRoles;
+			this.roles = Object.fromEntries(
+				Object.entries(MemberRoles).filter(([role]) => allowedRoles.includes(role as SDK.MemberRolesEnum)),
+			);
+			if (allowedRoles.length === 1) this.form.controls.role.setValue(allowedRoles[0]);
+		}
 	}
 
 	createMember() {

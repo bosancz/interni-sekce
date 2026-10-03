@@ -86,7 +86,20 @@
 		@if (loading()) {
 			<div class="mp-placeholder"><ion-spinner name="crescent"></ion-spinner></div>
 		} @else if (!filteredMembers().length) {
-			<div class="mp-placeholder mp-empty">Nikdo nenalezen.</div>
+			<div class="mp-placeholder mp-empty">
+				<span>Nikdo nenalezen.</span>
+				@if (canCreate() && query().trim()) {
+					<button
+						type="button"
+						class="bm-btn-ghost mp-empty-create"
+						[disabled]="creating()"
+						(click)="createMember()"
+					>
+						<ion-icon name="person-add-outline" aria-hidden="true"></ion-icon>
+						Přidat „{{ query().trim() }}“ jako nového člena
+					</button>
+				}
+			</div>
 		}
 	</div>
 
