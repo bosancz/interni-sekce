@@ -3,8 +3,9 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController, ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { callOutline, imagesOutline, medkitOutline, personCircleOutline } from "ionicons/icons";
+import { callOutline, gitMergeOutline, imagesOutline, medkitOutline, personCircleOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { ModalService } from "src/app/core/services/modal.service";
 import { TitleService } from "src/app/core/services/title.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -17,10 +18,12 @@ import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { VerticalMenuItemComponent } from "src/app/shared/components/vertical-menu-item/vertical-menu-item.component";
 import { VerticalMenuComponent } from "src/app/shared/components/vertical-menu/vertical-menu.component";
 import { SDK } from "src/sdk";
+import { MemberSelectorModalComponent } from "../../../events/components/member-selector-modal/member-selector-modal.component";
 import { MemberContactComponent } from "../../components/member-contact/member-contact.component";
 import MemberContactsComponent from "../../components/member-contacts/member-contacts.component";
 import { MemberHealthComponent } from "../../components/member-health/member-health.component";
 import { MemberInfoComponent } from "../../components/member-info/member-info.component";
+import { MemberMergeModalComponent } from "../../components/member-merge-modal/member-merge-modal.component";
 import { MemberMembershipComponent } from "../../components/member-membership/member-membership.component";
 import { MemberPaymentComponent } from "../../components/member-payment/member-payment.component";
 import { MemberPhotosComponent } from "../../components/member-photos/member-photos.component";
@@ -61,6 +64,13 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 		return [
 			{
+				text: "Sloučit s…",
+				icon: "git-merge-outline",
+				hidden: !links?.mergeMember.applicable,
+				disabled: !links?.mergeMember.allowed,
+				handler: () => this.merge(),
+			},
+			{
 				text: "Smazat",
 				role: "destructive",
 				icon: "trash",
@@ -88,8 +98,9 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		private router: Router,
 		private alertController: AlertController,
 		private titleService: TitleService,
+		private modalService: ModalService,
 	) {
-		addIcons({ personCircleOutline, medkitOutline, callOutline, imagesOutline });
+		addIcons({ personCircleOutline, medkitOutline, callOutline, imagesOutline, gitMergeOutline });
 	}
 
 	ngOnInit() {
@@ -177,6 +188,38 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		this.toastService.toast(`Člen ${this.member()!.nickname} smazán.`);
 
 		this.router.navigate(["../"], { relativeTo: this.route, replaceUrl: true });
+	}
+
+	async merge() {
+		const member = this.member();
+		if (!member) return;
+
+		const other = await this.modalService.componentModal(
+			MemberSelectorModalComponent,
+			{
+				title: "Sloučit s…",
+				subtitle: `Vyber člena, se kterým se má ${this.getTitleName(member)} sloučit.`,
+			},
+			{ cssClass: "dialog-picker" },
+		);
+		if (!other) return;
+
+		if (other.id === member.id) {
+			this.toastService.toast("Člena nejde sloučit se sebou samým.", { color: "danger" });
+			return;
+		}
+
+		const result = await this.modalService.componentModal(
+			MemberMergeModalComponent,
+			{ memberAId: member.id, memberBId: other.id },
+			{ cssClass: "dialog-merge" },
+		);
+		if (!result) return;
+
+		this.toastService.toast("Členové sloučeni.");
+
+		if (result.targetId === member.id) await this.loadMember(member.id);
+		else this.router.navigate(["../", result.targetId], { relativeTo: this.route, replaceUrl: true });
 	}
 
 	async restore() {

@@ -108,3 +108,12 @@ export const MemberDeletePermanentPermission = new Permission({
 	},
 	applicable: ({ doc }) => !!doc.deletedAt,
 });
+
+export const MemberMergePermission = new Permission({
+	linkTo: MemberResponse,
+	params: { memberId: "id" },
+	allowed: {
+		admin: true,
+	},
+	applicable: ({ doc }) => !doc.deletedAt,
+});

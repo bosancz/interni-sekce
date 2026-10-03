@@ -3,6 +3,9 @@ import {
 	Controller,
 	Delete,
 	Get,
+	HttpCode,
+	HttpStatus,
+	Logger,
 	NotFoundException,
 	Param,
 	ParseIntPipe,
@@ -15,12 +18,15 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
+import { PhotoFacesMatchingService } from "src/models/albums/services/photo-faces-matching.service";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
+import { MemberMergeService } from "src/models/members/services/member-merge.service";
 import { PaymentSettingsRepository } from "src/models/settings/repositories/payment-settings.repository";
 import {
 	MemberCreatePermission,
 	MemberDeletePermanentPermission,
 	MemberDeletePermission,
+	MemberMergePermission,
 	MemberReadPermission,
 	MemberRestorePermission,
 	MembersDeletedListPermission,
@@ -29,6 +35,7 @@ import {
 	MemberUpdatePermission,
 } from "../acl/members.acl";
 import { MemberCreateBody, MemberResponse, MemberUpdateBody, MembersListQuery } from "../dto/member.dto";
+import { MemberMergeBody, MemberMergeInfoQuery, MemberMergeInfoResponse } from "../dto/member-merge.dto";
 import { MembershipSummaryQuery, MembershipSummaryResponse } from "../dto/membership-summary.dto";
 
 @Controller("members")
@@ -36,9 +43,13 @@ import { MembershipSummaryQuery, MembershipSummaryResponse } from "../dto/member
 @AcController()
 @ApiTags("Members")
 export class MembersController {
+	private logger = new Logger(MembersController.name);
+
 	constructor(
 		private members: MembersRepository,
 		private paymentSettings: PaymentSettingsRepository,
+		private memberMergeService: MemberMergeService,
+		private photoFacesMatchingService: PhotoFacesMatchingService,
 	) {}
 
 	@Get()
@@ -179,5 +190,47 @@ export class MembersController {
 		MemberDeletePermanentPermission.canOrThrow(req, member);
 
 		await this.members.hardDeleteMember(memberId);
+	}
+
+	@Get(":memberId/merge")
+	@AcLinks(MemberMergePermission)
+	@ApiResponse({ status: 200, type: MemberMergeInfoResponse })
+	async getMemberMergeInfo(
+		@Req() req: Request,
+		@Param("memberId", ParseIntPipe) memberId: number,
+		@Query() query: MemberMergeInfoQuery,
+	): Promise<MemberMergeInfoResponse> {
+		const member = await this.members.getMember(memberId);
+		if (!member) throw new NotFoundException();
+
+		MemberMergePermission.canOrThrow(req, member);
+
+		return this.memberMergeService.getMergeInfo(memberId, query.sourceMemberId);
+	}
+
+	@Post(":memberId/merge")
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@AcLinks(MemberMergePermission)
+	@ApiResponse({ status: HttpStatus.NO_CONTENT })
+	async mergeMember(
+		@Req() req: Request,
+		@Param("memberId", ParseIntPipe) memberId: number,
+		@Body() body: MemberMergeBody,
+	): Promise<void> {
+		const member = await this.members.getMember(memberId);
+		if (!member) throw new NotFoundException();
+
+		MemberMergePermission.canOrThrow(req, member);
+
+		const { manualFaces } = await this.memberMergeService.mergeMembers(
+			memberId,
+			body.sourceMemberId,
+			body.fieldsFromSource,
+		);
+
+		if (manualFaces)
+			this.photoFacesMatchingService
+				.matchAll()
+				.catch((err) => this.logger.error(`Face matching after member merge failed: ${err}`));
 	}
 }
