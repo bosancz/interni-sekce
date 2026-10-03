@@ -28,8 +28,9 @@ import {
 	PhotoFaceEditPermission,
 	PhotoFaceReadFilePermission,
 	PhotoFacesListPermission,
+	PhotoFaceSuggestionsListPermission,
 } from "../acl/photo-face.acl";
-import { PhotoFaceResponse, PhotoFaceUpdateBody } from "../dto/photo-face.dto";
+import { PhotoFaceResponse, PhotoFaceSuggestionResponse, PhotoFaceUpdateBody } from "../dto/photo-face.dto";
 
 @Controller("photos/:photoId/faces")
 @Authenticated()
@@ -59,6 +60,22 @@ export class PhotoFacesController {
 		PhotoFacesListPermission.canOrThrow(req, photo);
 
 		return this.photoFacesService.getPhotoFaces(photo.id);
+	}
+
+	@Get(":faceId/suggestions")
+	@AcLinks(PhotoFaceSuggestionsListPermission)
+	@ApiResponse({ status: 200, type: PhotoFaceSuggestionResponse, isArray: true })
+	async listPhotoFaceSuggestions(
+		@Param("photoId", ParseIntPipe) photoId: number,
+		@Param("faceId", ParseIntPipe) faceId: number,
+		@Req() req: Request,
+	): Promise<PhotoFaceSuggestionResponse[]> {
+		const face = await this.photoFacesService.getPhotoFace(photoId, faceId);
+		if (!face) throw new NotFoundException();
+
+		PhotoFaceSuggestionsListPermission.canOrThrow(req, face);
+
+		return this.photoFacesMatchingService.getSuggestions(face);
 	}
 
 	@Patch(":faceId")

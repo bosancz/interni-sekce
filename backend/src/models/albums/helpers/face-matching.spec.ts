@@ -2,8 +2,10 @@ import { PhotoFaceAssignment } from "../schema/detected-faces";
 import {
 	FACE_MATCH_MIN_DETECTION_SCORE,
 	FACE_MATCH_THRESHOLD,
+	FACE_SUGGESTION_MIN_SCORE,
 	MatchFace,
 	matchPhotoFaces,
+	pickFaceSuggestions,
 	prepareReferences,
 } from "./face-matching";
 
@@ -90,5 +92,39 @@ describe("matchPhotoFaces", () => {
 
 		expect(result.get(10)?.match).toBeNull();
 		expect(result.get(10)?.candidate?.memberId).toBe(1);
+	});
+});
+
+describe("pickFaceSuggestions", () => {
+	it("suggests only the best member when it clearly leads", () => {
+		const result = pickFaceSuggestions([
+			{ memberId: 2, score: 0.45 },
+			{ memberId: 1, score: 0.7 },
+		]);
+
+		expect(result.map((item) => item.memberId)).toEqual([1]);
+	});
+
+	it("suggests two members when they are close", () => {
+		const result = pickFaceSuggestions([
+			{ memberId: 2, score: 0.5 },
+			{ memberId: 1, score: 0.55 },
+			{ memberId: 3, score: 0.52 },
+		]);
+
+		expect(result.map((item) => item.memberId)).toEqual([1, 3]);
+	});
+
+	it("suggests nobody below the minimum score", () => {
+		expect(pickFaceSuggestions([{ memberId: 1, score: FACE_SUGGESTION_MIN_SCORE - 0.01 }])).toEqual([]);
+	});
+
+	it("drops a close second below the minimum score", () => {
+		const result = pickFaceSuggestions([
+			{ memberId: 1, score: FACE_SUGGESTION_MIN_SCORE + 0.02 },
+			{ memberId: 2, score: FACE_SUGGESTION_MIN_SCORE - 0.02 },
+		]);
+
+		expect(result.map((item) => item.memberId)).toEqual([1]);
 	});
 });

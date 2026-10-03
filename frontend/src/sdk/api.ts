@@ -6726,6 +6726,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof PhotoFaceResponseLinks
          */
+        'listPhotoFaceSuggestions': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoFaceResponseLinks
+         */
         'updatePhotoFace': AcLink;
         /**
          * 
@@ -6852,6 +6858,26 @@ export namespace SDK {
     }
     
     
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoFaceSuggestionResponse
+     */
+    export interface PhotoFaceSuggestionResponse {
+        /**
+         * 
+         * @type {MemberResponse}
+         * @memberof PhotoFaceSuggestionResponse
+         */
+        'member': MemberResponse;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoFaceSuggestionResponse
+         */
+        'score': number;
+    }
     
         /**
      * 
@@ -14147,6 +14173,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * PhotoGalleryApi - object-oriented interface
      * @export
@@ -14864,6 +14894,58 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<AlbumResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} photoId 
+         * @param {number} faceId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async listPhotoFaceSuggestions(
+            photoId: number,
+            faceId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('listPhotoFaceSuggestions', 'photoId', photoId)
+            assertParamExists('listPhotoFaceSuggestions', 'faceId', faceId)
+            
+            // verify required parameter 'faceId' is not null or undefined
+            assertParamExists('listPhotoFaceSuggestions', 'photoId', photoId)
+            assertParamExists('listPhotoFaceSuggestions', 'faceId', faceId)
+            
+            const localVarPath = `/api/photos/{photoId}/faces/{faceId}/suggestions`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)))
+                .replace(`{${"faceId"}}`, encodeURIComponent(String(faceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<PhotoFaceSuggestionResponse>>(axiosRequestConfig);
         }
     
         /**
