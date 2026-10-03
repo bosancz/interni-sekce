@@ -131,6 +131,7 @@
 ## Albums
 
 - `GET /albums` returns each album's `coverPhoto` — the title photo, else the album's first photo (`PhotosRepository.getCoverPhotosByAlbums`, `DISTINCT ON`); the public gallery keeps its own title-photo-only lookup. `albums-list` has a table/grid segment toggle at the toolbar's right (choice in `localStorage.albumsListView`); the grid shows cover photos, and the pills over them get a solid backing because the dark theme's `--bo-*-tint` backgrounds are semi-transparent. `ion-segment` is `display: grid; grid-auto-columns: 1fr`, so a compact segment needs `grid-auto-columns: max-content` + `width: fit-content`.
+- **Fotky člena (záložka Fotky i `/galerie/nove-fotky`) jsou po albech** — `groupPhotosByAlbum()` (`helpers/album-photos.ts`). `getMemberPhotos()` proto řadí podle alba (`dateFrom DESC`, pak `id`) a uvnitř jako galerie (`order`, `timestamp`), takže stránkování přidává fotky jen do posledního alba a skupiny se netrhají.
 
 ## Kontakty na rodiče
 

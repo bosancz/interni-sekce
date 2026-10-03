@@ -1,26 +1,43 @@
-<bo-card>
-	<bo-card-header>
-		<bo-card-title>
-			<span class="bo-card-section-title">
-				<ion-icon name="images-outline" />
-				Fotky
-			</span>
-		</bo-card-title>
-	</bo-card-header>
+@for (group of albums(); track group.album.id) {
+	<bo-card>
+		<bo-card-header>
+			<bo-card-title>
+				<span class="bo-card-section-title">
+					<ion-icon name="images-outline" />
+					{{ group.album.name }}
+				</span>
+			</bo-card-title>
+			<bo-card-open-button [routerLink]="['/galerie', group.album.id]" />
+		</bo-card-header>
+		<bo-card-content>
+			<bo-photo-gallery
+				[photos]="group.photos"
+				[maxHeight]="160"
+				[clickable]="true"
+				(click)="openPhoto(group, $event)"
+			/>
+		</bo-card-content>
+	</bo-card>
+} @empty {
+	<bo-card>
+		<bo-card-header>
+			<bo-card-title>
+				<span class="bo-card-section-title">
+					<ion-icon name="images-outline" />
+					Fotky
+				</span>
+			</bo-card-title>
+		</bo-card-header>
+		<bo-card-content>
+			@if (loading()) {
+				<div class="loading"><ion-spinner name="dots"></ion-spinner></div>
+			} @else {
+				<p class="empty">Na žádné fotce zatím není označený. Obličeje se přiřazují v galerii.</p>
+			}
+		</bo-card-content>
+	</bo-card>
+}
 
-	<bo-card-content>
-		@if (photos().length) {
-			<bo-photo-gallery [photos]="photos()" [maxHeight]="160" [clickable]="true" (click)="openPhoto($event)" />
-		} @else if (!loading()) {
-			<p class="empty">Na žádné fotce zatím není označený. Obličeje se přiřazují v galerii.</p>
-		}
-
-		@if (loading() && !photos().length) {
-			<div class="loading"><ion-spinner name="dots"></ion-spinner></div>
-		}
-
-		<ion-infinite-scroll [disabled]="!active() || !hasMore()" (ionInfinite)="onInfiniteScroll($any($event))">
-			<ion-infinite-scroll-content></ion-infinite-scroll-content>
-		</ion-infinite-scroll>
-	</bo-card-content>
-</bo-card>
+<ion-infinite-scroll [disabled]="!active() || !hasMore()" (ionInfinite)="onInfiniteScroll($any($event))">
+	<ion-infinite-scroll-content></ion-infinite-scroll-content>
+</ion-infinite-scroll>

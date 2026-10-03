@@ -1,4 +1,5 @@
-import { Component, effect, input, signal } from "@angular/core";
+import { Component, computed, effect, input, signal } from "@angular/core";
+import { RouterLink } from "@angular/router";
 import {
 	InfiniteScrollCustomEvent,
 	IonIcon,
@@ -14,9 +15,11 @@ import { ToastService } from "src/app/core/services/toast.service";
 import { PhotosEditComponent } from "src/app/features/albums/components/photos-edit/photos-edit.component";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
+import { CardOpenButtonComponent } from "src/app/shared/components/card-open-button/card-open-button.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
+import { AlbumPhotos, groupPhotosByAlbum } from "src/helpers/album-photos";
 import { SDK } from "src/sdk";
 
 const PAGE_SIZE = 30;
@@ -30,7 +33,9 @@ const PAGE_SIZE = 30;
 		CardHeaderComponent,
 		CardTitleComponent,
 		CardContentComponent,
+		CardOpenButtonComponent,
 		PhotoGalleryComponent,
+		RouterLink,
 		IonIcon,
 		IonInfiniteScroll,
 		IonInfiniteScrollContent,
@@ -44,6 +49,8 @@ export class MemberPhotosComponent {
 	photos = signal<SDK.PhotoResponseWithLinks[]>([]);
 	loading = signal(false);
 	hasMore = signal(false);
+
+	albums = computed(() => groupPhotosByAlbum(this.photos()));
 
 	private loadedFor?: number;
 
@@ -91,10 +98,10 @@ export class MemberPhotosComponent {
 		e.target.complete();
 	}
 
-	async openPhoto(photo: SDK.PhotoResponseWithLinks) {
+	async openPhoto(group: AlbumPhotos, photo: SDK.PhotoResponseWithLinks) {
 		await this.modalService.modal(
 			PhotosEditComponent,
-			{ photos: [...this.photos()], startPhoto: photo },
+			{ photos: [...group.photos], startPhoto: photo },
 			{ backdropDismiss: false, cssClass: "ion-modal-lg" },
 		);
 	}
