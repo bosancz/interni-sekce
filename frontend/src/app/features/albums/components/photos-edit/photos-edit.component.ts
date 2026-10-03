@@ -130,6 +130,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	private resizeObserver = new ResizeObserver(() => this.measureImage());
 
 	constructor(
+		private elementRef: ElementRef<HTMLElement>,
 		private modalController: ModalController,
 		private api: ApiService,
 		private toastService: ToastService,
@@ -314,8 +315,26 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		this.albumTags.set([...seen]);
 	}
 
+	private pressedKeys = new Set<string>();
+
+	@HostListener("document:keydown", ["$event"])
+	onKeyDown(event: KeyboardEvent) {
+		if (this.isTopOverlay()) this.pressedKeys.add(event.code);
+		else this.pressedKeys.delete(event.code);
+	}
+
+	private isTopOverlay() {
+		const overlays = document.querySelectorAll(
+			":is(ion-modal, ion-alert, ion-popover, ion-action-sheet, ion-loading, ion-picker-legacy):not(.overlay-hidden)",
+		);
+		const top = overlays.item(overlays.length - 1);
+		return top ? top === this.elementRef.nativeElement.closest("ion-modal") : true;
+	}
+
 	@HostListener("document:keyup", ["$event"])
 	onKeyUp(event: KeyboardEvent) {
+		if (!this.pressedKeys.delete(event.code)) return;
+
 		if (!this.editingCaption() && !this.infoOpen() && !this.faceMenuOpen()) {
 			switch (event.code) {
 				case "ArrowLeft":
