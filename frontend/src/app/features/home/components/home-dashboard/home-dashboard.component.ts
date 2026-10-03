@@ -12,6 +12,7 @@ import { EventCalendarComponent } from "src/app/shared/components/event-calendar
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { SDK } from "src/sdk";
 import { HomeCardMyEventsComponent } from "../home-card-my-events/home-card-my-events.component";
+import { HomeCardPhotoOfDayComponent } from "../home-card-photo-of-day/home-card-photo-of-day.component";
 import { HomeCardNoleaderEventsComponent } from "../home-card-noleader-events/home-card-noleader-events.component";
 import { HomeCardTopChildrenComponent } from "../home-card-top-children/home-card-top-children.component";
 import { HomeCardTopEventsComponent } from "../home-card-top-events/home-card-top-events.component";
@@ -42,6 +43,7 @@ const months = [
 		EventCalendarComponent,
 		HomeCardMyEventsComponent,
 		HomeCardNoleaderEventsComponent,
+		HomeCardPhotoOfDayComponent,
 		HomeCardStatisticsComponent,
 		HomeCardTopLeadersComponent,
 		HomeCardTopEventsComponent,

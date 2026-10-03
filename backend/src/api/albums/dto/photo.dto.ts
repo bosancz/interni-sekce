@@ -63,3 +63,7 @@ export class AlbumTitlePhotoBody {
 	@IsInt()
 	photoId!: number | null;
 }
+
+export class PhotoDailyResponse {
+	@ApiPropertyOptional({ type: WithLinks(PhotoResponse), nullable: true }) photo!: PhotoResponse | null;
+}
