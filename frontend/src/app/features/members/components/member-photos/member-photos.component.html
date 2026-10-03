@@ -6,6 +6,11 @@
 					<ion-icon name="images-outline" />
 					{{ group.album.name }}
 				</span>
+				@if (group.album.dateFrom || group.album.dateTill) {
+					<small class="bo-card-section-subtitle">{{
+						[group.album.dateFrom, group.album.dateTill] | dateRange
+					}}</small>
+				}
 			</bo-card-title>
 			<bo-card-open-button [routerLink]="['/galerie', group.album.id]" />
 		</bo-card-header>
