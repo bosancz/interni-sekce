@@ -165,12 +165,17 @@
 	border-radius: 11px;
 	cursor: pointer;
 
-	&:hover {
+	&:hover,
+	&.active {
 		background: var(--bm-surface-hover);
 	}
 
 	&.selected {
 		background: var(--bm-checked-bg);
+	}
+
+	&.active {
+		box-shadow: inset 0 0 0 1px var(--bm-blue);
 	}
 
 	&.pending {
