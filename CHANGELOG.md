@@ -1,3 +1,7 @@
+## v4.19.4 — 2026-10-03
+
+- <span class="changelog-type" title="fix">🐛</span> [Šipky ve fotce fungují i po výběru člena k obličeji](https://github.com/bosancz/interni-sekce/commit/ba36d8f4f2e9d872d91d88a62ea830edee7fac58) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.19.3 — 2026-10-03
 
 - <span class="changelog-type" title="patch">🚸</span> [Seznamy po návratu z detailu tiše obnoví data](https://github.com/bosancz/interni-sekce/commit/92f165d33bb92cb356b007b4a94274acc4432823) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
