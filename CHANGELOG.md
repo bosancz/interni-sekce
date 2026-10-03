@@ -1,3 +1,7 @@
+## v4.19.6 — 2026-10-03
+
+- <span class="changelog-type" title="fix">🐛</span> [Odstraněn vodorovný posuvník v levém menu na desktopu](https://github.com/bosancz/interni-sekce/commit/c78b8f878a62ee9059851c886ae3a107ddae2242) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.19.5 — 2026-10-03
 
 - <span class="changelog-type" title="fix">🐛</span> [Detekce obličejů přes celou fotku \(portrétů\)](https://github.com/bosancz/interni-sekce/commit/75e754e19af43394f12404e4bdc2fc011458c030) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
