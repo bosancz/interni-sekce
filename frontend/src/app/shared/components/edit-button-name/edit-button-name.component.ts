@@ -11,7 +11,7 @@ import { EditButtonComponent } from "../edit-button/edit-button.component";
 })
 export class EditButtonNameComponent {
 	label = input<string | undefined>();
-	placeholder = input<string | undefined>();
+	placeholder = input<{ firstName?: string; lastName?: string } | undefined>();
 	value = input<{ firstName?: string | null; lastName?: string | null } | undefined>();
 	disabled = input<boolean | undefined>();
 
@@ -25,12 +25,12 @@ export class EditButtonNameComponent {
 			header: this.label(),
 			inputs: {
 				firstName: {
-					placeholder: this.placeholder(),
+					placeholder: this.placeholder()?.firstName,
 					type: "text",
 					value: value?.firstName,
 				},
 				lastName: {
-					placeholder: this.placeholder(),
+					placeholder: this.placeholder()?.lastName,
 					type: "text",
 					value: value?.lastName,
 				},

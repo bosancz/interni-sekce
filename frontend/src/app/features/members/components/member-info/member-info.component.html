@@ -26,7 +26,7 @@
 						>
 						<bo-edit-button-name
 							label="Jméno"
-							placeholder="Bilbo"
+							[placeholder]="{ firstName: 'Bilbo', lastName: 'Pytlík' }"
 							[disabled]="!memberValue._links.updateMember.allowed"
 							[value]="{ firstName: memberValue.firstName, lastName: memberValue.lastName }"
 							(update)="update.emit({ firstName: $event.firstName, lastName: $event.lastName })"
