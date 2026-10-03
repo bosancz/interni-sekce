@@ -9,7 +9,6 @@ import { ModalService } from "src/app/core/services/modal.service";
 import { PhotosEditComponent } from "src/app/features/albums/components/photos-edit/photos-edit.component";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
-import { CardOpenButtonComponent } from "src/app/shared/components/card-open-button/card-open-button.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
@@ -28,7 +27,6 @@ import { SDK } from "src/sdk";
 		CardComponent,
 		CardHeaderComponent,
 		CardTitleComponent,
-		CardOpenButtonComponent,
 		CardContentComponent,
 		PhotoImageUrlPipe,
 	],

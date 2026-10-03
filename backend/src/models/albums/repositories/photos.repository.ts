@@ -7,6 +7,7 @@ import { User } from "src/models/users/entities/user.entity";
 import { Brackets, Repository } from "typeorm";
 import { AlbumStatus } from "../entities/album.entity";
 import { PhotoFace } from "../entities/photo-face.entity";
+import { FaceEmotion } from "../schema/detected-faces";
 import { Photo } from "../entities/photo.entity";
 import { PhotosFilesService } from "../services/photos-files.service";
 
@@ -148,9 +149,12 @@ export class PhotosRepository {
 				`EXISTS (
 					SELECT 1 FROM photo_faces faces
 					INNER JOIN members ON members.id = faces.member_id
-					WHERE faces.photo_id = photos.id AND members.role = :role AND members.deleted_at IS NULL
+					WHERE faces.photo_id = photos.id
+						AND faces.emotion = :emotion
+						AND members.role = :role
+						AND members.deleted_at IS NULL
 				)`,
-				{ role: MemberRoles.vedouci },
+				{ role: MemberRoles.vedouci, emotion: FaceEmotion.happy },
 			)
 			.orderBy("md5(photos.id::text || (now() AT TIME ZONE :timezone)::date::text)")
 			.setParameter("timezone", timezone)

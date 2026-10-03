@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsInt, IsOptional, IsString } from "class-validator";
-import { WithLinks } from "src/access-control/access-control-lib";
+import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { UserResponse } from "src/api/users/dto/user.dto";
 import { Album } from "src/models/albums/entities/album.entity";
 import { User } from "src/models/users/entities/user.entity";
@@ -65,5 +65,7 @@ export class AlbumTitlePhotoBody {
 }
 
 export class PhotoDailyResponse {
-	@ApiPropertyOptional({ type: WithLinks(PhotoResponse), nullable: true }) photo!: PhotoResponse | null;
+	@AcEntity(PhotoResponse)
+	@ApiPropertyOptional({ type: WithLinks(PhotoResponse), nullable: true })
+	photo!: PhotoResponse | null;
 }

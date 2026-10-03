@@ -2,9 +2,6 @@
 	<bo-card>
 		<bo-card-header>
 			<bo-card-title>Fotka dne</bo-card-title>
-			@if (daily()?.photo; as photo) {
-				<bo-card-open-button [routerLink]="['/galerie', photo.albumId]"></bo-card-open-button>
-			}
 		</bo-card-header>
 
 		<bo-card-content>
