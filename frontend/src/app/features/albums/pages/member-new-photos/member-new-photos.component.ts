@@ -17,6 +17,7 @@ import { CardComponent } from "src/app/shared/components/card/card.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
+import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { AlbumPhotos, groupPhotosByAlbum } from "src/helpers/album-photos";
 import { SDK } from "src/sdk";
 
@@ -36,6 +37,7 @@ const PAGE_SIZE = 200;
 		CardContentComponent,
 		CardOpenButtonComponent,
 		PhotoGalleryComponent,
+		DateRangePipe,
 		RouterLink,
 		IonButton,
 		IonIcon,

@@ -340,6 +340,16 @@ ion-select.filter-pill {
 	}
 }
 
+.bo-card-section-subtitle {
+	display: block;
+	margin-top: 2px;
+	padding-inline-start: calc(1.25rem + 9px);
+	font-family: var(--font-regular);
+	font-size: 0.8rem;
+	font-weight: normal;
+	color: var(--bo-muted);
+}
+
 .bo-info-list {
 	display: flex;
 	flex-direction: column;
