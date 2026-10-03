@@ -1,13 +1,12 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { setImmediate } from "timers/promises";
 import { Member } from "src/models/members/entities/member.entity";
-import { DataSource, In } from "typeorm";
+import { DataSource, Not } from "typeorm";
 import { PhotoFace } from "../entities/photo-face.entity";
 import { Photo } from "../entities/photo.entity";
 import {
 	FACE_MATCH_SETTINGS,
 	FACE_MATCH_THRESHOLD,
-	FaceMatch,
 	FaceReference,
 	FacesMatchStats,
 	MatchFace,
@@ -104,37 +103,23 @@ export class PhotoFacesMatchingService {
 		return stats;
 	}
 
-	async getSuggestions(face: { id: PhotoFace["id"]; photoId: Photo["id"] }) {
-		const candidates: FaceMatch[] = await this.dataSource.query(
-			`SELECT r.member_id AS "memberId", max(s.score) AS "score"
-			FROM photo_faces f
-			JOIN photo_faces r ON r.assignment = $2 AND r.member_id IS NOT NULL AND r.descriptor IS NOT NULL
-				AND array_length(r.descriptor, 1) = array_length(f.descriptor, 1)
-			CROSS JOIN LATERAL (SELECT sum(a * b) AS score FROM unnest(f.descriptor, r.descriptor) AS t(a, b)) s
-			WHERE f.id = $1 AND f.descriptor IS NOT NULL
-			AND r.member_id NOT IN (
-				SELECT o.member_id FROM photo_faces o
-				WHERE o.photo_id = f.photo_id AND o.id <> f.id AND o.member_id IS NOT NULL
-			)
-			GROUP BY r.member_id
-			ORDER BY 2 DESC
-			LIMIT 3`,
-			[face.id, PhotoFaceAssignment.manual],
-		);
+	async getSuggestions(
+		face: Pick<PhotoFace, "id" | "photoId" | "candidateMemberId" | "candidateScore">,
+	): Promise<{ member: Member; score: number }[]> {
+		if (face.candidateMemberId === null || face.candidateScore === null) return [];
 
-		const suggestions = pickFaceSuggestions(
-			candidates.map((candidate) => ({ memberId: candidate.memberId, score: Number(candidate.score) })),
-		);
-		if (!suggestions.length) return [];
+		const [suggestion] = pickFaceSuggestions([{ memberId: face.candidateMemberId, score: face.candidateScore }]);
+		if (!suggestion) return [];
 
-		const members = await this.dataSource
-			.getRepository(Member)
-			.findBy({ id: In(suggestions.map((suggestion) => suggestion.memberId)) });
-
-		return suggestions.flatMap((suggestion) => {
-			const member = members.find((item) => item.id === suggestion.memberId);
-			return member ? [{ member, score: suggestion.score }] : [];
+		const assignedElsewhere = await this.dataSource.getRepository(PhotoFace).existsBy({
+			photoId: face.photoId,
+			id: Not(face.id),
+			memberId: suggestion.memberId,
 		});
+		if (assignedElsewhere) return [];
+
+		const member = await this.dataSource.getRepository(Member).findOneBy({ id: suggestion.memberId });
+		return member ? [{ member, score: suggestion.score }] : [];
 	}
 
 	matchAll() {
