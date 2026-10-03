@@ -1,6 +1,6 @@
 import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
-import { PhotoResponse } from "../dto/photo.dto";
+import { PhotoDailyResponse, PhotoResponse } from "../dto/photo.dto";
 
 export const PhotosListPermission = new Permission<void>({
 	linkTo: RootResponse,
@@ -13,6 +13,7 @@ export const PhotosListPermission = new Permission<void>({
 
 export const PhotoDailyPermission = new Permission<void>({
 	linkTo: RootResponse,
+	contains: PhotoDailyResponse,
 
 	allowed: {
 		vedouci: true,
