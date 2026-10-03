@@ -3512,6 +3512,20 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface FaceMatchingSettingsUpdateBody
+     */
+    export interface FaceMatchingSettingsUpdateBody {
+        /**
+         * 
+         * @type {number}
+         * @memberof FaceMatchingSettingsUpdateBody
+         */
+        'threshold': number;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface FaceMatchingStatusResponse
      */
     export interface FaceMatchingStatusResponse {
@@ -7534,6 +7548,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'getFaceMatchingSummary': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'updateFaceMatchingSettings': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -17894,6 +17914,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * WorkerApi - object-oriented interface
      * @export
@@ -18209,6 +18233,51 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async updateFaceMatchingSettings(
+            body: FaceMatchingSettingsUpdateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'faceMatchingSettingsUpdateBody' is not null or undefined
+            assertParamExists('updateFaceMatchingSettings', 'faceMatchingSettingsUpdateBody', body)
+            
+            const localVarPath = `/api/face-detection/matching/settings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<FaceMatchingSettingsResponse>(axiosRequestConfig);
         }
     }
     

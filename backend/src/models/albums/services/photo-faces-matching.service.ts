@@ -1,12 +1,13 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { setImmediate } from "timers/promises";
 import { Member } from "src/models/members/entities/member.entity";
+import { FaceMatchingSettingsRepository } from "src/models/settings/repositories/face-matching-settings.repository";
 import { DataSource, Not } from "typeorm";
 import { PhotoFace } from "../entities/photo-face.entity";
 import { Photo } from "../entities/photo.entity";
 import {
 	FACE_MATCH_SETTINGS,
-	FACE_MATCH_THRESHOLD,
+	FaceMatchSettings,
 	FaceReference,
 	FacesMatchStats,
 	MatchFace,
@@ -70,7 +71,22 @@ export class PhotoFacesMatchingService {
 	private lastRun: FacesMatchRun | null = null;
 	private queuedAll?: Promise<FacesMatchStats>;
 
-	constructor(private dataSource: DataSource) {}
+	constructor(
+		private dataSource: DataSource,
+		private faceMatchingSettings: FaceMatchingSettingsRepository,
+	) {}
+
+	async getSettings(): Promise<FaceMatchSettings> {
+		const stored = await this.faceMatchingSettings.getFaceMatchingSettings();
+		return { ...FACE_MATCH_SETTINGS, threshold: stored?.threshold ?? FACE_MATCH_SETTINGS.threshold };
+	}
+
+	async updateSettings(data: Pick<FaceMatchSettings, "threshold">): Promise<FaceMatchSettings> {
+		await this.faceMatchingSettings.updateFaceMatchingSettings({
+			threshold: Math.round(data.threshold * 100) / 100,
+		});
+		return this.getSettings();
+	}
 
 	getStatus() {
 		return { current: this.current, queued: !!this.queuedAll, lastRun: this.lastRun };
@@ -85,7 +101,7 @@ export class PhotoFacesMatchingService {
 			[PhotoFaceAssignment.manual],
 		);
 
-		return analyzeFaceMatching(decisions, FACE_MATCH_SETTINGS);
+		return analyzeFaceMatching(decisions, await this.getSettings());
 	}
 
 	async getFacesStats() {
@@ -174,6 +190,7 @@ export class PhotoFacesMatchingService {
 
 	private async matchChanges(changes: PendingChanges, progress: FacesMatchProgress) {
 		const photoIds = new Set(changes.photoIds);
+		const settings = await this.getSettings();
 
 		const similar: { photoId: number }[] = await this.dataSource.query(
 			`SELECT DISTINCT f.photo_id AS "photoId" FROM photo_faces f
@@ -183,7 +200,7 @@ export class PhotoFacesMatchingService {
 				WHERE r.id = ANY($2) AND r.assignment = $3 AND r.member_id IS NOT NULL AND r.descriptor IS NOT NULL
 				AND (SELECT sum(a * b) FROM unnest(f.descriptor, r.descriptor) AS t(a, b)) >= $4
 			)`,
-			[PhotoFaceAssignment.auto, [...changes.faceIds], PhotoFaceAssignment.manual, FACE_MATCH_THRESHOLD],
+			[PhotoFaceAssignment.auto, [...changes.faceIds], PhotoFaceAssignment.manual, settings.threshold],
 		);
 		similar.forEach((row) => photoIds.add(row.photoId));
 
@@ -248,6 +265,7 @@ export class PhotoFacesMatchingService {
 		stats.photos = photoIds.length;
 		if (!photoIds.length) return stats;
 
+		const settings = await this.getSettings();
 		const references = prepareReferences(await this.loadReferences());
 
 		for (let i = 0; i < photoIds.length; i += PHOTOS_CHUNK) {
@@ -277,7 +295,7 @@ export class PhotoFacesMatchingService {
 					yieldedAt = Date.now();
 				}
 
-				const results = matchPhotoFaces(faces, references);
+				const results = matchPhotoFaces(faces, references, settings);
 
 				for (const face of faces) {
 					const result = results.get(face.id);

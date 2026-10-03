@@ -169,6 +169,52 @@
 							}
 						</div>
 
+						<div class="fm-actions fm-threshold">
+							<ion-input
+								class="fm-threshold-input"
+								type="number"
+								inputmode="decimal"
+								label="Hranice skóre"
+								labelPlacement="stacked"
+								fill="outline"
+								[min]="0"
+								[max]="1"
+								[step]="0.01"
+								[value]="thresholdDraft() ?? score(s.settings.threshold)"
+								[disabled]="!canUpdateSettings() || savingThreshold()"
+								[class.ion-invalid]="thresholdInvalid()"
+								[class.ion-touched]="thresholdInvalid()"
+								errorText="Zadej číslo od 0 do 1."
+								(ionInput)="onThresholdInput($event.detail.value)"
+								(keyup.enter)="saveThreshold()"
+							></ion-input>
+							<ion-button
+								[disabled]="
+									!canUpdateSettings() ||
+									savingThreshold() ||
+									thresholdInvalid() ||
+									!thresholdChanged()
+								"
+								[boTooltip]="!canUpdateSettings() ? 'Na změnu hranice nemáš oprávnění.' : ''"
+								(click)="saveThreshold()"
+							>
+								Uložit
+							</ion-button>
+							@if (s.analysis.proposed; as proposed) {
+								@if (thresholdOutdated()) {
+									<ion-button
+										fill="outline"
+										[disabled]="!canUpdateSettings() || savingThreshold()"
+										[boTooltip]="!canUpdateSettings() ? 'Na změnu hranice nemáš oprávnění.' : ''"
+										(click)="saveThreshold(proposed.threshold)"
+									>
+										Použít návrh {{ score(proposed.threshold) }}
+									</ion-button>
+								}
+							}
+							<span class="muted">Uložení spustí přepočet všech automatických přiřazení.</span>
+						</div>
+
 						<div class="fm-note muted">
 							@if (!s.analysis.enoughData) {
 								<p>
@@ -186,8 +232,8 @@
 								Návrh vychází z {{ s.analysis.decisions }} ručních rozhodnutí o obličejích, u kterých
 								systém znal svého kandidáta ({{ s.analysis.correctCandidates }}× trefil,
 								{{ s.analysis.wrongCandidates }}× ne). Navržená je nejnižší hranice, nad kterou je
-								správně aspoň {{ percent(s.analysis.targetPrecision) }} přiřazení. Hodnoty jsou v kódu a
-								samy se nemění.
+								správně aspoň {{ percent(s.analysis.targetPrecision) }} přiřazení. Hranice se sama
+								nemění, ostatní hodnoty jsou v kódu.
 							</p>
 						</div>
 					</bo-card-content>

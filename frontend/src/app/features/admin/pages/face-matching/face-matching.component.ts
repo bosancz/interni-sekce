@@ -1,6 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, computed, OnDestroy, OnInit, signal } from "@angular/core";
-import { IonButton, IonIcon, IonProgressBar, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonButton, IonIcon, IonInput, IonProgressBar, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { optionsOutline, peopleOutline, refreshOutline, statsChartOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -34,6 +34,7 @@ const TRIGGER_LABELS: Record<SDK.FaceMatchingTriggerEnum, string> = {
 		PageContentComponent,
 		IonButton,
 		IonIcon,
+		IonInput,
 		IonProgressBar,
 		IonSkeletonText,
 		CardComponent,
@@ -48,8 +49,22 @@ const TRIGGER_LABELS: Record<SDK.FaceMatchingTriggerEnum, string> = {
 export class FaceMatchingComponent implements OnInit, OnDestroy {
 	summary = signal<SDK.FaceMatchingSummaryResponse | undefined>(undefined);
 	starting = signal(false);
+	savingThreshold = signal(false);
+	thresholdDraft = signal<number | null>(null);
 
 	canRunMatching = computed(() => this.api.links()?.runFaceMatching.allowed ?? false);
+	canUpdateSettings = computed(() => this.api.links()?.updateFaceMatchingSettings.allowed ?? false);
+
+	thresholdInvalid = computed(() => {
+		const draft = this.thresholdDraft();
+		return draft !== null && (isNaN(draft) || draft < 0 || draft > 1);
+	});
+
+	thresholdChanged = computed(() => {
+		const draft = this.thresholdDraft();
+		const current = this.summary()?.settings.threshold;
+		return draft !== null && current !== undefined && Math.round(draft * 100) !== Math.round(current * 100);
+	});
 
 	busy = computed(() => {
 		const status = this.summary()?.status;
@@ -135,6 +150,27 @@ export class FaceMatchingComponent implements OnInit, OnDestroy {
 			this.toastService.toast("Přepočet přiřazení se nepodařil.", { color: "danger" });
 		} finally {
 			this.starting.set(false);
+		}
+	}
+
+	onThresholdInput(value: string | number | null | undefined) {
+		this.thresholdDraft.set(value === null || value === undefined || value === "" ? NaN : Number(value));
+	}
+
+	async saveThreshold(threshold = this.thresholdDraft()) {
+		if (!this.canUpdateSettings() || threshold === null || isNaN(threshold) || threshold < 0 || threshold > 1)
+			return;
+
+		this.savingThreshold.set(true);
+		try {
+			await this.api.WorkerApi.updateFaceMatchingSettings({ threshold: Math.round(threshold * 100) / 100 });
+			this.thresholdDraft.set(null);
+			this.toastService.toast("Hranice uložena, přiřazení se přepočítává.");
+			await this.refresh();
+		} catch {
+			this.toastService.toast("Hranici se nepodařilo uložit.", { color: "danger" });
+		} finally {
+			this.savingThreshold.set(false);
 		}
 	}
 

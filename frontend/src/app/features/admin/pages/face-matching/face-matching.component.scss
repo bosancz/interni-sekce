@@ -50,6 +50,22 @@
 	font-size: 0.9em;
 }
 
+.fm-threshold {
+	align-items: flex-start;
+
+	ion-button {
+		margin-top: 10px;
+	}
+
+	.muted {
+		flex-basis: 100%;
+	}
+}
+
+.fm-threshold-input {
+	width: 140px;
+}
+
 .fm-note {
 	padding: 13px 20px 16px;
 	border-top: 1px solid var(--bo-card-line);
