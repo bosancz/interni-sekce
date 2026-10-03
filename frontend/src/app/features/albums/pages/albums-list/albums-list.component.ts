@@ -50,6 +50,7 @@ import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 
 import { UrlParams } from "src/helpers/typings";
 import { SDK } from "src/sdk";
+import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loading";
 
 @UntilDestroy()
 @Component({
@@ -207,6 +208,10 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	private loadToken = 0;
 
+	private loadedFilterKey: string | null = null;
+
+	private hasLeft = false;
+
 	constructor(
 		private api: ApiService,
 		private alertController: AlertController,
@@ -238,6 +243,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	ionViewWillEnter() {
 		this.loadYears();
+		if (this.hasLeft) this.loadAlbums(this.filter, "refresh");
 	}
 
 	setView(view: "table" | "grid") {
@@ -246,10 +252,16 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	ionViewWillLeave(): void {
 		this.alert?.dismiss();
+		this.hasLeft = true;
 	}
 
 	onParams(params: Params) {
 		this.model.setCommitted(this.modelFromParams(params));
+
+		const filterKey = getParamsKey(params);
+		if (filterKey === this.loadedFilterKey) return;
+		this.loadedFilterKey = filterKey;
+
 		this.filter = { ...params };
 		this.loadAlbums(this.filter);
 	}
@@ -304,7 +316,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
 		try {
-			await this.loadAlbums(this.filter, true);
+			await this.loadAlbums(this.filter, "more");
 		} finally {
 			e.target.complete();
 		}
@@ -316,12 +328,12 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		this.years.set(years);
 	}
 
-	private async loadAlbums(filter: UrlParams, loadMore = false) {
-		if (loadMore) {
+	private async loadAlbums(filter: UrlParams, mode: ListLoadMode = "reset") {
+		if (mode === "more") {
 			const currentAlbums = this.albums();
 			if (!currentAlbums || currentAlbums.length < this.page() * this.pageSize) return;
 			this.page.set(this.page() + 1);
-		} else {
+		} else if (mode === "reset") {
 			this.page.set(1);
 			this.albums.set(undefined);
 		}
@@ -332,7 +344,6 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 			year: this.normalizeFilterValueToArray(filter.year).map((year) => parseInt(year, 10)),
 			sort: (filter.sort as string) || undefined,
 			order: (filter.order as SDK.ListAlbumsOrderEnum) || undefined,
-			offset: (this.page() - 1) * this.pageSize,
 			limit: this.pageSize,
 		};
 
@@ -340,10 +351,17 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 		let newAlbums: SDK.AlbumResponseWithLinks[];
 		try {
-			newAlbums = await this.api.PhotoGalleryApi.listAlbums(params).then((res) => res.data);
+			const pages = await Promise.all(
+				getPagesToLoad(mode, this.page()).map((page) =>
+					this.api.PhotoGalleryApi.listAlbums({ ...params, offset: (page - 1) * this.pageSize }).then(
+						(res) => res.data,
+					),
+				),
+			);
+			newAlbums = pages.flat();
 		} catch (err) {
-			if (token !== this.loadToken) return;
-			if (loadMore) {
+			if (token !== this.loadToken || mode === "refresh") return;
+			if (mode === "more") {
 				this.page.set(this.page() - 1);
 			} else {
 				this.albums.set([]);
@@ -354,12 +372,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 		if (token !== this.loadToken) return;
 
-		const currentAlbums = this.albums();
-		if (!currentAlbums) {
-			this.albums.set(newAlbums);
-		} else {
-			this.albums.set([...currentAlbums, ...newAlbums]);
-		}
+		this.albums.set(mode === "more" ? [...(this.albums() ?? []), ...newAlbums] : newAlbums);
 	}
 
 	// TODO: move to own page

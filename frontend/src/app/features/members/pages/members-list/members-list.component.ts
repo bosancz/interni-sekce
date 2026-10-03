@@ -16,6 +16,7 @@ import {
 	IonPopover,
 	IonToggle,
 	ViewWillEnter,
+	ViewWillLeave,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
@@ -43,6 +44,7 @@ import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 import { MembershipPaymentStates } from "../../../../core/config/membership";
 import { MemberCreateModalComponent } from "../../components/member-create-modal/member-create-modal.component";
+import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loading";
 
 const COLUMNS_ICON =
 	"data:image/svg+xml;utf8," +
@@ -103,7 +105,7 @@ const MEMBERS_LIST_COLUMNS: { [key: string]: boolean } = {
 	],
 	providers: [FilterModel],
 })
-export class MembersListComponent implements OnInit, ViewWillEnter {
+export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeave {
 	private model = inject(FilterModel);
 
 	private userSettings = inject(UserSettingsService);
@@ -243,6 +245,11 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 
 	ionViewWillEnter() {
 		this.loadGroups();
+		if (this.hasLeft) this.loadMembers(this.filter, "refresh");
+	}
+
+	ionViewWillLeave() {
+		this.hasLeft = true;
 	}
 
 	export() {
@@ -283,8 +290,17 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 		this.toasts.toast("Zkopírováno do schránky.");
 	}
 
+	private loadedFilterKey: string | null = null;
+
+	private hasLeft = false;
+
 	onParams(params: Params) {
 		this.model.setCommitted(this.modelFromParams(params));
+
+		const filterKey = getParamsKey(params);
+		if (filterKey === this.loadedFilterKey) return;
+		this.loadedFilterKey = filterKey;
+
 		this.filter = { ...params };
 		this.loadMembers(this.filter);
 	}
@@ -328,16 +344,16 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 	}
 
 	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
-		await this.loadMembers(this.filter, true);
+		await this.loadMembers(this.filter, "more");
 		e.target.complete();
 	}
 
-	private async loadMembers(filter: FilterData, loadMore: boolean = false) {
-		if (loadMore) {
+	private async loadMembers(filter: FilterData, mode: ListLoadMode = "reset") {
+		if (mode === "more") {
 			const memberList = this.members();
 			if (!memberList || memberList.length < this.page * this.pageSize) return;
 			this.page++;
-		} else {
+		} else if (mode === "reset") {
 			this.page = 1;
 			this.members.set([]);
 		}
@@ -346,7 +362,6 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 
 		const params: SDK.MembersApiListMembersQueryParams = {
 			search: filter.search || undefined,
-			offset: (this.page - 1) * this.pageSize,
 			roles: this.normalizeFilterValueToArray(filter["roles"]) as SDK.ListMembersRolesEnum[],
 			membership: this.normalizeFilterValueToArray(filter["membership"]) as SDK.MembershipPaymentStatesEnum[],
 			limit: this.pageSize,
@@ -357,12 +372,21 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 			order: (filter["order"] as SDK.ListMembersOrderEnum) || undefined,
 		};
 
-		const members = await this.api.MembersApi.listMembers(params).then((res) => res.data);
+		const pages = await Promise.all(
+			getPagesToLoad(mode, this.page).map((page) =>
+				this.api.MembersApi.listMembers({ ...params, offset: (page - 1) * this.pageSize }).then(
+					(res) => res.data,
+				),
+			),
+		).catch((err) => {
+			if (mode === "refresh") return null;
+			throw err;
+		});
 
-		if (loadId !== this.latestLoadId) return;
+		if (loadId !== this.latestLoadId || !pages) return;
 
-		const currentMembers = this.members() || [];
-		this.members.set([...currentMembers, ...members]);
+		const members = pages.flat();
+		this.members.set(mode === "more" ? [...(this.members() ?? []), ...members] : members);
 	}
 
 	private needsContacts(): boolean {
