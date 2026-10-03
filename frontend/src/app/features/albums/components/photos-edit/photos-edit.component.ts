@@ -1,4 +1,4 @@
-import { DatePipe } from "@angular/common";
+import { DatePipe, DecimalPipe } from "@angular/common";
 import {
 	Component,
 	computed,
@@ -27,6 +27,7 @@ import {
 	IonLabel,
 	IonList,
 	IonPopover,
+	IonSpinner,
 	IonToolbar,
 	ModalController,
 } from "@ionic/angular/standalone";
@@ -43,6 +44,7 @@ import {
 	imageOutline,
 	personAddOutline,
 	personOutline,
+	sparklesOutline,
 	trashOutline,
 	star,
 	starOutline,
@@ -67,6 +69,7 @@ import { PhotoTagsEditorComponent } from "../photo-tags-editor/photo-tags-editor
 	imports: [
 		FormsModule,
 		DatePipe,
+		DecimalPipe,
 		IonContent,
 		IonToolbar,
 		IonButtons,
@@ -78,6 +81,7 @@ import { PhotoTagsEditorComponent } from "../photo-tags-editor/photo-tags-editor
 		IonInputStandalone,
 		IonIcon,
 		IonChip,
+		IonSpinner,
 		PhotoImageUrlPipe,
 		TooltipDirective,
 		PhotoTagsEditorComponent,
@@ -116,6 +120,8 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	faceMenuOpen = signal(false);
 	faceMenuEvent = signal<Event | undefined>(undefined);
 	selectedFace = signal<SDK.PhotoFaceResponseWithLinks | undefined>(undefined);
+	faceSuggestions = signal<SDK.PhotoFaceSuggestionResponse[]>([]);
+	faceSuggestionsLoading = signal(false);
 
 	faceEmotions = FACE_EMOTIONS;
 	faceEmotionLabel = faceEmotionLabel;
@@ -135,6 +141,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		addIcons({
 			checkmarkCircleOutline,
 			helpCircleOutline,
+			sparklesOutline,
 			closeCircleOutline,
 			happyOutline,
 			personAddOutline,
@@ -206,6 +213,29 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		this.selectedFace.set(face);
 		this.faceMenuEvent.set(event);
 		this.faceMenuOpen.set(true);
+		this.loadFaceSuggestions(face);
+	}
+
+	private async loadFaceSuggestions(face: SDK.PhotoFaceResponseWithLinks) {
+		this.faceSuggestions.set([]);
+		if (face.member || !face._links.listPhotoFaceSuggestions.allowed) return;
+
+		this.faceSuggestionsLoading.set(true);
+		try {
+			const suggestions = await this.api.PhotoGalleryApi.listPhotoFaceSuggestions(face.photoId, face.id).then(
+				(res) => res.data,
+			);
+			if (this.selectedFace()?.id === face.id) this.faceSuggestions.set(suggestions);
+		} catch {
+			if (this.selectedFace()?.id === face.id) this.faceSuggestions.set([]);
+		} finally {
+			if (this.selectedFace()?.id === face.id) this.faceSuggestionsLoading.set(false);
+		}
+	}
+
+	async acceptSuggestion(face: SDK.PhotoFaceResponseWithLinks, suggestion: SDK.PhotoFaceSuggestionResponse) {
+		this.faceMenuOpen.set(false);
+		await this.updateFace(face, suggestion.member.id);
 	}
 
 	async assignFace(face: SDK.PhotoFaceResponseWithLinks) {

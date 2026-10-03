@@ -39,6 +39,11 @@ export class PhotoFaceResponse {
 	@ApiPropertyOptional({ type: MemberResponse, nullable: true }) member?: Member | null;
 }
 
+export class PhotoFaceSuggestionResponse {
+	@ApiProperty({ type: MemberResponse }) member!: Member;
+	@ApiProperty({ type: "number" }) score!: number;
+}
+
 export class PhotoFaceUpdateBody {
 	@ApiProperty({ type: "integer", nullable: true })
 	@IsOptional()

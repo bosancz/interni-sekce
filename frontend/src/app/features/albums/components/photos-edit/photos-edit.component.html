@@ -298,6 +298,26 @@
 							</ion-label>
 						</ion-item>
 					}
+					@if (faceSuggestionsLoading()) {
+						<ion-item class="face-suggestions-loading">
+							<ion-spinner slot="start" name="dots"></ion-spinner>
+							<ion-label>Hledám, kdo to může být…</ion-label>
+						</ion-item>
+					}
+					@for (suggestion of faceSuggestions(); track suggestion.member.id) {
+						<ion-item
+							button
+							[detail]="false"
+							[disabled]="!face._links.updatePhotoFace.allowed"
+							(click)="acceptSuggestion(face, suggestion)"
+						>
+							<ion-icon slot="start" name="sparkles-outline" color="primary"></ion-icon>
+							<ion-label>
+								Je to {{ suggestion.member.nickname }}?
+								<p>Návrh, shoda {{ suggestion.score * 100 | number: "1.0-0" }} %</p>
+							</ion-label>
+						</ion-item>
+					}
 					<ion-item
 						button
 						[detail]="false"

@@ -4,6 +4,9 @@ export const FACE_MATCH_THRESHOLD = 0.58;
 export const FACE_MATCH_MARGIN = 0.05;
 export const FACE_MATCH_MIN_DETECTION_SCORE = 0.9;
 
+export const FACE_SUGGESTION_MIN_SCORE = 0.36;
+export const FACE_SUGGESTION_MARGIN = 0.1;
+
 export interface FaceMatchSettings {
 	threshold: number;
 	margin: number;
@@ -167,4 +170,14 @@ export function isMatch(
 	if (secondScore !== null && score - secondScore < settings.margin) return false;
 	if (detectionScore !== null && detectionScore < settings.minDetectionScore) return false;
 	return true;
+}
+
+export function pickFaceSuggestions(candidates: FaceMatch[]): FaceMatch[] {
+	const [first, second] = [...candidates]
+		.filter((candidate) => candidate.score >= FACE_SUGGESTION_MIN_SCORE)
+		.sort((a, b) => b.score - a.score);
+
+	if (!first) return [];
+	if (!second || first.score - second.score >= FACE_SUGGESTION_MARGIN) return [first];
+	return [first, second];
 }

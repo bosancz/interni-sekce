@@ -231,3 +231,13 @@ ion-toolbar {
 	--color: var(--bo-muted);
 	font-size: 0.9em;
 }
+
+.face-suggestions-loading {
+	--color: var(--bo-muted);
+	font-size: 0.9em;
+
+	ion-spinner {
+		width: 20px;
+		height: 20px;
+	}
+}
