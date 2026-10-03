@@ -4,6 +4,7 @@ import { Album } from "./album.entity";
 import { PhotoFace } from "./photo-face.entity";
 
 @Entity("photos")
+@Index("IDX_photos_album_id", ["albumId"])
 @Index("IDX_photos_faces_pending", ["timestamp", "id"], { where: "faces_detected_at IS NULL" })
 export class Photo {
 	@PrimaryGeneratedColumn()
