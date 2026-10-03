@@ -7,6 +7,7 @@ import {
 	Logger,
 	Optional,
 	Post,
+	Put,
 	Query,
 	Req,
 	ServiceUnavailableException,
@@ -16,7 +17,6 @@ import { Request } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Config } from "src/config";
-import { FACE_MATCH_SETTINGS } from "src/models/albums/helpers/face-matching";
 import { FaceReviewOrder } from "src/models/albums/schema/detected-faces";
 import { PhotoFacesMatchingService } from "src/models/albums/services/photo-faces-matching.service";
 import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
@@ -26,6 +26,7 @@ import {
 	FaceDetectionLogPermission,
 	FaceDetectionSummaryPermission,
 	FaceMatchingRunPermission,
+	FaceMatchingSettingsUpdatePermission,
 	FaceMatchingSummaryPermission,
 	FaceReviewPermission,
 } from "../acl/worker.acl";
@@ -35,6 +36,8 @@ import {
 	FaceDetectionLogEntryResponse,
 	FaceDetectionLogQuery,
 	FaceDetectionSummaryResponse,
+	FaceMatchingSettingsResponse,
+	FaceMatchingSettingsUpdateBody,
 	FaceMatchingSummaryResponse,
 	FaceReviewQuery,
 	FaceReviewResponse,
@@ -134,19 +137,36 @@ export class FaceDetectionController {
 	async getFaceMatchingSummary(@Req() req: Request): Promise<FaceMatchingSummaryResponse> {
 		FaceMatchingSummaryPermission.canOrThrow(req);
 
-		const [faces, analysis, queue] = await Promise.all([
+		const [settings, faces, analysis, queue] = await Promise.all([
+			this.photoFacesMatchingService.getSettings(),
 			this.photoFacesMatchingService.getFacesStats(),
 			this.photoFacesMatchingService.getAnalysis(),
 			this.facesDetectionService?.getQueueStatus() ?? null,
 		]);
 
 		return {
-			settings: FACE_MATCH_SETTINGS,
+			settings,
 			status: this.photoFacesMatchingService.getStatus(),
 			faces,
 			analysis,
 			nextMatchAt: queue?.nextMatchAt ?? null,
 		};
+	}
+
+	@Put("matching/settings")
+	@AcLinks(FaceMatchingSettingsUpdatePermission)
+	@ApiResponse({ status: 200, type: FaceMatchingSettingsResponse })
+	async updateFaceMatchingSettings(
+		@Req() req: Request,
+		@Body() body: FaceMatchingSettingsUpdateBody,
+	): Promise<FaceMatchingSettingsResponse> {
+		FaceMatchingSettingsUpdatePermission.canOrThrow(req);
+
+		const settings = await this.photoFacesMatchingService.updateSettings({ threshold: body.threshold });
+
+		this.photoFacesMatchingService.matchAll().catch((err) => this.logger.error(`Face matching failed: ${err}`));
+
+		return settings;
 	}
 
 	@Post("match")

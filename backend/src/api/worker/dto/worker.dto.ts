@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
-import { IsEnum, IsInt, IsOptional, Max, Min, ValidateIf } from "class-validator";
+import { IsEnum, IsInt, IsNumber, IsOptional, Max, Min, ValidateIf } from "class-validator";
 import { FaceEmotionsResponse, PhotoFaceResponse } from "src/api/albums/dto/photo-face.dto";
 import { MemberResponse } from "src/api/members/dto/member.dto";
 import { Member } from "src/models/members/entities/member.entity";
@@ -119,6 +119,10 @@ export class FaceMatchingSettingsResponse {
 	@ApiProperty() threshold!: number;
 	@ApiProperty() margin!: number;
 	@ApiProperty() minDetectionScore!: number;
+}
+
+export class FaceMatchingSettingsUpdateBody {
+	@ApiProperty() @IsNumber() @Min(0) @Max(1) threshold!: number;
 }
 
 export class FaceMatchingProgressResponse {

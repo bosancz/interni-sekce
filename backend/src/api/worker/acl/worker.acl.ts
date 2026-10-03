@@ -46,6 +46,11 @@ export const FaceMatchingSummaryPermission = new Permission<void>({
 	inherit: FaceDetectionSummaryPermission,
 });
 
+export const FaceMatchingSettingsUpdatePermission = new Permission<void>({
+	linkTo: RootResponse,
+	inherit: FaceDetectionSummaryPermission,
+});
+
 export const FaceReviewPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: FaceReviewResponse,

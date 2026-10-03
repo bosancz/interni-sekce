@@ -1,6 +1,6 @@
 import { PhotoFaceAssignment } from "../schema/detected-faces";
 
-export const FACE_MATCH_THRESHOLD = 0.58;
+export const FACE_MATCH_THRESHOLD = 0.5;
 export const FACE_MATCH_MARGIN = 0.05;
 export const FACE_MATCH_MIN_DETECTION_SCORE = 0.9;
 
@@ -86,7 +86,11 @@ export function prepareReferences(references: FaceReference[]): FaceReferences {
 	return { members, memberIndexes, descriptors, dimensions, count: valid.length };
 }
 
-export function matchPhotoFaces(faces: MatchFace[], references: FaceReferences): Map<number, FaceMatchResult> {
+export function matchPhotoFaces(
+	faces: MatchFace[],
+	references: FaceReferences,
+	settings: FaceMatchSettings = FACE_MATCH_SETTINGS,
+): Map<number, FaceMatchResult> {
 	const { members, memberIndexes, descriptors, dimensions, count } = references;
 
 	const manualMembers = new Set(
@@ -141,7 +145,7 @@ export function matchPhotoFaces(faces: MatchFace[], references: FaceReferences):
 			secondScore: secondScore === -Infinity ? null : secondScore,
 		});
 
-		if (!isMatch(bestScore, secondScore, face.detectionScore)) continue;
+		if (!isMatch(bestScore, secondScore, face.detectionScore, settings)) continue;
 
 		proposals.push({ faceId: face.id, memberId: members[best], score: bestScore });
 	}

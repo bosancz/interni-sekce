@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { FilesModule } from "src/models/files/files.module";
 import { NotificationsModelModule } from "src/models/notifications/notifications-model.module";
+import { SettingsModelModule } from "src/models/settings/settings-model.module";
 import { CleanAlbumsMetadataCommand } from "./commands/clean-album-metadata.command";
 import { FacesMatchCommand } from "./commands/faces-match.command";
 import { FacesNotifyCommand } from "./commands/faces-notify.command";
@@ -20,7 +21,12 @@ import { PhotosFilesService } from "./services/photos-files.service";
 import { PhotosMaintenanceService } from "./services/photos-maintenance.service";
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Album, Photo, PhotoFace]), FilesModule, NotificationsModelModule],
+	imports: [
+		TypeOrmModule.forFeature([Album, Photo, PhotoFace]),
+		FilesModule,
+		NotificationsModelModule,
+		SettingsModelModule,
+	],
 	providers: [
 		AlbumsRepository,
 		AlbumsMetadataService,

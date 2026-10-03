@@ -1,6 +1,7 @@
 import { PhotoFaceAssignment } from "../schema/detected-faces";
 import {
 	FACE_MATCH_MIN_DETECTION_SCORE,
+	FACE_MATCH_SETTINGS,
 	FACE_MATCH_THRESHOLD,
 	FACE_SUGGESTION_MIN_SCORE,
 	MatchFace,
@@ -92,6 +93,18 @@ describe("matchPhotoFaces", () => {
 
 		expect(result.get(10)?.match).toBeNull();
 		expect(result.get(10)?.candidate?.memberId).toBe(1);
+	});
+
+	it("respects the configured threshold", () => {
+		const faces = [face(10, vector(1, 0.8, 0))];
+
+		expect(
+			matchPhotoFaces(faces, references, { ...FACE_MATCH_SETTINGS, threshold: 0.9 }).get(10)?.match,
+		).toBeNull();
+		expect(
+			matchPhotoFaces(faces, references, { ...FACE_MATCH_SETTINGS, threshold: 0.7, margin: 0 }).get(10)?.match
+				?.memberId,
+		).toBe(1);
 	});
 });
 
