@@ -95,6 +95,6 @@ hr {
 .bottom {
 	position: absolute;
 	bottom: 1rem;
-	width: 100%;
+	inset-inline: 0;
 	text-align: center;
 }
