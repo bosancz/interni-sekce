@@ -207,6 +207,8 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	private loadToken = 0;
 
+	private loadedFilterKey?: string;
+
 	constructor(
 		private api: ApiService,
 		private alertController: AlertController,
@@ -250,6 +252,11 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	onParams(params: Params) {
 		this.model.setCommitted(this.modelFromParams(params));
+
+		const filterKey = this.getFilterKey(params);
+		if (filterKey === this.loadedFilterKey) return;
+		this.loadedFilterKey = filterKey;
+
 		this.filter = { ...params };
 		this.loadAlbums(this.filter);
 	}
@@ -286,6 +293,14 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	setFilterParam(name: string, value: string | string[] | null) {
 		this.model.set(name, value);
+	}
+
+	private getFilterKey(params: Params): string {
+		return JSON.stringify(
+			Object.keys(params)
+				.sort()
+				.map((key) => [key, params[key]]),
+		);
 	}
 
 	private normalizeFilterValueToArray(value: unknown): string[] {
