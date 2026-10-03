@@ -104,8 +104,11 @@ export class PhotoFacesService {
 		}
 
 		const faces = await query
-			.orderBy("photo.timestamp", "DESC")
-			.addOrderBy("photo.id", "DESC")
+			.orderBy("album.dateFrom", "DESC", "NULLS LAST")
+			.addOrderBy("album.id", "DESC")
+			.addOrderBy("photo.order", "ASC", "NULLS LAST")
+			.addOrderBy("photo.timestamp", "ASC")
+			.addOrderBy("photo.id", "ASC")
 			.skip(options.offset ?? 0)
 			.take(options.limit ?? 50)
 			.getMany();

@@ -17,14 +17,10 @@ import { CardComponent } from "src/app/shared/components/card/card.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
+import { AlbumPhotos, groupPhotosByAlbum } from "src/helpers/album-photos";
 import { SDK } from "src/sdk";
 
 const PAGE_SIZE = 200;
-
-interface AlbumPhotos {
-	album: SDK.AlbumResponse;
-	photos: SDK.PhotoResponseWithLinks[];
-}
 
 @UntilDestroy()
 @Component({
@@ -55,16 +51,7 @@ export class MemberNewPhotosComponent {
 		return member ? `Nové fotky: ${member.nickname || member.firstName}` : "Nové fotky";
 	});
 
-	albums = computed(() => {
-		const albums = new Map<number, AlbumPhotos>();
-		for (const photo of this.photos() ?? []) {
-			if (!photo.album) continue;
-			const group = albums.get(photo.albumId) ?? { album: photo.album, photos: [] };
-			group.photos.push(photo);
-			albums.set(photo.albumId, group);
-		}
-		return [...albums.values()];
-	});
+	albums = computed(() => groupPhotosByAlbum(this.photos() ?? []));
 
 	constructor(
 		private api: ApiService,
