@@ -4710,6 +4710,163 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface MemberMergeBody
+     */
+    export interface MemberMergeBody {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberMergeBody
+         */
+        'sourceMemberId': number;
+        /**
+         * 
+         * @type {Array<MemberMergeFieldsEnum>}
+         * @memberof MemberMergeBody
+         */
+        'fieldsFromSource': Array<MemberMergeFieldsEnum>;
+    }
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const MemberMergeFieldsEnum = {
+        Nickname: 'nickname',
+        FirstName: 'firstName',
+        LastName: 'lastName',
+        GroupId: 'groupId',
+        Role: 'role',
+        Rank: 'rank',
+        Function: 'function',
+        Active: 'active',
+        Birthday: 'birthday',
+        Address: 'address',
+        Mobile: 'mobile',
+        Email: 'email',
+        KnownProblems: 'knownProblems',
+        Allergies: 'allergies',
+        InsuranceCard: 'insuranceCard',
+        ProfilePhoto: 'profilePhoto',
+        User: 'user'
+    } as const;
+    
+    export type MemberMergeFieldsEnum = typeof MemberMergeFieldsEnum[keyof typeof MemberMergeFieldsEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @interface MemberMergeInfoResponse
+     */
+    export interface MemberMergeInfoResponse {
+        /**
+         * 
+         * @type {MemberMergeSideResponse}
+         * @memberof MemberMergeInfoResponse
+         */
+        'target': MemberMergeSideResponse;
+        /**
+         * 
+         * @type {MemberMergeSideResponse}
+         * @memberof MemberMergeInfoResponse
+         */
+        'source': MemberMergeSideResponse;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberMergeInfoResponse
+         */
+        'sharedEvents': number;
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof MemberMergeInfoResponse
+         */
+        'sharedMembershipYears': Array<number>;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MemberMergeSideResponse
+     */
+    export interface MemberMergeSideResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberMergeSideResponse
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberMergeSideResponse
+         */
+        'attendeeEvents': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberMergeSideResponse
+         */
+        'leaderEvents': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberMergeSideResponse
+         */
+        'photoFaces': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberMergeSideResponse
+         */
+        'contacts': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberMergeSideResponse
+         */
+        'achievements': number;
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof MemberMergeSideResponse
+         */
+        'membershipYears': Array<number>;
+        /**
+         * 
+         * @type {MemberMergeUserResponse}
+         * @memberof MemberMergeSideResponse
+         */
+        'user'?: MemberMergeUserResponse | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MemberMergeUserResponse
+     */
+    export interface MemberMergeUserResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberMergeUserResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberMergeUserResponse
+         */
+        'login': string;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface MemberPaymentRequestResponseWithLinks
      */
     export interface MemberPaymentRequestResponseWithLinks {
@@ -5214,6 +5371,18 @@ export namespace SDK {
          * @memberof MemberResponseLinks
          */
         'deleteMemberPermanent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'getMemberMergeInfo': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'mergeMember': AcLink;
     }
     
         /**
@@ -11422,6 +11591,25 @@ export namespace SDK {
     
     
     
+    /**
+     * Query parameters for getMemberMergeInfo operation in MembersApi.
+     * @export
+     * @interface MembersApiGetMemberMergeInfoQueryParams
+     */
+    export interface MembersApiGetMemberMergeInfoQueryParams {
+        //sourceMemberId
+        /**
+         * 
+         * @type {number}
+         * @memberof MembersApiGetMemberMergeInfo
+         */
+        sourceMemberId: number
+    }
+    
+    
+    
+    
+    
     
     
     
@@ -11658,6 +11846,10 @@ export namespace SDK {
          */
         active?: boolean
     }
+    
+    
+    
+    
     
     
     
@@ -12445,6 +12637,61 @@ export namespace SDK {
         /**
          * 
     
+         * @param {number} memberId 
+         * @param {MembersApiGetMemberMergeInfoQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async getMemberMergeInfo(
+            memberId: number,
+            queryParams: MembersApiGetMemberMergeInfoQueryParams,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('getMemberMergeInfo', 'memberId', memberId)
+            assertParamExists('getMemberMergeInfo', 'sourceMemberId', queryParams.sourceMemberId)
+            
+            // verify required parameter 'sourceMemberId' is not null or undefined
+            assertParamExists('getMemberMergeInfo', 'memberId', memberId)
+            assertParamExists('getMemberMergeInfo', 'sourceMemberId', queryParams.sourceMemberId)
+            
+            const localVarPath = `/api/members/{memberId}/merge`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.sourceMemberId !== undefined) {
+                requestQueryParameter['sourceMemberId'] = queryParams.sourceMemberId;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<MemberMergeInfoResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {number} id 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -12895,6 +13142,59 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<MemberResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async mergeMember(
+            memberId: number,
+            body: MemberMergeBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('mergeMember', 'memberId', memberId)
+            assertParamExists('mergeMember', 'memberMergeBody', body)
+            
+            // verify required parameter 'memberMergeBody' is not null or undefined
+            assertParamExists('mergeMember', 'memberId', memberId)
+            assertParamExists('mergeMember', 'memberMergeBody', body)
+            
+            const localVarPath = `/api/members/{memberId}/merge`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
         }
     
         /**

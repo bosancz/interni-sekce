@@ -1,0 +1,175 @@
+<bo-modal-layout>
+	<div slot="title" class="mm-head">
+		<div class="mm-head-text">
+			<h4>Sloučit členy</h4>
+			<p class="mm-subtitle">Vyber, který člen zůstane a které údaje si ponechá.</p>
+		</div>
+		<button type="button" class="mm-close" aria-label="Zavřít" (click)="close.emit()">
+			<ion-icon name="close-outline"></ion-icon>
+		</button>
+	</div>
+
+	<div class="bm-body">
+		<div class="mm-warning" role="alert">
+			<ion-icon name="warning-outline"></ion-icon>
+			<div>
+				<strong>Sloučení je nevratné.</strong>
+				Druhý člen bude smazán a všechny jeho akce, fotky, kontakty a příspěvky se přepíšou na člena, který
+				zůstane.
+			</div>
+		</div>
+
+		@if (loading()) {
+			<div class="mm-loading"><ion-spinner name="crescent"></ion-spinner></div>
+		} @else if (error(); as errorText) {
+			<p class="mm-error">{{ errorText }}</p>
+		} @else {
+			@let a = memberA()!;
+			@let b = memberB()!;
+
+			<div class="mm-grid">
+				<div class="mm-label mm-label-head">Člen</div>
+				@for (side of ["a", "b"]; track side) {
+					@let member = side === "a" ? a : b;
+					@let isTarget = target() === side;
+					<button
+						type="button"
+						class="mm-member"
+						[class.target]="isTarget"
+						[attr.aria-pressed]="isTarget"
+						(click)="setTarget($any(side))"
+					>
+						<span class="mm-avatar" [style.background-color]="member.groupId | group: 'color'">
+							@if (member | memberProfilePhotoUrl; as photoUrl) {
+								<img [src]="photoUrl" alt="" />
+							} @else {
+								{{ (member.nickname || member.firstName || "?").charAt(0) }}
+							}
+						</span>
+						<span class="mm-member-text">
+							<span class="mm-member-name">{{
+								member.nickname || member.firstName || "#" + member.id
+							}}</span>
+							<span class="mm-member-meta">{{ member.groupId | group: "name" }} · #{{ member.id }}</span>
+						</span>
+						<span class="mm-pill" [class.keep]="isTarget">{{ isTarget ? "Zůstane" : "Bude smazán" }}</span>
+					</button>
+				}
+
+				<div class="mm-section">Údaje</div>
+
+				@for (row of rows(); track row.field) {
+					<div class="mm-label">{{ row.label }}</div>
+					@for (side of ["a", "b"]; track side) {
+						@let value = side === "a" ? row.a : row.b;
+						@let member = side === "a" ? a : b;
+						<button
+							type="button"
+							class="mm-value"
+							[class.selected]="!row.same && isSelected(row.field, $any(side))"
+							[class.same]="row.same"
+							[class.empty]="!value"
+							[disabled]="row.same"
+							(click)="select(row.field, $any(side))"
+						>
+							<span class="mm-check">
+								@if (!row.same && isSelected(row.field, $any(side))) {
+									<ion-icon name="checkmark-outline"></ion-icon>
+								}
+							</span>
+							<span class="mm-value-text">
+								@if (row.kind === "photo" && value) {
+									<img class="mm-photo" [src]="member | memberProfilePhotoUrl" alt="" />
+								} @else if (row.kind === "group" && value) {
+									{{ member.groupId | group: "name" }}
+								} @else {
+									{{ value || "–" }}
+								}
+							</span>
+						</button>
+					}
+				}
+
+				@if (sideA()?.user || sideB()?.user) {
+					<div class="mm-label">Uživatelský účet</div>
+					@for (side of ["a", "b"]; track side) {
+						@let user = side === "a" ? sideA()?.user : sideB()?.user;
+						<button
+							type="button"
+							class="mm-value"
+							[class.selected]="isSelected('user', $any(side))"
+							[class.empty]="!user"
+							(click)="select('user', $any(side))"
+						>
+							<span class="mm-check">
+								@if (isSelected("user", $any(side))) {
+									<ion-icon name="checkmark-outline"></ion-icon>
+								}
+							</span>
+							<span class="mm-value-text">{{ user?.login || "–" }}</span>
+						</button>
+					}
+				}
+
+				<div class="mm-section">Přesune se na člena, který zůstane</div>
+
+				<div class="mm-label">Akce (účastník)</div>
+				<div class="mm-count">{{ sideA()?.attendeeEvents ?? 0 }}</div>
+				<div class="mm-count">{{ sideB()?.attendeeEvents ?? 0 }}</div>
+
+				<div class="mm-label">Akce (vedoucí)</div>
+				<div class="mm-count">{{ sideA()?.leaderEvents ?? 0 }}</div>
+				<div class="mm-count">{{ sideB()?.leaderEvents ?? 0 }}</div>
+
+				<div class="mm-label">Fotky</div>
+				<div class="mm-count">{{ sideA()?.photoFaces ?? 0 }}</div>
+				<div class="mm-count">{{ sideB()?.photoFaces ?? 0 }}</div>
+
+				<div class="mm-label">Kontakty na rodiče</div>
+				<div class="mm-count">{{ sideA()?.contacts ?? 0 }}</div>
+				<div class="mm-count">{{ sideB()?.contacts ?? 0 }}</div>
+
+				<div class="mm-label">Zaplacené příspěvky</div>
+				<div class="mm-count">{{ sideA()?.membershipYears?.join(", ") || "–" }}</div>
+				<div class="mm-count">{{ sideB()?.membershipYears?.join(", ") || "–" }}</div>
+			</div>
+
+			@if (sharedEvents() || sharedMembershipYears().length || lostUser()) {
+				<ul class="mm-notes">
+					@if (sharedEvents()) {
+						<li>
+							Na {{ sharedEvents() }} {{ sharedEvents() === 1 ? "akci" : "akcích" }}
+							byli oba — zůstane jeden záznam, vedoucí má přednost před účastníkem.
+						</li>
+					}
+					@if (sharedMembershipYears().length) {
+						<li>
+							Příspěvek za {{ sharedMembershipYears().join(", ") }} mají zaplacený oba — ponechá se záznam
+							člena, který zůstane.
+						</li>
+					}
+					@if (lostUser(); as user) {
+						<li>
+							Uživatelský účet <strong>{{ user.login }}</strong> zůstane bez propojení na člena.
+						</li>
+					}
+				</ul>
+			}
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button
+			type="button"
+			class="bm-btn-primary mm-btn-danger"
+			[disabled]="loading() || !!error() || merging()"
+			(click)="merge()"
+		>
+			@if (merging()) {
+				<ion-spinner name="crescent"></ion-spinner>
+			}
+			Sloučit
+		</button>
+	</div>
+</bo-modal-layout>
