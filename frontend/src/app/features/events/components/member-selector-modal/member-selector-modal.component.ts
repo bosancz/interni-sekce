@@ -1,4 +1,15 @@
-import { Component, computed, ElementRef, inject, input, OnInit, Signal, signal, ViewChild } from "@angular/core";
+import {
+	Component,
+	computed,
+	ElementRef,
+	inject,
+	input,
+	linkedSignal,
+	OnInit,
+	Signal,
+	signal,
+	ViewChild,
+} from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { IonIcon, IonSpinner, ModalController, ViewDidEnter } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
@@ -73,6 +84,8 @@ export class MemberSelectorModalComponent
 		);
 	});
 
+	activeIndex = linkedSignal({ source: this.filteredMembers, computation: () => 0 });
+
 	groupChips = computed(() => {
 		const groupIds = new Set(this.allMembers().map((member) => member.groupId));
 		return this.groups()
@@ -95,6 +108,7 @@ export class MemberSelectorModalComponent
 	});
 
 	@ViewChild("searchInput") searchInput!: ElementRef<HTMLInputElement>;
+	@ViewChild("list") list?: ElementRef<HTMLElement>;
 
 	constructor() {
 		super(inject(ModalController));
@@ -139,6 +153,38 @@ export class MemberSelectorModalComponent
 	clearQuery() {
 		this.query.set("");
 		this.searchInput?.nativeElement.focus();
+	}
+
+	onSearchKeydown(event: KeyboardEvent) {
+		if (event.isComposing) return;
+
+		const members = this.filteredMembers();
+
+		switch (event.key) {
+			case "ArrowDown":
+			case "ArrowUp":
+				event.preventDefault();
+				if (!members.length) return;
+				this.setActive(
+					(this.activeIndex() + (event.key === "ArrowDown" ? 1 : -1) + members.length) % members.length,
+				);
+				break;
+
+			case "Enter": {
+				event.preventDefault();
+				const member = members[this.activeIndex()];
+				if (member) this.toggleMember(member);
+				else if (!members.length && this.canCreate()) this.createMember();
+				break;
+			}
+		}
+	}
+
+	setActive(index: number) {
+		this.activeIndex.set(index);
+		window.requestAnimationFrame(() =>
+			this.list?.nativeElement.querySelectorAll(".mp-row")[index]?.scrollIntoView({ block: "nearest" }),
+		);
 	}
 
 	async toggleMember(member: SDK.MemberResponse) {

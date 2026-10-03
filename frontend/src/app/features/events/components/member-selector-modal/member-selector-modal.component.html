@@ -23,6 +23,7 @@
 				aria-label="Hledat podle jména nebo přezdívky"
 				[value]="query()"
 				(input)="query.set($any($event.target).value)"
+				(keydown)="onSearchKeydown($event)"
 			/>
 			@if (query()) {
 				<button type="button" class="mp-clear" (click)="clearQuery()">Zrušit</button>
@@ -53,9 +54,15 @@
 		}
 	</div>
 
-	<div class="mp-list">
-		@for (member of filteredMembers(); track member.id) {
-			<label class="mp-row" [class.selected]="isSelected(member.id)" [class.pending]="isPending(member.id)">
+	<div class="mp-list" #list>
+		@for (member of filteredMembers(); track member.id; let index = $index) {
+			<label
+				class="mp-row"
+				[class.selected]="isSelected(member.id)"
+				[class.pending]="isPending(member.id)"
+				[class.active]="activeIndex() === index"
+				(mousemove)="activeIndex() !== index && activeIndex.set(index)"
+			>
 				<input
 					class="bm-visually-hidden"
 					[attr.type]="selectable ? 'checkbox' : 'radio'"
