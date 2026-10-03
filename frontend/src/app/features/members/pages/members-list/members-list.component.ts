@@ -43,6 +43,7 @@ import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 import { MembershipPaymentStates } from "../../../../core/config/membership";
 import { MemberCreateModalComponent } from "../../components/member-create-modal/member-create-modal.component";
+import { getParamsKey } from "src/helpers/params";
 
 const COLUMNS_ICON =
 	"data:image/svg+xml;utf8," +
@@ -283,8 +284,15 @@ export class MembersListComponent implements OnInit, ViewWillEnter {
 		this.toasts.toast("Zkopírováno do schránky.");
 	}
 
+	private loadedFilterKey: string | null = null;
+
 	onParams(params: Params) {
 		this.model.setCommitted(this.modelFromParams(params));
+
+		const filterKey = getParamsKey(params);
+		if (filterKey === this.loadedFilterKey) return;
+		this.loadedFilterKey = filterKey;
+
 		this.filter = { ...params };
 		this.loadMembers(this.filter);
 	}

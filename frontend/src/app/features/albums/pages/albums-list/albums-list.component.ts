@@ -50,6 +50,7 @@ import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 
 import { UrlParams } from "src/helpers/typings";
 import { SDK } from "src/sdk";
+import { getParamsKey } from "src/helpers/params";
 
 @UntilDestroy()
 @Component({
@@ -207,7 +208,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	private loadToken = 0;
 
-	private loadedFilterKey?: string;
+	private loadedFilterKey: string | null = null;
 
 	constructor(
 		private api: ApiService,
@@ -253,7 +254,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	onParams(params: Params) {
 		this.model.setCommitted(this.modelFromParams(params));
 
-		const filterKey = this.getFilterKey(params);
+		const filterKey = getParamsKey(params);
 		if (filterKey === this.loadedFilterKey) return;
 		this.loadedFilterKey = filterKey;
 
@@ -293,14 +294,6 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	setFilterParam(name: string, value: string | string[] | null) {
 		this.model.set(name, value);
-	}
-
-	private getFilterKey(params: Params): string {
-		return JSON.stringify(
-			Object.keys(params)
-				.sort()
-				.map((key) => [key, params[key]]),
-		);
 	}
 
 	private normalizeFilterValueToArray(value: unknown): string[] {

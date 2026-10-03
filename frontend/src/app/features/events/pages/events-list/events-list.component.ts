@@ -45,6 +45,7 @@ import { SDK } from "src/sdk";
 import { GroupPipe } from "../../../../shared/pipes/group.pipe";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 import { EventCreateModalComponent } from "../../components/event-create-modal/event-create-modal.component";
+import { getParamsKey } from "src/helpers/params";
 
 type EventStatusActions = ExtractExisting<
 	keyof SDK.EventResponseWithLinks["_links"],
@@ -317,7 +318,7 @@ export class EventsListComponent implements OnInit {
 	onParams(params: Params) {
 		this.model.setCommitted(this.modelFromParams(params));
 
-		const filterKey = this.getFilterKey(params);
+		const filterKey = getParamsKey(params);
 		if (filterKey === this.loadedFilterKey) return;
 		this.loadedFilterKey = filterKey;
 
@@ -458,14 +459,6 @@ export class EventsListComponent implements OnInit {
 		if (token !== this.loadToken) return;
 
 		this.events.set(loadMore ? [...this.events(), ...events] : events);
-	}
-
-	private getFilterKey(params: Params): string {
-		return JSON.stringify(
-			Object.keys(params)
-				.sort()
-				.map((key) => [key, params[key]]),
-		);
 	}
 
 	private normalizeFilterValueToArray(value: unknown): string[] {

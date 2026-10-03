@@ -50,6 +50,7 @@ import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
+import { getParamsKey } from "src/helpers/params";
 
 // Custom "columns" glyph, same as the members list — see the note there on why it must be a
 // `data:image/svg+xml;utf8,` URI rather than a raw SVG string.
@@ -719,8 +720,15 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		this.model.set(name, value);
 	}
 
+	private loadedFilterKey: string | null = null;
+
 	onParams(params: Params) {
 		this.model.setCommitted(this.modelFromParams(params));
+
+		const filterKey = getParamsKey(params);
+		if (filterKey === this.loadedFilterKey) return;
+		this.loadedFilterKey = filterKey;
+
 		this.filter = { ...params };
 		this.loadMembers(this.filter);
 		this.loadSummary();
