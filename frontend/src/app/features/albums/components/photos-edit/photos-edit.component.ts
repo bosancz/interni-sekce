@@ -61,6 +61,29 @@ import { FACE_EMOTIONS, faceEmotionLabel } from "src/helpers/face-emotions";
 import { SDK } from "src/sdk";
 import { PhotoTagsEditorComponent } from "../photo-tags-editor/photo-tags-editor.component";
 
+interface Point {
+	x: number;
+	y: number;
+}
+
+interface Zoom {
+	scale: number;
+	x: number;
+	y: number;
+}
+
+type ZoomGesture =
+	| { type: "single"; start: Point; startZoom: Zoom; pointerType: string; moved: boolean }
+	| { type: "pinch"; startDistance: number; startMid: Point; startZoom: Zoom };
+
+const MAX_ZOOM = 6;
+const DOUBLE_TAP_ZOOM = 2.5;
+const KEYBOARD_ZOOM_STEP = 1.5;
+const DOUBLE_TAP_DELAY_MS = 300;
+const TAP_TOLERANCE_PX = 10;
+const DOUBLE_TAP_DISTANCE_PX = 30;
+const SWIPE_DISTANCE_PX = 50;
+
 @Component({
 	selector: "bo-photos-edit",
 	templateUrl: "./photos-edit.component.html",
@@ -106,7 +129,19 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 
 	isLg = toSignal(this.platformService.isLg, { initialValue: this.platformService.isLg.value });
 
-	private swipeStart?: { x: number; y: number };
+	zoom = signal<Zoom>({ scale: 1, x: 0, y: 0 });
+	zoomed = computed(() => this.zoom().scale > 1.01);
+	zoomAnimated = signal(false);
+	dragging = signal(false);
+	hiResRequested = signal(false);
+	hiResLoaded = signal(false);
+
+	private pointers = new Map<number, Point>();
+	private gesture?: ZoomGesture;
+	private lastTap?: { point: Point; time: number };
+	private tapTimeout?: ReturnType<typeof setTimeout>;
+
+	@ViewChild("viewer") private viewer?: ElementRef<HTMLElement>;
 
 	@ViewChild("captionInput") captionInput!: IonInput;
 
@@ -169,6 +204,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 
 	ngOnDestroy(): void {
 		this.resizeObserver.disconnect();
+		clearTimeout(this.tapTimeout);
 	}
 
 	@ViewChild("image") set image(ref: ElementRef<HTMLImageElement> | undefined) {
@@ -191,6 +227,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 			width: image.offsetWidth,
 			height: image.offsetHeight,
 		});
+		this.zoom.set(this.clampZoom(this.zoom()));
 	}
 
 	toggleFaces() {
@@ -336,6 +373,16 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		if (!this.pressedKeys.delete(event.code)) return;
 
 		if (!this.editingCaption() && !this.infoOpen() && !this.faceMenuOpen()) {
+			switch (event.key) {
+				case "+":
+					return this.zoomAtCenter(this.zoom().scale * KEYBOARD_ZOOM_STEP);
+				case "-":
+					return this.zoomAtCenter(this.zoom().scale / KEYBOARD_ZOOM_STEP);
+				case "0":
+					return this.resetZoom(true);
+			}
+			if (event.code === "Escape" && this.zoomed()) return this.resetZoom(true);
+
 			switch (event.code) {
 				case "ArrowLeft":
 					return this.previousPhoto();
@@ -367,25 +414,186 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	}
 
 	onPointerDown(event: PointerEvent) {
-		if (event.pointerType !== "touch") return;
-		this.swipeStart = { x: event.clientX, y: event.clientY };
+		if (event.pointerType === "mouse" && event.button !== 0) return;
+		if ((event.target as Element).closest("ion-button, .title-badge, .face")) return;
+
+		this.viewer?.nativeElement.setPointerCapture(event.pointerId);
+		this.pointers.set(event.pointerId, this.viewerPoint(event));
+		this.zoomAnimated.set(false);
+		this.startGesture(event.pointerType);
 	}
 
-	onPointerUp(event: PointerEvent) {
-		if (!this.swipeStart) return;
-		const dx = event.clientX - this.swipeStart.x;
-		const dy = event.clientY - this.swipeStart.y;
-		this.swipeStart = undefined;
+	onPointerMove(event: PointerEvent) {
+		if (!this.pointers.has(event.pointerId)) return;
+		this.pointers.set(event.pointerId, this.viewerPoint(event));
 
-		if (Math.abs(dx) >= 50 && Math.abs(dx) > Math.abs(dy)) {
-			if (dx < 0) this.nextPhoto();
-			else this.previousPhoto();
+		const gesture = this.gesture;
+		if (!gesture) return;
+
+		if (gesture.type === "pinch") {
+			const [a, b] = [...this.pointers.values()];
+			if (!b) return;
+			const { startZoom, startMid } = gesture;
+			const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+			const scale = this.clampScale((startZoom.scale * Math.hypot(a.x - b.x, a.y - b.y)) / gesture.startDistance);
+			this.setZoom({
+				scale,
+				x: mid.x - ((startMid.x - startZoom.x) / startZoom.scale) * scale,
+				y: mid.y - ((startMid.y - startZoom.y) / startZoom.scale) * scale,
+			});
 			return;
 		}
 
-		if (Math.abs(dy) >= 50) return;
+		const point = this.pointers.get(event.pointerId)!;
+		const dx = point.x - gesture.start.x;
+		const dy = point.y - gesture.start.y;
+		if (Math.hypot(dx, dy) > TAP_TOLERANCE_PX) gesture.moved = true;
 
-		if (!this.editingCaption()) this.controlsVisible.update((visible) => !visible);
+		if (gesture.startZoom.scale > 1 && gesture.moved) {
+			this.dragging.set(true);
+			this.setZoom({ ...gesture.startZoom, x: gesture.startZoom.x + dx, y: gesture.startZoom.y + dy });
+		}
+	}
+
+	onPointerUp(event: PointerEvent) {
+		const point = this.pointers.get(event.pointerId);
+		if (!point || !this.pointers.delete(event.pointerId)) return;
+
+		const gesture = this.gesture;
+		this.gesture = undefined;
+		this.dragging.set(false);
+
+		if (!gesture) return;
+
+		if (gesture.type === "pinch") {
+			if (this.pointers.size) this.startGesture(event.pointerType, true);
+			else if (this.zoom().scale < 1.05) this.resetZoom(true);
+			return;
+		}
+
+		if (!gesture.moved) {
+			this.onTap(point, gesture.pointerType);
+			return;
+		}
+
+		if (gesture.startZoom.scale > 1 || gesture.pointerType !== "touch") return;
+
+		const dx = point.x - gesture.start.x;
+		const dy = point.y - gesture.start.y;
+		if (Math.abs(dx) >= SWIPE_DISTANCE_PX && Math.abs(dx) > Math.abs(dy)) {
+			if (dx < 0) this.nextPhoto();
+			else this.previousPhoto();
+		}
+	}
+
+	onPointerCancel(event: PointerEvent) {
+		this.pointers.delete(event.pointerId);
+		this.gesture = undefined;
+		this.dragging.set(false);
+	}
+
+	onWheel(event: WheelEvent) {
+		event.preventDefault();
+		const delta = event.deltaY * (event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : 1);
+		this.zoomAnimated.set(false);
+		this.zoomAt(this.viewerPoint(event), this.zoom().scale * Math.exp(-delta * (event.ctrlKey ? 0.01 : 0.002)));
+	}
+
+	private startGesture(pointerType: string, moved = false) {
+		const points = [...this.pointers.values()];
+
+		if (points.length >= 2) {
+			const [a, b] = points;
+			clearTimeout(this.tapTimeout);
+			this.lastTap = undefined;
+			this.gesture = {
+				type: "pinch",
+				startDistance: Math.max(Math.hypot(a.x - b.x, a.y - b.y), 1),
+				startMid: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
+				startZoom: this.zoom(),
+			};
+		} else if (points.length === 1) {
+			this.gesture = { type: "single", start: points[0], startZoom: this.zoom(), pointerType, moved };
+		}
+	}
+
+	private onTap(point: Point, pointerType: string) {
+		const now = Date.now();
+		const last = this.lastTap;
+
+		if (
+			last &&
+			now - last.time < DOUBLE_TAP_DELAY_MS &&
+			Math.hypot(point.x - last.point.x, point.y - last.point.y) < DOUBLE_TAP_DISTANCE_PX
+		) {
+			clearTimeout(this.tapTimeout);
+			this.lastTap = undefined;
+			if (this.zoomed()) this.resetZoom(true);
+			else this.zoomAt(point, DOUBLE_TAP_ZOOM, true);
+			return;
+		}
+
+		this.lastTap = { point, time: now };
+
+		if (pointerType !== "touch") return;
+		clearTimeout(this.tapTimeout);
+		this.tapTimeout = setTimeout(() => {
+			if (!this.editingCaption()) this.controlsVisible.update((visible) => !visible);
+		}, DOUBLE_TAP_DELAY_MS);
+	}
+
+	private viewerPoint(event: MouseEvent): Point {
+		const rect = this.viewer?.nativeElement.getBoundingClientRect();
+		return { x: event.clientX - (rect?.left ?? 0), y: event.clientY - (rect?.top ?? 0) };
+	}
+
+	private zoomAtCenter(scale: number) {
+		const viewer = this.viewer?.nativeElement;
+		if (!viewer) return;
+		this.zoomAt({ x: viewer.clientWidth / 2, y: viewer.clientHeight / 2 }, scale, true);
+	}
+
+	private zoomAt(point: Point, scale: number, animated = false) {
+		const current = this.zoom();
+		const next = this.clampScale(scale);
+		this.zoomAnimated.set(animated);
+		this.setZoom({
+			scale: next,
+			x: point.x - ((point.x - current.x) * next) / current.scale,
+			y: point.y - ((point.y - current.y) * next) / current.scale,
+		});
+	}
+
+	resetZoom(animated = false) {
+		this.zoomAnimated.set(animated);
+		this.zoom.set({ scale: 1, x: 0, y: 0 });
+	}
+
+	private setZoom(zoom: Zoom) {
+		if (zoom.scale > 1) this.hiResRequested.set(true);
+		this.zoom.set(this.clampZoom(zoom));
+	}
+
+	private clampScale(scale: number) {
+		return Math.min(MAX_ZOOM, Math.max(1, scale));
+	}
+
+	private clampZoom(zoom: Zoom): Zoom {
+		const rect = this.imageRect();
+		const viewer = this.viewer?.nativeElement;
+		if (!rect || !viewer || zoom.scale <= 1) return { scale: 1, x: 0, y: 0 };
+
+		const clampAxis = (offset: number, start: number, size: number, view: number) => {
+			const scaled = size * zoom.scale;
+			if (scaled <= view) return (view - scaled) / 2 - start * zoom.scale;
+			return Math.min(-start * zoom.scale, Math.max(view - (start + size) * zoom.scale, offset));
+		};
+
+		return {
+			scale: zoom.scale,
+			x: clampAxis(zoom.x, rect.left, rect.width, viewer.clientWidth),
+			y: clampAxis(zoom.y, rect.top, rect.height, viewer.clientHeight),
+		};
 	}
 
 	openPhoto(index: number) {
@@ -394,6 +602,14 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 
 		const photo = photos[index];
 		this.currentIndex.set(index);
+		this.resetZoom();
+		this.hiResRequested.set(false);
+		this.hiResLoaded.set(false);
+		this.pointers.clear();
+		this.gesture = undefined;
+		this.dragging.set(false);
+		clearTimeout(this.tapTimeout);
+		this.lastTap = undefined;
 		this.imageError.set(false);
 		this.imageRect.set(null);
 		this.photo.set(photo);

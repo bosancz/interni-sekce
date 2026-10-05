@@ -78,7 +78,31 @@ ion-toolbar {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	overflow: hidden;
 	touch-action: none;
+	user-select: none;
+
+	&.zoomed {
+		cursor: grab;
+	}
+
+	&.dragging {
+		cursor: grabbing;
+	}
+}
+
+.zoom-stage {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transform-origin: 0 0;
+	will-change: transform;
+
+	&.animated {
+		transition: transform 0.25s ease;
+	}
 }
 
 .image {
@@ -87,6 +111,17 @@ ion-toolbar {
 	width: auto;
 	height: auto;
 	object-fit: contain;
+}
+
+.image-hires {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.2s ease;
+
+	&.loaded {
+		opacity: 1;
+	}
 }
 
 .image-error {
@@ -163,9 +198,9 @@ ion-toolbar {
 	padding: 0;
 	margin: 0;
 	background: none;
-	border: 2px dashed rgba(255, 255, 255, 0.85);
-	border-radius: 6px;
-	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+	border: calc(2px / var(--zoom, 1)) dashed rgba(255, 255, 255, 0.85);
+	border-radius: calc(6px / var(--zoom, 1));
+	box-shadow: 0 0 0 calc(1px / var(--zoom, 1)) rgba(0, 0, 0, 0.35);
 	cursor: pointer;
 	pointer-events: auto;
 	transition: border-color 0.15s ease;
@@ -194,7 +229,8 @@ ion-toolbar {
 	position: absolute;
 	top: 100%;
 	left: 50%;
-	transform: translate(-50%, 4px);
+	transform: translate(-50%, calc(4px / var(--zoom, 1))) scale(calc(1 / var(--zoom, 1)));
+	transform-origin: 50% 0;
 	padding: 1px 6px;
 	border-radius: 4px;
 	background: rgba(0, 0, 0, 0.75);

@@ -144,7 +144,17 @@
 		</ion-popover>
 	}
 	@if (photo()) {
-		<div class="image-viewer" (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
+		<div
+			#viewer
+			class="image-viewer"
+			[class.zoomed]="zoomed()"
+			[class.dragging]="dragging()"
+			(pointerdown)="onPointerDown($event)"
+			(pointermove)="onPointerMove($event)"
+			(pointerup)="onPointerUp($event)"
+			(pointercancel)="onPointerCancel($event)"
+			(wheel)="onWheel($event)"
+		>
 			<ion-icon
 				class="title-badge"
 				[class.active]="photo()!.titlePhoto"
@@ -160,48 +170,71 @@
 			}
 
 			@if (!imageError()) {
-				<img
-					#image
-					class="image"
-					[src]="photo() | photoImageUrl: 'big'"
-					[style.background-color]="photo()!.bg"
-					[alt]="photo()!.caption || photo()!.name"
-					(load)="measureImage()"
-					(error)="imageError.set(true)"
-				/>
-				@if (facesVisible() && imageRect(); as rect) {
-					<div
-						class="faces-layer"
-						[style.left.px]="rect.left"
-						[style.top.px]="rect.top"
-						[style.width.px]="rect.width"
-						[style.height.px]="rect.height"
-					>
-						@for (face of faces(); track face.id) {
-							<button
-								type="button"
-								class="face"
-								[class.assigned]="!!face.member"
-								[class.auto]="face.assignment === 'auto'"
-								[style.left.%]="face.x * 100"
-								[style.top.%]="face.y * 100"
-								[style.width.%]="face.width * 100"
-								[style.height.%]="face.height * 100"
-								[attr.aria-label]="face.member?.nickname ?? 'Neznámý obličej'"
-								(pointerdown)="$event.stopPropagation()"
-								(pointerup)="$event.stopPropagation()"
-								(click)="openFaceMenu($event, face)"
-							>
-								@if (face.member) {
-									<span class="face-label"
-										>{{ face.emotion ? faceEmotions[face.emotion].emoji + " " : ""
-										}}{{ face.member.nickname }}{{ face.assignment === "auto" ? "?" : "" }}</span
-									>
-								}
-							</button>
-						}
-					</div>
-				}
+				<div
+					class="zoom-stage"
+					[class.animated]="zoomAnimated()"
+					[style.transform]="'translate(' + zoom().x + 'px, ' + zoom().y + 'px) scale(' + zoom().scale + ')'"
+					[style.--zoom]="zoom().scale"
+				>
+					<img
+						#image
+						class="image"
+						draggable="false"
+						[src]="photo() | photoImageUrl: 'big'"
+						[style.background-color]="photo()!.bg"
+						[alt]="photo()!.caption || photo()!.name"
+						(load)="measureImage()"
+						(error)="imageError.set(true)"
+					/>
+					@if (hiResRequested() && imageRect(); as rect) {
+						<img
+							class="image-hires"
+							draggable="false"
+							alt=""
+							[class.loaded]="hiResLoaded()"
+							[src]="photo() | photoImageUrl: 'original'"
+							[style.left.px]="rect.left"
+							[style.top.px]="rect.top"
+							[style.width.px]="rect.width"
+							[style.height.px]="rect.height"
+							(load)="hiResLoaded.set(true)"
+						/>
+					}
+					@if (facesVisible() && imageRect(); as rect) {
+						<div
+							class="faces-layer"
+							[style.left.px]="rect.left"
+							[style.top.px]="rect.top"
+							[style.width.px]="rect.width"
+							[style.height.px]="rect.height"
+						>
+							@for (face of faces(); track face.id) {
+								<button
+									type="button"
+									class="face"
+									[class.assigned]="!!face.member"
+									[class.auto]="face.assignment === 'auto'"
+									[style.left.%]="face.x * 100"
+									[style.top.%]="face.y * 100"
+									[style.width.%]="face.width * 100"
+									[style.height.%]="face.height * 100"
+									[attr.aria-label]="face.member?.nickname ?? 'Neznámý obličej'"
+									(pointerdown)="$event.stopPropagation()"
+									(pointerup)="$event.stopPropagation()"
+									(click)="openFaceMenu($event, face)"
+								>
+									@if (face.member) {
+										<span class="face-label"
+											>{{ face.emotion ? faceEmotions[face.emotion].emoji + " " : ""
+											}}{{ face.member.nickname
+											}}{{ face.assignment === "auto" ? "?" : "" }}</span
+										>
+									}
+								</button>
+							}
+						</div>
+					}
+				</div>
 			} @else {
 				<div class="image-error">
 					<ion-icon name="image-outline"></ion-icon>
