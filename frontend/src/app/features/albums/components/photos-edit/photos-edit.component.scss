@@ -91,6 +91,24 @@ ion-toolbar {
 	}
 }
 
+.filmstrip {
+	position: absolute;
+	inset: 0;
+	will-change: transform;
+
+	&.animated {
+		transition: transform 0.25s ease-out;
+	}
+}
+
+.slide {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 .zoom-stage {
 	position: absolute;
 	inset: 0;
