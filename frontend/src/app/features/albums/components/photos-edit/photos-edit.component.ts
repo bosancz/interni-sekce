@@ -84,6 +84,7 @@ type Gesture =
 			axis?: "x" | "y";
 			last: Point & { time: number };
 			velocityX: number;
+			face?: HTMLElement;
 	  }
 	| { type: "pinch"; startDistance: number; startMid: Point; startZoom: Zoom };
 
@@ -509,14 +510,18 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 
 	onPointerDown(event: PointerEvent) {
 		if (event.pointerType === "mouse" && event.button !== 0) return;
-		if ((event.target as Element).closest("ion-button, .title-badge, .face")) return;
+		if ((event.target as Element).closest("ion-button, .title-badge")) return;
 
 		this.finishSlide();
 		this.viewer?.nativeElement.setPointerCapture(event.pointerId);
 		this.pointers.set(event.pointerId, this.viewerPoint(event));
 		this.zoomAnimated.set(false);
 		this.stripAnimated.set(false);
-		this.startGesture(event.pointerType);
+		this.startGesture(
+			event.pointerType,
+			false,
+			(event.target as Element).closest<HTMLElement>(".face") ?? undefined,
+		);
 	}
 
 	onPointerMove(event: PointerEvent) {
@@ -582,7 +587,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 
 		if (!gesture.moved) {
 			this.snapBack();
-			this.onTap(point, gesture.pointerType);
+			this.onTap(point, gesture.pointerType, gesture.face);
 			return;
 		}
 
@@ -614,7 +619,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		this.zoomAt(this.viewerPoint(event), this.zoom().scale * Math.exp(-delta * (event.ctrlKey ? 0.01 : 0.002)));
 	}
 
-	private startGesture(pointerType: string, moved = false) {
+	private startGesture(pointerType: string, moved = false, face?: HTMLElement) {
 		const points = [...this.pointers.values()];
 
 		if (points.length >= 2) {
@@ -638,11 +643,12 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 				axis: moved ? "y" : undefined,
 				last: { ...points[0], time: performance.now() },
 				velocityX: 0,
+				face,
 			};
 		}
 	}
 
-	private onTap(point: Point, pointerType: string) {
+	private onTap(point: Point, pointerType: string, faceElement?: HTMLElement) {
 		const now = Date.now();
 		const last = this.lastTap;
 
@@ -660,10 +666,16 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 
 		this.lastTap = { point, time: now };
 
-		if (pointerType !== "touch") return;
+		const face = this.faces().find((item) => String(item.id) === faceElement?.dataset["faceId"]);
+		if (!face && pointerType !== "touch") return;
+
 		clearTimeout(this.tapTimeout);
 		this.tapTimeout = setTimeout(() => {
-			if (!this.editingCaption()) this.controlsVisible.update((visible) => !visible);
+			if (face && faceElement?.isConnected) {
+				this.openFaceMenu(new CustomEvent("click", { detail: { ionShadowTarget: faceElement } }), face);
+			} else if (!this.editingCaption()) {
+				this.controlsVisible.update((visible) => !visible);
+			}
 		}, DOUBLE_TAP_DELAY_MS);
 	}
 

@@ -237,9 +237,8 @@
 													[style.width.%]="face.width * 100"
 													[style.height.%]="face.height * 100"
 													[attr.aria-label]="face.member?.nickname ?? 'Neznámý obličej'"
-													(pointerdown)="$event.stopPropagation()"
-													(pointerup)="$event.stopPropagation()"
-													(click)="openFaceMenu($event, face)"
+													[attr.data-face-id]="face.id"
+													(click)="$event.detail === 0 && openFaceMenu($event, face)"
 												>
 													@if (face.member) {
 														<span class="face-label"
