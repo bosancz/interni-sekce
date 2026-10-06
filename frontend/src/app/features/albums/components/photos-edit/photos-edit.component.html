@@ -144,7 +144,17 @@
 		</ion-popover>
 	}
 	@if (photo()) {
-		<div class="image-viewer" (pointerdown)="onPointerDown($event)" (pointerup)="onPointerUp($event)">
+		<div
+			#viewer
+			class="image-viewer"
+			[class.zoomed]="zoomed()"
+			[class.dragging]="dragging()"
+			(pointerdown)="onPointerDown($event)"
+			(pointermove)="onPointerMove($event)"
+			(pointerup)="onPointerUp($event)"
+			(pointercancel)="onPointerCancel($event)"
+			(wheel)="onWheel($event)"
+		>
 			<ion-icon
 				class="title-badge"
 				[class.active]="photo()!.titlePhoto"
@@ -159,56 +169,97 @@
 				</ion-button>
 			}
 
-			@if (!imageError()) {
-				<img
-					#image
-					class="image"
-					[src]="photo() | photoImageUrl: 'big'"
-					[style.background-color]="photo()!.bg"
-					[alt]="photo()!.caption || photo()!.name"
-					(load)="measureImage()"
-					(error)="imageError.set(true)"
-				/>
-				@if (facesVisible() && imageRect(); as rect) {
+			<div
+				class="filmstrip"
+				[class.animated]="stripAnimated()"
+				[style.transform]="'translateX(' + stripOffset() + 'px)'"
+				(transitionend)="onStripTransitionEnd($event)"
+			>
+				@for (slide of slides(); track slide.photo.id) {
 					<div
-						class="faces-layer"
-						[style.left.px]="rect.left"
-						[style.top.px]="rect.top"
-						[style.width.px]="rect.width"
-						[style.height.px]="rect.height"
+						class="slide"
+						[class.current]="slide.offset === 0"
+						[style.transform]="'translateX(calc(' + slide.offset + ' * (100% + ' + slideGap + 'px)))'"
 					>
-						@for (face of faces(); track face.id) {
-							<button
-								type="button"
-								class="face"
-								[class.assigned]="!!face.member"
-								[class.auto]="face.assignment === 'auto'"
-								[style.left.%]="face.x * 100"
-								[style.top.%]="face.y * 100"
-								[style.width.%]="face.width * 100"
-								[style.height.%]="face.height * 100"
-								[attr.aria-label]="face.member?.nickname ?? 'Neznámý obličej'"
-								(pointerdown)="$event.stopPropagation()"
-								(pointerup)="$event.stopPropagation()"
-								(click)="openFaceMenu($event, face)"
+						@if (failedPhotoIds().has(slide.photo.id)) {
+							<div class="image-error">
+								<ion-icon name="image-outline"></ion-icon>
+								<strong>Fotku se nepodařilo načíst</strong>
+								<p>Zkuste to prosím později.</p>
+							</div>
+						} @else {
+							<div
+								class="zoom-stage"
+								[class.animated]="slide.offset === 0 && zoomAnimated()"
+								[style.transform]="slide.offset === 0 ? zoomTransform() : null"
+								[style.--zoom]="slide.offset === 0 ? zoom().scale : 1"
 							>
-								@if (face.member) {
-									<span class="face-label"
-										>{{ face.emotion ? faceEmotions[face.emotion].emoji + " " : ""
-										}}{{ face.member.nickname }}{{ face.assignment === "auto" ? "?" : "" }}</span
-									>
+								<img
+									class="image"
+									draggable="false"
+									[src]="slide.photo | photoImageUrl: 'big'"
+									[style.background-color]="slide.photo.bg"
+									[alt]="slide.photo.caption || slide.photo.name"
+									(load)="onSlideLoad(slide.photo)"
+									(error)="onSlideError(slide.photo)"
+								/>
+								@if (slide.offset === 0) {
+									@if (hiResRequested() && imageRect(); as rect) {
+										<img
+											class="image-hires"
+											draggable="false"
+											alt=""
+											[class.loaded]="hiResLoaded()"
+											[src]="photo() | photoImageUrl: 'original'"
+											[style.left.px]="rect.left"
+											[style.top.px]="rect.top"
+											[style.width.px]="rect.width"
+											[style.height.px]="rect.height"
+											(load)="hiResLoaded.set(true)"
+										/>
+									}
+									@if (facesVisible() && imageRect(); as rect) {
+										<div
+											class="faces-layer"
+											[style.left.px]="rect.left"
+											[style.top.px]="rect.top"
+											[style.width.px]="rect.width"
+											[style.height.px]="rect.height"
+										>
+											@for (face of faces(); track face.id) {
+												<button
+													type="button"
+													class="face"
+													[class.assigned]="!!face.member"
+													[class.auto]="face.assignment === 'auto'"
+													[style.left.%]="face.x * 100"
+													[style.top.%]="face.y * 100"
+													[style.width.%]="face.width * 100"
+													[style.height.%]="face.height * 100"
+													[attr.aria-label]="face.member?.nickname ?? 'Neznámý obličej'"
+													[attr.data-face-id]="face.id"
+													(click)="$event.detail === 0 && openFaceMenu($event, face)"
+												>
+													@if (face.member) {
+														<span class="face-label"
+															>{{
+																face.emotion
+																	? faceEmotions[face.emotion].emoji + " "
+																	: ""
+															}}{{ face.member.nickname
+															}}{{ face.assignment === "auto" ? "?" : "" }}</span
+														>
+													}
+												</button>
+											}
+										</div>
+									}
 								}
-							</button>
+							</div>
 						}
 					</div>
 				}
-			} @else {
-				<div class="image-error">
-					<ion-icon name="image-outline"></ion-icon>
-					<strong>Fotku se nepodařilo načíst</strong>
-					<p>Zkuste to prosím později.</p>
-				</div>
-			}
+			</div>
 
 			@if (isLg() && currentIndex() < photos.length - 1) {
 				<ion-button class="nav next" fill="clear" (click)="nextPhoto()">
