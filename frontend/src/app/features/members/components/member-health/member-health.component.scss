@@ -13,7 +13,8 @@
 		column-gap: 1.25rem;
 
 		> * {
-			display: block;
+			display: flex;
+			flex-direction: column;
 			break-inside: avoid;
 			margin-bottom: 1.25rem;
 		}
