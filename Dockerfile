@@ -5,7 +5,6 @@
 FROM node:24-alpine AS build-frontend
 
 ARG NG_CONFIGURATION=production
-ARG VERSION
 
 WORKDIR /app/frontend
 
@@ -15,6 +14,7 @@ RUN npm ci
 
 # build
 COPY ./frontend .
+ARG VERSION
 ENV VERSION=$VERSION
 RUN npm run build
 
@@ -71,8 +71,6 @@ CMD ["python", "-m", "worker"]
 ## RUNNER ##
 FROM node:24-alpine AS app
 
-ARG VERSION
-
 # Chromium used by Puppeteer to render registration PDFs from HTML templates.
 # font-noto-emoji: without it Chromium has no emoji glyphs and renders tofu boxes in the PDF.
 RUN apk add --no-cache chromium nss freetype harfbuzz ca-certificates ttf-freefont font-noto-emoji
@@ -100,6 +98,7 @@ COPY release-issues.jso[n] /app/
 # run
 WORKDIR /app/backend
 
+ARG VERSION
 ENV NODE_ENV=production
 ENV VERSION=$VERSION
 ENV HOST=0.0.0.0
