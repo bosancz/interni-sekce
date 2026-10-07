@@ -21,8 +21,17 @@
 						<p class="title">{{ photo.title }}</p>
 					}
 
+					@if (photo.caption) {
+						<p class="caption">{{ photo.caption }}</p>
+					}
+
 					<p class="meta">
-						<span>{{ photo.timestamp | date: "d. M. y" }}</span>
+						<span>
+							{{ photo.timestamp | date: "d. M. y" }}
+							@if (leaders()) {
+								· {{ leaders() }}
+							}
+						</span>
 						@if (photo.album) {
 							<a class="album" [routerLink]="['/galerie', photo.album.id]">
 								<ion-icon name="images-outline"></ion-icon>

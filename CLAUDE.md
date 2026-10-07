@@ -99,7 +99,7 @@
 
 ## Fotka dne
 
-- Karta `bo-home-card-photo-of-day` pod kalendářem na homepagi, `GET /photos/daily` (`vedouci`, linkované z kořene API). `PhotosRepository.getDailyPhoto()` vybírá z fotek **veřejných alb, na kterých je obličej přiřazený vedoucímu** a který se usmívá (`members.role = 'vedouci'`, `photo_faces.emotion = 'happy'`, ruční i automatické přiřazení) pořadím `md5(id || dnešní datum v Europe/Prague)` — celý den stejná fotka pro všechny, bez ukládání stavu. Karta ukazuje titulek, datum pořízení a album, klik otevře `PhotosEditComponent` jen s touto fotkou — fotka proto musí nést `_links` (`PhotoDailyPermission.contains` + `@AcEntity` na `PhotoDailyResponse.photo`), jinak modal spadne na `listPhotoFaces`; bez vhodné fotky `photo: null` a karta se skryje.
+- Karta `bo-home-card-photo-of-day` pod kalendářem na homepagi, `GET /photos/daily` (`vedouci`, linkované z kořene API). `PhotosRepository.getDailyPhoto()` vybírá z fotek **veřejných alb, na kterých je obličej přiřazený vedoucímu** a který se usmívá (`members.role = 'vedouci'`, `photo_faces.emotion = 'happy'`, ruční i automatické přiřazení) pořadím `md5(id || dnešní datum v Europe/Prague)` — celý den stejná fotka pro všechny, bez ukládání stavu. Karta ukazuje titulek, popisek (`caption`), datum pořízení, za ním vedoucí na fotce (`leaders` v odpovědi — všechny obličeje přiřazené členům s rolí `vedouci`, seřazené zleva doprava podle středu boxu `x + width / 2`, každý jednou) a album, klik otevře `PhotosEditComponent` jen s touto fotkou — fotka proto musí nést `_links` (`PhotoDailyPermission.contains` + `@AcEntity` na `PhotoDailyResponse.photo`), jinak modal spadne na `listPhotoFaces`; bez vhodné fotky `photo: null` a karta se skryje.
 
 ## Seznam akcí
 

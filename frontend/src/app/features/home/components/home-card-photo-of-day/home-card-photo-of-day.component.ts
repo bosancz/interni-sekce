@@ -34,6 +34,13 @@ import { SDK } from "src/sdk";
 export class HomeCardPhotoOfDayComponent {
 	daily = signal<SDK.PhotoDailyResponse | undefined>(undefined);
 
+	leaders = computed(
+		() =>
+			this.daily()
+				?.leaders.map((leader) => leader.nickname)
+				.join(", ") ?? "",
+	);
+
 	canSeePhoto = computed(() => this.api.links()?.getDailyPhoto?.allowed ?? false);
 
 	constructor(
