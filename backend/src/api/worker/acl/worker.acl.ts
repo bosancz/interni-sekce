@@ -7,6 +7,11 @@ import {
 	FaceReviewResponse,
 	WorkerResponse,
 } from "../dto/worker.dto";
+import {
+	PhotoCategoryResponse,
+	PhotoContentSearchHitResponse,
+	PhotoContentSummaryResponse,
+} from "../dto/photo-content.dto";
 
 export const WorkersListPermission = new Permission<void>({
 	linkTo: RootResponse,
@@ -55,4 +60,74 @@ export const FaceReviewPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: FaceReviewResponse,
 	inherit: FaceDetectionSummaryPermission,
+});
+
+export const PhotoContentSummaryPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: PhotoContentSummaryResponse,
+	allowed: {
+		admin: true,
+	},
+});
+
+export const PhotoContentBatchPermission = new Permission<void>({
+	linkTo: RootResponse,
+	inherit: PhotoContentSummaryPermission,
+});
+
+export const PhotoContentSearchPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: PhotoContentSearchHitResponse,
+	inherit: PhotoContentSummaryPermission,
+});
+
+export const PhotoCategoriesListPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: PhotoCategoryResponse,
+	allowed: {
+		vedouci: true,
+	},
+});
+
+export const PhotoCategoryReadPermission = new Permission({
+	linkTo: PhotoCategoryResponse,
+	contains: PhotoCategoryResponse,
+	params: { categoryId: "id" },
+	allowed: {
+		vedouci: true,
+	},
+});
+
+export const PhotoCategoryPhotosPermission = new Permission({
+	linkTo: PhotoCategoryResponse,
+	contains: PhotoContentSearchHitResponse,
+	params: { categoryId: "id" },
+	allowed: {
+		vedouci: true,
+	},
+});
+
+export const PhotoCategoryCreatePermission = new Permission<void>({
+	linkTo: RootResponse,
+	inherit: PhotoContentSummaryPermission,
+});
+
+export const PhotoCategoryPreviewPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: PhotoContentSearchHitResponse,
+	inherit: PhotoContentSummaryPermission,
+});
+
+export const PhotoCategoryEditPermission = new Permission({
+	linkTo: PhotoCategoryResponse,
+	params: { categoryId: "id" },
+	allowed: {
+		admin: true,
+	},
+});
+
+export const PhotoCategoryDeletePermission = new Permission({
+	linkTo: PhotoCategoryResponse,
+	params: { categoryId: "id" },
+	inherit: PhotoCategoryEditPermission,
 });

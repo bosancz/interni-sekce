@@ -1,0 +1,106 @@
+:host ::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+.pc-page {
+	max-width: 1600px;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+
+	@media (min-width: 1200px) {
+		display: grid;
+		grid-template-columns: minmax(320px, 1fr) minmax(0, 2fr);
+		align-items: start;
+
+		.pc-search {
+			grid-column: 2;
+			grid-row: 1 / span 2;
+		}
+	}
+}
+
+.muted {
+	color: var(--bo-muted);
+}
+
+.pc-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 16px;
+	padding: 13px 20px 16px;
+	border-top: 1px solid var(--bo-card-line);
+	font-size: 0.9em;
+}
+
+.pc-search-bar {
+	padding: 8px 12px 4px;
+
+	ion-searchbar {
+		padding-inline: 0;
+	}
+}
+
+.pc-examples {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding: 0 4px;
+}
+
+.pc-example {
+	border: 1px solid var(--bo-card-line);
+	background: transparent;
+	color: var(--bo-ink);
+	border-radius: 999px;
+	padding: 3px 12px;
+	font-size: 0.9em;
+	cursor: pointer;
+
+	&:hover:not(:disabled),
+	&.active {
+		background: var(--bo-yellow-tint);
+		border-color: var(--san-yellow);
+	}
+}
+
+.pc-hint {
+	margin: 10px 4px 4px;
+	font-size: 0.85em;
+}
+
+.pc-grid {
+	padding: 12px 16px 16px;
+}
+
+.pc-create {
+	margin: 8px 0 0;
+}
+
+.pc-link {
+	text-decoration: none;
+	color: inherit;
+
+	&:hover {
+		background: var(--bo-card-line);
+	}
+}
+
+.pc-link-icon {
+	vertical-align: middle;
+	margin-left: 6px;
+	color: var(--bo-muted);
+}
+
+.pc-loading {
+	display: flex;
+	justify-content: center;
+	padding: 24px 0;
+}
+
+.pc-empty {
+	margin: 0;
+	padding: 13px 20px 16px;
+}

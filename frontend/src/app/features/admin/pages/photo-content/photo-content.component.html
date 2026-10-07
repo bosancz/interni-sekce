@@ -1,0 +1,196 @@
+<bo-page-header title="Obsah fotek" backUrl="/admin" />
+
+<bo-page-content>
+	<div class="pc-page">
+		<bo-card class="pc-status">
+			<bo-card-header>
+				<bo-card-title>
+					<span class="bo-card-section-title">
+						<ion-icon name="images-outline" />
+						Stav
+					</span>
+				</bo-card-title>
+				<ion-button slot="buttons" fill="clear" size="small" (click)="loadSummary()" boTooltip="Obnovit">
+					<ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+				</ion-button>
+			</bo-card-header>
+
+			<bo-card-content>
+				@if (summary(); as s) {
+					<div class="bo-info-list">
+						<div class="bo-info-row">
+							<span class="bo-info-label">Rozpoznávání</span>
+							<span class="bo-info-value">
+								@if (s.enabled) {
+									<span class="bo-pill bo-pill-green">Zapnuto</span>
+								} @else {
+									<span class="bo-pill bo-pill-red">Vypnuto — chybí REDIS_URL</span>
+								}
+							</span>
+						</div>
+						<div class="bo-info-row">
+							<span class="bo-info-label">Zpracované fotky</span>
+							<span class="bo-info-value">
+								{{ s.photos.processed }} z {{ s.photos.total }}
+								<span class="muted">(čeká {{ s.photos.pending }}, chyby {{ s.photos.failed }})</span>
+							</span>
+						</div>
+						<div class="bo-info-row">
+							<span class="bo-info-label">Naposledy</span>
+							<span class="bo-info-value">{{
+								s.photos.lastEmbeddedAt ? (s.photos.lastEmbeddedAt | date: "d. M. y H:mm") : "—"
+							}}</span>
+						</div>
+						@if (s.queue; as q) {
+							<div class="bo-info-row">
+								<span class="bo-info-label">Fronta</span>
+								<span class="bo-info-value">
+									čeká {{ q.waiting + q.delayed }}, zpracovává se {{ q.active }}
+									@if (q.failed) {
+										<span class="bo-pill bo-pill-red">{{ q.failed }} selhalo</span>
+									}
+								</span>
+							</div>
+							<div class="bo-info-row">
+								<span class="bo-info-label">Další noční dávka</span>
+								<span class="bo-info-value">
+									{{ q.nextBatchAt ? (q.nextBatchAt | date: "d. M. H:mm") : "—" }}
+									<span class="muted">({{ s.batchSize }} fotek)</span>
+								</span>
+							</div>
+						}
+					</div>
+
+					<div class="pc-actions">
+						<ion-button
+							[disabled]="!s.enabled || !canRunBatch() || queueing() || queueRemaining() > 0"
+							[boTooltip]="
+								!canRunBatch()
+									? 'Na spuštění dávky nemáš oprávnění.'
+									: !s.enabled
+										? 'Rozpoznávání není zapnuté.'
+										: ''
+							"
+							(click)="runBatch()"
+						>
+							<ion-icon slot="start" name="play-outline"></ion-icon>
+							Spustit dávku teď
+						</ion-button>
+						<span class="muted">Zařadí {{ s.batchSize }} nejnovějších nezpracovaných fotek.</span>
+					</div>
+				} @else {
+					<div class="bo-info-list">
+						<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+						<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+					</div>
+				}
+			</bo-card-content>
+		</bo-card>
+
+		<bo-card class="pc-categories">
+			<bo-card-header>
+				<bo-card-title>
+					<span class="bo-card-section-title">
+						<ion-icon name="pricetags-outline" />
+						Kategorie
+					</span>
+				</bo-card-title>
+				<ion-button
+					slot="buttons"
+					fill="clear"
+					size="small"
+					routerLink="/admin/obsah-fotek/kategorie/nova"
+					[disabled]="!canCreateCategory()"
+					[boTooltip]="canCreateCategory() ? 'Přidat kategorii' : 'Na přidání kategorie nemáš oprávnění.'"
+				>
+					<ion-icon slot="icon-only" name="add-outline"></ion-icon>
+				</ion-button>
+			</bo-card-header>
+
+			<bo-card-content>
+				@if (categories(); as list) {
+					<div class="bo-info-list">
+						@for (category of list; track category.id) {
+							<a class="bo-info-row pc-link" [routerLink]="['/admin/obsah-fotek/kategorie', category.id]">
+								<span class="bo-info-label">{{ category.name }}</span>
+								<span class="bo-info-value">
+									{{ category.photosCount ?? 0 }} fotek
+									<span class="muted">(hranice {{ category.threshold | number: "1.3-3" }})</span>
+									<ion-icon name="chevron-forward-outline" class="pc-link-icon"></ion-icon>
+								</span>
+							</a>
+						} @empty {
+							<p class="muted pc-empty">
+								Zatím žádné kategorie. Vyzkoušej popisy v hledání a pak z nich kategorii vytvoř.
+							</p>
+						}
+					</div>
+				} @else {
+					<div class="bo-info-list">
+						<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+					</div>
+				}
+			</bo-card-content>
+		</bo-card>
+
+		<bo-card class="pc-search">
+			<bo-card-header>
+				<bo-card-title>
+					<span class="bo-card-section-title">
+						<ion-icon name="search-outline" />
+						Co je na fotkách
+					</span>
+				</bo-card-title>
+			</bo-card-header>
+
+			<bo-card-content>
+				<div class="pc-search-bar">
+					<ion-searchbar
+						placeholder="Popiš, co hledáš — např. děti u táboráku"
+						[value]="query()"
+						[debounce]="400"
+						[disabled]="!canSearch()"
+						(ionInput)="onQueryChange($event.detail.value)"
+					></ion-searchbar>
+					<div class="pc-examples">
+						@for (example of examples; track example) {
+							<button
+								type="button"
+								class="pc-example"
+								[class.active]="searchedQuery() === example"
+								[disabled]="!canSearch()"
+								(click)="setExample(example)"
+							>
+								{{ example }}
+							</button>
+						}
+					</div>
+					@if (searchedQuery() && canCreateCategory()) {
+						<ion-button
+							fill="clear"
+							size="small"
+							class="pc-create"
+							[routerLink]="['/admin/obsah-fotek/kategorie/nova']"
+							[queryParams]="{ prompt: searchedQuery() }"
+						>
+							<ion-icon slot="start" name="add-outline"></ion-icon>
+							Vytvořit kategorii z „{{ searchedQuery() }}“
+						</ion-button>
+					}
+					<p class="muted pc-hint">
+						Číslo u fotky je podobnost s popisem. Absolutní hodnota moc neříká, záleží na pořadí a na tom,
+						kde začnou výsledky přestávat sedět — tam patří hranice kategorie.
+					</p>
+				</div>
+
+				@if (searching() && !results().length) {
+					<div class="pc-loading"><ion-spinner name="dots"></ion-spinner></div>
+				} @else if (results().length) {
+					<bo-photo-hits-grid class="pc-grid" [hits]="results()" [loading]="searching()" />
+				} @else if (searchedQuery()) {
+					<p class="muted pc-empty">Nic nenalezeno — možná ještě nejsou zpracované žádné fotky.</p>
+				}
+			</bo-card-content>
+		</bo-card>
+	</div>
+</bo-page-content>

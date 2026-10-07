@@ -3,9 +3,11 @@ import { DynamicModule, Logger, Module } from "@nestjs/common";
 import { StaticConfig } from "src/config";
 import { AlbumsModelModule } from "src/models/albums/albums-model.module";
 import { FacesEnqueueCommand } from "./commands/faces-enqueue.command";
+import { PhotosEmbedCommand } from "./commands/photos-embed.command";
 import { BackendScheduleProcessor } from "./processors/backend-schedule.processor";
 import { WorkerResultsProcessor } from "./processors/worker-results.processor";
 import { FacesDetectionService } from "./services/faces-detection.service";
+import { PhotoContentService } from "./services/photo-content.service";
 import { WorkersService } from "./services/workers.service";
 import { BACKEND_SCHEDULE_QUEUE, WORKER_RESULTS_QUEUE, WORKER_TASK_QUEUE, WorkerTasks } from "./worker-queues";
 
@@ -14,7 +16,9 @@ export class WorkerModelModule {
 	static forRoot(options: { processors: boolean }): DynamicModule {
 		if (!StaticConfig.redis.url) {
 			if (options.processors) {
-				new Logger(WorkerModelModule.name).warn("REDIS_URL is not set, face detection is disabled.");
+				new Logger(WorkerModelModule.name).warn(
+					"REDIS_URL is not set, face detection and photo content recognition are disabled.",
+				);
 			}
 			return { module: WorkerModelModule };
 		}
@@ -26,16 +30,21 @@ export class WorkerModelModule {
 				BullModule.forRoot({ connection: { url: StaticConfig.redis.url } }),
 				BullModule.registerQueue(
 					{ name: WORKER_TASK_QUEUE(WorkerTasks.detectFaces) },
+					{ name: WORKER_TASK_QUEUE(WorkerTasks.embedPhoto) },
+					{ name: WORKER_TASK_QUEUE(WorkerTasks.embedText) },
 					{ name: WORKER_RESULTS_QUEUE },
 					{ name: BACKEND_SCHEDULE_QUEUE },
 				),
 				AlbumsModelModule,
 			],
-			exports: [FacesDetectionService, WorkersService],
+			exports: [FacesDetectionService, PhotoContentService, WorkersService],
 			providers: [
 				FacesDetectionService,
+				PhotoContentService,
 				WorkersService,
-				...(options.processors ? [BackendScheduleProcessor, WorkerResultsProcessor] : [FacesEnqueueCommand]),
+				...(options.processors
+					? [BackendScheduleProcessor, WorkerResultsProcessor]
+					: [FacesEnqueueCommand, PhotosEmbedCommand]),
 			],
 		};
 	}

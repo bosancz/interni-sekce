@@ -1,0 +1,119 @@
+<bo-page-header [title]="title()" backUrl="/admin/obsah-fotek">
+	@if (canDelete()) {
+		<ion-button fill="clear" color="danger" (click)="delete()">
+			<ion-icon slot="start" name="trash-outline"></ion-icon>
+			Smazat
+		</ion-button>
+	}
+	<ion-button [disabled]="!canSave() || saving()" (click)="save()">Uložit</ion-button>
+</bo-page-header>
+
+<bo-page-content>
+	@if (loaded()) {
+		<div class="ce-page">
+			<bo-card class="ce-form">
+				<bo-card-header>
+					<bo-card-title>
+						<span class="bo-card-section-title">
+							<ion-icon name="pricetag-outline" />
+							Kategorie
+						</span>
+					</bo-card-title>
+				</bo-card-header>
+
+				<bo-card-content>
+					<label class="ce-label" for="ce-name">Název</label>
+					<ion-input
+						id="ce-name"
+						class="ce-input"
+						fill="outline"
+						placeholder="např. Voda"
+						[value]="name()"
+						(ionInput)="name.set($event.detail.value ?? '')"
+					></ion-input>
+
+					<label class="ce-label">Popisy pro rozpoznávání</label>
+					<div class="ce-prompts">
+						@for (prompt of prompts(); track $index) {
+							<div class="ce-prompt">
+								<ion-input
+									class="ce-input"
+									fill="outline"
+									placeholder="např. fotka jezera"
+									[value]="prompt"
+									(ionInput)="setPrompt($index, $event.detail.value)"
+									(keyup.enter)="loadPreview()"
+								></ion-input>
+								<ion-button
+									fill="clear"
+									color="medium"
+									(click)="removePrompt($index)"
+									boTooltip="Odebrat popis"
+								>
+									<ion-icon slot="icon-only" name="close-outline"></ion-icon>
+								</ion-button>
+							</div>
+						}
+					</div>
+					<button type="button" class="ce-add" (click)="addPrompt()">
+						<ion-icon name="add-outline"></ion-icon>
+						Přidat popis
+					</button>
+					<p class="muted ce-hint">
+						Fotka se porovná s průměrem všech popisů. Lépe fungují krátké věty („děti se koupou v jezeře“) a
+						víc různých popisů než jedno slovo. Česky i anglicky.
+					</p>
+
+					<label class="ce-label">
+						Hranice
+						<span class="ce-threshold">{{ threshold() | number: "1.3-3" }}</span>
+					</label>
+					<ion-range
+						[min]="minThreshold"
+						[max]="maxThreshold"
+						[step]="0.005"
+						[value]="threshold()"
+						(ionInput)="setThreshold($event.detail.value)"
+					></ion-range>
+					<p class="muted ce-hint">
+						Do kategorie patří fotky se skóre aspoň na hranici. V náhledu je to
+						<strong>{{ aboveThreshold() }}</strong>
+						z {{ preview().length }} nejpodobnějších fotek — posuň hranici tam, kde výsledky přestávají
+						sedět. Změna se projeví hned po uložení, fotky se nepřepočítávají.
+					</p>
+				</bo-card-content>
+			</bo-card>
+
+			<bo-card class="ce-preview">
+				<bo-card-header>
+					<bo-card-title>
+						<span class="bo-card-section-title">
+							<ion-icon name="eye-outline" />
+							Náhled
+						</span>
+					</bo-card-title>
+					@if (previewLoading()) {
+						<ion-spinner slot="buttons" name="dots"></ion-spinner>
+					}
+				</bo-card-header>
+
+				<bo-card-content>
+					@if (preview().length) {
+						<bo-photo-hits-grid
+							class="ce-grid"
+							[hits]="preview()"
+							[threshold]="threshold()"
+							[loading]="previewLoading()"
+						/>
+					} @else if (!previewLoading()) {
+						<p class="muted ce-empty">
+							Napiš aspoň jeden popis a uvidíš, které fotky by do kategorie spadly.
+						</p>
+					}
+				</bo-card-content>
+			</bo-card>
+		</div>
+	} @else {
+		<div class="ce-loading"><ion-spinner name="dots"></ion-spinner></div>
+	}
+</bo-page-content>

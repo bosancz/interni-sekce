@@ -8,6 +8,7 @@ import numpy as np
 from bullmq import Queue
 
 from .. import config
+from ..paths import resolve_data_path
 
 NAME = "detect-faces"
 RESULT = "faces-detected"
@@ -43,13 +44,6 @@ def _emotions(expression: Any, aligned: np.ndarray) -> dict[str, float]:
     probabilities = np.exp(logits - logits.max())
     probabilities /= probabilities.sum()
     return {name: round(float(p), 4) for name, p in zip(config.FACES_EMOTIONS, probabilities)}
-
-
-def _resolve(relative_path: str) -> Path:
-    path = (config.DATA_DIR / relative_path).resolve()
-    if not path.is_relative_to(config.DATA_DIR):
-        raise ValueError(f"Path {relative_path} is outside of DATA_DIR.")
-    return path
 
 
 def _detect_scaled(detector: Any, image: np.ndarray, max_side: int | None) -> np.ndarray:
@@ -140,7 +134,7 @@ async def run(data: dict[str, Any], results: Queue) -> None:
     result: dict[str, Any] = {"photoId": photo_id, "model": config.FACES_MODEL}
 
     try:
-        path = _resolve(data["path"])
+        path = resolve_data_path(data["path"])
         result["faces"] = await asyncio.to_thread(detect, path)
         logger.info("Photo %s: %d faces", photo_id, len(result["faces"]))
     except (ValueError, OSError, cv2.error) as err:

@@ -77,3 +77,9 @@ export class PhotoDailyResponse {
 	@ApiProperty({ type: PhotoDailyLeader, isArray: true })
 	leaders!: PhotoDailyLeader[];
 }
+
+export class PhotoCategoryOfPhotoResponse {
+	@ApiProperty() categoryId!: number;
+	@ApiProperty() name!: string;
+	@ApiProperty() score!: number;
+}

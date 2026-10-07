@@ -289,6 +289,16 @@
 					}
 				</div>
 			}
+			@if (categories().length) {
+				<div class="people-bar categories-bar">
+					@for (category of categories(); track category.categoryId) {
+						<ion-chip outline (click)="openCategory(category.categoryId)">
+							<ion-icon name="pricetag-outline"></ion-icon>
+							<ion-label>{{ category.name }}</ion-label>
+						</ion-chip>
+					}
+				</div>
+			}
 			<div class="tags-bar">
 				<bo-photo-tags-editor
 					[tags]="photo()!.tags ?? null"
