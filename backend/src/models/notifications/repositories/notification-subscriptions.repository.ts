@@ -62,11 +62,16 @@ export class NotificationSubscriptionsRepository {
 		});
 	}
 
-	async getSendableSubscriptions(userIds: number[]) {
-		if (!userIds.length) return [];
-		return this.repository.find({
+	async getSendableSubscription(id: number) {
+		return this.repository.findOne({
 			select: { id: true, userId: true, endpoint: true, keyP256dh: true, keyAuth: true },
-			where: { userId: In(userIds) },
+			where: { id },
 		});
+	}
+
+	async getSubscriptionIds(userIds: number[]) {
+		if (!userIds.length) return [];
+		const subscriptions = await this.repository.find({ select: { id: true }, where: { userId: In(userIds) } });
+		return subscriptions.map((subscription) => subscription.id);
 	}
 }
