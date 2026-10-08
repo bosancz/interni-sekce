@@ -11,3 +11,10 @@ TASKS: dict[str, TaskHandler] = {
     embed_photo.NAME: embed_photo.run,
     embed_text.NAME: embed_text.run,
 }
+
+TaskRelease = Callable[[], bool]
+
+RELEASES: dict[str, TaskRelease] = {
+    detect_faces.NAME: detect_faces.release,
+    embed_photo.NAME: embed_photo.release,
+}

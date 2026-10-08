@@ -36,6 +36,14 @@ def _models():
     return _detector, _recognizer, _expression
 
 
+def release() -> bool:
+    global _detector, _recognizer, _expression
+    if _detector is None:
+        return False
+    _detector = _recognizer = _expression = None
+    return True
+
+
 def _emotions(expression: Any, aligned: np.ndarray) -> dict[str, float]:
     image = cv2.cvtColor(aligned, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
     image = (image - 0.5) / 0.5

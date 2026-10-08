@@ -94,6 +94,14 @@ def embed_image(path: Path) -> list[list[float]]:
     return [[round(float(v), 5) for v in row] for row in _normalize(output.astype(np.float32))]
 
 
+def release_vision() -> bool:
+    global _vision
+    if _vision is None:
+        return False
+    _vision = None
+    return True
+
+
 def embed_texts(texts: list[str]) -> list[list[float]]:
     global _text, _tokenizer, _projection
     if _text is None:
