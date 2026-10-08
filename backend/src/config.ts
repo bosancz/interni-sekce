@@ -157,6 +157,11 @@ const faces = {
 	batchSize: process.env["FACES_BATCH_SIZE"] ? parseInt(process.env["FACES_BATCH_SIZE"], 10) : 300,
 };
 
+const photoContent = {
+	batchSize: process.env["PHOTO_CONTENT_BATCH_SIZE"] ? parseInt(process.env["PHOTO_CONTENT_BATCH_SIZE"], 10) : 3000,
+	textTimeoutMs: 30_000,
+};
+
 const oauth = {
 	wiki: {
 		clientId: process.env["OAUTH_WIKI_CLIENT_ID"] ?? "",
@@ -187,6 +192,7 @@ export class Config {
 	server = server;
 	fs = fs;
 	mapy = mapy;
+	photoContent = photoContent;
 	photos = photos;
 }
 

@@ -6610,6 +6610,390 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface PhotoCategoryCreateBody
+     */
+    export interface PhotoCategoryCreateBody {
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoCategoryCreateBody
+         */
+        'name': string;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof PhotoCategoryCreateBody
+         */
+        'prompts': Array<string>;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoCategoryCreateBody
+         */
+        'threshold'?: number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoCategoryCreateBody
+         */
+        'order'?: number | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoCategoryOfPhotoResponse
+     */
+    export interface PhotoCategoryOfPhotoResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoCategoryOfPhotoResponse
+         */
+        'categoryId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoCategoryOfPhotoResponse
+         */
+        'name': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoCategoryOfPhotoResponse
+         */
+        'score': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoCategoryPreviewBody
+     */
+    export interface PhotoCategoryPreviewBody {
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof PhotoCategoryPreviewBody
+         */
+        'prompts': Array<string>;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoCategoryPreviewBody
+         */
+        'limit'?: number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoCategoryResponseLinks
+     */
+    export interface PhotoCategoryResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoCategoryResponseLinks
+         */
+        'getPhotoCategory': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoCategoryResponseLinks
+         */
+        'updatePhotoCategory': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoCategoryResponseLinks
+         */
+        'deletePhotoCategory': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoCategoryResponseLinks
+         */
+        'listPhotoCategoryPhotos': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoCategoryResponseWithLinks
+     */
+    export interface PhotoCategoryResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoCategoryResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoCategoryResponseWithLinks
+         */
+        'name': string;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof PhotoCategoryResponseWithLinks
+         */
+        'prompts': Array<string>;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoCategoryResponseWithLinks
+         */
+        'threshold': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoCategoryResponseWithLinks
+         */
+        'order'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoCategoryResponseWithLinks
+         */
+        'model'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoCategoryResponseWithLinks
+         */
+        'photosCount'?: number | null;
+        /**
+         * 
+         * @type {PhotoCategoryResponseLinks}
+         * @memberof PhotoCategoryResponseWithLinks
+         */
+        '_links': PhotoCategoryResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoCategoryUpdateBody
+     */
+    export interface PhotoCategoryUpdateBody {
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoCategoryUpdateBody
+         */
+        'name'?: string;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof PhotoCategoryUpdateBody
+         */
+        'prompts'?: Array<string>;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoCategoryUpdateBody
+         */
+        'threshold'?: number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoCategoryUpdateBody
+         */
+        'order'?: number | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoContentBatchBody
+     */
+    export interface PhotoContentBatchBody {
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentBatchBody
+         */
+        'limit'?: number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoContentBatchResponse
+     */
+    export interface PhotoContentBatchResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentBatchResponse
+         */
+        'queued': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoContentPhotosStatsResponse
+     */
+    export interface PhotoContentPhotosStatsResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentPhotosStatsResponse
+         */
+        'total': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentPhotosStatsResponse
+         */
+        'processed': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentPhotosStatsResponse
+         */
+        'pending': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentPhotosStatsResponse
+         */
+        'failed': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoContentPhotosStatsResponse
+         */
+        'lastEmbeddedAt'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoContentQueueResponse
+     */
+    export interface PhotoContentQueueResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentQueueResponse
+         */
+        'waiting': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentQueueResponse
+         */
+        'active': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentQueueResponse
+         */
+        'delayed': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentQueueResponse
+         */
+        'failed': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoContentQueueResponse
+         */
+        'nextBatchAt'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoContentQueueResponse
+         */
+        'nextStopAt'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoContentSearchHitResponse
+     */
+    export interface PhotoContentSearchHitResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentSearchHitResponse
+         */
+        'photoId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoContentSearchHitResponse
+         */
+        'photoName': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoContentSearchHitResponse
+         */
+        'photoTitle'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentSearchHitResponse
+         */
+        'albumId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoContentSearchHitResponse
+         */
+        'albumName'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentSearchHitResponse
+         */
+        'score': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoContentSummaryResponse
+     */
+    export interface PhotoContentSummaryResponse {
+        /**
+         * 
+         * @type {boolean}
+         * @memberof PhotoContentSummaryResponse
+         */
+        'enabled': boolean;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoContentSummaryResponse
+         */
+        'batchSize': number;
+        /**
+         * 
+         * @type {PhotoContentPhotosStatsResponse}
+         * @memberof PhotoContentSummaryResponse
+         */
+        'photos': PhotoContentPhotosStatsResponse;
+        /**
+         * 
+         * @type {PhotoContentQueueResponse}
+         * @memberof PhotoContentSummaryResponse
+         */
+        'queue'?: PhotoContentQueueResponse | null;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface PhotoDailyLeader
      */
     export interface PhotoDailyLeader {
@@ -7125,6 +7509,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof PhotoResponseLinks
          */
+        'listPhotoCategoriesOfPhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoResponseLinks
+         */
         'updatePhoto': AcLink;
         /**
          * 
@@ -7592,6 +7982,42 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'getFaceForReview': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listPhotoCategories': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'createPhotoCategory': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'previewPhotoCategory': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getPhotoContentSummary': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'enqueuePhotoContentBatch': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'searchPhotoContent': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -14523,6 +14949,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * PhotoGalleryApi - object-oriented interface
      * @export
@@ -15240,6 +15670,50 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<AlbumResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} photoId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async listPhotoCategoriesOfPhoto(
+            photoId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('listPhotoCategoriesOfPhoto', 'photoId', photoId)
+            
+            const localVarPath = `/api/photos/{photoId}/categories`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<PhotoCategoryOfPhotoResponse>>(axiosRequestConfig);
         }
     
         /**
@@ -17851,6 +18325,18 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * Query parameters for getFaceForReview operation in WorkerApi.
      * @export
@@ -17906,6 +18392,14 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * Query parameters for listFaceDetectionLog operation in WorkerApi.
      * @export
@@ -17937,6 +18431,80 @@ export namespace SDK {
     
     
     
+    /**
+     * Query parameters for listPhotoCategoryPhotos operation in WorkerApi.
+     * @export
+     * @interface WorkerApiListPhotoCategoryPhotosQueryParams
+     */
+    export interface WorkerApiListPhotoCategoryPhotosQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerApiListPhotoCategoryPhotos
+         */
+        limit?: number
+    
+        //offset
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerApiListPhotoCategoryPhotos
+         */
+        offset?: number
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for searchPhotoContent operation in WorkerApi.
+     * @export
+     * @interface WorkerApiSearchPhotoContentQueryParams
+     */
+    export interface WorkerApiSearchPhotoContentQueryParams {
+        //q
+        /**
+         * 
+         * @type {string}
+         * @memberof WorkerApiSearchPhotoContent
+         */
+        q: string
+    
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerApiSearchPhotoContent
+         */
+        limit?: number
+    
+        //minScore
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerApiSearchPhotoContent
+         */
+        minScore?: number
+    }
+    
+    
+    
+    
+    
     
     
     
@@ -17954,6 +18522,95 @@ export namespace SDK {
     
         constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
             super(configuration, configuration.basePath, axios);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async createPhotoCategory(
+            body: PhotoCategoryCreateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoCategoryCreateBody' is not null or undefined
+            assertParamExists('createPhotoCategory', 'photoCategoryCreateBody', body)
+            
+            const localVarPath = `/api/photo-categories`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<PhotoCategoryResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} categoryId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async deletePhotoCategory(
+            categoryId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'categoryId' is not null or undefined
+            assertParamExists('deletePhotoCategory', 'categoryId', categoryId)
+            
+            const localVarPath = `/api/photo-categories/{categoryId}`
+                .replace(`{${"categoryId"}}`, encodeURIComponent(String(categoryId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
         }
     
         /**
@@ -17999,6 +18656,51 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<FaceDetectionBatchResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async enqueuePhotoContentBatch(
+            body: PhotoContentBatchBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoContentBatchBody' is not null or undefined
+            assertParamExists('enqueuePhotoContentBatch', 'photoContentBatchBody', body)
+            
+            const localVarPath = `/api/photo-content/batch`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<PhotoContentBatchResponse>(axiosRequestConfig);
         }
     
         /**
@@ -18140,6 +18842,88 @@ export namespace SDK {
         /**
          * 
     
+         * @param {number} categoryId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async getPhotoCategory(
+            categoryId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'categoryId' is not null or undefined
+            assertParamExists('getPhotoCategory', 'categoryId', categoryId)
+            
+            const localVarPath = `/api/photo-categories/{categoryId}`
+                .replace(`{${"categoryId"}}`, encodeURIComponent(String(categoryId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<PhotoCategoryResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async getPhotoContentSummary(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/photo-content`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<PhotoContentSummaryResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {WorkerApiListFaceDetectionLogQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -18193,6 +18977,98 @@ export namespace SDK {
          * @memberof WorkerApi
          */
         
+        public async listPhotoCategories(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/photo-categories`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<PhotoCategoryResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} categoryId 
+         * @param {WorkerApiListPhotoCategoryPhotosQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async listPhotoCategoryPhotos(
+            categoryId: number,
+            queryParams: WorkerApiListPhotoCategoryPhotosQueryParams,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'categoryId' is not null or undefined
+            assertParamExists('listPhotoCategoryPhotos', 'categoryId', categoryId)
+            
+            const localVarPath = `/api/photo-categories/{categoryId}/photos`
+                .replace(`{${"categoryId"}}`, encodeURIComponent(String(categoryId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.offset !== undefined) {
+                requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<PhotoContentSearchHitResponse>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
         public async listWorkers(
             options: AxiosRequestConfig = {}
         ) {
@@ -18231,6 +19107,51 @@ export namespace SDK {
          * @memberof WorkerApi
          */
         
+        public async previewPhotoCategory(
+            body: PhotoCategoryPreviewBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoCategoryPreviewBody' is not null or undefined
+            assertParamExists('previewPhotoCategory', 'photoCategoryPreviewBody', body)
+            
+            const localVarPath = `/api/photo-categories/preview`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<PhotoContentSearchHitResponse>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
         public async runFaceMatching(
             options: AxiosRequestConfig = {}
         ) {
@@ -18259,6 +19180,61 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {WorkerApiSearchPhotoContentQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async searchPhotoContent(
+            queryParams: WorkerApiSearchPhotoContentQueryParams,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'q' is not null or undefined
+            assertParamExists('searchPhotoContent', 'q', queryParams.q)
+            
+            const localVarPath = `/api/photo-content/search`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.q !== undefined) {
+                requestQueryParameter['q'] = queryParams.q;
+            }
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.minScore !== undefined) {
+                requestQueryParameter['minScore'] = queryParams.minScore;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<PhotoContentSearchHitResponse>>(axiosRequestConfig);
         }
     
         /**
@@ -18304,6 +19280,59 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<FaceMatchingSettingsResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} categoryId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async updatePhotoCategory(
+            categoryId: number,
+            body: PhotoCategoryUpdateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'categoryId' is not null or undefined
+            assertParamExists('updatePhotoCategory', 'categoryId', categoryId)
+            assertParamExists('updatePhotoCategory', 'photoCategoryUpdateBody', body)
+            
+            // verify required parameter 'photoCategoryUpdateBody' is not null or undefined
+            assertParamExists('updatePhotoCategory', 'categoryId', categoryId)
+            assertParamExists('updatePhotoCategory', 'photoCategoryUpdateBody', body)
+            
+            const localVarPath = `/api/photo-categories/{categoryId}`
+                .replace(`{${"categoryId"}}`, encodeURIComponent(String(categoryId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<PhotoCategoryResponseWithLinks>(axiosRequestConfig);
         }
     }
     

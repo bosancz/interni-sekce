@@ -46,6 +46,7 @@ import {
 	imageOutline,
 	personAddOutline,
 	personOutline,
+	pricetagOutline,
 	sparklesOutline,
 	trashOutline,
 	star,
@@ -196,6 +197,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	@ViewChild("captionInput") captionInput!: IonInput;
 
 	faces = signal<SDK.PhotoFaceResponseWithLinks[]>([]);
+	categories = signal<SDK.PhotoCategoryOfPhotoResponse[]>([]);
 	assignedFaces = computed(() => this.faces().filter((face) => face.member));
 	private userSettings = inject(UserSettingsService);
 	private photoFacesVisible = this.userSettings.watch("photoFacesVisible");
@@ -231,6 +233,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 			happyOutline,
 			personAddOutline,
 			personOutline,
+			pricetagOutline,
 			trashOutline,
 			createOutline,
 			checkmarkOutline,
@@ -297,6 +300,26 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		} catch {
 			this.toastService.toast("Nepodařilo se načíst obličeje.", { color: "warning" });
 		}
+	}
+
+	private async loadCategories(photo: SDK.PhotoResponseWithLinks) {
+		this.categories.set([]);
+		if (!photo._links.listPhotoCategoriesOfPhoto?.allowed) return;
+
+		try {
+			const categories = await this.api.PhotoGalleryApi.listPhotoCategoriesOfPhoto(photo.id).then(
+				(res) => res.data,
+			);
+			if (this.photo()?.id === photo.id) this.categories.set(categories);
+		} catch {
+			this.categories.set([]);
+		}
+	}
+
+	async openCategory(categoryId: number) {
+		const modal = await this.modalController.getTop();
+		if (modal) await this.modalService.dismissAndNavigate(modal, ["/galerie/kategorie", categoryId]);
+		else await this.router.navigate(["/galerie/kategorie", categoryId]);
 	}
 
 	openFaceMenu(event: Event, face: SDK.PhotoFaceResponseWithLinks) {
@@ -749,6 +772,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		this.imageRect.set(null);
 		this.photo.set(photo);
 		this.loadFaces(photo);
+		this.loadCategories(photo);
 		afterNextRender({ read: () => this.measureImage() }, { injector: this.injector });
 
 		this.router.navigate([], { queryParams: { photo: photo.id }, queryParamsHandling: "merge", replaceUrl: true });

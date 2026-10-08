@@ -1,0 +1,24 @@
+<bo-page-header title="Kategorie fotek" backUrl="/galerie" />
+
+<bo-page-content [padding]="true">
+	@if (cards()) {
+		<div class="cl-grid">
+			@for (card of visibleCards(); track card.category.id) {
+				<a class="cl-card" [routerLink]="['/galerie/kategorie', card.category.id]">
+					@if (card.coverPhotoId) {
+						<img [src]="{ id: card.coverPhotoId } | photoImageUrl: 'small'" loading="lazy" alt="" />
+					}
+					<span class="cl-label">
+						<ion-icon name="pricetag-outline"></ion-icon>
+						{{ card.category.name }}
+						<span class="cl-count">{{ card.category.photosCount }}</span>
+					</span>
+				</a>
+			} @empty {
+				<p class="cl-empty">Zatím tu nejsou žádné kategorie s fotkami.</p>
+			}
+		</div>
+	} @else {
+		<div class="cl-loading"><ion-spinner name="dots"></ion-spinner></div>
+	}
+</bo-page-content>

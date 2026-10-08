@@ -9,11 +9,15 @@ import { FacesNotifyCommand } from "./commands/faces-notify.command";
 import { FixPhotoDimensionsCommand } from "./commands/fix-photo-dimensions.command";
 import { WriteAlbumsMetadataCommand } from "./commands/write-album-metadata.command";
 import { Album } from "./entities/album.entity";
+import { PhotoCategory } from "./entities/photo-category.entity";
+import { PhotoEmbedding } from "./entities/photo-embedding.entity";
 import { PhotoFace } from "./entities/photo-face.entity";
 import { Photo } from "./entities/photo.entity";
 import { AlbumsRepository } from "./repositories/albums.repository";
 import { PhotosRepository } from "./repositories/photos.repository";
 import { AlbumsMetadataService } from "./services/albums-metadata.service";
+import { PhotoCategoriesService } from "./services/photo-categories.service";
+import { PhotoEmbeddingsService } from "./services/photo-embeddings.service";
 import { PhotoFacesMatchingService } from "./services/photo-faces-matching.service";
 import { PhotoFacesNotificationsService } from "./services/photo-faces-notifications.service";
 import { PhotoFacesService } from "./services/photo-faces.service";
@@ -22,7 +26,7 @@ import { PhotosMaintenanceService } from "./services/photos-maintenance.service"
 
 @Module({
 	imports: [
-		TypeOrmModule.forFeature([Album, Photo, PhotoFace]),
+		TypeOrmModule.forFeature([Album, Photo, PhotoFace, PhotoEmbedding, PhotoCategory]),
 		FilesModule,
 		NotificationsModelModule,
 		SettingsModelModule,
@@ -30,6 +34,8 @@ import { PhotosMaintenanceService } from "./services/photos-maintenance.service"
 	providers: [
 		AlbumsRepository,
 		AlbumsMetadataService,
+		PhotoCategoriesService,
+		PhotoEmbeddingsService,
 		PhotoFacesService,
 		PhotoFacesMatchingService,
 		PhotoFacesNotificationsService,
@@ -46,6 +52,8 @@ import { PhotosMaintenanceService } from "./services/photos-maintenance.service"
 		AlbumsRepository,
 		PhotosRepository,
 		PhotosFilesService,
+		PhotoCategoriesService,
+		PhotoEmbeddingsService,
 		PhotoFacesService,
 		PhotoFacesMatchingService,
 		PhotoFacesNotificationsService,

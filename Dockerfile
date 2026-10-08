@@ -59,6 +59,17 @@ ADD --checksum=sha256:0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087
 ADD --checksum=sha256:4f61307602fc089ce20488a31d4e4614e3c9753a7d6c41578c854858b183e1a9 \
 	${OPENCV_ZOO}/facial_expression_recognition/facial_expression_recognition_mobilefacenet_2022july.onnx models/
 
+ARG CLIP_VISION=https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/d15189d7028b43f1d3e65039190477f6af591c2a
+ARG CLIP_TEXT=https://huggingface.co/sentence-transformers/clip-ViT-B-32-multilingual-v1/resolve/58edf8cada9e398793dca955574a48cbb7f18be2
+ADD --checksum=sha256:35c4e0fb0aeee527dcde1693520b214a34424a786babd530f35366bad5844efd \
+	${CLIP_VISION}/onnx/vision_model_fp16.onnx models/clip-vit-base-patch32-vision.onnx
+ADD --checksum=sha256:fbc8fbeaa5237d96bd1bf430057c70d34de8334a463e933a5faa305f6caeed9c \
+	${CLIP_TEXT}/onnx/model_quint8_avx2.onnx models/clip-vit-base-patch32-multilingual-text.onnx
+ADD --checksum=sha256:5b4e1a8171c81dfd666ae40265b9530c6e0b3d53923fe8ac493dcc84229adf81 \
+	${CLIP_TEXT}/tokenizer.json models/clip-vit-base-patch32-multilingual-tokenizer.json
+ADD --checksum=sha256:d12568dc7300970a4d3dbb49068ad16cd89b99840b74b026f8e48071e9414f74 \
+	${CLIP_TEXT}/2_Dense/model.safetensors models/clip-vit-base-patch32-multilingual-dense.safetensors
+
 COPY ./worker/worker ./worker
 
 RUN useradd --system --uid 1001 --no-create-home worker && chmod -R a+r /app/models

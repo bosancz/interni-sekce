@@ -21,6 +21,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
 	addOutline,
+	pricetagsOutline,
 	eyeOffOutline,
 	eyeOutline,
 	gridOutline,
@@ -109,6 +110,11 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 			icon: "add-outline",
 			pinned: true,
 			handler: () => this.create(),
+		},
+		{
+			text: "Kategorie fotek",
+			icon: "pricetags-outline",
+			handler: () => this.router.navigate(["kategorie"], { relativeTo: this.route }),
 		},
 		{
 			text: "Smazaná alba",
@@ -223,6 +229,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		private router: Router,
 	) {
 		addIcons({
+			pricetagsOutline,
 			addOutline,
 			eyeOutline,
 			eyeOffOutline,

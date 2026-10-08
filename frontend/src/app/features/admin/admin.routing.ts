@@ -3,6 +3,8 @@ import { Routes } from "@angular/router";
 import { AdminHomeComponent } from "./pages/admin-home/admin-home.component";
 import { FaceDetectionComponent } from "./pages/face-detection/face-detection.component";
 import { FaceMatchingComponent } from "./pages/face-matching/face-matching.component";
+import { PhotoCategoryEditComponent } from "./pages/photo-category-edit/photo-category-edit.component";
+import { PhotoContentComponent } from "./pages/photo-content/photo-content.component";
 import { UsersCreateComponent } from "./pages/users-create/users-create.component";
 import { UsersEditComponent } from "./pages/users-edit/users-edit.component";
 import { UsersListComponent } from "./pages/users-list/users-list.component";
@@ -19,5 +21,7 @@ export const adminRoutes: Routes = [
 
 	{ path: "obliceje", title: "Detekce obličejů", component: FaceDetectionComponent },
 	{ path: "prirazovani-obliceju", title: "Přiřazování obličejů", component: FaceMatchingComponent },
+	{ path: "obsah-fotek", title: "Obsah fotek", component: PhotoContentComponent },
+	{ path: "obsah-fotek/kategorie/:category", title: "Kategorie fotek", component: PhotoCategoryEditComponent },
 	{ path: "workery", title: "Workery", component: WorkersComponent },
 ];

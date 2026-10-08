@@ -58,6 +58,19 @@ FACES_MAX_IMAGE_SIDE = 1600
 FACES_LARGE_SCALES = [640, 320]
 FACES_LARGE_PADDING = 0.25
 
+CLIP_VISION_MODEL = MODELS_DIR / "clip-vit-base-patch32-vision.onnx"
+CLIP_TEXT_MODEL = MODELS_DIR / "clip-vit-base-patch32-multilingual-text.onnx"
+CLIP_TEXT_TOKENIZER = MODELS_DIR / "clip-vit-base-patch32-multilingual-tokenizer.json"
+CLIP_TEXT_PROJECTION = MODELS_DIR / "clip-vit-base-patch32-multilingual-dense.safetensors"
+CLIP_MODEL = "clip-vit-b32+multilingual-v1"
+CLIP_IMAGE_MODEL = "clip-vit-b32-crops-v2"
+CLIP_CROP_MIN_ASPECT = 1.15
+CLIP_IMAGE_SIZE = 224
+CLIP_IMAGE_MEAN = [0.48145466, 0.4578275, 0.40821073]
+CLIP_IMAGE_STD = [0.26862954, 0.26130258, 0.27577711]
+CLIP_TEXT_MAX_TOKENS = 128
+CLIP_TEXT_MAX_BATCH = 64
+
 
 def task_queue(task: str) -> str:
     return f"worker-{task}"

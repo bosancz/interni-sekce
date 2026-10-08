@@ -42,13 +42,14 @@ async def main() -> None:
     logger.info("Worker name: %s", heartbeat.id)
 
     def processor(name: str, handler: TaskHandler):
-        async def process(job: Any, token: str) -> None:
+        async def process(job: Any, token: str) -> Any:
             async with lock:
                 await heartbeat.job_started(name, job.id)
                 ok = False
                 try:
-                    await handler(job.data, results)
+                    result = await handler(job.data, results)
                     ok = True
+                    return result
                 finally:
                     await heartbeat.job_finished(ok)
 

@@ -1,0 +1,24 @@
+<div class="grid" [class.loading]="loading()">
+	@for (hit of hits(); track hit.photoId; let i = $index) {
+		@if (i === cutoffIndex() && i > 0) {
+			<div class="cutoff">
+				<span>hranice {{ threshold() | number: "1.3-3" }}</span>
+			</div>
+		}
+		<a
+			class="hit"
+			[class.below]="cutoffIndex() >= 0 && i >= cutoffIndex()"
+			[routerLink]="['/galerie', hit.albumId]"
+			[queryParams]="{ photo: hit.photoId }"
+			[boTooltip]="hit.albumName ?? ''"
+		>
+			<img [src]="{ id: hit.photoId } | photoImageUrl: 'small'" loading="lazy" alt="" />
+			@if (showScore()) {
+				<span class="score">{{ hit.score | number: "1.3-3" }}</span>
+			}
+		</a>
+	}
+	@if (cutoffIndex() === 0 && hits().length) {
+		<div class="cutoff cutoff-first"><span>žádná fotka nedosáhla hranice</span></div>
+	}
+</div>

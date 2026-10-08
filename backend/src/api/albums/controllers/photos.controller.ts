@@ -24,19 +24,29 @@ import { contentType } from "mime-types";
 import { extname } from "path";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
+import { PhotoCategoriesService } from "src/models/albums/services/photo-categories.service";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import { FacesDetectionService } from "src/models/worker/services/faces-detection.service";
+import { PhotoContentService } from "src/models/worker/services/photo-content.service";
 import {
 	PhotoCreatePermission,
 	PhotoDailyPermission,
 	PhotoDeletePermission,
 	PhotoEditPermission,
 	PhotoReadFilePermission,
+	PhotoCategoriesOfPhotoPermission,
 	PhotoReadPermission,
 	PhotosListPermission,
 } from "../acl/photo.acl";
-import { PhotoCreateBody, PhotoDailyResponse, PhotoResponse, PhotoSizes, PhotoUpdateBody } from "../dto/photo.dto";
+import {
+	PhotoCategoryOfPhotoResponse,
+	PhotoCreateBody,
+	PhotoDailyResponse,
+	PhotoResponse,
+	PhotoSizes,
+	PhotoUpdateBody,
+} from "../dto/photo.dto";
 
 @Controller("photos")
 @Authenticated()
@@ -48,7 +58,9 @@ export class PhotosController {
 	constructor(
 		private photos: PhotosRepository,
 		private photosFiles: PhotosFilesService,
+		private photoCategoriesService: PhotoCategoriesService,
 		@Optional() private facesDetectionService?: FacesDetectionService,
+		@Optional() private photoContentService?: PhotoContentService,
 	) {}
 
 	@Get()
@@ -83,6 +95,9 @@ export class PhotosController {
 		this.facesDetectionService
 			?.enqueuePhotos([photo])
 			.catch((err) => this.logger.error(`Failed to queue photo ${photo.id} for face detection.`, err));
+		this.photoContentService
+			?.enqueuePhotos([photo])
+			.catch((err) => this.logger.error(`Failed to queue photo ${photo.id} for content recognition.`, err));
 
 		return photo;
 	}
@@ -106,6 +121,23 @@ export class PhotosController {
 		PhotoReadPermission.canOrThrow(req, photo);
 
 		return photo;
+	}
+
+	@Get(":photoId/categories")
+	@AcLinks(PhotoCategoriesOfPhotoPermission)
+	@ApiResponse({ status: 200, type: PhotoCategoryOfPhotoResponse, isArray: true })
+	async listPhotoCategoriesOfPhoto(
+		@Param("photoId", ParseIntPipe) photoId: number,
+		@Req() req: Request,
+	): Promise<PhotoCategoryOfPhotoResponse[]> {
+		const photo = await this.photos.getPhoto(photoId);
+		if (!photo) throw new NotFoundException();
+
+		PhotoCategoriesOfPhotoPermission.canOrThrow(req, photo);
+
+		const categories = await this.photoCategoriesService.getPhotoCategories(photoId);
+
+		return categories.map(({ category, score }) => ({ categoryId: category.id, name: category.name, score }));
 	}
 
 	@Patch(":photoId")

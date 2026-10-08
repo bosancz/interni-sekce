@@ -1,0 +1,99 @@
+:host ::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+.ce-page {
+	max-width: 1600px;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+
+	@media (min-width: 1200px) {
+		display: grid;
+		grid-template-columns: minmax(320px, 1fr) minmax(0, 2fr);
+		align-items: start;
+	}
+}
+
+.ce-form bo-card-content {
+	display: block;
+	padding: 4px 20px 16px !important;
+}
+
+.muted {
+	color: var(--bo-muted);
+}
+
+.ce-label {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	margin: 14px 0 6px;
+	font-weight: 600;
+	color: var(--bo-ink);
+}
+
+.ce-input {
+	--padding-start: 12px;
+	min-height: 42px;
+}
+
+.ce-prompts {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.ce-prompt {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+
+	ion-input {
+		flex: 1;
+	}
+}
+
+.ce-add {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: 8px;
+	padding: 4px 10px;
+	border: 1px dashed var(--bo-card-line);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--bo-ink);
+	cursor: pointer;
+
+	&:hover {
+		background: var(--bo-yellow-tint);
+		border-color: var(--san-yellow);
+	}
+}
+
+.ce-hint {
+	margin: 8px 0 0;
+	font-size: 0.85em;
+}
+
+.ce-threshold {
+	font-variant-numeric: tabular-nums;
+	color: var(--bo-red);
+}
+
+.ce-grid {
+	padding: 12px 16px 16px;
+}
+
+.ce-empty {
+	margin: 0;
+	padding: 13px 20px 16px;
+}
+
+.ce-loading {
+	display: flex;
+	justify-content: center;
+	padding: 40px 0;
+}

@@ -1,6 +1,6 @@
 import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
-import { PhotoDailyResponse, PhotoResponse } from "../dto/photo.dto";
+import { PhotoCategoryOfPhotoResponse, PhotoDailyResponse, PhotoResponse } from "../dto/photo.dto";
 
 export const PhotosListPermission = new Permission<void>({
 	linkTo: RootResponse,
@@ -54,6 +54,13 @@ export const PhotoDeletePermission = new Permission({
 
 export const PhotoReadFilePermission = new Permission({
 	linkTo: PhotoResponse,
+	params: { photoId: "id" },
+	inherit: PhotoReadPermission,
+});
+
+export const PhotoCategoriesOfPhotoPermission = new Permission({
+	linkTo: PhotoResponse,
+	contains: PhotoCategoryOfPhotoResponse,
 	params: { photoId: "id" },
 	inherit: PhotoReadPermission,
 });

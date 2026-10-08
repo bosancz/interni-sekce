@@ -5,6 +5,7 @@ import { Config } from "src/config";
 import { PhotoFacesMatchingService } from "src/models/albums/services/photo-faces-matching.service";
 import { PhotoFacesNotificationsService } from "src/models/albums/services/photo-faces-notifications.service";
 import { FacesDetectionService } from "../services/faces-detection.service";
+import { PhotoContentService } from "../services/photo-content.service";
 import { BACKEND_SCHEDULE_QUEUE, BackendScheduleJobs } from "../worker-queues";
 
 @Processor(BACKEND_SCHEDULE_QUEUE)
@@ -14,6 +15,7 @@ export class BackendScheduleProcessor extends WorkerHost implements OnModuleInit
 	constructor(
 		@InjectQueue(BACKEND_SCHEDULE_QUEUE) private queue: Queue,
 		private facesDetectionService: FacesDetectionService,
+		private photoContentService: PhotoContentService,
 		private photoFacesMatchingService: PhotoFacesMatchingService,
 		private photoFacesNotificationsService: PhotoFacesNotificationsService,
 		private config: Config,
@@ -48,8 +50,20 @@ export class BackendScheduleProcessor extends WorkerHost implements OnModuleInit
 			{ name: BackendScheduleJobs.facesNotify, opts: { removeOnComplete: true, removeOnFail: 100 } },
 		);
 
+		await this.queue.upsertJobScheduler(
+			BackendScheduleJobs.photosEmbedEnqueue,
+			{ pattern: this.config.faces.cron, tz },
+			{ name: BackendScheduleJobs.photosEmbedEnqueue, opts: { removeOnComplete: true, removeOnFail: 100 } },
+		);
+
+		await this.queue.upsertJobScheduler(
+			BackendScheduleJobs.photosEmbedStop,
+			{ pattern: this.config.faces.stopCron, tz },
+			{ name: BackendScheduleJobs.photosEmbedStop, opts: { removeOnComplete: true, removeOnFail: 100 } },
+		);
+
 		this.logger.log(
-			`Face detection scheduled at "${this.config.faces.cron}" until "${this.config.faces.stopCron}" (${tz}), ${this.config.faces.batchSize} photos per night, face matching at "${this.config.faces.matchCron}", new photos notifications at "${this.config.faces.notifyCron}".`,
+			`Face detection scheduled at "${this.config.faces.cron}" until "${this.config.faces.stopCron}" (${tz}), ${this.config.faces.batchSize} photos per night, face matching at "${this.config.faces.matchCron}", new photos notifications at "${this.config.faces.notifyCron}", ${this.config.photoContent.batchSize} photos per night for content recognition.`,
 		);
 	}
 
@@ -63,6 +77,10 @@ export class BackendScheduleProcessor extends WorkerHost implements OnModuleInit
 				return this.photoFacesMatchingService.matchAll();
 			case BackendScheduleJobs.facesNotify:
 				return this.photoFacesNotificationsService.notifyNewPhotos();
+			case BackendScheduleJobs.photosEmbedEnqueue:
+				return this.photoContentService.enqueueBatch();
+			case BackendScheduleJobs.photosEmbedStop:
+				return this.photoContentService.stopBatch();
 			default:
 				this.logger.warn(`Unknown scheduled job "${job.name}".`);
 		}
