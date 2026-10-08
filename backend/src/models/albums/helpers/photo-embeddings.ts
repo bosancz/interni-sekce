@@ -1,5 +1,7 @@
 export const PHOTO_EMBEDDING_DIMENSION = 512;
 
+export const PHOTO_EMBEDDING_MODEL = "clip-vit-b32-crops-v2";
+
 export function toVectorLiteral(values: ArrayLike<number>) {
 	return `[${Array.from(values).join(",")}]`;
 }

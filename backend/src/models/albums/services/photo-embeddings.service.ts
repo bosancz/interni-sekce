@@ -1,9 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, In, Repository } from "typeorm";
 import { PhotoEmbedding } from "../entities/photo-embedding.entity";
 import { Photo } from "../entities/photo.entity";
-import { PHOTO_EMBEDDING_DIMENSION, toVectorLiteral } from "../helpers/photo-embeddings";
+import { PHOTO_EMBEDDING_DIMENSION, PHOTO_EMBEDDING_MODEL, toVectorLiteral } from "../helpers/photo-embeddings";
 import { PhotoEmbeddedResult, PhotoSearchHit } from "../schema/photo-embeddings";
 
 const VECTOR = `vector(${PHOTO_EMBEDDING_DIMENSION})`;
@@ -11,6 +11,7 @@ const PHOTO_DISTANCE = (query: string) => `min(e.embedding::${VECTOR} <#> ${quer
 
 @Injectable()
 export class PhotoEmbeddingsService {
+	private logger = new Logger(PhotoEmbeddingsService.name);
 	private version = 0;
 
 	constructor(
@@ -45,7 +46,21 @@ export class PhotoEmbeddingsService {
 		const exists = await this.photos.existsBy({ id: result.photoId });
 		if (!exists) return;
 
+		if (result.model !== PHOTO_EMBEDDING_MODEL) {
+			this.logger.warn(
+				`Photo ${result.photoId}: ignoring embedding from model "${result.model}", expected "${PHOTO_EMBEDDING_MODEL}" — the worker image is out of date.`,
+			);
+			return;
+		}
+
 		if (result.error !== undefined) return this.markEmbeddingFailed(result.photoId, result.model, result.error);
+
+		if (!Array.isArray(result.embeddings)) {
+			this.logger.warn(
+				`Photo ${result.photoId}: worker result has no embeddings — the worker image is out of date.`,
+			);
+			return;
+		}
 
 		const vectors = result.embeddings.filter((vector) => vector.length === PHOTO_EMBEDDING_DIMENSION);
 		if (!vectors.length) return this.markEmbeddingFailed(result.photoId, result.model, "Empty embedding.");

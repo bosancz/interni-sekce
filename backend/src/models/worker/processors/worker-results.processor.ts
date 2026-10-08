@@ -1,4 +1,4 @@
-import { Processor, WorkerHost } from "@nestjs/bullmq";
+import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Logger } from "@nestjs/common";
 import { Job } from "bullmq";
 import { FacesDetectedResult } from "src/models/albums/schema/detected-faces";
@@ -33,5 +33,13 @@ export class WorkerResultsProcessor extends WorkerHost {
 			default:
 				this.logger.warn(`Unknown worker result "${job.name}".`);
 		}
+	}
+
+	@OnWorkerEvent("failed")
+	onFailed(job: Job | undefined, error: Error) {
+		this.logger.error(
+			`Worker result "${job?.name}" (attempt ${job?.attemptsMade}) failed: ${error.message}`,
+			error.stack,
+		);
 	}
 }
