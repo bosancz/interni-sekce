@@ -40,10 +40,9 @@ export class PhotoContentQueueResponse {
 }
 
 export class PhotoContentSummaryResponse {
-	@ApiProperty() enabled!: boolean;
 	@ApiProperty() batchSize!: number;
 	@ApiProperty({ type: PhotoContentPhotosStatsResponse }) photos!: PhotoContentPhotosStatsResponse;
-	@ApiPropertyOptional({ type: PhotoContentQueueResponse, nullable: true }) queue!: PhotoContentQueueResponse | null;
+	@ApiProperty({ type: PhotoContentQueueResponse }) queue!: PhotoContentQueueResponse;
 }
 
 export class PhotoContentBatchBody {

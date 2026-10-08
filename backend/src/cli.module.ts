@@ -5,6 +5,7 @@ import { DatabaseModule } from "./database/database.module";
 import { AlbumsModelModule } from "./models/albums/albums-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
 import { MongoImportModule } from "./mongo-import/mongo-import.module";
+import { QueueModelModule } from "./models/queues/queue-model.module";
 import { WorkerModelModule } from "./models/worker/worker-model.module";
 import { SeedModule } from "./seed/seed.module";
 
@@ -16,6 +17,7 @@ import { SeedModule } from "./seed/seed.module";
 		SeedModule,
 		UsersModelModule,
 		AlbumsModelModule,
+		QueueModelModule,
 		WorkerModelModule.forRoot({ processors: false }),
 	],
 	providers: [DbRefreshVersionsCommand],

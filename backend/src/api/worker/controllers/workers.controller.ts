@@ -1,4 +1,4 @@
-import { Controller, Get, Optional, Req } from "@nestjs/common";
+import { Controller, Get, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
@@ -12,7 +12,7 @@ import { WorkerResponse } from "../dto/worker.dto";
 @AcController()
 @ApiTags("Worker")
 export class WorkersController {
-	constructor(@Optional() private workersService?: WorkersService) {}
+	constructor(private workersService: WorkersService) {}
 
 	@Get()
 	@AcLinks(WorkersListPermission)
@@ -20,6 +20,6 @@ export class WorkersController {
 	async listWorkers(@Req() req: Request): Promise<WorkerResponse[]> {
 		WorkersListPermission.canOrThrow(req);
 
-		return this.workersService?.getWorkers() ?? [];
+		return this.workersService.getWorkers();
 	}
 }

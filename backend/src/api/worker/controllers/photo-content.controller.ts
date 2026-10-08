@@ -1,15 +1,4 @@
-import {
-	Body,
-	Controller,
-	Get,
-	GatewayTimeoutException,
-	Logger,
-	Optional,
-	Post,
-	Query,
-	Req,
-	ServiceUnavailableException,
-} from "@nestjs/common";
+import { Body, Controller, Get, GatewayTimeoutException, Logger, Post, Query, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
@@ -42,7 +31,7 @@ export class PhotoContentController {
 	constructor(
 		private photoEmbeddingsService: PhotoEmbeddingsService,
 		private config: Config,
-		@Optional() private photoContentService?: PhotoContentService,
+		private photoContentService: PhotoContentService,
 	) {}
 
 	@Get()
@@ -53,11 +42,10 @@ export class PhotoContentController {
 
 		const [photos, queue] = await Promise.all([
 			this.photoEmbeddingsService.getStats(),
-			this.photoContentService?.getQueueStatus() ?? null,
+			this.photoContentService.getQueueStatus(),
 		]);
 
 		return {
-			enabled: !!this.photoContentService,
 			batchSize: this.config.photoContent.batchSize,
 			photos,
 			queue,
@@ -73,9 +61,6 @@ export class PhotoContentController {
 	): Promise<PhotoContentBatchResponse> {
 		PhotoContentBatchPermission.canOrThrow(req);
 
-		if (!this.photoContentService)
-			throw new ServiceUnavailableException("Photo content recognition is not configured.");
-
 		const queued = await this.photoContentService.enqueueBatch(body.limit);
 
 		return { queued };
@@ -89,9 +74,6 @@ export class PhotoContentController {
 		@Query() query: PhotoContentSearchQuery,
 	): Promise<PhotoContentSearchHitResponse[]> {
 		PhotoContentSearchPermission.canOrThrow(req);
-
-		if (!this.photoContentService)
-			throw new ServiceUnavailableException("Photo content recognition is not configured.");
 
 		let embedding: number[];
 		try {

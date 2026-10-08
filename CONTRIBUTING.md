@@ -16,7 +16,7 @@
 
 #### Devcontainer (doporučené)
 
-Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a otevřel vývojový NodeJS kontejner.
+Devcontainer je připraven tak, aby spustil databázi, Redis, prohlížeč databáze a otevřel vývojový NodeJS kontejner.
 
 ⚠️ Spouštění devcontaineru na Windows a na Macu vyžaduje poměrně dost paměti (doporučuji 16GB RAM).  
 💡 Lze použít i jiné editory, ale instalace je složitější. Např. u Cursoru je nutné spouštět devcontainer přes DevPod.
@@ -36,6 +36,7 @@ Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a 
 1. Nainstaluj
    - [NodeJS](https://nodejs.org/) (verze 22 nebo vyšší)
    - [PostgreSQL](https://www.postgresql.org/download/) (verze 15)
+   - [Redis](https://redis.io/downloads/) (verze 7) — bez něj backend nenastartuje
    - Editor dle volby (doporučujeme [VSCode](https://code.visualstudio.com/))
    - Správce databáze PostgreSQL dle volby (pgAdmin, DBeaver, HeidiSQL, ...)
 
@@ -46,13 +47,14 @@ Devcontainer je připraven tak, aby spustil databázi, prohlížeč databáze a 
    ```
 
 3. Vytvoř databázi a uživatele v PostgreSQL
-4. Vytvoř soubor `.env` ve složce `backend` a nastav v něm připojení k databázi (můžeš vycházet z `.env.example`). Například:
+4. Vytvoř soubor `.env` ve složce `backend` a nastav v něm připojení k databázi a Redisu (můžeš vycházet z `.env.example`). Například:
    ```
    DB_HOST=postgres
    DB_USER=postgres
    DB_PASSWORD=password
    DB_DATABASE=postgres
    DB_SCHEMA=public
+   REDIS_URL=redis://localhost:6379
    ```
 
 ### Instalace závislostí

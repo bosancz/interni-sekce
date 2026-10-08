@@ -11,6 +11,7 @@ services:
       DB_PASSWORD: password
       DB_DATABASE: postgres
       DB_SCHEMA: public
+      REDIS_URL: redis://redis:6379
       CORS_ENABLE: "true"
       CORS_ORIGINS: "http://localhost:4200,http://localhost:4300"
 
@@ -20,6 +21,9 @@ services:
       target: postgres
     environment:
       POSTGRES_PASSWORD: password
+
+  redis:
+    image: redis:7-alpine
 
   pgweb:
     image: sosedoff/pgweb

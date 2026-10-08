@@ -70,12 +70,10 @@ export class FaceDetectionQueueResponse {
 }
 
 export class FaceDetectionSummaryResponse {
-	@ApiProperty() enabled!: boolean;
 	@ApiProperty({ type: FaceDetectionScheduleResponse }) schedule!: FaceDetectionScheduleResponse;
 	@ApiProperty({ type: FaceDetectionPhotosStatsResponse }) photos!: FaceDetectionPhotosStatsResponse;
 	@ApiProperty({ type: FaceDetectionFacesStatsResponse }) faces!: FaceDetectionFacesStatsResponse;
-	@ApiPropertyOptional({ type: FaceDetectionQueueResponse, nullable: true })
-	queue!: FaceDetectionQueueResponse | null;
+	@ApiProperty({ type: FaceDetectionQueueResponse }) queue!: FaceDetectionQueueResponse;
 }
 
 export class FaceDetectionLogFaceResponse {

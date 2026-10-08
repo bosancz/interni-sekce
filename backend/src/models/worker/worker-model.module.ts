@@ -1,6 +1,5 @@
 import { BullModule } from "@nestjs/bullmq";
-import { DynamicModule, Logger, Module } from "@nestjs/common";
-import { StaticConfig } from "src/config";
+import { DynamicModule, Module } from "@nestjs/common";
 import { AlbumsModelModule } from "src/models/albums/albums-model.module";
 import { FacesEnqueueCommand } from "./commands/faces-enqueue.command";
 import { PhotosEmbedCommand } from "./commands/photos-embed.command";
@@ -14,20 +13,10 @@ import { BACKEND_SCHEDULE_QUEUE, WORKER_RESULTS_QUEUE, WORKER_TASK_QUEUE, Worker
 @Module({})
 export class WorkerModelModule {
 	static forRoot(options: { processors: boolean }): DynamicModule {
-		if (!StaticConfig.redis.url) {
-			if (options.processors) {
-				new Logger(WorkerModelModule.name).warn(
-					"REDIS_URL is not set, face detection and photo content recognition are disabled.",
-				);
-			}
-			return { module: WorkerModelModule };
-		}
-
 		return {
 			module: WorkerModelModule,
 			global: true,
 			imports: [
-				BullModule.forRoot({ connection: { url: StaticConfig.redis.url } }),
 				BullModule.registerQueue(
 					{ name: WORKER_TASK_QUEUE(WorkerTasks.detectFaces) },
 					{ name: WORKER_TASK_QUEUE(WorkerTasks.embedPhoto) },

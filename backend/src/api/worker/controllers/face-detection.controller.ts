@@ -1,17 +1,4 @@
-import {
-	Body,
-	Controller,
-	Get,
-	HttpCode,
-	HttpStatus,
-	Logger,
-	Optional,
-	Post,
-	Put,
-	Query,
-	Req,
-	ServiceUnavailableException,
-} from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Logger, Post, Put, Query, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
@@ -54,7 +41,7 @@ export class FaceDetectionController {
 		private photoFacesService: PhotoFacesService,
 		private photoFacesMatchingService: PhotoFacesMatchingService,
 		private config: Config,
-		@Optional() private facesDetectionService?: FacesDetectionService,
+		private facesDetectionService: FacesDetectionService,
 	) {}
 
 	@Get()
@@ -65,11 +52,10 @@ export class FaceDetectionController {
 
 		const [stats, queue] = await Promise.all([
 			this.photoFacesService.getDetectionStats(),
-			this.facesDetectionService?.getQueueStatus() ?? null,
+			this.facesDetectionService.getQueueStatus(),
 		]);
 
 		return {
-			enabled: !!this.facesDetectionService,
 			schedule: {
 				cron: this.config.faces.cron,
 				stopCron: this.config.faces.stopCron,
@@ -124,8 +110,6 @@ export class FaceDetectionController {
 	): Promise<FaceDetectionBatchResponse> {
 		FaceDetectionBatchPermission.canOrThrow(req);
 
-		if (!this.facesDetectionService) throw new ServiceUnavailableException("Face detection is not configured.");
-
 		const queued = await this.facesDetectionService.enqueueBatch(body.limit);
 
 		return { queued };
@@ -141,7 +125,7 @@ export class FaceDetectionController {
 			this.photoFacesMatchingService.getSettings(),
 			this.photoFacesMatchingService.getFacesStats(),
 			this.photoFacesMatchingService.getAnalysis(),
-			this.facesDetectionService?.getQueueStatus() ?? null,
+			this.facesDetectionService.getQueueStatus(),
 		]);
 
 		return {
@@ -149,7 +133,7 @@ export class FaceDetectionController {
 			status: this.photoFacesMatchingService.getStatus(),
 			faces,
 			analysis,
-			nextMatchAt: queue?.nextMatchAt ?? null,
+			nextMatchAt: queue.nextMatchAt,
 		};
 	}
 

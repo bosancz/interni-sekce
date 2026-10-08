@@ -29,6 +29,8 @@ import { NotificationsModelModule } from "./models/notifications/notifications-m
 import { SettingsModelModule } from "./models/settings/settings-model.module";
 import { StatisticsModelModule } from "./models/statistics/statistics-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
+import { NotificationsProcessorModule } from "./models/notifications/notifications-processor.module";
+import { QueueModelModule } from "./models/queues/queue-model.module";
 import { WorkerModelModule } from "./models/worker/worker-model.module";
 import { SeedModule } from "./seed/seed.module";
 
@@ -71,7 +73,9 @@ import { SeedModule } from "./seed/seed.module";
 		GoogleModelModule,
 		FilesModule,
 		SeedModule,
+		QueueModelModule,
 		WorkerModelModule.forRoot({ processors: true }),
+		NotificationsProcessorModule,
 		WorkerModule,
 	],
 	controllers: [],

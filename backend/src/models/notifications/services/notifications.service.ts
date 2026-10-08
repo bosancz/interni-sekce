@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 import { Config } from "src/config";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Event } from "src/models/events/entities/event.entity";
-import { MailService } from "src/models/mail/services/mail.service";
+import { MailOptions } from "src/models/mail/schema/mail-options";
 import { User, UserRoles } from "src/models/users/entities/user.entity";
 import { In, Repository } from "typeorm";
 import { NotificationMailTemplate } from "../mail-templates/notification/notification.mail-template";
@@ -17,6 +17,7 @@ import {
 	NotificationTypes,
 	NotificationTypesMetadata,
 } from "../schema/notification-types";
+import { NotificationsQueueService } from "./notifications-queue.service";
 import { PushService } from "./push.service";
 
 @Injectable()
@@ -29,7 +30,7 @@ export class NotificationsService {
 		private notificationSettings: NotificationSettingsRepository,
 		private notifications: NotificationsRepository,
 		private pushService: PushService,
-		private mailService: MailService,
+		private notificationsQueueService: NotificationsQueueService,
 		private config: Config,
 	) {
 		if (this.config.notifications.notifyActor)
@@ -175,9 +176,8 @@ export class NotificationsService {
 	private async sendPush(users: User[], message: NotificationMessage) {
 		if (!this.pushService.isConfigured || !users.length) return;
 
-		const subscriptions = await this.notificationSubscriptions.getSendableSubscriptions(
-			users.map((user) => user.id),
-		);
+		const subscriptionIds = await this.notificationSubscriptions.getSubscriptionIds(users.map((user) => user.id));
+		if (!subscriptionIds.length) return;
 
 		const url = message.path ? this.config.app.baseUrl + message.path : undefined;
 		const payload = {
@@ -188,22 +188,7 @@ export class NotificationsService {
 			},
 		};
 
-		for (const subscription of subscriptions) {
-			try {
-				const alive = await this.pushService.send(
-					{
-						endpoint: subscription.endpoint!,
-						keyP256dh: subscription.keyP256dh!,
-						keyAuth: subscription.keyAuth!,
-					},
-					payload,
-				);
-
-				if (!alive) await this.notificationSubscriptions.deleteSubscription(subscription.id);
-			} catch (err) {
-				this.logger.error(`Failed to send push notification: ${(err as Error).message}`);
-			}
-		}
+		await this.notificationsQueueService.enqueuePush(subscriptionIds, payload);
 	}
 
 	private async saveInApp(type: NotificationTypes, users: User[], message: NotificationMessage) {
@@ -219,22 +204,19 @@ export class NotificationsService {
 	}
 
 	private async sendEmails(users: User[], message: NotificationMessage) {
-		for (const user of users) {
-			if (!user.email) continue;
+		const mails: MailOptions[] = users
+			.filter((user) => user.email)
+			.map((user) =>
+				NotificationMailTemplate(user.email!, {
+					title: message.title,
+					body: message.body,
+					url: message.path ? this.config.app.baseUrl + message.path : undefined,
+					settingsUrl: `${this.config.app.baseUrl}/ucet`,
+				}),
+			);
+		if (!mails.length) return;
 
-			const mail = NotificationMailTemplate(user.email, {
-				title: message.title,
-				body: message.body,
-				url: message.path ? this.config.app.baseUrl + message.path : undefined,
-				settingsUrl: `${this.config.app.baseUrl}/ucet`,
-			});
-
-			try {
-				await this.mailService.sendMail(mail);
-			} catch (err) {
-				this.logger.error(`Failed to send notification email to ${user.email}: ${(err as Error).message}`);
-			}
-		}
+		await this.notificationsQueueService.enqueueEmails(mails);
 	}
 
 	private async getUsersByRoles(roles: UserRoles[]) {

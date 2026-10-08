@@ -3130,12 +3130,6 @@ export namespace SDK {
     export interface FaceDetectionSummaryResponse {
         /**
          * 
-         * @type {boolean}
-         * @memberof FaceDetectionSummaryResponse
-         */
-        'enabled': boolean;
-        /**
-         * 
          * @type {FaceDetectionScheduleResponse}
          * @memberof FaceDetectionSummaryResponse
          */
@@ -3157,7 +3151,7 @@ export namespace SDK {
          * @type {FaceDetectionQueueResponse}
          * @memberof FaceDetectionSummaryResponse
          */
-        'queue'?: FaceDetectionQueueResponse | null;
+        'queue': FaceDetectionQueueResponse;
     }
     
         /**
@@ -4187,8 +4181,7 @@ export namespace SDK {
     
     export const HealthStatus = {
         Ok: 'ok',
-        Error: 'error',
-        Disabled: 'disabled'
+        Error: 'error'
     } as const;
     
     export type HealthStatus = typeof HealthStatus[keyof typeof HealthStatus];
@@ -7044,12 +7037,6 @@ export namespace SDK {
     export interface PhotoContentSummaryResponse {
         /**
          * 
-         * @type {boolean}
-         * @memberof PhotoContentSummaryResponse
-         */
-        'enabled': boolean;
-        /**
-         * 
          * @type {number}
          * @memberof PhotoContentSummaryResponse
          */
@@ -7065,7 +7052,7 @@ export namespace SDK {
          * @type {PhotoContentQueueResponse}
          * @memberof PhotoContentSummaryResponse
          */
-        'queue'?: PhotoContentQueueResponse | null;
+        'queue': PhotoContentQueueResponse;
     }
     
         /**

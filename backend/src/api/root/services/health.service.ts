@@ -1,4 +1,4 @@
-import { Injectable, Logger, Optional } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { WorkersService } from "src/models/worker/services/workers.service";
 import { DataSource } from "typeorm";
 import { HealthResponse, HealthStatus } from "../dto/health-response";
@@ -11,13 +11,13 @@ export class HealthService {
 
 	constructor(
 		private dataSource: DataSource,
-		@Optional() private workersService?: WorkersService,
+		private workersService: WorkersService,
 	) {}
 
 	async getHealth(): Promise<HealthResponse> {
 		const [database, redis] = await Promise.all([
 			this.check("database", () => this.dataSource.query("SELECT 1")),
-			this.workersService ? this.check("redis", () => this.workersService!.ping()) : HealthStatus.disabled,
+			this.check("redis", () => this.workersService.ping()),
 		]);
 
 		const status = [database, redis].includes(HealthStatus.error) ? HealthStatus.error : HealthStatus.ok;

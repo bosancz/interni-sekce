@@ -6,7 +6,6 @@ import {
 	Get,
 	Logger,
 	NotFoundException,
-	Optional,
 	Param,
 	ParseIntPipe,
 	Patch,
@@ -59,8 +58,8 @@ export class PhotosController {
 		private photos: PhotosRepository,
 		private photosFiles: PhotosFilesService,
 		private photoCategoriesService: PhotoCategoriesService,
-		@Optional() private facesDetectionService?: FacesDetectionService,
-		@Optional() private photoContentService?: PhotoContentService,
+		private facesDetectionService: FacesDetectionService,
+		private photoContentService: PhotoContentService,
 	) {}
 
 	@Get()
@@ -93,10 +92,10 @@ export class PhotosController {
 		const photo = await this.photos.createPhoto(body.albumId, file, req.user?.userId ?? null);
 
 		this.facesDetectionService
-			?.enqueuePhotos([photo])
+			.enqueuePhotos([photo])
 			.catch((err) => this.logger.error(`Failed to queue photo ${photo.id} for face detection.`, err));
 		this.photoContentService
-			?.enqueuePhotos([photo])
+			.enqueuePhotos([photo])
 			.catch((err) => this.logger.error(`Failed to queue photo ${photo.id} for content recognition.`, err));
 
 		return photo;
