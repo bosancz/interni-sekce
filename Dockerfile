@@ -75,6 +75,8 @@ COPY ./worker/worker ./worker
 RUN useradd --system --uid 1001 --no-create-home worker && chmod -R a+r /app/models
 USER worker
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 CMD ["python", "-m", "worker.healthcheck"]
+
 CMD ["python", "-m", "worker"]
 
 
@@ -88,6 +90,9 @@ RUN apt-get update \
 		postgresql-${PG_MAJOR}-postgis-3-scripts \
 		postgresql-${PG_MAJOR}-pgvector \
 	&& rm -rf /var/lib/apt/lists/*
+
+HEALTHCHECK --interval=10s --timeout=5s --start-period=60s --retries=5 \
+	CMD pg_isready -h 127.0.0.1 -U "${POSTGRES_USER:-postgres}" || exit 1
 
 
 
@@ -128,5 +133,8 @@ ENV HOST=0.0.0.0
 ENV PORT=3000
 
 EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5m --retries=3 \
+	CMD wget -q -O /dev/null "http://127.0.0.1:${PORT}/${GLOBAL_PREFIX:-api}/health" || exit 1
 
 CMD [ "node", "dist/main.js" ]
