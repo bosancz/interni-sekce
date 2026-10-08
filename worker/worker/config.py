@@ -45,6 +45,7 @@ WORKER_NAMES = [
 ]
 HEARTBEAT_INTERVAL_S = 10
 HEARTBEAT_TTL_S = 30
+HEARTBEAT_FILE = Path(os.environ.get("HEARTBEAT_FILE", "/tmp/worker-heartbeat"))
 
 FACES_DETECTOR_MODEL = MODELS_DIR / "face_detection_yunet_2023mar.onnx"
 FACES_RECOGNIZER_MODEL = MODELS_DIR / "face_recognition_sface_2021dec.onnx"

@@ -94,6 +94,7 @@ class Heartbeat:
                 await self._acquire_name()
                 logger.warning("Worker name %s taken over, continuing as %s", previous, self.id)
             await self.redis.set(self.key, json.dumps(self.state), ex=config.HEARTBEAT_TTL_S)
+            config.HEARTBEAT_FILE.touch()
         except redis.RedisError as err:
             logger.warning("Heartbeat failed: %s", err)
 

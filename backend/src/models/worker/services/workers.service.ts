@@ -18,6 +18,10 @@ export class WorkersService implements OnModuleDestroy {
 		this.redis.disconnect();
 	}
 
+	async ping(): Promise<void> {
+		await this.redis.ping();
+	}
+
 	async getWorkers(): Promise<WorkerHeartbeat[]> {
 		const keys: string[] = [];
 		let cursor = "0";
