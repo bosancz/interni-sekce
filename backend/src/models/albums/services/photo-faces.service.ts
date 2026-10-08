@@ -302,7 +302,7 @@ export class PhotoFacesService {
 				width: face.width,
 				height: face.height,
 				score: face.score,
-				descriptor: face.descriptor,
+				descriptor: face.descriptor?.length ? face.descriptor : null,
 				emotions: face.emotions ?? null,
 				emotion: face.emotion ?? null,
 				model: result.model,

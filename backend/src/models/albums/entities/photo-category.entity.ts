@@ -1,3 +1,4 @@
+import { PHOTO_EMBEDDING_DIMENSION } from "../helpers/photo-embeddings";
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 export const PHOTO_CATEGORY_DEFAULT_THRESHOLD = 0.25;
@@ -12,8 +13,8 @@ export class PhotoCategory {
 	@Column({ type: "real", nullable: false, default: PHOTO_CATEGORY_DEFAULT_THRESHOLD }) threshold!: number;
 	@Column({ type: "integer", nullable: true }) order!: number | null;
 
-	@Column({ type: "bytea", nullable: true, select: false })
-	embedding?: Buffer | null;
+	@Column({ type: "vector", length: PHOTO_EMBEDDING_DIMENSION, nullable: true, select: false })
+	embedding?: number[] | null;
 
 	@Column({ type: "varchar", nullable: true }) model!: string | null;
 

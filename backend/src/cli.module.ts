@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "./config";
+import { DbRefreshVersionsCommand } from "./database/commands/db-refresh-versions.command";
 import { DatabaseModule } from "./database/database.module";
 import { AlbumsModelModule } from "./models/albums/albums-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
@@ -17,6 +18,6 @@ import { SeedModule } from "./seed/seed.module";
 		AlbumsModelModule,
 		WorkerModelModule.forRoot({ processors: false }),
 	],
-	providers: [],
+	providers: [DbRefreshVersionsCommand],
 })
 export class CliModule {}

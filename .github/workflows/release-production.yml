@@ -69,11 +69,27 @@ jobs:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 
+  build-postgres:
+    name: Build POSTGRES
+    needs: version
+    uses: ./.github/workflows/build.yml
+    with:
+      context: .
+      target: postgres
+      image-name: bosancz/interni-sekce-postgres
+      registry: ghcr.io
+      tag: latest
+      version: ${{ needs.version.outputs.new_tag }}
+    secrets:
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+
   cleanup:
     name: Clean up
     needs:
       - build-app
       - build-worker
+      - build-postgres
     uses: ./.github/workflows/cleanup.yml
 
   deploy:
@@ -81,6 +97,7 @@ jobs:
     needs:
       - build-app
       - build-worker
+      - build-postgres
     uses: ./.github/workflows/deploy.yml
     with:
       images: ${{ needs.build-app.outputs.images }},${{ needs.build-worker.outputs.images }}
@@ -92,6 +109,7 @@ jobs:
       - version
       - build-app
       - build-worker
+      - build-postgres
     uses: ./.github/workflows/tag.yml
     with:
       tag: PRODUCTION

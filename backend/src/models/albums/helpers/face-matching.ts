@@ -1,5 +1,7 @@
 import { PhotoFaceAssignment } from "../schema/detected-faces";
 
+export const FACE_DESCRIPTOR_DIMENSION = 128;
+
 export const FACE_MATCH_THRESHOLD = 0.5;
 export const FACE_MATCH_MARGIN = 0.05;
 export const FACE_MATCH_MIN_DETECTION_SCORE = 0.9;

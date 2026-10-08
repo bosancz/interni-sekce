@@ -1,6 +1,7 @@
 import { Member } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { FACE_DESCRIPTOR_DIMENSION } from "../helpers/face-matching";
 import { FaceEmotion, FaceEmotions, PhotoFaceAssignment } from "../schema/detected-faces";
 import { Photo } from "./photo.entity";
 
@@ -9,6 +10,7 @@ export class PhotoFace {
 	@PrimaryGeneratedColumn()
 	id!: number;
 
+	@Index()
 	@Column({ type: "integer", nullable: false })
 	photoId!: number;
 
@@ -29,7 +31,7 @@ export class PhotoFace {
 	@Column({ type: "real", nullable: false }) height!: number;
 	@Column({ type: "real", nullable: true }) score!: number | null;
 
-	@Column({ type: "real", array: true, nullable: true, select: false })
+	@Column({ type: "vector", length: FACE_DESCRIPTOR_DIMENSION, nullable: true, select: false })
 	descriptor?: number[] | null;
 
 	@Column({ type: "jsonb", nullable: true }) emotions!: FaceEmotions | null;

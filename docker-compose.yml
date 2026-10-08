@@ -50,7 +50,7 @@ services:
       - redis:/data
 
   postgres:
-    image: postgis/postgis:16-3.4
+    image: ghcr.io/bosancz/interni-sekce-postgres:latest
     environment:
       POSTGRES_PASSWORD: password
     volumes:
