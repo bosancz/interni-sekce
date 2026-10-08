@@ -161,7 +161,22 @@ export class PhotosRepository {
 			.limit(1)
 			.getOne();
 
-		return { photo: photo ?? null };
+		if (!photo) return { photo: null, leaders: [] };
+
+		const faces = await this.facesRepository
+			.createQueryBuilder("faces")
+			.innerJoinAndSelect("faces.member", "member")
+			.where("faces.photo_id = :photoId", { photoId: photo.id })
+			.andWhere("member.role = :role", { role: MemberRoles.vedouci })
+			.orderBy("faces.x + faces.width / 2", "ASC")
+			.getMany();
+
+		const leaders = new Map<number, { id: number; nickname: string }>();
+		for (const { member } of faces) {
+			if (member && !leaders.has(member.id)) leaders.set(member.id, { id: member.id, nickname: member.nickname });
+		}
+
+		return { photo, leaders: [...leaders.values()] };
 	}
 
 	async deletePhoto(id: Photo["id"]) {

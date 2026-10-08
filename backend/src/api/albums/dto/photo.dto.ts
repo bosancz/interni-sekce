@@ -64,8 +64,16 @@ export class AlbumTitlePhotoBody {
 	photoId!: number | null;
 }
 
+export class PhotoDailyLeader {
+	@ApiProperty() id!: number;
+	@ApiProperty() nickname!: string;
+}
+
 export class PhotoDailyResponse {
 	@AcEntity(PhotoResponse)
 	@ApiPropertyOptional({ type: WithLinks(PhotoResponse), nullable: true })
 	photo!: PhotoResponse | null;
+
+	@ApiProperty({ type: PhotoDailyLeader, isArray: true })
+	leaders!: PhotoDailyLeader[];
 }

@@ -6610,6 +6610,26 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface PhotoDailyLeader
+     */
+    export interface PhotoDailyLeader {
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoDailyLeader
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoDailyLeader
+         */
+        'nickname': string;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface PhotoDailyResponse
      */
     export interface PhotoDailyResponse {
@@ -6619,6 +6639,12 @@ export namespace SDK {
          * @memberof PhotoDailyResponse
          */
         'photo'?: PhotoResponseWithLinks | null;
+        /**
+         * 
+         * @type {Array<PhotoDailyLeader>}
+         * @memberof PhotoDailyResponse
+         */
+        'leaders': Array<PhotoDailyLeader>;
     }
     
         /**
