@@ -3,7 +3,6 @@ import { ApiProperty } from "@nestjs/swagger";
 export enum HealthStatus {
 	ok = "ok",
 	error = "error",
-	disabled = "disabled",
 }
 
 export class HealthResponse {

@@ -1,7 +1,7 @@
 import { InjectQueue } from "@nestjs/bullmq";
 import { Injectable, Logger, OnModuleDestroy } from "@nestjs/common";
 import { Queue, QueueEvents } from "bullmq";
-import { Config, StaticConfig } from "src/config";
+import { Config } from "src/config";
 import { Photo } from "src/models/albums/entities/photo.entity";
 import { EmbedPhotoJob, EmbedTextJob, EmbedTextResult } from "src/models/albums/schema/photo-embeddings";
 import { PhotoEmbeddingsService } from "src/models/albums/services/photo-embeddings.service";
@@ -101,7 +101,7 @@ export class PhotoContentService implements OnModuleDestroy {
 	}
 
 	private async runTextJob(texts: string[]) {
-		this.textEvents ??= new QueueEvents(this.textQueue.name, { connection: { url: StaticConfig.redis.url } });
+		this.textEvents ??= new QueueEvents(this.textQueue.name, { connection: { url: this.config.redis.url } });
 		await this.textEvents.waitUntilReady();
 
 		const job = await this.textQueue.add(

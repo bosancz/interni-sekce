@@ -19,16 +19,6 @@
 				@if (summary(); as s) {
 					<div class="bo-info-list">
 						<div class="bo-info-row">
-							<span class="bo-info-label">Rozpoznávání</span>
-							<span class="bo-info-value">
-								@if (s.enabled) {
-									<span class="bo-pill bo-pill-green">Zapnuto</span>
-								} @else {
-									<span class="bo-pill bo-pill-red">Vypnuto — chybí REDIS_URL</span>
-								}
-							</span>
-						</div>
-						<div class="bo-info-row">
 							<span class="bo-info-label">Zpracované fotky</span>
 							<span class="bo-info-value">
 								{{ s.photos.processed }} z {{ s.photos.total }}
@@ -41,36 +31,29 @@
 								s.photos.lastEmbeddedAt ? (s.photos.lastEmbeddedAt | date: "d. M. y H:mm") : "—"
 							}}</span>
 						</div>
-						@if (s.queue; as q) {
-							<div class="bo-info-row">
-								<span class="bo-info-label">Fronta</span>
-								<span class="bo-info-value">
-									čeká {{ q.waiting + q.delayed }}, zpracovává se {{ q.active }}
-									@if (q.failed) {
-										<span class="bo-pill bo-pill-red">{{ q.failed }} selhalo</span>
-									}
-								</span>
-							</div>
-							<div class="bo-info-row">
-								<span class="bo-info-label">Další noční dávka</span>
-								<span class="bo-info-value">
-									{{ q.nextBatchAt ? (q.nextBatchAt | date: "d. M. H:mm") : "—" }}
-									<span class="muted">({{ s.batchSize }} fotek)</span>
-								</span>
-							</div>
-						}
+						@let q = s.queue;
+						<div class="bo-info-row">
+							<span class="bo-info-label">Fronta</span>
+							<span class="bo-info-value">
+								čeká {{ q.waiting + q.delayed }}, zpracovává se {{ q.active }}
+								@if (q.failed) {
+									<span class="bo-pill bo-pill-red">{{ q.failed }} selhalo</span>
+								}
+							</span>
+						</div>
+						<div class="bo-info-row">
+							<span class="bo-info-label">Další noční dávka</span>
+							<span class="bo-info-value">
+								{{ q.nextBatchAt ? (q.nextBatchAt | date: "d. M. H:mm") : "—" }}
+								<span class="muted">({{ s.batchSize }} fotek)</span>
+							</span>
+						</div>
 					</div>
 
 					<div class="pc-actions">
 						<ion-button
-							[disabled]="!s.enabled || !canRunBatch() || queueing() || queueRemaining() > 0"
-							[boTooltip]="
-								!canRunBatch()
-									? 'Na spuštění dávky nemáš oprávnění.'
-									: !s.enabled
-										? 'Rozpoznávání není zapnuté.'
-										: ''
-							"
+							[disabled]="!canRunBatch() || queueing() || queueRemaining() > 0"
+							[boTooltip]="!canRunBatch() ? 'Na spuštění dávky nemáš oprávnění.' : ''"
 							(click)="runBatch()"
 						>
 							<ion-icon slot="start" name="play-outline"></ion-icon>

@@ -132,7 +132,7 @@ export class FaceDetectionComponent implements OnInit, OnDestroy {
 
 	async runBatch() {
 		const summary = this.summary();
-		if (!summary?.enabled || !this.canRunBatch()) return;
+		if (!summary || !this.canRunBatch()) return;
 
 		const count = Math.min(summary.schedule.batchSize, summary.photos.pending);
 		if (!count) {

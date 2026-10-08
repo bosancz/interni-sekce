@@ -7,7 +7,6 @@ import {
 	HttpStatus,
 	Logger,
 	NotFoundException,
-	Optional,
 	Param,
 	ParseIntPipe,
 	Patch,
@@ -55,7 +54,7 @@ export class PhotoCategoriesController {
 
 	constructor(
 		private photoCategoriesService: PhotoCategoriesService,
-		@Optional() private photoContentService?: PhotoContentService,
+		private photoContentService: PhotoContentService,
 	) {}
 
 	@Get()
@@ -168,9 +167,6 @@ export class PhotoCategoriesController {
 	}
 
 	private async embedPrompts(prompts: string[]) {
-		if (!this.photoContentService)
-			throw new ServiceUnavailableException("Photo content recognition is not configured.");
-
 		try {
 			const vectors = await this.photoContentService.embedTexts(prompts);
 			return { model: this.photoContentService.textModel ?? "", vector: meanEmbedding(vectors) };
