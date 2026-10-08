@@ -193,6 +193,11 @@
 - **`ReleaseIssuesService` (`models/bug-reports`) owns `release-issues.json`** for both readers — the bug list and `ReleaseNotificationsService`. It caches the parsed file for the life of the process, which is exactly its lifetime: the file is baked into the image and only a deploy changes it.
 - **An issue only reaches `release-issues.json` if the fixing commit references it** (`Closes #123`, or `(#123)` in the subject) — the same rule as the changelog, and forgetting it silently costs the reporter both their notification and the "Opraveno" badge.
 
+## Paměť kontejneru
+
+- **Gmail jde přes `@googleapis/gmail`, nikdy přes celý `googleapis`** — ten při importu načte klienty všech Google API (~100 MB RSS). Další Google API = další samostatný balík `@googleapis/<api>`.
+- Image spouští `node dist/main.js` přímo, ne `npm start` — npm proces navíc stál 50–85 MB a SIGTERM by nedostal Node.
+
 ## Backend entities
 
 - **One table, one entity mapping.** Never map a table twice (an explicit `@Entity("x")` _and_ a `@JoinTable` over `"x"`): TypeORM builds two metadata objects and **every** generated migration then drops and recreates that table's indexes — drift that survives being applied. `events_groups` is mapped **only** by the `@ManyToMany`/`@JoinTable` on `Event.groups` and must never get an entity again; code touching it directly works off the table name (`clearJoinTable()` in `mongo-import.service.ts`).
