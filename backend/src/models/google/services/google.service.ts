@@ -1,17 +1,17 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { google } from "googleapis";
+import { auth, gmail, gmail_v1 } from "@googleapis/gmail";
 import { Config } from "src/config";
 
 @Injectable()
 export class GoogleService {
 	private readonly logger = new Logger(GoogleService.name);
 
-	readonly gmail = google.gmail({ version: "v1" });
+	readonly gmail: gmail_v1.Gmail;
 
 	constructor(private readonly config: Config) {
 		const keyFilePath = this.config.google.keyFile;
 
-		const auth = new google.auth.GoogleAuth({
+		const googleAuth = new auth.GoogleAuth({
 			keyFile: keyFilePath,
 			scopes: ["https://mail.google.com/"],
 			clientOptions: {
@@ -19,7 +19,7 @@ export class GoogleService {
 			},
 		});
 
-		google.options({ auth });
+		this.gmail = gmail({ version: "v1", auth: googleAuth });
 	}
 
 	async validateAccessToken(accessToken: string): Promise<{ email: string }> {
