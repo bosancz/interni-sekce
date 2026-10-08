@@ -4,6 +4,7 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
 import { Config, StaticConfig } from "./config";
+import { refreshDatabaseVersions } from "./database/refresh-database-versions";
 import { runMigrations } from "./database/run-migrations";
 import { ReleaseNotificationsService } from "./models/bug-reports/services/release-notifications.service";
 import { registerOpenAPI } from "./openapi";
@@ -17,6 +18,10 @@ async function bootstrap() {
 	logger.log(`Environment: ${StaticConfig.environment}`);
 
 	if (StaticConfig.environment === "production") {
+		await refreshDatabaseVersions(StaticConfig).catch((err) =>
+			logger.error(`Refreshing collation and extension versions failed: ${err.message}`),
+		);
+
 		logger.log("Spouštím migrace...");
 		await runMigrations(StaticConfig);
 		logger.log("Migrace dokončeny.");

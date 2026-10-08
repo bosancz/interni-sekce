@@ -2,11 +2,12 @@ import { Injectable, Logger } from "@nestjs/common";
 import { setImmediate } from "timers/promises";
 import { Member } from "src/models/members/entities/member.entity";
 import { FaceMatchingSettingsRepository } from "src/models/settings/repositories/face-matching-settings.repository";
-import { DataSource, Not } from "typeorm";
+import { DataSource, In } from "typeorm";
 import { PhotoFace } from "../entities/photo-face.entity";
 import { Photo } from "../entities/photo.entity";
 import {
 	FACE_MATCH_SETTINGS,
+	FaceMatch,
 	FaceMatchSettings,
 	FaceReference,
 	FacesMatchStats,
@@ -119,23 +120,35 @@ export class PhotoFacesMatchingService {
 		return stats;
 	}
 
-	async getSuggestions(
-		face: Pick<PhotoFace, "id" | "photoId" | "candidateMemberId" | "candidateScore">,
-	): Promise<{ member: Member; score: number }[]> {
-		if (face.candidateMemberId === null || face.candidateScore === null) return [];
+	async getSuggestions(face: Pick<PhotoFace, "id">): Promise<{ member: Member; score: number }[]> {
+		const candidates: FaceMatch[] = await this.dataSource.query(
+			`SELECT r.member_id AS "memberId", -min(r.descriptor <#> f.descriptor) AS "score"
+			FROM photo_faces f
+			JOIN photo_faces r ON r.assignment = $2 AND r.member_id IS NOT NULL AND r.descriptor IS NOT NULL
+				AND r.id <> f.id
+			WHERE f.id = $1 AND f.descriptor IS NOT NULL
+				AND NOT EXISTS (
+					SELECT 1 FROM photo_faces o
+					WHERE o.photo_id = f.photo_id AND o.id <> f.id AND o.member_id = r.member_id
+				)
+			GROUP BY r.member_id
+			ORDER BY min(r.descriptor <#> f.descriptor), r.member_id
+			LIMIT 2`,
+			[face.id, PhotoFaceAssignment.manual],
+		);
 
-		const [suggestion] = pickFaceSuggestions([{ memberId: face.candidateMemberId, score: face.candidateScore }]);
-		if (!suggestion) return [];
+		const suggestions = pickFaceSuggestions(candidates);
+		if (!suggestions.length) return [];
 
-		const assignedElsewhere = await this.dataSource.getRepository(PhotoFace).existsBy({
-			photoId: face.photoId,
-			id: Not(face.id),
-			memberId: suggestion.memberId,
+		const members = await this.dataSource
+			.getRepository(Member)
+			.findBy({ id: In(suggestions.map((suggestion) => suggestion.memberId)) });
+		const membersById = new Map(members.map((member) => [member.id, member]));
+
+		return suggestions.flatMap((suggestion) => {
+			const member = membersById.get(suggestion.memberId);
+			return member ? [{ member, score: suggestion.score }] : [];
 		});
-		if (assignedElsewhere) return [];
-
-		const member = await this.dataSource.getRepository(Member).findOneBy({ id: suggestion.memberId });
-		return member ? [{ member, score: suggestion.score }] : [];
 	}
 
 	matchAll() {
@@ -198,7 +211,7 @@ export class PhotoFacesMatchingService {
 			AND EXISTS (
 				SELECT 1 FROM photo_faces r
 				WHERE r.id = ANY($2) AND r.assignment = $3 AND r.member_id IS NOT NULL AND r.descriptor IS NOT NULL
-				AND (SELECT sum(a * b) FROM unnest(f.descriptor, r.descriptor) AS t(a, b)) >= $4
+				AND -(f.descriptor <#> r.descriptor) >= $4
 			)`,
 			[PhotoFaceAssignment.auto, [...changes.faceIds], PhotoFaceAssignment.manual, settings.threshold],
 		);
@@ -250,7 +263,7 @@ export class PhotoFacesMatchingService {
 
 	private async loadReferences(): Promise<FaceReference[]> {
 		const rows: { memberId: number; descriptor: unknown }[] = await this.dataSource.query(
-			`SELECT member_id AS "memberId", descriptor FROM photo_faces
+			`SELECT member_id AS "memberId", descriptor::real[] AS "descriptor" FROM photo_faces
 			WHERE assignment = $1 AND member_id IS NOT NULL AND descriptor IS NOT NULL`,
 			[PhotoFaceAssignment.manual],
 		);
@@ -271,7 +284,7 @@ export class PhotoFacesMatchingService {
 		for (let i = 0; i < photoIds.length; i += PHOTOS_CHUNK) {
 			const rows: MatchFaceRow[] = await this.dataSource.query(
 				`SELECT id, photo_id AS "photoId", member_id AS "memberId", assignment,
-					match_score AS "matchScore", score AS "detectionScore", descriptor,
+					match_score AS "matchScore", score AS "detectionScore", descriptor::real[] AS "descriptor",
 					candidate_member_id AS "candidateMemberId", candidate_score AS "candidateScore",
 					candidate_second_score AS "candidateSecondScore"
 				FROM photo_faces WHERE photo_id = ANY($1)`,

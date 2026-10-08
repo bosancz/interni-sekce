@@ -1,28 +1,16 @@
-import { Injectable, Logger, OnModuleDestroy } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, In, Repository } from "typeorm";
 import { PhotoEmbedding } from "../entities/photo-embedding.entity";
 import { Photo } from "../entities/photo.entity";
-import {
-	bufferToHalves,
-	encodeHalfEmbeddings,
-	halvesToBuffer,
-	PHOTO_EMBEDDING_DIMENSION,
-	PhotoVectorIndex,
-} from "../helpers/photo-embeddings";
+import { PHOTO_EMBEDDING_DIMENSION, toVectorLiteral } from "../helpers/photo-embeddings";
 import { PhotoEmbeddedResult, PhotoSearchHit } from "../schema/photo-embeddings";
 
-const LOAD_ID_RANGE = 5000;
-const CACHE_IDLE_MS = 30 * 60_000;
+const VECTOR = `vector(${PHOTO_EMBEDDING_DIMENSION})`;
+const PHOTO_DISTANCE = (query: string) => `min(e.embedding::${VECTOR} <#> ${query})`;
 
 @Injectable()
-export class PhotoEmbeddingsService implements OnModuleDestroy {
-	private logger = new Logger(PhotoEmbeddingsService.name);
-
-	private index: PhotoVectorIndex | null = null;
-	private loading: Promise<PhotoVectorIndex> | null = null;
-	private pendingUpdates = new Map<number, Uint16Array | null>();
-	private idleTimer?: ReturnType<typeof setTimeout>;
+export class PhotoEmbeddingsService {
 	private version = 0;
 
 	constructor(
@@ -31,11 +19,7 @@ export class PhotoEmbeddingsService implements OnModuleDestroy {
 		private dataSource: DataSource,
 	) {}
 
-	onModuleDestroy() {
-		clearTimeout(this.idleTimer);
-	}
-
-	get indexVersion() {
+	get embeddingsVersion() {
 		return this.version;
 	}
 
@@ -54,7 +38,7 @@ export class PhotoEmbeddingsService implements OnModuleDestroy {
 			await t.delete(PhotoEmbedding, { photoId });
 			await t.insert(PhotoEmbedding, { photoId, crop: 0, model, error: error.slice(0, 1000), embedding: null });
 		});
-		this.updateIndex(photoId, null);
+		this.version++;
 	}
 
 	async saveEmbedding(result: PhotoEmbeddedResult) {
@@ -66,23 +50,20 @@ export class PhotoEmbeddingsService implements OnModuleDestroy {
 		const vectors = result.embeddings.filter((vector) => vector.length === PHOTO_EMBEDDING_DIMENSION);
 		if (!vectors.length) return this.markEmbeddingFailed(result.photoId, result.model, "Empty embedding.");
 
-		const halves = encodeHalfEmbeddings(vectors);
 		await this.dataSource.transaction(async (t) => {
 			await t.delete(PhotoEmbedding, { photoId: result.photoId });
 			await t.insert(
 				PhotoEmbedding,
-				vectors.map((_, crop) => ({
+				vectors.map((embedding, crop) => ({
 					photoId: result.photoId,
 					crop,
 					model: result.model,
 					error: null,
-					embedding: halvesToBuffer(
-						halves.subarray(crop * PHOTO_EMBEDDING_DIMENSION, (crop + 1) * PHOTO_EMBEDDING_DIMENSION),
-					),
+					embedding,
 				})),
 			);
 		});
-		this.updateIndex(result.photoId, halves);
+		this.version++;
 	}
 
 	async getStats() {
@@ -108,11 +89,62 @@ export class PhotoEmbeddingsService implements OnModuleDestroy {
 		};
 	}
 
-	async search(query: number[], options: { limit: number; minScore?: number }) {
-		const index = await this.getIndex();
-		const hits = index.top(Float32Array.from(query), options.limit, options.minScore);
+	async search(query: ArrayLike<number>, options: { limit: number; offset?: number; minScore?: number }) {
+		return this.withPhotos(await this.getTopPhotos(query, options));
+	}
 
-		return this.withPhotos(hits);
+	async getTopPhotos(
+		query: ArrayLike<number>,
+		options: { limit: number; offset?: number; minScore?: number },
+	): Promise<PhotoSearchHit[]> {
+		const rows: PhotoSearchHit[] = await this.dataSource.query(
+			`SELECT e.photo_id AS "photoId", -${PHOTO_DISTANCE(`$1::${VECTOR}`)} AS "score"
+			FROM photo_embeddings e
+			WHERE e.embedding IS NOT NULL
+			GROUP BY e.photo_id
+			HAVING $2::float8 IS NULL OR -${PHOTO_DISTANCE(`$1::${VECTOR}`)} >= $2::float8
+			ORDER BY ${PHOTO_DISTANCE(`$1::${VECTOR}`)}, e.photo_id
+			LIMIT $3 OFFSET $4`,
+			[toVectorLiteral(query), options.minScore ?? null, options.limit, options.offset ?? 0],
+		);
+
+		return rows;
+	}
+
+	async countPhotos(queries: { query: ArrayLike<number>; minScore: number }[]) {
+		if (!queries.length) return [];
+
+		const rows: { index: number; count: number }[] = await this.dataSource.query(
+			`SELECT q.index::int AS "index", (
+				SELECT count(*) FROM (
+					SELECT 1 FROM photo_embeddings e
+					WHERE e.embedding IS NOT NULL
+					GROUP BY e.photo_id
+					HAVING -${PHOTO_DISTANCE("q.query")} >= q.min_score
+				) hits
+			)::int AS "count"
+			FROM unnest($1::${VECTOR}[], $2::float8[]) WITH ORDINALITY AS q(query, min_score, index)`,
+			[queries.map((query) => toVectorLiteral(query.query)), queries.map((query) => query.minScore)],
+		);
+
+		return rows.sort((a, b) => a.index - b.index).map((row) => row.count);
+	}
+
+	async getPhotoScores(photoId: Photo["id"], queries: ArrayLike<number>[]) {
+		if (!queries.length) return [];
+
+		const rows: { index: number; score: number }[] = await this.dataSource.query(
+			`SELECT q.index::int AS "index", -${PHOTO_DISTANCE("q.query")} AS "score"
+			FROM photo_embeddings e
+			CROSS JOIN unnest($2::${VECTOR}[]) WITH ORDINALITY AS q(query, index)
+			WHERE e.photo_id = $1 AND e.embedding IS NOT NULL
+			GROUP BY q.index`,
+			[photoId, queries.map((query) => toVectorLiteral(query))],
+		);
+
+		const scores = new Array<number | null>(queries.length).fill(null);
+		for (const row of rows) scores[row.index - 1] = row.score;
+		return scores;
 	}
 
 	async withPhotos(hits: PhotoSearchHit[]) {
@@ -128,67 +160,5 @@ export class PhotoEmbeddingsService implements OnModuleDestroy {
 			const photo = photosById.get(hit.photoId);
 			return photo ? [{ photo, score: hit.score }] : [];
 		});
-	}
-
-	async getIndex() {
-		clearTimeout(this.idleTimer);
-		this.idleTimer = setTimeout(() => (this.index = null), CACHE_IDLE_MS);
-		this.idleTimer.unref?.();
-
-		if (this.index) return this.index;
-		if (!this.loading) {
-			this.loading = this.loadIndex().finally(() => (this.loading = null));
-		}
-		return this.loading;
-	}
-
-	private updateIndex(photoId: number, halves: Uint16Array | null) {
-		this.version++;
-		if (this.loading) this.pendingUpdates.set(photoId, halves);
-		if (!this.index) return;
-		if (halves) this.index.set(photoId, halves);
-		else this.index.delete(photoId);
-	}
-
-	private async loadIndex() {
-		const started = Date.now();
-		this.pendingUpdates.clear();
-
-		const [{ count, max }] = await this.photoEmbeddings.query(
-			`SELECT count(*)::int AS "count", coalesce(max(photo_id), 0)::int AS "max"
-			FROM photo_embeddings WHERE embedding IS NOT NULL`,
-		);
-		const index = new PhotoVectorIndex(PHOTO_EMBEDDING_DIMENSION, Math.max(1024, count));
-
-		for (let from = 0; from <= max; from += LOAD_ID_RANGE) {
-			const rows: { photo_id: number; embedding: Buffer }[] = await this.photoEmbeddings.query(
-				`SELECT photo_id, embedding FROM photo_embeddings
-				WHERE embedding IS NOT NULL AND photo_id > $1 AND photo_id <= $2
-				ORDER BY photo_id, crop`,
-				[from, from + LOAD_ID_RANGE],
-			);
-
-			let start = 0;
-			while (start < rows.length) {
-				let end = start;
-				while (end < rows.length && rows[end].photo_id === rows[start].photo_id) end++;
-				const halves = new Uint16Array((end - start) * PHOTO_EMBEDDING_DIMENSION);
-				for (let i = start; i < end; i++)
-					halves.set(bufferToHalves(rows[i].embedding), (i - start) * PHOTO_EMBEDDING_DIMENSION);
-				index.set(rows[start].photo_id, halves);
-				start = end;
-			}
-		}
-
-		for (const [photoId, halves] of this.pendingUpdates) {
-			if (halves) index.set(photoId, halves);
-			else index.delete(photoId);
-		}
-		this.pendingUpdates.clear();
-
-		this.index = index;
-		this.logger.log(`Loaded ${index.rowCount} embeddings of ${index.size} photos in ${Date.now() - started} ms.`);
-
-		return index;
 	}
 }

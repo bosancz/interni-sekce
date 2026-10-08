@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Not, Repository } from "typeorm";
 import { PhotoCategory } from "../entities/photo-category.entity";
 import { Photo } from "../entities/photo.entity";
-import { decodeEmbedding, encodeEmbedding } from "../helpers/photo-embeddings";
 import { PhotoCategoryInput } from "../schema/photo-embeddings";
 import { PhotoEmbeddingsService } from "./photo-embeddings.service";
 
@@ -11,7 +10,7 @@ const MAX_CATEGORY_PHOTOS = 100_000;
 
 @Injectable()
 export class PhotoCategoriesService {
-	private embeddings: Map<number, Float32Array> | null = null;
+	private embeddings: Map<number, number[]> | null = null;
 	private counts: Map<number, number> | null = null;
 	private countsVersion = -1;
 
@@ -35,7 +34,7 @@ export class PhotoCategoriesService {
 			this.photoCategories.create({
 				...input,
 				model: embedding.model,
-				embedding: encodeEmbedding(embedding.vector),
+				embedding: embedding.vector,
 			}),
 		);
 		this.invalidate();
@@ -52,7 +51,7 @@ export class PhotoCategoriesService {
 
 		await this.photoCategories.update(categoryId, {
 			...input,
-			...(embedding ? { model: embedding.model, embedding: encodeEmbedding(embedding.vector) } : {}),
+			...(embedding ? { model: embedding.model, embedding: embedding.vector } : {}),
 		});
 		this.invalidate();
 
@@ -65,20 +64,23 @@ export class PhotoCategoriesService {
 	}
 
 	async getPhotoCounts() {
-		const index = await this.photoEmbeddingsService.getIndex();
-		const version = this.photoEmbeddingsService.indexVersion;
+		const version = this.photoEmbeddingsService.embeddingsVersion;
 		if (this.counts && this.countsVersion === version) return this.counts;
 
 		const [categories, embeddings] = await Promise.all([this.getCategories(), this.getEmbeddings()]);
-		const counts = new Map<number, number>();
+		const queries = categories.flatMap((category) => {
+			const query = embeddings.get(category.id);
+			return query ? [{ categoryId: category.id, query, minScore: category.threshold }] : [];
+		});
+		const results = await this.photoEmbeddingsService.countPhotos(queries);
 
-		for (const category of categories) {
-			const embedding = embeddings.get(category.id);
-			counts.set(category.id, embedding ? index.count(embedding, category.threshold) : 0);
+		const counts = new Map<number, number>(categories.map((category) => [category.id, 0]));
+		queries.forEach((query, i) => counts.set(query.categoryId, results[i]));
+
+		if (version === this.photoEmbeddingsService.embeddingsVersion) {
+			this.counts = counts;
+			this.countsVersion = version;
 		}
-
-		this.counts = counts;
-		this.countsVersion = version;
 
 		return counts;
 	}
@@ -87,33 +89,33 @@ export class PhotoCategoriesService {
 		const embedding = (await this.getEmbeddings()).get(category.id);
 		if (!embedding) return [];
 
-		const index = await this.photoEmbeddingsService.getIndex();
-		const hits = index
-			.top(embedding, Math.min(options.offset + options.limit, MAX_CATEGORY_PHOTOS), category.threshold)
-			.slice(options.offset);
+		const limit = Math.min(options.limit, MAX_CATEGORY_PHOTOS - options.offset);
+		if (limit <= 0) return [];
 
-		return this.photoEmbeddingsService.withPhotos(hits);
+		return this.photoEmbeddingsService.search(embedding, {
+			limit,
+			offset: options.offset,
+			minScore: category.threshold,
+		});
 	}
 
 	async getPhotoCategories(photoId: Photo["id"]) {
-		const index = await this.photoEmbeddingsService.getIndex();
-		if (!index.has(photoId)) return [];
-
 		const [categories, embeddings] = await Promise.all([this.getCategories(), this.getEmbeddings()]);
+		const withEmbedding = categories.filter((category) => embeddings.has(category.id));
+		const scores = await this.photoEmbeddingsService.getPhotoScores(
+			photoId,
+			withEmbedding.map((category) => embeddings.get(category.id)!),
+		);
 
-		return categories
-			.map((category) => {
-				const embedding = embeddings.get(category.id);
-				return { category, score: embedding ? (index.score(photoId, embedding) ?? -1) : -1 };
-			})
+		return withEmbedding
+			.map((category, i) => ({ category, score: scores[i] }))
+			.filter((hit): hit is { category: PhotoCategory; score: number } => hit.score !== null)
 			.filter(({ category, score }) => score >= category.threshold)
 			.sort((a, b) => b.score - a.score);
 	}
 
 	async previewCategory(vector: number[], limit: number) {
-		const index = await this.photoEmbeddingsService.getIndex();
-
-		return this.photoEmbeddingsService.withPhotos(index.top(Float32Array.from(vector), limit));
+		return this.photoEmbeddingsService.search(vector, { limit });
 	}
 
 	private async getEmbeddings() {
@@ -125,7 +127,7 @@ export class PhotoCategoriesService {
 			.where("categories.embedding IS NOT NULL")
 			.getMany();
 
-		this.embeddings = new Map(rows.map((row) => [row.id, decodeEmbedding(row.embedding!)]));
+		this.embeddings = new Map(rows.map((row) => [row.id, row.embedding!]));
 
 		return this.embeddings;
 	}

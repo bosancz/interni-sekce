@@ -79,6 +79,18 @@ CMD ["python", "-m", "worker"]
 
 
 
+## DATABASE ##
+FROM postgres:15-bookworm AS postgres
+
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		postgresql-${PG_MAJOR}-postgis-3 \
+		postgresql-${PG_MAJOR}-postgis-3-scripts \
+		postgresql-${PG_MAJOR}-pgvector \
+	&& rm -rf /var/lib/apt/lists/*
+
+
+
 ## RUNNER ##
 FROM node:24-alpine AS app
 
