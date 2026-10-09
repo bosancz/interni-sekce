@@ -18,7 +18,7 @@ import { PaymentSettings } from "src/models/settings/entities/payment-settings.e
 import { User } from "src/models/users/entities/user.entity";
 import { EntityManager } from "typeorm";
 import { readFile } from "fs/promises";
-import { extname, resolve } from "path";
+import { resolve } from "path";
 import {
 	SeedAlbums,
 	SeedEvent,
@@ -403,13 +403,14 @@ export class SeedService {
 				timestamp: dateFrom.plus({ days: index }).toJSDate(),
 				width: metadata.width,
 				height: metadata.height,
-				bg: metadata.bg,
 				uploadedById,
 				srcAlbumId: null,
 				srcId: null,
 			});
 
-			await this.photosFiles.savePhotoFiles(albumId, photo.id, extname(seedPhoto.name), buffer);
+			await this.photosFiles.saveOriginal(photo, buffer);
+			const { bg } = await this.photosFiles.createThumbnails(photo, buffer);
+			await t.update(Photo, photo.id, { bg, thumbnailsAt: new Date(), thumbnailsError: null });
 		}
 	}
 }

@@ -16,9 +16,10 @@ const FACE_IMAGE_PADDING = 0.3;
 export interface PhotoMetadata {
 	width: number | null;
 	height: number | null;
-	bg: string | null;
 	timestamp: Date;
 }
+
+export type PhotoThumbnailSize = Exclude<PhotoSizes, PhotoSizes.original>;
 
 @Injectable()
 export class PhotosFilesService {
@@ -35,13 +36,6 @@ export class PhotosFilesService {
 
 	async fileExists(path: string): Promise<void> {
 		return this.files.fileAccessible(path);
-	}
-
-	getImagePath(albumId: number, photoId: number, size: PhotoSizes, ext: string): string {
-		if (size === PhotoSizes.original) {
-			return join(this.config.fs.photosDir, String(albumId), `${photoId}${ext}`);
-		}
-		return join(this.config.fs.thumbnailsDir, String(albumId), `${photoId}_${size}${ext}`);
 	}
 
 	getPhotoImagePath(photo: Photo, size: PhotoSizes): string {
@@ -76,38 +70,62 @@ export class PhotosFilesService {
 	}
 
 	async extractMetadata(buffer: Buffer): Promise<PhotoMetadata> {
-		const image = sharp(buffer, { limitInputPixels: MAX_INPUT_PIXELS });
-		const [metadata, stats] = await Promise.all([image.metadata(), image.stats()]);
-
-		const bg =
-			stats.channels.length >= 3
-				? `rgb(${stats.channels
-						.slice(0, 3)
-						.map((channel) => Math.round(channel.mean))
-						.join(",")})`
-				: null;
+		const metadata = await sharp(buffer, { limitInputPixels: MAX_INPUT_PIXELS }).metadata();
 
 		const swapAxes = typeof metadata.orientation === "number" && metadata.orientation >= 5;
 
 		return {
 			width: (swapAxes ? metadata.height : metadata.width) ?? null,
 			height: (swapAxes ? metadata.width : metadata.height) ?? null,
-			bg,
 			timestamp: this.readCaptureDate(metadata.exif) ?? new Date(),
 		};
 	}
 
-	async savePhotoFiles(albumId: number, photoId: number, ext: string, buffer: Buffer): Promise<void> {
-		await this.files.saveFile(this.getImagePath(albumId, photoId, PhotoSizes.original, ext), buffer);
+	get thumbnailSizes(): PhotoThumbnailSize[] {
+		return Object.keys(this.config.photos.sizes) as PhotoThumbnailSize[];
+	}
 
-		for (const [name, size] of Object.entries(this.config.photos.sizes)) {
-			const resized = await sharp(buffer, { limitInputPixels: MAX_INPUT_PIXELS })
+	async saveOriginal(photo: Photo, buffer: Buffer): Promise<void> {
+		await this.files.saveFile(this.getPhotoImagePath(photo, PhotoSizes.original), buffer);
+	}
+
+	async createThumbnails(photo: Photo, input?: Buffer): Promise<{ bg: string | null }> {
+		const source = input ?? this.getPhotoImagePath(photo, PhotoSizes.original);
+		const sizes = Object.entries(this.config.photos.sizes).sort(
+			([, a], [, b]) => b.width * b.height - a.width * a.height,
+		);
+
+		let smallest: Buffer | null = null;
+
+		for (const [name, size] of sizes) {
+			const resized = await sharp(source, { limitInputPixels: MAX_INPUT_PIXELS })
 				.rotate()
 				.resize(size.width, size.height, { fit: "inside" })
 				.toBuffer();
 
-			await this.files.saveFile(this.getImagePath(albumId, photoId, name as PhotoSizes, ext), resized);
+			await this.files.saveFile(this.getPhotoImagePath(photo, name as PhotoSizes), resized);
+			smallest = resized;
 		}
+
+		return { bg: smallest ? await this.getBackground(smallest) : null };
+	}
+
+	async saveThumbnails(photo: Photo, thumbnails: Partial<Record<PhotoThumbnailSize, Buffer>>): Promise<void> {
+		for (const size of this.thumbnailSizes) {
+			const buffer = thumbnails[size];
+			if (!buffer) throw new Error(`Missing ${size} thumbnail of photo ${photo.id}.`);
+			await this.files.saveFile(this.getPhotoImagePath(photo, size), buffer);
+		}
+	}
+
+	private async getBackground(image: Buffer): Promise<string | null> {
+		const stats = await sharp(image).removeAlpha().toColourspace("srgb").stats();
+		if (stats.channels.length < 3) return null;
+
+		return `rgb(${stats.channels
+			.slice(0, 3)
+			.map((channel) => Math.round(channel.mean))
+			.join(",")})`;
 	}
 
 	async deletePhotoFiles(photo: Photo): Promise<void> {

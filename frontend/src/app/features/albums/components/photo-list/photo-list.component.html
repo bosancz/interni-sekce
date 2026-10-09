@@ -18,6 +18,7 @@
 					<ion-avatar slot="start">
 						<img
 							[src]="photo | photoImageUrl: 'small'"
+							[boPhotoPending]="photo"
 							[style.background-color]="photo.bg"
 							loading="lazy"
 						/>
@@ -86,6 +87,7 @@
 					<div class="photo ion-activatable ripple-parent" (click)="onPhotoClick(photo, $event)">
 						<img
 							[src]="photo | photoImageUrl: 'small'"
+							[boPhotoPending]="photo"
 							[style.background-color]="photo.bg"
 							loading="lazy"
 						/>

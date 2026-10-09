@@ -187,6 +187,12 @@
 								<strong>Fotku se nepodařilo načíst</strong>
 								<p>Zkuste to prosím později.</p>
 							</div>
+						} @else if (pendingPhotoIds().has(slide.photo.id)) {
+							<div class="image-error">
+								<ion-spinner name="crescent"></ion-spinner>
+								<strong>Náhled fotky se připravuje</strong>
+								<p>Fotka se ještě zpracovává, za chvíli se tu objeví.</p>
+							</div>
 						} @else {
 							<div
 								class="zoom-stage"

@@ -17,6 +17,7 @@ import { ItemReorderEventDetail } from "@ionic/core";
 import { addIcons } from "ionicons";
 import { star } from "ionicons/icons";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
+import { PhotoPendingDirective } from "src/app/shared/directives/photo-pending.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 
@@ -39,6 +40,7 @@ import { SDK } from "src/sdk";
 		IonSkeletonText,
 		IonRippleEffect,
 		PhotoImageUrlPipe,
+		PhotoPendingDirective,
 		TooltipDirective,
 	],
 })

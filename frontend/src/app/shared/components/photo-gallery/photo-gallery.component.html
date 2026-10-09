@@ -9,7 +9,12 @@
 				[style.width]="row.height * item.ratio + 'px'"
 				[style.background-color]="item.photo.bg"
 			>
-				<img [src]="item.photo | photoImageUrl: 'small'" loading="lazy" (error)="onImgError($event)" />
+				<img
+					[src]="item.photo | photoImageUrl: 'small'"
+					[boPhotoPending]="item.photo"
+					loading="lazy"
+					(error)="onImgError($event, item.photo)"
+				/>
 				@if (item.photo.titlePhoto) {
 					<span class="title-badge" boTooltip="Titulní fotka"
 						><ion-icon name="star" color="warning"></ion-icon

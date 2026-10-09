@@ -14,7 +14,9 @@ import { IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { star } from "ionicons/icons";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
+import { PhotoPendingDirective } from "src/app/shared/directives/photo-pending.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
+import { isPhotoPending } from "src/helpers/photo-thumbnails";
 import { SDK } from "src/sdk";
 
 interface PhotoRowItem {
@@ -31,7 +33,7 @@ class PhotoRow {
 	selector: "bo-photo-gallery",
 	templateUrl: "./photo-gallery.component.html",
 	styleUrls: ["./photo-gallery.component.scss"],
-	imports: [IonIcon, PhotoImageUrlPipe, TooltipDirective],
+	imports: [IonIcon, PhotoImageUrlPipe, PhotoPendingDirective, TooltipDirective],
 })
 export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 	photos = input<SDK.PhotoResponseWithLinks[]>([]);
@@ -126,7 +128,8 @@ export class PhotoGalleryComponent implements OnInit, AfterViewInit, OnDestroy {
 	private static readonly TRANSPARENT_PX =
 		"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
-	onImgError(event: Event) {
+	onImgError(event: Event, photo: SDK.PhotoResponseWithLinks) {
+		if (isPhotoPending(photo)) return;
 		const img = event.target as HTMLImageElement;
 		if (img.src === PhotoGalleryComponent.TRANSPARENT_PX) return;
 		img.src = PhotoGalleryComponent.TRANSPARENT_PX;

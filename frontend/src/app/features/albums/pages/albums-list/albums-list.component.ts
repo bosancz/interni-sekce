@@ -47,6 +47,7 @@ import { FilterModel, FilterValues } from "src/app/shared/components/filter/filt
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { AlbumPipe } from "src/app/shared/pipes/album.pipe";
+import { PhotoPendingDirective } from "src/app/shared/directives/photo-pending.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 
 import { UrlParams } from "src/helpers/typings";
@@ -81,6 +82,7 @@ import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loa
 		AdminTableCellDirective,
 		AlbumPipe,
 		PhotoImageUrlPipe,
+		PhotoPendingDirective,
 		NgTemplateOutlet,
 	],
 	providers: [FilterModel],

@@ -452,6 +452,7 @@ export class MongoImportService {
 				uploadedById: mongoPhoto.uploadedBy ? userIds[mongoPhoto.uploadedBy.toString()] : null,
 				width,
 				height,
+				thumbnailsAt: new Date(),
 				srcAlbumId: mongoPhoto.album.toString(),
 				srcId: mongoPhoto._id.toString(),
 			};

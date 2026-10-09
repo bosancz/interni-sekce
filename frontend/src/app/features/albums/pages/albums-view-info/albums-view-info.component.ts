@@ -21,6 +21,7 @@ import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { PhotoPendingDirective } from "src/app/shared/directives/photo-pending.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 import { AlbumGalleryComponent } from "../../components/album-gallery/album-gallery.component";
@@ -36,7 +37,14 @@ const TITLE_PHOTO_ASPECT_RATIO = 350 / 200;
 	templateUrl: "./albums-view-info.component.html",
 	styleUrl: "./albums-view-info.component.scss",
 
-	imports: [PageHeaderComponent, PageContentComponent, AlbumInfoComponent, AlbumGalleryComponent, PhotoImageUrlPipe],
+	imports: [
+		PageHeaderComponent,
+		PageContentComponent,
+		AlbumInfoComponent,
+		AlbumGalleryComponent,
+		PhotoImageUrlPipe,
+		PhotoPendingDirective,
+	],
 })
 export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy, ViewWillLeave {
 	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);

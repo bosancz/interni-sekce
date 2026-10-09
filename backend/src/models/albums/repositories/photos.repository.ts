@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { extname } from "path";
 import { PaginationOptions } from "src/helpers/pagination";
 import { MemberRoles } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
@@ -45,7 +44,6 @@ export class PhotosRepository {
 	}
 
 	async createPhoto(albumId: number, file: Express.Multer.File, uploadedById: User["id"] | null) {
-		const ext = extname(file.originalname);
 		const metadata = await this.photosFiles.extractMetadata(file.buffer);
 
 		const { max } = await this.repository
@@ -62,11 +60,12 @@ export class PhotosRepository {
 			order: (max ?? 0) + 1,
 			width: metadata.width,
 			height: metadata.height,
-			bg: metadata.bg,
+			bg: null,
+			thumbnailsAt: null,
 		});
 
 		try {
-			await this.photosFiles.savePhotoFiles(albumId, photo.id, ext, file.buffer);
+			await this.photosFiles.saveOriginal(photo, file.buffer);
 		} catch (err) {
 			await this.repository.delete(photo.id);
 			await this.photosFiles.deletePhotoFiles(photo);
@@ -74,6 +73,22 @@ export class PhotosRepository {
 		}
 
 		return photo;
+	}
+
+	getPhotosWithoutThumbnails(limit: number) {
+		return this.repository
+			.createQueryBuilder("photos")
+			.where("photos.thumbnails_at IS NULL")
+			.orderBy("photos.id", "DESC")
+			.take(limit)
+			.getMany();
+	}
+
+	async setThumbnailsState(
+		id: Photo["id"],
+		state: Pick<Photo, "thumbnailsAt" | "thumbnailsError"> & Partial<Pick<Photo, "bg">>,
+	) {
+		await this.repository.update(id, state);
 	}
 
 	async updatePhoto(id: Photo["id"], photo: Partial<Photo>) {

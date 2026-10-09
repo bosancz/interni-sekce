@@ -3,10 +3,12 @@ import { DynamicModule, Module } from "@nestjs/common";
 import { AlbumsModelModule } from "src/models/albums/albums-model.module";
 import { FacesEnqueueCommand } from "./commands/faces-enqueue.command";
 import { PhotosEmbedCommand } from "./commands/photos-embed.command";
+import { PhotosThumbnailsCommand } from "./commands/photos-thumbnails.command";
 import { BackendScheduleProcessor } from "./processors/backend-schedule.processor";
 import { WorkerResultsProcessor } from "./processors/worker-results.processor";
 import { FacesDetectionService } from "./services/faces-detection.service";
 import { PhotoContentService } from "./services/photo-content.service";
+import { PhotoThumbnailsService } from "./services/photo-thumbnails.service";
 import { WorkersService } from "./services/workers.service";
 import { BACKEND_SCHEDULE_QUEUE, WORKER_RESULTS_QUEUE, WORKER_TASK_QUEUE, WorkerTasks } from "./worker-queues";
 
@@ -21,19 +23,21 @@ export class WorkerModelModule {
 					{ name: WORKER_TASK_QUEUE(WorkerTasks.detectFaces) },
 					{ name: WORKER_TASK_QUEUE(WorkerTasks.embedPhoto) },
 					{ name: WORKER_TASK_QUEUE(WorkerTasks.embedText) },
+					{ name: WORKER_TASK_QUEUE(WorkerTasks.photoThumbnails) },
 					{ name: WORKER_RESULTS_QUEUE },
 					{ name: BACKEND_SCHEDULE_QUEUE },
 				),
 				AlbumsModelModule,
 			],
-			exports: [FacesDetectionService, PhotoContentService, WorkersService],
+			exports: [FacesDetectionService, PhotoContentService, PhotoThumbnailsService, WorkersService],
 			providers: [
 				FacesDetectionService,
 				PhotoContentService,
+				PhotoThumbnailsService,
 				WorkersService,
 				...(options.processors
 					? [BackendScheduleProcessor, WorkerResultsProcessor]
-					: [FacesEnqueueCommand, PhotosEmbedCommand]),
+					: [FacesEnqueueCommand, PhotosEmbedCommand, PhotosThumbnailsCommand]),
 			],
 		};
 	}

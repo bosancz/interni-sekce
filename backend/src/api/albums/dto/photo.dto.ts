@@ -29,6 +29,7 @@ export class PhotoResponse {
 	@ApiPropertyOptional({ type: "string" }) caption!: string | null;
 	@ApiPropertyOptional({ type: "string", isArray: true }) tags!: string[] | null;
 	@ApiPropertyOptional({ type: "string" }) bg!: string | null;
+	@ApiPropertyOptional({ type: "string" }) thumbnailsAt!: string | Date | null;
 
 	@ApiPropertyOptional({ type: () => WithLinks(() => AlbumResponse) }) album?: Album | undefined;
 	@ApiPropertyOptional({ type: () => WithLinks(UserResponse) }) uploadedBy?: User | null;

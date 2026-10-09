@@ -61,6 +61,7 @@ import { MemberSelectorModalComponent } from "src/app/features/events/components
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { FACE_EMOTIONS, faceEmotionLabel } from "src/helpers/face-emotions";
+import { isPhotoPending, waitForImage } from "src/helpers/photo-thumbnails";
 import { SDK } from "src/sdk";
 import { PhotoTagsEditorComponent } from "../photo-tags-editor/photo-tags-editor.component";
 
@@ -110,6 +111,7 @@ const SLIDE_ANIMATION_FALLBACK_MS = 400;
 	selector: "bo-photos-edit",
 	templateUrl: "./photos-edit.component.html",
 	styleUrls: ["./photos-edit.component.scss"],
+	providers: [PhotoImageUrlPipe],
 
 	imports: [
 		FormsModule,
@@ -140,6 +142,9 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	albumTags = signal<string[]>([]);
 
 	failedPhotoIds = signal(new Set<number>());
+	pendingPhotoIds = signal(new Set<number>());
+	private pendingAbort = new AbortController();
+	private photoImageUrl = inject(PhotoImageUrlPipe);
 
 	editingCaption = signal(false);
 
@@ -258,6 +263,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		this.resizeObserver.disconnect();
 		clearTimeout(this.tapTimeout);
 		clearTimeout(this.pendingSlide?.timeout);
+		this.pendingAbort.abort();
 	}
 
 	measureImage() {
@@ -282,8 +288,24 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		if (photo.id === this.photo()?.id) this.measureImage();
 	}
 
-	onSlideError(photo: SDK.PhotoResponseWithLinks) {
-		this.failedPhotoIds.update((ids) => new Set(ids).add(photo.id));
+	async onSlideError(photo: SDK.PhotoResponseWithLinks) {
+		if (!isPhotoPending(photo)) {
+			this.failedPhotoIds.update((ids) => new Set(ids).add(photo.id));
+			return;
+		}
+
+		if (this.pendingPhotoIds().has(photo.id)) return;
+		this.pendingPhotoIds.update((ids) => new Set(ids).add(photo.id));
+
+		const ready = await waitForImage(this.photoImageUrl.transform(photo, "big"), this.pendingAbort.signal);
+		if (this.pendingAbort.signal.aborted) return;
+
+		this.pendingPhotoIds.update((ids) => {
+			const next = new Set(ids);
+			next.delete(photo.id);
+			return next;
+		});
+		if (!ready) this.failedPhotoIds.update((ids) => new Set(ids).add(photo.id));
 	}
 
 	toggleFaces() {

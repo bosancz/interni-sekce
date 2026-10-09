@@ -5090,6 +5090,12 @@ export namespace SDK {
         'bg'?: string | null;
         /**
          * 
+         * @type {string}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'thumbnailsAt'?: string;
+        /**
+         * 
          * @type {AlbumResponseWithLinks}
          * @memberof MemberPhotoResponseWithLinks
          */
@@ -6650,6 +6656,18 @@ export namespace SDK {
          * @type {string}
          * @memberof Photo
          */
+        'thumbnailsAt': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Photo
+         */
+        'thumbnailsError'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Photo
+         */
         'facesDetectedAt'?: string | null;
         /**
          * 
@@ -7678,6 +7696,12 @@ export namespace SDK {
          * @memberof PhotoResponseWithLinks
          */
         'bg'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoResponseWithLinks
+         */
+        'thumbnailsAt'?: string;
         /**
          * 
          * @type {AlbumResponseWithLinks}
