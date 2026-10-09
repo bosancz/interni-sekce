@@ -1,9 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsInt, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsInt, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { UserResponse } from "src/api/users/dto/user.dto";
 import { Album } from "src/models/albums/entities/album.entity";
+import { EnsureArray } from "src/helpers/validation";
 import { User } from "src/models/users/entities/user.entity";
 import { AlbumResponse } from "./album.dto";
 
@@ -82,4 +83,28 @@ export class PhotoCategoryOfPhotoResponse {
 	@ApiProperty() categoryId!: number;
 	@ApiProperty() name!: string;
 	@ApiProperty() score!: number;
+}
+
+export class PhotoBrowseQuery {
+	@ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(200) q?: string;
+
+	@ApiPropertyOptional() @IsOptional() @IsDateString() dateFrom?: string;
+	@ApiPropertyOptional() @IsOptional() @IsDateString() dateTill?: string;
+
+	@ApiPropertyOptional({ type: Number, isArray: true })
+	@EnsureArray({ split: "," })
+	@Type(() => Number)
+	@IsInt({ each: true })
+	@IsOptional()
+	categoryIds?: number[];
+
+	@ApiPropertyOptional({ type: Number, isArray: true })
+	@EnsureArray({ split: "," })
+	@Type(() => Number)
+	@IsInt({ each: true })
+	@IsOptional()
+	memberIds?: number[];
+
+	@ApiPropertyOptional() @Type(() => Number) @IsInt() @Min(1) @Max(200) @IsOptional() limit?: number;
+	@ApiPropertyOptional() @Type(() => Number) @IsInt() @Min(0) @IsOptional() offset?: number;
 }

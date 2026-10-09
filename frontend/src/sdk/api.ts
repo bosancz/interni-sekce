@@ -7811,6 +7811,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'browsePhotos': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'getDailyPhoto': AcLink;
         /**
          * 
@@ -14877,6 +14883,73 @@ export namespace SDK {
         
     
     
+    /**
+     * Query parameters for browsePhotos operation in PhotoGalleryApi.
+     * @export
+     * @interface PhotoGalleryApiBrowsePhotosQueryParams
+     */
+    export interface PhotoGalleryApiBrowsePhotosQueryParams {
+        //q
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoGalleryApiBrowsePhotos
+         */
+        q?: string
+    
+        //dateFrom
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoGalleryApiBrowsePhotos
+         */
+        dateFrom?: string
+    
+        //dateTill
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoGalleryApiBrowsePhotos
+         */
+        dateTill?: string
+    
+        //categoryIds
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof PhotoGalleryApiBrowsePhotos
+         */
+        categoryIds?: Array<number>
+    
+        //memberIds
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof PhotoGalleryApiBrowsePhotos
+         */
+        memberIds?: Array<number>
+    
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoGalleryApiBrowsePhotos
+         */
+        limit?: number
+    
+        //offset
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoGalleryApiBrowsePhotos
+         */
+        offset?: number
+    }
+    
+    
+    
+    
+    
     
     
     
@@ -15077,6 +15150,74 @@ export namespace SDK {
     
         constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
             super(configuration, configuration.basePath, axios);
+        }
+    
+        /**
+         * 
+    
+         * @param {PhotoGalleryApiBrowsePhotosQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async browsePhotos(
+            queryParams: PhotoGalleryApiBrowsePhotosQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/photos/browse`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.q !== undefined) {
+                requestQueryParameter['q'] = queryParams.q;
+            }
+    
+            if (queryParams.dateFrom !== undefined) {
+                requestQueryParameter['dateFrom'] = queryParams.dateFrom;
+            }
+    
+            if (queryParams.dateTill !== undefined) {
+                requestQueryParameter['dateTill'] = queryParams.dateTill;
+            }
+    
+            if (queryParams.categoryIds) {
+                requestQueryParameter['categoryIds'] = queryParams.categoryIds;
+            }
+    
+            if (queryParams.memberIds) {
+                requestQueryParameter['memberIds'] = queryParams.memberIds;
+            }
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.offset !== undefined) {
+                requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<PhotoResponseWithLinks>>(axiosRequestConfig);
         }
     
         /**

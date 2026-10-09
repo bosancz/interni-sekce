@@ -1,0 +1,26 @@
+@if (variant() === "tabs") {
+	<ion-tab-bar>
+		@for (view of views; track view.name) {
+			<ion-tab-button [class.tab-selected]="view.name === active()" (click)="open(view)">
+				<ion-icon [name]="view.icon"></ion-icon>
+				<ion-label>{{ view.label }}</ion-label>
+			</ion-tab-button>
+		}
+	</ion-tab-bar>
+} @else {
+	<div class="gvs-switch" role="tablist" aria-label="Zobrazení galerie">
+		@for (view of views; track view.name) {
+			<button
+				type="button"
+				role="tab"
+				class="gvs-option"
+				[class.active]="view.name === active()"
+				[attr.aria-selected]="view.name === active()"
+				(click)="open(view)"
+			>
+				<ion-icon [name]="view.icon" aria-hidden="true"></ion-icon>
+				{{ view.label }}
+			</button>
+		}
+	</div>
+}

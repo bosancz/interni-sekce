@@ -3,6 +3,7 @@ import {
 	Body,
 	Controller,
 	Delete,
+	GatewayTimeoutException,
 	Get,
 	Logger,
 	NotFoundException,
@@ -10,6 +11,7 @@ import {
 	ParseIntPipe,
 	Patch,
 	Post,
+	Query,
 	Req,
 	Res,
 	UploadedFile,
@@ -36,9 +38,11 @@ import {
 	PhotoReadFilePermission,
 	PhotoCategoriesOfPhotoPermission,
 	PhotoReadPermission,
+	PhotosBrowsePermission,
 	PhotosListPermission,
 } from "../acl/photo.acl";
 import {
+	PhotoBrowseQuery,
 	PhotoCategoryOfPhotoResponse,
 	PhotoCreateBody,
 	PhotoDailyResponse,
@@ -46,6 +50,8 @@ import {
 	PhotoSizes,
 	PhotoUpdateBody,
 } from "../dto/photo.dto";
+
+const BROWSE_LIMIT = 60;
 
 @Controller("photos")
 @Authenticated()
@@ -99,6 +105,39 @@ export class PhotosController {
 			.catch((err) => this.logger.error(`Failed to queue photo ${photo.id} for content recognition.`, err));
 
 		return photo;
+	}
+
+	@Get("browse")
+	@AcLinks(PhotosBrowsePermission)
+	@ApiResponse({ status: 200, type: WithLinks(PhotoResponse), isArray: true })
+	async browsePhotos(@Req() req: Request, @Query() query: PhotoBrowseQuery): Promise<PhotoResponse[]> {
+		PhotosBrowsePermission.canOrThrow(req);
+
+		const categories = query.categoryIds?.length
+			? await this.photoCategoriesService.getCategoryQueries(query.categoryIds)
+			: [];
+		if (categories.some((category) => category === null)) return [];
+
+		const text = query.q?.trim();
+		let embedding: number[] | undefined;
+		if (text) {
+			try {
+				embedding = await this.photoContentService.embedText(text);
+			} catch (err) {
+				this.logger.warn(`Text embedding failed: ${err}`);
+				throw new GatewayTimeoutException("Worker did not answer, is any worker running the embed-text task?");
+			}
+		}
+
+		return this.photos.browsePhotos({
+			query: embedding,
+			dateFrom: query.dateFrom,
+			dateTill: query.dateTill,
+			categories: categories.filter((category) => category !== null),
+			memberIds: query.memberIds,
+			limit: query.limit ?? BROWSE_LIMIT,
+			offset: query.offset ?? 0,
+		});
 	}
 
 	@Get("daily")

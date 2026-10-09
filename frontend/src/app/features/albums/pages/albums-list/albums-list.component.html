@@ -1,4 +1,6 @@
-<bo-page-header title="Galerie" backUrl="/" [actions]="actions()" />
+<bo-page-header title="Galerie" backUrl="/" [actions]="actions()">
+	<bo-gallery-view-switch slot="title-end" class="ms-3 d-none d-lg-block" active="albums" />
+</bo-page-header>
 
 <bo-page-content>
 	<bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
@@ -61,7 +63,10 @@
 			@if (albums(); as albumList) {
 				@for (album of albumList; track album.id) {
 					<a class="albums-grid-item" [routerLink]="rowLink(album)">
-						<div class="albums-grid-photo" [class.albums-grid-photo-unpublished]="album.status !== 'public'">
+						<div
+							class="albums-grid-photo"
+							[class.albums-grid-photo-unpublished]="album.status !== 'public'"
+						>
 							@if (album.coverPhoto) {
 								<img
 									[src]="album.coverPhoto | photoImageUrl: 'small'"
@@ -158,3 +163,7 @@
 		<ion-infinite-scroll-content></ion-infinite-scroll-content>
 	</ion-infinite-scroll>
 </bo-page-content>
+
+<bo-page-footer class="d-lg-none">
+	<bo-gallery-view-switch variant="tabs" active="albums" />
+</bo-page-footer>
