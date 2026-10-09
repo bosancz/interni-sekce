@@ -58,3 +58,17 @@ export enum FaceReviewFilter {
 	children = "children",
 	member = "member",
 }
+
+export interface MatchFacesJob {
+	dimensions: number;
+	referencesKey: string;
+	referenceMemberIds: number[];
+	facesKey: string;
+	excluded: [number, number][];
+}
+
+export interface MatchFacesResult {
+	memberIds: (number | null)[];
+	scores: (number | null)[];
+	secondScores: (number | null)[];
+}

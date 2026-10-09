@@ -1,108 +1,101 @@
 import { PhotoFaceAssignment } from "../schema/detected-faces";
 import {
+	decideFaceMatches,
 	FACE_MATCH_MIN_DETECTION_SCORE,
 	FACE_MATCH_SETTINGS,
-	FACE_MATCH_THRESHOLD,
 	FACE_SUGGESTION_MIN_SCORE,
+	FaceCandidate,
 	MatchFace,
-	matchPhotoFaces,
 	pickFaceSuggestions,
-	prepareReferences,
 } from "./face-matching";
 
-function vector(...values: number[]) {
-	const length = Math.hypot(...values);
-	return Float32Array.from(values.map((value) => value / length));
+const DESCRIPTOR = Buffer.alloc(8);
+
+function face(id: number, overrides: Partial<MatchFace> = {}): MatchFace {
+	return {
+		id,
+		memberId: null,
+		assignment: null,
+		matchScore: null,
+		detectionScore: null,
+		descriptor: DESCRIPTOR,
+		...overrides,
+	};
 }
 
-function face(id: number, descriptor: Float32Array | null, overrides: Partial<MatchFace> = {}): MatchFace {
-	return { id, memberId: null, assignment: null, matchScore: null, detectionScore: null, descriptor, ...overrides };
+function candidates(entries: [number, number, number, number | null][]) {
+	return new Map<number, FaceCandidate | null>(
+		entries.map(([faceId, memberId, score, secondScore]) => [faceId, { memberId, score, secondScore }]),
+	);
 }
 
-const alice = vector(1, 0, 0);
-const bob = vector(0, 1, 0);
+describe("decideFaceMatches", () => {
+	it("assigns the candidate above the threshold with a clear lead", () => {
+		const result = decideFaceMatches([face(10)], candidates([[10, 1, 0.7, 0.2]]));
 
-describe("matchPhotoFaces", () => {
-	const references = prepareReferences([
-		{ memberId: 1, descriptor: alice },
-		{ memberId: 2, descriptor: bob },
-	]);
-
-	it("assigns the most similar member above the threshold", () => {
-		const result = matchPhotoFaces([face(10, vector(1, 0.1, 0))], references);
-
-		expect(result.get(10)?.match?.memberId).toBe(1);
-		expect(result.get(10)!.match!.score).toBeGreaterThanOrEqual(FACE_MATCH_THRESHOLD);
+		expect(result.get(10)?.match).toEqual({ memberId: 1, score: 0.7 });
 	});
 
-	it("leaves faces below the threshold unassigned", () => {
-		const result = matchPhotoFaces([face(10, vector(0, 0, 1))], references);
+	it("leaves faces below the threshold unassigned but keeps the candidate", () => {
+		const result = decideFaceMatches([face(10)], candidates([[10, 1, 0.4, 0.1]]));
 
 		expect(result.get(10)?.match).toBeNull();
+		expect(result.get(10)?.candidate).toEqual({ memberId: 1, score: 0.4, secondScore: 0.1 });
 	});
 
 	it("leaves ambiguous faces unassigned", () => {
-		const result = matchPhotoFaces([face(10, vector(1, 1, 0))], references);
+		const result = decideFaceMatches([face(10)], candidates([[10, 1, 0.7, 0.68]]));
 
 		expect(result.get(10)?.match).toBeNull();
 	});
 
-	it("assigns a member at most once per photo", () => {
-		const result = matchPhotoFaces([face(10, vector(1, 0.2, 0)), face(11, vector(1, 0.05, 0))], references);
+	it("assigns a member at most once per photo, to the better face", () => {
+		const result = decideFaceMatches(
+			[face(10), face(11)],
+			candidates([
+				[10, 1, 0.6, 0.1],
+				[11, 1, 0.8, 0.1],
+			]),
+		);
 
 		expect(result.get(11)?.match?.memberId).toBe(1);
 		expect(result.get(10)?.match).toBeNull();
 	});
 
-	it("skips members already assigned manually on the photo", () => {
-		const result = matchPhotoFaces(
-			[face(10, vector(1, 0, 0)), face(11, null, { memberId: 1, assignment: PhotoFaceAssignment.manual })],
-			references,
+	it("never touches manual faces and faces without a descriptor", () => {
+		const result = decideFaceMatches(
+			[face(10, { assignment: PhotoFaceAssignment.manual }), face(11, { descriptor: null })],
+			candidates([
+				[10, 1, 0.9, null],
+				[11, 2, 0.9, null],
+			]),
 		);
 
-		expect(result.get(10)?.match).toBeNull();
-		expect(result.has(11)).toBe(false);
+		expect(result.size).toBe(0);
 	});
 
-	it("never touches rejected faces", () => {
-		const result = matchPhotoFaces([face(10, alice, { assignment: PhotoFaceAssignment.manual })], references);
+	it("clears an auto face without a candidate", () => {
+		const result = decideFaceMatches([face(10, { memberId: 1, assignment: PhotoFaceAssignment.auto })], new Map());
 
-		expect(result.has(10)).toBe(false);
-	});
-
-	it("reassigns an auto face when a better reference appears", () => {
-		const faces = [face(10, vector(0.2, 1, 0), { memberId: 1, assignment: PhotoFaceAssignment.auto })];
-
-		expect(matchPhotoFaces(faces, references).get(10)?.match?.memberId).toBe(2);
-	});
-
-	it("records the best candidate even below the threshold", () => {
-		const result = matchPhotoFaces([face(10, vector(0.3, 0.1, 1))], references);
-
-		expect(result.get(10)?.match).toBeNull();
-		expect(result.get(10)?.candidate?.memberId).toBe(1);
-		expect(result.get(10)!.candidate!.score).toBeLessThan(FACE_MATCH_THRESHOLD);
-		expect(result.get(10)!.candidate!.secondScore).toBeCloseTo(0.1 / Math.hypot(0.3, 0.1, 1));
+		expect(result.get(10)).toEqual({ candidate: null, match: null });
 	});
 
 	it("leaves faces with a low detection score unassigned", () => {
-		const result = matchPhotoFaces(
-			[face(10, vector(1, 0.1, 0), { detectionScore: FACE_MATCH_MIN_DETECTION_SCORE - 0.01 })],
-			references,
+		const result = decideFaceMatches(
+			[face(10, { detectionScore: FACE_MATCH_MIN_DETECTION_SCORE - 0.01 })],
+			candidates([[10, 1, 0.9, 0.1]]),
 		);
 
 		expect(result.get(10)?.match).toBeNull();
-		expect(result.get(10)?.candidate?.memberId).toBe(1);
 	});
 
 	it("respects the configured threshold", () => {
-		const faces = [face(10, vector(1, 0.8, 0))];
+		const faces = [face(10)];
+		const found = candidates([[10, 1, 0.8, 0.76]]);
 
+		expect(decideFaceMatches(faces, found, { ...FACE_MATCH_SETTINGS, threshold: 0.9 }).get(10)?.match).toBeNull();
 		expect(
-			matchPhotoFaces(faces, references, { ...FACE_MATCH_SETTINGS, threshold: 0.9 }).get(10)?.match,
-		).toBeNull();
-		expect(
-			matchPhotoFaces(faces, references, { ...FACE_MATCH_SETTINGS, threshold: 0.7, margin: 0 }).get(10)?.match
+			decideFaceMatches(faces, found, { ...FACE_MATCH_SETTINGS, threshold: 0.7, margin: 0 }).get(10)?.match
 				?.memberId,
 		).toBe(1);
 	});

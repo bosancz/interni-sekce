@@ -2,6 +2,7 @@ export enum WorkerTasks {
 	detectFaces = "detect-faces",
 	embedPhoto = "embed-photo",
 	embedText = "embed-text",
+	matchFaces = "match-faces",
 }
 
 export const WORKER_TASK_QUEUE = (task: WorkerTasks) => `worker-${task}`;
