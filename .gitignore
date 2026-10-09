@@ -5,6 +5,7 @@ node_modules
 /data
 /db
 /keys
+dump.rdb
 
 # local enviornment settings
 .env
