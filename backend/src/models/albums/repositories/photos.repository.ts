@@ -159,9 +159,7 @@ export class PhotosRepository {
 
 	async getPhotoExif(photo: Photo): Promise<PhotoExif | null> {
 		const stored = await this.repository.findOne({ select: { id: true, exif: true }, where: { id: photo.id } });
-		if (stored?.exif) return stored.exif;
-
-		return this.loadPhotoExif(photo);
+		return stored?.exif ?? null;
 	}
 
 	async loadPhotoExif(photo: Photo): Promise<PhotoExif | null> {
