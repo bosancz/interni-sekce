@@ -174,14 +174,10 @@ export class PhotoCategoryEditComponent {
 
 		this.saving.set(true);
 		try {
-			if (category) {
-				const updated = await this.api.WorkerApi.updatePhotoCategory(category.id, body).then((res) => res.data);
-				this.category.set({ ...category, ...updated });
-			} else {
-				const created = await this.api.WorkerApi.createPhotoCategory(body).then((res) => res.data);
-				await this.router.navigate(["/admin/obsah-fotek/kategorie", created.id], { replaceUrl: true });
-			}
+			if (category) await this.api.WorkerApi.updatePhotoCategory(category.id, body);
+			else await this.api.WorkerApi.createPhotoCategory(body);
 			this.toastService.toast("Kategorie uložena.");
+			await this.router.navigate(["/admin/obsah-fotek"]);
 		} catch (err: any) {
 			const message =
 				err?.response?.status === 409
