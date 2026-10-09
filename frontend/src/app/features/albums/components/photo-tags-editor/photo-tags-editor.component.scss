@@ -11,8 +11,19 @@ ion-chip.tag {
 	cursor: pointer;
 	transition: opacity 0.15s ease;
 
+	&.active {
+		background: var(--ion-color-warning);
+		color: var(--ion-color-warning-contrast);
+		font-weight: 600;
+		box-shadow: 0 0 0 1px var(--ion-color-warning-shade);
+	}
+	&.active ion-icon {
+		margin: 0 2px 0 -2px;
+		color: inherit;
+		font-size: 1rem;
+	}
 	&:not(.active):not(.add) {
-		opacity: 0.8;
+		opacity: 0.6;
 	}
 	&:not(.active):not(.add):hover {
 		opacity: 1;
