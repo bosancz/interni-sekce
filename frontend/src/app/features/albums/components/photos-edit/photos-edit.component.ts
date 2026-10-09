@@ -35,6 +35,7 @@ import {
 } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
+	albumsOutline,
 	checkmarkCircleOutline,
 	checkmarkOutline,
 	chevronBackOutline,
@@ -226,6 +227,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		private modalService: ModalService,
 	) {
 		addIcons({
+			albumsOutline,
 			checkmarkCircleOutline,
 			helpCircleOutline,
 			sparklesOutline,
@@ -314,6 +316,12 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		} catch {
 			this.categories.set([]);
 		}
+	}
+
+	async openAlbum(albumId: number) {
+		const modal = await this.modalController.getTop();
+		if (modal) await this.modalService.dismissAndNavigate(modal, ["/galerie", albumId]);
+		else await this.router.navigate(["/galerie", albumId]);
 	}
 
 	async openCategory(categoryId: number) {
