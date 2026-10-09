@@ -8,6 +8,7 @@ import { Brackets, In, Repository } from "typeorm";
 import { AlbumStatus } from "../entities/album.entity";
 import { PhotoFace } from "../entities/photo-face.entity";
 import { FaceEmotion } from "../schema/detected-faces";
+import { PhotoExif } from "../schema/photo-exif";
 import { Photo } from "../entities/photo.entity";
 import { PHOTO_EMBEDDING_DIMENSION, toVectorLiteral } from "../helpers/photo-embeddings";
 import { PhotosFilesService } from "../services/photos-files.service";
@@ -156,6 +157,20 @@ export class PhotosRepository {
 		return this.repository.findOneBy({ id });
 	}
 
+	async getPhotoExif(photo: Photo): Promise<PhotoExif | null> {
+		const stored = await this.repository.findOne({ select: { id: true, exif: true }, where: { id: photo.id } });
+		if (stored?.exif) return stored.exif;
+
+		return this.loadPhotoExif(photo);
+	}
+
+	async loadPhotoExif(photo: Photo): Promise<PhotoExif | null> {
+		const exif = await this.photosFiles.readExif(photo);
+		if (exif) await this.repository.update(photo.id, { exif });
+
+		return exif;
+	}
+
 	async createPhoto(albumId: number, file: Express.Multer.File, uploadedById: User["id"] | null) {
 		const ext = extname(file.originalname);
 		const metadata = await this.photosFiles.extractMetadata(file.buffer);
@@ -175,6 +190,7 @@ export class PhotosRepository {
 			width: metadata.width,
 			height: metadata.height,
 			bg: metadata.bg,
+			exif: metadata.exif,
 		});
 
 		try {

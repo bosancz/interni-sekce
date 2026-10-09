@@ -7,6 +7,7 @@ import { FilesService } from "src/models/files/services/files.service";
 import { PhotoSizes } from "src/api/albums/dto/photo.dto";
 import { Photo } from "../entities/photo.entity";
 import { FaceBox } from "../schema/detected-faces";
+import { parsePhotoExif, PhotoExif } from "../schema/photo-exif";
 
 const MAX_INPUT_PIXELS = 24000 * 24000;
 
@@ -18,6 +19,7 @@ export interface PhotoMetadata {
 	height: number | null;
 	bg: string | null;
 	timestamp: Date;
+	exif: PhotoExif | null;
 }
 
 @Injectable()
@@ -94,7 +96,21 @@ export class PhotosFilesService {
 			height: (swapAxes ? metadata.width : metadata.height) ?? null,
 			bg,
 			timestamp: this.readCaptureDate(metadata.exif) ?? new Date(),
+			exif: this.parseExif(metadata.exif),
 		};
+	}
+
+	async readExif(photo: Photo): Promise<PhotoExif | null> {
+		const path = this.getPhotoImagePath(photo, PhotoSizes.original);
+
+		try {
+			await this.files.fileAccessible(path);
+		} catch {
+			return null;
+		}
+
+		const metadata = await sharp(path, { limitInputPixels: MAX_INPUT_PIXELS }).metadata();
+		return this.parseExif(metadata.exif);
 	}
 
 	async savePhotoFiles(albumId: number, photoId: number, ext: string, buffer: Buffer): Promise<void> {
@@ -179,6 +195,15 @@ export class PhotosFilesService {
 		}
 
 		throw new Error(`No image file found for photo ${photo.id}.`);
+	}
+
+	private parseExif(exif?: Buffer): PhotoExif | null {
+		try {
+			return parsePhotoExif(exif);
+		} catch (err) {
+			this.logger.warn(`Failed to read EXIF: ${err}`);
+			return null;
+		}
 	}
 
 	private readCaptureDate(exif?: Buffer): Date | null {

@@ -1,6 +1,7 @@
 import { User } from "src/models/users/entities/user.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Album } from "./album.entity";
+import { PhotoExif } from "../schema/photo-exif";
 import { PhotoFace } from "./photo-face.entity";
 
 @Entity("photos")
@@ -38,6 +39,7 @@ export class Photo {
 	@Column({ type: "text", nullable: true }) caption!: string | null;
 	@Column({ type: "varchar", array: true, nullable: true }) tags!: string[] | null;
 	@Column({ type: "varchar", nullable: true }) bg!: string | null;
+	@Column({ type: "jsonb", nullable: true, select: false }) exif?: PhotoExif | null;
 
 	@Column({ type: "timestamp with time zone", nullable: true }) facesDetectedAt?: Date | null;
 	@Column({ type: "varchar", nullable: true }) facesModel?: string | null;

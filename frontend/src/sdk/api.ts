@@ -6647,6 +6647,12 @@ export namespace SDK {
         'bg': string | null;
         /**
          * 
+         * @type {object}
+         * @memberof Photo
+         */
+        'exif'?: object | null;
+        /**
+         * 
          * @type {string}
          * @memberof Photo
          */
@@ -7093,6 +7099,98 @@ export namespace SDK {
          * @memberof PhotoDailyResponse
          */
         'leaders': Array<PhotoDailyLeader>;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface PhotoExifResponse
+     */
+    export interface PhotoExifResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoExifResponse
+         */
+        'make'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoExifResponse
+         */
+        'model'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoExifResponse
+         */
+        'lensModel'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoExifResponse
+         */
+        'software'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoExifResponse
+         */
+        'fNumber'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoExifResponse
+         */
+        'exposureTime'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoExifResponse
+         */
+        'iso'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoExifResponse
+         */
+        'focalLength'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoExifResponse
+         */
+        'focalLength35mm'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoExifResponse
+         */
+        'exposureBias'?: number | null;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof PhotoExifResponse
+         */
+        'flash'?: boolean | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoExifResponse
+         */
+        'latitude'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoExifResponse
+         */
+        'longitude'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoExifResponse
+         */
+        'altitude'?: number | null;
     }
     
         /**
@@ -7574,6 +7672,12 @@ export namespace SDK {
          * @memberof PhotoResponseLinks
          */
         'listPhotoCategoriesOfPhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoResponseLinks
+         */
+        'getPhotoExif': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -15008,6 +15112,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * @export
      */
@@ -15727,6 +15835,50 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<PhotoResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} photoId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async getPhotoExif(
+            photoId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('getPhotoExif', 'photoId', photoId)
+            
+            const localVarPath = `/api/photos/{photoId}/exif`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<PhotoExifResponse>(axiosRequestConfig);
         }
     
         /**

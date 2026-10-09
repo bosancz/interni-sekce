@@ -8,6 +8,7 @@ export interface UserSettings {
 	albumsListView?: "table" | "grid";
 	membersListColumns?: { [key: string]: boolean };
 	photoFacesVisible?: boolean;
+	photoInfoVisible?: boolean;
 }
 
 const PROPAGATED_SETTINGS: (keyof UserSettings)[] = ["darkMode"];

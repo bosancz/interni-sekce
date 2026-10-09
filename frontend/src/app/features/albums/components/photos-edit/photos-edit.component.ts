@@ -3,6 +3,7 @@ import {
 	afterNextRender,
 	Component,
 	computed,
+	effect,
 	ElementRef,
 	HostListener,
 	inject,
@@ -11,6 +12,7 @@ import {
 	OnDestroy,
 	OnInit,
 	signal,
+	untracked,
 	ViewChild,
 } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
@@ -30,6 +32,7 @@ import {
 	IonList,
 	IonPopover,
 	IonSpinner,
+	IonTitle,
 	IonToolbar,
 	ModalController,
 } from "@ionic/angular/standalone";
@@ -41,10 +44,13 @@ import {
 	chevronBackOutline,
 	chevronForwardOutline,
 	closeCircleOutline,
+	closeOutline,
 	createOutline,
 	happyOutline,
 	helpCircleOutline,
 	imageOutline,
+	informationCircleOutline,
+	mapOutline,
 	personAddOutline,
 	personOutline,
 	pricetagOutline,
@@ -62,6 +68,15 @@ import { MemberSelectorModalComponent } from "src/app/features/events/components
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { FACE_EMOTIONS, faceEmotionLabel } from "src/helpers/face-emotions";
+import {
+	formatExifAperture,
+	formatExifCoordinates,
+	formatExifExposureBias,
+	formatExifExposureTime,
+	formatExifFocalLength,
+	getExifCamera,
+	getExifMapUrl,
+} from "src/helpers/photo-exif";
 import { SDK } from "src/sdk";
 import { PhotoTagsEditorComponent } from "../photo-tags-editor/photo-tags-editor.component";
 
@@ -107,6 +122,10 @@ const SLIDE_COMMIT_VELOCITY = 0.3;
 const SLIDE_EDGE_RESISTANCE = 0.3;
 const SLIDE_ANIMATION_FALLBACK_MS = 400;
 
+function isTextInput(target: EventTarget | null) {
+	return target instanceof HTMLElement && (target.isContentEditable || !!target.closest("input, textarea"));
+}
+
 @Component({
 	selector: "bo-photos-edit",
 	templateUrl: "./photos-edit.component.html",
@@ -128,6 +147,7 @@ const SLIDE_ANIMATION_FALLBACK_MS = 400;
 		IonIcon,
 		IonChip,
 		IonSpinner,
+		IonTitle,
 		PhotoImageUrlPipe,
 		TooltipDirective,
 		PhotoTagsEditorComponent,
@@ -143,8 +163,6 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	failedPhotoIds = signal(new Set<number>());
 
 	editingCaption = signal(false);
-
-	infoOpen = signal(false);
 
 	currentIndex = signal(0);
 
@@ -203,6 +221,45 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	private userSettings = inject(UserSettingsService);
 	private photoFacesVisible = this.userSettings.watch("photoFacesVisible");
 	facesVisible = computed(() => this.photoFacesVisible() ?? false);
+	private photoInfoVisible = this.userSettings.watch("photoInfoVisible");
+	infoVisible = computed(() => this.photoInfoVisible() ?? false);
+
+	private exifCache = new Map<number, SDK.PhotoExifResponse | null>();
+	exif = signal<SDK.PhotoExifResponse | null | undefined>(undefined);
+	exifInfo = computed(() => {
+		const exif = this.exif();
+		if (!exif) return null;
+
+		const info = {
+			camera: getExifCamera(exif),
+			lens: exif.lensModel ?? null,
+			software: exif.software ?? null,
+			aperture: exif.fNumber ? formatExifAperture(exif.fNumber) : null,
+			exposureTime: exif.exposureTime ? formatExifExposureTime(exif.exposureTime) : null,
+			iso: exif.iso ? `ISO ${exif.iso}` : null,
+			focalLength: formatExifFocalLength(exif),
+			exposureBias: exif.exposureBias != null ? formatExifExposureBias(exif.exposureBias) : null,
+			flash: exif.flash == null ? null : exif.flash ? "Ano" : "Ne",
+			position:
+				exif.latitude != null && exif.longitude != null
+					? {
+							label: formatExifCoordinates(exif.latitude, exif.longitude),
+							url: getExifMapUrl(exif.latitude, exif.longitude),
+							altitude: exif.altitude != null ? `${Math.round(exif.altitude)} m n. m.` : null,
+						}
+					: null,
+		};
+		const hasCamera = !!(info.camera || info.lens || info.software);
+		const hasExposure = !!(
+			info.aperture ||
+			info.exposureTime ||
+			info.iso ||
+			info.focalLength ||
+			info.exposureBias ||
+			info.flash
+		);
+		return { ...info, hasCamera, hasExposure, empty: !hasCamera && !hasExposure && !info.position };
+	});
 	imageRect = signal<{ left: number; top: number; width: number; height: number } | null>(null);
 
 	faceMenuOpen = signal(false);
@@ -242,8 +299,17 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 			chevronBackOutline,
 			chevronForwardOutline,
 			imageOutline,
+			informationCircleOutline,
+			closeOutline,
+			mapOutline,
 			star,
 			starOutline,
+		});
+
+		effect(() => {
+			const photo = this.photo();
+			if (!photo || !this.infoVisible()) return;
+			untracked(() => this.loadExif(photo));
 		});
 	}
 
@@ -290,6 +356,32 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 
 	toggleFaces() {
 		this.userSettings.set("photoFacesVisible", !this.facesVisible());
+	}
+
+	toggleInfo() {
+		this.userSettings.set("photoInfoVisible", !this.infoVisible());
+	}
+
+	private async loadExif(photo: SDK.PhotoResponseWithLinks) {
+		if (this.exifCache.has(photo.id)) {
+			this.exif.set(this.exifCache.get(photo.id));
+			return;
+		}
+
+		this.exif.set(undefined);
+		if (!photo._links.getPhotoExif?.allowed) {
+			this.exif.set(null);
+			return;
+		}
+
+		let exif: SDK.PhotoExifResponse | null;
+		try {
+			exif = await this.api.PhotoGalleryApi.getPhotoExif(photo.id).then((res) => res.data);
+			this.exifCache.set(photo.id, exif);
+		} catch {
+			exif = null;
+		}
+		if (this.photo()?.id === photo.id) this.exif.set(exif);
 	}
 
 	private async loadFaces(photo: SDK.PhotoResponseWithLinks) {
@@ -457,7 +549,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	onKeyUp(event: KeyboardEvent) {
 		if (!this.pressedKeys.delete(event.code)) return;
 
-		if (!this.editingCaption() && !this.infoOpen() && !this.faceMenuOpen()) {
+		if (!this.editingCaption() && !this.faceMenuOpen()) {
 			switch (event.key) {
 				case "+":
 					return this.zoomAtCenter(this.zoom().scale * KEYBOARD_ZOOM_STEP);
@@ -467,6 +559,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 					return this.resetZoom(true);
 			}
 			if (event.code === "Escape" && this.zoomed()) return this.resetZoom(true);
+			if (event.code === "KeyI" && !isTextInput(event.target)) return this.toggleInfo();
 
 			switch (event.code) {
 				case "ArrowLeft":

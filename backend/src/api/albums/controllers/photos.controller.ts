@@ -37,6 +37,7 @@ import {
 	PhotoEditPermission,
 	PhotoReadFilePermission,
 	PhotoCategoriesOfPhotoPermission,
+	PhotoExifReadPermission,
 	PhotoReadPermission,
 	PhotosBrowsePermission,
 	PhotosListPermission,
@@ -46,6 +47,7 @@ import {
 	PhotoCategoryOfPhotoResponse,
 	PhotoCreateBody,
 	PhotoDailyResponse,
+	PhotoExifResponse,
 	PhotoResponse,
 	PhotoSizes,
 	PhotoUpdateBody,
@@ -177,6 +179,24 @@ export class PhotosController {
 		const categories = await this.photoCategoriesService.getPhotoCategories(photoId);
 
 		return categories.map(({ category, score }) => ({ categoryId: category.id, name: category.name, score }));
+	}
+
+	@Get(":photoId/exif")
+	@AcLinks(PhotoExifReadPermission)
+	@ApiResponse({ status: 200, type: PhotoExifResponse })
+	async getPhotoExif(
+		@Param("photoId", ParseIntPipe) photoId: number,
+		@Req() req: Request,
+	): Promise<PhotoExifResponse> {
+		const photo = await this.photos.getPhoto(photoId);
+		if (!photo) throw new NotFoundException();
+
+		PhotoExifReadPermission.canOrThrow(req, photo);
+
+		const exif = await this.photos.getPhotoExif(photo);
+		if (!exif) throw new NotFoundException("Image file not found.");
+
+		return exif;
 	}
 
 	@Patch(":photoId")
