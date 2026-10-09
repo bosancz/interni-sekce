@@ -1,0 +1,137 @@
+<bo-page-header title="Galerie" backUrl="/">
+	<bo-gallery-view-switch slot="title-end" class="ms-3 d-none d-lg-block" active="photos" />
+</bo-page-header>
+
+<bo-page-content>
+	<ion-toolbar>
+		<div class="pb-bar">
+			<ion-searchbar
+				class="pb-search"
+				placeholder="Co je na fotce? Např. děti u ohně"
+				[debounce]="600"
+				[value]="filter().q"
+				(ionInput)="setSearch($any($event).detail.value)"
+			></ion-searchbar>
+
+			<div class="pb-filters">
+				<button
+					type="button"
+					class="pb-pill"
+					[class.has-value]="filter().dateFrom || filter().dateTill"
+					(click)="openDatePopover($event)"
+				>
+					<span>{{ dateLabel() }}</span>
+					<ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+				</button>
+
+				@if (categoryOptions().length) {
+					<bo-filter-pill
+						label="Kategorie"
+						[columns]="2"
+						[options]="categoryOptions()"
+						[selected]="selectedCategories()"
+						(selectedChange)="setCategories($event)"
+					/>
+				}
+
+				<button
+					type="button"
+					class="pb-pill"
+					[class.has-value]="filter().memberIds.length"
+					(click)="selectMembers()"
+				>
+					<span>{{ membersLabel() }}</span>
+					<ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+				</button>
+
+				@if (hasFilter()) {
+					<ion-button fill="clear" size="small" (click)="clearAll()">Zrušit filtry</ion-button>
+				}
+			</div>
+		</div>
+	</ion-toolbar>
+
+	<ion-popover
+		cssClass="filter-pill-chips-popover"
+		[dismissOnSelect]="false"
+		[isOpen]="datePopoverOpen()"
+		[event]="datePopoverEvent()"
+		(didDismiss)="datePopoverOpen.set(false)"
+	>
+		<ng-template>
+			<ion-content>
+				<div class="filter-pill-panel pb-date-panel">
+					<div class="pb-date-inputs">
+						<label>
+							<span>Od</span>
+							<input
+								type="date"
+								[value]="filter().dateFrom"
+								[max]="filter().dateTill || null"
+								(change)="setDate('dateFrom', $any($event.target).value)"
+							/>
+						</label>
+						<label>
+							<span>Do</span>
+							<input
+								type="date"
+								[value]="filter().dateTill"
+								[min]="filter().dateFrom || null"
+								(change)="setDate('dateTill', $any($event.target).value)"
+							/>
+						</label>
+					</div>
+
+					@if (years().length) {
+						<div class="filter-pill-chips pb-years" style="--pill-columns: 3">
+							@for (year of years(); track year) {
+								<button
+									type="button"
+									class="filter-pill-chip"
+									[class.selected]="selectedYear() === year"
+									(click)="setYear(year)"
+								>
+									{{ year }}
+								</button>
+							}
+						</div>
+					}
+
+					@if (filter().dateFrom || filter().dateTill) {
+						<button type="button" class="filter-pill-clear" (click)="clearDate()">Zrušit výběr</button>
+					}
+					<button type="button" class="filter-pill-done" (click)="datePopoverOpen.set(false)">Hotovo</button>
+				</div>
+			</ion-content>
+		</ng-template>
+	</ion-popover>
+
+	<div class="pb-content">
+		@if (selectedMembers().length) {
+			<div class="pb-members">
+				@for (item of selectedMembers(); track item.id) {
+					<span class="pb-member">
+						{{ item.member ? item.member.nickname || item.member.firstName : "…" }}
+						<button type="button" aria-label="Odebrat" (click)="removeMember(item.id)">
+							<ion-icon name="close-outline"></ion-icon>
+						</button>
+					</span>
+				}
+			</div>
+		}
+
+		@if (photos(); as list) {
+			<p class="pb-meta">{{ description() }}</p>
+			<bo-photo-gallery [photos]="list" [maxHeight]="200" [clickable]="true" (click)="openPhoto($event)" />
+			<ion-infinite-scroll [disabled]="!hasMore()" (ionInfinite)="loadMore($event)">
+				<ion-infinite-scroll-content></ion-infinite-scroll-content>
+			</ion-infinite-scroll>
+		} @else {
+			<div class="pb-loading"><ion-spinner name="dots"></ion-spinner></div>
+		}
+	</div>
+</bo-page-content>
+
+<bo-page-footer class="d-lg-none">
+	<bo-gallery-view-switch variant="tabs" active="photos" />
+</bo-page-footer>

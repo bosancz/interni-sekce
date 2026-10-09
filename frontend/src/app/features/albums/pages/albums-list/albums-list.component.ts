@@ -21,7 +21,6 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
 	addOutline,
-	pricetagsOutline,
 	eyeOffOutline,
 	eyeOutline,
 	gridOutline,
@@ -45,7 +44,9 @@ import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-
 import { FilterComponent } from "src/app/shared/components/filter/filter.component";
 import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { GalleryViewSwitchComponent } from "src/app/features/albums/components/gallery-view-switch/gallery-view-switch.component";
 import { AlbumPipe } from "src/app/shared/pipes/album.pipe";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 
@@ -72,6 +73,8 @@ import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loa
 		IonSegmentButton,
 		IonSkeletonText,
 		PageHeaderComponent,
+		PageFooterComponent,
+		GalleryViewSwitchComponent,
 		PageContentComponent,
 		FilterComponent,
 		FilterPillComponent,
@@ -110,11 +113,6 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 			icon: "add-outline",
 			pinned: true,
 			handler: () => this.create(),
-		},
-		{
-			text: "Kategorie fotek",
-			icon: "pricetags-outline",
-			handler: () => this.router.navigate(["kategorie"], { relativeTo: this.route }),
 		},
 		{
 			text: "Smazaná alba",
@@ -229,7 +227,6 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		private router: Router,
 	) {
 		addIcons({
-			pricetagsOutline,
 			addOutline,
 			eyeOutline,
 			eyeOffOutline,

@@ -318,8 +318,9 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 
 	async openCategory(categoryId: number) {
 		const modal = await this.modalController.getTop();
-		if (modal) await this.modalService.dismissAndNavigate(modal, ["/galerie/kategorie", categoryId]);
-		else await this.router.navigate(["/galerie/kategorie", categoryId]);
+		const extras = { queryParams: { kategorie: categoryId } };
+		if (modal) await this.modalService.dismissAndNavigate(modal, ["/galerie/fotky"], extras);
+		else await this.router.navigate(["/galerie/fotky"], extras);
 	}
 
 	openFaceMenu(event: Event, face: SDK.PhotoFaceResponseWithLinks) {

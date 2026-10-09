@@ -4,15 +4,29 @@ import { extname } from "path";
 import { PaginationOptions } from "src/helpers/pagination";
 import { MemberRoles } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
-import { Brackets, Repository } from "typeorm";
+import { Brackets, In, Repository } from "typeorm";
 import { AlbumStatus } from "../entities/album.entity";
 import { PhotoFace } from "../entities/photo-face.entity";
 import { FaceEmotion } from "../schema/detected-faces";
 import { Photo } from "../entities/photo.entity";
+import { PHOTO_EMBEDDING_DIMENSION, toVectorLiteral } from "../helpers/photo-embeddings";
 import { PhotosFilesService } from "../services/photos-files.service";
+
+const VECTOR = `vector(${PHOTO_EMBEDDING_DIMENSION})`;
 
 export interface GetPhotosOptions extends PaginationOptions {
 	album?: number;
+}
+
+export interface BrowsePhotosOptions {
+	query?: ArrayLike<number>;
+	dateFrom?: string;
+	dateTill?: string;
+	categories?: { query: ArrayLike<number>; minScore: number }[];
+	memberIds?: number[];
+	limit: number;
+	offset: number;
+	timezone?: string;
 }
 
 @Injectable()
@@ -38,6 +52,96 @@ export class PhotosRepository {
 		else if (!options.album) q.take(50);
 
 		return q.getMany();
+	}
+
+	async browsePhotos(options: BrowsePhotosOptions) {
+		const params: unknown[] = [];
+		const param = (value: unknown) => {
+			params.push(value);
+			return `$${params.length}`;
+		};
+
+		const joins: string[] = [];
+		const conditions: string[] = ["a.deleted_at IS NULL"];
+		const timezone = options.timezone ?? "Europe/Prague";
+
+		if (options.query) {
+			joins.push(
+				`INNER JOIN (
+					SELECT e.photo_id, min(e.embedding::${VECTOR} <#> ${param(toVectorLiteral(options.query))}::${VECTOR}) AS distance
+					FROM photo_embeddings e
+					WHERE e.embedding IS NOT NULL
+					GROUP BY e.photo_id
+				) s ON s.photo_id = p.id`,
+			);
+		}
+
+		if (options.dateFrom) {
+			conditions.push(
+				`p.timestamp >= (${param(options.dateFrom)}::date::timestamp AT TIME ZONE ${param(timezone)})`,
+			);
+		}
+
+		if (options.dateTill) {
+			conditions.push(
+				`p.timestamp < ((${param(options.dateTill)}::date + 1)::timestamp AT TIME ZONE ${param(timezone)})`,
+			);
+		}
+
+		if (options.memberIds?.length) {
+			const memberIds = [...new Set(options.memberIds)];
+			conditions.push(
+				`p.id IN (
+					SELECT f.photo_id FROM photo_faces f
+					WHERE f.member_id = ANY(${param(memberIds)}::int[])
+					GROUP BY f.photo_id
+					HAVING count(DISTINCT f.member_id) = ${param(memberIds.length)}
+				)`,
+			);
+		}
+
+		if (options.categories?.length) {
+			conditions.push(
+				`p.id IN (
+					SELECT c.photo_id FROM (
+						SELECT e.photo_id, q.min_score, -min(e.embedding::${VECTOR} <#> q.query) AS score
+						FROM photo_embeddings e
+						CROSS JOIN unnest(
+							${param(options.categories.map((category) => toVectorLiteral(category.query)))}::${VECTOR}[],
+							${param(options.categories.map((category) => category.minScore))}::float8[]
+						) WITH ORDINALITY AS q(query, min_score, index)
+						WHERE e.embedding IS NOT NULL
+						GROUP BY e.photo_id, q.index, q.min_score
+					) c
+					WHERE c.score >= c.min_score
+					GROUP BY c.photo_id
+					HAVING count(*) = ${param(options.categories.length)}
+				)`,
+			);
+		}
+
+		const order = options.query ? "s.distance ASC, p.id ASC" : "p.timestamp DESC, p.id DESC";
+
+		const rows: { id: number }[] = await this.repository.query(
+			`SELECT p.id
+			FROM photos p
+			INNER JOIN albums a ON a.id = p.album_id
+			${joins.join("\n")}
+			WHERE ${conditions.join(" AND ")}
+			ORDER BY ${order}
+			LIMIT ${param(options.limit)} OFFSET ${param(options.offset)}`,
+			params,
+		);
+
+		if (!rows.length) return [];
+
+		const photos = await this.repository.find({
+			where: { id: In(rows.map((row) => row.id)) },
+			relations: { album: true },
+		});
+		const photosById = new Map(photos.map((photo) => [photo.id, photo]));
+
+		return rows.flatMap((row) => photosById.get(row.id) ?? []);
 	}
 
 	async getPhoto(id: Photo["id"]) {

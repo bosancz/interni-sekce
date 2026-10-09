@@ -11,6 +11,15 @@ export const PhotosListPermission = new Permission<void>({
 	},
 });
 
+export const PhotosBrowsePermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: PhotoResponse,
+
+	allowed: {
+		vedouci: true,
+	},
+});
+
 export const PhotoDailyPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: PhotoDailyResponse,

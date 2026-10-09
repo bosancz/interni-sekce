@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable, TemplateRef, Type } from "@angular/core";
-import { NavigationCancel, NavigationEnd, NavigationSkipped, Router } from "@angular/router";
+import { NavigationCancel, NavigationEnd, NavigationExtras, NavigationSkipped, Router } from "@angular/router";
 import { AlertController, ModalController, ModalOptions } from "@ionic/angular/standalone";
 import { ComponentProps, TextFieldTypes } from "@ionic/core";
 import { firstValueFrom } from "rxjs";
@@ -96,11 +96,11 @@ export class ModalService {
 		await overlay.present();
 	}
 
-	async dismissAndNavigate(overlay: DismissableOverlay, commands: any[]) {
+	async dismissAndNavigate(overlay: DismissableOverlay, commands: any[], extras?: NavigationExtras) {
 		const settled = this.waitForBackCloseToSettle(overlay);
 		await overlay.dismiss();
 		await settled;
-		return this.router.navigate(commands);
+		return this.router.navigate(commands, extras);
 	}
 
 	private async waitForBackCloseToSettle(overlay: DismissableOverlay): Promise<void> {

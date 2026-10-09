@@ -114,6 +114,17 @@ export class PhotoCategoriesService {
 			.sort((a, b) => b.score - a.score);
 	}
 
+	async getCategoryQueries(categoryIds: PhotoCategory["id"][]) {
+		const [categories, embeddings] = await Promise.all([this.getCategories(), this.getEmbeddings()]);
+		const categoriesById = new Map(categories.map((category) => [category.id, category]));
+
+		return categoryIds.map((categoryId) => {
+			const category = categoriesById.get(categoryId);
+			const query = embeddings.get(categoryId);
+			return category && query ? { query, minScore: category.threshold } : null;
+		});
+	}
+
 	async previewCategory(vector: number[], limit: number) {
 		return this.photoEmbeddingsService.search(vector, { limit });
 	}
