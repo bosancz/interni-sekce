@@ -14,7 +14,7 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { chevronDown, closeOutline } from "ionicons/icons";
+import { chevronDown, closeOutline, pricetagOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -26,6 +26,7 @@ import { PageFooterComponent } from "src/app/shared/components/page-footer/page-
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { GalleryViewSwitchComponent } from "src/app/features/albums/components/gallery-view-switch/gallery-view-switch.component";
 import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { FACE_EMOTIONS } from "src/helpers/face-emotions";
 import { SDK } from "src/sdk";
 
@@ -52,6 +53,7 @@ interface BrowseFilter {
 		PageContentComponent,
 		PhotoGalleryComponent,
 		FilterPillComponent,
+		TooltipDirective,
 		IonToolbar,
 		IonSearchbar,
 		IonButton,
@@ -78,6 +80,11 @@ export class PhotosBrowseComponent {
 	categories = signal<SDK.PhotoCategoryResponseWithLinks[]>([]);
 	years = signal<number[]>([]);
 	members = signal<SDK.MemberResponse[]>([]);
+
+	readonly noPermissionText = "K této akci nemáš oprávnění.";
+
+	searchQuery = computed(() => this.filter().q.trim());
+	canCreateCategory = computed(() => !!this.api.links()?.createPhotoCategory.allowed);
 
 	datePopoverOpen = signal(false);
 	datePopoverEvent = signal<Event | undefined>(undefined);
@@ -147,7 +154,7 @@ export class PhotosBrowseComponent {
 		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
-		addIcons({ chevronDown, closeOutline });
+		addIcons({ chevronDown, closeOutline, pricetagOutline });
 
 		this.route.queryParams.pipe(untilDestroyed(this)).subscribe((params) => this.onParams(params));
 
@@ -165,6 +172,12 @@ export class PhotosBrowseComponent {
 
 	setEmotions(values: string[]) {
 		this.navigate({ emotions: values as SDK.FaceEmotionEnum[] });
+	}
+
+	createCategory() {
+		this.router.navigate(["/admin/fotky/kategorie/nova"], {
+			queryParams: { prompt: this.searchQuery(), zpet: this.router.url },
+		});
 	}
 
 	openDatePopover(event: Event) {

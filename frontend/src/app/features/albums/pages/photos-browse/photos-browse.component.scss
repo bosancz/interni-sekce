@@ -17,13 +17,72 @@
 }
 
 .pb-search {
+	position: relative;
 	flex: 1 1 320px;
 	min-width: 200px;
-	padding: 0;
-	--background: var(--bo-white);
-	--box-shadow: var(--bo-shadow-card);
-	--placeholder-color: var(--bo-muted);
-	--icon-color: var(--bo-muted);
+
+	ion-searchbar {
+		padding: 0;
+		--background: var(--bo-white);
+		--box-shadow: var(--bo-shadow-card);
+		--placeholder-color: var(--bo-muted);
+		--icon-color: var(--bo-muted);
+	}
+
+	&.has-action ion-searchbar ::ng-deep .searchbar-input {
+		padding-inline-end: 210px;
+	}
+}
+
+.pb-create-category {
+	position: absolute;
+	top: 50%;
+	inset-inline-end: 48px;
+	transform: translateY(-50%);
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 30px;
+	padding-inline: 10px 12px;
+	border: 1px solid var(--bo-blue);
+	border-radius: var(--bo-radius-pill);
+	background: var(--bo-blue-tint);
+	color: var(--bo-blue);
+	font-size: 0.8125rem;
+	font-weight: 700;
+	white-space: nowrap;
+	cursor: pointer;
+
+	ion-icon {
+		font-size: 15px;
+	}
+
+	&:hover:not(:disabled) {
+		background: var(--bo-blue);
+		color: var(--bo-white);
+	}
+
+	&:disabled {
+		border-color: var(--bo-line);
+		background: transparent;
+		color: var(--bo-muted);
+		cursor: default;
+	}
+}
+
+@media (max-width: 575.98px) {
+	.pb-search.has-action ion-searchbar ::ng-deep .searchbar-input {
+		padding-inline-end: 96px;
+	}
+
+	.pb-create-category {
+		padding-inline: 8px;
+	}
+
+	.pb-create-category-label {
+		display: none;
+	}
 }
 
 .pb-filters {
