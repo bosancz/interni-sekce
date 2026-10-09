@@ -6,6 +6,9 @@ DATA_DIR = Path(os.environ.get("DATA_DIR", "/data")).resolve()
 WORKER_TASKS = os.environ.get("WORKER_TASKS", "*")
 WORKER_NAME = os.environ.get("WORKER_NAME", "")
 
+ASSETS_DIR = Path(os.environ.get("ASSETS_DIR", Path(__file__).resolve().parent.parent.parent / "backend" / "assets"))
+CHROMIUM_PATH = os.environ.get("CHROMIUM_PATH", "")
+
 MODELS_DIR = Path(os.environ.get("MODELS_DIR", Path(__file__).resolve().parent.parent / "models"))
 
 RESULTS_QUEUE = "worker-results"
@@ -74,6 +77,14 @@ CLIP_IMAGE_MEAN = [0.48145466, 0.4578275, 0.40821073]
 CLIP_IMAGE_STD = [0.26862954, 0.26130258, 0.27577711]
 CLIP_TEXT_MAX_TOKENS = 128
 CLIP_TEXT_MAX_BATCH = 64
+
+REGISTRATION_TEMPLATES_DIR = ASSETS_DIR / "registration-templates"
+REGISTRATION_PAGE_WIDTH_MM = 297
+REGISTRATION_PAGE_HEIGHT_MM = 210
+REGISTRATION_PREVIEW_MARGIN_MM = 11
+REGISTRATION_PREVIEW_SCALE = 1.5
+REGISTRATION_PREVIEW_QUALITY = 82
+REGISTRATION_TIMEOUT_MS = 20_000
 
 
 def task_queue(task: str) -> str:
