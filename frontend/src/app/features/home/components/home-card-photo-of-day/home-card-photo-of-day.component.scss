@@ -49,6 +49,22 @@
 	color: var(--bo-muted);
 	font-size: 0.875rem;
 
+	.source {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		margin-inline-start: auto;
+	}
+
+	.leaders a {
+		color: inherit;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
 	.album {
 		display: inline-flex;
 		align-items: center;
