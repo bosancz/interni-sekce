@@ -53,6 +53,14 @@
 								}
 							</ion-label>
 						</ion-item>
+						@if (photo()!.album; as album) {
+							<ion-item button [detail]="false" (click)="openAlbum(album.id)">
+								<ion-label>
+									<h3>Album</h3>
+									<p>{{ album.name }}</p>
+								</ion-label>
+							</ion-item>
+						}
 						<ion-item [boTooltip]="photo()!.name">
 							<ion-label>
 								<h3>Název</h3>
@@ -271,6 +279,17 @@
 
 	@if (photo()) {
 		<ion-toolbar class="bottom-toolbar" [class.controls-hidden]="!controlsVisible()">
+			@if (photo()!.album; as album) {
+				<div class="people-bar">
+					<ion-chip outline (click)="openAlbum(album.id)" [boTooltip]="'Otevřít album'">
+						<ion-icon name="albums-outline"></ion-icon>
+						<ion-label
+							>{{ album.name
+							}}{{ album.dateFrom ? " (" + (album.dateFrom | date: "y") + ")" : "" }}</ion-label
+						>
+					</ion-chip>
+				</div>
+			}
 			@if (assignedFaces().length) {
 				<div class="people-bar">
 					@for (face of assignedFaces(); track face.id) {
