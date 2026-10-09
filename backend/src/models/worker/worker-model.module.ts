@@ -7,6 +7,7 @@ import { BackendScheduleProcessor } from "./processors/backend-schedule.processo
 import { WorkerResultsProcessor } from "./processors/worker-results.processor";
 import { FacesDetectionService } from "./services/faces-detection.service";
 import { PhotoContentService } from "./services/photo-content.service";
+import { ServerStatsService } from "./services/server-stats.service";
 import { WorkersService } from "./services/workers.service";
 import { BACKEND_SCHEDULE_QUEUE, WORKER_RESULTS_QUEUE, WORKER_TASK_QUEUE, WorkerTasks } from "./worker-queues";
 
@@ -26,10 +27,11 @@ export class WorkerModelModule {
 				),
 				AlbumsModelModule,
 			],
-			exports: [FacesDetectionService, PhotoContentService, WorkersService],
+			exports: [FacesDetectionService, PhotoContentService, ServerStatsService, WorkersService],
 			providers: [
 				FacesDetectionService,
 				PhotoContentService,
+				ServerStatsService,
 				WorkersService,
 				...(options.processors
 					? [BackendScheduleProcessor, WorkerResultsProcessor]

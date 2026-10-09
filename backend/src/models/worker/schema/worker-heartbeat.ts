@@ -18,6 +18,7 @@ export interface WorkerHeartbeat {
 	current: WorkerCurrentJob | null;
 	cpus: number;
 	cpuLimit: number | null;
+	cpuUsage?: number | null;
 	memoryLimit: number | null;
 	memoryUsage: number | null;
 	processed: number;

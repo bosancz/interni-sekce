@@ -8088,6 +8088,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'listWorkers': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getServerStats': AcLink;
     }
     
         /**
@@ -8126,6 +8132,44 @@ export namespace SDK {
          * @memberof RootResponseWithLinks
          */
         '_links': RootResponseLinks;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface ServerStatsResponse
+     */
+    export interface ServerStatsResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof ServerStatsResponse
+         */
+        'cpus': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof ServerStatsResponse
+         */
+        'cpuUsage'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof ServerStatsResponse
+         */
+        'memoryTotal': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof ServerStatsResponse
+         */
+        'memoryAvailable': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof ServerStatsResponse
+         */
+        'uptime': number;
     }
     
         /**
@@ -8942,6 +8986,12 @@ export namespace SDK {
          * @memberof WorkerResponse
          */
         'cpuLimit'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof WorkerResponse
+         */
+        'cpuUsage'?: number | null;
         /**
          * 
          * @type {number}
@@ -18504,6 +18554,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for listFaceDetectionLog operation in WorkerApi.
      * @export
@@ -19023,6 +19077,44 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<PhotoContentSummaryResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof WorkerApi
+         */
+        
+        public async getServerStats(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/workers/server`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<ServerStatsResponse>(axiosRequestConfig);
         }
     
         /**

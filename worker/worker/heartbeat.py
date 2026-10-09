@@ -3,13 +3,14 @@ import json
 import logging
 import os
 import socket
+import time
 from datetime import datetime, timezone
 from typing import Any, Iterator
 
 import redis.asyncio as redis
 
 from . import config
-from .resources import available_cpus, cpu_limit, memory_limit, memory_usage
+from .resources import available_cpus, cpu_limit, cpu_time, memory_limit, memory_usage
 
 logger = logging.getLogger("heartbeat")
 
@@ -51,6 +52,7 @@ class Heartbeat:
             "current": None,
             "cpus": available_cpus(),
             "cpuLimit": cpu_limit(),
+            "cpuUsage": None,
             "memoryLimit": memory_limit(),
             "memoryUsage": None,
             "processed": 0,
@@ -60,6 +62,7 @@ class Heartbeat:
             "updatedAt": _now(),
         }
         self._task: asyncio.Task | None = None
+        self._cpu_sample = (time.monotonic(), cpu_time())
 
     def _claim_key(self, name: str) -> str:
         return f"{config.NAME_CLAIM_PREFIX}{name}"
@@ -85,7 +88,16 @@ class Heartbeat:
                 return
         raise RuntimeError("No free worker name")
 
+    def _cpu_usage(self) -> float | None:
+        now, used = time.monotonic(), cpu_time()
+        previous_now, previous_used = self._cpu_sample
+        self._cpu_sample = (now, used)
+        if now <= previous_now:
+            return None
+        return round(max(0.0, used - previous_used) / (now - previous_now), 3)
+
     async def publish(self) -> None:
+        self.state["cpuUsage"] = self._cpu_usage()
         self.state["memoryUsage"] = memory_usage()
         self.state["updatedAt"] = _now()
         try:

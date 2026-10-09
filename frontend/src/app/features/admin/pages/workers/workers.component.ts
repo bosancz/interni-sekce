@@ -42,6 +42,7 @@ const STATUS_LABELS: Record<SDK.WorkerStatusEnum, { label: string; pill: string 
 })
 export class WorkersComponent implements OnInit, OnDestroy {
 	workers = signal<SDK.WorkerResponse[] | undefined>(undefined);
+	server = signal<SDK.ServerStatsResponse | undefined>(undefined);
 	now = signal(Date.now());
 
 	statusLabels = STATUS_LABELS;
@@ -66,7 +67,12 @@ export class WorkersComponent implements OnInit, OnDestroy {
 
 	async load() {
 		try {
-			this.workers.set(await this.api.WorkerApi.listWorkers().then((res) => res.data));
+			const [workers, server] = await Promise.all([
+				this.api.WorkerApi.listWorkers().then((res) => res.data),
+				this.api.WorkerApi.getServerStats().then((res) => res.data),
+			]);
+			this.workers.set(workers);
+			this.server.set(server);
 			this.now.set(Date.now());
 		} catch {
 			this.toastService.toast("Nepodařilo se načíst workery.", { color: "warning" });
@@ -74,8 +80,14 @@ export class WorkersComponent implements OnInit, OnDestroy {
 	}
 
 	cpuLabel(worker: SDK.WorkerResponse) {
-		if (worker.cpuLimit) return `${formatNumber(worker.cpuLimit)} (${worker.cpus} vláken)`;
-		return `bez limitu (${worker.cpus} jader)`;
+		const usage = worker.cpuUsage != null ? formatNumber(Math.round(worker.cpuUsage * 100) / 100) : "—";
+		if (worker.cpuLimit) return `${usage} / ${formatNumber(worker.cpuLimit)} (${worker.cpus} vláken)`;
+		return `${usage} / bez limitu (${worker.cpus} jader)`;
+	}
+
+	cpuPercent(worker: SDK.WorkerResponse) {
+		if (worker.cpuUsage == null) return null;
+		return Math.min(100, Math.round((worker.cpuUsage / (worker.cpuLimit || worker.cpus)) * 100));
 	}
 
 	memoryLabel(worker: SDK.WorkerResponse) {
@@ -89,8 +101,25 @@ export class WorkersComponent implements OnInit, OnDestroy {
 		return Math.min(100, Math.round((worker.memoryUsage / worker.memoryLimit) * 100));
 	}
 
+	serverCpuLabel(server: SDK.ServerStatsResponse) {
+		const usage = server.cpuUsage != null ? `${Math.round(server.cpuUsage * 100)} %` : "—";
+		return `${usage} z ${server.cpus} jader`;
+	}
+
+	serverMemoryLabel(server: SDK.ServerStatsResponse) {
+		return `${formatBytes(server.memoryTotal - server.memoryAvailable)} / ${formatBytes(server.memoryTotal)}`;
+	}
+
+	serverMemoryPercent(server: SDK.ServerStatsResponse) {
+		return Math.min(100, Math.round(((server.memoryTotal - server.memoryAvailable) / server.memoryTotal) * 100));
+	}
+
 	duration(from: string) {
-		const seconds = Math.max(0, Math.round((this.now() - new Date(from).getTime()) / 1000));
+		return this.seconds((this.now() - new Date(from).getTime()) / 1000);
+	}
+
+	seconds(value: number) {
+		const seconds = Math.max(0, Math.round(value));
 		if (seconds < 60) return `${seconds} s`;
 		const minutes = Math.floor(seconds / 60);
 		if (minutes < 60) return `${minutes} min ${seconds % 60} s`;
