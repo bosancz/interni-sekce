@@ -26,18 +26,24 @@
 					}
 
 					<p class="meta">
-						<span>
+						@if (daily.leaders.length) {
+							<span class="leaders">
+								@for (leader of daily.leaders; track leader.id; let last = $last) {
+									<a [routerLink]="['/databaze/clenove', leader.id]">{{ leader.nickname }}</a
+									>{{ last ? "" : ", " }}
+								}
+							</span>
+						}
+						<span class="source">
 							{{ photo.timestamp | date: "d. M. y" }}
-							@if (leaders()) {
-								· {{ leaders() }}
+							@if (photo.album) {
+								·
+								<a class="album" [routerLink]="['/galerie', photo.album.id]">
+									<ion-icon name="images-outline"></ion-icon>
+									{{ photo.album.name }}
+								</a>
 							}
 						</span>
-						@if (photo.album) {
-							<a class="album" [routerLink]="['/galerie', photo.album.id]">
-								<ion-icon name="images-outline"></ion-icon>
-								{{ photo.album.name }}
-							</a>
-						}
 					</p>
 				}
 			} @else {
