@@ -5,13 +5,28 @@
 <bo-page-content>
 	<ion-toolbar class="pb-toolbar">
 		<div class="pb-bar">
-			<ion-searchbar
-				class="pb-search"
-				placeholder="Co je na fotce? Např. děti u ohně nebo nine seat canoe"
-				[debounce]="600"
-				[value]="filter().q"
-				(ionInput)="setSearch($any($event).detail.value)"
-			></ion-searchbar>
+			<div class="pb-search" [class.has-action]="searchQuery()">
+				<ion-searchbar
+					placeholder="Co je na fotce? Např. děti u ohně nebo nine seat canoe"
+					[debounce]="600"
+					[value]="filter().q"
+					(ionInput)="setSearch($any($event).detail.value)"
+				></ion-searchbar>
+				@if (searchQuery()) {
+					<button
+						type="button"
+						class="pb-create-category"
+						[disabled]="!canCreateCategory()"
+						[boTooltip]="
+							canCreateCategory() ? 'Vytvořit kategorii z „' + searchQuery() + '“' : noPermissionText
+						"
+						(click)="createCategory()"
+					>
+						<ion-icon name="pricetag-outline" aria-hidden="true"></ion-icon>
+						<span class="pb-create-category-label">Vytvořit kategorii</span>
+					</button>
+				}
+			</div>
 
 			<div class="pb-filters">
 				<button
