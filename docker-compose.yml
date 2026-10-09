@@ -38,7 +38,7 @@ services:
     environment:
       REDIS_URL: redis://redis:6379
       DATA_DIR: /data
-      WORKER_TASKS: embed-text
+      WORKER_TASKS: embed-text,photo-thumbnails
     volumes:
       - data:/data:ro
     cpus: 1

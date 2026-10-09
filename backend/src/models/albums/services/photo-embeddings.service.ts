@@ -27,6 +27,7 @@ export class PhotoEmbeddingsService {
 		return this.photos
 			.createQueryBuilder("photos")
 			.where("NOT EXISTS (SELECT 1 FROM photo_embeddings e WHERE e.photo_id = photos.id)")
+			.andWhere("photos.thumbnails_at IS NOT NULL")
 			.orderBy("photos.timestamp", "DESC")
 			.addOrderBy("photos.id", "DESC")
 			.take(limit)

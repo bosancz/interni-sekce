@@ -4,7 +4,6 @@ import {
 	Controller,
 	Delete,
 	Get,
-	Logger,
 	NotFoundException,
 	Param,
 	ParseIntPipe,
@@ -26,8 +25,7 @@ import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { PhotoCategoriesService } from "src/models/albums/services/photo-categories.service";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
-import { FacesDetectionService } from "src/models/worker/services/faces-detection.service";
-import { PhotoContentService } from "src/models/worker/services/photo-content.service";
+import { PhotoThumbnailsService } from "src/models/worker/services/photo-thumbnails.service";
 import {
 	PhotoCreatePermission,
 	PhotoDailyPermission,
@@ -52,14 +50,11 @@ import {
 @AcController()
 @ApiTags("Photo gallery")
 export class PhotosController {
-	private logger = new Logger(PhotosController.name);
-
 	constructor(
 		private photos: PhotosRepository,
 		private photosFiles: PhotosFilesService,
 		private photoCategoriesService: PhotoCategoriesService,
-		private facesDetectionService: FacesDetectionService,
-		private photoContentService: PhotoContentService,
+		private photoThumbnailsService: PhotoThumbnailsService,
 	) {}
 
 	@Get()
@@ -91,14 +86,7 @@ export class PhotosController {
 
 		const photo = await this.photos.createPhoto(body.albumId, file, req.user?.userId ?? null);
 
-		this.facesDetectionService
-			.enqueuePhotos([photo])
-			.catch((err) => this.logger.error(`Failed to queue photo ${photo.id} for face detection.`, err));
-		this.photoContentService
-			.enqueuePhotos([photo])
-			.catch((err) => this.logger.error(`Failed to queue photo ${photo.id} for content recognition.`, err));
-
-		return photo;
+		return this.photoThumbnailsService.processUploadedPhoto(photo);
 	}
 
 	@Get("daily")
@@ -188,6 +176,7 @@ export class PhotosController {
 		try {
 			await this.photosFiles.fileExists(path);
 		} catch {
+			if (photo.thumbnailsAt === null) res.setHeader("Cache-Control", "no-store");
 			throw new NotFoundException("Image file not found.");
 		}
 

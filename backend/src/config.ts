@@ -96,6 +96,10 @@ const photos = {
 		big: { width: 1280, height: 1024 },
 		small: { width: 1024, height: 340 },
 	},
+	thumbnailsCron: process.env["PHOTOS_THUMBNAILS_CRON"] ?? "30 0 * * *",
+	thumbnailsBatchSize: process.env["PHOTOS_THUMBNAILS_BATCH_SIZE"]
+		? parseInt(process.env["PHOTOS_THUMBNAILS_BATCH_SIZE"], 10)
+		: 1000,
 };
 
 const GOOGLE_CLIENT_ID = "249555539983-j8rvff7bovgnecsmjffe0a3dj55j33hh.apps.googleusercontent.com";

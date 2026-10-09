@@ -241,6 +241,7 @@ export class PhotoFacesService {
 		return this.photos
 			.createQueryBuilder("photos")
 			.where("photos.faces_detected_at IS NULL")
+			.andWhere("photos.thumbnails_at IS NOT NULL")
 			.orderBy("photos.timestamp", "DESC")
 			.addOrderBy("photos.id", "DESC")
 			.take(limit)

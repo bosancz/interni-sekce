@@ -6,6 +6,7 @@ import { PhotoFace } from "./photo-face.entity";
 @Entity("photos")
 @Index("IDX_photos_album_id", ["albumId"])
 @Index("IDX_photos_faces_pending", ["timestamp", "id"], { where: "faces_detected_at IS NULL" })
+@Index("IDX_photos_thumbnails_pending", ["id"], { where: "thumbnails_at IS NULL" })
 export class Photo {
 	@PrimaryGeneratedColumn()
 	id!: number;
@@ -38,6 +39,9 @@ export class Photo {
 	@Column({ type: "text", nullable: true }) caption!: string | null;
 	@Column({ type: "varchar", array: true, nullable: true }) tags!: string[] | null;
 	@Column({ type: "varchar", nullable: true }) bg!: string | null;
+
+	@Column({ type: "timestamp with time zone", nullable: true }) thumbnailsAt!: Date | null;
+	@Column({ type: "varchar", nullable: true }) thumbnailsError?: string | null;
 
 	@Column({ type: "timestamp with time zone", nullable: true }) facesDetectedAt?: Date | null;
 	@Column({ type: "varchar", nullable: true }) facesModel?: string | null;

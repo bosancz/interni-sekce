@@ -61,10 +61,14 @@
 			@if (albums(); as albumList) {
 				@for (album of albumList; track album.id) {
 					<a class="albums-grid-item" [routerLink]="rowLink(album)">
-						<div class="albums-grid-photo" [class.albums-grid-photo-unpublished]="album.status !== 'public'">
+						<div
+							class="albums-grid-photo"
+							[class.albums-grid-photo-unpublished]="album.status !== 'public'"
+						>
 							@if (album.coverPhoto) {
 								<img
 									[src]="album.coverPhoto | photoImageUrl: 'small'"
+									[boPhotoPending]="album.coverPhoto"
 									[style.background-color]="album.coverPhoto.bg"
 									[alt]="album.name"
 									loading="lazy"

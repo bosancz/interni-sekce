@@ -8,7 +8,11 @@
 
 		@if (titlePhoto(); as photo) {
 			<div class="title-photo d-none d-lg-block" [style.width.px]="titlePhotoWidth()">
-				<img [src]="photo | photoImageUrl: 'big'" [style.background-color]="photo.bg" />
+				<img
+					[src]="photo | photoImageUrl: 'big'"
+					[boPhotoPending]="photo"
+					[style.background-color]="photo.bg"
+				/>
 			</div>
 		}
 	</div>
