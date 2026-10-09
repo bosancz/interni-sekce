@@ -1,28 +1,25 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { setImmediate } from "timers/promises";
 import { Member } from "src/models/members/entities/member.entity";
 import { FaceMatchingSettingsRepository } from "src/models/settings/repositories/face-matching-settings.repository";
 import { DataSource, In } from "typeorm";
 import { PhotoFace } from "../entities/photo-face.entity";
 import { Photo } from "../entities/photo.entity";
 import {
+	decideFaceMatches,
 	FACE_MATCH_SETTINGS,
 	FaceMatch,
 	FaceMatchSettings,
-	FaceReference,
 	FacesMatchStats,
 	MatchFace,
-	matchPhotoFaces,
 	pickFaceSuggestions,
-	prepareReferences,
-	toDescriptor,
 } from "../helpers/face-matching";
 import { analyzeFaceMatching, FaceMatchDecision } from "../helpers/face-matching-analysis";
 import { FacesMatchTrigger, PhotoFaceAssignment } from "../schema/detected-faces";
+import { VectorFaceReference } from "../helpers/face-matching-worker";
+import { FaceMatchingWorkerService } from "./face-matching-worker.service";
 
 const PHOTOS_CHUNK = 500;
 const FACE_CHANGES_DEBOUNCE_MS = 2000;
-const EVENT_LOOP_SLICE_MS = 20;
 
 interface FaceMatchUpdate {
 	id: number;
@@ -34,9 +31,8 @@ interface FaceMatchUpdate {
 	change: "assigned" | "cleared" | null;
 }
 
-type MatchFaceRow = Omit<MatchFace, "descriptor"> & {
+type MatchFaceRow = MatchFace & {
 	photoId: number;
-	descriptor: unknown;
 	candidateMemberId: number | null;
 	candidateScore: number | null;
 	candidateSecondScore: number | null;
@@ -75,6 +71,7 @@ export class PhotoFacesMatchingService {
 	constructor(
 		private dataSource: DataSource,
 		private faceMatchingSettings: FaceMatchingSettingsRepository,
+		private faceMatchingWorkerService: FaceMatchingWorkerService,
 	) {}
 
 	async getSettings(): Promise<FaceMatchSettings> {
@@ -179,8 +176,12 @@ export class PhotoFacesMatchingService {
 		return run;
 	}
 
-	matchPhoto(photoId: Photo["id"]) {
-		return this.matchPhotos([photoId]);
+	async matchPhoto(photoId: Photo["id"]) {
+		try {
+			await this.matchPhotos([photoId]);
+		} catch (err) {
+			this.logger.warn(`Matching faces on photo ${photoId} failed: ${err}`);
+		}
 	}
 
 	onFaceChanged(face: { id: PhotoFace["id"]; photoId: Photo["id"] }, previousMemberId: Member["id"] | null) {
@@ -261,16 +262,12 @@ export class PhotoFacesMatchingService {
 		return run;
 	}
 
-	private async loadReferences(): Promise<FaceReference[]> {
-		const rows: { memberId: number; descriptor: unknown }[] = await this.dataSource.query(
-			`SELECT member_id AS "memberId", descriptor::real[] AS "descriptor" FROM photo_faces
+	private async loadReferences(): Promise<VectorFaceReference[]> {
+		return this.dataSource.query(
+			`SELECT member_id AS "memberId", vector_send(descriptor) AS "descriptor" FROM photo_faces
 			WHERE assignment = $1 AND member_id IS NOT NULL AND descriptor IS NOT NULL`,
 			[PhotoFaceAssignment.manual],
 		);
-
-		return rows
-			.map((row) => ({ memberId: row.memberId, descriptor: toDescriptor(row.descriptor) }))
-			.filter((row): row is FaceReference => !!row.descriptor);
 	}
 
 	private async matchPhotos(photoIds: number[], progress?: FacesMatchProgress): Promise<FacesMatchStats> {
@@ -279,52 +276,52 @@ export class PhotoFacesMatchingService {
 		if (!photoIds.length) return stats;
 
 		const settings = await this.getSettings();
-		const references = prepareReferences(await this.loadReferences());
 
-		for (let i = 0; i < photoIds.length; i += PHOTOS_CHUNK) {
-			const rows: MatchFaceRow[] = await this.dataSource.query(
-				`SELECT id, photo_id AS "photoId", member_id AS "memberId", assignment,
-					match_score AS "matchScore", score AS "detectionScore", descriptor::real[] AS "descriptor",
-					candidate_member_id AS "candidateMemberId", candidate_score AS "candidateScore",
-					candidate_second_score AS "candidateSecondScore"
-				FROM photo_faces WHERE photo_id = ANY($1)`,
-				[photoIds.slice(i, i + PHOTOS_CHUNK)],
-			);
+		const workerRun = await this.faceMatchingWorkerService.start(await this.loadReferences());
 
-			const byPhoto = new Map<number, (MatchFaceRow & MatchFace)[]>();
-			for (const row of rows) {
-				const faces = byPhoto.get(row.photoId) ?? [];
-				faces.push({ ...row, descriptor: toDescriptor(row.descriptor) });
-				byPhoto.set(row.photoId, faces);
-			}
+		try {
+			for (let i = 0; i < photoIds.length; i += PHOTOS_CHUNK) {
+				const rows: MatchFaceRow[] = await this.dataSource.query(
+					`SELECT id, photo_id AS "photoId", member_id AS "memberId", assignment,
+						match_score AS "matchScore", score AS "detectionScore", vector_send(descriptor) AS "descriptor",
+						candidate_member_id AS "candidateMemberId", candidate_score AS "candidateScore",
+						candidate_second_score AS "candidateSecondScore"
+					FROM photo_faces WHERE photo_id = ANY($1)`,
+					[photoIds.slice(i, i + PHOTOS_CHUNK)],
+				);
 
-			const updates: FaceMatchUpdate[] = [];
-
-			let yieldedAt = Date.now();
-
-			for (const faces of byPhoto.values()) {
-				if (Date.now() - yieldedAt > EVENT_LOOP_SLICE_MS) {
-					await setImmediate();
-					yieldedAt = Date.now();
+				const byPhoto = new Map<number, MatchFaceRow[]>();
+				for (const row of rows) {
+					const faces = byPhoto.get(row.photoId) ?? [];
+					faces.push(row);
+					byPhoto.set(row.photoId, faces);
 				}
 
-				const results = matchPhotoFaces(faces, references, settings);
+				const candidates = await workerRun.findPhotosCandidates(byPhoto.values());
 
-				for (const face of faces) {
-					const result = results.get(face.id);
-					if (!result) continue;
+				const updates: FaceMatchUpdate[] = [];
 
-					const update = this.getUpdate(face, result.candidate, result.match);
-					if (update) updates.push(update);
+				for (const faces of byPhoto.values()) {
+					const results = decideFaceMatches(faces, candidates, settings);
+
+					for (const face of faces) {
+						const result = results.get(face.id);
+						if (!result) continue;
+
+						const update = this.getUpdate(face, result.candidate, result.match);
+						if (update) updates.push(update);
+					}
 				}
-			}
 
-			const updated = await this.saveMatches(updates);
-			for (const update of updates) {
-				if (update.change && updated.has(update.id)) stats[update.change]++;
-			}
+				const updated = await this.saveMatches(updates);
+				for (const update of updates) {
+					if (update.change && updated.has(update.id)) stats[update.change]++;
+				}
 
-			if (progress) progress.processed = Math.min(photoIds.length, i + PHOTOS_CHUNK);
+				if (progress) progress.processed = Math.min(photoIds.length, i + PHOTOS_CHUNK);
+			}
+		} finally {
+			await workerRun.close().catch(() => undefined);
 		}
 
 		return stats;

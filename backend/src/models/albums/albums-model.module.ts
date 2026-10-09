@@ -1,8 +1,10 @@
+import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { FilesModule } from "src/models/files/files.module";
 import { NotificationsModelModule } from "src/models/notifications/notifications-model.module";
 import { SettingsModelModule } from "src/models/settings/settings-model.module";
+import { WORKER_TASK_QUEUE, WorkerTasks } from "src/models/worker/worker-queues";
 import { CleanAlbumsMetadataCommand } from "./commands/clean-album-metadata.command";
 import { FacesMatchCommand } from "./commands/faces-match.command";
 import { FacesNotifyCommand } from "./commands/faces-notify.command";
@@ -18,6 +20,7 @@ import { PhotosRepository } from "./repositories/photos.repository";
 import { AlbumsMetadataService } from "./services/albums-metadata.service";
 import { PhotoCategoriesService } from "./services/photo-categories.service";
 import { PhotoEmbeddingsService } from "./services/photo-embeddings.service";
+import { FaceMatchingWorkerService } from "./services/face-matching-worker.service";
 import { PhotoFacesMatchingService } from "./services/photo-faces-matching.service";
 import { PhotoFacesNotificationsService } from "./services/photo-faces-notifications.service";
 import { PhotoFacesService } from "./services/photo-faces.service";
@@ -30,6 +33,7 @@ import { PhotosMaintenanceService } from "./services/photos-maintenance.service"
 		FilesModule,
 		NotificationsModelModule,
 		SettingsModelModule,
+		BullModule.registerQueue({ name: WORKER_TASK_QUEUE(WorkerTasks.matchFaces) }),
 	],
 	providers: [
 		AlbumsRepository,
@@ -37,6 +41,7 @@ import { PhotosMaintenanceService } from "./services/photos-maintenance.service"
 		PhotoCategoriesService,
 		PhotoEmbeddingsService,
 		PhotoFacesService,
+		FaceMatchingWorkerService,
 		PhotoFacesMatchingService,
 		PhotoFacesNotificationsService,
 		PhotosRepository,

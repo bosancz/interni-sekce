@@ -62,6 +62,8 @@ FACES_MAX_IMAGE_SIDE = 1600
 FACES_LARGE_SCALES = [640, 320]
 FACES_LARGE_PADDING = 0.25
 
+MATCH_FACES_BLOCK = 2048
+
 CLIP_VISION_MODEL = MODELS_DIR / "clip-vit-base-patch32-vision.onnx"
 CLIP_TEXT_MODEL = MODELS_DIR / "clip-vit-base-patch32-multilingual-text.onnx"
 CLIP_TEXT_TOKENIZER = MODELS_DIR / "clip-vit-base-patch32-multilingual-tokenizer.json"
