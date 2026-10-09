@@ -13,6 +13,9 @@
 			(keydown.enter)="toggleTag(tag)"
 			(keydown.space)="$event.preventDefault(); toggleTag(tag)"
 		>
+			@if (hasTag(tag)) {
+				<ion-icon name="checkmark-outline"></ion-icon>
+			}
 			#{{ tag }}
 		</ion-chip>
 	}

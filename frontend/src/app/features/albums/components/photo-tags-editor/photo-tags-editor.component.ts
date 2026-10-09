@@ -1,7 +1,7 @@
 import { Component, computed, inject, input, output } from "@angular/core";
 import { AlertController, IonChip, IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { addOutline } from "ionicons/icons";
+import { addOutline, checkmarkOutline } from "ionicons/icons";
 
 @Component({
 	selector: "bo-photo-tags-editor",
@@ -31,7 +31,7 @@ export class PhotoTagsEditorComponent {
 	});
 
 	constructor() {
-		addIcons({ addOutline });
+		addIcons({ addOutline, checkmarkOutline });
 	}
 
 	hasTag(tag: string) {
