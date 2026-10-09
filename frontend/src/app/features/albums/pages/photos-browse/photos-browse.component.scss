@@ -51,7 +51,19 @@
 	}
 }
 
+::ng-deep .pb-date-popover {
+	--max-height: 90vh;
+}
+
 ::ng-deep .pb-date-panel {
+	.pb-years {
+		max-height: 162px;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		padding: 1px;
+		margin: -1px;
+	}
+
 	.pb-date-inputs {
 		display: flex;
 		flex-direction: column;

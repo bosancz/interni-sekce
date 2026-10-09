@@ -24,6 +24,7 @@ export interface BrowsePhotosOptions {
 	dateTill?: string;
 	categories?: { query: ArrayLike<number>; minScore: number }[];
 	memberIds?: number[];
+	emotions?: FaceEmotion[];
 	limit: number;
 	offset: number;
 	timezone?: string;
@@ -88,15 +89,22 @@ export class PhotosRepository {
 			);
 		}
 
+		const emotions = options.emotions?.length ? [...new Set(options.emotions)] : null;
+
 		if (options.memberIds?.length) {
 			const memberIds = [...new Set(options.memberIds)];
 			conditions.push(
 				`p.id IN (
 					SELECT f.photo_id FROM photo_faces f
 					WHERE f.member_id = ANY(${param(memberIds)}::int[])
+					${emotions ? `AND f.emotion = ANY(${param(emotions)}::varchar[])` : ""}
 					GROUP BY f.photo_id
 					HAVING count(DISTINCT f.member_id) = ${param(memberIds.length)}
 				)`,
+			);
+		} else if (emotions) {
+			conditions.push(
+				`p.id IN (SELECT f.photo_id FROM photo_faces f WHERE f.emotion = ANY(${param(emotions)}::varchar[]))`,
 			);
 		}
 

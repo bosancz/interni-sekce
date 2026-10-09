@@ -2,10 +2,14 @@ import { Transform } from "class-transformer";
 
 export function EnsureArray(options: { split?: string } = {}): PropertyDecorator {
 	return Transform((param) => {
+		const original = param.obj[param.key];
 		if (param.value === undefined) return undefined;
-		if (param.value === "") return [];
+		if (original === "") return [];
 		if (Array.isArray(param.value)) return param.value.filter((v) => v !== undefined && v !== "");
-		if (typeof param.value === "string" && options.split) return param.value.split(options.split);
+		if (typeof original === "string" && options.split) {
+			const values = original.split(options.split).filter((v) => v !== "");
+			return typeof param.value === "number" ? values.map(Number) : values;
+		}
 		return [param.value];
 	});
 }

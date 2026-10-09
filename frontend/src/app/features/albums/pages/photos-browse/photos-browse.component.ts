@@ -26,6 +26,7 @@ import { PageFooterComponent } from "src/app/shared/components/page-footer/page-
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { GalleryViewSwitchComponent } from "src/app/features/albums/components/gallery-view-switch/gallery-view-switch.component";
 import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
+import { FACE_EMOTIONS } from "src/helpers/face-emotions";
 import { SDK } from "src/sdk";
 
 const PAGE_SIZE = 60;
@@ -36,6 +37,7 @@ interface BrowseFilter {
 	dateTill: string;
 	categoryIds: number[];
 	memberIds: number[];
+	emotions: SDK.FaceEmotionEnum[];
 }
 
 @UntilDestroy()
@@ -62,7 +64,14 @@ interface BrowseFilter {
 	],
 })
 export class PhotosBrowseComponent {
-	filter = signal<BrowseFilter>({ q: "", dateFrom: "", dateTill: "", categoryIds: [], memberIds: [] });
+	filter = signal<BrowseFilter>({
+		q: "",
+		dateFrom: "",
+		dateTill: "",
+		categoryIds: [],
+		memberIds: [],
+		emotions: [],
+	});
 	photos = signal<SDK.PhotoResponseWithLinks[] | undefined>(undefined);
 	hasMore = signal(false);
 
@@ -78,7 +87,10 @@ export class PhotosBrowseComponent {
 	);
 	selectedCategories = computed(() => this.filter().categoryIds.map(String));
 
-	memberIds = computed(() => this.filter().memberIds);
+	emotionOptions: FilterPillOption[] = Object.entries(FACE_EMOTIONS).map(([value, emotion]) => ({
+		value,
+		label: `${emotion.emoji} ${emotion.label}`,
+	}));
 
 	membersLabel = computed(() => {
 		const ids = this.filter().memberIds;
@@ -113,7 +125,8 @@ export class PhotosBrowseComponent {
 			filter.dateFrom ||
 			filter.dateTill ||
 			filter.categoryIds.length ||
-			filter.memberIds.length
+			filter.memberIds.length ||
+			filter.emotions.length
 		);
 	});
 
@@ -150,6 +163,10 @@ export class PhotosBrowseComponent {
 		this.navigate({ categoryIds: values.map(Number) });
 	}
 
+	setEmotions(values: string[]) {
+		this.navigate({ emotions: values as SDK.FaceEmotionEnum[] });
+	}
+
 	openDatePopover(event: Event) {
 		this.datePopoverEvent.set(event);
 		this.datePopoverOpen.set(true);
@@ -170,23 +187,30 @@ export class PhotosBrowseComponent {
 	}
 
 	async selectMembers() {
+		const selectedIds = signal(this.filter().memberIds);
+
 		await this.modalService.componentModal(
 			MemberSelectorModalComponent,
 			{
 				title: "Kdo má být na fotkách?",
 				subtitle: "Ukážou se fotky, na kterých jsou všichni vybraní.",
 				keepOpenAfterSelect: true,
-				selectedIds: this.memberIds,
+				selectedIds,
 				onSelect: (member: SDK.MemberResponse) => {
 					this.members.update((members) => [...members.filter((item) => item.id !== member.id), member]);
-					this.navigate({ memberIds: [...this.filter().memberIds, member.id] });
+					selectedIds.update((ids) => [...ids, member.id]);
 				},
 				onDeselect: (member: SDK.MemberResponse) =>
-					this.navigate({ memberIds: this.filter().memberIds.filter((id) => id !== member.id) }),
-				onClearAll: () => this.navigate({ memberIds: [] }),
+					selectedIds.update((ids) => ids.filter((id) => id !== member.id)),
+				onClearAll: () => selectedIds.set([]),
 			},
 			{ cssClass: "dialog-picker" },
 		);
+
+		const memberIds = selectedIds();
+		const current = this.filter().memberIds;
+		if (memberIds.length !== current.length || memberIds.some((id, i) => id !== current[i]))
+			this.navigate({ memberIds });
 	}
 
 	removeMember(memberId: number) {
@@ -194,7 +218,7 @@ export class PhotosBrowseComponent {
 	}
 
 	clearAll() {
-		this.navigate({ q: "", dateFrom: "", dateTill: "", categoryIds: [], memberIds: [] });
+		this.navigate({ q: "", dateFrom: "", dateTill: "", categoryIds: [], memberIds: [], emotions: [] });
 	}
 
 	selectedMembers = computed(() => {
@@ -225,6 +249,7 @@ export class PhotosBrowseComponent {
 			dateTill: params["do"] ?? "",
 			categoryIds: parseIds(params["kategorie"]),
 			memberIds: parseIds(params["lide"]),
+			emotions: parseEmotions(params["emoce"]),
 		};
 		this.filter.set(filter);
 		this.loadMembers(filter.memberIds);
@@ -241,6 +266,7 @@ export class PhotosBrowseComponent {
 				do: filter.dateTill || null,
 				kategorie: filter.categoryIds.length ? filter.categoryIds.join(",") : null,
 				lide: filter.memberIds.length ? filter.memberIds.join(",") : null,
+				emoce: filter.emotions.length ? filter.emotions.join(",") : null,
 			},
 			replaceUrl: true,
 		});
@@ -260,6 +286,7 @@ export class PhotosBrowseComponent {
 				dateTill: filter.dateTill || undefined,
 				categoryIds: filter.categoryIds.length ? filter.categoryIds : undefined,
 				memberIds: filter.memberIds.length ? filter.memberIds : undefined,
+				emotions: filter.emotions.length ? filter.emotions : undefined,
 				limit: PAGE_SIZE,
 				offset: current.length,
 			}).then((res) => res.data);
@@ -322,6 +349,11 @@ function parseIds(value: string | undefined): number[] {
 		.split(",")
 		.map((item) => parseInt(item, 10))
 		.filter((item) => !isNaN(item));
+}
+
+function parseEmotions(value: string | undefined): SDK.FaceEmotionEnum[] {
+	if (!value) return [];
+	return value.split(",").filter((item): item is SDK.FaceEmotionEnum => item in FACE_EMOTIONS);
 }
 
 function formatDate(value: string) {

@@ -44,6 +44,14 @@
 					<ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
 				</button>
 
+				<bo-filter-pill
+					label="Emoce"
+					[columns]="2"
+					[options]="emotionOptions"
+					[selected]="filter().emotions"
+					(selectedChange)="setEmotions($event)"
+				/>
+
 				@if (hasFilter()) {
 					<ion-button fill="clear" size="small" (click)="clearAll()">Zrušit filtry</ion-button>
 				}
@@ -52,7 +60,7 @@
 	</ion-toolbar>
 
 	<ion-popover
-		cssClass="filter-pill-chips-popover"
+		cssClass="filter-pill-chips-popover pb-date-popover"
 		[dismissOnSelect]="false"
 		[isOpen]="datePopoverOpen()"
 		[event]="datePopoverEvent()"
