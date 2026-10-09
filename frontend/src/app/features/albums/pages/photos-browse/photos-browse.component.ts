@@ -139,6 +139,7 @@ export class PhotosBrowseComponent {
 	});
 
 	private loadToken = 0;
+	private loadedFilter?: string;
 
 	constructor(
 		private api: ApiService,
@@ -251,6 +252,10 @@ export class PhotosBrowseComponent {
 			memberIds: parseIds(params["lide"]),
 			emotions: parseEmotions(params["emoce"]),
 		};
+		const key = JSON.stringify(filter);
+		if (key === this.loadedFilter) return;
+		this.loadedFilter = key;
+
 		this.filter.set(filter);
 		this.loadMembers(filter.memberIds);
 		this.load("reset");
