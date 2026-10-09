@@ -135,6 +135,7 @@ export class PhotosController {
 			dateTill: query.dateTill,
 			categories: categories.filter((category) => category !== null),
 			memberIds: query.memberIds,
+			emotions: query.emotions,
 			limit: query.limit ?? BROWSE_LIMIT,
 			offset: query.offset ?? 0,
 		});

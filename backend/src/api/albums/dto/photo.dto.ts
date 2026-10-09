@@ -1,9 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsDateString, IsInt, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
+import { IsDateString, IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { UserResponse } from "src/api/users/dto/user.dto";
 import { Album } from "src/models/albums/entities/album.entity";
+import { FaceEmotion } from "src/models/albums/schema/detected-faces";
 import { EnsureArray } from "src/helpers/validation";
 import { User } from "src/models/users/entities/user.entity";
 import { AlbumResponse } from "./album.dto";
@@ -104,6 +105,12 @@ export class PhotoBrowseQuery {
 	@IsInt({ each: true })
 	@IsOptional()
 	memberIds?: number[];
+
+	@ApiPropertyOptional({ enum: FaceEmotion, enumName: "FaceEmotionEnum", isArray: true })
+	@EnsureArray({ split: "," })
+	@IsEnum(FaceEmotion, { each: true })
+	@IsOptional()
+	emotions?: FaceEmotion[];
 
 	@ApiPropertyOptional() @Type(() => Number) @IsInt() @Min(1) @Max(200) @IsOptional() limit?: number;
 	@ApiPropertyOptional() @Type(() => Number) @IsInt() @Min(0) @IsOptional() offset?: number;

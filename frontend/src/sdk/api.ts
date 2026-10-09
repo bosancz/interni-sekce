@@ -14929,6 +14929,14 @@ export namespace SDK {
          */
         memberIds?: Array<number>
     
+        //emotions
+        /**
+         * 
+         * @type {Array<FaceEmotionEnum>}
+         * @memberof PhotoGalleryApiBrowsePhotos
+         */
+        emotions?: Array<FaceEmotionEnum>
+    
         //limit
         /**
          * 
@@ -15198,6 +15206,10 @@ export namespace SDK {
     
             if (queryParams.memberIds) {
                 requestQueryParameter['memberIds'] = queryParams.memberIds;
+            }
+    
+            if (queryParams.emotions) {
+                requestQueryParameter['emotions'] = queryParams.emotions;
             }
     
             if (queryParams.limit !== undefined) {
