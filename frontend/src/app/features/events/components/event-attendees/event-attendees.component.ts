@@ -302,6 +302,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			MemberSelectorModalComponent,
 			{
 				keepOpenAfterSelect: true,
+				allowCreate: true,
 				roles: type === "leader" ? LEADER_ROLES : undefined,
 				title: type === "leader" ? "Přidat vedoucí" : "Přidat účastníky",
 				subtitle:

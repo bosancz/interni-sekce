@@ -256,7 +256,7 @@ export class FaceReviewCardComponent implements OnInit {
 		try {
 			const member = await this.modalService.componentModal(
 				MemberSelectorModalComponent,
-				{ title: "Kdo je na fotce?", subtitle: "Vyber člověka, kterému obličej patří." },
+				{ title: "Kdo je na fotce?", subtitle: "Vyber člověka, kterému obličej patří.", allowCreate: true },
 				{ cssClass: "dialog-picker" },
 			);
 			if (member) await this.assign(member.id);

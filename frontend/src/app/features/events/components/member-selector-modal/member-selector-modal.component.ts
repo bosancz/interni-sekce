@@ -37,6 +37,7 @@ export class MemberSelectorModalComponent
 {
 	members = input<SDK.MemberResponse[]>([]);
 	keepOpenAfterSelect = false;
+	allowCreate = false;
 	roles?: SDK.MemberRolesEnum[];
 	title = "Vybrat člověka";
 	subtitle?: string;
@@ -57,7 +58,9 @@ export class MemberSelectorModalComponent
 	private modalService = inject(ModalService);
 	private toastService = inject(ToastService);
 
-	canCreate = computed(() => this.members().length === 0 && !!this.api.links()?.createMember?.allowed);
+	canCreate = computed(
+		() => this.allowCreate && this.members().length === 0 && !!this.api.links()?.createMember?.allowed,
+	);
 
 	private allMembers = signal<SDK.MemberResponse[]>([]);
 	private groups = toSignal(this.groupsService.groups, { initialValue: [] as SDK.GroupResponseWithLinks[] });
