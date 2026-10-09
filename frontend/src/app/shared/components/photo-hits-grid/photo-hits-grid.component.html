@@ -1,24 +1,35 @@
-<div class="grid" [class.loading]="loading()">
-	@for (hit of hits(); track hit.photoId; let i = $index) {
-		@if (i === cutoffIndex() && i > 0) {
+<div class="grid" #grid [class.loading]="loading()">
+	@for (entry of entries(); track entry.type === "hit" ? entry.hit.photoId : "gap-" + entry.index) {
+		@if (entry.index === cutoffIndex() && entry.index > 0) {
 			<div class="cutoff">
 				<span>hranice {{ threshold() | number: "1.3-3" }}</span>
 			</div>
 		}
-		<a
-			class="hit"
-			[class.below]="cutoffIndex() >= 0 && i >= cutoffIndex()"
-			[routerLink]="['/galerie', hit.albumId]"
-			[queryParams]="{ photo: hit.photoId }"
-			[boTooltip]="hit.albumName ?? ''"
-		>
-			<img [src]="{ id: hit.photoId } | photoImageUrl: 'small'" loading="lazy" alt="" />
-			@if (showScore()) {
-				<span class="score">{{ hit.score | number: "1.3-3" }}</span>
-			}
-		</a>
+		@if (entry.type === "hit") {
+			<a
+				class="hit"
+				[class.below]="cutoffIndex() >= 0 && entry.index >= cutoffIndex()"
+				[routerLink]="['/galerie', entry.hit.albumId]"
+				[queryParams]="{ photo: entry.hit.photoId }"
+				[boTooltip]="entry.hit.albumName ?? ''"
+			>
+				<img [src]="{ id: entry.hit.photoId } | photoImageUrl: 'small'" loading="lazy" alt="" />
+				@if (showScore()) {
+					<span class="score">{{ entry.hit.score | number: "1.3-3" }}</span>
+				}
+			</a>
+		} @else {
+			<div class="gap">
+				<span class="gap-dots">···</span>
+				<span>{{ entry.count }} {{ entry.count === 1 ? "fotka" : entry.count < 5 ? "fotky" : "fotek" }}</span>
+			</div>
+		}
 	}
 	@if (cutoffIndex() === 0 && hits().length) {
 		<div class="cutoff cutoff-first"><span>žádná fotka nedosáhla hranice</span></div>
+	} @else if (cutoffIndex() === hits().length && hits().length) {
+		<div class="cutoff">
+			<span>hranice {{ threshold() | number: "1.3-3" }} je až za posledním náhledem</span>
+		</div>
 	}
 </div>
