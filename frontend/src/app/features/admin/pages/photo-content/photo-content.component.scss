@@ -9,15 +9,10 @@
 	flex-direction: column;
 	gap: 1.25rem;
 
-	@media (min-width: 1200px) {
+	@media (min-width: 1400px) {
 		display: grid;
-		grid-template-columns: minmax(320px, 1fr) minmax(0, 2fr);
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
 		align-items: start;
-
-		.pc-search {
-			grid-column: 2;
-			grid-row: 1 / span 2;
-		}
 	}
 }
 
@@ -77,21 +72,6 @@
 
 .pc-create {
 	margin: 8px 0 0;
-}
-
-.pc-link {
-	text-decoration: none;
-	color: inherit;
-
-	&:hover {
-		background: var(--bo-card-line);
-	}
-}
-
-.pc-link-icon {
-	vertical-align: middle;
-	margin-left: 6px;
-	color: var(--bo-muted);
 }
 
 .pc-loading {

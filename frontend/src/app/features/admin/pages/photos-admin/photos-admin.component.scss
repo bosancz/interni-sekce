@@ -1,0 +1,73 @@
+.pa-layout {
+	@media (min-width: 992px) {
+		display: flex;
+		align-items: flex-start;
+	}
+}
+
+.pa-menu {
+	flex: 0 0 240px;
+	padding: 16px 0 16px 16px;
+	position: sticky;
+	top: 0;
+
+	ion-list {
+		padding: 0;
+	}
+
+	ion-item {
+		cursor: pointer;
+		--padding-start: 1rem;
+		--padding-end: 1rem;
+		--inner-padding-end: 0;
+		margin-bottom: 0.25rem;
+		border-radius: var(--bo-radius-btn);
+		--border-radius: var(--bo-radius-btn);
+		--color: var(--bo-muted);
+		font-weight: 600;
+
+		&.active {
+			--background: var(--bo-nav-active-bg);
+			--color: var(--bo-nav-active-fg);
+			font-weight: 800;
+		}
+	}
+}
+
+.pa-content {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+ion-tab-bar {
+	justify-content: space-evenly;
+	--background: var(--bo-white);
+	border-top: 1px solid var(--bo-line);
+}
+
+ion-tab-button {
+	--color: var(--bo-muted);
+	--color-selected: var(--bo-nav-active-fg);
+	--background: transparent;
+
+	ion-label {
+		font-family: var(--font-san);
+	}
+
+	&::part(native) {
+		margin: 6px;
+		border-radius: var(--bo-radius-pill);
+		transition:
+			background-color 0.18s ease,
+			color 0.18s ease;
+	}
+
+	&.tab-selected {
+		color: var(--bo-nav-active-fg);
+		font-weight: 700;
+
+		&::part(native) {
+			background: var(--bo-nav-active-bg);
+		}
+	}
+}
