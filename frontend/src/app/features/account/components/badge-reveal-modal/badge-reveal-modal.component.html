@@ -1,0 +1,62 @@
+<bo-modal-layout>
+	<h4 slot="title">{{ items().length > 1 ? "Nové odznaky!" : "Nový odznak!" }}</h4>
+
+	@for (item of [current()]; track index()) {
+		@if (item) {
+			<div class="reveal">
+				<div class="reveal-stage">
+					<div class="reveal-rays"></div>
+					<div class="reveal-glow"></div>
+
+					<div class="reveal-confetti" aria-hidden="true">
+						@for (piece of confetti; track $index) {
+							<span
+								class="piece"
+								[class.round]="piece.round"
+								[style.--x.px]="piece.x"
+								[style.--y.px]="piece.y"
+								[style.--r.deg]="piece.rotate"
+								[style.--d.ms]="piece.delay"
+								[style.background]="piece.color"
+							></span>
+						}
+					</div>
+
+					<div class="reveal-badge">
+						<bo-achievement-badge
+							[icon]="item.badge.icon"
+							[level]="item.level.level"
+							[levels]="item.badge.levels.length"
+							[size]="132"
+						/>
+						<div class="reveal-shine"></div>
+					</div>
+				</div>
+
+				<div class="reveal-text">
+					<div class="reveal-title">{{ title() }}</div>
+					<p class="reveal-description">{{ item.badge.description }}</p>
+				</div>
+
+				@if (items().length > 1) {
+					<div class="reveal-dots">
+						@for (badge of items(); track $index) {
+							<span
+								class="dot"
+								[class.active]="$index === index()"
+								[class.done]="$index < index()"
+							></span>
+						}
+					</div>
+				}
+			</div>
+		}
+	}
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="submit.emit('list')">Vidět všechny</button>
+		<button type="button" class="bm-btn-primary" (click)="next()">
+			{{ isLast() ? "Super!" : "Další" }}
+		</button>
+	</div>
+</bo-modal-layout>

@@ -1,0 +1,153 @@
+:host {
+	--badge-size: 72px;
+	--tone-light: #f7c46a;
+	--tone-mid: #e28f26;
+	--tone-dark: #a8620b;
+	--core-light: #4a58b0;
+	--core-dark: #1c2459;
+	--icon-color: #fff;
+
+	position: relative;
+	display: inline-block;
+	flex: 0 0 auto;
+	width: var(--badge-size);
+	height: calc(var(--badge-size) * 1.12);
+}
+
+.badge-shape {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	filter: drop-shadow(0 3px 6px rgba(31, 36, 48, 0.22));
+
+	&[data-tone="bronze"] {
+		--tone-light: #ecb47f;
+		--tone-mid: #b8743a;
+		--tone-dark: #7a461b;
+	}
+
+	&[data-tone="silver"] {
+		--tone-light: #f1f3f8;
+		--tone-mid: #a9b1c2;
+		--tone-dark: #646c80;
+	}
+
+	&[data-tone="gold"] {
+		--tone-light: #f9cd7a;
+		--tone-mid: #e28f26;
+		--tone-dark: #a2600c;
+	}
+
+	&[data-tone="green"] {
+		--tone-light: #c0dc8c;
+		--tone-mid: #799f3d;
+		--tone-dark: #4a6620;
+	}
+
+	&[data-tone="red"] {
+		--tone-light: #f58a8d;
+		--tone-mid: #d2232a;
+		--tone-dark: #861217;
+	}
+
+	&[data-tone="locked"] {
+		--tone-light: #e6e8f0;
+		--tone-mid: #c9cdd9;
+		--tone-dark: #a3a8b8;
+		--core-light: #d7dbe6;
+		--core-dark: #b9bfcf;
+		filter: none;
+	}
+}
+
+.stop-light {
+	stop-color: var(--tone-light);
+}
+
+.stop-mid {
+	stop-color: var(--tone-mid);
+}
+
+.stop-dark {
+	stop-color: var(--tone-dark);
+}
+
+.core-light {
+	stop-color: var(--core-light);
+}
+
+.core-dark {
+	stop-color: var(--core-dark);
+}
+
+.ribbon {
+	fill: var(--tone-dark);
+}
+
+.rim {
+	stroke: var(--tone-dark);
+	stroke-width: 3;
+	stroke-linejoin: round;
+}
+
+.core {
+	stroke: var(--tone-dark);
+	stroke-width: 1.5;
+}
+
+.stitch {
+	fill: none;
+	stroke: var(--tone-light);
+	stroke-width: 1.4;
+	stroke-dasharray: 2.6 2.4;
+	opacity: 0.75;
+}
+
+.gloss {
+	fill: #fff;
+	opacity: 0.22;
+}
+
+.level-plate {
+	fill: var(--core-dark);
+	stroke: var(--tone-light);
+	stroke-width: 1.5;
+}
+
+.level-text {
+	fill: #fff;
+	font-family: var(--font-san);
+	font-weight: 800;
+	font-size: 10.5px;
+	letter-spacing: 0.5px;
+}
+
+.badge-icon {
+	position: absolute;
+	left: 50%;
+	top: calc(var(--badge-size) * 0.5);
+	width: calc(var(--badge-size) * 0.32);
+	height: calc(var(--badge-size) * 0.32);
+	transform: translate(-50%, -50%);
+	color: var(--icon-color);
+	filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+}
+
+:host(.locked) {
+	--icon-color: var(--bo-muted);
+
+	.badge-icon {
+		filter: none;
+	}
+}
+
+:host-context(body.dark) {
+	.badge-shape[data-tone="locked"] {
+		--tone-light: #3a3e4d;
+		--tone-mid: #31343f;
+		--tone-dark: #262833;
+		--core-light: #2f3240;
+		--core-dark: #23252f;
+	}
+}

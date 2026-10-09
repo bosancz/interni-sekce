@@ -1,0 +1,61 @@
+<bo-page-header title="Odznaky" />
+
+<bo-page-content [padding]="true">
+	@if (rows(); as rows) {
+		<p class="badges-intro">
+			Odznaky získáváš za aktivitu v oddíle — za akce, které jsi absolvoval/a nebo vedl/a, za místa v žebříčcích i
+			za fotky. Kontrolují se každé ráno.
+			<strong>Máš {{ earnedCount() }} z {{ rows.length }}.</strong>
+		</p>
+
+		<div class="badges-grid">
+			@for (row of rows; track row.badge.badge) {
+				<div class="badge-card" [class.badge-card-locked]="!row.badge.level">
+					<bo-achievement-badge
+						[icon]="row.badge.icon"
+						[level]="row.badge.level"
+						[levels]="row.badge.levels.length"
+						[locked]="!row.badge.level"
+						[size]="76"
+					/>
+
+					<div class="badge-info">
+						<div class="badge-title">{{ row.title }}</div>
+						<div class="badge-description">{{ row.badge.description }}</div>
+
+						@if (row.next) {
+							<div class="badge-progress">
+								<div class="badge-progress-fill" [style.width.%]="row.progress * 100"></div>
+							</div>
+							<div class="badge-meta">
+								{{ row.badge.value }} / {{ row.next.threshold }} {{ row.badge.unit }}
+								@if (row.earnedAt) {
+									· získáno {{ row.earnedAt | date: "d. M. yyyy" }}
+								}
+							</div>
+						} @else {
+							<div class="badge-meta badge-meta-done">
+								Splněno · {{ row.badge.value }} {{ row.badge.unit }}
+								@if (row.earnedAt) {
+									· získáno {{ row.earnedAt | date: "d. M. yyyy" }}
+								}
+							</div>
+						}
+
+						@if (row.levels.length > 1) {
+							<div class="badge-levels">
+								@for (level of row.levels; track level.level) {
+									<span class="badge-level" [class.badge-level-earned]="level.earnedAt">
+										{{ level.numeral }} · {{ level.threshold }}
+									</span>
+								}
+							</div>
+						}
+					</div>
+				</div>
+			}
+		</div>
+	} @else {
+		<div class="badges-loading"><ion-spinner name="dots" /></div>
+	}
+</bo-page-content>

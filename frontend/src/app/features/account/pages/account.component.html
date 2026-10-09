@@ -50,6 +50,10 @@
 				</bo-card-content>
 			</bo-card>
 
+			@if (user.member) {
+				<bo-account-badges />
+			}
+
 			<div class="account-grid">
 				<bo-card>
 					<bo-card-header>

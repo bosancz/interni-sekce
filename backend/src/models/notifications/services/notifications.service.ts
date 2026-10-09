@@ -137,6 +137,29 @@ export class NotificationsService {
 		return users.length;
 	}
 
+	async onBadgesEarned(memberId: number, badges: { title: string; description: string }[]) {
+		const users = await this.users.find({ where: { memberId } });
+
+		await this.notifyUsers(
+			NotificationTypes.myBadges,
+			users,
+			undefined,
+			badges.length === 1
+				? { title: `Nový odznak: ${badges[0].title}`, body: badges[0].description, path: "/ucet/odznaky" }
+				: {
+						title: `Nové odznaky (${badges.length})`,
+						body:
+							badges.length > 3
+								? `${badges
+										.slice(0, 3)
+										.map((badge) => badge.title)
+										.join(", ")} a ${badges.length - 3} dalších`
+								: badges.map((badge) => badge.title).join(", "),
+						path: "/ucet/odznaky",
+					},
+		);
+	}
+
 	private async notifyUsers(
 		type: NotificationTypes,
 		users: User[],

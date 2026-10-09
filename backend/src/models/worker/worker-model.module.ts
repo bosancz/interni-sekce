@@ -1,6 +1,7 @@
 import { BullModule } from "@nestjs/bullmq";
 import { DynamicModule, Module } from "@nestjs/common";
 import { AlbumsModelModule } from "src/models/albums/albums-model.module";
+import { BadgesModelModule } from "src/models/badges/badges-model.module";
 import { FacesEnqueueCommand } from "./commands/faces-enqueue.command";
 import { PhotosEmbedCommand } from "./commands/photos-embed.command";
 import { BackendScheduleProcessor } from "./processors/backend-schedule.processor";
@@ -26,6 +27,7 @@ export class WorkerModelModule {
 					{ name: BACKEND_SCHEDULE_QUEUE },
 				),
 				AlbumsModelModule,
+				BadgesModelModule,
 			],
 			exports: [FacesDetectionService, PhotoContentService, ServerStatsService, WorkersService],
 			providers: [

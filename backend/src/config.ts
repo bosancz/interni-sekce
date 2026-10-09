@@ -157,6 +157,10 @@ const faces = {
 	batchSize: process.env["FACES_BATCH_SIZE"] ? parseInt(process.env["FACES_BATCH_SIZE"], 10) : 300,
 };
 
+const badges = {
+	cron: process.env["BADGES_CRON"] ?? "30 7 * * *",
+};
+
 const photoContent = {
 	batchSize: process.env["PHOTO_CONTENT_BATCH_SIZE"] ? parseInt(process.env["PHOTO_CONTENT_BATCH_SIZE"], 10) : 3000,
 	textTimeoutMs: 30_000,
@@ -192,6 +196,7 @@ export class Config {
 	server = server;
 	fs = fs;
 	mapy = mapy;
+	badges = badges;
 	photoContent = photoContent;
 	photos = photos;
 }

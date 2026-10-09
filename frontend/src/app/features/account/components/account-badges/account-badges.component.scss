@@ -1,0 +1,148 @@
+:host {
+	display: block;
+}
+
+bo-card-content {
+	padding: 16px 18px 18px !important;
+}
+
+.ab-summary {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.ab-count {
+	display: flex;
+	align-items: baseline;
+	gap: 4px;
+	flex: 0 0 auto;
+}
+
+.ab-count-value {
+	font-size: 34px;
+	line-height: 1;
+	color: var(--bo-heading);
+}
+
+.ab-count-total {
+	color: var(--bo-muted);
+	font-weight: 700;
+}
+
+.ab-summary-bar {
+	flex: 1;
+	min-width: 0;
+}
+
+.ab-summary-label,
+.ab-next-label {
+	color: var(--bo-muted);
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	margin-bottom: 6px;
+}
+
+.ab-progress {
+	height: 8px;
+	border-radius: var(--bo-radius-pill);
+	background: var(--bo-neutral-pill);
+	overflow: hidden;
+}
+
+.ab-progress-fill {
+	height: 100%;
+	border-radius: inherit;
+	background: linear-gradient(90deg, var(--bo-yellow), #f5b75a);
+	transition: width 600ms ease-out;
+}
+
+.ab-strip {
+	display: flex;
+	gap: 6px;
+	margin: 16px -18px 0;
+	padding: 4px 18px 6px;
+	overflow-x: auto;
+	scroll-snap-type: x proximity;
+	scrollbar-width: thin;
+}
+
+.ab-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	width: 84px;
+	flex: 0 0 auto;
+	padding: 6px 2px;
+	border-radius: 12px;
+	text-decoration: none;
+	scroll-snap-align: start;
+	transition:
+		background 150ms,
+		transform 150ms;
+
+	&:hover {
+		background: var(--bo-yellow-tint);
+		transform: translateY(-2px);
+	}
+}
+
+.ab-item-title {
+	color: var(--bo-ink);
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1.2;
+	text-align: center;
+}
+
+.ab-empty {
+	color: var(--bo-muted);
+	font-size: 14px;
+	margin-top: 6px;
+}
+
+.ab-next {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-top: 14px;
+	padding-top: 14px;
+	border-top: 1px solid var(--bo-card-line);
+}
+
+.ab-next-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.ab-next-head {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	flex-wrap: wrap;
+	margin-bottom: 6px;
+
+	.ab-next-label {
+		margin-bottom: 0;
+	}
+
+	strong {
+		color: var(--bo-ink);
+		font-size: 14px;
+	}
+}
+
+.ab-next-value {
+	margin-top: 4px;
+	color: var(--bo-muted);
+	font-size: 12px;
+}
+
+.ab-loading {
+	display: flex;
+	justify-content: center;
+	padding: 24px 0;
+}

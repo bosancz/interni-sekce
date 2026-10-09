@@ -117,6 +117,7 @@ export class MemberMergeService {
 			const manualFaces = await this.mergePhotoFaces(t, targetId, sourceId);
 			await this.mergeContacts(t, targetId, sourceId);
 			await t.query(`UPDATE members_achievements SET member_id = $1 WHERE member_id = $2`, [targetId, sourceId]);
+			await this.mergeBadges(t, targetId, sourceId);
 			await this.mergeMembershipPayments(t, targetId, sourceId);
 			await this.mergeUser(t, targetId, sourceId, fields.has(MemberMergeFields.user));
 
@@ -132,6 +133,22 @@ export class MemberMergeService {
 		this.logger.log(`Member ${sourceId} merged into member ${targetId}.`);
 
 		return { manualFaces };
+	}
+
+	private async mergeBadges(t: EntityManager, targetId: number, sourceId: number) {
+		await t.query(
+			`UPDATE members_badges tb SET earned_at = LEAST(tb.earned_at, sb.earned_at),
+				seen_at = CASE WHEN tb.seen_at IS NULL OR sb.seen_at IS NULL THEN NULL ELSE GREATEST(tb.seen_at, sb.seen_at) END
+			FROM members_badges sb
+			WHERE tb.member_id = $1 AND sb.member_id = $2 AND sb.badge = tb.badge AND sb.level = tb.level`,
+			[targetId, sourceId],
+		);
+		await t.query(
+			`UPDATE members_badges sb SET member_id = $1
+			WHERE sb.member_id = $2
+				AND NOT EXISTS (SELECT 1 FROM members_badges tb WHERE tb.member_id = $1 AND tb.badge = sb.badge AND tb.level = sb.level)`,
+			[targetId, sourceId],
+		);
 	}
 
 	private assertDifferent(targetId: number, sourceId: number) {

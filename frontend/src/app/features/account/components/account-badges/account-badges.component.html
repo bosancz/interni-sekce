@@ -1,0 +1,85 @@
+<bo-card>
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="ribbon-outline" />
+				Odznaky
+			</span>
+		</bo-card-title>
+		<ion-button slot="buttons" fill="clear" size="small" routerLink="/ucet/odznaky">
+			Vidět všechny
+			<ion-icon slot="end" name="chevron-forward-outline" />
+		</ion-button>
+	</bo-card-header>
+
+	<bo-card-content>
+		@if (badges()) {
+			<div class="ab-summary">
+				<div class="ab-count">
+					<span class="ab-count-value san">{{ earnedLevels() }}</span>
+					<span class="ab-count-total">/ {{ totalLevels() }}</span>
+				</div>
+				<div class="ab-summary-bar">
+					<div class="ab-summary-label">Získané úrovně odznaků</div>
+					<div class="ab-progress">
+						<div
+							class="ab-progress-fill"
+							[style.width.%]="(earnedLevels() / (totalLevels() || 1)) * 100"
+						></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="ab-strip">
+				@for (item of earned(); track item.badge.badge) {
+					<a class="ab-item" routerLink="/ucet/odznaky" [attr.aria-label]="item.title">
+						<bo-achievement-badge
+							[icon]="item.badge.icon"
+							[level]="item.badge.level"
+							[levels]="item.badge.levels.length"
+							[size]="64"
+						/>
+						<span class="ab-item-title">{{ item.title }}</span>
+					</a>
+				} @empty {
+					@for (badge of locked(); track badge.badge) {
+						<a class="ab-item" routerLink="/ucet/odznaky" [attr.aria-label]="badge.title">
+							<bo-achievement-badge [icon]="badge.icon" [locked]="true" [size]="64" />
+							<span class="ab-item-title">{{ badge.title }}</span>
+						</a>
+					}
+				}
+			</div>
+
+			@if (!earned().length) {
+				<div class="ab-empty">Zatím žádný odznak — první získáš hned po první akci.</div>
+			}
+
+			@if (nextUp(); as next) {
+				<div class="ab-next">
+					<bo-achievement-badge
+						[icon]="next.badge.icon"
+						[level]="next.next.level"
+						[levels]="next.badge.levels.length"
+						[locked]="true"
+						[size]="40"
+					/>
+					<div class="ab-next-info">
+						<div class="ab-next-head">
+							<span class="ab-next-label">Další na řadě</span>
+							<strong>{{ next.title }}</strong>
+						</div>
+						<div class="ab-progress">
+							<div class="ab-progress-fill" [style.width.%]="next.progress * 100"></div>
+						</div>
+						<div class="ab-next-value">
+							{{ next.badge.value }} / {{ next.next.threshold }} {{ next.badge.unit }}
+						</div>
+					</div>
+				</div>
+			}
+		} @else {
+			<div class="ab-loading"><ion-spinner name="dots" /></div>
+		}
+	</bo-card-content>
+</bo-card>

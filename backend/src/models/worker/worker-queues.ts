@@ -23,6 +23,7 @@ export enum BackendScheduleJobs {
 	facesNotify = "faces-notify",
 	photosEmbedEnqueue = "photos-embed-enqueue",
 	photosEmbedStop = "photos-embed-stop",
+	badgesEvaluate = "badges-evaluate",
 }
 
 export const WORKER_HEARTBEAT_PREFIX = "worker-heartbeat:";

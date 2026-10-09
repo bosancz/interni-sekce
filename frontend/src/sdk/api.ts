@@ -688,6 +688,120 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface BadgeLevelResponse
+     */
+    export interface BadgeLevelResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof BadgeLevelResponse
+         */
+        'level': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof BadgeLevelResponse
+         */
+        'threshold': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof BadgeLevelResponse
+         */
+        'earnedAt': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BadgeLevelResponse
+         */
+        'seenAt': string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface BadgeResponse
+     */
+    export interface BadgeResponse {
+        /**
+         * 
+         * @type {BadgeTypesEnum}
+         * @memberof BadgeResponse
+         */
+        'badge': BadgeTypesEnum;
+        /**
+         * 
+         * @type {Array<BadgeLevelResponse>}
+         * @memberof BadgeResponse
+         */
+        'levels': Array<BadgeLevelResponse>;
+        /**
+         * 
+         * @type {string}
+         * @memberof BadgeResponse
+         */
+        'title': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof BadgeResponse
+         */
+        'description': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof BadgeResponse
+         */
+        'unit': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof BadgeResponse
+         */
+        'icon': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof BadgeResponse
+         */
+        'value': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof BadgeResponse
+         */
+        'level': number;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const BadgeTypesEnum = {
+        FirstEvent: 'firstEvent',
+        EventsAttended: 'eventsAttended',
+        DaysOnEvents: 'daysOnEvents',
+        LongEvents: 'longEvents',
+        Seasons: 'seasons',
+        FirstLed: 'firstLed',
+        EventsLed: 'eventsLed',
+        ChildDays: 'childDays',
+        TopLeader: 'topLeader',
+        Podium: 'podium',
+        TopEvent: 'topEvent',
+        Photos: 'photos'
+    } as const;
+    
+    export type BadgeTypesEnum = typeof BadgeTypesEnum[keyof typeof BadgeTypesEnum];
+    
+    
+        /**
+     * 
+     * @export
      * @interface BugReportBody
      */
     export interface BugReportBody {
@@ -6120,6 +6234,7 @@ export namespace SDK {
     export const NotificationGroupsEnum = {
         Events: 'events',
         Photos: 'photos',
+        Badges: 'badges',
         Admin: 'admin'
     } as const;
     
@@ -6395,7 +6510,8 @@ export namespace SDK {
         NewUsers: 'newUsers',
         MyBugReports: 'myBugReports',
         MyPhotos: 'myPhotos',
-        NewAlbums: 'newAlbums'
+        NewAlbums: 'newAlbums',
+        MyBadges: 'myBadges'
     } as const;
     
     export type NotificationTypesEnum = typeof NotificationTypesEnum[keyof typeof NotificationTypesEnum];
@@ -7775,6 +7891,18 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'getMyBadges': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'markMyBadgesSeen': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'listAlbums': AcLink;
         /**
          * 
@@ -9079,6 +9207,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for loginUsingLink operation in AccountApi.
      * @export
@@ -9093,6 +9225,10 @@ export namespace SDK {
          */
         code: string
     }
+    
+    
+    
+    
     
     
     
@@ -9157,6 +9293,44 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<AccountResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof AccountApi
+         */
+        
+        public async getMyBadges(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/account/badges`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<BadgeResponse>>(axiosRequestConfig);
         }
     
         /**
@@ -9351,6 +9525,44 @@ export namespace SDK {
             const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof AccountApi
+         */
+        
+        public async markMyBadgesSeen(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/account/badges/seen`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
     
     
     

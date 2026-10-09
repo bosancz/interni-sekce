@@ -1,0 +1,28 @@
+<svg class="badge-shape" viewBox="0 0 100 112" aria-hidden="true" [attr.data-tone]="tone()">
+	<defs>
+		<linearGradient [attr.id]="id + '-rim'" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" class="stop-light" />
+			<stop offset="0.55" class="stop-mid" />
+			<stop offset="1" class="stop-dark" />
+		</linearGradient>
+		<radialGradient [attr.id]="id + '-core'" cx="0.5" cy="0.3" r="0.8">
+			<stop offset="0" class="core-light" />
+			<stop offset="1" class="core-dark" />
+		</radialGradient>
+	</defs>
+
+	<path class="ribbon" d="M33 66 L22 106 L31 101 L37 109 L46 72 Z" />
+	<path class="ribbon" d="M67 66 L78 106 L69 101 L63 109 L54 72 Z" />
+
+	<path class="rim" d="M50 6 L88 28 L88 72 L50 94 L12 72 L12 28 Z" [attr.fill]="'url(#' + id + '-rim)'" />
+	<circle class="core" cx="50" cy="50" r="30" [attr.fill]="'url(#' + id + '-core)'" />
+	<circle class="stitch" cx="50" cy="50" r="25.5" />
+	<path class="gloss" d="M18 31 L50 12 L82 31 L82 40 Q50 26 18 46 Z" />
+
+	@if (numeral(); as numeral) {
+		<rect class="level-plate" x="36" y="83" width="28" height="15" rx="7.5" />
+		<text class="level-text" x="50" y="94.2" text-anchor="middle">{{ numeral }}</text>
+	}
+</svg>
+
+<ion-icon class="badge-icon" [name]="locked() ? 'lock-closed' : icon()" />

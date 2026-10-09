@@ -23,6 +23,7 @@ import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { SDK } from "src/sdk";
 import { AccountAppComponent } from "../components/account-app/account-app.component";
+import { AccountBadgesComponent } from "../components/account-badges/account-badges.component";
 import { AccountCredentialsComponent } from "../components/account-credentials/account-credentials.component";
 
 @Component({
@@ -43,6 +44,7 @@ import { AccountCredentialsComponent } from "../components/account-credentials/a
 		CardOpenButtonComponent,
 		AccountCredentialsComponent,
 		AccountAppComponent,
+		AccountBadgesComponent,
 		EditButtonComponent,
 		EditButtonTextComponent,
 		GroupPipe,

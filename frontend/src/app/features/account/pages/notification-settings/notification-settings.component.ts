@@ -9,6 +9,7 @@ import {
 	laptopOutline,
 	paperPlaneOutline,
 	phonePortraitOutline,
+	ribbonOutline,
 	settingsOutline,
 } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -27,6 +28,7 @@ import { SDK } from "src/sdk";
 const GROUP_ICONS: Record<SDK.NotificationGroupsEnum, string> = {
 	events: "calendar-outline",
 	photos: "images-outline",
+	badges: "ribbon-outline",
 	admin: "settings-outline",
 };
 
@@ -97,6 +99,7 @@ export class NotificationSettingsComponent implements OnInit {
 			addOutline,
 			calendarOutline,
 			imagesOutline,
+			ribbonOutline,
 			settingsOutline,
 		});
 	}
