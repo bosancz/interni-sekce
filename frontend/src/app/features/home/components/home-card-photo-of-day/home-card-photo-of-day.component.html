@@ -29,7 +29,10 @@
 						@if (daily.leaders.length) {
 							<span class="leaders">
 								@for (leader of daily.leaders; track leader.id; let last = $last) {
-									<a [routerLink]="['/databaze/clenove', leader.id]">{{ leader.nickname }}</a
+									<a
+										[routerLink]="['/databaze/clenove', leader.id]"
+										[queryParams]="{ tab: 'photos' }"
+										>{{ leader.nickname }}</a
 									>{{ last ? "" : ", " }}
 								}
 							</span>
