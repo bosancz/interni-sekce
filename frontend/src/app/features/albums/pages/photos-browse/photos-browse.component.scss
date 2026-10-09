@@ -1,15 +1,29 @@
+.pb-toolbar {
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
+	margin-bottom: 0.5rem;
+	--padding-start: 16px;
+	--padding-end: 16px;
+	--background: transparent;
+	--ion-toolbar-background: transparent;
+}
+
 .pb-bar {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 4px 8px;
-	padding: 4px 16px;
+	width: 100%;
 }
 
 .pb-search {
 	flex: 1 1 320px;
-	min-width: 0;
-	padding-inline: 0;
+	min-width: 200px;
+	padding: 0;
+	--background: var(--bo-white);
+	--box-shadow: var(--bo-shadow-card);
+	--placeholder-color: var(--bo-muted);
+	--icon-color: var(--bo-muted);
 }
 
 .pb-filters {
@@ -143,10 +157,6 @@
 }
 
 @media (max-width: 575.98px) {
-	.pb-bar {
-		padding-inline: 8px;
-	}
-
 	.pb-content {
 		padding-inline: 8px;
 	}
