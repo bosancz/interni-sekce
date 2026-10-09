@@ -28,6 +28,7 @@ import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { PhotoCategoriesService } from "src/models/albums/services/photo-categories.service";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
+import { EMPTY_PHOTO_EXIF } from "src/models/albums/schema/photo-exif";
 import { FacesDetectionService } from "src/models/worker/services/faces-detection.service";
 import { PhotoContentService } from "src/models/worker/services/photo-content.service";
 import {
@@ -194,9 +195,8 @@ export class PhotosController {
 		PhotoExifReadPermission.canOrThrow(req, photo);
 
 		const exif = await this.photos.getPhotoExif(photo);
-		if (!exif) throw new NotFoundException("Image file not found.");
 
-		return exif;
+		return exif ?? { ...EMPTY_PHOTO_EXIF };
 	}
 
 	@Patch(":photoId")
