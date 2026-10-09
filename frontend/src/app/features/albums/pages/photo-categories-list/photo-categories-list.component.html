@@ -1,0 +1,45 @@
+<bo-page-header title="Galerie" backUrl="/" [actions]="actions()">
+	<bo-gallery-view-switch slot="title-end" class="ms-3 d-none d-lg-block" active="categories" />
+</bo-page-header>
+
+<bo-page-content [padding]="true">
+	@if (cards()) {
+		<div class="cl-grid">
+			@for (card of visibleCards(); track card.category.id) {
+				<div class="cl-item">
+					<a class="cl-card" routerLink="/galerie/fotky" [queryParams]="{ kategorie: card.category.id }">
+						<span class="cl-photos" [attr.data-count]="card.photoIds.length">
+							@for (photoId of card.photoIds; track photoId) {
+								<img [src]="{ id: photoId } | photoImageUrl: 'small'" loading="lazy" alt="" />
+							}
+						</span>
+						<span class="cl-label">
+							<ion-icon name="pricetag-outline"></ion-icon>
+							{{ card.category.name }}
+							<span class="cl-count">{{ card.category.photosCount }}</span>
+						</span>
+					</a>
+					@if (card.category._links.updatePhotoCategory.allowed) {
+						<a
+							class="cl-edit"
+							[routerLink]="['/admin/fotky/kategorie', card.category.id]"
+							[queryParams]="{ zpet: '/galerie/kategorie' }"
+							aria-label="Upravit kategorii"
+							boTooltip="Upravit kategorii"
+						>
+							<ion-icon name="pencil"></ion-icon>
+						</a>
+					}
+				</div>
+			} @empty {
+				<p class="cl-empty">Zatím tu nejsou žádné kategorie s fotkami.</p>
+			}
+		</div>
+	} @else {
+		<div class="cl-loading"><ion-spinner name="dots"></ion-spinner></div>
+	}
+</bo-page-content>
+
+<bo-page-footer class="d-lg-none">
+	<bo-gallery-view-switch variant="tabs" active="categories" />
+</bo-page-footer>
