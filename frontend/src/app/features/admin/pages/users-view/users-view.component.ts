@@ -120,6 +120,7 @@ export class UsersViewComponent {
 			{
 				title: "Propojit člena",
 				subtitle: "Vyber člena, kterému tenhle účet patří.",
+				allowCreate: true,
 			},
 			{ cssClass: "dialog-picker" },
 		);

@@ -358,7 +358,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 
 		const member = await this.modalService.componentModal(
 			MemberSelectorModalComponent,
-			{ title: "Kdo je na fotce?", subtitle: "Vyber člověka, kterému obličej patří." },
+			{ title: "Kdo je na fotce?", subtitle: "Vyber člověka, kterému obličej patří.", allowCreate: true },
 			{ cssClass: "dialog-picker" },
 		);
 		if (!member) return;
