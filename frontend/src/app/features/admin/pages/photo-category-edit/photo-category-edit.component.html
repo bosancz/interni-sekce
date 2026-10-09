@@ -79,7 +79,8 @@
 						Do kategorie patří fotky se skóre aspoň na hranici. V náhledu je to
 						<strong>{{ aboveThreshold() }}</strong>
 						z {{ preview().length }} nejpodobnějších fotek — posuň hranici tam, kde výsledky přestávají
-						sedět. Změna se projeví hned po uložení, fotky se nepřepočítávají.
+						sedět. Hranici posouvá i kolečko myši nebo tah dvěma prsty nad náhledem. Změna se projeví hned
+						po uložení, fotky se nepřepočítávají.
 					</p>
 				</bo-card-content>
 			</bo-card>
@@ -104,6 +105,8 @@
 							[hits]="preview()"
 							[threshold]="threshold()"
 							[collapse]="true"
+							[adjustable]="true"
+							(thresholdChange)="threshold.set($event)"
 							[loading]="previewLoading()"
 						/>
 					} @else if (!previewLoading()) {
