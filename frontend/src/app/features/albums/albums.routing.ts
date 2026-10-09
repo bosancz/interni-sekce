@@ -7,6 +7,10 @@ import { PhotoCategoriesListComponent } from "./pages/photo-categories-list/phot
 import { PhotosBrowseComponent } from "./pages/photos-browse/photos-browse.component";
 
 export const albumsRoutes: Routes = [
+	{ path: "", pathMatch: "full", redirectTo: "alba" },
+
+	{ path: "alba", title: "Alba", component: AlbumsListComponent },
+
 	{ path: "smazane", component: DeletedAlbumsListComponent },
 
 	{ path: "nove-fotky/:member/:notifiedAt", component: MemberNewPhotosComponent },
@@ -19,6 +23,4 @@ export const albumsRoutes: Routes = [
 	{ path: ":album", component: AlbumsViewInfoComponent },
 
 	{ path: ":album/info", redirectTo: ":album" },
-
-	{ path: "", component: AlbumsListComponent },
 ];

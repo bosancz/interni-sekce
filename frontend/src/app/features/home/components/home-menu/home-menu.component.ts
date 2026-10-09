@@ -22,7 +22,7 @@ export class HomeMenuComponent implements OnInit {
 		{ link: "/kalendar", title: "Kalendář", color: "primary" },
 		{ link: "/akce", title: "Akce", color: "secondary" },
 		{ link: "/program", title: "Program", color: "secondary" },
-		{ link: "/galerie", title: "Galerie", color: "secondary" },
+		{ link: "/galerie/alba", title: "Galerie", color: "secondary" },
 		{ link: "/databaze", title: "Databáze", color: "secondary" },
 		{ link: "/blog", title: "Blog", color: "secondary" },
 		{ link: "/statistiky", title: "Statistiky", color: "secondary" },

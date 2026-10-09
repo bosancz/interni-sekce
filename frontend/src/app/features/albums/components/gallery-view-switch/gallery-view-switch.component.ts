@@ -6,7 +6,7 @@ import { albumsOutline, imageOutline, pricetagsOutline } from "ionicons/icons";
 export type GalleryView = "albums" | "categories" | "photos";
 
 const GALLERY_VIEWS: { name: GalleryView; label: string; icon: string; url: string }[] = [
-	{ name: "albums", label: "Alba", icon: "albums-outline", url: "/galerie" },
+	{ name: "albums", label: "Alba", icon: "albums-outline", url: "/galerie/alba" },
 	{ name: "categories", label: "Kategorie", icon: "pricetags-outline", url: "/galerie/kategorie" },
 	{ name: "photos", label: "Fotky", icon: "image-outline", url: "/galerie/fotky" },
 ];

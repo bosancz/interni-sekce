@@ -377,7 +377,7 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		await this.api.PhotoGalleryApi.deleteAlbum(album.id);
 
 		this.toastService.toast("Smazáno.");
-		this.router.navigate(["/galerie"], { relativeTo: this.route, replaceUrl: true });
+		this.router.navigate(["/galerie/alba"], { relativeTo: this.route, replaceUrl: true });
 	}
 
 	private open() {
