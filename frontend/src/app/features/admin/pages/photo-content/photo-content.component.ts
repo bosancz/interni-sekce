@@ -1,17 +1,9 @@
-import { DatePipe, DecimalPipe } from "@angular/common";
+import { DatePipe } from "@angular/common";
 import { Component, computed, OnDestroy, OnInit, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonButton, IonIcon, IonSearchbar, IonSkeletonText, IonSpinner } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import {
-	addOutline,
-	chevronForwardOutline,
-	imagesOutline,
-	playOutline,
-	pricetagsOutline,
-	refreshOutline,
-	searchOutline,
-} from "ionicons/icons";
+import { addOutline, imagesOutline, playOutline, refreshOutline, searchOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -19,8 +11,6 @@ import { CardContentComponent } from "src/app/shared/components/card-content/car
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
-import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
-import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoHitsGridComponent } from "src/app/shared/components/photo-hits-grid/photo-hits-grid.component";
 import { SDK } from "src/sdk";
@@ -33,8 +23,6 @@ const SEARCH_LIMIT = 60;
 	templateUrl: "./photo-content.component.html",
 	styleUrl: "./photo-content.component.scss",
 	imports: [
-		PageHeaderComponent,
-		PageContentComponent,
 		IonButton,
 		IonIcon,
 		IonSearchbar,
@@ -45,7 +33,6 @@ const SEARCH_LIMIT = 60;
 		CardTitleComponent,
 		CardContentComponent,
 		DatePipe,
-		DecimalPipe,
 		RouterLink,
 		PhotoHitsGridComponent,
 		TooltipDirective,
@@ -55,7 +42,6 @@ export class PhotoContentComponent implements OnInit, OnDestroy {
 	readonly examples = ["voda", "krajina", "uvnitř", "kolo", "lyže", "sníh", "táborák", "stan", "hory", "les"];
 
 	summary = signal<SDK.PhotoContentSummaryResponse | undefined>(undefined);
-	categories = signal<SDK.PhotoCategoryResponseWithLinks[] | undefined>(undefined);
 	queueing = signal(false);
 
 	query = signal("");
@@ -81,10 +67,8 @@ export class PhotoContentComponent implements OnInit, OnDestroy {
 	) {
 		addIcons({
 			addOutline,
-			chevronForwardOutline,
 			imagesOutline,
 			playOutline,
-			pricetagsOutline,
 			refreshOutline,
 			searchOutline,
 		});
@@ -93,10 +77,6 @@ export class PhotoContentComponent implements OnInit, OnDestroy {
 	ngOnInit() {
 		this.loadSummary();
 		this.timer = setInterval(() => this.loadSummary(), REFRESH_MS);
-	}
-
-	ionViewWillEnter() {
-		this.loadCategories();
 	}
 
 	ngOnDestroy() {
@@ -108,14 +88,6 @@ export class PhotoContentComponent implements OnInit, OnDestroy {
 			this.summary.set(await this.api.WorkerApi.getPhotoContentSummary().then((res) => res.data));
 		} catch {
 			this.toastService.toast("Nepodařilo se načíst stav rozpoznávání.", { color: "warning" });
-		}
-	}
-
-	async loadCategories() {
-		try {
-			this.categories.set(await this.api.WorkerApi.listPhotoCategories().then((res) => res.data));
-		} catch {
-			this.categories.set([]);
 		}
 	}
 

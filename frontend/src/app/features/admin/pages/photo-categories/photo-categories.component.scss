@@ -1,0 +1,40 @@
+.pk-page {
+	max-width: 1600px;
+	padding: 16px;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+	gap: 1.25rem;
+	align-items: start;
+}
+
+.muted {
+	color: var(--bo-muted);
+}
+
+.pk-meta {
+	margin-bottom: 10px;
+}
+
+.pk-photos {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 6px;
+
+	img {
+		width: 100%;
+		aspect-ratio: 4 / 3;
+		object-fit: cover;
+		border-radius: 8px;
+		display: block;
+		background: var(--bo-card-line);
+	}
+}
+
+.pk-empty {
+	margin: 0;
+}
+
+.pk-skeleton-photos {
+	height: 120px;
+	margin-top: 10px;
+}

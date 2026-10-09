@@ -177,7 +177,7 @@ export class PhotoCategoryEditComponent {
 			if (category) await this.api.WorkerApi.updatePhotoCategory(category.id, body);
 			else await this.api.WorkerApi.createPhotoCategory(body);
 			this.toastService.toast("Kategorie uložena.");
-			await this.router.navigate(["/admin/obsah-fotek"]);
+			await this.router.navigate(["/admin/fotky/kategorie"]);
 		} catch (err: any) {
 			const message =
 				err?.response?.status === 409
@@ -200,7 +200,7 @@ export class PhotoCategoryEditComponent {
 
 		try {
 			await this.api.WorkerApi.deletePhotoCategory(category.id);
-			await this.router.navigate(["/admin/obsah-fotek"]);
+			await this.router.navigate(["/admin/fotky/kategorie"]);
 		} catch {
 			this.toastService.toast("Kategorii se nepodařilo smazat.", { color: "danger" });
 		}

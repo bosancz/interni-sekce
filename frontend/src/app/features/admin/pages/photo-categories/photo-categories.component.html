@@ -1,0 +1,58 @@
+<div class="pk-page">
+	@if (cards(); as list) {
+		@for (card of list; track card.category.id) {
+			<bo-card class="pk-card">
+				<bo-card-header>
+					<bo-card-title>
+						<span class="bo-card-section-title">
+							<ion-icon name="pricetag-outline" />
+							{{ card.category.name }}
+						</span>
+					</bo-card-title>
+					<ion-button
+						slot="buttons"
+						fill="clear"
+						size="small"
+						[routerLink]="['/admin/fotky/kategorie', card.category.id]"
+						[disabled]="!card.category._links.updatePhotoCategory.allowed"
+						[boTooltip]="
+							card.category._links.updatePhotoCategory.allowed
+								? ''
+								: 'Na úpravu kategorie nemáš oprávnění.'
+						"
+					>
+						<ion-icon slot="start" name="create-outline"></ion-icon>
+						Upravit
+					</ion-button>
+				</bo-card-header>
+
+				<bo-card-content>
+					<div class="pk-meta">
+						{{ card.category.photosCount ?? 0 }} fotek
+						<span class="muted">· hranice {{ card.category.threshold | number: "1.3-3" }}</span>
+					</div>
+					@if (card.photos.length) {
+						<div class="pk-photos">
+							@for (photo of card.photos; track photo.photoId) {
+								<img [src]="{ id: photo.photoId } | photoImageUrl: 'small'" loading="lazy" alt="" />
+							}
+						</div>
+					} @else {
+						<p class="muted pk-empty">Do kategorie zatím nespadá žádná fotka.</p>
+					}
+				</bo-card-content>
+			</bo-card>
+		} @empty {
+			<p class="muted">Zatím žádné kategorie. Vyzkoušej popisy v Detekci obsahu a pak z nich kategorii vytvoř.</p>
+		}
+	} @else {
+		@for (i of [1, 2]; track i) {
+			<bo-card class="pk-card">
+				<bo-card-content>
+					<ion-skeleton-text [animated]="true"></ion-skeleton-text>
+					<ion-skeleton-text [animated]="true" class="pk-skeleton-photos"></ion-skeleton-text>
+				</bo-card-content>
+			</bo-card>
+		}
+	}
+</div>

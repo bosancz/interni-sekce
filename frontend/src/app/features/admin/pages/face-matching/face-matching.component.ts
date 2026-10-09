@@ -9,8 +9,6 @@ import { CardContentComponent } from "src/app/shared/components/card-content/car
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
-import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
-import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
 import { FaceReviewCardComponent } from "../../components/face-review-card/face-review-card.component";
@@ -30,8 +28,6 @@ const TRIGGER_LABELS: Record<SDK.FaceMatchingTriggerEnum, string> = {
 	templateUrl: "./face-matching.component.html",
 	styleUrl: "./face-matching.component.scss",
 	imports: [
-		PageHeaderComponent,
-		PageContentComponent,
 		IonButton,
 		IonIcon,
 		IonInput,

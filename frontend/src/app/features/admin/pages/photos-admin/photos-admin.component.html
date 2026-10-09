@@ -1,0 +1,42 @@
+<bo-page-header title="Fotky" backUrl="/admin">
+	@if (section() === "kategorie") {
+		<ion-button
+			routerLink="/admin/fotky/kategorie/nova"
+			[disabled]="!canCreateCategory()"
+			[boTooltip]="canCreateCategory() ? '' : 'Na přidání kategorie nemáš oprávnění.'"
+		>
+			<ion-icon slot="start" name="add-outline"></ion-icon>
+			Přidat kategorii
+		</ion-button>
+	}
+</bo-page-header>
+
+<bo-page-content>
+	<div class="pa-layout">
+		<nav class="pa-menu d-none d-lg-block">
+			<ion-list lines="none" mode="md">
+				@for (item of sections; track item.path) {
+					<ion-item [button]="true" [class.active]="section() === item.path" [routerLink]="item.path">
+						<ion-icon [name]="item.icon" class="me-3"></ion-icon>
+						<ion-label>{{ item.label }}</ion-label>
+					</ion-item>
+				}
+			</ion-list>
+		</nav>
+
+		<div class="pa-content">
+			<router-outlet />
+		</div>
+	</div>
+</bo-page-content>
+
+<bo-page-footer class="d-lg-none">
+	<ion-tab-bar>
+		@for (item of sections; track item.path) {
+			<ion-tab-button [class.tab-selected]="section() === item.path" [routerLink]="item.path">
+				<ion-icon [name]="item.icon"></ion-icon>
+				<ion-label>{{ item.tabLabel }}</ion-label>
+			</ion-tab-button>
+		}
+	</ion-tab-bar>
+</bo-page-footer>
