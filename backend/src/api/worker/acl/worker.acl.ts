@@ -5,6 +5,7 @@ import {
 	FaceDetectionSummaryResponse,
 	FaceMatchingSummaryResponse,
 	FaceReviewResponse,
+	ServerStatsResponse,
 	WorkerResponse,
 } from "../dto/worker.dto";
 import {
@@ -16,6 +17,14 @@ import {
 export const WorkersListPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: WorkerResponse,
+	allowed: {
+		admin: true,
+	},
+});
+
+export const ServerStatsPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: ServerStatsResponse,
 	allowed: {
 		admin: true,
 	},

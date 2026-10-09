@@ -28,6 +28,7 @@ export class WorkerResponse implements WorkerHeartbeat {
 	@ApiPropertyOptional({ type: WorkerCurrentJobResponse, nullable: true }) current!: WorkerCurrentJob | null;
 	@ApiProperty() cpus!: number;
 	@ApiPropertyOptional({ type: "number", nullable: true }) cpuLimit!: number | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) cpuUsage?: number | null;
 	@ApiPropertyOptional({ type: "number", nullable: true }) memoryLimit!: number | null;
 	@ApiPropertyOptional({ type: "number", nullable: true }) memoryUsage!: number | null;
 	@ApiProperty() processed!: number;
@@ -35,6 +36,14 @@ export class WorkerResponse implements WorkerHeartbeat {
 	@ApiPropertyOptional({ type: "string", nullable: true }) lastJobAt!: string | null;
 	@ApiProperty() startedAt!: string;
 	@ApiProperty() updatedAt!: string;
+}
+
+export class ServerStatsResponse {
+	@ApiProperty() cpus!: number;
+	@ApiPropertyOptional({ type: "number", nullable: true }) cpuUsage!: number | null;
+	@ApiProperty() memoryTotal!: number;
+	@ApiProperty() memoryAvailable!: number;
+	@ApiProperty() uptime!: number;
 }
 
 export class FaceDetectionScheduleResponse {

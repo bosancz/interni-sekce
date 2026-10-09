@@ -9,6 +9,35 @@
 			</ion-button>
 		</div>
 
+		@if (server(); as server) {
+			<bo-card class="wk-server">
+				<bo-card-content>
+					<div class="wk-server-row">
+						<bo-card-title class="wk-server-title">
+							<span class="bo-card-section-title wk-title">
+								<ion-icon name="server-outline" />
+								<span class="wk-name">Server</span>
+							</span>
+						</bo-card-title>
+						<div class="wk-stat">
+							<span class="wk-stat-label">CPU</span>
+							<span class="wk-stat-value">{{ serverCpuLabel(server) }}</span>
+							<span class="wk-bar"><span [style.width.%]="(server.cpuUsage ?? 0) * 100"></span></span>
+						</div>
+						<div class="wk-stat">
+							<span class="wk-stat-label">Paměť</span>
+							<span class="wk-stat-value">{{ serverMemoryLabel(server) }}</span>
+							<span class="wk-bar"><span [style.width.%]="serverMemoryPercent(server)"></span></span>
+						</div>
+						<div class="wk-stat">
+							<span class="wk-stat-label">Běží</span>
+							<span class="wk-stat-value">{{ seconds(server.uptime) }}</span>
+						</div>
+					</div>
+				</bo-card-content>
+			</bo-card>
+		}
+
 		@if (workers(); as list) {
 			<div class="wk-grid">
 				@for (worker of list; track worker.id) {
@@ -50,11 +79,18 @@
 								</div>
 								<div class="bo-info-row">
 									<span class="bo-info-label">CPU</span>
-									<span class="bo-info-value">{{ cpuLabel(worker) }}</span>
+									<span class="bo-info-value wk-meter">
+										{{ cpuLabel(worker) }}
+										@if (cpuPercent(worker) != null) {
+											<span class="wk-bar"
+												><span [style.width.%]="cpuPercent(worker)"></span
+											></span>
+										}
+									</span>
 								</div>
 								<div class="bo-info-row">
 									<span class="bo-info-label">Paměť</span>
-									<span class="bo-info-value wk-memory">
+									<span class="bo-info-value wk-meter">
 										{{ memoryLabel(worker) }}
 										@if (memoryPercent(worker); as percent) {
 											<span class="wk-bar"><span [style.width.%]="percent"></span></span>

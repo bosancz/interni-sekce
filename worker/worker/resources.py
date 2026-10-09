@@ -49,3 +49,19 @@ def memory_limit() -> int | None:
 def memory_usage() -> int | None:
     value = _read("/sys/fs/cgroup/memory.current") or _read("/sys/fs/cgroup/memory/memory.usage_in_bytes")
     return int(value) if value else None
+
+
+def cpu_time() -> float:
+    cpu_stat = _read("/sys/fs/cgroup/cpu.stat")
+    if cpu_stat:
+        for line in cpu_stat.splitlines():
+            key, _, value = line.partition(" ")
+            if key == "usage_usec":
+                return int(value) / 1_000_000
+
+    usage = _read("/sys/fs/cgroup/cpuacct/cpuacct.usage")
+    if usage:
+        return int(usage) / 1_000_000_000
+
+    times = os.times()
+    return times.user + times.system + times.children_user + times.children_system
