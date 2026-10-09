@@ -7,10 +7,12 @@ from bullmq import Queue
 
 from .. import config
 from ..paths import resolve_data_path
-from .clip import embed_image
+from .clip import embed_image, release_vision
 
 NAME = "embed-photo"
 RESULT = "photo-embedded"
+
+release = release_vision
 
 logger = logging.getLogger(NAME)
 
