@@ -67,6 +67,7 @@ const CONVENTIONAL = /^(\w+)(?:\(([^)]*)\))?(!)?:\s*(.+)$/;
 const ISSUE_KEYWORD_REF = /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?|refs?)\s+#(\d+)/gi;
 const ISSUE_SUBJECT_REF = /\(#(\d+)\)/g;
 
+const RELEASE_COMMIT = /^chore\(release\):/;
 const ISSUE_IN_SUBJECT = /\s*[,;–-]?\s*(?:\(#\d+\)|(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?|refs?)\s+#\d+)/gi;
 
 function collectIssues(text, pattern) {
@@ -249,7 +250,8 @@ function commitsInRange(range) {
 		.map((chunk) => {
 			const fields = chunk.split("\x1f");
 			return { ...commitFromFields(fields), subject: (fields[5] ?? "").trim(), body: (fields[6] ?? "").trim() };
-		});
+		})
+		.filter((commit) => !RELEASE_COMMIT.test(commit.subject));
 }
 
 function initials(name) {
