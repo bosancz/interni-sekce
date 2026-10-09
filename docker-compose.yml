@@ -47,6 +47,17 @@ services:
       redis:
         condition: service_healthy
 
+  worker-render:
+    image: ghcr.io/bosancz/interni-sekce-worker:latest
+    environment:
+      REDIS_URL: redis://redis:6379
+      WORKER_TASKS: render-registration
+    cpus: 1
+    mem_limit: 768m
+    depends_on:
+      redis:
+        condition: service_healthy
+
   redis:
     image: redis:7-alpine
     command: redis-server --appendonly yes

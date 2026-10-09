@@ -25,9 +25,6 @@ FROM node:24-alpine AS build-backend
 
 WORKDIR /app/backend
 
-# Puppeteer bundles a glibc Chromium that can't run on Alpine; use the system one instead (installed in the runner).
-ENV PUPPETEER_SKIP_DOWNLOAD=true
-
 # install dependencies
 COPY ./backend/package.json ./backend/package-lock.json ./
 RUN npm ci
@@ -44,12 +41,23 @@ RUN npm prune --omit=dev
 ## WORKER ##
 FROM python:3.12-slim AS worker
 
-ENV PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1 MODELS_DIR=/app/models DATA_DIR=/data
+ENV PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1 MODELS_DIR=/app/models DATA_DIR=/data \
+	ASSETS_DIR=/app/assets PLAYWRIGHT_BROWSERS_PATH=/app/browsers
 
 WORKDIR /app
 
 COPY ./worker/requirements.txt .
 RUN pip install -r requirements.txt
+
+# Chromium renders registration PDFs (render-registration task).
+# fonts-noto-color-emoji: without it Chromium has no emoji glyphs and renders tofu boxes in the PDF.
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		fontconfig fonts-noto-color-emoji fonts-freefont-ttf \
+		libasound2 libatk-bridge2.0-0 libatk1.0-0 libatspi2.0-0 libdbus-1-3 libexpat1 libgbm1 libglib2.0-0 \
+		libnss3 libx11-6 libxcb1 libxcomposite1 libxdamage1 libxext6 libxfixes3 libxkbcommon0 libxrandr2 \
+	&& rm -rf /var/lib/apt/lists/* \
+	&& python -m playwright install --only-shell chromium
 
 ARG OPENCV_ZOO=https://media.githubusercontent.com/media/opencv/opencv_zoo/47534e27c9851bb1128ccc0102f1145e27f23f98/models
 ADD --checksum=sha256:8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4 \
@@ -69,6 +77,10 @@ ADD --checksum=sha256:5b4e1a8171c81dfd666ae40265b9530c6e0b3d53923fe8ac493dcc8422
 	${CLIP_TEXT}/tokenizer.json models/clip-vit-base-patch32-multilingual-tokenizer.json
 ADD --checksum=sha256:d12568dc7300970a4d3dbb49068ad16cd89b99840b74b026f8e48071e9414f74 \
 	${CLIP_TEXT}/2_Dense/model.safetensors models/clip-vit-base-patch32-multilingual-dense.safetensors
+
+COPY ./backend/assets/registration-templates ./assets/registration-templates
+COPY ./backend/assets/img ./assets/img
+COPY ./backend/assets/fonts ./assets/fonts
 
 COPY ./worker/worker ./worker
 
@@ -98,12 +110,6 @@ HEALTHCHECK --interval=10s --timeout=5s --start-period=60s --retries=5 \
 
 ## RUNNER ##
 FROM node:24-alpine AS app
-
-# Chromium used by Puppeteer to render registration PDFs from HTML templates.
-# font-noto-emoji: without it Chromium has no emoji glyphs and renders tofu boxes in the PDF.
-RUN apk add --no-cache chromium nss freetype harfbuzz ca-certificates ttf-freefont font-noto-emoji
-ENV PUPPETEER_SKIP_DOWNLOAD=true \
-	PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 WORKDIR /app
 

@@ -162,6 +162,10 @@ const photoContent = {
 	textTimeoutMs: 30_000,
 };
 
+const registrations = {
+	renderTimeoutMs: 30_000,
+};
+
 const oauth = {
 	wiki: {
 		clientId: process.env["OAUTH_WIKI_CLIENT_ID"] ?? "",
@@ -193,6 +197,7 @@ export class Config {
 	fs = fs;
 	mapy = mapy;
 	photoContent = photoContent;
+	registrations = registrations;
 	photos = photos;
 }
 

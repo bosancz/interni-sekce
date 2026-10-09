@@ -193,9 +193,7 @@ export class EventsRegistrationsController {
 
 		EventRegistrationGeneratePermission.canOrThrow(req, event);
 
-		const { pdf, image } = await this.eventRegistrationService.generateRegistration(event, template, color, note);
-
-		return { pdf: pdf.toString("base64"), image: image.toString("base64") };
+		return this.eventRegistrationService.generateRegistration(event, template, color, note);
 	}
 
 	@Delete(":eventId/registration")

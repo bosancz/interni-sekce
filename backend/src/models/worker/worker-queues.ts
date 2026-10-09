@@ -2,6 +2,7 @@ export enum WorkerTasks {
 	detectFaces = "detect-faces",
 	embedPhoto = "embed-photo",
 	embedText = "embed-text",
+	renderRegistration = "render-registration",
 }
 
 export const WORKER_TASK_QUEUE = (task: WorkerTasks) => `worker-${task}`;

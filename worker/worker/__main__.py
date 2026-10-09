@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import logging
 import signal
 import time
@@ -35,10 +36,21 @@ async def release_idle_models(lock: asyncio.Lock, releases: dict[str, TaskReleas
             continue
 
         async with lock:
-            released = [name for name, release in releases.items() if release()]
+            released = await release_all(releases)
             if released:
                 memory.trim()
-                logger.info("Idle, released models: %s", ", ".join(released))
+                logger.info("Idle, released: %s", ", ".join(released))
+
+
+async def release_all(releases: dict[str, TaskRelease]) -> list[str]:
+    released = []
+    for name, release in releases.items():
+        result = release()
+        if inspect.isawaitable(result):
+            result = await result
+        if result:
+            released.append(name)
+    return released
 
 
 async def main() -> None:
@@ -94,6 +106,7 @@ async def main() -> None:
     if idle:
         idle.cancel()
     await asyncio.gather(*(worker.close() for worker in workers))
+    await release_all(releases)
     await results.close()
     await heartbeat.stop()
 
