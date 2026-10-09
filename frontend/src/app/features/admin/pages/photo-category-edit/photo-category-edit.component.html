@@ -27,7 +27,7 @@
 						id="ce-name"
 						class="ce-input"
 						fill="outline"
-						placeholder="např. Voda"
+						placeholder="např. Voda nebo Water"
 						[value]="name()"
 						(ionInput)="name.set($event.detail.value ?? '')"
 					></ion-input>
@@ -39,7 +39,7 @@
 								<ion-input
 									class="ce-input"
 									fill="outline"
-									placeholder="např. fotka jezera"
+									placeholder="např. fotka jezera nebo a photo of a lake"
 									[value]="prompt"
 									(ionInput)="setPrompt($index, $event.detail.value)"
 									(keyup.enter)="loadPreview()"
