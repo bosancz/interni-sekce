@@ -1,4 +1,6 @@
 :host {
+	--info-sidebar-width: 340px;
+	--info-sheet-height: 55%;
 	background-color: #000;
 }
 
@@ -201,7 +203,8 @@ ion-toolbar {
 	}
 }
 
-.faces-toggle.active {
+.faces-toggle.active,
+.info-toggle.active {
 	--color: var(--ion-color-warning, #ffc409);
 }
 
@@ -293,5 +296,135 @@ ion-toolbar {
 	ion-spinner {
 		width: 20px;
 		height: 20px;
+	}
+}
+
+.info-visible {
+	@media (min-width: 768px) {
+		.top-toolbar,
+		.bottom-toolbar,
+		.image-viewer {
+			right: var(--info-sidebar-width);
+			width: auto;
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.image-viewer {
+			bottom: var(--info-sheet-height);
+		}
+
+		.bottom-toolbar {
+			display: none;
+		}
+	}
+}
+
+.info-sidebar {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 20;
+	display: flex;
+	flex-direction: column;
+	height: var(--info-sheet-height);
+	border-top: 1px solid rgba(255, 255, 255, 0.12);
+	background-color: #161616;
+	color: #fff;
+
+	@media (min-width: 768px) {
+		top: 0;
+		left: auto;
+		width: var(--info-sidebar-width);
+		height: auto;
+		border-top: none;
+		border-left: 1px solid rgba(255, 255, 255, 0.12);
+	}
+
+	.info-toolbar {
+		flex: none;
+		background-color: transparent !important;
+
+		ion-title {
+			font-size: 1rem;
+		}
+
+		ion-button {
+			--color: #fff;
+		}
+	}
+}
+
+.info-content {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	padding: 0 16px 24px;
+
+	section + section {
+		margin-top: 8px;
+		padding-top: 16px;
+		border-top: 1px solid rgba(255, 255, 255, 0.12);
+	}
+
+	h4 {
+		margin: 0 0 8px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 0.55);
+	}
+
+	dl {
+		display: grid;
+		grid-template-columns: 6.5rem 1fr;
+		gap: 6px 16px;
+		margin: 0 0 8px;
+		font-size: 0.9rem;
+	}
+
+	dt {
+		color: rgba(255, 255, 255, 0.6);
+	}
+
+	dd {
+		margin: 0;
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	.info-map {
+		--color: #fff;
+		--border-color: rgba(255, 255, 255, 0.4);
+		margin: 4px 0 8px;
+	}
+}
+
+.info-loading,
+.info-empty {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 16px 0 0;
+	font-size: 0.9rem;
+	font-style: italic;
+	color: rgba(255, 255, 255, 0.6);
+
+	ion-spinner {
+		width: 20px;
+		height: 20px;
+		color: #fff;
+	}
+}
+
+.info-link {
+	color: #fff;
+	text-decoration: underline;
+	text-decoration-color: rgba(255, 255, 255, 0.4);
+	text-underline-offset: 2px;
+
+	&:hover {
+		text-decoration-color: #fff;
 	}
 }

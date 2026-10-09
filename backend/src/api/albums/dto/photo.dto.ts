@@ -86,6 +86,23 @@ export class PhotoCategoryOfPhotoResponse {
 	@ApiProperty() score!: number;
 }
 
+export class PhotoExifResponse {
+	@ApiPropertyOptional({ type: "string", nullable: true }) make!: string | null;
+	@ApiPropertyOptional({ type: "string", nullable: true }) model!: string | null;
+	@ApiPropertyOptional({ type: "string", nullable: true }) lensModel!: string | null;
+	@ApiPropertyOptional({ type: "string", nullable: true }) software!: string | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) fNumber!: number | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) exposureTime!: number | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) iso!: number | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) focalLength!: number | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) focalLength35mm!: number | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) exposureBias!: number | null;
+	@ApiPropertyOptional({ type: "boolean", nullable: true }) flash!: boolean | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) latitude!: number | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) longitude!: number | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) altitude!: number | null;
+}
+
 export class PhotoBrowseQuery {
 	@ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(200) q?: string;
 

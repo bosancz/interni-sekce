@@ -9,6 +9,7 @@ import { CleanAlbumsMetadataCommand } from "./commands/clean-album-metadata.comm
 import { FacesMatchCommand } from "./commands/faces-match.command";
 import { FacesNotifyCommand } from "./commands/faces-notify.command";
 import { FixPhotoDimensionsCommand } from "./commands/fix-photo-dimensions.command";
+import { PhotosExifCommand } from "./commands/photos-exif.command";
 import { WriteAlbumsMetadataCommand } from "./commands/write-album-metadata.command";
 import { Album } from "./entities/album.entity";
 import { PhotoCategory } from "./entities/photo-category.entity";
@@ -50,6 +51,7 @@ import { PhotosMaintenanceService } from "./services/photos-maintenance.service"
 		WriteAlbumsMetadataCommand,
 		CleanAlbumsMetadataCommand,
 		FixPhotoDimensionsCommand,
+		PhotosExifCommand,
 		FacesMatchCommand,
 		FacesNotifyCommand,
 	],
