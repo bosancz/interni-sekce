@@ -1,12 +1,13 @@
 import { Component, input } from "@angular/core";
 import { IonIcon, IonLabel, IonTabBar, IonTabButton, NavController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { albumsOutline, imageOutline } from "ionicons/icons";
+import { albumsOutline, imageOutline, pricetagsOutline } from "ionicons/icons";
 
-export type GalleryView = "albums" | "photos";
+export type GalleryView = "albums" | "categories" | "photos";
 
 const GALLERY_VIEWS: { name: GalleryView; label: string; icon: string; url: string }[] = [
 	{ name: "albums", label: "Alba", icon: "albums-outline", url: "/galerie" },
+	{ name: "categories", label: "Kategorie", icon: "pricetags-outline", url: "/galerie/kategorie" },
 	{ name: "photos", label: "Fotky", icon: "image-outline", url: "/galerie/fotky" },
 ];
 
@@ -23,7 +24,7 @@ export class GalleryViewSwitchComponent {
 	views = GALLERY_VIEWS;
 
 	constructor(private navController: NavController) {
-		addIcons({ albumsOutline, imageOutline });
+		addIcons({ albumsOutline, imageOutline, pricetagsOutline });
 	}
 
 	open(view: (typeof GALLERY_VIEWS)[number]) {

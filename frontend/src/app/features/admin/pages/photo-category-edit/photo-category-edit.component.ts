@@ -48,6 +48,8 @@ export class PhotoCategoryEditComponent {
 	readonly minThreshold = 0.1;
 	readonly maxThreshold = 0.4;
 
+	backUrl: string;
+
 	category = signal<SDK.PhotoCategoryResponseWithLinks | null>(null);
 	loaded = signal(false);
 
@@ -87,6 +89,7 @@ export class PhotoCategoryEditComponent {
 		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
+		this.backUrl = getBackUrl(this.route.snapshot.queryParamMap.get("zpet"));
 		addIcons({ addOutline, closeOutline, eyeOutline, pricetagOutline, trashOutline });
 
 		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => this.load(params["category"]));
@@ -177,7 +180,7 @@ export class PhotoCategoryEditComponent {
 			if (category) await this.api.WorkerApi.updatePhotoCategory(category.id, body);
 			else await this.api.WorkerApi.createPhotoCategory(body);
 			this.toastService.toast("Kategorie uložena.");
-			await this.router.navigate(["/admin/fotky/kategorie"]);
+			await this.router.navigateByUrl(this.backUrl);
 		} catch (err: any) {
 			const message =
 				err?.response?.status === 409
@@ -200,9 +203,13 @@ export class PhotoCategoryEditComponent {
 
 		try {
 			await this.api.WorkerApi.deletePhotoCategory(category.id);
-			await this.router.navigate(["/admin/fotky/kategorie"]);
+			await this.router.navigateByUrl(this.backUrl);
 		} catch {
 			this.toastService.toast("Kategorii se nepodařilo smazat.", { color: "danger" });
 		}
 	}
+}
+
+function getBackUrl(value: string | null) {
+	return value?.startsWith("/") && !value.startsWith("//") ? value : "/admin/fotky/kategorie";
 }
