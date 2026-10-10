@@ -105,9 +105,12 @@
 				<ng-container *adminCell="let event">
 					@for (leader of event.leaders; track leader.id; let isLast = $last) {
 						<span class="leader"
-							><span class="leader-avatar" [style.background-color]="leader.groupId | group: 'color'">{{
-								(leader | member: "nickname")?.charAt(0)
-							}}</span
+							><span class="leader-avatar" [style.background-color]="leader.groupId | group: 'color'">
+								@if (leader | memberProfilePhotoUrl; as photoUrl) {
+									<img [src]="photoUrl" alt="" />
+								} @else {
+									{{ (leader | member: "nickname")?.charAt(0) }}
+								}</span
 							>{{ leader | member: "nickname" }}{{ isLast ? "" : "," }}</span
 						>
 					}

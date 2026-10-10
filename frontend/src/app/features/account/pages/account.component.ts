@@ -21,6 +21,7 @@ import { PageContentComponent } from "src/app/shared/components/page-content/pag
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
+import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
 import { SDK } from "src/sdk";
 import { AccountAppComponent } from "../components/account-app/account-app.component";
 import { AccountCredentialsComponent } from "../components/account-credentials/account-credentials.component";
@@ -47,6 +48,7 @@ import { AccountCredentialsComponent } from "../components/account-credentials/a
 		EditButtonTextComponent,
 		GroupPipe,
 		MemberPipe,
+		MemberProfilePhotoUrlPipe,
 	],
 })
 export class AccountComponent {

@@ -1,6 +1,7 @@
 @if (user(); as user) {
 	<bo-avatar
 		[initials]="user.member! | member: 'initials'"
+		[photoUrl]="user.member | memberProfilePhotoUrl"
 		[color]="user.member?.groupId | group: 'color'"
 		(click)="openAccountMenu($event)"
 	/>

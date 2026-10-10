@@ -9,6 +9,7 @@
 						<bo-avatar
 							class="profile-avatar"
 							[initials]="user.member! | member: 'initials'"
+							[photoUrl]="user.member | memberProfilePhotoUrl"
 							[style.background-color]="user.member?.groupId | group: 'color'"
 						/>
 
