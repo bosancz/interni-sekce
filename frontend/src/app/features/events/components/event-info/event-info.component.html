@@ -76,26 +76,6 @@
 				></bo-event-type-selector>
 			</bo-item>
 
-			<bo-item label="Řeka" [loading]="!event()">
-				<p>{{ event()?.river ?? "-" }}</p>
-				@if (canEdit()) {
-					<bo-edit-button slot="end" (click)="editRiver()" />
-				}
-			</bo-item>
-
-			<bo-item label="Kilometry na vodě" [loading]="!event()">
-				<p>{{ event()?.waterKm != null ? (event()?.waterKm | number: "1.0-1") + " km" : "-" }}</p>
-				@if (canEdit()) {
-					<bo-edit-button-number
-						slot="end"
-						label="Kilometry na vodě"
-						placeholder="42"
-						[value]="event()?.waterKm"
-						(update)="update.emit({ waterKm: $event })"
-					/>
-				}
-			</bo-item>
-
 			<bo-item label="Oddíl" [loading]="!event()">
 				<bo-group-select
 					[disabled]="!canEdit()"
