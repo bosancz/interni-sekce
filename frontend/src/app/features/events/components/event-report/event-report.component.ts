@@ -8,39 +8,15 @@ import { chevronForwardOutline, closeOutline, documentTextOutline, imagesOutline
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
+import { EditButtonNumberComponent } from "src/app/shared/components/edit-button-number/edit-button-number.component";
 import { MarkdownEditorModalComponent } from "src/app/shared/components/markdown-editor-modal/markdown-editor-modal.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
 import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 import { AlbumSelectorModalComponent, CREATE_ALBUM } from "../album-selector-modal/album-selector-modal.component";
-
-/**
- * Prefilled outline offered when writing a report for an event that doesn't have one yet.
- *
- * Vedle vlastního průběhu akce obsahuje otázky, které hospodář potřebuje mít v účtování
- * zodpovězené — dřív byly natvrdo v šabloně účtování, i s odpovědí "žádné", takže je nikdo
- * nikdy nevyplnil. Odpovědi jsou předvyplněné tak, aby stačilo přepsat, co se skutečně stalo.
- *
- * Nadpisy jsou úmyslně až úrovně 4: report se vypisuje pod nadpisem sekce, takže se má držet pod
- * ním, a v účtování jde do jedné buňky, kde by h1 vedle desetibodového textu působilo jako překlep.
- */
-const EVENT_REPORT_TEMPLATE = [
-	"#### Průběh akce",
-	"",
-	"",
-	"#### Zdravotní komplikace některého z účastníků",
-	"žádné",
-	"",
-	"#### Nevhodné chování účastníků (jak dětí, tak dospělých)",
-	"žádné",
-	"",
-	"#### Stížnosti rodičů či dětí, jiné komplikace při průběhu akce",
-	"žádné",
-	"",
-	"#### Pochvala pro jakéhokoliv účastníka akce (se zdůvodněním)",
-	"žádná",
-].join("\n");
+import { RiverSelectModalComponent } from "../river-select-modal/river-select-modal.component";
 
 @UntilDestroy()
 @Component({
@@ -51,7 +27,9 @@ const EVENT_REPORT_TEMPLATE = [
 	imports: [
 		CommonModule,
 		RouterLink,
+		EditButtonComponent,
 		EditButtonMarkdownComponent,
+		EditButtonNumberComponent,
 		MarkdownPipe,
 		IonButton,
 		IonIcon,
@@ -84,18 +62,31 @@ export class EventReportComponent {
 	async writeReport() {
 		const result = await this.modalService.componentModal(MarkdownEditorModalComponent, {
 			header: "Report",
-			value: this.event()?.report || EVENT_REPORT_TEMPLATE,
+			value: this.event()?.report ?? "",
 		});
 
 		if (result !== null) await this.saveReport(result);
 	}
 
 	async saveReport(report: string | null) {
+		await this.saveReportData({ report });
+	}
+
+	async editRiver() {
+		const result = await this.modalService.componentModal(
+			RiverSelectModalComponent,
+			{ value: this.event()?.river ?? null },
+			{ cssClass: "dialog-picker" },
+		);
+		if (result) await this.saveReportData({ river: result.river });
+	}
+
+	async saveReportData(data: SDK.EventReportUpdateBody) {
 		const event = this.event();
 		if (!event) return;
 
 		try {
-			await this.api.EventsApi.updateEventReport(event.id, { report });
+			await this.api.EventsApi.updateEventReport(event.id, data);
 			this.toastService.toast("Uloženo.");
 			this.change.emit();
 		} catch (e) {

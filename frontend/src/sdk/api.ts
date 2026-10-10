@@ -1852,10 +1852,22 @@ export namespace SDK {
     export interface EventReportUpdateBody {
         /**
          * 
+         * @type {number}
+         * @memberof EventReportUpdateBody
+         */
+        'waterKm'?: number | null;
+        /**
+         * 
          * @type {string}
          * @memberof EventReportUpdateBody
          */
-        'report': string | null;
+        'report'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventReportUpdateBody
+         */
+        'river'?: string | null;
     }
     
         /**
@@ -2501,12 +2513,6 @@ export namespace SDK {
         'price'?: number | null;
         /**
          * 
-         * @type {number}
-         * @memberof EventUpdateBody
-         */
-        'waterKm'?: number | null;
-        /**
-         * 
          * @type {string}
          * @memberof EventUpdateBody
          */
@@ -2601,12 +2607,6 @@ export namespace SDK {
          * @memberof EventUpdateBody
          */
         'meetingPlaceEnd'?: string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof EventUpdateBody
-         */
-        'river'?: string | null;
     }
     
     export const EventUpdateBodyStatusEnum = {

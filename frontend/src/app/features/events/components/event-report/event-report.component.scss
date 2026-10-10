@@ -12,3 +12,23 @@
 		font-size: 1.2rem;
 	}
 }
+
+.water {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	column-gap: 2rem;
+	row-gap: 0.25rem;
+	margin-top: 1rem;
+}
+
+.water-field {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.water-label {
+	color: var(--bo-heading);
+	font-weight: 600;
+}

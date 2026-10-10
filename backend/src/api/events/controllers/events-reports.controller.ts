@@ -46,6 +46,7 @@ export class EventsReportsController {
 
 		EventReportEditPermission.canOrThrow(req, event);
 
-		await this.events.updateEvent(eventId, { report: body.report });
+		const { report, river, waterKm } = body;
+		await this.events.updateEvent(eventId, { report, river, waterKm });
 	}
 }
