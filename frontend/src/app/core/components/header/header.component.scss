@@ -8,6 +8,36 @@
 	background-color: var(--san-blue);
 	color: #fff;
 	--ion-toolbar-color: #fff;
+	-webkit-app-region: drag;
+	app-region: drag;
+}
+
+a,
+button,
+ion-buttons,
+bo-account-menu,
+.search-area ::ng-deep .search {
+	-webkit-app-region: no-drag;
+	app-region: no-drag;
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex: 0 0 auto;
+	min-width: 0;
+
+	.logo {
+		display: flex;
+	}
+}
+
+.search-area {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	justify-content: center;
 }
 
 h1 {
@@ -66,4 +96,117 @@ h1 {
 
 ion-buttons ion-button {
 	--color: #fff;
+}
+
+:host(.lg) {
+	height: 48px;
+
+	.brand {
+		width: 230px;
+		padding-left: 12px;
+
+		img {
+			height: 32px;
+			width: auto;
+		}
+	}
+
+	h1 {
+		font-size: 20px;
+		padding-top: 2px;
+	}
+
+	.search-area {
+		padding: 0 16px;
+	}
+
+	.end-spacer {
+		flex: 0 0 230px;
+	}
+
+	::ng-deep bo-global-search .search ion-searchbar {
+		--border-radius: var(--bo-radius-pill);
+		height: 32px;
+		padding: 0;
+		font-size: 14px;
+
+		.searchbar-input-container {
+			height: 100%;
+		}
+
+		.searchbar-input {
+			height: 100%;
+			padding-top: 0;
+			padding-bottom: 0;
+			padding-inline-start: 38px;
+			line-height: 32px;
+		}
+
+		.searchbar-search-icon {
+			inset-inline-start: 14px;
+			width: 17px;
+			height: 17px;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		.searchbar-clear-button {
+			height: 100%;
+		}
+	}
+}
+
+@media (display-mode: window-controls-overlay) {
+	:host {
+		height: env(titlebar-area-height, 33px);
+		padding-inline-start: env(titlebar-area-x, 0);
+		padding-inline-end: calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw));
+
+		.brand {
+			gap: 8px;
+			padding-left: 10px;
+
+			img {
+				height: 24px;
+				width: auto;
+			}
+		}
+
+		h1 {
+			font-size: 18px;
+		}
+
+		bo-account-menu {
+			padding: 0 0.25rem;
+			font-size: 0.7em;
+		}
+	}
+
+	:host(.lg) {
+		height: env(titlebar-area-height, 33px);
+
+		.brand {
+			width: calc(230px - env(titlebar-area-x, 0px));
+		}
+
+		.end-spacer {
+			display: none;
+		}
+
+		::ng-deep bo-global-search .search ion-searchbar {
+			height: 25px;
+			font-size: 13px;
+
+			.searchbar-input {
+				padding-inline-start: 33px;
+				line-height: 25px;
+			}
+
+			.searchbar-search-icon {
+				inset-inline-start: 12px;
+				width: 15px;
+				height: 15px;
+			}
+		}
+	}
 }

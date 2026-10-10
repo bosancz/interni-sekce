@@ -3,7 +3,16 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { RouterLink } from "@angular/router";
 import { IonIcon, IonItem, IonLabel, IonList, NavController, PopoverController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { bugOutline, logOut, notificationsOutline, optionsOutline, person, settings } from "ionicons/icons";
+import {
+	bugOutline,
+	globeOutline,
+	logOut,
+	notificationsOutline,
+	openOutline,
+	optionsOutline,
+	person,
+	settings,
+} from "ionicons/icons";
 import { BugReportService } from "src/app/core/services/bug-report.service";
 import { LoginService } from "src/app/core/services/login.service";
 import { NotificationsService } from "src/app/core/services/notifications.service";
@@ -48,7 +57,16 @@ export class AccountMenuModalComponent {
 		private readonly bugReportService: BugReportService,
 		private readonly notificationsService: NotificationsService,
 	) {
-		addIcons({ person, settings, logOut, bugOutline, notificationsOutline, optionsOutline });
+		addIcons({
+			person,
+			settings,
+			logOut,
+			bugOutline,
+			notificationsOutline,
+			optionsOutline,
+			globeOutline,
+			openOutline,
+		});
 	}
 
 	async navigate(path: string) {

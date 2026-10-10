@@ -43,6 +43,11 @@
 - `frontend/src/sdk` is generated from the backend's OpenAPI spec — never hand-edit `api.ts`. After changing a backend controller/DTO run `npm run generate:sdk` from `frontend/` (reads `http://127.0.0.1:3000/api/openapi-json`, so the backend must be up). Every NestJS route needs a unique `operationId` (method name) or generation fails validation.
 - The Nest Swagger plugin runs with `introspectComments: true`, so JSDoc on DTO/entity properties and routes would become OpenAPI descriptions. We don't write it (see _Code style_) — descriptions belong in `@ApiProperty({ description })` when they are actually wanted.
 
+## Hlavička a sidebar (WCO)
+
+- **Nainstalovaná PWA běží ve Window Controls Overlay** (`display_override` v `manifest.json`): `bo-header` je zároveň titulek okna — v `@media (display-mode: window-controls-overlay)` má výšku `env(titlebar-area-height)` a odsazení podle `titlebar-area-x/width`, celý je `app-region: drag` a odkazy, tlačítka a vyhledávání `no-drag` (jinak na ně nejde kliknout). Bez WCO má na lg 48 px. Na lg v hlavičce **není avatar** — vpravo by ho překryly ovládací prvky okna.
+- **Účet je na lg kartou `bo-account-card` dole v sidebaru**; popover nad ní je stejný `AccountMenuModalComponent` jako z avataru na mobilu (`size: "cover"`, ukotvený přes `ionShadowTarget`, protože Ionic jinak bere `event.target` — klik na avatar by ho posunul). Bootstrap zabírá třídu `.card`, proto `.account-card`. Menu sidebaru (`.menu`) se při malé výšce okna posouvá, karta a přepínač tmavého režimu zůstávají vždy vidět.
+
 ## User settings
 
 - **`User.settings` is an opaque `jsonb` blob owned by the frontend** — the backend never looks inside it. `GET /account/settings` and `PUT /account/settings` (whole object, `{ settings: … }`, `@IsObject()` only) are the only way in; the column is `select: false`, so it never rides along in `getMe` or the users list. Unknown keys survive a round trip untouched.

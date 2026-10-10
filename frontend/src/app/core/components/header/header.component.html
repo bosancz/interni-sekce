@@ -1,23 +1,31 @@
 @if (!showSearch()) {
-	<a routerLink="/" slot="start"><img src="assets/img/logo.svg" alt="Logo" height="56" /></a>
-	<h1 slot="start">
-		Bošán
-		@if (environment()) {
-			<span class="environment">{{ environment() }}</span>
-		}
-	</h1>
+	<div class="brand">
+		<a routerLink="/" class="logo"><img src="assets/img/logo.svg" alt="Logo" height="56" /></a>
+		<h1>
+			Bošán
+			@if (environment()) {
+				<span class="environment">{{ environment() }}</span>
+			}
+		</h1>
+	</div>
 }
 
 @if (isLg() || showSearch()) {
-	<bo-global-search [showCancelButton]="!isLg()" (close)="showSearch.set(false)" (searchBlur)="onSearchBlur()" />
+	<div class="search-area">
+		<bo-global-search [showCancelButton]="!isLg()" (close)="showSearch.set(false)" (searchBlur)="onSearchBlur()" />
+	</div>
 }
 
-<ion-buttons slot="end">
-	@if (!isLg() && !showSearch()) {
-		<ion-button fill="clear" size="large" (click)="showSearch.set(true)">
-			<ion-icon name="search-sharp"></ion-icon>
-		</ion-button>
-	}
+@if (isLg()) {
+	<div class="end-spacer"></div>
+} @else {
+	<ion-buttons slot="end">
+		@if (!showSearch()) {
+			<ion-button fill="clear" size="large" (click)="showSearch.set(true)">
+				<ion-icon name="search-sharp"></ion-icon>
+			</ion-button>
+		}
 
-	<bo-account-menu />
-</ion-buttons>
+		<bo-account-menu />
+	</ion-buttons>
+}
