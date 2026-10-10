@@ -1,0 +1,38 @@
+.gvs-switch {
+	display: inline-flex;
+	gap: 2px;
+	padding: 3px;
+	border: 1px solid var(--bo-line);
+	border-radius: var(--bo-radius-pill);
+	background: var(--bo-white);
+}
+
+.gvs-option {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 14px;
+	border: none;
+	border-radius: var(--bo-radius-pill);
+	background: transparent;
+	color: var(--bo-muted);
+	font-size: 0.875rem;
+	font-weight: 700;
+	cursor: pointer;
+	transition:
+		background-color 0.18s ease,
+		color 0.18s ease;
+
+	ion-icon {
+		font-size: 16px;
+	}
+
+	&:hover:not(.active) {
+		color: var(--bo-nav-active-fg);
+	}
+
+	&.active {
+		background: var(--bo-nav-active-bg);
+		color: var(--bo-nav-active-fg);
+	}
+}

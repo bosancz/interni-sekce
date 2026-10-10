@@ -1,0 +1,21 @@
+@use "./../../../../../styles/leaderboard-card" as *;
+@use "./../../../../../styles/pill-switch";
+
+:host {
+	display: block;
+}
+
+.paddlers-switch {
+	margin-bottom: 0.75rem;
+}
+
+.rank {
+	margin-inline-end: 0;
+}
+
+.km {
+	font-family: var(--font-san);
+	font-weight: 800;
+	color: var(--bo-heading);
+	white-space: nowrap;
+}

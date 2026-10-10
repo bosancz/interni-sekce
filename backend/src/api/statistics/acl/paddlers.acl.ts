@@ -1,7 +1,7 @@
 import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
 
-export const PadlersRankingPermission = new Permission<void>({
+export const PaddlersSummaryPermission = new Permission<void>({
 	linkTo: RootResponse,
 
 	allowed: {
@@ -9,7 +9,7 @@ export const PadlersRankingPermission = new Permission<void>({
 	},
 });
 
-export const PadlersTotalsPermission = new Permission<void>({
+export const PaddlersRankingPermission = new Permission<void>({
 	linkTo: RootResponse,
 
 	allowed: {
