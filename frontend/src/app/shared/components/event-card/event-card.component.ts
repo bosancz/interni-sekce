@@ -7,8 +7,10 @@ import { SDK } from "src/sdk";
 import { DateRangePipe } from "../../pipes/date-range.pipe";
 import { EventStatusPipe } from "../../pipes/event-status.pipe";
 import { EventPipe } from "../../pipes/event.pipe";
-import { JoinLeadersPipe } from "../../pipes/join-leaders.pipe";
+import { GroupPipe } from "../../pipes/group.pipe";
 import { MarkdownPipe } from "../../pipes/markdown.pipe";
+import { MemberProfilePhotoUrlPipe } from "../../pipes/member-profile-photo-url.pipe";
+import { MemberPipe } from "../../pipes/member.pipe";
 import { CardContentComponent } from "../card-content/card-content.component";
 import { CardFooterComponent } from "../card-footer/card-footer.component";
 import { CardHeaderComponent } from "../card-header/card-header.component";
@@ -31,7 +33,9 @@ import { CardComponent } from "../card/card.component";
 		DateRangePipe,
 		EventPipe,
 		EventStatusPipe,
-		JoinLeadersPipe,
+		GroupPipe,
+		MemberPipe,
+		MemberProfilePhotoUrlPipe,
 		MarkdownPipe,
 		CardComponent,
 		CardContentComponent,

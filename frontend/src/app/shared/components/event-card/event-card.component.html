@@ -77,7 +77,19 @@
 			<p class="mb-0">
 				@if (event.leaders?.length) {
 					Vede
-					<strong [innerHTML]="event.leaders! | joinLeaders"></strong>
+					@for (leader of event.leaders; track leader.id; let index = $index; let count = $count) {
+						<span class="leader"
+							><a class="leader-link" [routerLink]="['/databaze/clenove', leader.id]"
+								><span class="leader-avatar" [style.background-color]="leader.groupId | group: 'color'">
+									@if (leader | memberProfilePhotoUrl; as photoUrl) {
+										<img [src]="photoUrl" alt="" />
+									} @else {
+										{{ (leader | member: "nickname")?.charAt(0) }}
+									}</span
+								><strong>{{ leader | member: "nickname" }}</strong></a
+							></span
+						>{{ index < count - 2 ? ", " : index === count - 2 ? " a " : "" }}
+					}
 				} @else {
 					<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
 				}
