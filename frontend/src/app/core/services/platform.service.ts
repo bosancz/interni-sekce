@@ -33,6 +33,14 @@ export class PlatformService {
 
 	isTouch = signal(typeof navigator !== "undefined" && navigator.maxTouchPoints > 0);
 
+	private readonly standaloneQuery = window.matchMedia(
+		"(display-mode: standalone), (display-mode: window-controls-overlay), (display-mode: fullscreen)",
+	);
+
+	isStandalone = signal(
+		this.standaloneQuery.matches || (navigator as Navigator & { standalone?: boolean }).standalone === true,
+	);
+
 	constructor(private readonly platform: Platform) {
 		window.addEventListener(
 			"pointerdown",
@@ -41,5 +49,7 @@ export class PlatformService {
 			},
 			{ capture: true, passive: true },
 		);
+
+		this.standaloneQuery.addEventListener("change", (event) => this.isStandalone.set(event.matches));
 	}
 }
