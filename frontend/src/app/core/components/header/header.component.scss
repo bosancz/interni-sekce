@@ -105,8 +105,18 @@ ion-buttons ion-button {
 		width: 230px;
 		padding-left: 12px;
 
+		.logo {
+			width: 40px;
+			height: 40px;
+			overflow: hidden;
+			justify-content: center;
+			align-items: center;
+		}
+
 		img {
-			height: 32px;
+			flex: 0 0 auto;
+			height: 63px;
+			max-width: none;
 			width: auto;
 		}
 	}
