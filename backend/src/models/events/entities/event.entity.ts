@@ -82,7 +82,12 @@ export class Event {
 	@Column({ type: "varchar", nullable: true }) meetingPlaceStart!: string | null;
 	@Column({ type: "varchar", nullable: true }) meetingPlaceEnd!: string | null;
 	@Column({ type: "varchar", nullable: true }) type!: string | null;
-	@Column({ type: "numeric", nullable: true }) waterKm!: number | null;
+	@Column({
+		type: "numeric",
+		nullable: true,
+		transformer: { to: (value) => value, from: (value) => (value === null ? null : Number(value)) },
+	})
+	waterKm!: number | null;
 	@Column({ type: "varchar", nullable: true }) river!: string | null;
 	@Column({ type: "boolean", nullable: false, default: false }) leadersEvent!: boolean;
 	@Column({ type: "boolean", nullable: false, default: false }) hasRegistration!: boolean;
