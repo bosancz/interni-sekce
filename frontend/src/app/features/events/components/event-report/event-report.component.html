@@ -11,7 +11,7 @@
 	<div class="bo-empty-state">
 		<ion-icon name="document-text-outline"></ion-icon>
 		<strong>Report je zatím prázdný</strong>
-		<p>Sepište, jak akce proběhla.</p>
+		<p>Sepiš krátké shrnutí průběhu akce.</p>
 		<ion-button
 			fill="solid"
 			color="warning"
@@ -24,6 +24,30 @@
 	</div>
 } @else {
 	<p><ion-skeleton-text animated></ion-skeleton-text></p>
+}
+
+@if (event()) {
+	<div class="water">
+		<span class="water-field">
+			<span class="water-label">Řeka</span>
+			{{ event()?.river ?? "-" }}
+			@if (canEditReport()) {
+				<bo-edit-button (click)="editRiver()" />
+			}
+		</span>
+		<span class="water-field">
+			<span class="water-label">Kilometry na vodě</span>
+			{{ event()?.waterKm != null ? (event()?.waterKm | number: "1.0-1") + " km" : "-" }}
+			@if (canEditReport()) {
+				<bo-edit-button-number
+					label="Kilometry na vodě"
+					placeholder="42"
+					[value]="event()?.waterKm"
+					(update)="saveReportData({ waterKm: $event })"
+				/>
+			}
+		</span>
+	</div>
 }
 
 <h3 class="mt-5">Fotogalerie</h3>

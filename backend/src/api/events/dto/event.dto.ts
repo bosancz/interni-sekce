@@ -79,12 +79,12 @@ export class EventUpdateBody {
 	@IsOptional() @IsString() timeTill?: string | null;
 	@IsOptional() @IsString() meetingPlaceStart?: string | null;
 	@IsOptional() @IsString() meetingPlaceEnd?: string | null;
-	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsNumber() @Min(0) waterKm?: number | null;
-	@IsOptional() @IsString() river?: string | null;
 }
 
 export class EventReportUpdateBody {
-	@IsOptional() @IsString() report!: string | null;
+	@IsOptional() @IsString() report?: string | null;
+	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsNumber() @Min(0) waterKm?: number | null;
+	@IsOptional() @IsString() river?: string | null;
 }
 
 export class EventStatusChangeBody {
