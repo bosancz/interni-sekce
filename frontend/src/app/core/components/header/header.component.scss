@@ -24,12 +24,18 @@ bo-account-menu,
 .brand {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: 26px;
 	flex: 0 0 auto;
 	min-width: 0;
+	padding-left: 16px;
 
 	.logo {
 		display: flex;
+	}
+
+	img {
+		height: 34px;
+		width: auto;
 	}
 }
 
@@ -103,11 +109,11 @@ ion-buttons ion-button {
 
 	.brand {
 		width: 230px;
-		padding-left: 12px;
+		gap: 12px;
+		padding-left: 21px;
 
 		img {
 			height: 32px;
-			width: auto;
 		}
 	}
 
