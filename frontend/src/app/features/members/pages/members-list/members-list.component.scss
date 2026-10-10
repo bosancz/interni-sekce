@@ -21,6 +21,11 @@ td ion-badge {
 	font-size: 2rem;
 }
 
+.members-photo-empty {
+	background-color: transparent;
+	border: 2px solid var(--bo-neutral-badge);
+}
+
 ion-select::part(text) {
 	font-weight: normal;
 }
