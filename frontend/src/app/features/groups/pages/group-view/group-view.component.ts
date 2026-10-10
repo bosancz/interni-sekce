@@ -18,7 +18,7 @@ import { VerticalMenuComponent } from "src/app/shared/components/vertical-menu/v
 import { SDK } from "src/sdk";
 import { GroupInfoComponent } from "../../components/group-info/group-info.component";
 import { GroupMembersComponent } from "../../components/group-members/group-members.component";
-import { MemberCreateModalComponent } from "../../components/member-create-modal/member-create-modal.component";
+import { MemberCreateModalComponent } from "src/app/features/members/components/member-create-modal/member-create-modal.component";
 import { GroupsService } from "../../services/groups.service";
 
 @UntilDestroy()
@@ -52,7 +52,7 @@ export class GroupViewComponent implements OnInit {
 				icon: "create",
 				pinned: true,
 				hidden: !links?.updateGroup.applicable || !links?.updateGroup.allowed,
-				handler: () => this.navController.navigateForward(`/databaze/oddily/${this.group()?.id}/upravit`),
+				handler: () => this.navController.navigateForward(["/oddily", this.group()?.shortName, "upravit"]),
 			},
 			{
 				text: "Smazat",
@@ -97,7 +97,7 @@ export class GroupViewComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.route.params.subscribe((params) => {
-			if (params["id"]) this.groupsService.loadGroup(parseInt(params["id"]));
+			if (params["group"]) this.groupsService.loadGroup(params["group"]);
 		});
 
 		this.groupsService.currentGroup.pipe(untilDestroyed(this)).subscribe((group) => this.group.set(group));
@@ -145,7 +145,7 @@ export class GroupViewComponent implements OnInit {
 		await this.api.MembersApi.createMember(memberData);
 		await this.toastService.toast("Člen uložen.");
 
-		this.groupsService.loadGroup(group.id);
+		this.groupsService.loadGroup(group.shortName);
 	}
 
 	private async exportMembers() {

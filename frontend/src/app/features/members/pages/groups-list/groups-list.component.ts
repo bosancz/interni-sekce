@@ -43,7 +43,7 @@ export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 	}
 
 	openGroup(group: SDK.GroupResponseWithLinks) {
-		this.navController.navigateForward(["/databaze/oddily", group.id]);
+		this.navController.navigateForward(["/oddily", group.shortName]);
 	}
 
 	openDeletedGroups() {
@@ -103,7 +103,14 @@ export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 	}
 
 	private async createGroupConfirmed(groupData: SDK.CreateGroupBody) {
-		const group = await this.api.MembersApi.createGroup(groupData).then((res) => res.data);
+		let group: SDK.GroupResponse;
+		try {
+			group = await this.api.MembersApi.createGroup(groupData).then((res) => res.data);
+		} catch (err: any) {
+			const message = err?.response?.data?.message ?? "Oddíl se nepodařilo vytvořit.";
+			await this.toastService.toast(message, { color: "danger", duration: 4000 });
+			return;
+		}
 
 		await this.loadGroups();
 

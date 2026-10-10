@@ -11,6 +11,7 @@ import {
 	notificationsOutline,
 	openOutline,
 	optionsOutline,
+	peopleOutline,
 	person,
 	settings,
 	statsChartOutline,
@@ -24,6 +25,7 @@ import { NotificationsService } from "src/app/core/services/notifications.servic
 import { UserService } from "src/app/core/services/user.service";
 import { DarkModeToggleComponent } from "src/app/shared/components/dark-mode-toggle/dark-mode-toggle.component";
 import { UnreadBadgeComponent } from "src/app/shared/components/unread-badge/unread-badge.component";
+import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { VersionComponent } from "src/app/shared/components/version/version.component";
 
 @Component({
@@ -33,6 +35,7 @@ import { VersionComponent } from "src/app/shared/components/version/version.comp
 	imports: [
 		RouterLink,
 		RouterLinkActive,
+		GroupPipe,
 		IonList,
 		IonItem,
 		IonIcon,
@@ -69,6 +72,7 @@ export class SidebarComponent {
 	canAccessProgram = this.userService.canAccessProgram;
 	canAccessTreasurer = this.userService.canAccessTreasurer;
 	canAccessAdmin = this.userService.canAccessAdmin;
+	myGroupId = this.userService.myGroupId;
 
 	memberId = computed(() => this.userService.currentUser()?.member?.id);
 
@@ -94,6 +98,7 @@ export class SidebarComponent {
 			clipboardOutline,
 			walletOutline,
 			statsChartOutline,
+			peopleOutline,
 		});
 	}
 

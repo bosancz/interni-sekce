@@ -29,6 +29,8 @@ export class UserService {
 
 	readonly canAccessAdmin = this.isAdmin;
 
+	readonly myGroupId = computed(() => this.currentUser()?.member?.groupId ?? null);
+
 	constructor(
 		private api: ApiService,
 		private toastService: ToastService,
