@@ -4,6 +4,7 @@ import { OfflineKeys } from "src/app/core/offline/offline-responses";
 import {
 	clearOfflineEntries,
 	deleteOfflineEntriesExcept,
+	getOfflineEntry,
 	OfflineMeta,
 	putOfflineEntry,
 	readOfflineMeta,
@@ -47,7 +48,12 @@ export class OfflineDataService {
 		private userService: UserService,
 		private toastService: ToastService,
 	) {
-		this.userService.user.subscribe((user) => this.onUser(user));
+		effect(() => {
+			const user = this.userService.currentUser();
+			const links = this.api.links();
+			const offline = this.api.offline();
+			untracked(() => this.sync(user, links, offline));
+		});
 
 		effect(() => {
 			if (!this.api.servedOffline()) return;
@@ -55,15 +61,7 @@ export class OfflineDataService {
 		});
 	}
 
-	async enable() {
-		const user = this.userService.currentUser();
-		if (!user) return;
-
-		this.setMeta({ userId: user.id, downloadedAt: null });
-		await this.download();
-	}
-
-	async disable() {
+	private async disable() {
 		this.setMeta(null);
 		await clearOfflineEntries().catch((err) => this.logger.error("Clearing offline data failed", err));
 	}
@@ -78,18 +76,33 @@ export class OfflineDataService {
 		return this.running;
 	}
 
-	private onUser(user: SDK.AccountResponseWithLinks | null | undefined) {
+	private sync(
+		user: SDK.AccountResponseWithLinks | null | undefined,
+		links: SDK.RootResponseLinks | undefined,
+		offline: boolean,
+	) {
 		if (user === undefined) return;
 
-		const meta = this.meta();
-		if (!meta) return;
+		let meta = this.meta();
 
-		if (!user || user.id !== meta.userId) {
+		if (meta && (!user || user.id !== meta.userId)) {
 			this.disable();
+			meta = null;
+		}
+
+		if (!user || !links || offline) return;
+
+		if (!links.listMembers?.allowed) {
+			if (meta) this.disable();
 			return;
 		}
 
-		if (!this.api.offline() && this.isStale(meta)) this.download(true);
+		if (!meta) {
+			meta = { userId: user.id, downloadedAt: null };
+			this.setMeta(meta);
+		}
+
+		if (this.isStale(meta)) this.download(true);
 	}
 
 	private isStale(meta: OfflineMeta) {
@@ -133,7 +146,7 @@ export class OfflineDataService {
 			const members: SDK.MemberResponseWithLinks[] = [];
 			for (let offset = 0; ; offset += PAGE_SIZE) {
 				const page = await this.api.MembersApi.listMembers(
-					{ contacts: true, limit: PAGE_SIZE, offset },
+					{ active: true, contacts: true, limit: PAGE_SIZE, offset },
 					options,
 				).then((res) => res.data);
 				members.push(...page);
@@ -159,11 +172,7 @@ export class OfflineDataService {
 					await put(OfflineKeys.contacts(member.id), contacts);
 
 					if (detail.insuranceCardFile && detail._links.getInsuranceCard?.allowed) {
-						const card = await this.api.MembersApi.getInsuranceCard(member.id, {
-							...options,
-							responseType: "blob",
-						}).then((res) => res.data as unknown as Blob);
-						await put(OfflineKeys.insuranceCard(member.id), card);
+						await this.downloadInsuranceCard(member.id, put);
 						insuranceCards++;
 					}
 				}),
@@ -193,6 +202,27 @@ export class OfflineDataService {
 			if (!silent) this.toastService.toast("Stažení databáze se nezdařilo.", { color: "danger" });
 			return false;
 		}
+	}
+
+	private async downloadInsuranceCard(memberId: number, put: (key: string, data: unknown) => Promise<void>) {
+		const [cached, cachedEtag] = await Promise.all([
+			getOfflineEntry<Blob>(OfflineKeys.insuranceCard(memberId)),
+			getOfflineEntry<string>(OfflineKeys.insuranceCardEtag(memberId)),
+		]);
+		const conditional = cached !== undefined && !!cachedEtag;
+
+		const res = await this.api.MembersApi.getInsuranceCard(memberId, {
+			offlineFallback: false,
+			responseType: "blob",
+			headers: conditional ? { "If-None-Match": cachedEtag } : undefined,
+			validateStatus: (status) => (status >= 200 && status < 300) || (conditional && status === 304),
+		});
+
+		const etag = res.headers["etag"] as string | undefined;
+		const card = res.status === 304 ? cached : (res.data as unknown as Blob);
+
+		await put(OfflineKeys.insuranceCard(memberId), card);
+		if (etag) await put(OfflineKeys.insuranceCardEtag(memberId), etag);
 	}
 
 	private async runPool(tasks: (() => Promise<void>)[], onDone: () => void) {
