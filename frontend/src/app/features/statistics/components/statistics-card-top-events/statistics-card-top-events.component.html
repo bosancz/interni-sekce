@@ -1,5 +1,5 @@
 @if (canSeeEvents()) {
-	<bo-home-leaderboard-card title="Nejlepší akce" infoTitle="Jak se počítají děťodny" [infoLines]="infoLines">
+	<bo-statistics-leaderboard-card title="Nejlepší akce" infoTitle="Jak se počítají děťodny" [infoLines]="infoLines">
 		@if (statistics(); as statistics) {
 			@if (statistics.events.length) {
 				<ion-list lines="full">
@@ -39,5 +39,5 @@
 				}
 			</ion-list>
 		}
-	</bo-home-leaderboard-card>
+	</bo-statistics-leaderboard-card>
 }

@@ -12,6 +12,7 @@ import {
 	openOutline,
 	person,
 	settings,
+	statsChartOutline,
 	walletOutline,
 } from "ionicons/icons";
 import { map } from "rxjs";
@@ -88,6 +89,7 @@ export class SidebarComponent {
 			openOutline,
 			clipboardOutline,
 			walletOutline,
+			statsChartOutline,
 		});
 	}
 

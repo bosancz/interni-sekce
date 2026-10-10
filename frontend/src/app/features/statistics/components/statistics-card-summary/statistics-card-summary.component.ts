@@ -3,16 +3,16 @@ import { Component, computed, effect, model, signal } from "@angular/core";
 import { IonSkeletonText } from "@ionic/angular/standalone";
 import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
-import { HomeLeaderboardCardComponent } from "../home-leaderboard-card/home-leaderboard-card.component";
+import { StatisticsLeaderboardCardComponent } from "../statistics-leaderboard-card/statistics-leaderboard-card.component";
 
 @Component({
-	selector: "bo-home-card-statistics",
-	templateUrl: "./home-card-statistics.component.html",
-	styleUrls: ["./home-card-statistics.component.scss"],
+	selector: "bo-statistics-card-summary",
+	templateUrl: "./statistics-card-summary.component.html",
+	styleUrls: ["./statistics-card-summary.component.scss"],
 
-	imports: [I18nPluralPipe, IonSkeletonText, HomeLeaderboardCardComponent],
+	imports: [I18nPluralPipe, IonSkeletonText, StatisticsLeaderboardCardComponent],
 })
-export class HomeCardStatisticsComponent {
+export class StatisticsCardSummaryComponent {
 	statistics = signal<SDK.SummaryResponse | undefined>(undefined);
 
 	year = model.required<number>();
