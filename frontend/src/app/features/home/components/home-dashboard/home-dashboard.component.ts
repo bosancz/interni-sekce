@@ -1,6 +1,6 @@
 import { Component, computed, effect, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { IonIcon, PopoverController } from "@ionic/angular/standalone";
+import { IonIcon, IonSpinner, PopoverController } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
@@ -43,6 +43,7 @@ const months = [
 		PageContentComponent,
 		ButtonSquareComponent,
 		IonIcon,
+		IonSpinner,
 		RouterLink,
 	],
 })
@@ -57,6 +58,7 @@ export class HomeDashboardComponent {
 	monthTitle = computed(() => `${months[this.currentMonth().month - 1]} ${this.currentMonth().year}`);
 
 	events = signal<SDK.EventResponseWithLinks[]>([]);
+	loading = signal(false);
 
 	user = this.userService.user;
 
@@ -85,10 +87,15 @@ export class HomeDashboardComponent {
 
 	async loadCalendarEvents(dateFrom: DateTime, dateTill: DateTime) {
 		const request = ++this.calendarRequest;
-		const events = await this.api.EventsApi.listEvents({
-			dateFrom: dateFrom.toISODate()!,
-			dateTill: dateTill.toISODate()!,
-		}).then((res) => res.data);
-		if (request === this.calendarRequest) this.events.set(events);
+		this.loading.set(true);
+		try {
+			const events = await this.api.EventsApi.listEvents({
+				dateFrom: dateFrom.toISODate()!,
+				dateTill: dateTill.toISODate()!,
+			}).then((res) => res.data);
+			if (request === this.calendarRequest) this.events.set(events);
+		} finally {
+			if (request === this.calendarRequest) this.loading.set(false);
+		}
 	}
 }
