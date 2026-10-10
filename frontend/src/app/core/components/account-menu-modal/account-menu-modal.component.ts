@@ -1,9 +1,9 @@
-import { Component } from "@angular/core";
+import { Component, computed } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { RouterLink } from "@angular/router";
 import { IonIcon, IonItem, IonLabel, IonList, NavController, PopoverController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { bugOutline, logOut, notificationsOutline, person, settings } from "ionicons/icons";
+import { bugOutline, logOut, notificationsOutline, optionsOutline, person, settings } from "ionicons/icons";
 import { BugReportService } from "src/app/core/services/bug-report.service";
 import { LoginService } from "src/app/core/services/login.service";
 import { NotificationsService } from "src/app/core/services/notifications.service";
@@ -33,6 +33,8 @@ export class AccountMenuModalComponent {
 
 	canAccessAdmin = this.userService.canAccessAdmin;
 
+	memberId = computed(() => this.userService.currentUser()?.member?.id);
+
 	isLg = toSignal(this.platformService.isLg);
 
 	unreadCount = this.notificationsService.unreadCount;
@@ -46,7 +48,7 @@ export class AccountMenuModalComponent {
 		private readonly bugReportService: BugReportService,
 		private readonly notificationsService: NotificationsService,
 	) {
-		addIcons({ person, settings, logOut, bugOutline, notificationsOutline });
+		addIcons({ person, settings, logOut, bugOutline, notificationsOutline, optionsOutline });
 	}
 
 	async navigate(path: string) {

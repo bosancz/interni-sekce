@@ -1,55 +1,8 @@
-<bo-page-header title="Můj účet" />
+<bo-page-header title="Nastavení" />
 
 <bo-page-content [padding]="true">
 	@if (user(); as user) {
 		<div class="account-layout">
-			<bo-card class="profile-card">
-				<bo-card-content>
-					<div class="profile">
-						<bo-avatar
-							class="profile-avatar"
-							[initials]="user.member! | member: 'initials'"
-							[style.background-color]="user.member?.groupId | group: 'color'"
-						/>
-
-						<div class="profile-info">
-							<div class="profile-name san">
-								@if (user.member; as member) {
-									{{ member.firstName }} {{ member.lastName }}
-								} @else {
-									{{ user.login }}
-								}
-							</div>
-
-							<div class="profile-sub">
-								@if (user.member?.nickname; as nickname) {
-									„{{ nickname }}"
-									@if (user.email) {
-										·
-									}
-								}
-								@if (user.email) {
-									<a [href]="'mailto:' + user.email">{{ user.email }}</a>
-								}
-							</div>
-
-							<div class="profile-pills">
-								@for (role of user.roles; track role) {
-									<span class="bo-pill bo-pill-blue">{{ role }}</span>
-								}
-								@if (user.member?.groupId; as groupId) {
-									<span class="bo-pill">{{ groupId | group: "name" }}</span>
-								}
-							</div>
-
-							@if (!user.member) {
-								<div class="profile-unpaired">Nespárováno s členským účtem</div>
-							}
-						</div>
-					</div>
-				</bo-card-content>
-			</bo-card>
-
 			<div class="account-grid">
 				<bo-card>
 					<bo-card-header>
