@@ -158,32 +158,17 @@ ion-buttons ion-button {
 
 @media (display-mode: window-controls-overlay) {
 	:host {
-		height: env(titlebar-area-height, 33px);
+		height: max(env(titlebar-area-height, 33px), 48px);
 		padding-inline-start: env(titlebar-area-x, 0);
 		padding-inline-end: calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw));
 
 		.brand {
-			gap: 8px;
 			padding-left: 10px;
-
-			img {
-				height: 24px;
-				width: auto;
-			}
-		}
-
-		h1 {
-			font-size: 18px;
-		}
-
-		bo-account-menu {
-			padding: 0 0.25rem;
-			font-size: 0.7em;
 		}
 	}
 
 	:host(.lg) {
-		height: env(titlebar-area-height, 33px);
+		height: max(env(titlebar-area-height, 33px), 48px);
 
 		.brand {
 			width: calc(230px - env(titlebar-area-x, 0px));
@@ -191,22 +176,6 @@ ion-buttons ion-button {
 
 		.end-spacer {
 			display: none;
-		}
-
-		::ng-deep bo-global-search .search ion-searchbar {
-			height: 25px;
-			font-size: 13px;
-
-			.searchbar-input {
-				padding-inline-start: 33px;
-				line-height: 25px;
-			}
-
-			.searchbar-search-icon {
-				inset-inline-start: 12px;
-				width: 15px;
-				height: 15px;
-			}
 		}
 	}
 }
