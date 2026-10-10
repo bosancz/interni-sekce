@@ -76,5 +76,21 @@
 			"type": "image/png",
 			"purpose": "maskable"
 		}
+	],
+	"screenshots": [
+		{
+			"src": "assets/img/app-screenshots/desktop.webp",
+			"sizes": "1280x800",
+			"type": "image/webp",
+			"form_factor": "wide",
+			"label": "Bošán na počítači"
+		},
+		{
+			"src": "assets/img/app-screenshots/mobile.webp",
+			"sizes": "780x1688",
+			"type": "image/webp",
+			"form_factor": "narrow",
+			"label": "Bošán na mobilu"
+		}
 	]
 }

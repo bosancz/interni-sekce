@@ -261,3 +261,7 @@ cd backend && npm ci && npm run migrations:run
 **pgvector ≥ 0.7** is needed too, and Ubuntu's `postgresql-16-pgvector` is 0.6 (no `halfvec`) while PGDG's package wants a newer `postgresql-16`. Add the PGDG repo (`https://apt.postgresql.org/pub/repos/apt noble-pgdg main`, key `ACCC4CF8.asc`), `apt-get download postgresql-16-pgvector`, `dpkg -x` it and copy `vector.so` into `/usr/lib/postgresql/16/lib` and `vector*` into `/usr/share/postgresql/16/extension` (before the first `migrations:run`, or `DROP EXTENSION vector` afterwards).
 
 **PostGIS** (needed by `Event.placeGeometry`) is not preinstalled: if `CREATE EXTENSION postgis` fails, `apt-get update && apt-get install -y postgresql-16-postgis-3` — the `update` is required. `unaccent` ships with core.
+
+## Screenshoty aplikace
+
+- `assets/img/app-screenshots/{desktop,mobile}.webp` ukazuje karta Aplikace v Nastavení (`bo-account-app`) a nese je i `screenshots` v `manifest.json` (instalační dialog Chromu). Nafocené Playwrightem na seedu (`bilbo`, 1280×800 a 390×776 @2x; mobil pak `sharp` doplní na 390×844 o stavový řádek 44 px v barvě hlavičky a 24 px s indikátorem, aby rohy rámečku telefonu nesahaly na logo a avatar): Chromium neumí emulovat `display-mode`, takže se v odpovědích dev serveru přepisuje `display-mode: …` na `min-width: 0px` (WCO navíc `env(titlebar-area-width, 100vw)` na `calc(100vw - 138px)` a ovládací prvky okna jako SVG v `body::after`), `matchMedia` se přebije init skriptem a štítek `.environment` se skryje.

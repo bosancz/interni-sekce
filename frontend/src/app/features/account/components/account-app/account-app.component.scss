@@ -50,6 +50,79 @@ ion-button {
 	align-self: center;
 }
 
+.app-screenshots {
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	gap: 24px;
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 8px 16px 20px;
+}
+
+.app-screenshot {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	min-width: 0;
+
+	img {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
+	figcaption {
+		color: var(--bo-muted);
+		font-size: 0.875rem;
+	}
+}
+
+.app-screenshot-desktop {
+	flex: 1.6 1 0;
+}
+
+.app-screenshot-mobile {
+	flex: 0.462 1 0;
+}
+
+.app-window {
+	width: 100%;
+	border-radius: 8px;
+	overflow: hidden;
+	border: 1px solid var(--bo-line);
+	box-shadow: 0 8px 24px rgba(20, 30, 80, 0.18);
+}
+
+.app-phone {
+	width: 100%;
+	padding: 6px;
+	border-radius: 24px;
+	background: #1b1d24;
+	box-shadow: 0 8px 24px rgba(20, 30, 80, 0.18);
+
+	img {
+		border-radius: 18px;
+	}
+}
+
+@media (max-width: 575.98px) {
+	.app-screenshots {
+		gap: 12px;
+	}
+
+	.app-phone {
+		padding: 4px;
+		border-radius: 16px;
+
+		img {
+			border-radius: 12px;
+		}
+	}
+}
+
 @media (max-width: 991.98px) {
 	.app-row {
 		flex-wrap: wrap;

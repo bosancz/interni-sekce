@@ -7,6 +7,7 @@ import {
 	informationCircleOutline,
 	phonePortraitOutline,
 } from "ionicons/icons";
+import { PlatformService } from "src/app/core/services/platform.service";
 import { PwaInstallService } from "src/app/core/services/pwa-install.service";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
@@ -24,7 +25,12 @@ export class AccountAppComponent {
 
 	readonly installed = this.pwaInstall.installed;
 
-	constructor(private readonly pwaInstall: PwaInstallService) {
+	readonly deviceName = this.platformService.isMobile.value ? "mobil" : "počítač";
+
+	constructor(
+		private readonly pwaInstall: PwaInstallService,
+		private readonly platformService: PlatformService,
+	) {
 		addIcons({
 			phonePortraitOutline,
 			informationCircleOutline,
