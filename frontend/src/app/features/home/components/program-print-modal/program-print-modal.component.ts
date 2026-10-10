@@ -38,17 +38,11 @@ export class ProgramPrintModalComponent extends InputModalComponent implements O
 			return;
 		}
 
-		const requestOptions = {
-			filter: {
-				dateFrom: { $lte: dateRange[1] },
-				dateTill: { $gte: dateRange[0] },
-				status: "public",
-			},
-			select: "_id name description dateFrom dateTill leaders",
-		};
-
-		//TODO: use options above
-		const events = await this.api.EventsApi.listEvents().then((res) => res.data);
+		const events = await this.api.EventsApi.listEvents({
+			dateFrom: dateRange[0],
+			dateTill: dateRange[1],
+			status: ["public"],
+		}).then((res) => res.data);
 
 		if (!events.length) {
 			this.toasts.toast("Nelze vygenerovat program, ve vybraném rozmezí nejsou žádné akce.");

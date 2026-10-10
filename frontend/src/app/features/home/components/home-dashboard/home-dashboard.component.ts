@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, signal } from "@angular/core";
+import { Component, computed, effect, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonIcon, PopoverController } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
@@ -46,7 +46,7 @@ const months = [
 		RouterLink,
 	],
 })
-export class HomeDashboardComponent implements OnInit {
+export class HomeDashboardComponent {
 	view = signal("home");
 
 	currentMonth = signal(DateTime.local().startOf("month"));
@@ -69,10 +69,8 @@ export class HomeDashboardComponent implements OnInit {
 		public popoverController: PopoverController,
 	) {
 		addIcons({ chevronBackOutline, chevronForwardOutline });
-	}
 
-	ngOnInit(): void {
-		this.loadCalendarEvents();
+		effect(() => this.loadCalendarEvents(this.dateFrom(), this.dateTill()));
 	}
 
 	previousMonth() {
@@ -83,8 +81,14 @@ export class HomeDashboardComponent implements OnInit {
 		this.currentMonth.update((month) => month.plus({ months: 1 }));
 	}
 
-	async loadCalendarEvents() {
-		const events = await this.api.EventsApi.listEvents().then((res: any) => res.data);
-		this.events.set(events);
+	private calendarRequest = 0;
+
+	async loadCalendarEvents(dateFrom: DateTime, dateTill: DateTime) {
+		const request = ++this.calendarRequest;
+		const events = await this.api.EventsApi.listEvents({
+			dateFrom: dateFrom.toISODate()!,
+			dateTill: dateTill.toISODate()!,
+		}).then((res) => res.data);
+		if (request === this.calendarRequest) this.events.set(events);
 	}
 }
