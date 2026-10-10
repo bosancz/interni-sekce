@@ -11,6 +11,7 @@ export const OfflineKeys = {
 	member: (id: number) => `member:${id}`,
 	contacts: (id: number) => `contacts:${id}`,
 	insuranceCard: (id: number) => `insurance-card:${id}`,
+	insuranceCardEtag: (id: number) => `insurance-card-etag:${id}`,
 };
 
 type Member = SDK.MemberResponseWithLinks;

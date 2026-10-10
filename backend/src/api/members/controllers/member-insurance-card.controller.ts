@@ -20,6 +20,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { createReadStream } from "fs";
+import { stat } from "fs/promises";
 import { contentType } from "mime-types";
 import { extname } from "path";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
@@ -64,10 +65,17 @@ export class MemberInsuranceCardController {
 		if (!member.insuranceCardFile) throw new NotFoundException("Insurance card not found");
 		const path = this.getInsuraceCardPath(member.id, member.insuranceCardFile);
 
-		try {
-			await this.filesService.fileAccessible(path);
-		} catch {
+		const stats = await stat(path).catch(() => {
 			throw new NotFoundException("Insurance card file not found");
+		});
+
+		const etag = `W/"${stats.size.toString(16)}-${Math.floor(stats.mtimeMs).toString(16)}"`;
+		res.setHeader("ETag", etag);
+		res.setHeader("Cache-Control", "private, no-cache");
+
+		if (req.headers["if-none-match"] === etag) {
+			res.status(304).end();
+			return;
 		}
 
 		res.setHeader("Content-Disposition", `inline; filename="insurance_card.${member.insuranceCardFile}"`);
