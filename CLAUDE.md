@@ -46,6 +46,7 @@
 ## Hlavička a sidebar (WCO)
 
 - **Nainstalovaná PWA běží ve Window Controls Overlay** (`display_override` v `manifest.json`): `bo-header` je zároveň titulek okna — v `@media (display-mode: window-controls-overlay)` má výšku `max(env(titlebar-area-height), 48px)` (samotný titulek okna je jen ~32 px a vyhledávání se do něj nevešlo) a odsazení podle `titlebar-area-x/width`, celý je `app-region: drag` a odkazy, tlačítka a vyhledávání `no-drag` (jinak na ně nejde kliknout). Bez WCO má na lg 48 px. Na lg v hlavičce **není avatar** — vpravo by ho překryly ovládací prvky okna.
+- **Šipky Zpět/Vpřed v hlavičce** (`history-nav`) jsou jen v nainstalované PWA na desktopu (`PlatformService.isStandalone` — `display-mode` standalone/WCO/fullscreen — a ne `isMobile`), kde prohlížeč žádné nemá. Zakázání bere z Navigation API (`navigation.canGoBack/canGoForward`), bez něj zůstávají povolené.
 - **Účet je na lg kartou `bo-account-card` dole v sidebaru**; popover nad ní je stejný `AccountMenuModalComponent` jako z avataru na mobilu (`size: "cover"`, ukotvený přes `ionShadowTarget`, protože Ionic jinak bere `event.target` — klik na avatar by ho posunul). Bootstrap zabírá třídu `.card`, proto `.account-card`. Menu sidebaru (`.menu`) se při malé výšce okna posouvá, karta a přepínač tmavého režimu zůstávají vždy vidět.
 
 ## User settings

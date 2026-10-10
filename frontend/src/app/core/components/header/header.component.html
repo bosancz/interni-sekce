@@ -8,6 +8,23 @@
 			}
 		</h1>
 	</div>
+
+	@if (showHistoryNav()) {
+		<ion-buttons class="history-nav">
+			<ion-button fill="clear" title="Zpět" aria-label="Zpět" [disabled]="!canGoBack()" (click)="goBack()">
+				<ion-icon slot="icon-only" name="arrow-back-sharp"></ion-icon>
+			</ion-button>
+			<ion-button
+				fill="clear"
+				title="Vpřed"
+				aria-label="Vpřed"
+				[disabled]="!canGoForward()"
+				(click)="goForward()"
+			>
+				<ion-icon slot="icon-only" name="arrow-forward-sharp"></ion-icon>
+			</ion-button>
+		</ion-buttons>
+	}
 }
 
 @if (isLg() || showSearch()) {
