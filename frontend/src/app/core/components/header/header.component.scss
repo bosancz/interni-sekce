@@ -56,6 +56,8 @@ h1 {
 
 ::ng-deep bo-account-menu bo-avatar {
 	background-color: var(--san-yellow) !important;
+	border: 2px solid #fff;
+	box-sizing: border-box;
 
 	h3 {
 		color: #fff !important;
