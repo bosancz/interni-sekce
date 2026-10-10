@@ -122,7 +122,7 @@ export class FeedbackService {
 				labels: [this.config.github.bugReportLabel],
 			});
 
-			await this.recordBugReport(report.userId, repo, issue.number, title);
+			await this.recordBugReport(report.userId, repo, issue.number, title, this.getPagePath(report.url));
 
 			this.logger.verbose(`Bug report filed as GitHub issue #${issue.number} (${issue.url}).`);
 			return issue;
@@ -200,9 +200,26 @@ export class FeedbackService {
 			.join("\n");
 	}
 
-	private async recordBugReport(userId: number, repo: string, issueNumber: number, title: string) {
+	private getPagePath(url?: string): string | null {
+		if (!url) return null;
+
 		try {
-			await this.bugReports.createBugReport({ userId, repo, issueNumber, title });
+			const { pathname, search, hash } = new URL(url, this.config.app.baseUrl);
+			return `${pathname}${search}${hash}`;
+		} catch {
+			return null;
+		}
+	}
+
+	private async recordBugReport(
+		userId: number,
+		repo: string,
+		issueNumber: number,
+		title: string,
+		path: string | null,
+	) {
+		try {
+			await this.bugReports.createBugReport({ userId, repo, issueNumber, title, path });
 		} catch (err) {
 			this.logger.error(`Failed to record bug report for issue #${issueNumber}: ${(err as Error).message}`);
 		}

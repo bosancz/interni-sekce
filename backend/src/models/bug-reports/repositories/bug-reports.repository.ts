@@ -8,6 +8,7 @@ export interface BugReportData {
 	repo: string;
 	issueNumber: number;
 	title: string;
+	path: string | null;
 }
 
 @Injectable()
