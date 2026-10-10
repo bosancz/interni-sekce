@@ -29,6 +29,12 @@ export const appRoutes: Routes = [
 	},
 
 	{
+		path: "oddily",
+		title: "Oddíl",
+		loadChildren: () => import("./features/groups/groups.routing").then((m) => m.groupsRoutes),
+	},
+
+	{
 		path: "program",
 		title: "Program",
 		canMatch: [roleGuard("program")],

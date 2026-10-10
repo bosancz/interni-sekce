@@ -31,6 +31,13 @@ import {
 } from "../acl/groups.acl";
 import { CreateGroupBody, GroupResponse, ListGroupsQuery, UpdateGroupBody } from "../dto/group.dto";
 
+function throwOnDuplicateShortName(err: unknown): never {
+	if (err instanceof QueryFailedError && (err.driverError as { code?: string }).code === "23505") {
+		throw new ConflictException("Oddíl s touto zkratkou už existuje.");
+	}
+	throw err;
+}
+
 @Controller("groups")
 @Authenticated()
 @AcController()
@@ -52,7 +59,7 @@ export class GroupsController {
 	@ApiResponse({ status: HttpStatus.CREATED, type: WithLinks(GroupResponse) })
 	async createGroup(@Req() req: Request, @Body() groupData: CreateGroupBody) {
 		GroupCreatePermission.canOrThrow(req);
-		return this.groups.createGroup(groupData);
+		return this.groups.createGroup(groupData).catch(throwOnDuplicateShortName);
 	}
 
 	@Get(":groupId")
@@ -80,7 +87,7 @@ export class GroupsController {
 
 		GroupEditPermission.canOrThrow(req, group);
 
-		await this.groups.updateGroup(groupId, body);
+		await this.groups.updateGroup(groupId, body).catch(throwOnDuplicateShortName);
 	}
 
 	@Delete(":groupId")

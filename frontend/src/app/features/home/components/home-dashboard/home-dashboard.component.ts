@@ -12,6 +12,7 @@ import { UserService } from "src/app/core/services/user.service";
 import { ButtonSquareComponent } from "src/app/shared/components/button-square/button-square.component";
 import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
+import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { SDK } from "src/sdk";
 import { HomeCardMyEventsComponent } from "../home-card-my-events/home-card-my-events.component";
 import { HomeCardPhotoOfDayComponent } from "../home-card-photo-of-day/home-card-photo-of-day.component";
@@ -40,6 +41,7 @@ const months = [
 	imports: [
 		EventCalendarComponent,
 		HomeCardMyEventsComponent,
+		GroupPipe,
 		HomeCardNoleaderEventsComponent,
 		HomeCardPhotoOfDayComponent,
 		PageContentComponent,
@@ -67,6 +69,7 @@ export class HomeDashboardComponent {
 
 	canAccessProgram = this.userService.canAccessProgram;
 	canAccessTreasurer = this.userService.canAccessTreasurer;
+	myGroupId = this.userService.myGroupId;
 
 	offline = this.offlineDataService.offline;
 	offlineDownloadedAt = computed(() => this.offlineDataService.meta()?.downloadedAt ?? null);

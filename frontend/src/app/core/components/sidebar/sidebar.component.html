@@ -25,6 +25,12 @@
 		<span class="nav-icon nav-icon--databaze me-3"></span>
 		<ion-label>Databáze</ion-label>
 	</ion-item>
+	@if (myGroupId(); as groupId) {
+		<ion-item [routerLink]="['/oddily', groupId | group: 'code']" routerLinkActive="active">
+			<ion-icon name="people-outline" class="me-3"></ion-icon>
+			<ion-label>Oddíl</ion-label>
+		</ion-item>
+	}
 	<ion-item
 		routerLink="/"
 		[queryParams]="{ tab: 'calendar' }"
