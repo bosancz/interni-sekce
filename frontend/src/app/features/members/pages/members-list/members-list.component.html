@@ -142,6 +142,20 @@
 		[order]="sortOrder()"
 		(sortChange)="onSortChange($event)"
 	>
+		@if (viewSelections().photo) {
+			<admin-table-column [start]="true" headerClass="members-photo-column" cellClass="members-photo-column">
+				<ng-container *adminCell="let member">
+					<bo-avatar
+						class="members-photo"
+						[initials]="member | member: 'initials'"
+						[photoUrl]="member | memberProfilePhotoUrl"
+						color="#fff"
+						[style.background-color]="(member.groupId | group: 'color') || 'var(--bo-neutral-badge)'"
+					/>
+				</ng-container>
+			</admin-table-column>
+		}
+
 		@if (viewSelections().nickname) {
 			<admin-table-column
 				header="Přezdívka"

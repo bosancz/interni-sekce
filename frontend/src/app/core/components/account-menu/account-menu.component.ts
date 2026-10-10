@@ -6,12 +6,13 @@ import { UserService } from "src/app/core/services/user.service";
 import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
+import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
 
 @Component({
 	selector: "bo-account-menu",
 	templateUrl: "./account-menu.component.html",
 	styleUrl: "./account-menu.component.scss",
-	imports: [AvatarComponent, MemberPipe, GroupPipe],
+	imports: [AvatarComponent, MemberPipe, MemberProfilePhotoUrlPipe, GroupPipe],
 })
 export class AccountMenuComponent {
 	user = this.userService.currentUser;

@@ -91,6 +91,14 @@
 						[routerLink]="resolveLink(row)"
 						(click)="onRowClick(row)"
 					>
+						@if (startColumn(); as startColumn) {
+							<div slot="start" class="admin-table-start">
+								<ng-container
+									[ngTemplateOutlet]="startColumn.cellTemplate()"
+									[ngTemplateOutletContext]="{ $implicit: row }"
+								></ng-container>
+							</div>
+						}
 						<ion-label>
 							@for (column of lineColumns(); track column) {
 								@if (column.primary()) {

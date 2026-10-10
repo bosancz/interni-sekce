@@ -10,6 +10,15 @@ td ion-badge {
 :host ::ng-deep .members-table {
 	table-layout: fixed;
 	width: 100%;
+
+	.members-photo-column {
+		width: 56px;
+		vertical-align: middle;
+	}
+}
+
+.members-photo {
+	font-size: 2rem;
 }
 
 ion-select::part(text) {

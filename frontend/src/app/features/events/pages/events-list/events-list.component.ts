@@ -44,6 +44,7 @@ import { ExtractExisting, UrlParams } from "src/helpers/typings";
 import { SDK } from "src/sdk";
 import { GroupPipe } from "../../../../shared/pipes/group.pipe";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
+import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
 import { EventCreateModalComponent } from "../../components/event-create-modal/event-create-modal.component";
 import { getPagesToLoad, getParamsKey, ListLoadMode } from "src/helpers/list-loading";
 
@@ -69,6 +70,7 @@ type EventStatusActions = ExtractExisting<
 		EventHoverPreviewComponent,
 		GroupPipe,
 		MemberPipe,
+		MemberProfilePhotoUrlPipe,
 		AdminTableComponent,
 		AdminTableColumnComponent,
 		AdminTableCellDirective,

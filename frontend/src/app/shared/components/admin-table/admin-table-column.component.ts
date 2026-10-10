@@ -10,6 +10,8 @@ export class AdminTableColumnComponent {
 
 	right = input<boolean>(false);
 
+	start = input<boolean>(false);
+
 	primary = input<boolean>(false);
 
 	hideMobileLabel = input<boolean>(false);

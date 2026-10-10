@@ -41,6 +41,8 @@ import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
+import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
+import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
 import { SDK } from "src/sdk";
 import { MembershipPaymentStates } from "../../../../core/config/membership";
 import { MemberCreateModalComponent } from "../../components/member-create-modal/member-create-modal.component";
@@ -54,6 +56,7 @@ const COLUMNS_ICON =
 	'<line x1="320" y1="80" x2="320" y2="432" stroke="currentColor" stroke-width="32"/></svg>';
 
 const MEMBERS_LIST_COLUMNS: { [key: string]: boolean } = {
+	photo: true,
 	nickname: true,
 	firstName: true,
 	lastName: true,
@@ -93,6 +96,9 @@ const MEMBERS_LIST_COLUMNS: { [key: string]: boolean } = {
 		FormsModule,
 		KeyValuePipe,
 		MemberPipe,
+		MemberProfilePhotoUrlPipe,
+		AvatarComponent,
+		GroupPipe,
 		DefaultContactPipe,
 		GroupBadgeComponent,
 		IonInfiniteScroll,
@@ -487,6 +493,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 	public getViewSelectionLabel(key: string): string {
 		const labels: { [key: string]: string } = {
+			photo: "Fotka",
 			nickname: "Přezdívka",
 			firstName: "Jméno",
 			lastName: "Příjmení",
