@@ -1,0 +1,86 @@
+:host {
+	display: block;
+}
+
+.account-card {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	width: 100%;
+	padding: 8px 10px;
+	border: 1px solid var(--bo-line);
+	border-radius: var(--bo-radius-btn);
+	background: var(--bo-white);
+	color: var(--bo-ink);
+	font: inherit;
+	text-align: start;
+	cursor: pointer;
+
+	&:hover,
+	&.open {
+		background: var(--bo-paper);
+	}
+
+	&:focus {
+		outline: none;
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--bo-blue);
+		outline-offset: 2px;
+	}
+}
+
+.avatar {
+	position: relative;
+	flex: 0 0 auto;
+	display: flex;
+
+	bo-avatar {
+		font-size: 36px;
+		background-color: var(--san-yellow);
+
+		::ng-deep h3 {
+			color: #fff !important;
+		}
+	}
+}
+
+.unread-dot {
+	position: absolute;
+	top: -2px;
+	right: -2px;
+	width: 11px;
+	height: 11px;
+	border-radius: 50%;
+	background-color: var(--ion-color-danger);
+	border: 2px solid var(--bo-white);
+	pointer-events: none;
+}
+
+.text {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.name {
+	font-weight: 800;
+	font-size: 15px;
+	color: var(--bo-ink);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.subline {
+	font-size: 12.8px;
+	color: var(--bo-muted);
+}
+
+ion-icon {
+	flex: 0 0 auto;
+	font-size: 16px;
+	color: var(--bo-muted);
+}

@@ -3,7 +3,6 @@
 	flex-direction: column;
 	height: 100%;
 	--ion-item-background: transparent;
-	position: relative;
 	background-color: var(--bo-white);
 	border-right: 1px solid var(--bo-line);
 	padding: 0.5rem;
@@ -66,11 +65,6 @@ ion-item {
 		--nav-icon-src: url("/assets/img/button-program.svg");
 	}
 
-	.external-icon {
-		font-size: 1rem;
-		opacity: 0.6;
-	}
-
 	&.active {
 		--background: var(--bo-nav-active-bg);
 		--color: var(--bo-nav-active-fg);
@@ -86,15 +80,24 @@ ion-item {
 	}
 }
 
-hr {
-	background-color: var(--bo-line);
-	margin: 0.25rem 2em;
-	opacity: 1;
+.menu {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-y: auto;
 }
 
 .bottom {
-	position: absolute;
-	bottom: 1rem;
-	inset-inline: 0;
-	text-align: center;
+	flex: none;
+	padding-top: 8px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding-bottom: 8px;
+}
+
+.app-info {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
 }

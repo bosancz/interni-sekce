@@ -430,3 +430,14 @@ ion-select.filter-pill {
 .color-orange .alert-radio-label::before {
 	background: #e28f26;
 }
+
+.account-card-popover {
+	--offset-y: -6px;
+	--box-shadow: 0 10px 34px rgba(31, 36, 48, 0.18);
+
+	&::part(content) {
+		border-radius: 14px;
+		border: 1px solid var(--bo-line);
+		background: var(--bo-white);
+	}
+}

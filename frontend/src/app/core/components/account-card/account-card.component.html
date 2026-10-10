@@ -1,0 +1,25 @@
+@if (user(); as user) {
+	<button
+		type="button"
+		class="account-card"
+		[class.open]="open()"
+		[attr.aria-expanded]="open()"
+		(click)="toggle($event)"
+	>
+		<span class="avatar">
+			<bo-avatar
+				[initials]="user.member! | member: 'initials'"
+				[photoUrl]="user.member | memberProfilePhotoUrl"
+				[color]="user.member?.groupId | group: 'color'"
+			/>
+			@if (unreadCount() > 0) {
+				<span class="unread-dot" [attr.aria-label]="unreadCount() + ' nepřečtených upozornění'"></span>
+			}
+		</span>
+		<span class="text">
+			<span class="name">{{ name() }}</span>
+			<span class="subline">Profil a nastavení</span>
+		</span>
+		<ion-icon name="chevron-up"></ion-icon>
+	</button>
+}

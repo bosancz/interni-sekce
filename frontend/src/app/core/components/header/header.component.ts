@@ -15,6 +15,9 @@ import { PlatformService } from "src/app/core/services/platform.service";
 	templateUrl: "./header.component.html",
 	styleUrl: "./header.component.scss",
 	imports: [RouterLink, IonButton, IonButtons, IonIcon, GlobalSearchComponent, AccountMenuComponent],
+	host: {
+		"[class.lg]": "isLg()",
+	},
 })
 export class HeaderComponent {
 	private static readonly BLUR_CLOSE_DELAY_MS = 200;

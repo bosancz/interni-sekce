@@ -1,30 +1,13 @@
-import { Component, computed } from "@angular/core";
+import { Component } from "@angular/core";
 import { IsActiveMatchOptions, RouterLink, RouterLinkActive } from "@angular/router";
 import { IonIcon, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import {
-	bugOutline,
-	clipboardOutline,
-	globeOutline,
-	homeSharp,
-	logOut,
-	notificationsOutline,
-	openOutline,
-	optionsOutline,
-	peopleOutline,
-	person,
-	settings,
-	statsChartOutline,
-	walletOutline,
-} from "ionicons/icons";
+import { clipboardOutline, homeSharp, peopleOutline, statsChartOutline, walletOutline } from "ionicons/icons";
 import { map } from "rxjs";
+import { AccountCardComponent } from "src/app/core/components/account-card/account-card.component";
 import { ApiService } from "src/app/core/services/api.service";
-import { BugReportService } from "src/app/core/services/bug-report.service";
-import { LoginService } from "src/app/core/services/login.service";
-import { NotificationsService } from "src/app/core/services/notifications.service";
 import { UserService } from "src/app/core/services/user.service";
 import { DarkModeToggleComponent } from "src/app/shared/components/dark-mode-toggle/dark-mode-toggle.component";
-import { UnreadBadgeComponent } from "src/app/shared/components/unread-badge/unread-badge.component";
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { VersionComponent } from "src/app/shared/components/version/version.component";
 
@@ -42,7 +25,7 @@ import { VersionComponent } from "src/app/shared/components/version/version.comp
 		IonLabel,
 		DarkModeToggleComponent,
 		VersionComponent,
-		UnreadBadgeComponent,
+		AccountCardComponent,
 	],
 })
 export class SidebarComponent {
@@ -51,13 +34,6 @@ export class SidebarComponent {
 	readonly tabLinkActiveOptions: IsActiveMatchOptions = {
 		paths: "exact",
 		queryParams: "exact",
-		matrixParams: "ignored",
-		fragment: "ignored",
-	};
-
-	readonly exactPathLinkActiveOptions: IsActiveMatchOptions = {
-		paths: "exact",
-		queryParams: "ignored",
 		matrixParams: "ignored",
 		fragment: "ignored",
 	};
@@ -71,42 +47,18 @@ export class SidebarComponent {
 
 	canAccessProgram = this.userService.canAccessProgram;
 	canAccessTreasurer = this.userService.canAccessTreasurer;
-	canAccessAdmin = this.userService.canAccessAdmin;
 	myGroupId = this.userService.myGroupId;
-
-	memberId = computed(() => this.userService.currentUser()?.member?.id);
-
-	unreadCount = this.notificationsService.unreadCount;
 
 	constructor(
 		private readonly api: ApiService,
-		private readonly loginService: LoginService,
 		private readonly userService: UserService,
-		private readonly bugReportService: BugReportService,
-		private readonly notificationsService: NotificationsService,
 	) {
 		addIcons({
 			homeSharp,
-			person,
-			settings,
-			logOut,
-			bugOutline,
-			notificationsOutline,
-			globeOutline,
-			openOutline,
-			optionsOutline,
 			clipboardOutline,
 			walletOutline,
 			statsChartOutline,
 			peopleOutline,
 		});
-	}
-
-	async logout() {
-		await this.loginService.logout();
-	}
-
-	async reportBug() {
-		return this.bugReportService.reportBug();
 	}
 }

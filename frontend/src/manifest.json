@@ -8,6 +8,7 @@
 	"theme_color": "#2a3478",
 	"background_color": "#2a3478",
 	"display": "standalone",
+	"display_override": ["window-controls-overlay"],
 	"orientation": "portrait",
 	"start_url": "/",
 	"scope": "/",
