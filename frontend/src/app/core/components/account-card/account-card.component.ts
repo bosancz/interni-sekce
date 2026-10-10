@@ -23,7 +23,7 @@ export class AccountCardComponent {
 		const user = this.user();
 		const member = user?.member;
 		const fullName = [member?.firstName, member?.lastName].filter(Boolean).join(" ");
-		return fullName || member?.nickname || user?.login || "";
+		return member?.nickname || fullName || user?.login || "";
 	});
 
 	unreadCount = this.notificationsService.unreadCount;
