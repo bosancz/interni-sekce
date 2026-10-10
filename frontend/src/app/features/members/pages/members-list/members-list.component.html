@@ -145,13 +145,8 @@
 		@if (viewSelections().photo) {
 			<admin-table-column [start]="true" headerClass="members-photo-column" cellClass="members-photo-column">
 				<ng-container *adminCell="let member">
-					<bo-avatar
-						class="members-photo"
-						[initials]="member | member: 'initials'"
-						[photoUrl]="member | memberProfilePhotoUrl"
-						color="#fff"
-						[style.background-color]="(member.groupId | group: 'color') || 'var(--bo-neutral-badge)'"
-					/>
+					@let photoUrl = member | memberProfilePhotoUrl;
+					<bo-avatar class="members-photo" [class.members-photo-empty]="!photoUrl" [photoUrl]="photoUrl" />
 				</ng-container>
 			</admin-table-column>
 		}
