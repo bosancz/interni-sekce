@@ -82,7 +82,16 @@
 			<div class="col-lg-6 col-xl-4 pl-lg-2">
 				<div class="calendar-card">
 					<div class="calendar-nav">
-						<h3 class="calendar-nav-title mb-0">{{ monthTitle() }}</h3>
+						<h3 class="calendar-nav-title mb-0">
+							{{ monthTitle() }}
+							@if (loading()) {
+								<ion-spinner
+									name="crescent"
+									class="calendar-loading"
+									aria-label="Načítám akce"
+								></ion-spinner>
+							}
+						</h3>
 						<div class="calendar-nav-buttons">
 							<button
 								type="button"
