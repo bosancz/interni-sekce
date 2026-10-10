@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Min } from "class-validator";
 import { AlbumResponse } from "src/api/albums/dto/album.dto";
 import { GroupResponse } from "src/api/members/dto/group.dto";
 import { MemberResponse } from "src/api/members/dto/member.dto";
@@ -79,7 +79,7 @@ export class EventUpdateBody {
 	@IsOptional() @IsString() timeTill?: string | null;
 	@IsOptional() @IsString() meetingPlaceStart?: string | null;
 	@IsOptional() @IsString() meetingPlaceEnd?: string | null;
-	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsString() waterKm?: number | null;
+	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsNumber() @Min(0) waterKm?: number | null;
 	@IsOptional() @IsString() river?: string | null;
 }
 

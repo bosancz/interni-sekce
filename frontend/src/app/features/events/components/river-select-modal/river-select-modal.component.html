@@ -1,0 +1,66 @@
+<bo-modal-layout>
+	<div slot="title" class="rs-head">
+		<h4>Řeka</h4>
+		<button type="button" class="rs-close" aria-label="Zavřít" (click)="close.emit()">
+			<ion-icon name="close-outline"></ion-icon>
+		</button>
+	</div>
+
+	<div class="rs-tools">
+		<div class="rs-search">
+			<ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+			<input
+				#searchInput
+				type="text"
+				enterkeyhint="search"
+				autocomplete="off"
+				placeholder="Hledat řeku"
+				aria-label="Hledat řeku"
+				[value]="query()"
+				(input)="query.set($any($event.target).value)"
+				(keydown)="onSearchKeydown($event)"
+			/>
+			@if (query()) {
+				<button type="button" class="rs-clear" (click)="query.set('')">Zrušit</button>
+			}
+		</div>
+	</div>
+
+	<div class="rs-list" #list>
+		@for (option of options(); track option.popular + option.river; let index = $index, first = $first) {
+			@if (option.popular && first) {
+				<div class="rs-section">Nejoblíbenější</div>
+			}
+			@if (!option.popular && !query().trim() && options()[index - 1]?.popular) {
+				<div class="rs-section">Všechny řeky</div>
+			}
+			<button
+				type="button"
+				class="rs-row"
+				[class.selected]="option.river === value"
+				[class.active]="activeIndex() === index"
+				(mousemove)="activeIndex() !== index && activeIndex.set(index)"
+				(click)="select(option.river)"
+			>
+				<span class="rs-name">{{ option.river }}</span>
+				@if (option.river === value) {
+					<ion-icon name="checkmark-outline" aria-hidden="true"></ion-icon>
+				}
+			</button>
+		}
+
+		@if (customRiver(); as river) {
+			<button type="button" class="rs-row rs-custom" (click)="select(river)">
+				<ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+				<span class="rs-name">Použít „{{ river }}“</span>
+			</button>
+		}
+	</div>
+
+	<div slot="buttons" class="rs-foot">
+		@if (value) {
+			<button type="button" class="bm-btn-ghost rs-remove" (click)="select(null)">Bez řeky</button>
+		}
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+	</div>
+</bo-modal-layout>
