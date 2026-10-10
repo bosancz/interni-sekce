@@ -1,0 +1,27 @@
+<bo-page-header title="Statistiky" backUrl="/" />
+
+<bo-page-content [padding]="true">
+	<div class="d-lg-flex gap-4">
+		<div class="d-none d-lg-block" style="min-width: 200px">
+			<bo-vertical-menu defaultTab="prehled" (change)="view.set($any($event))">
+				<bo-vertical-menu-item
+					name="prehled"
+					label="Přehled"
+					icon="stats-chart-outline"
+				></bo-vertical-menu-item>
+			</bo-vertical-menu>
+		</div>
+
+		<div class="flex-grow-1">
+			@if (view() === "prehled") {
+				<bo-statistics-overview class="mb-5"></bo-statistics-overview>
+			}
+		</div>
+	</div>
+</bo-page-content>
+
+<bo-page-footer class="d-lg-none">
+	<bo-tabs defaultTab="prehled" (change)="view.set($any($event))">
+		<bo-tab name="prehled" label="Přehled" icon="stats-chart-outline"></bo-tab>
+	</bo-tabs>
+</bo-page-footer>

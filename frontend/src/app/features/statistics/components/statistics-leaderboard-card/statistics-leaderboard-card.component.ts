@@ -8,9 +8,9 @@ import { CardTitleComponent } from "src/app/shared/components/card-title/card-ti
 import { CardComponent } from "src/app/shared/components/card/card.component";
 
 @Component({
-	selector: "bo-home-leaderboard-card",
-	templateUrl: "./home-leaderboard-card.component.html",
-	styleUrls: ["./home-leaderboard-card.component.scss"],
+	selector: "bo-statistics-leaderboard-card",
+	templateUrl: "./statistics-leaderboard-card.component.html",
+	styleUrls: ["./statistics-leaderboard-card.component.scss"],
 
 	imports: [
 		IonContent,
@@ -22,7 +22,7 @@ import { CardComponent } from "src/app/shared/components/card/card.component";
 		CardContentComponent,
 	],
 })
-export class HomeLeaderboardCardComponent {
+export class StatisticsLeaderboardCardComponent {
 	title = input.required<string>();
 
 	year = input<number>();

@@ -46,6 +46,7 @@ export class ReleaseNotificationsService {
 					title: report.title,
 					version: issue.version,
 					description: issue.text,
+					path: report.path,
 				});
 				notified.push(report.id);
 			} catch (err) {

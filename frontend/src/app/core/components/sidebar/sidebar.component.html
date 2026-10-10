@@ -34,6 +34,10 @@
 		<span class="nav-icon nav-icon--program me-3"></span>
 		<ion-label>Kalendář</ion-label>
 	</ion-item>
+	<ion-item routerLink="/statistiky" routerLinkActive="active">
+		<ion-icon name="stats-chart-outline" class="me-3"></ion-icon>
+		<ion-label>Statistiky</ion-label>
+	</ion-item>
 	@if (canAccessProgram()) {
 		<ion-item routerLink="/program" routerLinkActive="active">
 			<ion-icon name="clipboard-outline" class="me-3"></ion-icon>
@@ -49,9 +53,16 @@
 </ion-list>
 <hr />
 <ion-list lines="none" mode="md">
+	@if (memberId(); as memberId) {
+		<ion-item [routerLink]="['/databaze/clenove', memberId]" routerLinkActive="active">
+			<ion-icon class="me-3" name="person"></ion-icon>
+			<ion-label>Profil</ion-label>
+		</ion-item>
+	}
+
 	<ion-item routerLink="/ucet" routerLinkActive="active" [routerLinkActiveOptions]="exactPathLinkActiveOptions">
-		<ion-icon class="me-3" name="person"></ion-icon>
-		<ion-label>Můj účet</ion-label>
+		<ion-icon class="me-3" name="options-outline"></ion-icon>
+		<ion-label>Nastavení</ion-label>
 	</ion-item>
 
 	<ion-item routerLink="/ucet/notifikace" routerLinkActive="active">

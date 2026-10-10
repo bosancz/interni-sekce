@@ -4,14 +4,14 @@ import { IonContent, IonItem, IonLabel, IonList, IonPopover, IonSkeletonText } f
 import { ApiService } from "src/app/core/services/api.service";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
-import { HomeLeaderboardCardComponent } from "../home-leaderboard-card/home-leaderboard-card.component";
+import { StatisticsLeaderboardCardComponent } from "../statistics-leaderboard-card/statistics-leaderboard-card.component";
 
 const TOP_CHILDREN_LIMIT = 5;
 
 @Component({
-	selector: "bo-home-card-top-children",
-	templateUrl: "./home-card-top-children.component.html",
-	styleUrls: ["./home-card-top-children.component.scss"],
+	selector: "bo-statistics-card-top-children",
+	templateUrl: "./statistics-card-top-children.component.html",
+	styleUrls: ["./statistics-card-top-children.component.scss"],
 
 	imports: [
 		DateRangePipe,
@@ -22,10 +22,10 @@ const TOP_CHILDREN_LIMIT = 5;
 		IonLabel,
 		IonPopover,
 		IonSkeletonText,
-		HomeLeaderboardCardComponent,
+		StatisticsLeaderboardCardComponent,
 	],
 })
-export class HomeCardTopChildrenComponent {
+export class StatisticsCardTopChildrenComponent {
 	statistics = signal<SDK.TopChildrenResponse | undefined>(undefined);
 
 	year = input.required<number>();

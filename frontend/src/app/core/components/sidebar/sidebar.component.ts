@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, computed } from "@angular/core";
 import { IsActiveMatchOptions, RouterLink, RouterLinkActive } from "@angular/router";
 import { IonIcon, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
@@ -10,8 +10,10 @@ import {
 	logOut,
 	notificationsOutline,
 	openOutline,
+	optionsOutline,
 	person,
 	settings,
+	statsChartOutline,
 	walletOutline,
 } from "ionicons/icons";
 import { map } from "rxjs";
@@ -68,6 +70,8 @@ export class SidebarComponent {
 	canAccessTreasurer = this.userService.canAccessTreasurer;
 	canAccessAdmin = this.userService.canAccessAdmin;
 
+	memberId = computed(() => this.userService.currentUser()?.member?.id);
+
 	unreadCount = this.notificationsService.unreadCount;
 
 	constructor(
@@ -86,8 +90,10 @@ export class SidebarComponent {
 			notificationsOutline,
 			globeOutline,
 			openOutline,
+			optionsOutline,
 			clipboardOutline,
 			walletOutline,
+			statsChartOutline,
 		});
 	}
 
