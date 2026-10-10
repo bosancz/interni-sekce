@@ -208,6 +208,11 @@
 - **`ReleaseIssuesService` (`models/bug-reports`) owns `release-issues.json`** for both readers — the bug list and `ReleaseNotificationsService`. It caches the parsed file for the life of the process, which is exactly its lifetime: the file is baked into the image and only a deploy changes it.
 - **An issue only reaches `release-issues.json` if the fixing commit references it** (`Closes #123`, or `(#123)` in the subject) — the same rule as the changelog, and forgetting it silently costs the reporter both their notification and the "Opraveno" badge.
 
+## Offline režim
+
+- **Databáze offline je vlastní úložiště v IndexedDB, ne cache service workeru** (`core/offline`). V Nastavení (`bo-account-offline`, jen s `_links.listMembers`) se stáhnou kořen API, účet, oddíly, seznam členů (s kontakty), detail a kontakty každého člena a kartičky pojištěnce (`OfflineDataService`, generace záznamů, 4 souběžně). Stav (`userId`, `downloadedAt`, počty) je v `localStorage.offlineData`; po 12 h online se stáhne znovu potichu, **změna nebo odhlášení uživatele data smaže**.
+- **Čte se v interceptoru vlastní axios instance `ApiService`**: GET, který spadne na síti (nebo dostane od SW prázdné 504), se zkusí obsloužit `resolveOfflineResponse()` — seznamy členů a oddílů filtruje, řadí a stránkuje na klientovi podobně jako backend (hledání je podřetězec bez diakritiky, ne fulltext). Stahování samo jde s `offlineFallback: false`. `ApiService.offline` (signál) řídí úvodní stránku — offline jen varování a dlaždice toho, co funguje (Databáze). Úpravy offline nejsou. `dataGroups` v `ngsw-config.json` jsou proto pryč; SW drží jen aplikaci.
+
 ## Paměť kontejneru
 
 - **Gmail jde přes `@googleapis/gmail`, nikdy přes celý `googleapis`** — ten při importu načte klienty všech Google API (~100 MB RSS). Další Google API = další samostatný balík `@googleapis/<api>`.

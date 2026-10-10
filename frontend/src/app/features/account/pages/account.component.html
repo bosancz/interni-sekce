@@ -96,6 +96,10 @@
 				<bo-account-credentials class="grid-full" />
 
 				<bo-account-app class="grid-full" />
+
+				@if (canUseOffline()) {
+					<bo-account-offline class="grid-full" />
+				}
 			</div>
 		</div>
 	}

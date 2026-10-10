@@ -1,0 +1,77 @@
+:host {
+	display: block;
+}
+
+::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+.offline-row {
+	align-items: flex-start;
+	gap: 12px;
+	justify-content: flex-start;
+}
+
+.offline-icon {
+	font-size: 1.4rem;
+	color: var(--bo-muted);
+	flex: 0 0 auto;
+	margin-top: 1px;
+}
+
+.offline-text {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	flex: 1;
+	min-width: 0;
+
+	strong {
+		color: var(--bo-ink);
+	}
+
+	ion-progress-bar {
+		margin-top: 6px;
+	}
+}
+
+.offline-muted {
+	color: var(--bo-muted);
+}
+
+.offline-buttons {
+	display: flex;
+	gap: 8px;
+	flex: 0 0 auto;
+	align-self: center;
+}
+
+ion-button {
+	--border-radius: var(--bo-radius-btn);
+	text-transform: none;
+	letter-spacing: 0;
+	font-weight: 700;
+	margin: 0;
+}
+
+ion-button:not(.offline-delete) {
+	--background: var(--bo-heading);
+	--background-hover: var(--bo-heading);
+	--background-focused: var(--bo-heading);
+	--background-activated: var(--bo-heading);
+	--color: var(--bo-paper);
+}
+
+@media (max-width: 991.98px) {
+	.offline-row {
+		flex-wrap: wrap;
+	}
+
+	.offline-buttons {
+		flex: 0 0 100%;
+
+		ion-button {
+			flex: 1;
+		}
+	}
+}

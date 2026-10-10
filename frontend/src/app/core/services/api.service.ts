@@ -1,6 +1,8 @@
-import { Injectable, Signal } from "@angular/core";
+import { Injectable, Signal, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import { resolveOfflineResponse } from "src/app/core/offline/offline-responses";
+import { readOfflineMeta } from "src/app/core/offline/offline-store";
 import { Observable, ReplaySubject, Subject, fromEvent } from "rxjs";
 import { filter, map, shareReplay, switchMap } from "rxjs/operators";
 import { Config } from "src/config";
@@ -12,6 +14,14 @@ export type RootLinks = SDK.RootResponseLinks;
 export type ApiError = AxiosError;
 
 axios.defaults.withCredentials = true;
+
+declare module "axios" {
+	interface AxiosRequestConfig {
+		offlineFallback?: boolean;
+	}
+}
+
+const apiAxios = axios.create();
 
 interface WatchRequestOptions {
 	onFocus?: boolean;
@@ -44,12 +54,67 @@ export class ApiService extends SDK {
 
 	public links: Signal<SDK.RootResponseLinks | undefined> = toSignal(this.rootLinks);
 
+	public readonly offline = signal(!navigator.onLine);
+
+	public readonly servedOffline = signal(false);
+
 	constructor(config: Config) {
-		super({
-			basePath: config.apiRoot,
-		});
+		super(
+			{
+				basePath: config.apiRoot,
+			},
+			apiAxios,
+		);
+
+		window.addEventListener("offline", () => this.offline.set(true));
+		window.addEventListener("online", () => this.offline.set(false));
+
+		apiAxios.interceptors.response.use(
+			(res) => {
+				this.offline.set(false);
+				this.servedOffline.set(false);
+				return res;
+			},
+			(err) => {
+				if (axios.isAxiosError(err) && err.config && this.isNetworkFailure(err)) {
+					return this.fallbackOffline(err.config, err);
+				}
+				throw err;
+			},
+		);
 
 		this.info.subscribe((info) => this.rootLinks.next(info._links));
+	}
+
+	private isNetworkFailure(err: AxiosError) {
+		if (err.code === AxiosError.ERR_CANCELED) return false;
+		const res = err.response;
+		if (!res) return true;
+		const empty = res.data instanceof Blob ? res.data.size === 0 : !res.data;
+		return res.status === 504 && empty;
+	}
+
+	private async fallbackOffline(config: InternalAxiosRequestConfig, failure: AxiosError) {
+		this.offline.set(true);
+
+		const method = (config.method ?? "get").toLowerCase();
+		const meta = readOfflineMeta();
+
+		if (method === "get" && config.offlineFallback !== false && meta?.downloadedAt && config.url) {
+			const found = await resolveOfflineResponse(config.url).catch((err) => {
+				this.logger.error("Offline lookup failed", err);
+				return undefined;
+			});
+			if (found) {
+				this.servedOffline.set(true);
+				return { data: found.data, status: 200, statusText: "OK", headers: {}, config } as AxiosResponse;
+			}
+		}
+
+		if (failure.response) {
+			throw new AxiosError("Network Error", AxiosError.ERR_NETWORK, config, failure.request);
+		}
+		throw failure;
 	}
 
 	async reloadApi() {

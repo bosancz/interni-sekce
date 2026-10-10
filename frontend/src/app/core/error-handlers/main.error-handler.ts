@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { ErrorHandler, Injectable, Injector } from "@angular/core";
 import { NavController } from "@ionic/angular/standalone";
+import axios, { AxiosError } from "axios";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Logger } from "src/logger";
 
@@ -31,6 +32,9 @@ export class MainErrorHandler implements ErrorHandler {
 				propagateError = false;
 				toastService.toast("K akci nemáš oprávnění.");
 			}
+		} else if (axios.isAxiosError(err) && err.code === AxiosError.ERR_NETWORK) {
+			propagateError = false;
+			toastService.toast("Akci se nepodařilo dokončit - jsi bez internetu.");
 		} else if (err.name === "GoogleError") {
 			if (err.message === "idpiframe_initialization_failed") {
 				propagateError = false;

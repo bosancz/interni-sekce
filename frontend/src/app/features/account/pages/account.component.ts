@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, computed } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { RouterLink } from "@angular/router";
 import { IonButtons, IonIcon } from "@ionic/angular/standalone";
@@ -22,6 +22,7 @@ import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { SDK } from "src/sdk";
 import { AccountAppComponent } from "../components/account-app/account-app.component";
 import { AccountCredentialsComponent } from "../components/account-credentials/account-credentials.component";
+import { AccountOfflineComponent } from "../components/account-offline/account-offline.component";
 
 @Component({
 	selector: "bo-account",
@@ -40,6 +41,7 @@ import { AccountCredentialsComponent } from "../components/account-credentials/a
 		CardOpenButtonComponent,
 		AccountCredentialsComponent,
 		AccountAppComponent,
+		AccountOfflineComponent,
 		EditButtonComponent,
 		EditButtonTextComponent,
 		GroupPipe,
@@ -49,6 +51,8 @@ export class AccountComponent {
 	user = toSignal(this.userService.user);
 
 	roles = UserRoles;
+
+	canUseOffline = computed(() => !!this.api.links()?.listMembers?.allowed);
 
 	constructor(
 		private userService: UserService,
