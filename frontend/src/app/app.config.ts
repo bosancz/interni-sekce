@@ -40,7 +40,7 @@ export const appConfig: ApplicationConfig = {
 				anchorScrolling: "enabled",
 			}),
 		),
-		provideServiceWorker("ngsw-worker.js", {
+		provideServiceWorker("sw.js", {
 			enabled: !isDevMode(),
 			registrationStrategy: "registerImmediately",
 		}),

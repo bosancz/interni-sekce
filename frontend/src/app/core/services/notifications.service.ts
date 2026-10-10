@@ -1,4 +1,4 @@
-import { Injectable, signal } from "@angular/core";
+import { effect, Injectable, signal } from "@angular/core";
 import { SwPush } from "@angular/service-worker";
 import { ApiService } from "src/app/core/services/api.service";
 
@@ -24,6 +24,8 @@ export class NotificationsService {
 		});
 
 		this.swPush.messages.subscribe(() => this.loadUnreadCount());
+
+		effect(() => this.updateAppBadge(this.count()));
 	}
 
 	setUnreadCount(count: number) {
@@ -38,5 +40,12 @@ export class NotificationsService {
 			.catch(() => undefined);
 
 		if (count !== undefined) this.count.set(count);
+	}
+
+	private updateAppBadge(count: number) {
+		if (!("setAppBadge" in navigator)) return;
+
+		const request = count > 0 ? navigator.setAppBadge(count) : navigator.clearAppBadge();
+		request.catch(() => {});
 	}
 }
