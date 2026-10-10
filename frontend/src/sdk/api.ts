@@ -6424,6 +6424,68 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface PaddlerResponse
+     */
+    export interface PaddlerResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof PaddlerResponse
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof PaddlerResponse
+         */
+        'nickname': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof PaddlerResponse
+         */
+        'groupId': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PaddlerResponse
+         */
+        'waterKm': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PaddlerResponse
+         */
+        'eventsCount': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PaddlerResponse
+         */
+        'riversCount': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PaddlerResponse
+         */
+        'rank': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof PaddlerResponse
+         */
+        'firstName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PaddlerResponse
+         */
+        'lastName'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface PaddlersRankingResponse
      */
     export interface PaddlersRankingResponse {
@@ -6432,51 +6494,75 @@ export namespace SDK {
          * @type {number}
          * @memberof PaddlersRankingResponse
          */
-        'id': number;
-        /**
-         * 
-         * @type {string}
-         * @memberof PaddlersRankingResponse
-         */
-        'nickname': string;
-        /**
-         * 
-         * @type {string}
-         * @memberof PaddlersRankingResponse
-         */
-        'firstName': string;
-        /**
-         * 
-         * @type {string}
-         * @memberof PaddlersRankingResponse
-         */
-        'lastName': string;
+        'year': number;
         /**
          * 
          * @type {number}
          * @memberof PaddlersRankingResponse
          */
-        'groupId': number;
+        'firstYear': number;
         /**
          * 
          * @type {number}
          * @memberof PaddlersRankingResponse
          */
-        'waterKm': number;
+        'lastYear': number;
+        /**
+         * 
+         * @type {Array<PaddlerResponse>}
+         * @memberof PaddlersRankingResponse
+         */
+        'children': Array<PaddlerResponse>;
+        /**
+         * 
+         * @type {Array<PaddlerResponse>}
+         * @memberof PaddlersRankingResponse
+         */
+        'leaders': Array<PaddlerResponse>;
     }
     
         /**
      * 
      * @export
-     * @interface PadlersTotalsResponse
+     * @interface PaddlersSummaryResponse
      */
-    export interface PadlersTotalsResponse {
+    export interface PaddlersSummaryResponse {
         /**
          * 
-         * @type {Array<number>}
-         * @memberof PadlersTotalsResponse
+         * @type {number}
+         * @memberof PaddlersSummaryResponse
          */
-        'years': Array<number>;
+        'year': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PaddlersSummaryResponse
+         */
+        'riversCount': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PaddlersSummaryResponse
+         */
+        'eventsCount': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PaddlersSummaryResponse
+         */
+        'waterKm': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PaddlersSummaryResponse
+         */
+        'firstYear': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PaddlersSummaryResponse
+         */
+        'lastYear': number;
     }
     
         /**
@@ -8096,6 +8182,18 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'getTopLeaders': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getPaddlersSummary': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getPaddlersRanking': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -17617,9 +17715,39 @@ export namespace SDK {
     
     
     
+    /**
+     * Query parameters for getPaddlersRanking operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetPaddlersRankingQueryParams
+     */
+    export interface StatisticsApiGetPaddlersRankingQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetPaddlersRanking
+         */
+        year?: number
+    }
     
     
     
+    
+    
+    /**
+     * Query parameters for getPaddlersSummary operation in StatisticsApi.
+     * @export
+     * @interface StatisticsApiGetPaddlersSummaryQueryParams
+     */
+    export interface StatisticsApiGetPaddlersSummaryQueryParams {
+        //year
+        /**
+         * Defaults to the current year.
+         * @type {number}
+         * @memberof StatisticsApiGetPaddlersSummary
+         */
+        year?: number
+    }
     
     
     
@@ -18029,22 +18157,18 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} year 
+         * @param {StatisticsApiGetPaddlersRankingQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof StatisticsApi
          */
         
         public async getPaddlersRanking(
-            year: number,
+            queryParams: StatisticsApiGetPaddlersRankingQueryParams = {},
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'year' is not null or undefined
-            assertParamExists('getPaddlersRanking', 'year', year)
-            
-            const localVarPath = `/api/statistics/paddlers/{year}/ranking`
-                .replace(`{${"year"}}`, encodeURIComponent(String(year)));
+            const localVarPath = `/api/statistics/paddlers/ranking`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -18058,6 +18182,10 @@ export namespace SDK {
     
             // authentication cookieAuth required
     
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
     
     
             setSearchParams(requestUrlObj, requestQueryParameter);
@@ -18067,22 +18195,24 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<Array<PaddlersRankingResponse>>(axiosRequestConfig);
+            return this.axios.request<PaddlersRankingResponse>(axiosRequestConfig);
         }
     
         /**
          * 
     
+         * @param {StatisticsApiGetPaddlersSummaryQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof StatisticsApi
          */
         
-        public async getPaddlersTotals(
+        public async getPaddlersSummary(
+            queryParams: StatisticsApiGetPaddlersSummaryQueryParams = {},
             options: AxiosRequestConfig = {}
         ) {
     
-            const localVarPath = `/api/statistics/paddlers`;
+            const localVarPath = `/api/statistics/paddlers/summary`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -18096,6 +18226,10 @@ export namespace SDK {
     
             // authentication cookieAuth required
     
+            if (queryParams.year !== undefined) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
     
     
             setSearchParams(requestUrlObj, requestQueryParameter);
@@ -18105,7 +18239,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<PadlersTotalsResponse>(axiosRequestConfig);
+            return this.axios.request<PaddlersSummaryResponse>(axiosRequestConfig);
         }
     
         /**

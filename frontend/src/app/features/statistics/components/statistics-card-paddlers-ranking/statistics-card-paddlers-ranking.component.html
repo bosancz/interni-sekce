@@ -1,0 +1,85 @@
+@if (canSeeRanking()) {
+	<bo-statistics-leaderboard-card title="Vodák roku" infoTitle="Jak se počítá pořadí" [infoLines]="infoLines">
+		<div class="gvs-switch paddlers-switch" role="tablist" aria-label="Žebříček">
+			@for (option of views; track option.name) {
+				<button
+					type="button"
+					role="tab"
+					class="gvs-option"
+					[class.active]="option.name === view()"
+					[attr.aria-selected]="option.name === view()"
+					(click)="view.set(option.name)"
+				>
+					<ion-icon [name]="option.icon" aria-hidden="true"></ion-icon>
+					{{ option.label }}
+				</button>
+			}
+		</div>
+
+		@if (statistics() && !paddlers().length) {
+			<p class="m-0 mt-3 mb-3 text-center">
+				@if (view() === "children") {
+					V tomto roce nebylo na vodě žádné dítě.
+				} @else {
+					V tomto roce nebyl na vodě žádný vedoucí.
+				}
+			</p>
+		} @else {
+			<admin-table
+				class="paddlers-table"
+				[rows]="paddlers()"
+				[loading]="!statistics()"
+				[rowLink]="rowLink"
+				[trackBy]="trackBy"
+			>
+				<admin-table-column header="#" [start]="true" headerClass="align-middle" cellClass="align-middle">
+					<ng-container *adminCell="let paddler">
+						<div class="rank" [class.rank-first]="paddler.rank === 1">{{ paddler.rank }}.</div>
+					</ng-container>
+				</admin-table-column>
+
+				<admin-table-column
+					header="Přezdívka"
+					[primary]="true"
+					headerClass="align-middle"
+					cellClass="align-middle"
+				>
+					<ng-container *adminCell="let paddler"
+						><strong>{{ paddler.nickname }}</strong></ng-container
+					>
+				</admin-table-column>
+
+				<admin-table-column header="Jméno" headerClass="align-middle" cellClass="align-middle">
+					<ng-container *adminCell="let paddler">{{ paddler.firstName }} {{ paddler.lastName }}</ng-container>
+				</admin-table-column>
+
+				<admin-table-column header="Oddíl" headerClass="align-middle" cellClass="align-middle">
+					<ng-container *adminCell="let paddler">
+						@if (paddler.groupId) {
+							<bo-group-badge [groupId]="paddler.groupId"></bo-group-badge>
+						}
+					</ng-container>
+				</admin-table-column>
+
+				<admin-table-column header="Akcí" headerClass="align-middle" cellClass="align-middle">
+					<ng-container *adminCell="let paddler">{{ paddler.eventsCount }}</ng-container>
+				</admin-table-column>
+
+				<admin-table-column header="Řek" headerClass="align-middle" cellClass="align-middle">
+					<ng-container *adminCell="let paddler">{{ paddler.riversCount }}</ng-container>
+				</admin-table-column>
+
+				<admin-table-column
+					header="Km"
+					[right]="true"
+					headerClass="align-middle text-end"
+					cellClass="align-middle text-end"
+				>
+					<ng-container *adminCell="let paddler">
+						<span class="km">{{ paddler.waterKm | number: "1.0-1" : "cs" }}&nbsp;km</span>
+					</ng-container>
+				</admin-table-column>
+			</admin-table>
+		}
+	</bo-statistics-leaderboard-card>
+}
