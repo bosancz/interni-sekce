@@ -14,10 +14,6 @@ import { SDK } from "src/sdk";
 import { HomeCardMyEventsComponent } from "../home-card-my-events/home-card-my-events.component";
 import { HomeCardPhotoOfDayComponent } from "../home-card-photo-of-day/home-card-photo-of-day.component";
 import { HomeCardNoleaderEventsComponent } from "../home-card-noleader-events/home-card-noleader-events.component";
-import { HomeCardTopChildrenComponent } from "../home-card-top-children/home-card-top-children.component";
-import { HomeCardTopEventsComponent } from "../home-card-top-events/home-card-top-events.component";
-import { HomeCardTopLeadersComponent } from "../home-card-top-leaders/home-card-top-leaders.component";
-import { HomeCardStatisticsComponent } from "../home-card-statistics/home-card-statistics.component";
 
 const months = [
 	"Leden",
@@ -44,10 +40,6 @@ const months = [
 		HomeCardMyEventsComponent,
 		HomeCardNoleaderEventsComponent,
 		HomeCardPhotoOfDayComponent,
-		HomeCardStatisticsComponent,
-		HomeCardTopLeadersComponent,
-		HomeCardTopEventsComponent,
-		HomeCardTopChildrenComponent,
 		PageContentComponent,
 		ButtonSquareComponent,
 		IonIcon,
@@ -65,8 +57,6 @@ export class HomeDashboardComponent implements OnInit {
 	monthTitle = computed(() => `${months[this.currentMonth().month - 1]} ${this.currentMonth().year}`);
 
 	events = signal<SDK.EventResponseWithLinks[]>([]);
-
-	statisticsYear = signal(new Date().getFullYear());
 
 	user = this.userService.user;
 

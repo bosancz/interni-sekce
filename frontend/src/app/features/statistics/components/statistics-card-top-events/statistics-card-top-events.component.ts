@@ -5,14 +5,14 @@ import { IonItem, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/stan
 import { ApiService } from "src/app/core/services/api.service";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
-import { HomeLeaderboardCardComponent } from "../home-leaderboard-card/home-leaderboard-card.component";
+import { StatisticsLeaderboardCardComponent } from "../statistics-leaderboard-card/statistics-leaderboard-card.component";
 
 const TOP_EVENTS_LIMIT = 5;
 
 @Component({
-	selector: "bo-home-card-top-events",
-	templateUrl: "./home-card-top-events.component.html",
-	styleUrls: ["./home-card-top-events.component.scss"],
+	selector: "bo-statistics-card-top-events",
+	templateUrl: "./statistics-card-top-events.component.html",
+	styleUrls: ["./statistics-card-top-events.component.scss"],
 
 	imports: [
 		DateRangePipe,
@@ -22,10 +22,10 @@ const TOP_EVENTS_LIMIT = 5;
 		IonLabel,
 		IonSkeletonText,
 		RouterLink,
-		HomeLeaderboardCardComponent,
+		StatisticsLeaderboardCardComponent,
 	],
 })
-export class HomeCardTopEventsComponent {
+export class StatisticsCardTopEventsComponent {
 	statistics = signal<SDK.TopEventsResponse | undefined>(undefined);
 
 	year = input.required<number>();

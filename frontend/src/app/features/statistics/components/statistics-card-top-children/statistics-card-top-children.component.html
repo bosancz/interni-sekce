@@ -1,5 +1,9 @@
 @if (canSeeChildren()) {
-	<bo-home-leaderboard-card title="Nejlepší děti" infoTitle="Jak se počítají dny na akcích" [infoLines]="infoLines">
+	<bo-statistics-leaderboard-card
+		title="Nejlepší děti"
+		infoTitle="Jak se počítají dny na akcích"
+		[infoLines]="infoLines"
+	>
 		@if (statistics(); as statistics) {
 			@if (statistics.children.length) {
 				<ion-list lines="full">
@@ -31,7 +35,7 @@
 				}
 			</ion-list>
 		}
-	</bo-home-leaderboard-card>
+	</bo-statistics-leaderboard-card>
 
 	<ion-popover
 		cssClass="leaderboard-popover"

@@ -4,16 +4,16 @@ import { IonContent, IonItem, IonLabel, IonList, IonPopover, IonSkeletonText } f
 import { ApiService } from "src/app/core/services/api.service";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
-import { HomeLeaderboardCardComponent } from "../home-leaderboard-card/home-leaderboard-card.component";
+import { StatisticsLeaderboardCardComponent } from "../statistics-leaderboard-card/statistics-leaderboard-card.component";
 
 const TOP_LEADERS_LIMIT = 5;
 
 export type RankedLeader = SDK.TopLeaderResponse | SDK.MyRankingResponse;
 
 @Component({
-	selector: "bo-home-card-top-leaders",
-	templateUrl: "./home-card-top-leaders.component.html",
-	styleUrls: ["./home-card-top-leaders.component.scss"],
+	selector: "bo-statistics-card-top-leaders",
+	templateUrl: "./statistics-card-top-leaders.component.html",
+	styleUrls: ["./statistics-card-top-leaders.component.scss"],
 
 	imports: [
 		DateRangePipe,
@@ -24,10 +24,10 @@ export type RankedLeader = SDK.TopLeaderResponse | SDK.MyRankingResponse;
 		IonLabel,
 		IonPopover,
 		IonSkeletonText,
-		HomeLeaderboardCardComponent,
+		StatisticsLeaderboardCardComponent,
 	],
 })
-export class HomeCardTopLeadersComponent {
+export class StatisticsCardTopLeadersComponent {
 	statistics = signal<SDK.TopLeadersResponse | undefined>(undefined);
 
 	year = input.required<number>();
