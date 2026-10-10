@@ -6,6 +6,7 @@ import { Group } from "src/models/members/entities/group.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { MembersModelModule } from "src/models/members/members-model.module";
 import { SettingsModelModule } from "src/models/settings/settings-model.module";
+import { GroupProfilePhotoController } from "./controllers/group-profile-photo.controller";
 import { GroupsController } from "./controllers/groups.controller";
 import { MemberContactsController } from "./controllers/member-contacts.controller";
 import { MemberInsuranceCardController } from "./controllers/member-insurance-card.controller";
@@ -20,6 +21,7 @@ import { MembersExportController } from "./controllers/members-export.controller
 	controllers: [
 		MembersController,
 		GroupsController,
+		GroupProfilePhotoController,
 		MemberInsuranceCardController,
 		MemberContactsController,
 		MemberMembershipController,

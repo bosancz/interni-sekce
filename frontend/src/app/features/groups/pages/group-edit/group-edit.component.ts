@@ -9,6 +9,7 @@ import { PageContentComponent } from "src/app/shared/components/page-content/pag
 import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { SDK } from "src/sdk";
+import { GroupProfilePhotoComponent } from "../../components/group-profile-photo/group-profile-photo.component";
 
 @Component({
 	selector: "bo-group-edit",
@@ -25,6 +26,7 @@ import { SDK } from "src/sdk";
 		PageHeaderComponent,
 		PageContentComponent,
 		PageFooterComponent,
+		GroupProfilePhotoComponent,
 	],
 })
 export class GroupEditComponent implements OnInit {
@@ -49,6 +51,13 @@ export class GroupEditComponent implements OnInit {
 		if (!listedGroup) return;
 
 		this.group.set(await this.api.MembersApi.getGroup(listedGroup.id).then((res) => res.data));
+	}
+
+	async reloadGroup() {
+		const group = this.group();
+		if (!group) return;
+
+		this.group.set(await this.api.MembersApi.getGroup(group.id).then((res) => res.data));
 	}
 
 	async editGroup(form: NgForm) {

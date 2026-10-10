@@ -1,0 +1,52 @@
+@if (group(); as groupValue) {
+	@let links = groupValue._links;
+	<div class="group-photo">
+		<div class="photo-wrapper">
+			<div class="photo" [style.background-color]="groupValue.color || 'var(--bo-neutral-badge)'">
+				@if (groupValue | groupProfilePhotoUrl; as src) {
+					<img [src]="src" [alt]="groupValue.name || groupValue.shortName" />
+				} @else {
+					<span>{{ groupValue.shortName }}</span>
+				}
+
+				@if (uploading()) {
+					<div class="photo-uploading"><ion-spinner name="crescent"></ion-spinner></div>
+				}
+			</div>
+
+			@if (links.uploadGroupProfilePhoto.applicable) {
+				<button
+					type="button"
+					class="photo-edit"
+					[class.disabled]="!links.uploadGroupProfilePhoto.allowed || uploading()"
+					[attr.aria-disabled]="!links.uploadGroupProfilePhoto.allowed || uploading()"
+					[boTooltip]="
+						links.uploadGroupProfilePhoto.allowed
+							? groupValue.profilePhotoUpdatedAt
+								? 'Změnit profilovou fotku oddílu'
+								: 'Nahrát profilovou fotku oddílu'
+							: 'Na změnu profilové fotky nemáš oprávnění.'
+					"
+					(click)="links.uploadGroupProfilePhoto.allowed && !uploading() && photoInput.click()"
+				>
+					<ion-icon name="camera-outline"></ion-icon>
+				</button>
+			}
+		</div>
+
+		@if (links.deleteGroupProfilePhoto.applicable && links.deleteGroupProfilePhoto.allowed) {
+			<ion-button fill="clear" size="small" color="medium" [disabled]="uploading()" (click)="deletePhoto()">
+				<ion-icon slot="start" name="trash-outline"></ion-icon>
+				Odebrat fotku
+			</ion-button>
+		}
+
+		<input
+			#photoInput
+			class="photo-input"
+			type="file"
+			accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif"
+			(change)="onPhotoSelected(photoInput)"
+		/>
+	</div>
+}

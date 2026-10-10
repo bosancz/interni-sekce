@@ -9,6 +9,7 @@ import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { GroupProfilePhotoUrlPipe } from "src/app/shared/pipes/group-profile-photo-url.pipe";
 import { SDK } from "src/sdk";
 
 @UntilDestroy()
@@ -17,7 +18,7 @@ import { SDK } from "src/sdk";
 	templateUrl: "./groups-list.component.html",
 	styleUrls: ["./groups-list.component.scss"],
 
-	imports: [PageHeaderComponent, PageContentComponent, RouterLink, IonIcon],
+	imports: [PageHeaderComponent, PageContentComponent, RouterLink, IonIcon, GroupProfilePhotoUrlPipe],
 })
 export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 	groups = signal<SDK.GroupResponseWithLinks[]>([]);

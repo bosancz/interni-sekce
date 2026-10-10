@@ -21,6 +21,7 @@ export class FilesService implements OnApplicationBootstrap {
 	async onApplicationBootstrap() {
 		await mkdir(this.config.fs.dataDir, { recursive: true });
 		await mkdir(this.config.fs.membersDir, { recursive: true });
+		await mkdir(this.config.fs.groupsDir, { recursive: true });
 		await mkdir(this.config.fs.eventsDir, { recursive: true });
 		await mkdir(this.config.fs.photosDir, { recursive: true });
 		await mkdir(this.config.fs.thumbnailsDir, { recursive: true });

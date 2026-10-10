@@ -3884,6 +3884,12 @@ export namespace SDK {
          * @type {string}
          * @memberof Group
          */
+        'profilePhotoUpdatedAt': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Group
+         */
         'deletedAt': string | null;
         /**
          * 
@@ -3899,6 +3905,12 @@ export namespace SDK {
      * @interface GroupResponse
      */
     export interface GroupResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof GroupResponse
+         */
+        'profilePhotoUpdatedAt': string | null;
         /**
          * 
          * @type {number}
@@ -3972,6 +3984,24 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof GroupResponseLinks
          */
+        'getGroupProfilePhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof GroupResponseLinks
+         */
+        'uploadGroupProfilePhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof GroupResponseLinks
+         */
+        'deleteGroupProfilePhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof GroupResponseLinks
+         */
         'getGroup': AcLink;
         /**
          * 
@@ -4005,6 +4035,12 @@ export namespace SDK {
      * @interface GroupResponseWithLinks
      */
     export interface GroupResponseWithLinks {
+        /**
+         * 
+         * @type {string}
+         * @memberof GroupResponseWithLinks
+         */
+        'profilePhotoUpdatedAt': string | null;
         /**
          * 
          * @type {number}
@@ -12153,6 +12189,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * @export
      */
@@ -12414,6 +12454,10 @@ export namespace SDK {
          */
         active?: boolean
     }
+    
+    
+    
+    
     
     
     
@@ -12730,6 +12774,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * MembersApi - object-oriented interface
      * @export
@@ -12955,6 +13003,50 @@ export namespace SDK {
             assertParamExists('deleteGroup', 'groupId', groupId)
             
             const localVarPath = `/api/groups/{groupId}`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} groupId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async deleteGroupProfilePhoto(
+            groupId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('deleteGroupProfilePhoto', 'groupId', groupId)
+            
+            const localVarPath = `/api/groups/{groupId}/profile-photo`
                 .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -13384,6 +13476,50 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<GroupResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} groupId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async getGroupProfilePhoto(
+            groupId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('getGroupProfilePhoto', 'groupId', groupId)
+            
+            const localVarPath = `/api/groups/{groupId}/profile-photo`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
         }
     
         /**
@@ -14437,6 +14573,59 @@ export namespace SDK {
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} groupId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async uploadGroupProfilePhoto(
+            groupId: number,
+            file: File,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('uploadGroupProfilePhoto', 'groupId', groupId)
+            
+            const localVarPath = `/api/groups/{groupId}/profile-photo`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+            const requestFormParams = new ((this.configuration && this.configuration.formDataCtor) || FormData)();
+    
+            // authentication cookieAuth required
+    
+    
+            if (file !== undefined) { 
+                requestFormParams.append('file', file as any);
+            }
+    
+    
+            requestHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = requestFormParams;
     
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;

@@ -3,6 +3,8 @@
 <bo-page-content [padding]="true">
 	<div class="d-lg-flex gap-4">
 		<div class="d-none d-lg-block" style="min-width: 200px">
+			<bo-group-profile-photo class="mb-3" [group]="group()" (change)="groupsService.refreshGroup()" />
+
 			<bo-vertical-menu defaultTab="clenove" (change)="view.set($any($event))">
 				<bo-vertical-menu-item name="clenove" label="Členové" icon="people-outline"></bo-vertical-menu-item>
 				<bo-vertical-menu-item

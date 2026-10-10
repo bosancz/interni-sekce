@@ -51,3 +51,27 @@ export const GroupPermanentDeletePermission = new Permission({
 
 	applicable: ({ doc }) => !!doc.deletedAt,
 });
+
+export const GroupProfilePhotoReadPermission = new Permission({
+	linkTo: GroupResponse,
+	params: { groupId: "id" },
+	inherit: GroupReadPermission,
+
+	applicable: ({ doc }) => !!doc.profilePhotoUpdatedAt,
+});
+
+export const GroupProfilePhotoUpdatePermission = new Permission({
+	linkTo: GroupResponse,
+	params: { groupId: "id" },
+	inherit: GroupEditPermission,
+
+	applicable: ({ doc }) => !doc.deletedAt,
+});
+
+export const GroupProfilePhotoDeletePermission = new Permission({
+	linkTo: GroupResponse,
+	params: { groupId: "id" },
+	inherit: GroupEditPermission,
+
+	applicable: ({ doc }) => !!doc.profilePhotoUpdatedAt,
+});

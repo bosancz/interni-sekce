@@ -30,6 +30,7 @@ import {
 	getMissingDataEntries,
 	GroupMissingDataComponent,
 } from "../../components/group-missing-data/group-missing-data.component";
+import { GroupProfilePhotoComponent } from "../../components/group-profile-photo/group-profile-photo.component";
 import { GroupStatisticsComponent } from "../../components/group-statistics/group-statistics.component";
 import {
 	getUnpaidMembers,
@@ -53,6 +54,7 @@ import { GroupsService } from "../../services/groups.service";
 		VerticalMenuItemComponent,
 		GroupMembersComponent,
 		GroupMissingDataComponent,
+		GroupProfilePhotoComponent,
 		GroupStatisticsComponent,
 		GroupUnpaidMembershipComponent,
 	],
@@ -118,7 +120,7 @@ export class GroupViewComponent implements OnInit {
 		private route: ActivatedRoute,
 		private api: ApiService,
 		private navController: NavController,
-		private groupsService: GroupsService,
+		protected groupsService: GroupsService,
 		private alertController: AlertController,
 		private toastService: ToastService,
 		private modalService: ModalService,
@@ -132,7 +134,9 @@ export class GroupViewComponent implements OnInit {
 		});
 
 		this.groupsService.currentGroup.pipe(untilDestroyed(this)).subscribe((group) => {
+			const previousId = this.group()?.id;
 			this.group.set(group);
+			if (group && group.id === previousId) return;
 			this.loadMembers(group?.id);
 		});
 	}

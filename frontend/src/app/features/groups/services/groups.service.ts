@@ -23,4 +23,12 @@ export class GroupsService {
 		const group = await this.api.MembersApi.getGroup(listedGroup.id).then((res) => res.data);
 		this.currentGroup.next(group);
 	}
+
+	async refreshGroup() {
+		const current = this.currentGroup.value;
+		if (!current) return;
+
+		const group = await this.api.MembersApi.getGroup(current.id).then((res) => res.data);
+		this.currentGroup.next(group);
+	}
 }
