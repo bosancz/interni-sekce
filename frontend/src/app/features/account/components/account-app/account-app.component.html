@@ -35,11 +35,38 @@
 					<div class="app-text">
 						<strong>Aplikaci nelze nainstalovat.</strong>
 						<span class="app-muted">
-							Aplikace je buď již nainstalovaná, nebo to toto zařízení nepodporuje.
+							Aplikace je buď již nainstalovaná, nebo to {{ deviceName }}/prohlížeč nepodporuje.
 						</span>
 					</div>
 				</div>
 			}
+		</div>
+
+		<div class="app-screenshots">
+			<figure class="app-screenshot app-screenshot-desktop">
+				<div class="app-window">
+					<img
+						src="assets/img/app-screenshots/desktop.webp"
+						alt="Nainstalovaná aplikace na počítači"
+						width="1280"
+						height="800"
+						loading="lazy"
+					/>
+				</div>
+				<figcaption>Počítač</figcaption>
+			</figure>
+			<figure class="app-screenshot app-screenshot-mobile">
+				<div class="app-phone">
+					<img
+						src="assets/img/app-screenshots/mobile.webp"
+						alt="Nainstalovaná aplikace na mobilu"
+						width="390"
+						height="844"
+						loading="lazy"
+					/>
+				</div>
+				<figcaption>Mobil</figcaption>
+			</figure>
 		</div>
 	</bo-card-content>
 </bo-card>
