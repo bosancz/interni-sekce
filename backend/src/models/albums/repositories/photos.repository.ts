@@ -278,6 +278,7 @@ export class PhotosRepository {
 					WHERE faces.photo_id = photos.id
 						AND faces.emotion = :emotion
 						AND members.role = :role
+						AND members.active = true
 						AND members.deleted_at IS NULL
 				)`,
 				{ role: MemberRoles.vedouci, emotion: FaceEmotion.happy },
