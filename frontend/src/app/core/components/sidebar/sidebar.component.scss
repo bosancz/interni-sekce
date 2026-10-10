@@ -3,7 +3,6 @@
 	flex-direction: column;
 	height: 100%;
 	--ion-item-background: transparent;
-	position: relative;
 	background-color: var(--bo-white);
 	border-right: 1px solid var(--bo-line);
 	padding: 0.5rem;
@@ -92,9 +91,14 @@ hr {
 	opacity: 1;
 }
 
+.menu {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-y: auto;
+}
+
 .bottom {
-	position: absolute;
-	bottom: 1rem;
-	inset-inline: 0;
+	flex: none;
+	padding-block: 0.5rem;
 	text-align: center;
 }
