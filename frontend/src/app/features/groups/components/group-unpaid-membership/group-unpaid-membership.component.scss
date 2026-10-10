@@ -1,0 +1,33 @@
+.unpaid-count {
+	margin-left: auto;
+}
+
+.unpaid-row {
+	gap: 8px 12px;
+}
+
+.unpaid-member {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	flex: 1 1 auto;
+}
+
+.unpaid-name {
+	color: var(--bo-ink);
+	font-weight: 600;
+	word-break: break-word;
+}
+
+.unpaid-detail,
+.unpaid-role {
+	color: var(--bo-muted);
+	font-size: 0.8125rem;
+}
+
+.unpaid-link {
+	flex: 0 0 auto;
+	margin: 0;
+	--padding-start: 8px;
+	--padding-end: 8px;
+}

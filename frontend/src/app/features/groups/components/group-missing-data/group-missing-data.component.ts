@@ -85,6 +85,25 @@ const MISSING_DATA_CHECKS: MissingDataCheck[] = [
 	},
 ];
 
+export function getMissingDataEntries(members: SDK.MemberResponseWithLinks[] | undefined): MissingDataEntry[] {
+	if (!members) return [];
+
+	return members
+		.filter((member) => member.active)
+		.map((member) => ({
+			member,
+			items: MISSING_DATA_CHECKS.filter((check) => check.missing(member)).map(({ label, icon }) => ({
+				label,
+				icon,
+			})),
+		}))
+		.filter((entry) => entry.items.length > 0);
+}
+
+export function countMissingData(entries: MissingDataEntry[]): number {
+	return entries.reduce((sum, entry) => sum + entry.items.length, 0);
+}
+
 @Component({
 	selector: "bo-group-missing-data",
 	templateUrl: "./group-missing-data.component.html",
@@ -106,23 +125,9 @@ export class GroupMissingDataComponent {
 
 	color = input<string | undefined>(undefined);
 
-	entries = computed<MissingDataEntry[]>(() => {
-		const members = this.members();
-		if (!members) return [];
+	entries = computed<MissingDataEntry[]>(() => getMissingDataEntries(this.members()));
 
-		return members
-			.filter((member) => member.active)
-			.map((member) => ({
-				member,
-				items: MISSING_DATA_CHECKS.filter((check) => check.missing(member)).map(({ label, icon }) => ({
-					label,
-					icon,
-				})),
-			}))
-			.filter((entry) => entry.items.length > 0);
-	});
-
-	missingCount = computed(() => this.entries().reduce((sum, entry) => sum + entry.items.length, 0));
+	missingCount = computed(() => countMissingData(this.entries()));
 
 	constructor() {
 		addIcons({

@@ -6,9 +6,16 @@
 			<bo-vertical-menu defaultTab="clenove" (change)="view.set($any($event))">
 				<bo-vertical-menu-item name="clenove" label="Členové" icon="people-outline"></bo-vertical-menu-item>
 				<bo-vertical-menu-item
-					name="info"
-					label="Info"
-					icon="information-circle-outline"
+					name="statistiky"
+					label="Statistiky"
+					icon="stats-chart-outline"
+				></bo-vertical-menu-item>
+				<bo-vertical-menu-item
+					name="kontrola"
+					label="Kontrola"
+					icon="alert-circle-outline"
+					[badge]="problemsCount()"
+					badgeVariant="attention"
 				></bo-vertical-menu-item>
 			</bo-vertical-menu>
 		</div>
@@ -16,7 +23,22 @@
 		<div class="flex-grow-1">
 			<bo-group-members class="mb-5" [class.d-none]="view() !== 'clenove'"></bo-group-members>
 
-			<bo-group-info class="mb-5" [class.d-none]="view() !== 'info'"></bo-group-info>
+			@if (view() === "statistiky") {
+				<bo-group-statistics class="d-block mb-5" [members]="members()" [color]="group()?.color || undefined" />
+			}
+
+			@if (view() === "kontrola") {
+				<bo-group-missing-data
+					class="d-block mb-4"
+					[members]="members()"
+					[color]="group()?.color || undefined"
+				/>
+				<bo-group-unpaid-membership
+					class="d-block mb-5"
+					[members]="members()"
+					[color]="group()?.color || undefined"
+				/>
+			}
 		</div>
 	</div>
 </bo-page-content>
@@ -24,6 +46,13 @@
 <bo-page-footer class="d-lg-none">
 	<bo-tabs defaultTab="clenove" (change)="view.set($any($event))">
 		<bo-tab name="clenove" label="Členové" icon="people-outline"></bo-tab>
-		<bo-tab name="info" label="Info" icon="information-circle-outline"></bo-tab>
+		<bo-tab name="statistiky" label="Statistiky" icon="stats-chart-outline"></bo-tab>
+		<bo-tab
+			name="kontrola"
+			label="Kontrola"
+			icon="alert-circle-outline"
+			[badge]="problemsCount()"
+			badgeVariant="attention"
+		></bo-tab>
 	</bo-tabs>
 </bo-page-footer>

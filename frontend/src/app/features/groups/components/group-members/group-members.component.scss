@@ -1,6 +1,20 @@
 :host ::ng-deep .members-table {
 	table-layout: fixed;
 	width: 100%;
+
+	.members-photo-column {
+		width: 56px;
+		vertical-align: middle;
+	}
+}
+
+.members-photo {
+	font-size: 2rem;
+}
+
+.members-photo-empty {
+	background-color: transparent;
+	border: 2px solid var(--bo-neutral-badge);
 }
 
 ion-select::part(text) {

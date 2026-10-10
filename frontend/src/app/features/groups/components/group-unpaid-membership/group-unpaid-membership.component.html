@@ -1,0 +1,39 @@
+@if (unpaidMembers().length) {
+	<bo-card [color]="color()">
+		<bo-card-header>
+			<bo-card-title>
+				<span class="bo-card-section-title">
+					<ion-icon name="wallet-outline" />
+					Nezaplacené příspěvky
+					<span class="bo-pill bo-pill-red unpaid-count">{{ unpaidMembers().length }}</span>
+				</span>
+			</bo-card-title>
+		</bo-card-header>
+
+		<bo-card-content>
+			<div class="bo-info-list">
+				@for (member of unpaidMembers(); track member.id) {
+					<div class="bo-info-row unpaid-row">
+						<div class="unpaid-member">
+							<span class="unpaid-name">{{ member | member: "nickname" }}</span>
+							@if (member.firstName || member.lastName) {
+								<span class="unpaid-detail">{{ member.firstName }} {{ member.lastName }}</span>
+							}
+						</div>
+
+						<span class="unpaid-role">{{ member | member: "role" }}</span>
+
+						<ion-button
+							class="unpaid-link"
+							fill="clear"
+							size="small"
+							[routerLink]="['/databaze/clenove', member.id]"
+						>
+							<ion-icon slot="end" name="chevron-forward-outline" />
+						</ion-button>
+					</div>
+				}
+			</div>
+		</bo-card-content>
+	</bo-card>
+}
