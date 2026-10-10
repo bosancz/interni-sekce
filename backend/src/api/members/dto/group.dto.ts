@@ -1,3 +1,4 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsOptional, IsString } from "class-validator";
 import { EnsureBoolean } from "src/helpers/validation";
 import { Group } from "src/models/members/entities/group.entity";
@@ -9,6 +10,7 @@ export class GroupResponse implements Omit<Group, "members"> {
 	shortName!: string;
 	color!: string | null;
 	darkColor!: string | null;
+	@ApiProperty({ type: "string", nullable: true }) profilePhotoUpdatedAt!: Date | null;
 	name!: string | null;
 	deletedAt!: string | null;
 	childrenCount?: number;

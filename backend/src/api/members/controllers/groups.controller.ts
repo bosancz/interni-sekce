@@ -19,6 +19,8 @@ import { Request } from "express";
 import { QueryFailedError } from "typeorm";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
+import { Config } from "src/config";
+import { FilesService } from "src/models/files/services/files.service";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
 import {
 	GroupCreatePermission,
@@ -43,7 +45,11 @@ function throwOnDuplicateShortName(err: unknown): never {
 @AcController()
 @ApiTags("Members")
 export class GroupsController {
-	constructor(private groups: GroupsRepository) {}
+	constructor(
+		private groups: GroupsRepository,
+		private filesService: FilesService,
+		private config: Config,
+	) {}
 
 	@Get()
 	@AcLinks(GroupListPermission)
@@ -132,5 +138,7 @@ export class GroupsController {
 			}
 			throw err;
 		}
+
+		await this.filesService.deleteFile(`${this.config.fs.groupsDir}/${groupId}/profile_photo.jpg`).catch(() => {});
 	}
 }

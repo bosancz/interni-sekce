@@ -11,6 +11,7 @@ export class Group {
 	@Column({ type: "boolean", nullable: false, default: true }) children!: boolean;
 	@Column({ type: "varchar", nullable: true }) color!: string | null;
 	@Column({ type: "varchar", nullable: true }) darkColor!: string | null;
+	@Column({ type: "timestamp with time zone", nullable: true }) profilePhotoUpdatedAt!: Date | null;
 
 	@DeleteDateColumn() deletedAt!: string | null;
 
