@@ -80,7 +80,8 @@ export class AdminTableComponent {
 		return this.isDesktop() ? "table" : "list";
 	});
 
-	readonly lineColumns = computed(() => this.columns().filter((column) => !column.right()));
+	readonly lineColumns = computed(() => this.columns().filter((column) => !column.right() && !column.start()));
+	readonly startColumn = computed(() => this.columns().find((column) => column.start()) ?? null);
 	readonly rightColumn = computed(() => this.columns().find((column) => column.right()) ?? null);
 
 	readonly skeletonArray = computed(() => Array.from({ length: this.skeletonRows() }));
