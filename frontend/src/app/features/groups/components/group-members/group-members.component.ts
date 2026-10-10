@@ -40,6 +40,8 @@ import { FilterModel, FilterValues } from "src/app/shared/components/filter/filt
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
+import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
+import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
 import { getMemberEmails } from "src/helpers/member-contacts";
 import { SDK } from "src/sdk";
 import { GroupsService } from "../../services/groups.service";
@@ -62,6 +64,8 @@ const mailAddresses = (emails: string[]) =>
 	templateUrl: "./group-members.component.html",
 	styleUrls: ["./group-members.component.scss"],
 	imports: [
+		MemberProfilePhotoUrlPipe,
+		AvatarComponent,
 		FilterComponent,
 		FilterPillComponent,
 		SortSelectComponent,
@@ -183,6 +187,7 @@ export class GroupMembersComponent implements OnInit {
 	}));
 
 	viewSelections = signal<{ [key: string]: boolean }>({
+		photo: true,
 		nickname: true,
 		firstName: true,
 		lastName: true,
@@ -367,6 +372,7 @@ export class GroupMembersComponent implements OnInit {
 
 	public getViewSelectionLabel(key: string): string {
 		const labels: { [key: string]: string } = {
+			photo: "Fotka",
 			nickname: "Přezdívka",
 			firstName: "Jméno",
 			lastName: "Příjmení",

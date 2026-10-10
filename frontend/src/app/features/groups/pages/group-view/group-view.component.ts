@@ -3,7 +3,15 @@ import { ActivatedRoute } from "@angular/router";
 import { AlertController, NavController } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline, create, downloadOutline, informationCircleOutline, peopleOutline, trash } from "ionicons/icons";
+import {
+	addOutline,
+	alertCircleOutline,
+	create,
+	downloadOutline,
+	peopleOutline,
+	statsChartOutline,
+	trash,
+} from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -16,8 +24,17 @@ import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { VerticalMenuItemComponent } from "src/app/shared/components/vertical-menu-item/vertical-menu-item.component";
 import { VerticalMenuComponent } from "src/app/shared/components/vertical-menu/vertical-menu.component";
 import { SDK } from "src/sdk";
-import { GroupInfoComponent } from "../../components/group-info/group-info.component";
 import { GroupMembersComponent } from "../../components/group-members/group-members.component";
+import {
+	countMissingData,
+	getMissingDataEntries,
+	GroupMissingDataComponent,
+} from "../../components/group-missing-data/group-missing-data.component";
+import { GroupStatisticsComponent } from "../../components/group-statistics/group-statistics.component";
+import {
+	getUnpaidMembers,
+	GroupUnpaidMembershipComponent,
+} from "../../components/group-unpaid-membership/group-unpaid-membership.component";
 import { MemberCreateModalComponent } from "src/app/features/members/components/member-create-modal/member-create-modal.component";
 import { GroupsService } from "../../services/groups.service";
 
@@ -34,14 +51,28 @@ import { GroupsService } from "../../services/groups.service";
 		TabComponent,
 		VerticalMenuComponent,
 		VerticalMenuItemComponent,
-		GroupInfoComponent,
 		GroupMembersComponent,
+		GroupMissingDataComponent,
+		GroupStatisticsComponent,
+		GroupUnpaidMembershipComponent,
 	],
 })
 export class GroupViewComponent implements OnInit {
 	group = signal<SDK.GroupResponseWithLinks | null | undefined>(undefined);
 
-	view = signal<"info" | "clenove">("clenove");
+	members = signal<SDK.MemberResponseWithLinks[] | undefined>(undefined);
+
+	view = signal<"clenove" | "statistiky" | "kontrola">("clenove");
+
+	problemsCount = computed(() => {
+		const members = this.members();
+		if (!members) return undefined;
+
+		const count = countMissingData(getMissingDataEntries(members)) + getUnpaidMembers(members).length;
+		return count || undefined;
+	});
+
+	private latestLoadId = 0;
 
 	actions = computed<Action[]>(() => {
 		const links = this.group()?._links;
@@ -92,7 +123,7 @@ export class GroupViewComponent implements OnInit {
 		private toastService: ToastService,
 		private modalService: ModalService,
 	) {
-		addIcons({ informationCircleOutline, peopleOutline, create, trash, addOutline, downloadOutline });
+		addIcons({ peopleOutline, statsChartOutline, alertCircleOutline, create, trash, addOutline, downloadOutline });
 	}
 
 	ngOnInit(): void {
@@ -100,7 +131,27 @@ export class GroupViewComponent implements OnInit {
 			if (params["group"]) this.groupsService.loadGroup(params["group"]);
 		});
 
-		this.groupsService.currentGroup.pipe(untilDestroyed(this)).subscribe((group) => this.group.set(group));
+		this.groupsService.currentGroup.pipe(untilDestroyed(this)).subscribe((group) => {
+			this.group.set(group);
+			this.loadMembers(group?.id);
+		});
+	}
+
+	private async loadMembers(groupId?: number) {
+		this.members.set(undefined);
+		if (!groupId) return;
+
+		const loadId = ++this.latestLoadId;
+
+		const members = await this.api.MembersApi.listMembers({
+			groups: [groupId],
+			limit: 1000,
+			contacts: true,
+		}).then((res) => res.data);
+
+		if (loadId !== this.latestLoadId) return;
+
+		this.members.set(members);
 	}
 
 	private async deleteGroup() {
