@@ -18,6 +18,8 @@ export class BugReport {
 
 	@Column({ type: "varchar" }) title!: string;
 
+	@Column({ type: "varchar", nullable: true }) path!: string | null;
+
 	@CreateDateColumn({ type: "timestamp with time zone" }) createdAt!: Date;
 
 	@Column({ type: "timestamp with time zone", nullable: true }) notifiedAt!: Date | null;

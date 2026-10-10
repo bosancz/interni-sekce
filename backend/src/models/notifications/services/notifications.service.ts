@@ -104,11 +104,14 @@ export class NotificationsService {
 		});
 	}
 
-	async onBugReportResolved(user: User, fix: { title: string; version: string; description: string }) {
+	async onBugReportResolved(
+		user: User,
+		fix: { title: string; version: string; description: string; path: string | null },
+	) {
 		await this.notifyUsers(NotificationTypes.myBugReports, [user], undefined, {
 			title: `Opraveno: ${fix.title}`,
 			body: `Nasazeno ve verzi ${fix.version} — ${fix.description}`,
-			path: "/ucet/chyby",
+			path: fix.path || "/ucet/chyby",
 		});
 	}
 
