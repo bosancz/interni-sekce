@@ -71,3 +71,27 @@
 ion-content {
 	--padding-top: 0;
 }
+
+.offline-warning {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	margin-bottom: 1.5rem;
+	padding: 14px 16px;
+	border-radius: var(--bo-radius-card);
+	background-color: var(--bo-yellow-tint);
+	border-left: 4px solid var(--san-yellow);
+	color: var(--bo-ink);
+
+	ion-icon {
+		flex: 0 0 auto;
+		font-size: 1.5rem;
+		margin-top: 1px;
+	}
+}
+
+.offline-warning-text {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}

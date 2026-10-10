@@ -1,0 +1,63 @@
+<bo-card>
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="cloud-offline-outline" />
+				Offline režim
+			</span>
+		</bo-card-title>
+	</bo-card-header>
+
+	<bo-card-content>
+		<div class="bo-info-list">
+			<div class="bo-info-row offline-row">
+				@if (progress(); as progress) {
+					<ion-icon class="offline-icon" name="cloud-download-outline" />
+					<div class="offline-text">
+						<strong>Stahuji databázi…</strong>
+						<span class="offline-muted">{{ progress.done }} / {{ progress.total }}</span>
+						<ion-progress-bar [value]="progress.total ? progress.done / progress.total : 0" />
+					</div>
+				} @else if (meta()?.downloadedAt; as downloadedAt) {
+					<ion-icon class="offline-icon" color="success" name="checkmark-circle-outline" />
+					<div class="offline-text">
+						<strong>Databáze je stažená v tomto zařízení</strong>
+						<span class="offline-muted">
+							Staženo {{ downloadedAt | date: "d. M. y H:mm" }} · členů: {{ meta()?.members ?? 0 }} ·
+							kartiček pojištěnce: {{ meta()?.insuranceCards ?? 0 }}
+						</span>
+						<span class="offline-muted">
+							Bez internetu ji uvidíš jen pro čtení. Obnovuje se sama, když jsi online. Odhlášením se
+							smaže.
+						</span>
+					</div>
+					<div class="offline-buttons">
+						<ion-button [disabled]="offline()" (click)="download()">
+							<ion-icon name="refresh-outline" slot="start" />
+							Aktualizovat
+						</ion-button>
+						<ion-button class="offline-delete" fill="outline" color="danger" (click)="disable()">
+							<ion-icon name="trash-outline" slot="start" />
+							Smazat
+						</ion-button>
+					</div>
+				} @else {
+					<ion-icon class="offline-icon" name="cloud-offline-outline" />
+					<div class="offline-text">
+						<strong>Databáze bez internetu</strong>
+						<span class="offline-muted">
+							Stáhne členy, kontakty na rodiče a kartičky pojištěnce do tohoto zařízení, aby šly zobrazit
+							i bez internetu. Odhlášením se smažou.
+						</span>
+					</div>
+					<div class="offline-buttons">
+						<ion-button [disabled]="offline()" (click)="enable()">
+							<ion-icon name="cloud-download-outline" slot="start" />
+							Stáhnout
+						</ion-button>
+					</div>
+				}
+			</div>
+		</div>
+	</bo-card-content>
+</bo-card>

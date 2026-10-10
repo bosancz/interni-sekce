@@ -1,11 +1,13 @@
-import { Component, computed, effect, signal } from "@angular/core";
+import { DatePipe } from "@angular/common";
+import { Component, computed, effect, signal, untracked } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonIcon, IonSpinner, PopoverController } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { chevronBackOutline, chevronForwardOutline } from "ionicons/icons";
+import { chevronBackOutline, chevronForwardOutline, cloudOfflineOutline } from "ionicons/icons";
 import { DateTime } from "luxon";
 import { ApiService } from "src/app/core/services/api.service";
+import { OfflineDataService } from "src/app/core/services/offline-data.service";
 import { UserService } from "src/app/core/services/user.service";
 import { ButtonSquareComponent } from "src/app/shared/components/button-square/button-square.component";
 import { EventCalendarComponent } from "src/app/shared/components/event-calendar/event-calendar.component";
@@ -45,6 +47,7 @@ const months = [
 		IonIcon,
 		IonSpinner,
 		RouterLink,
+		DatePipe,
 	],
 })
 export class HomeDashboardComponent {
@@ -65,14 +68,22 @@ export class HomeDashboardComponent {
 	canAccessProgram = this.userService.canAccessProgram;
 	canAccessTreasurer = this.userService.canAccessTreasurer;
 
+	offline = this.offlineDataService.offline;
+	offlineDownloadedAt = computed(() => this.offlineDataService.meta()?.downloadedAt ?? null);
+
 	constructor(
 		private api: ApiService,
 		private userService: UserService,
 		public popoverController: PopoverController,
+		private offlineDataService: OfflineDataService,
 	) {
-		addIcons({ chevronBackOutline, chevronForwardOutline });
+		addIcons({ chevronBackOutline, chevronForwardOutline, cloudOfflineOutline });
 
-		effect(() => this.loadCalendarEvents(this.dateFrom(), this.dateTill()));
+		effect(() => {
+			const dateFrom = this.dateFrom();
+			const dateTill = this.dateTill();
+			if (!this.offline()) untracked(() => this.loadCalendarEvents(dateFrom, dateTill));
+		});
 	}
 
 	previousMonth() {

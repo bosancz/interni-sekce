@@ -1,43 +1,27 @@
 <bo-page-content [padding]="true">
 	<div class="p-1 p-lg-3">
-		<div class="row no-gutters">
-			<div class="col-lg-6 col-xl-8 pr-lg-2">
-				<div class="row nav-buttons">
-					<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
-						<bo-button-square
-							routerLink="/akce"
-							[queryParams]="{ year: 'budouci' }"
-							label="Akce"
-							color="var(--san-blue)"
-							tint="var(--bo-blue-tint)"
-							image="assets/img/button-akce.svg"
-						/>
-					</div>
-					<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
-						<a
-							href="https://wiki.bosan.cz"
-							target="_blank"
-							rel="noopener"
-							class="d-block text-decoration-none"
+		@if (offline()) {
+			<div class="offline-warning" role="status">
+				<ion-icon name="cloud-offline-outline" />
+				<div class="offline-warning-text">
+					<strong>Jsi bez internetu</strong>
+					@if (offlineDownloadedAt(); as downloadedAt) {
+						<span>
+							Funguje jen prohlížení databáze stažené {{ downloadedAt | date: "d. M. y H:mm" }}. Nic z ní
+							teď nejde upravit.
+						</span>
+					} @else {
+						<span
+							>Bez internetu teď nic nefunguje. Databázi si můžeš pro offline režim stáhnout v
+							Nastavení.</span
 						>
-							<bo-button-square
-								label="Wiki"
-								color="var(--san-green)"
-								tint="var(--bo-green-tint)"
-								image="assets/img/button-wiki.svg"
-							/>
-						</a>
-					</div>
-					<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
-						<bo-button-square
-							routerLink="/galerie/alba"
-							label="Galerie"
-							color="var(--san-yellow)"
-							tint="var(--bo-yellow-tint)"
-							image="assets/img/button-galerie.svg"
-						/>
-					</div>
-					<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
+					}
+				</div>
+			</div>
+
+			@if (offlineDownloadedAt()) {
+				<div class="row nav-buttons">
+					<div class="col-6 col-md-3 col-lg-3 col-xl-2 mb-4">
 						<bo-button-square
 							routerLink="/databaze"
 							label="Databáze"
@@ -46,82 +30,132 @@
 							image="assets/img/button-databaze.svg"
 						/>
 					</div>
-					@if (canAccessProgram()) {
+				</div>
+			}
+		} @else {
+			<div class="row no-gutters">
+				<div class="col-lg-6 col-xl-8 pr-lg-2">
+					<div class="row nav-buttons">
 						<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
 							<bo-button-square
-								routerLink="/program"
-								label="Program"
-								color="var(--san-green)"
-								tint="var(--bo-green-tint)"
-								image="assets/img/button-program.svg"
+								routerLink="/akce"
+								[queryParams]="{ year: 'budouci' }"
+								label="Akce"
+								color="var(--san-blue)"
+								tint="var(--bo-blue-tint)"
+								image="assets/img/button-akce.svg"
 							/>
 						</div>
-					}
-					@if (canAccessTreasurer()) {
+						<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
+							<a
+								href="https://wiki.bosan.cz"
+								target="_blank"
+								rel="noopener"
+								class="d-block text-decoration-none"
+							>
+								<bo-button-square
+									label="Wiki"
+									color="var(--san-green)"
+									tint="var(--bo-green-tint)"
+									image="assets/img/button-wiki.svg"
+								/>
+							</a>
+						</div>
 						<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
 							<bo-button-square
-								routerLink="/prispevky"
-								label="Příspěvky"
+								routerLink="/galerie/alba"
+								label="Galerie"
 								color="var(--san-yellow)"
 								tint="var(--bo-yellow-tint)"
+								image="assets/img/button-galerie.svg"
+							/>
+						</div>
+						<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
+							<bo-button-square
+								routerLink="/databaze"
+								label="Databáze"
+								color="var(--san-red)"
+								tint="var(--bo-red-tint)"
 								image="assets/img/button-databaze.svg"
 							/>
 						</div>
-					}
-				</div>
+						@if (canAccessProgram()) {
+							<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
+								<bo-button-square
+									routerLink="/program"
+									label="Program"
+									color="var(--san-green)"
+									tint="var(--bo-green-tint)"
+									image="assets/img/button-program.svg"
+								/>
+							</div>
+						}
+						@if (canAccessTreasurer()) {
+							<div class="col-6 col-md-3 col-lg-6 col-xl-3 mb-4">
+								<bo-button-square
+									routerLink="/prispevky"
+									label="Příspěvky"
+									color="var(--san-yellow)"
+									tint="var(--bo-yellow-tint)"
+									image="assets/img/button-databaze.svg"
+								/>
+							</div>
+						}
+					</div>
 
-				<div class="row pl-lg-2">
-					<div class="col-12 col-xl-6">
-						<bo-home-card-my-events class="mb-3 mb-lg-3"></bo-home-card-my-events>
-					</div>
-					<div class="col-12 col-xl-6">
-						<bo-home-card-noleader-events class="mb-3 mb-lg-3"></bo-home-card-noleader-events>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-6 col-xl-4 pl-lg-2">
-				<div class="calendar-card">
-					<div class="calendar-nav">
-						<h3 class="calendar-nav-title mb-0">
-							{{ monthTitle() }}
-							@if (loading()) {
-								<ion-spinner
-									name="crescent"
-									class="calendar-loading"
-									aria-label="Načítám akce"
-								></ion-spinner>
-							}
-						</h3>
-						<div class="calendar-nav-buttons">
-							<button
-								type="button"
-								class="calendar-nav-button"
-								aria-label="Předchozí měsíc"
-								(click)="previousMonth()"
-							>
-								<ion-icon name="chevron-back-outline"></ion-icon>
-							</button>
-							<button
-								type="button"
-								class="calendar-nav-button"
-								aria-label="Následující měsíc"
-								(click)="nextMonth()"
-							>
-								<ion-icon name="chevron-forward-outline"></ion-icon>
-							</button>
+					<div class="row pl-lg-2">
+						<div class="col-12 col-xl-6">
+							<bo-home-card-my-events class="mb-3 mb-lg-3"></bo-home-card-my-events>
+						</div>
+						<div class="col-12 col-xl-6">
+							<bo-home-card-noleader-events class="mb-3 mb-lg-3"></bo-home-card-noleader-events>
 						</div>
 					</div>
-					<bo-event-calendar
-						[dateFrom]="dateFrom()"
-						[dateTill]="dateTill()"
-						[events]="events()"
-						[cpv]="true"
-						[headingLevel]="3"
-					></bo-event-calendar>
 				</div>
+				<div class="col-lg-6 col-xl-4 pl-lg-2">
+					<div class="calendar-card">
+						<div class="calendar-nav">
+							<h3 class="calendar-nav-title mb-0">
+								{{ monthTitle() }}
+								@if (loading()) {
+									<ion-spinner
+										name="crescent"
+										class="calendar-loading"
+										aria-label="Načítám akce"
+									></ion-spinner>
+								}
+							</h3>
+							<div class="calendar-nav-buttons">
+								<button
+									type="button"
+									class="calendar-nav-button"
+									aria-label="Předchozí měsíc"
+									(click)="previousMonth()"
+								>
+									<ion-icon name="chevron-back-outline"></ion-icon>
+								</button>
+								<button
+									type="button"
+									class="calendar-nav-button"
+									aria-label="Následující měsíc"
+									(click)="nextMonth()"
+								>
+									<ion-icon name="chevron-forward-outline"></ion-icon>
+								</button>
+							</div>
+						</div>
+						<bo-event-calendar
+							[dateFrom]="dateFrom()"
+							[dateTill]="dateTill()"
+							[events]="events()"
+							[cpv]="true"
+							[headingLevel]="3"
+						></bo-event-calendar>
+					</div>
 
-				<bo-home-card-photo-of-day class="photo-of-day"></bo-home-card-photo-of-day>
+					<bo-home-card-photo-of-day class="photo-of-day"></bo-home-card-photo-of-day>
+				</div>
 			</div>
-		</div>
+		}
 	</div>
 </bo-page-content>

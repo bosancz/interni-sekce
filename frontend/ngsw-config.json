@@ -25,25 +25,5 @@
 				"urls": ["https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap"]
 			}
 		}
-	],
-	"dataGroups": [
-		{
-			"name": "api",
-			"urls": ["/api", "/api/me/user"],
-			"cacheConfig": {
-				"strategy": "freshness",
-				"maxSize": 100,
-				"maxAge": "7d"
-			}
-		},
-		{
-			"name": "database",
-			"urls": ["/api/members", "/api/members/*"],
-			"cacheConfig": {
-				"strategy": "freshness",
-				"maxSize": 200,
-				"maxAge": "7d"
-			}
-		}
 	]
 }
