@@ -169,11 +169,8 @@ export class NotificationsService {
 			if (channels.includes(NotificationChannels.inApp)) inAppUsers.push(user);
 		}
 
-		await Promise.all([
-			this.sendPush(pushUsers, message),
-			this.sendEmails(emailUsers, message),
-			this.saveInApp(type, inAppUsers, message),
-		]);
+		await this.saveInApp(type, inAppUsers, message);
+		await Promise.all([this.sendPush(pushUsers, message), this.sendEmails(emailUsers, message)]);
 	}
 
 	private async sendPush(users: User[], message: NotificationMessage) {

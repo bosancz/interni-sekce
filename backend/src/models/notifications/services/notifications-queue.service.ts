@@ -8,9 +8,13 @@ export interface NotificationEmailJob {
 	mail: MailOptions;
 }
 
+export interface NotificationPushPayload {
+	notification: { title: string; body?: string; data?: Record<string, unknown> };
+}
+
 export interface NotificationPushJob {
 	subscriptionId: number;
-	payload: object;
+	payload: NotificationPushPayload;
 }
 
 const JOB_OPTIONS: JobsOptions = {
@@ -35,7 +39,7 @@ export class NotificationsQueueService {
 		);
 	}
 
-	async enqueuePush(subscriptionIds: number[], payload: object) {
+	async enqueuePush(subscriptionIds: number[], payload: NotificationPushPayload) {
 		if (!subscriptionIds.length) return;
 		await this.queue.addBulk(
 			subscriptionIds.map((subscriptionId) => ({

@@ -21,6 +21,7 @@
 						"assets": [
 							"src/assets",
 							"src/manifest.json",
+							"src/sw.js",
 							"src/config.json",
 							{
 								"glob": "*.png",
