@@ -1,3 +1,7 @@
+## v4.25.2 — 2026-10-11
+
+- <span class="changelog-type" title="patch">🚸</span> [Šipky zpět a vpřed hned vlevo od vyhledávání](https://github.com/bosancz/interni-sekce/commit/52c66f96c53ce19f16c80b60c68e4605c20d3393) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.25.1 — 2026-10-11
 
 - <span class="changelog-type" title="patch">🚸</span> [Šipky zpět a vpřed v nainstalované aplikaci na desktopu](https://github.com/bosancz/interni-sekce/commit/f60ac48fa31eec9d7f04668994f9d7233835edbb) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
