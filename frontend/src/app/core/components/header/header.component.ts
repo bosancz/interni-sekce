@@ -1,4 +1,4 @@
-import { Location } from "@angular/common";
+import { Location, NgTemplateOutlet } from "@angular/common";
 import { Component, computed, DestroyRef, signal, viewChild } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { RouterLink } from "@angular/router";
@@ -15,7 +15,15 @@ import { PlatformService } from "src/app/core/services/platform.service";
 	selector: "bo-header",
 	templateUrl: "./header.component.html",
 	styleUrl: "./header.component.scss",
-	imports: [RouterLink, IonButton, IonButtons, IonIcon, GlobalSearchComponent, AccountMenuComponent],
+	imports: [
+		NgTemplateOutlet,
+		RouterLink,
+		IonButton,
+		IonButtons,
+		IonIcon,
+		GlobalSearchComponent,
+		AccountMenuComponent,
+	],
 	host: {
 		"[class.lg]": "isLg()",
 	},

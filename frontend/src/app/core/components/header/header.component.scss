@@ -133,6 +133,20 @@ ion-buttons ion-button {
 
 	.search-area {
 		padding: 0 16px;
+		display: grid;
+		grid-template-columns: 1fr minmax(0, 500px) 1fr;
+		align-items: center;
+
+		.history-nav {
+			grid-column: 1;
+			justify-self: end;
+			margin-inline-end: 8px;
+		}
+
+		::ng-deep .search {
+			grid-column: 2;
+			width: 100%;
+		}
 	}
 
 	.end-spacer {
