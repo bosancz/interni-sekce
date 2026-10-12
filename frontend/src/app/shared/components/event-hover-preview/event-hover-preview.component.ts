@@ -51,8 +51,9 @@ export class EventHoverPreviewComponent implements OnDestroy {
 		if (this.paused) return;
 		if (e.pointerType !== "mouse" && e.pointerType !== "pen") return;
 
-		const row = (e.target as HTMLElement | null)?.closest?.("[id^='event-']") as HTMLElement | null;
-		if (!row) {
+		const target = e.target as HTMLElement | null;
+		const row = target?.closest?.("[id^='event-']") as HTMLElement | null;
+		if (!row || target?.closest?.("[data-no-hover-preview]")) {
 			this.clear();
 			return;
 		}

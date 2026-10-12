@@ -152,4 +152,9 @@ ion-item ion-label h3 {
 .admin-table-end {
 	display: flex;
 	align-items: center;
+
+	[admin-table-actions] {
+		display: flex;
+		align-items: center;
+	}
 }

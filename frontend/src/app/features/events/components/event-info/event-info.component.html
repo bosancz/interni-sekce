@@ -130,7 +130,9 @@
 		<!-- TODO: ten label bych dal mimo ten edit button, ale stejně to chci trochu předělat, aby se třeba na mobilu ten markdown editova na celou obrazovku a na PC třeba i inline -->
 	</div>
 	<div class="col-12 col-xl-4 order-first order-xl-last">
-		<event-card [event]="event()" class="mb-3" [actions]="false"></event-card>
+		@if (event(); as event) {
+			<bo-event-card [event]="event" class="mb-3"></bo-event-card>
+		}
 		@if (placeCoordinates(); as coords) {
 			<bo-location-map [coordinates]="coords" class="event-map mb-5"></bo-location-map>
 		}

@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from "@angular/core";
-import { IonContent, IonIcon, IonPopover } from "@ionic/angular/standalone";
+import { ChangeDetectionStrategy, Component, computed, input, output } from "@angular/core";
+import { IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { DateTime } from "luxon";
 import { chatbubbleEllipsesOutline } from "ionicons/icons";
@@ -7,6 +7,7 @@ import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { EventStatusID, EventStatuses } from "src/app/core/config/event-statuses";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
 import { EventAnnouncementModalComponent } from "../event-announcement-modal/event-announcement-modal.component";
 import { EventClosureModalComponent } from "../event-closure-modal/event-closure-modal.component";
@@ -59,15 +60,12 @@ const DONE_COLOR = EventStatuses.public.color;
 	templateUrl: "./event-progress.component.html",
 	styleUrl: "./event-progress.component.scss",
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [IonIcon, IonPopover, IonContent],
+	imports: [IonIcon, TooltipDirective],
 })
 export class EventProgressComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>(undefined);
 
 	change = output<void>();
-
-	noteOpen = signal(false);
-	noteEvent = signal<Event | undefined>(undefined);
 
 	statusNote = computed(() => this.event()?.statusNote || undefined);
 
@@ -171,8 +169,6 @@ export class EventProgressComponent {
 		}));
 	});
 
-	noteLabel = computed(() => this.steps().find((step) => step.note)?.label);
-
 	accentColor = computed(() => {
 		const status = this.status();
 		if (!status) return NEUTRAL_COLOR;
@@ -186,12 +182,6 @@ export class EventProgressComponent {
 		private readonly toastService: ToastService,
 	) {
 		addIcons({ chatbubbleEllipsesOutline });
-	}
-
-	openNote(domEvent: Event) {
-		domEvent.stopPropagation();
-		this.noteEvent.set(domEvent);
-		this.noteOpen.set(true);
 	}
 
 	async openStep(step: EventProgressStep) {

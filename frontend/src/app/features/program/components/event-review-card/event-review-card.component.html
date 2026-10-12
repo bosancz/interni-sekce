@@ -1,45 +1,5 @@
 @let e = event();
-<bo-card [routerLink]="'/akce/' + e.id">
-	<bo-card-content>
-		<div class="header">
-			<div
-				class="icon"
-				[style.background-color]="(e | event: 'image') ? 'transparent' : (e | event: 'color') || '#ccc'"
-			>
-				@if (e | event: "image") {
-					<img [src]="e | event: 'image'" />
-				}
-			</div>
-			<div class="title">
-				<span class="name">{{ e.name }}</span>
-				<span class="subtitle">{{ subtitle() }}</span>
-			</div>
-			<ion-icon name="chevron-forward"></ion-icon>
-		</div>
-
-		<div class="content">
-			@if (e.statusNote) {
-				<p class="note"><strong>Poznámka:</strong> {{ e.statusNote }}</p>
-			}
-
-			@if (e.description) {
-				<div class="description" [innerHTML]="e.description | markdown"></div>
-			}
-
-			<div class="facts">
-				@if (e.meetingPlaceStart) {
-					<p><strong>Sraz: </strong>{{ e.meetingPlaceStart }}</p>
-				}
-				@if (e.meetingPlaceEnd) {
-					<p><strong>Konec: </strong>{{ e.meetingPlaceEnd }}</p>
-				}
-				@if (e.leaders?.length) {
-					<p>Vede <strong [innerHTML]="e.leaders! | joinLeaders"></strong></p>
-				}
-			</div>
-		</div>
-	</bo-card-content>
-
+<bo-event-card [event]="e" [statusBar]="false" [link]="true">
 	@if (e._links.rejectEvent.applicable || e._links.publishEvent.applicable) {
 		<bo-card-footer class="footer" (click)="$event.stopPropagation()">
 			@if (e._links.rejectEvent.applicable) {
@@ -64,4 +24,4 @@
 			}
 		</bo-card-footer>
 	}
-</bo-card>
+</bo-event-card>

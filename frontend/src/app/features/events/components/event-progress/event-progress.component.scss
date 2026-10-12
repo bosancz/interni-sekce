@@ -132,27 +132,3 @@
 		color: var(--accent);
 	}
 }
-
-::ng-deep .event-progress-note-popover {
-	--width: min(20rem, calc(100vw - 2rem));
-
-	.popover-panel {
-		padding: 12px 14px;
-		font-size: 0.85rem;
-
-		h4 {
-			margin: 0 0 0.4rem;
-			color: var(--bo-heading);
-			font-size: 0.95rem;
-		}
-
-		p {
-			margin: 0 0 0.5rem;
-			white-space: pre-wrap;
-
-			&:last-child {
-				margin-bottom: 0;
-			}
-		}
-	}
-}
