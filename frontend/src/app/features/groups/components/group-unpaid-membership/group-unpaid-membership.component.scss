@@ -31,3 +31,16 @@
 	--padding-start: 8px;
 	--padding-end: 8px;
 }
+
+bo-card.all-paid {
+	background: var(--bo-green-tint);
+
+	::ng-deep h3 {
+		font-size: 1.1rem;
+	}
+
+	.bo-pill {
+		font-size: 0.75rem;
+		padding: 0.2em 0.7em;
+	}
+}

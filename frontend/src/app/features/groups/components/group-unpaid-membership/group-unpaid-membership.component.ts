@@ -2,7 +2,7 @@ import { Component, computed, input } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { chevronForwardOutline, walletOutline } from "ionicons/icons";
+import { checkmarkCircle, chevronForwardOutline, walletOutline } from "ionicons/icons";
 import { currentMembershipYear, isMembershipPaid } from "src/app/core/helpers/membership";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
@@ -44,7 +44,12 @@ export class GroupUnpaidMembershipComponent {
 
 	unpaidMembers = computed(() => getUnpaidMembers(this.members(), this.year));
 
+	allPaid = computed(() => {
+		const members = this.members();
+		return !!members?.some((member) => member.active) && this.unpaidMembers().length === 0;
+	});
+
 	constructor() {
-		addIcons({ walletOutline, chevronForwardOutline });
+		addIcons({ walletOutline, chevronForwardOutline, checkmarkCircle });
 	}
 }

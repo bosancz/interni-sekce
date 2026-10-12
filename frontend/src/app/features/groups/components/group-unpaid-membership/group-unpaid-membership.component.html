@@ -1,4 +1,16 @@
-@if (unpaidMembers().length) {
+@if (allPaid()) {
+	<bo-card class="all-paid" color="var(--bo-green)">
+		<bo-card-header>
+			<bo-card-title>
+				<span class="bo-card-section-title">
+					<ion-icon name="checkmark-circle" />
+					Příspěvky {{ year }}
+					<span class="bo-pill bo-pill-green unpaid-count">Všichni zaplatili</span>
+				</span>
+			</bo-card-title>
+		</bo-card-header>
+	</bo-card>
+} @else if (unpaidMembers().length) {
 	<bo-card [color]="color()">
 		<bo-card-header>
 			<bo-card-title>
