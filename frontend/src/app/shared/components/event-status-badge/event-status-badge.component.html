@@ -4,6 +4,16 @@
 >
 	{{ event().status | eventStatus: "name" }}
 	@if (event().statusNote) {
-		: {{ event().statusNote }}
+		<span
+			class="note-icon"
+			tabindex="0"
+			role="img"
+			aria-label="Poznámka ke stavu"
+			data-no-hover-preview
+			[boTooltip]="event().statusNote"
+			[boTooltipTap]="true"
+		>
+			<ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+		</span>
 	}
 </ion-badge>

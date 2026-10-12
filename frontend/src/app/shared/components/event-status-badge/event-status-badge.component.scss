@@ -1,5 +1,6 @@
 :host {
-	display: inline-block;
+	display: inline-flex;
+	vertical-align: middle;
 	transition: background-color 1000ms;
 }
 
@@ -9,4 +10,21 @@ ion-badge {
 	font-weight: 700;
 	border-radius: var(--bo-radius-pill);
 	padding: 0.35em 1em;
+}
+
+ion-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+}
+
+.note-icon {
+	display: inline-flex;
+	align-items: center;
+	margin: -0.2em -0.3em -0.2em 0;
+	cursor: help;
+
+	ion-icon {
+		font-size: 1.35em;
+	}
 }

@@ -1,8 +1,8 @@
-import { NgTemplateOutlet } from "@angular/common";
-import { Component, effect, input, OnInit, output, signal } from "@angular/core";
+import { Component, computed, input } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { IonButton, IonButtons, IonItem, IonLabel } from "@ionic/angular/standalone";
-import { ApiService } from "src/app/core/services/api.service";
+import { IonIcon } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { chevronForward } from "ionicons/icons";
 import { SDK } from "src/sdk";
 import { DateRangePipe } from "../../pipes/date-range.pipe";
 import { EventStatusPipe } from "../../pipes/event-status.pipe";
@@ -12,25 +12,17 @@ import { MarkdownPipe } from "../../pipes/markdown.pipe";
 import { MemberProfilePhotoUrlPipe } from "../../pipes/member-profile-photo-url.pipe";
 import { MemberPipe } from "../../pipes/member.pipe";
 import { CardContentComponent } from "../card-content/card-content.component";
-import { CardFooterComponent } from "../card-footer/card-footer.component";
-import { CardHeaderComponent } from "../card-header/card-header.component";
 import { CardStatusBarComponent } from "../card-status-bar/card-status-bar.component";
-import { CardTitleComponent } from "../card-title/card-title.component";
 import { CardComponent } from "../card/card.component";
 
 @Component({
-	selector: "event-card",
+	selector: "bo-event-card",
 	templateUrl: "./event-card.component.html",
 	styleUrls: ["./event-card.component.scss"],
 
 	imports: [
-		NgTemplateOutlet,
 		RouterLink,
-		IonItem,
-		IonLabel,
-		IonButton,
-		IonButtons,
-		DateRangePipe,
+		IonIcon,
 		EventPipe,
 		EventStatusPipe,
 		GroupPipe,
@@ -39,67 +31,21 @@ import { CardComponent } from "../card/card.component";
 		MarkdownPipe,
 		CardComponent,
 		CardContentComponent,
-		CardHeaderComponent,
 		CardStatusBarComponent,
-		CardTitleComponent,
-		CardFooterComponent,
 	],
 })
-export class EventCardComponent implements OnInit {
-	event = input<SDK.EventResponseWithLinks | undefined>();
-	eventId = input<number | undefined>();
-	actions = input<boolean>(false);
-	open = input<boolean>(false);
+export class EventCardComponent {
+	event = input.required<SDK.EventResponseWithLinks>();
+	statusBar = input(true);
+	link = input(false);
 
-	change = output<SDK.EventResponseWithLinks>();
+	subtitle = computed(() => {
+		const event = this.event();
+		const date = event.dateFrom ? new DateRangePipe().transform([event.dateFrom, event.dateTill]) : "";
+		return [date, event.place].filter(Boolean).join(", ");
+	});
 
-	private _loadedEvent = signal<SDK.EventResponseWithLinks | undefined>(undefined);
-
-	constructor(private api: ApiService) {
-		effect(() => {
-			const eventId = this.eventId();
-			if (eventId) this.loadEvent(eventId);
-		});
-	}
-
-	ngOnInit() {}
-
-	async loadEvent(eventId: number) {
-		const event = await this.api.EventsApi.getEvent(eventId).then((res) => res.data);
-		this._loadedEvent.set(event);
-	}
-
-	getEvent(): SDK.EventResponseWithLinks | undefined {
-		return this._loadedEvent() ?? this.event();
-	}
-
-	async reload() {
-		const event = this.getEvent();
-		if (event && event.id) return this.loadEvent(event.id);
-	}
-
-	async eventAction(
-		event: SDK.EventResponseWithLinks,
-		action: "submitEvent" | "rejectEvent" | "publishEvent" | "unpublishEvent" | "cancelEvent" | "uncancelEvent",
-	) {
-		const statusNote = window.prompt("Poznámka pro správce programu (můžeš nechat prázdné):");
-		if (statusNote === null) return;
-
-		await this.api.EventsApi[action](event.id, { statusNote });
-
-		await this.reload();
-		const updatedEvent = this.getEvent();
-		if (updatedEvent) this.change.emit(updatedEvent);
-	}
-
-	async rejectEvent(event: SDK.EventResponseWithLinks) {
-		const statusNote = window.prompt("Poznámka k vrácení akce:");
-		if (statusNote === null) return;
-
-		await this.api.EventsApi.rejectEvent(event.id, { statusNote });
-
-		await this.reload();
-		const updatedEvent = this.getEvent();
-		if (updatedEvent) this.change.emit(updatedEvent);
+	constructor() {
+		addIcons({ chevronForward });
 	}
 }

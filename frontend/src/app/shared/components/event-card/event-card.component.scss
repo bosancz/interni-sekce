@@ -1,17 +1,89 @@
-@use "src/styles/variables" as *;
-
-$circle-size: 3rem;
-
 :host {
 	display: block;
 }
 
+bo-card-content {
+	padding: 0 !important;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 18px 16px 10px 20px;
+
+	> ion-icon {
+		flex-shrink: 0;
+		font-size: 18px;
+		color: var(--bo-muted);
+	}
+}
+
 .icon {
-	float: left;
-	width: $circle-size;
-	height: $circle-size;
+	flex-shrink: 0;
+	width: 48px;
+	height: 48px;
 	border-radius: 50%;
-	background-color: #ccc;
+	overflow: hidden;
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+}
+
+.title {
+	flex-grow: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.name {
+	font-family: var(--font-san);
+	font-weight: bold;
+	font-size: 18px;
+	color: var(--bo-heading);
+}
+
+.subtitle {
+	font-size: 14px;
+	color: var(--bo-muted);
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 4px 20px 16px;
+	font-size: 16px;
+	line-height: 1.5;
+	color: var(--bo-ink);
+
+	p {
+		margin: 0;
+	}
+}
+
+.note {
+	margin: 16px 20px 0;
+	padding: 8px 12px;
+	border-radius: var(--bo-radius-btn);
+	background: var(--bo-yellow-tint);
+	font-size: 15px;
+	white-space: pre-wrap;
+}
+
+.description ::ng-deep > :last-child {
+	margin-bottom: 0;
+}
+
+.facts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0 24px;
 }
 
 .leader {
@@ -60,31 +132,5 @@ $circle-size: 3rem;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-	}
-}
-
-.event-heading {
-	--ion-item-background: transparent;
-}
-
-ion-card-title,
-ion-card-subtitle {
-	margin-left: 3rem;
-}
-
-.buttons {
-	text-align: right;
-
-	-webkit-padding-start: 10px;
-	padding-inline-start: 10px;
-	-webkit-padding-end: 10px;
-	padding-inline-end: 10px;
-
-	padding-top: 0px;
-	padding-bottom: 0px;
-
-	ion-button {
-		margin-top: 10px;
-		margin-bottom: 10px;
 	}
 }

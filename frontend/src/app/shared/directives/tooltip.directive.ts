@@ -7,9 +7,14 @@ import { Directive, ElementRef, HostListener, OnDestroy, input } from "@angular/
 export class TooltipDirective implements OnDestroy {
 	boTooltip = input<string | null | undefined>();
 	boTooltipPlacement = input<"top" | "bottom">("top");
+	boTooltipTap = input(false);
 
 	private tooltip?: HTMLElement;
+	private lastPointerType?: string;
 	private readonly hideHandler = () => this.hide();
+	private readonly outsideHandler = (event: PointerEvent) => {
+		if (!this.el.nativeElement.contains(event.target as Node)) this.hide();
+	};
 
 	constructor(private el: ElementRef<HTMLElement>) {
 		blockDisabledClicks();
@@ -54,17 +59,34 @@ export class TooltipDirective implements OnDestroy {
 
 		window.addEventListener("scroll", this.hideHandler, true);
 		window.addEventListener("resize", this.hideHandler);
+		if (this.boTooltipTap()) document.addEventListener("pointerdown", this.outsideHandler, true);
+	}
+
+	@HostListener("pointerdown", ["$event"])
+	rememberPointer(event: PointerEvent) {
+		this.lastPointerType = event.pointerType;
+	}
+
+	@HostListener("click", ["$event"])
+	onClick(event: MouseEvent) {
+		if (this.boTooltipTap() && this.lastPointerType === "touch") {
+			event.stopPropagation();
+			event.preventDefault();
+			this.show();
+			return;
+		}
+		this.hide();
 	}
 
 	@HostListener("mouseleave")
 	@HostListener("focusout")
-	@HostListener("click")
 	hide() {
 		this.tooltip?.remove();
 		this.tooltip = undefined;
 
 		window.removeEventListener("scroll", this.hideHandler, true);
 		window.removeEventListener("resize", this.hideHandler);
+		document.removeEventListener("pointerdown", this.outsideHandler, true);
 	}
 
 	ngOnDestroy() {

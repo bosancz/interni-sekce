@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, input } from "@angular/core";
-import { IonBadge } from "@ionic/angular/standalone";
+import { IonBadge, IonIcon } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { chatbubbleEllipsesOutline } from "ionicons/icons";
 import { SDK } from "src/sdk";
+import { TooltipDirective } from "../../directives/tooltip.directive";
 import { EventStatusPipe } from "../../pipes/event-status.pipe";
 
 @Component({
@@ -9,10 +12,12 @@ import { EventStatusPipe } from "../../pipes/event-status.pipe";
 	styleUrls: ["./event-status-badge.component.scss"],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 
-	imports: [IonBadge, EventStatusPipe],
+	imports: [IonBadge, IonIcon, TooltipDirective, EventStatusPipe],
 })
 export class EventStatusBadgeComponent {
 	event = input.required<SDK.EventResponseWithLinks>();
 
-	constructor() {}
+	constructor() {
+		addIcons({ chatbubbleEllipsesOutline });
+	}
 }

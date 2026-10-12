@@ -20,7 +20,14 @@
 			<div class="label">
 				<span>{{ step.label }}</span>
 				@if (step.note) {
-					<button type="button" class="note-button" aria-label="Poznámka ke stavu" (click)="openNote($event)">
+					<button
+						type="button"
+						class="note-button"
+						aria-label="Poznámka ke stavu"
+						[boTooltip]="statusNote()"
+						[boTooltipTap]="true"
+						(click)="$event.stopPropagation()"
+					>
 						<ion-icon name="chatbubble-ellipses-outline"></ion-icon>
 					</button>
 				}
@@ -28,19 +35,3 @@
 		</div>
 	}
 </div>
-
-<ion-popover
-	cssClass="event-progress-note-popover"
-	[isOpen]="noteOpen()"
-	[event]="noteEvent()"
-	(didDismiss)="noteOpen.set(false)"
->
-	<ng-template>
-		<ion-content>
-			<div class="popover-panel">
-				<h4>{{ noteLabel() }}</h4>
-				<p>{{ statusNote() }}</p>
-			</div>
-		</ion-content>
-	</ng-template>
-</ion-popover>
