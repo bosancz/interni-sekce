@@ -11,7 +11,6 @@ import {
 	openOutline,
 	optionsOutline,
 	person,
-	settings,
 } from "ionicons/icons";
 import { BugReportService } from "src/app/core/services/bug-report.service";
 import { LoginService } from "src/app/core/services/login.service";
@@ -40,8 +39,6 @@ import { VersionComponent } from "src/app/shared/components/version/version.comp
 export class AccountMenuModalComponent {
 	user = this.userService.user;
 
-	canAccessAdmin = this.userService.canAccessAdmin;
-
 	memberId = computed(() => this.userService.currentUser()?.member?.id);
 
 	isLg = toSignal(this.platformService.isLg);
@@ -59,7 +56,6 @@ export class AccountMenuModalComponent {
 	) {
 		addIcons({
 			person,
-			settings,
 			logOut,
 			bugOutline,
 			notificationsOutline,

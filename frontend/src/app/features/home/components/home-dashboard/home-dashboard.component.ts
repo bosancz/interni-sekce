@@ -69,6 +69,7 @@ export class HomeDashboardComponent {
 
 	canAccessProgram = this.userService.canAccessProgram;
 	canAccessTreasurer = this.userService.canAccessTreasurer;
+	canAccessAdmin = this.userService.canAccessAdmin;
 	myGroupId = this.userService.myGroupId;
 
 	offline = this.offlineDataService.offline;

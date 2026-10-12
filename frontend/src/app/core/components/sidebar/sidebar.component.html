@@ -57,6 +57,12 @@
 				<ion-label>Příspěvky</ion-label>
 			</ion-item>
 		}
+		@if (canAccessAdmin()) {
+			<ion-item routerLink="/admin" routerLinkActive="active">
+				<ion-icon name="settings-outline" class="me-3"></ion-icon>
+				<ion-label>Administrace</ion-label>
+			</ion-item>
+		}
 	</ion-list>
 </div>
 
