@@ -7,10 +7,23 @@ import { EventsRepository } from "./repositories/events.repository";
 import { EventAccountingService } from "./services/event-accountig.service";
 import { EventAnnouncementService } from "./services/event-announcement.service";
 import { EventRegistrationService } from "./services/event-registration.service";
+import { EventsProgramPdfService } from "./services/events-program-pdf.service";
 
 @Module({
 	imports: [TypeOrmModule.forFeature([Event, EventExpense, EventAttendee])],
-	providers: [EventsRepository, EventAccountingService, EventAnnouncementService, EventRegistrationService],
-	exports: [EventsRepository, EventAccountingService, EventAnnouncementService, EventRegistrationService],
+	providers: [
+		EventsRepository,
+		EventAccountingService,
+		EventAnnouncementService,
+		EventRegistrationService,
+		EventsProgramPdfService,
+	],
+	exports: [
+		EventsRepository,
+		EventAccountingService,
+		EventAnnouncementService,
+		EventRegistrationService,
+		EventsProgramPdfService,
+	],
 })
 export class EventsModelModule {}

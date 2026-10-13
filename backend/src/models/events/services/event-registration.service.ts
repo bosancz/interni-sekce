@@ -7,6 +7,7 @@ import * as path from "path";
 import * as puppeteer from "puppeteer";
 import sharp = require("sharp");
 import { pathToFileURL } from "url";
+import { resolveChromiumPath } from "src/helpers/chromium";
 import { string2Date } from "src/helpers/string2date";
 import { Event } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
@@ -152,7 +153,7 @@ export class EventRegistrationService {
 			await writeFile(tempFile, html, "utf-8");
 
 			browser = await puppeteer.launch({
-				executablePath: this.resolveChromiumPath(),
+				executablePath: resolveChromiumPath(),
 				args: ["--no-sandbox", "--disable-setuid-sandbox"],
 			});
 
@@ -189,17 +190,6 @@ export class EventRegistrationService {
 			})
 			.jpeg({ quality: PREVIEW_QUALITY })
 			.toBuffer();
-	}
-
-	private resolveChromiumPath(): string | undefined {
-		const fromEnv = process.env["PUPPETEER_EXECUTABLE_PATH"];
-		if (fromEnv) return fromEnv;
-
-		const candidates = ["/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome"];
-		const systemChromium = candidates.find((candidate) => existsSync(candidate));
-		if (systemChromium) return systemChromium;
-
-		return undefined;
 	}
 
 	private buildContext(event: Event, accent: string, note?: string) {

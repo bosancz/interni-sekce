@@ -28,6 +28,14 @@ export const EventsDeletedListPermission = new Permission<void>({
 	},
 });
 
+export const EventsProgramPdfPermission = new Permission<void>({
+	linkTo: RootResponse,
+
+	allowed: {
+		vedouci: true,
+	},
+});
+
 export const EventsYearsPermission = new Permission<void>({
 	linkTo: EventResponse,
 	allowed: {

@@ -15,7 +15,7 @@ import {
 	Req,
 	Res,
 } from "@nestjs/common";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOkResponse, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
@@ -24,6 +24,7 @@ import { SessionUser } from "src/auth/schema/user-token";
 import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventPlaceGeometry, EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository, GetEventsOptions } from "src/models/events/repositories/events.repository";
+import { EventsProgramPdfService } from "src/models/events/services/events-program-pdf.service";
 import { NotificationsService } from "src/models/notifications/services/notifications.service";
 import {
 	EventCancelPermission,
@@ -38,6 +39,7 @@ import {
 	EventRestorePermission,
 	EventsDeletedListPermission,
 	EventsListPermission,
+	EventsProgramPdfPermission,
 	EventsStatusesPermission,
 	EventSubmitPermission,
 	EventsYearsPermission,
@@ -57,6 +59,7 @@ export class EventsController {
 	constructor(
 		private events: EventsRepository,
 		private notificationsService: NotificationsService,
+		private eventsProgramPdfService: EventsProgramPdfService,
 	) {}
 
 	@Get()
@@ -69,9 +72,33 @@ export class EventsController {
 	): Promise<EventResponse[]> {
 		const where = EventsListPermission.canWhere(req, "events");
 
-		const options: GetEventsOptions = {
-			...query,
-		};
+		return this.events.getEvents(this.listOptions(query, authUser), where);
+	}
+
+	@Get("program-pdf")
+	@AcLinks(EventsProgramPdfPermission)
+	@ApiOkResponse({ schema: { type: "string", format: "binary" }, content: { "application/pdf": {} } })
+	async exportEventsPdf(
+		@Req() req: Request,
+		@AuthUser() authUser: SessionUser,
+		@Query() query: ListEventsQuery,
+		@Res() res: Response,
+	): Promise<void> {
+		EventsProgramPdfPermission.canOrThrow(req);
+
+		const where = EventsListPermission.canWhere(req, "events");
+		const { limit, offset, sort, order, ...filter } = query;
+
+		const events = await this.events.getEvents({ ...this.listOptions(filter, authUser), groups: true }, where);
+		const pdf = await this.eventsProgramPdfService.renderProgram(events, filter);
+
+		res.setHeader("Content-Type", "application/pdf");
+		res.setHeader("Content-Disposition", "attachment; filename=program.pdf");
+		res.send(pdf);
+	}
+
+	private listOptions(query: ListEventsQuery, authUser: SessionUser): GetEventsOptions {
+		const options: GetEventsOptions = { ...query };
 
 		if (query.my) {
 			if (!authUser.memberId)
@@ -79,7 +106,7 @@ export class EventsController {
 			options.memberId = authUser.memberId;
 		}
 
-		return this.events.getEvents(options, where);
+		return options;
 	}
 
 	@Post()

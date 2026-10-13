@@ -20,6 +20,7 @@ export interface GetEventsOptions extends PaginationOptions {
 	deleted?: boolean;
 	dateFrom?: string;
 	dateTill?: string;
+	groups?: boolean;
 }
 
 @Injectable()
@@ -49,6 +50,8 @@ export class EventsRepository {
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
 			.leftJoinAndSelect("attendees.member", "leaders")
 			.where(where);
+
+		if (options.groups) q.leftJoinAndSelect("events.groups", "groups");
 
 		applySort(
 			q,
