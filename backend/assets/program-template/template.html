@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="cs">
+	<head>
+		<meta charset="utf-8" />
+		<title>Program akcí</title>
+		<style>
+			@font-face {
+				font-family: "SanGrotesk";
+				src: url("{{fontsUrl}}/SanGrotesk-Regular.otf");
+			}
+
+			@font-face {
+				font-family: "NunitoSans";
+				src: url("{{fontsUrl}}/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf");
+			}
+
+			:root {
+				--navy: #2a3478;
+				--yellow: #e28f26;
+				--text: #1f2430;
+				--muted: #6b7185;
+				--line: #e4e7ef;
+				--tint: #f4f5fa;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: "NunitoSans", "Helvetica Neue", Arial, sans-serif;
+				font-size: 10.5px;
+				line-height: 1.4;
+				color: var(--text);
+				margin: 0;
+			}
+
+			.header {
+				display: flex;
+				align-items: center;
+				gap: 14px;
+				padding-bottom: 12px;
+				border-bottom: 3px solid var(--navy);
+				position: relative;
+			}
+
+			.header::after {
+				content: "";
+				position: absolute;
+				left: 0;
+				bottom: -3px;
+				width: 64px;
+				height: 3px;
+				background: var(--yellow);
+			}
+
+			.logo {
+				width: 74px;
+				height: auto;
+				flex: none;
+			}
+
+			.heading {
+				flex: 1;
+				min-width: 0;
+			}
+
+			h1 {
+				font-family: "SanGrotesk", sans-serif;
+				font-weight: normal;
+				font-size: 30px;
+				line-height: 1.05;
+				color: var(--navy);
+				margin: 0 0 4px;
+			}
+
+			.subtitle {
+				font-size: 12px;
+				font-weight: 600;
+				color: var(--muted);
+			}
+
+			.meta {
+				text-align: right;
+				font-size: 9.5px;
+				color: var(--muted);
+				flex: none;
+			}
+
+			.meta strong {
+				display: block;
+				font-size: 15px;
+				color: var(--navy);
+				font-weight: 800;
+			}
+
+			.month {
+				margin-top: 18px;
+			}
+
+			.month h2 {
+				font-family: "SanGrotesk", sans-serif;
+				font-weight: normal;
+				font-size: 17px;
+				color: var(--navy);
+				margin: 0 0 2px;
+				break-after: avoid;
+			}
+
+			.month h2::after {
+				content: "";
+				display: block;
+				width: 36px;
+				height: 3px;
+				margin-top: 3px;
+				border-radius: 2px;
+				background: var(--yellow);
+			}
+
+			.event {
+				display: flex;
+				gap: 14px;
+				padding: 8px 0;
+				border-bottom: 1px solid var(--line);
+				break-inside: avoid;
+			}
+
+			.event:last-child {
+				border-bottom: none;
+			}
+
+			.date {
+				flex: none;
+				width: 30mm;
+				border-left: 3px solid var(--navy);
+				padding-left: 8px;
+			}
+
+			.date-label {
+				font-size: 12px;
+				font-weight: 800;
+				color: var(--navy);
+				white-space: nowrap;
+			}
+
+			.weekday {
+				font-size: 9.5px;
+				color: var(--muted);
+			}
+
+			.body {
+				flex: 1;
+				min-width: 0;
+			}
+
+			.title-row {
+				display: flex;
+				align-items: baseline;
+				gap: 8px;
+			}
+
+			.name {
+				flex: 1;
+				font-size: 12.5px;
+				font-weight: 800;
+				color: var(--text);
+			}
+
+			.cancelled .name {
+				text-decoration: line-through;
+				color: var(--muted);
+			}
+
+			.cancelled .date {
+				border-left-color: #d2232a;
+			}
+
+			.status {
+				flex: none;
+				font-size: 8.5px;
+				font-weight: 700;
+				padding: 1px 7px;
+				border-radius: 999px;
+				background: #eef1f6;
+				color: #6b7185;
+			}
+
+			.status.pending,
+			.status.rejected {
+				background: #fdf1de;
+				color: #b9720f;
+			}
+
+			.status.cancelled {
+				background: #fbe7e7;
+				color: #d2232a;
+			}
+
+			.details {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 3px 12px;
+				margin-top: 3px;
+				color: var(--muted);
+			}
+
+			.details .label {
+				font-weight: 700;
+				color: var(--text);
+			}
+
+			.groups {
+				display: inline-flex;
+				gap: 4px;
+			}
+
+			.group {
+				display: inline-flex;
+				align-items: center;
+				gap: 4px;
+				padding: 0 6px 0 4px;
+				border-radius: 4px;
+				background: var(--tint);
+				font-size: 9px;
+				font-weight: 700;
+				color: var(--text);
+			}
+
+			.group i {
+				width: 7px;
+				height: 7px;
+				border-radius: 2px;
+			}
+
+			.empty {
+				margin-top: 40px;
+				text-align: center;
+				font-size: 13px;
+				color: var(--muted);
+			}
+		</style>
+	</head>
+	<body>
+		<header class="header">
+			<img class="logo" src="{{logoUrl}}" alt="ŠÁN" />
+			<div class="heading">
+				<h1>Program akcí</h1>
+				<div class="subtitle">{{subtitle}}</div>
+			</div>
+			<div class="meta">
+				<strong>{{countLabel}}</strong>
+				vygenerováno {{generatedAt}}
+			</div>
+		</header>
+
+		{{#each months}}
+			<section class="month">
+				<h2>{{label}}</h2>
+				{{#each events}}
+					<div class="event{{#if cancelled}} cancelled{{/if}}">
+						<div class="date">
+							<div class="date-label">{{dateLabel}}</div>
+							<div class="weekday">{{weekdayLabel}}</div>
+						</div>
+						<div class="body">
+							<div class="title-row">
+								<div class="name">{{name}}</div>
+								{{#if status}}<span class="status {{statusClass}}">{{status}}</span>{{/if}}
+							</div>
+							<div class="details">
+								{{#if groups.length}}
+									<span class="groups">
+										{{#each groups}}<span class="group"><i style="background: {{color}}"></i>{{shortName}}</span>{{/each}}
+									</span>
+								{{/if}}
+								{{#if place}}<span><span class="label">Místo:</span> {{place}}</span>{{/if}}
+								{{#if leaders.length}}<span><span class="label">Vede:</span> {{#each leaders}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</span>{{/if}}
+							</div>
+						</div>
+					</div>
+				{{/each}}
+			</section>
+		{{else}}
+			<p class="empty">Filtru neodpovídají žádné akce.</p>
+		{{/each}}
+	</body>
+</html>

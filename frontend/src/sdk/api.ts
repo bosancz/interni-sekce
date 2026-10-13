@@ -8061,6 +8061,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'exportEventsPdf': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'createEvent': AcLink;
         /**
          * 
@@ -9733,6 +9739,121 @@ export namespace SDK {
     
     
     
+    /**
+     * @export
+     */
+    export const ExportEventsPdfOrderEnum = {
+        Asc: 'ASC',
+        Desc: 'DESC'
+    } as const;
+    export type ExportEventsPdfOrderEnum = typeof ExportEventsPdfOrderEnum[keyof typeof ExportEventsPdfOrderEnum];
+    
+    
+    /**
+     * Query parameters for exportEventsPdf operation in EventsApi.
+     * @export
+     * @interface EventsApiExportEventsPdfQueryParams
+     */
+    export interface EventsApiExportEventsPdfQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof EventsApiExportEventsPdf
+         */
+        limit?: number
+    
+        //offset
+        /**
+         * 
+         * @type {number}
+         * @memberof EventsApiExportEventsPdf
+         */
+        offset?: number
+    
+        //sort
+        /**
+         * 
+         * @type {string}
+         * @memberof EventsApiExportEventsPdf
+         */
+        sort?: string
+    
+        //orderisEnumOrderEnum
+        /**
+         * 
+         * @type {'ASC' | 'DESC'}
+         * @memberof EventsApiExportEventsPdf
+         */
+        order?: ExportEventsPdfOrderEnum
+    
+        //year
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof EventsApiExportEventsPdf
+         */
+        year?: Array<number>
+    
+        //dateFrom
+        /**
+         * 
+         * @type {string}
+         * @memberof EventsApiExportEventsPdf
+         */
+        dateFrom?: string
+    
+        //dateTill
+        /**
+         * 
+         * @type {string}
+         * @memberof EventsApiExportEventsPdf
+         */
+        dateTill?: string
+    
+        //status
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof EventsApiExportEventsPdf
+         */
+        status?: Array<string>
+    
+        //search
+        /**
+         * 
+         * @type {string}
+         * @memberof EventsApiExportEventsPdf
+         */
+        search?: string
+    
+        //my
+        /**
+         * 
+         * @type {boolean}
+         * @memberof EventsApiExportEventsPdf
+         */
+        my?: boolean
+    
+        //noleader
+        /**
+         * 
+         * @type {boolean}
+         * @memberof EventsApiExportEventsPdf
+         */
+        noleader?: boolean
+    
+        //deleted
+        /**
+         * 
+         * @type {boolean}
+         * @memberof EventsApiExportEventsPdf
+         */
+        deleted?: boolean
+    }
+    
+    
+    
     
     
     /**
@@ -10512,6 +10633,94 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {EventsApiExportEventsPdfQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async exportEventsPdf(
+            queryParams: EventsApiExportEventsPdfQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/events/program-pdf`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.offset !== undefined) {
+                requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+            if (queryParams.sort !== undefined) {
+                requestQueryParameter['sort'] = queryParams.sort;
+            }
+    
+            if (queryParams.order !== undefined) {
+                requestQueryParameter['order'] = queryParams.order;
+            }
+    
+            if (queryParams.year) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+            if (queryParams.dateFrom !== undefined) {
+                requestQueryParameter['dateFrom'] = queryParams.dateFrom;
+            }
+    
+            if (queryParams.dateTill !== undefined) {
+                requestQueryParameter['dateTill'] = queryParams.dateTill;
+            }
+    
+            if (queryParams.status) {
+                requestQueryParameter['status'] = queryParams.status;
+            }
+    
+            if (queryParams.search !== undefined) {
+                requestQueryParameter['search'] = queryParams.search;
+            }
+    
+            if (queryParams.my !== undefined) {
+                requestQueryParameter['my'] = queryParams.my;
+            }
+    
+            if (queryParams.noleader !== undefined) {
+                requestQueryParameter['noleader'] = queryParams.noleader;
+            }
+    
+            if (queryParams.deleted !== undefined) {
+                requestQueryParameter['deleted'] = queryParams.deleted;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<File>(axiosRequestConfig);
         }
     
         /**

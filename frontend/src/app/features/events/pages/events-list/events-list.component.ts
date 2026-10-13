@@ -17,6 +17,7 @@ import {
 	arrowForwardOutline,
 	arrowUndoOutline,
 	closeOutline,
+	downloadOutline,
 	eyeOffOutline,
 	eyeOutline,
 	handLeftOutline,
@@ -142,6 +143,11 @@ export class EventsListComponent implements OnInit {
 			handler: () => this.create(),
 		},
 		{
+			text: "Stáhnout program (PDF)",
+			icon: "download-outline",
+			handler: () => this.exportPdf(),
+		},
+		{
 			text: "Smazané akce",
 			icon: "trash-outline",
 			handler: () => this.router.navigate(["smazane"], { relativeTo: this.route }),
@@ -180,6 +186,7 @@ export class EventsListComponent implements OnInit {
 			arrowBackOutline,
 			eyeOffOutline,
 			closeOutline,
+			downloadOutline,
 			arrowUndoOutline,
 			trashOutline,
 		});
@@ -313,6 +320,20 @@ export class EventsListComponent implements OnInit {
 		this.router.navigate([event.id], { relativeTo: this.route });
 	}
 
+	async exportPdf() {
+		const { sort, order, ...params } = this.listParams(this.filter);
+
+		this.toasts.toast("Připravuji PDF…");
+		const res = await this.api.EventsApi.exportEventsPdf(params, { responseType: "blob" });
+
+		const url = URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = "program.pdf";
+		a.click();
+		URL.revokeObjectURL(url);
+	}
+
 	ngOnInit(): void {
 		this.loadYears();
 		this.loadStatuses();
@@ -438,24 +459,7 @@ export class EventsListComponent implements OnInit {
 			this.events.set([]);
 		}
 
-		const leaders = this.normalizeFilterValueToArray((filter as any)["leaders"]);
-
-		const dateFilters = this.normalizeFilterValueToArray((filter as any)["year"]);
-		const showFuture = dateFilters.includes(this.futureFilterValue);
-		const years = dateFilters.filter((value) => value !== this.futureFilterValue).map((year) => parseInt(year, 10));
-
-		const params: SDK.EventsApiListEventsQueryParams = {
-			search: filter.search || undefined,
-			status: this.normalizeFilterValueToArray((filter as any)["status"]),
-			year: years,
-			dateFrom: showFuture ? (DateTime.now().startOf("day").toISODate() ?? undefined) : undefined,
-			my: leaders.includes("my"),
-			noleader: leaders.includes("noleader"),
-			deleted: !!filter.deleted,
-			sort: (filter as any)["sort"] || this.defaultSortColumn,
-			order: (filter as any)["order"] || this.defaultSortOrder(dateFilters),
-			limit: this.pageSize,
-		};
+		const params: SDK.EventsApiListEventsQueryParams = { ...this.listParams(filter), limit: this.pageSize };
 
 		const token = ++this.loadToken;
 
@@ -474,6 +478,26 @@ export class EventsListComponent implements OnInit {
 
 		const events = pages.flat();
 		this.events.set(mode === "more" ? [...this.events(), ...events] : events);
+	}
+
+	private listParams(filter: UrlParams): SDK.EventsApiListEventsQueryParams {
+		const leaders = this.normalizeFilterValueToArray((filter as any)["leaders"]);
+
+		const dateFilters = this.normalizeFilterValueToArray((filter as any)["year"]);
+		const showFuture = dateFilters.includes(this.futureFilterValue);
+		const years = dateFilters.filter((value) => value !== this.futureFilterValue).map((year) => parseInt(year, 10));
+
+		return {
+			search: filter.search || undefined,
+			status: this.normalizeFilterValueToArray((filter as any)["status"]),
+			year: years,
+			dateFrom: showFuture ? (DateTime.now().startOf("day").toISODate() ?? undefined) : undefined,
+			my: leaders.includes("my"),
+			noleader: leaders.includes("noleader"),
+			deleted: !!filter.deleted,
+			sort: (filter as any)["sort"] || this.defaultSortColumn,
+			order: (filter as any)["order"] || this.defaultSortOrder(dateFilters),
+		};
 	}
 
 	private normalizeFilterValueToArray(value: unknown): string[] {
