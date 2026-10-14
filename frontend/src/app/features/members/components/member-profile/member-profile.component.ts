@@ -9,8 +9,7 @@ import { PhotosEditComponent } from "src/app/features/albums/components/photos-e
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
 import { SDK } from "src/sdk";
-import { CardContentComponent } from "../../../../shared/components/card-content/card-content.component";
-import { CardComponent } from "../../../../shared/components/card/card.component";
+import { GroupPipe } from "../../../../shared/pipes/group.pipe";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 import { MemberProfilePhotoModalComponent } from "../member-profile-photo-modal/member-profile-photo-modal.component";
 
@@ -18,15 +17,7 @@ import { MemberProfilePhotoModalComponent } from "../member-profile-photo-modal/
 	selector: "bo-member-profile",
 	templateUrl: "./member-profile.component.html",
 	styleUrl: "./member-profile.component.scss",
-	imports: [
-		CardComponent,
-		CardContentComponent,
-		IonAvatar,
-		IonIcon,
-		MemberPipe,
-		MemberProfilePhotoUrlPipe,
-		TooltipDirective,
-	],
+	imports: [GroupPipe, IonAvatar, IonIcon, MemberPipe, MemberProfilePhotoUrlPipe, TooltipDirective],
 })
 export class MemberProfileComponent {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();

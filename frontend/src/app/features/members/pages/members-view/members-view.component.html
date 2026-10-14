@@ -5,9 +5,9 @@
 </bo-page-header>
 
 <bo-page-content [padding]="true">
-	<div class="layout d-lg-flex gap-4 mt-3">
+	<div class="layout d-lg-flex gap-4">
 		<div class="sidebar d-lg-block" [class.d-none]="view() !== 'profile'">
-			<bo-member-profile [member]="member()" (change)="reloadMember()" class="mb-4" />
+			<bo-member-profile [member]="member()" (change)="reloadMember()" class="mb-3" />
 
 			<bo-vertical-menu class="d-none d-lg-block" defaultTab="profile" (change)="view.set($any($event))">
 				<bo-vertical-menu-item name="profile" label="Profil" icon="person-circle-outline" />
