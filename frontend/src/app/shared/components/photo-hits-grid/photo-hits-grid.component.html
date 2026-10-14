@@ -9,7 +9,7 @@
 			<a
 				class="hit"
 				[class.below]="cutoffIndex() >= 0 && entry.index >= cutoffIndex()"
-				[routerLink]="['/galerie', entry.hit.albumId]"
+				[routerLink]="['/galerie/alba', entry.hit.albumId]"
 				[queryParams]="{ photo: entry.hit.photoId }"
 				[boTooltip]="entry.hit.albumName ?? ''"
 			>

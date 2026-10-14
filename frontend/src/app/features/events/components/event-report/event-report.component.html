@@ -53,7 +53,7 @@
 <h3 class="mt-5">Fotogalerie</h3>
 
 @if (event()?.album; as album) {
-	<ion-item button [detail]="false" [routerLink]="['/galerie', album.id]" lines="none" class="album-link">
+	<ion-item button [detail]="false" [routerLink]="['/galerie/alba', album.id]" lines="none" class="album-link">
 		<ion-icon name="images-outline" slot="start"></ion-icon>
 		<ion-label>
 			<h2>{{ album.name }}</h2>

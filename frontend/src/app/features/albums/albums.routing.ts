@@ -10,6 +10,8 @@ export const albumsRoutes: Routes = [
 	{ path: "", pathMatch: "full", redirectTo: "alba" },
 
 	{ path: "alba", title: "Alba", component: AlbumsListComponent },
+	{ path: "alba/:album", component: AlbumsViewInfoComponent },
+	{ path: "alba/:album/info", redirectTo: "alba/:album" },
 
 	{ path: "smazane", component: DeletedAlbumsListComponent },
 
@@ -20,7 +22,6 @@ export const albumsRoutes: Routes = [
 	{ path: "kategorie", title: "Kategorie fotek", component: PhotoCategoriesListComponent },
 	{ path: "kategorie/:category", redirectTo: ({ params }) => `/galerie/fotky?kategorie=${params["category"]}` },
 
-	{ path: ":album", component: AlbumsViewInfoComponent },
-
-	{ path: ":album/info", redirectTo: ":album" },
+	{ path: ":album", redirectTo: "alba/:album" },
+	{ path: ":album/info", redirectTo: "alba/:album" },
 ];
