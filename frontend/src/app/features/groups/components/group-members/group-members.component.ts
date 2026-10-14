@@ -41,6 +41,7 @@ import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { DefaultContactPipe } from "src/app/shared/pipes/default-contact.pipe";
 import { MemberPipe } from "src/app/shared/pipes/member.pipe";
 import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
+import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
 import { getMemberEmails } from "src/helpers/member-contacts";
 import { SDK } from "src/sdk";
@@ -65,6 +66,7 @@ const mailAddresses = (emails: string[]) =>
 	styleUrls: ["./group-members.component.scss"],
 	imports: [
 		MemberProfilePhotoUrlPipe,
+		GroupPipe,
 		AvatarComponent,
 		FilterComponent,
 		FilterPillComponent,
