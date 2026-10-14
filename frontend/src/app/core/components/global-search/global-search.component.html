@@ -91,7 +91,7 @@
 					</ion-item>
 				} @else {
 					@for (album of albumsSearchResults.value(); track album.id) {
-						<ion-item button (click)="navigate(['/galerie', album.id])" [detail]="true">
+						<ion-item button (click)="navigate(['/galerie/alba', album.id])" [detail]="true">
 							<ion-label>
 								<h4>{{ album.name }}</h4>
 								@if (album.dateFrom) {

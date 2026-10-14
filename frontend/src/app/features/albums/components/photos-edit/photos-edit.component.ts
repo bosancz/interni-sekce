@@ -412,8 +412,8 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 
 	async openAlbum(albumId: number) {
 		const modal = await this.modalController.getTop();
-		if (modal) await this.modalService.dismissAndNavigate(modal, ["/galerie", albumId]);
-		else await this.router.navigate(["/galerie", albumId]);
+		if (modal) await this.modalService.dismissAndNavigate(modal, ["/galerie/alba", albumId]);
+		else await this.router.navigate(["/galerie/alba", albumId]);
 	}
 
 	async openCategory(categoryId: number) {

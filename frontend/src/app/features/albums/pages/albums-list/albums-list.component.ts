@@ -138,7 +138,7 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 		{ key: "datePublished", label: "Publikováno" },
 	];
 
-	rowLink = (album: SDK.AlbumResponseWithLinks) => "" + album.id;
+	rowLink = (album: SDK.AlbumResponseWithLinks) => ["/galerie/alba", album.id];
 
 	rowActionsHeader = (album: SDK.AlbumResponseWithLinks) => album.name;
 
@@ -434,6 +434,6 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 		const album = await this.api.PhotoGalleryApi.createAlbum(albumData).then((res) => res.data);
 
-		await this.navController.navigateForward("/galerie/" + album.id);
+		await this.navController.navigateForward("/galerie/alba/" + album.id);
 	}
 }

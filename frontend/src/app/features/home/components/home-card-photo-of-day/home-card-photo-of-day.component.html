@@ -41,7 +41,7 @@
 							{{ photo.timestamp | date: "d. M. y" }}
 							@if (photo.album) {
 								·
-								<a class="album" [routerLink]="['/galerie', photo.album.id]">
+								<a class="album" [routerLink]="['/galerie/alba', photo.album.id]">
 									<ion-icon name="images-outline"></ion-icon>
 									{{ photo.album.name }}
 								</a>

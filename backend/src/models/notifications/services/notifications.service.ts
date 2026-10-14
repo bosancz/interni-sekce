@@ -124,7 +124,7 @@ export class NotificationsService {
 				album.dateFrom && album.dateTill
 					? this.formatEventDates({ dateFrom: album.dateFrom, dateTill: album.dateTill })
 					: undefined,
-			path: `/galerie/${album.id}`,
+			path: `/galerie/alba/${album.id}`,
 		});
 	}
 
