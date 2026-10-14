@@ -2,7 +2,14 @@ import { Component } from "@angular/core";
 import { IsActiveMatchOptions, RouterLink, RouterLinkActive } from "@angular/router";
 import { IonIcon, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { clipboardOutline, homeSharp, peopleOutline, statsChartOutline, walletOutline } from "ionicons/icons";
+import {
+	clipboardOutline,
+	homeSharp,
+	peopleOutline,
+	settingsOutline,
+	statsChartOutline,
+	walletOutline,
+} from "ionicons/icons";
 import { map } from "rxjs";
 import { AccountCardComponent } from "src/app/core/components/account-card/account-card.component";
 import { ApiService } from "src/app/core/services/api.service";
@@ -47,6 +54,7 @@ export class SidebarComponent {
 
 	canAccessProgram = this.userService.canAccessProgram;
 	canAccessTreasurer = this.userService.canAccessTreasurer;
+	canAccessAdmin = this.userService.canAccessAdmin;
 	myGroupId = this.userService.myGroupId;
 
 	constructor(
@@ -59,6 +67,7 @@ export class SidebarComponent {
 			walletOutline,
 			statsChartOutline,
 			peopleOutline,
+			settingsOutline,
 		});
 	}
 }
