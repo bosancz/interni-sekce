@@ -1,3 +1,7 @@
+## v4.25.5 — 2026-10-14
+
+- <span class="changelog-type" title="fix">🐛</span> [Album je na /galerie/alba/:id, staré adresy přesměrovávají](https://github.com/bosancz/interni-sekce/commit/cb38ebfe580a08d9cf980449ff9726b22ee14d34) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.25.4 — 2026-10-14
 
 - <span class="changelog-type" title="patch">🚸</span> [Avatar v detailu člena bez karty, v barvě oddílu a ve stejné velikosti jako u oddílu](https://github.com/bosancz/interni-sekce/commit/7d2bca3ba31d9198894350a83aae3f043ed81ad5) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
