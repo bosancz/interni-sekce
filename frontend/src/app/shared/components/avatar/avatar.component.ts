@@ -4,6 +4,10 @@ import { Component, input } from "@angular/core";
 	selector: "bo-avatar",
 	templateUrl: "./avatar.component.html",
 	styleUrl: "./avatar.component.scss",
+	host: {
+		"[class.ringed]": "!!photoUrl() && !!color()",
+		"[style.background-color]": "photoUrl() && color() ? color() : null",
+	},
 })
 export class AvatarComponent {
 	initials = input<string | null>(null);
