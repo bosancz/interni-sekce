@@ -1,3 +1,7 @@
+## v4.25.7 — 2026-10-15
+
+- <span class="changelog-type" title="fix">🐛</span> [Service worker neodpovídá na adresy /api stránkou aplikace](https://github.com/bosancz/interni-sekce/commit/7e679a9ca9835c778e14147d6e58e29f6d417f80) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.25.6 — 2026-10-14
 
 - <span class="changelog-type" title="patch">🚸</span> [Profilové fotky s okrajem v barvě oddílu](https://github.com/bosancz/interni-sekce/commit/48a17a7d82dad0462bbd8f835fecfc23538b5879) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
