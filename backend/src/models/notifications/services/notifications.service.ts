@@ -169,30 +169,45 @@ export class NotificationsService {
 			if (channels.includes(NotificationChannels.inApp)) inAppUsers.push(user);
 		}
 
-		await this.saveInApp(type, inAppUsers, message);
-		await Promise.all([this.sendPush(pushUsers, message), this.sendEmails(emailUsers, message)]);
+		const notificationIds = await this.saveInApp(type, inAppUsers, message);
+		await Promise.all([this.sendPush(pushUsers, message, notificationIds), this.sendEmails(emailUsers, message)]);
 	}
 
-	private async sendPush(users: User[], message: NotificationMessage) {
+	private async sendPush(users: User[], message: NotificationMessage, notificationIds: Map<number, number>) {
 		if (!this.pushService.isConfigured || !users.length) return;
 
-		const subscriptionIds = await this.notificationSubscriptions.getSubscriptionIds(users.map((user) => user.id));
-		if (!subscriptionIds.length) return;
+		const subscriptions = await this.notificationSubscriptions.getSubscriptions(users.map((user) => user.id));
+		if (!subscriptions.length) return;
 
-		const url = message.path ? this.config.app.baseUrl + message.path : undefined;
-		const payload = {
-			notification: {
-				title: message.title,
-				body: message.body,
-				data: url ? { onActionClick: { default: { operation: "navigateLastFocusedOrOpen", url } } } : undefined,
-			},
-		};
+		await this.notificationsQueueService.enqueuePush(
+			subscriptions.map((subscription) => {
+				const url = this.getPushUrl(message, notificationIds.get(subscription.userId));
+				return {
+					subscriptionId: subscription.id,
+					payload: {
+						notification: {
+							title: message.title,
+							body: message.body,
+							data: url
+								? { onActionClick: { default: { operation: "navigateLastFocusedOrOpen", url } } }
+								: undefined,
+						},
+					},
+				};
+			}),
+		);
+	}
 
-		await this.notificationsQueueService.enqueuePush(subscriptionIds, payload);
+	private getPushUrl(message: NotificationMessage, notificationId: number | undefined) {
+		const url = new URL(this.config.app.baseUrl + (message.path ?? "/ucet/notifikace"));
+		if (notificationId === undefined) return message.path ? url.toString() : undefined;
+
+		url.searchParams.set("notifikace", String(notificationId));
+		return url.toString();
 	}
 
 	private async saveInApp(type: NotificationTypes, users: User[], message: NotificationMessage) {
-		await this.notifications.createNotifications(
+		return this.notifications.createNotifications(
 			users.map((user) => ({
 				userId: user.id,
 				type,

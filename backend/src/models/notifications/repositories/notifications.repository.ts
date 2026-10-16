@@ -17,8 +17,11 @@ export class NotificationsRepository {
 	constructor(@InjectRepository(Notification) private repository: Repository<Notification>) {}
 
 	async createNotifications(notifications: NotificationData[]) {
-		if (!notifications.length) return;
-		await this.repository.insert(notifications);
+		if (!notifications.length) return new Map<number, number>();
+		const result = await this.repository.insert(notifications);
+		return new Map(
+			notifications.map((notification, i) => [notification.userId, result.identifiers[i].id as number]),
+		);
 	}
 
 	async listNotifications(userId: number, limit = 100) {

@@ -39,10 +39,10 @@ export class NotificationsQueueService {
 		);
 	}
 
-	async enqueuePush(subscriptionIds: number[], payload: NotificationPushPayload) {
-		if (!subscriptionIds.length) return;
+	async enqueuePush(pushes: NotificationPushJob[]) {
+		if (!pushes.length) return;
 		await this.queue.addBulk(
-			subscriptionIds.map((subscriptionId) => ({
+			pushes.map(({ subscriptionId, payload }) => ({
 				name: NotificationJobs.push,
 				data: { subscriptionId, payload } satisfies NotificationPushJob,
 				opts: JOB_OPTIONS,
