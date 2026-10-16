@@ -137,6 +137,34 @@
 	background: var(--bo-paper);
 }
 
+.pu-link {
+	display: inline-flex;
+	align-items: center;
+	align-self: flex-start;
+	margin-top: 24px;
+	padding: 4px 0;
+	border: none;
+	background: transparent;
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--bm-blue);
+	cursor: pointer;
+
+	&:hover {
+		text-decoration: underline;
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--bm-blue);
+		outline-offset: 2px;
+	}
+}
+
+:host-context(body.dark) .pu-link {
+	color: var(--bo-heading);
+}
+
 .pu-label {
 	font-size: 13px;
 	font-weight: 700;
@@ -312,6 +340,15 @@
 		font-style: italic;
 		color: var(--bm-muted);
 	}
+}
+
+.pu-name {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--bm-text);
 }
 
 .pu-meta {

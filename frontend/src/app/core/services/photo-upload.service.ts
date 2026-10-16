@@ -46,6 +46,8 @@ export class PhotoUploadService {
 	readonly captionFields = signal<Record<number, PhotoCaptionField | null>>({});
 	private readonly captionFieldsChosen = new Set<number>();
 
+	readonly captionToolsOpen = signal<Record<number, boolean>>({});
+
 	readonly batch = computed(() => this.items().filter((item) => item.status !== "draft"));
 
 	readonly uploading = computed(() => this.items().some(isActivePhotoUpload));
@@ -106,6 +108,10 @@ export class PhotoUploadService {
 		return this.captionFields()[albumId] ?? null;
 	}
 
+	openCaptionTools(albumId: number) {
+		this.captionToolsOpen.set({ ...this.captionToolsOpen(), [albumId]: true });
+	}
+
 	setCaptionField(albumId: number, field: PhotoCaptionField | null) {
 		this.captionFieldsChosen.add(albumId);
 		this.captionFields.set({ ...this.captionFields(), [albumId]: field });
@@ -113,6 +119,7 @@ export class PhotoUploadService {
 
 	getCaption(uploadItem: PhotoUploadItem): string | null {
 		if (uploadItem.status !== "draft" && uploadItem.status !== "error") return uploadItem.caption ?? null;
+		if (!this.captionToolsOpen()[uploadItem.album.id]) return null;
 		const field = this.captionField(uploadItem.album.id);
 		return field ? (uploadItem.captions?.[field] ?? null) : null;
 	}
@@ -144,16 +151,19 @@ export class PhotoUploadService {
 		if (this.openAlbumId() === albumId) this.openAlbumId.set(null);
 
 		const keepAll = this.albumUploading(albumId);
+		if (!keepAll) {
+			this.captionFieldsChosen.delete(albumId);
+			const { [albumId]: _, ...captionFields } = this.captionFields();
+			this.captionFields.set(captionFields);
+			const { [albumId]: __, ...captionToolsOpen } = this.captionToolsOpen();
+			this.captionToolsOpen.set(captionToolsOpen);
+		}
+
 		const dropped = this.albumItems(albumId).filter((item) => (keepAll ? item.status === "draft" : true));
 		if (!dropped.length) return;
 
 		for (const item of dropped) URL.revokeObjectURL(item.thumbnailUrl);
 		this.items.set(this.items().filter((item) => !dropped.includes(item)));
-		if (!keepAll) {
-			this.captionFieldsChosen.delete(albumId);
-			const { [albumId]: _, ...captionFields } = this.captionFields();
-			this.captionFields.set(captionFields);
-		}
 	}
 
 	private async run() {
