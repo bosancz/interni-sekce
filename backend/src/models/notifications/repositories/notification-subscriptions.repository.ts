@@ -69,9 +69,8 @@ export class NotificationSubscriptionsRepository {
 		});
 	}
 
-	async getSubscriptionIds(userIds: number[]) {
+	async getSubscriptions(userIds: number[]) {
 		if (!userIds.length) return [];
-		const subscriptions = await this.repository.find({ select: { id: true }, where: { userId: In(userIds) } });
-		return subscriptions.map((subscription) => subscription.id);
+		return this.repository.find({ select: { id: true, userId: true }, where: { userId: In(userIds) } });
 	}
 }

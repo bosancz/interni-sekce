@@ -11,6 +11,7 @@ import { LoginComponent } from "./core/components/login/login.component";
 import { SidebarComponent } from "./core/components/sidebar/sidebar.component";
 import { ApiService } from "./core/services/api.service";
 import { DarkModeService } from "./core/services/dark-mode.service";
+import { NotificationsService } from "./core/services/notifications.service";
 import { OfflineDataService } from "./core/services/offline-data.service";
 import { PlatformService } from "./core/services/platform.service";
 import { PushNotificationsService } from "./core/services/push-notifications.service";
@@ -41,6 +42,7 @@ export class AppComponent implements OnInit {
 		private readonly toastService: ToastService,
 		private readonly darkModeService: DarkModeService,
 		private readonly pushNotificationsService: PushNotificationsService,
+		private readonly notificationsService: NotificationsService,
 		private readonly offlineDataService: OfflineDataService,
 	) {
 		addIcons({ homeSharp, calendarSharp, downloadOutline });
