@@ -54,6 +54,8 @@ export class PhotosUploadComponent extends InputModalComponent<boolean> implemen
 
 	captionField = computed(() => this.photoUploadService.captionFields()[this.album.id] ?? null);
 
+	captionToolsOpen = computed(() => this.photoUploadService.captionToolsOpen()[this.album.id] ?? false);
+
 	captionMenuOpen = signal(false);
 
 	captionFieldOptions = computed(() => {
@@ -171,6 +173,10 @@ export class PhotosUploadComponent extends InputModalComponent<boolean> implemen
 	setCaptionField(field: PhotoCaptionField | null) {
 		this.photoUploadService.setCaptionField(this.album.id, field);
 		this.captionMenuOpen.set(false);
+	}
+
+	openCaptionTools() {
+		this.photoUploadService.openCaptionTools(this.album.id);
 	}
 
 	getCaption(uploadItem: PhotoUploadItem): string | null {
