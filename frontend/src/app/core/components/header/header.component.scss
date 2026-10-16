@@ -25,12 +25,14 @@ bo-account-menu,
 	display: flex;
 	align-items: center;
 	gap: 26px;
-	flex: 0 0 auto;
+	flex: 0 1 auto;
 	min-width: 0;
+	overflow: hidden;
 	padding-left: 16px;
 
 	.logo {
 		display: flex;
+		flex: 0 0 auto;
 	}
 
 	img {
@@ -57,6 +59,7 @@ bo-account-menu,
 
 h1 {
 	margin: 0;
+	white-space: nowrap;
 	display: flex;
 	align-items: center;
 	gap: 0.4em;
@@ -109,6 +112,12 @@ h1 {
 	}
 }
 
+ion-buttons {
+	flex: 0 0 auto;
+	gap: 4px;
+	padding-inline-start: 8px;
+}
+
 ion-buttons ion-button {
 	--color: #fff;
 }
@@ -151,6 +160,9 @@ ion-buttons ion-button {
 
 	.end-spacer {
 		flex: 0 0 230px;
+		display: flex;
+		justify-content: flex-end;
+		padding-inline-end: 16px;
 	}
 
 	::ng-deep bo-global-search .search ion-searchbar {
@@ -204,7 +216,7 @@ ion-buttons ion-button {
 		}
 
 		.end-spacer {
-			display: none;
+			flex: 0 0 auto;
 		}
 	}
 }

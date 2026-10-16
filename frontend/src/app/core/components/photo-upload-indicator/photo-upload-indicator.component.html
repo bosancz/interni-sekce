@@ -1,0 +1,30 @@
+@if (visible()) {
+	<button
+		type="button"
+		class="pill"
+		[class.error]="!uploading()"
+		[title]="title()"
+		[attr.aria-label]="title()"
+		(click)="open()"
+	>
+		@if (uploading()) {
+			<span class="fill" [style.width.%]="progress()" aria-hidden="true"></span>
+			<ion-icon name="cloud-upload-outline" aria-hidden="true"></ion-icon>
+			<span class="label">
+				@if (!compact()) {
+					Nahrávám
+				}
+				{{ number() }}/{{ total() }}
+			</span>
+		} @else {
+			<ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+			<span class="label">
+				@if (compact()) {
+					{{ errorCount() }}
+				} @else {
+					Nenahráno {{ errorCount() }}
+				}
+			</span>
+		}
+	</button>
+}

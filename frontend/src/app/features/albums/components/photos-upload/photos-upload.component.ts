@@ -1,15 +1,16 @@
-import { HttpClient, HttpEventType } from "@angular/common/http";
 import {
 	AfterViewInit,
-	ChangeDetectorRef,
 	Component,
 	computed,
+	DestroyRef,
 	ElementRef,
 	Input,
 	OnDestroy,
+	OnInit,
 	signal,
 	ViewChild,
 } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { IonIcon, IonPopover, ModalController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
@@ -21,30 +22,19 @@ import {
 	trashOutline,
 } from "ionicons/icons";
 import { InputModalComponent } from "src/app/core/services/modal.service";
+import {
+	getTotalProgress,
+	isActivePhotoUpload,
+	PhotoUploadItem,
+	PhotoUploadService,
+	photosWord,
+} from "src/app/core/services/photo-upload.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { PrettyBytesPipe } from "src/app/shared/pipes/pretty-bytes.pipe";
-import { Config } from "src/config";
-import {
-	PhotoCaptionField,
-	PhotoCaptionFields,
-	PhotoCaptionValues,
-	readPhotoCaptionValues,
-} from "src/helpers/photo-metadata";
+import { filter } from "rxjs";
+import { PhotoCaptionField, PhotoCaptionFields } from "src/helpers/photo-metadata";
 import { SDK } from "src/sdk";
-
-type PhotoUploadStatus = "pending" | "uploading" | "processing" | "finished" | "error";
-
-interface PhotoUploadItem {
-	file: File;
-	thumbnailUrl: string;
-	progress: number;
-	status: PhotoUploadStatus;
-	error?: Error;
-	captions?: PhotoCaptionValues;
-}
-
-const DEFAULT_CAPTION_FIELD: PhotoCaptionField = "xmpDescription";
 
 @Component({
 	selector: "photos-upload",
@@ -53,15 +43,16 @@ const DEFAULT_CAPTION_FIELD: PhotoCaptionField = "xmpDescription";
 
 	imports: [IonIcon, IonPopover, ModalLayoutComponent, PrettyBytesPipe],
 })
-export class PhotosUploadComponent extends InputModalComponent<boolean> implements AfterViewInit, OnDestroy {
+export class PhotosUploadComponent extends InputModalComponent<boolean> implements OnInit, AfterViewInit, OnDestroy {
 	@Input() album!: SDK.AlbumResponseWithLinks;
 
-	uploading = signal(false);
+	photoUploadQueue = computed(() =>
+		this.photoUploadService.items().filter((item) => item.album.id === this.album.id),
+	);
 
-	photoUploadQueue = signal<PhotoUploadItem[]>([]);
+	uploading = computed(() => this.photoUploadQueue().some(isActivePhotoUpload));
 
-	captionField = signal<PhotoCaptionField | null>(null);
-	private captionFieldChosen = false;
+	captionField = computed(() => this.photoUploadService.captionFields()[this.album.id] ?? null);
 
 	captionMenuOpen = signal(false);
 
@@ -96,61 +87,62 @@ export class PhotosUploadComponent extends InputModalComponent<boolean> implemen
 
 	uploadingNumber = computed(() => Math.min(this.finishedCount() + 1, this.photoUploadQueue().length));
 
-	totalProgress = computed(() => {
-		const queue = this.photoUploadQueue();
-		if (!queue.length) return 0;
-		return Math.round(
-			queue.reduce((sum, item) => sum + (item.status === "finished" ? 100 : item.progress), 0) / queue.length,
-		);
-	});
+	waitingForOtherAlbum = computed(
+		() =>
+			this.uploading() &&
+			!this.photoUploadQueue().some((item) => item.status === "uploading" || item.status === "processing"),
+	);
+
+	totalProgress = computed(() => getTotalProgress(this.photoUploadQueue()));
 
 	uploadLabel = computed(() => {
 		const count = this.pendingCount();
 		if (!count) return "Nahrát fotky";
-		return `Nahrát ${count} ${this.photosWord(count, "fotku", "fotky", "fotek")}`;
+		return `Nahrát ${count} ${photosWord(count)}`;
 	});
 
 	dragOver = signal(false);
-
-	allowedFiles_re = /\.(jpg|jpeg|png|gif)$/i;
 
 	@ViewChild("photoInput") photoInput!: ElementRef<HTMLInputElement>;
 
 	isMobile = signal(false);
 
-	private preventExitListener = (event: BeforeUnloadEvent) => {
-		event.preventDefault();
-		event.returnValue = "Opravdu chcete zrušit nahrávání fotek?";
-		return "Opravdu chcete zrušit nahrávání fotek?";
-	};
-
 	constructor(
-		private http: HttpClient,
 		modalController: ModalController,
 		private platformService: PlatformService,
-		private cdRef: ChangeDetectorRef,
-		private config: Config,
+		private photoUploadService: PhotoUploadService,
+		private destroyRef: DestroyRef,
 	) {
 		super(modalController);
 		addIcons({ addOutline, checkmarkOutline, chevronDownOutline, closeOutline, cloudUploadOutline, trashOutline });
 	}
 
+	ngOnInit() {
+		this.photoUploadService.open(this.album.id);
+		this.photoUploadService.albumFinished
+			.pipe(
+				filter((albumId) => albumId === this.album.id),
+				takeUntilDestroyed(this.destroyRef),
+			)
+			.subscribe(() => {
+				if (!this.photoUploadQueue().some((item) => item.status === "draft")) this.submit.emit(true);
+			});
+	}
+
 	ngOnDestroy() {
-		this.uploading.set(false);
-		this.allowExit();
-		for (const item of this.photoUploadQueue()) URL.revokeObjectURL(item.thumbnailUrl);
+		this.photoUploadService.closed(this.album.id);
 	}
 
 	ngAfterViewInit() {
 		if (this.platformService.isMobile.value) {
 			this.isMobile.set(true);
-			this.photoInput.nativeElement.click();
+			if (!this.photoUploadQueue().length) this.photoInput.nativeElement.click();
 		}
 	}
 
 	addPhotosByInput(photoInput: HTMLInputElement) {
 		if (!photoInput.files?.length) return;
-		this.addFiles(photoInput.files);
+		this.photoUploadService.add(this.album, photoInput.files);
 		photoInput.value = "";
 	}
 
@@ -159,7 +151,7 @@ export class PhotosUploadComponent extends InputModalComponent<boolean> implemen
 		this.dragOver.set(false);
 
 		if (!event.dataTransfer?.files?.length || this.uploading()) return;
-		this.addFiles(event.dataTransfer.files);
+		this.photoUploadService.add(this.album, event.dataTransfer.files);
 	}
 
 	onDragOver(event: DragEvent) {
@@ -173,135 +165,28 @@ export class PhotosUploadComponent extends InputModalComponent<boolean> implemen
 	}
 
 	removeFromQueue(uploadItem: PhotoUploadItem) {
-		URL.revokeObjectURL(uploadItem.thumbnailUrl);
-		this.photoUploadQueue.set(this.photoUploadQueue().filter((item) => item !== uploadItem));
+		this.photoUploadService.remove(uploadItem);
 	}
 
 	setCaptionField(field: PhotoCaptionField | null) {
-		this.captionFieldChosen = true;
-		this.captionField.set(field);
+		this.photoUploadService.setCaptionField(this.album.id, field);
 		this.captionMenuOpen.set(false);
 	}
 
 	getCaption(uploadItem: PhotoUploadItem): string | null {
-		const field = this.captionField();
-		return field ? (uploadItem.captions?.[field] ?? null) : null;
+		return this.photoUploadService.getCaption(uploadItem);
 	}
 
 	stopUploading() {
-		this.uploading.set(false);
+		this.photoUploadService.stop(this.album.id);
 	}
 
 	closeModal() {
-		if (this.finishedCount()) this.submit.emit(true);
+		if (this.finishedCount() && !this.uploading()) this.submit.emit(true);
 		else this.close.emit();
 	}
 
-	async uploadPhotos(album: SDK.AlbumResponseWithLinks) {
-		this.uploading.set(true);
-		this.preventExit();
-
-		const queue = [...this.photoUploadQueue()];
-		for (let i = 0; i < queue.length; i++) {
-			if (!this.uploading()) break;
-
-			const uploadItem = queue[i];
-			if (uploadItem.status === "finished") continue;
-
-			try {
-				uploadItem.status = "uploading";
-				uploadItem.error = undefined;
-				this.photoUploadQueue.set([...queue]);
-				await this.uploadPhoto(album, uploadItem);
-				uploadItem.status = "finished";
-				this.photoUploadQueue.set([...queue]);
-			} catch (err: any) {
-				uploadItem.status = "error";
-				uploadItem.error = err;
-				this.photoUploadQueue.set([...queue]);
-			}
-		}
-
-		const stopped = !this.uploading();
-		this.uploading.set(false);
-		this.allowExit();
-
-		if (!stopped) this.submit.emit(true);
-	}
-
-	async uploadPhoto(album: SDK.AlbumResponseWithLinks, uploadItem: PhotoUploadItem): Promise<void> {
-		if (!this.allowedFiles_re.test(uploadItem.file.name)) {
-			throw new Error("Nepodporovaný typ souboru.");
-		}
-
-		const formData = new FormData();
-		formData.set("albumId", String(album.id));
-		const caption = this.getCaption(uploadItem);
-		if (caption) formData.set("caption", caption);
-		formData.set("file", uploadItem.file, uploadItem.file.name);
-
-		const request = this.http.post(`${this.config.apiRoot}api/photos`, formData, {
-			withCredentials: true,
-			observe: "events",
-			reportProgress: true,
-		});
-
-		await new Promise<void>((resolve, reject) => {
-			request.subscribe({
-				next: (event) => {
-					if (event.type === HttpEventType.UploadProgress) {
-						uploadItem.progress = event.total ? Math.round((event.loaded / event.total) * 100) : 0;
-						if (event.total && event.loaded === event.total) uploadItem.status = "processing";
-						this.photoUploadQueue.set([...this.photoUploadQueue()]);
-						this.cdRef.markForCheck();
-					} else if (event.type === HttpEventType.Response) {
-						uploadItem.progress = 100;
-						resolve();
-					}
-				},
-				error: (err) => reject(err),
-			});
-		});
-	}
-
-	private addFiles(files: FileList) {
-		const items: PhotoUploadItem[] = Array.from(files).map((file) => ({
-			file,
-			thumbnailUrl: URL.createObjectURL(file),
-			progress: 0,
-			status: "pending",
-		}));
-		this.photoUploadQueue.set([...this.photoUploadQueue(), ...items]);
-
-		for (const item of items) this.readCaptions(item);
-	}
-
-	private async readCaptions(uploadItem: PhotoUploadItem) {
-		try {
-			uploadItem.captions = await readPhotoCaptionValues(uploadItem.file);
-		} catch (err) {
-			console.warn(`Failed to read metadata of ${uploadItem.file.name}`, err);
-			uploadItem.captions = {};
-		}
-
-		if (!this.captionFieldChosen && uploadItem.captions[DEFAULT_CAPTION_FIELD]) {
-			this.captionField.set(DEFAULT_CAPTION_FIELD);
-		}
-
-		this.photoUploadQueue.set([...this.photoUploadQueue()]);
-	}
-
-	private photosWord(count: number, one: string, few: string, many: string) {
-		if (count === 1) return one;
-		if (count >= 2 && count <= 4) return few;
-		return many;
-	}
-
-	private preventExit() {
-		window.addEventListener("beforeunload", this.preventExitListener);
-	}
-
-	private allowExit() {
-		window.removeEventListener("beforeunload", this.preventExitListener);
+	uploadPhotos() {
+		this.photoUploadService.start(this.album.id);
 	}
 }

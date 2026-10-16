@@ -24,10 +24,13 @@
 }
 
 @if (isLg()) {
-	<div class="end-spacer"></div>
+	<div class="end-spacer">
+		<bo-photo-upload-indicator />
+	</div>
 } @else {
 	<ion-buttons slot="end">
 		@if (!showSearch()) {
+			<bo-photo-upload-indicator [compact]="true" />
 			<ion-button fill="clear" size="large" (click)="showSearch.set(true)">
 				<ion-icon name="search-sharp"></ion-icon>
 			</ion-button>

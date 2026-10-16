@@ -6,7 +6,7 @@
 				<span class="pu-count">{{ photoUploadQueue().length }}</span>
 			}
 		</div>
-		<button type="button" class="pu-close" aria-label="Zavřít" [disabled]="uploading()" (click)="closeModal()">
+		<button type="button" class="pu-close" aria-label="Zavřít" (click)="closeModal()">
 			<ion-icon name="close-outline"></ion-icon>
 		</button>
 	</div>
@@ -126,6 +126,9 @@
 							[class.active]="uploadItem.status === 'uploading' || uploadItem.status === 'processing'"
 						>
 							@switch (uploadItem.status) {
+								@case ("queued") {
+									Čeká na nahrání…
+								}
 								@case ("uploading") {
 									Nahrávám… {{ uploadItem.progress }} %
 								}
@@ -143,7 +146,7 @@
 								}
 							}
 						</span>
-						@if (uploading() || uploadItem.status !== "pending") {
+						@if (uploading() || uploadItem.status !== "draft") {
 							<span class="pu-bar" aria-hidden="true">
 								<span
 									class="pu-bar-fill"
@@ -186,17 +189,22 @@
 	<div slot="buttons" class="pu-foot">
 		@if (uploading()) {
 			<div class="pu-progress">
-				<span class="pu-progress-label"
-					>Nahrávám {{ uploadingNumber() }} z {{ photoUploadQueue().length }}</span
-				>
+				<span class="pu-progress-label">
+					@if (waitingForOtherAlbum()) {
+						Čeká na dokončení jiného alba
+					} @else {
+						Nahrávám {{ uploadingNumber() }} z {{ photoUploadQueue().length }}
+					}
+				</span>
 				<span class="pu-bar" aria-hidden="true">
 					<span class="pu-bar-fill" [style.width.%]="totalProgress()"></span>
 				</span>
+				<span class="pu-progress-hint">Okno můžeš zavřít, nahrávání poběží dál.</span>
 			</div>
 			<button type="button" class="bm-btn-ghost" (click)="stopUploading()">Zastavit</button>
 		} @else {
 			<button type="button" class="bm-btn-ghost" (click)="closeModal()">Zrušit</button>
-			<button type="button" class="bm-btn-primary" [disabled]="!pendingCount()" (click)="uploadPhotos(album)">
+			<button type="button" class="bm-btn-primary" [disabled]="!pendingCount()" (click)="uploadPhotos()">
 				{{ uploadLabel() }}
 			</button>
 		}

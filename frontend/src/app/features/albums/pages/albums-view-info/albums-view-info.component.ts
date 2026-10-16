@@ -16,6 +16,7 @@ import { addIcons } from "ionicons";
 import { calendarOutline, eyeOffOutline, eyeOutline, openOutline, textOutline, trash } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
+import { PhotoUploadService } from "src/app/core/services/photo-upload.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -86,6 +87,7 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		private modalService: ModalService,
 		private platformService: PlatformService,
 		private ngZone: NgZone,
+		private photoUploadService: PhotoUploadService,
 	) {
 		addIcons({
 			openOutline,
@@ -102,6 +104,10 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 			if (this.album()?.id === Number(params["album"])) return;
 			await this.loadAlbum(params["album"]);
 			this.openPhotoFromUrl();
+		});
+
+		this.photoUploadService.albumFinished.pipe(untilDestroyed(this)).subscribe((albumId) => {
+			if (this.album()?.id === albumId) this.loadAlbum(albumId);
 		});
 	}
 
@@ -332,13 +338,11 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		const album = this.album();
 		if (!album) return;
 
-		const uploaded = await this.modalService.componentModal(
+		await this.modalService.componentModal(
 			PhotosUploadComponent,
 			{ album },
 			{ backdropDismiss: false, cssClass: "dialog-upload" },
 		);
-
-		if (uploaded) this.loadAlbum(album.id);
 	}
 
 	private async publish() {
