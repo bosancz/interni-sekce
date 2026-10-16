@@ -38,72 +38,6 @@
 			}
 		</button>
 	} @else {
-		@if (captionToolsOpen()) {
-			<div class="pu-tools">
-				<span class="pu-label" id="pu-caption-label">Popisek z metadat</span>
-				<button
-					type="button"
-					id="pu-caption-trigger"
-					class="pu-select"
-					aria-labelledby="pu-caption-label"
-					[disabled]="uploading()"
-					(click)="captionMenuOpen.set(true)"
-				>
-					<span class="pu-select-label">{{ selectedCaptionField()?.label ?? "Nevyplňovat" }}</span>
-					@if (selectedCaptionField(); as selected) {
-						<span class="pu-select-tech">{{ selected.tech }}</span>
-					}
-					<ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon>
-				</button>
-				<span class="pu-hint">{{ captionHint() }}</span>
-
-				<ion-popover
-					trigger="pu-caption-trigger"
-					size="cover"
-					alignment="start"
-					[isOpen]="captionMenuOpen()"
-					(didDismiss)="captionMenuOpen.set(false)"
-					cssClass="photo-caption-field-popover"
-				>
-					<ng-template>
-						<div class="pu-menu" role="listbox" aria-label="Popisek z metadat">
-							<button
-								type="button"
-								role="option"
-								class="pu-option"
-								[class.selected]="!captionField()"
-								[attr.aria-selected]="!captionField()"
-								(click)="setCaptionField(null)"
-							>
-								<span class="pu-option-text">
-									<span class="pu-option-label">Nevyplňovat</span>
-									<span class="pu-option-tech">popisek zůstane prázdný</span>
-								</span>
-							</button>
-							@for (option of captionFieldOptions(); track option.field) {
-								<button
-									type="button"
-									role="option"
-									class="pu-option"
-									[class.selected]="option.field === captionField()"
-									[attr.aria-selected]="option.field === captionField()"
-									(click)="setCaptionField(option.field)"
-								>
-									<span class="pu-option-text">
-										<span class="pu-option-label">{{ option.label }}</span>
-										<span class="pu-option-tech">{{ option.tech }}</span>
-									</span>
-									<span class="pu-option-count"
-										>{{ option.count }}/{{ photoUploadQueue().length }}</span
-									>
-								</button>
-							}
-						</div>
-					</ng-template>
-				</ion-popover>
-			</div>
-		}
-
 		<div
 			class="pu-list"
 			[class.over]="dragOver()"
@@ -199,6 +133,72 @@
 						Přidat popisky z metadat souborů
 					</button>
 				}
+			}
+
+			@if (captionToolsOpen()) {
+				<div class="pu-tools">
+					<span class="pu-label" id="pu-caption-label">Popisek z metadat</span>
+					<button
+						type="button"
+						id="pu-caption-trigger"
+						class="pu-select"
+						aria-labelledby="pu-caption-label"
+						[disabled]="uploading()"
+						(click)="captionMenuOpen.set(true)"
+					>
+						<span class="pu-select-label">{{ selectedCaptionField()?.label ?? "Nevyplňovat" }}</span>
+						@if (selectedCaptionField(); as selected) {
+							<span class="pu-select-tech">{{ selected.tech }}</span>
+						}
+						<ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon>
+					</button>
+					<span class="pu-hint">{{ captionHint() }}</span>
+
+					<ion-popover
+						trigger="pu-caption-trigger"
+						size="cover"
+						alignment="start"
+						[isOpen]="captionMenuOpen()"
+						(didDismiss)="captionMenuOpen.set(false)"
+						cssClass="photo-caption-field-popover"
+					>
+						<ng-template>
+							<div class="pu-menu" role="listbox" aria-label="Popisek z metadat">
+								<button
+									type="button"
+									role="option"
+									class="pu-option"
+									[class.selected]="!captionField()"
+									[attr.aria-selected]="!captionField()"
+									(click)="setCaptionField(null)"
+								>
+									<span class="pu-option-text">
+										<span class="pu-option-label">Nevyplňovat</span>
+										<span class="pu-option-tech">popisek zůstane prázdný</span>
+									</span>
+								</button>
+								@for (option of captionFieldOptions(); track option.field) {
+									<button
+										type="button"
+										role="option"
+										class="pu-option"
+										[class.selected]="option.field === captionField()"
+										[attr.aria-selected]="option.field === captionField()"
+										(click)="setCaptionField(option.field)"
+									>
+										<span class="pu-option-text">
+											<span class="pu-option-label">{{ option.label }}</span>
+											<span class="pu-option-tech">{{ option.tech }}</span>
+										</span>
+										<span class="pu-option-count"
+											>{{ option.count }}/{{ photoUploadQueue().length }}</span
+										>
+									</button>
+								}
+							</div>
+						</ng-template>
+					</ion-popover>
+				</div>
 			}
 		</div>
 	}
