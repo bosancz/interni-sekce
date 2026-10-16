@@ -27,7 +27,6 @@ export class PhotoResponse {
 	@ApiPropertyOptional({ type: "number" }) width!: number | null;
 	@ApiPropertyOptional({ type: "number" }) height!: number | null;
 	@ApiPropertyOptional({ type: "number" }) uploadedById!: number | null;
-	@ApiPropertyOptional({ type: "string" }) title!: string | null;
 	@ApiPropertyOptional({ type: "string" }) caption!: string | null;
 	@ApiPropertyOptional({ type: "string", isArray: true }) tags!: string[] | null;
 	@ApiPropertyOptional({ type: "string" }) bg!: string | null;
@@ -42,11 +41,12 @@ export class PhotoCreateBody {
 	@IsInt()
 	albumId!: number;
 
+	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() caption?: string;
+
 	@ApiProperty({ type: "string", format: "binary" }) file!: any;
 }
 
 export class PhotoUpdateBody {
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() title?: string | null;
 	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() caption?: string | null;
 	@ApiPropertyOptional({ type: "string", isArray: true }) @IsOptional() @IsString({ each: true }) tags?:
 		| string[]

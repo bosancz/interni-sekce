@@ -335,7 +335,7 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		const uploaded = await this.modalService.componentModal(
 			PhotosUploadComponent,
 			{ album },
-			{ backdropDismiss: false, cssClass: "dialog-list" },
+			{ backdropDismiss: false, cssClass: "dialog-upload" },
 		);
 
 		if (uploaded) this.loadAlbum(album.id);

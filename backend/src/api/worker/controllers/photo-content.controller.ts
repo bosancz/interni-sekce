@@ -91,7 +91,6 @@ export class PhotoContentController {
 		return hits.map(({ photo, score }) => ({
 			photoId: photo.id,
 			photoName: photo.name,
-			photoTitle: photo.title,
 			albumId: photo.albumId,
 			albumName: photo.album?.name ?? null,
 			score,

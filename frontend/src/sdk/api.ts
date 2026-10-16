@@ -5105,12 +5105,6 @@ export namespace SDK {
          * @type {string}
          * @memberof MemberPhotoResponseWithLinks
          */
-        'title'?: string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof MemberPhotoResponseWithLinks
-         */
         'caption'?: string | null;
         /**
          * 
@@ -6748,12 +6742,6 @@ export namespace SDK {
          * @type {string}
          * @memberof Photo
          */
-        'title': string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof Photo
-         */
         'caption': string | null;
         /**
          * 
@@ -7131,12 +7119,6 @@ export namespace SDK {
          * @memberof PhotoContentSearchHitResponse
          */
         'photoName': string;
-        /**
-         * 
-         * @type {string}
-         * @memberof PhotoContentSearchHitResponse
-         */
-        'photoTitle'?: string | null;
         /**
          * 
          * @type {number}
@@ -7885,12 +7867,6 @@ export namespace SDK {
          * @type {string}
          * @memberof PhotoResponseWithLinks
          */
-        'title'?: string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof PhotoResponseWithLinks
-         */
         'caption'?: string | null;
         /**
          * 
@@ -7930,12 +7906,6 @@ export namespace SDK {
      * @interface PhotoUpdateBody
      */
     export interface PhotoUpdateBody {
-        /**
-         * 
-         * @type {string}
-         * @memberof PhotoUpdateBody
-         */
-        'title'?: string | null;
         /**
          * 
          * @type {string}
@@ -15891,6 +15861,7 @@ export namespace SDK {
         
         public async createPhoto(
             albumId: number,
+            caption: string,
             file: File,
             options: AxiosRequestConfig = {}
         ) {
@@ -15921,6 +15892,10 @@ export namespace SDK {
     
             if (albumId !== undefined) { 
                 requestFormParams.append('albumId', albumId as any);
+            }
+    
+            if (caption !== undefined) { 
+                requestFormParams.append('caption', caption as any);
             }
     
             if (file !== undefined) { 

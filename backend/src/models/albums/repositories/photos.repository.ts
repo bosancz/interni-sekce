@@ -169,7 +169,12 @@ export class PhotosRepository {
 		return exif;
 	}
 
-	async createPhoto(albumId: number, file: Express.Multer.File, uploadedById: User["id"] | null) {
+	async createPhoto(
+		albumId: number,
+		file: Express.Multer.File,
+		uploadedById: User["id"] | null,
+		caption: string | null = null,
+	) {
 		const ext = extname(file.originalname);
 		const metadata = await this.photosFiles.extractMetadata(file.buffer);
 
@@ -189,6 +194,7 @@ export class PhotosRepository {
 			height: metadata.height,
 			bg: metadata.bg,
 			exif: metadata.exif,
+			caption,
 		});
 
 		try {
