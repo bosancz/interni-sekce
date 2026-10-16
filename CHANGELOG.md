@@ -1,3 +1,7 @@
+## v4.25.8 — 2026-10-16
+
+- <span class="changelog-type" title="patch">🚸</span> [Převzít popisek fotky z metadat souboru při nahrání](https://github.com/bosancz/interni-sekce/commit/600ca63eb20b7bb99a7ed666134ddedf0d9065dd) (#657) <span class="changelog-credit" title="Claude"><a class="changelog-author" href="https://github.com/claude"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></a></span>
+
 ## v4.25.7 — 2026-10-15
 
 - <span class="changelog-type" title="fix">🐛</span> [Service worker neodpovídá na adresy /api stránkou aplikace](https://github.com/bosancz/interni-sekce/commit/7e679a9ca9835c778e14147d6e58e29f6d417f80) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
