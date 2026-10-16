@@ -8,6 +8,7 @@ import { arrowBackSharp, arrowForwardSharp, searchSharp } from "ionicons/icons";
 import { map } from "rxjs";
 import { AccountMenuComponent } from "src/app/core/components/account-menu/account-menu.component";
 import { GlobalSearchComponent } from "src/app/core/components/global-search/global-search.component";
+import { PhotoUploadIndicatorComponent } from "src/app/core/components/photo-upload-indicator/photo-upload-indicator.component";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 
@@ -23,6 +24,7 @@ import { PlatformService } from "src/app/core/services/platform.service";
 		IonIcon,
 		GlobalSearchComponent,
 		AccountMenuComponent,
+		PhotoUploadIndicatorComponent,
 	],
 	host: {
 		"[class.lg]": "isLg()",

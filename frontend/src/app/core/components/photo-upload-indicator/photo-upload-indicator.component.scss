@@ -1,0 +1,53 @@
+:host {
+	display: flex;
+	align-items: center;
+}
+
+.pill {
+	position: relative;
+	overflow: hidden;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 30px;
+	padding: 0 12px;
+	border: 0;
+	border-radius: var(--bo-radius-pill);
+	background: rgba(255, 255, 255, 0.12);
+	color: #fff;
+	font-size: 13px;
+	font-weight: 700;
+	white-space: nowrap;
+	cursor: pointer;
+	-webkit-app-region: no-drag;
+	app-region: no-drag;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.24);
+	}
+
+	&.error {
+		background: var(--bo-red);
+	}
+
+	ion-icon {
+		position: relative;
+		font-size: 18px;
+	}
+
+	.label {
+		position: relative;
+		font-variant-numeric: tabular-nums;
+	}
+}
+
+.fill {
+	position: absolute;
+	inset: 0 auto 0 0;
+	background: rgba(255, 255, 255, 0.22);
+	transition: width 0.3s ease;
+}
+
+:host(.compact) .pill {
+	padding: 0 10px;
+}
