@@ -312,7 +312,7 @@ ion-select.filter-pill {
 	text-align: center;
 	color: var(--bo-muted);
 
-	ion-icon {
+	> ion-icon {
 		font-size: 2rem;
 		color: var(--bo-muted);
 	}
