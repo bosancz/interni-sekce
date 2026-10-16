@@ -1,3 +1,7 @@
+## v4.25.10 — 2026-10-16
+
+- <span class="changelog-type" title="patch">🚸</span> [Výběr popisku z metadat pod seznamem fotek a © před autorem](https://github.com/bosancz/interni-sekce/commit/cb6967ee1b8114cd51ff900f92dbfb048bcd58ad) (#657) <span class="changelog-credit" title="Claude"><a class="changelog-author" href="https://github.com/claude"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></a></span>
+
 ## v4.25.9 — 2026-10-16
 
 - <span class="changelog-type" title="patch">🚸</span> [Popisky z metadat schovat pod odkaz a ve výchozím stavu nevyplňovat](https://github.com/bosancz/interni-sekce/commit/485e0d3e35067e48b941693ae18aacc5d6b1eb75) (#657) <span class="changelog-credit" title="Claude"><a class="changelog-author" href="https://github.com/claude"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></a></span>
