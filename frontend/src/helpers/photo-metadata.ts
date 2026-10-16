@@ -67,7 +67,7 @@ export function getPhotoCaptionValues(output: Record<string, any>): PhotoCaption
 		windowsSubject: windowsText(ifd0.XPSubject),
 		windowsComment: windowsText(ifd0.XPComment),
 		userComment: userCommentText(exif.UserComment),
-		author: listText(dc.creator) ?? iptcText(iptc.Byline) ?? toText(ifd0.Artist),
+		author: copyrightText(listText(dc.creator) ?? iptcText(iptc.Byline) ?? toText(ifd0.Artist)),
 	};
 
 	const result: PhotoCaptionValues = {};
@@ -84,6 +84,11 @@ export function isJunkCaption(caption: string, cameraNames: (string | null)[] = 
 	if (cameraNames.some((name) => name && normalizeName(name) === normalized)) return true;
 
 	return JUNK_CAPTIONS.some((pattern) => pattern.test(caption));
+}
+
+function copyrightText(author: string | null): string | null {
+	if (!author || /^(©|\(c\)|copyright\b)/i.test(author)) return author;
+	return `© ${author}`;
 }
 
 function normalizeName(value: string): string {

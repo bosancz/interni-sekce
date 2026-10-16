@@ -125,16 +125,10 @@
 }
 
 .pu-tools {
-	position: sticky;
-	top: -6px;
-	z-index: 1;
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
-	margin: -6px -28px 0;
-	padding: 4px 28px 14px;
-	border-bottom: 1px solid var(--bm-border-soft);
-	background: var(--bo-paper);
+	margin-top: 24px;
 }
 
 .pu-link {
@@ -470,11 +464,6 @@
 }
 
 @media (max-width: 576px) {
-	.pu-tools {
-		margin-inline: -20px;
-		padding-inline: 20px;
-	}
-
 	.pu-thumb {
 		width: 56px;
 		height: 56px;
