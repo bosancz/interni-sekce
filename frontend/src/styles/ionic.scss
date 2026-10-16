@@ -121,6 +121,11 @@ ion-modal.dialog.dialog-brand {
 	--max-width: calc(100vw - 32px);
 }
 
+ion-modal.dialog.dialog-upload {
+	--width: 560px;
+	--max-width: calc(100vw - 32px);
+}
+
 ion-modal.dialog.dialog-merge {
 	--width: 820px;
 	--max-width: calc(100vw - 32px);
@@ -210,4 +215,8 @@ ion-button.bo-tooltip.button-disabled {
 	&::part(native) {
 		pointer-events: none;
 	}
+}
+
+ion-popover.photo-caption-field-popover {
+	--width: min(380px, calc(100vw - 32px));
 }

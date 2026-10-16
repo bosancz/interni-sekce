@@ -98,7 +98,12 @@ export class PhotosController {
 		const ext = extname(file.originalname).slice(1).toLowerCase();
 		if (!this.photosFiles.isAllowedType(ext)) throw new BadRequestException("Unsupported file type.");
 
-		const photo = await this.photos.createPhoto(body.albumId, file, req.user?.userId ?? null);
+		const photo = await this.photos.createPhoto(
+			body.albumId,
+			file,
+			req.user?.userId ?? null,
+			body.caption?.trim() || null,
+		);
 
 		this.facesDetectionService
 			.enqueuePhotos([photo])

@@ -1,72 +1,116 @@
-import { CommonModule } from "@angular/common";
 import { HttpClient, HttpEventType } from "@angular/common/http";
 import {
 	AfterViewInit,
 	ChangeDetectorRef,
 	Component,
+	computed,
 	ElementRef,
 	Input,
 	OnDestroy,
-	OnInit,
 	signal,
 	ViewChild,
 } from "@angular/core";
-import {
-	IonButton,
-	IonButtons,
-	IonContent,
-	IonFooter,
-	IonIcon,
-	IonItem,
-	IonLabel,
-	IonList,
-	IonToolbar,
-	ModalController,
-} from "@ionic/angular/standalone";
+import { IonIcon, IonPopover, ModalController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { trashOutline } from "ionicons/icons";
-import { ApiService } from "src/app/core/services/api.service";
+import {
+	addOutline,
+	checkmarkOutline,
+	chevronDownOutline,
+	closeOutline,
+	cloudUploadOutline,
+	trashOutline,
+} from "ionicons/icons";
 import { InputModalComponent } from "src/app/core/services/modal.service";
 import { PlatformService } from "src/app/core/services/platform.service";
+import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { PrettyBytesPipe } from "src/app/shared/pipes/pretty-bytes.pipe";
 import { Config } from "src/config";
+import {
+	PhotoCaptionField,
+	PhotoCaptionFields,
+	PhotoCaptionValues,
+	readPhotoCaptionValues,
+} from "src/helpers/photo-metadata";
 import { SDK } from "src/sdk";
+
+type PhotoUploadStatus = "pending" | "uploading" | "processing" | "finished" | "error";
 
 interface PhotoUploadItem {
 	file: File;
+	thumbnailUrl: string;
 	progress: number;
-	status: string;
+	status: PhotoUploadStatus;
 	error?: Error;
+	captions?: PhotoCaptionValues;
 }
+
+const DEFAULT_CAPTION_FIELD: PhotoCaptionField = "xmpDescription";
 
 @Component({
 	selector: "photos-upload",
 	templateUrl: "./photos-upload.component.html",
 	styleUrls: ["./photos-upload.component.scss"],
 
-	imports: [
-		CommonModule,
-		IonContent,
-		IonList,
-		IonItem,
-		IonLabel,
-		IonButton,
-		IonIcon,
-		IonFooter,
-		IonToolbar,
-		IonButtons,
-		PrettyBytesPipe,
-	],
+	imports: [IonIcon, IonPopover, ModalLayoutComponent, PrettyBytesPipe],
 })
-export class PhotosUploadComponent extends InputModalComponent<boolean> implements OnInit, AfterViewInit, OnDestroy {
+export class PhotosUploadComponent extends InputModalComponent<boolean> implements AfterViewInit, OnDestroy {
 	@Input() album!: SDK.AlbumResponseWithLinks;
-
-	tags = signal<string[]>([]);
-	selectedTags = signal<string[]>([]);
 
 	uploading = signal(false);
 
 	photoUploadQueue = signal<PhotoUploadItem[]>([]);
+
+	captionField = signal<PhotoCaptionField | null>(null);
+	private captionFieldChosen = false;
+
+	captionMenuOpen = signal(false);
+
+	captionFieldOptions = computed(() => {
+		const queue = this.photoUploadQueue();
+		return (Object.keys(PhotoCaptionFields) as PhotoCaptionField[])
+			.map((field) => ({
+				field,
+				...PhotoCaptionFields[field],
+				count: queue.filter((item) => item.captions?.[field]).length,
+			}))
+			.filter((option) => option.count > 0 || option.field === this.captionField());
+	});
+
+	selectedCaptionField = computed(() => {
+		const field = this.captionField();
+		return field ? PhotoCaptionFields[field] : null;
+	});
+
+	captionHint = computed(() => {
+		const field = this.captionField();
+		const queue = this.photoUploadQueue();
+		if (!field) return "Fotky se nahrají bez popisku.";
+
+		const count = queue.filter((item) => item.captions?.[field]).length;
+		return `S popiskem ${count} / ${queue.length}, ostatní zůstanou bez popisku.`;
+	});
+
+	pendingCount = computed(() => this.photoUploadQueue().filter((item) => item.status !== "finished").length);
+
+	finishedCount = computed(() => this.photoUploadQueue().filter((item) => item.status === "finished").length);
+
+	uploadingNumber = computed(() => Math.min(this.finishedCount() + 1, this.photoUploadQueue().length));
+
+	totalProgress = computed(() => {
+		const queue = this.photoUploadQueue();
+		if (!queue.length) return 0;
+		return Math.round(
+			queue.reduce((sum, item) => sum + (item.status === "finished" ? 100 : item.progress), 0) / queue.length,
+		);
+	});
+
+	uploadLabel = computed(() => {
+		const count = this.pendingCount();
+		if (!count) return "Nahrát fotky";
+		return `Nahrát ${count} ${this.photosWord(count, "fotku", "fotky", "fotek")}`;
+	});
+
+	dragOver = signal(false);
 
 	allowedFiles_re = /\.(jpg|jpeg|png|gif)$/i;
 
@@ -81,7 +125,6 @@ export class PhotosUploadComponent extends InputModalComponent<boolean> implemen
 	};
 
 	constructor(
-		private api: ApiService,
 		private http: HttpClient,
 		modalController: ModalController,
 		private platformService: PlatformService,
@@ -89,15 +132,13 @@ export class PhotosUploadComponent extends InputModalComponent<boolean> implemen
 		private config: Config,
 	) {
 		super(modalController);
-		addIcons({ trashOutline });
+		addIcons({ addOutline, checkmarkOutline, chevronDownOutline, closeOutline, cloudUploadOutline, trashOutline });
 	}
 
-	ngOnInit() {
-		this.updateTags();
-	}
 	ngOnDestroy() {
 		this.uploading.set(false);
 		this.allowExit();
+		for (const item of this.photoUploadQueue()) URL.revokeObjectURL(item.thumbnailUrl);
 	}
 
 	ngAfterViewInit() {
@@ -107,58 +148,53 @@ export class PhotosUploadComponent extends InputModalComponent<boolean> implemen
 		}
 	}
 
-	updateTags() {
-		const tags: string[] = [];
-		const album = this.album;
-		album.photos?.forEach((photo) => {
-			photo.tags?.filter((tag) => tags.indexOf(tag) === -1).forEach((tag) => tags.push(tag));
-		});
-		this.tags.set(tags);
-	}
-
 	addPhotosByInput(photoInput: HTMLInputElement) {
 		if (!photoInput.files?.length) return;
-
-		const queue = [...this.photoUploadQueue()];
-		for (let i = 0; i < photoInput.files.length; i++) {
-			queue.push({
-				file: photoInput.files[i],
-				progress: 0,
-				status: "pending",
-			});
-		}
-		this.photoUploadQueue.set(queue);
+		this.addFiles(photoInput.files);
+		photoInput.value = "";
 	}
 
-	addPhotosByDropzone(event: DragEvent, dropZone: HTMLDivElement) {
+	addPhotosByDropzone(event: DragEvent) {
 		event.preventDefault();
+		this.dragOver.set(false);
 
-		if (!event.dataTransfer?.files) return;
-
-		const queue = [...this.photoUploadQueue()];
-		for (let i = 0; i < event.dataTransfer.files.length; i++) {
-			queue.push({
-				file: event.dataTransfer.files[i],
-				progress: 0,
-				status: "pending",
-			});
-		}
-		this.photoUploadQueue.set(queue);
+		if (!event.dataTransfer?.files?.length || this.uploading()) return;
+		this.addFiles(event.dataTransfer.files);
 	}
 
 	onDragOver(event: DragEvent) {
 		event.stopPropagation();
 		event.preventDefault();
+		if (!this.uploading()) this.dragOver.set(true);
+	}
+
+	onDragLeave(event: DragEvent) {
+		if (!(event.currentTarget as Element).contains(event.relatedTarget as Node | null)) this.dragOver.set(false);
 	}
 
 	removeFromQueue(uploadItem: PhotoUploadItem) {
-		const queue = this.photoUploadQueue();
-		const i = queue.indexOf(uploadItem);
-		if (i !== -1) {
-			const newQueue = [...queue];
-			newQueue.splice(i, 1);
-			this.photoUploadQueue.set(newQueue);
-		}
+		URL.revokeObjectURL(uploadItem.thumbnailUrl);
+		this.photoUploadQueue.set(this.photoUploadQueue().filter((item) => item !== uploadItem));
+	}
+
+	setCaptionField(field: PhotoCaptionField | null) {
+		this.captionFieldChosen = true;
+		this.captionField.set(field);
+		this.captionMenuOpen.set(false);
+	}
+
+	getCaption(uploadItem: PhotoUploadItem): string | null {
+		const field = this.captionField();
+		return field ? (uploadItem.captions?.[field] ?? null) : null;
+	}
+
+	stopUploading() {
+		this.uploading.set(false);
+	}
+
+	closeModal() {
+		if (this.finishedCount()) this.submit.emit(true);
+		else this.close.emit();
 	}
 
 	async uploadPhotos(album: SDK.AlbumResponseWithLinks) {
@@ -174,6 +210,7 @@ export class PhotosUploadComponent extends InputModalComponent<boolean> implemen
 
 			try {
 				uploadItem.status = "uploading";
+				uploadItem.error = undefined;
 				this.photoUploadQueue.set([...queue]);
 				await this.uploadPhoto(album, uploadItem);
 				uploadItem.status = "finished";
@@ -185,19 +222,22 @@ export class PhotosUploadComponent extends InputModalComponent<boolean> implemen
 			}
 		}
 
+		const stopped = !this.uploading();
 		this.uploading.set(false);
 		this.allowExit();
 
-		this.submit.emit(true);
+		if (!stopped) this.submit.emit(true);
 	}
 
 	async uploadPhoto(album: SDK.AlbumResponseWithLinks, uploadItem: PhotoUploadItem): Promise<void> {
 		if (!this.allowedFiles_re.test(uploadItem.file.name)) {
-			throw new Error("Unsupported file type.");
+			throw new Error("Nepodporovaný typ souboru.");
 		}
 
 		const formData = new FormData();
 		formData.set("albumId", String(album.id));
+		const caption = this.getCaption(uploadItem);
+		if (caption) formData.set("caption", caption);
 		formData.set("file", uploadItem.file, uploadItem.file.name);
 
 		const request = this.http.post(`${this.config.apiRoot}api/photos`, formData, {
@@ -222,6 +262,39 @@ export class PhotosUploadComponent extends InputModalComponent<boolean> implemen
 				error: (err) => reject(err),
 			});
 		});
+	}
+
+	private addFiles(files: FileList) {
+		const items: PhotoUploadItem[] = Array.from(files).map((file) => ({
+			file,
+			thumbnailUrl: URL.createObjectURL(file),
+			progress: 0,
+			status: "pending",
+		}));
+		this.photoUploadQueue.set([...this.photoUploadQueue(), ...items]);
+
+		for (const item of items) this.readCaptions(item);
+	}
+
+	private async readCaptions(uploadItem: PhotoUploadItem) {
+		try {
+			uploadItem.captions = await readPhotoCaptionValues(uploadItem.file);
+		} catch (err) {
+			console.warn(`Failed to read metadata of ${uploadItem.file.name}`, err);
+			uploadItem.captions = {};
+		}
+
+		if (!this.captionFieldChosen && uploadItem.captions[DEFAULT_CAPTION_FIELD]) {
+			this.captionField.set(DEFAULT_CAPTION_FIELD);
+		}
+
+		this.photoUploadQueue.set([...this.photoUploadQueue()]);
+	}
+
+	private photosWord(count: number, one: string, few: string, many: string) {
+		if (count === 1) return one;
+		if (count >= 2 && count <= 4) return few;
+		return many;
 	}
 
 	private preventExit() {

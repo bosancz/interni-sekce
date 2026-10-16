@@ -87,7 +87,6 @@ export interface SeedEvent {
 
 export interface SeedPhoto {
 	name: string;
-	title: string;
 	caption: string;
 	tags: string[];
 }
@@ -541,31 +540,26 @@ export const SeedAlbums: SeedAlbum[] = [
 		photos: [
 			{
 				name: "bilbo-pred-pytlikovem.jpg",
-				title: "Bilbo před Dnem Pytle",
 				caption: "Ráno odjezdu. Kapesník zůstal doma.",
 				tags: ["výprava", "Hobitín"],
 			},
 			{
 				name: "gandalf-na-ceste.jpg",
-				title: "Gandalf na cestě",
 				caption: "Vedoucí nechodí pozdě ani brzy, přichází přesně tehdy, kdy zamýšlí.",
 				tags: ["výprava", "vedoucí"],
 			},
 			{
 				name: "thorin-pod-osamelou-horou.jpg",
-				title: "Thorin pod Osamělou horou",
 				caption: "Nástup před výpravou k Osamělé hoře.",
 				tags: ["výprava", "hory"],
 			},
 			{
 				name: "glum-u-jezera.jpg",
-				title: "Glum u jezera",
 				caption: "U jezera pod Mlžnými horami. Prsten se toho dne nenašel.",
 				tags: ["voda", "jezero"],
 			},
 			{
 				name: "bilbo-na-ceste.jpg",
-				title: "Bilbo na cestě",
 				caption: "Tam a zase zpátky, tentokrát s bagáží.",
 				tags: ["výprava"],
 			},

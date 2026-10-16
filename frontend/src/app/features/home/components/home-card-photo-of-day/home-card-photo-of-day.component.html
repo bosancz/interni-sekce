@@ -11,15 +11,11 @@
 						type="button"
 						class="photo"
 						[style.background-color]="photo.bg"
-						[attr.aria-label]="photo.title || 'Otevřít fotku'"
+						[attr.aria-label]="photo.caption || 'Otevřít fotku'"
 						(click)="openPhoto(photo)"
 					>
-						<img [src]="photo | photoImageUrl: 'big'" [alt]="photo.title || photo.name" loading="lazy" />
+						<img [src]="photo | photoImageUrl: 'big'" [alt]="photo.caption || photo.name" loading="lazy" />
 					</button>
-
-					@if (photo.title) {
-						<p class="title">{{ photo.title }}</p>
-					}
 
 					@if (photo.caption) {
 						<p class="caption">{{ photo.caption }}</p>

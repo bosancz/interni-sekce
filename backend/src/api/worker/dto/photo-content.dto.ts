@@ -62,7 +62,6 @@ export class PhotoContentSearchQuery {
 export class PhotoContentSearchHitResponse {
 	@ApiProperty() photoId!: number;
 	@ApiProperty() photoName!: string;
-	@ApiPropertyOptional({ type: "string", nullable: true }) photoTitle!: string | null;
 	@ApiProperty() albumId!: number;
 	@ApiPropertyOptional({ type: "string", nullable: true }) albumName!: string | null;
 	@ApiProperty() score!: number;

@@ -35,7 +35,6 @@ export class Photo {
 	@Column({ type: "boolean", nullable: false, default: false }) titlePhoto!: boolean;
 	@Column({ type: "integer", nullable: true }) width!: number | null;
 	@Column({ type: "integer", nullable: true }) height!: number | null;
-	@Column({ type: "text", nullable: true }) title!: string | null;
 	@Column({ type: "text", nullable: true }) caption!: string | null;
 	@Column({ type: "varchar", array: true, nullable: true }) tags!: string[] | null;
 	@Column({ type: "varchar", nullable: true }) bg!: string | null;

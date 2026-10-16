@@ -396,7 +396,6 @@ export class SeedService {
 				...(existing ? { id: existing.id } : {}),
 				albumId,
 				name: seedPhoto.name,
-				title: seedPhoto.title,
 				caption: seedPhoto.caption,
 				tags: seedPhoto.tags,
 				order: index,

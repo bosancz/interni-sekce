@@ -181,7 +181,6 @@ function toHit({ photo, score }: { photo: Photo; score: number }): PhotoContentS
 	return {
 		photoId: photo.id,
 		photoName: photo.name,
-		photoTitle: photo.title,
 		albumId: photo.albumId,
 		albumName: photo.album?.name ?? null,
 		score,
