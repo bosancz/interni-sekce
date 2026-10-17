@@ -163,6 +163,11 @@ const photoContent = {
 	textTimeoutMs: 30_000,
 };
 
+const insuranceCards = {
+	timeoutMs: 20_000,
+	timezone: "Europe/Prague",
+};
+
 const oauth = {
 	wiki: {
 		clientId: process.env["OAUTH_WIKI_CLIENT_ID"] ?? "",
@@ -181,6 +186,7 @@ export class Config {
 	github = github;
 	google = google;
 	ical = ical;
+	insuranceCards = insuranceCards;
 	jwt = jwt;
 	logging = logging;
 	mongoDb = mongoDb;

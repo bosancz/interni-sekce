@@ -38,11 +38,11 @@ services:
     environment:
       REDIS_URL: redis://redis:6379
       DATA_DIR: /data
-      WORKER_TASKS: embed-text,match-faces
+      WORKER_TASKS: embed-text,match-faces,read-insurance-card
     volumes:
       - data:/data:ro
     cpus: 1
-    mem_limit: 512m
+    mem_limit: 1g
     depends_on:
       redis:
         condition: service_healthy

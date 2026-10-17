@@ -3,6 +3,7 @@ export enum WorkerTasks {
 	embedPhoto = "embed-photo",
 	embedText = "embed-text",
 	matchFaces = "match-faces",
+	readInsuranceCard = "read-insurance-card",
 }
 
 export const WORKER_TASK_QUEUE = (task: WorkerTasks) => `worker-${task}`;
