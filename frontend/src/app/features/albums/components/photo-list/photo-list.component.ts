@@ -2,7 +2,6 @@ import { DatePipe } from "@angular/common";
 import { Component, ElementRef, input, OnInit, output, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import {
-	IonAvatar,
 	IonCheckbox,
 	IonChip,
 	IonIcon,
@@ -13,6 +12,7 @@ import {
 	IonReorderGroup,
 	IonRippleEffect,
 	IonSkeletonText,
+	IonThumbnail,
 } from "@ionic/angular/standalone";
 import { ItemReorderEventDetail } from "@ionic/core";
 import { addIcons } from "ionicons";
@@ -33,12 +33,12 @@ import { SDK } from "src/sdk";
 		IonItem,
 		IonCheckbox,
 		IonChip,
-		IonAvatar,
 		IonIcon,
 		IonInput,
 		IonLabel,
 		IonReorder,
 		IonSkeletonText,
+		IonThumbnail,
 		IonRippleEffect,
 		PhotoImageUrlPipe,
 		TooltipDirective,

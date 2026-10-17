@@ -15,13 +15,13 @@
 					@if (selectable()) {
 						<ion-checkbox slot="start" [ngModel]="isPhotoChecked(photo)"> </ion-checkbox>
 					}
-					<ion-avatar slot="start">
+					<ion-thumbnail slot="start" class="photo-thumb">
 						<img
 							[src]="photo | photoImageUrl: 'small'"
 							[style.background-color]="photo.bg"
 							loading="lazy"
 						/>
-					</ion-avatar>
+					</ion-thumbnail>
 
 					<ion-label>
 						@if (editCaptions()) {
@@ -79,9 +79,9 @@
 		} @else {
 			@for (item of loadingPhotos(); track $index) {
 				<ion-item>
-					<ion-avatar slot="start">
+					<ion-thumbnail slot="start" class="photo-thumb">
 						<ion-skeleton-text></ion-skeleton-text>
-					</ion-avatar>
+					</ion-thumbnail>
 
 					<ion-label>
 						<h2><ion-skeleton-text></ion-skeleton-text></h2>
