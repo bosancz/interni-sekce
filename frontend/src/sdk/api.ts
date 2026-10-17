@@ -3687,10 +3687,10 @@ export namespace SDK {
         'assignedAt'?: string | null;
         /**
          * 
-         * @type {MemberResponse}
+         * @type {MemberResponseWithLinks}
          * @memberof FaceReviewFaceResponse
          */
-        'member'?: MemberResponse | null;
+        'member'?: MemberResponseWithLinks | null;
         /**
          * 
          * @type {number}
@@ -7580,10 +7580,10 @@ export namespace SDK {
         'assignedAt'?: string | null;
         /**
          * 
-         * @type {MemberResponse}
+         * @type {MemberResponseWithLinks}
          * @memberof PhotoFaceResponse
          */
-        'member'?: MemberResponse | null;
+        'member'?: MemberResponseWithLinks | null;
     }
     
     
@@ -7718,10 +7718,10 @@ export namespace SDK {
         'assignedAt'?: string | null;
         /**
          * 
-         * @type {MemberResponse}
+         * @type {MemberResponseWithLinks}
          * @memberof PhotoFaceResponseWithLinks
          */
-        'member'?: MemberResponse | null;
+        'member'?: MemberResponseWithLinks | null;
         /**
          * 
          * @type {PhotoFaceResponseLinks}

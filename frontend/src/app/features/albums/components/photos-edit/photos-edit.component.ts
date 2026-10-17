@@ -54,6 +54,7 @@ import {
 	mapOutline,
 	personAddOutline,
 	peopleOutline,
+	personCircleOutline,
 	personOutline,
 	pricetagOutline,
 	sparklesOutline,
@@ -327,6 +328,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 			happyOutline,
 			personAddOutline,
 			peopleOutline,
+			personCircleOutline,
 			personOutline,
 			pricetagOutline,
 			trashOutline,
@@ -575,6 +577,24 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		}
 
 		this.faces.update((faces) => faces.filter((item) => item.id !== face.id));
+	}
+
+	async setProfilePhoto(face: SDK.PhotoFaceResponseWithLinks) {
+		this.faceMenuOpen.set(false);
+		const member = face.member;
+		if (!member?._links.updateMemberProfilePhoto.allowed) return;
+
+		try {
+			await this.api.MembersApi.updateMemberProfilePhoto(member.id, { faceId: face.id });
+		} catch {
+			this.toastService.toast("Profilovou fotku se nepodařilo uložit.", { color: "danger" });
+			return;
+		}
+
+		this.toastService.toast("Profilová fotka uložena.");
+
+		const photo = this.photo();
+		if (photo) await this.loadFaces(photo);
 	}
 
 	async openMember(memberId: number) {
