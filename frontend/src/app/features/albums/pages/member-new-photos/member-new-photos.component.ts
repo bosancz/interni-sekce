@@ -18,7 +18,7 @@ import { PageContentComponent } from "src/app/shared/components/page-content/pag
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
-import { AlbumPhotos, groupPhotosByAlbum } from "src/helpers/album-photos";
+import { groupPhotosByAlbum } from "src/helpers/album-photos";
 import { SDK } from "src/sdk";
 
 const PAGE_SIZE = 200;
@@ -95,10 +95,10 @@ export class MemberNewPhotosComponent {
 		}
 	}
 
-	async openPhoto(group: AlbumPhotos, photo: SDK.PhotoResponseWithLinks) {
+	async openPhoto(photo: SDK.PhotoResponseWithLinks) {
 		await this.modalService.modal(
 			PhotosEditComponent,
-			{ photos: [...group.photos], startPhoto: photo },
+			{ photos: this.albums().flatMap((group) => group.photos), startPhoto: photo },
 			{ backdropDismiss: false, cssClass: "ion-modal-lg" },
 		);
 	}

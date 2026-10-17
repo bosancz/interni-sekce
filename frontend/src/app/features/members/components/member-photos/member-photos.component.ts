@@ -20,10 +20,11 @@ import { CardTitleComponent } from "src/app/shared/components/card-title/card-ti
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
-import { AlbumPhotos, groupPhotosByAlbum } from "src/helpers/album-photos";
+import { groupPhotosByAlbum } from "src/helpers/album-photos";
 import { SDK } from "src/sdk";
 
 const PAGE_SIZE = 30;
+const LOAD_PAGE_SIZE = 200;
 
 @Component({
 	selector: "bo-member-photos",
@@ -50,9 +51,11 @@ export class MemberPhotosComponent {
 
 	photos = signal<SDK.PhotoResponseWithLinks[]>([]);
 	loading = signal(false);
-	hasMore = signal(false);
+	visibleCount = signal(PAGE_SIZE);
 
-	albums = computed(() => groupPhotosByAlbum(this.photos()));
+	hasMore = computed(() => this.visibleCount() < this.photos().length);
+	albums = computed(() => groupPhotosByAlbum(this.photos().slice(0, this.visibleCount())));
+	allPhotos = computed(() => groupPhotosByAlbum(this.photos()).flatMap((group) => group.photos));
 
 	private loadedFor?: number;
 
@@ -68,26 +71,26 @@ export class MemberPhotosComponent {
 			if (!member || member.id === this.loadedFor) return;
 			this.loadedFor = member.id;
 			this.photos.set([]);
-			if (member._links.listMemberPhotos.allowed) this.loadMore();
+			this.visibleCount.set(PAGE_SIZE);
+			if (member._links.listMemberPhotos.allowed) this.load(member);
 		});
 	}
 
-	async loadMore() {
-		const member = this.member();
-		if (!member || this.loading()) return;
-
+	async load(member: SDK.MemberResponseWithLinks) {
 		this.loading.set(true);
 
 		try {
-			const page = await this.api.MembersApi.listMemberPhotos(member.id, {
-				limit: PAGE_SIZE,
-				offset: this.photos().length,
-			}).then((res) => res.data as unknown as SDK.PhotoResponseWithLinks[]);
-
-			if (this.member()?.id !== member.id) return;
-
-			this.photos.update((photos) => [...photos, ...page]);
-			this.hasMore.set(page.length === PAGE_SIZE);
+			const photos: SDK.PhotoResponseWithLinks[] = [];
+			while (true) {
+				const page = await this.api.MembersApi.listMemberPhotos(member.id, {
+					limit: LOAD_PAGE_SIZE,
+					offset: photos.length,
+				}).then((res) => res.data as unknown as SDK.PhotoResponseWithLinks[]);
+				if (this.member()?.id !== member.id) return;
+				photos.push(...page);
+				if (page.length < LOAD_PAGE_SIZE) break;
+			}
+			this.photos.set(photos);
 		} catch {
 			this.toastService.toast("Nepodařilo se načíst fotky.", { color: "warning" });
 		} finally {
@@ -95,15 +98,15 @@ export class MemberPhotosComponent {
 		}
 	}
 
-	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
-		await this.loadMore();
+	onInfiniteScroll(e: InfiniteScrollCustomEvent) {
+		this.visibleCount.update((count) => count + PAGE_SIZE);
 		e.target.complete();
 	}
 
-	async openPhoto(group: AlbumPhotos, photo: SDK.PhotoResponseWithLinks) {
+	async openPhoto(photo: SDK.PhotoResponseWithLinks) {
 		await this.modalService.modal(
 			PhotosEditComponent,
-			{ photos: [...group.photos], startPhoto: photo },
+			{ photos: this.allPhotos(), startPhoto: photo },
 			{ backdropDismiss: false, cssClass: "ion-modal-lg" },
 		);
 	}
