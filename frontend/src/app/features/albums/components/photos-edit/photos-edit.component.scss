@@ -1,7 +1,13 @@
 :host {
 	--info-sidebar-width: 340px;
 	--info-sheet-height: 55%;
+	--top-bar-height: 56px;
+	--bottom-bar-height: 60px;
 	background-color: #000;
+
+	@media (max-width: 767.98px) {
+		--bottom-bar-height: 104px;
+	}
 }
 
 ion-content.modal-bg {
@@ -18,16 +24,14 @@ ion-toolbar {
 	top: 0;
 	left: 0;
 	right: 0;
-}
-.bottom-toolbar {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
+	height: var(--top-bar-height);
+	--min-height: var(--top-bar-height);
+	--padding-top: 0;
+	--padding-bottom: 0;
 }
 
 .top-toolbar,
-.bottom-toolbar {
+.bottom-bar {
 	transition:
 		opacity 0.2s ease,
 		transform 0.2s ease;
@@ -38,45 +42,237 @@ ion-toolbar {
 	pointer-events: none;
 	transform: translateY(-100%);
 }
-.bottom-toolbar.controls-hidden {
+.bottom-bar.controls-hidden {
 	opacity: 0;
 	pointer-events: none;
 	transform: translateY(100%);
 }
 
-.top-toolbar ion-item,
-.bottom-toolbar ion-item {
-	--ion-background-color: transparent;
-	--ion-item-color: #fff;
+.title-toggle {
+	--color: #fff;
 
-	.edit-caption {
-		--ion-background-color: #fff;
-		--ion-item-color: #000;
-		--ion-toolbar-color: #000;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		--ion-item-color: #fff;
-	}
-
-	ion-button:not([color]) {
-		--color: #fff;
+	&.active {
+		--color: var(--ion-color-warning, #ffc409);
 	}
 }
+
+.bottom-bar {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 10;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	box-sizing: border-box;
+	height: var(--bottom-bar-height);
+	padding: 0 16px;
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+	background-color: #000;
+	color: #fff;
+
+	@media (max-width: 767.98px) {
+		flex-direction: column;
+		align-items: stretch;
+		justify-content: center;
+		gap: 4px;
+		padding: 0 0 8px;
+	}
+}
+
+.caption {
+	display: flex;
+	flex: 1 1 200px;
+	align-items: center;
+	gap: 4px;
+	min-width: 120px;
+
+	@media (max-width: 767.98px) {
+		flex: none;
+		padding: 0 4px 0 16px;
+	}
+
+	ion-button {
+		--color: rgba(255, 255, 255, 0.75);
+		flex: none;
+		margin: 0;
+	}
+
+	.caption-save {
+		--color: var(--ion-color-warning, #ffc409);
+	}
+}
+
+.caption-text {
+	min-width: 0;
+	overflow: hidden;
+	font-size: 1rem;
+	font-weight: 600;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	cursor: text;
+}
+
 .nocaption {
 	opacity: 0.7;
 	font-style: italic;
+	font-weight: 400;
 }
 
-.tags-bar {
-	padding: 4px 12px 0;
-	max-height: 25vh;
+.caption-input {
+	--color: #fff;
+	--placeholder-color: rgba(255, 255, 255, 0.6);
+	--padding-start: 10px;
+	--padding-end: 10px;
+	min-height: 36px;
+	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.12);
+}
+
+.chips {
+	display: flex;
+	flex: 0 1 auto;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+	overflow-x: auto;
+	scrollbar-width: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+
+	@media (max-width: 767.98px) {
+		padding: 0 16px;
+	}
+
+	ion-chip {
+		--background: rgba(255, 255, 255, 0.12);
+		--color: #fff;
+		flex: none;
+		height: 32px;
+		margin: 0;
+		font-size: 0.85rem;
+
+		ion-icon {
+			color: inherit;
+			font-size: 1rem;
+		}
+
+		&.auto {
+			--background: transparent;
+			border: 1px dashed rgba(255, 255, 255, 0.55);
+			font-style: italic;
+		}
+	}
+
+	.album-chip ion-label {
+		max-width: 220px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.tag-chip {
+		--background: rgba(255, 196, 9, 0.18);
+		--color: #ffd666;
+	}
+
+	.add-tag-chip {
+		--background: transparent;
+		border: 1px solid rgba(255, 255, 255, 0.4);
+
+		&.icon-only {
+			width: 32px;
+			padding: 0;
+			justify-content: center;
+
+			ion-icon {
+				margin: 0;
+			}
+		}
+	}
+}
+
+.chips-divider {
+	flex: none;
+	width: 1px;
+	height: 20px;
+	background: rgba(255, 255, 255, 0.15);
+
+	&:first-child {
+		display: none;
+	}
+}
+
+.chip-more {
+	opacity: 0.7;
+}
+
+.uncertain-badge {
+	margin-left: 6px;
+	padding: 1px 6px;
+	border-radius: 9px;
+	background: var(--ion-color-warning, #ffc409);
+	color: #1a1a1a;
+	font-size: 0.75rem;
+	font-style: normal;
+	font-weight: 700;
+}
+
+ion-popover.chips-popover {
+	--width: 320px;
+}
+
+.popover-content {
+	padding: 12px;
+
+	bo-photo-tags-editor {
+		display: block;
+		max-height: 40vh;
+		overflow-y: auto;
+	}
+}
+
+.popover-header {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 8px;
+	font-size: 0.9rem;
+
+	span {
+		color: var(--bo-muted);
+		font-size: 0.8rem;
+	}
+}
+
+.popover-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	max-height: 40vh;
 	overflow-y: auto;
+
+	ion-chip {
+		margin: 0;
+		font-size: 0.85rem;
+
+		&.auto {
+			border-style: dashed;
+			font-style: italic;
+		}
+	}
 }
 
 .image-viewer {
 	position: absolute;
-	inset: 0;
+	top: var(--top-bar-height);
+	right: 0;
+	bottom: var(--bottom-bar-height);
+	left: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -90,6 +286,11 @@ ion-toolbar {
 
 	&.dragging {
 		cursor: grabbing;
+	}
+
+	&.immersive {
+		top: 0;
+		bottom: 0;
 	}
 }
 
@@ -169,24 +370,6 @@ ion-toolbar {
 	}
 }
 
-.image-viewer .title-badge {
-	position: absolute;
-	top: 1rem;
-	left: 1rem;
-	z-index: 10;
-	box-sizing: content-box;
-	padding: 0.4rem;
-	border-radius: 50%;
-	background-color: rgba(0, 0, 0, 0.55);
-	font-size: 1.5rem;
-	color: #fff;
-	cursor: pointer;
-
-	&.active {
-		color: var(--ion-color-warning, #ffc409);
-	}
-}
-
 .image-viewer .nav {
 	position: absolute;
 	top: 50%;
@@ -262,28 +445,6 @@ ion-toolbar {
 	pointer-events: none;
 }
 
-.people-bar {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 4px;
-	padding: 4px 12px 0;
-
-	ion-chip {
-		--color: #fff;
-		margin: 0;
-		border-color: rgba(255, 255, 255, 0.5);
-
-		ion-icon {
-			color: #fff;
-		}
-
-		&.auto {
-			border-style: dashed;
-			font-style: italic;
-		}
-	}
-}
-
 .face-emotion {
 	--color: var(--bo-muted);
 	font-size: 0.9em;
@@ -302,7 +463,7 @@ ion-toolbar {
 .info-visible {
 	@media (min-width: 768px) {
 		.top-toolbar,
-		.bottom-toolbar,
+		.bottom-bar,
 		.image-viewer {
 			right: var(--info-sidebar-width);
 			width: auto;
@@ -314,7 +475,7 @@ ion-toolbar {
 			bottom: var(--info-sheet-height);
 		}
 
-		.bottom-toolbar {
+		.bottom-bar {
 			display: none;
 		}
 	}
@@ -392,6 +553,22 @@ ion-toolbar {
 		margin: 0;
 		min-width: 0;
 		overflow-wrap: anywhere;
+	}
+
+	.info-chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+
+		ion-chip {
+			--color: #fff;
+			margin: 0;
+			border-color: rgba(255, 255, 255, 0.4);
+
+			ion-icon {
+				color: #fff;
+			}
+		}
 	}
 
 	.info-map {

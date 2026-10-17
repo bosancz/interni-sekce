@@ -38,6 +38,7 @@ import {
 } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
+	addOutline,
 	albumsOutline,
 	checkmarkCircleOutline,
 	checkmarkOutline,
@@ -52,6 +53,7 @@ import {
 	informationCircleOutline,
 	mapOutline,
 	personAddOutline,
+	peopleOutline,
 	personCircleOutline,
 	personOutline,
 	pricetagOutline,
@@ -123,6 +125,10 @@ const SLIDE_COMMIT_RATIO = 0.25;
 const SLIDE_COMMIT_VELOCITY = 0.3;
 const SLIDE_EDGE_RESISTANCE = 0.3;
 const SLIDE_ANIMATION_FALLBACK_MS = 400;
+
+const MAX_PEOPLE_CHIPS = 3;
+const PEOPLE_SUMMARY_NAMES = 2;
+const MAX_VISIBLE_TAGS = 3;
 
 function isTextInput(target: EventTarget | null) {
 	return target instanceof HTMLElement && (target.isContentEditable || !!target.closest("input, textarea"));
@@ -220,6 +226,34 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	faces = signal<SDK.PhotoFaceResponseWithLinks[]>([]);
 	categories = signal<SDK.PhotoCategoryOfPhotoResponse[]>([]);
 	assignedFaces = computed(() => this.faces().filter((face) => face.member));
+	sortedAssignedFaces = computed(() =>
+		[...this.assignedFaces()].sort((a, b) => Number(a.assignment === "auto") - Number(b.assignment === "auto")),
+	);
+	uncertainFacesCount = computed(() => this.assignedFaces().filter((face) => face.assignment === "auto").length);
+	peopleSummary = computed(() =>
+		this.sortedAssignedFaces()
+			.slice(0, PEOPLE_SUMMARY_NAMES)
+			.map((face) => face.member!.nickname + (face.assignment === "auto" ? "?" : ""))
+			.join(", "),
+	);
+	peopleCountLabel = computed(() => {
+		const count = this.assignedFaces().length;
+		if (count === 1) return "člověk";
+		if (count >= 2 && count <= 4) return "lidé";
+		return "lidí";
+	});
+	maxPeopleChips = MAX_PEOPLE_CHIPS;
+	peopleSummaryNames = PEOPLE_SUMMARY_NAMES;
+	peoplePopoverOpen = signal(false);
+	peoplePopoverEvent = signal<Event | undefined>(undefined);
+	private peoplePopoverAnchor?: HTMLElement;
+	private pendingPopoverFace?: SDK.PhotoFaceResponseWithLinks;
+
+	photoTags = computed(() => this.photo()?.tags ?? []);
+	visibleTags = computed(() => this.photoTags().slice(0, MAX_VISIBLE_TAGS));
+	hiddenTagsCount = computed(() => Math.max(0, this.photoTags().length - MAX_VISIBLE_TAGS));
+	tagsPopoverOpen = signal(false);
+	tagsPopoverEvent = signal<Event | undefined>(undefined);
 	private userSettings = inject(UserSettingsService);
 	private userService = inject(UserService);
 	private photoFacesVisible = this.userSettings.watch("photoFacesVisible");
@@ -287,6 +321,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		private modalService: ModalService,
 	) {
 		addIcons({
+			addOutline,
 			albumsOutline,
 			checkmarkCircleOutline,
 			helpCircleOutline,
@@ -294,6 +329,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 			closeCircleOutline,
 			happyOutline,
 			personAddOutline,
+			peopleOutline,
 			personCircleOutline,
 			personOutline,
 			pricetagOutline,
@@ -425,6 +461,33 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		const extras = { queryParams: { kategorie: categoryId } };
 		if (modal) await this.modalService.dismissAndNavigate(modal, ["/galerie/fotky"], extras);
 		else await this.router.navigate(["/galerie/fotky"], extras);
+	}
+
+	openPeoplePopover(event: Event) {
+		event.stopPropagation();
+		this.peoplePopoverAnchor = event.currentTarget as HTMLElement;
+		this.peoplePopoverEvent.set(event);
+		this.peoplePopoverOpen.set(true);
+	}
+
+	selectPersonFromPopover(face: SDK.PhotoFaceResponseWithLinks) {
+		this.pendingPopoverFace = face;
+		this.peoplePopoverOpen.set(false);
+	}
+
+	onPeoplePopoverDismiss() {
+		this.peoplePopoverOpen.set(false);
+		const face = this.pendingPopoverFace;
+		this.pendingPopoverFace = undefined;
+		const anchor = this.peoplePopoverAnchor;
+		if (!face || !anchor?.isConnected) return;
+		this.openFaceMenu(new CustomEvent("click", { detail: { ionShadowTarget: anchor } }), face);
+	}
+
+	openTagsPopover(event: Event) {
+		event.stopPropagation();
+		this.tagsPopoverEvent.set(event);
+		this.tagsPopoverOpen.set(true);
 	}
 
 	openFaceMenu(event: Event, face: SDK.PhotoFaceResponseWithLinks) {
