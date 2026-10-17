@@ -4792,6 +4792,20 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface MemberInsuranceCardUploadResponse
+     */
+    export interface MemberInsuranceCardUploadResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberInsuranceCardUploadResponse
+         */
+        'recognizedExpiration': string | null;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface MemberMembershipUpdateBody
      */
     export interface MemberMembershipUpdateBody {
@@ -14862,7 +14876,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<void>(axiosRequestConfig);
+            return this.axios.request<MemberInsuranceCardUploadResponse>(axiosRequestConfig);
         }
     }
     

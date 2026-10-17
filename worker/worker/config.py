@@ -77,6 +77,12 @@ CLIP_IMAGE_STD = [0.26862954, 0.26130258, 0.27577711]
 CLIP_TEXT_MAX_TOKENS = 128
 CLIP_TEXT_MAX_BATCH = 64
 
+OCR_DET_MODEL = MODELS_DIR / "PP-OCRv6_det_tiny.onnx"
+OCR_CLS_MODEL = MODELS_DIR / "ch_ppocr_mobile_v2.0_cls_mobile.onnx"
+OCR_REC_MODEL = MODELS_DIR / "PP-OCRv6_rec_tiny.onnx"
+OCR_MODEL = "rapidocr-3.10-ppocrv6-tiny"
+OCR_MAX_IMAGE_SIDE = 1280
+
 
 def task_queue(task: str) -> str:
     return f"worker-{task}"

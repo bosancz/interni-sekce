@@ -198,6 +198,7 @@
 ## Kartička pojištěnce
 
 - `Member.insuranceCardExpiration` (`date`, nullable) drží platnost kartičky; ukládá se běžným `PATCH /members/:memberId`, smazání kartičky ji nuluje. Stav počítá `getInsuranceCardExpirationState()` (`src/helpers/insurance-card.ts`) — `unknown` / `expired` / `expiring` (do `INSURANCE_CARD_EXPIRATION_WARNING_DAYS` = 30 dní) / `valid`. Upozorňuje se na dvou místech: pilulka v kartě `bo-card-insurance-card` (červená jen u `expired`) a položka „Platnost kartičky“ v `bo-group-missing-data`, kde platí pro každého člena s nahranou kartičkou. Po nahrání kartičky se rovnou zeptáme na datum.
+- **Datum se čte z fotky synchronně** — `PUT …/insurance-card` u JPG/PNG počká na úlohu workeru `read-insurance-card` (RapidOCR, PP-OCRv6 tiny, modely z modelscope při buildu; ~0,4 s na 1 CPU, obrázek zmenšený na 1280 px; small dával stejné výsledky za 5× čas a +100 MB) přes `InsuranceCardReaderService` (`QueueEvents`, 20 s), worker vrací jen nalezená data `dd/mm/yyyy`. Vybírá `pickInsuranceCardExpiration()` (`models/members/helpers`): víc dat → zahodí narozeniny člena (jinak nejstarší), vezme nejpozdější; jediné datum jen v budoucnu. Rozpoznané se rovnou uloží a vrátí jako `recognizedExpiration`, dialog ho předvyplní. Bez živého workeru (heartbeat) se nečeká a vrací `null`; PDF se nečte. V compose běží na lehkém `worker-text` (proto 1 GB — OCR přidá ~110 MB, ve špičce ~250 MB, po 5 min nečinnosti se uvolní).
 
 ## API routes & links
 

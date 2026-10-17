@@ -70,6 +70,14 @@ ADD --checksum=sha256:5b4e1a8171c81dfd666ae40265b9530c6e0b3d53923fe8ac493dcc8422
 ADD --checksum=sha256:d12568dc7300970a4d3dbb49068ad16cd89b99840b74b026f8e48071e9414f74 \
 	${CLIP_TEXT}/2_Dense/model.safetensors models/clip-vit-base-patch32-multilingual-dense.safetensors
 
+ARG RAPIDOCR=https://www.modelscope.cn/models/RapidAI/RapidOCR/resolve/v3.10.0/onnx
+ADD --checksum=sha256:f42c0fbd294d95eac1a550e131b277dac97462c8025fa4b6c3cec1b7894bd3d5 \
+	${RAPIDOCR}/PP-OCRv6/det/PP-OCRv6_det_tiny.onnx models/
+ADD --checksum=sha256:e16e242de5937ad92609223f19bc2aff3727ee40b095f996907c24749bad251b \
+	${RAPIDOCR}/PP-OCRv6/rec/PP-OCRv6_rec_tiny.onnx models/
+ADD --checksum=sha256:e47acedf663230f8863ff1ab0e64dd2d82b838fceb5957146dab185a89d6215c \
+	${RAPIDOCR}/PP-OCRv4/cls/ch_ppocr_mobile_v2.0_cls_mobile.onnx models/
+
 COPY ./worker/worker ./worker
 
 RUN useradd --system --uid 1001 --no-create-home worker && chmod -R a+r /app/models

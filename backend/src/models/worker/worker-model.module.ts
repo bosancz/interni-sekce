@@ -6,6 +6,7 @@ import { PhotosEmbedCommand } from "./commands/photos-embed.command";
 import { BackendScheduleProcessor } from "./processors/backend-schedule.processor";
 import { WorkerResultsProcessor } from "./processors/worker-results.processor";
 import { FacesDetectionService } from "./services/faces-detection.service";
+import { InsuranceCardReaderService } from "./services/insurance-card-reader.service";
 import { PhotoContentService } from "./services/photo-content.service";
 import { ServerStatsService } from "./services/server-stats.service";
 import { WorkersService } from "./services/workers.service";
@@ -22,14 +23,16 @@ export class WorkerModelModule {
 					{ name: WORKER_TASK_QUEUE(WorkerTasks.detectFaces) },
 					{ name: WORKER_TASK_QUEUE(WorkerTasks.embedPhoto) },
 					{ name: WORKER_TASK_QUEUE(WorkerTasks.embedText) },
+					{ name: WORKER_TASK_QUEUE(WorkerTasks.readInsuranceCard) },
 					{ name: WORKER_RESULTS_QUEUE },
 					{ name: BACKEND_SCHEDULE_QUEUE },
 				),
 				AlbumsModelModule,
 			],
-			exports: [FacesDetectionService, PhotoContentService, ServerStatsService, WorkersService],
+			exports: [FacesDetectionService, InsuranceCardReaderService, PhotoContentService, ServerStatsService, WorkersService],
 			providers: [
 				FacesDetectionService,
+				InsuranceCardReaderService,
 				PhotoContentService,
 				ServerStatsService,
 				WorkersService,

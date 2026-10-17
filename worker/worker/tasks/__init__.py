@@ -2,7 +2,7 @@ from typing import Any, Awaitable, Callable
 
 from bullmq import Queue
 
-from . import detect_faces, embed_photo, embed_text, match_faces
+from . import detect_faces, embed_photo, embed_text, match_faces, read_insurance_card
 
 TaskHandler = Callable[[dict[str, Any], Queue], Awaitable[Any]]
 
@@ -11,6 +11,7 @@ TASKS: dict[str, TaskHandler] = {
     embed_photo.NAME: embed_photo.run,
     embed_text.NAME: embed_text.run,
     match_faces.NAME: match_faces.run,
+    read_insurance_card.NAME: read_insurance_card.run,
 }
 
 TaskRelease = Callable[[], bool]
@@ -18,4 +19,5 @@ TaskRelease = Callable[[], bool]
 RELEASES: dict[str, TaskRelease] = {
     detect_faces.NAME: detect_faces.release,
     embed_photo.NAME: embed_photo.release,
+    read_insurance_card.NAME: read_insurance_card.release,
 }

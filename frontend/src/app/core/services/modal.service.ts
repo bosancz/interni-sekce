@@ -18,6 +18,7 @@ interface BaseModalOptions {
 interface DeleteConfirmationModalOptions extends BaseModalOptions {}
 
 interface InputModalOptions<D extends Record<string, any>> extends BaseModalOptions {
+	message?: string;
 	inputs: { [K in keyof D]: InputModalInput<D[K]> };
 }
 
@@ -191,6 +192,7 @@ export class ModalService {
 		return new Promise<D | null>(async (resolve, reject) => {
 			const alert = await this.alertController.create({
 				header: options.header,
+				message: options.message,
 				cssClass: options.cssClass,
 				inputs: Object.entries(options.inputs).map(([name, input]) => ({ ...input, name })),
 				buttons: [

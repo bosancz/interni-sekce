@@ -158,9 +158,11 @@ export class CardInsuranceCardComponent implements OnDestroy {
 		const uploadToast = await this.toastService.toast("Nahrávám kartičku pojištěnce...");
 
 		let uploaded = false;
+		let recognizedExpiration: string | null = null;
 
 		try {
-			await this.api.MembersApi.uploadInsuranceCard(member.id, file);
+			const res = await this.api.MembersApi.uploadInsuranceCard(member.id, file);
+			recognizedExpiration = res.data.recognizedExpiration;
 
 			this.loadedKey = null;
 			this.insuranceCardUrl.set(undefined);
@@ -175,17 +177,18 @@ export class CardInsuranceCardComponent implements OnDestroy {
 			uploadToast.dismiss();
 		}
 
-		if (uploaded) await this.askExpiration();
+		if (uploaded) await this.askExpiration(recognizedExpiration);
 	}
 
-	private async askExpiration() {
+	private async askExpiration(recognizedExpiration: string | null) {
 		const result = await this.modalService.inputModal<{ insuranceCardExpiration: string | null }>({
 			header: "Platnost kartičky",
+			message: recognizedExpiration ? "Datum jsme přečetli z kartičky, zkontroluj ho." : undefined,
 			inputs: {
 				insuranceCardExpiration: {
 					type: "date",
 					placeholder: "Datum expirace",
-					value: this.member()?.insuranceCardExpiration,
+					value: recognizedExpiration ?? this.member()?.insuranceCardExpiration,
 				},
 			},
 		});

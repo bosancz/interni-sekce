@@ -3,7 +3,6 @@ import {
 	Controller,
 	Delete,
 	Get,
-	HttpCode,
 	HttpStatus,
 	InternalServerErrorException,
 	Logger,
@@ -28,13 +27,16 @@ import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Config } from "src/config";
 import { FilesService } from "src/models/files/services/files.service";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
+import { InsuranceCardReaderService } from "src/models/worker/services/insurance-card-reader.service";
 import {
 	MemberInsuranceCardDeletePermission,
 	MemberInsuranceCardReadPermission,
 	MemberInsuranceCardUploadPermission,
 } from "../acl/member-insurance-card.acl";
+import { MemberInsuranceCardUploadResponse } from "../dto/member-insurance-card.dto";
 
 const ALLOWED_INSURANCE_CARD_TYPES = ["pdf", "jpg", "jpeg", "png"];
+const READABLE_INSURANCE_CARD_TYPES = ["jpg", "jpeg", "png"];
 
 @Controller("members/:memberId/insurance-card")
 @Authenticated()
@@ -46,6 +48,7 @@ export class MemberInsuranceCardController {
 	constructor(
 		private membersService: MembersRepository,
 		private filesService: FilesService,
+		private insuranceCardReaderService: InsuranceCardReaderService,
 		private readonly config: Config,
 	) {}
 
@@ -95,7 +98,6 @@ export class MemberInsuranceCardController {
 
 	@Put("")
 	@UseInterceptors(FileInterceptor("file"))
-	@HttpCode(HttpStatus.NO_CONTENT)
 	@AcLinks(MemberInsuranceCardUploadPermission)
 	@ApiBody({
 		schema: {
@@ -109,12 +111,12 @@ export class MemberInsuranceCardController {
 		},
 	})
 	@ApiConsumes("multipart/form-data")
-	@ApiResponse({ status: HttpStatus.NO_CONTENT })
+	@ApiResponse({ status: HttpStatus.OK, type: MemberInsuranceCardUploadResponse })
 	async uploadInsuranceCard(
 		@Req() req: Request,
 		@Param("memberId", ParseIntPipe) memberId: number,
 		@UploadedFile() file: Express.Multer.File,
-	) {
+	): Promise<MemberInsuranceCardUploadResponse> {
 		const member = await this.membersService.getMember(memberId);
 		if (!member) throw new NotFoundException("Member not found");
 
@@ -140,6 +142,20 @@ export class MemberInsuranceCardController {
 			this.filesService.deleteFile(path).catch(() => {});
 			throw new InternalServerErrorException("Failed to save card.");
 		}
+
+		if (!READABLE_INSURANCE_CARD_TYPES.includes(ext)) return { recognizedExpiration: null };
+
+		const recognizedExpiration = await this.insuranceCardReaderService.readExpiration(
+			member.id,
+			path,
+			member.birthday,
+		);
+
+		if (recognizedExpiration) {
+			await this.membersService.updateMember(member.id, { insuranceCardExpiration: recognizedExpiration });
+		}
+
+		return { recognizedExpiration };
 	}
 
 	@Delete("")
