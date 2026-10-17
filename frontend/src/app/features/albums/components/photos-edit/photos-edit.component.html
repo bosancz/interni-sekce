@@ -1,5 +1,18 @@
 <ion-content class="modal-bg" [class.info-visible]="photo() && infoVisible()" [scrollY]="false">
 	<ion-toolbar class="top-toolbar" [class.controls-hidden]="!controlsVisible()">
+		@if (photo()) {
+			<ion-buttons slot="start">
+				<ion-button
+					fill="clear"
+					class="title-toggle"
+					[class.active]="photo()!.titlePhoto"
+					(click)="toggleTitlePhoto()"
+					[boTooltip]="photo()!.titlePhoto ? 'Odebrat titulní fotku' : 'Nastavit jako titulní fotku'"
+				>
+					<ion-icon slot="icon-only" [name]="photo()!.titlePhoto ? 'star' : 'star-outline'"></ion-icon>
+				</ion-button>
+			</ion-buttons>
+		}
 		<ion-buttons slot="end">
 			@if (photo()) {
 				@if (photo()!._links.listPhotoFaces.allowed) {
@@ -75,6 +88,19 @@
 						}
 					</dl>
 				</section>
+				@if (categories().length) {
+					<section>
+						<h4>Kategorie</h4>
+						<div class="info-chips">
+							@for (category of categories(); track category.categoryId) {
+								<ion-chip outline (click)="openCategory(category.categoryId)">
+									<ion-icon name="pricetag-outline"></ion-icon>
+									<ion-label>{{ category.name }}</ion-label>
+								</ion-chip>
+							}
+						</div>
+					</section>
+				}
 
 				@if (exif() === undefined) {
 					<div class="info-loading">
@@ -171,20 +197,13 @@
 			class="image-viewer"
 			[class.zoomed]="zoomed()"
 			[class.dragging]="dragging()"
+			[class.immersive]="!controlsVisible()"
 			(pointerdown)="onPointerDown($event)"
 			(pointermove)="onPointerMove($event)"
 			(pointerup)="onPointerUp($event)"
 			(pointercancel)="onPointerCancel($event)"
 			(wheel)="onWheel($event)"
 		>
-			<ion-icon
-				class="title-badge"
-				[class.active]="photo()!.titlePhoto"
-				[name]="photo()!.titlePhoto ? 'star' : 'star-outline'"
-				(click)="$event.stopPropagation(); toggleTitlePhoto()"
-				[boTooltip]="photo()!.titlePhoto ? 'Odebrat titulní fotku' : 'Nastavit jako titulní fotku'"
-			></ion-icon>
-
 			@if (isLg() && currentIndex() > 0) {
 				<ion-button class="nav prev" fill="clear" (click)="previousPhoto()">
 					<ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
@@ -292,25 +311,111 @@
 	}
 
 	@if (photo()) {
-		<ion-toolbar class="bottom-toolbar" [class.controls-hidden]="!controlsVisible()">
-			@if (photo()!.album; as album) {
-				<div class="people-bar">
-					<ion-chip outline (click)="openAlbum(album.id)" [boTooltip]="'Otevřít album'">
+		<div class="bottom-bar" [class.controls-hidden]="!controlsVisible()">
+			<div class="caption">
+				@if (!editingCaption()) {
+					<span class="caption-text" [class.nocaption]="!photo()!.caption" (dblclick)="editCaption()">{{
+						photo()!.caption || "Bez popisku"
+					}}</span>
+					<ion-button fill="clear" class="caption-edit" (click)="editCaption()" boTooltip="Upravit popisek">
+						<ion-icon slot="icon-only" name="create-outline"></ion-icon>
+					</ion-button>
+				} @else {
+					<ion-input
+						#captionInput
+						class="caption-input"
+						placeholder="Popisek fotky"
+						[ngModel]="photo()!.caption"
+						(keyup.enter)="saveCaption(captionInput.value); $event.stopPropagation()"
+					></ion-input>
+					<ion-button fill="clear" class="caption-save" (click)="saveCaption(captionInput.value)">
+						<ion-icon slot="icon-only" name="checkmark-outline"></ion-icon>
+					</ion-button>
+				}
+			</div>
+			<div class="chips">
+				@if (photo()!.album; as album) {
+					<ion-chip class="album-chip" (click)="openAlbum(album.id)" [boTooltip]="album.name">
 						<ion-icon name="albums-outline"></ion-icon>
 						<ion-label
 							>{{ album.name
 							}}{{ album.dateFrom ? " (" + (album.dateFrom | date: "y") + ")" : "" }}</ion-label
 						>
 					</ion-chip>
+				}
+				@if (assignedFaces().length) {
+					<span class="chips-divider"></span>
+					@if (assignedFaces().length <= maxPeopleChips) {
+						@for (face of sortedAssignedFaces(); track face.id) {
+							<ion-chip [class.auto]="face.assignment === 'auto'" (click)="openFaceMenu($event, face)">
+								<ion-icon
+									[name]="face.assignment === 'auto' ? 'help-circle-outline' : 'person-outline'"
+								></ion-icon>
+								<ion-label
+									>{{ face.member!.nickname }}{{ face.assignment === "auto" ? "?" : "" }}</ion-label
+								>
+							</ion-chip>
+						}
+					} @else {
+						<ion-chip class="people-chip" (click)="openPeoplePopover($event)">
+							<ion-icon name="people-outline"></ion-icon>
+							<ion-label>
+								{{ peopleSummary() }}
+								<span class="chip-more">+{{ assignedFaces().length - peopleSummaryNames }}</span>
+							</ion-label>
+							@if (uncertainFacesCount()) {
+								<span class="uncertain-badge" [boTooltip]="'Nepotvrzených: ' + uncertainFacesCount()"
+									>{{ uncertainFacesCount() }}&nbsp;?</span
+								>
+							}
+						</ion-chip>
+					}
+				}
+				<span class="chips-divider"></span>
+				@for (tag of visibleTags(); track tag) {
+					<ion-chip class="tag-chip" (click)="openTagsPopover($event)">#{{ tag }}</ion-chip>
+				}
+				@if (hiddenTagsCount()) {
+					<ion-chip class="tag-chip" (click)="openTagsPopover($event)">+{{ hiddenTagsCount() }}</ion-chip>
+				}
+				<ion-chip
+					class="add-tag-chip"
+					[class.icon-only]="photoTags().length"
+					(click)="openTagsPopover($event)"
+					[attr.aria-label]="'Štítky'"
+					[boTooltip]="photoTags().length ? 'Štítky' : null"
+				>
+					<ion-icon name="add-outline"></ion-icon>
+					@if (!photoTags().length) {
+						<ion-label>Štítek</ion-label>
+					}
+				</ion-chip>
+			</div>
+		</div>
+	}
+
+	<ion-popover
+		[isOpen]="peoplePopoverOpen()"
+		[event]="peoplePopoverEvent()"
+		side="top"
+		alignment="center"
+		(didDismiss)="onPeoplePopoverDismiss()"
+		class="chips-popover"
+	>
+		<ng-template>
+			<div class="popover-content">
+				<div class="popover-header">
+					<strong>Na fotce {{ assignedFaces().length }} {{ peopleCountLabel() }}</strong>
+					@if (uncertainFacesCount()) {
+						<span>{{ uncertainFacesCount() }} k potvrzení</span>
+					}
 				</div>
-			}
-			@if (assignedFaces().length) {
-				<div class="people-bar">
-					@for (face of assignedFaces(); track face.id) {
+				<div class="popover-chips">
+					@for (face of sortedAssignedFaces(); track face.id) {
 						<ion-chip
 							outline
 							[class.auto]="face.assignment === 'auto'"
-							(click)="openFaceMenu($event, face)"
+							(click)="selectPersonFromPopover(face)"
 						>
 							<ion-icon
 								[name]="face.assignment === 'auto' ? 'help-circle-outline' : 'person-outline'"
@@ -321,48 +426,29 @@
 						</ion-chip>
 					}
 				</div>
-			}
-			@if (categories().length) {
-				<div class="people-bar categories-bar">
-					@for (category of categories(); track category.categoryId) {
-						<ion-chip outline (click)="openCategory(category.categoryId)">
-							<ion-icon name="pricetag-outline"></ion-icon>
-							<ion-label>{{ category.name }}</ion-label>
-						</ion-chip>
-					}
-				</div>
-			}
-			<div class="tags-bar">
+			</div>
+		</ng-template>
+	</ion-popover>
+
+	<ion-popover
+		[isOpen]="tagsPopoverOpen()"
+		[event]="tagsPopoverEvent()"
+		side="top"
+		alignment="center"
+		(didDismiss)="tagsPopoverOpen.set(false)"
+		class="chips-popover"
+	>
+		<ng-template>
+			<div class="popover-content">
+				<div class="popover-header"><strong>Štítky</strong></div>
 				<bo-photo-tags-editor
-					[tags]="photo()!.tags ?? null"
+					[tags]="photo()?.tags ?? null"
 					[albumTags]="albumTags()"
 					(tagsChange)="saveTags($event)"
 				></bo-photo-tags-editor>
 			</div>
-			@if (!editingCaption()) {
-				<ion-item lines="none">
-					<ion-label [class.nocaption]="!photo()!.caption" (dblclick)="editCaption()">
-						{{ photo()!.caption || "Bez popisku" }}
-					</ion-label>
-					<ion-button (click)="editCaption()" fill="clear"
-						><ion-icon name="create-outline"></ion-icon
-					></ion-button>
-				</ion-item>
-			}
-			@if (editingCaption()) {
-				<ion-item class="edit-caption" lines="none">
-					<ion-input
-						#captionInput
-						[ngModel]="photo()!.caption"
-						(keyup.enter)="saveCaption(captionInput.value); $event.stopPropagation()"
-					></ion-input>
-					<ion-button (click)="saveCaption(captionInput.value)" fill="clear" color="primary">
-						<ion-icon name="checkmark-outline"></ion-icon>
-					</ion-button>
-				</ion-item>
-			}
-		</ion-toolbar>
-	}
+		</ng-template>
+	</ion-popover>
 
 	<ion-popover
 		[isOpen]="faceMenuOpen()"
