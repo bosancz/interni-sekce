@@ -116,6 +116,17 @@
 	}
 }
 
+ion-thumbnail.photo-thumb {
+	--size: auto;
+	--border-radius: 4px;
+	width: 64px;
+	height: 48px;
+
+	img {
+		object-fit: cover;
+	}
+}
+
 .caption-input {
 	--background: var(--bo-white);
 	--padding-start: 10px;
