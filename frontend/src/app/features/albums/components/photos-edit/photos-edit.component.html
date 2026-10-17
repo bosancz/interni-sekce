@@ -21,7 +21,7 @@
 						class="faces-toggle"
 						[class.active]="facesVisible()"
 						(click)="toggleFaces()"
-						[boTooltip]="facesVisible() ? 'Skrýt obličeje' : 'Ukázat obličeje'"
+						[boTooltip]="facesVisible() ? 'Skrýt obličeje (O)' : 'Ukázat obličeje (O)'"
 					>
 						<ion-icon slot="start" name="happy-outline"></ion-icon>
 						Obličeje{{ faces().length ? " (" + faces().length + ")" : "" }}
@@ -34,7 +34,7 @@
 					[class.active]="infoVisible()"
 					(click)="toggleInfo()"
 					(keydown.enter)="$event.preventDefault()"
-					[boTooltip]="infoVisible() ? 'Skrýt informace' : 'Ukázat informace'"
+					[boTooltip]="infoVisible() ? 'Skrýt informace (I)' : 'Ukázat informace (I)'"
 				>
 					<ion-icon slot="start" name="information-circle-outline"></ion-icon>
 					Info
@@ -49,7 +49,7 @@
 			<ion-toolbar class="info-toolbar">
 				<ion-title>Informace</ion-title>
 				<ion-buttons slot="end">
-					<ion-button fill="clear" (click)="toggleInfo()" boTooltip="Zavřít informace">
+					<ion-button fill="clear" (click)="toggleInfo()" boTooltip="Zavřít informace (I)">
 						<ion-icon slot="icon-only" name="close-outline"></ion-icon>
 					</ion-button>
 				</ion-buttons>
@@ -317,7 +317,12 @@
 					<span class="caption-text" [class.nocaption]="!photo()!.caption" (dblclick)="editCaption()">{{
 						photo()!.caption || "Bez popisku"
 					}}</span>
-					<ion-button fill="clear" class="caption-edit" (click)="editCaption()" boTooltip="Upravit popisek">
+					<ion-button
+						fill="clear"
+						class="caption-edit"
+						(click)="editCaption()"
+						boTooltip="Upravit popisek (Enter)"
+					>
 						<ion-icon slot="icon-only" name="create-outline"></ion-icon>
 					</ion-button>
 				} @else {
