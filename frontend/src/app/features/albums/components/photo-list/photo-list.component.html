@@ -1,9 +1,9 @@
 @if (view() === "list") {
-	<ion-reorder-group (ionItemReorder)="onReorder($any($event))" [disabled]="!sortable()">
+	<ion-reorder-group (ionItemReorder)="onReorder($any($event))" [disabled]="!sortable() || editCaptions()">
 		@if (photos() !== undefined) {
 			@for (photo of photos(); track photo.id) {
 				<ion-item
-					[button]="true"
+					[button]="!editCaptions()"
 					[detail]="false"
 					(click)="onPhotoClick(photo, $event)"
 					(pointerdown)="onPointerDown(photo, $event)"
@@ -24,12 +24,25 @@
 					</ion-avatar>
 
 					<ion-label>
-						<h2 [class.nocaption]="!photo.caption">
-							@if (photo.titlePhoto) {
-								<ion-icon name="star" color="warning" boTooltip="Titulní fotka"></ion-icon>
-							}
-							{{ photo.caption || "Bez popisku" }}
-						</h2>
+						@if (editCaptions()) {
+							<ion-input
+								class="caption-input"
+								fill="outline"
+								placeholder="Bez popisku"
+								aria-label="Popisek fotky"
+								[value]="captions()[photo.id] ?? photo.caption ?? ''"
+								[disabled]="!photo._links.updatePhoto.allowed"
+								(ionInput)="captionChange.emit({ photo, caption: $any($event).detail.value ?? '' })"
+								(keydown.enter)="focusNextCaption($event)"
+							></ion-input>
+						} @else {
+							<h2 [class.nocaption]="!photo.caption">
+								@if (photo.titlePhoto) {
+									<ion-icon name="star" color="warning" boTooltip="Titulní fotka"></ion-icon>
+								}
+								{{ photo.caption || "Bez popisku" }}
+							</h2>
+						}
 						<p class="row no-gutters info">
 							<span class="col-12 col-lg-4 col-xl-3"
 								>Datum: {{ photo.timestamp | date: "d. M. y H:mm:ss" }}</span
@@ -58,7 +71,9 @@
 						}
 					</ion-label>
 
-					<ion-reorder slot="end"></ion-reorder>
+					@if (!editCaptions()) {
+						<ion-reorder slot="end"></ion-reorder>
+					}
 				</ion-item>
 			}
 		} @else {

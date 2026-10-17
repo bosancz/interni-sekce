@@ -29,6 +29,12 @@
 	align-items: center;
 	justify-content: flex-end;
 	flex-wrap: wrap;
+
+	ion-checkbox.select-all {
+		margin-inline-end: auto;
+		padding-inline-start: 8px;
+		font-size: 0.875rem;
+	}
 }
 
 .tag-filter {

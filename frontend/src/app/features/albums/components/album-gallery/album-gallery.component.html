@@ -14,7 +14,10 @@
 					<span class="d-none d-lg-inline">Upravit</span>
 				</ion-button>
 			} @else {
-				<ion-button (click)="viewChange.emit('gallery'); selectingCancel.emit()" fill="clear">
+				<ion-button
+					(click)="viewChange.emit('gallery'); selectingCancel.emit(); captionsCancel.emit()"
+					fill="clear"
+				>
 					<ion-icon slot="start" name="eye-outline"></ion-icon>
 					<span class="d-none d-lg-inline">Prohlížet</span>
 				</ion-button>
@@ -25,15 +28,40 @@
 
 @if (photos()?.length && view() === "manage") {
 	<div class="buttons">
-		@if (!selecting()) {
+		@if (editingCaptions()) {
+			<ion-button (click)="captionsSave.emit()" [disabled]="!changedCaptions() || savingCaptions()" fill="clear">
+				<ion-icon slot="start" name="checkmark-outline"></ion-icon> Uložit popisky
+				@if (changedCaptions()) {
+					({{ changedCaptions() }})
+				}
+			</ion-button>
+
+			<ion-button (click)="captionsCancel.emit()" [disabled]="savingCaptions()" fill="clear">
+				<ion-icon slot="start" name="close-outline"></ion-icon> Zrušit
+			</ion-button>
+		} @else if (!selecting()) {
 			<ion-button (click)="sort.emit()" fill="clear">
 				<ion-icon slot="start" name="swap-vertical-outline"></ion-icon> Seřadit
+			</ion-button>
+
+			<ion-button (click)="captionsStart.emit()" fill="clear">
+				<ion-icon slot="start" name="text-outline"></ion-icon> Upravit popisky
 			</ion-button>
 
 			<ion-button (click)="selectingStart.emit()" fill="clear" color="danger">
 				<ion-icon slot="start" name="trash-outline"></ion-icon> Smazat
 			</ion-button>
 		} @else {
+			<ion-checkbox
+				class="select-all"
+				labelPlacement="end"
+				[checked]="allSelected()"
+				[indeterminate]="!allSelected() && !!selectedPhotos().length"
+				(ionChange)="toggleSelectAll($event.detail.checked)"
+			>
+				Označit vše
+			</ion-checkbox>
+
 			<ion-button
 				(click)="deleteSelected.emit()"
 				[disabled]="!selectedPhotos().length"
@@ -110,6 +138,9 @@
 			[sortable]="true"
 			[selectable]="selecting()"
 			[selected]="selectedPhotos()"
+			[editCaptions]="editingCaptions()"
+			[captions]="captionDrafts()"
+			(captionChange)="captionChange.emit($event)"
 			(selectedChange)="selectedPhotosChange.emit($event)"
 			(reorderChange)="reorder.emit($event)"
 			(longPress)="longPress.emit($event)"
