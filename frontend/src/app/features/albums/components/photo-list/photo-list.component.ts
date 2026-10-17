@@ -1,11 +1,12 @@
 import { DatePipe } from "@angular/common";
-import { Component, input, OnInit, output, signal } from "@angular/core";
+import { Component, ElementRef, input, OnInit, output, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import {
 	IonAvatar,
 	IonCheckbox,
 	IonChip,
 	IonIcon,
+	IonInput,
 	IonItem,
 	IonLabel,
 	IonReorder,
@@ -34,6 +35,7 @@ import { SDK } from "src/sdk";
 		IonChip,
 		IonAvatar,
 		IonIcon,
+		IonInput,
 		IonLabel,
 		IonReorder,
 		IonSkeletonText,
@@ -48,10 +50,13 @@ export class PhotoListComponent implements OnInit {
 	selectable = input<boolean>(false);
 	sortable = input<boolean>(false);
 	selected = input<SDK.PhotoResponseWithLinks[]>([]);
+	editCaptions = input<boolean>(false);
+	captions = input<Record<number, string>>({});
 
 	selectedChange = output<SDK.PhotoResponseWithLinks[]>();
 	reorderChange = output<SDK.PhotoResponseWithLinks[]>();
 	longPress = output<SDK.PhotoResponseWithLinks>();
+	captionChange = output<{ photo: SDK.PhotoResponseWithLinks; caption: string }>();
 	click = output<CustomEvent<SDK.PhotoResponseWithLinks | undefined>>();
 
 	loadingPhotos = signal<any[]>(Array(5).fill(true));
@@ -60,7 +65,7 @@ export class PhotoListComponent implements OnInit {
 	private longPressStart?: { x: number; y: number };
 	private longPressFired = false;
 
-	constructor() {
+	constructor(private host: ElementRef<HTMLElement>) {
 		addIcons({ star });
 	}
 
@@ -82,6 +87,8 @@ export class PhotoListComponent implements OnInit {
 	}
 
 	onPhotoClick(photo: SDK.PhotoResponseWithLinks, event: MouseEvent) {
+		if (this.editCaptions()) return;
+
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -99,6 +106,7 @@ export class PhotoListComponent implements OnInit {
 
 	onPointerDown(photo: SDK.PhotoResponseWithLinks, event: PointerEvent) {
 		this.cancelLongPress();
+		if (this.editCaptions()) return;
 		this.longPressFired = false;
 		this.longPressStart = { x: event.clientX, y: event.clientY };
 		this.longPressTimeout = setTimeout(() => {
@@ -118,6 +126,16 @@ export class PhotoListComponent implements OnInit {
 		if (this.longPressTimeout) clearTimeout(this.longPressTimeout);
 		this.longPressTimeout = undefined;
 		this.longPressStart = undefined;
+	}
+
+	focusNextCaption(event: Event) {
+		event.preventDefault();
+		const inputs = Array.from(
+			this.host.nativeElement.querySelectorAll<HTMLIonInputElement>("ion-input.caption-input"),
+		);
+		const current = (event.target as HTMLElement).closest("ion-input");
+		const next = inputs.slice(inputs.indexOf(current as HTMLIonInputElement) + 1).find((item) => !item.disabled);
+		next?.setFocus();
 	}
 
 	isPhotoChecked(photo: SDK.PhotoResponseWithLinks) {

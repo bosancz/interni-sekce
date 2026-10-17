@@ -50,6 +50,19 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 
 	selectedPhotos = signal<SDK.PhotoResponseWithLinks[]>([]);
 
+	editingCaptions = signal(false);
+
+	captionDrafts = signal<Record<number, string>>({});
+
+	savingCaptions = signal(false);
+
+	changedCaptions = computed(() => {
+		const drafts = this.captionDrafts();
+		return (this.photos() ?? []).filter(
+			(photo) => photo.id in drafts && drafts[photo.id].trim() !== (photo.caption ?? ""),
+		);
+	});
+
 	titlePhoto = computed(() => {
 		const photos = this.photos();
 		return photos?.find((photo) => photo.titlePhoto) ?? photos?.[0];
@@ -167,7 +180,7 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 	}
 
 	onListClick(event: CustomEvent<SDK.PhotoResponseWithLinks | undefined>) {
-		if (this.selecting()) return;
+		if (this.selecting() || this.editingCaptions()) return;
 		if (!event.detail) return;
 		this.openPhoto(event.detail);
 	}
@@ -285,6 +298,53 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		}
 	}
 
+	startEditingCaptions() {
+		this.cancelSelecting();
+		this.captionDrafts.set({});
+		this.editingCaptions.set(true);
+	}
+
+	cancelEditingCaptions() {
+		this.editingCaptions.set(false);
+		this.captionDrafts.set({});
+	}
+
+	setCaptionDraft(photo: SDK.PhotoResponseWithLinks, caption: string) {
+		this.captionDrafts.update((drafts) => ({ ...drafts, [photo.id]: caption }));
+	}
+
+	async saveCaptions() {
+		const changed = this.changedCaptions();
+		if (!changed.length) return;
+
+		const drafts = this.captionDrafts();
+		const failed: SDK.PhotoResponseWithLinks[] = [];
+
+		this.savingCaptions.set(true);
+
+		for (const photo of changed) {
+			const caption = drafts[photo.id].trim() || null;
+			try {
+				await this.api.PhotoGalleryApi.updatePhoto(photo.id, { caption });
+				photo.caption = caption;
+			} catch (e) {
+				failed.push(photo);
+			}
+		}
+
+		this.savingCaptions.set(false);
+		this.photos.update((photos) => (photos ? [...photos] : photos));
+
+		if (failed.length) {
+			this.captionDrafts.set(Object.fromEntries(failed.map((photo) => [photo.id, drafts[photo.id]])));
+			this.toastService.toast(`Nepodařilo se uložit popisky (${failed.length}).`, { color: "warning" });
+			return;
+		}
+
+		this.toastService.toast("Popisky uloženy.");
+		this.cancelEditingCaptions();
+	}
+
 	startSelecting() {
 		this.selecting.set(true);
 		this.selectedPhotos.set([]);
@@ -296,7 +356,7 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 	}
 
 	onLongPress(photo: SDK.PhotoResponseWithLinks) {
-		if (this.selecting()) return;
+		if (this.selecting() || this.editingCaptions()) return;
 		this.selecting.set(true);
 		this.selectedPhotos.set([photo]);
 	}

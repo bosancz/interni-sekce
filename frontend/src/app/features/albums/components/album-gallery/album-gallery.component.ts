@@ -1,13 +1,15 @@
 import { Component, computed, input, output, signal } from "@angular/core";
-import { IonButton, IonChip, IonIcon } from "@ionic/angular/standalone";
+import { IonButton, IonCheckbox, IonChip, IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
+	checkmarkOutline,
 	closeOutline,
 	cloudUploadOutline,
 	createOutline,
 	eyeOutline,
 	imageOutline,
 	swapVerticalOutline,
+	textOutline,
 	trashOutline,
 } from "ionicons/icons";
 import { PhotoGalleryComponent } from "src/app/shared/components/photo-gallery/photo-gallery.component";
@@ -19,13 +21,17 @@ import { PhotoListComponent } from "../photo-list/photo-list.component";
 	templateUrl: "./album-gallery.component.html",
 	styleUrls: ["./album-gallery.component.scss"],
 
-	imports: [IonButton, IonChip, IonIcon, PhotoGalleryComponent, PhotoListComponent],
+	imports: [IonButton, IonCheckbox, IonChip, IonIcon, PhotoGalleryComponent, PhotoListComponent],
 })
 export class AlbumGalleryComponent {
 	photos = input<SDK.PhotoResponseWithLinks[] | undefined>(undefined);
 	view = input<"gallery" | "manage">("gallery");
 	selecting = input<boolean>(false);
 	selectedPhotos = input<SDK.PhotoResponseWithLinks[]>([]);
+	editingCaptions = input<boolean>(false);
+	captionDrafts = input<Record<number, string>>({});
+	changedCaptions = input<number>(0);
+	savingCaptions = input<boolean>(false);
 
 	upload = output<void>();
 	viewChange = output<"gallery" | "manage">();
@@ -34,6 +40,10 @@ export class AlbumGalleryComponent {
 	selectingCancel = output<void>();
 	deleteSelected = output<void>();
 	selectedPhotosChange = output<SDK.PhotoResponseWithLinks[]>();
+	captionsStart = output<void>();
+	captionsCancel = output<void>();
+	captionsSave = output<void>();
+	captionChange = output<{ photo: SDK.PhotoResponseWithLinks; caption: string }>();
 	reorder = output<SDK.PhotoResponseWithLinks[]>();
 	photoClick = output<SDK.PhotoResponseWithLinks>();
 	listClick = output<CustomEvent<SDK.PhotoResponseWithLinks | undefined>>();
@@ -61,6 +71,15 @@ export class AlbumGalleryComponent {
 		return photos.filter((photo) => photo.tags?.includes(tag));
 	});
 
+	allSelected = computed(() => {
+		const count = this.photos()?.length ?? 0;
+		return count > 0 && this.selectedPhotos().length === count;
+	});
+
+	toggleSelectAll(checked: boolean) {
+		this.selectedPhotosChange.emit(checked ? [...(this.photos() ?? [])] : []);
+	}
+
 	selectTag(tag: string | null) {
 		this.activeTag.set(tag);
 	}
@@ -78,6 +97,8 @@ export class AlbumGalleryComponent {
 			createOutline,
 			eyeOutline,
 			imageOutline,
+			textOutline,
+			checkmarkOutline,
 		});
 	}
 }
