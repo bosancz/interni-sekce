@@ -30,12 +30,12 @@
 			}
 
 			@if (view() === "kontrola") {
-				<bo-group-missing-data
+				<bo-group-unpaid-membership
 					class="d-block mb-4"
 					[members]="members()"
 					[color]="group()?.color || undefined"
 				/>
-				<bo-group-unpaid-membership
+				<bo-group-missing-data
 					class="d-block mb-5"
 					[members]="members()"
 					[color]="group()?.color || undefined"
