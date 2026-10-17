@@ -65,6 +65,7 @@ import { PlatformService } from "src/app/core/services/platform.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { UserSettingsService } from "src/app/core/services/user-settings.service";
+import { UserService } from "src/app/core/services/user.service";
 import { MemberSelectorModalComponent } from "src/app/features/events/components/member-selector-modal/member-selector-modal.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
@@ -220,6 +221,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	categories = signal<SDK.PhotoCategoryOfPhotoResponse[]>([]);
 	assignedFaces = computed(() => this.faces().filter((face) => face.member));
 	private userSettings = inject(UserSettingsService);
+	private userService = inject(UserService);
 	private photoFacesVisible = this.userSettings.watch("photoFacesVisible");
 	facesVisible = computed(() => this.photoFacesVisible() ?? false);
 	private photoInfoVisible = this.userSettings.watch("photoInfoVisible");
@@ -514,6 +516,16 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		}
 
 		this.faces.update((faces) => faces.filter((item) => item.id !== face.id));
+	}
+
+	profilePhotoLabel(face: SDK.PhotoFaceResponseWithLinks) {
+		const member = face.member;
+		if (!member) return "";
+		const isCurrent = member.profilePhotoFaceId === face.id;
+		if (member.id === this.userService.myMemberId()) {
+			return isCurrent ? "Už je mou profilovkou" : "Nastavit jako mou profilovku";
+		}
+		return isCurrent ? `Už je profilovkou (${member.nickname})` : `Nastavit jako profilovku (${member.nickname})`;
 	}
 
 	async setProfilePhoto(face: SDK.PhotoFaceResponseWithLinks) {

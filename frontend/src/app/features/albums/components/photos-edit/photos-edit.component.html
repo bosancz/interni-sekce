@@ -434,13 +434,7 @@
 								(click)="setProfilePhoto(face)"
 							>
 								<ion-icon slot="start" name="person-circle-outline"></ion-icon>
-								<ion-label>
-									{{
-										face.member.profilePhotoFaceId === face.id
-											? "Už je profilovkou (" + face.member.nickname + ")"
-											: "Nastavit jako profilovku (" + face.member.nickname + ")"
-									}}
-								</ion-label>
+								<ion-label>{{ profilePhotoLabel(face) }}</ion-label>
 							</ion-item>
 						}
 						<ion-item
