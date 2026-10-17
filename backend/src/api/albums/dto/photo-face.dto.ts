@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsInt, IsOptional } from "class-validator";
+import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { MemberResponse } from "src/api/members/dto/member.dto";
 import { FaceEmotion, FaceEmotions, PhotoFaceAssignment } from "src/models/albums/schema/detected-faces";
 import { Member } from "src/models/members/entities/member.entity";
@@ -36,7 +37,9 @@ export class PhotoFaceResponse {
 	@ApiPropertyOptional({ type: "integer", nullable: true }) assignedById!: number | null;
 	@ApiPropertyOptional({ type: "string", nullable: true }) assignedAt!: Date | string | null;
 
-	@ApiPropertyOptional({ type: MemberResponse, nullable: true }) member?: Member | null;
+	@AcEntity(MemberResponse)
+	@ApiPropertyOptional({ type: WithLinks(MemberResponse), nullable: true })
+	member?: Member | null;
 }
 
 export class PhotoFaceSuggestionResponse {
