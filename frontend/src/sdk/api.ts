@@ -8781,6 +8781,12 @@ export namespace SDK {
          * @type {string}
          * @memberof UpdateGroupBody
          */
+        'color'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof UpdateGroupBody
+         */
         'shortName'?: string;
         /**
          * 

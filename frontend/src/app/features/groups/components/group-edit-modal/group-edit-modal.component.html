@@ -1,0 +1,127 @@
+<bo-modal-layout>
+	<h4 slot="title">Upravit oddíl</h4>
+
+	<div class="bm-body">
+		<bo-group-profile-photo class="ge-photo" [group]="previewGroup()" (change)="reloadGroup()" />
+
+		<div class="ge-row">
+			<label class="ge-field ge-name">
+				<span class="ge-label">Název</span>
+				<input
+					type="text"
+					class="ge-input"
+					placeholder="Společenstvo prstenu"
+					[value]="name()"
+					(input)="name.set($any($event.target).value)"
+				/>
+			</label>
+
+			<label class="ge-field ge-short">
+				<span class="ge-label">Zkratka</span>
+				<input
+					type="text"
+					class="ge-input"
+					placeholder="SP"
+					[value]="shortName()"
+					(input)="shortName.set($any($event.target).value)"
+				/>
+			</label>
+		</div>
+
+		<div class="ge-field">
+			<span class="ge-label">Barva</span>
+			<div class="ge-swatches" role="radiogroup" aria-label="Barva oddílu">
+				<button
+					type="button"
+					class="ge-swatch ge-swatch-none"
+					role="radio"
+					[class.selected]="!color()"
+					[attr.aria-checked]="!color()"
+					aria-label="Bez barvy"
+					title="Bez barvy"
+					(click)="color.set(null)"
+				></button>
+
+				@for (swatch of colors; track swatch) {
+					<button
+						type="button"
+						class="ge-swatch"
+						role="radio"
+						[style.background-color]="swatch"
+						[class.selected]="isSelected(swatch)"
+						[attr.aria-checked]="isSelected(swatch)"
+						[attr.aria-label]="swatch"
+						[title]="swatch"
+						(click)="color.set(swatch)"
+					>
+						@if (isSelected(swatch)) {
+							<ion-icon name="checkmark-outline"></ion-icon>
+						}
+					</button>
+				}
+
+				<label
+					class="ge-swatch ge-swatch-custom"
+					title="Vlastní barva"
+					[class.selected]="isCustomColor()"
+					[style.background-color]="isCustomColor() ? color() : null"
+				>
+					<ion-icon [name]="isCustomColor() ? 'checkmark-outline' : 'color-palette-outline'"></ion-icon>
+					<input
+						type="color"
+						class="bm-visually-hidden"
+						aria-label="Vlastní barva"
+						[value]="color() || '#2a3478'"
+						(input)="color.set($any($event.target).value.toUpperCase())"
+					/>
+				</label>
+			</div>
+			<span class="ge-helper">{{ color() ? color() : "Bez barvy — oddíl se zobrazí šedě." }}</span>
+		</div>
+
+		<label class="bm-check-row" [class.checked]="active()">
+			<input
+				type="checkbox"
+				class="bm-visually-hidden"
+				[checked]="active()"
+				(change)="active.set($any($event.target).checked)"
+			/>
+			<span class="bm-checkbox">
+				@if (active()) {
+					<ion-icon name="checkmark-outline"></ion-icon>
+				}
+			</span>
+			<span class="bm-row-text">
+				<span class="bm-row-label">Aktivní oddíl</span>
+				<span class="bm-row-helper">Neaktivní oddíl se nenabízí ve výběru oddílů.</span>
+			</span>
+		</label>
+
+		<label class="bm-check-row" [class.checked]="children()">
+			<input
+				type="checkbox"
+				class="bm-visually-hidden"
+				[checked]="children()"
+				(change)="children.set($any($event.target).checked)"
+			/>
+			<span class="bm-checkbox">
+				@if (children()) {
+					<ion-icon name="checkmark-outline"></ion-icon>
+				}
+			</span>
+			<span class="bm-row-text">
+				<span class="bm-row-label">Dětský oddíl</span>
+				<span class="bm-row-helper">Patří do volby „Všechny oddíly“ při výběru oddílů.</span>
+			</span>
+		</label>
+
+		@if (error(); as errorText) {
+			<p class="ge-error">{{ errorText }}</p>
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button type="button" class="bm-btn-primary" [disabled]="saving()" (click)="save()">Uložit</button>
+	</div>
+</bo-modal-layout>
