@@ -1,4 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { drive, drive_v3 } from "@googleapis/drive";
 import { auth, gmail, gmail_v1 } from "@googleapis/gmail";
 import { Config } from "src/config";
 
@@ -7,6 +8,8 @@ export class GoogleService {
 	private readonly logger = new Logger(GoogleService.name);
 
 	readonly gmail: gmail_v1.Gmail;
+
+	readonly drive: drive_v3.Drive;
 
 	constructor(private readonly config: Config) {
 		const keyFilePath = this.config.google.keyFile;
@@ -20,6 +23,16 @@ export class GoogleService {
 		});
 
 		this.gmail = gmail({ version: "v1", auth: googleAuth });
+
+		const driveAuth = new auth.GoogleAuth({
+			keyFile: keyFilePath,
+			scopes: ["https://www.googleapis.com/auth/drive"],
+			clientOptions: {
+				subject: this.config.google.impersonate,
+			},
+		});
+
+		this.drive = drive({ version: "v3", auth: driveAuth });
 	}
 
 	async validateAccessToken(accessToken: string): Promise<{ email: string }> {

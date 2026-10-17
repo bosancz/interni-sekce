@@ -3,6 +3,7 @@ import { ConfigModule } from "./config";
 import { DbRefreshVersionsCommand } from "./database/commands/db-refresh-versions.command";
 import { DatabaseModule } from "./database/database.module";
 import { AlbumsModelModule } from "./models/albums/albums-model.module";
+import { BackupsModelModule } from "./models/backups/backups-model.module";
 import { UsersModelModule } from "./models/users/users-model.module";
 import { MongoImportModule } from "./mongo-import/mongo-import.module";
 import { QueueModelModule } from "./models/queues/queue-model.module";
@@ -19,6 +20,7 @@ import { SeedModule } from "./seed/seed.module";
 		AlbumsModelModule,
 		QueueModelModule,
 		WorkerModelModule.forRoot({ processors: false }),
+		BackupsModelModule.forRoot({ processors: false }),
 	],
 	providers: [DbRefreshVersionsCommand],
 })

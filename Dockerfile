@@ -102,6 +102,7 @@ FROM node:24-alpine AS app
 # Chromium used by Puppeteer to render registration PDFs from HTML templates.
 # font-noto-emoji: without it Chromium has no emoji glyphs and renders tofu boxes in the PDF.
 RUN apk add --no-cache chromium nss freetype harfbuzz ca-certificates ttf-freefont font-noto-emoji
+RUN apk add --no-cache postgresql17-client
 ENV PUPPETEER_SKIP_DOWNLOAD=true \
 	PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
