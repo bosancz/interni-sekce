@@ -655,6 +655,8 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 			}
 			if (event.code === "Escape" && this.zoomed()) return this.resetZoom(true);
 			if (event.code === "KeyI" && !isTextInput(event.target)) return this.toggleInfo();
+			if (event.code === "KeyO" && !isTextInput(event.target) && this.photo()?._links.listPhotoFaces.allowed)
+				return this.toggleFaces();
 
 			switch (event.code) {
 				case "ArrowLeft":
