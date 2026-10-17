@@ -108,6 +108,12 @@ export const AlbumSetTitlePhotoPermission = new Permission({
 	inherit: AlbumEditPermission,
 });
 
+export const AlbumDownloadPermission = new Permission({
+	linkTo: AlbumResponse,
+	params: { albumId: "id" },
+	inherit: AlbumReadPermission,
+});
+
 export const AlbumPhotosPermission = new Permission({
 	linkTo: AlbumResponse,
 	contains: PhotoResponse,

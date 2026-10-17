@@ -27,6 +27,15 @@
 						Obličeje{{ faces().length ? " (" + faces().length + ")" : "" }}
 					</ion-button>
 				}
+				<ion-button
+					fill="clear"
+					[href]="photoDownloadUrl()"
+					[download]="photo()!.name"
+					[disabled]="!photo()!._links.downloadPhoto.allowed"
+					boTooltip="Stáhnout originál fotky"
+				>
+					<ion-icon slot="icon-only" name="download-outline"></ion-icon>
+				</ion-button>
 				<ion-button color="danger" fill="clear" (click)="delete(photo()!)">Smazat</ion-button>
 				<ion-button
 					fill="clear"

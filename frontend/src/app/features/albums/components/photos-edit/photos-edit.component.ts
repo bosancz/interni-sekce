@@ -47,6 +47,7 @@ import {
 	closeCircleOutline,
 	closeOutline,
 	createOutline,
+	downloadOutline,
 	happyOutline,
 	helpCircleOutline,
 	imageOutline,
@@ -63,6 +64,7 @@ import {
 	starOutline,
 } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
+import { Config } from "src/config";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -249,6 +251,11 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	private peoplePopoverAnchor?: HTMLElement;
 	private pendingPopoverFace?: SDK.PhotoFaceResponseWithLinks;
 
+	photoDownloadUrl = computed(() => {
+		const photo = this.photo();
+		return photo ? `${this.config.apiRoot}api/photos/${photo.id}/download` : undefined;
+	});
+
 	photoTags = computed(() => this.photo()?.tags ?? []);
 	visibleTags = computed(() => this.photoTags().slice(0, MAX_VISIBLE_TAGS));
 	hiddenTagsCount = computed(() => Math.max(0, this.photoTags().length - MAX_VISIBLE_TAGS));
@@ -319,6 +326,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		private router: Router,
 		private platformService: PlatformService,
 		private modalService: ModalService,
+		private config: Config,
 	) {
 		addIcons({
 			addOutline,
@@ -335,6 +343,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 			pricetagOutline,
 			trashOutline,
 			createOutline,
+			downloadOutline,
 			checkmarkOutline,
 			chevronBackOutline,
 			chevronForwardOutline,

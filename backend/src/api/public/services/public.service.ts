@@ -1,13 +1,10 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { extname, join } from "path";
+import { join } from "path";
 import { Config } from "src/config";
-import { sanitizeFilename } from "src/helpers/sanitizefilename";
-import { PhotoSizes } from "src/api/albums/dto/photo.dto";
-import { AlbumStatus } from "src/models/albums/entities/album.entity";
+import { Album, AlbumStatus } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
 import { AlbumsRepository } from "src/models/albums/repositories/albums.repository";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
-import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { FilesService } from "src/models/files/services/files.service";
@@ -20,7 +17,6 @@ export class PublicService {
 		private readonly events: EventsRepository,
 		private readonly albums: AlbumsRepository,
 		private readonly photos: PhotosRepository,
-		private readonly photosFiles: PhotosFilesService,
 		private readonly files: FilesService,
 		private readonly groups: GroupsRepository,
 	) {}
@@ -49,29 +45,14 @@ export class PublicService {
 		return { path: join(folder, matches[0]), filename: matches[0] };
 	}
 
-	async getAlbumDownload(albumId: number): Promise<{ filename: string; files: { path: string; name: string }[] }> {
+	async getAlbumDownload(albumId: number): Promise<{ album: Album; photos: Photo[] }> {
 		const album = await this.albums.getAlbum(albumId);
 		if (!album || album.status !== AlbumStatus.public) throw new NotFoundException();
 
 		const photos = await this.photos.getPhotos({ album: album.id });
 		if (!photos.length) throw new NotFoundException("Album has no downloadable photos.");
 
-		const files: { path: string; name: string }[] = [];
-		const usedNames = new Set<string>();
-
-		for (const photo of photos) {
-			const ext = extname(photo.name);
-			const path = this.photosFiles.getPhotoImagePath(photo, PhotoSizes.original);
-
-			let name = sanitizeFilename(photo.name) || `${photo.id}${ext}`;
-			if (usedNames.has(name)) name = `${photo.id}_${name}`;
-			usedNames.add(name);
-
-			files.push({ path, name });
-		}
-
-		const albumName = sanitizeFilename(album.name) || String(album.id);
-		return { filename: `${albumName}.zip`, files };
+		return { album, photos };
 	}
 
 	private isPubliclyVisible(event: Event): boolean {

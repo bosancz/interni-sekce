@@ -2,7 +2,6 @@ import {
 	Controller,
 	Get,
 	InternalServerErrorException,
-	Logger,
 	NotFoundException,
 	Param,
 	ParseIntPipe,
@@ -11,7 +10,6 @@ import {
 	Res,
 } from "@nestjs/common";
 import { ApiProduces, ApiResponse, ApiTags } from "@nestjs/swagger";
-import archiver = require("archiver");
 import { Request, Response } from "express";
 import { createReadStream } from "fs";
 import { contentType } from "mime-types";
@@ -39,8 +37,6 @@ import { contentDispositionFilename } from "src/helpers/sanitizefilename";
 @AcController()
 @ApiTags("Public API")
 export class PublicController {
-	private readonly logger = new Logger(PublicController.name);
-
 	constructor(
 		private readonly publicService: PublicService,
 		private readonly programIcal: ProgramIcalService,
@@ -105,23 +101,9 @@ export class PublicController {
 
 	@Get("gallery/:id/download")
 	async downloadAlbum(@Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<void> {
-		const { filename, files } = await this.publicService.getAlbumDownload(id);
+		const { album, photos } = await this.publicService.getAlbumDownload(id);
 
-		const archive = archiver("zip", { store: true });
-
-		archive.on("warning", (err) => this.logger.warn(`Album ${id} ZIP warning: ${err.message}`));
-		archive.on("error", (err) => {
-			this.logger.error(`Album ${id} ZIP failed: ${err.message}`);
-			res.destroy(err);
-		});
-
-		res.setHeader("Content-Type", "application/zip");
-		res.setHeader("Content-Disposition", `attachment; ${contentDispositionFilename(filename)}`);
-
-		archive.pipe(res);
-		for (const file of files) archive.file(file.path, { name: file.name });
-
-		await archive.finalize();
+		await this.photosFiles.sendAlbumArchive(res, album, photos);
 	}
 
 	@Get("photos/:id/image/:size")
