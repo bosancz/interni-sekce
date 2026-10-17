@@ -16,7 +16,34 @@
 	@if (content() === undefined) {
 		<p class="muted">Načítání…</p>
 	} @else if (content()) {
-		<div class="changelog" [innerHTML]="content()! | markdown | changelogLinks"></div>
+		@if (types().length > 1) {
+			<div class="changelog-filter">
+				<button type="button" class="changelog-pill" [class.active]="!selectedTypes().size" (click)="showAll()">
+					Vše
+				</button>
+				@for (type of types(); track type.type) {
+					<button
+						type="button"
+						class="changelog-pill"
+						[class.active]="selectedTypes().has(type.type)"
+						[class.shown]="isShown(type.type)"
+						[attr.aria-pressed]="selectedTypes().has(type.type)"
+						[title]="type.type"
+						(click)="toggleType(type.type)"
+					>
+						<span class="emoji">{{ type.emoji }}</span>
+						{{ type.label }}
+						<span class="count">{{ type.count }}</span>
+					</button>
+				}
+			</div>
+		}
+
+		@if (filteredContent()) {
+			<div class="changelog" [innerHTML]="filteredContent() | markdown | changelogLinks"></div>
+		} @else {
+			<p class="muted">Vybraným typům neodpovídají žádné změny.</p>
+		}
 	} @else {
 		<p class="muted">Zatím tu nejsou žádné změny k zobrazení.</p>
 	}
