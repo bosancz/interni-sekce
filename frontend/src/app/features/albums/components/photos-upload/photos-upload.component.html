@@ -127,14 +127,19 @@
 						<span class="pu-dropzone-hint">nebo je sem přetáhni</span>
 					}
 				</button>
+			}
+		</div>
+	}
 
+	<div slot="buttons" class="pu-foot">
+		@if (photoUploadQueue().length) {
+			@if (!uploading()) {
 				@if (!captionToolsOpen() && captionFieldOptions().length) {
 					<button type="button" class="pu-link" (click)="openCaptionTools()">
 						Přidat popisky z metadat souborů
 					</button>
 				}
 			}
-
 			@if (captionToolsOpen()) {
 				<div class="pu-tools">
 					<span class="pu-label" id="pu-caption-label">Popisek z metadat</span>
@@ -200,30 +205,29 @@
 					</ion-popover>
 				</div>
 			}
-		</div>
-	}
-
-	<div slot="buttons" class="pu-foot">
-		@if (uploading()) {
-			<div class="pu-progress">
-				<span class="pu-progress-label">
-					@if (waitingForOtherAlbum()) {
-						Čeká na dokončení jiného alba
-					} @else {
-						Nahrávám {{ uploadingNumber() }} z {{ photoUploadQueue().length }}
-					}
-				</span>
-				<span class="pu-bar" aria-hidden="true">
-					<span class="pu-bar-fill" [style.width.%]="totalProgress()"></span>
-				</span>
-				<span class="pu-progress-hint">Okno můžeš zavřít, nahrávání poběží dál.</span>
-			</div>
-			<button type="button" class="bm-btn-ghost" (click)="stopUploading()">Zastavit</button>
-		} @else {
-			<button type="button" class="bm-btn-ghost" (click)="closeModal()">Zrušit</button>
-			<button type="button" class="bm-btn-primary" [disabled]="!pendingCount()" (click)="uploadPhotos()">
-				{{ uploadLabel() }}
-			</button>
 		}
+		<div class="pu-foot-buttons">
+			@if (uploading()) {
+				<div class="pu-progress">
+					<span class="pu-progress-label">
+						@if (waitingForOtherAlbum()) {
+							Čeká na dokončení jiného alba
+						} @else {
+							Nahrávám {{ uploadingNumber() }} z {{ photoUploadQueue().length }}
+						}
+					</span>
+					<span class="pu-bar" aria-hidden="true">
+						<span class="pu-bar-fill" [style.width.%]="totalProgress()"></span>
+					</span>
+					<span class="pu-progress-hint">Okno můžeš zavřít, nahrávání poběží dál.</span>
+				</div>
+				<button type="button" class="bm-btn-ghost" (click)="stopUploading()">Zastavit</button>
+			} @else {
+				<button type="button" class="bm-btn-ghost" (click)="closeModal()">Zrušit</button>
+				<button type="button" class="bm-btn-primary" [disabled]="!pendingCount()" (click)="uploadPhotos()">
+					{{ uploadLabel() }}
+				</button>
+			}
+		</div>
 	</div>
 </bo-modal-layout>

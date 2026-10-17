@@ -128,14 +128,12 @@
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
-	margin-top: 24px;
 }
 
 .pu-link {
 	display: inline-flex;
 	align-items: center;
 	align-self: flex-start;
-	margin-top: 24px;
 	padding: 4px 0;
 	border: none;
 	background: transparent;
@@ -431,10 +429,17 @@
 
 .pu-foot {
 	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	width: 100%;
+	text-align: start;
+}
+
+.pu-foot-buttons {
+	display: flex;
 	align-items: center;
 	justify-content: flex-end;
 	gap: 12px;
-	width: 100%;
 }
 
 .pu-progress {
@@ -477,7 +482,7 @@
 		min-height: 200px;
 	}
 
-	.pu-foot .bm-btn-primary {
+	.pu-foot-buttons .bm-btn-primary {
 		flex: 1;
 	}
 }
