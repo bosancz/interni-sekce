@@ -158,6 +158,19 @@ const faces = {
 	batchSize: process.env["FACES_BATCH_SIZE"] ? parseInt(process.env["FACES_BATCH_SIZE"], 10) : 300,
 };
 
+const backup = {
+	cron: process.env["BACKUP_CRON"] ?? "0 4 * * *",
+	timezone: process.env["BACKUP_TIMEZONE"] ?? "Europe/Prague",
+	driveFolderId: process.env["BACKUP_DRIVE_FOLDER_ID"] ?? "",
+	keepDays: process.env["BACKUP_KEEP_DAYS"] ? parseInt(process.env["BACKUP_KEEP_DAYS"], 10) : 30,
+	keepMonths: process.env["BACKUP_KEEP_MONTHS"] ? parseInt(process.env["BACKUP_KEEP_MONTHS"], 10) : 12,
+	excludeTableData: (process.env["BACKUP_EXCLUDE_TABLE_DATA"] ?? "photo_embeddings")
+		.split(",")
+		.map((table) => table.trim())
+		.filter(Boolean),
+	filePrefix: "interni-sekce-db-",
+};
+
 const photoContent = {
 	batchSize: process.env["PHOTO_CONTENT_BATCH_SIZE"] ? parseInt(process.env["PHOTO_CONTENT_BATCH_SIZE"], 10) : 3000,
 	textTimeoutMs: 30_000,
@@ -174,6 +187,7 @@ const oauth = {
 @Injectable()
 export class Config {
 	app = app;
+	backup = backup;
 	db = db;
 	environment = environment;
 	faces = faces;
