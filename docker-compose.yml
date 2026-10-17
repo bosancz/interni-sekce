@@ -47,6 +47,22 @@ services:
       redis:
         condition: service_healthy
 
+  backup:
+    image: ghcr.io/bosancz/interni-sekce-backup:latest
+    environment:
+      PGHOST: postgres
+      PGUSER: postgres
+      PGPASSWORD: password
+      PGDATABASE: postgres
+      BACKUP_DRIVE_FOLDER_ID: ""
+      BACKUP_TIME: "04:00"
+    volumes:
+      - data:/data:ro
+      - ./keys:/keys:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   redis:
     image: redis:7-alpine
     command: redis-server --appendonly yes

@@ -104,6 +104,26 @@ HEALTHCHECK --interval=10s --timeout=5s --start-period=60s --retries=5 \
 
 
 
+## BACKUP ##
+FROM postgres:15-bookworm AS backup
+
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends rclone zip tzdata ca-certificates \
+	&& rm -rf /var/lib/apt/lists/*
+
+COPY --chmod=755 ./backup/backup.sh /usr/local/bin/backup
+COPY --chmod=755 ./backup/scheduler.sh /usr/local/bin/backup-scheduler
+COPY --chmod=755 ./backup/healthcheck.sh /usr/local/bin/backup-healthcheck
+
+ENV TZ=Europe/Prague DATA_DIR=/data BACKUP_STATE_DIR=/var/lib/backup
+
+HEALTHCHECK --interval=10m --timeout=10s --start-period=1m --retries=1 CMD ["backup-healthcheck"]
+
+ENTRYPOINT []
+CMD ["backup-scheduler"]
+
+
+
 ## RUNNER ##
 FROM node:24-alpine AS app
 

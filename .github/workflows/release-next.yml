@@ -71,12 +71,27 @@ jobs:
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 
+  build-backup:
+    name: Build BACKUP
+    needs: version
+    uses: ./.github/workflows/build.yml
+    with:
+      context: .
+      target: backup
+      image-name: bosancz/interni-sekce-backup
+      registry: ghcr.io
+      tag: next
+    secrets:
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+
   cleanup:
     name: Clean up
     needs:
       - build-app
       - build-worker
       - build-postgres
+      - build-backup
     uses: ./.github/workflows/cleanup.yml
 
   deploy:
@@ -85,9 +100,10 @@ jobs:
       - build-app
       - build-worker
       - build-postgres
+      - build-backup
     uses: ./.github/workflows/deploy.yml
     with:
-      images: ${{ needs.build-app.outputs.images }},${{ needs.build-worker.outputs.images }}
+      images: ${{ needs.build-app.outputs.images }},${{ needs.build-worker.outputs.images }},${{ needs.build-backup.outputs.images }}
     secrets: inherit
 
   tag:
@@ -96,6 +112,7 @@ jobs:
       - build-app
       - build-worker
       - build-postgres
+      - build-backup
     uses: ./.github/workflows/tag.yml
     with:
       tag: NEXT
