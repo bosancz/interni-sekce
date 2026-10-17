@@ -10,10 +10,11 @@ export const albumsRoutes: Routes = [
 	{ path: "", pathMatch: "full", redirectTo: "alba" },
 
 	{ path: "alba", title: "Alba", component: AlbumsListComponent },
+	{ path: "alba/smazane", component: DeletedAlbumsListComponent },
 	{ path: "alba/:album", component: AlbumsViewInfoComponent },
 	{ path: "alba/:album/info", redirectTo: "alba/:album" },
 
-	{ path: "smazane", component: DeletedAlbumsListComponent },
+	{ path: "smazane", redirectTo: "alba/smazane" },
 
 	{ path: "nove-fotky/:member/:notifiedAt", component: MemberNewPhotosComponent },
 
