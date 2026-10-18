@@ -244,13 +244,19 @@ export const EventAnnouncementCheckPermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventAnnouncementGetPermission,
+	allowed: {
+		program: true,
+	},
 });
 
 export const EventAnnouncementSendPermission = new Permission({
 	linkTo: EventResponse,
 	params: { eventId: "id" },
 
-	inherit: EventEditPermission,
+	allowed: {
+		program: true,
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
 	applicable: ({ doc }) => doc.status === EventStates.public && !doc.deletedAt,
 });
 
