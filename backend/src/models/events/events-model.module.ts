@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { MailModelModule } from "../mail/mail-model.module";
 import { EventAttendee } from "./entities/event-attendee.entity";
 import { EventExpense } from "./entities/event-expense.entity";
 import { Event } from "./entities/event.entity";
@@ -10,7 +11,7 @@ import { EventRegistrationService } from "./services/event-registration.service"
 import { EventsProgramPdfService } from "./services/events-program-pdf.service";
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Event, EventExpense, EventAttendee])],
+	imports: [TypeOrmModule.forFeature([Event, EventExpense, EventAttendee]), MailModelModule],
 	providers: [
 		EventsRepository,
 		EventAccountingService,
