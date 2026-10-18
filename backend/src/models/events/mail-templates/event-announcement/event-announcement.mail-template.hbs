@@ -1,0 +1,24 @@
+<p>Ahoj!</p>
+
+<p>
+	{{sender}}
+	{{#if resent}}znovu posílá ohlášku{{else}}ohlásil/a{{/if}}
+	akci
+	<strong>{{eventName}}</strong>.
+</p>
+
+<p><strong>Termín:</strong> {{dates}}</p>
+
+{{#if place}}
+	<p><strong>Místo:</strong> {{place}}</p>
+{{/if}}
+
+{{#if leaders}}
+	<p><strong>Vedoucí:</strong> {{leaders}}</p>
+{{/if}}
+
+<p><strong>Počet lidí:</strong> {{attendeesCount}}</p>
+
+<p>Ohláška se seznamem účastníků je v příloze.</p>
+
+<p><a href="{{url}}">Otevřít akci v interní sekci</a></p>

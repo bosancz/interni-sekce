@@ -21,6 +21,25 @@
 	}
 }
 
+.announcement-warning {
+	margin-bottom: 0.5rem;
+	padding: 8px 12px;
+	border-radius: var(--bo-radius-btn);
+	background: var(--bo-yellow-tint);
+	font-size: $font-small;
+
+	ul {
+		margin: 4px 0 0;
+		padding-inline-start: 1.25rem;
+	}
+}
+
+.announcement-note {
+	margin: 0.25rem 0 0;
+	font-size: $font-small;
+	text-align: center;
+}
+
 @media (max-width: 575.98px) {
 	.mail-label {
 		display: none;

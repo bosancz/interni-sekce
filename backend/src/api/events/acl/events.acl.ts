@@ -235,8 +235,30 @@ export const EventAnnouncementGetPermission = new Permission({
 
 	allowed: {
 		revizor: true,
+		vedouci: true,
+	},
+});
+
+export const EventAnnouncementCheckPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	allowed: {
+		program: true,
+		revizor: true,
 		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
+});
+
+export const EventAnnouncementSendPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	allowed: {
+		program: true,
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
+	applicable: ({ doc }) => doc.status === EventStates.public && !doc.deletedAt,
 });
 
 export const EventAnnouncementSentPermission = new Permission({

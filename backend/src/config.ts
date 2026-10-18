@@ -125,6 +125,10 @@ const feedback = {
 	bugReportRecipient: process.env["BUG_REPORT_RECIPIENT"] ?? "lef@bosan.cz",
 };
 
+const announcements = {
+	recipient: process.env["ANNOUNCEMENT_RECIPIENT"] ?? "ohlasky@bosan.cz",
+};
+
 const github = {
 	appId: process.env["GITHUB_APP_ID"] ?? "",
 	privateKey: (process.env["GITHUB_APP_PRIVATE_KEY"] ?? "").replace(/\\n/g, "\n"),
@@ -178,6 +182,7 @@ const oauth = {
 
 @Injectable()
 export class Config {
+	announcements = announcements;
 	app = app;
 	db = db;
 	environment = environment;

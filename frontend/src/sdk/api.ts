@@ -1239,6 +1239,72 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface EventAnnouncementCheckResponse
+     */
+    export interface EventAnnouncementCheckResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof EventAnnouncementCheckResponse
+         */
+        'recipient': string;
+        /**
+         * 
+         * @type {Array<EventAnnouncementMissingDataResponse>}
+         * @memberof EventAnnouncementCheckResponse
+         */
+        'missing': Array<EventAnnouncementMissingDataResponse>;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface EventAnnouncementMissingDataResponse
+     */
+    export interface EventAnnouncementMissingDataResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof EventAnnouncementMissingDataResponse
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventAnnouncementMissingDataResponse
+         */
+        'nickname': string;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof EventAnnouncementMissingDataResponse
+         */
+        'fields': Array<string>;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface EventAnnouncementSendResponse
+     */
+    export interface EventAnnouncementSendResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof EventAnnouncementSendResponse
+         */
+        'recipient': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventAnnouncementSendResponse
+         */
+        'sentAt': string;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface EventAttendee
      */
     export interface EventAttendee {
@@ -2090,6 +2156,18 @@ export namespace SDK {
          * @memberof EventResponseLinks
          */
         'getEventAnnouncement': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'checkEventAnnouncement': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'sendEventAnnouncement': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -9723,6 +9801,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * @export
      */
@@ -10105,6 +10187,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * EventsApi - object-oriented interface
      * @export
@@ -10336,6 +10422,50 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async checkEventAnnouncement(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('checkEventAnnouncement', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/announcement/check`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<EventAnnouncementCheckResponse>(axiosRequestConfig);
         }
     
         /**
@@ -11702,6 +11832,50 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async sendEventAnnouncement(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('sendEventAnnouncement', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/announcement/send`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<EventAnnouncementSendResponse>(axiosRequestConfig);
         }
     
         /**
