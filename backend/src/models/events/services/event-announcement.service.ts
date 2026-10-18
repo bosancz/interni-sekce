@@ -50,7 +50,6 @@ export class EventAnnouncementService {
 					!string2Date(member.birthday) && "datum narození",
 					!member.addressStreet && "ulice",
 					!member.addressCity && "město",
-					!member.addressPostalCode && "PSČ",
 					!phone.value && phone.label,
 				].filter((field): field is string => !!field);
 
@@ -95,7 +94,6 @@ export class EventAnnouncementService {
 					string2Date(ea?.member?.birthday) || MISSING,
 					(ea?.member?.addressStreet || MISSING) + " " + (ea?.member?.addressStreetNo || ""),
 					ea?.member?.addressCity || MISSING,
-					ea?.member?.addressPostalCode || MISSING,
 					phone.value || MISSING,
 				];
 			}) || [];

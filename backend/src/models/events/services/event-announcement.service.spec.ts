@@ -66,7 +66,7 @@ describe("EventAnnouncementService.getMissingData", () => {
 		} as Event;
 
 		expect(createService().getMissingData(event)).toEqual([
-			{ memberId: 1, nickname: "člen 1", fields: ["datum narození", "PSČ", "telefon na rodiče"] },
+			{ memberId: 1, nickname: "člen 1", fields: ["datum narození", "telefon na rodiče"] },
 		]);
 	});
 

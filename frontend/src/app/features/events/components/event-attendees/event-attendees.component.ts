@@ -144,7 +144,10 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 	announcementMissing = computed(() => this.announcementCheck()?.missing ?? []);
 
 	showAnnouncement = computed(
-		() => !!this.attendeesCount() && !!this.event()?._links?.checkEventAnnouncement?.allowed,
+		() =>
+			!!this.attendeesCount() &&
+			!!this.event()?._links?.checkEventAnnouncement?.allowed &&
+			!!this.event()?._links?.sendEventAnnouncement?.applicable,
 	);
 
 	canSendAnnouncement = computed(() => {
@@ -161,7 +164,6 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 	sendAnnouncementTooltip = computed(() => {
 		const link = this.event()?._links?.sendEventAnnouncement;
 		if (!link?.allowed) return this.noPermissionText;
-		if (!link.applicable) return "Ohlášku půjde odeslat, až bude akce v programu.";
 		if (this.announcementMissing().length) return "Nejdřív doplň chybějící údaje v databázi.";
 
 		const recipient = this.announcementCheck()?.recipient;
@@ -218,7 +220,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 	}
 
 	private async loadAnnouncementCheck(event: SDK.EventResponseWithLinks) {
-		if (!event._links.checkEventAnnouncement?.allowed) {
+		if (!event._links.checkEventAnnouncement?.allowed || !event._links.sendEventAnnouncement?.applicable) {
 			this.announcementCheck.set(undefined);
 			return;
 		}

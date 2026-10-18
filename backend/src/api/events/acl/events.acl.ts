@@ -235,7 +235,7 @@ export const EventAnnouncementGetPermission = new Permission({
 
 	allowed: {
 		revizor: true,
-		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+		vedouci: true,
 	},
 });
 
@@ -243,9 +243,10 @@ export const EventAnnouncementCheckPermission = new Permission({
 	linkTo: EventResponse,
 	params: { eventId: "id" },
 
-	inherit: EventAnnouncementGetPermission,
 	allowed: {
 		program: true,
+		revizor: true,
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
 	},
 });
 
