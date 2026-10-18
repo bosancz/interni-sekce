@@ -1,9 +1,10 @@
-import { CommonModule } from "@angular/common";
+import { CommonModule, formatDate } from "@angular/common";
 import { Component, computed, effect, input, OnDestroy, OnInit, output, signal } from "@angular/core";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
+import { RouterLink } from "@angular/router";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { mailOutline } from "ionicons/icons";
+import { checkmarkOutline, downloadOutline, mailOutline, sendOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -49,6 +50,7 @@ const mailAddresses = (emails: string[]) =>
 		CommonModule,
 		IonButton,
 		IonIcon,
+		RouterLink,
 		TooltipDirective,
 		EventAttendeesListComponent,
 		AddButtonComponent,
@@ -133,6 +135,42 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		return missing ? `${text} ${withoutEmailLabel(missing)}, ${notDeliveredLabel(missing)}.` : text;
 	});
 
+	readonly noPermissionText = "K této akci nemáš oprávnění.";
+
+	announcementCheck = signal<SDK.EventAnnouncementCheckResponse | undefined>(undefined);
+	sendingAnnouncement = signal(false);
+
+	announcementSent = computed(() => !!this.event()?.announcementSentAt);
+	announcementMissing = computed(() => this.announcementCheck()?.missing ?? []);
+
+	canDownloadAnnouncement = computed(() => this.event()?._links?.getEventAnnouncement?.allowed ?? false);
+	showAnnouncement = computed(
+		() =>
+			!!this.attendeesCount() &&
+			(this.canDownloadAnnouncement() || !!this.event()?._links?.sendEventAnnouncement?.allowed),
+	);
+
+	canSendAnnouncement = computed(() => {
+		const link = this.event()?._links?.sendEventAnnouncement;
+		return (
+			!!link?.allowed &&
+			!!link.applicable &&
+			!!this.announcementCheck() &&
+			!this.announcementMissing().length &&
+			!this.sendingAnnouncement()
+		);
+	});
+
+	sendAnnouncementTooltip = computed(() => {
+		const link = this.event()?._links?.sendEventAnnouncement;
+		if (!link?.allowed) return this.noPermissionText;
+		if (!link.applicable) return "Ohlášku půjde odeslat, až bude akce v programu.";
+		if (this.announcementMissing().length) return "Nejdřív doplň chybějící údaje v databázi.";
+
+		const recipient = this.announcementCheck()?.recipient;
+		return recipient ? `Odešle ohlášku e-mailem na ${recipient}.` : null;
+	});
+
 	actions: Action[] = [];
 
 	modal?: HTMLIonModalElement;
@@ -142,7 +180,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		private toastService: ToastService,
 		private modalService: ModalService,
 	) {
-		addIcons({ mailOutline });
+		addIcons({ mailOutline, sendOutline, checkmarkOutline, downloadOutline });
 
 		effect(() => {
 			const event = this.event();
@@ -165,6 +203,8 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			return;
 		}
 
+		this.loadAnnouncementCheck(event);
+
 		const attendees = await this.api.EventsApi.listEventAttendees(event.id).then((res) => res.data);
 
 		attendees.sort((a, b) => {
@@ -178,6 +218,20 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 		this.attendees.set(attendees.filter((a) => a.type === "attendee"));
 		this.leaders.set(attendees.filter((a) => a.type === "leader").sort(compareLeaderPositions));
+	}
+
+	private async loadAnnouncementCheck(event: SDK.EventResponseWithLinks) {
+		if (!event._links.checkEventAnnouncement?.allowed) {
+			this.announcementCheck.set(undefined);
+			return;
+		}
+
+		try {
+			const check = await this.api.EventsApi.checkEventAnnouncement(event.id).then((res) => res.data);
+			if (this.event()?.id === event.id) this.announcementCheck.set(check);
+		} catch (e) {
+			this.announcementCheck.set(undefined);
+		}
 	}
 
 	private emailsOf(attendees?: SDK.EventAttendeeResponseWithLinks[]) {
@@ -396,6 +450,41 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			if (open) sliding.close();
 			else sliding.open();
 		});
+	}
+
+	async sendAnnouncement() {
+		const event = this.event();
+		const check = this.announcementCheck();
+		if (!event || !check || !this.canSendAnnouncement()) return;
+
+		const count = this.attendeesCount() ?? 0;
+		const sentAt = event.announcementSentAt;
+
+		const message = [
+			sentAt && `Ohláška už byla odeslána ${formatDate(sentAt, "d. M. y", "cs")}.`,
+			`Ohláška akce ${event.name} se seznamem ${count} ${count === 1 ? "člověka" : "lidí"} odejde e-mailem na ${check.recipient}.`,
+		]
+			.filter(Boolean)
+			.join(" ");
+
+		const confirmed = await this.modalService.confirmationModal(message, {
+			header: sentAt ? "Odeslat ohlášku znovu?" : "Odeslat ohlášku?",
+			buttonText: "Odeslat",
+		});
+		if (!confirmed) return;
+
+		this.sendingAnnouncement.set(true);
+
+		try {
+			const res = await this.api.EventsApi.sendEventAnnouncement(event.id).then((res) => res.data);
+			this.toastService.toast(`Ohláška odeslána na ${res.recipient}.`);
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Ohlášku se nepodařilo odeslat.", { color: "danger" });
+			this.loadAnnouncementCheck(event);
+		} finally {
+			this.sendingAnnouncement.set(false);
+		}
 	}
 
 	async getAnnouncement(event: SDK.EventResponseWithLinks) {
