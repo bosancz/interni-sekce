@@ -111,13 +111,6 @@
 				@if (event()!.announcementSentAt; as sentAt) {
 					<p class="announcement-note text-muted">Ohláška odeslána {{ sentAt | date: "d. M. y" }}.</p>
 				}
-
-				@if (canDownloadAnnouncement()) {
-					<ion-button fill="clear" size="small" expand="block" (click)="getAnnouncement(event()!)">
-						<ion-icon name="download-outline" slot="start"></ion-icon>
-						Stáhnout ohlášku (XLSX)
-					</ion-button>
-				}
 			</div>
 		}
 	</div>

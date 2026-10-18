@@ -4,7 +4,7 @@ import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { RouterLink } from "@angular/router";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { checkmarkOutline, downloadOutline, mailOutline, sendOutline } from "ionicons/icons";
+import { checkmarkOutline, mailOutline, sendOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -143,11 +143,8 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 	announcementSent = computed(() => !!this.event()?.announcementSentAt);
 	announcementMissing = computed(() => this.announcementCheck()?.missing ?? []);
 
-	canDownloadAnnouncement = computed(() => this.event()?._links?.getEventAnnouncement?.allowed ?? false);
 	showAnnouncement = computed(
-		() =>
-			!!this.attendeesCount() &&
-			(this.canDownloadAnnouncement() || !!this.event()?._links?.sendEventAnnouncement?.allowed),
+		() => !!this.attendeesCount() && !!this.event()?._links?.checkEventAnnouncement?.allowed,
 	);
 
 	canSendAnnouncement = computed(() => {
@@ -180,7 +177,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		private toastService: ToastService,
 		private modalService: ModalService,
 	) {
-		addIcons({ mailOutline, sendOutline, checkmarkOutline, downloadOutline });
+		addIcons({ mailOutline, sendOutline, checkmarkOutline });
 
 		effect(() => {
 			const event = this.event();
@@ -484,29 +481,6 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			this.loadAnnouncementCheck(event);
 		} finally {
 			this.sendingAnnouncement.set(false);
-		}
-	}
-
-	async getAnnouncement(event: SDK.EventResponseWithLinks) {
-		if (!event) return;
-
-		try {
-			const res = (await this.api.EventsApi.getEventAnnouncement(event.id, { responseType: "blob" })) as any;
-
-			const blob = new Blob([res.data], {
-				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-			});
-
-			const fileName = res.headers["content-disposition"]?.match(/filename="?([^";]+)"?/)?.[1] ?? "ohlaska.xlsx";
-
-			const url = URL.createObjectURL(blob);
-			const a = document.createElement("a");
-			a.href = url;
-			a.download = fileName;
-			a.click();
-			URL.revokeObjectURL(url);
-		} catch (e) {
-			this.toastService.toast("Nepodařilo se stáhnout ohlášku.", { color: "danger" });
 		}
 	}
 }

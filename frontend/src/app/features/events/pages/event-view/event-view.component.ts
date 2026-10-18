@@ -11,6 +11,7 @@ import {
 	cashOutline,
 	closeOutline,
 	documentOutline,
+	downloadOutline,
 	eyeOffOutline,
 	eyeOutline,
 	handLeftOutline,
@@ -161,6 +162,27 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 		this.toastService.toast("Uloženo");
 	}
 
+	private async downloadAnnouncement(event: SDK.EventResponseWithLinks) {
+		try {
+			const res = (await this.api.EventsApi.getEventAnnouncement(event.id, { responseType: "blob" })) as any;
+
+			const blob = new Blob([res.data], {
+				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			});
+
+			const fileName = res.headers["content-disposition"]?.match(/filename="?([^";]+)"?/)?.[1] ?? "ohlaska.xlsx";
+
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = fileName;
+			a.click();
+			URL.revokeObjectURL(url);
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se stáhnout ohlášku.", { color: "danger" });
+		}
+	}
+
 	private async deleteEvent(event: SDK.EventResponseWithLinks) {
 		const confirmation = await this.modalService.deleteConfirmationModal(
 			`Opravdu chcete smazat akci ${event.name}?`,
@@ -212,6 +234,12 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 				hidden: !event._links.rejectEvent.applicable,
 				disabled: !event._links.rejectEvent.allowed,
 				handler: () => this.eventStatusAction(event, "rejectEvent"),
+			},
+			{
+				text: "Stáhnout ohlášku",
+				icon: downloadOutline,
+				disabled: !event._links.getEventAnnouncement.allowed,
+				handler: () => this.downloadAnnouncement(event),
 			},
 			{
 				text: "Odebrat z programu",
