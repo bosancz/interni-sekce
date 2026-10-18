@@ -1,7 +1,8 @@
+import { randomBytes } from "crypto";
 import { Injectable, Logger } from "@nestjs/common";
 import { Config } from "src/config";
 import { GoogleService } from "src/models/google/services/google.service";
-import { MailOptions } from "../schema/mail-options";
+import { MailAttachment, MailOptions } from "../schema/mail-options";
 
 @Injectable()
 export class MailService {
@@ -13,17 +14,17 @@ export class MailService {
 	) {}
 
 	async sendMail(options: MailOptions) {
-		const messageParts = [
+		const headers = [
 			`From: ${this.encodeUtf8("Bošán")} <${this.config.google.impersonate}>`,
 			`To: ${options.to}`,
-			"Content-Type: text/html; charset=utf-8",
+			...(options.replyTo ? [`Reply-To: ${options.replyTo}`] : []),
 			"MIME-Version: 1.0",
 			`Subject: ${this.encodeUtf8(options.subject)}`,
-			"",
-			options.body,
 		];
 
-		const message = messageParts.join("\n");
+		const message = options.attachments?.length
+			? this.multipartMessage(headers, options.body, options.attachments)
+			: [...headers, "Content-Type: text/html; charset=utf-8", "", options.body].join("\n");
 
 		const encodedMessage = Buffer.from(message)
 			.toString("base64")
@@ -41,6 +42,30 @@ export class MailService {
 		});
 
 		return res.data;
+	}
+
+	private multipartMessage(headers: string[], body: string, attachments: MailAttachment[]) {
+		const boundary = `bosan-${randomBytes(12).toString("hex")}`;
+
+		const parts = [
+			[`--${boundary}`, "Content-Type: text/html; charset=utf-8", "", body],
+			...attachments.map((attachment) => [
+				`--${boundary}`,
+				`Content-Type: ${attachment.contentType}; name="${this.encodeUtf8(attachment.filename)}"`,
+				`Content-Disposition: attachment; filename="${this.encodeUtf8(attachment.filename)}"`,
+				"Content-Transfer-Encoding: base64",
+				"",
+				attachment.content.toString("base64").replace(/.{76}/g, "$&\n"),
+			]),
+		];
+
+		return [
+			...headers,
+			`Content-Type: multipart/mixed; boundary="${boundary}"`,
+			"",
+			...parts.map((part) => part.join("\n")),
+			`--${boundary}--`,
+		].join("\n");
 	}
 
 	private encodeUtf8(text: string) {
