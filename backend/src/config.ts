@@ -126,7 +126,7 @@ const feedback = {
 };
 
 const announcements = {
-	recipient: process.env["ANNOUNCEMENT_RECIPIENT"] ?? "lef@bosan.cz",
+	recipient: process.env["ANNOUNCEMENT_RECIPIENT"] ?? "ohlasky@bosan.cz",
 };
 
 const github = {

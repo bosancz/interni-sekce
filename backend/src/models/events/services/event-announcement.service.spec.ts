@@ -39,7 +39,7 @@ function attendee(
 const parentContact = { id: 1, isDefault: true, mobile: ["777 123 456"], relationship: "máma" };
 
 function createService() {
-	return new EventAnnouncementService({} as MailService, { announcements: { recipient: "lef@bosan.cz" } } as Config);
+	return new EventAnnouncementService({} as MailService, { announcements: { recipient: "ohlasky@bosan.cz" } } as Config);
 }
 
 describe("EventAnnouncementService.getMissingData", () => {
