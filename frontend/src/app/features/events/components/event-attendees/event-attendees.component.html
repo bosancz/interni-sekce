@@ -76,11 +76,41 @@
 			</bo-card>
 		}
 
-		@if (event() && event()!._links.getEventAnnouncement.allowed && attendeesCount()) {
-			<div class="text-center">
-				<ion-button (click)="getAnnouncement(event()!)" expand="block" fill="outline">
-					Stáhnout ohlášku
+		@if (event() && showAnnouncement()) {
+			<div class="announcement">
+				@if (announcementMissing().length) {
+					<div class="announcement-warning">
+						<strong>Ohlášku zatím nejde odeslat.</strong> V databázi chybí:
+						<ul>
+							@for (item of announcementMissing(); track item.memberId) {
+								<li>
+									<a [routerLink]="'/databaze/clenove/' + item.memberId">{{ item.nickname }}</a
+									>:
+									{{ item.fields.join(", ") }}
+								</li>
+							}
+						</ul>
+					</div>
+				}
+
+				<ion-button
+					expand="block"
+					[fill]="announcementSent() ? 'solid' : 'outline'"
+					[color]="announcementSent() ? 'success' : 'primary'"
+					[disabled]="!canSendAnnouncement()"
+					[boTooltip]="sendAnnouncementTooltip()"
+					(click)="sendAnnouncement()"
+				>
+					<ion-icon
+						[name]="announcementSent() ? 'checkmark-outline' : 'send-outline'"
+						slot="start"
+					></ion-icon>
+					{{ announcementSent() ? "Odeslat znovu" : "Odeslat ohlášku" }}
 				</ion-button>
+
+				@if (event()!.announcementSentAt; as sentAt) {
+					<p class="announcement-note text-muted">Ohláška odeslána {{ sentAt | date: "d. M. y" }}.</p>
+				}
 			</div>
 		}
 	</div>
