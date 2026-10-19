@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsHexColor, IsOptional, IsString, ValidateIf } from "class-validator";
 import { EnsureBoolean } from "src/helpers/validation";
 import { Group } from "src/models/members/entities/group.entity";
 
@@ -28,9 +28,14 @@ export class CreateGroupBody implements Pick<Group, "shortName" | "name"> {
 	@IsString() @IsOptional() name!: string | null;
 }
 
-export class UpdateGroupBody implements Partial<Pick<Group, "shortName" | "name" | "active" | "children">> {
+export class UpdateGroupBody implements Partial<Pick<Group, "shortName" | "name" | "active" | "children" | "color">> {
 	@IsString() @IsOptional() shortName?: string;
 	@IsString() @IsOptional() name?: string | null;
 	@IsBoolean() @IsOptional() active?: boolean;
 	@IsBoolean() @IsOptional() children?: boolean;
+	@ApiProperty({ type: "string", nullable: true, required: false })
+	@ValidateIf((_, value) => value !== null)
+	@IsHexColor()
+	@IsOptional()
+	color?: string | null;
 }

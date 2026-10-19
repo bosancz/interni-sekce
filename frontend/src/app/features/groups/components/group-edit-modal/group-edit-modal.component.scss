@@ -1,0 +1,160 @@
+@use "./../../../../../styles/brand-modal" as *;
+
+.bm-body {
+	gap: 14px;
+}
+
+.ge-photo {
+	font-size: 0.7rem;
+}
+
+.ge-row {
+	display: flex;
+	gap: 12px;
+}
+
+.ge-name {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.ge-short {
+	flex: 0 0 110px;
+}
+
+.ge-field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.ge-label {
+	font-size: 13.5px;
+	font-weight: 700;
+	color: var(--bm-muted);
+}
+
+.ge-helper {
+	font-size: 13.5px;
+	color: var(--bm-muted);
+}
+
+.ge-input {
+	width: 100%;
+	padding: 10px 14px;
+	border: 2px solid var(--bm-border);
+	border-radius: 12px;
+	background: transparent;
+	color: var(--bm-text);
+	font-family: inherit;
+	font-size: 15px;
+
+	&::placeholder {
+		color: var(--bm-muted-2);
+	}
+
+	&:focus {
+		outline: none;
+		border-color: var(--bm-blue);
+	}
+}
+
+.ge-swatches {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.ge-swatch {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	padding: 0;
+	border: 2px solid transparent;
+	border-radius: 50%;
+	color: #ffffff;
+	cursor: pointer;
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+	transition:
+		transform 150ms,
+		box-shadow 150ms;
+
+	ion-icon {
+		font-size: 18px;
+		filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
+	}
+
+	&:hover {
+		transform: scale(1.08);
+	}
+
+	&.selected {
+		box-shadow:
+			0 0 0 2px var(--ion-background-color, #fff),
+			0 0 0 4px var(--bm-blue);
+	}
+
+	&:focus-visible,
+	&:focus-within {
+		outline: 2px solid var(--bm-blue);
+		outline-offset: 3px;
+	}
+}
+
+:host-context(body.dark) .ge-swatch.selected {
+	box-shadow:
+		0 0 0 2px var(--ion-background-color, #000),
+		0 0 0 4px var(--bm-yellow-on-blue);
+}
+
+.ge-swatch-none {
+	background: linear-gradient(
+		135deg,
+		transparent calc(50% - 1.5px),
+		var(--ion-color-danger) calc(50% - 1.5px),
+		var(--ion-color-danger) calc(50% + 1.5px),
+		transparent calc(50% + 1.5px)
+	);
+	border-color: var(--bm-border);
+	box-shadow: none;
+}
+
+.ge-swatch-custom {
+	border: 2px dashed var(--bm-checkbox-border);
+	box-shadow: none;
+	color: var(--bm-muted);
+
+	ion-icon {
+		filter: none;
+	}
+
+	&.selected {
+		border-style: solid;
+		border-color: transparent;
+		color: #ffffff;
+
+		ion-icon {
+			filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
+		}
+	}
+}
+
+.ge-error {
+	margin: 0;
+	color: var(--ion-color-danger);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+@media (max-width: 575.98px) {
+	.ge-row {
+		flex-direction: column;
+	}
+
+	.ge-short {
+		flex-basis: auto;
+	}
+}
