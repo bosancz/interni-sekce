@@ -31,8 +31,8 @@ export class PhotoResponse {
 	@ApiPropertyOptional({ type: "string", isArray: true }) tags!: string[] | null;
 	@ApiPropertyOptional({ type: "string" }) bg!: string | null;
 
-	@ApiPropertyOptional({ type: () => WithLinks(() => AlbumResponse) }) album?: Album | undefined;
-	@ApiPropertyOptional({ type: () => WithLinks(UserResponse) }) uploadedBy?: User | null;
+	@ApiPropertyOptional({ type: WithLinks(() => AlbumResponse) }) album?: Album | undefined;
+	@ApiPropertyOptional({ type: WithLinks(() => UserResponse) }) uploadedBy?: User | null;
 }
 
 export class PhotoCreateBody {
