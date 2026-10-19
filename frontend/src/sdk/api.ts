@@ -518,6 +518,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof AlbumResponseLinks
          */
+        'downloadAlbumPhotos': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AlbumResponseLinks
+         */
         'reorderAlbumPhotos': AcLink;
         /**
          * 
@@ -7892,6 +7898,12 @@ export namespace SDK {
          * @memberof PhotoResponseLinks
          */
         'getPhotoImage': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoResponseLinks
+         */
+        'downloadPhoto': AcLink;
     }
     
         /**
@@ -15776,6 +15788,14 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * @export
      */
@@ -16277,6 +16297,94 @@ export namespace SDK {
             }
     
             const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} albumId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async downloadAlbumPhotos(
+            albumId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('downloadAlbumPhotos', 'albumId', albumId)
+            
+            const localVarPath = `/api/albums/{albumId}/download`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} photoId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async downloadPhoto(
+            photoId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('downloadPhoto', 'photoId', photoId)
+            
+            const localVarPath = `/api/photos/{photoId}/download`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
     

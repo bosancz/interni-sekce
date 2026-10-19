@@ -24,6 +24,7 @@ import { createReadStream } from "fs";
 import { contentType } from "mime-types";
 import { extname } from "path";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
+import { contentDispositionFilename } from "src/helpers/sanitizefilename";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { PhotoCategoriesService } from "src/models/albums/services/photo-categories.service";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
@@ -35,6 +36,7 @@ import {
 	PhotoCreatePermission,
 	PhotoDailyPermission,
 	PhotoDeletePermission,
+	PhotoDownloadPermission,
 	PhotoEditPermission,
 	PhotoReadFilePermission,
 	PhotoCategoriesOfPhotoPermission,
@@ -257,6 +259,34 @@ export class PhotosController {
 		}
 
 		res.setHeader("Content-Type", contentType(ext) || "application/octet-stream");
+		createReadStream(path).pipe(res);
+	}
+
+	@Get(":photoId/download")
+	@AcLinks(PhotoDownloadPermission)
+	async downloadPhoto(
+		@Param("photoId", ParseIntPipe) photoId: number,
+		@Req() req: Request,
+		@Res() res: Response,
+	): Promise<void> {
+		const photo = await this.photos.getPhoto(photoId);
+		if (!photo) throw new NotFoundException();
+
+		PhotoDownloadPermission.canOrThrow(req, photo);
+
+		const path = this.photosFiles.getPhotoImagePath(photo, PhotoSizes.original);
+
+		try {
+			await this.photosFiles.fileExists(path);
+		} catch {
+			throw new NotFoundException("Image file not found.");
+		}
+
+		res.setHeader("Content-Type", contentType(extname(photo.name)) || "application/octet-stream");
+		res.setHeader(
+			"Content-Disposition",
+			`attachment; ${contentDispositionFilename(this.photosFiles.getPhotoDownloadName(photo))}`,
+		);
 		createReadStream(path).pipe(res);
 	}
 }

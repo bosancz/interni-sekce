@@ -1,10 +1,14 @@
 import { Injectable, Logger } from "@nestjs/common";
+import archiver = require("archiver");
+import { Response } from "express";
 import { extname, join } from "path";
 import { Config } from "src/config";
+import { contentDispositionFilename, sanitizeFilename } from "src/helpers/sanitizefilename";
 import exifReader = require("exif-reader");
 import sharp = require("sharp");
 import { FilesService } from "src/models/files/services/files.service";
 import { PhotoSizes } from "src/api/albums/dto/photo.dto";
+import { Album } from "../entities/album.entity";
 import { Photo } from "../entities/photo.entity";
 import { FaceBox } from "../schema/detected-faces";
 import { parsePhotoExif, PhotoExif } from "../schema/photo-exif";
@@ -55,6 +59,39 @@ export class PhotosFilesService {
 			return join(this.config.fs.photosDir, albumDir, `${fileId}${ext}`);
 		}
 		return join(this.config.fs.thumbnailsDir, albumDir, `${fileId}_${size}${ext}`);
+	}
+
+	getPhotoDownloadName(photo: Photo): string {
+		return sanitizeFilename(photo.name) || `${photo.id}${extname(photo.name)}`;
+	}
+
+	async sendAlbumArchive(res: Response, album: Album, photos: Photo[]): Promise<void> {
+		const usedNames = new Set<string>();
+		const files = photos.map((photo) => {
+			let name = this.getPhotoDownloadName(photo);
+			if (usedNames.has(name)) name = `${photo.id}_${name}`;
+			usedNames.add(name);
+
+			return { path: this.getPhotoImagePath(photo, PhotoSizes.original), name };
+		});
+
+		const filename = `${sanitizeFilename(album.name) || String(album.id)}.zip`;
+
+		const archive = archiver("zip", { store: true });
+
+		archive.on("warning", (err) => this.logger.warn(`Album ${album.id} ZIP warning: ${err.message}`));
+		archive.on("error", (err) => {
+			this.logger.error(`Album ${album.id} ZIP failed: ${err.message}`);
+			res.destroy(err);
+		});
+
+		res.setHeader("Content-Type", "application/zip");
+		res.setHeader("Content-Disposition", `attachment; ${contentDispositionFilename(filename)}`);
+
+		archive.pipe(res);
+		for (const file of files) archive.file(file.path, { name: file.name });
+
+		await archive.finalize();
 	}
 
 	async readServedDimensions(photo: Photo): Promise<{ width: number; height: number } | null> {

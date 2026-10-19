@@ -67,6 +67,12 @@ export const PhotoReadFilePermission = new Permission({
 	inherit: PhotoReadPermission,
 });
 
+export const PhotoDownloadPermission = new Permission({
+	linkTo: PhotoResponse,
+	params: { photoId: "id" },
+	inherit: PhotoReadFilePermission,
+});
+
 export const PhotoCategoriesOfPhotoPermission = new Permission({
 	linkTo: PhotoResponse,
 	contains: PhotoCategoryOfPhotoResponse,

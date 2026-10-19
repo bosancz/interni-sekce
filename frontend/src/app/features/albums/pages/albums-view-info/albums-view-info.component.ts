@@ -13,7 +13,15 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ActionSheetController, AlertController, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { calendarOutline, eyeOffOutline, eyeOutline, openOutline, textOutline, trash } from "ionicons/icons";
+import {
+	calendarOutline,
+	downloadOutline,
+	eyeOffOutline,
+	eyeOutline,
+	openOutline,
+	textOutline,
+	trash,
+} from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { PhotoUploadService } from "src/app/core/services/photo-upload.service";
@@ -23,6 +31,7 @@ import { Action } from "src/app/shared/components/action-buttons/action-buttons.
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
+import { Config } from "src/config";
 import { SDK } from "src/sdk";
 import { AlbumGalleryComponent } from "../../components/album-gallery/album-gallery.component";
 import { AlbumInfoComponent } from "../../components/album-info/album-info.component";
@@ -101,9 +110,11 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		private platformService: PlatformService,
 		private ngZone: NgZone,
 		private photoUploadService: PhotoUploadService,
+		private config: Config,
 	) {
 		addIcons({
 			openOutline,
+			downloadOutline,
 			eyeOutline,
 			eyeOffOutline,
 			trash,
@@ -450,6 +461,12 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		window.open("https://bosan.cz/fotogalerie/" + album.id);
 	}
 
+	private download() {
+		const album = this.album();
+		if (!album) return;
+		window.location.href = `${this.config.apiRoot}api/albums/${album.id}/download`;
+	}
+
 	private getAlbumActions(album: SDK.AlbumResponseWithLinks): Action[] {
 		return [
 			{
@@ -465,6 +482,13 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 				color: "success",
 				hidden: album.status !== "public",
 				handler: () => this.open(),
+			},
+			{
+				text: "Stáhnout album",
+				icon: "download-outline",
+				hidden: !this.photos()?.length,
+				disabled: !album._links.downloadAlbumPhotos.allowed,
+				handler: () => this.download(),
 			},
 			{
 				text: "Zrušit publikaci",

@@ -23,11 +23,33 @@
 						(click)="toggleFaces()"
 						[boTooltip]="facesVisible() ? 'Skrýt obličeje (O)' : 'Ukázat obličeje (O)'"
 					>
-						<ion-icon slot="start" name="happy-outline"></ion-icon>
-						Obličeje{{ faces().length ? " (" + faces().length + ")" : "" }}
+						@if (isLg()) {
+							Obličeje{{ faces().length ? " (" + faces().length + ")" : "" }}
+						} @else {
+							<ion-icon slot="icon-only" name="happy-outline"></ion-icon>
+						}
 					</ion-button>
 				}
-				<ion-button color="danger" fill="clear" (click)="delete(photo()!)">Smazat</ion-button>
+				<ion-button
+					fill="clear"
+					[href]="photoDownloadUrl()"
+					[download]="photo()!.name"
+					[disabled]="!photo()!._links.downloadPhoto.allowed"
+					boTooltip="Stáhnout originál fotky"
+				>
+					@if (isLg()) {
+						Stáhnout
+					} @else {
+						<ion-icon slot="icon-only" name="download-outline"></ion-icon>
+					}
+				</ion-button>
+				<ion-button color="danger" fill="clear" (click)="delete(photo()!)" boTooltip="Smazat fotku">
+					@if (isLg()) {
+						Smazat
+					} @else {
+						<ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+					}
+				</ion-button>
 				<ion-button
 					fill="clear"
 					class="info-toggle"
@@ -36,11 +58,16 @@
 					(keydown.enter)="$event.preventDefault()"
 					[boTooltip]="infoVisible() ? 'Skrýt informace (I)' : 'Ukázat informace (I)'"
 				>
-					<ion-icon slot="start" name="information-circle-outline"></ion-icon>
-					Info
+					@if (isLg()) {
+						Info
+					} @else {
+						<ion-icon slot="icon-only" name="information-circle-outline"></ion-icon>
+					}
 				</ion-button>
 			}
-			<ion-button fill="clear" (click)="close()">Zavřít</ion-button>
+			<ion-button fill="clear" class="close-button" (click)="close()" boTooltip="Zavřít (Esc)">
+				<ion-icon slot="icon-only" name="close-outline"></ion-icon>
+			</ion-button>
 		</ion-buttons>
 	</ion-toolbar>
 

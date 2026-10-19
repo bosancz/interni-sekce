@@ -386,6 +386,30 @@ ion-popover.chips-popover {
 	}
 }
 
+.top-toolbar ion-buttons ion-button.close-button {
+	--background: rgba(255, 255, 255, 0.16);
+	--background-hover: rgba(255, 255, 255, 0.28);
+	--background-hover-opacity: 1;
+	--border-radius: 50%;
+	--padding-start: 0;
+	--padding-end: 0;
+	--color: #fff;
+	width: 40px;
+	height: 40px;
+	margin-inline: 20px 8px;
+	position: relative;
+	overflow: visible;
+
+	&::before {
+		content: "";
+		position: absolute;
+		left: -11px;
+		top: 8px;
+		bottom: 8px;
+		border-left: 1px solid rgba(255, 255, 255, 0.25);
+	}
+}
+
 .faces-toggle.active,
 .info-toggle.active {
 	--color: var(--ion-color-warning, #ffc409);

@@ -11,20 +11,23 @@ import {
 	Post,
 	Query,
 	Req,
+	Res,
 } from "@nestjs/common";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
+import { ApiProduces, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { Request, Response } from "express";
 import { DateTime } from "luxon";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
 import { AlbumsRepository, GetAlbumsOptions } from "src/models/albums/repositories/albums.repository";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
+import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { NotificationsService } from "src/models/notifications/services/notifications.service";
 import {
 	AlbumCreatePermission,
 	AlbumDeletePermanentPermission,
 	AlbumDeletePermission,
+	AlbumDownloadPermission,
 	AlbumEditPermission,
 	AlbumPhotosPermission,
 	AlbumPublishPermission,
@@ -50,6 +53,7 @@ export class AlbumsController {
 	constructor(
 		private albums: AlbumsRepository,
 		private photos: PhotosRepository,
+		private photosFiles: PhotosFilesService,
 		private notificationsService: NotificationsService,
 	) {}
 
@@ -209,6 +213,25 @@ export class AlbumsController {
 		AlbumPhotosPermission.canOrThrow(req, album);
 
 		return this.photos.getPhotos({ album: albumId });
+	}
+
+	@Get(":albumId/download")
+	@AcLinks(AlbumDownloadPermission)
+	@ApiProduces("application/zip")
+	async downloadAlbumPhotos(
+		@Param("albumId", ParseIntPipe) albumId: number,
+		@Req() req: Request,
+		@Res() res: Response,
+	): Promise<void> {
+		const album = await this.albums.getAlbum(albumId);
+		if (!album) throw new NotFoundException();
+
+		AlbumDownloadPermission.canOrThrow(req, album);
+
+		const photos = await this.photos.getPhotos({ album: albumId });
+		if (!photos.length) throw new NotFoundException("Album has no downloadable photos.");
+
+		await this.photosFiles.sendAlbumArchive(res, album, photos);
 	}
 
 	@Patch(":albumId/photos/order")
