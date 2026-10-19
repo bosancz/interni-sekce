@@ -1092,6 +1092,6 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	}
 
 	getMpix(width: number, height: number) {
-		return Math.round((width * height) / 1000000);
+		return (width * height) / 1000000;
 	}
 }

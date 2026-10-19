@@ -102,7 +102,7 @@
 						<dd>
 							@if (photo()!.width && photo()!.height) {
 								{{ photo()!.width }} × {{ photo()!.height }} px ({{
-									getMpix(photo()!.width!, photo()!.height!)
+									getMpix(photo()!.width!, photo()!.height!) | number: "1.0-1"
 								}}
 								MP)
 							} @else {
