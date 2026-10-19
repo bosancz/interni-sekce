@@ -24,6 +24,7 @@ import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { VerticalMenuItemComponent } from "src/app/shared/components/vertical-menu-item/vertical-menu-item.component";
 import { VerticalMenuComponent } from "src/app/shared/components/vertical-menu/vertical-menu.component";
 import { SDK } from "src/sdk";
+import { GroupEditModalComponent } from "../../components/group-edit-modal/group-edit-modal.component";
 import { GroupMembersComponent } from "../../components/group-members/group-members.component";
 import {
 	countMissingData,
@@ -85,7 +86,7 @@ export class GroupViewComponent implements OnInit {
 				icon: "create",
 				pinned: true,
 				hidden: !links?.updateGroup.applicable || !links?.updateGroup.allowed,
-				handler: () => this.navController.navigateForward(["/oddily", this.group()?.shortName, "upravit"]),
+				handler: () => this.editGroup(),
 			},
 			{
 				text: "Smazat",
@@ -156,6 +157,26 @@ export class GroupViewComponent implements OnInit {
 		if (loadId !== this.latestLoadId) return;
 
 		this.members.set(members);
+	}
+
+	private async editGroup() {
+		const group = this.group();
+		if (!group) return;
+
+		const updated = await this.modalService.componentModal(
+			GroupEditModalComponent,
+			{ group },
+			{ cssClass: "dialog-brand" },
+		);
+		if (!updated) return;
+
+		await this.toastService.toast("Uloženo.", { color: "success" });
+
+		if (updated.shortName !== group.shortName) {
+			this.navController.navigateRoot(["/oddily", updated.shortName], { animated: false, replaceUrl: true });
+		} else {
+			this.groupsService.currentGroup.next(updated);
+		}
 	}
 
 	private async deleteGroup() {
