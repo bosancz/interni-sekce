@@ -63,20 +63,8 @@ export class PhotosRepository {
 			return `$${params.length}`;
 		};
 
-		const joins: string[] = [];
 		const conditions: string[] = ["a.deleted_at IS NULL"];
 		const timezone = options.timezone ?? "Europe/Prague";
-
-		if (options.query) {
-			joins.push(
-				`INNER JOIN (
-					SELECT e.photo_id, min(e.embedding::${VECTOR} <#> ${param(toVectorLiteral(options.query))}::${VECTOR}) AS distance
-					FROM photo_embeddings e
-					WHERE e.embedding IS NOT NULL
-					GROUP BY e.photo_id
-				) s ON s.photo_id = p.id`,
-			);
-		}
 
 		if (options.dateFrom) {
 			conditions.push(
@@ -129,16 +117,19 @@ export class PhotosRepository {
 			);
 		}
 
-		const order = options.query ? "s.distance ASC, p.id ASC" : "p.timestamp DESC, p.id DESC";
+		const filtered = `FROM photos p INNER JOIN albums a ON a.id = p.album_id WHERE ${conditions.join(" AND ")}`;
 
 		const rows: { id: number }[] = await this.repository.query(
-			`SELECT p.id
-			FROM photos p
-			INNER JOIN albums a ON a.id = p.album_id
-			${joins.join("\n")}
-			WHERE ${conditions.join(" AND ")}
-			ORDER BY ${order}
-			LIMIT ${param(options.limit)} OFFSET ${param(options.offset)}`,
+			options.query
+				? `SELECT e.photo_id AS id
+				FROM photo_embeddings e
+				WHERE e.embedding IS NOT NULL AND e.photo_id IN (SELECT p.id ${filtered})
+				GROUP BY e.photo_id
+				ORDER BY min(e.embedding::${VECTOR} <#> ${param(toVectorLiteral(options.query))}::${VECTOR}) ASC, e.photo_id ASC
+				LIMIT ${param(options.limit)} OFFSET ${param(options.offset)}`
+				: `SELECT p.id ${filtered}
+				ORDER BY p.timestamp DESC, p.id DESC
+				LIMIT ${param(options.limit)} OFFSET ${param(options.offset)}`,
 			params,
 		);
 
