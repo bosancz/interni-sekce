@@ -65,7 +65,9 @@
 					}
 				</ion-button>
 			}
-			<ion-button fill="clear" (click)="close()">Zavřít</ion-button>
+			<ion-button fill="clear" class="close-button" (click)="close()" boTooltip="Zavřít (Esc)">
+				<ion-icon slot="icon-only" name="close-outline"></ion-icon>
+			</ion-button>
 		</ion-buttons>
 	</ion-toolbar>
 
