@@ -1,3 +1,7 @@
+## v4.26.7 — 2026-10-20
+
+- <span class="changelog-type" title="patch">🚸</span> [Náhled alba ve veřejné galerii přednostně s usmívajícími se dětmi a vedoucími](https://github.com/bosancz/interni-sekce/commit/ea1d9f8e5d38a611c0085d03a29c3fccaf30f74e) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.26.6 — 2026-10-20
 
 - <span class="changelog-type" title="fix">🐛</span> [Řadit nedávná alba podle data publikace](https://github.com/bosancz/interni-sekce/commit/23925b7bda90822d13e6c3d90a558f11803fadf0) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
