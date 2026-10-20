@@ -60,7 +60,9 @@ Funguje to jen pro SVG ze složky `../../img`. Soubory jsou pojmenované podle t
 se ukáže původní (černý) obrázek, v PDF už obarvená verze. Velikost nastav přes CSS na `.icon`.
 
 Obrázek **bez** třídy `icon` (např. `<img class="sanlogo" src="../../img/sanlogo-07.svg">`) zůstane
-ve svých původních barvách – tak je v šablonách umístěné logo SAN v rohu.
+ve svých původních barvách – tak je v šablonách umístěné logo SAN. To je ve všech šablonách
+stejně velké a na stejném místě (levý dolní roh) – při úpravě šablony zkopíruj styl `.sanlogo`
+z některé stávající.
 
 ## Barevné „fleky" (chunk + ikona)
 
