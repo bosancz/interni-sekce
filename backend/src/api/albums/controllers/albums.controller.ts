@@ -112,7 +112,7 @@ export class AlbumsController {
 	@AcLinks(AlbumReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(AlbumResponse) })
 	async getAlbum(@Param("albumId", ParseIntPipe) albumId: number, @Req() req: Request): Promise<AlbumResponse> {
-		const album = await this.albums.getAlbum(albumId, { event: true });
+		const album = await this.albums.getAlbumDetail(albumId);
 		if (!album) throw new NotFoundException();
 
 		AlbumReadPermission.canOrThrow(req, album);
@@ -212,7 +212,7 @@ export class AlbumsController {
 
 		AlbumPhotosPermission.canOrThrow(req, album);
 
-		return this.photos.getPhotos({ album: albumId });
+		return this.photos.getPhotos({ album: albumId, uploadedBy: true });
 	}
 
 	@Get(":albumId/download")

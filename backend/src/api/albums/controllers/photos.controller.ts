@@ -79,7 +79,7 @@ export class PhotosController {
 	async listPhotos(@Req() req: Request) {
 		const where = PhotosListPermission.canWhere(req, "photos");
 
-		return this.photos.getPhotos({}, where);
+		return this.photos.getPhotos({ uploadedBy: true }, where);
 	}
 
 	@Post()

@@ -7,6 +7,7 @@ import { FilesService } from "src/models/files/services/files.service";
 import { Member, MemberRoles } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
 import { DataSource, Repository } from "typeorm";
+import { leftJoinUserAuthor } from "src/models/users/helpers/user-author";
 import { PhotoFace } from "../entities/photo-face.entity";
 import { Photo } from "../entities/photo.entity";
 import {
@@ -96,6 +97,8 @@ export class PhotoFacesService {
 			.innerJoinAndSelect("faces.photo", "photo")
 			.innerJoinAndSelect("photo.album", "album")
 			.where("faces.member_id = :memberId", { memberId });
+
+		leftJoinUserAuthor(query, "photo.uploadedBy", "uploadedBy");
 
 		if (options.notifiedAt !== undefined) {
 			query.andWhere("faces.notified_member_id = :memberId AND faces.notified_at = :notifiedAt", {

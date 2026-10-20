@@ -4,6 +4,7 @@ import { extname } from "path";
 import { PaginationOptions } from "src/helpers/pagination";
 import { MemberRoles } from "src/models/members/entities/member.entity";
 import { User } from "src/models/users/entities/user.entity";
+import { leftJoinUserAuthor } from "src/models/users/helpers/user-author";
 import { Brackets, In, Repository } from "typeorm";
 import { AlbumStatus } from "../entities/album.entity";
 import { PhotoFace } from "../entities/photo-face.entity";
@@ -17,6 +18,7 @@ const VECTOR = `vector(${PHOTO_EMBEDDING_DIMENSION})`;
 
 export interface GetPhotosOptions extends PaginationOptions {
 	album?: number;
+	uploadedBy?: boolean;
 }
 
 export interface BrowsePhotosOptions {
@@ -47,6 +49,8 @@ export class PhotosRepository {
 			.addOrderBy("photos.timestamp", "ASC");
 
 		if (options.album) q.andWhere("photos.album_id = :album", { album: options.album });
+
+		if (options.uploadedBy) leftJoinUserAuthor(q, "photos.uploadedBy", "uploadedBy");
 
 		if (options.offset) q.skip(options.offset);
 
@@ -135,10 +139,14 @@ export class PhotosRepository {
 
 		if (!rows.length) return [];
 
-		const photos = await this.repository.find({
-			where: { id: In(rows.map((row) => row.id)) },
-			relations: { album: true },
-		});
+		const photos = await leftJoinUserAuthor(
+			this.repository
+				.createQueryBuilder("photos")
+				.leftJoinAndSelect("photos.album", "album")
+				.where({ id: In(rows.map((row) => row.id)) }),
+			"photos.uploadedBy",
+			"uploadedBy",
+		).getMany();
 		const photosById = new Map(photos.map((photo) => [photo.id, photo]));
 
 		return rows.flatMap((row) => photosById.get(row.id) ?? []);
@@ -264,9 +272,11 @@ export class PhotosRepository {
 	}
 
 	async getDailyPhoto(timezone = "Europe/Prague") {
-		const photo = await this.repository
-			.createQueryBuilder("photos")
-			.innerJoinAndSelect("photos.album", "album")
+		const photo = await leftJoinUserAuthor(
+			this.repository.createQueryBuilder("photos").innerJoinAndSelect("photos.album", "album"),
+			"photos.uploadedBy",
+			"uploadedBy",
+		)
 			.where("album.status = :status", { status: AlbumStatus.public })
 			.andWhere(
 				`EXISTS (

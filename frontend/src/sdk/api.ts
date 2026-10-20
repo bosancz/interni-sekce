@@ -427,6 +427,12 @@ export namespace SDK {
         'createdById'?: number | null;
         /**
          * 
+         * @type {UserResponse}
+         * @memberof AlbumResponse
+         */
+        'createdBy'?: UserResponse | null;
+        /**
+         * 
          * @type {string}
          * @memberof AlbumResponse
          */
@@ -593,6 +599,12 @@ export namespace SDK {
          * @memberof AlbumResponseWithLinks
          */
         'createdById'?: number | null;
+        /**
+         * 
+         * @type {UserResponse}
+         * @memberof AlbumResponseWithLinks
+         */
+        'createdBy'?: UserResponse | null;
         /**
          * 
          * @type {string}

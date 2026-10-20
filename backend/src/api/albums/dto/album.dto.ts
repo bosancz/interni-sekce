@@ -3,10 +3,12 @@ import { Type } from "class-transformer";
 import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { EventResponse } from "src/api/events/dto/event.dto";
+import { UserResponse } from "src/api/users/dto/user.dto";
 import { PaginationQuery } from "src/api/helpers/dto";
 import { EnsureArray } from "src/helpers/validation";
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
 import { Event } from "src/models/events/entities/event.entity";
+import { User } from "src/models/users/entities/user.entity";
 import { PhotoResponse } from "./photo.dto";
 
 export class AlbumResponse {
@@ -19,6 +21,7 @@ export class AlbumResponse {
 	@ApiPropertyOptional({ type: "string" }) dateTill!: string | null;
 	@ApiPropertyOptional({ type: "number" }) eventId!: number | null;
 	@ApiPropertyOptional({ type: "number" }) createdById!: number | null;
+	@ApiPropertyOptional({ type: () => UserResponse }) createdBy?: User | null;
 	@ApiPropertyOptional({ type: "string" }) deletedAt?: Date | null;
 
 	@AcEntity(EventResponse)
