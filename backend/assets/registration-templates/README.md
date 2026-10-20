@@ -80,5 +80,11 @@ zůstane černá). Vznikne tak barevná skvrna se symbolem uvnitř:
 Aby byl symbol čitelný i na tmavé kaňce, ve vzorových šablonách ho přebarvujeme na bílo přes CSS
 `filter: brightness(0) invert(1)` na `.chunk-icon`.
 
+## Dlouhé texty
+
+Šablona `univerzalni` zmenší písmo, když se popis, seznam věcí nebo název akce nevejdou
+na stránku (skript na konci šablony, levý sloupec až na 7,5 px). Kdyby se text nevešel ani tak,
+přeteče na druhou stránku – nic se neusekne. Při psaní vlastní šablony ho můžeš zkopírovat.
+
 Vzorové šablony najdeš ve složkách vedle tohoto souboru – nejjednodušší je jednu zkopírovat
 a upravit.

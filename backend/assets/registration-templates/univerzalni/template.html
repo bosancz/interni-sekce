@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="cs">
+	<head>
+		<meta charset="utf-8" />
+		<style>
+			@font-face {
+				font-family: "SanGrotesk";
+				src: url("../../fonts/SanGrotesk-Regular.otf");
+			}
+
+			@font-face {
+				font-family: "NunitoSans";
+				src: url("../../fonts/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf");
+			}
+
+			:root {
+				--accent: #2a3478;
+			}
+
+			@page {
+				size: A4 landscape;
+				margin: 1.1cm;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: "NunitoSans", "Helvetica Neue", Arial, sans-serif;
+				font-size: 11px;
+				line-height: 1.4;
+				color: #1f2329;
+				margin: 0;
+				overflow-wrap: anywhere;
+			}
+
+			.page {
+				position: relative;
+				display: flex;
+				flex-direction: column;
+				width: 275mm;
+				height: 184mm;
+				overflow: hidden;
+			}
+
+			.page.overflowing {
+				height: auto;
+				min-height: 184mm;
+				overflow: visible;
+			}
+
+			.sanlogo {
+				position: absolute;
+				bottom: -4mm;
+				left: 0;
+				width: 92px;
+				height: auto;
+				z-index: 2;
+			}
+
+			.header {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				flex: none;
+				min-height: 72px;
+				margin-bottom: 8px;
+			}
+
+			.header h1 {
+				flex: 1;
+				min-width: 0;
+				font-family: "SanGrotesk", sans-serif;
+				font-size: 30px;
+				line-height: 1.1;
+				color: var(--accent);
+				margin: 0;
+			}
+
+			.chunk {
+				position: relative;
+				flex: none;
+				width: 150px;
+				height: 100px;
+			}
+
+			.chunk .flek {
+				position: absolute;
+				inset: 0;
+				rotate: 90deg;
+			}
+
+			.chunk .flek svg {
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
+
+			.chunk-icon {
+				position: absolute;
+				top: 60%;
+				left: 55%;
+				width: 70px;
+				height: 70px;
+				transform: translate(-50%, -50%);
+				object-fit: contain;
+				filter: brightness(0) invert(1);
+			}
+
+			.columns {
+				display: flex;
+				gap: 28px;
+				flex: 1;
+				min-height: 0;
+			}
+
+			.col {
+				flex: 1 1 0;
+				min-width: 0;
+				min-height: 0;
+				font-size: 11px;
+			}
+
+			.col.about {
+				flex-grow: 1.1;
+				padding-bottom: 15mm;
+			}
+
+			.col.form {
+				position: relative;
+				border-left: 1px dashed #c4c4cc;
+				padding-left: 28px;
+			}
+
+			.col.form .scissors {
+				position: absolute;
+				top: -2px;
+				left: -8px;
+				font-size: 14px;
+				line-height: 1;
+				color: #b6b6bd;
+				background: #fff;
+			}
+
+			.pill {
+				display: inline-block;
+				max-width: 100%;
+				font-family: "SanGrotesk", sans-serif;
+				font-size: 1.4em;
+				line-height: 1.2;
+				font-weight: normal;
+				color: #fff;
+				background: var(--accent);
+				padding: 0.3em 1em;
+				border-radius: 1em;
+				margin: 0.8em 0 0.6em;
+			}
+
+			.col > .pill:first-of-type {
+				margin-top: 0;
+			}
+
+			.description > :first-child {
+				margin-top: 0;
+			}
+
+			.description > :last-child {
+				margin-bottom: 0;
+			}
+
+			.info-box {
+				border: 2px solid var(--accent);
+				border-radius: 12px;
+				padding: 0.7em 1.2em;
+			}
+
+			.info-box p {
+				margin: 0.3em 0;
+			}
+
+			.info-box .item-list > .label + p {
+				display: inline;
+			}
+
+			.info-box .item-list ul,
+			.info-box .item-list ol {
+				margin: 0.3em 0;
+				padding-left: 1.6em;
+			}
+
+			.note-box {
+				margin-top: 0.9em;
+				border: 2px dashed var(--accent);
+				border-radius: 12px;
+				padding: 0.6em 1.2em;
+			}
+
+			.note-box > :first-child {
+				margin-top: 0;
+			}
+
+			.note-box > :last-child {
+				margin-bottom: 0;
+			}
+
+			.label {
+				font-weight: 700;
+			}
+
+			.form-event {
+				font-weight: 700;
+				margin: 0 0 1.2em;
+			}
+
+			.field {
+				display: flex;
+				align-items: flex-end;
+				gap: 8px;
+				margin-bottom: 1.3em;
+			}
+
+			.field .label {
+				white-space: nowrap;
+			}
+
+			.field .line,
+			.signature .line {
+				flex: 1;
+				border-bottom: 1px solid #b6b6bd;
+				height: 1em;
+			}
+
+			.card-box {
+				width: 85.6mm;
+				height: 53.98mm;
+				border: 2px dashed var(--accent);
+				border-radius: 12px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				text-align: center;
+				color: #9a9aa2;
+				margin: 1.2em auto;
+			}
+
+			.declaration {
+				margin: 1em 0;
+				color: #44474d;
+			}
+
+			.signature {
+				display: flex;
+				gap: 24px;
+				margin-top: 1.6em;
+			}
+
+			.signature > div {
+				flex: 1;
+				display: flex;
+				align-items: flex-end;
+				gap: 8px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page">
+			<img class="sanlogo" src="../../img/sanlogo-07.svg" alt="šán" />
+
+			<header class="header">
+				<h1>{{name}}</h1>
+				<span class="chunk">
+					<img class="icon flek" src="../../img/flek-1.svg" alt="" />
+					<img class="chunk-icon" src="../../img/stan.svg" alt="" />
+				</span>
+			</header>
+
+			<div class="columns">
+				<div class="col about">
+					{{#if descriptionHtml}}
+					<h2 class="pill">O akci</h2>
+					<div class="description">{{{descriptionHtml}}}</div>
+					{{/if}}
+
+					<h2 class="pill">Kdy a kde</h2>
+					<div class="info-box">
+						{{#if place}}<p><span class="label">Místo:</span> {{place}}</p>{{/if}}
+						{{#if departure}}<p><span class="label">Sraz:</span> {{departure}}</p>{{/if}}
+						{{#if arrival}}<p><span class="label">Návrat:</span> {{arrival}}</p>{{/if}}
+						{{#if price}}<p><span class="label">Cena:</span> {{price}}</p>{{/if}}
+						{{#if itemListHtml}}<div class="item-list"><span class="label">Co s sebou:</span> {{{itemListHtml}}}</div>{{/if}}
+						{{#if contactsLine}}<p><span class="label">Kontakt:</span> {{contactsLine}}</p>{{/if}}
+					</div>
+
+					{{#if noteHtml}}<div class="note-box">{{{noteHtml}}}</div>{{/if}}
+				</div>
+
+				<div class="col form">
+					<span class="scissors">✁</span>
+					<h2 class="pill">Přihláška</h2>
+					<p class="form-event">{{name}}</p>
+
+					<div class="field"><span class="label">Jméno a příjmení dítěte:</span><span class="line"></span></div>
+					<div class="field"><span class="label">Datum narození:</span><span class="line"></span></div>
+					<div class="field"><span class="label">Kontakt rodiče (mobil):</span><span class="line"></span></div>
+					<div class="field"><span class="label">Kontakt rodiče (e-mail):</span><span class="line"></span></div>
+					<div class="field"><span class="label">Bydliště:</span><span class="line"></span></div>
+					<div class="field"><span class="label">Zdravotní komplikace:</span><span class="line"></span></div>
+
+					<div class="card-box">(Kopie kartičky pojištěnce)</div>
+
+					<p class="declaration">
+						Podpisem prohlašuji, že lékař dítěti nenařídil změnu režimu, dítě nejeví známky akutního
+						onemocnění a je schopno zúčastnit se akce.
+					</p>
+
+					<div class="signature">
+						<div><span class="label">Podpis:</span><span class="line"></span></div>
+						<div><span class="label">Datum:</span><span class="line"></span></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			(() => {
+				const page = document.querySelector(".page");
+				const overflows = (el) => {
+					const bottom = el.getBoundingClientRect().bottom - parseFloat(getComputedStyle(el).paddingBottom);
+					return [...el.children].some((child) => child.getBoundingClientRect().bottom > bottom + 1);
+				};
+
+				const shrink = (el, min, fits) => {
+					let size = parseFloat(getComputedStyle(el).fontSize);
+					while (!fits() && size > min) {
+						size -= 0.25;
+						el.style.fontSize = `${size}px`;
+					}
+				};
+
+				const fit = () => {
+					const h1 = document.querySelector(".header h1");
+					const lineHeight = () => parseFloat(getComputedStyle(h1).lineHeight);
+					shrink(h1, 18, () => h1.clientHeight <= lineHeight() * 2 + 1);
+
+					for (const col of document.querySelectorAll(".col")) {
+						shrink(col, 7.5, () => !overflows(col));
+					}
+
+					if ([...document.querySelectorAll(".col")].some(overflows)) page.classList.add("overflowing");
+				};
+
+				document.fonts.ready.then(fit);
+			})();
+		</script>
+	</body>
+</html>
