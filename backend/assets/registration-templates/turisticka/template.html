@@ -108,11 +108,22 @@
 				opacity: 0.3;
 			}
 
+			.col .card-box {
+				position: relative;
+				align-items: flex-end;
+				padding-bottom: 8px;
+			}
+
+			.card-box span {
+				position: relative;
+			}
+
 			.deco-kytara {
-				left: 69.2%;
-				top: 84%;
-				width: 120px;
-				rotate: 10deg;
+				left: calc(50% - 13px);
+				top: 45%;
+				width: 170px;
+				transform: translate(-50%, -50%) rotate(10deg);
+				opacity: 0.15;
 			}
 
 			.icon.deco-hrnek {
@@ -293,7 +304,10 @@
 					<div class="field"><span class="label">Bydliště:</span><span class="line"></span></div>
 					<div class="field"><span class="label">Zdravotní komplikace:</span><span class="line"></span></div>
 
-					<div class="card-box">(Kopie kartičky pojištěnce)</div>
+					<div class="card-box">
+						<img class="deco deco-kytara" src="../../img/kytara.svg" alt="" />
+						<span>(Kopie kartičky pojištěnce)</span>
+					</div>
 
 					<p class="declaration">
 						Podpisem prohlašuji, že lékař dítěti nenařídil změnu režimu, dítě nejeví známky akutního
@@ -307,7 +321,6 @@
 				</div>
 			</div>
 
-			<img class="deco deco-kytara" src="../../img/kytara.svg" alt="" />
 			<img class="icon deco deco-hrnek" src="../../img/hrnek.svg" alt="" />
 
 			<div class="icons">
