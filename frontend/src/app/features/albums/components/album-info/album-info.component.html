@@ -30,6 +30,14 @@
 		}
 	</bo-item>
 
+	<bo-item label="Vytvořil/a" [loading]="!album()" inline>
+		@if (album()?.createdBy; as createdBy) {
+			<p>{{ createdBy.member?.nickname || createdBy.login }}</p>
+		} @else {
+			<p><span class="bo-pill">Neznámo</span></p>
+		}
+	</bo-item>
+
 	<bo-item label="Akce" [loading]="!album()" lines="inset">
 		@if (album()?.event; as event) {
 			<p>{{ event.name }} ({{ [event.dateFrom, event.dateTill] | dateRange }})</p>

@@ -7,6 +7,7 @@ import { Brackets, FindOptionsRelations, Repository } from "typeorm";
 import { Album } from "../entities/album.entity";
 import { AlbumsMetadataService } from "../services/albums-metadata.service";
 import { PhotosRepository } from "./photos.repository";
+import { leftJoinUserAuthor } from "src/models/users/helpers/user-author";
 
 export interface GetAlbumsOptions extends PaginationOptions {
 	year?: number[];
@@ -88,6 +89,15 @@ export class AlbumsRepository {
 
 	async getAlbum(id: number, relations: FindOptionsRelations<Album> = {}) {
 		return this.repository.findOne({ where: { id }, relations });
+	}
+
+	async getAlbumDetail(id: Album["id"]) {
+		const query = this.repository
+			.createQueryBuilder("albums")
+			.leftJoinAndSelect("albums.event", "event")
+			.where("albums.id = :id", { id });
+
+		return leftJoinUserAuthor(query, "albums.createdBy", "createdBy").getOne();
 	}
 
 	async getDeletedAlbums(where: Brackets | string = "1=1") {
