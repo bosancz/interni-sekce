@@ -119,34 +119,45 @@ export class PublicService {
 			order: "DESC",
 		});
 
-		return Promise.all(
-			albums.map(async (album) => {
-				const [photos, titlePhoto] = await Promise.all([
-					this.photos.getPhotos({ album: album.id, limit: 3 }),
-					this.photos.getTitlePhoto(album.id),
-				]);
-				const previewPhotos = await this.getPreviewPhotos(album.id, titlePhoto, photos);
-				return this.serializeAlbum(album, { photos, titlePhoto, previewPhotos });
-			}),
-		);
+		return Promise.all(albums.map((album) => this.serializeAlbumPreview(album)));
 	}
 
-	async getAlbum(id: number, options: { preview?: boolean } = {}) {
-		const album = await this.albums.getAlbum(id);
-		if (!album || album.status !== AlbumStatus.public) throw new NotFoundException();
+	async getAlbum(id: number) {
+		const album = await this.getPublicAlbum(id);
 
 		const [photos, titlePhoto] = await Promise.all([
-			this.photos.getPhotos({ album: album.id, limit: options.preview ? 3 : undefined }),
+			this.photos.getPhotos({ album: album.id }),
 			this.photos.getTitlePhoto(album.id),
 		]);
-		const previewPhotos = await this.getPreviewPhotos(album.id, titlePhoto, photos);
 
-		return this.serializeAlbum(album, { photos, titlePhoto, previewPhotos });
+		return this.serializeAlbum(album, { photos, titlePhoto });
 	}
 
-	private getPreviewPhotos(albumId: number, titlePhoto: Photo | null, photos: Photo[]) {
-		const cover = this.buildTitlePhotos(titlePhoto, photos)[0];
-		return this.photos.getPreviewPhotos(albumId, { excludeId: cover?.id, limit: PREVIEW_PHOTOS_COUNT });
+	async getAlbumPreview(id: number) {
+		return this.serializeAlbumPreview(await this.getPublicAlbum(id));
+	}
+
+	private async getPublicAlbum(id: number) {
+		const album = await this.albums.getAlbum(id);
+		if (!album || album.status !== AlbumStatus.public) throw new NotFoundException();
+		return album;
+	}
+
+	private async serializeAlbumPreview(album: Album) {
+		const titlePhoto =
+			(await this.photos.getTitlePhoto(album.id)) ??
+			(await this.photos.getPhotos({ album: album.id, limit: 1 }))[0] ??
+			null;
+		const previewPhotos = await this.photos.getPreviewPhotos(album.id, {
+			excludeId: titlePhoto?.id,
+			limit: PREVIEW_PHOTOS_COUNT,
+		});
+
+		return {
+			...this.serializeAlbumInfo(album),
+			titlePhotos: titlePhoto ? [this.serializePreviewPhoto(titlePhoto)] : [],
+			previewPhotos: previewPhotos.map((photo) => this.serializePreviewPhoto(photo)),
+		};
 	}
 
 	private buildTitlePhotos(titlePhoto: Photo | null | undefined, photos: Photo[] | undefined): Photo[] {
@@ -163,17 +174,21 @@ export class PublicService {
 
 	private serializeAlbum(
 		album: { id: number; [k: string]: any },
-		{
-			photos,
-			titlePhoto,
-			previewPhotos,
-		}: { photos?: Photo[]; titlePhoto?: Photo | null; previewPhotos?: Photo[] } = {},
+		{ photos, titlePhoto }: { photos?: Photo[]; titlePhoto?: Photo | null } = {},
 	) {
 		const serializedPhotos = photos?.map((photo) => this.serializePhoto(photo));
 		const serializedTitlePhotos = this.buildTitlePhotos(titlePhoto, photos).map((photo) =>
 			this.serializePhoto(photo),
 		);
 
+		return {
+			...this.serializeAlbumInfo(album),
+			titlePhotos: serializedTitlePhotos,
+			photos: serializedPhotos,
+		};
+	}
+
+	private serializeAlbumInfo(album: { id: number; [k: string]: any }) {
 		return {
 			_id: String(album.id),
 			year: album.dateFrom ? new Date(album.dateFrom).getFullYear() : undefined,
@@ -183,9 +198,6 @@ export class PublicService {
 			datePublished: album.datePublished ?? null,
 			dateFrom: album.dateFrom ?? null,
 			dateTill: album.dateTill ?? null,
-			titlePhotos: serializedTitlePhotos,
-			photos: serializedPhotos,
-			previewPhotos: previewPhotos?.map((photo) => this.serializePhoto(photo)),
 			_links: {
 				self: { href: `${this.apiBase}/public/gallery/${album.id}`, method: "GET", allowed: { GET: true } },
 				download: {
@@ -214,6 +226,19 @@ export class PublicService {
 				original: { url: `${base}/original`, ...this.scaledSize(photo, null) },
 				big: { url: `${base}/big`, ...this.scaledSize(photo, this.config.photos.sizes.big) },
 				small: { url: `${base}/small`, ...this.scaledSize(photo, this.config.photos.sizes.small) },
+			},
+		};
+	}
+
+	private serializePreviewPhoto(photo: Photo) {
+		return {
+			_id: String(photo.id),
+			bg: photo.bg ?? null,
+			sizes: {
+				small: {
+					url: `${this.apiBase}/public/photos/${photo.id}/image/small`,
+					...this.scaledSize(photo, this.config.photos.sizes.small),
+				},
 			},
 		};
 	}
