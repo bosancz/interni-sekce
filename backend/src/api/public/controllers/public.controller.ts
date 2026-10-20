@@ -96,7 +96,7 @@ export class PublicController {
 	@Get("gallery/:id/preview")
 	@AcLinks(PublicGalleryAlbumPreviewPermission)
 	async getGalleryAlbumPreview(@Param("id", ParseIntPipe) id: number) {
-		return this.publicService.getAlbum(id, { preview: true });
+		return this.publicService.getAlbumPreview(id);
 	}
 
 	@Get("gallery/:id/download")
