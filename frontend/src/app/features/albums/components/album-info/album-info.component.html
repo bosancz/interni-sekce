@@ -40,7 +40,10 @@
 
 	<bo-item label="Akce" [loading]="!album()" lines="inset">
 		@if (album()?.event; as event) {
-			<p>{{ event.name }} ({{ [event.dateFrom, event.dateTill] | dateRange }})</p>
+			<p>
+				<a [routerLink]="['/akce', event.id]">{{ event.name }}</a>
+				({{ [event.dateFrom, event.dateTill] | dateRange }})
+			</p>
 		} @else {
 			<p><span class="bo-pill">Nepřiřazeno</span></p>
 		}

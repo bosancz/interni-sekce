@@ -1,5 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, input, output } from "@angular/core";
+import { RouterLink } from "@angular/router";
 import { IonButton, IonIcon, IonList } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { calendarOutline, closeOutline, textOutline } from "ionicons/icons";
@@ -31,6 +32,7 @@ import { EditButtonEventComponent } from "../edit-button-event/edit-button-event
 		EditButtonMarkdownComponent,
 		MarkdownPipe,
 		TooltipDirective,
+		RouterLink,
 	],
 })
 export class AlbumInfoComponent {
