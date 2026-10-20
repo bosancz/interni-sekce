@@ -56,7 +56,7 @@ Obrázek s třídou `icon` se při generování nahradí vloženým SVG obarven�
 
 Funguje to jen pro SVG ze složky `../../img`. Soubory jsou pojmenované podle toho, co je na nich:
 `vlny.svg`, `plachetnice.svg`, `kajak.svg`, `stan.svg`, `taborak.svg`, `bota.svg`,
-`zachranny-kruh.svg`, `pastelka.svg`, `smrk.svg`, `kompas.svg`, `hory.svg`, `kytara.svg`, `hrnek.svg`, `hvezda.svg` a barevné fleky `flek-1.svg`–`flek-4.svg`. V prohlížeči
+`zachranny-kruh.svg`, `pastelka.svg`, `smrk.svg`, `kompas.svg`, `kytara.svg`, `hrnek.svg` a barevné fleky `flek-1.svg`–`flek-4.svg`. V prohlížeči
 se ukáže původní (černý) obrázek, v PDF už obarvená verze. Velikost nastav přes CSS na `.icon`.
 
 Obrázek **bez** třídy `icon` (např. `<img class="sanlogo" src="../../img/sanlogo-07.svg">`) zůstane
