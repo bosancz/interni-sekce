@@ -113,6 +113,8 @@ export class PublicService {
 		const albums = await this.albums.getAlbums({
 			status: [AlbumStatus.public],
 			limit: Math.min(limit, 10),
+			sort: "datePublished",
+			order: "DESC",
 		});
 
 		return Promise.all(

@@ -50,7 +50,7 @@ export class AlbumsRepository {
 				name: "albums.name",
 				dateFrom: "albums.dateFrom",
 				status: "albums.status",
-				datePublished: "albums.datePublished",
+				datePublished: { column: "albums.datePublished", nulls: "NULLS LAST" },
 			},
 			{ column: "albums.dateFrom", order: "DESC" },
 		);
