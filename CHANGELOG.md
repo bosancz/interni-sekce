@@ -1,3 +1,7 @@
+## v4.26.6 — 2026-10-20
+
+- <span class="changelog-type" title="fix">🐛</span> [Řadit nedávná alba podle data publikace](https://github.com/bosancz/interni-sekce/commit/23925b7bda90822d13e6c3d90a558f11803fadf0) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.26.5 — 2026-10-20
 
 - <span class="changelog-type" title="patch">🚸</span> [Zobrazit, kdo vytvořil album a kdo nahrál fotku](https://github.com/bosancz/interni-sekce/commit/73083654cd970e5ce134541aa0929a303d499c67) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
