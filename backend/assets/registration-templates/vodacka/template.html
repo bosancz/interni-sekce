@@ -21,7 +21,7 @@
 
 			@page {
 				size: A4 landscape;
-				margin: 1cm;
+				margin: 1.1cm;
 			}
 
 			* {
@@ -42,13 +42,14 @@
 				overflow: hidden;
 			}
 
-			/* logo SAN ve vlastních barvách – LEVÝ horní roh */
+			/* logo SAN ve vlastních barvách – LEVÝ dolní roh, stejně ve všech šablonách */
 			.sanlogo {
 				position: absolute;
-				top: 91%;
-				left: 0.5%;
+				bottom: -4mm;
+				left: 0;
 				width: 92px;
 				height: auto;
+				z-index: 2;
 			}
 
 			/* ---- barevný „flek" s ikonou (chunk): kaňka ve vybrané barvě + bílý symbol navrch ---- */

@@ -56,11 +56,13 @@ Obrázek s třídou `icon` se při generování nahradí vloženým SVG obarven�
 
 Funguje to jen pro SVG ze složky `../../img`. Soubory jsou pojmenované podle toho, co je na nich:
 `vlny.svg`, `plachetnice.svg`, `kajak.svg`, `stan.svg`, `taborak.svg`, `bota.svg`,
-`zachranny-kruh.svg`, `pastelka.svg` a barevné fleky `flek-1.svg`–`flek-4.svg`. V prohlížeči
+`zachranny-kruh.svg`, `pastelka.svg`, `smrk.svg`, `kompas.svg`, `kytara.svg`, `hrnek.svg` a barevné fleky `flek-1.svg`–`flek-4.svg`. V prohlížeči
 se ukáže původní (černý) obrázek, v PDF už obarvená verze. Velikost nastav přes CSS na `.icon`.
 
 Obrázek **bez** třídy `icon` (např. `<img class="sanlogo" src="../../img/sanlogo-07.svg">`) zůstane
-ve svých původních barvách – tak je v šablonách umístěné logo SAN v rohu.
+ve svých původních barvách – tak je v šablonách umístěné logo SAN. To je ve všech šablonách
+stejně velké a na stejném místě (levý dolní roh) – při úpravě šablony zkopíruj styl `.sanlogo`
+z některé stávající.
 
 ## Barevné „fleky" (chunk + ikona)
 
@@ -77,6 +79,12 @@ zůstane černá). Vznikne tak barevná skvrna se symbolem uvnitř:
 
 Aby byl symbol čitelný i na tmavé kaňce, ve vzorových šablonách ho přebarvujeme na bílo přes CSS
 `filter: brightness(0) invert(1)` na `.chunk-icon`.
+
+## Dlouhé texty
+
+Šablona `ztracena` zmenší písmo, když se popis, seznam věcí nebo název akce nevejdou
+na stránku (skript na konci šablony, levý sloupec až na 7,5 px). Kdyby se text nevešel ani tak,
+přeteče na druhou stránku – nic se neusekne. Při psaní vlastní šablony ho můžeš zkopírovat.
 
 Vzorové šablony najdeš ve složkách vedle tohoto souboru – nejjednodušší je jednu zkopírovat
 a upravit.

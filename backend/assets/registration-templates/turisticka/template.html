@@ -39,16 +39,18 @@
 			/* výška tisknutelné plochy A4 na šířku minus okraje @page (≈ 210 − 2×1,1 cm) */
 			.page {
 				position: relative;
-				min-height: 182mm;
+				min-height: 184mm;
+				overflow: hidden;
 			}
 
-			/* logo SAN ve vlastních barvách – roh */
+			/* logo SAN ve vlastních barvách – LEVÝ dolní roh, stejně ve všech šablonách */
 			.sanlogo {
 				position: absolute;
-				bottom: 0%;
-				right: 0;
-				width: 126px;
+				bottom: -4mm;
+				left: 0;
+				width: 92px;
 				height: auto;
+				z-index: 2;
 			}
 
 			/* hlavička s názvem akce */
@@ -70,7 +72,7 @@
 
 			.icon {
 				position: absolute;
-				filter: brightness(0) invert(0.5);
+				filter: brightness(0) invert(1);
 				top: 69%;
 				left: 2%;
 				width: 160px;
@@ -100,7 +102,40 @@
 
 
 
+			.deco {
+				position: absolute;
+				z-index: 0;
+				opacity: 0.3;
+			}
+
+			.col .card-box {
+				position: relative;
+			}
+
+			.card-box span {
+				position: relative;
+			}
+
+			.deco-kytara {
+				right: -26px;
+				bottom: -18px;
+				width: 150px;
+				rotate: 12deg;
+				opacity: 0.3;
+			}
+
+			.icon.deco-hrnek {
+				right: 0;
+				left: auto;
+				top: -4%;
+				width: 110px;
+				filter: none;
+				opacity: 1;
+			}
+
 			.columns {
+				position: relative;
+				z-index: 1;
 				display: flex;
 				gap: 32px;
 			}
@@ -267,7 +302,10 @@
 					<div class="field"><span class="label">Bydliště:</span><span class="line"></span></div>
 					<div class="field"><span class="label">Zdravotní komplikace:</span><span class="line"></span></div>
 
-					<div class="card-box">(Kopie kartičky pojištěnce)</div>
+					<div class="card-box">
+						<img class="deco deco-kytara" src="../../img/kytara.svg" alt="" />
+						<span>(Kopie kartičky pojištěnce)</span>
+					</div>
 
 					<p class="declaration">
 						Podpisem prohlašuji, že lékař dítěti nenařídil změnu režimu, dítě nejeví známky akutního
@@ -280,6 +318,8 @@
 					</div>
 				</div>
 			</div>
+
+			<img class="icon deco deco-hrnek" src="../../img/hrnek.svg" alt="" />
 
 			<div class="icons">
 				<img class="flek-icon" src="../../img/flek-3.svg" alt="" />
