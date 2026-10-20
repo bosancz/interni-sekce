@@ -14,7 +14,7 @@
 			}
 
 			:root {
-				--accent: #2a3478;
+				--accent: #799f3d;
 			}
 
 			@page {
@@ -65,7 +65,13 @@
 				gap: 16px;
 				flex: none;
 				min-height: 72px;
-				margin-bottom: 8px;
+			}
+
+			.trail {
+				flex: none;
+				border-top: 3px dashed var(--accent);
+				margin: 6px 0 16px;
+				opacity: 0.6;
 			}
 
 			.header h1 {
@@ -99,16 +105,18 @@
 
 			.chunk-icon {
 				position: absolute;
-				top: 60%;
-				left: 55%;
-				width: 70px;
-				height: 70px;
+				top: 56%;
+				left: 52%;
+				width: 66px;
+				height: 66px;
 				transform: translate(-50%, -50%);
 				object-fit: contain;
 				filter: brightness(0) invert(1);
 			}
 
 			.columns {
+				position: relative;
+				z-index: 1;
 				display: flex;
 				gap: 28px;
 				flex: 1;
@@ -124,7 +132,7 @@
 
 			.col.about {
 				flex-grow: 1.1;
-				padding-bottom: 15mm;
+				padding-bottom: 22mm;
 			}
 
 			.col.form {
@@ -155,6 +163,22 @@
 				padding: 0.3em 1em;
 				border-radius: 1em;
 				margin: 0.8em 0 0.6em;
+			}
+
+			.pill-icon {
+				display: inline-block;
+				width: 1.7em;
+				height: 1.5em;
+				margin: -0.3em 0.3em -0.4em -0.4em;
+				vertical-align: middle;
+				filter: brightness(0) invert(1);
+			}
+
+			.pill-icon svg,
+			.chunk-icon svg {
+				display: block;
+				width: 100%;
+				height: 100%;
 			}
 
 			.col > .pill:first-of-type {
@@ -261,28 +285,72 @@
 				align-items: flex-end;
 				gap: 8px;
 			}
+
+			.forest {
+				position: absolute;
+				left: 120px;
+				bottom: -2mm;
+				display: flex;
+				align-items: flex-end;
+				z-index: 0;
+				opacity: 0.3;
+			}
+
+			.forest .icon {
+				display: block;
+				margin-left: -22px;
+			}
+
+			.forest .icon svg {
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
+
+			.forest .tree-s {
+				width: 60px;
+				height: 50px;
+			}
+
+			.forest .tree-m {
+				width: 84px;
+				height: 70px;
+			}
+
+			.forest .tree-l {
+				width: 108px;
+				height: 90px;
+			}
 		</style>
 	</head>
 	<body>
 		<div class="page">
 			<img class="sanlogo" src="../../img/sanlogo-07.svg" alt="šán" />
 
+			<div class="forest">
+				<img class="icon tree-s" src="../../img/smrk.svg" alt="" />
+				<img class="icon tree-l" src="../../img/smrk.svg" alt="" />
+				<img class="icon tree-m" src="../../img/smrk.svg" alt="" />
+				<img class="icon tree-s" src="../../img/smrk.svg" alt="" />
+			</div>
+
 			<header class="header">
 				<h1>{{name}}</h1>
 				<span class="chunk">
 					<img class="icon flek" src="../../img/flek-1.svg" alt="" />
-					<img class="chunk-icon" src="../../img/stan.svg" alt="" />
+					<img class="chunk-icon" src="../../img/kompas.svg" alt="kompas" />
 				</span>
 			</header>
+			<div class="trail"></div>
 
 			<div class="columns">
 				<div class="col about">
 					{{#if descriptionHtml}}
-					<h2 class="pill">O akci</h2>
+					<h2 class="pill"><img class="pill-icon" src="../../img/smrk.svg" alt="" />O akci</h2>
 					<div class="description">{{{descriptionHtml}}}</div>
 					{{/if}}
 
-					<h2 class="pill">Kdy a kde</h2>
+					<h2 class="pill"><img class="pill-icon" src="../../img/kompas.svg" alt="" />Kdy a kde</h2>
 					<div class="info-box">
 						{{#if place}}<p><span class="label">Místo:</span> {{place}}</p>{{/if}}
 						{{#if departure}}<p><span class="label">Sraz:</span> {{departure}}</p>{{/if}}

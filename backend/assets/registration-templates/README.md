@@ -56,7 +56,7 @@ Obrázek s třídou `icon` se při generování nahradí vloženým SVG obarven�
 
 Funguje to jen pro SVG ze složky `../../img`. Soubory jsou pojmenované podle toho, co je na nich:
 `vlny.svg`, `plachetnice.svg`, `kajak.svg`, `stan.svg`, `taborak.svg`, `bota.svg`,
-`zachranny-kruh.svg`, `pastelka.svg` a barevné fleky `flek-1.svg`–`flek-4.svg`. V prohlížeči
+`zachranny-kruh.svg`, `pastelka.svg`, `smrk.svg`, `kompas.svg` a barevné fleky `flek-1.svg`–`flek-4.svg`. V prohlížeči
 se ukáže původní (černý) obrázek, v PDF už obarvená verze. Velikost nastav přes CSS na `.icon`.
 
 Obrázek **bez** třídy `icon` (např. `<img class="sanlogo" src="../../img/sanlogo-07.svg">`) zůstane
@@ -82,7 +82,7 @@ Aby byl symbol čitelný i na tmavé kaňce, ve vzorových šablonách ho přeba
 
 ## Dlouhé texty
 
-Šablona `univerzalni` zmenší písmo, když se popis, seznam věcí nebo název akce nevejdou
+Šablona `ztracena` zmenší písmo, když se popis, seznam věcí nebo název akce nevejdou
 na stránku (skript na konci šablony, levý sloupec až na 7,5 px). Kdyby se text nevešel ani tak,
 přeteče na druhou stránku – nic se neusekne. Při psaní vlastní šablony ho můžeš zkopírovat.
 
