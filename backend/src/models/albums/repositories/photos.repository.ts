@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { extname } from "path";
 import { PaginationOptions } from "src/helpers/pagination";
 import { MemberRoles } from "src/models/members/entities/member.entity";
+import { CHILD_PARAMS, childCondition } from "src/models/statistics/statistics.helpers";
 import { User } from "src/models/users/entities/user.entity";
 import { leftJoinUserAuthor } from "src/models/users/helpers/user-author";
 import { Brackets, In, Repository } from "typeorm";
@@ -269,6 +270,32 @@ export class PhotosRepository {
 		for (const photo of photos) map.set(photo.albumId, photo);
 
 		return map;
+	}
+
+	async getPreviewPhotos(albumId: Photo["albumId"], options: { excludeId?: Photo["id"]; limit: number }) {
+		const happyFace = (condition: string) =>
+			`EXISTS (
+				SELECT 1 FROM photo_faces faces
+				INNER JOIN members ON members.id = faces.member_id AND members.deleted_at IS NULL
+				WHERE faces.photo_id = photos.id
+					AND faces.emotion = :emotion
+					AND ${condition}
+			)`;
+
+		const q = this.repository
+			.createQueryBuilder("photos")
+			.innerJoin("photos.album", "album")
+			.where("photos.album_id = :albumId", { albumId })
+			.orderBy(
+				`CASE WHEN ${happyFace(childCondition("members", "album"))} THEN 0 WHEN ${happyFace("members.role = :leaderRole")} THEN 1 ELSE 2 END`,
+			)
+			.addOrderBy("random()")
+			.setParameters({ ...CHILD_PARAMS, emotion: FaceEmotion.happy, leaderRole: MemberRoles.vedouci })
+			.limit(options.limit);
+
+		if (options.excludeId) q.andWhere("photos.id != :excludeId", { excludeId: options.excludeId });
+
+		return q.getMany();
 	}
 
 	async getDailyPhoto(timezone = "Europe/Prague") {
