@@ -10,6 +10,8 @@ import { EventsRepository } from "src/models/events/repositories/events.reposito
 import { FilesService } from "src/models/files/services/files.service";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
 
+const PREVIEW_PHOTOS_COUNT = 8;
+
 @Injectable()
 export class PublicService {
 	constructor(
@@ -123,7 +125,8 @@ export class PublicService {
 					this.photos.getPhotos({ album: album.id, limit: 3 }),
 					this.photos.getTitlePhoto(album.id),
 				]);
-				return this.serializeAlbum(album, { photos, titlePhoto });
+				const previewPhotos = await this.getPreviewPhotos(album.id, titlePhoto, photos);
+				return this.serializeAlbum(album, { photos, titlePhoto, previewPhotos });
 			}),
 		);
 	}
@@ -136,8 +139,14 @@ export class PublicService {
 			this.photos.getPhotos({ album: album.id, limit: options.preview ? 3 : undefined }),
 			this.photos.getTitlePhoto(album.id),
 		]);
+		const previewPhotos = await this.getPreviewPhotos(album.id, titlePhoto, photos);
 
-		return this.serializeAlbum(album, { photos, titlePhoto });
+		return this.serializeAlbum(album, { photos, titlePhoto, previewPhotos });
+	}
+
+	private getPreviewPhotos(albumId: number, titlePhoto: Photo | null, photos: Photo[]) {
+		const cover = this.buildTitlePhotos(titlePhoto, photos)[0];
+		return this.photos.getPreviewPhotos(albumId, { excludeId: cover?.id, limit: PREVIEW_PHOTOS_COUNT });
 	}
 
 	private buildTitlePhotos(titlePhoto: Photo | null | undefined, photos: Photo[] | undefined): Photo[] {
@@ -154,7 +163,11 @@ export class PublicService {
 
 	private serializeAlbum(
 		album: { id: number; [k: string]: any },
-		{ photos, titlePhoto }: { photos?: Photo[]; titlePhoto?: Photo | null } = {},
+		{
+			photos,
+			titlePhoto,
+			previewPhotos,
+		}: { photos?: Photo[]; titlePhoto?: Photo | null; previewPhotos?: Photo[] } = {},
 	) {
 		const serializedPhotos = photos?.map((photo) => this.serializePhoto(photo));
 		const serializedTitlePhotos = this.buildTitlePhotos(titlePhoto, photos).map((photo) =>
@@ -172,6 +185,7 @@ export class PublicService {
 			dateTill: album.dateTill ?? null,
 			titlePhotos: serializedTitlePhotos,
 			photos: serializedPhotos,
+			previewPhotos: previewPhotos?.map((photo) => this.serializePhoto(photo)),
 			_links: {
 				self: { href: `${this.apiBase}/public/gallery/${album.id}`, method: "GET", allowed: { GET: true } },
 				download: {
