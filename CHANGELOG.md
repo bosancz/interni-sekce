@@ -1,3 +1,7 @@
+## v4.26.10 — 2026-10-21
+
+- <span class="changelog-type" title="patch">🚸</span> [V náhledu alba počítat usmívající se obličeje bez přiřazeného člena jako děti](https://github.com/bosancz/interni-sekce/commit/0e5cc7a872b5d133005478d10ca494cab9d94426) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.26.9 — 2026-10-20
 
 - <span class="changelog-type" title="patch">🚸</span> [Ztracená – text v oválných nadpisech svisle na středu](https://github.com/bosancz/interni-sekce/commit/8fde14217d400147c57e26fbea0f0b845aeae21c) (#401) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
