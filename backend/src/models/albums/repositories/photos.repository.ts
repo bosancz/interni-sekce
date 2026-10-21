@@ -276,7 +276,7 @@ export class PhotosRepository {
 		const happyFace = (condition: string) =>
 			`EXISTS (
 				SELECT 1 FROM photo_faces faces
-				INNER JOIN members ON members.id = faces.member_id AND members.deleted_at IS NULL
+				LEFT JOIN members ON members.id = faces.member_id AND members.deleted_at IS NULL
 				WHERE faces.photo_id = photos.id
 					AND faces.emotion = :emotion
 					AND ${condition}
@@ -287,7 +287,7 @@ export class PhotosRepository {
 			.innerJoin("photos.album", "album")
 			.where("photos.album_id = :albumId", { albumId })
 			.orderBy(
-				`CASE WHEN ${happyFace(childCondition("members", "album"))} THEN 0 WHEN ${happyFace("members.role = :leaderRole")} THEN 1 ELSE 2 END`,
+				`CASE WHEN ${happyFace(`(faces.member_id IS NULL OR ${childCondition("members", "album")})`)} THEN 0 WHEN ${happyFace("members.role = :leaderRole")} THEN 1 ELSE 2 END`,
 			)
 			.addOrderBy("random()")
 			.setParameters({ ...CHILD_PARAMS, emotion: FaceEmotion.happy, leaderRole: MemberRoles.vedouci })
