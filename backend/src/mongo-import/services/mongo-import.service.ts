@@ -295,6 +295,8 @@ export class MongoImportService {
 				name: mongoEvent.name,
 				status,
 				statusNote: mongoEvent.statusNote ?? null,
+				publishedAt: null,
+				cancelledAt: null,
 				announcementSentAt: null,
 				accountingSentAt: null,
 				place: mongoEvent.place ?? null,

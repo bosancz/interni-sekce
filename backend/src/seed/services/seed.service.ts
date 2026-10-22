@@ -267,6 +267,10 @@ export class SeedService {
 		return userIds;
 	}
 
+	private isPublishedSeedStatus(status: EventStates) {
+		return status === EventStates.public || status === EventStates.cancelled;
+	}
+
 	private async seedEvents(t: EntityManager, groupIds: Map<string, number>, memberIds: Map<string, number>) {
 		const today = DateTime.local().startOf("day");
 
@@ -283,6 +287,10 @@ export class SeedService {
 				type: seedEvent.type,
 				status: seedEvent.status,
 				statusNote: null,
+				publishedAt: this.isPublishedSeedStatus(seedEvent.status)
+					? (existing?.publishedAt ?? new Date())
+					: null,
+				cancelledAt: seedEvent.status === EventStates.cancelled ? (existing?.cancelledAt ?? new Date()) : null,
 				place: seedEvent.place,
 				placeGeometry: null,
 				description: seedEvent.description,

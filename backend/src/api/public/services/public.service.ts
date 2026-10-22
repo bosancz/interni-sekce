@@ -77,6 +77,8 @@ export class PublicService {
 		return {
 			_id: String(event.id),
 			status: event.status,
+			publishedAt: event.publishedAt,
+			cancelledAt: event.cancelledAt,
 			name: event.name,
 			type: event.type,
 			description: event.description,
