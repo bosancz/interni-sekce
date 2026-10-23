@@ -52,7 +52,7 @@ SQL
 
 record_interrupted_runs() {
 	status_sql <<'SQL' >/dev/null
-UPDATE :"schema".backup_runs SET status = 'error', finished_at = now(), error = 'Přerušeno restartem záložního kontejneru.'
+UPDATE :"schema".backup_runs SET status = 'error', finished_at = now(), error = 'Přerušeno restartem zálohování.'
 WHERE status = 'running';
 SQL
 }
