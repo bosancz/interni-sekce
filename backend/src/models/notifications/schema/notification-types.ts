@@ -5,6 +5,7 @@ export enum NotificationTypes {
 	"myEvents" = "myEvents",
 	"submittedEvents" = "submittedEvents",
 	"newEvents" = "newEvents",
+	"newEventReports" = "newEventReports",
 	"newUsers" = "newUsers",
 	"myBugReports" = "myBugReports",
 	"myPhotos" = "myPhotos",
@@ -59,6 +60,13 @@ export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTy
 		description: "Nově zveřejněné akce v programu",
 		defaultChannels: [NotificationChannels.push, NotificationChannels.inApp],
 		roles: null,
+	},
+	[NotificationTypes.newEventReports]: {
+		group: NotificationGroups.events,
+		title: "Nové reporty z akcí",
+		description: "Vedoucí akce vyplnil report — shrnutí, komplikace, pochvaly a stížnosti",
+		defaultChannels: [NotificationChannels.push, NotificationChannels.inApp],
+		roles: [UserRoles.revizor],
 	},
 	[NotificationTypes.newUsers]: {
 		group: NotificationGroups.admin,
