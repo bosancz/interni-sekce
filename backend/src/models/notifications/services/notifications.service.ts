@@ -140,6 +140,18 @@ export class NotificationsService {
 		return users.length;
 	}
 
+	async onBackupProblems(problems: string[]) {
+		const recipients = await this.getUsersByRoles([UserRoles.admin]);
+
+		await this.notifyUsers(NotificationTypes.backups, recipients, undefined, {
+			title: "Zálohy potřebují kontrolu",
+			body: problems.join(" "),
+			path: "/admin/zalohy",
+		});
+
+		return recipients.length;
+	}
+
 	private async notifyUsers(
 		type: NotificationTypes,
 		users: User[],

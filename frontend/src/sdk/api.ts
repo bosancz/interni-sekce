@@ -25,6 +25,7 @@ export { ConfigurationParameters as SDKConfiguration } from './configuration';
 
 export class SDK {
         AccountApi: SDK.AccountApi;
+        BackupsApi: SDK.BackupsApi;
         EventsApi: SDK.EventsApi;
         FeedbackApi: SDK.FeedbackApi;
         MembersApi: SDK.MembersApi;
@@ -43,6 +44,7 @@ export class SDK {
             if(!axios) axios = globalAxios.create();
 
             this.AccountApi = new SDK.AccountApi(configuration, axios!);
+            this.BackupsApi = new SDK.BackupsApi(configuration, axios!);
             this.EventsApi = new SDK.EventsApi(configuration, axios!);
             this.FeedbackApi = new SDK.FeedbackApi(configuration, axios!);
             this.MembersApi = new SDK.MembersApi(configuration, axios!);
@@ -701,6 +703,193 @@ export namespace SDK {
          * @memberof AlbumUpdateBody
          */
         'eventId'?: number | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface BackupRunResponse
+     */
+    export interface BackupRunResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupRunResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {BackupRunTypesEnum}
+         * @memberof BackupRunResponse
+         */
+        'type': BackupRunTypesEnum;
+        /**
+         * 
+         * @type {BackupRunStatusesEnum}
+         * @memberof BackupRunResponse
+         */
+        'status': BackupRunStatusesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof BackupRunResponse
+         */
+        'startedAt': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof BackupRunResponse
+         */
+        'finishedAt'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BackupRunResponse
+         */
+        'fileName'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupRunResponse
+         */
+        'bytes'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupRunResponse
+         */
+        'filesTransferred'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupRunResponse
+         */
+        'filesRemoved'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BackupRunResponse
+         */
+        'error'?: string | null;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const BackupRunStatusesEnum = {
+        Running: 'running',
+        Ok: 'ok',
+        Error: 'error'
+    } as const;
+    
+    export type BackupRunStatusesEnum = typeof BackupRunStatusesEnum[keyof typeof BackupRunStatusesEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const BackupRunTypesEnum = {
+        Database: 'database',
+        Files: 'files'
+    } as const;
+    
+    export type BackupRunTypesEnum = typeof BackupRunTypesEnum[keyof typeof BackupRunTypesEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @interface BackupScheduleResponse
+     */
+    export interface BackupScheduleResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof BackupScheduleResponse
+         */
+        'cron'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BackupScheduleResponse
+         */
+        'timezone'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BackupScheduleResponse
+         */
+        'nextRunAt'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BackupScheduleResponse
+         */
+        'updatedAt': string;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface BackupsSummaryResponse
+     */
+    export interface BackupsSummaryResponse {
+        /**
+         * 
+         * @type {BackupScheduleResponse}
+         * @memberof BackupsSummaryResponse
+         */
+        'schedule'?: BackupScheduleResponse | null;
+        /**
+         * 
+         * @type {BackupRunResponse}
+         * @memberof BackupsSummaryResponse
+         */
+        'lastDatabase'?: BackupRunResponse | null;
+        /**
+         * 
+         * @type {BackupRunResponse}
+         * @memberof BackupsSummaryResponse
+         */
+        'lastDatabaseSuccess'?: BackupRunResponse | null;
+        /**
+         * 
+         * @type {BackupRunResponse}
+         * @memberof BackupsSummaryResponse
+         */
+        'lastFiles'?: BackupRunResponse | null;
+        /**
+         * 
+         * @type {BackupRunResponse}
+         * @memberof BackupsSummaryResponse
+         */
+        'lastFilesSuccess'?: BackupRunResponse | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BackupsSummaryResponse
+         */
+        'driveFolderUrl'?: string | null;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof BackupsSummaryResponse
+         */
+        'problems': Array<string>;
+        /**
+         * 
+         * @type {Array<BackupRunResponse>}
+         * @memberof BackupsSummaryResponse
+         */
+        'runs': Array<BackupRunResponse>;
     }
     
         /**
@@ -6783,7 +6972,8 @@ export namespace SDK {
         NewUsers: 'newUsers',
         MyBugReports: 'myBugReports',
         MyPhotos: 'myPhotos',
-        NewAlbums: 'newAlbums'
+        NewAlbums: 'newAlbums',
+        Backups: 'backups'
     } as const;
     
     export type NotificationTypesEnum = typeof NotificationTypesEnum[keyof typeof NotificationTypesEnum];
@@ -8378,6 +8568,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'getDailyPhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getBackups': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -10078,6 +10274,64 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    }
+    
+        
+        
+    
+    
+    
+    
+    
+    /**
+     * BackupsApi - object-oriented interface
+     * @export
+     * @class BackupsApi
+     * @extends {BaseAPI}
+     */
+    export class BackupsApi extends BaseAPI {
+    
+        constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
+            super(configuration, configuration.basePath, axios);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof BackupsApi
+         */
+        
+        public async getBackups(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/backups`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<BackupsSummaryResponse>(axiosRequestConfig);
         }
     }
     
