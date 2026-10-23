@@ -1,3 +1,7 @@
+## v4.28.1 — 2026-10-23
+
+- <span class="changelog-type" title="patch">🚸</span> [Průběh syncu souborů v logu s počtem souborů, GB a odhadem dokončení](https://github.com/bosancz/interni-sekce/commit/3dafadd23beb7d4264a72f4dd6881bb8ebd656ac) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.28.0 — 2026-10-23
 
 - <span class="changelog-type" title="feat">✨</span> [Stav záloh v Administraci](https://github.com/bosancz/interni-sekce/commit/ec9cfd9716196186fff836431758f545b4a23c62) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
