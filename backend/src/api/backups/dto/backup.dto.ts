@@ -1,6 +1,18 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { BackupRunStatuses, BackupRunTypes } from "src/models/backups/schema/backup-run";
 
+export class BackupRunProgressResponse {
+	@ApiProperty() bytes!: number;
+	@ApiProperty() totalBytes!: number;
+	@ApiProperty() transfers!: number;
+	@ApiProperty() totalTransfers!: number;
+	@ApiProperty() checks!: number;
+	@ApiProperty() speed!: number;
+	@ApiPropertyOptional({ type: "number", nullable: true }) eta!: number | null;
+	@ApiProperty() elapsed!: number;
+	@ApiProperty() updatedAt!: string;
+}
+
 export class BackupRunResponse {
 	@ApiProperty() id!: number;
 	@ApiProperty({ enum: BackupRunTypes, enumName: "BackupRunTypesEnum" }) type!: BackupRunTypes;
@@ -11,6 +23,8 @@ export class BackupRunResponse {
 	@ApiPropertyOptional({ type: "number", nullable: true }) bytes!: number | null;
 	@ApiPropertyOptional({ type: "number", nullable: true }) filesTransferred!: number | null;
 	@ApiPropertyOptional({ type: "number", nullable: true }) filesRemoved!: number | null;
+	@ApiPropertyOptional({ type: BackupRunProgressResponse, nullable: true })
+	progress!: BackupRunProgressResponse | null;
 	@ApiPropertyOptional({ type: "string", nullable: true }) error!: string | null;
 }
 

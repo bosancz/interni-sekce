@@ -76,6 +76,11 @@ backup_database() {
 	touch "$STATE_DIR/database-ok"
 }
 
+record_rclone_progress() {
+	jq -R -c --unbuffered 'fromjson? | select(.stats) | .stats | {bytes, totalBytes, transfers, totalTransfers, checks, speed, eta, elapsed: .elapsedTime}' |
+		while IFS= read -r progress; do record_run_progress "${RUN_ID:-}" "$progress" || true; done
+}
+
 backup_files() {
 	log "Syncing $DATA_DIR"
 	local status=0 excludes=() rclone_log stats
@@ -87,7 +92,7 @@ backup_files() {
 		--backup-dir "${REMOTE}smazane/$(date +%Y-%m-%d)" \
 		--tpslimit 5 \
 		--use-json-log --stats 5m --stats-one-line --stats-log-level NOTICE -v \
-		2>&1 | tee "$rclone_log" | format_rclone_log
+		2>&1 | tee "$rclone_log" >(record_rclone_progress) | format_rclone_log
 	status=${PIPESTATUS[0]}
 	set -e
 
@@ -136,6 +141,7 @@ run_step() {
 	export RUN_INFO
 	RUN_INFO="$(mktemp)"
 	id="$(record_run_start "$type")" || id=""
+	export RUN_ID="$id"
 
 	set +e
 	"$0" "run-$type" 2>&1 | tee "$log"

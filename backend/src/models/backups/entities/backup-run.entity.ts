@@ -1,5 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
-import { BackupRunStatuses, BackupRunTypes } from "../schema/backup-run";
+import { BackupRunProgress, BackupRunStatuses, BackupRunTypes } from "../schema/backup-run";
 
 @Entity("backup_runs")
 @Index(["type", "startedAt"])
@@ -26,6 +26,8 @@ export class BackupRun {
 	@Column({ type: "int", nullable: true }) filesTransferred!: number | null;
 
 	@Column({ type: "int", nullable: true }) filesRemoved!: number | null;
+
+	@Column({ type: "jsonb", nullable: true }) progress!: BackupRunProgress | null;
 
 	@Column({ type: "text", nullable: true }) error!: string | null;
 }
