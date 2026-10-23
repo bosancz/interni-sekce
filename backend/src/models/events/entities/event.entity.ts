@@ -92,6 +92,10 @@ export class Event {
 	@Column({ type: "boolean", nullable: false, default: false }) leadersEvent!: boolean;
 	@Column({ type: "boolean", nullable: false, default: false }) hasRegistration!: boolean;
 	@Column({ type: "varchar", nullable: true }) report!: string | null;
+	@Column({ type: "timestamp with time zone", nullable: true }) reportPublishedAt!: Date | string | null;
+	@Column({ type: "text", nullable: true, select: false }) reportComplications?: string | null;
+	@Column({ type: "text", nullable: true, select: false }) reportPraises?: string | null;
+	@Column({ type: "text", nullable: true, select: false }) reportComplaints?: string | null;
 	@Column({ type: "timestamp with time zone", nullable: true }) announcementSentAt!: Date | string | null;
 	@Column({ type: "timestamp with time zone", nullable: true }) accountingSentAt!: Date | string | null;
 

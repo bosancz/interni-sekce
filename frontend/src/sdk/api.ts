@@ -1603,6 +1603,30 @@ export namespace SDK {
          * @type {object}
          * @memberof Event
          */
+        'reportPublishedAt': object;
+        /**
+         * 
+         * @type {string}
+         * @memberof Event
+         */
+        'reportComplications'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Event
+         */
+        'reportPraises'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Event
+         */
+        'reportComplaints'?: string | null;
+        /**
+         * 
+         * @type {object}
+         * @memberof Event
+         */
         'announcementSentAt': object;
         /**
          * 
@@ -2318,6 +2342,32 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface EventReportResponse
+     */
+    export interface EventReportResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof EventReportResponse
+         */
+        'reportComplications': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventReportResponse
+         */
+        'reportPraises': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventReportResponse
+         */
+        'reportComplaints': string | null;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface EventReportUpdateBody
      */
     export interface EventReportUpdateBody {
@@ -2339,6 +2389,24 @@ export namespace SDK {
          * @memberof EventReportUpdateBody
          */
         'river'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventReportUpdateBody
+         */
+        'reportComplications'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventReportUpdateBody
+         */
+        'reportPraises'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventReportUpdateBody
+         */
+        'reportComplaints'?: string | null;
     }
     
         /**
@@ -2353,6 +2421,12 @@ export namespace SDK {
          * @memberof EventResponse
          */
         'status': EventStatesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponse
+         */
+        'reportPublishedAt'?: string;
         /**
          * 
          * @type {string}
@@ -2668,6 +2742,18 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof EventResponseLinks
          */
+        'publishEventReport': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'unpublishEventReport': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
         'getEventsYears': AcLink;
         /**
          * 
@@ -2761,6 +2847,12 @@ export namespace SDK {
          * @memberof EventResponseWithLinks
          */
         'status': EventStatesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'reportPublishedAt'?: string;
         /**
          * 
          * @type {string}
@@ -7037,6 +7129,7 @@ export namespace SDK {
         MyEvents: 'myEvents',
         SubmittedEvents: 'submittedEvents',
         NewEvents: 'newEvents',
+        NewEventReports: 'newEventReports',
         NewUsers: 'newUsers',
         MyBugReports: 'myBugReports',
         MyPhotos: 'myPhotos',
@@ -8798,6 +8891,18 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'getProgramIcal': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getReports': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getReport': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -10835,6 +10940,14 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * EventsApi - object-oriented interface
      * @export
@@ -11850,7 +11963,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<void>(axiosRequestConfig);
+            return this.axios.request<EventReportResponse>(axiosRequestConfig);
         }
     
         /**
@@ -12337,6 +12450,50 @@ export namespace SDK {
          * @memberof EventsApi
          */
         
+        public async publishEventReport(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('publishEventReport', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/report/publish`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
         public async rejectEvent(
             eventId: number,
             body: EventStatusChangeBody,
@@ -12778,6 +12935,50 @@ export namespace SDK {
          * @memberof EventsApi
          */
         
+        public async unpublishEventReport(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('unpublishEventReport', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/report/publish`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
         public async updateEvent(
             eventId: number,
             body: EventUpdateBody,
@@ -13051,7 +13252,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<void>(axiosRequestConfig);
+            return this.axios.request<EventReportResponse>(axiosRequestConfig);
         }
     }
     
@@ -18460,6 +18661,37 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for getReports operation in PublicAPIApi.
+     * @export
+     * @interface PublicAPIApiGetReportsQueryParams
+     */
+    export interface PublicAPIApiGetReportsQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof PublicAPIApiGetReports
+         */
+        limit?: number
+    
+        //offset
+        /**
+         * 
+         * @type {number}
+         * @memberof PublicAPIApiGetReports
+         */
+        offset?: number
+    }
+    
+    
+    
+    
     /**
      * PublicAPIApi - object-oriented interface
      * @export
@@ -19049,6 +19281,94 @@ export namespace SDK {
             const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
             const requestHeaderParameter = {} as any;
             const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getReport(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getReport', 'id', id)
+            
+            const localVarPath = `/api/public/reports/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {PublicAPIApiGetReportsQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getReports(
+            queryParams: PublicAPIApiGetReportsQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/reports`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.offset !== undefined) {
+                requestQueryParameter['offset'] = queryParams.offset;
+            }
     
     
     
