@@ -1,7 +1,111 @@
+bo-card-content {
+	padding: 0 1rem 1rem;
+}
+
+.section-label {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-height: 32px;
+	color: var(--bo-heading);
+	font-weight: 600;
+
+	&.sub {
+		font-size: 0.95rem;
+	}
+
+	.value {
+		color: var(--ion-text-color);
+		font-weight: 400;
+	}
+
+	bo-edit-button,
+	bo-edit-button-markdown,
+	bo-edit-button-number {
+		display: inline-flex;
+		align-items: center;
+	}
+
+	::ng-deep ion-button {
+		margin: 0;
+		--padding-start: 4px;
+		--padding-end: 4px;
+		height: 28px;
+	}
+}
+
+.visibility {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	font-size: 0.75rem;
+	font-weight: 500;
+	color: var(--bo-muted);
+}
+
+.section-hint {
+	margin: 0 0 0.75rem;
+	color: var(--bo-muted);
+	font-size: 0.875rem;
+
+	ion-icon {
+		vertical-align: -2px;
+		margin-right: 0.25rem;
+		color: var(--ion-color-success);
+	}
+}
+
+.muted {
+	color: var(--bo-muted);
+	margin: 0;
+}
+
+.report-text ::ng-deep > :last-child,
+.revizor-field-value ::ng-deep > :last-child {
+	margin-bottom: 0;
+}
+
+.water {
+	display: flex;
+	flex-wrap: wrap;
+	column-gap: 2rem;
+	margin-top: 1rem;
+}
+
+.revizor-section {
+	margin-top: 1.25rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--bo-neutral-badge);
+}
+
+.revizor-fields {
+	display: grid;
+	gap: 0.75rem;
+	max-width: 50rem;
+}
+
+.publish {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 1rem;
+	margin-top: 1.25rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--bo-neutral-badge);
+
+	.section-hint {
+		margin: 0;
+		flex: 1 1 16rem;
+	}
+
+	ion-button {
+		margin: 0;
+	}
+}
+
 .album-link {
 	--background: var(--bo-white);
-	border-radius: var(--bo-radius-card);
-	box-shadow: var(--bo-shadow-card);
+	--padding-start: 0;
 	max-width: 30rem;
 
 	ion-icon[slot="start"] {
@@ -11,58 +115,4 @@
 		padding: 8px;
 		font-size: 1.2rem;
 	}
-}
-
-.water {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	column-gap: 2rem;
-	row-gap: 0.25rem;
-	margin-top: 1rem;
-}
-
-.water-field {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.water-label {
-	color: var(--bo-heading);
-	font-weight: 600;
-}
-
-.report-visibility {
-	margin: -0.25rem 0 1rem;
-	color: var(--ion-color-medium);
-	font-size: 0.875rem;
-
-	ion-icon {
-		vertical-align: -2px;
-		margin-right: 0.25rem;
-	}
-}
-
-.revizor-fields {
-	display: grid;
-	gap: 1.25rem;
-	max-width: 50rem;
-}
-
-.revizor-field-label {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	color: var(--bo-heading);
-	font-weight: 600;
-}
-
-.revizor-field-empty {
-	color: var(--ion-color-medium);
-	margin: 0.25rem 0 0;
-}
-
-.revizor-field-value ::ng-deep > :last-child {
-	margin-bottom: 0;
 }

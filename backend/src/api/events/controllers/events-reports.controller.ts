@@ -1,4 +1,18 @@
-import { Body, Controller, Get, Logger, NotFoundException, Param, ParseIntPipe, Put, Req } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	Logger,
+	NotFoundException,
+	Param,
+	ParseIntPipe,
+	Post,
+	Put,
+	Req,
+	UnprocessableEntityException,
+} from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
@@ -8,7 +22,12 @@ import { Event } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { NotificationsService } from "src/models/notifications/services/notifications.service";
 import { Repository } from "typeorm";
-import { EventReportEditPermission, EventReportReadPermission } from "../acl/events.acl";
+import {
+	EventReportEditPermission,
+	EventReportPublishPermission,
+	EventReportReadPermission,
+	EventReportUnpublishPermission,
+} from "../acl/events.acl";
 import { EventReportResponse, EventReportUpdateBody } from "../dto/event.dto";
 
 const emptyToNull = (value: string | null | undefined) =>
@@ -74,24 +93,45 @@ export class EventsReportsController {
 			reportComplaints: emptyToNull(reportComplaints),
 		};
 
-		let published = false;
 		if (report !== undefined) {
 			data.report = emptyToNull(report);
 			if (!data.report) data.reportPublishedAt = null;
-			else if (!event.reportPublishedAt) {
-				data.reportPublishedAt = new Date();
-				published = true;
-			}
 		}
 
 		await this.events.updateEvent(eventId, data);
 
-		if (published) {
-			this.notificationsService
-				.onEventReportPublished(event, req.user?.userId)
-				.catch((err) => this.logger.error(`Failed to send event report notifications: ${err.message}`));
-		}
-
 		return this.getEventReport(req, eventId);
+	}
+
+	@Post(":eventId/report/publish")
+	@HttpCode(204)
+	@AcLinks(EventReportPublishPermission)
+	@ApiResponse({ status: 204 })
+	async publishEventReport(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<void> {
+		const event = await this.events.getEvent(eventId);
+		if (!event) throw new NotFoundException();
+
+		EventReportPublishPermission.canOrThrow(req, event);
+
+		if (!event.report?.trim()) throw new UnprocessableEntityException("Report has no summary.");
+
+		await this.events.updateEvent(eventId, { reportPublishedAt: new Date() });
+
+		this.notificationsService
+			.onEventReportPublished(event, req.user?.userId)
+			.catch((err) => this.logger.error(`Failed to send event report notifications: ${err.message}`));
+	}
+
+	@Delete(":eventId/report/publish")
+	@HttpCode(204)
+	@AcLinks(EventReportUnpublishPermission)
+	@ApiResponse({ status: 204 })
+	async unpublishEventReport(@Req() req: Request, @Param("eventId", ParseIntPipe) eventId: number): Promise<void> {
+		const event = await this.events.getEvent(eventId);
+		if (!event) throw new NotFoundException();
+
+		EventReportUnpublishPermission.canOrThrow(req, event);
+
+		await this.events.updateEvent(eventId, { reportPublishedAt: null });
 	}
 }

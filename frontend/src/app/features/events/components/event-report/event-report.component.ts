@@ -5,16 +5,22 @@ import { IonButton, IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/a
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
+	checkmarkCircleOutline,
 	chevronForwardOutline,
 	closeOutline,
 	documentTextOutline,
 	globeOutline,
 	imagesOutline,
 	lockClosedOutline,
+	sendOutline,
 } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
+import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
+import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
+import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
+import { CardComponent } from "src/app/shared/components/card/card.component";
 import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
 import { EditButtonNumberComponent } from "src/app/shared/components/edit-button-number/edit-button-number.component";
@@ -34,6 +40,10 @@ import { RiverSelectModalComponent } from "../river-select-modal/river-select-mo
 	imports: [
 		CommonModule,
 		RouterLink,
+		CardComponent,
+		CardContentComponent,
+		CardHeaderComponent,
+		CardTitleComponent,
 		EditButtonComponent,
 		EditButtonMarkdownComponent,
 		EditButtonNumberComponent,
@@ -64,6 +74,15 @@ export class EventReportComponent {
 
 	revizorReport = signal<SDK.EventReportResponse | null>(null);
 
+	canPublish = computed(() => !!this.event()?._links?.publishEventReport?.allowed && !!this.event()?.report?.trim());
+	publishBlockedText = computed(() => {
+		if (!this.event()?._links?.publishEventReport?.allowed) return this.noPermissionText;
+		if (!this.event()?.report?.trim()) return "Nejdřív napiš shrnutí akce.";
+		return null;
+	});
+
+	publishing = signal(false);
+
 	addingAlbum = signal(false);
 	removingAlbum = signal(false);
 
@@ -79,6 +98,8 @@ export class EventReportComponent {
 			closeOutline,
 			globeOutline,
 			lockClosedOutline,
+			sendOutline,
+			checkmarkCircleOutline,
 		});
 
 		effect(() => {
@@ -104,7 +125,7 @@ export class EventReportComponent {
 
 	async writeReport() {
 		const result = await this.modalService.componentModal(MarkdownEditorModalComponent, {
-			header: "Report",
+			header: "Shrnutí akce",
 			value: this.event()?.report ?? "",
 		});
 
@@ -113,6 +134,44 @@ export class EventReportComponent {
 
 	async saveReport(report: string | null) {
 		await this.saveReportData({ report });
+	}
+
+	async publish() {
+		const event = this.event();
+		if (!event || !this.canPublish() || this.publishing()) return;
+
+		this.publishing.set(true);
+		try {
+			await this.api.EventsApi.publishEventReport(event.id);
+			this.toastService.toast("Report publikován.");
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se publikovat report.", { color: "warning" });
+		} finally {
+			this.publishing.set(false);
+		}
+	}
+
+	async unpublish() {
+		const event = this.event();
+		if (!event || this.publishing()) return;
+
+		const confirmed = await this.modalService.confirmationModal(
+			"Shrnutí zmizí z webu a revizor uvidí report až po novém publikování.",
+			{ header: "Zrušit publikování?", buttonText: "Zrušit publikování" },
+		);
+		if (!confirmed) return;
+
+		this.publishing.set(true);
+		try {
+			await this.api.EventsApi.unpublishEventReport(event.id);
+			this.toastService.toast("Publikování zrušeno.");
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se zrušit publikování.", { color: "warning" });
+		} finally {
+			this.publishing.set(false);
+		}
 	}
 
 	async editRiver() {
