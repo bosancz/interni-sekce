@@ -38,3 +38,9 @@ export const PublicGalleryAlbumPreviewPermission = new Permission<void>({
 	allowed: { verejnost: true },
 	path: () => "gallery/{id}/preview",
 });
+
+export const PublicGroupsPermission = new Permission<void>({
+	linkTo: RootResponse,
+	name: "groups",
+	allowed: { verejnost: true },
+});

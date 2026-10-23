@@ -3986,6 +3986,18 @@ export namespace SDK {
          * @type {string}
          * @memberof Group
          */
+        'meetingDay': GroupMeetingDayEnum | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof Group
+         */
+        'leaderId': number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Group
+         */
         'deletedAt': string | null;
         /**
          * 
@@ -3994,6 +4006,66 @@ export namespace SDK {
          */
         'members'?: Array<Member>;
     }
+    
+    export const GroupMeetingDayEnum = {
+        Monday: 'monday',
+        Tuesday: 'tuesday',
+        Wednesday: 'wednesday',
+        Thursday: 'thursday',
+        Friday: 'friday'
+    } as const;
+    
+    export type GroupMeetingDayEnum = typeof GroupMeetingDayEnum[keyof typeof GroupMeetingDayEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @interface GroupLeaderResponse
+     */
+    export interface GroupLeaderResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupLeaderResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof GroupLeaderResponse
+         */
+        'nickname': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof GroupLeaderResponse
+         */
+        'firstName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof GroupLeaderResponse
+         */
+        'lastName'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const GroupMeetingDaysEnum = {
+        Monday: 'monday',
+        Tuesday: 'tuesday',
+        Wednesday: 'wednesday',
+        Thursday: 'thursday',
+        Friday: 'friday'
+    } as const;
+    
+    export type GroupMeetingDaysEnum = typeof GroupMeetingDaysEnum[keyof typeof GroupMeetingDaysEnum];
+    
     
         /**
      * 
@@ -4007,6 +4079,24 @@ export namespace SDK {
          * @memberof GroupResponse
          */
         'profilePhotoUpdatedAt': string | null;
+        /**
+         * 
+         * @type {GroupMeetingDaysEnum}
+         * @memberof GroupResponse
+         */
+        'meetingDay': GroupMeetingDaysEnum | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupResponse
+         */
+        'leaderId': number | null;
+        /**
+         * 
+         * @type {GroupLeaderResponse}
+         * @memberof GroupResponse
+         */
+        'leader'?: GroupLeaderResponse | null;
         /**
          * 
          * @type {number}
@@ -4068,6 +4158,8 @@ export namespace SDK {
          */
         'leadersCount'?: number;
     }
+    
+    
     
         /**
      * 
@@ -4139,6 +4231,24 @@ export namespace SDK {
         'profilePhotoUpdatedAt': string | null;
         /**
          * 
+         * @type {GroupMeetingDaysEnum}
+         * @memberof GroupResponseWithLinks
+         */
+        'meetingDay': GroupMeetingDaysEnum | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof GroupResponseWithLinks
+         */
+        'leaderId': number | null;
+        /**
+         * 
+         * @type {GroupLeaderResponse}
+         * @memberof GroupResponseWithLinks
+         */
+        'leader'?: GroupLeaderResponse | null;
+        /**
+         * 
          * @type {number}
          * @memberof GroupResponseWithLinks
          */
@@ -4204,6 +4314,8 @@ export namespace SDK {
          */
         '_links': GroupResponseLinks;
     }
+    
+    
     
         /**
      * 
@@ -8273,6 +8385,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'getGroups': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'getGallery': AcLink;
         /**
          * 
@@ -8886,6 +9004,18 @@ export namespace SDK {
         'color'?: string | null;
         /**
          * 
+         * @type {GroupMeetingDaysEnum}
+         * @memberof UpdateGroupBody
+         */
+        'meetingDay'?: GroupMeetingDaysEnum | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof UpdateGroupBody
+         */
+        'leaderId'?: number | null;
+        /**
+         * 
          * @type {string}
          * @memberof UpdateGroupBody
          */
@@ -8909,6 +9039,8 @@ export namespace SDK {
          */
         'children'?: boolean;
     }
+    
+    
     
         /**
      * 
@@ -17588,6 +17720,14 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * Query parameters for getProgram operation in PublicAPIApi.
      * @export
@@ -17851,6 +17991,84 @@ export namespace SDK {
             if (queryParams.sort !== undefined) {
                 requestQueryParameter['sort'] = queryParams.sort;
             }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} id 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getGroupLeaderProfilePhoto(
+            id: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('getGroupLeaderProfilePhoto', 'id', id)
+            
+            const localVarPath = `/api/public/groups/{id}/leader/profile-photo`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getGroups(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/groups`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
     
     
     

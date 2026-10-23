@@ -1,15 +1,26 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
 import { IonIcon, ModalController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { checkmarkOutline, colorPaletteOutline } from "ionicons/icons";
+import { checkmarkOutline, closeOutline, colorPaletteOutline, personOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { GroupsService } from "src/app/core/services/groups.service";
-import { InputModalComponent } from "src/app/core/services/modal.service";
+import { InputModalComponent, ModalService } from "src/app/core/services/modal.service";
+import { MemberSelectorModalComponent } from "src/app/features/events/components/member-selector-modal/member-selector-modal.component";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { SDK } from "src/sdk";
 import { GroupProfilePhotoComponent } from "../group-profile-photo/group-profile-photo.component";
 
 export const GROUP_COLORS = ["#BB0000", "#FEC503", "#36802D", "#3880FF"];
+
+export const GROUP_MEETING_DAYS: { value: SDK.GroupMeetingDaysEnum; label: string; title: string }[] = [
+	{ value: "monday", label: "Po", title: "Pondělí" },
+	{ value: "tuesday", label: "Út", title: "Úterý" },
+	{ value: "wednesday", label: "St", title: "Středa" },
+	{ value: "thursday", label: "Čt", title: "Čtvrtek" },
+	{ value: "friday", label: "Pá", title: "Pátek" },
+];
+
+type GroupLeader = Pick<SDK.MemberResponse, "id" | "nickname" | "firstName" | "lastName">;
 
 @Component({
 	selector: "bo-group-edit-modal",
@@ -27,11 +38,19 @@ export class GroupEditModalComponent extends InputModalComponent<SDK.GroupRespon
 	color = signal<string | null>(null);
 	active = signal(true);
 	children = signal(true);
+	meetingDay = signal<SDK.GroupMeetingDaysEnum | null>(null);
+	leader = signal<GroupLeader | null>(null);
 
 	saving = signal(false);
 	error = signal<string | null>(null);
 
 	readonly colors = GROUP_COLORS;
+	readonly meetingDays = GROUP_MEETING_DAYS;
+
+	leaderName = computed(() => {
+		const leader = this.leader();
+		return [leader?.firstName, leader?.lastName].filter(Boolean).join(" ");
+	});
 
 	isCustomColor = computed(() => {
 		const color = this.color();
@@ -48,9 +67,10 @@ export class GroupEditModalComponent extends InputModalComponent<SDK.GroupRespon
 		modalController: ModalController,
 		private api: ApiService,
 		private groupsService: GroupsService,
+		private modalService: ModalService,
 	) {
 		super(modalController);
-		addIcons({ checkmarkOutline, colorPaletteOutline });
+		addIcons({ checkmarkOutline, closeOutline, colorPaletteOutline, personOutline });
 	}
 
 	ngOnInit(): void {
@@ -60,6 +80,21 @@ export class GroupEditModalComponent extends InputModalComponent<SDK.GroupRespon
 		this.color.set(this.group.color);
 		this.active.set(this.group.active);
 		this.children.set(this.group.children);
+		this.meetingDay.set(this.group.meetingDay);
+		this.leader.set(this.group.leader ?? null);
+	}
+
+	async selectLeader() {
+		const member = await this.modalService.componentModal(
+			MemberSelectorModalComponent,
+			{
+				title: "Oddílový vedoucí",
+				subtitle: "Bude uvedený v kontaktech na bosan.cz.",
+				roles: ["vedouci", "instruktor"],
+			},
+			{ cssClass: "dialog-picker" },
+		);
+		if (member) this.leader.set(member);
 	}
 
 	isSelected(color: string) {
@@ -87,6 +122,8 @@ export class GroupEditModalComponent extends InputModalComponent<SDK.GroupRespon
 				color: this.color(),
 				active: this.active(),
 				children: this.children(),
+				meetingDay: this.meetingDay(),
+				leaderId: this.leader()?.id ?? null,
 			});
 		} catch (err: any) {
 			this.error.set(err?.response?.data?.message ?? "Oddíl se nepodařilo uložit.");

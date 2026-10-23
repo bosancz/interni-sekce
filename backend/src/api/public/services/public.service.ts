@@ -8,6 +8,7 @@ import { PhotosRepository } from "src/models/albums/repositories/photos.reposito
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { FilesService } from "src/models/files/services/files.service";
+import { Group } from "src/models/members/entities/group.entity";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
 
 const PREVIEW_PHOTOS_COUNT = 8;
@@ -102,6 +103,46 @@ export class PublicService {
 					allowed: { GET: !!event.hasRegistration },
 				},
 			},
+		};
+	}
+
+	async getGroups() {
+		const groups = await this.groups.getPublicGroups();
+		return groups.map((group) => this.serializeGroup(group));
+	}
+
+	async getGroupLeaderProfilePhotoPath(groupId: number): Promise<string> {
+		const groups = await this.groups.getPublicGroups();
+		const leader = groups.find((group) => group.id === groupId)?.leader;
+		if (!leader?.profilePhotoUpdatedAt) throw new NotFoundException();
+
+		return join(this.config.fs.membersDir, String(leader.id), "profile_photo.jpg");
+	}
+
+	private serializeGroup(group: Group) {
+		const leader = group.leader;
+
+		return {
+			_id: String(group.id),
+			shortName: group.shortName,
+			name: group.name,
+			color: group.color,
+			darkColor: group.darkColor,
+			children: group.children,
+			meetingDay: group.meetingDay,
+			leader: leader
+				? {
+						_id: String(leader.id),
+						nickname: leader.nickname,
+						firstName: leader.firstName ?? null,
+						lastName: leader.lastName ?? null,
+						email: leader.email ?? null,
+						mobile: leader.mobile ?? null,
+						profilePhoto: leader.profilePhotoUpdatedAt
+							? `${this.apiBase}/public/groups/${group.id}/leader/profile-photo?v=${leader.profilePhotoUpdatedAt.getTime()}`
+							: null,
+					}
+				: null,
 		};
 	}
 
