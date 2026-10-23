@@ -33,6 +33,7 @@ export class AlbumsRepository {
 			.select([
 				"albums.id",
 				"albums.name",
+				"albums.description",
 				"albums.status",
 				"albums.dateFrom",
 				"albums.dateTill",
