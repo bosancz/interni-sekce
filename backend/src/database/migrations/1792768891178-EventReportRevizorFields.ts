@@ -9,7 +9,7 @@ export class EventReportRevizorFields1792768891178 implements MigrationInterface
 		await queryRunner.query(`ALTER TABLE "events" ADD "report_praises" text`);
 		await queryRunner.query(`ALTER TABLE "events" ADD "report_complaints" text`);
 		await queryRunner.query(
-			`UPDATE "events" SET "report_published_at" = ("date_till" + 1)::timestamp AT TIME ZONE 'Europe/Prague' WHERE coalesce(trim("report"), '') <> ''`,
+			`UPDATE "events" SET "report_published_at" = "date_till"::timestamp AT TIME ZONE 'Europe/Prague' WHERE coalesce(trim("report"), '') <> ''`,
 		);
 		await queryRunner.query(
 			`ALTER TYPE "public"."notifications_type_enum" RENAME TO "notifications_type_enum_old"`,
