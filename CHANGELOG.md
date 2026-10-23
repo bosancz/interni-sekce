@@ -1,3 +1,7 @@
+## v4.29.2 — 2026-10-24
+
+- <span class="changelog-type" title="fix">🐛</span> [Vrátit typ notifikace „backups“ do databáze](https://github.com/bosancz/interni-sekce/commit/ee7a0516e484958ecb260c500c0865a53a85f219) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.29.1 — 2026-10-23
 
 - <span class="changelog-type" title="patch">🚸</span> [Seznam vedení ze sdílených komponent](https://github.com/bosancz/interni-sekce/commit/cf332f03fb18b9bd24755944f7ca6d3178bd4ce3) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
