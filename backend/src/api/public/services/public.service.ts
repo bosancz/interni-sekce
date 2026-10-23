@@ -113,18 +113,25 @@ export class PublicService {
 		const [events, groups] = await Promise.all([this.events.getPublicReports(options), this.groups.getGroups()]);
 
 		const groupNameById = new Map(groups.map((g) => [g.id, g.shortName]));
+		const coverPhotos = await this.photos.getCoverPhotosByAlbums(
+			events.flatMap((event) => (event.album ? [event.album.id] : [])),
+		);
 
-		return events.map((event) => this.serializeReport(event, groupNameById));
+		return events.map((event) => this.serializeReport(event, groupNameById, coverPhotos));
 	}
 
 	async getReport(id: number) {
 		const [event, groups] = await Promise.all([this.events.getPublicReport(id), this.groups.getGroups()]);
 		if (!event) throw new NotFoundException();
 
-		return this.serializeReport(event, new Map(groups.map((g) => [g.id, g.shortName])));
+		const coverPhotos = await this.photos.getCoverPhotosByAlbums(event.album ? [event.album.id] : []);
+
+		return this.serializeReport(event, new Map(groups.map((g) => [g.id, g.shortName])), coverPhotos);
 	}
 
-	private serializeReport(event: Event, groupNameById: Map<number, string>) {
+	private serializeReport(event: Event, groupNameById: Map<number, string>, coverPhotos: Map<number, Photo>) {
+		const titlePhoto = event.album ? coverPhotos.get(event.album.id) : undefined;
+
 		return {
 			_id: String(event.id),
 			name: event.name,
@@ -138,7 +145,13 @@ export class PublicService {
 			reportPublishedAt: event.reportPublishedAt,
 			river: event.river,
 			waterKm: event.waterKm,
-			album: event.album ? { _id: String(event.album.id), name: event.album.name } : null,
+			album: event.album
+				? {
+						_id: String(event.album.id),
+						name: event.album.name,
+						titlePhoto: titlePhoto ? this.serializePhoto(titlePhoto) : null,
+					}
+				: null,
 			_links: {
 				self: { href: `${this.apiBase}/public/reports/${event.id}`, method: "GET", allowed: { GET: true } },
 				album: event.album
