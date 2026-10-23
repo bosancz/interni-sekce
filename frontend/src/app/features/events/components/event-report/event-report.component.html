@@ -28,7 +28,6 @@
 				/>
 			}
 		</div>
-		<p class="section-hint">Po publikování vyjde v Aktualitách na bosan.cz.</p>
 
 		@if (event()?.publicReport; as publicReport) {
 			<div class="report-text" [innerHTML]="publicReport | markdown"></div>
@@ -88,7 +87,6 @@
 						/>
 					}
 				</div>
-				<p class="section-hint">Na web nejde, čtou ho vedoucí a revizor.</p>
 
 				@if (event()?.report; as report) {
 					<div class="report-text" [innerHTML]="report | markdown"></div>
