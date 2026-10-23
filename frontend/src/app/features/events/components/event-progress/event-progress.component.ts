@@ -81,7 +81,7 @@ export class EventProgressComponent {
 
 		return [
 			{ key: "accounting", label: "Vyúčtování odesláno", done: !!event?.accountingSentAt, required: true },
-			{ key: "report", label: "Report vyplněn", done: !!event?.report, required: true },
+			{ key: "report", label: "Report publikován", done: !!event?.reportPublishedAt, required: true },
 			{
 				key: "album",
 				label: !album

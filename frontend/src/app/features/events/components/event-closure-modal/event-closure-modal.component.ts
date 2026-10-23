@@ -24,15 +24,19 @@ export class EventClosureModalComponent extends InputModalComponent<{ accounting
 	);
 
 	autoItems = computed(() => {
-		const reportFilled = !!this.event.report;
+		const reportPublished = !!this.event.reportPublishedAt;
 		const albumPublished = this.event.album?.status === "public";
 
 		return [
 			{
 				key: "report",
-				label: reportFilled ? "Report vyplněn" : "Report nevyplněn",
-				helper: reportFilled ? undefined : "vyplň report akce",
-				done: reportFilled,
+				label: reportPublished ? "Report publikován" : "Report nepublikován",
+				helper: reportPublished
+					? undefined
+					: this.event.report
+						? "publikuj report v záložce Report"
+						: "vyplň a publikuj report akce",
+				done: reportPublished,
 			},
 			{
 				key: "album",
