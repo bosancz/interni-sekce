@@ -122,6 +122,46 @@ export class EventsRepository {
 		return this.withLeaders(await q.getMany());
 	}
 
+	async getPublicReports(options: { limit?: number; offset?: number } = {}) {
+		const q = this.publicReportsQuery()
+			.orderBy("events.reportPublishedAt", "DESC")
+			.addOrderBy("events.id", "DESC")
+			.take(Math.min(options.limit ?? 20, 100))
+			.skip(options.offset ?? 0);
+
+		return this.withLeaders(await q.getMany());
+	}
+
+	async getPublicReport(id: number) {
+		const event = await this.publicReportsQuery().andWhere("events.id = :id", { id }).getOne();
+
+		return event ? this.withLeaders([event])[0] : null;
+	}
+
+	private publicReportsQuery() {
+		return this.eventsRepository
+			.createQueryBuilder("events")
+			.select([
+				"events.id",
+				"events.name",
+				"events.type",
+				"events.dateFrom",
+				"events.dateTill",
+				"events.leadersEvent",
+				"events.report",
+				"events.reportPublishedAt",
+				"events.river",
+				"events.waterKm",
+			])
+			.leftJoinAndSelect("events.groups", "groups")
+			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
+			.leftJoinAndSelect("attendees.member", "leaders")
+			.leftJoin("events.album", "album", "album.status = :albumStatus", { albumStatus: "public" })
+			.addSelect(["album.id", "album.name"])
+			.where("events.status = :status", { status: EventStates.public })
+			.andWhere("events.reportPublishedAt IS NOT NULL");
+	}
+
 	private publicProgramQuery(dateFrom: string) {
 		return this.eventsRepository
 			.createQueryBuilder("events")

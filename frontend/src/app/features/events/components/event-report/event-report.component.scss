@@ -32,3 +32,37 @@
 	color: var(--bo-heading);
 	font-weight: 600;
 }
+
+.report-visibility {
+	margin: -0.25rem 0 1rem;
+	color: var(--ion-color-medium);
+	font-size: 0.875rem;
+
+	ion-icon {
+		vertical-align: -2px;
+		margin-right: 0.25rem;
+	}
+}
+
+.revizor-fields {
+	display: grid;
+	gap: 1.25rem;
+	max-width: 50rem;
+}
+
+.revizor-field-label {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--bo-heading);
+	font-weight: 600;
+}
+
+.revizor-field-empty {
+	color: var(--ion-color-medium);
+	margin: 0.25rem 0 0;
+}
+
+.revizor-field-value ::ng-deep > :last-child {
+	margin-bottom: 0;
+}

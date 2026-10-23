@@ -1,17 +1,29 @@
 <h3>
-	Report z akce
+	Shrnutí akce
 	@if (canEditReport() && event()?.report) {
-		<bo-edit-button-markdown slot="end" label="Report" [value]="event()?.report" (update)="saveReport($event)" />
+		<bo-edit-button-markdown
+			slot="end"
+			label="Shrnutí akce"
+			[value]="event()?.report"
+			(update)="saveReport($event)"
+		/>
 	}
 </h3>
+<p class="report-visibility">
+	<ion-icon name="globe-outline"></ion-icon>
+	Veřejné — čte ho revizor a vyjde v Aktualitách na bosan.cz.
+	@if (event()?.reportPublishedAt) {
+		Zveřejněno {{ event()?.reportPublishedAt | date: "d. M. y H:mm" }}.
+	}
+</p>
 
 @if (event() && event()!.report) {
 	<div [innerHTML]="event()!.report | markdown"></div>
 } @else if (event()) {
 	<div class="bo-empty-state">
 		<ion-icon name="document-text-outline"></ion-icon>
-		<strong>Report je zatím prázdný</strong>
-		<p>Sepiš krátké shrnutí průběhu akce.</p>
+		<strong>Shrnutí je zatím prázdné</strong>
+		<p>Sepiš krátce, jak akce proběhla — pro revizora i pro rodiče na webu.</p>
 		<ion-button
 			fill="solid"
 			color="warning"
@@ -47,6 +59,39 @@
 				/>
 			}
 		</span>
+	</div>
+}
+
+@if (canReadRevizorReport()) {
+	<h3 class="mt-5">Pro revizora</h3>
+	<p class="report-visibility">
+		<ion-icon name="lock-closed-outline"></ion-icon>
+		Neveřejné — vidí jen vedoucí akce, revizor a admin.
+	</p>
+
+	<div class="revizor-fields">
+		@for (field of revizorFields; track field.key) {
+			<div class="revizor-field">
+				<div class="revizor-field-label">
+					{{ field.label }}
+					@if (canEditReport() && revizorReport()) {
+						<bo-edit-button-markdown
+							[label]="field.label"
+							[placeholder]="field.placeholder"
+							[value]="revizorReport()?.[field.key]"
+							(update)="saveRevizorField(field.key, $event)"
+						/>
+					}
+				</div>
+				@if (!revizorReport()) {
+					<p><ion-skeleton-text animated></ion-skeleton-text></p>
+				} @else if (revizorReport()?.[field.key]; as value) {
+					<div class="revizor-field-value" [innerHTML]="value | markdown"></div>
+				} @else {
+					<p class="revizor-field-empty">Nic.</p>
+				}
+			</div>
+		}
 	</div>
 }
 

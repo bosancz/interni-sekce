@@ -215,7 +215,10 @@ export const EventReportReadPermission = new Permission({
 	linkTo: EventResponse,
 	params: { eventId: "id" },
 
-	inherit: EventReadPermission,
+	allowed: {
+		revizor: true,
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
 });
 
 export const EventReportEditPermission = new Permission({

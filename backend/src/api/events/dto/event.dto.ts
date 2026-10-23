@@ -12,7 +12,10 @@ import { Member } from "src/models/members/entities/member.entity";
 import { EventAttendeeResponse } from "./event-attendee.dto";
 import { EventExpenseResponse } from "./event-expense.dto";
 
-export class EventResponse implements Omit<Event, "setLeaders" | "srcId"> {
+export class EventResponse implements Omit<
+	Event,
+	"setLeaders" | "srcId" | "reportComplications" | "reportPraises" | "reportComplaints"
+> {
 	id!: number;
 	name!: string;
 	@ApiProperty({ enum: EventStates, enumName: "EventStatesEnum" }) status!: EventStates;
@@ -37,6 +40,7 @@ export class EventResponse implements Omit<Event, "setLeaders" | "srcId"> {
 	river!: string | null;
 	deletedAt?: Date | null;
 	report!: string | null;
+	@ApiPropertyOptional({ type: "string" }) reportPublishedAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) announcementSentAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) accountingSentAt!: Date | string | null;
 
@@ -85,6 +89,17 @@ export class EventReportUpdateBody {
 	@IsOptional() @IsString() report?: string | null;
 	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsNumber() @Min(0) waterKm?: number | null;
 	@IsOptional() @IsString() river?: string | null;
+	@IsOptional() @IsString() reportComplications?: string | null;
+	@IsOptional() @IsString() reportPraises?: string | null;
+	@IsOptional() @IsString() reportComplaints?: string | null;
+}
+
+export class EventReportResponse implements Required<
+	Pick<Event, "reportComplications" | "reportPraises" | "reportComplaints">
+> {
+	reportComplications!: string | null;
+	reportPraises!: string | null;
+	reportComplaints!: string | null;
 }
 
 export class EventStatusChangeBody {

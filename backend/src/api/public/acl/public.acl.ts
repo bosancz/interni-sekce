@@ -50,3 +50,16 @@ export const PublicBoardMembersPermission = new Permission<void>({
 	name: "boardMembers",
 	allowed: { verejnost: true },
 });
+
+export const PublicReportsPermission = new Permission<void>({
+	linkTo: RootResponse,
+	name: "reports",
+	allowed: { verejnost: true },
+});
+
+export const PublicReportPermission = new Permission<void>({
+	linkTo: RootResponse,
+	name: "report",
+	allowed: { verejnost: true },
+	path: () => "reports/{id}",
+});

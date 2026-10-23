@@ -109,6 +109,49 @@ export class PublicService {
 		};
 	}
 
+	async getReports(options: { limit?: number; offset?: number }) {
+		const [events, groups] = await Promise.all([this.events.getPublicReports(options), this.groups.getGroups()]);
+
+		const groupNameById = new Map(groups.map((g) => [g.id, g.shortName]));
+
+		return events.map((event) => this.serializeReport(event, groupNameById));
+	}
+
+	async getReport(id: number) {
+		const [event, groups] = await Promise.all([this.events.getPublicReport(id), this.groups.getGroups()]);
+		if (!event) throw new NotFoundException();
+
+		return this.serializeReport(event, new Map(groups.map((g) => [g.id, g.shortName])));
+	}
+
+	private serializeReport(event: Event, groupNameById: Map<number, string>) {
+		return {
+			_id: String(event.id),
+			name: event.name,
+			type: event.type,
+			dateFrom: event.dateFrom,
+			dateTill: event.dateTill,
+			groups: (event.groupsIds ?? []).map((id) => groupNameById.get(id)).filter((name): name is string => !!name),
+			leadersEvent: event.leadersEvent,
+			leaders: (event.leaders ?? []).map((member) => ({ _id: String(member.id), nickname: member.nickname })),
+			report: event.report,
+			reportPublishedAt: event.reportPublishedAt,
+			river: event.river,
+			waterKm: event.waterKm,
+			album: event.album ? { _id: String(event.album.id), name: event.album.name } : null,
+			_links: {
+				self: { href: `${this.apiBase}/public/reports/${event.id}`, method: "GET", allowed: { GET: true } },
+				album: event.album
+					? {
+							href: `${this.apiBase}/public/gallery/${event.album.id}`,
+							method: "GET",
+							allowed: { GET: true },
+						}
+					: undefined,
+			},
+		};
+	}
+
 	async getGroups() {
 		const groups = await this.groups.getPublicGroups();
 		return groups.map((group) => this.serializeGroup(group));

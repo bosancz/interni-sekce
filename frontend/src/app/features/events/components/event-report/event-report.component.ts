@@ -1,10 +1,17 @@
 import { CommonModule } from "@angular/common";
-import { Component, computed, input, output, signal } from "@angular/core";
+import { Component, computed, effect, input, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonButton, IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { chevronForwardOutline, closeOutline, documentTextOutline, imagesOutline } from "ionicons/icons";
+import {
+	chevronForwardOutline,
+	closeOutline,
+	documentTextOutline,
+	globeOutline,
+	imagesOutline,
+	lockClosedOutline,
+} from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -47,6 +54,15 @@ export class EventReportComponent {
 
 	canEditReport = computed(() => this.event()?._links?.updateEventReport?.allowed ?? false);
 	canEditAlbum = computed(() => this.event()?._links?.updateEvent?.allowed ?? false);
+	canReadRevizorReport = computed(() => this.event()?._links?.getEventReport?.allowed ?? false);
+
+	readonly revizorFields: { key: keyof SDK.EventReportResponse; label: string; placeholder: string }[] = [
+		{ key: "reportComplications", label: "Komplikace", placeholder: "Co se nepovedlo, úrazy, problémy…" },
+		{ key: "reportPraises", label: "Pochvaly", placeholder: "Kdo nebo co si zaslouží pochvalu…" },
+		{ key: "reportComplaints", label: "Stížnosti", placeholder: "Stížnosti rodičů, dětí nebo okolí…" },
+	];
+
+	revizorReport = signal<SDK.EventReportResponse | null>(null);
 
 	addingAlbum = signal(false);
 	removingAlbum = signal(false);
@@ -56,7 +72,34 @@ export class EventReportComponent {
 		private readonly toastService: ToastService,
 		private readonly modalService: ModalService,
 	) {
-		addIcons({ imagesOutline, chevronForwardOutline, documentTextOutline, closeOutline });
+		addIcons({
+			imagesOutline,
+			chevronForwardOutline,
+			documentTextOutline,
+			closeOutline,
+			globeOutline,
+			lockClosedOutline,
+		});
+
+		effect(() => {
+			const event = this.event();
+			const allowed = this.canReadRevizorReport();
+			if (event && allowed) this.loadRevizorReport(event.id);
+			else this.revizorReport.set(null);
+		});
+	}
+
+	async loadRevizorReport(eventId: number) {
+		try {
+			const report = await this.api.EventsApi.getEventReport(eventId).then((res) => res.data);
+			if (this.event()?.id === eventId) this.revizorReport.set(report);
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se načíst část reportu pro revizora.", { color: "warning" });
+		}
+	}
+
+	async saveRevizorField(key: keyof SDK.EventReportResponse, value: string | null) {
+		await this.saveReportData({ [key]: value });
 	}
 
 	async writeReport() {
@@ -86,7 +129,8 @@ export class EventReportComponent {
 		if (!event) return;
 
 		try {
-			await this.api.EventsApi.updateEventReport(event.id, data);
+			const report = await this.api.EventsApi.updateEventReport(event.id, data).then((res) => res.data);
+			this.revizorReport.set(report);
 			this.toastService.toast("Uloženo.");
 			this.change.emit();
 		} catch (e) {

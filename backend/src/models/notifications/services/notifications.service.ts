@@ -95,6 +95,16 @@ export class NotificationsService {
 		});
 	}
 
+	async onEventReportPublished(event: Event, actorUserId?: number) {
+		const recipients = await this.getUsersByRoles([UserRoles.revizor]);
+
+		await this.notifyUsers(NotificationTypes.newEventReports, recipients, actorUserId, {
+			title: `Nový report z akce: ${event.name}`,
+			body: this.formatEventDates(event),
+			path: `/akce/${event.id}?tab=report`,
+		});
+	}
+
 	async onUserCreated(user: User, actorUserId?: number) {
 		const recipients = await this.getUsersByRoles([UserRoles.admin]);
 
