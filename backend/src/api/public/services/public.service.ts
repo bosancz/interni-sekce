@@ -8,7 +8,9 @@ import { PhotosRepository } from "src/models/albums/repositories/photos.reposito
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { FilesService } from "src/models/files/services/files.service";
+import { BoardMember } from "src/models/members/entities/board-member.entity";
 import { Group } from "src/models/members/entities/group.entity";
+import { BoardMembersRepository } from "src/models/members/repositories/board-members.repository";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
 
 const PREVIEW_PHOTOS_COUNT = 8;
@@ -22,6 +24,7 @@ export class PublicService {
 		private readonly photos: PhotosRepository,
 		private readonly files: FilesService,
 		private readonly groups: GroupsRepository,
+		private readonly boardMembers: BoardMembersRepository,
 	) {}
 
 	private get apiBase() {
@@ -142,6 +145,36 @@ export class PublicService {
 							? `${this.apiBase}/public/groups/${group.id}/leader/profile-photo?v=${leader.profilePhotoUpdatedAt.getTime()}`
 							: null,
 					}
+				: null,
+		};
+	}
+
+	async getBoardMembers() {
+		const boardMembers = await this.boardMembers.getBoardMembers({ contacts: true });
+		return boardMembers.map((boardMember) => this.serializeBoardMember(boardMember));
+	}
+
+	async getBoardMemberProfilePhotoPath(memberId: number): Promise<string> {
+		const boardMembers = await this.boardMembers.getBoardMembers();
+		const member = boardMembers.find((boardMember) => boardMember.memberId === memberId)?.member;
+		if (!member?.profilePhotoUpdatedAt) throw new NotFoundException();
+
+		return join(this.config.fs.membersDir, String(member.id), "profile_photo.jpg");
+	}
+
+	private serializeBoardMember(boardMember: BoardMember) {
+		const member = boardMember.member!;
+
+		return {
+			_id: String(member.id),
+			function: boardMember.function,
+			nickname: member.nickname,
+			firstName: member.firstName ?? null,
+			lastName: member.lastName ?? null,
+			email: member.email ?? null,
+			mobile: member.mobile ?? null,
+			profilePhoto: member.profilePhotoUpdatedAt
+				? `${this.apiBase}/public/board-members/${member.id}/profile-photo?v=${member.profilePhotoUpdatedAt.getTime()}`
 				: null,
 		};
 	}

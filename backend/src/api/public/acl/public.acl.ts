@@ -44,3 +44,9 @@ export const PublicGroupsPermission = new Permission<void>({
 	name: "groups",
 	allowed: { verejnost: true },
 });
+
+export const PublicBoardMembersPermission = new Permission<void>({
+	linkTo: RootResponse,
+	name: "boardMembers",
+	allowed: { verejnost: true },
+});

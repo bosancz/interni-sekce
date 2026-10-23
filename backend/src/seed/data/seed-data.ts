@@ -15,6 +15,11 @@ export interface SeedGroup {
 	leader?: string;
 }
 
+export interface SeedBoardMember {
+	member: string;
+	function: string;
+}
+
 export interface SeedMemberContact {
 	relationship: string;
 	name?: string;
@@ -130,6 +135,13 @@ export const SeedGroups: SeedGroup[] = [
 		leader: "Šmak",
 	},
 	{ shortName: "KP", name: "Klub přátel", color: "#0F0F0F", active: true, children: false },
+];
+
+export const SeedBoardMembers: SeedBoardMember[] = [
+	{ member: "Bilbo", function: "hlavní vedoucí" },
+	{ member: "Glóin (pokladník)", function: "hospodář" },
+	{ member: "Thorin", function: "člen vedení" },
+	{ member: "Gandalf (správce programu)", function: "revizor" },
 ];
 
 export const SeedUsers: SeedUser[] = [
