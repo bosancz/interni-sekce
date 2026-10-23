@@ -18,27 +18,31 @@
 	</bo-card-header>
 	<bo-card-content>
 		<div class="section-label">
-			<span>Shrnutí akce</span>
+			<span>Shrnutí akce na web</span>
 			<span class="visibility"><ion-icon name="globe-outline"></ion-icon>veřejné</span>
-			@if (canEditReport() && event()?.report) {
-				<bo-edit-button-markdown label="Shrnutí akce" [value]="event()?.report" (update)="saveReport($event)" />
+			@if (canEditReport() && event()?.publicReport) {
+				<bo-edit-button-markdown
+					label="Shrnutí akce na web"
+					[value]="event()?.publicReport"
+					(update)="saveReportData({ publicReport: $event })"
+				/>
 			}
 		</div>
-		<p class="section-hint">Čte ho revizor a po publikování vyjde v Aktualitách na bosan.cz.</p>
+		<p class="section-hint">Po publikování vyjde v Aktualitách na bosan.cz.</p>
 
-		@if (event() && event()!.report) {
-			<div class="report-text" [innerHTML]="event()!.report | markdown"></div>
+		@if (event()?.publicReport; as publicReport) {
+			<div class="report-text" [innerHTML]="publicReport | markdown"></div>
 		} @else if (event()) {
 			<div class="bo-empty-state">
 				<ion-icon name="document-text-outline"></ion-icon>
 				<strong>Shrnutí je zatím prázdné</strong>
-				<p>Sepiš krátce, jak akce proběhla — pro revizora i pro rodiče na webu.</p>
+				<p>Sepiš krátce, jak akce proběhla — pro rodiče a děti na webu.</p>
 				<ion-button
 					fill="solid"
 					color="warning"
 					[disabled]="!canEditReport()"
 					[boTooltip]="canEditReport() ? null : noPermissionText"
-					(click)="writeReport()"
+					(click)="writePublicReport()"
 				>
 					Napsat shrnutí
 				</ion-button>
@@ -71,60 +75,39 @@
 					}
 				</span>
 			</div>
-		}
 
-		@if (canReadRevizorReport()) {
 			<div class="revizor-section">
 				<div class="section-label">
-					<span>Pro revizora</span>
+					<span>Report pro revizora</span>
 					<span class="visibility"><ion-icon name="lock-closed-outline"></ion-icon>neveřejné</span>
-				</div>
-				<p class="section-hint">Vidí jen vedoucí akce a revizor.</p>
-
-				<div class="revizor-fields">
-					@for (field of revizorFields; track field.key) {
-						<div class="revizor-field">
-							<div class="section-label sub">
-								<span>{{ field.label }}</span>
-								@if (canEditReport() && revizorReport()) {
-									<bo-edit-button-markdown
-										[label]="field.label"
-										[placeholder]="field.placeholder"
-										[value]="revizorReport()?.[field.key]"
-										(update)="saveRevizorField(field.key, $event)"
-									/>
-								}
-								@if (canEditReport() && revizorReport() && !revizorReport()?.[field.key]) {
-									<ion-checkbox
-										class="none-checkbox"
-										labelPlacement="end"
-										[checked]="revizorReport()?.[field.key] === ''"
-										(ionChange)="setRevizorFieldNone(field.key, $event.detail.checked)"
-									>
-										Žádné
-									</ion-checkbox>
-								}
-							</div>
-							@if (!revizorReport()) {
-								<p><ion-skeleton-text animated></ion-skeleton-text></p>
-							} @else if (revizorReport()?.[field.key]; as value) {
-								<div class="revizor-field-value" [innerHTML]="value | markdown"></div>
-							} @else if (revizorReport()?.[field.key] === "") {
-								@if (!canEditReport()) {
-									<p class="muted">Žádné.</p>
-								}
-							} @else {
-								<p class="missing">
-									@if (canEditReport()) {
-										Nevyplněno — napiš, co se stalo, nebo zaškrtni „Žádné“.
-									} @else {
-										Nevyplněno.
-									}
-								</p>
-							}
-						</div>
+					@if (canEditReport() && event()?.report) {
+						<bo-edit-button-markdown
+							label="Report pro revizora"
+							[value]="event()?.report"
+							(update)="saveReportData({ report: $event })"
+						/>
 					}
 				</div>
+				<p class="section-hint">Na web nejde, čtou ho vedoucí a revizor.</p>
+
+				@if (event()?.report; as report) {
+					<div class="report-text" [innerHTML]="report | markdown"></div>
+				} @else {
+					<div class="bo-empty-state">
+						<ion-icon name="lock-closed-outline"></ion-icon>
+						<strong>Report pro revizora je zatím prázdný</strong>
+						<p>Komplikace, pochvaly a stížnosti z akce.</p>
+						<ion-button
+							fill="solid"
+							color="warning"
+							[disabled]="!canEditReport()"
+							[boTooltip]="canEditReport() ? null : noPermissionText"
+							(click)="writeReport()"
+						>
+							Napsat report
+						</ion-button>
+					</div>
+				}
 			</div>
 		}
 

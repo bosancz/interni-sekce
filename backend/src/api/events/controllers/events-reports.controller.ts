@@ -2,7 +2,6 @@ import {
 	Body,
 	Controller,
 	Delete,
-	Get,
 	HttpCode,
 	Logger,
 	NotFoundException,
@@ -14,27 +13,21 @@ import {
 	UnprocessableEntityException,
 } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { NotificationsService } from "src/models/notifications/services/notifications.service";
-import { Repository } from "typeorm";
 import {
 	EventReportEditPermission,
 	EventReportPublishPermission,
-	EventReportReadPermission,
 	EventReportUnpublishPermission,
 } from "../acl/events.acl";
-import { EventReportResponse, EventReportUpdateBody } from "../dto/event.dto";
+import { EventReportUpdateBody } from "../dto/event.dto";
 
 const emptyToNull = (value: string | null | undefined) =>
 	value === undefined ? undefined : value?.trim() ? value : null;
-
-const trimRevizorField = (value: string | null | undefined) =>
-	value === undefined || value === null ? value : value.trim();
 
 @Controller("events")
 @Authenticated()
@@ -45,65 +38,32 @@ export class EventsReportsController {
 
 	constructor(
 		private events: EventsRepository,
-		@InjectRepository(Event) private eventsRepository: Repository<Event>,
 		private notificationsService: NotificationsService,
 	) {}
 
-	@Get(":eventId/report")
-	@AcLinks(EventReportReadPermission)
-	@ApiResponse({ status: 200, type: EventReportResponse })
-	async getEventReport(
-		@Req() req: Request,
-		@Param("eventId", ParseIntPipe) eventId: number,
-	): Promise<EventReportResponse> {
-		const event = await this.events.getEvent(eventId);
-		if (!event) throw new NotFoundException();
-
-		EventReportReadPermission.canOrThrow(req, event);
-
-		const report = await this.eventsRepository.findOne({
-			where: { id: eventId },
-			select: { id: true, reportComplications: true, reportPraises: true, reportComplaints: true },
-			withDeleted: true,
-		});
-
-		return {
-			reportComplications: report?.reportComplications ?? null,
-			reportPraises: report?.reportPraises ?? null,
-			reportComplaints: report?.reportComplaints ?? null,
-		};
-	}
-
 	@Put(":eventId/report")
+	@HttpCode(204)
 	@AcLinks(EventReportEditPermission)
-	@ApiResponse({ status: 200, type: EventReportResponse })
+	@ApiResponse({ status: 204 })
 	async updateEventReport(
 		@Req() req: Request,
 		@Param("eventId", ParseIntPipe) eventId: number,
 		@Body() body: EventReportUpdateBody,
-	): Promise<EventReportResponse> {
+	): Promise<void> {
 		const event = await this.events.getEvent(eventId);
 		if (!event) throw new NotFoundException();
 
 		EventReportEditPermission.canOrThrow(req, event);
 
-		const { report, river, waterKm, reportComplications, reportPraises, reportComplaints } = body;
-		const data: Partial<Event> = {
-			river,
-			waterKm,
-			reportComplications: trimRevizorField(reportComplications),
-			reportPraises: trimRevizorField(reportPraises),
-			reportComplaints: trimRevizorField(reportComplaints),
-		};
+		const { report, publicReport, river, waterKm } = body;
+		const data: Partial<Event> = { report: emptyToNull(report), river, waterKm };
 
-		if (report !== undefined) {
-			data.report = emptyToNull(report);
-			if (!data.report) data.reportPublishedAt = null;
+		if (publicReport !== undefined) {
+			data.publicReport = emptyToNull(publicReport);
+			if (!data.publicReport) data.reportPublishedAt = null;
 		}
 
 		await this.events.updateEvent(eventId, data);
-
-		return this.getEventReport(req, eventId);
 	}
 
 	@Post(":eventId/report/publish")
@@ -116,11 +76,8 @@ export class EventsReportsController {
 
 		EventReportPublishPermission.canOrThrow(req, event);
 
-		if (!event.report?.trim()) throw new UnprocessableEntityException("Report has no summary.");
-
-		const revizorReport = await this.getEventReport(req, eventId);
-		if (Object.values(revizorReport).some((value) => value === null))
-			throw new UnprocessableEntityException("Report has unanswered revizor fields.");
+		if (!event.publicReport?.trim()) throw new UnprocessableEntityException("Report has no public summary.");
+		if (!event.report?.trim()) throw new UnprocessableEntityException("Report has no report for the revizor.");
 
 		await this.events.updateEvent(eventId, { reportPublishedAt: new Date() });
 

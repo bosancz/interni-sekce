@@ -148,7 +148,7 @@ export class EventsRepository {
 				"events.dateFrom",
 				"events.dateTill",
 				"events.leadersEvent",
-				"events.report",
+				"events.publicReport",
 				"events.reportPublishedAt",
 				"events.river",
 				"events.waterKm",

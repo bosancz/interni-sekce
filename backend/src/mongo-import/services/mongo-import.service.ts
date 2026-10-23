@@ -316,6 +316,7 @@ export class MongoImportService {
 				leadersEvent: mongoEvent.groups?.includes("V") || false,
 				hasRegistration: !!mongoEvent.registration,
 				report: null,
+				publicReport: null,
 				reportPublishedAt: null,
 				srcId: mongoEvent._id.toString(),
 				groups,

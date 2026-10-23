@@ -331,6 +331,7 @@ export class SeedService {
 				leadersEvent: seedEvent.leadersEvent ?? false,
 				hasRegistration: seedEvent.hasRegistration ?? false,
 				report: null,
+				publicReport: null,
 				announcementSentAt: null,
 				accountingSentAt: null,
 				srcId: null,

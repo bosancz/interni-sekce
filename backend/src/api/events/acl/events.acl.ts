@@ -211,16 +211,6 @@ export const EventRegistrationDeletePermission = new Permission({
 	applicable: ({ doc }) => doc.hasRegistration,
 });
 
-export const EventReportReadPermission = new Permission({
-	linkTo: EventResponse,
-	params: { eventId: "id" },
-
-	allowed: {
-		revizor: ({ doc }) => !!doc.reportPublishedAt,
-		vedouci: ({ doc, req }) => isMyEvent(doc, req),
-	},
-});
-
 export const EventReportEditPermission = new Permission({
 	linkTo: EventResponse,
 	params: { eventId: "id" },
