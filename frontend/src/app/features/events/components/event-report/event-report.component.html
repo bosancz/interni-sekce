@@ -94,13 +94,33 @@
 										(update)="saveRevizorField(field.key, $event)"
 									/>
 								}
+								@if (canEditReport() && revizorReport() && !revizorReport()?.[field.key]) {
+									<ion-checkbox
+										class="none-checkbox"
+										labelPlacement="end"
+										[checked]="revizorReport()?.[field.key] === ''"
+										(ionChange)="setRevizorFieldNone(field.key, $event.detail.checked)"
+									>
+										Žádné
+									</ion-checkbox>
+								}
 							</div>
 							@if (!revizorReport()) {
 								<p><ion-skeleton-text animated></ion-skeleton-text></p>
 							} @else if (revizorReport()?.[field.key]; as value) {
 								<div class="revizor-field-value" [innerHTML]="value | markdown"></div>
+							} @else if (revizorReport()?.[field.key] === "") {
+								@if (!canEditReport()) {
+									<p class="muted">Žádné.</p>
+								}
 							} @else {
-								<p class="muted">Nic.</p>
+								<p class="missing">
+									@if (canEditReport()) {
+										Nevyplněno — napiš, co se stalo, nebo zaškrtni „Žádné“.
+									} @else {
+										Nevyplněno.
+									}
+								</p>
 							}
 						</div>
 					}
@@ -120,9 +140,13 @@
 					<ion-icon name="send-outline" slot="start"></ion-icon>
 					Publikovat report
 				</ion-button>
-				<p class="section-hint">
-					Shrnutí vyjde v Aktualitách na bosan.cz a revizor dostane upozornění. Upravit půjde i potom.
-				</p>
+				@if (event()?._links?.publishEventReport?.allowed && publishBlockedText(); as blocked) {
+					<p class="section-hint missing">{{ blocked }}</p>
+				} @else {
+					<p class="section-hint">
+						Shrnutí vyjde v Aktualitách na bosan.cz a revizor dostane upozornění. Upravit půjde i potom.
+					</p>
+				}
 			</div>
 		} @else if (event()?.reportPublishedAt) {
 			<div class="publish">

@@ -33,6 +33,9 @@ import { EventReportResponse, EventReportUpdateBody } from "../dto/event.dto";
 const emptyToNull = (value: string | null | undefined) =>
 	value === undefined ? undefined : value?.trim() ? value : null;
 
+const trimRevizorField = (value: string | null | undefined) =>
+	value === undefined || value === null ? value : value.trim();
+
 @Controller("events")
 @Authenticated()
 @AcController()
@@ -88,9 +91,9 @@ export class EventsReportsController {
 		const data: Partial<Event> = {
 			river,
 			waterKm,
-			reportComplications: emptyToNull(reportComplications),
-			reportPraises: emptyToNull(reportPraises),
-			reportComplaints: emptyToNull(reportComplaints),
+			reportComplications: trimRevizorField(reportComplications),
+			reportPraises: trimRevizorField(reportPraises),
+			reportComplaints: trimRevizorField(reportComplaints),
 		};
 
 		if (report !== undefined) {
@@ -114,6 +117,10 @@ export class EventsReportsController {
 		EventReportPublishPermission.canOrThrow(req, event);
 
 		if (!event.report?.trim()) throw new UnprocessableEntityException("Report has no summary.");
+
+		const revizorReport = await this.getEventReport(req, eventId);
+		if (Object.values(revizorReport).some((value) => value === null))
+			throw new UnprocessableEntityException("Report has unanswered revizor fields.");
 
 		await this.events.updateEvent(eventId, { reportPublishedAt: new Date() });
 

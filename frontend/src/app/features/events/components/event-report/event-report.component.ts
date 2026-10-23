@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, computed, effect, input, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { IonButton, IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonButton, IonCheckbox, IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
@@ -49,6 +49,7 @@ import { RiverSelectModalComponent } from "../river-select-modal/river-select-mo
 		EditButtonNumberComponent,
 		MarkdownPipe,
 		IonButton,
+		IonCheckbox,
 		IonIcon,
 		IonItem,
 		IonLabel,
@@ -74,12 +75,21 @@ export class EventReportComponent {
 
 	revizorReport = signal<SDK.EventReportResponse | null>(null);
 
-	canPublish = computed(() => !!this.event()?._links?.publishEventReport?.allowed && !!this.event()?.report?.trim());
+	missingRevizorFields = computed(() => {
+		const report = this.revizorReport();
+		return this.revizorFields.filter((field) => !report || report[field.key] === null);
+	});
+
 	publishBlockedText = computed(() => {
 		if (!this.event()?._links?.publishEventReport?.allowed) return this.noPermissionText;
 		if (!this.event()?.report?.trim()) return "Nejdřív napiš shrnutí akce.";
+		const missing = this.missingRevizorFields();
+		if (missing.length)
+			return `Vyplň nebo zaškrtni „Žádné“: ${missing.map((field) => field.label.toLowerCase()).join(", ")}.`;
 		return null;
 	});
+
+	canPublish = computed(() => this.publishBlockedText() === null);
 
 	publishing = signal(false);
 
@@ -120,7 +130,11 @@ export class EventReportComponent {
 	}
 
 	async saveRevizorField(key: keyof SDK.EventReportResponse, value: string | null) {
-		await this.saveReportData({ [key]: value });
+		await this.saveReportData({ [key]: value?.trim() || null });
+	}
+
+	async setRevizorFieldNone(key: keyof SDK.EventReportResponse, none: boolean) {
+		await this.saveReportData({ [key]: none ? "" : null });
 	}
 
 	async writeReport() {
