@@ -5,11 +5,12 @@ set -euo pipefail
 
 REMOTE="gdrive:"
 DB_PREFIX="interni-sekce-db-"
-KEEP_DAYS="${BACKUP_KEEP_DAYS:-30}"
-KEEP_MONTHS="${BACKUP_KEEP_MONTHS:-12}"
-KEEP_DELETED_DAYS="${BACKUP_KEEP_DELETED_DAYS:-365}"
+KEEP_DAYS="${BACKUP_DB_KEEP_DAYS:-}"
+KEEP_MONTHS="${BACKUP_DB_KEEP_MONTHS:-}"
+KEEP_DELETED_DAYS="${BACKUP_FILES_KEEP_DELETED_DAYS:-}"
 STATE_DIR="${BACKUP_STATE_DIR:-/var/lib/backup}"
 DATA_DIR="${DATA_DIR:-/data}"
+read -r -a EXCLUDE_DIRS <<<"${BACKUP_EXCLUDE_DIRS-thumbs thumbnails}"
 read -r -a EXCLUDE_TABLE_DATA <<<"${BACKUP_EXCLUDE_TABLE_DATA-photo_embeddings}"
 
 export RCLONE_CONFIG=""
@@ -34,7 +35,7 @@ backup_database() {
 	log "Dumping database ${PGDATABASE:-}"
 	pg_dump "${args[@]}"
 	(cd "$tmp" && zip -q -9 -m "$name.zip" "$name.sql")
-	log "Database dumped to $name.zip ($(du -h "$tmp/$name.zip" | cut -f1))"
+	log "Database dumped to $name.zip ($(numfmt --to=iec --suffix=B "$(stat -c %s "$tmp/$name.zip")"))"
 
 	rclone copyto "$tmp/$name.zip" "${REMOTE}databaze/denni/$name.zip"
 	if ! rclone lsf "${REMOTE}databaze/mesicni" --include "${DB_PREFIX}$(date +%Y-%m)-*" 2>/dev/null | grep -q .; then
@@ -43,32 +44,39 @@ backup_database() {
 	fi
 	log "Uploaded $name.zip"
 
-	rclone delete "${REMOTE}databaze/denni" --min-age "${KEEP_DAYS}d" --include "${DB_PREFIX}*" --drive-use-trash=false
-	rclone delete "${REMOTE}databaze/mesicni" --min-age "$((KEEP_MONTHS * 31))d" --include "${DB_PREFIX}*" --drive-use-trash=false
+	if [ -n "$KEEP_DAYS" ]; then
+		rclone delete "${REMOTE}databaze/denni" --min-age "${KEEP_DAYS}d" --include "${DB_PREFIX}*" --drive-use-trash=false
+	fi
+	if [ -n "$KEEP_MONTHS" ]; then
+		rclone delete "${REMOTE}databaze/mesicni" --min-age "$((KEEP_MONTHS * 31))d" --include "${DB_PREFIX}*" --drive-use-trash=false
+	fi
 
 	touch "$STATE_DIR/database-ok"
 }
 
 backup_files() {
 	log "Syncing $DATA_DIR"
-	local status=0
+	local status=0 excludes=()
+	for dir in "${EXCLUDE_DIRS[@]}"; do excludes+=(--exclude "/$dir/**"); done
 	rclone sync "$DATA_DIR" "${REMOTE}soubory" \
-		--exclude "/thumbs/**" \
+		"${excludes[@]}" \
 		--backup-dir "${REMOTE}smazane/$(date +%Y-%m-%d)" \
-		--drive-stop-on-upload-limit \
+		--tpslimit 5 \
 		--fast-list \
 		--stats 10m --stats-one-line --stats-log-level NOTICE \
 		|| status=$?
 
-	local cutoff
-	cutoff="$(date -d "-${KEEP_DELETED_DAYS} days" +%Y-%m-%d)"
-	rclone lsf "${REMOTE}smazane" --dirs-only 2>/dev/null | while read -r dir; do
-		dir="${dir%/}"
-		if [[ "$dir" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ && "$dir" < "$cutoff" ]]; then
-			rclone purge "${REMOTE}smazane/$dir" --drive-use-trash=false
-			log "Deleted files removed before $dir"
-		fi
-	done
+	if [ -n "$KEEP_DELETED_DAYS" ]; then
+		local cutoff
+		cutoff="$(date -d "-${KEEP_DELETED_DAYS} days" +%Y-%m-%d)"
+		rclone lsf "${REMOTE}smazane" --dirs-only 2>/dev/null | while read -r dir; do
+			dir="${dir%/}"
+			if [[ "$dir" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ && "$dir" < "$cutoff" ]]; then
+				rclone purge "${REMOTE}smazane/$dir" --drive-use-trash=false
+				log "Deleted files removed before $dir"
+			fi
+		done
+	fi
 
 	if [ "$status" -ne 0 ]; then
 		log "File sync stopped with code $status, the next run continues where it ended"
