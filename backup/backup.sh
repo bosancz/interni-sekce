@@ -62,7 +62,6 @@ backup_files() {
 		"${excludes[@]}" \
 		--backup-dir "${REMOTE}smazane/$(date +%Y-%m-%d)" \
 		--tpslimit 5 \
-		--fast-list \
 		--stats 10m --stats-one-line --stats-log-level NOTICE \
 		|| status=$?
 
