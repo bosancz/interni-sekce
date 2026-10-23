@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
-import { Component, computed, effect, input, output, signal } from "@angular/core";
+import { Component, computed, input, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { IonButton, IonCheckbox, IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonButton, IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
@@ -31,6 +31,8 @@ import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 import { AlbumSelectorModalComponent, CREATE_ALBUM } from "../album-selector-modal/album-selector-modal.component";
 import { RiverSelectModalComponent } from "../river-select-modal/river-select-modal.component";
 
+const REVIZOR_REPORT_TEMPLATE = "**Komplikace:**\n\n**Pochvaly:**\n\n**Stížnosti:**\n";
+
 @UntilDestroy()
 @Component({
 	selector: "bo-event-report",
@@ -49,7 +51,6 @@ import { RiverSelectModalComponent } from "../river-select-modal/river-select-mo
 		EditButtonNumberComponent,
 		MarkdownPipe,
 		IonButton,
-		IonCheckbox,
 		IonIcon,
 		IonItem,
 		IonLabel,
@@ -65,27 +66,12 @@ export class EventReportComponent {
 
 	canEditReport = computed(() => this.event()?._links?.updateEventReport?.allowed ?? false);
 	canEditAlbum = computed(() => this.event()?._links?.updateEvent?.allowed ?? false);
-	canReadRevizorReport = computed(() => this.event()?._links?.getEventReport?.allowed ?? false);
-
-	readonly revizorFields: { key: keyof SDK.EventReportResponse; label: string; placeholder: string }[] = [
-		{ key: "reportComplications", label: "Komplikace", placeholder: "Co se nepovedlo, úrazy, problémy…" },
-		{ key: "reportPraises", label: "Pochvaly", placeholder: "Kdo nebo co si zaslouží pochvalu…" },
-		{ key: "reportComplaints", label: "Stížnosti", placeholder: "Stížnosti rodičů, dětí nebo okolí…" },
-	];
-
-	revizorReport = signal<SDK.EventReportResponse | null>(null);
-
-	missingRevizorFields = computed(() => {
-		const report = this.revizorReport();
-		return this.revizorFields.filter((field) => !report || report[field.key] === null);
-	});
-
 	publishBlockedText = computed(() => {
-		if (!this.event()?._links?.publishEventReport?.allowed) return this.noPermissionText;
-		if (!this.event()?.report?.trim()) return "Nejdřív napiš shrnutí akce.";
-		const missing = this.missingRevizorFields();
-		if (missing.length)
-			return `Vyplň nebo zaškrtni „Žádné“: ${missing.map((field) => field.label.toLowerCase()).join(", ")}.`;
+		const event = this.event();
+		if (!event?._links?.publishEventReport?.allowed) return this.noPermissionText;
+		if (!event.publicReport?.trim()) return "Nejdřív napiš shrnutí akce.";
+		if (!event.report?.trim() || event.report.trim() === REVIZOR_REPORT_TEMPLATE.trim())
+			return "Nejdřív vyplň report pro revizora.";
 		return null;
 	});
 
@@ -111,43 +97,24 @@ export class EventReportComponent {
 			sendOutline,
 			checkmarkCircleOutline,
 		});
+	}
 
-		effect(() => {
-			const event = this.event();
-			const allowed = this.canReadRevizorReport();
-			if (event && allowed) this.loadRevizorReport(event.id);
-			else this.revizorReport.set(null);
+	async writePublicReport() {
+		const result = await this.modalService.componentModal(MarkdownEditorModalComponent, {
+			header: "Shrnutí akce na web",
+			value: this.event()?.publicReport ?? "",
 		});
-	}
 
-	async loadRevizorReport(eventId: number) {
-		try {
-			const report = await this.api.EventsApi.getEventReport(eventId).then((res) => res.data);
-			if (this.event()?.id === eventId) this.revizorReport.set(report);
-		} catch (e) {
-			this.toastService.toast("Nepodařilo se načíst část reportu pro revizora.", { color: "warning" });
-		}
-	}
-
-	async saveRevizorField(key: keyof SDK.EventReportResponse, value: string | null) {
-		await this.saveReportData({ [key]: value?.trim() || null });
-	}
-
-	async setRevizorFieldNone(key: keyof SDK.EventReportResponse, none: boolean) {
-		await this.saveReportData({ [key]: none ? "" : null });
+		if (result !== null) await this.saveReportData({ publicReport: result });
 	}
 
 	async writeReport() {
 		const result = await this.modalService.componentModal(MarkdownEditorModalComponent, {
-			header: "Shrnutí akce",
-			value: this.event()?.report ?? "",
+			header: "Report pro revizora",
+			value: this.event()?.report || REVIZOR_REPORT_TEMPLATE,
 		});
 
-		if (result !== null) await this.saveReport(result);
-	}
-
-	async saveReport(report: string | null) {
-		await this.saveReportData({ report });
+		if (result !== null) await this.saveReportData({ report: result });
 	}
 
 	async publish() {
@@ -171,7 +138,7 @@ export class EventReportComponent {
 		if (!event || this.publishing()) return;
 
 		const confirmed = await this.modalService.confirmationModal(
-			"Shrnutí zmizí z webu a revizor uvidí report až po novém publikování.",
+			"Shrnutí zmizí z Aktualit na bosan.cz, dokud report znovu nepublikuješ.",
 			{ header: "Zrušit publikování?", buttonText: "Zrušit publikování" },
 		);
 		if (!confirmed) return;
@@ -202,8 +169,7 @@ export class EventReportComponent {
 		if (!event) return;
 
 		try {
-			const report = await this.api.EventsApi.updateEventReport(event.id, data).then((res) => res.data);
-			this.revizorReport.set(report);
+			await this.api.EventsApi.updateEventReport(event.id, data);
 			this.toastService.toast("Uloženo.");
 			this.change.emit();
 		} catch (e) {

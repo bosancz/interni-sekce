@@ -1618,28 +1618,16 @@ export namespace SDK {
         'report': string | null;
         /**
          * 
+         * @type {string}
+         * @memberof Event
+         */
+        'publicReport': string | null;
+        /**
+         * 
          * @type {object}
          * @memberof Event
          */
         'reportPublishedAt': object;
-        /**
-         * 
-         * @type {string}
-         * @memberof Event
-         */
-        'reportComplications'?: string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof Event
-         */
-        'reportPraises'?: string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof Event
-         */
-        'reportComplaints'?: string | null;
         /**
          * 
          * @type {object}
@@ -2360,32 +2348,6 @@ export namespace SDK {
         /**
      * 
      * @export
-     * @interface EventReportResponse
-     */
-    export interface EventReportResponse {
-        /**
-         * 
-         * @type {string}
-         * @memberof EventReportResponse
-         */
-        'reportComplications': string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof EventReportResponse
-         */
-        'reportPraises': string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof EventReportResponse
-         */
-        'reportComplaints': string | null;
-    }
-    
-        /**
-     * 
-     * @export
      * @interface EventReportUpdateBody
      */
     export interface EventReportUpdateBody {
@@ -2406,25 +2368,13 @@ export namespace SDK {
          * @type {string}
          * @memberof EventReportUpdateBody
          */
+        'publicReport'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventReportUpdateBody
+         */
         'river'?: string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof EventReportUpdateBody
-         */
-        'reportComplications'?: string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof EventReportUpdateBody
-         */
-        'reportPraises'?: string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof EventReportUpdateBody
-         */
-        'reportComplaints'?: string | null;
     }
     
         /**
@@ -2631,6 +2581,12 @@ export namespace SDK {
          * @memberof EventResponse
          */
         'report': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponse
+         */
+        'publicReport': string | null;
     }
     
     
@@ -2755,12 +2711,6 @@ export namespace SDK {
          * @memberof EventResponseLinks
          */
         'deleteEventRegistration': AcLink;
-        /**
-         * 
-         * @type {AcLink}
-         * @memberof EventResponseLinks
-         */
-        'getEventReport': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -3075,6 +3025,12 @@ export namespace SDK {
          * @memberof EventResponseWithLinks
          */
         'report': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'publicReport': string | null;
     }
     
     
@@ -10794,10 +10750,6 @@ export namespace SDK {
     
     
     
-    
-    
-    
-    
     /**
      * @export
      */
@@ -11962,50 +11914,6 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<RegistrationTemplateResponse>>(axiosRequestConfig);
-        }
-    
-        /**
-         * 
-    
-         * @param {number} eventId 
-         * @param {AxiosRequestConfig} [options] Override http request option.
-         * @throws {RequiredError}
-         * @memberof EventsApi
-         */
-        
-        public async getEventReport(
-            eventId: number,
-            options: AxiosRequestConfig = {}
-        ) {
-    
-            // verify required parameter 'eventId' is not null or undefined
-            assertParamExists('getEventReport', 'eventId', eventId)
-            
-            const localVarPath = `/api/events/{eventId}/report`
-                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (this.configuration) {
-                baseOptions = this.configuration.baseOptions;
-            }
-    
-            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
-            const requestHeaderParameter = {} as any;
-            const requestQueryParameter = {} as any;
-    
-            // authentication cookieAuth required
-    
-    
-    
-            setSearchParams(requestUrlObj, requestQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-    
-            axiosRequestConfig["url"] = toPathString(requestUrlObj);
-            axiosRequestConfig["baseURL"] = this.configuration.basePath;
-            
-            return this.axios.request<EventReportResponse>(axiosRequestConfig);
         }
     
         /**
@@ -13294,7 +13202,7 @@ export namespace SDK {
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
-            return this.axios.request<EventReportResponse>(axiosRequestConfig);
+            return this.axios.request<void>(axiosRequestConfig);
         }
     }
     

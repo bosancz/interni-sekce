@@ -143,7 +143,7 @@ export class PublicService {
 			groups: (event.groupsIds ?? []).map((id) => groupNameById.get(id)).filter((name): name is string => !!name),
 			leadersEvent: event.leadersEvent,
 			leaders: (event.leaders ?? []).map((member) => ({ _id: String(member.id), nickname: member.nickname })),
-			report: event.report,
+			report: event.publicReport,
 			reportPublishedAt: event.reportPublishedAt,
 			river: event.river,
 			waterKm: event.waterKm,

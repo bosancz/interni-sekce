@@ -61,17 +61,6 @@ bo-card-content {
 	margin: 0;
 }
 
-.none-checkbox {
-	margin-left: 0.5rem;
-	font-weight: 400;
-	font-size: 0.875rem;
-	--size: 18px;
-
-	&::part(label) {
-		margin-inline-start: 6px;
-	}
-}
-
 .muted {
 	color: var(--bo-muted);
 	margin: 0;
