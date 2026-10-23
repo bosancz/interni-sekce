@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	Body,
 	ConflictException,
 	Controller,
@@ -22,6 +23,7 @@ import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { Config } from "src/config";
 import { FilesService } from "src/models/files/services/files.service";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
+import { MembersRepository } from "src/models/members/repositories/members.repository";
 import {
 	GroupCreatePermission,
 	GroupDeletePermission,
@@ -47,6 +49,7 @@ function throwOnDuplicateShortName(err: unknown): never {
 export class GroupsController {
 	constructor(
 		private groups: GroupsRepository,
+		private members: MembersRepository,
 		private filesService: FilesService,
 		private config: Config,
 	) {}
@@ -72,7 +75,7 @@ export class GroupsController {
 	@AcLinks(GroupReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(GroupResponse) })
 	async getGroup(@Param("groupId", ParseIntPipe) groupId: number, @Req() req: Request) {
-		const group = await this.groups.getGroup(groupId);
+		const group = await this.groups.getGroup(groupId, { leader: true });
 		if (!group) throw new NotFoundException();
 
 		GroupReadPermission.canOrThrow(req, group);
@@ -92,6 +95,10 @@ export class GroupsController {
 		if (!group) throw new NotFoundException();
 
 		GroupEditPermission.canOrThrow(req, group);
+
+		if (body.leaderId && !(await this.members.getMember(body.leaderId))) {
+			throw new BadRequestException("Vedoucí oddílu neexistuje.");
+		}
 
 		await this.groups.updateGroup(groupId, body).catch(throwOnDuplicateShortName);
 	}

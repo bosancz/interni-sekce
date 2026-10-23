@@ -8,6 +8,9 @@ import { PhotosRepository } from "src/models/albums/repositories/photos.reposito
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { FilesService } from "src/models/files/services/files.service";
+import { BoardMember } from "src/models/members/entities/board-member.entity";
+import { Group } from "src/models/members/entities/group.entity";
+import { BoardMembersRepository } from "src/models/members/repositories/board-members.repository";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
 
 const PREVIEW_PHOTOS_COUNT = 8;
@@ -21,6 +24,7 @@ export class PublicService {
 		private readonly photos: PhotosRepository,
 		private readonly files: FilesService,
 		private readonly groups: GroupsRepository,
+		private readonly boardMembers: BoardMembersRepository,
 	) {}
 
 	private get apiBase() {
@@ -104,6 +108,132 @@ export class PublicService {
 					allowed: { GET: !!event.hasRegistration },
 				},
 			},
+		};
+	}
+
+	async getReports(options: { limit?: number; offset?: number }) {
+		const [events, groups] = await Promise.all([this.events.getPublicReports(options), this.groups.getGroups()]);
+
+		const groupNameById = new Map(groups.map((g) => [g.id, g.shortName]));
+		const coverPhotos = await this.photos.getCoverPhotosByAlbums(
+			events.flatMap((event) => (event.album ? [event.album.id] : [])),
+		);
+
+		return events.map((event) => this.serializeReport(event, groupNameById, coverPhotos));
+	}
+
+	async getReport(id: number) {
+		const [event, groups] = await Promise.all([this.events.getPublicReport(id), this.groups.getGroups()]);
+		if (!event) throw new NotFoundException();
+
+		const coverPhotos = await this.photos.getCoverPhotosByAlbums(event.album ? [event.album.id] : []);
+
+		return this.serializeReport(event, new Map(groups.map((g) => [g.id, g.shortName])), coverPhotos);
+	}
+
+	private serializeReport(event: Event, groupNameById: Map<number, string>, coverPhotos: Map<number, Photo>) {
+		const titlePhoto = event.album ? coverPhotos.get(event.album.id) : undefined;
+
+		return {
+			_id: String(event.id),
+			name: event.name,
+			type: event.type,
+			dateFrom: event.dateFrom,
+			dateTill: event.dateTill,
+			groups: (event.groupsIds ?? []).map((id) => groupNameById.get(id)).filter((name): name is string => !!name),
+			leadersEvent: event.leadersEvent,
+			leaders: (event.leaders ?? []).map((member) => ({ _id: String(member.id), nickname: member.nickname })),
+			report: event.report,
+			reportPublishedAt: event.reportPublishedAt,
+			river: event.river,
+			waterKm: event.waterKm,
+			album: event.album
+				? {
+						_id: String(event.album.id),
+						name: event.album.name,
+						titlePhoto: titlePhoto ? this.serializePhoto(titlePhoto) : null,
+					}
+				: null,
+			_links: {
+				self: { href: `${this.apiBase}/public/reports/${event.id}`, method: "GET", allowed: { GET: true } },
+				album: event.album
+					? {
+							href: `${this.apiBase}/public/gallery/${event.album.id}`,
+							method: "GET",
+							allowed: { GET: true },
+						}
+					: undefined,
+			},
+		};
+	}
+
+	async getGroups() {
+		const groups = await this.groups.getPublicGroups();
+		return groups.map((group) => this.serializeGroup(group));
+	}
+
+	async getGroupLeaderProfilePhotoPath(groupId: number): Promise<string> {
+		const groups = await this.groups.getPublicGroups();
+		const leader = groups.find((group) => group.id === groupId)?.leader;
+		if (!leader?.profilePhotoUpdatedAt) throw new NotFoundException();
+
+		return join(this.config.fs.membersDir, String(leader.id), "profile_photo.jpg");
+	}
+
+	private serializeGroup(group: Group) {
+		const leader = group.leader;
+
+		return {
+			_id: String(group.id),
+			shortName: group.shortName,
+			name: group.name,
+			color: group.color,
+			darkColor: group.darkColor,
+			children: group.children,
+			meetingDay: group.meetingDay,
+			leader: leader
+				? {
+						_id: String(leader.id),
+						nickname: leader.nickname,
+						firstName: leader.firstName ?? null,
+						lastName: leader.lastName ?? null,
+						email: leader.email ?? null,
+						mobile: leader.mobile ?? null,
+						profilePhoto: leader.profilePhotoUpdatedAt
+							? `${this.apiBase}/public/groups/${group.id}/leader/profile-photo?v=${leader.profilePhotoUpdatedAt.getTime()}`
+							: null,
+					}
+				: null,
+		};
+	}
+
+	async getBoardMembers() {
+		const boardMembers = await this.boardMembers.getBoardMembers({ contacts: true });
+		return boardMembers.map((boardMember) => this.serializeBoardMember(boardMember));
+	}
+
+	async getBoardMemberProfilePhotoPath(memberId: number): Promise<string> {
+		const boardMembers = await this.boardMembers.getBoardMembers();
+		const member = boardMembers.find((boardMember) => boardMember.memberId === memberId)?.member;
+		if (!member?.profilePhotoUpdatedAt) throw new NotFoundException();
+
+		return join(this.config.fs.membersDir, String(member.id), "profile_photo.jpg");
+	}
+
+	private serializeBoardMember(boardMember: BoardMember) {
+		const member = boardMember.member!;
+
+		return {
+			_id: String(member.id),
+			function: boardMember.function,
+			nickname: member.nickname,
+			firstName: member.firstName ?? null,
+			lastName: member.lastName ?? null,
+			email: member.email ?? null,
+			mobile: member.mobile ?? null,
+			profilePhoto: member.profilePhotoUpdatedAt
+				? `${this.apiBase}/public/board-members/${member.id}/profile-photo?v=${member.profilePhotoUpdatedAt.getTime()}`
+				: null,
 		};
 	}
 

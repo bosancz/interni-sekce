@@ -1,6 +1,6 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
-import { AlertController, NavController } from "@ionic/angular/standalone";
+import { ActivatedRoute, RouterLink } from "@angular/router";
+import { AlertController, IonIcon, NavController } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
@@ -9,6 +9,7 @@ import {
 	create,
 	downloadOutline,
 	peopleOutline,
+	personOutline,
 	statsChartOutline,
 	trash,
 } from "ionicons/icons";
@@ -16,6 +17,7 @@ import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageFooterComponent } from "src/app/shared/components/page-footer/page-footer.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
@@ -23,6 +25,7 @@ import { TabComponent } from "src/app/shared/components/tab/tab.component";
 import { TabsComponent } from "src/app/shared/components/tabs/tabs.component";
 import { VerticalMenuItemComponent } from "src/app/shared/components/vertical-menu-item/vertical-menu-item.component";
 import { VerticalMenuComponent } from "src/app/shared/components/vertical-menu/vertical-menu.component";
+import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
 import { SDK } from "src/sdk";
 import { GroupEditModalComponent } from "../../components/group-edit-modal/group-edit-modal.component";
 import { GroupMembersComponent } from "../../components/group-members/group-members.component";
@@ -58,6 +61,10 @@ import { GroupsService } from "../../services/groups.service";
 		GroupProfilePhotoComponent,
 		GroupStatisticsComponent,
 		GroupUnpaidMembershipComponent,
+		AvatarComponent,
+		IonIcon,
+		RouterLink,
+		MemberProfilePhotoUrlPipe,
 	],
 })
 export class GroupViewComponent implements OnInit {
@@ -126,7 +133,16 @@ export class GroupViewComponent implements OnInit {
 		private toastService: ToastService,
 		private modalService: ModalService,
 	) {
-		addIcons({ peopleOutline, statsChartOutline, alertCircleOutline, create, trash, addOutline, downloadOutline });
+		addIcons({
+			peopleOutline,
+			personOutline,
+			statsChartOutline,
+			alertCircleOutline,
+			create,
+			trash,
+			addOutline,
+			downloadOutline,
+		});
 	}
 
 	ngOnInit(): void {
@@ -159,7 +175,7 @@ export class GroupViewComponent implements OnInit {
 		this.members.set(members);
 	}
 
-	private async editGroup() {
+	protected async editGroup() {
 		const group = this.group();
 		if (!group) return;
 

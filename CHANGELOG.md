@@ -1,3 +1,34 @@
+## v4.28.2 — 2026-10-23
+
+- <span class="changelog-type" title="patch">🚸</span> [Průběh běžící zálohy souborů na kartě v administraci](https://github.com/bosancz/interni-sekce/commit/18c97dbc9d0e9dd7de37ab4199a43cec13ca783a) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
+## v4.28.1 — 2026-10-23
+
+- <span class="changelog-type" title="patch">🚸</span> [Průběh syncu souborů v logu s počtem souborů, GB a odhadem dokončení](https://github.com/bosancz/interni-sekce/commit/3dafadd23beb7d4264a72f4dd6881bb8ebd656ac) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
+## v4.28.0 — 2026-10-23
+
+- <span class="changelog-type" title="feat">✨</span> [Stav záloh v Administraci](https://github.com/bosancz/interni-sekce/commit/ec9cfd9716196186fff836431758f545b4a23c62) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+- <span class="changelog-type" title="patch">🚸</span> [Plánování záloh přes BACKUP\_CRON a mazání jen s nastavenou dobou uchování](https://github.com/bosancz/interni-sekce/commit/29956a8703d0c4160df5d22efa50e99a8a695eb2) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+- <span class="changelog-type" title="fix">🐛</span> [Záloha souborů bez --fast-list](https://github.com/bosancz/interni-sekce/commit/f86a905fbc7fbcb4e44231a67a54808bc3d85aae) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+- <span class="changelog-type" title="perf">⚡️</span> [Seed nepřepisuje stejné soubory fotek](https://github.com/bosancz/interni-sekce/commit/48fc7436d7401130801686748ae1b2bce9a72734) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
+## v4.27.0 — 2026-10-23
+
+- <span class="changelog-type" title="feat">✨</span> [Denní zálohy databáze a souborů na Google Disk](https://github.com/bosancz/interni-sekce/commit/a901a1d08d3807daadc717cdd196373ab44f8d51) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
+## v4.26.13 — 2026-10-23
+
+- <span class="changelog-type" title="feat">✨</span> [Vedení skupiny v administraci a na webu](https://github.com/bosancz/interni-sekce/commit/627117e8ea7cdb75cf9e7c48d14806d5e4064621) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
+## v4.26.12 — 2026-10-23
+
+- <span class="changelog-type" title="patch">🚸</span> [Ukázat oddílového vedoucího v Databázi a na stránce oddílu](https://github.com/bosancz/interni-sekce/commit/8f51b2f0dd20653c596f97bda81150ff7409d0a8) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
+## v4.26.11 — 2026-10-23
+
+- <span class="changelog-type" title="feat">✨</span> [Veřejné kontakty na oddílové vedoucí a den schůzek](https://github.com/bosancz/interni-sekce/commit/8cacb2e10ad9639092ead1cad8ddaad20bc7a42f) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.26.10 — 2026-10-21
 
 - <span class="changelog-type" title="patch">🚸</span> [V náhledu alba počítat usmívající se obličeje bez přiřazeného člena jako děti](https://github.com/bosancz/interni-sekce/commit/0e5cc7a872b5d133005478d10ca494cab9d94426) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>

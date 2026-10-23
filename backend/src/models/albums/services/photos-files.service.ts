@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import archiver = require("archiver");
 import { Response } from "express";
+import { readFile } from "fs/promises";
 import { extname, join } from "path";
 import { Config } from "src/config";
 import { contentDispositionFilename, sanitizeFilename } from "src/helpers/sanitizefilename";
@@ -148,6 +149,24 @@ export class PhotosFilesService {
 
 		const metadata = await sharp(path, { limitInputPixels: MAX_INPUT_PIXELS }).metadata();
 		return this.parseExif(metadata.exif);
+	}
+
+	async hasPhotoFiles(albumId: number, photoId: number, ext: string, buffer: Buffer): Promise<boolean> {
+		const original = await readFile(this.getImagePath(albumId, photoId, PhotoSizes.original, ext)).catch(
+			() => null,
+		);
+		if (!original?.equals(buffer)) return false;
+
+		const sizes = Object.keys(this.config.photos.sizes) as PhotoSizes[];
+		const accessible = await Promise.all(
+			sizes.map((size) =>
+				this.files.fileAccessible(this.getImagePath(albumId, photoId, size, ext)).then(
+					() => true,
+					() => false,
+				),
+			),
+		);
+		return accessible.every(Boolean);
 	}
 
 	async savePhotoFiles(albumId: number, photoId: number, ext: string, buffer: Buffer): Promise<void> {

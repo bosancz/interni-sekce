@@ -79,6 +79,59 @@
 			<span class="ge-helper">{{ color() ? color() : "Bez barvy — oddíl se zobrazí šedě." }}</span>
 		</div>
 
+		<div class="ge-field">
+			<span class="ge-label">Oddílový vedoucí</span>
+			@if (leader(); as leaderValue) {
+				<div class="ge-leader">
+					<ion-icon name="person-outline"></ion-icon>
+					<button type="button" class="ge-leader-name" (click)="selectLeader()">
+						<span class="ge-leader-nickname">{{ leaderValue.nickname }}</span>
+						@if (leaderName()) {
+							<span class="ge-leader-full">{{ leaderName() }}</span>
+						}
+					</button>
+					<button type="button" class="ge-leader-remove" title="Odebrat" (click)="leader.set(null)">
+						<ion-icon name="close-outline"></ion-icon>
+					</button>
+				</div>
+			} @else {
+				<button type="button" class="ge-leader ge-leader-empty" (click)="selectLeader()">
+					<ion-icon name="person-outline"></ion-icon>
+					<span>Vybrat vedoucího</span>
+				</button>
+			}
+			<span class="ge-helper">Zobrazí se s fotkou a kontakty na bosan.cz/kontakty.</span>
+		</div>
+
+		<div class="ge-field">
+			<span class="ge-label">Den schůzek</span>
+			<div class="ge-days" role="radiogroup" aria-label="Den schůzek">
+				<button
+					type="button"
+					class="ge-day"
+					role="radio"
+					[class.selected]="!meetingDay()"
+					[attr.aria-checked]="!meetingDay()"
+					(click)="meetingDay.set(null)"
+				>
+					Nemá
+				</button>
+				@for (day of meetingDays; track day.value) {
+					<button
+						type="button"
+						class="ge-day"
+						role="radio"
+						[title]="day.title"
+						[class.selected]="meetingDay() === day.value"
+						[attr.aria-checked]="meetingDay() === day.value"
+						(click)="meetingDay.set(day.value)"
+					>
+						{{ day.label }}
+					</button>
+				}
+			</div>
+		</div>
+
 		<label class="bm-check-row" [class.checked]="active()">
 			<input
 				type="checkbox"

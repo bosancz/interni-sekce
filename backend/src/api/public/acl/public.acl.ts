@@ -38,3 +38,28 @@ export const PublicGalleryAlbumPreviewPermission = new Permission<void>({
 	allowed: { verejnost: true },
 	path: () => "gallery/{id}/preview",
 });
+
+export const PublicGroupsPermission = new Permission<void>({
+	linkTo: RootResponse,
+	name: "groups",
+	allowed: { verejnost: true },
+});
+
+export const PublicBoardMembersPermission = new Permission<void>({
+	linkTo: RootResponse,
+	name: "boardMembers",
+	allowed: { verejnost: true },
+});
+
+export const PublicReportsPermission = new Permission<void>({
+	linkTo: RootResponse,
+	name: "reports",
+	allowed: { verejnost: true },
+});
+
+export const PublicReportPermission = new Permission<void>({
+	linkTo: RootResponse,
+	name: "report",
+	allowed: { verejnost: true },
+	path: () => "reports/{id}",
+});

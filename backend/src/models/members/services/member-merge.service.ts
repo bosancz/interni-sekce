@@ -119,6 +119,11 @@ export class MemberMergeService {
 			await t.query(`UPDATE members_achievements SET member_id = $1 WHERE member_id = $2`, [targetId, sourceId]);
 			await this.mergeMembershipPayments(t, targetId, sourceId);
 			await this.mergeUser(t, targetId, sourceId, fields.has(MemberMergeFields.user));
+			await t.query(`UPDATE groups SET leader_id = $1 WHERE leader_id = $2`, [targetId, sourceId]);
+			await t.query(
+				`UPDATE board_members SET member_id = $1 WHERE member_id = $2 AND NOT EXISTS (SELECT 1 FROM board_members WHERE member_id = $1)`,
+				[targetId, sourceId],
+			);
 
 			await t.delete(Member, { id: sourceId });
 

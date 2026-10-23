@@ -11,6 +11,7 @@ services:
       DB_SCHEMA: public
       DATA_DIR: /data
       REDIS_URL: redis://redis:6379
+      BACKUP_DRIVE_FOLDER_ID: ""
     volumes:
       - data:/data
     depends_on:
@@ -45,6 +46,25 @@ services:
     mem_limit: 1g
     depends_on:
       redis:
+        condition: service_healthy
+
+  backup:
+    image: ghcr.io/bosancz/interni-sekce-backup:latest
+    environment:
+      PGHOST: postgres
+      PGUSER: postgres
+      PGPASSWORD: password
+      PGDATABASE: postgres
+      BACKUP_DRIVE_FOLDER_ID: ""
+      BACKUP_CRON: "0 4 * * *"
+      BACKUP_DB_KEEP_DAYS: 30
+      BACKUP_DB_KEEP_MONTHS: 12
+      BACKUP_FILES_KEEP_DELETED_DAYS: 365
+    volumes:
+      - data:/data:ro
+      - ./keys:/keys:ro
+    depends_on:
+      postgres:
         condition: service_healthy
 
   redis:

@@ -215,7 +215,10 @@ export const EventReportReadPermission = new Permission({
 	linkTo: EventResponse,
 	params: { eventId: "id" },
 
-	inherit: EventReadPermission,
+	allowed: {
+		revizor: ({ doc }) => !!doc.reportPublishedAt,
+		vedouci: ({ doc, req }) => isMyEvent(doc, req),
+	},
 });
 
 export const EventReportEditPermission = new Permission({
@@ -227,6 +230,22 @@ export const EventReportEditPermission = new Permission({
 	},
 
 	applicable: ({ doc }) => !doc.deletedAt,
+});
+
+export const EventReportPublishPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventReportEditPermission,
+	applicable: ({ doc }) => !doc.deletedAt && !doc.reportPublishedAt,
+});
+
+export const EventReportUnpublishPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventReportEditPermission,
+	applicable: ({ doc }) => !doc.deletedAt && !!doc.reportPublishedAt,
 });
 
 export const EventAnnouncementGetPermission = new Permission({

@@ -1,0 +1,75 @@
+<bo-page-header title="Vedení skupiny" backUrl="/admin" [actions]="actions()" />
+
+<bo-page-content>
+	<div class="board-page">
+		<p class="board-intro text-muted">
+			Vedení skupiny se ukazuje na bosan.cz v Kontaktech v tomhle pořadí, s fotkou, e-mailem a telefonem z karty člena.
+		</p>
+
+		<ion-list>
+			<ion-reorder-group [disabled]="!canReorder()" (ionItemReorder)="onReorder($any($event))">
+				@for (boardMember of boardMembers(); track boardMember.memberId) {
+					<div class="board-item">
+						<a class="board-row" [routerLink]="['/databaze/clenove', boardMember.memberId]">
+							<bo-avatar
+								class="board-avatar"
+								[photoUrl]="boardMember.member | memberProfilePhotoUrl"
+								[initials]="boardMember.member?.nickname?.slice(0, 1) ?? null"
+							/>
+
+							<div class="board-text">
+								<strong class="board-name">{{ boardMember.member?.nickname }}</strong>
+								<div class="board-contact text-muted">
+									@if (boardMember.member?.email; as email) {
+										<span><ion-icon name="mail-outline" aria-hidden="true" />{{ email }}</span>
+									}
+									@if (boardMember.member?.mobile; as mobile) {
+										<span><ion-icon name="call-outline" aria-hidden="true" />{{ mobile }}</span>
+									}
+									@if (!boardMember.member?.email && !boardMember.member?.mobile) {
+										<em>Bez kontaktu v databázi</em>
+									}
+								</div>
+							</div>
+						</a>
+
+						<ion-select
+							class="board-function"
+							aria-label="Funkce"
+							interface="popover"
+							[value]="boardMember.function"
+							[disabled]="!canSave()"
+							(ionChange)="setFunction(boardMember, $event.detail.value)"
+						>
+							@for (item of functionOptions(boardMember); track item) {
+								<ion-select-option [value]="item">{{ item }}</ion-select-option>
+							}
+						</ion-select>
+
+						<div class="board-actions">
+							@if (boardMember._links.deleteBoardMember.allowed) {
+								<bo-delete-button (click)="remove(boardMember)" />
+							}
+
+							@if (canReorder()) {
+								<ion-reorder boTooltip="Přetažením změníš pořadí" />
+							}
+						</div>
+					</div>
+				}
+			</ion-reorder-group>
+
+			@if (boardMembers() === undefined) {
+				@for (item of loadingArray; track $index) {
+					<bo-item>
+						<ion-skeleton-text [animated]="true" />
+					</bo-item>
+				}
+			} @else if (boardMembers()!.length === 0) {
+				<bo-item>
+					<p class="text-muted"><em>Ve vedení zatím nikdo není.</em></p>
+				</bo-item>
+			}
+		</ion-list>
+	</div>
+</bo-page-content>

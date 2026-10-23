@@ -25,10 +25,14 @@ import {
 	PublicGalleryAlbumPreviewPermission,
 	PublicGalleryPermission,
 	PublicGalleryRecentPermission,
+	PublicBoardMembersPermission,
+	PublicGroupsPermission,
 	PublicProgramIcalPermission,
 	PublicProgramPermission,
+	PublicReportPermission,
+	PublicReportsPermission,
 } from "../acl/public.acl";
-import { PublicGalleryQuery, PublicProgramQuery } from "../dto/public.dto";
+import { PublicGalleryQuery, PublicProgramQuery, PublicReportsQuery } from "../dto/public.dto";
 import { ProgramIcalService } from "../services/program-ical.service";
 import { PublicService } from "../services/public.service";
 import { contentDispositionFilename } from "src/helpers/sanitizefilename";
@@ -73,6 +77,63 @@ export class PublicController {
 		await new Promise<void>((resolve, reject) => {
 			res.sendFile(path, (err) => (err ? reject(new InternalServerErrorException(err.message)) : resolve()));
 		});
+	}
+
+	@Get("reports")
+	@AcLinks(PublicReportsPermission)
+	async getReports(@Query() query: PublicReportsQuery) {
+		return this.publicService.getReports({ limit: query.limit, offset: query.offset });
+	}
+
+	@Get("reports/:id")
+	@AcLinks(PublicReportPermission)
+	async getReport(@Param("id", ParseIntPipe) id: number) {
+		return this.publicService.getReport(id);
+	}
+
+	@Get("groups")
+	@AcLinks(PublicGroupsPermission)
+	async getGroups() {
+		return this.publicService.getGroups();
+	}
+
+	@Get("groups/:id/leader/profile-photo")
+	async getGroupLeaderProfilePhoto(@Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<void> {
+		const path = await this.publicService.getGroupLeaderProfilePhotoPath(id);
+
+		try {
+			await this.photosFiles.fileExists(path);
+		} catch {
+			throw new NotFoundException("Profile photo file not found.");
+		}
+
+		res.setHeader("Content-Type", "image/jpeg");
+		res.setHeader("Cache-Control", "public, max-age=86400");
+		createReadStream(path).pipe(res);
+	}
+
+	@Get("board-members")
+	@AcLinks(PublicBoardMembersPermission)
+	async getBoardMembers() {
+		return this.publicService.getBoardMembers();
+	}
+
+	@Get("board-members/:memberId/profile-photo")
+	async getBoardMemberProfilePhoto(
+		@Param("memberId", ParseIntPipe) memberId: number,
+		@Res() res: Response,
+	): Promise<void> {
+		const path = await this.publicService.getBoardMemberProfilePhotoPath(memberId);
+
+		try {
+			await this.photosFiles.fileExists(path);
+		} catch {
+			throw new NotFoundException("Profile photo file not found.");
+		}
+
+		res.setHeader("Content-Type", "image/jpeg");
+		res.setHeader("Cache-Control", "public, max-age=86400");
+		createReadStream(path).pipe(res);
 	}
 
 	@Get("gallery")

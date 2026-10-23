@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class EventPublishedCancelledAt1792674659034 implements MigrationInterface {
-	name = "EventPublishedCancelledAt1792674659034";
+export class EventPublishedCancelledAt1792780467178 implements MigrationInterface {
+	name = "EventPublishedCancelledAt1792780467178";
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(`ALTER TABLE "events" ADD "published_at" TIMESTAMP WITH TIME ZONE`);

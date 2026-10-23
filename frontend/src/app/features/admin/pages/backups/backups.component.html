@@ -1,0 +1,162 @@
+<bo-page-header title="Zálohy" backUrl="/admin">
+	<ion-button slot="end" fill="clear" (click)="load()" boTooltip="Obnovit">
+		<ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+	</ion-button>
+</bo-page-header>
+
+<bo-page-content>
+	<div class="bk-page">
+		@if (backups(); as b) {
+			@if (b.problems.length) {
+				<div class="bk-problems">
+					<ion-icon name="warning-outline"></ion-icon>
+					<div>
+						@for (problem of b.problems; track problem) {
+							<p>{{ problem }}</p>
+						}
+					</div>
+				</div>
+			}
+
+			<div class="bk-schedule">
+				<div class="bk-plan">
+					<ion-icon name="calendar-outline"></ion-icon>
+					@if (b.schedule; as schedule) {
+						@if (schedule.cron) {
+							<span>
+								Plán <code>{{ schedule.cron }}</code>
+								@if (schedule.nextRunAt) {
+									· příští záloha <strong>{{ schedule.nextRunAt | date: "d. M. y H:mm" }}</strong>
+								}
+							</span>
+						} @else {
+							<span>Plánované zálohy jsou vypnuté. Spustit se dají jen ručně na serveru.</span>
+						}
+					} @else {
+						<span class="muted">Zálohování se zatím neozvalo.</span>
+					}
+				</div>
+				@if (b.driveFolderUrl) {
+					<a class="bk-drive" [href]="b.driveFolderUrl" target="_blank" rel="noopener">
+						<ion-icon name="logo-google"></ion-icon>
+						Otevřít v Google Disku
+					</a>
+				}
+			</div>
+
+			<div class="bk-grid">
+				@for (card of cards(); track card.type) {
+					@let type = card.type;
+					@let last = card.last;
+					@let success = card.success;
+					<bo-card>
+						<bo-card-header>
+							<bo-card-title>
+								<span class="bo-card-section-title bk-title">
+									<ion-icon [name]="type === 'database' ? 'server-outline' : 'documents-outline'" />
+									{{ typeLabels[type] }}
+								</span>
+							</bo-card-title>
+							@if (last) {
+								<span slot="buttons" class="bo-pill" [class]="statusLabels[last.status].pill">
+									{{ statusLabels[last.status].label }}
+								</span>
+							}
+						</bo-card-header>
+						<bo-card-content>
+							@if (last?.status === "running" && last?.progress; as progress) {
+								<div class="bk-progress">
+									<div class="bk-progress-bar">
+										<span [style.width.%]="percent(progress)"></span>
+									</div>
+									<div>{{ progressText(progress) }}</div>
+									<div class="muted">{{ progressMeta(progress) }}</div>
+								</div>
+							}
+							<div class="bo-info-list">
+								<div class="bo-info-row">
+									<span class="bo-info-label">Poslední úspěšná</span>
+									<span class="bo-info-value">
+										@if (success?.finishedAt; as finishedAt) {
+											<strong>{{ finishedAt | date: "d. M. y H:mm" }}</strong>
+											<span class="muted"> · {{ ago(finishedAt) }}</span>
+										} @else {
+											<span class="muted">zatím žádná</span>
+										}
+									</span>
+								</div>
+								@if (success) {
+									<div class="bo-info-row">
+										<span class="bo-info-label">{{
+											type === "database" ? "Soubor" : "Přeneseno"
+										}}</span>
+										<span class="bo-info-value">
+											@if (type === "database") {
+												{{ success.fileName }}
+												<span class="muted"> · {{ details(success) }}</span>
+											} @else {
+												{{ details(success) }}
+											}
+										</span>
+									</div>
+								}
+								@if (last && last.id !== success?.id) {
+									<div class="bo-info-row">
+										<span class="bo-info-label">Poslední běh</span>
+										<span class="bo-info-value">
+											{{ last.startedAt | date: "d. M. y H:mm" }}
+											<span class="muted">
+												· {{ statusLabels[last.status].label.toLowerCase() }}</span
+											>
+										</span>
+									</div>
+								}
+							</div>
+							@if (last?.status === "error" && last?.error) {
+								<pre class="bk-error">{{ last!.error }}</pre>
+							}
+						</bo-card-content>
+					</bo-card>
+				}
+			</div>
+
+			<bo-card class="bk-history">
+				<bo-card-header>
+					<bo-card-title>
+						<span class="bo-card-section-title bk-title">
+							<ion-icon name="time-outline" />
+							Historie
+						</span>
+					</bo-card-title>
+				</bo-card-header>
+				<bo-card-content>
+					<div class="bk-runs">
+						@for (run of b.runs; track run.id) {
+							<div class="bk-run">
+								<span class="bo-pill" [class]="statusLabels[run.status].pill">{{
+									statusLabels[run.status].label
+								}}</span>
+								<div class="bk-run-info">
+									<div>
+										<strong>{{ typeLabels[run.type] }}</strong>
+										<span class="muted"> · {{ run.startedAt | date: "d. M. y H:mm" }}</span>
+									</div>
+									@if (details(run); as details) {
+										<div class="muted">{{ details }}</div>
+									}
+									@if (run.error) {
+										<pre class="bk-error">{{ run.error }}</pre>
+									}
+								</div>
+							</div>
+						} @empty {
+							<p class="muted bk-empty">Zatím neproběhla žádná záloha.</p>
+						}
+					</div>
+				</bo-card-content>
+			</bo-card>
+		} @else {
+			<ion-skeleton-text [animated]="true" class="bk-skeleton"></ion-skeleton-text>
+		}
+	</div>
+</bo-page-content>

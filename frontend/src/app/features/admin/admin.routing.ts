@@ -1,6 +1,8 @@
 import { Routes } from "@angular/router";
 
 import { AdminHomeComponent } from "./pages/admin-home/admin-home.component";
+import { BackupsComponent } from "./pages/backups/backups.component";
+import { BoardMembersComponent } from "./pages/board-members/board-members.component";
 import { FaceDetectionComponent } from "./pages/face-detection/face-detection.component";
 import { FaceMatchingComponent } from "./pages/face-matching/face-matching.component";
 import { PhotoCategoriesComponent } from "./pages/photo-categories/photo-categories.component";
@@ -36,5 +38,7 @@ export const adminRoutes: Routes = [
 	{ path: "obliceje", redirectTo: "fotky/obliceje" },
 	{ path: "prirazovani-obliceju", redirectTo: "fotky/prirazovani-obliceju" },
 	{ path: "obsah-fotek", redirectTo: "fotky/obsah" },
+	{ path: "vedeni", title: "Vedení skupiny", component: BoardMembersComponent },
 	{ path: "workery", title: "Workery", component: WorkersComponent },
+	{ path: "zalohy", title: "Zálohy", component: BackupsComponent },
 ];

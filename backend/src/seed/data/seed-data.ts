@@ -1,6 +1,7 @@
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
 import { EventExpenseTypes } from "src/models/events/entities/event-expense.entity";
 import { EventStates } from "src/models/events/entities/event.entity";
+import { GroupMeetingDays } from "src/models/members/entities/group.entity";
 import { HealthEntry, HealthSeverity, MemberRanks, MemberRoles } from "src/models/members/entities/member.entity";
 import { UserRoles } from "src/models/users/entities/user.entity";
 
@@ -10,6 +11,13 @@ export interface SeedGroup {
 	color: string;
 	active: boolean;
 	children: boolean;
+	meetingDay?: GroupMeetingDays;
+	leader?: string;
+}
+
+export interface SeedBoardMember {
+	member: string;
+	function: string;
 }
 
 export interface SeedMemberContact {
@@ -108,9 +116,32 @@ export interface SeedUser {
 }
 
 export const SeedGroups: SeedGroup[] = [
-	{ shortName: "T", name: "Trpaslíci", color: "#FEC503", active: true, children: true },
-	{ shortName: "N", name: "Nepřátelé", color: "#8B0000", active: true, children: true },
+	{
+		shortName: "T",
+		name: "Trpaslíci",
+		color: "#FEC503",
+		active: true,
+		children: true,
+		meetingDay: GroupMeetingDays.monday,
+		leader: "Thorin",
+	},
+	{
+		shortName: "N",
+		name: "Nepřátelé",
+		color: "#8B0000",
+		active: true,
+		children: true,
+		meetingDay: GroupMeetingDays.wednesday,
+		leader: "Šmak",
+	},
 	{ shortName: "KP", name: "Klub přátel", color: "#0F0F0F", active: true, children: false },
+];
+
+export const SeedBoardMembers: SeedBoardMember[] = [
+	{ member: "Bilbo", function: "hlavní vedoucí" },
+	{ member: "Glóin (pokladník)", function: "hospodář" },
+	{ member: "Thorin", function: "člen vedení" },
+	{ member: "Gandalf (správce programu)", function: "revizor" },
 ];
 
 export const SeedUsers: SeedUser[] = [
