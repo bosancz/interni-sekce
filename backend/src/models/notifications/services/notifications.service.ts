@@ -15,7 +15,7 @@ import {
 	NotificationChannels,
 	NotificationMessage,
 	NotificationTypes,
-	NotificationTypesMetadata,
+	getNotificationDefaultChannels,
 } from "../schema/notification-types";
 import { NotificationsQueueService } from "./notifications-queue.service";
 import { PushService } from "./push.service";
@@ -96,7 +96,7 @@ export class NotificationsService {
 	}
 
 	async onEventReportPublished(event: Event, actorUserId?: number) {
-		const recipients = await this.getUsersByRoles([UserRoles.revizor]);
+		const recipients = await this.users.find();
 
 		await this.notifyUsers(NotificationTypes.newEventReports, recipients, actorUserId, {
 			title: `Nový report z akce: ${event.name}`,
@@ -178,14 +178,13 @@ export class NotificationsService {
 			type,
 		);
 		const overrides = new Map(settings.map((setting) => [setting.userId, setting.channels]));
-		const defaultChannels = NotificationTypesMetadata[type].defaultChannels;
 
 		const pushUsers: User[] = [];
 		const emailUsers: User[] = [];
 		const inAppUsers: User[] = [];
 
 		for (const user of recipients) {
-			const channels = overrides.get(user.id) ?? defaultChannels;
+			const channels = overrides.get(user.id) ?? getNotificationDefaultChannels(type, user.roles ?? []);
 			if (channels.includes(NotificationChannels.push)) pushUsers.push(user);
 			if (channels.includes(NotificationChannels.email)) emailUsers.push(user);
 			if (channels.includes(NotificationChannels.inApp)) inAppUsers.push(user);

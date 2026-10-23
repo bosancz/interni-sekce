@@ -22,6 +22,7 @@ import { OptionsStore } from "src/access-control/access-control-lib/options-stor
 import { AuthUser } from "src/auth/decorators/auth-user.decorator";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { SessionUser } from "src/auth/schema/user-token";
+import { UserRoles } from "src/models/users/entities/user.entity";
 import { NotificationSettingsRepository } from "src/models/notifications/repositories/notification-settings.repository";
 import { NotificationSubscriptionsRepository } from "src/models/notifications/repositories/notification-subscriptions.repository";
 import { NotificationsRepository } from "src/models/notifications/repositories/notifications.repository";
@@ -32,6 +33,8 @@ import {
 	NotificationGroupsMetadata,
 	NotificationTypes,
 	NotificationTypesMetadata,
+	getNotificationDefaultChannels,
+	isNotificationTypeForRoles,
 } from "src/models/notifications/schema/notification-types";
 import {
 	NotificationDeviceDeletePermission,
@@ -129,7 +132,11 @@ export class AccountNotificationsController {
 		const groups = Object.values(NotificationGroups);
 
 		const types = Object.entries(NotificationTypesMetadata)
-			.filter(([, metadata]) => !metadata.roles || metadata.roles.some((role) => userRoles.includes(role)))
+			.filter(
+				([type]) =>
+					userRoles.includes(UserRoles.admin) ||
+					isNotificationTypeForRoles(<NotificationTypes>type, userRoles),
+			)
 			.sort(([, a], [, b]) => groups.indexOf(a.group) - groups.indexOf(b.group))
 			.map(([type, metadata]) => ({
 				type: <NotificationTypes>type,
@@ -137,7 +144,9 @@ export class AccountNotificationsController {
 				groupTitle: NotificationGroupsMetadata[metadata.group].title,
 				title: metadata.title,
 				description: metadata.description,
-				channels: settings.find((setting) => setting.type === type)?.channels ?? metadata.defaultChannels,
+				channels:
+					settings.find((setting) => setting.type === type)?.channels ??
+					getNotificationDefaultChannels(<NotificationTypes>type, userRoles),
 			}));
 
 		return {

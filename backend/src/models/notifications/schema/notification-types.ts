@@ -37,6 +37,7 @@ export interface NotificationTypeMetadata {
 	description: string;
 	defaultChannels: NotificationChannels[];
 	roles: Roles[] | null;
+	defaultRoles?: Roles[];
 }
 
 export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTypeMetadata> = {
@@ -64,9 +65,10 @@ export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTy
 	[NotificationTypes.newEventReports]: {
 		group: NotificationGroups.events,
 		title: "Nové reporty z akcí",
-		description: "Vedoucí akce vyplnil report — shrnutí, komplikace, pochvaly a stížnosti",
+		description: "Vedoucí akce zveřejnil report z akce",
 		defaultChannels: [NotificationChannels.push, NotificationChannels.inApp],
-		roles: [UserRoles.revizor],
+		roles: null,
+		defaultRoles: [UserRoles.revizor],
 	},
 	[NotificationTypes.newUsers]: {
 		group: NotificationGroups.admin,
@@ -104,6 +106,21 @@ export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTy
 		roles: [UserRoles.admin],
 	},
 };
+
+export function isNotificationTypeForRoles(type: NotificationTypes, roles: string[]) {
+	const metadataRoles = NotificationTypesMetadata[type].roles;
+	return !metadataRoles || metadataRoles.some((role) => roles.includes(role));
+}
+
+export function getNotificationDefaultChannels(type: NotificationTypes, roles: string[]) {
+	const metadata = NotificationTypesMetadata[type];
+	if (metadata.defaultRoles)
+		return metadata.defaultRoles.some((role) => roles.includes(role)) ? metadata.defaultChannels : [];
+
+	const staticRoles: string[] = Object.values(StaticRoles);
+	const forStaticRole = metadata.roles?.some((role) => staticRoles.includes(role));
+	return forStaticRole || isNotificationTypeForRoles(type, roles) ? metadata.defaultChannels : [];
+}
 
 export interface NotificationMessage {
 	title: string;
