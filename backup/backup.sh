@@ -29,7 +29,18 @@ log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 run_info() { [ -n "${RUN_INFO:-}" ] && echo "$1=$2" >>"$RUN_INFO" || true; }
 
 format_rclone_log() {
-	jq -R -r --unbuffered 'fromjson? // {msg: .} | select(.object == null or .level != "info") | (.msg | rtrimstr("\n") | gsub("^ +"; "")) as $msg | if .time then "[\(.time[0:19] | sub("T"; " "))] \($msg)" else $msg end'
+	jq -R -r --unbuffered '
+		def size: if . >= 1e9 then "\(. / 1e8 | floor / 10) GB" elif . >= 1e6 then "\(. / 1e5 | floor / 10) MB" elif . >= 1e3 then "\(. / 1e2 | floor / 10) kB" else "\(.) B" end;
+		def duration: if . >= 3600 then "\(. / 3600 | floor)h\(. % 3600 / 60 | floor)m" elif . >= 60 then "\(. / 60 | floor)m" else "\(. | floor)s" end;
+		def progress: "Uploaded \(.transfers)/\(.totalTransfers) files, \(.bytes | size)/\(.totalBytes | size)"
+			+ (if .totalBytes > 0 then " (\(.bytes * 100 / .totalBytes | floor) %)" else "" end)
+			+ ", \(.speed | size)/s"
+			+ (if .eta then ", ETA \(.eta | duration)" else "" end)
+			+ ", checked \(.checks) unchanged, \(.renames) moved to smazane, elapsed \(.elapsedTime | duration)";
+		fromjson? // {msg: .}
+		| select(.object == null or .level != "info")
+		| (if .stats then (.stats | progress) else .msg | rtrimstr("\n") | gsub("^ +"; "") end) as $msg
+		| if .time then "[\(.time[0:19] | sub("T"; " "))] \($msg)" else $msg end'
 }
 
 backup_database() {
@@ -75,7 +86,7 @@ backup_files() {
 		"${excludes[@]}" \
 		--backup-dir "${REMOTE}smazane/$(date +%Y-%m-%d)" \
 		--tpslimit 5 \
-		--use-json-log --stats 10m --stats-one-line --stats-log-level NOTICE -v \
+		--use-json-log --stats 5m --stats-one-line --stats-log-level NOTICE -v \
 		2>&1 | tee "$rclone_log" | format_rclone_log
 	status=${PIPESTATUS[0]}
 	set -e
