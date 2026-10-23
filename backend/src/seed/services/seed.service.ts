@@ -432,7 +432,10 @@ export class SeedService {
 				srcId: null,
 			});
 
-			await this.photosFiles.savePhotoFiles(albumId, photo.id, extname(seedPhoto.name), buffer);
+			const ext = extname(seedPhoto.name);
+			if (existing && (await this.photosFiles.hasPhotoFiles(albumId, photo.id, ext, buffer))) continue;
+
+			await this.photosFiles.savePhotoFiles(albumId, photo.id, ext, buffer);
 		}
 	}
 }

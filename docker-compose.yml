@@ -11,6 +11,7 @@ services:
       DB_SCHEMA: public
       DATA_DIR: /data
       REDIS_URL: redis://redis:6379
+      BACKUP_DRIVE_FOLDER_ID: ""
     volumes:
       - data:/data
     depends_on:

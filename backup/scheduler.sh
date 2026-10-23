@@ -4,9 +4,13 @@ set -uo pipefail
 CRON="${BACKUP_CRON:-}"
 STATE_DIR="${BACKUP_STATE_DIR:-/var/lib/backup}"
 
+source "${BACKUP_LIB_DIR:-$(dirname "$0")}/status.sh"
+
 if [ -z "$CRON" ]; then
 	[ "${1:-}" = "--next" ] && echo "Scheduled backups are disabled" && exit 0
 	echo "BACKUP_CRON is not set, scheduled backups are disabled; run them with: backup [database|files]"
+	record_interrupted_runs || true
+	until record_schedule "" "" ""; do sleep 300; done
 	exec sleep infinity
 fi
 
@@ -85,6 +89,7 @@ fi
 
 mkdir -p "$STATE_DIR"
 touch "$STATE_DIR/started"
+record_interrupted_runs || true
 
 echo "Backups to Google Drive scheduled by cron \"$CRON\" ($TZ)"
 
@@ -94,7 +99,14 @@ while true; do
 		exit 1
 	fi
 	echo "Next backup at $(date -d "@$next" '+%Y-%m-%d %H:%M')"
-	sleep $((next - $(date +%s)))
+	recorded=""
+	while [ "$(date +%s)" -lt "$next" ]; do
+		if [ -z "$recorded" ] && record_schedule "$CRON" "${TZ:-}" "$next"; then recorded=1; fi
+		wait_s=$((next - $(date +%s)))
+		[ -z "$recorded" ] && [ "$wait_s" -gt 300 ] && wait_s=300
+		[ "$wait_s" -gt 0 ] && sleep "$wait_s"
+	done
 
-	backup all || echo "Backup finished with errors"
+	backup database || echo "Database backup finished with errors"
+	(backup files || echo "File backup finished with errors") &
 done

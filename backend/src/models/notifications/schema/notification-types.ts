@@ -9,6 +9,7 @@ export enum NotificationTypes {
 	"myBugReports" = "myBugReports",
 	"myPhotos" = "myPhotos",
 	"newAlbums" = "newAlbums",
+	"backups" = "backups",
 }
 
 export enum NotificationChannels {
@@ -86,6 +87,13 @@ export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTy
 		description: "Nově zveřejněná alba ve fotogalerii",
 		defaultChannels: [NotificationChannels.inApp],
 		roles: [StaticRoles.vedouci],
+	},
+	[NotificationTypes.backups]: {
+		group: NotificationGroups.admin,
+		title: "Zálohy",
+		description: "Záloha databáze nebo souborů skončila chybou nebo dlouho neproběhla — kontroluje se jednou denně",
+		defaultChannels: [NotificationChannels.email, NotificationChannels.inApp],
+		roles: [UserRoles.admin],
 	},
 };
 

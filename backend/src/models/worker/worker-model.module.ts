@@ -1,6 +1,7 @@
 import { BullModule } from "@nestjs/bullmq";
 import { DynamicModule, Module } from "@nestjs/common";
 import { AlbumsModelModule } from "src/models/albums/albums-model.module";
+import { BackupsModelModule } from "src/models/backups/backups-model.module";
 import { FacesEnqueueCommand } from "./commands/faces-enqueue.command";
 import { PhotosEmbedCommand } from "./commands/photos-embed.command";
 import { BackendScheduleProcessor } from "./processors/backend-schedule.processor";
@@ -28,8 +29,15 @@ export class WorkerModelModule {
 					{ name: BACKEND_SCHEDULE_QUEUE },
 				),
 				AlbumsModelModule,
+				BackupsModelModule,
 			],
-			exports: [FacesDetectionService, InsuranceCardReaderService, PhotoContentService, ServerStatsService, WorkersService],
+			exports: [
+				FacesDetectionService,
+				InsuranceCardReaderService,
+				PhotoContentService,
+				ServerStatsService,
+				WorkersService,
+			],
 			providers: [
 				FacesDetectionService,
 				InsuranceCardReaderService,

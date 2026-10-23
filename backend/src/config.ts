@@ -162,6 +162,13 @@ const faces = {
 	batchSize: process.env["FACES_BATCH_SIZE"] ? parseInt(process.env["FACES_BATCH_SIZE"], 10) : 300,
 };
 
+const backups = {
+	checkCron: process.env["BACKUPS_CHECK_CRON"] ?? "0 8 * * *",
+	timezone: process.env["BACKUPS_TIMEZONE"] ?? "Europe/Prague",
+	maxAgeHours: process.env["BACKUPS_MAX_AGE_HOURS"] ? parseInt(process.env["BACKUPS_MAX_AGE_HOURS"], 10) : 36,
+	driveFolderId: process.env["BACKUP_DRIVE_FOLDER_ID"] || null,
+};
+
 const photoContent = {
 	batchSize: process.env["PHOTO_CONTENT_BATCH_SIZE"] ? parseInt(process.env["PHOTO_CONTENT_BATCH_SIZE"], 10) : 3000,
 	textTimeoutMs: 30_000,
@@ -184,6 +191,7 @@ const oauth = {
 export class Config {
 	announcements = announcements;
 	app = app;
+	backups = backups;
 	db = db;
 	environment = environment;
 	faces = faces;
