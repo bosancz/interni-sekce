@@ -69,6 +69,8 @@ export class Event {
 
 	@Column({ type: "enum", nullable: false, enum: EventStates, default: EventStates.draft }) status!: EventStates;
 	@Column({ type: "text", nullable: true }) statusNote!: string | null;
+	@Column({ type: "timestamp with time zone", nullable: true }) publishedAt!: Date | string | null;
+	@Column({ type: "timestamp with time zone", nullable: true }) cancelledAt!: Date | string | null;
 	@Column({ type: "text", nullable: true }) place!: string | null;
 	@Column({ type: "geometry", spatialFeatureType: "Point", srid: 4326, nullable: true })
 	placeGeometry!: EventPlaceGeometry | null;

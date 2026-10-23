@@ -40,6 +40,8 @@ export class EventResponse implements Omit<
 	river!: string | null;
 	deletedAt?: Date | null;
 	report!: string | null;
+	@ApiPropertyOptional({ type: "string" }) publishedAt!: Date | string | null;
+	@ApiPropertyOptional({ type: "string" }) cancelledAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) reportPublishedAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) announcementSentAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) accountingSentAt!: Date | string | null;

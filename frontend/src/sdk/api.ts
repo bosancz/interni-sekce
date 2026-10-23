@@ -1498,6 +1498,18 @@ export namespace SDK {
         'statusNote': string | null;
         /**
          * 
+         * @type {object}
+         * @memberof Event
+         */
+        'publishedAt': object;
+        /**
+         * 
+         * @type {object}
+         * @memberof Event
+         */
+        'cancelledAt': object;
+        /**
+         * 
          * @type {string}
          * @memberof Event
          */
@@ -2426,6 +2438,18 @@ export namespace SDK {
          * @type {string}
          * @memberof EventResponse
          */
+        'publishedAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponse
+         */
+        'cancelledAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponse
+         */
         'reportPublishedAt'?: string;
         /**
          * 
@@ -2847,6 +2871,18 @@ export namespace SDK {
          * @memberof EventResponseWithLinks
          */
         'status': EventStatesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'publishedAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventResponseWithLinks
+         */
+        'cancelledAt'?: string;
         /**
          * 
          * @type {string}

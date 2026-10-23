@@ -169,6 +169,8 @@ export class EventsRepository {
 				"events.id",
 				"events.name",
 				"events.status",
+				"events.publishedAt",
+				"events.cancelledAt",
 				"events.dateFrom",
 				"events.dateTill",
 				"events.timeFrom",
@@ -268,6 +270,25 @@ export class EventsRepository {
 		}
 
 		data.id = id;
+
+		if (data.status !== undefined) {
+			const current = await this.eventsRepository.findOne({
+				where: { id },
+				select: { id: true, status: true, publishedAt: true },
+			});
+			if (current && current.status !== data.status) {
+				const now = new Date();
+				if (data.status === EventStates.public) {
+					if (current.status !== EventStates.cancelled || !current.publishedAt) data.publishedAt = now;
+					data.cancelledAt = null;
+				} else if (data.status === EventStates.cancelled) {
+					data.cancelledAt = now;
+				} else {
+					data.publishedAt = null;
+					data.cancelledAt = null;
+				}
+			}
+		}
 
 		return this.eventsRepository.save(data);
 	}
