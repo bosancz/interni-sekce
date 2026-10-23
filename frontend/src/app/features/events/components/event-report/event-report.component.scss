@@ -109,6 +109,21 @@ bo-card-content {
 	}
 }
 
+.gallery {
+	margin-top: 1rem;
+}
+
+.gallery-empty {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 1rem;
+
+	ion-button {
+		margin: 0;
+	}
+}
+
 .album-link {
 	--background: var(--bo-white);
 	--padding-start: 0;
