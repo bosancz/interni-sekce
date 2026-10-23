@@ -179,6 +179,15 @@ const insuranceCards = {
 	timezone: "Europe/Prague",
 };
 
+const cmsAuth = {
+	githubClientId: process.env["CMS_GITHUB_CLIENT_ID"] ?? "",
+	githubClientSecret: process.env["CMS_GITHUB_CLIENT_SECRET"] ?? "",
+	allowedDomains: (process.env["CMS_ALLOWED_DOMAINS"] ?? "bosan.cz,www.bosan.cz,test.bosan.cz")
+		.split(",")
+		.map((domain) => domain.trim().toLowerCase())
+		.filter(Boolean),
+};
+
 const oauth = {
 	wiki: {
 		clientId: process.env["OAUTH_WIKI_CLIENT_ID"] ?? "",
@@ -191,6 +200,7 @@ const oauth = {
 export class Config {
 	announcements = announcements;
 	app = app;
+	cmsAuth = cmsAuth;
 	backups = backups;
 	db = db;
 	environment = environment;

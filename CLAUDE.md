@@ -291,3 +291,7 @@ cd backend && npm ci && npm run migrations:run
 ## Screenshoty aplikace
 
 - `assets/img/app-screenshots/{desktop,mobile}.webp` ukazuje karta Aplikace v Nastavení (`bo-account-app`) a nese je i `screenshots` v `manifest.json` (instalační dialog Chromu). Nafocené Playwrightem na seedu (`bilbo`, 1280×800 a 390×776 @2x; mobil pak `sharp` doplní na 390×844 o stavový řádek 44 px v barvě hlavičky a 24 px s indikátorem, aby rohy rámečku telefonu nesahaly na logo a avatar): Chromium neumí emulovat `display-mode`, takže se v odpovědích dev serveru přepisuje `display-mode: …` na `min-width: 0px` (WCO navíc `env(titlebar-area-width, 100vw)` na `calc(100vw - 138px)` a ovládací prvky okna jako SVG v `body::after`), `matchMedia` se přebije init skriptem a štítek `.environment` se skryje.
+
+## Přihlášení do CMS bosan.cz
+
+- **`GET /api/cms-auth/auth` a `/callback` jsou OAuth prostředník pro „Sign In with GitHub“ v Sveltia CMS na bosan.cz** (`api/cms-auth`, protokol jako `sveltia/sveltia-cms-auth`): `auth` ověří `site_id` proti `CMS_ALLOWED_DOMAINS`, uloží `state` do cookie a přesměruje na GitHub (scope `repo,user`), `callback` vymění kód za token (`CMS_GITHUB_CLIENT_ID`/`_SECRET` z GitHub OAuth app s callbackem `<BASE_URL>/api/cms-auth/callback`) a vrátí stránku, která token pošle `postMessage` jen oknu z povolené domény. Token se nikde neukládá. Bez nastavené aplikace vrací chybu `MISCONFIGURED_CLIENT`.

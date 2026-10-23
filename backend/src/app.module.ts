@@ -6,6 +6,7 @@ import { AccessControlModule } from "./access-control/access-control.module";
 import { AccountModule } from "./api/account/account.module";
 import { AlbumsModule } from "./api/albums/albums.module";
 import { BackupsModule } from "./api/backups/backups.module";
+import { CmsAuthModule } from "./api/cms-auth/cms-auth.module";
 import { EventsModule } from "./api/events/events.module";
 import { FeedbackModule } from "./api/feedback/feedback.module";
 import { MembersModule } from "./api/members/members.module";
@@ -71,6 +72,7 @@ import { SeedModule } from "./seed/seed.module";
 		AccessControlModule,
 		AccountModule,
 		OauthModule,
+		CmsAuthModule,
 		StatisticsModule,
 		RootModule,
 		StatisticsModelModule,
