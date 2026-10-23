@@ -980,6 +980,12 @@ export namespace SDK {
         'nickname': string;
         /**
          * 
+         * @type {number}
+         * @memberof BoardMemberMemberResponse
+         */
+        'groupId'?: number;
+        /**
+         * 
          * @type {string}
          * @memberof BoardMemberMemberResponse
          */

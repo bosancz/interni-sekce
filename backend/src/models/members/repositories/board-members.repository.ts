@@ -16,6 +16,7 @@ export class BoardMembersRepository {
 			.addSelect([
 				"member.id",
 				"member.nickname",
+				"member.groupId",
 				"member.firstName",
 				"member.lastName",
 				"member.profilePhotoUpdatedAt",

@@ -25,6 +25,7 @@ import { ItemComponent } from "src/app/shared/components/item/item.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
+import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-photo-url.pipe";
 import { SDK } from "src/sdk";
 
@@ -48,6 +49,7 @@ import { SDK } from "src/sdk";
 		DeleteButtonComponent,
 		TooltipDirective,
 		MemberProfilePhotoUrlPipe,
+		GroupPipe,
 	],
 })
 export class BoardMembersComponent implements ViewWillEnter {
