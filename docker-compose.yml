@@ -55,7 +55,10 @@ services:
       PGPASSWORD: password
       PGDATABASE: postgres
       BACKUP_DRIVE_FOLDER_ID: ""
-      BACKUP_TIME: "04:00"
+      BACKUP_CRON: "0 4 * * *"
+      BACKUP_DB_KEEP_DAYS: 30
+      BACKUP_DB_KEEP_MONTHS: 12
+      BACKUP_FILES_KEEP_DELETED_DAYS: 365
     volumes:
       - data:/data:ro
       - ./keys:/keys:ro
