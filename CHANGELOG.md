@@ -1,3 +1,7 @@
+## v4.27.0 — 2026-10-23
+
+- <span class="changelog-type" title="feat">✨</span> [Denní zálohy databáze a souborů na Google Disk](https://github.com/bosancz/interni-sekce/commit/a901a1d08d3807daadc717cdd196373ab44f8d51) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.26.13 — 2026-10-23
 
 - <span class="changelog-type" title="feat">✨</span> [Vedení skupiny v administraci a na webu](https://github.com/bosancz/interni-sekce/commit/627117e8ea7cdb75cf9e7c48d14806d5e4064621) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
