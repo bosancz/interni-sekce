@@ -1,6 +1,18 @@
 <bo-card class="mb-3">
 	<bo-card-header>
-		<bo-card-title>Report z akce</bo-card-title>
+		<bo-card-title>
+			<span class="section-label heading">
+				Shrnutí akce na web
+				<span class="visibility"><ion-icon name="globe-outline"></ion-icon>veřejné</span>
+				@if (canEditReport() && event()?.publicReport) {
+					<bo-edit-button-markdown
+						label="Shrnutí akce na web"
+						[value]="event()?.publicReport"
+						(update)="saveReportData({ publicReport: $event })"
+					/>
+				}
+			</span>
+		</bo-card-title>
 		@if (event()) {
 			<span
 				slot="buttons"
@@ -17,18 +29,6 @@
 		}
 	</bo-card-header>
 	<bo-card-content>
-		<div class="section-label">
-			<span>Shrnutí akce na web</span>
-			<span class="visibility"><ion-icon name="globe-outline"></ion-icon>veřejné</span>
-			@if (canEditReport() && event()?.publicReport) {
-				<bo-edit-button-markdown
-					label="Shrnutí akce na web"
-					[value]="event()?.publicReport"
-					(update)="saveReportData({ publicReport: $event })"
-				/>
-			}
-		</div>
-
 		@if (event()?.publicReport; as publicReport) {
 			<div class="report-text" [innerHTML]="publicReport | markdown"></div>
 		} @else if (event()) {
@@ -75,18 +75,62 @@
 				</span>
 			</div>
 
-			<div class="revizor-section">
+			<div class="gallery">
 				<div class="section-label">
-					<span>Report pro revizora</span>
-					<span class="visibility"><ion-icon name="lock-closed-outline"></ion-icon>neveřejné</span>
-					@if (canEditReport() && event()?.report) {
-						<bo-edit-button-markdown
-							label="Report pro revizora"
-							[value]="event()?.report"
-							(update)="saveReportData({ report: $event })"
-						/>
-					}
+					<span>Fotogalerie</span>
 				</div>
+				@if (event()?.album; as album) {
+					<ion-item
+						button
+						[detail]="false"
+						[routerLink]="['/galerie/alba', album.id]"
+						lines="none"
+						class="album-link"
+					>
+						<ion-icon name="images-outline" slot="start"></ion-icon>
+						<ion-label>
+							<h2>{{ album.name }}</h2>
+							<p>{{ album.dateFrom | date: "d. M. y" }} – {{ album.dateTill | date: "d. M. y" }}</p>
+						</ion-label>
+						@if (canEditAlbum()) {
+							<ion-button
+								slot="end"
+								fill="clear"
+								color="medium"
+								[disabled]="removingAlbum()"
+								boTooltip="Odpojit album"
+								(click)="removeAlbum(album, $event)"
+							>
+								<ion-icon name="close-outline" slot="icon-only"></ion-icon>
+							</ion-button>
+						}
+					</ion-item>
+				} @else if (canEditAlbum()) {
+					<div class="gallery-empty">
+						<span class="muted">Zatím žádná fotogalerie.</span>
+						<ion-button fill="outline" size="small" [disabled]="addingAlbum()" (click)="addAlbum()">
+							Přidat album
+						</ion-button>
+					</div>
+				} @else {
+					<p class="muted">Akce zatím nemá fotogalerii.</p>
+				}
+			</div>
+
+			<div class="revizor-section">
+				<bo-card-title>
+					<span class="section-label heading">
+						Report pro revizora
+						<span class="visibility"><ion-icon name="lock-closed-outline"></ion-icon>neveřejné</span>
+						@if (canEditReport() && event()?.report) {
+							<bo-edit-button-markdown
+								label="Report pro revizora"
+								[value]="event()?.report"
+								(update)="saveReportData({ report: $event })"
+							/>
+						}
+					</span>
+				</bo-card-title>
 
 				@if (event()?.report; as report) {
 					<div class="report-text" [innerHTML]="report | markdown"></div>
@@ -147,52 +191,6 @@
 					</ion-button>
 				}
 			</div>
-		}
-	</bo-card-content>
-</bo-card>
-
-<bo-card class="mb-3">
-	<bo-card-header>
-		<bo-card-title>Fotogalerie</bo-card-title>
-	</bo-card-header>
-	<bo-card-content>
-		@if (event()?.album; as album) {
-			<ion-item
-				button
-				[detail]="false"
-				[routerLink]="['/galerie/alba', album.id]"
-				lines="none"
-				class="album-link"
-			>
-				<ion-icon name="images-outline" slot="start"></ion-icon>
-				<ion-label>
-					<h2>{{ album.name }}</h2>
-					<p>{{ album.dateFrom | date: "d. M. y" }} – {{ album.dateTill | date: "d. M. y" }}</p>
-				</ion-label>
-				@if (canEditAlbum()) {
-					<ion-button
-						slot="end"
-						fill="clear"
-						color="medium"
-						[disabled]="removingAlbum()"
-						boTooltip="Odpojit album"
-						(click)="removeAlbum(album, $event)"
-					>
-						<ion-icon name="close-outline" slot="icon-only"></ion-icon>
-					</ion-button>
-				}
-			</ion-item>
-		} @else if (!event()) {
-			<p><ion-skeleton-text animated></ion-skeleton-text></p>
-		} @else if (canEditAlbum()) {
-			<div class="bo-empty-state">
-				<ion-icon name="images-outline"></ion-icon>
-				<strong>Zatím žádná fotogalerie</strong>
-				<p>Vytvořte nové album, nebo připojte existující.</p>
-				<ion-button fill="solid" [disabled]="addingAlbum()" (click)="addAlbum()">Přidat album</ion-button>
-			</div>
-		} @else {
-			<p class="muted">Akce zatím nemá fotogalerii.</p>
 		}
 	</bo-card-content>
 </bo-card>
