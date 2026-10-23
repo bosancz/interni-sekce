@@ -1,6 +1,18 @@
 <bo-card class="mb-3">
 	<bo-card-header>
-		<bo-card-title>Report z akce</bo-card-title>
+		<bo-card-title>
+			<span class="section-label heading">
+				Shrnutí akce na web
+				<span class="visibility"><ion-icon name="globe-outline"></ion-icon>veřejné</span>
+				@if (canEditReport() && event()?.publicReport) {
+					<bo-edit-button-markdown
+						label="Shrnutí akce na web"
+						[value]="event()?.publicReport"
+						(update)="saveReportData({ publicReport: $event })"
+					/>
+				}
+			</span>
+		</bo-card-title>
 		@if (event()) {
 			<span
 				slot="buttons"
@@ -17,18 +29,6 @@
 		}
 	</bo-card-header>
 	<bo-card-content>
-		<div class="section-label">
-			<span>Shrnutí akce na web</span>
-			<span class="visibility"><ion-icon name="globe-outline"></ion-icon>veřejné</span>
-			@if (canEditReport() && event()?.publicReport) {
-				<bo-edit-button-markdown
-					label="Shrnutí akce na web"
-					[value]="event()?.publicReport"
-					(update)="saveReportData({ publicReport: $event })"
-				/>
-			}
-		</div>
-
 		@if (event()?.publicReport; as publicReport) {
 			<div class="report-text" [innerHTML]="publicReport | markdown"></div>
 		} @else if (event()) {
@@ -118,17 +118,19 @@
 			</div>
 
 			<div class="revizor-section">
-				<div class="section-label">
-					<span>Report pro revizora</span>
-					<span class="visibility"><ion-icon name="lock-closed-outline"></ion-icon>neveřejné</span>
-					@if (canEditReport() && event()?.report) {
-						<bo-edit-button-markdown
-							label="Report pro revizora"
-							[value]="event()?.report"
-							(update)="saveReportData({ report: $event })"
-						/>
-					}
-				</div>
+				<bo-card-title>
+					<span class="section-label heading">
+						Report pro revizora
+						<span class="visibility"><ion-icon name="lock-closed-outline"></ion-icon>neveřejné</span>
+						@if (canEditReport() && event()?.report) {
+							<bo-edit-button-markdown
+								label="Report pro revizora"
+								[value]="event()?.report"
+								(update)="saveReportData({ report: $event })"
+							/>
+						}
+					</span>
+				</bo-card-title>
 
 				@if (event()?.report; as report) {
 					<div class="report-text" [innerHTML]="report | markdown"></div>

@@ -14,6 +14,10 @@ bo-card-content {
 		font-size: 0.95rem;
 	}
 
+	&.heading {
+		font-weight: inherit;
+	}
+
 	.value {
 		color: var(--ion-text-color);
 		font-weight: 400;
@@ -36,6 +40,7 @@ bo-card-content {
 }
 
 .visibility {
+	font-family: var(--font-regular);
 	display: inline-flex;
 	align-items: center;
 	gap: 0.25rem;
@@ -136,4 +141,9 @@ bo-card-content {
 		padding: 8px;
 		font-size: 1.2rem;
 	}
+}
+
+.revizor-section bo-card-title {
+	display: block;
+	margin-bottom: 0.5rem;
 }
