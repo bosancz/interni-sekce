@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ListGroupsQuery } from "src/api/members/dto/group.dto";
-import { Brackets, FindOneOptions, Repository, SelectQueryBuilder } from "typeorm";
+import { Brackets, Repository, SelectQueryBuilder } from "typeorm";
 import { Group } from "../entities/group.entity";
 import { Member } from "../entities/member.entity";
 
@@ -59,8 +59,39 @@ export class GroupsRepository {
 		return q.getMany();
 	}
 
-	async getGroup(id: number, options?: FindOneOptions<Group>) {
-		return this.groupsRepository.findOne({ where: { id }, ...options });
+	async getGroup(id: number, options: { withDeleted?: boolean; leader?: boolean } = {}) {
+		const q = this.groupsRepository.createQueryBuilder("groups").where("groups.id = :id", { id });
+
+		if (options.withDeleted) q.withDeleted();
+
+		if (options.leader) {
+			q.leftJoin("groups.leader", "leader").addSelect([
+				"leader.id",
+				"leader.nickname",
+				"leader.firstName",
+				"leader.lastName",
+			]);
+		}
+
+		return q.getOne();
+	}
+
+	async getPublicGroups() {
+		return this.groupsRepository
+			.createQueryBuilder("groups")
+			.leftJoin("groups.leader", "leader")
+			.addSelect([
+				"leader.id",
+				"leader.nickname",
+				"leader.firstName",
+				"leader.lastName",
+				"leader.email",
+				"leader.mobile",
+				"leader.profilePhotoUpdatedAt",
+			])
+			.where("groups.active = true")
+			.orderBy("groups.short_name", "ASC")
+			.getMany();
 	}
 
 	async createGroup(groupData: Pick<Group, "shortName" | "name">) {

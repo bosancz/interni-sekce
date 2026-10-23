@@ -134,6 +134,7 @@ export class SeedService {
 		await this.entityManager.transaction(async (t) => {
 			const groupIds = await this.seedGroups(t);
 			const memberIds = await this.seedMembers(t, groupIds);
+			await this.seedGroupLeaders(t, groupIds, memberIds);
 			const userIds = await this.seedUsers(t, memberIds, password);
 			await this.seedEvents(t, groupIds, memberIds);
 			await this.seedAlbums(t, userIds);
@@ -156,6 +157,7 @@ export class SeedService {
 				darkColor: seedGroup.color,
 				active: seedGroup.active,
 				children: seedGroup.children,
+				meetingDay: seedGroup.meetingDay ?? null,
 			});
 
 			groupIds.set(seedGroup.shortName, group.id);
@@ -164,6 +166,16 @@ export class SeedService {
 		this.logger.debug(` - Seeded ${groupIds.size} groups.`);
 
 		return groupIds;
+	}
+
+	private async seedGroupLeaders(t: EntityManager, groupIds: Map<string, number>, memberIds: Map<string, number>) {
+		for (const seedGroup of SeedGroups) {
+			const leaderId = seedGroup.leader ? memberIds.get(seedGroup.leader) : null;
+			if (leaderId === undefined)
+				throw new Error(`Unknown leader '${seedGroup.leader}' of group '${seedGroup.shortName}'.`);
+
+			await t.update(Group, { id: groupIds.get(seedGroup.shortName) }, { leaderId });
+		}
 	}
 
 	private async seedMembers(t: EntityManager, groupIds: Map<string, number>) {
