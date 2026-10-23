@@ -10,6 +10,7 @@ import { PhotosFilesService } from "src/models/albums/services/photos-files.serv
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventExpense } from "src/models/events/entities/event-expense.entity";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
+import { BoardMember } from "src/models/members/entities/board-member.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member } from "src/models/members/entities/member.entity";
@@ -21,6 +22,7 @@ import { readFile } from "fs/promises";
 import { extname, resolve } from "path";
 import {
 	SeedAlbums,
+	SeedBoardMembers,
 	SeedEvent,
 	SeedEventSchedules,
 	SeedEvents,
@@ -135,6 +137,7 @@ export class SeedService {
 			const groupIds = await this.seedGroups(t);
 			const memberIds = await this.seedMembers(t, groupIds);
 			await this.seedGroupLeaders(t, groupIds, memberIds);
+			await this.seedBoardMembers(t, memberIds);
 			const userIds = await this.seedUsers(t, memberIds, password);
 			await this.seedEvents(t, groupIds, memberIds);
 			await this.seedAlbums(t, userIds);
@@ -175,6 +178,15 @@ export class SeedService {
 				throw new Error(`Unknown leader '${seedGroup.leader}' of group '${seedGroup.shortName}'.`);
 
 			await t.update(Group, { id: groupIds.get(seedGroup.shortName) }, { leaderId });
+		}
+	}
+
+	private async seedBoardMembers(t: EntityManager, memberIds: Map<string, number>) {
+		for (const [position, seedBoardMember] of SeedBoardMembers.entries()) {
+			const memberId = memberIds.get(seedBoardMember.member);
+			if (memberId === undefined) throw new Error(`Unknown board member '${seedBoardMember.member}'.`);
+
+			await t.upsert(BoardMember, { memberId, function: seedBoardMember.function, position }, ["memberId"]);
 		}
 	}
 

@@ -706,6 +706,136 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface BoardMemberMemberResponse
+     */
+    export interface BoardMemberMemberResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof BoardMemberMemberResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof BoardMemberMemberResponse
+         */
+        'nickname': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof BoardMemberMemberResponse
+         */
+        'firstName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BoardMemberMemberResponse
+         */
+        'lastName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BoardMemberMemberResponse
+         */
+        'email'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BoardMemberMemberResponse
+         */
+        'mobile'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BoardMemberMemberResponse
+         */
+        'profilePhotoUpdatedAt'?: string | null;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface BoardMemberResponseLinks
+     */
+    export interface BoardMemberResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof BoardMemberResponseLinks
+         */
+        'deleteBoardMember': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface BoardMemberResponseWithLinks
+     */
+    export interface BoardMemberResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof BoardMemberResponseWithLinks
+         */
+        'position': number | null;
+        /**
+         * 
+         * @type {BoardMemberMemberResponse}
+         * @memberof BoardMemberResponseWithLinks
+         */
+        'member'?: BoardMemberMemberResponse;
+        /**
+         * 
+         * @type {BoardMemberResponseLinks}
+         * @memberof BoardMemberResponseWithLinks
+         */
+        '_links': BoardMemberResponseLinks;
+        /**
+         * 
+         * @type {number}
+         * @memberof BoardMemberResponseWithLinks
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof BoardMemberResponseWithLinks
+         */
+        'function': string;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface BoardMemberUpdateBody
+     */
+    export interface BoardMemberUpdateBody {
+        /**
+         * 
+         * @type {string}
+         * @memberof BoardMemberUpdateBody
+         */
+        'function'?: string;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface BoardMembersOrderBody
+     */
+    export interface BoardMembersOrderBody {
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof BoardMembersOrderBody
+         */
+        'memberIds': Array<number>;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface BugReportBody
      */
     export interface BugReportBody {
@@ -8295,6 +8425,24 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'listBoardMembers': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'updateBoardMembersOrder': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'saveBoardMember': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'listGroups': AcLink;
         /**
          * 
@@ -8392,6 +8540,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'getGroups': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'getBoardMembers': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -12728,6 +12882,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * @export
      */
@@ -13064,6 +13222,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for listGroups operation in MembersApi.
      * @export
@@ -13313,6 +13475,14 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * MembersApi - object-oriented interface
      * @export
@@ -13466,6 +13636,50 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<MemberResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async deleteBoardMember(
+            memberId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('deleteBoardMember', 'memberId', memberId)
+            
+            const localVarPath = `/api/board-members/{memberId}`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
         }
     
         /**
@@ -14336,6 +14550,44 @@ export namespace SDK {
         /**
          * 
     
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async listBoardMembers(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/board-members`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<BoardMemberResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {number} memberId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -14833,6 +15085,104 @@ export namespace SDK {
             setSearchParams(requestUrlObj, requestQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async saveBoardMember(
+            memberId: number,
+            body: BoardMemberUpdateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('saveBoardMember', 'memberId', memberId)
+            assertParamExists('saveBoardMember', 'boardMemberUpdateBody', body)
+            
+            // verify required parameter 'boardMemberUpdateBody' is not null or undefined
+            assertParamExists('saveBoardMember', 'memberId', memberId)
+            assertParamExists('saveBoardMember', 'boardMemberUpdateBody', body)
+            
+            const localVarPath = `/api/board-members/{memberId}`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async updateBoardMembersOrder(
+            body: BoardMembersOrderBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'boardMembersOrderBody' is not null or undefined
+            assertParamExists('updateBoardMembersOrder', 'boardMembersOrderBody', body)
+            
+            const localVarPath = `/api/board-members`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PUT', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
     
             axiosRequestConfig["url"] = toPathString(requestUrlObj);
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
@@ -17660,6 +18010,14 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * Query parameters for getGallery operation in PublicAPIApi.
      * @export
@@ -17811,6 +18169,84 @@ export namespace SDK {
             
             const localVarPath = `/api/public/gallery/{id}/download`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getBoardMemberProfilePhoto(
+            memberId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('getBoardMemberProfilePhoto', 'memberId', memberId)
+            
+            const localVarPath = `/api/public/board-members/{memberId}/profile-photo`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getBoardMembers(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/board-members`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
