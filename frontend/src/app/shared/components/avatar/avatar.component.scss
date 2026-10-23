@@ -6,6 +6,11 @@
 	border-radius: 50%;
 	overflow: hidden;
 
+	&.empty {
+		background-color: transparent;
+		border: 2px solid var(--bo-neutral-badge);
+	}
+
 	&.ringed {
 		padding: max(2px, 0.06em);
 	}

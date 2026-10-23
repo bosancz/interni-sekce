@@ -6,6 +6,7 @@ import { Component, input } from "@angular/core";
 	styleUrl: "./avatar.component.scss",
 	host: {
 		"[class.ringed]": "!!photoUrl() && !!color()",
+		"[class.empty]": "!photoUrl() && !initials()",
 		"[style.background-color]": "photoUrl() && color() ? color() : null",
 	},
 })
