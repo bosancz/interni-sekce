@@ -708,6 +708,68 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface BackupRunProgressResponse
+     */
+    export interface BackupRunProgressResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupRunProgressResponse
+         */
+        'bytes': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupRunProgressResponse
+         */
+        'totalBytes': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupRunProgressResponse
+         */
+        'transfers': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupRunProgressResponse
+         */
+        'totalTransfers': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupRunProgressResponse
+         */
+        'checks': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupRunProgressResponse
+         */
+        'speed': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupRunProgressResponse
+         */
+        'eta'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof BackupRunProgressResponse
+         */
+        'elapsed': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof BackupRunProgressResponse
+         */
+        'updatedAt': string;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface BackupRunResponse
      */
     export interface BackupRunResponse {
@@ -765,6 +827,12 @@ export namespace SDK {
          * @memberof BackupRunResponse
          */
         'filesRemoved'?: number | null;
+        /**
+         * 
+         * @type {BackupRunProgressResponse}
+         * @memberof BackupRunResponse
+         */
+        'progress'?: BackupRunProgressResponse | null;
         /**
          * 
          * @type {string}

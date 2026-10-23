@@ -64,6 +64,15 @@
 							}
 						</bo-card-header>
 						<bo-card-content>
+							@if (last?.status === "running" && last?.progress; as progress) {
+								<div class="bk-progress">
+									<div class="bk-progress-bar">
+										<span [style.width.%]="percent(progress)"></span>
+									</div>
+									<div>{{ progressText(progress) }}</div>
+									<div class="muted">{{ progressMeta(progress) }}</div>
+								</div>
+							}
 							<div class="bo-info-list">
 								<div class="bo-info-row">
 									<span class="bo-info-label">Poslední úspěšná</span>

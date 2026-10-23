@@ -132,7 +132,36 @@ export class BackupsComponent implements OnInit {
 		return `${count.toLocaleString("cs-CZ")} souborů`;
 	}
 
+	percent(progress: SDK.BackupRunProgressResponse) {
+		if (!progress.totalBytes) return 0;
+		return Math.min(100, Math.floor((progress.bytes / progress.totalBytes) * 100));
+	}
+
+	progressText(progress: SDK.BackupRunProgressResponse) {
+		return [
+			`${this.bytes(progress.bytes)} z ${this.bytes(progress.totalBytes)} (${this.percent(progress)} %)`,
+			`${progress.transfers.toLocaleString("cs-CZ")} z ${this.files(progress.totalTransfers)}`,
+			`${this.bytes(progress.speed)}/s`,
+		].join(" · ");
+	}
+
+	progressMeta(progress: SDK.BackupRunProgressResponse) {
+		const parts = [`běží ${this.seconds(progress.elapsed)}`];
+		if (progress.eta) parts.push(`zbývá asi ${this.seconds(progress.eta)}`);
+		parts.push(`aktualizováno ${this.ago(progress.updatedAt)}`);
+		return parts.join(" · ");
+	}
+
+	seconds(value: number) {
+		const minutes = Math.floor(value / 60);
+		if (minutes < 60) return `${minutes} min`;
+		const hours = Math.floor(minutes / 60);
+		if (hours < 48) return `${hours} h ${minutes % 60} min`;
+		return `${Math.floor(hours / 24)} d ${hours % 24} h`;
+	}
+
 	details(run: SDK.BackupRunResponse) {
+		if (run.status === "running" && run.progress) return this.progressText(run.progress);
 		const parts: string[] = [];
 		if (run.type === "database") {
 			const size = this.bytes(run.bytes);

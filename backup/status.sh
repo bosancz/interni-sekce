@@ -42,6 +42,14 @@ WHERE id = :'id';
 SQL
 }
 
+record_run_progress() {
+	[ -n "$1" ] || return 0
+	status_sql -v id="$1" -v progress="$2" <<'SQL' >/dev/null
+UPDATE :"schema".backup_runs SET progress = :'progress'::jsonb || jsonb_build_object('updatedAt', now())
+WHERE id = :'id' AND status = 'running';
+SQL
+}
+
 record_interrupted_runs() {
 	status_sql <<'SQL' >/dev/null
 UPDATE :"schema".backup_runs SET status = 'error', finished_at = now(), error = 'Přerušeno restartem záložního kontejneru.'

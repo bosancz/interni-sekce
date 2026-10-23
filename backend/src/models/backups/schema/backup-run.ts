@@ -8,3 +8,15 @@ export enum BackupRunStatuses {
 	ok = "ok",
 	error = "error",
 }
+
+export interface BackupRunProgress {
+	bytes: number;
+	totalBytes: number;
+	transfers: number;
+	totalTransfers: number;
+	checks: number;
+	speed: number;
+	eta: number | null;
+	elapsed: number;
+	updatedAt: string;
+}
