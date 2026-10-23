@@ -36,7 +36,13 @@
 					}
 					<div class="group-info">
 						<h3 class="group-name">{{ group.name ?? group.shortName }}</h3>
-						<p class="group-count">{{ group.childrenCount }}&nbsp;dětí · {{ group.leadersCount }}&nbsp;vedoucích</p>
+						<p class="group-count">
+							{{ group.childrenCount }}&nbsp;dětí · {{ group.leadersCount }}&nbsp;vedoucích
+						</p>
+						<p class="group-leader" [class.group-leader-missing]="!group.leader">
+							<ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+							<span>{{ group.leader?.nickname ?? "Bez oddílového vedoucího" }}</span>
+						</p>
 					</div>
 				</div>
 			</div>

@@ -14,6 +14,14 @@ export class GroupsRepository {
 
 		q.where(where);
 
+		q.leftJoin("groups.leader", "leader").addSelect([
+			"leader.id",
+			"leader.nickname",
+			"leader.firstName",
+			"leader.lastName",
+			"leader.profilePhotoUpdatedAt",
+		]);
+
 		q.addOrderBy("short_name", "ASC", "NULLS LAST");
 
 		if (options.active) q.andWhere({ active: options.active });
@@ -70,6 +78,7 @@ export class GroupsRepository {
 				"leader.nickname",
 				"leader.firstName",
 				"leader.lastName",
+				"leader.profilePhotoUpdatedAt",
 			]);
 		}
 

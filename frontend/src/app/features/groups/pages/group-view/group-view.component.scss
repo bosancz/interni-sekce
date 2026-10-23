@@ -1,0 +1,61 @@
+.group-leader {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 16px;
+	padding: 10px 12px 10px 10px;
+	border-radius: var(--bo-radius-card);
+	background-color: var(--bo-white);
+	box-shadow: var(--bo-shadow-card);
+	color: inherit;
+	text-decoration: none;
+
+	> ion-icon {
+		flex: 0 0 auto;
+		width: 40px;
+		font-size: 22px;
+		color: var(--bo-muted);
+	}
+}
+
+a.group-leader:hover {
+	box-shadow: var(--bo-shadow);
+}
+
+.group-leader-photo {
+	flex: 0 0 auto;
+	width: 40px;
+	height: 40px;
+}
+
+.group-leader-text {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.group-leader-label {
+	color: var(--bo-muted);
+	font-size: 0.8rem;
+}
+
+.group-leader-name {
+	display: flex;
+	flex-direction: column;
+	overflow-wrap: anywhere;
+}
+
+.group-leader-full {
+	color: var(--bo-muted);
+	font-size: 0.9rem;
+}
+
+.group-leader-missing .group-leader-name {
+	color: var(--bo-muted);
+	font-style: italic;
+}
+
+.group-leader-set {
+	font-size: 0.9rem;
+	font-weight: 600;
+}

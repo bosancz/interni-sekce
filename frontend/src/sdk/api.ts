@@ -4048,6 +4048,12 @@ export namespace SDK {
          * @memberof GroupLeaderResponse
          */
         'lastName'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof GroupLeaderResponse
+         */
+        'profilePhotoUpdatedAt'?: string | null;
     }
     
         /**

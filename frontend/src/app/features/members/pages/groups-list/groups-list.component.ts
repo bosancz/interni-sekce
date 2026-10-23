@@ -3,7 +3,7 @@ import { RouterLink } from "@angular/router";
 import { AlertController, IonIcon, NavController, ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline, trashOutline } from "ionicons/icons";
+import { addOutline, personOutline, trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -40,7 +40,7 @@ export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 		private toastService: ToastService,
 		private navController: NavController,
 	) {
-		addIcons({ addOutline, trashOutline });
+		addIcons({ addOutline, personOutline, trashOutline });
 	}
 
 	openGroup(group: SDK.GroupResponseWithLinks) {

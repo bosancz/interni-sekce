@@ -149,3 +149,29 @@
 	color: var(--bo-muted);
 	font-size: 0.85rem;
 }
+
+.group-leader {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin: 2px 0 0;
+	font-size: 0.85rem;
+	font-weight: 600;
+
+	ion-icon {
+		flex: 0 0 auto;
+		color: var(--bo-muted);
+	}
+
+	span {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+
+.group-leader-missing {
+	color: var(--bo-muted);
+	font-weight: 400;
+	font-style: italic;
+}

@@ -20,6 +20,39 @@
 					badgeVariant="attention"
 				></bo-vertical-menu-item>
 			</bo-vertical-menu>
+
+			@if (group(); as currentGroup) {
+				@if (currentGroup.leader; as leader) {
+					<a class="group-leader" [routerLink]="['/databaze/clenove', leader.id]">
+						<bo-avatar
+							class="group-leader-photo"
+							[photoUrl]="leader | memberProfilePhotoUrl"
+							[initials]="leader.nickname.slice(0, 1)"
+							[color]="currentGroup.color"
+						/>
+						<span class="group-leader-text">
+							<span class="group-leader-label">Oddílový vedoucí</span>
+							<span class="group-leader-name">
+								<strong>{{ leader.nickname }}</strong>
+								@if (leader.firstName || leader.lastName) {
+									<span class="group-leader-full">{{ leader.firstName }} {{ leader.lastName }}</span>
+								}
+							</span>
+						</span>
+					</a>
+				} @else {
+					<div class="group-leader group-leader-missing">
+						<ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+						<span class="group-leader-text">
+							<span class="group-leader-label">Oddílový vedoucí</span>
+							<span class="group-leader-name">Není vybraný</span>
+							@if (currentGroup._links.updateGroup.allowed) {
+								<a class="clickable group-leader-set" (click)="editGroup()">Vybrat</a>
+							}
+						</span>
+					</div>
+				}
+			}
 		</div>
 
 		<div class="flex-grow-1">
