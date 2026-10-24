@@ -20,22 +20,16 @@ export class EditButtonDateRangeComponent {
 
 	async openEdit() {
 		const value = this.value();
-		const result = await this.modalService.inputModal({
+		const result = await this.modalService.inputModal<{ dates: [string, string] }>({
 			header: this.label(),
 			inputs: {
-				dateFrom: {
-					placeholder: "Datum od",
-					type: "date",
-					value: value?.[0],
-				},
-				dateTill: {
-					placeholder: "Datum do",
-					type: "date",
-					value: value?.[1],
+				dates: {
+					type: "date-range",
+					value: [value?.[0], value?.[1]],
 				},
 			},
 		});
 
-		if (result) this.update.emit([result.dateFrom, result.dateTill]);
+		if (result) this.update.emit(result.dates);
 	}
 }

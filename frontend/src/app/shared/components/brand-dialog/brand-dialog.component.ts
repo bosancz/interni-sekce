@@ -16,14 +16,15 @@ export type BrandDialogInputType =
 	| "url"
 	| "search"
 	| "time"
-	| "datetime-local";
+	| "datetime-local"
+	| "date-range";
 
 export interface BrandDialogInput {
 	name: string;
 	type?: BrandDialogInputType;
 	label?: string;
 	placeholder?: string;
-	value?: string | number | null;
+	value?: string | number | [string | null | undefined, string | null | undefined] | null;
 	required?: boolean;
 	autocapitalize?: string;
 }
@@ -33,6 +34,8 @@ export interface BrandDialogOption<T = any> {
 	value: T;
 	color?: string;
 }
+
+const isFullDate = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value) && Number(value.slice(0, 4)) >= 1900;
 
 @Component({
 	selector: "bo-brand-dialog",
@@ -52,12 +55,12 @@ export class BrandDialogComponent extends InputModalComponent<any> implements On
 	destructive = false;
 	large = false;
 
-	values = signal<Record<string, string>>({});
+	values = signal<Record<string, any>>({});
 	chosen = signal<any[]>([]);
 
 	valid = computed(() => {
 		const values = this.values();
-		if (this.inputs.some((input) => input.required && !values[input.name]?.trim())) return false;
+		if (this.inputs.some((input) => input.required && !this.isFilled(input, values[input.name]))) return false;
 		if (this.options.length && !this.multiple && !this.chosen().length) return false;
 		return true;
 	});
@@ -68,14 +71,32 @@ export class BrandDialogComponent extends InputModalComponent<any> implements On
 	}
 
 	ngOnInit() {
-		this.values.set(
-			Object.fromEntries(
-				this.inputs.map((input) => [input.name, input.value == null ? "" : String(input.value)]),
-			),
-		);
+		this.values.set(Object.fromEntries(this.inputs.map((input) => [input.name, this.initialValue(input)])));
 
 		const selected = this.multiple ? (this.selected ?? []) : this.selected !== undefined ? [this.selected] : [];
 		this.chosen.set(selected);
+	}
+
+	private initialValue(input: BrandDialogInput) {
+		if (input.type === "date-range") {
+			const [from, till] = Array.isArray(input.value) ? input.value : [];
+			return [from ?? "", till ?? ""];
+		}
+		return input.value == null ? "" : String(input.value);
+	}
+
+	private isFilled(input: BrandDialogInput, value: any) {
+		if (input.type === "date-range") return !!value?.[0] && !!value?.[1];
+		return !!value?.trim();
+	}
+
+	setRange(name: string, index: 0 | 1, value: string) {
+		this.values.update((values) => {
+			const range: [string, string] = [...(values[name] ?? ["", ""])] as [string, string];
+			range[index] = value;
+			if (index === 0 && isFullDate(value) && (!range[1] || range[1] < value)) range[1] = value;
+			return { ...values, [name]: range };
+		});
 	}
 
 	labelOf(input: BrandDialogInput) {

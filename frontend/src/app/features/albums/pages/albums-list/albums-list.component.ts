@@ -376,16 +376,15 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	// TODO: move to own page
 	private async createAlbumModal() {
-		const data = await this.modalService.inputModal<SDK.AlbumCreateBody>({
+		const data = await this.modalService.inputModal<{ name: string; dates: [string, string] }>({
 			header: "Vytvořit album",
 			inputs: {
 				name: { label: "Název alba", type: "text", required: true },
-				dateFrom: { label: "Datum od", type: "date", required: true },
-				dateTill: { label: "Datum do", type: "date", required: true },
+				dates: { label: "Datum", type: "date-range", required: true },
 			},
 			buttonText: "Vytvořit",
 		});
-		if (data) this.onCreateAlbum(data);
+		if (data) this.onCreateAlbum({ name: data.name, dateFrom: data.dates[0], dateTill: data.dates[1] });
 	}
 
 	private onCreateAlbum(albumData: SDK.AlbumCreateBody) {
