@@ -6,6 +6,7 @@
 - **Injected dependencies:** services carry the `Service` suffix (`private notificationsService: NotificationsService`), repositories the full entity name without it (`private notificationSettings: NotificationSettingsRepository`).
 - **Prettier formats the repo**: `./backend/node_modules/.bin/prettier --write .` from the root (`.prettierrc.yml`: tabs, width 120). `.prettierignore` holds `!old`, `frontend/src/sdk`, `frontend/src/assets/lib`, `backend/assets` and `CHANGELOG.md` out of it.
 - `!old/` is the retired server kept for reference — never edit it.
+- **Features never use Ionic components directly** — not `ion-alert`/`AlertController` nor any other Ionic UI; they use the shared components in the ŠÁN visual identity (`shared/components`, e.g. `bo-modal-layout` + `ModalService.componentModal` + `_brand-modal.scss` for dialogs). Only those shared components may use Ionic inside. A missing piece becomes a new shared component, a one-off dialog its own component on `bo-modal-layout` (`AlbumPublishModalComponent`). Existing direct uses are legacy, not a pattern.
 
 ## Commits & changelog
 
