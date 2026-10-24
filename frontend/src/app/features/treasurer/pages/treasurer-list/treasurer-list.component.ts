@@ -504,7 +504,6 @@ export class TreasurerListComponent implements OnInit, AfterViewInit, ViewWillEn
 		const year = this.year();
 		const result = await this.modalService.inputModal<{ note: string }>({
 			header: `Poznámka k příspěvku ${year}`,
-			cssClass: "alert-note",
 			inputs: {
 				note: {
 					type: "textarea",

@@ -10,7 +10,7 @@ import {
 	viewChild,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ActionSheetController, AlertController, ViewWillLeave } from "@ionic/angular/standalone";
+import { ActionSheetController, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
@@ -95,7 +95,6 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		return this.getAlbumActions(album);
 	});
 
-	alert?: HTMLIonAlertElement;
 	photosModal?: HTMLIonModalElement;
 	sortSheet?: HTMLIonActionSheetElement;
 
@@ -104,7 +103,6 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		private router: Router,
 		private api: ApiService,
 		private toastService: ToastService,
-		private alertController: AlertController,
 		private actionSheetController: ActionSheetController,
 		private modalService: ModalService,
 		private platformService: PlatformService,
@@ -149,7 +147,6 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 	}
 
 	ionViewWillLeave() {
-		this.alert?.dismiss();
 		this.sortSheet?.dismiss();
 		this.photosModal?.dismiss();
 	}
@@ -250,28 +247,15 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		];
 
 		if (this.platformService.isLg.value) {
-			this.alert = await this.alertController.create({
+			const value = await this.modalService.selectModal({
 				header: "Seřadit fotky",
 				message: "Vlastní pořadí fotek se ztratí.",
-				inputs: options.map((option, index) => ({
-					type: "radio" as const,
-					label: option.text,
-					value: option.value,
-					checked: index === 0,
-				})),
-				buttons: [
-					{ text: "Zrušit", role: "cancel" },
-					{
-						text: "Seřadit",
-						handler: (value: string) => {
-							const option = options.find((item) => item.value === value);
-							if (option) this.applySort(option.compare);
-						},
-					},
-				],
+				values: options.map((option) => ({ label: option.text, value: option.value })),
+				value: options[0].value,
+				buttonText: "Seřadit",
 			});
-
-			this.alert.present();
+			const option = options.find((item) => item.value === value);
+			if (option) this.applySort(option.compare);
 			return;
 		}
 
@@ -376,15 +360,11 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		const selected = this.selectedPhotos();
 		if (!selected.length) return;
 
-		this.alert = await this.alertController.create({
-			message: `Opravdu chcete smazat vybrané fotky (${selected.length})?`,
-			buttons: [
-				{ text: "Zrušit", role: "cancel" },
-				{ text: "Smazat", handler: () => this.deleteSelectedConfirmed() },
-			],
-		});
-
-		this.alert.present();
+		const confirmed = await this.modalService.deleteConfirmationModal(
+			`Opravdu chcete smazat vybrané fotky (${selected.length})?`,
+			{ header: "Smazat fotky?" },
+		);
+		if (confirmed) await this.deleteSelectedConfirmed();
 	}
 
 	private async deleteSelectedConfirmed() {
@@ -434,15 +414,13 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 
 	private async delete() {
 		const album = this.album();
-		this.alert = await this.alertController.create({
-			message: `Opravdu chcete smazat album ${album?.name}?`,
-			buttons: [
-				{ text: "Zrušit", role: "cancel" },
-				{ text: "Smazat", handler: () => this.deleteConfirmed() },
-			],
-		});
-
-		this.alert.present();
+		const confirmed = await this.modalService.deleteConfirmationModal(
+			`Opravdu chcete smazat album ${album?.name}?`,
+			{
+				header: "Smazat album?",
+			},
+		);
+		if (confirmed) await this.deleteConfirmed();
 	}
 
 	private async deleteConfirmed() {

@@ -19,7 +19,6 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import {
-	AlertController,
 	IonButton,
 	IonButtons,
 	IonChip,
@@ -322,7 +321,6 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 		private modalController: ModalController,
 		private api: ApiService,
 		private toastService: ToastService,
-		private alertController: AlertController,
 		private router: Router,
 		private platformService: PlatformService,
 		private modalService: ModalService,
@@ -1063,16 +1061,10 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	}
 
 	async delete(photo: SDK.PhotoResponseWithLinks) {
-		const alert = await this.alertController.create({
-			header: "Smazat fotku",
-			message: "Chcete opravdu smazat tuto fotku?",
-			buttons: [
-				{ text: "Zrušit", role: "cancel" },
-				{ text: "Smazat", role: "submit", handler: () => this.deleteConfirmed(photo) },
-			],
+		const confirmed = await this.modalService.deleteConfirmationModal("Opravdu chcete smazat tuto fotku?", {
+			header: "Smazat fotku?",
 		});
-
-		alert.present();
+		if (confirmed) await this.deleteConfirmed(photo);
 	}
 
 	async deleteConfirmed(photo: SDK.PhotoResponseWithLinks) {

@@ -51,7 +51,6 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 	actions: Action[] = [];
 
 	modal?: HTMLIonModalElement;
-	alert?: HTMLIonAlertElement;
 
 	constructor(
 		private toastService: ToastService,
@@ -70,7 +69,6 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 
 	ngOnDestroy() {
 		this.modal?.dismiss();
-		this.alert?.dismiss();
 	}
 
 	private async loadExpenses() {

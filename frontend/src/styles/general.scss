@@ -399,38 +399,6 @@ ion-select.filter-pill {
 	user-select: text !important;
 }
 
-.color-radio .alert-radio-label {
-	display: flex;
-	align-items: center;
-
-	&::before {
-		content: "";
-		display: inline-block;
-		width: 20px;
-		height: 20px;
-		margin-right: 12px;
-		border-radius: 50%;
-		border: 1px solid rgba(0, 0, 0, 0.2);
-		flex: 0 0 auto;
-	}
-}
-
-.color-black .alert-radio-label::before {
-	background: #1a1a1a;
-}
-.color-blue .alert-radio-label::before {
-	background: #2a3478;
-}
-.color-green .alert-radio-label::before {
-	background: #799f3d;
-}
-.color-red .alert-radio-label::before {
-	background: #d2232a;
-}
-.color-orange .alert-radio-label::before {
-	background: #e28f26;
-}
-
 .account-card-popover {
 	--offset-y: -6px;
 	--box-shadow: 0 10px 34px rgba(31, 36, 48, 0.18);

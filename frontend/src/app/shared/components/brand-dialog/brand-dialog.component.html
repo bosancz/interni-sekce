@@ -1,0 +1,83 @@
+<bo-modal-layout>
+	<h4 slot="title">{{ header }}</h4>
+
+	<div class="bm-body" [class.bd-large]="large">
+		@if (message) {
+			<p class="bd-message" [innerHTML]="message"></p>
+		}
+
+		@for (input of inputs; track input.name; let first = $first) {
+			<label class="bd-field">
+				@if (labelOf(input); as label) {
+					<span class="bd-label">{{ label }}</span>
+				}
+				@if (input.type === "textarea") {
+					<textarea
+						class="bd-input bd-textarea"
+						[placeholder]="input.placeholder ?? ''"
+						[value]="values()[input.name]"
+						[attr.autocapitalize]="input.autocapitalize ?? null"
+						[attr.autofocus]="first ? '' : null"
+						(input)="setValue(input.name, $any($event.target).value)"
+					></textarea>
+				} @else {
+					<input
+						class="bd-input"
+						[type]="input.type ?? 'text'"
+						[placeholder]="input.placeholder ?? ''"
+						[attr.aria-label]="labelOf(input) ? null : input.placeholder"
+						[value]="values()[input.name]"
+						[attr.autocapitalize]="input.autocapitalize ?? null"
+						[attr.autofocus]="first ? '' : null"
+						(input)="setValue(input.name, $any($event.target).value)"
+						(keydown.enter)="onEnter($event, input)"
+					/>
+				}
+			</label>
+		}
+
+		@if (options.length) {
+			<div class="bd-options" [attr.role]="multiple ? 'group' : 'radiogroup'">
+				@for (option of options; track option.value) {
+					<button
+						type="button"
+						class="bm-check-row bd-option"
+						[class.checked]="isChosen(option)"
+						[attr.role]="multiple ? 'checkbox' : 'radio'"
+						[attr.aria-checked]="isChosen(option)"
+						(click)="choose(option)"
+					>
+						@if (multiple) {
+							<span class="bm-checkbox">
+								@if (isChosen(option)) {
+									<ion-icon name="checkmark-outline"></ion-icon>
+								}
+							</span>
+						} @else {
+							<span class="bd-radio"></span>
+						}
+						@if (option.color) {
+							<span class="bd-swatch" [style.background]="option.color"></span>
+						}
+						<span class="bm-row-label">{{ option.label }}</span>
+					</button>
+				}
+			</div>
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		@if (cancelText) {
+			<button type="button" class="bm-btn-ghost" (click)="close.emit()">{{ cancelText }}</button>
+		}
+		<button
+			type="button"
+			class="bm-btn-primary"
+			[class.bd-destructive]="destructive"
+			[disabled]="!valid()"
+			(click)="confirm()"
+		>
+			{{ confirmText }}
+		</button>
+	</div>
+</bo-modal-layout>

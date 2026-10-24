@@ -1,6 +1,7 @@
 import { DatePipe } from "@angular/common";
 import { Component, signal } from "@angular/core";
-import { AlertController, ViewWillEnter } from "@ionic/angular/standalone";
+import { ViewWillEnter } from "@ionic/angular/standalone";
+import { ModalService } from "src/app/core/services/modal.service";
 import { addIcons } from "ionicons";
 import { arrowUndoOutline, trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -53,7 +54,7 @@ export class DeletedEventsListComponent implements ViewWillEnter {
 
 	constructor(
 		private api: ApiService,
-		private alertController: AlertController,
+		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
 		addIcons({ arrowUndoOutline, trashOutline });
@@ -81,20 +82,11 @@ export class DeletedEventsListComponent implements ViewWillEnter {
 	async permanentlyDeleteEvent(event: SDK.EventResponseWithLinks) {
 		if (!event._links.deleteEventPermanent.allowed) return;
 
-		const alert = await this.alertController.create({
+		const confirmed = await this.modalService.deleteConfirmationModal("Tuto akci nelze vzít zpět.", {
 			header: `Trvale smazat ${event.name}?`,
-			message: "Tuto akci nelze vzít zpět.",
-			buttons: [
-				{ text: "Zrušit", role: "cancel" },
-				{
-					text: "Smazat trvale",
-					role: "destructive",
-					handler: async () => this.permanentlyDeleteEventConfirmed(event),
-				},
-			],
+			buttonText: "Smazat trvale",
 		});
-
-		alert.present();
+		if (confirmed) await this.permanentlyDeleteEventConfirmed(event);
 	}
 
 	private async permanentlyDeleteEventConfirmed(event: SDK.EventResponseWithLinks) {

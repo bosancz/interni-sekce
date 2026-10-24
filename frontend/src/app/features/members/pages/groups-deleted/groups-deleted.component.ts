@@ -1,13 +1,6 @@
 import { Component, signal } from "@angular/core";
-import {
-	AlertController,
-	IonButton,
-	IonIcon,
-	IonItem,
-	IonLabel,
-	IonList,
-	ViewWillEnter,
-} from "@ionic/angular/standalone";
+import { IonButton, IonIcon, IonItem, IonLabel, IonList, ViewWillEnter } from "@ionic/angular/standalone";
+import { ModalService } from "src/app/core/services/modal.service";
 import { addIcons } from "ionicons";
 import { arrowUndoOutline, trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -27,7 +20,7 @@ export class GroupsDeletedComponent implements ViewWillEnter {
 
 	constructor(
 		private api: ApiService,
-		private alertController: AlertController,
+		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
 		addIcons({ arrowUndoOutline, trashOutline });
@@ -58,20 +51,11 @@ export class GroupsDeletedComponent implements ViewWillEnter {
 	async permanentlyDeleteGroup(group: SDK.GroupResponseWithLinks) {
 		if (!group._links.permanentlyDeleteGroup.allowed) return;
 
-		const alert = await this.alertController.create({
+		const confirmed = await this.modalService.deleteConfirmationModal("Tuto akci nelze vzít zpět.", {
 			header: `Trvale smazat ${group.name ?? group.id}?`,
-			message: "Tuto akci nelze vzít zpět.",
-			buttons: [
-				{ text: "Zrušit", role: "cancel" },
-				{
-					text: "Smazat trvale",
-					role: "destructive",
-					handler: async () => this.permanentlyDeleteGroupConfirmed(group),
-				},
-			],
+			buttonText: "Smazat trvale",
 		});
-
-		alert.present();
+		if (confirmed) await this.permanentlyDeleteGroupConfirmed(group);
 	}
 
 	private async permanentlyDeleteGroupConfirmed(group: SDK.GroupResponseWithLinks) {
