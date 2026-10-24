@@ -32,7 +32,7 @@ export class OauthService {
 	constructor(
 		private readonly config: Config,
 		private readonly tokenService: TokenService,
-		private readonly users: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 	) {}
 
 	private get clients(): OauthClient[] {
@@ -85,7 +85,7 @@ export class OauthService {
 		const payload = await this.tokenService.verifyToken<OauthAccessPayload>(accessToken);
 		if (!payload || payload.type !== "oauth_access") return undefined;
 
-		const user = await this.users.getUser(payload.sub, { includeMember: true });
+		const user = await this.usersRepository.getUser(payload.sub, { includeMember: true });
 		if (!user || !user.email) return undefined;
 
 		const member = user.member;

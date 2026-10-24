@@ -2,7 +2,8 @@ import { KeyValuePipe } from "@angular/common";
 import { Component, input, output, ChangeDetectionStrategy } from "@angular/core";
 import { IonButton, IonLabel, IonList, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
 import { ModalService } from "src/app/core/services/modal.service";
-import { UserRoles } from "src/app/core/config/user-roles";
+import { AssignableUserRoles } from "src/app/core/config/user-roles";
+import { UserRolesPipe } from "src/app/shared/pipes/user-roles.pipe";
 import { SDK } from "src/sdk";
 import { EditButtonTextComponent } from "../../../../shared/components/edit-button-text/edit-button-text.component";
 import { ItemComponent } from "../../../../shared/components/item/item.component";
@@ -12,6 +13,7 @@ import { ItemComponent } from "../../../../shared/components/item/item.component
 	templateUrl: "./user-info.component.html",
 	styleUrls: ["./user-info.component.scss"],
 	imports: [
+		UserRolesPipe,
 		IonList,
 		IonLabel,
 		IonButton,
@@ -27,7 +29,7 @@ export class UserInfoComponent {
 	update = output<SDK.UserUpdateBody>();
 	setPassword = output<string>();
 
-	userRoles = UserRoles;
+	userRoles = AssignableUserRoles;
 
 	constructor(private readonly modalService: ModalService) {}
 

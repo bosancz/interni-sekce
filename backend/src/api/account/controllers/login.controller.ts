@@ -35,7 +35,7 @@ import { SendLoginLinkMailTemplate } from "../mail-templates/send-login-link/sen
 @AcController()
 export class LoginController {
 	constructor(
-		private users: UsersRepository,
+		private usersRepository: UsersRepository,
 		private hashService: HashService,
 		private tokenService: TokenService,
 		private mailService: MailService,
@@ -48,7 +48,10 @@ export class LoginController {
 		@Res({ passthrough: true }) res: Response,
 		@Body() body: LoginCredentialsBody,
 	) {
-		const user = await this.users.findUser({ login: body.login.toLocaleLowerCase() }, { credentials: true });
+		const user = await this.usersRepository.findUser(
+			{ login: body.login.toLocaleLowerCase() },
+			{ credentials: true },
+		);
 		if (!user) throw new NotFoundException();
 
 		LoginCredentialsPermission.canOrThrow(req);
@@ -69,7 +72,7 @@ export class LoginController {
 	) {
 		const { email } = await this.googleService.validateAccessToken(body.token);
 
-		const user = await this.users.findUser({ email });
+		const user = await this.usersRepository.findUser({ email });
 		if (!user) throw new NotFoundException(`User with email ${email} not found.`);
 
 		LoginGooglePermission.canOrThrow(req);
@@ -79,7 +82,7 @@ export class LoginController {
 
 	@Post("sendLink")
 	async sendLoginLink(@Req() req: Request, @Body() body: LoginSendLinkBody) {
-		const user = await this.users.findUser([{ login: body.login }, { email: body.login }]);
+		const user = await this.usersRepository.findUser([{ login: body.login }, { email: body.login }]);
 		if (!user) throw new NotFoundException();
 		if (!user.email) throw new ConflictException();
 
@@ -87,7 +90,7 @@ export class LoginController {
 
 		const loginCode = this.hashService.generateRandomString();
 
-		await this.users.updateUser(user.id, {
+		await this.usersRepository.updateUser(user.id, {
 			loginCode: loginCode,
 			loginCodeExp: DateTime.local().plus({ minutes: 30 }).toISO(),
 		});
@@ -105,12 +108,12 @@ export class LoginController {
 		@Res({ passthrough: true }) res: Response,
 		@Query() query: LoginLinkQuery,
 	) {
-		const user = await this.users.findUser({ loginCode: query.code }, { credentials: true });
+		const user = await this.usersRepository.findUser({ loginCode: query.code }, { credentials: true });
 		if (!user || !user.loginCodeExp) throw new NotFoundException();
 
 		LoginLinkPermission.canOrThrow(req);
 
-		await this.users.updateUser(user.id, {
+		await this.usersRepository.updateUser(user.id, {
 			loginCode: null,
 			loginCodeExp: null,
 		});
@@ -129,7 +132,7 @@ export class LoginController {
 		const impersonatorId = req.user?.impersonatorId;
 
 		if (impersonatorId) {
-			const impersonator = await this.users.findUser({ id: impersonatorId });
+			const impersonator = await this.usersRepository.findUser({ id: impersonatorId });
 
 			if (impersonator) {
 				await this.setLoginToken(res, impersonator);

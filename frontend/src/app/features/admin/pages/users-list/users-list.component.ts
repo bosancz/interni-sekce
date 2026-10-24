@@ -19,7 +19,8 @@ import { ModalService } from "src/app/core/services/modal.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { addOutline } from "ionicons/icons";
-import { UserRoles } from "src/app/core/config/user-roles";
+import { ShownUserRoles, UserRoles } from "src/app/core/config/user-roles";
+import { UserRolesPipe } from "src/app/shared/pipes/user-roles.pipe";
 import { ApiService } from "src/app/core/services/api.service";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -41,6 +42,7 @@ type UsersFilter = {
 	styleUrls: ["./users-list.component.scss"],
 
 	imports: [
+		UserRolesPipe,
 		FormsModule,
 		RouterLink,
 		KeyValuePipe,
@@ -62,6 +64,8 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
 	users = signal<SDK.UserResponseWithLinks[] | undefined>(undefined);
 
 	userRoles = UserRoles;
+
+	shownUserRoles = ShownUserRoles;
 
 	filter = signal<FilterData>({});
 

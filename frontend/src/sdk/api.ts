@@ -10089,21 +10089,11 @@ export namespace SDK {
         'email'?: string;
         /**
          * 
-         * @type {Array<string>}
+         * @type {Array<UserSavedRolesEnum>}
          * @memberof UserCreateBody
          */
-        'roles'?: Array<UserCreateBodyRolesEnum>;
+        'roles'?: Array<UserSavedRolesEnum>;
     }
-    
-    export const UserCreateBodyRolesEnum = {
-        Admin: 'admin',
-        Revizor: 'revizor',
-        Program: 'program',
-        Pokladnik: 'pokladnik'
-    } as const;
-    
-    export type UserCreateBodyRolesEnum = typeof UserCreateBodyRolesEnum[keyof typeof UserCreateBodyRolesEnum];
-    
     
         /**
      * 
@@ -10283,10 +10273,28 @@ export namespace SDK {
         Admin: 'admin',
         Revizor: 'revizor',
         Program: 'program',
-        Pokladnik: 'pokladnik'
+        Pokladnik: 'pokladnik',
+        Vedouci: 'vedouci',
+        Uzivatel: 'uzivatel'
     } as const;
     
     export type UserRolesEnum = typeof UserRolesEnum[keyof typeof UserRolesEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const UserSavedRolesEnum = {
+        Admin: 'admin',
+        Revizor: 'revizor',
+        Program: 'program',
+        Pokladnik: 'pokladnik'
+    } as const;
+    
+    export type UserSavedRolesEnum = typeof UserSavedRolesEnum[keyof typeof UserSavedRolesEnum];
     
     
         /**
@@ -10329,21 +10337,11 @@ export namespace SDK {
         'email'?: string;
         /**
          * 
-         * @type {Array<string>}
+         * @type {Array<UserSavedRolesEnum>}
          * @memberof UserUpdateBody
          */
-        'roles'?: Array<UserUpdateBodyRolesEnum>;
+        'roles'?: Array<UserSavedRolesEnum>;
     }
-    
-    export const UserUpdateBodyRolesEnum = {
-        Admin: 'admin',
-        Revizor: 'revizor',
-        Program: 'program',
-        Pokladnik: 'pokladnik'
-    } as const;
-    
-    export type UserUpdateBodyRolesEnum = typeof UserUpdateBodyRolesEnum[keyof typeof UserUpdateBodyRolesEnum];
-    
     
         /**
      * 
@@ -21083,10 +21081,10 @@ export namespace SDK {
         //roles
         /**
          * 
-         * @type {Array<string>}
+         * @type {Array<UserRolesEnum>}
          * @memberof UsersApiListUsers
          */
-        roles?: Array<string>
+        roles?: Array<UserRolesEnum>
     }
     
     

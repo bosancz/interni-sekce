@@ -11,7 +11,7 @@ import {
 	IonSelectOption,
 	ModalController,
 } from "@ionic/angular/standalone";
-import { UserRoles } from "src/app/core/config/user-roles";
+import { AssignableUserRoles, getAssignedRoles } from "src/app/core/config/user-roles";
 import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { SDK } from "src/sdk";
@@ -35,11 +35,11 @@ import { SDK } from "src/sdk";
 	],
 })
 export class AccountEditModalComponent extends InputModalComponent<SDK.UserUpdateBody> {
-	roles = UserRoles;
+	roles = AssignableUserRoles;
 
 	form = new FormGroup({
 		email: new FormControl<string>("", { nonNullable: true, validators: [Validators.email] }),
-		roles: new FormControl<SDK.UserUpdateBodyRolesEnum[]>([], { nonNullable: true }),
+		roles: new FormControl<SDK.UserSavedRolesEnum[]>([], { nonNullable: true }),
 	});
 
 	constructor(modalController: ModalController) {
@@ -49,7 +49,7 @@ export class AccountEditModalComponent extends InputModalComponent<SDK.UserUpdat
 	set user(user: SDK.AccountResponseWithLinks | null | undefined) {
 		this.form.reset({
 			email: user?.email ?? "",
-			roles: (user?.roles ?? []) as SDK.UserUpdateBodyRolesEnum[],
+			roles: getAssignedRoles(user?.roles),
 		});
 	}
 

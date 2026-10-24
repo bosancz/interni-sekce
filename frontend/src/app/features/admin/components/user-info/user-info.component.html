@@ -42,7 +42,7 @@
 			<ion-select
 				multiple
 				placeholder="žádné"
-				[value]="userValue.roles ?? []"
+				[value]="userValue.roles | userRoles: 'assigned'"
 				[disabled]="!userValue._links.updateUser.allowed"
 				(ionChange)="update.emit({ roles: $event.detail.value })"
 			>

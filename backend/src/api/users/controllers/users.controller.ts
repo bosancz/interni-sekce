@@ -15,17 +15,13 @@ import {
 	Res,
 } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { HashService } from "src/auth/services/hash.service";
 import { TokenService } from "src/auth/services/token.service";
-import { toPrefixTsQuery } from "src/helpers/search";
 import { NotificationsService } from "src/models/notifications/services/notifications.service";
-import { User } from "src/models/users/entities/user.entity";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
-import { Repository } from "typeorm";
 import {
 	UserCreatePermission,
 	UserDeletePermission,
@@ -49,47 +45,23 @@ export class UsersController {
 	private logger = new Logger(UsersController.name);
 
 	constructor(
-		private userService: UsersRepository,
+		private usersRepository: UsersRepository,
 		private tokenService: TokenService,
 		private hashService: HashService,
 		private notificationsService: NotificationsService,
-		@InjectRepository(User) private userRepository: Repository<User>,
 	) {}
 
 	@Get()
 	@AcLinks(UsersListPermission)
 	@ApiResponse({ status: 200, type: WithLinks(UserResponse), isArray: true })
 	async listUsers(@Req() req: Request, @Query() query: ListUsersQuery): Promise<UserResponse[]> {
-		const q = this.userRepository
-			.createQueryBuilder("user")
-			.select([
-				"user.id",
-				"user.login",
-				"user.memberId",
-				"user.roles",
-				"user.email",
-				"member.nickname",
-				"member.firstName",
-				"member.lastName",
-			])
-			.leftJoin("user.member", "member")
-			.where(UsersListPermission.canWhere(req, "user"))
-			.orderBy("user.login", "ASC")
-			.take(query.limit || 25)
-			.skip(query.offset || 0);
-
-		if (query.search) {
-			const search = toPrefixTsQuery(query.search);
-			if (search)
-				q.andWhere(
-					"user.searchVector @@ to_tsquery('simple_unaccent', :search) OR member.searchVector @@ to_tsquery('simple_unaccent', :search)",
-					{ search },
-				);
-		}
-
-		if (query.roles) q.andWhere("user.roles && array[:...roles]::users_roles_enum[]", { roles: query.roles });
-
-		return q.getMany();
+		return this.usersRepository.listUsers({
+			where: (alias) => UsersListPermission.canWhere(req, alias),
+			search: query.search,
+			roles: query.roles,
+			limit: query.limit,
+			offset: query.offset,
+		});
 	}
 
 	@Post()
@@ -98,7 +70,7 @@ export class UsersController {
 	async createUser(@Req() req: Request, @Body() body: UserCreateBody): Promise<UserResponse> {
 		UserCreatePermission.canOrThrow(req);
 
-		const user = await this.userService.createUser(body);
+		const user = await this.usersRepository.createUser(body);
 
 		this.notificationsService
 			.onUserCreated(user, req.user?.userId)
@@ -115,10 +87,7 @@ export class UsersController {
 		@Param("userId", ParseIntPipe) userId: number,
 		@Query() query: GetUserQueryDto,
 	): Promise<UserResponse> {
-		const user = await this.userRepository.findOne({
-			where: { id: userId },
-			relations: query.includeMember ? { member: { group: true } } : {},
-		});
+		const user = await this.usersRepository.getUser(userId, { includeMember: query.includeMember });
 		if (!user) throw new NotFoundException();
 
 		UserReadPermission.canOrThrow(req, user);
@@ -134,24 +103,24 @@ export class UsersController {
 		@Param("userId", ParseIntPipe) userId: number,
 		@Body() body: UserUpdateBody,
 	): Promise<void> {
-		const user = await this.userService.getUser(userId);
+		const user = await this.usersRepository.getUser(userId);
 		if (!user) throw new NotFoundException();
 
 		UserEditPermission.canOrThrow(req, user);
 
-		await this.userService.updateUser(userId, body);
+		await this.usersRepository.updateUser(userId, body);
 	}
 
 	@Delete(":userId")
 	@AcLinks(UserDeletePermission)
 	@ApiResponse({ status: 204 })
 	async deleteUser(@Req() req: Request, @Param("userId", ParseIntPipe) userId: number): Promise<void> {
-		const user = await this.userService.getUser(userId);
+		const user = await this.usersRepository.getUser(userId);
 		if (!user) throw new NotFoundException();
 
 		UserDeletePermission.canOrThrow(req, user);
 
-		await this.userService.deleteUser(userId);
+		await this.usersRepository.deleteUser(userId);
 	}
 
 	@Put(":userId/password")
@@ -162,13 +131,13 @@ export class UsersController {
 		@Param("userId", ParseIntPipe) userId: number,
 		@Body() body: UserSetPasswordBody,
 	): Promise<void> {
-		const user = await this.userService.getUser(userId);
+		const user = await this.usersRepository.getUser(userId);
 		if (!user) throw new NotFoundException();
 
 		UserSetPassword.canOrThrow(req, user);
 
 		const password = await this.hashService.generateHash(body.password);
-		await this.userService.updateUser(userId, { password });
+		await this.usersRepository.updateUser(userId, { password });
 	}
 
 	@Post(":userId/impersonate")
@@ -178,7 +147,7 @@ export class UsersController {
 		@Res({ passthrough: true }) res: Response,
 		@Param("userId", ParseIntPipe) userId: number,
 	) {
-		const user = await this.userService.getUser(userId);
+		const user = await this.usersRepository.getUser(userId);
 		if (!user) throw new NotFoundException();
 
 		UserImpersonatePermission.canOrThrow(req, user);

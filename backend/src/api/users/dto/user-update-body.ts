@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
-import { User, UserRoles } from "src/models/users/entities/user.entity";
+import { User } from "src/models/users/entities/user.entity";
+import { UserSavedRoles } from "src/models/users/schema/user-roles";
 
 export class UserUpdateBody implements Partial<User> {
 	@ApiPropertyOptional({ type: Number, nullable: true })
@@ -10,8 +11,8 @@ export class UserUpdateBody implements Partial<User> {
 	@ApiPropertyOptional() @IsString() @IsOptional() login?: string;
 	@ApiPropertyOptional() @IsString() @IsOptional() email?: string;
 
-	@ApiPropertyOptional({ enum: UserRoles, isArray: true })
-	@IsEnum(UserRoles, { each: true })
+	@ApiPropertyOptional({ enum: UserSavedRoles, enumName: "UserSavedRolesEnum", isArray: true })
+	@IsEnum(UserSavedRoles, { each: true })
 	@IsOptional()
-	roles?: UserRoles[];
+	roles?: UserSavedRoles[];
 }

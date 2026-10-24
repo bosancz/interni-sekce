@@ -16,7 +16,8 @@ import {
 	IonToolbar,
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { UserRoles } from "src/app/core/config/user-roles";
+import { AssignableUserRoles } from "src/app/core/config/user-roles";
+import { UserRolesPipe } from "src/app/shared/pipes/user-roles.pipe";
 import { ApiService } from "src/app/core/services/api.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { Action, ActionButtonsComponent } from "src/app/shared/components/action-buttons/action-buttons.component";
@@ -30,6 +31,7 @@ import { SDK } from "src/sdk";
 	styleUrls: ["./users-edit.component.scss"],
 
 	imports: [
+		UserRolesPipe,
 		FormsModule,
 		KeyValuePipe,
 		IonHeader,
@@ -50,7 +52,7 @@ import { SDK } from "src/sdk";
 export class UsersEditComponent implements OnInit {
 	user = signal<SDK.UserResponseWithLinks | undefined>(undefined);
 
-	roles = UserRoles;
+	roles = AssignableUserRoles;
 
 	members = signal<SDK.MemberResponse[]>([]);
 

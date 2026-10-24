@@ -5,6 +5,6 @@ export const ChangelogPermission = new Permission({
 	contains: ChangelogResponse,
 
 	allowed: {
-		verejnost: true,
+		public: true,
 	},
 });

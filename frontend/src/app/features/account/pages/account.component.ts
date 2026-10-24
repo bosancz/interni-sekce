@@ -4,7 +4,8 @@ import { RouterLink } from "@angular/router";
 import { IonButtons, IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { mailOutline, peopleOutline } from "ionicons/icons";
-import { UserRoles } from "src/app/core/config/user-roles";
+import { AssignableUserRoles, getAssignedRoles, UserRoles } from "src/app/core/config/user-roles";
+import { UserRolesPipe } from "src/app/shared/pipes/user-roles.pipe";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -29,6 +30,7 @@ import { AccountOfflineComponent } from "../components/account-offline/account-o
 	templateUrl: "./account.component.html",
 	styleUrls: ["./account.component.scss"],
 	imports: [
+		UserRolesPipe,
 		PageHeaderComponent,
 		PageContentComponent,
 		IonIcon,
@@ -78,13 +80,13 @@ export class AccountComponent {
 		const user = this.user();
 		if (!user?._links.updateUser.allowed) return;
 
-		const roles = await this.modalService.multiSelectModal<SDK.UserUpdateBodyRolesEnum>({
+		const roles = await this.modalService.multiSelectModal<SDK.UserSavedRolesEnum>({
 			header: "Role",
-			values: Object.entries(this.roles).map(([value, role]) => ({
+			values: Object.entries(AssignableUserRoles).map(([value, role]) => ({
 				label: role.title,
-				value: value as SDK.UserUpdateBodyRolesEnum,
+				value: value as SDK.UserSavedRolesEnum,
 			})),
-			value: (user.roles ?? []) as SDK.UserUpdateBodyRolesEnum[],
+			value: getAssignedRoles(user.roles),
 		});
 
 		if (!roles) return;

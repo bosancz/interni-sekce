@@ -11,7 +11,8 @@ import { Group } from "src/models/members/entities/group.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member, MemberRanks, MemberRoles } from "src/models/members/entities/member.entity";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
-import { User, UserRoles } from "src/models/users/entities/user.entity";
+import { User } from "src/models/users/entities/user.entity";
+import { UserSavedRoles } from "src/models/users/schema/user-roles";
 import { EntityManager, EntityTarget, ObjectLiteral } from "typeorm";
 import { MongoMemberGroups } from "../data/member-groups";
 import { MongoAlbum, MongoAlbumSchema } from "../models/album";
@@ -521,12 +522,12 @@ export class MongoImportService {
 		return group.id;
 	}
 
-	private getUserRoles(mongoUser: MongoUser): UserRoles[] {
-		const roles: UserRoles[] = [];
-		if (mongoUser.roles?.includes("admin")) roles.push(UserRoles.admin);
-		if (mongoUser.roles?.includes("spravce")) roles.push(UserRoles.admin);
-		if (mongoUser.roles?.includes("program")) roles.push(UserRoles.program);
-		if (mongoUser.roles?.includes("revizor")) roles.push(UserRoles.revizor);
+	private getUserRoles(mongoUser: MongoUser): UserSavedRoles[] {
+		const roles: UserSavedRoles[] = [];
+		if (mongoUser.roles?.includes("admin")) roles.push(UserSavedRoles.admin);
+		if (mongoUser.roles?.includes("spravce")) roles.push(UserSavedRoles.admin);
+		if (mongoUser.roles?.includes("program")) roles.push(UserSavedRoles.program);
+		if (mongoUser.roles?.includes("revizor")) roles.push(UserSavedRoles.revizor);
 
 		return roles;
 	}

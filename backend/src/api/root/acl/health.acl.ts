@@ -5,6 +5,6 @@ export const HealthPermission = new Permission({
 	contains: HealthResponse,
 
 	allowed: {
-		verejnost: true,
+		public: true,
 	},
 });
