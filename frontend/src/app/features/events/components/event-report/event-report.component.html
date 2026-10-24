@@ -92,6 +92,14 @@
 							<h2>{{ album.name }}</h2>
 							<p>{{ album.dateFrom | date: "d. M. y" }} – {{ album.dateTill | date: "d. M. y" }}</p>
 						</ion-label>
+						<span
+							slot="end"
+							class="bo-pill"
+							[class.bo-pill-green]="album.status === 'public'"
+							[class.bo-pill-yellow]="album.status !== 'public'"
+						>
+							{{ album.status === "public" ? "Publikované" : "Nepublikované" }}
+						</span>
 						@if (canEditAlbum()) {
 							<ion-button
 								slot="end"
@@ -105,15 +113,21 @@
 							</ion-button>
 						}
 					</ion-item>
-				} @else if (canEditAlbum()) {
-					<div class="gallery-empty">
-						<span class="muted">Zatím žádná fotogalerie.</span>
-						<ion-button fill="outline" size="small" [disabled]="addingAlbum()" (click)="addAlbum()">
+				} @else {
+					<div class="bo-empty-state">
+						<ion-icon name="images-outline"></ion-icon>
+						<strong>Fotogalerie zatím není</strong>
+						<p>Připoj album s fotkami z akce.</p>
+						<ion-button
+							fill="solid"
+							color="warning"
+							[disabled]="!canEditAlbum() || addingAlbum()"
+							[boTooltip]="canEditAlbum() ? null : noPermissionText"
+							(click)="addAlbum()"
+						>
 							Přidat album
 						</ion-button>
 					</div>
-				} @else {
-					<p class="muted">Akce zatím nemá fotogalerii.</p>
 				}
 			</div>
 

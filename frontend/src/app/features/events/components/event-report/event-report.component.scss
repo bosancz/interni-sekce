@@ -71,9 +71,15 @@ bo-card-content {
 	margin: 0;
 }
 
-.report-text ::ng-deep > :last-child,
-.revizor-field-value ::ng-deep > :last-child {
-	margin-bottom: 0;
+.report-text {
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--bo-neutral-badge);
+	border-radius: 10px;
+	background: var(--bo-blue-tint);
+
+	::ng-deep > :last-child {
+		margin-bottom: 0;
+	}
 }
 
 .water {
@@ -116,17 +122,6 @@ bo-card-content {
 
 .gallery {
 	margin-top: 1rem;
-}
-
-.gallery-empty {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 0.5rem 1rem;
-
-	ion-button {
-		margin: 0;
-	}
 }
 
 .album-link {

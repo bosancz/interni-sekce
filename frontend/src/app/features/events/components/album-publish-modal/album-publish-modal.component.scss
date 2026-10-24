@@ -1,0 +1,7 @@
+@use "./../../../../../styles/brand-modal" as *;
+
+.bm-text {
+	margin: 0;
+	line-height: 1.5;
+	color: var(--bm-text);
+}

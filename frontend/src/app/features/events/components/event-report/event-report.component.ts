@@ -28,6 +28,7 @@ import { MarkdownEditorModalComponent } from "src/app/shared/components/markdown
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
 import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
+import { AlbumPublishModalComponent } from "../album-publish-modal/album-publish-modal.component";
 import { AlbumSelectorModalComponent, CREATE_ALBUM } from "../album-selector-modal/album-selector-modal.component";
 import { RiverSelectModalComponent } from "../river-select-modal/river-select-modal.component";
 
@@ -128,8 +129,33 @@ export class EventReportComponent {
 			this.change.emit();
 		} catch (e) {
 			this.toastService.toast("Nepodařilo se publikovat report.", { color: "warning" });
+			return;
 		} finally {
 			this.publishing.set(false);
+		}
+
+		if (event.album) await this.offerAlbumPublish(event.album.id);
+	}
+
+	private async offerAlbumPublish(albumId: number) {
+		const album = await this.api.PhotoGalleryApi.getAlbum(albumId)
+			.then((res) => res.data)
+			.catch(() => null);
+		if (album?.status !== "draft" || !album._links.publishAlbum.allowed) return;
+
+		const confirmed = await this.modalService.componentModal(
+			AlbumPublishModalComponent,
+			{ albumName: album.name },
+			{ cssClass: "dialog-brand" },
+		);
+		if (!confirmed) return;
+
+		try {
+			await this.api.PhotoGalleryApi.publishAlbum(album.id);
+			this.toastService.toast("Fotogalerie publikována.");
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se publikovat fotogalerii.", { color: "warning" });
 		}
 	}
 

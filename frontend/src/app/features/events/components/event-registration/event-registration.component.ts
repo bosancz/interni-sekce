@@ -149,7 +149,7 @@ export class EventRegistrationComponent {
 			value: "",
 		});
 
-		await this.generateWithTemplate(eventId, template, color, note ?? undefined);
+		await this.generateWithTemplate(eventId, template, color, note || undefined);
 	}
 
 	private async generateWithTemplate(eventId: number, template: string, color: string, note?: string) {

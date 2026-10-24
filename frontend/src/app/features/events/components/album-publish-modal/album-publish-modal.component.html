@@ -1,0 +1,15 @@
+<bo-modal-layout>
+	<h4 slot="title">Publikovat i fotogalerii?</h4>
+
+	<div class="bm-body">
+		<p class="bm-text">
+			Report je publikovaný, ale fotogalerie <strong>{{ albumName }}</strong> zatím ne. Po publikování ji uvidí
+			návštěvníci bosan.cz.
+		</p>
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Teď ne</button>
+		<button type="button" class="bm-btn-primary" (click)="submit.emit(true)">Publikovat fotogalerii</button>
+	</div>
+</bo-modal-layout>
