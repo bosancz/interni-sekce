@@ -1,0 +1,190 @@
+<bo-page-header title="Reporty" />
+
+<bo-page-content>
+	<bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
+		@if (isDesktop()) {
+			<div toolbar-actions slot="end" class="filter-actions">
+				<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+			</div>
+		} @else {
+			<div class="filter-modal">
+				<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+			</div>
+		}
+	</bo-filter>
+
+	<ng-template #filterPills>
+		<bo-filter-pill
+			label="Rok"
+			[columns]="3"
+			[options]="yearOptions()"
+			[selected]="selectedYears()"
+			(selectedChange)="setYears($event)"
+		/>
+	</ng-template>
+
+	<div class="reports">
+		@if (reports(); as reports) {
+			@for (report of reports; track report.id) {
+				<bo-card class="report">
+					<bo-card-content class="report-layout">
+						<a
+							class="photo"
+							[routerLink]="['/akce', report.id]"
+							[queryParams]="{ tab: 'report' }"
+							tabindex="-1"
+						>
+							@if (report.album?.coverPhoto; as photo) {
+								<img
+									[src]="photo | photoImageUrl: 'small'"
+									[style.background-color]="photo.bg"
+									[alt]="report.name"
+									loading="lazy"
+								/>
+							} @else {
+								<ion-icon name="images-outline"></ion-icon>
+							}
+						</a>
+
+						<div class="text">
+							<div class="meta">
+								<span>{{ [report.dateFrom, report.dateTill] | dateRange }}</span>
+								@for (groupId of report.groupsIds; track groupId) {
+									<bo-group-badge [groupId]="groupId" [short]="true" />
+								}
+								@if (report.waterKm) {
+									<span class="water">
+										{{ report.waterKm | number: "1.0-1" }} km{{
+											report.river ? " · " + report.river : ""
+										}}
+									</span>
+								}
+							</div>
+
+							<h2>
+								<a [routerLink]="['/akce', report.id]" [queryParams]="{ tab: 'report' }">{{
+									report.name
+								}}</a>
+							</h2>
+
+							<p class="byline">
+								@if (leaderNames(report); as leaders) {
+									Vede {{ leaders }} ·
+								}
+								publikováno {{ report.reportPublishedAt | date: "d. M. y" }}
+							</p>
+
+							<div class="section-label">
+								<ion-icon name="lock-closed-outline"></ion-icon>
+								Report pro revizora
+							</div>
+							@if (report.report) {
+								<div class="report-text" [innerHTML]="report.report | markdown"></div>
+							} @else {
+								<p class="missing">Report pro revizora je prázdný.</p>
+							}
+
+							@if (report.publicReport) {
+								<details class="summary">
+									<summary>Shrnutí akce na web</summary>
+									<div class="report-text" [innerHTML]="report.publicReport | markdown"></div>
+								</details>
+							}
+
+							@if (accountingRows(report); as rows) {
+								@if (rows.length) {
+									<div class="section-label">Vyúčtování</div>
+									<div class="accounting">
+										<div class="accounting-summary">
+											<span>
+												<strong
+													>{{
+														report.accounting.total | number: "1.0-0" : "cs"
+													}}&nbsp;Kč</strong
+												>
+												celkem
+											</span>
+											<span>
+												<strong
+													>{{
+														personDays(report)
+															? (report.accounting.total / personDays(report)
+																| number: "1.0-0" : "cs")
+															: "–"
+													}}&nbsp;Kč</strong
+												>
+												na osoboden
+											</span>
+											<span class="muted">
+												{{ report.accounting.persons }} os. × {{ report.accounting.days }}
+												{{
+													report.accounting.days === 1
+														? "den"
+														: report.accounting.days < 5
+															? "dny"
+															: "dní"
+												}}
+											</span>
+										</div>
+										<table class="accounting-table">
+											<thead>
+												<tr>
+													<th>Kategorie</th>
+													<th>Celkem</th>
+													<th>Kč/osoboden</th>
+												</tr>
+											</thead>
+											<tbody>
+												@for (row of rows; track row.title) {
+													<tr>
+														<td>
+															<span class="dot" [style.background]="row.color"></span>
+															{{ row.title }}
+														</td>
+														<td>{{ row.total | number: "1.0-0" : "cs" }}&nbsp;Kč</td>
+														<td>{{ row.perPersonDay | number: "1.0-1" : "cs" }}&nbsp;Kč</td>
+													</tr>
+												}
+											</tbody>
+										</table>
+									</div>
+								}
+							}
+
+							<div class="links">
+								<a [routerLink]="['/akce', report.id]" [queryParams]="{ tab: 'report' }">Detail akce</a>
+								@if (report.album; as album) {
+									<a [routerLink]="['/galerie/alba', album.id]">Fotky z akce</a>
+								}
+							</div>
+						</div>
+					</bo-card-content>
+				</bo-card>
+			} @empty {
+				<div class="bo-empty-state">
+					<ion-icon name="document-text-outline"></ion-icon>
+					<strong>Zatím tu žádný report není</strong>
+					<p>Reporty se tu objeví, jakmile je vedoucí akcí publikují.</p>
+				</div>
+			}
+		} @else {
+			@for (i of [1, 2, 3]; track i) {
+				<bo-card class="report">
+					<bo-card-content class="report-layout">
+						<div class="photo"></div>
+						<div class="text">
+							<p><ion-skeleton-text animated style="width: 30%"></ion-skeleton-text></p>
+							<h2><ion-skeleton-text animated style="width: 60%"></ion-skeleton-text></h2>
+							<p><ion-skeleton-text animated></ion-skeleton-text></p>
+							<p><ion-skeleton-text animated></ion-skeleton-text></p>
+						</div>
+					</bo-card-content>
+				</bo-card>
+			}
+		}
+	</div>
+
+	<ion-infinite-scroll [disabled]="!hasMore()" (ionInfinite)="onInfiniteScroll($any($event))">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
+</bo-page-content>

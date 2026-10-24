@@ -56,6 +56,8 @@ export class EventsAccountingController {
 
 		EventAccountingGetPermission.canOrThrow(req, event);
 
+		event.report = await this.events.getEventReport(eventId);
+
 		const { fileBuffer, fileName } = await this.eventAccountingService.generateAccounting(event);
 
 		res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");

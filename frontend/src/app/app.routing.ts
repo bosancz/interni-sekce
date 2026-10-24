@@ -49,6 +49,13 @@ export const appRoutes: Routes = [
 	},
 
 	{
+		path: "reporty",
+		title: "Reporty",
+		canMatch: [roleGuard("revizor")],
+		loadChildren: () => import("./features/reports/reports.routing").then((m) => m.reportsRoutes),
+	},
+
+	{
 		path: "statistiky",
 		title: "Statistiky",
 		data: { permission: "statistics" },

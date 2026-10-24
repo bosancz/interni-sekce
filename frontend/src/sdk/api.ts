@@ -1615,7 +1615,7 @@ export namespace SDK {
          * @type {string}
          * @memberof Event
          */
-        'report': string | null;
+        'report'?: string | null;
         /**
          * 
          * @type {string}
@@ -2348,6 +2348,20 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface EventReportResponse
+     */
+    export interface EventReportResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof EventReportResponse
+         */
+        'report': string | null;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface EventReportUpdateBody
      */
     export interface EventReportUpdateBody {
@@ -2580,12 +2594,6 @@ export namespace SDK {
          * @type {string}
          * @memberof EventResponse
          */
-        'report': string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof EventResponse
-         */
         'publicReport': string | null;
     }
     
@@ -2711,6 +2719,12 @@ export namespace SDK {
          * @memberof EventResponseLinks
          */
         'deleteEventRegistration': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof EventResponseLinks
+         */
+        'getEventReport': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -3024,12 +3038,6 @@ export namespace SDK {
          * @type {string}
          * @memberof EventResponseWithLinks
          */
-        'report': string | null;
-        /**
-         * 
-         * @type {string}
-         * @memberof EventResponseWithLinks
-         */
         'publicReport': string | null;
     }
     
@@ -3212,6 +3220,232 @@ export namespace SDK {
          */
         'lng': number;
     }
+    
+        /**
+     * 
+     * @export
+     * @interface EventWithReportResponseWithLinks
+     */
+    export interface EventWithReportResponseWithLinks {
+        /**
+         * 
+         * @type {EventStatesEnum}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'status': EventStatesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'publishedAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'cancelledAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'reportPublishedAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'announcementSentAt'?: string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'accountingSentAt'?: string;
+        /**
+         * 
+         * @type {Array<GroupResponse>}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'groups'?: Array<GroupResponse>;
+        /**
+         * 
+         * @type {Array<EventAttendeeResponse>}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'attendees'?: Array<EventAttendeeResponse>;
+        /**
+         * 
+         * @type {Array<EventExpenseResponse>}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'expenses'?: Array<EventExpenseResponse>;
+        /**
+         * 
+         * @type {Array<MemberResponse>}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'leaders'?: Array<MemberResponse>;
+        /**
+         * 
+         * @type {ReportAccountingResponse}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'accounting': ReportAccountingResponse;
+        /**
+         * 
+         * @type {ReportAlbumResponse}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'album'?: ReportAlbumResponse;
+        /**
+         * 
+         * @type {object}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        '_links': object;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'name': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'dateFrom': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'dateTill': string;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'leadersEvent': boolean;
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'groupsIds': Array<number>;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'hasRegistration': boolean;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'type': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'statusNote': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'place': string | null;
+        /**
+         * 
+         * @type {EventPlaceGeometry}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'placeGeometry': EventPlaceGeometry | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'description': string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'price': number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'itemList': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'timeFrom': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'timeTill': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'meetingPlaceStart': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'meetingPlaceEnd': string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'waterKm': number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'river': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'deletedAt'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'publicReport': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventWithReportResponseWithLinks
+         */
+        'report': string | null;
+    }
+    
+    
     
         /**
      * 
@@ -8462,6 +8696,98 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface PhotoResponse
+     */
+    export interface PhotoResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponse
+         */
+        'albumId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoResponse
+         */
+        'timestamp': string;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoResponse
+         */
+        'name': string;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponse
+         */
+        'order'?: number | null;
+        /**
+         * 
+         * @type {boolean}
+         * @memberof PhotoResponse
+         */
+        'titlePhoto': boolean;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponse
+         */
+        'width'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponse
+         */
+        'height'?: number | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponse
+         */
+        'uploadedById'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoResponse
+         */
+        'caption'?: string | null;
+        /**
+         * 
+         * @type {Array<string>}
+         * @memberof PhotoResponse
+         */
+        'tags'?: Array<string> | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoResponse
+         */
+        'bg'?: string | null;
+        /**
+         * 
+         * @type {AlbumResponseWithLinks}
+         * @memberof PhotoResponse
+         */
+        'album'?: AlbumResponseWithLinks;
+        /**
+         * 
+         * @type {UserResponseWithLinks}
+         * @memberof PhotoResponse
+         */
+        'uploadedBy'?: UserResponseWithLinks | null;
+    }
+    
+        /**
+     * 
+     * @export
      * @interface PhotoResponseLinks
      */
     export interface PhotoResponseLinks {
@@ -8676,6 +9002,100 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface ReportAccountingCategoryResponse
+     */
+    export interface ReportAccountingCategoryResponse {
+        /**
+         * 
+         * @type {EventExpenseTypesEnum}
+         * @memberof ReportAccountingCategoryResponse
+         */
+        'type': EventExpenseTypesEnum | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof ReportAccountingCategoryResponse
+         */
+        'total': number;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @interface ReportAccountingResponse
+     */
+    export interface ReportAccountingResponse {
+        /**
+         * 
+         * @type {Array<ReportAccountingCategoryResponse>}
+         * @memberof ReportAccountingResponse
+         */
+        'categories': Array<ReportAccountingCategoryResponse>;
+        /**
+         * 
+         * @type {number}
+         * @memberof ReportAccountingResponse
+         */
+        'days': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof ReportAccountingResponse
+         */
+        'persons': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof ReportAccountingResponse
+         */
+        'total': number;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface ReportAlbumResponse
+     */
+    export interface ReportAlbumResponse {
+        /**
+         * 
+         * @type {string}
+         * @memberof ReportAlbumResponse
+         */
+        'status': ReportAlbumResponseStatusEnum;
+        /**
+         * 
+         * @type {PhotoResponse}
+         * @memberof ReportAlbumResponse
+         */
+        'coverPhoto'?: PhotoResponse;
+        /**
+         * 
+         * @type {number}
+         * @memberof ReportAlbumResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof ReportAlbumResponse
+         */
+        'name': string;
+    }
+    
+    export const ReportAlbumResponseStatusEnum = {
+        Public: 'public',
+        Draft: 'draft'
+    } as const;
+    
+    export type ReportAlbumResponseStatusEnum = typeof ReportAlbumResponseStatusEnum[keyof typeof ReportAlbumResponseStatusEnum];
+    
+    
+        /**
+     * 
+     * @export
      * @interface RootResponseLinks
      */
     export interface RootResponseLinks {
@@ -8739,6 +9159,18 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'getCPVEvents': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listReportsYears': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listReports': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -10750,6 +11182,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * @export
      */
@@ -10862,6 +11298,53 @@ export namespace SDK {
          */
         deleted?: boolean
     }
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for listReports operation in EventsApi.
+     * @export
+     * @interface EventsApiListReportsQueryParams
+     */
+    export interface EventsApiListReportsQueryParams {
+        //year
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof EventsApiListReports
+         */
+        year?: Array<number>
+    
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof EventsApiListReports
+         */
+        limit?: number
+    
+        //offset
+        /**
+         * 
+         * @type {number}
+         * @memberof EventsApiListReports
+         */
+        offset?: number
+    
+        //search
+        /**
+         * 
+         * @type {string}
+         * @memberof EventsApiListReports
+         */
+        search?: string
+    }
+    
+    
+    
+    
     
     
     
@@ -11919,6 +12402,50 @@ export namespace SDK {
         /**
          * 
     
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async getEventReport(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('getEventReport', 'eventId', eventId)
+            
+            const localVarPath = `/api/events/{eventId}/report`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<EventReportResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof EventsApi
@@ -12248,6 +12775,100 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<EventResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {EventsApiListReportsQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async listReports(
+            queryParams: EventsApiListReportsQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/reports`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+            if (queryParams.year) {
+                requestQueryParameter['year'] = queryParams.year;
+            }
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.offset !== undefined) {
+                requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+            if (queryParams.search !== undefined) {
+                requestQueryParameter['search'] = queryParams.search;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<EventWithReportResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof EventsApi
+         */
+        
+        public async listReportsYears(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/reports/years`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<number>>(axiosRequestConfig);
         }
     
         /**

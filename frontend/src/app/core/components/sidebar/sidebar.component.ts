@@ -4,6 +4,7 @@ import { IonIcon, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
 	clipboardOutline,
+	documentTextOutline,
 	homeSharp,
 	peopleOutline,
 	settingsOutline,
@@ -54,6 +55,7 @@ export class SidebarComponent {
 
 	canAccessProgram = this.userService.canAccessProgram;
 	canAccessTreasurer = this.userService.canAccessTreasurer;
+	canAccessReports = this.userService.canAccessReports;
 	canAccessAdmin = this.userService.canAccessAdmin;
 	myGroupId = this.userService.myGroupId;
 
@@ -64,6 +66,7 @@ export class SidebarComponent {
 		addIcons({
 			homeSharp,
 			clipboardOutline,
+			documentTextOutline,
 			walletOutline,
 			statsChartOutline,
 			peopleOutline,

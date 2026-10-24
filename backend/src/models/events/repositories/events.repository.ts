@@ -7,7 +7,7 @@ import { Group } from "src/models/members/entities/group.entity";
 import { sortMemberContacts } from "src/models/members/helpers/member-contacts";
 import { Brackets, FindOptionsSelect, Repository } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "../entities/event-attendee.entity";
-import { EventExpense } from "../entities/event-expense.entity";
+import { EventExpense, EventExpenseTypes } from "../entities/event-expense.entity";
 import { Event, EventStates } from "../entities/event.entity";
 import { getEventLeaders } from "../helpers/event-leaders";
 
@@ -136,6 +136,89 @@ export class EventsRepository {
 		const event = await this.publicReportsQuery().andWhere("events.id = :id", { id }).getOne();
 
 		return event ? this.withLeaders([event])[0] : null;
+	}
+
+	async getEventReport(id: number): Promise<string | null> {
+		const event = await this.eventsRepository
+			.createQueryBuilder("events")
+			.select(["events.id", "events.report"])
+			.where("events.id = :id", { id })
+			.withDeleted()
+			.getOne();
+
+		return event?.report ?? null;
+	}
+
+	async getReportsYears() {
+		return this.eventsRepository
+			.createQueryBuilder("events")
+			.select("DISTINCT EXTRACT(YEAR FROM events.dateFrom)", "year")
+			.where("events.reportPublishedAt IS NOT NULL")
+			.orderBy("year", "DESC")
+			.getRawMany<{ year: string }>()
+			.then((years) => years.map((y) => parseInt(y.year)));
+	}
+
+	async getReports(options: { limit?: number; offset?: number; year?: number[]; search?: string } = {}) {
+		const q = this.eventsRepository
+			.createQueryBuilder("events")
+			.select([
+				"events.id",
+				"events.name",
+				"events.type",
+				"events.status",
+				"events.dateFrom",
+				"events.dateTill",
+				"events.leadersEvent",
+				"events.report",
+				"events.publicReport",
+				"events.reportPublishedAt",
+				"events.river",
+				"events.waterKm",
+			])
+			.leftJoinAndSelect("events.groups", "groups")
+			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
+			.leftJoinAndSelect("attendees.member", "leaders")
+			.leftJoin("events.album", "album")
+			.addSelect(["album.id", "album.name", "album.status"])
+			.where("events.reportPublishedAt IS NOT NULL")
+			.orderBy("events.reportPublishedAt", "DESC")
+			.addOrderBy("events.id", "DESC")
+			.take(Math.min(options.limit ?? 20, 100))
+			.skip(options.offset ?? 0);
+
+		if (options.year?.length)
+			q.andWhere("EXTRACT(YEAR FROM events.dateFrom) IN (:...years)", { years: options.year });
+
+		if (options.search?.trim())
+			q.andWhere("unaccent(events.name) ILIKE unaccent(:search)", { search: `%${options.search.trim()}%` });
+
+		return this.withLeaders(await q.getMany());
+	}
+
+	async getReportsAccounting(eventIds: number[]) {
+		const result = new Map<
+			number,
+			{ persons: number; expenses: { type: EventExpenseTypes | null; total: number }[] }
+		>();
+		if (!eventIds.length) return result;
+
+		const persons: { event_id: number; persons: string }[] = await this.eventsRepository.manager.query(
+			`SELECT event_id, COUNT(*) AS persons FROM events_attendees WHERE event_id = ANY($1) GROUP BY event_id`,
+			[eventIds],
+		);
+		const expenses: { event_id: number; type: EventExpenseTypes | null; total: string }[] =
+			await this.eventsRepository.manager.query(
+				`SELECT event_id, type, SUM(amount) AS total FROM events_expenses WHERE event_id = ANY($1) AND amount IS NOT NULL GROUP BY event_id, type`,
+				[eventIds],
+			);
+
+		for (const id of eventIds) result.set(id, { persons: 0, expenses: [] });
+		for (const row of persons) result.get(row.event_id)!.persons = Number(row.persons);
+		for (const row of expenses)
+			result.get(row.event_id)!.expenses.push({ type: row.type, total: Number(row.total) });
+
+		return result;
 	}
 
 	private publicReportsQuery() {

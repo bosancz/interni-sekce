@@ -51,6 +51,12 @@
 				<ion-label>Program</ion-label>
 			</ion-item>
 		}
+		@if (canAccessReports()) {
+			<ion-item routerLink="/reporty" routerLinkActive="active">
+				<ion-icon name="document-text-outline" class="me-3"></ion-icon>
+				<ion-label>Reporty</ion-label>
+			</ion-item>
+		}
 		@if (canAccessTreasurer()) {
 			<ion-item routerLink="/prispevky" routerLinkActive="active">
 				<ion-icon name="wallet-outline" class="me-3"></ion-icon>

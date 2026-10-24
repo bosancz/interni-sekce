@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, computed, input, output, signal } from "@angular/core";
+import { Component, computed, effect, input, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonButton, IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
@@ -65,14 +65,17 @@ export class EventReportComponent {
 
 	readonly noPermissionText = "K této akci nemáš oprávnění.";
 
+	report = signal<string | null>(null);
+
+	canReadReport = computed(() => this.event()?._links?.getEventReport?.allowed ?? false);
 	canEditReport = computed(() => this.event()?._links?.updateEventReport?.allowed ?? false);
 	canEditAlbum = computed(() => this.event()?._links?.updateEvent?.allowed ?? false);
 	publishBlockedText = computed(() => {
 		const event = this.event();
 		if (!event?._links?.publishEventReport?.allowed) return this.noPermissionText;
 		if (!event.publicReport?.trim()) return "Nejdřív napiš shrnutí akce.";
-		if (!event.report?.trim() || event.report.trim() === REVIZOR_REPORT_TEMPLATE.trim())
-			return "Nejdřív vyplň report pro revizora.";
+		const report = this.report()?.trim();
+		if (!report || report === REVIZOR_REPORT_TEMPLATE.trim()) return "Nejdřív vyplň report pro revizora.";
 		return null;
 	});
 
@@ -98,6 +101,19 @@ export class EventReportComponent {
 			sendOutline,
 			checkmarkCircleOutline,
 		});
+
+		effect(() => {
+			const event = this.event();
+			if (event && this.canReadReport()) this.loadReport(event.id);
+			else this.report.set(null);
+		});
+	}
+
+	private async loadReport(eventId: number) {
+		const report = await this.api.EventsApi.getEventReport(eventId)
+			.then((res) => res.data.report)
+			.catch(() => null);
+		if (this.event()?.id === eventId) this.report.set(report);
 	}
 
 	async writePublicReport() {
@@ -112,7 +128,7 @@ export class EventReportComponent {
 	async writeReport() {
 		const result = await this.modalService.componentModal(MarkdownEditorModalComponent, {
 			header: "Report pro revizora",
-			value: this.event()?.report || REVIZOR_REPORT_TEMPLATE,
+			value: this.report() || REVIZOR_REPORT_TEMPLATE,
 		});
 
 		if (result !== null) await this.saveReportData({ report: result });
