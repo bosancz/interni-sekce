@@ -1,4 +1,3 @@
-import { DatePipe } from "@angular/common";
 import { Component, computed, effect, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
@@ -11,6 +10,7 @@ import { CardContentComponent } from "src/app/shared/components/card-content/car
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
+import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 
@@ -20,7 +20,7 @@ import { SDK } from "src/sdk";
 	styleUrls: ["./home-card-photo-of-day.component.scss"],
 
 	imports: [
-		DatePipe,
+		DateRangePipe,
 		RouterLink,
 		IonIcon,
 		IonSkeletonText,

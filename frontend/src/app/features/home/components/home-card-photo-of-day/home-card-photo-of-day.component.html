@@ -33,16 +33,18 @@
 								}
 							</span>
 						}
-						<span class="source">
-							{{ photo.timestamp | date: "d. M. y" }}
-							@if (photo.album) {
-								·
-								<a class="album" [routerLink]="['/galerie/alba', photo.album.id]">
+						@if (photo.album; as album) {
+							<span class="source">
+								@if (album.dateFrom || album.dateTill) {
+									{{ [album.dateFrom, album.dateTill] | dateRange }}
+									·
+								}
+								<a class="album" [routerLink]="['/galerie/alba', album.id]">
 									<ion-icon name="images-outline"></ion-icon>
-									{{ photo.album.name }}
+									{{ album.name }}
 								</a>
-							}
-						</span>
+							</span>
+						}
 					</p>
 				}
 			} @else {
