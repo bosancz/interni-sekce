@@ -125,10 +125,8 @@ export class ProgramWorkflowComponent implements OnInit {
 	}
 
 	async eventAction(event: SDK.EventResponseWithLinks, action: ProgramEventAction) {
-		const statusNote = window.prompt(
-			action === "rejectEvent"
-				? "Poznámka k vrácení akce:"
-				: "Poznámka pro správce programu (můžeš nechat prázdné):",
+		const statusNote = await this.modalService.statusNoteModal(
+			action === "rejectEvent" ? "Poznámka k vrácení akce" : "Poznámka pro správce programu",
 		);
 		if (statusNote === null) return;
 

@@ -1,6 +1,7 @@
 import { Component, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { AlertController, IonIcon, NavController, ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
+import { IonIcon, NavController, ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
+import { ModalService } from "src/app/core/services/modal.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { addOutline, personOutline, trashOutline } from "ionicons/icons";
@@ -32,11 +33,9 @@ export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 
 	createGroupLink = signal<SDK.AcLink | null>(null);
 
-	alert?: HTMLIonAlertElement;
-
 	constructor(
 		private api: ApiService,
-		private alertController: AlertController,
+		private modalService: ModalService,
 		private toastService: ToastService,
 		private navController: NavController,
 	) {
@@ -57,9 +56,7 @@ export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 		this.api.rootLinks.pipe(untilDestroyed(this, "ionViewWillLeave")).subscribe((links) => this.setActions(links));
 	}
 
-	ionViewWillLeave(): void {
-		this.alert?.dismiss();
-	}
+	ionViewWillLeave(): void {}
 
 	private setActions(links: SDK.RootResponseLinks | null) {
 		this.createGroupLink.set(links?.createGroup ?? null);
@@ -76,22 +73,15 @@ export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 	}
 
 	async createGroup() {
-		this.alert = await this.alertController.create({
+		const data = await this.modalService.inputModal<SDK.CreateGroupBody>({
 			header: "Vytvořit oddíl",
-			inputs: [
-				{ name: "name", type: "text", placeholder: "Název" },
-				{ name: "shortName", type: "text", placeholder: "Zkratka" },
-			],
-			buttons: [
-				{ role: "cancel", text: "Zrušit" },
-				{
-					text: "Vytvořit",
-					handler: (data: SDK.CreateGroupBody) => this.onCreateGroup(data),
-				},
-			],
+			inputs: {
+				name: { label: "Název", type: "text", required: true },
+				shortName: { label: "Zkratka", type: "text", required: true },
+			},
+			buttonText: "Vytvořit",
 		});
-
-		await this.alert.present();
+		if (data) this.onCreateGroup(data);
 	}
 
 	private onCreateGroup(groupData: SDK.CreateGroupBody) {
@@ -139,22 +129,10 @@ export class GroupsListComponent implements ViewWillEnter, ViewWillLeave {
 	}
 
 	async deleteGroup(group: SDK.GroupResponseWithLinks) {
-		const alert = await this.alertController.create({
+		const confirmed = await this.modalService.deleteConfirmationModal("Oddíl půjde obnovit ze smazaných oddílů.", {
 			header: `Smazat ${group.name ?? group.id}?`,
-			buttons: [
-				{
-					text: "Zrušit",
-					role: "cancel",
-				},
-				{
-					text: "Smazat",
-					role: "destructive",
-					handler: async () => this.deleteGroupConfirmed(group),
-				},
-			],
 		});
-
-		alert.present();
+		if (confirmed) await this.deleteGroupConfirmed(group);
 	}
 
 	private async deleteGroupConfirmed(group: SDK.GroupResponseWithLinks) {

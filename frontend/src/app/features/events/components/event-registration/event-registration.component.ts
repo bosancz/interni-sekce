@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component, computed, ElementRef, input, output, signal, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
-import { AlertController, IonButton, IonIcon } from "@ionic/angular/standalone";
+import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { cloudUploadOutline, colorWandOutline, eyeOutline, trashOutline } from "ionicons/icons";
@@ -32,11 +32,11 @@ export class EventRegistrationComponent {
 	busy = computed(() => this.uploadingRegistration() || this.generatingRegistration());
 
 	private readonly colors = [
-		{ id: "black", name: "Černá" },
-		{ id: "blue", name: "Modrá" },
-		{ id: "green", name: "Zelená" },
-		{ id: "red", name: "Červená" },
-		{ id: "orange", name: "Žlutá" },
+		{ id: "black", name: "Černá", hex: "#1a1a1a" },
+		{ id: "blue", name: "Modrá", hex: "#2a3478" },
+		{ id: "green", name: "Zelená", hex: "#799f3d" },
+		{ id: "red", name: "Červená", hex: "#d2232a" },
+		{ id: "orange", name: "Žlutá", hex: "#e28f26" },
 	];
 
 	@ViewChild("registrationInput") registrationInput!: ElementRef<HTMLInputElement>;
@@ -46,7 +46,6 @@ export class EventRegistrationComponent {
 		private toastService: ToastService,
 		private eventService: EventsService,
 		private sanitizer: DomSanitizer,
-		private alertController: AlertController,
 		private modalService: ModalService,
 	) {
 		addIcons({ cloudUploadOutline, colorWandOutline, eyeOutline, trashOutline });
@@ -105,41 +104,23 @@ export class EventRegistrationComponent {
 			return;
 		}
 
-		const colorAlert = await this.alertController.create({
+		const color = await this.modalService.selectModal({
 			header: "Vyber barvu",
-			inputs: this.colors.map((color, i) => ({
-				type: "radio" as const,
-				label: color.name,
-				value: color.id,
-				cssClass: `color-radio color-${color.id}`,
-				checked: i === 0,
-			})),
-			buttons: [
-				{ text: "Zrušit", role: "cancel" },
-				{ text: "Dál", handler: (color: string) => void this.selectTemplate(event.id, color, templates) },
-			],
+			values: this.colors.map((color) => ({ label: color.name, value: color.id, color: color.hex })),
+			value: this.colors[0].id,
+			buttonText: "Dál",
 		});
-		await colorAlert.present();
+		if (color) await this.selectTemplate(event.id, color, templates);
 	}
 
 	private async selectTemplate(eventId: number, color: string, templates: SDK.RegistrationTemplateResponse[]) {
-		const templateAlert = await this.alertController.create({
+		const templateId = await this.modalService.selectModal({
 			header: "Vyber šablonu přihlášky",
-			inputs: templates.map((template, i) => ({
-				type: "radio" as const,
-				label: template.name,
-				value: template.id,
-				checked: i === 0,
-			})),
-			buttons: [
-				{ text: "Zrušit", role: "cancel" },
-				{
-					text: "Dál",
-					handler: (templateId: string) => void this.promptNoteAndGenerate(eventId, templateId, color),
-				},
-			],
+			values: templates.map((template) => ({ label: template.name, value: template.id })),
+			value: templates[0]?.id,
+			buttonText: "Dál",
 		});
-		await templateAlert.present();
+		if (templateId) await this.promptNoteAndGenerate(eventId, templateId, color);
 	}
 
 	private async promptNoteAndGenerate(eventId: number, template: string, color: string) {

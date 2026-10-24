@@ -1,6 +1,6 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, RouterLink } from "@angular/router";
-import { AlertController, IonIcon, NavController } from "@ionic/angular/standalone";
+import { IonIcon, NavController } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
@@ -129,7 +129,6 @@ export class GroupViewComponent implements OnInit {
 		private api: ApiService,
 		private navController: NavController,
 		protected groupsService: GroupsService,
-		private alertController: AlertController,
 		private toastService: ToastService,
 		private modalService: ModalService,
 	) {
@@ -199,22 +198,10 @@ export class GroupViewComponent implements OnInit {
 		const group = this.group();
 		if (!group) return;
 
-		const alert = await this.alertController.create({
+		const confirmed = await this.modalService.deleteConfirmationModal("Oddíl půjde obnovit ze smazaných oddílů.", {
 			header: `Smazat ${group.name ?? group.id}?`,
-			buttons: [
-				{
-					text: "Zrušit",
-					role: "cancel",
-				},
-				{
-					text: "Smazat",
-					role: "destructive",
-					handler: async () => this.deleteGroupConfirmed(group),
-				},
-			],
 		});
-
-		await alert.present();
+		if (confirmed) await this.deleteGroupConfirmed(group);
 	}
 
 	private async deleteGroupConfirmed(group: SDK.GroupResponseWithLinks) {

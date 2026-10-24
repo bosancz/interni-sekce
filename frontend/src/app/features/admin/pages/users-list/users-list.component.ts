@@ -3,7 +3,6 @@ import { Component, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router, RouterLink } from "@angular/router";
 import {
-	AlertController,
 	InfiniteScrollCustomEvent,
 	IonBadge,
 	IonContent,
@@ -16,6 +15,7 @@ import {
 	IonSelectOption,
 	ViewWillEnter,
 } from "@ionic/angular/standalone";
+import { ModalService } from "src/app/core/services/modal.service";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { addOutline } from "ionicons/icons";
@@ -79,13 +79,11 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
 
 	view = signal<"table" | "list" | undefined>(undefined);
 
-	alert?: HTMLIonAlertElement;
-
 	constructor(
 		private api: ApiService,
 		private router: Router,
 		private platformService: PlatformService,
-		private alertController: AlertController,
+		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
 		addIcons({ addOutline });
@@ -144,22 +142,15 @@ export class UsersListComponent implements OnInit, ViewWillEnter {
 	}
 
 	private async createUserModal() {
-		this.alert = await this.alertController.create({
+		const data = await this.modalService.inputModal<SDK.UserCreateBody>({
 			header: "Vytvořit uživatelský účet",
-			inputs: [
-				{ name: "login", type: "text", placeholder: "Login", attributes: { required: true } },
-				{ name: "email", type: "email", placeholder: "E-mail (nepovinný)" },
-			],
-			buttons: [
-				{ role: "cancel", text: "Zrušit" },
-				{
-					text: "Vytvořit",
-					handler: (data: SDK.UserCreateBody) => this.onCreateUser(data),
-				},
-			],
+			inputs: {
+				login: { label: "Login", type: "text", required: true },
+				email: { label: "E-mail (nepovinný)", type: "email" },
+			},
+			buttonText: "Vytvořit",
 		});
-
-		await this.alert.present();
+		if (data) this.onCreateUser(data);
 	}
 
 	private onCreateUser(userData: SDK.UserCreateBody) {

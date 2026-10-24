@@ -1,5 +1,6 @@
 import { Component, computed, inject, input, output } from "@angular/core";
-import { AlertController, IonChip, IonIcon } from "@ionic/angular/standalone";
+import { IonChip, IonIcon } from "@ionic/angular/standalone";
+import { ModalService } from "src/app/core/services/modal.service";
 import { addIcons } from "ionicons";
 import { addOutline, checkmarkOutline } from "ionicons/icons";
 
@@ -17,7 +18,7 @@ export class PhotoTagsEditorComponent {
 
 	tagsChange = output<string[]>();
 
-	private alertController = inject(AlertController);
+	private modalService = inject(ModalService);
 
 	availableTags = computed(() => {
 		const seen = new Set<string>();
@@ -49,21 +50,12 @@ export class PhotoTagsEditorComponent {
 	async addTag() {
 		if (this.disabled()) return;
 
-		const alert = await this.alertController.create({
+		const value = await this.modalService.inputModal<{ tag: string }>({
 			header: "Nový štítek",
-			inputs: [{ name: "tag", type: "text", placeholder: "Název štítku" }],
-			buttons: [
-				{ text: "Zrušit", role: "cancel" },
-				{
-					text: "Přidat",
-					handler: (value: { tag: string }) => {
-						this.commitNewTag(value.tag);
-					},
-				},
-			],
+			inputs: { tag: { type: "text", placeholder: "Název štítku", required: true } },
+			buttonText: "Přidat",
 		});
-
-		await alert.present();
+		if (value) this.commitNewTag(value.tag);
 	}
 
 	private commitNewTag(raw: string | undefined | null) {

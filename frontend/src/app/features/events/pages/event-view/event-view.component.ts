@@ -152,7 +152,7 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 			return;
 		}
 
-		const statusNote = window.prompt("Poznámka ke změně stavu (můžeš nechat prázdné):");
+		const statusNote = await this.modalService.statusNoteModal("Poznámka ke změně stavu");
 		if (statusNote === null) return;
 
 		await this.api.EventsApi[action](event.id, { statusNote });

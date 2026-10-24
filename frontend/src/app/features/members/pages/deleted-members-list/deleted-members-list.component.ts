@@ -1,6 +1,7 @@
 import { DatePipe } from "@angular/common";
 import { Component, signal } from "@angular/core";
-import { AlertController, ViewWillEnter } from "@ionic/angular/standalone";
+import { ViewWillEnter } from "@ionic/angular/standalone";
+import { ModalService } from "src/app/core/services/modal.service";
 import { addIcons } from "ionicons";
 import { arrowUndoOutline, trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -53,7 +54,7 @@ export class DeletedMembersListComponent implements ViewWillEnter {
 
 	constructor(
 		private api: ApiService,
-		private alertController: AlertController,
+		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
 		addIcons({ arrowUndoOutline, trashOutline });
@@ -86,20 +87,11 @@ export class DeletedMembersListComponent implements ViewWillEnter {
 	async permanentlyDeleteMember(member: SDK.MemberResponseWithLinks) {
 		if (!member._links.deleteMemberPermanent.allowed) return;
 
-		const alert = await this.alertController.create({
+		const confirmed = await this.modalService.deleteConfirmationModal("Tuto akci nelze vzít zpět.", {
 			header: `Trvale smazat ${this.memberName(member)}?`,
-			message: "Tuto akci nelze vzít zpět.",
-			buttons: [
-				{ text: "Zrušit", role: "cancel" },
-				{
-					text: "Smazat trvale",
-					role: "destructive",
-					handler: async () => this.permanentlyDeleteMemberConfirmed(member),
-				},
-			],
+			buttonText: "Smazat trvale",
 		});
-
-		alert.present();
+		if (confirmed) await this.permanentlyDeleteMemberConfirmed(member);
 	}
 
 	private async permanentlyDeleteMemberConfirmed(member: SDK.MemberResponseWithLinks) {

@@ -3,7 +3,6 @@ import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
 import {
-	AlertController,
 	InfiniteScrollCustomEvent,
 	IonIcon,
 	IonInfiniteScroll,
@@ -104,8 +103,6 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	readonly pageSize = 50;
 
 	statuses = AlbumStatuses;
-
-	alert?: HTMLIonAlertElement;
 
 	actions = signal<Action[]>([
 		{
@@ -218,7 +215,6 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	constructor(
 		private api: ApiService,
-		private alertController: AlertController,
 		private toastService: ToastService,
 		private navController: NavController,
 		private modalService: ModalService,
@@ -255,7 +251,6 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 	}
 
 	ionViewWillLeave(): void {
-		this.alert?.dismiss();
 		this.hasLeft = true;
 	}
 
@@ -381,33 +376,16 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 
 	// TODO: move to own page
 	private async createAlbumModal() {
-		this.alert = await this.alertController.create({
+		const data = await this.modalService.inputModal<SDK.AlbumCreateBody>({
 			header: "Vytvořit album",
-			inputs: [
-				{ name: "name", type: "text", placeholder: "Název alba" },
-				{
-					name: "dateFrom",
-					type: "date",
-					placeholder: "Datum od",
-					attributes: { required: true, "aria-label": "Datum od" },
-				},
-				{
-					name: "dateTill",
-					type: "date",
-					placeholder: "Datum do",
-					attributes: { required: true, "aria-label": "Datum do" },
-				},
-			],
-			buttons: [
-				{ role: "cancel", text: "Zrušit" },
-				{
-					text: "Vytvořit",
-					handler: (data: SDK.AlbumCreateBody) => this.onCreateAlbum(data),
-				},
-			],
+			inputs: {
+				name: { label: "Název alba", type: "text", required: true },
+				dateFrom: { label: "Datum od", type: "date", required: true },
+				dateTill: { label: "Datum do", type: "date", required: true },
+			},
+			buttonText: "Vytvořit",
 		});
-
-		await this.alert.present();
+		if (data) this.onCreateAlbum(data);
 	}
 
 	private onCreateAlbum(albumData: SDK.AlbumCreateBody) {

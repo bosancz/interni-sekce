@@ -1,6 +1,6 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { AlertController, ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
+import { ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import { callOutline, gitMergeOutline, imagesOutline, medkitOutline, personCircleOutline } from "ionicons/icons";
@@ -96,7 +96,6 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		private toastService: ToastService,
 		private route: ActivatedRoute,
 		private router: Router,
-		private alertController: AlertController,
 		private titleService: TitleService,
 		private modalService: ModalService,
 	) {
@@ -171,13 +170,11 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	async delete() {
 		if (!this.member()) return;
 
-		const alert = await this.alertController.create({
-			header: "Smazat člena?",
-			message: `Opravdu chcete smazat člena „<strong>${this.getTitleName(this.member()!)}</strong>“?`,
-			buttons: [{ text: "Zrušit" }, { text: "Smazat", handler: () => this.deleteConfirmed() }],
-		});
-
-		await alert.present();
+		const confirmed = await this.modalService.deleteConfirmationModal(
+			`Opravdu chcete smazat člena „<strong>${this.getTitleName(this.member()!)}</strong>“?`,
+			{ header: "Smazat člena?" },
+		);
+		if (confirmed) await this.deleteConfirmed();
 	}
 
 	async deleteConfirmed() {

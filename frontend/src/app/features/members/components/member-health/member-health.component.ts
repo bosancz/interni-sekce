@@ -1,14 +1,5 @@
 import { Component, input, output } from "@angular/core";
-import {
-	AlertController,
-	IonButton,
-	IonButtons,
-	IonIcon,
-	IonItem,
-	IonLabel,
-	IonList,
-	IonSkeletonText,
-} from "@ionic/angular/standalone";
+import { IonButton, IonButtons, IonIcon, IonItem, IonLabel, IonList, IonSkeletonText } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
@@ -61,7 +52,6 @@ export class MemberHealthComponent {
 	readonly severityOrder = HealthSeverityOrder;
 
 	constructor(
-		private alertController: AlertController,
 		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
@@ -126,61 +116,26 @@ export class MemberHealthComponent {
 		return entries;
 	}
 
-	private askName(header: string, placeholder: string, value?: string): Promise<string | null> {
-		return new Promise(async (resolve) => {
-			const alert = await this.alertController.create({
-				header,
-				inputs: [
-					{
-						name: "name",
-						type: "text",
-						placeholder,
-						value,
-						attributes: { autocapitalize: "sentences" },
-					},
-				],
-				buttons: [
-					{ text: "Zrušit", role: "cancel", handler: () => resolve(null) },
-					{
-						text: "Další",
-						handler: (data: { name?: string }) => {
-							const name = data.name?.trim();
-							if (!name) {
-								this.toastService.toast("Vyplň název", { color: "danger" });
-								return false;
-							}
-							resolve(name);
-						},
-					},
-				],
-			});
-
-			await alert.present();
+	private async askName(header: string, placeholder: string, value?: string): Promise<string | null> {
+		const data = await this.modalService.inputModal<{ name: string }>({
+			header,
+			inputs: { name: { type: "text", placeholder, value, required: true, autocapitalize: "sentences" } },
+			buttonText: "Další",
 		});
+		return data?.name.trim() || null;
 	}
 
 	private askSeverity(currentSeverity?: SDK.HealthSeverityEnum): Promise<SDK.HealthSeverityEnum | null> {
 		const selected = currentSeverity ?? DefaultHealthSeverity;
 
-		return new Promise(async (resolve) => {
-			const alert = await this.alertController.create({
-				header: "Závažnost",
-				inputs: this.severityOrder.map((severity) => ({
-					type: "radio",
-					label: `${this.severities[severity].emoji} ${this.severities[severity].title}`,
-					value: severity,
-					checked: severity === selected,
-				})),
-				buttons: [
-					{ text: "Zrušit", role: "cancel", handler: () => resolve(null) },
-					{
-						text: "Uložit",
-						handler: (severity: SDK.HealthSeverityEnum) => resolve(severity ?? selected),
-					},
-				],
-			});
-
-			await alert.present();
+		return this.modalService.selectModal({
+			header: "Závažnost",
+			values: this.severityOrder.map((severity) => ({
+				label: `${this.severities[severity].emoji} ${this.severities[severity].title}`,
+				value: severity,
+			})),
+			value: selected,
+			buttonText: "Uložit",
 		});
 	}
 }

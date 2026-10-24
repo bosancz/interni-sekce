@@ -1,57 +1,55 @@
 import { EventEmitter, Injectable, TemplateRef, Type } from "@angular/core";
 import { NavigationCancel, NavigationEnd, NavigationExtras, NavigationSkipped, Router } from "@angular/router";
-import { AlertController, ModalController, ModalOptions } from "@ionic/angular/standalone";
-import { ComponentProps, TextFieldTypes } from "@ionic/core";
+import { ModalController, ModalOptions } from "@ionic/angular/standalone";
+import { ComponentProps } from "@ionic/core";
 import { firstValueFrom } from "rxjs";
 import { filter, take } from "rxjs/operators";
+import {
+	BrandDialogComponent,
+	BrandDialogInput,
+	BrandDialogInputType,
+	BrandDialogOption,
+} from "../../shared/components/brand-dialog/brand-dialog.component";
 import { ModalTemplateComponent } from "../../shared/components/modal-template/modal-template.component";
+import { InputModalComponent } from "./input-modal";
 
-type DismissableOverlay = HTMLIonModalElement | HTMLIonAlertElement;
+type DismissableOverlay = HTMLIonModalElement;
 
 interface BaseModalOptions {
 	header?: string;
 	buttonText?: string;
-	/** Extra class on the alert, for the odd input that needs more room than the default gives. */
-	cssClass?: string;
 }
 
 interface DeleteConfirmationModalOptions extends BaseModalOptions {}
 
 interface InputModalOptions<D extends Record<string, any>> extends BaseModalOptions {
 	message?: string;
+	large?: boolean;
 	inputs: { [K in keyof D]: InputModalInput<D[K]> };
 }
 
 export interface InputModalInput<T> {
-	name?: string;
-	type?: T extends number
-		? "number"
-		: T extends boolean
-			? "checkbox"
-			: Exclude<TextFieldTypes, "number"> | "textarea";
+	label?: string;
+	type?: T extends number ? "number" : Exclude<BrandDialogInputType, "number">;
 	placeholder?: string;
 	value?: T;
+	required?: boolean;
+	autocapitalize?: string;
 }
 
 interface SelectModalOptions<D> extends BaseModalOptions {
-	values: { label: string; value: D }[];
+	message?: string;
+	values: BrandDialogOption<D>[];
 	value?: D;
 }
 
 interface MultiSelectModalOptions<D> extends BaseModalOptions {
-	values: { label: string; value: D }[];
+	message?: string;
+	values: BrandDialogOption<D>[];
 	value?: D[];
 }
 
-export class InputModalComponent<D = any> {
-	submit = new EventEmitter<D>();
-	close = new EventEmitter<void>();
-
-	constructor(modalCtrl: ModalController) {
-		this.submit.subscribe((data) => modalCtrl.dismiss(data));
-		this.close.subscribe(() => modalCtrl.dismiss(null));
-	}
-}
+export { InputModalComponent };
 
 type ModalComponentData<C extends InputModalComponent> = C extends { submit: EventEmitter<infer D> } ? D : never;
 
@@ -64,7 +62,6 @@ export class ModalService {
 	private suppressPopstate = false;
 
 	constructor(
-		private alertController: AlertController,
 		private modalController: ModalController,
 		private router: Router,
 	) {}
@@ -136,155 +133,81 @@ export class ModalService {
 	}
 
 	async alertModal(message: string, options: BaseModalOptions = {}) {
-		const alert = await this.alertController.create({
+		await this.dialog({
 			header: options.header,
-			cssClass: options.cssClass,
 			message,
-			buttons: [{ text: options.buttonText ?? "Rozumím", role: "cancel" }],
+			cancelText: null,
+			confirmText: options.buttonText ?? "Rozumím",
 		});
-
-		await this.presentWithBackClose(alert);
-		await alert.onDidDismiss();
 	}
 
 	async confirmationModal(message: string, options: BaseModalOptions = {}) {
-		return new Promise<boolean>(async (resolve) => {
-			const alert = await this.alertController.create({
-				header: options.header,
-				cssClass: options.cssClass,
-				message,
-				buttons: [
-					{ text: "Zrušit", role: "cancel", handler: () => resolve(false) },
-					{ text: options.buttonText ?? "Pokračovat", handler: () => resolve(true) },
-				],
-			});
-
-			alert.onDidDismiss().then(() => resolve(false));
-			await this.presentWithBackClose(alert);
+		const result = await this.dialog({
+			header: options.header,
+			message,
+			confirmText: options.buttonText ?? "Pokračovat",
 		});
+		return result === true;
 	}
 
 	async deleteConfirmationModal(message: string, options: DeleteConfirmationModalOptions = {}) {
-		return new Promise<boolean>(async (resolve, reject) => {
-			const alert = await this.alertController.create({
-				header: options.header ?? "Opravdu smazat?",
-				message,
-				buttons: [
-					{
-						text: "Zrušit",
-						role: "cancel",
-						handler: () => resolve(false),
-					},
-					{
-						text: options.buttonText ?? "Smazat",
-						role: "destructive",
-						handler: () => resolve(true),
-					},
-				],
-			});
+		const result = await this.dialog({
+			header: options.header ?? "Opravdu smazat?",
+			message,
+			confirmText: options.buttonText ?? "Smazat",
+			destructive: true,
+		});
+		return result === true;
+	}
 
-			alert.onDidDismiss().then(() => resolve(false));
-			await this.presentWithBackClose(alert);
+	async inputModal<D extends Record<string, any>>(options: InputModalOptions<D>): Promise<D | null> {
+		const inputs: BrandDialogInput[] = Object.entries(options.inputs).map(([name, input]) => ({
+			...(input as InputModalInput<any>),
+			name,
+		}));
+
+		return this.dialog({
+			header: options.header,
+			message: options.message,
+			inputs,
+			large: options.large,
+			confirmText: options.buttonText ?? "Uložit",
 		});
 	}
 
-	async inputModal<D extends Record<string, any>>(options: InputModalOptions<D>) {
-		return new Promise<D | null>(async (resolve, reject) => {
-			const alert = await this.alertController.create({
-				header: options.header,
-				message: options.message,
-				cssClass: options.cssClass,
-				inputs: Object.entries(options.inputs).map(([name, input]) => ({ ...input, name })),
-				buttons: [
-					{
-						text: "Zrušit",
-						role: "cancel",
-					},
-					{
-						text: options.buttonText ?? "Uložit",
-						handler: (data) => resolve(data),
-					},
-				],
-			});
-
-			alert.onDidDismiss().then(() => resolve(null));
-			await this.presentWithBackClose(alert);
+	async selectModal<D>(options: SelectModalOptions<D>): Promise<D | null> {
+		return this.dialog({
+			header: options.header,
+			message: options.message,
+			options: options.values,
+			selected: options.value,
+			confirmText: options.buttonText ?? "Vybrat",
 		});
 	}
 
-	async wideInputModal<D extends Record<string, any>>(options: InputModalOptions<D>) {
-		return new Promise<D | null>(async (resolve, reject) => {
-			const alert = await this.alertController.create({
-				header: options.header,
-				cssClass: "alert-wide",
-				inputs: Object.entries(options.inputs).map(([name, input]) => ({ ...input, name })),
-				buttons: [
-					{
-						text: "Zrušit",
-						role: "cancel",
-					},
-					{
-						text: options.buttonText ?? "Uložit",
-						handler: (data) => resolve(data),
-					},
-				],
-			});
-
-			alert.onDidDismiss().then(() => resolve(null));
-			await this.presentWithBackClose(alert);
+	async multiSelectModal<D>(options: MultiSelectModalOptions<D>): Promise<D[] | null> {
+		return this.dialog({
+			header: options.header,
+			message: options.message,
+			options: options.values,
+			multiple: true,
+			selected: options.value ?? [],
+			confirmText: options.buttonText ?? "Uložit",
 		});
 	}
 
-	async selectModal<D>(options: SelectModalOptions<D>) {
-		return new Promise<D | null>(async (resolve, reject) => {
-			const alert = await this.alertController.create({
-				header: options.header,
-				inputs: options.values.map((item) => ({
-					...item,
-					type: "radio",
-					checked: item.value === options.value,
-				})),
-				buttons: [
-					{
-						text: "Zrušit",
-						role: "cancel",
-					},
-					{
-						text: options.buttonText ?? "Vybrat",
-						handler: (data) => resolve(data),
-					},
-				],
-			});
-
-			alert.onDidDismiss().then(() => resolve(null));
-			await this.presentWithBackClose(alert);
+	async statusNoteModal(header: string): Promise<string | null> {
+		const data = await this.inputModal<{ note: string }>({
+			header,
+			message: "Můžeš nechat prázdné.",
+			inputs: { note: { type: "textarea" } },
+			buttonText: "Pokračovat",
 		});
+		return data ? data.note : null;
 	}
 
-	async multiSelectModal<D>(options: MultiSelectModalOptions<D>) {
-		return new Promise<D[] | null>(async (resolve, reject) => {
-			const alert = await this.alertController.create({
-				header: options.header,
-				inputs: options.values.map((item) => ({
-					...item,
-					type: "checkbox",
-					checked: options.value?.includes(item.value),
-				})),
-				buttons: [
-					{
-						text: "Zrušit",
-						role: "cancel",
-					},
-					{
-						text: options.buttonText ?? "Uložit",
-						handler: (data) => resolve(data),
-					},
-				],
-			});
-
-			alert.onDidDismiss().then(() => resolve(null));
-			await this.presentWithBackClose(alert);
-		});
+	private dialog(props: ComponentProps<BrandDialogComponent>) {
+		return this.componentModal(BrandDialogComponent, props, { cssClass: "dialog-brand" });
 	}
 
 	async componentModal<C extends InputModalComponent>(

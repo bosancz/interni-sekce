@@ -1,6 +1,7 @@
 import { DatePipe } from "@angular/common";
 import { Component, signal } from "@angular/core";
-import { AlertController, ViewWillEnter } from "@ionic/angular/standalone";
+import { ViewWillEnter } from "@ionic/angular/standalone";
+import { ModalService } from "src/app/core/services/modal.service";
 import { addIcons } from "ionicons";
 import { arrowUndoOutline, trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -53,7 +54,7 @@ export class DeletedAlbumsListComponent implements ViewWillEnter {
 
 	constructor(
 		private api: ApiService,
-		private alertController: AlertController,
+		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
 		addIcons({ arrowUndoOutline, trashOutline });
@@ -81,20 +82,11 @@ export class DeletedAlbumsListComponent implements ViewWillEnter {
 	async permanentlyDeleteAlbum(album: SDK.AlbumResponseWithLinks) {
 		if (!album._links.deleteAlbumPermanent.allowed) return;
 
-		const alert = await this.alertController.create({
-			header: `Trvale smazat ${album.name}?`,
-			message: "Smažou se i všechny fotky v albu včetně souborů. Tuto akci nelze vzít zpět.",
-			buttons: [
-				{ text: "Zrušit", role: "cancel" },
-				{
-					text: "Smazat trvale",
-					role: "destructive",
-					handler: async () => this.permanentlyDeleteAlbumConfirmed(album),
-				},
-			],
-		});
-
-		alert.present();
+		const confirmed = await this.modalService.deleteConfirmationModal(
+			"Smažou se i všechny fotky v albu včetně souborů. Tuto akci nelze vzít zpět.",
+			{ header: `Trvale smazat ${album.name}?`, buttonText: "Smazat trvale" },
+		);
+		if (confirmed) await this.permanentlyDeleteAlbumConfirmed(album);
 	}
 
 	private async permanentlyDeleteAlbumConfirmed(album: SDK.AlbumResponseWithLinks) {
