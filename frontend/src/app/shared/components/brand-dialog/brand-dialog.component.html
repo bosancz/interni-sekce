@@ -7,33 +7,65 @@
 		}
 
 		@for (input of inputs; track input.name; let first = $first) {
-			<label class="bd-field">
-				@if (labelOf(input); as label) {
-					<span class="bd-label">{{ label }}</span>
-				}
-				@if (input.type === "textarea") {
-					<textarea
-						class="bd-input bd-textarea"
-						[placeholder]="input.placeholder ?? ''"
-						[value]="values()[input.name]"
-						[attr.autocapitalize]="input.autocapitalize ?? null"
-						[attr.autofocus]="first ? '' : null"
-						(input)="setValue(input.name, $any($event.target).value)"
-					></textarea>
-				} @else {
-					<input
-						class="bd-input"
-						[type]="input.type ?? 'text'"
-						[placeholder]="input.placeholder ?? ''"
-						[attr.aria-label]="labelOf(input) ? null : input.placeholder"
-						[value]="values()[input.name]"
-						[attr.autocapitalize]="input.autocapitalize ?? null"
-						[attr.autofocus]="first ? '' : null"
-						(input)="setValue(input.name, $any($event.target).value)"
-						(keydown.enter)="onEnter($event, input)"
-					/>
-				}
-			</label>
+			@if (input.type === "date-range") {
+				<div class="bd-field" role="group" [attr.aria-label]="input.label ?? null">
+					@if (input.label) {
+						<span class="bd-label">{{ input.label }}</span>
+					}
+					<div class="bd-range">
+						<label class="bd-field">
+							<span class="bd-sublabel">Od</span>
+							<input
+								class="bd-input"
+								type="date"
+								[value]="values()[input.name][0]"
+								[attr.autofocus]="first ? '' : null"
+								(input)="setRange(input.name, 0, $any($event.target).value)"
+								(keydown.enter)="onEnter($event, input)"
+							/>
+						</label>
+						<label class="bd-field">
+							<span class="bd-sublabel">Do</span>
+							<input
+								class="bd-input"
+								type="date"
+								[value]="values()[input.name][1]"
+								[min]="values()[input.name][0] || null"
+								(input)="setRange(input.name, 1, $any($event.target).value)"
+								(keydown.enter)="onEnter($event, input)"
+							/>
+						</label>
+					</div>
+				</div>
+			} @else {
+				<label class="bd-field">
+					@if (labelOf(input); as label) {
+						<span class="bd-label">{{ label }}</span>
+					}
+					@if (input.type === "textarea") {
+						<textarea
+							class="bd-input bd-textarea"
+							[placeholder]="input.placeholder ?? ''"
+							[value]="values()[input.name]"
+							[attr.autocapitalize]="input.autocapitalize ?? null"
+							[attr.autofocus]="first ? '' : null"
+							(input)="setValue(input.name, $any($event.target).value)"
+						></textarea>
+					} @else {
+						<input
+							class="bd-input"
+							[type]="input.type ?? 'text'"
+							[placeholder]="input.placeholder ?? ''"
+							[attr.aria-label]="labelOf(input) ? null : input.placeholder"
+							[value]="values()[input.name]"
+							[attr.autocapitalize]="input.autocapitalize ?? null"
+							[attr.autofocus]="first ? '' : null"
+							(input)="setValue(input.name, $any($event.target).value)"
+							(keydown.enter)="onEnter($event, input)"
+						/>
+					}
+				</label>
+			}
 		}
 
 		@if (options.length) {

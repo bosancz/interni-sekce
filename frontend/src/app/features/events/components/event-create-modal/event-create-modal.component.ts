@@ -2,10 +2,12 @@ import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { IonButton, IonButtons, IonInput, IonItem, IonList, ModalController } from "@ionic/angular/standalone";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { SDK } from "src/sdk";
 
+@UntilDestroy()
 @Component({
 	selector: "bo-event-create-modal",
 	templateUrl: "./event-create-modal.component.html",
@@ -42,6 +44,12 @@ export class EventCreateModalComponent extends InputModalComponent<SDK.EventCrea
 			dateFrom: this.data.dateFrom,
 			dateTill: this.data.dateTill,
 			name: this.data.name,
+		});
+
+		this.form.controls.dateFrom.valueChanges.pipe(untilDestroyed(this)).subscribe((dateFrom) => {
+			const dateTill = this.form.controls.dateTill.value;
+			if (/^\d{4}-\d{2}-\d{2}$/.test(dateFrom) && dateFrom >= "1900" && (!dateTill || dateTill < dateFrom))
+				this.form.controls.dateTill.setValue(dateFrom);
 		});
 	}
 

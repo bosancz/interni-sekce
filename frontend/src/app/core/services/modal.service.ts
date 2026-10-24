@@ -30,9 +30,13 @@ interface InputModalOptions<D extends Record<string, any>> extends BaseModalOpti
 
 export interface InputModalInput<T> {
 	label?: string;
-	type?: T extends number ? "number" : Exclude<BrandDialogInputType, "number">;
+	type?: T extends number
+		? "number"
+		: T extends [string, string]
+			? "date-range"
+			: Exclude<BrandDialogInputType, "number" | "date-range">;
 	placeholder?: string;
-	value?: T;
+	value?: T extends [string, string] ? [string | null | undefined, string | null | undefined] : T;
 	required?: boolean;
 	autocapitalize?: string;
 }
