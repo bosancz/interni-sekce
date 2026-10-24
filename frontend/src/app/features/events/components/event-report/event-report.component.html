@@ -131,40 +131,42 @@
 				}
 			</div>
 
-			<div class="revizor-section">
-				<bo-card-title>
-					<span class="section-label heading">
-						Report pro revizora
-						<span class="visibility"><ion-icon name="lock-closed-outline"></ion-icon>neveřejné</span>
-						@if (canEditReport() && event()?.report) {
-							<bo-edit-button-markdown
-								label="Report pro revizora"
-								[value]="event()?.report"
-								(update)="saveReportData({ report: $event })"
-							/>
-						}
-					</span>
-				</bo-card-title>
+			@if (canReadReport()) {
+				<div class="revizor-section">
+					<bo-card-title>
+						<span class="section-label heading">
+							Report pro revizora
+							<span class="visibility"><ion-icon name="lock-closed-outline"></ion-icon>neveřejné</span>
+							@if (canEditReport() && report()) {
+								<bo-edit-button-markdown
+									label="Report pro revizora"
+									[value]="report()"
+									(update)="saveReportData({ report: $event })"
+								/>
+							}
+						</span>
+					</bo-card-title>
 
-				@if (event()?.report; as report) {
-					<div class="report-text" [innerHTML]="report | markdown"></div>
-				} @else {
-					<div class="bo-empty-state">
-						<ion-icon name="lock-closed-outline"></ion-icon>
-						<strong>Report pro revizora je zatím prázdný</strong>
-						<p>Komplikace, pochvaly a stížnosti z akce.</p>
-						<ion-button
-							fill="solid"
-							color="warning"
-							[disabled]="!canEditReport()"
-							[boTooltip]="canEditReport() ? null : noPermissionText"
-							(click)="writeReport()"
-						>
-							Napsat report
-						</ion-button>
-					</div>
-				}
-			</div>
+					@if (report(); as report) {
+						<div class="report-text" [innerHTML]="report | markdown"></div>
+					} @else {
+						<div class="bo-empty-state">
+							<ion-icon name="lock-closed-outline"></ion-icon>
+							<strong>Report pro revizora je zatím prázdný</strong>
+							<p>Komplikace, pochvaly a stížnosti z akce.</p>
+							<ion-button
+								fill="solid"
+								color="warning"
+								[disabled]="!canEditReport()"
+								[boTooltip]="canEditReport() ? null : noPermissionText"
+								(click)="writeReport()"
+							>
+								Napsat report
+							</ion-button>
+						</div>
+					}
+				</div>
+			}
 		}
 
 		@if (event()?._links?.publishEventReport?.applicable) {

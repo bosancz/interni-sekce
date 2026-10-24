@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { AlbumsModelModule } from "src/models/albums/albums-model.module";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventsModelModule } from "src/models/events/events-model.module";
@@ -12,13 +13,14 @@ import { EventsAnnouncementController } from "./controllers/events-announcement.
 import { EventsAttendeesController } from "./controllers/events-attendees.controller";
 import { EventsExpensesController } from "./controllers/events-expenses.controller";
 import { EventsRegistrationsController } from "./controllers/events-registrations.controller";
-import { EventsReportsController } from "./controllers/events-reports.controller";
+import { EventsReportsController, ReportsController } from "./controllers/events-reports.controller";
 import { EventsController } from "./controllers/events.controller";
 import { CPVEventsService } from "./services/cpv-events.service";
 
 @Module({
 	imports: [
 		TypeOrmModule.forFeature([Event, EventAttendee]),
+		AlbumsModelModule,
 		EventsModelModule,
 		FilesModule,
 		NotificationsModelModule,
@@ -30,6 +32,7 @@ import { CPVEventsService } from "./services/cpv-events.service";
 		EventsExpensesController,
 		CPVEventsController,
 		EventsReportsController,
+		ReportsController,
 		EventsRegistrationsController,
 		EventsAnnouncementController,
 		EventsAccountingController,

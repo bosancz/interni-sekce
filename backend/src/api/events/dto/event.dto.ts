@@ -1,18 +1,21 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { ApiProperty, ApiPropertyOptional, OmitType } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsBoolean, IsEnum, IsInt, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { EnsureArray } from "src/helpers/validation";
 import { AlbumResponse } from "src/api/albums/dto/album.dto";
 import { GroupResponse } from "src/api/members/dto/group.dto";
 import { MemberResponse } from "src/api/members/dto/member.dto";
-import { Album } from "src/models/albums/entities/album.entity";
+import { PhotoResponse } from "src/api/albums/dto/photo.dto";
+import { Album, AlbumStatus } from "src/models/albums/entities/album.entity";
 import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
-import { EventExpense } from "src/models/events/entities/event-expense.entity";
+import { EventExpense, EventExpenseTypes } from "src/models/events/entities/event-expense.entity";
 import { Event, EventPlaceGeometry, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { EventAttendeeResponse } from "./event-attendee.dto";
 import { EventExpenseResponse } from "./event-expense.dto";
 
-export class EventResponse implements Omit<Event, "setLeaders" | "srcId"> {
+export class EventResponse implements Omit<Event, "setLeaders" | "srcId" | "report"> {
 	id!: number;
 	name!: string;
 	@ApiProperty({ enum: EventStates, enumName: "EventStatesEnum" }) status!: EventStates;
@@ -36,7 +39,6 @@ export class EventResponse implements Omit<Event, "setLeaders" | "srcId"> {
 	waterKm!: number | null;
 	river!: string | null;
 	deletedAt?: Date | null;
-	report!: string | null;
 	publicReport!: string | null;
 	@ApiPropertyOptional({ type: "string" }) publishedAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) cancelledAt!: Date | string | null;
@@ -49,6 +51,50 @@ export class EventResponse implements Omit<Event, "setLeaders" | "srcId"> {
 	@ApiPropertyOptional({ type: EventAttendeeResponse, isArray: true }) attendees?: EventAttendee[] | undefined;
 	@ApiPropertyOptional({ type: EventExpenseResponse, isArray: true }) expenses?: EventExpense[] | undefined;
 	@ApiPropertyOptional({ type: MemberResponse, isArray: true }) leaders?: Member[] | undefined;
+}
+
+export class EventReportResponse {
+	report!: string | null;
+}
+
+export class ReportAlbumResponse {
+	id!: number;
+	name!: string;
+	@ApiProperty({ enum: AlbumStatus }) status!: AlbumStatus;
+	@ApiPropertyOptional({ type: () => PhotoResponse }) coverPhoto?: PhotoResponse;
+}
+
+export class ReportAccountingCategoryResponse {
+	@ApiProperty({ enum: EventExpenseTypes, enumName: "EventExpenseTypesEnum", nullable: true })
+	type!: EventExpenseTypes | null;
+	total!: number;
+}
+
+export class ReportAccountingResponse {
+	days!: number;
+	persons!: number;
+	total!: number;
+	@ApiProperty({ type: ReportAccountingCategoryResponse, isArray: true })
+	categories!: ReportAccountingCategoryResponse[];
+}
+
+export class EventWithReportResponse extends OmitType(EventResponse, ["album"]) {
+	report!: string | null;
+	@ApiProperty({ type: ReportAccountingResponse }) accounting!: ReportAccountingResponse;
+	@ApiPropertyOptional({ type: ReportAlbumResponse }) album?: ReportAlbumResponse;
+}
+
+export class ReportsListQuery {
+	@IsOptional() @Type(() => Number) @IsInt() @Min(1) limit?: number;
+	@IsOptional() @Type(() => Number) @IsInt() @Min(0) offset?: number;
+	@IsOptional() @IsString() search?: string;
+
+	@ApiPropertyOptional({ type: Number, isArray: true })
+	@EnsureArray({ split: "," })
+	@Type(() => Number)
+	@IsInt({ each: true })
+	@IsOptional()
+	year?: number[];
 }
 
 export class EventCreateBody implements Pick<Event, "name" | "description" | "dateFrom" | "dateTill"> {

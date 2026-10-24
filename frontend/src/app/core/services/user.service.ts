@@ -27,6 +27,8 @@ export class UserService {
 
 	readonly canAccessTreasurer = computed(() => this.hasRole("pokladnik"));
 
+	readonly canAccessReports = computed(() => this.hasRole("revizor"));
+
 	readonly canAccessAdmin = this.isAdmin;
 
 	readonly myMemberId = computed(() => this.currentUser()?.member?.id ?? null);
