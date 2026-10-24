@@ -4,9 +4,9 @@
 	<ion-item>
 		<ion-label position="stacked">Role</ion-label>
 		<ion-select multiple name="roles" ngModel placeholder="Vyber role">
-			@for (role of userRoles | keyvalue; track role.key) {
+			@for (role of shownUserRoles | keyvalue; track role.key) {
 				<ion-select-option [value]="role.key">
-					{{ role.value.title }}
+					{{ role.value?.title }}
 				</ion-select-option>
 			}
 		</ion-select>
@@ -32,7 +32,7 @@
 									</p>
 								}
 								<p class="d-lg-none">
-									@for (role of user.roles; track role) {
+									@for (role of user.roles | userRoles: "shown"; track role) {
 										<ion-badge>{{ userRoles[role].title }}</ion-badge>
 									}
 								</p>
@@ -49,7 +49,7 @@
 							</ion-label>
 
 							<ion-label class="d-none d-lg-block">
-								@for (role of user.roles; track role) {
+								@for (role of user.roles | userRoles: "shown"; track role) {
 									<ion-badge class="me-1">{{ userRoles[role].title }}</ion-badge>
 								}
 							</ion-label>
@@ -80,7 +80,7 @@
 								</td>
 								<td>{{ user.login }}</td>
 								<td>
-									@for (role of user.roles; track role) {
+									@for (role of user.roles | userRoles: "shown"; track role) {
 										<ion-badge class="me-1">{{ userRoles[role].title }}</ion-badge>
 									}
 								</td>

@@ -46,14 +46,14 @@ export class FeedbackService {
 	constructor(
 		private readonly mailService: MailService,
 		private readonly github: GithubService,
-		private readonly users: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 		private readonly bugReports: BugReportsRepository,
 		private readonly releaseIssuesService: ReleaseIssuesService,
 		private readonly config: Config,
 	) {}
 
 	async buildBugReport(userId: number, body: BugReportBody, userAgent?: string): Promise<BugReport> {
-		const user = await this.users.getUser(userId, { includeMember: true });
+		const user = await this.usersRepository.getUser(userId, { includeMember: true });
 
 		const reporterName = user?.member?.nickname || user?.login || "neznámý";
 

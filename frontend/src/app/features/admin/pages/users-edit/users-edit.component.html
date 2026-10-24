@@ -61,7 +61,7 @@
 
 		<ion-item>
 			<ion-label position="stacked">Role</ion-label>
-			<ion-select multiple name="roles" [ngModel]="user()?.roles" placeholder="žádné">
+			<ion-select multiple name="roles" [ngModel]="user()?.roles | userRoles: 'assigned'" placeholder="žádné">
 				@for (role of roles | keyvalue; track role.key) {
 					<ion-select-option [value]="role.key">{{ role.value.title }}</ion-select-option>
 				}

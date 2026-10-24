@@ -5,6 +5,6 @@ export const RootPermission = new Permission({
 	contains: RootResponse,
 
 	allowed: {
-		verejnost: true,
+		public: true,
 	},
 });

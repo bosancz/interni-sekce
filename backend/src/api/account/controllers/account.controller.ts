@@ -20,13 +20,13 @@ import { AccountResponse } from "../dto/account.dto";
 @ApiTags("Account")
 @AcController()
 export class AccountController {
-	constructor(private userService: UsersRepository) {}
+	constructor(private usersRepository: UsersRepository) {}
 
 	@Get()
 	@AcLinks(AccountReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(UserResponse, AccountResponse) })
 	async getMe(@Req() req: Request, @AuthUser() authUser: SessionUser): Promise<AccountResponse> {
-		const user = await this.userService.getUser(authUser.userId, { includeMember: true });
+		const user = await this.usersRepository.getUser(authUser.userId, { includeMember: true });
 		if (!user) throw new NotFoundException();
 
 		AccountReadPermission.canOrThrow(req, user);
@@ -40,7 +40,7 @@ export class AccountController {
 	async getMySettings(@Req() req: Request, @AuthUser() authUser: SessionUser): Promise<AccountSettingsResponse> {
 		AccountSettingsReadPermission.canOrThrow(req);
 
-		return { settings: await this.userService.getUserSettings(authUser.userId) };
+		return { settings: await this.usersRepository.getUserSettings(authUser.userId) };
 	}
 
 	@Put("settings")
@@ -54,6 +54,6 @@ export class AccountController {
 	): Promise<void> {
 		AccountSettingsUpdatePermission.canOrThrow(req);
 
-		await this.userService.setUserSettings(authUser.userId, body.settings);
+		await this.usersRepository.setUserSettings(authUser.userId, body.settings);
 	}
 }

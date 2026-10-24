@@ -15,6 +15,7 @@ import {
 	Res,
 	ServiceUnavailableException,
 } from "@nestjs/common";
+import { UserSavedRoles } from "src/models/users/schema/user-roles";
 import { ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
@@ -22,7 +23,6 @@ import { OptionsStore } from "src/access-control/access-control-lib/options-stor
 import { AuthUser } from "src/auth/decorators/auth-user.decorator";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { SessionUser } from "src/auth/schema/user-token";
-import { UserRoles } from "src/models/users/entities/user.entity";
 import { NotificationSettingsRepository } from "src/models/notifications/repositories/notification-settings.repository";
 import { NotificationSubscriptionsRepository } from "src/models/notifications/repositories/notification-subscriptions.repository";
 import { NotificationsRepository } from "src/models/notifications/repositories/notifications.repository";
@@ -134,7 +134,7 @@ export class AccountNotificationsController {
 		const types = Object.entries(NotificationTypesMetadata)
 			.filter(
 				([type]) =>
-					userRoles.includes(UserRoles.admin) ||
+					userRoles.includes(UserSavedRoles.admin) ||
 					isNotificationTypeForRoles(<NotificationTypes>type, userRoles),
 			)
 			.sort(([, a], [, b]) => groups.indexOf(a.group) - groups.indexOf(b.group))

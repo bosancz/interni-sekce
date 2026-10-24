@@ -2,13 +2,13 @@ import { ForbiddenException } from "@nestjs/common";
 import { Request } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
 import { AcPermission } from "../access-control-lib/schema/ac-route-acl";
-import { Roles } from "./roles";
+import { UserRoles } from "src/models/users/schema/user-roles";
 
 export type WhereData = {
 	where?: (qb: WhereExpressionBuilder, req: Request, alias: string) => WhereExpressionBuilder;
 };
 
-export class Permission<DOC> extends AcPermission<DOC, Roles, WhereData> {
+export class Permission<DOC> extends AcPermission<DOC, UserRoles, WhereData> {
 	canWhere(req: Request, alias: string): Brackets | string {
 		const permissions = this.getAllowed(req);
 

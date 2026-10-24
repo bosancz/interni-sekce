@@ -1,12 +1,12 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
 import { DateTime } from "luxon";
 import { Config } from "src/config";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Event } from "src/models/events/entities/event.entity";
 import { MailOptions } from "src/models/mail/schema/mail-options";
-import { User, UserRoles } from "src/models/users/entities/user.entity";
-import { In, Repository } from "typeorm";
+import { UserDynamicRoles, UserSavedRoles } from "src/models/users/schema/user-roles";
+import { User } from "src/models/users/entities/user.entity";
+import { UsersRepository } from "src/models/users/repositories/users.repository";
 import { NotificationMailTemplate } from "../mail-templates/notification/notification.mail-template";
 import { NotificationSettingsRepository } from "../repositories/notification-settings.repository";
 import { NotificationSubscriptionsRepository } from "../repositories/notification-subscriptions.repository";
@@ -25,7 +25,7 @@ export class NotificationsService {
 	private readonly logger = new Logger(NotificationsService.name);
 
 	constructor(
-		@InjectRepository(User) private users: Repository<User>,
+		private usersRepository: UsersRepository,
 		private notificationSubscriptions: NotificationSubscriptionsRepository,
 		private notificationSettings: NotificationSettingsRepository,
 		private notifications: NotificationsRepository,
@@ -38,7 +38,7 @@ export class NotificationsService {
 	}
 
 	async onEventSubmitted(event: Event, actorUserId?: number) {
-		const recipients = await this.getUsersByRoles([UserRoles.program, UserRoles.admin]);
+		const recipients = await this.getUsersByRoles([UserSavedRoles.program, UserSavedRoles.admin]);
 
 		await this.notifyUsers(NotificationTypes.submittedEvents, recipients, actorUserId, {
 			title: `Akce ke schválení: ${event.name}`,
@@ -56,7 +56,9 @@ export class NotificationsService {
 			path: `/akce/${event.id}`,
 		});
 
-		const others = (await this.users.find()).filter((user) => !leaders.some((leader) => leader.id === user.id));
+		const others = (await this.usersRepository.getUsers()).filter(
+			(user) => !leaders.some((leader) => leader.id === user.id),
+		);
 
 		await this.notifyUsers(NotificationTypes.newEvents, others, actorUserId, {
 			title: `Nová akce v programu: ${event.name}`,
@@ -96,7 +98,7 @@ export class NotificationsService {
 	}
 
 	async onEventReportPublished(event: Event, actorUserId?: number) {
-		const recipients = await this.users.find();
+		const recipients = await this.usersRepository.getUsers();
 
 		await this.notifyUsers(NotificationTypes.newEventReports, recipients, actorUserId, {
 			title: `Nový report z akce: ${event.name}`,
@@ -106,7 +108,7 @@ export class NotificationsService {
 	}
 
 	async onUserCreated(user: User, actorUserId?: number) {
-		const recipients = await this.getUsersByRoles([UserRoles.admin]);
+		const recipients = await this.getUsersByRoles([UserSavedRoles.admin]);
 
 		await this.notifyUsers(NotificationTypes.newUsers, recipients, actorUserId, {
 			title: `Nový uživatel: ${user.login}`,
@@ -118,7 +120,10 @@ export class NotificationsService {
 		user: User,
 		fix: { title: string; version: string; description: string; path: string | null },
 	) {
-		await this.notifyUsers(NotificationTypes.myBugReports, [user], undefined, {
+		const recipient = await this.usersRepository.getUser(user.id);
+		if (!recipient) return;
+
+		await this.notifyUsers(NotificationTypes.myBugReports, [recipient], undefined, {
 			title: `Opraveno: ${fix.title}`,
 			body: `Nasazeno ve verzi ${fix.version} — ${fix.description}`,
 			path: fix.path || "/ucet/chyby",
@@ -151,7 +156,7 @@ export class NotificationsService {
 	}
 
 	async onBackupProblems(problems: string[]) {
-		const recipients = await this.getUsersByRoles([UserRoles.admin]);
+		const recipients = await this.getUsersByRoles([UserSavedRoles.admin]);
 
 		await this.notifyUsers(NotificationTypes.backups, recipients, undefined, {
 			title: "Zálohy potřebují kontrolu",
@@ -255,25 +260,21 @@ export class NotificationsService {
 		await this.notificationsQueueService.enqueueEmails(mails);
 	}
 
-	private async getUsersByRoles(roles: UserRoles[]) {
-		return this.users
-			.createQueryBuilder("user")
-			.where("user.roles && array[:...roles]::users_roles_enum[]", { roles })
-			.getMany();
+	private async getUsersByRoles(roles: UserSavedRoles[]) {
+		return this.usersRepository.getUsers({ roles });
 	}
 
 	private async getLeaderUsers(memberId?: number) {
-		const users = await this.users.find({
-			where: memberId !== undefined ? { memberId } : undefined,
-			relations: { member: true },
+		return this.usersRepository.getUsers({
+			roles: [UserDynamicRoles.vedouci, UserSavedRoles.admin],
+			memberIds: memberId !== undefined ? [memberId] : undefined,
 		});
-		return users.filter((user) => user.member?.active || user.roles?.includes(UserRoles.admin));
 	}
 
 	private async getEventLeaderUsers(event: Event) {
 		const memberIds = event.leaders?.map((leader) => leader.id) ?? [];
 		if (!memberIds.length) return [];
-		return this.users.find({ where: { memberId: In(memberIds) } });
+		return this.usersRepository.getUsers({ memberIds });
 	}
 
 	private formatPhotosCount(count: number) {

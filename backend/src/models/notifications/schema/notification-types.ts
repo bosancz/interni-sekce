@@ -1,5 +1,4 @@
-import { Roles, StaticRoles } from "src/access-control/schema/roles";
-import { UserRoles } from "src/models/users/entities/user.entity";
+import { UserDynamicRoles, UserSavedRoles, UserRoles } from "src/models/users/schema/user-roles";
 
 export enum NotificationTypes {
 	"myEvents" = "myEvents",
@@ -36,8 +35,8 @@ export interface NotificationTypeMetadata {
 	title: string;
 	description: string;
 	defaultChannels: NotificationChannels[];
-	roles: Roles[] | null;
-	defaultRoles?: Roles[];
+	roles: UserRoles[] | null;
+	defaultRoles?: UserRoles[];
 }
 
 export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTypeMetadata> = {
@@ -46,14 +45,14 @@ export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTy
 		title: "Moje akce",
 		description: "Schválení, vrácení nebo zrušení akce, kterou vedu",
 		defaultChannels: [NotificationChannels.push, NotificationChannels.inApp],
-		roles: [StaticRoles.vedouci],
+		roles: [UserDynamicRoles.vedouci],
 	},
 	[NotificationTypes.submittedEvents]: {
 		group: NotificationGroups.events,
 		title: "Akce ke schválení",
 		description: "Akce odeslaná ke schválení programu",
 		defaultChannels: [],
-		roles: [UserRoles.program, UserRoles.admin],
+		roles: [UserSavedRoles.program, UserSavedRoles.admin],
 	},
 	[NotificationTypes.newEvents]: {
 		group: NotificationGroups.events,
@@ -68,14 +67,14 @@ export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTy
 		description: "Vedoucí akce zveřejnil report z akce",
 		defaultChannels: [NotificationChannels.push, NotificationChannels.inApp],
 		roles: null,
-		defaultRoles: [UserRoles.revizor],
+		defaultRoles: [UserSavedRoles.revizor],
 	},
 	[NotificationTypes.newUsers]: {
 		group: NotificationGroups.admin,
 		title: "Noví uživatelé",
 		description: "Nově založené uživatelské účty",
 		defaultChannels: [],
-		roles: [UserRoles.admin],
+		roles: [UserSavedRoles.admin],
 	},
 	[NotificationTypes.myBugReports]: {
 		group: NotificationGroups.admin,
@@ -89,21 +88,21 @@ export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTy
 		title: "Nové fotky se mnou",
 		description: "Fotky, na kterých mě nově rozpoznalo přiřazování obličejů — posílá se jednou denně ráno",
 		defaultChannels: [NotificationChannels.inApp],
-		roles: [StaticRoles.vedouci],
+		roles: [UserDynamicRoles.vedouci],
 	},
 	[NotificationTypes.newAlbums]: {
 		group: NotificationGroups.photos,
 		title: "Nová alba",
 		description: "Nově zveřejněná alba ve fotogalerii",
 		defaultChannels: [NotificationChannels.inApp],
-		roles: [StaticRoles.vedouci],
+		roles: [UserDynamicRoles.vedouci],
 	},
 	[NotificationTypes.backups]: {
 		group: NotificationGroups.admin,
 		title: "Zálohy",
 		description: "Záloha databáze nebo souborů skončila chybou nebo dlouho neproběhla — kontroluje se jednou denně",
 		defaultChannels: [NotificationChannels.email, NotificationChannels.inApp],
-		roles: [UserRoles.admin],
+		roles: [UserSavedRoles.admin],
 	},
 };
 
@@ -117,9 +116,9 @@ export function getNotificationDefaultChannels(type: NotificationTypes, roles: s
 	if (metadata.defaultRoles)
 		return metadata.defaultRoles.some((role) => roles.includes(role)) ? metadata.defaultChannels : [];
 
-	const staticRoles: string[] = Object.values(StaticRoles);
-	const forStaticRole = metadata.roles?.some((role) => staticRoles.includes(role));
-	return forStaticRole || isNotificationTypeForRoles(type, roles) ? metadata.defaultChannels : [];
+	const dynamicRoles: string[] = Object.values(UserDynamicRoles);
+	const forDynamicRole = metadata.roles?.some((role) => dynamicRoles.includes(role));
+	return forDynamicRole || isNotificationTypeForRoles(type, roles) ? metadata.defaultChannels : [];
 }
 
 export interface NotificationMessage {

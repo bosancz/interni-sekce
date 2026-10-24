@@ -1,10 +1,11 @@
 import { ApiHideProperty, ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsBoolean, IsOptional } from "class-validator";
 import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
+import { UserRoles } from "src/models/users/schema/user-roles";
 import { MemberResponse } from "src/api/members/dto/member.dto";
 import { EnsureBoolean } from "src/helpers/validation";
 import { Member } from "src/models/members/entities/member.entity";
-import { User, UserRoles, UserSettings } from "src/models/users/entities/user.entity";
+import { User, UserSettings } from "src/models/users/entities/user.entity";
 
 export class UserResponse implements User {
 	@ApiProperty() id!: number;

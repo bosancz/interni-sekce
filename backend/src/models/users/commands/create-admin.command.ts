@@ -1,9 +1,9 @@
 import { Logger } from "@nestjs/common";
+import { UserSavedRoles } from "../schema/user-roles";
 import { Command, CommandRunner } from "nest-commander";
 import { createInterface } from "readline/promises";
 import { HashService } from "src/auth/services/hash.service";
 import { StaticConfig } from "src/config";
-import { UserRoles } from "../entities/user.entity";
 import { UsersRepository } from "../repositories/users.repository";
 
 @Command({
@@ -15,7 +15,7 @@ export class CreateAdminCommand extends CommandRunner {
 	private logger = new Logger(CreateAdminCommand.name);
 
 	constructor(
-		private usersService: UsersRepository,
+		private usersRepository: UsersRepository,
 		private hashService: HashService,
 	) {
 		super();
@@ -26,16 +26,16 @@ export class CreateAdminCommand extends CommandRunner {
 
 		const passwordHash = await this.hashService.generateHash(password);
 
-		const existing = await this.usersService.findUser({ login: login.toLocaleLowerCase() });
+		const existing = await this.usersRepository.findUser({ login: login.toLocaleLowerCase() });
 		if (existing) {
-			await this.usersService.updateUser(existing.id, { password: passwordHash });
+			await this.usersRepository.updateUser(existing.id, { password: passwordHash });
 			this.logger.log(`Updated password for existing admin user '${login}'.`);
 		} else {
-			await this.usersService.createUser({
+			await this.usersRepository.createUser({
 				login,
 				email,
 				password: passwordHash,
-				roles: [UserRoles.admin],
+				roles: [UserSavedRoles.admin],
 			});
 			this.logger.log(`Admin user '${login}' created.`);
 		}

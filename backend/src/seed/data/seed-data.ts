@@ -1,9 +1,9 @@
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
+import { UserSavedRoles } from "src/models/users/schema/user-roles";
 import { EventExpenseTypes } from "src/models/events/entities/event-expense.entity";
 import { EventStates } from "src/models/events/entities/event.entity";
 import { GroupMeetingDays } from "src/models/members/entities/group.entity";
 import { HealthEntry, HealthSeverity, MemberRanks, MemberRoles } from "src/models/members/entities/member.entity";
-import { UserRoles } from "src/models/users/entities/user.entity";
 
 export interface SeedGroup {
 	shortName: string;
@@ -111,7 +111,7 @@ export interface SeedAlbum {
 export interface SeedUser {
 	login: string;
 	email: string;
-	roles: UserRoles[];
+	roles: UserSavedRoles[];
 	member: string;
 }
 
@@ -148,7 +148,7 @@ export const SeedUsers: SeedUser[] = [
 	{
 		login: "bilbo",
 		email: "bilbo@bosan.cz",
-		roles: [UserRoles.admin],
+		roles: [UserSavedRoles.admin],
 		member: "Bilbo",
 	},
 	{
@@ -166,13 +166,13 @@ export const SeedUsers: SeedUser[] = [
 	{
 		login: "program",
 		email: "program@bosan.cz",
-		roles: [UserRoles.program],
+		roles: [UserSavedRoles.program],
 		member: "Gandalf (správce programu)",
 	},
 	{
 		login: "pokladnik",
 		email: "pokladnik@bosan.cz",
-		roles: [UserRoles.pokladnik],
+		roles: [UserSavedRoles.pokladnik],
 		member: "Glóin (pokladník)",
 	},
 ];

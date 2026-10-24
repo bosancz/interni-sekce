@@ -3,6 +3,9 @@ import { Request } from "express";
 import { OptionsStore } from "../options-store";
 import { EntityType } from "./entity-type";
 
+export const PUBLIC_ROLE = "public";
+export type PublicRole = typeof PUBLIC_ROLE;
+
 export interface AcRouteOptions<DOC = void, ROLES extends string = string, PDATA extends Object = {}> {
 	linkTo?: Type<DOC extends void ? any : DOC>;
 
@@ -22,7 +25,7 @@ export interface AcRouteOptions<DOC = void, ROLES extends string = string, PDATA
 }
 
 export type AcAllowed<DOC, ROLES extends string = string, PDATA extends Object = {}> = Partial<
-	Record<ROLES, AcAllowedValue<DOC, PDATA>>
+	Record<ROLES | PublicRole, AcAllowedValue<DOC, PDATA>>
 >;
 
 export type AcAllowedValue<DOC, PDATA extends Object = {}> =
@@ -53,7 +56,7 @@ export class AcPermission<DOC, ROLES extends string = string, PDATA extends Obje
 	}
 
 	getAllowed(req: Request): AcAllowedValue<DOC, PDATA>[] {
-		const userRoles = <ROLES[]>OptionsStore.getUserRoles(req);
+		const userRoles = <(ROLES | PublicRole)[]>[PUBLIC_ROLE, ...OptionsStore.getUserRoles(req)];
 
 		const allowed: AcAllowedValue<DOC, PDATA>[] = [];
 
@@ -69,7 +72,7 @@ export class AcPermission<DOC, ROLES extends string = string, PDATA extends Obje
 	}
 
 	getInheritedPermissions() {
-		const permissions: Partial<Record<ROLES, AcAllowedValue<DOC, any>>>[] = [];
+		const permissions: AcAllowed<DOC, ROLES, any>[] = [];
 		if (this.options.inherit) permissions.push(...this.options.inherit.getInheritedPermissions());
 		if (this.options.allowed) permissions.push(this.options.allowed);
 

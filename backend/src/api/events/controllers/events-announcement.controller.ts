@@ -43,7 +43,7 @@ export class EventsAnnouncementController {
 		private readonly events: EventsRepository,
 		@InjectRepository(Event) private readonly eventsRepository: Repository<Event>,
 		private readonly eventAnnouncementService: EventAnnouncementService,
-		private readonly users: UsersRepository,
+		private readonly usersRepository: UsersRepository,
 	) {}
 
 	@Get(":eventId/announcement")
@@ -104,7 +104,7 @@ export class EventsAnnouncementController {
 		const missing = this.eventAnnouncementService.getMissingData(event);
 		if (missing.length) throw new UnprocessableEntityException("V ohlášce chybí údaje účastníků.");
 
-		const user = await this.users.getUser(authUser.userId, { includeMember: true });
+		const user = await this.usersRepository.getUser(authUser.userId, { includeMember: true });
 		const sender = user?.member?.nickname || user?.login || "Někdo";
 
 		await this.eventAnnouncementService.sendAnnouncement(event, { sender, replyTo: user?.email });

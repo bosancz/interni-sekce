@@ -1,10 +1,10 @@
 import { AcAllowed } from "src/access-control/access-control-lib/schema/ac-route-acl";
-import { Roles } from "src/access-control/schema/roles";
+import { UserRoles } from "src/models/users/schema/user-roles";
 import { Permission } from "src/access-control/schema/route-acl";
 import { RootResponse } from "src/api/root/dto/root-response";
 import { BugReportResponse } from "../dto/bug-report-response.dto";
 
-export const allowed: AcAllowed<void, Roles> = {
+export const allowed: AcAllowed<void, UserRoles> = {
 	uzivatel: true,
 };
 

@@ -1,15 +1,10 @@
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Member } from "src/models/members/entities/member.entity";
 import { Column, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { getSavedRoles } from "../helpers/user-roles";
+import { UserSavedRoles, UserRoles } from "../schema/user-roles";
 
 export type UserSettings = Record<string, any>;
-
-export enum UserRoles {
-	"admin" = "admin",
-	"revizor" = "revizor",
-	"program" = "program",
-	"pokladnik" = "pokladnik",
-}
 
 @Entity("users")
 export class User {
@@ -44,7 +39,16 @@ export class User {
 	@Column({ type: "varchar", nullable: true, select: false }) password!: string | null;
 	@Column({ type: "varchar", unique: true }) email!: string | null;
 
-	@Column({ type: "enum", enum: UserRoles, array: true, nullable: true })
+	@Column({
+		type: "enum",
+		enum: UserSavedRoles,
+		array: true,
+		nullable: true,
+		transformer: {
+			from: (v: UserSavedRoles[] | null) => v,
+			to: (v: unknown) => (Array.isArray(v) ? getSavedRoles(v) : v),
+		},
+	})
 	@ApiProperty({ enum: UserRoles, enumName: "UserRolesEnum", isArray: true, nullable: true })
 	roles!: UserRoles[] | null;
 

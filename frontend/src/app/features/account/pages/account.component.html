@@ -38,8 +38,8 @@
 								<span class="bo-info-label">Role</span>
 								<span class="bo-info-action">
 									<span class="profile-pills">
-										@for (role of user.roles; track role) {
-											<span class="bo-pill bo-pill-blue">{{ role }}</span>
+										@for (role of user.roles | userRoles: "shown"; track role) {
+											<span class="bo-pill bo-pill-blue">{{ roles[role].title }}</span>
 										} @empty {
 											<span class="bo-info-value">—</span>
 										}
