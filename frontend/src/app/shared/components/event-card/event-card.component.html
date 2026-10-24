@@ -8,7 +8,7 @@
 
 	<bo-card-content>
 		@if (e.statusNote) {
-			<p class="note"><strong>Poznámka:</strong> {{ e.statusNote }}</p>
+			<p class="note"><strong>Poznámka:</strong> {{ e.statusNote | typography }}</p>
 		}
 
 		<div class="header">
@@ -21,7 +21,7 @@
 				}
 			</div>
 			<div class="title">
-				<span class="name">{{ e.name }}</span>
+				<span class="name">{{ e.name | typography }}</span>
 				<span class="subtitle">{{ subtitle() }}</span>
 			</div>
 			@if (link()) {
@@ -37,10 +37,10 @@
 			@if (e.meetingPlaceStart || e.meetingPlaceEnd) {
 				<div class="facts">
 					@if (e.meetingPlaceStart) {
-						<p><strong>Sraz: </strong>{{ e.meetingPlaceStart }}</p>
+						<p><strong>Sraz: </strong><span [innerHTML]="e.meetingPlaceStart | markdownInline"></span></p>
 					}
 					@if (e.meetingPlaceEnd) {
-						<p><strong>Konec: </strong>{{ e.meetingPlaceEnd }}</p>
+						<p><strong>Konec: </strong><span [innerHTML]="e.meetingPlaceEnd | markdownInline"></span></p>
 					}
 				</div>
 			}

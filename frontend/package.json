@@ -43,6 +43,7 @@
 		"pretty-bytes": "^7.1.0",
 		"rxjs": "^7.8.1",
 		"swiper": "^14.0.2",
+		"typopo": "^3.1.0",
 		"zone.js": "^0.16.2"
 	},
 	"devDependencies": {

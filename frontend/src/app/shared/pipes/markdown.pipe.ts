@@ -1,5 +1,8 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { marked } from "marked";
+import { Marked } from "marked";
+import { typographyExtension } from "src/helpers/typography";
+
+const markdown = new Marked({ async: false, breaks: true }, typographyExtension);
 
 @Pipe({
 	name: "markdown",
@@ -7,6 +10,16 @@ import { marked } from "marked";
 export class MarkdownPipe implements PipeTransform {
 	transform(value: string | null | undefined, ...args: unknown[]): string {
 		if (!value) return "";
-		return marked.parse(value, { async: false, breaks: true }) as string;
+		return markdown.parse(value) as string;
+	}
+}
+
+@Pipe({
+	name: "markdownInline",
+})
+export class MarkdownInlinePipe implements PipeTransform {
+	transform(value: string | null | undefined): string {
+		if (!value) return "";
+		return markdown.parseInline(value) as string;
 	}
 }

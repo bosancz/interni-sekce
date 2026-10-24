@@ -51,6 +51,11 @@
 - **Šipky Zpět/Vpřed v hlavičce** (`history-nav`) jsou jen v nainstalované PWA na desktopu (`PlatformService.isStandalone` — `display-mode` standalone/WCO/fullscreen — a ne `isMobile`), kde prohlížeč žádné nemá. Na lg sedí hned vlevo od vyhledávání (`.search-area` je mřížka `1fr minmax(0, 500px) 1fr`, takže pole zůstává na středu), pod lg za logem. Zakázání bere z Navigation API (`navigation.canGoBack/canGoForward`), bez něj zůstávají povolené.
 - **Účet je na lg kartou `bo-account-card` dole v sidebaru**; popover nad ní je stejný `AccountMenuModalComponent` jako z avataru na mobilu (`size: "cover"`, ukotvený přes `ionShadowTarget`, protože Ionic jinak bere `event.target` — klik na avatar by ho posunul). Bootstrap zabírá třídu `.card`, proto `.account-card`. Menu sidebaru (`.menu`) se při malé výšce okna posouvá, karta a přepínač tmavého režimu zůstávají vždy vidět.
 
+## Typografie
+
+- **Česká typografie se dělá jen při zobrazení, data v DB zůstávají, jak je kdo napsal.** `typopo` (`fixTypos(…, "cs")`) přes `fixTypography()` / `typographyExtension` v `helpers/typography.ts` (frontend i backend, stejný soubor; na bosan.cz `core/typography.ts`): pevné mezery za jednopísmennými předložkami a za číslem s tečkou, „“, –, …. Markdown se opravuje **po tokenech** (hook `processAllTokens`), takže kód, odkazy a syntaxe zůstanou; text sousedních tokenů se spojí přes `\u2060`, aby pravidla viděla souvislosti (`v **lese**`, `"*x*"`). Prostý text pipe `typography`, jednořádkový markdown `markdownInline`. Backend ji pouští v PDF přihláškách, `markdownToPlainText` (iCal) i `markdownToRichText` (XLSX). Pozor: typopo bere `„x“ - y` jako přímou řeč a pomlčku smaže.
+- **Sraz a konec akce (`meetingPlaceStart`/`End`) jsou markdown** — edituje je `bo-edit-button-markdown`, zobrazuje `markdownInline`, do iCal/ohlášky/přihlášky jdou přes `markdownToPlainText`.
+
 ## User settings
 
 - **`User.settings` is an opaque `jsonb` blob owned by the frontend** — the backend never looks inside it. `GET /account/settings` and `PUT /account/settings` (whole object, `{ settings: … }`, `@IsObject()` only) are the only way in; the column is `select: false`, so it never rides along in `getMe` or the users list. Unknown keys survive a round trip untouched.

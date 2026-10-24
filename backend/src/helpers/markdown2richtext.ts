@@ -1,5 +1,6 @@
 import { marked, type Token, type Tokens } from "marked";
 import * as xlsxPopulate from "xlsx-populate";
+import { fixTokensTypography } from "./typography";
 
 interface RichTextFragment {
 	value(): string;
@@ -52,7 +53,7 @@ export function markdownToRichText(
 
 	const fontSize = options.fontSize ?? DEFAULT_FONT_SIZE;
 	const base: FragmentStyle = { fontSize, ...(options.fontFamily ? { fontFamily: options.fontFamily } : {}) };
-	const tokens = marked.lexer(markdown);
+	const tokens = fixTokensTypography(marked.lexer(markdown));
 
 	const add = (text: string, style: FragmentStyle = {}) => {
 		if (text === "") return;

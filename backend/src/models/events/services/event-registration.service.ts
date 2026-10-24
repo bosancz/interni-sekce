@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import * as Handlebars from "handlebars";
-import { marked } from "marked";
+import { Marked } from "marked";
 import { existsSync, readFileSync } from "fs";
 import { readdir, readFile, unlink, writeFile } from "fs/promises";
 import * as path from "path";
@@ -8,7 +8,9 @@ import * as puppeteer from "puppeteer";
 import sharp = require("sharp");
 import { pathToFileURL } from "url";
 import { resolveChromiumPath } from "src/helpers/chromium";
+import { markdownToPlainText } from "src/helpers/markdown2plaintext";
 import { string2Date } from "src/helpers/string2date";
+import { fixTypography, typographyExtension } from "src/helpers/typography";
 import { Event } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
 
@@ -17,6 +19,8 @@ const TEMPLATE_FILE = "template.html";
 const META_FILE = "meta.json";
 
 const IMG_DIR = path.resolve("assets/img");
+
+const markdownRenderer = new Marked({ async: false, breaks: true }, typographyExtension);
 
 const PALETTES: Record<string, string> = {
 	black: "#1a1a1a",
@@ -205,8 +209,8 @@ export class EventRegistrationService {
 
 		return {
 			accent,
-			name: event.name || "",
-			place: event.place || "",
+			name: fixTypography(event.name || ""),
+			place: fixTypography(event.place || ""),
 			dateFrom: this.formatDate(event.dateFrom),
 			dateTill: this.formatDate(event.dateTill),
 			departure: this.formatDeparture(event.dateFrom, event.timeFrom, event.meetingPlaceStart),
@@ -221,7 +225,7 @@ export class EventRegistrationService {
 
 	private renderMarkdown(markdown: string | null | undefined): string {
 		if (!markdown?.trim()) return "";
-		return marked.parse(markdown, { async: false, breaks: true });
+		return markdownRenderer.parse(markdown) as string;
 	}
 
 	private formatDate(date: string | null | undefined): string {
@@ -230,6 +234,6 @@ export class EventRegistrationService {
 	}
 
 	private formatDeparture(date: string | null, time: string | null, place: string | null): string {
-		return [this.formatDate(date), time, place].filter(Boolean).join(" ");
+		return fixTypography([this.formatDate(date), time, markdownToPlainText(place)].filter(Boolean).join(" "));
 	}
 }
