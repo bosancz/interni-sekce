@@ -128,8 +128,32 @@ export class EventReportComponent {
 			this.change.emit();
 		} catch (e) {
 			this.toastService.toast("Nepodařilo se publikovat report.", { color: "warning" });
+			return;
 		} finally {
 			this.publishing.set(false);
+		}
+
+		if (event.album) await this.offerAlbumPublish(event.album.id);
+	}
+
+	private async offerAlbumPublish(albumId: number) {
+		const album = await this.api.PhotoGalleryApi.getAlbum(albumId)
+			.then((res) => res.data)
+			.catch(() => null);
+		if (album?.status !== "draft" || !album._links.publishAlbum.allowed) return;
+
+		const confirmed = await this.modalService.confirmationModal(
+			`Fotogalerie „${album.name}“ zatím není publikovaná. Chceš ji publikovat taky?`,
+			{ header: "Publikovat i fotogalerii?", buttonText: "Publikovat" },
+		);
+		if (!confirmed) return;
+
+		try {
+			await this.api.PhotoGalleryApi.publishAlbum(album.id);
+			this.toastService.toast("Fotogalerie publikována.");
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se publikovat fotogalerii.", { color: "warning" });
 		}
 	}
 

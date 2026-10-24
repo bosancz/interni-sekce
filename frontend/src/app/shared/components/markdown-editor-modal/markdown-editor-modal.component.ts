@@ -26,6 +26,6 @@ export class MarkdownEditorModalComponent extends InputModalComponent<string | n
 	}
 
 	save() {
-		this.submit.emit(this.content().trim() ? this.content() : null);
+		this.submit.emit(this.content().trim() ? this.content() : "");
 	}
 }
