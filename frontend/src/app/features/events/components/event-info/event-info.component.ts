@@ -15,7 +15,8 @@ import { ItemComponent } from "src/app/shared/components/item/item.component";
 import { LocationMapComponent } from "src/app/shared/components/location-map/location-map.component";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
-import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
+import { MarkdownInlinePipe, MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
+import { TypographyPipe } from "../../../../shared/pipes/typography.pipe";
 import { EventRegistrationComponent } from "../event-registration/event-registration.component";
 
 @UntilDestroy()
@@ -38,6 +39,8 @@ import { EventRegistrationComponent } from "../event-registration/event-registra
 		EventTypeSelectorComponent,
 		DateRangePipe,
 		MarkdownPipe,
+		MarkdownInlinePipe,
+		TypographyPipe,
 		EventRegistrationComponent,
 		EventCardComponent,
 		LocationMapComponent,

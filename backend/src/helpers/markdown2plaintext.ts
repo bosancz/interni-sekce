@@ -1,11 +1,12 @@
 import { marked, type Token, type Tokens } from "marked";
+import { fixTokensTypography } from "./typography";
 
 const HR = "————————";
 
 export function markdownToPlainText(markdown: string | null | undefined): string {
 	if (!markdown || !markdown.trim()) return "";
 
-	return renderBlocks(marked.lexer(markdown))
+	return renderBlocks(fixTokensTypography(marked.lexer(markdown)))
 		.join("\n\n")
 		.replace(/[ \t]+$/gm, "")
 		.replace(/\n{3,}/g, "\n\n")

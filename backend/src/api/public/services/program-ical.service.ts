@@ -67,8 +67,8 @@ export class ProgramIcalService {
 		const leaders = (event.leaders ?? []).map((leader) => leader.nickname).filter(Boolean);
 
 		const meeting = [
-			event.meetingPlaceStart ? `Sraz: ${event.meetingPlaceStart}` : null,
-			event.meetingPlaceEnd ? `Konec: ${event.meetingPlaceEnd}` : null,
+			event.meetingPlaceStart ? `Sraz: ${markdownToPlainText(event.meetingPlaceStart)}` : null,
+			event.meetingPlaceEnd ? `Konec: ${markdownToPlainText(event.meetingPlaceEnd)}` : null,
 		].filter(Boolean);
 
 		return [

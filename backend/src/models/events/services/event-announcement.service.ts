@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Config } from "src/config";
+import { markdownToPlainText } from "src/helpers/markdown2plaintext";
 import { sanitizeFilename } from "src/helpers/sanitizefilename";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { Event } from "src/models/events/entities/event.entity";
@@ -70,8 +71,8 @@ export class EventAnnouncementService {
 		annoucementSheet.range("B14:B14").value(string2Date(event.dateFrom) || "");
 		annoucementSheet.range("B15:B15").value(string2Date(event.dateTill) || "");
 		annoucementSheet.cell("B17").value(event.place || "");
-		if (event.meetingPlaceStart) annoucementSheet.cell("B18").value(event.meetingPlaceStart);
-		if (event.meetingPlaceEnd) annoucementSheet.cell("B19").value(event.meetingPlaceEnd);
+		if (event.meetingPlaceStart) annoucementSheet.cell("B18").value(markdownToPlainText(event.meetingPlaceStart));
+		if (event.meetingPlaceEnd) annoucementSheet.cell("B19").value(markdownToPlainText(event.meetingPlaceEnd));
 
 		const leaders = getEventLeaders(event.attendees);
 		if (leaders.length) {
