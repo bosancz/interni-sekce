@@ -115,6 +115,8 @@
 	word-break: break-word;
 	max-height: 12em;
 	overflow: auto;
+	user-select: text !important;
+	cursor: text;
 }
 
 .bk-runs {
