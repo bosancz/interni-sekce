@@ -99,7 +99,7 @@ backup_files() {
 	stats="$(jq -R -s -c '[split("\n")[] | fromjson? | select(.stats)] | last | .stats // {}' "$rclone_log")"
 	run_info bytes "$(jq -R -r 'fromjson? | select(.level == "info" and (.msg | startswith("Copied")) and .object) | .object' "$rclone_log" |
 		while IFS= read -r object; do stat -c %s "$DATA_DIR/$object" 2>/dev/null || true; done |
-		awk '{ sum += $1 } END { print sum + 0 }')"
+		awk '{ sum += $1 } END { printf "%.0f\n", sum }')"
 	run_info files_transferred "$(jq -r '.transfers // empty' <<<"$stats")"
 	run_info files_removed "$(jq -r '.renames // empty' <<<"$stats")"
 	if [ -n "${RUN_INFO:-}" ]; then
@@ -108,15 +108,16 @@ backup_files() {
 	rm -f "$rclone_log"
 
 	if [ -n "$KEEP_DELETED_DAYS" ]; then
-		local cutoff
+		local cutoff deleted_dirs
 		cutoff="$(date -d "-${KEEP_DELETED_DAYS} days" +%Y-%m-%d)"
-		rclone lsf "${REMOTE}smazane" --dirs-only 2>/dev/null | while read -r dir; do
+		deleted_dirs="$(rclone lsf "${REMOTE}smazane" --dirs-only 2>/dev/null)" || deleted_dirs=""
+		while read -r dir; do
 			dir="${dir%/}"
 			if [[ "$dir" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ && "$dir" < "$cutoff" ]]; then
 				rclone purge "${REMOTE}smazane/$dir" --drive-use-trash=false
 				log "Deleted files removed before $dir"
 			fi
-		done
+		done <<<"$deleted_dirs"
 	fi
 
 	if [ "$status" -ne 0 ]; then
