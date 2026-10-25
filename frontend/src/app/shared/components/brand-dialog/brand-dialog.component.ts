@@ -1,7 +1,7 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
 import { IonIcon, ModalController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { checkmarkOutline } from "ionicons/icons";
+import { checkmarkOutline, eyeOffOutline, eyeOutline } from "ionicons/icons";
 import { InputModalComponent } from "src/app/core/services/input-modal";
 import { ModalLayoutComponent } from "../modal-layout/modal-layout.component";
 
@@ -57,6 +57,7 @@ export class BrandDialogComponent extends InputModalComponent<any> implements On
 
 	values = signal<Record<string, any>>({});
 	chosen = signal<any[]>([]);
+	revealed = signal<string[]>([]);
 
 	valid = computed(() => {
 		const values = this.values();
@@ -67,7 +68,7 @@ export class BrandDialogComponent extends InputModalComponent<any> implements On
 
 	constructor(modalController: ModalController) {
 		super(modalController);
-		addIcons({ checkmarkOutline });
+		addIcons({ checkmarkOutline, eyeOutline, eyeOffOutline });
 	}
 
 	ngOnInit() {
@@ -102,6 +103,17 @@ export class BrandDialogComponent extends InputModalComponent<any> implements On
 	labelOf(input: BrandDialogInput) {
 		if (input.label) return input.label;
 		return input.type && ["date", "time", "datetime-local"].includes(input.type) ? input.placeholder : undefined;
+	}
+
+	inputType(input: BrandDialogInput) {
+		if (input.type === "password" && this.revealed().includes(input.name)) return "text";
+		return input.type ?? "text";
+	}
+
+	toggleReveal(name: string) {
+		this.revealed.update((revealed) =>
+			revealed.includes(name) ? revealed.filter((item) => item !== name) : [...revealed, name],
+		);
 	}
 
 	setValue(name: string, value: string) {
