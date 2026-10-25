@@ -1,98 +1,78 @@
 <bo-page-header title="Uživatelské účty" backUrl="/" [actions]="actions()" />
 
-<bo-filter [search]="true" (change)="onFilterChange($event)">
-	<ion-item>
-		<ion-label position="stacked">Role</ion-label>
-		<ion-select multiple name="roles" ngModel placeholder="Vyber role">
-			@for (role of shownUserRoles | keyvalue; track role.key) {
-				<ion-select-option [value]="role.key">
-					{{ role.value?.title }}
-				</ion-select-option>
-			}
-		</ion-select>
-	</ion-item>
-</bo-filter>
+<bo-page-content>
+	<bo-filter [search]="true" [showButtonMobileOnly]="true" [immediateFilter]="true">
+		@if (isDesktop()) {
+			<div toolbar-actions slot="end" class="users-filter-actions">
+				<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+			</div>
+		} @else {
+			<div>
+				<div class="users-filter-modal">
+					<ng-container [ngTemplateOutlet]="filterPills"></ng-container>
+				</div>
 
-<ion-content>
-	@switch (view()) {
-		@case ("list") {
-			<ion-list>
-				@if (users()) {
-					@for (user of users()!; track user.id) {
-						<ion-item [routerLink]="['/admin/uzivatele', user.id]" [button]="true" [detail]="true">
-							<ion-label>
-								<h3>{{ user.login }}</h3>
-								@if (user.email) {
-									<p>{{ user.email }}</p>
-								}
-								@if (user.member) {
-									<p class="d-lg-none">
-										{{ user.member.nickname || "-" }} ({{ user.member.firstName }}
-										{{ user.member.lastName }})
-									</p>
-								}
-								<p class="d-lg-none">
-									@for (role of user.roles | userRoles: "shown"; track role) {
-										<ion-badge>{{ userRoles[role].title }}</ion-badge>
-									}
-								</p>
-							</ion-label>
+				<bo-sort-select
+					[options]="sortOptions"
+					[sort]="sortColumn()"
+					[order]="sortOrder()"
+					(sortChange)="onSortChange($event)"
+				/>
+			</div>
+		}
+	</bo-filter>
 
-							<ion-label class="d-none d-lg-block">
-								@if (user.member) {
-									<h3>{{ user.member.nickname || "-" }}</h3>
-									<p>{{ user.member.firstName }} {{ user.member.lastName }}</p>
-								}
-								@if (!user.member) {
-									<p><i>bez člena</i></p>
-								}
-							</ion-label>
+	<ng-template #filterPills>
+		<bo-filter-pill
+			label="Role"
+			[options]="roleOptions"
+			[selected]="selectedRoles()"
+			(selectedChange)="setFilterParam('roles', $event)"
+		/>
+	</ng-template>
 
-							<ion-label class="d-none d-lg-block">
-								@for (role of user.roles | userRoles: "shown"; track role) {
-									<ion-badge class="me-1">{{ userRoles[role].title }}</ion-badge>
-								}
-							</ion-label>
-						</ion-item>
-					}
+	<admin-table
+		[class]="'users-table'"
+		[rows]="users()"
+		[loading]="users() === undefined"
+		[rowLink]="rowLink"
+		[sort]="sortColumn()"
+		[order]="sortOrder()"
+		(sortChange)="onSortChange($event)"
+	>
+		<admin-table-column header="Login" sort="login" [primary]="true" headerClass="align-middle">
+			<ng-container *adminCell="let user">{{ user.login }}</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Člen" sort="member" headerClass="align-middle">
+			<ng-container *adminCell="let user">
+				@if (user.member) {
+					{{ user.member.nickname || "-" }}
+					<span class="users-member-name">{{ user.member.firstName }} {{ user.member.lastName }}</span>
+				} @else {
+					<span class="users-no-member">bez člena</span>
 				}
-			</ion-list>
-		}
-		@case ("table") {
-			<admin-table>
-				<thead>
-					<tr>
-						<th>Email</th>
-						<th>Člen</th>
-						<th>Login</th>
-						<th>Role</th>
-					</tr>
-				</thead>
+			</ng-container>
+		</admin-table-column>
 
-				<tbody>
-					@if (users()) {
-						@for (user of users()!; track user.id) {
-							<tr [routerLink]="['/admin/uzivatele', user.id]">
-								<td>{{ user.email }}</td>
-								<td>
-									{{ user.member?.nickname || "-" }} ({{ user.member?.firstName }}
-									{{ user.member?.lastName }})
-								</td>
-								<td>{{ user.login }}</td>
-								<td>
-									@for (role of user.roles | userRoles: "shown"; track role) {
-										<ion-badge class="me-1">{{ userRoles[role].title }}</ion-badge>
-									}
-								</td>
-							</tr>
-						}
+		<admin-table-column header="E-mail" sort="email" headerClass="align-middle">
+			<ng-container *adminCell="let user">{{ user.email }}</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Role" headerClass="align-middle">
+			<ng-container *adminCell="let user">
+				<span class="users-roles">
+					@for (role of user.roles | userRoles: "shown"; track role) {
+						<span class="bo-pill" [class.bo-pill-blue]="role !== 'vedouci'">{{
+							userRoles[role].title
+						}}</span>
 					}
-				</tbody>
-			</admin-table>
-		}
-	}
+				</span>
+			</ng-container>
+		</admin-table-column>
+	</admin-table>
 
 	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
 		<ion-infinite-scroll-content></ion-infinite-scroll-content>
 	</ion-infinite-scroll>
-</ion-content>
+</bo-page-content>

@@ -1,5 +1,6 @@
 import {
 	Body,
+	ConflictException,
 	Controller,
 	Delete,
 	Get,
@@ -16,6 +17,7 @@ import {
 } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
+import { QueryFailedError } from "typeorm";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { HashService } from "src/auth/services/hash.service";
@@ -36,6 +38,18 @@ import { UserSetPasswordBody } from "../dto/user-set-password-body";
 import { UserUpdateBody } from "../dto/user-update-body";
 import { GetUserQueryDto, UserResponse } from "../dto/user.dto";
 import { ListUsersQuery } from "../dto/users.dto";
+
+function throwOnDuplicateUser(err: unknown): never {
+	if (err instanceof QueryFailedError) {
+		const driverError = err.driverError as { code?: string; detail?: string };
+		if (driverError.code === "23505") {
+			if (driverError.detail?.includes("(email)"))
+				throw new ConflictException("Tenhle e-mail už má jiný uživatel.");
+			throw new ConflictException("Tenhle login už má jiný uživatel.");
+		}
+	}
+	throw err;
+}
 
 @Controller("users")
 @Authenticated()
@@ -61,6 +75,8 @@ export class UsersController {
 			roles: query.roles,
 			limit: query.limit,
 			offset: query.offset,
+			sort: query.sort,
+			order: query.order,
 		});
 	}
 
@@ -70,7 +86,7 @@ export class UsersController {
 	async createUser(@Req() req: Request, @Body() body: UserCreateBody): Promise<UserResponse> {
 		UserCreatePermission.canOrThrow(req);
 
-		const user = await this.usersRepository.createUser(body);
+		const user = await this.usersRepository.createUser(body).catch(throwOnDuplicateUser);
 
 		this.notificationsService
 			.onUserCreated(user, req.user?.userId)
@@ -108,7 +124,7 @@ export class UsersController {
 
 		UserEditPermission.canOrThrow(req, user);
 
-		await this.usersRepository.updateUser(userId, body);
+		await this.usersRepository.updateUser(userId, body).catch(throwOnDuplicateUser);
 	}
 
 	@Delete(":userId")

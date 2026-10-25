@@ -37,7 +37,7 @@ export class User {
 	searchVector?: string;
 
 	@Column({ type: "varchar", nullable: true, select: false }) password!: string | null;
-	@Column({ type: "varchar", unique: true }) email!: string | null;
+	@Column({ type: "varchar", unique: true, nullable: true }) email!: string | null;
 
 	@Column({
 		type: "enum",

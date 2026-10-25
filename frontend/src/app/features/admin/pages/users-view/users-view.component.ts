@@ -1,16 +1,18 @@
 import { DatePipe } from "@angular/common";
 import { Component, computed, signal } from "@angular/core";
 import { ActivatedRoute, Params, Router, RouterLink } from "@angular/router";
-import { IonButton, IonButtons, IonIcon } from "@ionic/angular/standalone";
+import { IonIcon } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { arrowForward, closeOutline, personCircleOutline, trashOutline } from "ionicons/icons";
+import { personCircleOutline, personOutline, trashOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { LoginService } from "src/app/core/services/login.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { UserService } from "src/app/core/services/user.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { CardOpenButtonComponent } from "src/app/shared/components/card-open-button/card-open-button.component";
+import { DeleteButtonComponent } from "src/app/shared/components/delete-button/delete-button.component";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
@@ -31,8 +33,6 @@ import { UserInfoComponent } from "../../components/user-info/user-info.componen
 	imports: [
 		DatePipe,
 		RouterLink,
-		IonButton,
-		IonButtons,
 		IonIcon,
 		PageHeaderComponent,
 		PageContentComponent,
@@ -41,6 +41,8 @@ import { UserInfoComponent } from "../../components/user-info/user-info.componen
 		CardTitleComponent,
 		CardContentComponent,
 		EditButtonComponent,
+		DeleteButtonComponent,
+		CardOpenButtonComponent,
 		UserInfoComponent,
 	],
 })
@@ -64,7 +66,7 @@ export class UsersViewComponent {
 		private loginService: LoginService,
 		private userService: UserService,
 	) {
-		addIcons({ arrowForward, closeOutline, personCircleOutline, trashOutline });
+		addIcons({ personCircleOutline, personOutline, trashOutline });
 	}
 
 	ngOnInit() {
@@ -86,9 +88,10 @@ export class UsersViewComponent {
 
 			toast.dismiss();
 			this.toastService.toast("Uloženo.");
-		} catch (e) {
+		} catch (err: any) {
 			toast.dismiss();
-			this.toastService.toast("Chyba při ukládání.", { color: "danger" });
+			const message = err?.response?.status === 409 ? err.response.data?.message : "Chyba při ukládání.";
+			this.toastService.toast(message, { color: "danger" });
 		}
 
 		await this.loadUser(user.id);

@@ -1,55 +1,72 @@
-@if (user()) {
-	@let userValue = user()!;
-	<ion-list class="selectable">
-		<bo-item label="Login">
-			<ion-label class="value">{{ userValue.login }}</ion-label>
-			<bo-edit-button-text
-				slot="end"
-				label="Login"
-				placeholder="bilbo"
-				[disabled]="!userValue._links.updateUser.allowed"
-				[value]="userValue.login"
-				(update)="updateLogin($event)"
-			/>
-		</bo-item>
+<bo-card>
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="key-outline" />
+				Uživatelský účet
+			</span>
+		</bo-card-title>
+	</bo-card-header>
 
-		<bo-item label="E-mail">
-			<ion-label class="value">{{ userValue.email || "-" }}</ion-label>
-			<bo-edit-button-text
-				slot="end"
-				type="email"
-				label="E-mail"
-				placeholder="bilbo@bosan.cz"
-				[disabled]="!userValue._links.updateUser.allowed"
-				[value]="userValue.email"
-				(update)="updateEmail($event)"
-			/>
-		</bo-item>
+	<bo-card-content>
+		@if (user(); as userValue) {
+			<div class="bo-info-list selectable">
+				<div class="bo-info-row">
+					<span class="bo-info-label">Login</span>
+					<span class="bo-info-action">
+						<span class="bo-info-value">{{ userValue.login }}</span>
+						<bo-edit-button-text
+							label="Login"
+							placeholder="bilbo"
+							[disabled]="!userValue._links.updateUser.allowed"
+							[value]="userValue.login"
+							(update)="updateLogin($event)"
+						/>
+					</span>
+				</div>
 
-		<bo-item label="Heslo">
-			<ion-button
-				slot="end"
-				fill="clear"
-				size="small"
-				[disabled]="!userValue._links.setUserPassword.allowed"
-				(click)="changePassword()"
-			>
-				Změnit heslo
-			</ion-button>
-		</bo-item>
+				<div class="bo-info-row">
+					<span class="bo-info-label">E-mail</span>
+					<span class="bo-info-action">
+						<span class="bo-info-value">{{ userValue.email || "-" }}</span>
+						<bo-edit-button-text
+							type="email"
+							label="E-mail"
+							placeholder="bilbo@bosan.cz"
+							[disabled]="!userValue._links.updateUser.allowed"
+							[value]="userValue.email"
+							(update)="updateEmail($event)"
+						/>
+					</span>
+				</div>
 
-		<bo-item label="Role">
-			<ion-select
-				multiple
-				placeholder="žádné"
-				[value]="userValue.roles | userRoles: 'assigned'"
-				[disabled]="!userValue._links.updateUser.allowed"
-				(ionChange)="update.emit({ roles: $event.detail.value })"
-			>
-				@for (role of userRoles | keyvalue; track role.key) {
-					<ion-select-option [value]="role.key">{{ role.value.title }}</ion-select-option>
-				}
-			</ion-select>
-		</bo-item>
-	</ion-list>
-}
+				<div class="bo-info-row">
+					<span class="bo-info-label">Heslo</span>
+					<span class="bo-info-action">
+						<span class="bo-info-value password-value">••••••••</span>
+						<bo-edit-button
+							[disabled]="!userValue._links.setUserPassword.allowed"
+							(click)="changePassword()"
+						/>
+					</span>
+				</div>
+
+				<div class="bo-info-row">
+					<span class="bo-info-label">Role</span>
+					<span class="bo-info-action">
+						<span class="bo-info-value roles-value">
+							@for (role of userValue.roles | userRoles: "shown"; track role) {
+								<span class="bo-pill" [class.bo-pill-blue]="role !== 'vedouci'">{{
+									allRoles[role].title
+								}}</span>
+							} @empty {
+								-
+							}
+						</span>
+						<bo-edit-button [disabled]="!userValue._links.updateUser.allowed" (click)="editRoles()" />
+					</span>
+				</div>
+			</div>
+		}
+	</bo-card-content>
+</bo-card>
