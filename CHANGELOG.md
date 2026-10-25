@@ -1,3 +1,7 @@
+## v4.30.3 — 2026-10-25
+
+- <span class="changelog-type" title="patch">🚸</span> [Zobrazení hesla v dialogu změny hesla](https://github.com/bosancz/interni-sekce/commit/97cfc8469c939c0f79af6a11cd5079a0808e0a38) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.30.2 — 2026-10-25
 
 - <span class="changelog-type" title="patch">🚸</span> [Seznam uživatelů jako tabulka s řazením a filtrem rolí](https://github.com/bosancz/interni-sekce/commit/7b6ddc65fa748c6128cd8169d0a44457b3d17a14) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
