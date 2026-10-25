@@ -51,6 +51,40 @@
 	}
 }
 
+.bd-password {
+	position: relative;
+
+	.bd-input {
+		padding-inline-end: 48px;
+	}
+}
+
+.bd-reveal {
+	position: absolute;
+	inset-block: 0;
+	inset-inline-end: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: var(--bm-muted);
+	font-size: 20px;
+	cursor: pointer;
+
+	&:hover {
+		color: var(--bm-text);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--bm-blue);
+		outline-offset: -6px;
+		border-radius: 10px;
+	}
+}
+
 :host-context(body.dark) .bd-input {
 	color-scheme: dark;
 }

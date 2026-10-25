@@ -51,6 +51,31 @@
 							[attr.autofocus]="first ? '' : null"
 							(input)="setValue(input.name, $any($event.target).value)"
 						></textarea>
+					} @else if (input.type === "password") {
+						<div class="bd-password">
+							<input
+								class="bd-input"
+								[type]="inputType(input)"
+								[placeholder]="input.placeholder ?? ''"
+								[attr.aria-label]="labelOf(input) ? null : input.placeholder"
+								[value]="values()[input.name]"
+								[attr.autocapitalize]="input.autocapitalize ?? null"
+								[attr.autofocus]="first ? '' : null"
+								(input)="setValue(input.name, $any($event.target).value)"
+								(keydown.enter)="onEnter($event, input)"
+							/>
+							<button
+								type="button"
+								class="bd-reveal"
+								[attr.aria-label]="revealed().includes(input.name) ? 'Skrýt heslo' : 'Zobrazit heslo'"
+								[attr.aria-pressed]="revealed().includes(input.name)"
+								(click)="toggleReveal(input.name)"
+							>
+								<ion-icon
+									[name]="revealed().includes(input.name) ? 'eye-off-outline' : 'eye-outline'"
+								></ion-icon>
+							</button>
+						</div>
 					} @else {
 						<input
 							class="bd-input"
