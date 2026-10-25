@@ -1,3 +1,45 @@
-.role {
-	margin-right: 5px;
+:host ::ng-deep .users-table {
+	table-layout: fixed;
+	width: 100%;
+
+	td {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+}
+
+.users-member-name,
+.users-no-member {
+	color: var(--bo-muted);
+}
+
+.users-no-member {
+	font-style: italic;
+}
+
+.users-roles {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.users-filter-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px;
+}
+
+.users-filter-modal {
+	padding: 8px 12px 4px;
+
+	bo-filter-pill {
+		display: block;
+	}
+
+	::ng-deep .filter-pill-button {
+		width: 100%;
+		margin-inline: 0;
+		justify-content: space-between;
+	}
 }

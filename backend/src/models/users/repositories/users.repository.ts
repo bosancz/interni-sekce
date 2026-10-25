@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { toPrefixTsQuery } from "src/helpers/search";
+import { applySort, SortOrder } from "src/helpers/sort";
 import { Brackets, FindOptionsWhere, Repository } from "typeorm";
 import { User, UserSettings } from "../entities/user.entity";
 import { getSavedRoles, getUserRoles } from "../helpers/user-roles";
@@ -16,6 +17,8 @@ export class UsersRepository {
 		roles?: UserRoles[];
 		limit?: number;
 		offset?: number;
+		sort?: string;
+		order?: SortOrder;
 	}) {
 		const q = this.repository
 			.createQueryBuilder("user")
@@ -31,9 +34,20 @@ export class UsersRepository {
 				"member.active",
 			])
 			.leftJoin("user.member", "member")
-			.orderBy("user.login", "ASC")
 			.take(options.limit || 25)
 			.skip(options.offset || 0);
+
+		applySort(
+			q,
+			options,
+			{
+				login: "user.login",
+				email: { column: "user.email", nulls: "NULLS LAST" },
+				member: { column: "member.nickname", nulls: "NULLS LAST" },
+			},
+			{ column: "user.login", order: "ASC" },
+		);
+		if (options.sort && options.sort !== "login") q.addOrderBy("user.login", "ASC");
 
 		if (options.where) q.andWhere(options.where("user"));
 

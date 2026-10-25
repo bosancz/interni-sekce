@@ -1,6 +1,18 @@
-.value {
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+:host {
+	display: block;
+}
+
+:host ::ng-deep bo-card-content {
+	padding: 0 !important;
+}
+
+.password-value {
+	letter-spacing: 2px;
+}
+
+.roles-value {
+	display: inline-flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 4px;
 }
