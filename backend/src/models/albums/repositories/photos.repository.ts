@@ -16,6 +16,7 @@ import { PHOTO_EMBEDDING_DIMENSION, toVectorLiteral } from "../helpers/photo-emb
 import { PhotosFilesService } from "../services/photos-files.service";
 
 const VECTOR = `vector(${PHOTO_EMBEDDING_DIMENSION})`;
+const DAILY_PHOTO_ROLES = [MemberRoles.vedouci, MemberRoles.instruktor];
 
 export interface GetPhotosOptions extends PaginationOptions {
 	album?: number;
@@ -311,11 +312,11 @@ export class PhotosRepository {
 					INNER JOIN members ON members.id = faces.member_id
 					WHERE faces.photo_id = photos.id
 						AND faces.emotion = :emotion
-						AND members.role = :role
+						AND members.role IN (:...roles)
 						AND members.active = true
 						AND members.deleted_at IS NULL
 				)`,
-				{ role: MemberRoles.vedouci, emotion: FaceEmotion.happy },
+				{ roles: DAILY_PHOTO_ROLES, emotion: FaceEmotion.happy },
 			)
 			.orderBy("md5(photos.id::text || (now() AT TIME ZONE :timezone)::date::text)")
 			.setParameter("timezone", timezone)
@@ -328,7 +329,8 @@ export class PhotosRepository {
 			.createQueryBuilder("faces")
 			.innerJoinAndSelect("faces.member", "member")
 			.where("faces.photo_id = :photoId", { photoId: photo.id })
-			.andWhere("member.role = :role", { role: MemberRoles.vedouci })
+			.andWhere("member.role IN (:...roles)", { roles: DAILY_PHOTO_ROLES })
+			.andWhere("member.active = true")
 			.orderBy("faces.x + faces.width / 2", "ASC")
 			.getMany();
 
