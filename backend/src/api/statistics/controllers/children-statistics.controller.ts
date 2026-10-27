@@ -1,3 +1,4 @@
+import { Config } from "src/config";
 import { Controller, Get, Param, ParseIntPipe, Query, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
@@ -8,14 +9,15 @@ import { ChildEventsPermission, TopChildrenPermission } from "../acl/children.ac
 import { ChildEventResponse, TopChildrenQuery, TopChildrenResponse } from "../dto/top-children.dto";
 import { StatisticsYearQuery } from "../dto/top-leaders.dto";
 
-const DEFAULT_TOP_CHILDREN_LIMIT = 5;
-
 @Controller("statistics/children")
 @Authenticated()
 @AcController()
 @ApiTags("Statistics")
 export class ChildrenStatisticsController {
-	constructor(private statistics: ChildrenStatisticsService) {}
+	constructor(
+		private statistics: ChildrenStatisticsService,
+		private config: Config,
+	) {}
 
 	@Get("top")
 	@AcLinks(TopChildrenPermission)
@@ -25,7 +27,7 @@ export class ChildrenStatisticsController {
 
 		return this.statistics.getTopChildrenStatistics(
 			query.year ?? new Date().getFullYear(),
-			query.limit ?? DEFAULT_TOP_CHILDREN_LIMIT,
+			query.limit ?? this.config.statistics.topLimit,
 		);
 	}
 

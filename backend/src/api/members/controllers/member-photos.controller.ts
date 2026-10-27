@@ -36,9 +36,6 @@ import {
 } from "../acl/member-photos.acl";
 import { MemberPhotosQuery, MemberProfilePhotoBody } from "../dto/member.dto";
 
-const PROFILE_PHOTO_SIZE = 512;
-const PROFILE_PHOTO_PADDING = 0.4;
-
 @Controller("members/:memberId")
 @Authenticated()
 @AcController()
@@ -126,8 +123,8 @@ export class MemberPhotosController {
 
 		try {
 			const image = await this.photosFilesService.cropFace(face.photo, face, {
-				size: PROFILE_PHOTO_SIZE,
-				padding: PROFILE_PHOTO_PADDING,
+				size: this.config.photos.profilePhoto.size,
+				padding: this.config.photos.profilePhoto.padding,
 				sizes: [PhotoSizes.original, PhotoSizes.big],
 			});
 			await this.filesService.saveFile(this.getProfilePhotoPath(member.id), image);

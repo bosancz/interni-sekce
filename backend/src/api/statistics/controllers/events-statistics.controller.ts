@@ -1,3 +1,4 @@
+import { Config } from "src/config";
 import { Controller, Get, Query, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
@@ -10,14 +11,15 @@ import { EventsLeadersReportResponse } from "../dto/events-leaders-report.dto";
 import { EventsReportResponse } from "../dto/events-report.dto";
 import { TopEventsQuery, TopEventsResponse } from "../dto/top-events.dto";
 
-const DEFAULT_TOP_EVENTS_LIMIT = 5;
-
 @Controller("statistics/events")
 @Authenticated()
 @AcController()
 @ApiTags("Statistics")
 export class EventsStatisticsController {
-	constructor(private statistics: EventsRankingStatisticsService) {}
+	constructor(
+		private statistics: EventsRankingStatisticsService,
+		private config: Config,
+	) {}
 
 	@Get("top")
 	@AcLinks(TopEventsPermission)
@@ -27,7 +29,7 @@ export class EventsStatisticsController {
 
 		return this.statistics.getTopEventsStatistics(
 			query.year ?? new Date().getFullYear(),
-			query.limit ?? DEFAULT_TOP_EVENTS_LIMIT,
+			query.limit ?? this.config.statistics.topLimit,
 		);
 	}
 

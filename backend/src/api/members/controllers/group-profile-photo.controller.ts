@@ -21,7 +21,7 @@ import { Request, Response } from "express";
 import { createReadStream } from "fs";
 import { AcController, AcLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
-import { Config } from "src/config";
+import { Config, StaticConfig } from "src/config";
 import { FilesService } from "src/models/files/services/files.service";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
 import {
@@ -30,9 +30,6 @@ import {
 	GroupProfilePhotoUpdatePermission,
 } from "../acl/groups.acl";
 import sharp = require("sharp");
-
-const PROFILE_PHOTO_SIZE = 512;
-const PROFILE_PHOTO_MAX_UPLOAD_SIZE = 20 * 1024 * 1024;
 
 @Controller("groups/:groupId/profile-photo")
 @Authenticated()
@@ -83,7 +80,7 @@ export class GroupProfilePhotoController {
 	}
 
 	@Put("")
-	@UseInterceptors(FileInterceptor("file", { limits: { fileSize: PROFILE_PHOTO_MAX_UPLOAD_SIZE } }))
+	@UseInterceptors(FileInterceptor("file", { limits: { fileSize: StaticConfig.photos.profilePhoto.maxUploadSize } }))
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@AcLinks(GroupProfilePhotoUpdatePermission)
 	@ApiBody({
@@ -115,7 +112,10 @@ export class GroupProfilePhotoController {
 		try {
 			image = await sharp(file.buffer)
 				.rotate()
-				.resize(PROFILE_PHOTO_SIZE, PROFILE_PHOTO_SIZE, { fit: "cover", position: "attention" })
+				.resize(this.config.photos.profilePhoto.size, this.config.photos.profilePhoto.size, {
+					fit: "cover",
+					position: "attention",
+				})
 				.flatten({ background: "#ffffff" })
 				.jpeg({ quality: 88, mozjpeg: true })
 				.toBuffer();

@@ -1,3 +1,4 @@
+import { Config } from "src/config";
 import { Controller, Get, Param, ParseIntPipe, Query, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
@@ -7,14 +8,15 @@ import { LeadersStatisticsService } from "src/models/statistics/services/leaders
 import { LeaderEventsPermission, TopLeadersPermission } from "../acl/leaders.acl";
 import { LeaderEventResponse, StatisticsYearQuery, TopLeadersQuery, TopLeadersResponse } from "../dto/top-leaders.dto";
 
-const DEFAULT_TOP_LEADERS_LIMIT = 5;
-
 @Controller("statistics/leaders")
 @Authenticated()
 @AcController()
 @ApiTags("Statistics")
 export class LeadersStatisticsController {
-	constructor(private statistics: LeadersStatisticsService) {}
+	constructor(
+		private statistics: LeadersStatisticsService,
+		private config: Config,
+	) {}
 
 	@Get("top")
 	@AcLinks(TopLeadersPermission)
@@ -24,7 +26,7 @@ export class LeadersStatisticsController {
 
 		return this.statistics.getLeadersStatistics(
 			query.year ?? new Date().getFullYear(),
-			query.limit ?? DEFAULT_TOP_LEADERS_LIMIT,
+			query.limit ?? this.config.statistics.topLimit,
 			req.user?.memberId,
 		);
 	}

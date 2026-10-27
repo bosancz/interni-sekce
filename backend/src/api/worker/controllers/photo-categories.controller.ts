@@ -1,3 +1,4 @@
+import { Config } from "src/config";
 import {
 	Body,
 	Controller,
@@ -42,9 +43,6 @@ import {
 	PhotoContentSearchHitResponse,
 } from "../dto/photo-content.dto";
 
-const CATEGORY_PHOTOS_LIMIT = 60;
-const PREVIEW_LIMIT = 120;
-
 @Controller("photo-categories")
 @Authenticated()
 @AcController()
@@ -55,6 +53,7 @@ export class PhotoCategoriesController {
 	constructor(
 		private photoCategoriesService: PhotoCategoriesService,
 		private photoContentService: PhotoContentService,
+		private config: Config,
 	) {}
 
 	@Get()
@@ -94,7 +93,10 @@ export class PhotoCategoriesController {
 		PhotoCategoryPreviewPermission.canOrThrow(req);
 
 		const { vector } = await this.embedPrompts(body.prompts);
-		const hits = await this.photoCategoriesService.previewCategory(vector, body.limit ?? PREVIEW_LIMIT);
+		const hits = await this.photoCategoriesService.previewCategory(
+			vector,
+			body.limit ?? this.config.photoContent.categoryPreviewLimit,
+		);
 
 		return hits.map(toHit);
 	}
@@ -153,7 +155,7 @@ export class PhotoCategoriesController {
 		PhotoCategoryPhotosPermission.canOrThrow(req, category);
 
 		const hits = await this.photoCategoriesService.getCategoryPhotos(category, {
-			limit: query.limit ?? CATEGORY_PHOTOS_LIMIT,
+			limit: query.limit ?? this.config.photoContent.categoryPhotosLimit,
 			offset: query.offset ?? 0,
 		});
 

@@ -22,12 +22,11 @@ interface OauthAccessPayload {
 	clientId: string;
 }
 
-const CODE_TTL_SECONDS = 60;
-const ACCESS_TTL_SECONDS = 300;
-
 @Injectable()
 export class OauthService {
-	readonly accessTokenTtlSeconds = ACCESS_TTL_SECONDS;
+	get accessTokenTtlSeconds() {
+		return this.config.oauth.accessTtlS;
+	}
 
 	constructor(
 		private readonly config: Config,
@@ -60,7 +59,7 @@ export class OauthService {
 			clientId: client.clientId,
 			redirectUri,
 		};
-		return this.tokenService.signToken(payload, { expiresIn: CODE_TTL_SECONDS });
+		return this.tokenService.signToken(payload, { expiresIn: this.config.oauth.codeTtlS });
 	}
 
 	async exchangeCode(code: string, client: OauthClient, redirectUri: string): Promise<string | undefined> {
@@ -78,7 +77,7 @@ export class OauthService {
 			sub: userId,
 			clientId: client.clientId,
 		};
-		return this.tokenService.signToken(payload, { expiresIn: ACCESS_TTL_SECONDS });
+		return this.tokenService.signToken(payload, { expiresIn: this.config.oauth.accessTtlS });
 	}
 
 	async getUserInfo(accessToken: string) {

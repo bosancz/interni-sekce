@@ -1,9 +1,8 @@
+import { StaticConfig } from "src/config";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Member, MemberRoles } from "src/models/members/entities/member.entity";
 import { ObjectLiteral, Repository, SelectQueryBuilder } from "typeorm";
-
-export const CHILD_AGE_LIMIT = 15;
 
 export const EVENT_DAYS = "(e.date_till - e.date_from + 1)";
 
@@ -12,7 +11,7 @@ export const FINISHED_EVENT_CONDITION =
 
 export const EVENT_YEAR_CONDITION = "EXTRACT(YEAR FROM e.dateFrom) = :year";
 
-export const CHILD_PARAMS = { childAgeLimit: CHILD_AGE_LIMIT, childRole: MemberRoles.dite };
+export const CHILD_PARAMS = { childAgeLimit: StaticConfig.statistics.childAgeLimit, childRole: MemberRoles.dite };
 
 export function childCondition(memberAlias: string, eventAlias: string): string {
 	return (

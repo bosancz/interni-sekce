@@ -1,9 +1,8 @@
+import { Config } from "src/config";
 import { Injectable, Logger } from "@nestjs/common";
 import { WorkersService } from "src/models/worker/services/workers.service";
 import { DataSource } from "typeorm";
 import { HealthResponse, HealthStatus } from "../dto/health-response";
-
-const CHECK_TIMEOUT_MS = 3000;
 
 @Injectable()
 export class HealthService {
@@ -12,6 +11,7 @@ export class HealthService {
 	constructor(
 		private dataSource: DataSource,
 		private workersService: WorkersService,
+		private config: Config,
 	) {}
 
 	async getHealth(): Promise<HealthResponse> {
@@ -31,7 +31,7 @@ export class HealthService {
 			await Promise.race([
 				fn(),
 				new Promise((_, reject) => {
-					timeout = setTimeout(() => reject(new Error("timeout")), CHECK_TIMEOUT_MS);
+					timeout = setTimeout(() => reject(new Error("timeout")), this.config.server.healthCheckTimeoutMs);
 				}),
 			]);
 			return HealthStatus.ok;

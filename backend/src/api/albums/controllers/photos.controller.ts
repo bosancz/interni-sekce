@@ -1,3 +1,4 @@
+import { Config } from "src/config";
 import {
 	BadRequestException,
 	Body,
@@ -56,8 +57,6 @@ import {
 	PhotoUpdateBody,
 } from "../dto/photo.dto";
 
-const BROWSE_LIMIT = 60;
-
 @Controller("photos")
 @Authenticated()
 @AcController()
@@ -71,6 +70,7 @@ export class PhotosController {
 		private photoCategoriesService: PhotoCategoriesService,
 		private facesDetectionService: FacesDetectionService,
 		private photoContentService: PhotoContentService,
+		private config: Config,
 	) {}
 
 	@Get()
@@ -146,7 +146,7 @@ export class PhotosController {
 			categories: categories.filter((category) => category !== null),
 			memberIds: query.memberIds,
 			emotions: query.emotions,
-			limit: query.limit ?? BROWSE_LIMIT,
+			limit: query.limit ?? this.config.photos.browseLimit,
 			offset: query.offset ?? 0,
 		});
 	}
