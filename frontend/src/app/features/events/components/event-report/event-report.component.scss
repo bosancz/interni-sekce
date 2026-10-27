@@ -121,7 +121,9 @@ bo-card-content {
 }
 
 .gallery {
-	margin-top: 1rem;
+	margin-top: 1.25rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--bo-neutral-badge);
 }
 
 .album-link {
@@ -138,6 +140,7 @@ bo-card-content {
 	}
 }
 
+.gallery bo-card-title,
 .revizor-section bo-card-title {
 	display: block;
 	margin-bottom: 0.5rem;
