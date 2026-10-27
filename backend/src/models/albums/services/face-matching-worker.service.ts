@@ -8,6 +8,7 @@ import { WorkerStatus } from "src/models/worker/schema/worker-heartbeat";
 import { WorkersService } from "src/models/worker/services/workers.service";
 import { WORKER_TASK_QUEUE, WorkerTasks } from "src/models/worker/worker-queues";
 import {
+	FaceMatchingJobData,
 	FaceMatchingJobRunner,
 	FaceMatchingWorkerRun,
 	joinVectors,
@@ -15,9 +16,6 @@ import {
 	vectorDimensions,
 } from "../helpers/face-matching-worker";
 import { MatchFacesJob, MatchFacesResult } from "../schema/detected-faces";
-
-const KEYS_TTL_S = 3600;
-const JOB_TIMEOUT_MS = 120_000;
 
 @Injectable()
 export class FaceMatchingWorkerService implements FaceMatchingJobRunner, OnModuleDestroy {
@@ -55,24 +53,25 @@ export class FaceMatchingWorkerService implements FaceMatchingJobRunner, OnModul
 			randomUUID(),
 			dimensions,
 			valid.map((reference) => reference.memberId),
+			valid.map((reference) => reference.minDate),
 		);
 
 		await this.redis.set(
 			run.referencesKey,
 			joinVectors(valid.map((reference) => reference.descriptor)),
 			"EX",
-			KEYS_TTL_S,
+			this.config.faces.matching.workerKeysTtlS,
 		);
 
 		return run;
 	}
 
-	async runJob(run: FaceMatchingWorkerRun, name: string, data: { faces: Buffer[]; excluded: [number, number][] }) {
+	async runJob(run: FaceMatchingWorkerRun, name: string, data: FaceMatchingJobData) {
 		this.events ??= new QueueEvents(this.queue.name, { connection: { url: this.config.redis.url } });
 		await this.events.waitUntilReady();
 
 		const facesKey = `${this.queue.name}:${name}`;
-		await this.redis.set(facesKey, joinVectors(data.faces), "EX", KEYS_TTL_S);
+		await this.redis.set(facesKey, joinVectors(data.faces), "EX", this.config.faces.matching.workerKeysTtlS);
 
 		try {
 			const job = await this.queue.add(
@@ -81,14 +80,19 @@ export class FaceMatchingWorkerService implements FaceMatchingJobRunner, OnModul
 					dimensions: run.dimensions,
 					referencesKey: run.referencesKey,
 					referenceMemberIds: run.referenceMemberIds,
+					referenceMinDates: run.referenceMinDates,
 					facesKey,
+					faceDates: data.faceDates,
 					excluded: data.excluded,
 				},
 				{ removeOnComplete: { age: 60 }, removeOnFail: { age: 3600 } },
 			);
 
 			try {
-				const result: MatchFacesResult = await job.waitUntilFinished(this.events, JOB_TIMEOUT_MS);
+				const result: MatchFacesResult = await job.waitUntilFinished(
+					this.events,
+					this.config.faces.matching.workerJobTimeoutMs,
+				);
 				if (result.memberIds.length !== data.faces.length)
 					throw new Error("Worker returned a wrong number of faces.");
 				return result;

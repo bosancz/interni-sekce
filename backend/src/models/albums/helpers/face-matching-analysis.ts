@@ -1,9 +1,11 @@
 import { FaceMatchSettings, isMatch } from "./face-matching";
 
-export const FACE_MATCH_TARGET_PRECISION = 0.95;
-export const FACE_MATCH_MIN_DECISIONS = 50;
-export const FACE_MATCH_MIN_WRONG_CANDIDATES = 10;
-export const FACE_MATCH_SWEEP = { from: 0.3, to: 0.8, step: 0.01 };
+export interface FaceMatchAnalysisSettings {
+	targetPrecision: number;
+	minDecisions: number;
+	minWrongCandidates: number;
+	sweep: { from: number; to: number; step: number };
+}
 
 export interface FaceMatchDecision {
 	score: number;
@@ -58,42 +60,45 @@ export function evaluateFaceMatching(decisions: FaceMatchDecision[], settings: F
 	};
 }
 
-export function analyzeFaceMatching(decisions: FaceMatchDecision[], settings: FaceMatchSettings): FaceMatchAnalysis {
+export function analyzeFaceMatching(
+	decisions: FaceMatchDecision[],
+	settings: FaceMatchSettings,
+	analysis: FaceMatchAnalysisSettings,
+): FaceMatchAnalysis {
 	const correctCandidates = decisions.filter((decision) => decision.correct).length;
 	const wrongCandidates = decisions.length - correctCandidates;
 
-	const steps = Math.round((FACE_MATCH_SWEEP.to - FACE_MATCH_SWEEP.from) / FACE_MATCH_SWEEP.step);
+	const steps = Math.round((analysis.sweep.to - analysis.sweep.from) / analysis.sweep.step);
 	const sweep = Array.from({ length: steps + 1 }, (_, i) =>
 		evaluateFaceMatching(decisions, {
 			...settings,
-			threshold: Math.round((FACE_MATCH_SWEEP.from + i * FACE_MATCH_SWEEP.step) * 100) / 100,
+			threshold: Math.round((analysis.sweep.from + i * analysis.sweep.step) * 100) / 100,
 		}),
 	);
 
-	const enoughData =
-		decisions.length >= FACE_MATCH_MIN_DECISIONS && wrongCandidates >= FACE_MATCH_MIN_WRONG_CANDIDATES;
+	const enoughData = decisions.length >= analysis.minDecisions && wrongCandidates >= analysis.minWrongCandidates;
 
 	return {
 		decisions: decisions.length,
 		correctCandidates,
 		wrongCandidates,
-		targetPrecision: FACE_MATCH_TARGET_PRECISION,
-		minDecisions: FACE_MATCH_MIN_DECISIONS,
-		minWrongCandidates: FACE_MATCH_MIN_WRONG_CANDIDATES,
+		targetPrecision: analysis.targetPrecision,
+		minDecisions: analysis.minDecisions,
+		minWrongCandidates: analysis.minWrongCandidates,
 		enoughData,
 		current: evaluateFaceMatching(decisions, settings),
-		proposed: enoughData ? proposeThreshold(sweep) : null,
+		proposed: enoughData ? proposeThreshold(sweep, analysis.targetPrecision) : null,
 		sweep,
 	};
 }
 
-function proposeThreshold(sweep: FaceMatchEvaluation[]) {
+function proposeThreshold(sweep: FaceMatchEvaluation[], targetPrecision: number) {
 	let proposed: FaceMatchEvaluation | null = null;
 
 	for (let i = sweep.length - 1; i >= 0; i--) {
 		const row = sweep[i];
 		if (row.precision === null) continue;
-		if (row.precision < FACE_MATCH_TARGET_PRECISION) break;
+		if (row.precision < targetPrecision) break;
 		proposed = row;
 	}
 

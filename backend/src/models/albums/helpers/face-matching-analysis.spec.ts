@@ -1,4 +1,3 @@
-import { FACE_MATCH_SETTINGS } from "./face-matching";
 import { analyzeFaceMatching, FaceMatchDecision } from "./face-matching-analysis";
 
 function decision(score: number, correct: boolean, overrides: Partial<FaceMatchDecision> = {}): FaceMatchDecision {
@@ -6,12 +5,19 @@ function decision(score: number, correct: boolean, overrides: Partial<FaceMatchD
 }
 
 describe("analyzeFaceMatching", () => {
-	const settings = { ...FACE_MATCH_SETTINGS, threshold: 0.5 };
+	const settings = { threshold: 0.5, margin: 0.05, minDetectionScore: 0.9 };
+	const analysisSettings = {
+		targetPrecision: 0.95,
+		minDecisions: 50,
+		minWrongCandidates: 10,
+		sweep: { from: 0.3, to: 0.8, step: 0.01 },
+	};
 
 	it("evaluates the current settings", () => {
 		const analysis = analyzeFaceMatching(
 			[decision(0.7, true), decision(0.55, false), decision(0.45, true), decision(0.4, false)],
 			settings,
+			analysisSettings,
 		);
 
 		expect(analysis.current).toMatchObject({ threshold: 0.5, assigned: 2, correct: 1, wrong: 1 });
@@ -20,7 +26,7 @@ describe("analyzeFaceMatching", () => {
 	});
 
 	it("proposes nothing without enough decisions", () => {
-		const analysis = analyzeFaceMatching([decision(0.7, true), decision(0.4, false)], settings);
+		const analysis = analyzeFaceMatching([decision(0.7, true), decision(0.4, false)], settings, analysisSettings);
 
 		expect(analysis.enoughData).toBe(false);
 		expect(analysis.proposed).toBeNull();
@@ -34,7 +40,7 @@ describe("analyzeFaceMatching", () => {
 			decision(0.7, false),
 		];
 
-		const analysis = analyzeFaceMatching(decisions, settings);
+		const analysis = analyzeFaceMatching(decisions, settings, analysisSettings);
 
 		expect(analysis.enoughData).toBe(true);
 		expect(analysis.proposed?.threshold).toBe(0.53);
@@ -45,6 +51,7 @@ describe("analyzeFaceMatching", () => {
 		const analysis = analyzeFaceMatching(
 			[decision(0.7, true, { secondScore: 0.68 }), decision(0.7, true, { detectionScore: 0.5 })],
 			settings,
+			analysisSettings,
 		);
 
 		expect(analysis.current.assigned).toBe(0);

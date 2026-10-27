@@ -36,9 +36,6 @@ export interface BugReportIssue {
 	url: string;
 }
 
-const ISSUE_TITLE_MAX_LENGTH = 80;
-const ISSUE_TITLE_MIN_TEXT_LENGTH = 20;
-
 @Injectable()
 export class FeedbackService {
 	private readonly logger = new Logger(FeedbackService.name);
@@ -232,7 +229,10 @@ export class FeedbackService {
 		const firstLine = (breakIndex === -1 ? text : text.slice(0, breakIndex)).trim();
 		const otherLines = breakIndex === -1 ? "" : text.slice(breakIndex + 1).trim();
 
-		const maxLength = Math.max(ISSUE_TITLE_MIN_TEXT_LENGTH, ISSUE_TITLE_MAX_LENGTH - titleSuffix.length);
+		const maxLength = Math.max(
+			this.config.feedback.issueTitleMinTextLength,
+			this.config.feedback.issueTitleMaxLength - titleSuffix.length,
+		);
 
 		if (!firstLine) return { title: "Nahlášená chyba", body: otherLines };
 

@@ -13,8 +13,6 @@ import { Group } from "src/models/members/entities/group.entity";
 import { BoardMembersRepository } from "src/models/members/repositories/board-members.repository";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
 
-const PREVIEW_PHOTOS_COUNT = 8;
-
 @Injectable()
 export class PublicService {
 	constructor(
@@ -282,7 +280,7 @@ export class PublicService {
 			null;
 		const previewPhotos = await this.photos.getPreviewPhotos(album.id, {
 			excludeId: titlePhoto?.id,
-			limit: PREVIEW_PHOTOS_COUNT,
+			limit: this.config.photos.publicPreviewCount,
 		});
 
 		return {

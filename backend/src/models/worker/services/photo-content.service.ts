@@ -8,8 +8,6 @@ import { PhotoEmbeddingsService } from "src/models/albums/services/photo-embeddi
 import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
 import { BACKEND_SCHEDULE_QUEUE, BackendScheduleJobs, WORKER_TASK_QUEUE, WorkerTasks } from "../worker-queues";
 
-const TEXT_CACHE_SIZE = 500;
-
 @Injectable()
 export class PhotoContentService implements OnModuleDestroy {
 	private logger = new Logger(PhotoContentService.name);
@@ -126,7 +124,8 @@ export class PhotoContentService implements OnModuleDestroy {
 	private cacheText(key: string, embedding: number[]) {
 		this.textCache.delete(key);
 		this.textCache.set(key, embedding);
-		if (this.textCache.size > TEXT_CACHE_SIZE) this.textCache.delete(this.textCache.keys().next().value!);
+		if (this.textCache.size > this.config.photoContent.textCacheSize)
+			this.textCache.delete(this.textCache.keys().next().value!);
 	}
 
 	async getQueueStatus() {

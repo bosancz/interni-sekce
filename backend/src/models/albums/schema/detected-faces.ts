@@ -63,7 +63,9 @@ export interface MatchFacesJob {
 	dimensions: number;
 	referencesKey: string;
 	referenceMemberIds: number[];
+	referenceMinDates: (number | null)[];
 	facesKey: string;
+	faceDates: (number | null)[];
 	excluded: [number, number][];
 }
 

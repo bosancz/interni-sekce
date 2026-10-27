@@ -23,6 +23,7 @@ const server = {
 		.split(",")
 		.map((origin) => origin.trim())
 		.filter(Boolean),
+	healthCheckTimeoutMs: 3000,
 };
 
 const logging: { level: LogLevel[]; query: boolean } = {
@@ -97,6 +98,11 @@ const photos = {
 		big: { width: 1280, height: 1024 },
 		small: { width: 1024, height: 340 },
 	},
+	maxInputPixels: 24000 * 24000,
+	faceImage: { size: 256, padding: 0.3 },
+	profilePhoto: { size: 512, padding: 0.4, maxUploadSize: 20 * 1024 * 1024 },
+	browseLimit: 60,
+	publicPreviewCount: 8,
 };
 
 const GOOGLE_CLIENT_ID = "249555539983-j8rvff7bovgnecsmjffe0a3dj55j33hh.apps.googleusercontent.com";
@@ -123,6 +129,8 @@ const notifications = {
 
 const feedback = {
 	bugReportRecipient: process.env["BUG_REPORT_RECIPIENT"] ?? "lef@bosan.cz",
+	issueTitleMaxLength: 80,
+	issueTitleMinTextLength: 20,
 };
 
 const announcements = {
@@ -160,6 +168,27 @@ const faces = {
 	notifyCron: process.env["FACES_NOTIFY_CRON"] ?? "0 7 * * *",
 	timezone: process.env["FACES_TIMEZONE"] ?? "Europe/Prague",
 	batchSize: process.env["FACES_BATCH_SIZE"] ? parseInt(process.env["FACES_BATCH_SIZE"], 10) : 300,
+	matching: {
+		threshold: 0.5,
+		margin: 0.05,
+		minDetectionScore: 0.9,
+		minAgeYears: 5,
+		photosChunk: 500,
+		changesDebounceMs: 2000,
+		workerKeysTtlS: 3600,
+		workerJobTimeoutMs: 120_000,
+	},
+	suggestions: {
+		minScore: 0.36,
+		margin: 0.1,
+	},
+	analysis: {
+		targetPrecision: 0.95,
+		minDecisions: 50,
+		minWrongCandidates: 10,
+		sweep: { from: 0.3, to: 0.8, step: 0.01 },
+	},
+	assignedOverlapIou: 0.5,
 };
 
 const backups = {
@@ -172,6 +201,20 @@ const backups = {
 const photoContent = {
 	batchSize: process.env["PHOTO_CONTENT_BATCH_SIZE"] ? parseInt(process.env["PHOTO_CONTENT_BATCH_SIZE"], 10) : 3000,
 	textTimeoutMs: 30_000,
+	textCacheSize: 500,
+	searchLimit: 60,
+	categoryPhotosLimit: 60,
+	categoryPreviewLimit: 120,
+	maxCategoryPhotos: 100_000,
+};
+
+const workers = {
+	staleAfterMs: 25_000,
+};
+
+const statistics = {
+	topLimit: 5,
+	childAgeLimit: 15,
 };
 
 const insuranceCards = {
@@ -185,6 +228,8 @@ const oauth = {
 		clientSecret: process.env["OAUTH_WIKI_CLIENT_SECRET"] ?? "",
 		redirectUri: process.env["OAUTH_WIKI_REDIRECT_URI"] ?? "",
 	},
+	codeTtlS: 60,
+	accessTtlS: 300,
 };
 
 @Injectable()
@@ -210,6 +255,8 @@ export class Config {
 	redis = redis;
 	seed = seed;
 	server = server;
+	statistics = statistics;
+	workers = workers;
 	fs = fs;
 	mapy = mapy;
 	photoContent = photoContent;

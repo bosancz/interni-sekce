@@ -19,8 +19,6 @@ import {
 	PhotoContentSummaryResponse,
 } from "../dto/photo-content.dto";
 
-const SEARCH_LIMIT = 60;
-
 @Controller("photo-content")
 @Authenticated()
 @AcController()
@@ -84,7 +82,7 @@ export class PhotoContentController {
 		}
 
 		const hits = await this.photoEmbeddingsService.search(embedding, {
-			limit: query.limit ?? SEARCH_LIMIT,
+			limit: query.limit ?? this.config.photoContent.searchLimit,
 			minScore: query.minScore,
 		});
 

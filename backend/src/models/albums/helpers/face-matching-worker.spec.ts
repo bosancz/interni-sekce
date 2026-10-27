@@ -20,7 +20,9 @@ from worker.tasks.match_faces import _matrix, match
 data = json.load(sys.stdin)
 references = _matrix(base64.b64decode(data["references"]), data["dimensions"])
 faces = _matrix(base64.b64decode(data["faces"]), data["dimensions"])
-members, scores, second = match(references, np.asarray(data["memberIds"], dtype=np.int64), faces, data["excluded"])
+members, scores, second = match(
+    references, np.asarray(data["memberIds"], dtype=np.int64), faces, data["excluded"], data["minDates"], data["dates"]
+)
 json.dump({"memberIds": members, "scores": scores, "secondScores": second}, sys.stdout)
 `;
 
@@ -54,6 +56,8 @@ function pythonRunner(python: string, references: VectorFaceReference[]): FaceMa
 					dimensions: run.dimensions,
 					references: joinVectors(references.map((reference) => reference.descriptor)).toString("base64"),
 					memberIds: run.referenceMemberIds,
+					minDates: run.referenceMinDates,
+					dates: data.faceDates,
 					faces: joinVectors(data.faces).toString("base64"),
 					excluded: data.excluded,
 				}),
@@ -72,9 +76,9 @@ const python = findPython();
 	const alice = vector(1, 0, 0);
 	const bob = vector(0, 1, 0);
 	const references: VectorFaceReference[] = [
-		{ memberId: 1, descriptor: alice },
-		{ memberId: 1, descriptor: vector(1, 0, 0.3) },
-		{ memberId: 2, descriptor: bob },
+		{ memberId: 1, minDate: null, descriptor: alice },
+		{ memberId: 1, minDate: null, descriptor: vector(1, 0, 0.3) },
+		{ memberId: 2, minDate: null, descriptor: bob },
 	];
 
 	function findCandidates(photos: VectorPhotoFace[][], refs = references) {
@@ -83,6 +87,7 @@ const python = findPython();
 			"test",
 			3,
 			refs.map((reference) => reference.memberId),
+			refs.map((reference) => reference.minDate),
 		);
 		return run.findPhotosCandidates(photos);
 	}
@@ -118,6 +123,28 @@ const python = findPython();
 		expect(candidates.get(10)).toBeNull();
 	});
 
+	it("skips members too young on the date of the photo", async () => {
+		const refs: VectorFaceReference[] = [
+			{ memberId: 1, minDate: 10_000, descriptor: alice },
+			{ memberId: 1, minDate: 10_000, descriptor: vector(1, 0, 0.3) },
+			{ memberId: 2, minDate: null, descriptor: bob },
+		];
+		const candidates = await findCandidates(
+			[
+				[face(10, vector(1, 0.1, 0), { photoDate: 9_999 })],
+				[face(20, vector(1, 0.1, 0), { photoDate: 10_000 })],
+				[face(30, vector(1, 0.1, 0), { photoDate: null })],
+				[face(40, vector(0.1, 1, 0), { photoDate: 0 })],
+			],
+			refs,
+		);
+
+		expect(candidates.get(10)).toEqual({ memberId: 2, score: expect.any(Number), secondScore: null });
+		expect(candidates.get(20)?.memberId).toBe(1);
+		expect(candidates.get(30)?.memberId).toBe(1);
+		expect(candidates.get(40)?.memberId).toBe(2);
+	});
+
 	it("leaves out faces with a different dimension", async () => {
 		const candidates = await findCandidates([[face(10, vector(1, 0)), face(11, alice)]]);
 
@@ -132,6 +159,7 @@ const python = findPython();
 
 		const refs: VectorFaceReference[] = Array.from({ length: 60 }, (_, i) => ({
 			memberId: (i % 20) + 1,
+			minDate: null,
 			descriptor: randomVector(),
 		}));
 		let faceId = 1;
@@ -150,6 +178,7 @@ const python = findPython();
 			"test",
 			16,
 			refs.map((reference) => reference.memberId),
+			refs.map((reference) => reference.minDate),
 		);
 		const candidates = await run.findPhotosCandidates(photos);
 

@@ -14,11 +14,6 @@ import { Photo } from "../entities/photo.entity";
 import { FaceBox } from "../schema/detected-faces";
 import { parsePhotoExif, PhotoExif } from "../schema/photo-exif";
 
-const MAX_INPUT_PIXELS = 24000 * 24000;
-
-const FACE_IMAGE_SIZE = 256;
-const FACE_IMAGE_PADDING = 0.3;
-
 export interface PhotoMetadata {
 	width: number | null;
 	height: number | null;
@@ -101,7 +96,7 @@ export class PhotosFilesService {
 
 			try {
 				await this.files.fileAccessible(path);
-				const metadata = await sharp(path, { limitInputPixels: MAX_INPUT_PIXELS }).metadata();
+				const metadata = await sharp(path, { limitInputPixels: this.config.photos.maxInputPixels }).metadata();
 				if (!metadata.width || !metadata.height) continue;
 
 				const swapAxes = typeof metadata.orientation === "number" && metadata.orientation >= 5;
@@ -116,7 +111,7 @@ export class PhotosFilesService {
 	}
 
 	async extractMetadata(buffer: Buffer): Promise<PhotoMetadata> {
-		const image = sharp(buffer, { limitInputPixels: MAX_INPUT_PIXELS });
+		const image = sharp(buffer, { limitInputPixels: this.config.photos.maxInputPixels });
 		const [metadata, stats] = await Promise.all([image.metadata(), image.stats()]);
 
 		const bg =
@@ -147,7 +142,7 @@ export class PhotosFilesService {
 			return null;
 		}
 
-		const metadata = await sharp(path, { limitInputPixels: MAX_INPUT_PIXELS }).metadata();
+		const metadata = await sharp(path, { limitInputPixels: this.config.photos.maxInputPixels }).metadata();
 		return this.parseExif(metadata.exif);
 	}
 
@@ -173,7 +168,7 @@ export class PhotosFilesService {
 		await this.files.saveFile(this.getImagePath(albumId, photoId, PhotoSizes.original, ext), buffer);
 
 		for (const [name, size] of Object.entries(this.config.photos.sizes)) {
-			const resized = await sharp(buffer, { limitInputPixels: MAX_INPUT_PIXELS })
+			const resized = await sharp(buffer, { limitInputPixels: this.config.photos.maxInputPixels })
 				.rotate()
 				.resize(size.width, size.height, { fit: "inside" })
 				.toBuffer();
@@ -203,8 +198,8 @@ export class PhotosFilesService {
 		} catch {}
 
 		const image = await this.cropFace(photo, box, {
-			size: FACE_IMAGE_SIZE,
-			padding: FACE_IMAGE_PADDING,
+			size: this.config.photos.faceImage.size,
+			padding: this.config.photos.faceImage.padding,
 			sizes: [PhotoSizes.big, PhotoSizes.original],
 		});
 		await this.files.saveFile(path, image);
@@ -230,7 +225,7 @@ export class PhotosFilesService {
 				continue;
 			}
 
-			const oriented = await sharp(path, { limitInputPixels: MAX_INPUT_PIXELS })
+			const oriented = await sharp(path, { limitInputPixels: this.config.photos.maxInputPixels })
 				.rotate()
 				.toBuffer({ resolveWithObject: true });
 

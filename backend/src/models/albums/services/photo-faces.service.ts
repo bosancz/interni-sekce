@@ -21,8 +21,6 @@ import {
 } from "../schema/detected-faces";
 import { PhotosFilesService } from "./photos-files.service";
 
-const ASSIGNED_OVERLAP_IOU = 0.5;
-
 export function faceIou(a: FaceBox, b: FaceBox) {
 	const left = Math.max(a.x, b.x);
 	const top = Math.max(a.y, b.y);
@@ -318,7 +316,7 @@ export class PhotoFacesService {
 				const match = assigned
 					.filter((a) => !matched.has(a.id))
 					.map((a) => ({ face: a, iou: faceIou(a, face) }))
-					.filter((m) => m.iou > ASSIGNED_OVERLAP_IOU)
+					.filter((m) => m.iou > this.config.faces.assignedOverlapIou)
 					.sort((a, b) => b.iou - a.iou)[0];
 
 				if (match) {

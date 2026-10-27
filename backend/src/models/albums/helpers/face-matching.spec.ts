@@ -1,13 +1,8 @@
 import { PhotoFaceAssignment } from "../schema/detected-faces";
-import {
-	decideFaceMatches,
-	FACE_MATCH_MIN_DETECTION_SCORE,
-	FACE_MATCH_SETTINGS,
-	FACE_SUGGESTION_MIN_SCORE,
-	FaceCandidate,
-	MatchFace,
-	pickFaceSuggestions,
-} from "./face-matching";
+import { decideFaceMatches, FaceCandidate, MatchFace, pickFaceSuggestions } from "./face-matching";
+
+const SETTINGS = { threshold: 0.5, margin: 0.05, minDetectionScore: 0.9 };
+const SUGGESTIONS = { minScore: 0.36, margin: 0.1 };
 
 const DESCRIPTOR = Buffer.alloc(8);
 
@@ -31,20 +26,20 @@ function candidates(entries: [number, number, number, number | null][]) {
 
 describe("decideFaceMatches", () => {
 	it("assigns the candidate above the threshold with a clear lead", () => {
-		const result = decideFaceMatches([face(10)], candidates([[10, 1, 0.7, 0.2]]));
+		const result = decideFaceMatches([face(10)], candidates([[10, 1, 0.7, 0.2]]), SETTINGS);
 
 		expect(result.get(10)?.match).toEqual({ memberId: 1, score: 0.7 });
 	});
 
 	it("leaves faces below the threshold unassigned but keeps the candidate", () => {
-		const result = decideFaceMatches([face(10)], candidates([[10, 1, 0.4, 0.1]]));
+		const result = decideFaceMatches([face(10)], candidates([[10, 1, 0.4, 0.1]]), SETTINGS);
 
 		expect(result.get(10)?.match).toBeNull();
 		expect(result.get(10)?.candidate).toEqual({ memberId: 1, score: 0.4, secondScore: 0.1 });
 	});
 
 	it("leaves ambiguous faces unassigned", () => {
-		const result = decideFaceMatches([face(10)], candidates([[10, 1, 0.7, 0.68]]));
+		const result = decideFaceMatches([face(10)], candidates([[10, 1, 0.7, 0.68]]), SETTINGS);
 
 		expect(result.get(10)?.match).toBeNull();
 	});
@@ -56,6 +51,7 @@ describe("decideFaceMatches", () => {
 				[10, 1, 0.6, 0.1],
 				[11, 1, 0.8, 0.1],
 			]),
+			SETTINGS,
 		);
 
 		expect(result.get(11)?.match?.memberId).toBe(1);
@@ -69,21 +65,27 @@ describe("decideFaceMatches", () => {
 				[10, 1, 0.9, null],
 				[11, 2, 0.9, null],
 			]),
+			SETTINGS,
 		);
 
 		expect(result.size).toBe(0);
 	});
 
 	it("clears an auto face without a candidate", () => {
-		const result = decideFaceMatches([face(10, { memberId: 1, assignment: PhotoFaceAssignment.auto })], new Map());
+		const result = decideFaceMatches(
+			[face(10, { memberId: 1, assignment: PhotoFaceAssignment.auto })],
+			new Map(),
+			SETTINGS,
+		);
 
 		expect(result.get(10)).toEqual({ candidate: null, match: null });
 	});
 
 	it("leaves faces with a low detection score unassigned", () => {
 		const result = decideFaceMatches(
-			[face(10, { detectionScore: FACE_MATCH_MIN_DETECTION_SCORE - 0.01 })],
+			[face(10, { detectionScore: SETTINGS.minDetectionScore - 0.01 })],
 			candidates([[10, 1, 0.9, 0.1]]),
+			SETTINGS,
 		);
 
 		expect(result.get(10)?.match).toBeNull();
@@ -93,43 +95,51 @@ describe("decideFaceMatches", () => {
 		const faces = [face(10)];
 		const found = candidates([[10, 1, 0.8, 0.76]]);
 
-		expect(decideFaceMatches(faces, found, { ...FACE_MATCH_SETTINGS, threshold: 0.9 }).get(10)?.match).toBeNull();
+		expect(decideFaceMatches(faces, found, { ...SETTINGS, threshold: 0.9 }).get(10)?.match).toBeNull();
 		expect(
-			decideFaceMatches(faces, found, { ...FACE_MATCH_SETTINGS, threshold: 0.7, margin: 0 }).get(10)?.match
-				?.memberId,
+			decideFaceMatches(faces, found, { ...SETTINGS, threshold: 0.7, margin: 0 }).get(10)?.match?.memberId,
 		).toBe(1);
 	});
 });
 
 describe("pickFaceSuggestions", () => {
 	it("suggests only the best member when it clearly leads", () => {
-		const result = pickFaceSuggestions([
-			{ memberId: 2, score: 0.45 },
-			{ memberId: 1, score: 0.7 },
-		]);
+		const result = pickFaceSuggestions(
+			[
+				{ memberId: 2, score: 0.45 },
+				{ memberId: 1, score: 0.7 },
+			],
+			SUGGESTIONS,
+		);
 
 		expect(result.map((item) => item.memberId)).toEqual([1]);
 	});
 
 	it("suggests two members when they are close", () => {
-		const result = pickFaceSuggestions([
-			{ memberId: 2, score: 0.5 },
-			{ memberId: 1, score: 0.55 },
-			{ memberId: 3, score: 0.52 },
-		]);
+		const result = pickFaceSuggestions(
+			[
+				{ memberId: 2, score: 0.5 },
+				{ memberId: 1, score: 0.55 },
+				{ memberId: 3, score: 0.52 },
+			],
+			SUGGESTIONS,
+		);
 
 		expect(result.map((item) => item.memberId)).toEqual([1, 3]);
 	});
 
 	it("suggests nobody below the minimum score", () => {
-		expect(pickFaceSuggestions([{ memberId: 1, score: FACE_SUGGESTION_MIN_SCORE - 0.01 }])).toEqual([]);
+		expect(pickFaceSuggestions([{ memberId: 1, score: SUGGESTIONS.minScore - 0.01 }], SUGGESTIONS)).toEqual([]);
 	});
 
 	it("drops a close second below the minimum score", () => {
-		const result = pickFaceSuggestions([
-			{ memberId: 1, score: FACE_SUGGESTION_MIN_SCORE + 0.02 },
-			{ memberId: 2, score: FACE_SUGGESTION_MIN_SCORE - 0.02 },
-		]);
+		const result = pickFaceSuggestions(
+			[
+				{ memberId: 1, score: SUGGESTIONS.minScore + 0.02 },
+				{ memberId: 2, score: SUGGESTIONS.minScore - 0.02 },
+			],
+			SUGGESTIONS,
+		);
 
 		expect(result.map((item) => item.memberId)).toEqual([1]);
 	});

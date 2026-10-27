@@ -1,3 +1,4 @@
+import { Config } from "src/config";
 import { ConflictException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Not, Repository } from "typeorm";
@@ -5,8 +6,6 @@ import { PhotoCategory } from "../entities/photo-category.entity";
 import { Photo } from "../entities/photo.entity";
 import { PhotoCategoryInput } from "../schema/photo-embeddings";
 import { PhotoEmbeddingsService } from "./photo-embeddings.service";
-
-const MAX_CATEGORY_PHOTOS = 100_000;
 
 @Injectable()
 export class PhotoCategoriesService {
@@ -17,6 +16,7 @@ export class PhotoCategoriesService {
 	constructor(
 		@InjectRepository(PhotoCategory) private photoCategories: Repository<PhotoCategory>,
 		private photoEmbeddingsService: PhotoEmbeddingsService,
+		private config: Config,
 	) {}
 
 	async getCategories() {
@@ -89,7 +89,7 @@ export class PhotoCategoriesService {
 		const embedding = (await this.getEmbeddings()).get(category.id);
 		if (!embedding) return [];
 
-		const limit = Math.min(options.limit, MAX_CATEGORY_PHOTOS - options.offset);
+		const limit = Math.min(options.limit, this.config.photoContent.maxCategoryPhotos - options.offset);
 		if (limit <= 0) return [];
 
 		return this.photoEmbeddingsService.search(embedding, {

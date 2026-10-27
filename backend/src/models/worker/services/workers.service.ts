@@ -4,13 +4,11 @@ import { Config } from "src/config";
 import { WorkerHeartbeat, WorkerStatus } from "../schema/worker-heartbeat";
 import { WORKER_HEARTBEAT_PREFIX } from "../worker-queues";
 
-const STALE_AFTER_MS = 25_000;
-
 @Injectable()
 export class WorkersService implements OnModuleDestroy {
 	private redis: Redis;
 
-	constructor(config: Config) {
+	constructor(private config: Config) {
 		this.redis = new Redis(config.redis.url, { lazyConnect: true, maxRetriesPerRequest: 2 });
 	}
 
@@ -41,7 +39,7 @@ export class WorkersService implements OnModuleDestroy {
 			.filter((value): value is string => !!value)
 			.map((value) => JSON.parse(value) as WorkerHeartbeat)
 			.map((worker) =>
-				now - new Date(worker.updatedAt).getTime() > STALE_AFTER_MS
+				now - new Date(worker.updatedAt).getTime() > this.config.workers.staleAfterMs
 					? { ...worker, status: WorkerStatus.stale }
 					: worker,
 			)
