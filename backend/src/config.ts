@@ -232,6 +232,10 @@ const oauth = {
 	accessTtlS: 300,
 };
 
+const chronicles = {
+	maxUploadSize: 50 * 1024 * 1024,
+};
+
 @Injectable()
 export class Config {
 	announcements = announcements;
@@ -261,6 +265,7 @@ export class Config {
 	mapy = mapy;
 	photoContent = photoContent;
 	photos = photos;
+	chronicles = chronicles;
 }
 
 @Global()

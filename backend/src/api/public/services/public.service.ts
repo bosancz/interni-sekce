@@ -6,6 +6,7 @@ import { Photo } from "src/models/albums/entities/photo.entity";
 import { AlbumsRepository } from "src/models/albums/repositories/albums.repository";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
+import { getEventChroniclePath } from "src/models/events/helpers/event-chronicle";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { FilesService } from "src/models/files/services/files.service";
 import { BoardMember } from "src/models/members/entities/board-member.entity";
@@ -129,6 +130,13 @@ export class PublicService {
 		return this.serializeReport(event, new Map(groups.map((g) => [g.id, g.shortName])), coverPhotos);
 	}
 
+	async getReportChronicleFile(id: number): Promise<{ path: string; filename: string }> {
+		const event = await this.events.getPublicReport(id);
+		if (!event?.chronicleFileName) throw new NotFoundException();
+
+		return { path: getEventChroniclePath(this.config.fs.eventsDir, event), filename: event.chronicleFileName };
+	}
+
 	private serializeReport(event: Event, groupNameById: Map<number, string>, coverPhotos: Map<number, Photo>) {
 		const titlePhoto = event.album ? coverPhotos.get(event.album.id) : undefined;
 
@@ -145,6 +153,14 @@ export class PublicService {
 			reportPublishedAt: event.reportPublishedAt,
 			river: event.river,
 			waterKm: event.waterKm,
+			chronicle: event.chronicleFileName
+				? {
+						fileName: event.chronicleFileName,
+						size: event.chronicleSize,
+						updatedAt: event.chronicleUpdatedAt,
+						url: `${this.apiBase}/public/reports/${event.id}/chronicle`,
+					}
+				: null,
 			album: event.album
 				? {
 						_id: String(event.album.id),

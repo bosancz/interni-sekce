@@ -319,6 +319,9 @@ export class MongoImportService {
 				report: null,
 				publicReport: null,
 				reportPublishedAt: null,
+				chronicleFileName: null,
+				chronicleSize: null,
+				chronicleUpdatedAt: null,
 				srcId: mongoEvent._id.toString(),
 				groups,
 			};

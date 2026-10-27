@@ -173,6 +173,9 @@ export class EventsRepository {
 				"events.report",
 				"events.publicReport",
 				"events.reportPublishedAt",
+				"events.chronicleFileName",
+				"events.chronicleSize",
+				"events.chronicleUpdatedAt",
 				"events.river",
 				"events.waterKm",
 			])
@@ -235,6 +238,10 @@ export class EventsRepository {
 				"events.reportPublishedAt",
 				"events.river",
 				"events.waterKm",
+				"events.srcId",
+				"events.chronicleFileName",
+				"events.chronicleSize",
+				"events.chronicleUpdatedAt",
 			])
 			.leftJoinAndSelect("events.groups", "groups")
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })

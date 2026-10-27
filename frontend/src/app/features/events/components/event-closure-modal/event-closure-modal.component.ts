@@ -33,7 +33,7 @@ export class EventClosureModalComponent extends InputModalComponent<{ accounting
 				label: reportPublished ? "Report publikován" : "Report nepublikován",
 				helper: reportPublished
 					? undefined
-					: this.event.publicReport
+					: this.event.publicReport || this.event.chronicleFileName
 						? "publikuj report v záložce Report"
 						: "vyplň a publikuj report akce",
 				done: reportPublished,

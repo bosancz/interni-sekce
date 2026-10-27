@@ -29,23 +29,106 @@
 		}
 	</bo-card-header>
 	<bo-card-content>
-		@if (event()?.publicReport; as publicReport) {
-			<div class="report-text" [innerHTML]="publicReport | markdown"></div>
-		} @else if (event()) {
-			<div class="bo-empty-state">
-				<ion-icon name="document-text-outline"></ion-icon>
-				<strong>Shrnutí je zatím prázdné</strong>
-				<p>Sepiš krátce, jak akce proběhla — pro rodiče a děti na webu.</p>
-				<ion-button
-					fill="solid"
-					color="warning"
-					[disabled]="!canEditReport()"
-					[boTooltip]="canEditReport() ? null : noPermissionText"
-					(click)="writePublicReport()"
-				>
-					Napsat shrnutí
-				</ion-button>
-			</div>
+		@if (event(); as event) {
+			@if (event.publicReport; as publicReport) {
+				<div class="report-text" [innerHTML]="publicReport | markdown"></div>
+			}
+			@if (event.chronicleFileName; as fileName) {
+				<div class="chronicle-file">
+					<ion-icon name="document-attach-outline" class="chronicle-icon"></ion-icon>
+					<button type="button" class="chronicle-name" (click)="openChronicle()" [disabled]="chronicleBusy()">
+						<strong>Kronika v PDF</strong>
+						<span
+							>{{ fileName }} · {{ event.chronicleSize ?? 0 | prettyBytes: { locale: "cs" } }} · nahráno
+							{{ event.chronicleUpdatedAt | date: "d. M. y" }}</span
+						>
+					</button>
+					@if (event._links.uploadEventReportChronicle.applicable) {
+						<ion-button
+							fill="clear"
+							color="medium"
+							[disabled]="!event._links.uploadEventReportChronicle.allowed || chronicleBusy()"
+							[boTooltip]="
+								event._links.uploadEventReportChronicle.allowed ? 'Nahrát jiné PDF' : noPermissionText
+							"
+							(click)="chronicleInput.click()"
+						>
+							<ion-icon name="cloud-upload-outline" slot="icon-only"></ion-icon>
+						</ion-button>
+					}
+					@if (event._links.deleteEventReportChronicle.applicable) {
+						<ion-button
+							fill="clear"
+							color="medium"
+							[disabled]="!event._links.deleteEventReportChronicle.allowed || chronicleBusy()"
+							[boTooltip]="
+								event._links.deleteEventReportChronicle.allowed ? 'Odebrat kroniku' : noPermissionText
+							"
+							(click)="deleteChronicle()"
+						>
+							<ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+						</ion-button>
+					}
+				</div>
+			}
+
+			@if (!event.publicReport && !event.chronicleFileName) {
+				<div class="bo-empty-state">
+					<ion-icon name="document-text-outline"></ion-icon>
+					<strong>Shrnutí je zatím prázdné</strong>
+					<p>Sepiš krátce, jak akce proběhla, nebo nahraj kroniku v PDF — pro rodiče a děti na webu.</p>
+					<div class="empty-actions">
+						<ion-button
+							fill="solid"
+							color="warning"
+							[disabled]="!canEditReport()"
+							[boTooltip]="canEditReport() ? null : noPermissionText"
+							(click)="writePublicReport()"
+						>
+							Napsat shrnutí
+						</ion-button>
+						<ion-button
+							fill="outline"
+							color="medium"
+							[disabled]="!event._links.uploadEventReportChronicle.allowed || chronicleBusy()"
+							[boTooltip]="event._links.uploadEventReportChronicle.allowed ? null : noPermissionText"
+							(click)="chronicleInput.click()"
+						>
+							<ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+							Nahrát kroniku v PDF
+						</ion-button>
+					</div>
+				</div>
+			} @else if (canEditReport() && (!event.publicReport || !event.chronicleFileName)) {
+				<div class="summary-add">
+					@if (!event.publicReport) {
+						<ion-button fill="outline" color="medium" size="small" (click)="writePublicReport()">
+							Napsat i textové shrnutí
+						</ion-button>
+					} @else {
+						<ion-button
+							fill="outline"
+							color="medium"
+							size="small"
+							[disabled]="chronicleBusy()"
+							(click)="chronicleInput.click()"
+						>
+							<ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+							Přidat kroniku v PDF
+						</ion-button>
+					}
+				</div>
+			}
+			@if (uploadingChronicle()) {
+				<p class="section-hint uploading">Nahrávám kroniku&hellip;</p>
+			}
+			<input
+				class="d-none"
+				type="file"
+				accept="application/pdf,.pdf"
+				#chronicleInput
+				(change)="uploadChronicle(chronicleInput)"
+			/>
 		} @else {
 			<p><ion-skeleton-text animated></ion-skeleton-text></p>
 		}

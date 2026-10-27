@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Delete,
@@ -13,17 +14,29 @@ import {
 	Put,
 	Query,
 	Req,
+	Res,
 	UnprocessableEntityException,
+	UploadedFile,
+	UseInterceptors,
 } from "@nestjs/common";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiBody, ApiConsumes, ApiProduces, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { Request, Response } from "express";
+import { readFile, unlink } from "fs/promises";
+import { Config, StaticConfig } from "src/config";
+import { contentDispositionFilename } from "src/helpers/sanitizefilename";
+import { FilesService } from "src/models/files/services/files.service";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import { Event } from "src/models/events/entities/event.entity";
+import { getEventChroniclePath } from "src/models/events/helpers/event-chronicle";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { NotificationsService } from "src/models/notifications/services/notifications.service";
 import {
+	EventReportChronicleDeletePermission,
+	EventReportChronicleEditPermission,
+	EventReportChronicleReadPermission,
 	EventReportEditPermission,
 	EventReportPublishPermission,
 	EventReportReadPermission,
@@ -51,7 +64,13 @@ export class EventsReportsController {
 	constructor(
 		private events: EventsRepository,
 		private notificationsService: NotificationsService,
+		private fileService: FilesService,
+		private config: Config,
 	) {}
+
+	private chroniclePath(event: Event): string {
+		return getEventChroniclePath(this.config.fs.eventsDir, event);
+	}
 
 	@Get(":eventId/report")
 	@AcLinks(EventReportReadPermission)
@@ -87,10 +106,101 @@ export class EventsReportsController {
 
 		if (publicReport !== undefined) {
 			data.publicReport = emptyToNull(publicReport);
-			if (!data.publicReport) data.reportPublishedAt = null;
+			if (!data.publicReport && !event.chronicleFileName) data.reportPublishedAt = null;
 		}
 
 		await this.events.updateEvent(eventId, data);
+	}
+
+	@Get(":eventId/report/chronicle")
+	@AcLinks(EventReportChronicleReadPermission)
+	@ApiProduces("application/pdf")
+	async getEventReportChronicle(
+		@Req() req: Request,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@Res() res: Response,
+	): Promise<void> {
+		const event = await this.events.getEvent(eventId);
+		if (!event) throw new NotFoundException();
+
+		EventReportChronicleReadPermission.canOrThrow(req, event);
+
+		res.setHeader("Content-Type", "application/pdf");
+		res.setHeader("Content-Disposition", `inline; ${contentDispositionFilename(event.chronicleFileName!)}`);
+
+		await new Promise<void>((resolve, reject) => {
+			res.sendFile(this.chroniclePath(event), (err) =>
+				err ? reject(new NotFoundException("Chronicle file not found.")) : resolve(),
+			);
+		});
+	}
+
+	@Put(":eventId/report/chronicle")
+	@HttpCode(204)
+	@AcLinks(EventReportChronicleEditPermission)
+	@ApiResponse({ status: 204 })
+	@UseInterceptors(
+		FileInterceptor("file", {
+			dest: "./uploads_temp",
+			limits: { fileSize: StaticConfig.chronicles.maxUploadSize },
+		}),
+	)
+	@ApiConsumes("multipart/form-data")
+	@ApiBody({ schema: { type: "object", properties: { file: { type: "string", format: "binary" } } } })
+	async uploadEventReportChronicle(
+		@Req() req: Request,
+		@Param("eventId", ParseIntPipe) eventId: number,
+		@UploadedFile() file: Express.Multer.File,
+	): Promise<void> {
+		if (!file) throw new BadRequestException("File not provided.");
+
+		let data: Buffer;
+		try {
+			data = await readFile(file.path);
+		} finally {
+			await unlink(file.path).catch(() => undefined);
+		}
+
+		const event = await this.events.getEvent(eventId);
+		if (!event) throw new NotFoundException();
+
+		EventReportChronicleEditPermission.canOrThrow(req, event);
+
+		if (data.subarray(0, 5).toString("latin1") !== "%PDF-") {
+			throw new UnprocessableEntityException("Chronicle must be a PDF file.");
+		}
+
+		const originalName = Buffer.from(file.originalname, "latin1").toString("utf8");
+		const fileName = /\.pdf$/i.test(originalName) ? originalName : `${originalName}.pdf`;
+
+		await this.fileService.saveFile(this.chroniclePath(event), data);
+		await this.events.updateEvent(eventId, {
+			chronicleFileName: fileName,
+			chronicleSize: data.length,
+			chronicleUpdatedAt: new Date(),
+		});
+	}
+
+	@Delete(":eventId/report/chronicle")
+	@HttpCode(204)
+	@AcLinks(EventReportChronicleDeletePermission)
+	@ApiResponse({ status: 204 })
+	async deleteEventReportChronicle(
+		@Req() req: Request,
+		@Param("eventId", ParseIntPipe) eventId: number,
+	): Promise<void> {
+		const event = await this.events.getEvent(eventId);
+		if (!event) throw new NotFoundException();
+
+		EventReportChronicleDeletePermission.canOrThrow(req, event);
+
+		await this.fileService.deleteFile(this.chroniclePath(event)).catch(() => undefined);
+		await this.events.updateEvent(eventId, {
+			chronicleFileName: null,
+			chronicleSize: null,
+			chronicleUpdatedAt: null,
+			...(event.publicReport?.trim() ? {} : { reportPublishedAt: null }),
+		});
 	}
 
 	@Post(":eventId/report/publish")
@@ -103,7 +213,8 @@ export class EventsReportsController {
 
 		EventReportPublishPermission.canOrThrow(req, event);
 
-		if (!event.publicReport?.trim()) throw new UnprocessableEntityException("Report has no public summary.");
+		if (!event.publicReport?.trim() && !event.chronicleFileName)
+			throw new UnprocessableEntityException("Report has neither a public summary nor a chronicle.");
 		const report = await this.events.getEventReport(eventId);
 		if (!report?.trim()) throw new UnprocessableEntityException("Report has no report for the revizor.");
 

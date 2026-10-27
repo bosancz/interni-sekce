@@ -156,6 +156,9 @@
 								@if (report.album; as album) {
 									<a [routerLink]="['/galerie/alba', album.id]">Fotky z akce</a>
 								}
+								@if (report.chronicleFileName) {
+									<a href="#" (click)="openChronicle(report.id, $event)">Kronika v PDF</a>
+								}
 							</div>
 						</div>
 					</bo-card-content>

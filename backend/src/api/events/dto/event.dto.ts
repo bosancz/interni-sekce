@@ -43,6 +43,9 @@ export class EventResponse implements Omit<Event, "setLeaders" | "srcId" | "repo
 	@ApiPropertyOptional({ type: "string" }) publishedAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) cancelledAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) reportPublishedAt!: Date | string | null;
+	chronicleFileName!: string | null;
+	chronicleSize!: number | null;
+	@ApiPropertyOptional({ type: "string" }) chronicleUpdatedAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) announcementSentAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) accountingSentAt!: Date | string | null;
 
