@@ -2,6 +2,7 @@ import { Logger, NestApplicationOptions, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import cookieParser from "cookie-parser";
+import { NextFunction, Request, Response } from "express";
 import { AppModule } from "./app.module";
 import { Config, StaticConfig } from "./config";
 import { refreshDatabaseVersions } from "./database/refresh-database-versions";
@@ -33,6 +34,11 @@ async function bootstrap() {
 	};
 
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, nestOptions);
+
+	app.use((req: Request, res: Response, next: NextFunction) => {
+		res.setHeader("X-Robots-Tag", "noindex, nofollow");
+		next();
+	});
 
 	const config = app.get(Config);
 

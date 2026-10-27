@@ -22,6 +22,7 @@
 							"src/assets",
 							"src/manifest.json",
 							"src/sw.js",
+							"src/robots.txt",
 							"src/config.json",
 							{
 								"glob": "*.png",
