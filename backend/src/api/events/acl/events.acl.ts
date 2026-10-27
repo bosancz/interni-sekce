@@ -262,6 +262,32 @@ export const EventReportUnpublishPermission = new Permission({
 	applicable: ({ doc }) => !doc.deletedAt && !!doc.reportPublishedAt,
 });
 
+export const EventReportChronicleReadPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	allowed: {
+		revizor: true,
+		vedouci: true,
+	},
+	applicable: ({ doc }) => !!doc.chronicleFileName,
+});
+
+export const EventReportChronicleEditPermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventReportEditPermission,
+});
+
+export const EventReportChronicleDeletePermission = new Permission({
+	linkTo: EventResponse,
+	params: { eventId: "id" },
+
+	inherit: EventReportEditPermission,
+	applicable: ({ doc }) => !doc.deletedAt && !!doc.chronicleFileName,
+});
+
 export const EventAnnouncementGetPermission = new Permission({
 	linkTo: EventResponse,
 	params: { eventId: "id" },

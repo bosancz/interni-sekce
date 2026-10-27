@@ -91,6 +91,26 @@ export class PublicController {
 		return this.publicService.getReport(id);
 	}
 
+	@Get("reports/:id/chronicle")
+	@ApiProduces("application/pdf")
+	async getReportChronicle(
+		@Param("id", ParseIntPipe) id: number,
+		@Query("download") download: string | undefined,
+		@Res() res: Response,
+	): Promise<void> {
+		const { path, filename } = await this.publicService.getReportChronicleFile(id);
+
+		res.setHeader("Content-Type", "application/pdf");
+		res.setHeader(
+			"Content-Disposition",
+			`${download !== undefined ? "attachment" : "inline"}; ${contentDispositionFilename(filename)}`,
+		);
+
+		await new Promise<void>((resolve, reject) => {
+			res.sendFile(path, (err) => (err ? reject(new NotFoundException("Chronicle file not found.")) : resolve()));
+		});
+	}
+
 	@Get("groups")
 	@AcLinks(PublicGroupsPermission)
 	async getGroups() {

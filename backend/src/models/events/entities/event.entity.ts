@@ -96,6 +96,9 @@ export class Event {
 	@Column({ type: "varchar", nullable: true, select: false }) report?: string | null;
 	@Column({ type: "text", nullable: true }) publicReport!: string | null;
 	@Column({ type: "timestamp with time zone", nullable: true }) reportPublishedAt!: Date | string | null;
+	@Column({ type: "varchar", nullable: true }) chronicleFileName!: string | null;
+	@Column({ type: "integer", nullable: true }) chronicleSize!: number | null;
+	@Column({ type: "timestamp with time zone", nullable: true }) chronicleUpdatedAt!: Date | string | null;
 	@Column({ type: "timestamp with time zone", nullable: true }) announcementSentAt!: Date | string | null;
 	@Column({ type: "timestamp with time zone", nullable: true }) accountingSentAt!: Date | string | null;
 

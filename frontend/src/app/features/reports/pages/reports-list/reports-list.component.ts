@@ -27,6 +27,7 @@ import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { MarkdownPipe } from "src/app/shared/pipes/markdown.pipe";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { getParamsKey } from "src/helpers/list-loading";
+import { openPdf } from "src/helpers/open-pdf";
 import { SDK } from "src/sdk";
 
 const PAGE_SIZE = 20;
@@ -172,6 +173,17 @@ export class ReportsListComponent implements OnInit {
 				};
 			})
 			.sort((a, b) => b.total - a.total);
+	}
+
+	async openChronicle(eventId: number, event: MouseEvent) {
+		event.preventDefault();
+
+		try {
+			const response = await this.api.EventsApi.getEventReportChronicle(eventId, { responseType: "blob" });
+			openPdf(response.data as unknown as Blob);
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se otevřít kroniku.", { color: "warning" });
+		}
 	}
 
 	personDays(report: SDK.EventWithReportResponseWithLinks) {

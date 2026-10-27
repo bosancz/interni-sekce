@@ -8,11 +8,14 @@ import {
 	checkmarkCircleOutline,
 	chevronForwardOutline,
 	closeOutline,
+	cloudUploadOutline,
+	documentAttachOutline,
 	documentTextOutline,
 	globeOutline,
 	imagesOutline,
 	lockClosedOutline,
 	sendOutline,
+	trashOutline,
 } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -26,11 +29,15 @@ import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-butt
 import { EditButtonNumberComponent } from "src/app/shared/components/edit-button-number/edit-button-number.component";
 import { MarkdownEditorModalComponent } from "src/app/shared/components/markdown-editor-modal/markdown-editor-modal.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
+import { openPdf } from "src/helpers/open-pdf";
 import { SDK } from "src/sdk";
+import { PrettyBytesPipe } from "src/app/shared/pipes/pretty-bytes.pipe";
 import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 import { AlbumPublishModalComponent } from "../album-publish-modal/album-publish-modal.component";
 import { AlbumSelectorModalComponent, CREATE_ALBUM } from "../album-selector-modal/album-selector-modal.component";
 import { RiverSelectModalComponent } from "../river-select-modal/river-select-modal.component";
+
+const CHRONICLE_MAX_SIZE = 50 * 1024 * 1024;
 
 const REVIZOR_REPORT_TEMPLATE = "**Komplikace:**\n\n**Pochvaly:**\n\n**Stížnosti:**\n";
 
@@ -51,6 +58,7 @@ const REVIZOR_REPORT_TEMPLATE = "**Komplikace:**\n\n**Pochvaly:**\n\n**Stížnos
 		EditButtonMarkdownComponent,
 		EditButtonNumberComponent,
 		MarkdownPipe,
+		PrettyBytesPipe,
 		IonButton,
 		IonIcon,
 		IonItem,
@@ -73,7 +81,8 @@ export class EventReportComponent {
 	publishBlockedText = computed(() => {
 		const event = this.event();
 		if (!event?._links?.publishEventReport?.allowed) return this.noPermissionText;
-		if (!event.publicReport?.trim()) return "Nejdřív napiš shrnutí akce.";
+		if (!event.publicReport?.trim() && !event.chronicleFileName)
+			return "Nejdřív napiš shrnutí akce nebo nahraj kroniku v PDF.";
 		const report = this.report()?.trim();
 		if (!report || report === REVIZOR_REPORT_TEMPLATE.trim()) return "Nejdřív vyplň report pro revizora.";
 		return null;
@@ -82,6 +91,10 @@ export class EventReportComponent {
 	canPublish = computed(() => this.publishBlockedText() === null);
 
 	publishing = signal(false);
+
+	uploadingChronicle = signal(false);
+	deletingChronicle = signal(false);
+	chronicleBusy = computed(() => this.uploadingChronicle() || this.deletingChronicle());
 
 	addingAlbum = signal(false);
 	removingAlbum = signal(false);
@@ -100,6 +113,9 @@ export class EventReportComponent {
 			lockClosedOutline,
 			sendOutline,
 			checkmarkCircleOutline,
+			cloudUploadOutline,
+			documentAttachOutline,
+			trashOutline,
 		});
 
 		effect(() => {
@@ -216,6 +232,73 @@ export class EventReportComponent {
 			this.change.emit();
 		} catch (e) {
 			this.toastService.toast("Nepodařilo se uložit report.", { color: "warning" });
+		}
+	}
+
+	async uploadChronicle(input: HTMLInputElement) {
+		const event = this.event();
+		const file = input.files?.[0];
+		input.value = "";
+		if (!event || !file) return;
+
+		if (file.type !== "application/pdf" && !/\.pdf$/i.test(file.name)) {
+			this.toastService.toast("Kronika musí být PDF.", { color: "warning" });
+			return;
+		}
+
+		if (file.size > CHRONICLE_MAX_SIZE) {
+			this.toastService.toast("Kronika může mít nejvýš 50 MB.", { color: "warning" });
+			return;
+		}
+
+		this.uploadingChronicle.set(true);
+		try {
+			await this.api.EventsApi.uploadEventReportChronicle(event.id, file);
+			this.toastService.toast("Kronika nahrána.");
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se nahrát kroniku.", { color: "warning" });
+		} finally {
+			this.uploadingChronicle.set(false);
+		}
+	}
+
+	async openChronicle() {
+		const event = this.event();
+		if (!event) return;
+
+		const response = await this.api.EventsApi.getEventReportChronicle(event.id, { responseType: "blob" }).catch(
+			() => null,
+		);
+		if (!response) {
+			this.toastService.toast("Nepodařilo se otevřít kroniku.", { color: "warning" });
+			return;
+		}
+
+		openPdf(response.data as unknown as Blob);
+	}
+
+	async deleteChronicle() {
+		const event = this.event();
+		if (!event || this.chronicleBusy()) return;
+
+		const confirmed = await this.modalService.deleteConfirmationModal(
+			event.publicReport?.trim()
+				? `Opravdu chceš odebrat kroniku „${event.chronicleFileName}“? Z webu zmizí i u publikovaného shrnutí.`
+				: `Opravdu chceš odebrat kroniku „${event.chronicleFileName}“? Bez textového shrnutí se tím zruší i publikování reportu.`,
+			{ header: "Odebrat kroniku?", buttonText: "Odebrat" },
+		);
+		if (!confirmed) return;
+
+		this.deletingChronicle.set(true);
+		try {
+			await this.api.EventsApi.deleteEventReportChronicle(event.id);
+			this.toastService.toast("Kronika odebrána.");
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se odebrat kroniku.", { color: "warning" });
+		} finally {
+			this.deletingChronicle.set(false);
 		}
 	}
 
