@@ -160,7 +160,27 @@ const faces = {
 	notifyCron: process.env["FACES_NOTIFY_CRON"] ?? "0 7 * * *",
 	timezone: process.env["FACES_TIMEZONE"] ?? "Europe/Prague",
 	batchSize: process.env["FACES_BATCH_SIZE"] ? parseInt(process.env["FACES_BATCH_SIZE"], 10) : 300,
-	matchMinAgeYears: 5,
+	matching: {
+		threshold: 0.5,
+		margin: 0.05,
+		minDetectionScore: 0.9,
+		minAgeYears: 5,
+		photosChunk: 500,
+		changesDebounceMs: 2000,
+		workerKeysTtlS: 3600,
+		workerJobTimeoutMs: 120_000,
+	},
+	suggestions: {
+		minScore: 0.36,
+		margin: 0.1,
+	},
+	analysis: {
+		targetPrecision: 0.95,
+		minDecisions: 50,
+		minWrongCandidates: 10,
+		sweep: { from: 0.3, to: 0.8, step: 0.01 },
+	},
+	assignedOverlapIou: 0.5,
 };
 
 const backups = {

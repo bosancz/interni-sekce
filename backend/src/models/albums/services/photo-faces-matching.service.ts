@@ -7,7 +7,6 @@ import { PhotoFace } from "../entities/photo-face.entity";
 import { Photo } from "../entities/photo.entity";
 import {
 	decideFaceMatches,
-	FACE_MATCH_SETTINGS,
 	FaceMatch,
 	FaceMatchSettings,
 	FacesMatchStats,
@@ -18,9 +17,6 @@ import { analyzeFaceMatching, FaceMatchDecision } from "../helpers/face-matching
 import { FacesMatchTrigger, PhotoFaceAssignment } from "../schema/detected-faces";
 import { VectorFaceReference } from "../helpers/face-matching-worker";
 import { FaceMatchingWorkerService } from "./face-matching-worker.service";
-
-const PHOTOS_CHUNK = 500;
-const FACE_CHANGES_DEBOUNCE_MS = 2000;
 
 const PHOTO_DATE = `coalesce(a.date_till, a.date_from, (p.timestamp AT TIME ZONE 'Europe/Prague')::date)`;
 
@@ -81,7 +77,8 @@ export class PhotoFacesMatchingService {
 
 	async getSettings(): Promise<FaceMatchSettings> {
 		const stored = await this.faceMatchingSettings.getFaceMatchingSettings();
-		return { ...FACE_MATCH_SETTINGS, threshold: stored?.threshold ?? FACE_MATCH_SETTINGS.threshold };
+		const { threshold, margin, minDetectionScore } = this.config.faces.matching;
+		return { threshold: stored?.threshold ?? threshold, margin, minDetectionScore };
 	}
 
 	async updateSettings(data: Pick<FaceMatchSettings, "threshold">): Promise<FaceMatchSettings> {
@@ -104,7 +101,7 @@ export class PhotoFacesMatchingService {
 			[PhotoFaceAssignment.manual],
 		);
 
-		return analyzeFaceMatching(decisions, await this.getSettings());
+		return analyzeFaceMatching(decisions, await this.getSettings(), this.config.faces.analysis);
 	}
 
 	async getFacesStats() {
@@ -140,10 +137,10 @@ export class PhotoFacesMatchingService {
 			GROUP BY r.member_id
 			ORDER BY min(r.descriptor <#> f.descriptor), r.member_id
 			LIMIT 2`,
-			[face.id, PhotoFaceAssignment.manual, this.config.faces.matchMinAgeYears],
+			[face.id, PhotoFaceAssignment.manual, this.config.faces.matching.minAgeYears],
 		);
 
-		const suggestions = pickFaceSuggestions(candidates);
+		const suggestions = pickFaceSuggestions(candidates, this.config.faces.suggestions);
 		if (!suggestions.length) return [];
 
 		const members = await this.dataSource
@@ -199,7 +196,7 @@ export class PhotoFacesMatchingService {
 		if (previousMemberId !== null) this.pending.memberIds.add(previousMemberId);
 
 		clearTimeout(this.pendingTimer);
-		this.pendingTimer = setTimeout(() => this.flushChanges(), FACE_CHANGES_DEBOUNCE_MS);
+		this.pendingTimer = setTimeout(() => this.flushChanges(), this.config.faces.matching.changesDebounceMs);
 	}
 
 	private flushChanges() {
@@ -278,7 +275,7 @@ export class PhotoFacesMatchingService {
 			FROM photo_faces f
 			JOIN members m ON m.id = f.member_id
 			WHERE f.assignment = $1 AND f.descriptor IS NOT NULL`,
-			[PhotoFaceAssignment.manual, this.config.faces.matchMinAgeYears],
+			[PhotoFaceAssignment.manual, this.config.faces.matching.minAgeYears],
 		);
 	}
 
@@ -288,11 +285,12 @@ export class PhotoFacesMatchingService {
 		if (!photoIds.length) return stats;
 
 		const settings = await this.getSettings();
+		const { photosChunk } = this.config.faces.matching;
 
 		const workerRun = await this.faceMatchingWorkerService.start(await this.loadReferences());
 
 		try {
-			for (let i = 0; i < photoIds.length; i += PHOTOS_CHUNK) {
+			for (let i = 0; i < photoIds.length; i += photosChunk) {
 				const rows: MatchFaceRow[] = await this.dataSource.query(
 					`SELECT f.id, f.photo_id AS "photoId", f.member_id AS "memberId", f.assignment,
 						f.match_score AS "matchScore", f.score AS "detectionScore",
@@ -304,7 +302,7 @@ export class PhotoFacesMatchingService {
 					JOIN photos p ON p.id = f.photo_id
 					LEFT JOIN albums a ON a.id = p.album_id
 					WHERE f.photo_id = ANY($1)`,
-					[photoIds.slice(i, i + PHOTOS_CHUNK)],
+					[photoIds.slice(i, i + photosChunk)],
 				);
 
 				const byPhoto = new Map<number, MatchFaceRow[]>();
@@ -335,7 +333,7 @@ export class PhotoFacesMatchingService {
 					if (update.change && updated.has(update.id)) stats[update.change]++;
 				}
 
-				if (progress) progress.processed = Math.min(photoIds.length, i + PHOTOS_CHUNK);
+				if (progress) progress.processed = Math.min(photoIds.length, i + photosChunk);
 			}
 		} finally {
 			await workerRun.close().catch(() => undefined);

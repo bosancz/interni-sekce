@@ -17,9 +17,6 @@ import {
 } from "../helpers/face-matching-worker";
 import { MatchFacesJob, MatchFacesResult } from "../schema/detected-faces";
 
-const KEYS_TTL_S = 3600;
-const JOB_TIMEOUT_MS = 120_000;
-
 @Injectable()
 export class FaceMatchingWorkerService implements FaceMatchingJobRunner, OnModuleDestroy {
 	private events?: QueueEvents;
@@ -63,7 +60,7 @@ export class FaceMatchingWorkerService implements FaceMatchingJobRunner, OnModul
 			run.referencesKey,
 			joinVectors(valid.map((reference) => reference.descriptor)),
 			"EX",
-			KEYS_TTL_S,
+			this.config.faces.matching.workerKeysTtlS,
 		);
 
 		return run;
@@ -74,7 +71,7 @@ export class FaceMatchingWorkerService implements FaceMatchingJobRunner, OnModul
 		await this.events.waitUntilReady();
 
 		const facesKey = `${this.queue.name}:${name}`;
-		await this.redis.set(facesKey, joinVectors(data.faces), "EX", KEYS_TTL_S);
+		await this.redis.set(facesKey, joinVectors(data.faces), "EX", this.config.faces.matching.workerKeysTtlS);
 
 		try {
 			const job = await this.queue.add(
@@ -92,7 +89,10 @@ export class FaceMatchingWorkerService implements FaceMatchingJobRunner, OnModul
 			);
 
 			try {
-				const result: MatchFacesResult = await job.waitUntilFinished(this.events, JOB_TIMEOUT_MS);
+				const result: MatchFacesResult = await job.waitUntilFinished(
+					this.events,
+					this.config.faces.matching.workerJobTimeoutMs,
+				);
 				if (result.memberIds.length !== data.faces.length)
 					throw new Error("Worker returned a wrong number of faces.");
 				return result;

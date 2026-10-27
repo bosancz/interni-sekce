@@ -2,24 +2,16 @@ import { PhotoFaceAssignment } from "../schema/detected-faces";
 
 export const FACE_DESCRIPTOR_DIMENSION = 128;
 
-export const FACE_MATCH_THRESHOLD = 0.5;
-export const FACE_MATCH_MARGIN = 0.05;
-export const FACE_MATCH_MIN_DETECTION_SCORE = 0.9;
-
-export const FACE_SUGGESTION_MIN_SCORE = 0.36;
-export const FACE_SUGGESTION_MARGIN = 0.1;
-
 export interface FaceMatchSettings {
 	threshold: number;
 	margin: number;
 	minDetectionScore: number;
 }
 
-export const FACE_MATCH_SETTINGS: FaceMatchSettings = {
-	threshold: FACE_MATCH_THRESHOLD,
-	margin: FACE_MATCH_MARGIN,
-	minDetectionScore: FACE_MATCH_MIN_DETECTION_SCORE,
-};
+export interface FaceSuggestionSettings {
+	minScore: number;
+	margin: number;
+}
 
 export interface MatchFace {
 	id: number;
@@ -65,7 +57,7 @@ export function getManualMembers(faces: Pick<MatchFace, "memberId" | "assignment
 export function decideFaceMatches(
 	faces: Pick<MatchFace, "id" | "assignment" | "detectionScore" | "descriptor">[],
 	candidatesByFace: Map<number, FaceCandidate | null>,
-	settings: FaceMatchSettings = FACE_MATCH_SETTINGS,
+	settings: FaceMatchSettings,
 ): Map<number, FaceMatchResult> {
 	const candidates = getMatchableFaces(faces);
 	const proposals: { faceId: number; memberId: number; score: number }[] = [];
@@ -95,7 +87,7 @@ export function isMatch(
 	score: number,
 	secondScore: number | null,
 	detectionScore: number | null,
-	settings: FaceMatchSettings = FACE_MATCH_SETTINGS,
+	settings: FaceMatchSettings,
 ) {
 	if (score < settings.threshold) return false;
 	if (secondScore !== null && score - secondScore < settings.margin) return false;
@@ -103,12 +95,12 @@ export function isMatch(
 	return true;
 }
 
-export function pickFaceSuggestions(candidates: FaceMatch[]): FaceMatch[] {
+export function pickFaceSuggestions(candidates: FaceMatch[], settings: FaceSuggestionSettings): FaceMatch[] {
 	const [first, second] = [...candidates]
-		.filter((candidate) => candidate.score >= FACE_SUGGESTION_MIN_SCORE)
+		.filter((candidate) => candidate.score >= settings.minScore)
 		.sort((a, b) => b.score - a.score);
 
 	if (!first) return [];
-	if (!second || first.score - second.score >= FACE_SUGGESTION_MARGIN) return [first];
+	if (!second || first.score - second.score >= settings.margin) return [first];
 	return [first, second];
 }
