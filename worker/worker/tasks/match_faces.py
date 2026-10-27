@@ -25,11 +25,21 @@ def _matrix(data: bytes | None, dimensions: int) -> np.ndarray:
     return np.frombuffer(data, dtype=">f4").astype(np.float32).reshape(-1, dimensions)
 
 
+def _days(values: list[int | None] | None, count: int, missing: float) -> np.ndarray:
+    if values is None:
+        return np.full(count, missing)
+    if len(values) != count:
+        raise ValueError("Dates do not match their embeddings")
+    return np.array([missing if value is None else float(value) for value in values])
+
+
 def match(
     references: np.ndarray,
     reference_members: np.ndarray,
     faces: np.ndarray,
     excluded: list[tuple[int, int]],
+    reference_min_dates: list[int | None] | None = None,
+    face_dates: list[int | None] | None = None,
 ) -> tuple[list[int | None], list[float | None], list[float | None]]:
     count = faces.shape[0]
     best_members: list[int | None] = [None] * count
@@ -45,6 +55,9 @@ def match(
     members = sorted_members[starts]
     member_index = {int(member): index for index, member in enumerate(members)}
 
+    min_dates = _days(reference_min_dates, reference_members.shape[0], -np.inf)[order][starts]
+    dates = _days(face_dates, count, np.inf)
+
     excluded_by_face: dict[int, list[int]] = {}
     for face, member in excluded:
         index = member_index.get(int(member))
@@ -55,6 +68,7 @@ def match(
     for start in range(0, count, block):
         end = min(count, start + block)
         scores = np.maximum.reduceat(faces[start:end] @ references.T, starts, axis=1)
+        scores[min_dates[None, :] > dates[start:end, None]] = -np.inf
 
         for face in range(start, end):
             indexes = excluded_by_face.get(face)
@@ -90,5 +104,13 @@ async def run(data: dict[str, Any], results: Queue) -> dict[str, Any]:
         raise ValueError("Reference embeddings do not match their members")
 
     excluded = [(int(face), int(member)) for face, member in data.get("excluded", [])]
-    members, scores, second_scores = await asyncio.to_thread(match, references, reference_members, faces, excluded)
+    members, scores, second_scores = await asyncio.to_thread(
+        match,
+        references,
+        reference_members,
+        faces,
+        excluded,
+        data.get("referenceMinDates"),
+        data.get("faceDates"),
+    )
     return {"memberIds": members, "scores": scores, "secondScores": second_scores}

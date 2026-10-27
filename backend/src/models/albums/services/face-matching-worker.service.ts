@@ -8,6 +8,7 @@ import { WorkerStatus } from "src/models/worker/schema/worker-heartbeat";
 import { WorkersService } from "src/models/worker/services/workers.service";
 import { WORKER_TASK_QUEUE, WorkerTasks } from "src/models/worker/worker-queues";
 import {
+	FaceMatchingJobData,
 	FaceMatchingJobRunner,
 	FaceMatchingWorkerRun,
 	joinVectors,
@@ -55,6 +56,7 @@ export class FaceMatchingWorkerService implements FaceMatchingJobRunner, OnModul
 			randomUUID(),
 			dimensions,
 			valid.map((reference) => reference.memberId),
+			valid.map((reference) => reference.minDate),
 		);
 
 		await this.redis.set(
@@ -67,7 +69,7 @@ export class FaceMatchingWorkerService implements FaceMatchingJobRunner, OnModul
 		return run;
 	}
 
-	async runJob(run: FaceMatchingWorkerRun, name: string, data: { faces: Buffer[]; excluded: [number, number][] }) {
+	async runJob(run: FaceMatchingWorkerRun, name: string, data: FaceMatchingJobData) {
 		this.events ??= new QueueEvents(this.queue.name, { connection: { url: this.config.redis.url } });
 		await this.events.waitUntilReady();
 
@@ -81,7 +83,9 @@ export class FaceMatchingWorkerService implements FaceMatchingJobRunner, OnModul
 					dimensions: run.dimensions,
 					referencesKey: run.referencesKey,
 					referenceMemberIds: run.referenceMemberIds,
+					referenceMinDates: run.referenceMinDates,
 					facesKey,
+					faceDates: data.faceDates,
 					excluded: data.excluded,
 				},
 				{ removeOnComplete: { age: 60 }, removeOnFail: { age: 3600 } },

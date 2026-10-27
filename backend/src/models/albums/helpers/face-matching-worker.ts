@@ -6,22 +6,28 @@ const VECTOR_HEADER_BYTES = 4;
 
 export interface VectorFaceReference {
 	memberId: number;
+	minDate: number | null;
 	descriptor: Buffer;
 }
 
 export interface VectorFace {
 	id: number;
+	date: number | null;
 	descriptor: Buffer;
 }
 
-export type VectorPhotoFace = Pick<MatchFace, "id" | "memberId" | "assignment" | "descriptor">;
+export type VectorPhotoFace = Pick<MatchFace, "id" | "memberId" | "assignment" | "descriptor"> & {
+	photoDate?: number | null;
+};
+
+export interface FaceMatchingJobData {
+	faces: Buffer[];
+	faceDates: (number | null)[];
+	excluded: [number, number][];
+}
 
 export interface FaceMatchingJobRunner {
-	runJob(
-		run: FaceMatchingWorkerRun,
-		name: string,
-		data: { faces: Buffer[]; excluded: [number, number][] },
-	): Promise<MatchFacesResult>;
+	runJob(run: FaceMatchingWorkerRun, name: string, data: FaceMatchingJobData): Promise<MatchFacesResult>;
 	deleteKeys(keys: string[]): Promise<void>;
 }
 
@@ -33,6 +39,7 @@ export class FaceMatchingWorkerRun {
 		readonly id: string,
 		readonly dimensions: number,
 		readonly referenceMemberIds: number[],
+		readonly referenceMinDates: (number | null)[],
 	) {}
 
 	get referencesKey() {
@@ -47,7 +54,7 @@ export class FaceMatchingWorkerRun {
 			const manualMembers = getManualMembers(photoFaces);
 			for (const face of getMatchableFaces(photoFaces)) {
 				for (const memberId of manualMembers) excluded.push([faces.length, memberId]);
-				faces.push({ id: face.id, descriptor: face.descriptor! });
+				faces.push({ id: face.id, date: face.photoDate ?? null, descriptor: face.descriptor! });
 			}
 		}
 
@@ -68,6 +75,7 @@ export class FaceMatchingWorkerRun {
 
 		const result = await this.service.runJob(this, `${this.id}:faces:${this.jobs++}`, {
 			faces: sent.map((index) => faces[index].descriptor),
+			faceDates: sent.map((index) => faces[index].date),
 			excluded: excluded
 				.filter(([index]) => indexes[index] !== undefined)
 				.map(([index, memberId]) => [indexes[index], memberId]),

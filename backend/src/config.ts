@@ -160,6 +160,7 @@ const faces = {
 	notifyCron: process.env["FACES_NOTIFY_CRON"] ?? "0 7 * * *",
 	timezone: process.env["FACES_TIMEZONE"] ?? "Europe/Prague",
 	batchSize: process.env["FACES_BATCH_SIZE"] ? parseInt(process.env["FACES_BATCH_SIZE"], 10) : 300,
+	matchMinAgeYears: 5,
 };
 
 const backups = {

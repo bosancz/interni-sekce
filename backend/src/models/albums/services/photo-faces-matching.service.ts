@@ -1,4 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { Config } from "src/config";
 import { Member } from "src/models/members/entities/member.entity";
 import { FaceMatchingSettingsRepository } from "src/models/settings/repositories/face-matching-settings.repository";
 import { DataSource, In } from "typeorm";
@@ -21,6 +22,8 @@ import { FaceMatchingWorkerService } from "./face-matching-worker.service";
 const PHOTOS_CHUNK = 500;
 const FACE_CHANGES_DEBOUNCE_MS = 2000;
 
+const PHOTO_DATE = `coalesce(a.date_till, a.date_from, (p.timestamp AT TIME ZONE 'Europe/Prague')::date)`;
+
 interface FaceMatchUpdate {
 	id: number;
 	memberId: number | null;
@@ -33,6 +36,7 @@ interface FaceMatchUpdate {
 
 type MatchFaceRow = MatchFace & {
 	photoId: number;
+	photoDate: number | null;
 	candidateMemberId: number | null;
 	candidateScore: number | null;
 	candidateSecondScore: number | null;
@@ -72,6 +76,7 @@ export class PhotoFacesMatchingService {
 		private dataSource: DataSource,
 		private faceMatchingSettings: FaceMatchingSettingsRepository,
 		private faceMatchingWorkerService: FaceMatchingWorkerService,
+		private config: Config,
 	) {}
 
 	async getSettings(): Promise<FaceMatchSettings> {
@@ -121,9 +126,13 @@ export class PhotoFacesMatchingService {
 		const candidates: FaceMatch[] = await this.dataSource.query(
 			`SELECT r.member_id AS "memberId", -min(r.descriptor <#> f.descriptor) AS "score"
 			FROM photo_faces f
+			JOIN photos p ON p.id = f.photo_id
+			LEFT JOIN albums a ON a.id = p.album_id
 			JOIN photo_faces r ON r.assignment = $2 AND r.member_id IS NOT NULL AND r.descriptor IS NOT NULL
 				AND r.id <> f.id
+			JOIN members m ON m.id = r.member_id
 			WHERE f.id = $1 AND f.descriptor IS NOT NULL
+				AND (m.birthday IS NULL OR m.birthday + make_interval(years => $3) <= ${PHOTO_DATE})
 				AND NOT EXISTS (
 					SELECT 1 FROM photo_faces o
 					WHERE o.photo_id = f.photo_id AND o.id <> f.id AND o.member_id = r.member_id
@@ -131,7 +140,7 @@ export class PhotoFacesMatchingService {
 			GROUP BY r.member_id
 			ORDER BY min(r.descriptor <#> f.descriptor), r.member_id
 			LIMIT 2`,
-			[face.id, PhotoFaceAssignment.manual],
+			[face.id, PhotoFaceAssignment.manual, this.config.faces.matchMinAgeYears],
 		);
 
 		const suggestions = pickFaceSuggestions(candidates);
@@ -264,9 +273,12 @@ export class PhotoFacesMatchingService {
 
 	private async loadReferences(): Promise<VectorFaceReference[]> {
 		return this.dataSource.query(
-			`SELECT member_id AS "memberId", vector_send(descriptor) AS "descriptor" FROM photo_faces
-			WHERE assignment = $1 AND member_id IS NOT NULL AND descriptor IS NOT NULL`,
-			[PhotoFaceAssignment.manual],
+			`SELECT f.member_id AS "memberId", (m.birthday + make_interval(years => $2))::date - DATE '1970-01-01' AS "minDate",
+				vector_send(f.descriptor) AS "descriptor"
+			FROM photo_faces f
+			JOIN members m ON m.id = f.member_id
+			WHERE f.assignment = $1 AND f.descriptor IS NOT NULL`,
+			[PhotoFaceAssignment.manual, this.config.faces.matchMinAgeYears],
 		);
 	}
 
@@ -282,11 +294,16 @@ export class PhotoFacesMatchingService {
 		try {
 			for (let i = 0; i < photoIds.length; i += PHOTOS_CHUNK) {
 				const rows: MatchFaceRow[] = await this.dataSource.query(
-					`SELECT id, photo_id AS "photoId", member_id AS "memberId", assignment,
-						match_score AS "matchScore", score AS "detectionScore", vector_send(descriptor) AS "descriptor",
-						candidate_member_id AS "candidateMemberId", candidate_score AS "candidateScore",
-						candidate_second_score AS "candidateSecondScore"
-					FROM photo_faces WHERE photo_id = ANY($1)`,
+					`SELECT f.id, f.photo_id AS "photoId", f.member_id AS "memberId", f.assignment,
+						f.match_score AS "matchScore", f.score AS "detectionScore",
+						vector_send(f.descriptor) AS "descriptor",
+						f.candidate_member_id AS "candidateMemberId", f.candidate_score AS "candidateScore",
+						f.candidate_second_score AS "candidateSecondScore",
+						${PHOTO_DATE} - DATE '1970-01-01' AS "photoDate"
+					FROM photo_faces f
+					JOIN photos p ON p.id = f.photo_id
+					LEFT JOIN albums a ON a.id = p.album_id
+					WHERE f.photo_id = ANY($1)`,
 					[photoIds.slice(i, i + PHOTOS_CHUNK)],
 				);
 
