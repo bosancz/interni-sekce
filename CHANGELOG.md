@@ -1,3 +1,7 @@
+## v4.31.2 — 2026-10-28
+
+- <span class="changelog-type" title="patch">🚸</span> [Tlačítko Publikovat report přejmenováno na Odeslat report](https://github.com/bosancz/interni-sekce/commit/bcb874f89a95f08f3c88e1e2fd65915ea5759d0d) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.31.1 — 2026-10-28
 
 - <span class="changelog-type" title="patch">🚸</span> [Rozdělit Uzavření v ukazateli průběhu akce na Účtování a Report](https://github.com/bosancz/interni-sekce/commit/abf8283bf9daaed14026976220e38ae55586f2ad) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
