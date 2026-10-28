@@ -43,19 +43,6 @@
 							{{ event.chronicleUpdatedAt | date: "d. M. y" }}</span
 						>
 					</button>
-					@if (event._links.uploadEventReportChronicle.applicable) {
-						<ion-button
-							fill="clear"
-							color="medium"
-							[disabled]="!event._links.uploadEventReportChronicle.allowed || chronicleBusy()"
-							[boTooltip]="
-								event._links.uploadEventReportChronicle.allowed ? 'Nahrát jiné PDF' : noPermissionText
-							"
-							(click)="chronicleInput.click()"
-						>
-							<ion-icon name="cloud-upload-outline" slot="icon-only"></ion-icon>
-						</ion-button>
-					}
 					@if (event._links.deleteEventReportChronicle.applicable) {
 						<ion-button
 							fill="clear"
