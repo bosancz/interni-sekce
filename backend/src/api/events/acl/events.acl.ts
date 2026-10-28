@@ -278,6 +278,7 @@ export const EventReportChronicleEditPermission = new Permission({
 	params: { eventId: "id" },
 
 	inherit: EventReportEditPermission,
+	applicable: ({ doc }) => !doc.deletedAt && !doc.chronicleFileName,
 });
 
 export const EventReportChronicleDeletePermission = new Permission({
