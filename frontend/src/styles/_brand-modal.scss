@@ -14,7 +14,6 @@
 	--bm-border-soft: #ecedf4;
 	--bm-checkbox-border: #a9aec9;
 	--bm-checked-bg: #f2f4fc;
-	--bm-dot-idle: #c3c6d8;
 	--bm-chip-bg: #e6e8f2;
 	--bm-chip-fg: #7a7f9c;
 
@@ -36,7 +35,6 @@
 	--bm-border-soft: #2a2d3a;
 	--bm-checkbox-border: #5a5f78;
 	--bm-checked-bg: rgba(74, 88, 176, 0.22);
-	--bm-dot-idle: #4a4f63;
 	--bm-chip-bg: #2f3342;
 	--bm-chip-fg: #aab0c2;
 }
@@ -126,43 +124,6 @@
 	background: var(--bm-blue);
 }
 
-.bm-auto-row {
-	display: flex;
-	align-items: flex-start;
-	gap: 14px;
-	padding: 14px 16px;
-	border-radius: 14px;
-	background: var(--bm-surface-alt);
-}
-
-.bm-status-dot {
-	flex: 0 0 auto;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 24px;
-	height: 24px;
-	margin-top: 1px;
-	border-radius: 50%;
-	background: var(--bm-dot-idle);
-
-	ion-icon {
-		font-size: 14px;
-		color: #ffffff;
-	}
-
-	.bm-dash {
-		color: #ffffff;
-		font-size: 14px;
-		font-weight: 900;
-		line-height: 1;
-	}
-}
-
-.bm-auto-row.done .bm-status-dot {
-	background: var(--bm-green);
-}
-
 .bm-row-text {
 	display: flex;
 	flex-direction: column;
@@ -176,26 +137,17 @@
 	color: var(--bm-text);
 }
 
-.bm-auto-row .bm-row-label {
-	color: var(--bm-muted-2);
-}
-
-.bm-auto-row.done .bm-row-label {
-	color: #4a4f70;
-}
-
-:host-context(body.dark) .bm-auto-row.done .bm-row-label {
-	color: var(--bm-text);
-}
-
 .bm-row-helper {
 	font-size: 13.5px;
 	line-height: 1.45;
 	color: var(--bm-muted);
 }
 
-.bm-auto-row .bm-row-helper {
-	color: var(--bm-muted-2);
+.bm-sent-note {
+	margin: 0;
+	padding: 0 2px;
+	font-size: 13.5px;
+	color: var(--bm-muted);
 }
 
 .bm-btn-ghost,
