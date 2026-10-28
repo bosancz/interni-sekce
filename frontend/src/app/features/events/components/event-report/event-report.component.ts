@@ -157,10 +157,10 @@ export class EventReportComponent {
 		this.publishing.set(true);
 		try {
 			await this.api.EventsApi.publishEventReport(event.id);
-			this.toastService.toast("Report publikován.");
+			this.toastService.toast("Report odeslán.");
 			this.change.emit();
 		} catch (e) {
-			this.toastService.toast("Nepodařilo se publikovat report.", { color: "warning" });
+			this.toastService.toast("Nepodařilo se odeslat report.", { color: "warning" });
 			return;
 		} finally {
 			this.publishing.set(false);
