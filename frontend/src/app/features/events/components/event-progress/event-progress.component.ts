@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from "@angular/core";
+import { Router } from "@angular/router";
 import { IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { DateTime } from "luxon";
@@ -10,30 +11,23 @@ import { EventStatusID, EventStatuses } from "src/app/core/config/event-statuses
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
 import { EventAnnouncementModalComponent } from "../event-announcement-modal/event-announcement-modal.component";
-import { EventClosureModalComponent } from "../event-closure-modal/event-closure-modal.component";
+import { EventAccountingModalComponent } from "../event-accounting-modal/event-accounting-modal.component";
 
 export interface EventProgressStep {
-	key: "draft" | "pending" | "public" | "announcement" | "closure";
+	key: "draft" | "public" | "announcement" | "accounting" | "report";
 	label: string;
 	reached: boolean;
 	active: boolean;
+	reachedOut: boolean;
 	clickable: boolean;
 	note: boolean;
 	accent: string;
 	accentOut: string;
 }
 
-export interface EventClosureItem {
-	key: string;
-	label: string;
-	done: boolean;
-	required: boolean;
-}
-
 const STEPS: { key: EventProgressStep["key"]; statuses: EventStatusID[] }[] = [
 	{ key: "draft", statuses: ["draft", "rejected"] },
-	{ key: "pending", statuses: ["pending"] },
-	{ key: "public", statuses: ["public", "cancelled", "finalized"] },
+	{ key: "public", statuses: ["public", "pending", "cancelled", "finalized"] },
 ];
 
 const STEP_LABELS: Record<EventStatusID, string> = {
@@ -43,10 +37,6 @@ const STEP_LABELS: Record<EventStatusID, string> = {
 	public: "V programu",
 	cancelled: "Zrušená",
 	finalized: "Uzavřená",
-};
-
-const PAST_STEP_LABELS: Partial<Record<EventProgressStep["key"], string>> = {
-	pending: "Schválena",
 };
 
 const NEUTRAL_COLOR = "var(--bo-line)";
@@ -75,31 +65,9 @@ export class EventProgressComponent {
 
 	announcementSent = computed(() => !!this.event()?.announcementSentAt);
 
-	closureItems = computed<EventClosureItem[]>(() => {
-		const event = this.event();
-		const album = event?.album;
+	accountingSent = computed(() => !!this.event()?.accountingSentAt);
 
-		return [
-			{ key: "accounting", label: "Vyúčtování odesláno", done: !!event?.accountingSentAt, required: true },
-			{ key: "report", label: "Report publikován", done: !!event?.reportPublishedAt, required: true },
-			{
-				key: "album",
-				label: !album
-					? "Bez galerie"
-					: album.status === "public"
-						? "Galerie zveřejněna"
-						: "Galerie nezveřejněná",
-				done: album?.status === "public",
-				required: false,
-			},
-		];
-	});
-
-	closureCount = computed(() => this.closureItems().filter((item) => item.done).length);
-
-	closureTotal = computed(() => this.closureItems().length);
-
-	closureDone = computed(() => this.closureItems().every((item) => !item.required || item.done));
+	reportPublished = computed(() => !!this.event()?.reportPublishedAt);
 
 	private statusIndex = computed(() => {
 		const status = this.status();
@@ -112,29 +80,42 @@ export class EventProgressComponent {
 		return DateTime.fromISO(dateTill).endOf("day") < DateTime.now();
 	});
 
+	private closureSteps = computed(() =>
+		[
+			{
+				key: "accounting" as const,
+				label: "Účtování",
+				done: this.accountingSent(),
+			},
+			{
+				key: "report" as const,
+				label: "Report",
+				done: this.reportPublished(),
+			},
+		].map((step) => ({ ...step, reached: this.announcementSent() && (step.done || this.eventEnded()) })),
+	);
+
 	private activeIndex = computed(() => {
 		if (!this.announcementSent()) return this.statusIndex();
-		if (!this.eventEnded() && !this.closureDone()) return STEPS.length;
-		return STEPS.length + 1;
-	});
 
-	private closureColor = computed(() => {
-		if (this.activeIndex() < STEPS.length + 1) return NEUTRAL_COLOR;
-		return this.closureDone() ? DONE_COLOR : IN_PROGRESS_COLOR;
+		const closureSteps = this.closureSteps();
+		const pending = closureSteps.findIndex((step) => step.reached && !step.done);
+		if (pending !== -1) return STEPS.length + 1 + pending;
+
+		return STEPS.length + 1 + closureSteps.map((step) => step.reached).lastIndexOf(true);
 	});
 
 	steps = computed<EventProgressStep[]>(() => {
 		const event = this.event();
+		const activeIndex = this.activeIndex();
 
 		const statusSteps = STEPS.map((step, index) => {
 			const status = index === this.statusIndex() ? this.status()! : step.statuses[0];
-			const past = this.statusIndex() > index;
 
 			return {
 				key: step.key,
-				label: (past && PAST_STEP_LABELS[step.key]) || STEP_LABELS[status],
-				reached: this.activeIndex() >= index,
-				active: index === this.activeIndex(),
+				label: STEP_LABELS[status],
+				reached: activeIndex >= index,
 				clickable: false,
 				note: index === this.statusIndex() && !!this.statusNote(),
 				accent: this.accentColor(),
@@ -145,26 +126,26 @@ export class EventProgressComponent {
 			...statusSteps,
 			{
 				key: "announcement" as const,
-				label: this.announcementSent() ? "Ohláška odeslána" : "Ohláška",
-				reached: this.activeIndex() >= STEPS.length,
-				active: this.activeIndex() === STEPS.length,
+				label: "Ohláška",
+				reached: activeIndex >= STEPS.length,
 				clickable: !!event && (this.announcementSent() || event._links.markAnnouncementSent.applicable),
 				note: false,
 				accent: this.accentColor(),
 			},
-			{
-				key: "closure" as const,
-				label: `Uzavřená ${this.closureCount()}/${this.closureTotal()}`,
-				reached: this.activeIndex() >= STEPS.length + 1,
-				active: this.activeIndex() === STEPS.length + 1,
+			...this.closureSteps().map((step) => ({
+				key: step.key,
+				label: step.label,
+				reached: step.reached,
 				clickable: !!event,
 				note: false,
-				accent: this.closureColor(),
-			},
+				accent: !step.reached ? NEUTRAL_COLOR : step.done ? DONE_COLOR : IN_PROGRESS_COLOR,
+			})),
 		];
 
 		return allSteps.map((step, index) => ({
 			...step,
+			active: index === activeIndex,
+			reachedOut: step.reached && (index !== activeIndex || !!allSteps[index + 1]?.reached),
 			accentOut: allSteps[index + 1]?.accent ?? step.accent,
 		}));
 	});
@@ -178,6 +159,7 @@ export class EventProgressComponent {
 
 	constructor(
 		private readonly api: ApiService,
+		private readonly router: Router,
 		private readonly modalService: ModalService,
 		private readonly toastService: ToastService,
 	) {
@@ -203,19 +185,21 @@ export class EventProgressComponent {
 			);
 		}
 
-		if (step.key === "closure") {
+		if (step.key === "accounting") {
 			const result = await this.modalService.componentModal(
-				EventClosureModalComponent,
+				EventAccountingModalComponent,
 				{ event },
 				{ cssClass: "dialog-brand" },
 			);
-			if (!result || result.accountingSent === !!event.accountingSentAt) return;
+			if (!result || result.sent === !!event.accountingSentAt) return;
 
 			await this.callApi((id) =>
-				result.accountingSent
-					? this.api.EventsApi.markAccountingSent(id)
-					: this.api.EventsApi.unmarkAccountingSent(id),
+				result.sent ? this.api.EventsApi.markAccountingSent(id) : this.api.EventsApi.unmarkAccountingSent(id),
 			);
+		}
+
+		if (step.key === "report") {
+			this.router.navigate([], { queryParams: { tab: "report" }, queryParamsHandling: "merge" });
 		}
 	}
 
