@@ -159,9 +159,12 @@
 			</div>
 
 			<div class="gallery">
-				<div class="section-label">
-					<span>Fotogalerie</span>
-				</div>
+				<bo-card-title>
+					<span class="section-label heading">
+						Fotogalerie
+						<span class="visibility"><ion-icon name="globe-outline"></ion-icon>veřejné</span>
+					</span>
+				</bo-card-title>
 				@if (event()?.album; as album) {
 					<ion-item
 						button
