@@ -252,7 +252,7 @@
 					(click)="publish()"
 				>
 					<ion-icon name="send-outline" slot="start"></ion-icon>
-					Publikovat report
+					Odeslat report
 				</ion-button>
 				@if (event()?._links?.publishEventReport?.allowed && publishBlockedText(); as blocked) {
 					<p class="section-hint missing">{{ blocked }}</p>
