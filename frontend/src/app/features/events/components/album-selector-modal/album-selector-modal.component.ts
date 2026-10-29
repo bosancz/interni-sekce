@@ -1,85 +1,66 @@
-import { Component, OnInit, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import {
-	InfiniteScrollCustomEvent,
-	IonButton,
-	IonButtons,
-	IonContent,
-	IonFooter,
-	IonIcon,
-	IonInfiniteScroll,
-	IonInfiniteScrollContent,
-	IonItem,
-	IonLabel,
-	IonList,
-	IonNote,
-	IonSearchbar,
-	IonToolbar,
-	ModalController,
-} from "@ionic/angular/standalone";
+import { Component, ElementRef, linkedSignal, OnDestroy, OnInit, signal, ViewChild } from "@angular/core";
+import { IonIcon, ModalController, ViewDidEnter } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { addOutline, checkmarkOutline, linkOutline } from "ionicons/icons";
+import { checkmarkOutline, closeOutline, imagesOutline, searchOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { InputModalComponent } from "src/app/core/services/modal.service";
+import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
+import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
-
-export const CREATE_ALBUM = "create" as const;
 
 @Component({
 	selector: "bo-album-selector-modal",
 	templateUrl: "./album-selector-modal.component.html",
-	styleUrls: ["./album-selector-modal.component.scss"],
-
-	imports: [
-		IonToolbar,
-		IonSearchbar,
-		IonButtons,
-		IonButton,
-		IonContent,
-		IonFooter,
-		IonIcon,
-		IonList,
-		IonItem,
-		IonLabel,
-		IonNote,
-		IonInfiniteScroll,
-		IonInfiniteScrollContent,
-		FormsModule,
-		DateRangePipe,
-	],
+	styleUrl: "./album-selector-modal.component.scss",
+	imports: [IonIcon, ModalLayoutComponent, DateRangePipe, PhotoImageUrlPipe],
 })
 export class AlbumSelectorModalComponent
-	extends InputModalComponent<SDK.AlbumResponseWithLinks | typeof CREATE_ALBUM>
-	implements OnInit
+	extends InputModalComponent<SDK.AlbumResponseWithLinks>
+	implements OnInit, OnDestroy, ViewDidEnter
 {
-	allowCreate = false;
-
 	initialSearch?: string;
 
-	createName?: string;
+	eventId?: number;
 
 	albums = signal<SDK.AlbumResponseWithLinks[] | undefined>(undefined);
 
 	selected = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
 
-	pageSize = 20;
-	page = signal(1);
-	searchString = signal<string | undefined>(undefined);
+	activeIndex = linkedSignal<SDK.AlbumResponseWithLinks[] | undefined, number>({
+		source: this.albums,
+		computation: (albums, previous) => (previous && albums?.length ? previous.value : -1),
+	});
 
-	protected readonly CREATE_ALBUM = CREATE_ALBUM;
+	loadingMore = signal(false);
+
+	pageSize = 20;
+	searchDebounceMs = 300;
+	page = 1;
+	hasMore = true;
+	searchString = signal("");
+
+	@ViewChild("searchInput") searchInput?: ElementRef<HTMLInputElement>;
+	@ViewChild("list") list?: ElementRef<HTMLElement>;
+	@ViewChild("sentinel") set sentinel(sentinel: ElementRef<HTMLElement> | undefined) {
+		this.observer?.disconnect();
+		if (!sentinel) return;
+		this.observer = new IntersectionObserver((entries) => {
+			if (entries.some((entry) => entry.isIntersecting)) this.loadAlbums(true);
+		});
+		this.observer.observe(sentinel.nativeElement);
+	}
+
+	private observer?: IntersectionObserver;
+	private searchTimeout?: number;
+	private requestId = 0;
 
 	constructor(
 		private api: ApiService,
 		modalController: ModalController,
 	) {
 		super(modalController);
-		addIcons({ addOutline, checkmarkOutline, linkOutline });
-	}
-
-	linkSelected() {
-		const album = this.selected();
-		if (album) this.submit.emit(album);
+		addIcons({ checkmarkOutline, closeOutline, imagesOutline, searchOutline });
 	}
 
 	ngOnInit(): void {
@@ -87,35 +68,81 @@ export class AlbumSelectorModalComponent
 		this.loadAlbums();
 	}
 
-	async searchAlbums(searchString?: string) {
-		this.searchString.set(searchString || undefined);
-		await this.loadAlbums();
+	ngOnDestroy(): void {
+		this.observer?.disconnect();
+		window.clearTimeout(this.searchTimeout);
 	}
 
-	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
-		await this.loadAlbums(true);
-		e.target.complete();
+	ionViewDidEnter(): void {
+		this.searchInput?.nativeElement.select();
+	}
+
+	link(album?: SDK.AlbumResponseWithLinks) {
+		if (album) this.submit.emit(album);
+	}
+
+	onSearchInput(value: string) {
+		this.searchString.set(value);
+		window.clearTimeout(this.searchTimeout);
+		this.searchTimeout = window.setTimeout(() => this.loadAlbums(), this.searchDebounceMs);
+	}
+
+	onSearchKeydown(event: KeyboardEvent) {
+		const albums = this.albums() ?? [];
+		switch (event.key) {
+			case "ArrowDown":
+				event.preventDefault();
+				if (albums.length) this.setActive(Math.min(this.activeIndex() + 1, albums.length - 1));
+				break;
+			case "ArrowUp":
+				event.preventDefault();
+				if (albums.length) this.setActive(Math.max(this.activeIndex() - 1, 0));
+				break;
+			case "Enter": {
+				event.preventDefault();
+				const album = albums[this.activeIndex()];
+				if (album) {
+					if (this.selected()?.id === album.id) this.link(album);
+					else this.selected.set(album);
+				}
+				break;
+			}
+		}
+	}
+
+	setActive(index: number) {
+		this.activeIndex.set(index);
+		window.requestAnimationFrame(() =>
+			this.list?.nativeElement.querySelectorAll(".as-row")[index]?.scrollIntoView({ block: "nearest" }),
+		);
 	}
 
 	private async loadAlbums(loadMore = false) {
+		if (loadMore && (!this.hasMore || this.loadingMore() || this.albums() === undefined)) return;
+
+		const requestId = ++this.requestId;
 		if (loadMore) {
-			const currentAlbums = this.albums();
-			if (currentAlbums && currentAlbums.length < this.page() * this.pageSize) return;
-			this.page.set(this.page() + 1);
+			this.loadingMore.set(true);
+			this.page++;
 		} else {
-			this.page.set(1);
+			this.page = 1;
+			this.hasMore = true;
 			this.albums.set(undefined);
 		}
 
-		const params: SDK.PhotoGalleryApiListAlbumsQueryParams = {
-			search: this.searchString(),
-			offset: (this.page() - 1) * this.pageSize,
-			limit: this.pageSize,
-		};
+		try {
+			const newAlbums = await this.api.PhotoGalleryApi.listAlbums({
+				search: this.searchString().trim() || undefined,
+				offset: (this.page - 1) * this.pageSize,
+				limit: this.pageSize,
+			}).then((res) => res.data);
 
-		const newAlbums = await this.api.PhotoGalleryApi.listAlbums(params).then((res) => res.data);
+			if (requestId !== this.requestId) return;
 
-		const currentAlbums = this.albums();
-		this.albums.set(currentAlbums ? [...currentAlbums, ...newAlbums] : newAlbums);
+			this.hasMore = newAlbums.length === this.pageSize;
+			this.albums.set(loadMore ? [...(this.albums() ?? []), ...newAlbums] : newAlbums);
+		} finally {
+			if (requestId === this.requestId) this.loadingMore.set(false);
+		}
 	}
 }

@@ -5,6 +5,7 @@ import { IonButton, IonIcon, IonItem, IonLabel, IonSkeletonText } from "@ionic/a
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
 import {
+	addOutline,
 	checkmarkCircleOutline,
 	chevronForwardOutline,
 	closeOutline,
@@ -13,6 +14,7 @@ import {
 	documentTextOutline,
 	globeOutline,
 	imagesOutline,
+	linkOutline,
 	lockClosedOutline,
 	sendOutline,
 	trashOutline,
@@ -34,7 +36,7 @@ import { SDK } from "src/sdk";
 import { PrettyBytesPipe } from "src/app/shared/pipes/pretty-bytes.pipe";
 import { MarkdownPipe } from "../../../../shared/pipes/markdown.pipe";
 import { AlbumPublishModalComponent } from "../album-publish-modal/album-publish-modal.component";
-import { AlbumSelectorModalComponent, CREATE_ALBUM } from "../album-selector-modal/album-selector-modal.component";
+import { AlbumSelectorModalComponent } from "../album-selector-modal/album-selector-modal.component";
 import { RiverSelectModalComponent } from "../river-select-modal/river-select-modal.component";
 
 const CHRONICLE_MAX_SIZE = 50 * 1024 * 1024;
@@ -116,6 +118,8 @@ export class EventReportComponent {
 			cloudUploadOutline,
 			documentAttachOutline,
 			trashOutline,
+			addOutline,
+			linkOutline,
 		});
 
 		effect(() => {
@@ -302,39 +306,45 @@ export class EventReportComponent {
 		}
 	}
 
-	async addAlbum() {
+	async linkAlbum() {
 		const event = this.event();
 		if (!event || this.addingAlbum()) return;
 
-		const result = await this.modalService.componentModal(
+		const album = await this.modalService.componentModal(
 			AlbumSelectorModalComponent,
-			{ allowCreate: true, initialSearch: event.name, createName: event.name },
-			{ cssClass: "dialog-list" },
+			{ initialSearch: event.name, eventId: event.id },
+			{ cssClass: "dialog-picker" },
 		);
-		if (!result) return;
+		if (!album) return;
 
 		this.addingAlbum.set(true);
 		try {
-			const albumId =
-				result === CREATE_ALBUM
-					? await this.api.PhotoGalleryApi.createAlbum({
-							name: event.name,
-							dateFrom: event.dateFrom,
-							dateTill: event.dateTill,
-						}).then((res) => res.data.id)
-					: result.id;
-
-			await this.api.PhotoGalleryApi.updateAlbum(albumId, { eventId: event.id });
-
-			this.toastService.toast(
-				result === CREATE_ALBUM ? "Album vytvořeno a připojeno k akci." : "Album připojeno k akci.",
-			);
+			await this.api.PhotoGalleryApi.updateAlbum(album.id, { eventId: event.id });
+			this.toastService.toast("Album připojeno k akci.");
 			this.change.emit();
 		} catch (e) {
-			this.toastService.toast(
-				result === CREATE_ALBUM ? "Nepodařilo se vytvořit album." : "Nepodařilo se připojit album.",
-				{ color: "warning" },
-			);
+			this.toastService.toast("Nepodařilo se připojit album.", { color: "warning" });
+		} finally {
+			this.addingAlbum.set(false);
+		}
+	}
+
+	async createAlbum() {
+		const event = this.event();
+		if (!event || this.addingAlbum()) return;
+
+		this.addingAlbum.set(true);
+		try {
+			const album = await this.api.PhotoGalleryApi.createAlbum({
+				name: event.name,
+				dateFrom: event.dateFrom,
+				dateTill: event.dateTill,
+			}).then((res) => res.data);
+			await this.api.PhotoGalleryApi.updateAlbum(album.id, { eventId: event.id });
+			this.toastService.toast("Album vytvořeno a připojeno k akci.");
+			this.change.emit();
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se vytvořit album.", { color: "warning" });
 		} finally {
 			this.addingAlbum.set(false);
 		}

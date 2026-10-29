@@ -86,7 +86,6 @@ bo-card-content {
 	display: flex;
 	flex-wrap: wrap;
 	column-gap: 2rem;
-	margin-top: 1rem;
 }
 
 .revizor-section {
@@ -120,6 +119,7 @@ bo-card-content {
 	}
 }
 
+.water-section,
 .gallery {
 	margin-top: 1.25rem;
 	padding-top: 1rem;
@@ -140,6 +140,7 @@ bo-card-content {
 	}
 }
 
+.water-section bo-card-title,
 .gallery bo-card-title,
 .revizor-section bo-card-title {
 	display: block;
@@ -220,4 +221,11 @@ bo-card-content {
 
 .uploading {
 	margin: 0.5rem 0 0;
+}
+
+.album-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 8px;
 }

@@ -1,68 +1,85 @@
-<ion-toolbar>
-	<ion-searchbar
-		enterkeyhint="search"
-		placeholder="Hledat album"
-		[value]="searchString() ?? ''"
-		[debounce]="300"
-		(ionInput)="searchAlbums($any($event).detail.value)"
-	></ion-searchbar>
-	<ion-buttons slot="end">
-		<ion-button (click)="close.emit()">Zrušit</ion-button>
-	</ion-buttons>
-</ion-toolbar>
+<bo-modal-layout>
+	<div slot="title" class="as-head">
+		<div>
+			<h4>Připojit album</h4>
+			<p class="as-subtitle">Vyber album s fotkami z akce.</p>
+		</div>
+		<button type="button" class="as-close" aria-label="Zavřít" (click)="close.emit()">
+			<ion-icon name="close-outline"></ion-icon>
+		</button>
+	</div>
 
-<ion-content>
-	@if (allowCreate) {
-		<ion-note class="verify-hint">
-			Nejdřív zkontrolujte, jestli už album neexistuje — pokud ho najdete v seznamu, připojte ho. Jinak vytvořte
-			nové.
-		</ion-note>
-	}
+	<div class="as-tools">
+		<div class="as-search">
+			<ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+			<input
+				#searchInput
+				type="text"
+				enterkeyhint="search"
+				autocomplete="off"
+				placeholder="Hledat album"
+				aria-label="Hledat album"
+				[value]="searchString()"
+				(input)="onSearchInput($any($event.target).value)"
+				(keydown)="onSearchKeydown($event)"
+			/>
+			@if (searchString()) {
+				<button type="button" class="as-clear" (click)="onSearchInput('')">Zrušit</button>
+			}
+		</div>
+	</div>
 
-	<ion-list>
-		@for (album of albums() ?? []; track album.id) {
-			<ion-item
-				[button]="true"
-				[color]="selected()?.id === album.id ? 'light' : undefined"
+	<div class="as-list" #list>
+		@for (album of albums() ?? []; track album.id; let index = $index) {
+			<button
+				type="button"
+				class="as-row"
+				[class.selected]="selected()?.id === album.id"
+				[class.active]="activeIndex() === index"
+				(mousemove)="activeIndex() !== index && activeIndex.set(index)"
 				(click)="selected.set(album)"
+				(dblclick)="link(album)"
 			>
-				<ion-label>
-					<h3>{{ album.name }}</h3>
-					<p>{{ [album.dateFrom, album.dateTill] | dateRange }}</p>
-				</ion-label>
-				@if (selected()?.id === album.id) {
-					<ion-icon name="checkmark-outline" color="primary" slot="end"></ion-icon>
+				<span class="as-thumb">
+					@if (album.coverPhoto; as photo) {
+						<img [src]="photo | photoImageUrl: 'small'" [style.background-color]="photo.bg" alt="" />
+					} @else {
+						<ion-icon name="images-outline" aria-hidden="true"></ion-icon>
+					}
+				</span>
+				<span class="as-text">
+					<span class="as-name">{{ album.name }}</span>
+					<span class="as-meta">
+						{{ [album.dateFrom, album.dateTill] | dateRange }}
+						@if (album.eventId && album.eventId !== eventId) {
+							· u jiné akce
+						}
+					</span>
+				</span>
+				@if (album.status !== "public") {
+					<span class="as-status">Nepublikované</span>
 				}
-			</ion-item>
+				@if (selected()?.id === album.id) {
+					<ion-icon class="as-check" name="checkmark-outline" aria-hidden="true"></ion-icon>
+				}
+			</button>
 		} @empty {
 			@if (albums()) {
-				<ion-note class="empty-note">Žádné odpovídající album.</ion-note>
+				<div class="as-empty">Žádné odpovídající album.</div>
 			}
 		}
-	</ion-list>
 
-	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
-		<ion-infinite-scroll-content></ion-infinite-scroll-content>
-	</ion-infinite-scroll>
-</ion-content>
+		@if (albums() === undefined || loadingMore()) {
+			<div class="as-empty">Načítám…</div>
+		}
 
-<ion-footer>
-	<ion-toolbar>
-		<div class="modal-actions">
-			@if (allowCreate) {
-				<ion-button fill="outline" (click)="submit.emit(CREATE_ALBUM)">
-					<ion-icon name="add-outline" slot="start"></ion-icon>
-					@if (createName) {
-						Vytvořit »{{ createName }}«
-					} @else {
-						Vytvořit nové
-					}
-				</ion-button>
-			}
-			<ion-button fill="solid" [disabled]="!selected()" (click)="linkSelected()">
-				<ion-icon name="link-outline" slot="start"></ion-icon>
-				Připojit vybrané
-			</ion-button>
-		</div>
-	</ion-toolbar>
-</ion-footer>
+		<div #sentinel class="as-sentinel"></div>
+	</div>
+
+	<div slot="buttons" class="bm-buttons as-foot">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button type="button" class="bm-btn-primary" [disabled]="!selected()" (click)="link(selected())">
+			Připojit album
+		</button>
+	</div>
+</bo-modal-layout>
