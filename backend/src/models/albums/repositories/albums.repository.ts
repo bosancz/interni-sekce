@@ -38,6 +38,7 @@ export class AlbumsRepository {
 				"albums.dateTill",
 				"albums.datePublished",
 				"albums.createdById",
+				"albums.eventId",
 			])
 			.where(where)
 			.take(options.limit || 25)

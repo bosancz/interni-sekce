@@ -121,35 +121,40 @@
 		}
 
 		@if (event()) {
-			<div class="water">
-				<span class="section-label">
-					<span>Řeka</span>
-					<span class="value">{{ event()?.river ?? "-" }}</span>
-					@if (canEditReport()) {
-						<bo-edit-button (click)="editRiver()" />
-					}
-				</span>
-				<span class="section-label">
-					<span>Kilometry na vodě</span>
-					<span class="value">{{
-						event()?.waterKm != null ? (event()?.waterKm | number: "1.0-1") + " km" : "-"
-					}}</span>
-					@if (canEditReport()) {
-						<bo-edit-button-number
-							label="Kilometry na vodě"
-							placeholder="42"
-							[value]="event()?.waterKm"
-							(update)="saveReportData({ waterKm: $event })"
-						/>
-					}
-				</span>
+			<div class="water-section">
+				<bo-card-title>
+					<span class="section-label heading">Vodák roku</span>
+				</bo-card-title>
+				<div class="water">
+					<span class="section-label">
+						<span>Řeka</span>
+						<span class="value">{{ event()?.river ?? "-" }}</span>
+						@if (canEditReport()) {
+							<bo-edit-button (click)="editRiver()" />
+						}
+					</span>
+					<span class="section-label">
+						<span>Kilometry na vodě</span>
+						<span class="value">{{
+							event()?.waterKm != null ? (event()?.waterKm | number: "1.0-1") + " km" : "-"
+						}}</span>
+						@if (canEditReport()) {
+							<bo-edit-button-number
+								label="Kilometry na vodě"
+								placeholder="42"
+								[value]="event()?.waterKm"
+								(update)="saveReportData({ waterKm: $event })"
+							/>
+						}
+					</span>
+				</div>
 			</div>
 
 			<div class="gallery">
 				<bo-card-title>
 					<span class="section-label heading">
 						Fotogalerie
-						<span class="visibility"><ion-icon name="globe-outline"></ion-icon>veřejné</span>
+						<span class="visibility"><ion-icon name="globe-outline"></ion-icon>veřejné · nepovinná</span>
 					</span>
 				</bo-card-title>
 				@if (event()?.album; as album) {
@@ -190,16 +195,29 @@
 					<div class="bo-empty-state">
 						<ion-icon name="images-outline"></ion-icon>
 						<strong>Fotogalerie zatím není</strong>
-						<p>Připoj album s fotkami z akce.</p>
-						<ion-button
-							fill="solid"
-							color="warning"
-							[disabled]="!canEditAlbum() || addingAlbum()"
-							[boTooltip]="canEditAlbum() ? null : noPermissionText"
-							(click)="addAlbum()"
-						>
-							Přidat album
-						</ion-button>
+						<p>Připoj existující album s fotkami z akce, nebo vytvoř nové.</p>
+						<div class="album-buttons">
+							<ion-button
+								fill="solid"
+								color="warning"
+								[disabled]="!canEditAlbum() || addingAlbum()"
+								[boTooltip]="canEditAlbum() ? null : noPermissionText"
+								(click)="linkAlbum()"
+							>
+								<ion-icon name="link-outline" slot="start"></ion-icon>
+								Připojit album
+							</ion-button>
+							<ion-button
+								fill="outline"
+								color="warning"
+								[disabled]="!canEditAlbum() || addingAlbum()"
+								[boTooltip]="canEditAlbum() ? null : noPermissionText"
+								(click)="createAlbum()"
+							>
+								<ion-icon name="add-outline" slot="start"></ion-icon>
+								Vytvořit album
+							</ion-button>
+						</div>
 					</div>
 				}
 			</div>
