@@ -36,12 +36,11 @@
 						@if (photo.album; as album) {
 							<span class="source">
 								@if (album.dateFrom || album.dateTill) {
-									{{ [album.dateFrom, album.dateTill] | dateRange }}
-									·
+									<span class="date">{{ [album.dateFrom, album.dateTill] | dateRange }}</span>
 								}
 								<a class="album" [routerLink]="['/galerie/alba', album.id]">
 									<ion-icon name="images-outline"></ion-icon>
-									{{ album.name }}
+									<span>{{ album.name }}</span>
 								</a>
 							</span>
 						}
