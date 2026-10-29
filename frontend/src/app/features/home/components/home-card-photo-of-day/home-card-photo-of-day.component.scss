@@ -44,10 +44,16 @@
 	font-size: 0.875rem;
 
 	.source {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.3rem;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.125rem 0.75rem;
+		min-width: 0;
 		margin-inline-start: auto;
+	}
+
+	.date {
+		white-space: nowrap;
 	}
 
 	.leaders a {
@@ -61,10 +67,17 @@
 
 	.album {
 		display: inline-flex;
-		align-items: center;
+		align-items: flex-start;
 		gap: 0.3rem;
+		min-width: 0;
 		color: inherit;
 		text-decoration: none;
+		overflow-wrap: anywhere;
+
+		ion-icon {
+			flex: none;
+			margin-top: 0.2em;
+		}
 
 		&:hover {
 			text-decoration: underline;
