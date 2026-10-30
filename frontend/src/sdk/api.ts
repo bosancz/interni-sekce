@@ -33,6 +33,7 @@ export class SDK {
         PaymentsApi: SDK.PaymentsApi;
         PhotoGalleryApi: SDK.PhotoGalleryApi;
         PublicAPIApi: SDK.PublicAPIApi;
+        PublicAPIV2Api: SDK.PublicAPIV2Api;
         RootApi: SDK.RootApi;
         StatisticsApi: SDK.StatisticsApi;
         UsersApi: SDK.UsersApi;
@@ -52,6 +53,7 @@ export class SDK {
             this.PaymentsApi = new SDK.PaymentsApi(configuration, axios!);
             this.PhotoGalleryApi = new SDK.PhotoGalleryApi(configuration, axios!);
             this.PublicAPIApi = new SDK.PublicAPIApi(configuration, axios!);
+            this.PublicAPIV2Api = new SDK.PublicAPIV2Api(configuration, axios!);
             this.RootApi = new SDK.RootApi(configuration, axios!);
             this.StatisticsApi = new SDK.StatisticsApi(configuration, axios!);
             this.UsersApi = new SDK.UsersApi(configuration, axios!);
@@ -9405,36 +9407,6 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'getProgram': AcLink;
-        /**
-         * 
-         * @type {AcLink}
-         * @memberof RootResponseLinks
-         */
-        'getProgramIcal': AcLink;
-        /**
-         * 
-         * @type {AcLink}
-         * @memberof RootResponseLinks
-         */
-        'getReports': AcLink;
-        /**
-         * 
-         * @type {AcLink}
-         * @memberof RootResponseLinks
-         */
-        'getReport': AcLink;
-        /**
-         * 
-         * @type {AcLink}
-         * @memberof RootResponseLinks
-         */
-        'getGroups': AcLink;
-        /**
-         * 
-         * @type {AcLink}
-         * @memberof RootResponseLinks
-         */
-        'getBoardMembers': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -19345,14 +19317,6 @@ export namespace SDK {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
     /**
      * Query parameters for getGallery operation in PublicAPIApi.
      * @export
@@ -19415,18 +19379,6 @@ export namespace SDK {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     /**
      * Query parameters for getProgram operation in PublicAPIApi.
      * @export
@@ -19481,33 +19433,6 @@ export namespace SDK {
     
     
     
-    
-    /**
-     * Query parameters for getReports operation in PublicAPIApi.
-     * @export
-     * @interface PublicAPIApiGetReportsQueryParams
-     */
-    export interface PublicAPIApiGetReportsQueryParams {
-        //limit
-        /**
-         * 
-         * @type {number}
-         * @memberof PublicAPIApiGetReports
-         */
-        limit?: number
-    
-        //offset
-        /**
-         * 
-         * @type {number}
-         * @memberof PublicAPIApiGetReports
-         */
-        offset?: number
-    }
-    
-    
-    
-    
     /**
      * PublicAPIApi - object-oriented interface
      * @export
@@ -19539,84 +19464,6 @@ export namespace SDK {
             
             const localVarPath = `/api/public/gallery/{id}/download`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (this.configuration) {
-                baseOptions = this.configuration.baseOptions;
-            }
-    
-            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
-            const requestHeaderParameter = {} as any;
-            const requestQueryParameter = {} as any;
-    
-    
-    
-            setSearchParams(requestUrlObj, requestQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-    
-            axiosRequestConfig["url"] = toPathString(requestUrlObj);
-            axiosRequestConfig["baseURL"] = this.configuration.basePath;
-            
-            return this.axios.request<void>(axiosRequestConfig);
-        }
-    
-        /**
-         * 
-    
-         * @param {number} memberId 
-         * @param {AxiosRequestConfig} [options] Override http request option.
-         * @throws {RequiredError}
-         * @memberof PublicAPIApi
-         */
-        
-        public async getBoardMemberProfilePhoto(
-            memberId: number,
-            options: AxiosRequestConfig = {}
-        ) {
-    
-            // verify required parameter 'memberId' is not null or undefined
-            assertParamExists('getBoardMemberProfilePhoto', 'memberId', memberId)
-            
-            const localVarPath = `/api/public/board-members/{memberId}/profile-photo`
-                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (this.configuration) {
-                baseOptions = this.configuration.baseOptions;
-            }
-    
-            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
-            const requestHeaderParameter = {} as any;
-            const requestQueryParameter = {} as any;
-    
-    
-    
-            setSearchParams(requestUrlObj, requestQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-    
-            axiosRequestConfig["url"] = toPathString(requestUrlObj);
-            axiosRequestConfig["baseURL"] = this.configuration.basePath;
-            
-            return this.axios.request<void>(axiosRequestConfig);
-        }
-    
-        /**
-         * 
-    
-         * @param {AxiosRequestConfig} [options] Override http request option.
-         * @throws {RequiredError}
-         * @memberof PublicAPIApi
-         */
-        
-        public async getBoardMembers(
-            options: AxiosRequestConfig = {}
-        ) {
-    
-            const localVarPath = `/api/public/board-members`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -19819,122 +19666,6 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
-         * @param {AxiosRequestConfig} [options] Override http request option.
-         * @throws {RequiredError}
-         * @memberof PublicAPIApi
-         */
-        
-        public async getGroupLeaderProfilePhoto(
-            id: number,
-            options: AxiosRequestConfig = {}
-        ) {
-    
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getGroupLeaderProfilePhoto', 'id', id)
-            
-            const localVarPath = `/api/public/groups/{id}/leader/profile-photo`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (this.configuration) {
-                baseOptions = this.configuration.baseOptions;
-            }
-    
-            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
-            const requestHeaderParameter = {} as any;
-            const requestQueryParameter = {} as any;
-    
-    
-    
-            setSearchParams(requestUrlObj, requestQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-    
-            axiosRequestConfig["url"] = toPathString(requestUrlObj);
-            axiosRequestConfig["baseURL"] = this.configuration.basePath;
-            
-            return this.axios.request<void>(axiosRequestConfig);
-        }
-    
-        /**
-         * 
-    
-         * @param {AxiosRequestConfig} [options] Override http request option.
-         * @throws {RequiredError}
-         * @memberof PublicAPIApi
-         */
-        
-        public async getGroups(
-            options: AxiosRequestConfig = {}
-        ) {
-    
-            const localVarPath = `/api/public/groups`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (this.configuration) {
-                baseOptions = this.configuration.baseOptions;
-            }
-    
-            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
-            const requestHeaderParameter = {} as any;
-            const requestQueryParameter = {} as any;
-    
-    
-    
-            setSearchParams(requestUrlObj, requestQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-    
-            axiosRequestConfig["url"] = toPathString(requestUrlObj);
-            axiosRequestConfig["baseURL"] = this.configuration.basePath;
-            
-            return this.axios.request<void>(axiosRequestConfig);
-        }
-    
-        /**
-         * The old server\'s iCalendar feed URL, kept so calendar apps subscribed to it keep working. Serves the same feed as GET /api/public/program/ical.
-         * @summary Deprecated: use GET /api/public/program/ical instead.
-    
-         * @param {AxiosRequestConfig} [options] Override http request option.
-         * @deprecated
-         * @throws {RequiredError}
-         * @memberof PublicAPIApi
-         */
-        
-        public async getLegacyProgramIcal(
-            options: AxiosRequestConfig = {}
-        ) {
-    
-            const localVarPath = `/api/program/ical`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (this.configuration) {
-                baseOptions = this.configuration.baseOptions;
-            }
-    
-            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
-            const requestHeaderParameter = {} as any;
-            const requestQueryParameter = {} as any;
-    
-    
-    
-            setSearchParams(requestUrlObj, requestQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-    
-            axiosRequestConfig["url"] = toPathString(requestUrlObj);
-            axiosRequestConfig["baseURL"] = this.configuration.basePath;
-            
-            return this.axios.request<string>(axiosRequestConfig);
-        }
-    
-        /**
-         * 
-    
          * @param {PublicAPIApiGetProgramQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -19990,11 +19721,83 @@ export namespace SDK {
          * @memberof PublicAPIApi
          */
         
-        public async getProgramIcal(
+        public async getProgramIcal0(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/v2/program/ical`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<string>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getProgramIcal1(
             options: AxiosRequestConfig = {}
         ) {
     
             const localVarPath = `/api/public/program/ical`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<string>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIApi
+         */
+        
+        public async getProgramIcal2(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/program/ical`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -20109,26 +19912,175 @@ export namespace SDK {
             
             return this.axios.request<void>(axiosRequestConfig);
         }
+    }
+    
+        
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for getPublicJournal operation in PublicAPIV2Api.
+     * @export
+     * @interface PublicAPIV2ApiGetPublicJournalQueryParams
+     */
+    export interface PublicAPIV2ApiGetPublicJournalQueryParams {
+        //sort
+        /**
+         * 
+         * @type {object}
+         * @memberof PublicAPIV2ApiGetPublicJournal
+         */
+        sort?: object
+    
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof PublicAPIV2ApiGetPublicJournal
+         */
+        limit?: number
+    
+        //offset
+        /**
+         * 
+         * @type {number}
+         * @memberof PublicAPIV2ApiGetPublicJournal
+         */
+        offset?: number
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for getPublicProgram operation in PublicAPIV2Api.
+     * @export
+     * @interface PublicAPIV2ApiGetPublicProgramQueryParams
+     */
+    export interface PublicAPIV2ApiGetPublicProgramQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof PublicAPIV2ApiGetPublicProgram
+         */
+        limit?: number
+    
+        //dateFrom
+        /**
+         * 
+         * @type {string}
+         * @memberof PublicAPIV2ApiGetPublicProgram
+         */
+        dateFrom?: string
+    
+        //dateTill
+        /**
+         * 
+         * @type {string}
+         * @memberof PublicAPIV2ApiGetPublicProgram
+         */
+        dateTill?: string
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * Query parameters for getPublicRecentAlbums operation in PublicAPIV2Api.
+     * @export
+     * @interface PublicAPIV2ApiGetPublicRecentAlbumsQueryParams
+     */
+    export interface PublicAPIV2ApiGetPublicRecentAlbumsQueryParams {
+        //limit
+        /**
+         * 
+         * @type {number}
+         * @memberof PublicAPIV2ApiGetPublicRecentAlbums
+         */
+        limit?: number
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * PublicAPIV2Api - object-oriented interface
+     * @export
+     * @class PublicAPIV2Api
+     * @extends {BaseAPI}
+     */
+    export class PublicAPIV2Api extends BaseAPI {
+    
+        constructor(protected override configuration: SDKConfiguration, protected override axios: AxiosInstance = globalAxios) {
+            super(configuration, configuration.basePath, axios);
+        }
     
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
-         * @memberof PublicAPIApi
+         * @memberof PublicAPIV2Api
          */
         
-        public async getReport(
-            id: number,
+        public async downloadPublicAlbum(
+            albumId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getReport', 'id', id)
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('downloadPublicAlbum', 'albumId', albumId)
             
-            const localVarPath = `/api/public/reports/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/public/v2/albums/{albumId}/download`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -20155,22 +20107,22 @@ export namespace SDK {
         /**
          * 
     
-         * @param {number} id 
+         * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
-         * @memberof PublicAPIApi
+         * @memberof PublicAPIV2Api
          */
         
-        public async getReportChronicle(
-            id: number,
+        public async getPublicAlbum(
+            albumId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('getReportChronicle', 'id', id)
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('getPublicAlbum', 'albumId', albumId)
             
-            const localVarPath = `/api/public/reports/{id}/chronicle`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            const localVarPath = `/api/public/v2/albums/{albumId}`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -20197,18 +20149,316 @@ export namespace SDK {
         /**
          * 
     
-         * @param {PublicAPIApiGetReportsQueryParams} queryParams Query parameters.
+         * @param {number} albumId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
-         * @memberof PublicAPIApi
+         * @memberof PublicAPIV2Api
          */
         
-        public async getReports(
-            queryParams: PublicAPIApiGetReportsQueryParams = {},
+        public async getPublicAlbumPhotos(
+            albumId: number,
             options: AxiosRequestConfig = {}
         ) {
     
-            const localVarPath = `/api/public/reports`;
+            // verify required parameter 'albumId' is not null or undefined
+            assertParamExists('getPublicAlbumPhotos', 'albumId', albumId)
+            
+            const localVarPath = `/api/public/v2/albums/{albumId}/photos`
+                .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIV2Api
+         */
+        
+        public async getPublicBoardMemberProfilePhoto(
+            memberId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('getPublicBoardMemberProfilePhoto', 'memberId', memberId)
+            
+            const localVarPath = `/api/public/v2/board-members/{memberId}/profile-photo`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIV2Api
+         */
+        
+        public async getPublicBoardMembers(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/v2/board-members`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} groupId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIV2Api
+         */
+        
+        public async getPublicGroupLeaderProfilePhoto(
+            groupId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'groupId' is not null or undefined
+            assertParamExists('getPublicGroupLeaderProfilePhoto', 'groupId', groupId)
+            
+            const localVarPath = `/api/public/v2/groups/{groupId}/leader/profile-photo`
+                .replace(`{${"groupId"}}`, encodeURIComponent(String(groupId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIV2Api
+         */
+        
+        public async getPublicGroups(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/v2/groups`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {PublicAPIV2ApiGetPublicJournalQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIV2Api
+         */
+        
+        public async getPublicJournal(
+            queryParams: PublicAPIV2ApiGetPublicJournalQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/v2/journal`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            if (queryParams.sort !== undefined) {
+                requestQueryParameter['sort'] = queryParams.sort;
+            }
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+            if (queryParams.offset !== undefined) {
+                requestQueryParameter['offset'] = queryParams.offset;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<object>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} photoId 
+         * @param {string} size 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIV2Api
+         */
+        
+        public async getPublicPhoto(
+            photoId: number,
+            size: string,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('getPublicPhoto', 'photoId', photoId)
+            assertParamExists('getPublicPhoto', 'size', size)
+            
+            // verify required parameter 'size' is not null or undefined
+            assertParamExists('getPublicPhoto', 'photoId', photoId)
+            assertParamExists('getPublicPhoto', 'size', size)
+            
+            const localVarPath = `/api/public/v2/photos/{photoId}/{size}`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)))
+                .replace(`{${"size"}}`, encodeURIComponent(String(size)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {PublicAPIV2ApiGetPublicProgramQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIV2Api
+         */
+        
+        public async getPublicProgram(
+            queryParams: PublicAPIV2ApiGetPublicProgramQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/v2/program`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -20224,9 +20474,181 @@ export namespace SDK {
                 requestQueryParameter['limit'] = queryParams.limit;
             }
     
-            if (queryParams.offset !== undefined) {
-                requestQueryParameter['offset'] = queryParams.offset;
+            if (queryParams.dateFrom !== undefined) {
+                requestQueryParameter['dateFrom'] = queryParams.dateFrom;
             }
+    
+            if (queryParams.dateTill !== undefined) {
+                requestQueryParameter['dateTill'] = queryParams.dateTill;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIV2Api
+         */
+        
+        public async getPublicProgramRegistration(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('getPublicProgramRegistration', 'eventId', eventId)
+            
+            const localVarPath = `/api/public/v2/program/{eventId}/registration`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {PublicAPIV2ApiGetPublicRecentAlbumsQueryParams} queryParams Query parameters.
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIV2Api
+         */
+        
+        public async getPublicRecentAlbums(
+            queryParams: PublicAPIV2ApiGetPublicRecentAlbumsQueryParams = {},
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/public/v2/albums/recent`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            if (queryParams.limit !== undefined) {
+                requestQueryParameter['limit'] = queryParams.limit;
+            }
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIV2Api
+         */
+        
+        public async getPublicReport(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('getPublicReport', 'eventId', eventId)
+            
+            const localVarPath = `/api/public/v2/reports/{eventId}`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} eventId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PublicAPIV2Api
+         */
+        
+        public async getPublicReportChronicle(
+            eventId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('getPublicReportChronicle', 'eventId', eventId)
+            
+            const localVarPath = `/api/public/v2/reports/{eventId}/chronicle`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
     
     
     

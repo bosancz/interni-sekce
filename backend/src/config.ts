@@ -232,6 +232,10 @@ const oauth = {
 	accessTtlS: 300,
 };
 
+const publicApi = {
+	recentAlbums: { defaultLimit: 5, maxLimit: 10 },
+};
+
 const chronicles = {
 	maxUploadSize: 50 * 1024 * 1024,
 };
@@ -266,6 +270,7 @@ export class Config {
 	photoContent = photoContent;
 	photos = photos;
 	chronicles = chronicles;
+	publicApi = publicApi;
 }
 
 @Global()
