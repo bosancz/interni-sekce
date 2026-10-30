@@ -13,12 +13,6 @@ export const PublicProgramPermission = new Permission<void>({
 	allowed,
 });
 
-export const PublicProgramIcalPermission = new Permission<void>({
-	linkTo: RootResponse,
-	name: "program:ical",
-	allowed,
-});
-
 export const PublicGalleryPermission = new Permission<void>({
 	linkTo: RootResponse,
 	name: "gallery",
@@ -43,29 +37,4 @@ export const PublicGalleryAlbumPreviewPermission = new Permission<void>({
 	name: "galleryalbum:preview",
 	allowed,
 	path: () => "gallery/{id}/preview",
-});
-
-export const PublicGroupsPermission = new Permission<void>({
-	linkTo: RootResponse,
-	name: "groups",
-	allowed,
-});
-
-export const PublicBoardMembersPermission = new Permission<void>({
-	linkTo: RootResponse,
-	name: "boardMembers",
-	allowed,
-});
-
-export const PublicReportsPermission = new Permission<void>({
-	linkTo: RootResponse,
-	name: "reports",
-	allowed,
-});
-
-export const PublicReportPermission = new Permission<void>({
-	linkTo: RootResponse,
-	name: "report",
-	allowed,
-	path: () => "reports/{id}",
 });

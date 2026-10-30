@@ -122,16 +122,6 @@ export class EventsRepository {
 		return this.withLeaders(await q.getMany());
 	}
 
-	async getPublicReports(options: { limit?: number; offset?: number } = {}) {
-		const q = this.publicReportsQuery()
-			.orderBy("events.reportPublishedAt", "DESC")
-			.addOrderBy("events.id", "DESC")
-			.take(Math.min(options.limit ?? 20, 100))
-			.skip(options.offset ?? 0);
-
-		return this.withLeaders(await q.getMany());
-	}
-
 	async getPublicReport(id: number) {
 		const event = await this.publicReportsQuery().andWhere("events.id = :id", { id }).getOne();
 

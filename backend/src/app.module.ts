@@ -13,6 +13,7 @@ import { NotificationsModule } from "./api/notifications/notifications.module";
 import { OauthModule } from "./api/oauth/oauth.module";
 import { PaymentsModule } from "./api/payments/payments.module";
 import { PublicModule } from "./api/public/public.module";
+import { PublicV2Module } from "./api/public-v2/public-v2.module";
 import { RootModule } from "./api/root/root.module";
 import { StatisticsModule } from "./api/statistics/statistics.module";
 import { UsersModule } from "./api/users/users.module";
@@ -54,6 +55,7 @@ import { SeedModule } from "./seed/seed.module";
 		EventsModule,
 		FeedbackModule,
 		PublicModule,
+		PublicV2Module,
 		MembersModule,
 		PaymentsModule,
 		AuthModule,
