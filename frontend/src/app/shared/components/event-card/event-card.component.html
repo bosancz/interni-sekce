@@ -31,7 +31,7 @@
 
 		<div class="content">
 			@if (e.description) {
-				<div class="description" [innerHTML]="e.description | markdown"></div>
+				<div class="description bo-markdown" [innerHTML]="e.description | markdown"></div>
 			}
 
 			@if (e.meetingPlaceStart || e.meetingPlaceEnd) {

@@ -79,7 +79,7 @@
 								Report pro revizora
 							</div>
 							@if (report.report) {
-								<div class="report-text" [innerHTML]="report.report | markdown"></div>
+								<div class="report-text bo-markdown" [innerHTML]="report.report | markdown"></div>
 							} @else {
 								<p class="missing">Report pro revizora je prázdný.</p>
 							}
@@ -87,7 +87,7 @@
 							@if (report.publicReport) {
 								<details class="summary">
 									<summary>Shrnutí akce na web</summary>
-									<div class="report-text" [innerHTML]="report.publicReport | markdown"></div>
+									<div class="report-text bo-markdown" [innerHTML]="report.publicReport | markdown"></div>
 								</details>
 							}
 

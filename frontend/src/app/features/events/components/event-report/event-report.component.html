@@ -31,7 +31,7 @@
 	<bo-card-content>
 		@if (event(); as event) {
 			@if (event.publicReport; as publicReport) {
-				<div class="report-text" [innerHTML]="publicReport | markdown"></div>
+				<div class="report-text bo-markdown" [innerHTML]="publicReport | markdown"></div>
 			}
 			@if (event.chronicleFileName; as fileName) {
 				<div class="chronicle-file">
@@ -239,7 +239,7 @@
 					</bo-card-title>
 
 					@if (report(); as report) {
-						<div class="report-text" [innerHTML]="report | markdown"></div>
+						<div class="report-text bo-markdown" [innerHTML]="report | markdown"></div>
 					} @else {
 						<div class="bo-empty-state">
 							<ion-icon name="lock-closed-outline"></ion-icon>

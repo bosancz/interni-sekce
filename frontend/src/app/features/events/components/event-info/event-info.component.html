@@ -86,7 +86,7 @@
 			</bo-item>
 
 			<bo-item label="Popis" [loading]="!event()">
-				<div [innerHTML]="event()?.description | markdown"></div>
+				<div class="bo-markdown" [innerHTML]="event()?.description | markdown"></div>
 				@if (canEdit()) {
 					<bo-edit-button-markdown
 						slot="end"
@@ -111,7 +111,7 @@
 			</bo-item>
 
 			<bo-item label="Co s sebou" [loading]="!event()">
-				<div [innerHTML]="event()?.itemList | markdown"></div>
+				<div class="bo-markdown" [innerHTML]="event()?.itemList | markdown"></div>
 				@if (canEdit()) {
 					<bo-edit-button-markdown
 						slot="end"

@@ -95,7 +95,7 @@
 
 		<div class="preview-pane" [hidden]="sideView() !== 'preview'">
 			@if (content()) {
-				<div class="preview" [innerHTML]="content() | markdown"></div>
+				<div class="preview bo-markdown" [innerHTML]="content() | markdown"></div>
 			} @else {
 				<div class="preview preview-empty">Náhled se zobrazí zde&hellip;</div>
 			}
