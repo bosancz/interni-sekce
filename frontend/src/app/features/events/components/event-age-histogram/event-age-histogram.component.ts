@@ -6,7 +6,7 @@ import { SDK } from "src/sdk";
 
 type AgeCategory = "child" | "instructor" | "leader";
 
-type AgeRow = { age: number; people: { nickname: string; category: AgeCategory }[] };
+type AgeRow = { age: number; people: { nickname: string; category: AgeCategory }[]; names: string };
 
 type AgeBand = { label: string; count: number; rows: AgeRow[] };
 
@@ -49,12 +49,10 @@ export class EventAgeHistogramComponent {
 			(band) => {
 				const rows: AgeRow[] = [];
 				for (let age = Math.max(band.from, min); age <= Math.min(band.till ?? max, max); age++) {
-					rows.push({
-						age,
-						people: people
-							.filter((person) => person.age === age)
-							.sort((a, b) => order.indexOf(a.category) - order.indexOf(b.category)),
-					});
+					const agePeople = people
+						.filter((person) => person.age === age)
+						.sort((a, b) => order.indexOf(a.category) - order.indexOf(b.category));
+					rows.push({ age, people: agePeople, names: agePeople.map((person) => person.nickname).join(", ") });
 				}
 				return {
 					label: this.getBandLabel(band),
