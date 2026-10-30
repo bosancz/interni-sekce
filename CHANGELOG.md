@@ -1,3 +1,7 @@
+## v4.31.4 — 2026-10-30
+
+- <span class="changelog-type" title="fix">🐛</span> [Nadpisy v markdownu mají správné pořadí velikostí](https://github.com/bosancz/interni-sekce/commit/5b02dc369700d89ec239722bd61e7b0e6aad2221) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.31.3 — 2026-10-30
 
 - <span class="changelog-type" title="patch">🚸</span> [Veřejné API v2 pro nový web](https://github.com/bosancz/interni-sekce/commit/544265349133316874da8788e96746d301079838) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
