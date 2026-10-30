@@ -6,9 +6,9 @@
 	grid-template-columns: minmax(0, 1fr) 6.5rem;
 	column-gap: 12px;
 }
-.row {
+.age-row {
 	display: grid;
-	grid-template-columns: 44px minmax(0, 1fr);
+	grid-template-columns: 44px 3.25rem minmax(0, 1fr);
 	align-items: center;
 	column-gap: 10px;
 	min-height: 22px;
@@ -21,7 +21,7 @@
 	font-weight: 500;
 	white-space: nowrap;
 }
-.row.empty .age {
+.age-row.empty .age {
 	font-weight: 400;
 	color: $colorMedium;
 	opacity: 0.6;
@@ -31,6 +31,13 @@
 	flex-wrap: wrap;
 	gap: 4px;
 	padding: 4px 0;
+}
+.names {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: $colorMedium;
 }
 .dot {
 	flex: none;

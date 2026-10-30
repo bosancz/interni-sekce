@@ -4,13 +4,14 @@
 			<div class="band">
 				<div class="rows">
 					@for (row of band.rows; track row.age) {
-						<div class="row" [class.empty]="!row.people.length">
+						<div class="age-row" [class.empty]="!row.people.length">
 							<span class="age">{{ row.age }} let</span>
 							<div class="dots">
 								@for (person of row.people; track $index) {
 									<span class="dot" [class]="person.category" [title]="person.nickname"></span>
 								}
 							</div>
+							<span class="names">{{ row.names }}</span>
 						</div>
 					}
 				</div>
