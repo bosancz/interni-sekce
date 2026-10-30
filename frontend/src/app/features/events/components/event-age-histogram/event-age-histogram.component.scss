@@ -1,54 +1,83 @@
+@use "sass:color";
 @use "src/styles/variables" as *;
 
-.histogram {
-	position: relative;
-	height: 100px;
-	width: 100%;
+.band {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 6.5rem;
+	column-gap: 12px;
 }
-.histogram .chart {
-	position: absolute;
-	top: 20px;
-	right: 0;
-	bottom: 20px;
-	left: 0;
-}
-.histogram .chart .bar {
-	position: absolute;
-	bottom: 0;
-	top: 0;
-	margin: 0 2px;
-}
-.histogram .chart .bar .full {
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	background-color: $blue;
-	border-bottom: 1px solid $blue;
-	border-radius: 4px 4px 0 0;
-}
-.histogram .chart .bar .label {
-	position: absolute;
-	top: 100%;
-	width: 100%;
-	text-align: center;
+.row {
+	display: grid;
+	grid-template-columns: 44px minmax(0, 1fr);
+	align-items: center;
+	column-gap: 10px;
+	min-height: 22px;
+	border-bottom: 1px solid $grey;
 	font-size: $font-small;
 }
-.histogram .chart .bar .count {
-	position: absolute;
-	bottom: 100%;
-	width: 100%;
-	text-align: center;
-	color: $blue;
-	font-size: $font-small;
+.age {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+	font-weight: 500;
+	white-space: nowrap;
 }
+.row.empty .age {
+	font-weight: 400;
+	color: $colorMedium;
+	opacity: 0.6;
+}
+.dots {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	padding: 4px 0;
+}
+.dot {
+	flex: none;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
 
-@media (max-width: 575.98px) {
-	.histogram .chart .bar .label,
-	.histogram .chart .bar .count {
-		font-size: 0.65rem;
+	&.child {
+		background-color: $blue;
 	}
-	.histogram .chart .bar {
-		margin: 0 1px;
+	&.instructor {
+		background-color: color.mix($sanyellow, $white, 55%);
+	}
+	&.leader {
+		background-color: $sanyellow;
+	}
+}
+.summary {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 2px;
+	margin: 3px 0;
+	padding-left: 12px;
+	border-left: 2px solid $grey;
+	white-space: nowrap;
+
+	.label {
+		font-size: $font-small;
+		color: $colorMedium;
+	}
+	.count {
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: $blue;
+	}
+}
+.legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-top: 12px;
+	font-size: $font-small;
+
+	> span {
+		display: flex;
+		align-items: center;
+		gap: 6px;
 	}
 }
