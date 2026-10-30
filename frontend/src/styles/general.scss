@@ -26,6 +26,33 @@ h2 {
 	font-size: 2em;
 }
 
+.bo-markdown {
+	:is(h1, h2, h3, h4, h5, h6) {
+		margin: 1em 0 0.4em;
+		line-height: 1.2;
+	}
+
+	h1 {
+		font-size: 1.6em;
+	}
+
+	h2 {
+		font-size: 1.4em;
+	}
+
+	h3 {
+		font-size: 1.2em;
+	}
+
+	:is(h4, h5, h6) {
+		font-size: 1em;
+	}
+
+	> :first-child {
+		margin-top: 0;
+	}
+}
+
 a[href] {
 	color: var(--bo-link);
 }

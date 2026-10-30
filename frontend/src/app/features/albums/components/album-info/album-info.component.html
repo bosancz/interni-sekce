@@ -67,7 +67,7 @@
 	</bo-item>
 
 	<bo-item label="Popis" [loading]="!album()">
-		<div [innerHTML]="album()?.description | markdown"></div>
+		<div class="bo-markdown" [innerHTML]="album()?.description | markdown"></div>
 		<bo-edit-button-markdown
 			slot="end"
 			label="Popis"
