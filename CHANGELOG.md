@@ -1,3 +1,7 @@
+## v4.31.7 — 2026-10-30
+
+- <span class="changelog-type" title="patch">🚸</span> [Přezdívky u věků v grafu věku účastníků](https://github.com/bosancz/interni-sekce/commit/b326536150c82149d86bb7b8d0f751e03f6d281b) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.31.6 — 2026-10-30
 
 - <span class="changelog-type" title="patch">🚸</span> [Věk účastníků po letech s pásmy jízdného](https://github.com/bosancz/interni-sekce/commit/edaba79816cf78bc7656a322c4cf3f16fa5892ab) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
