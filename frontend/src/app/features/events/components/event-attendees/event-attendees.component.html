@@ -71,7 +71,11 @@
 					<bo-card-title>Věk účastníků</bo-card-title>
 				</bo-card-header>
 				<bo-card-content>
-					<event-age-histogram [event]="event()!" [members]="allMembers()"></event-age-histogram>
+					<event-age-histogram
+						[event]="event()!"
+						[attendees]="attendeeMembers()"
+						[leaders]="leaderMembers()"
+					></event-age-histogram>
 				</bo-card-content>
 			</bo-card>
 		}

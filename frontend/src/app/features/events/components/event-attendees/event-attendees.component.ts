@@ -81,11 +81,9 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		return attendees.length + leaders.length;
 	});
 
-	allMembers = computed(() =>
-		[...(this.leaders() ?? []), ...(this.attendees() ?? [])]
-			.map((a) => a.member)
-			.filter((m): m is SDK.MemberResponse => !!m),
-	);
+	leaderMembers = computed(() => this.membersOf(this.leaders()));
+	attendeeMembers = computed(() => this.membersOf(this.attendees()));
+	allMembers = computed(() => [...this.leaderMembers(), ...this.attendeeMembers()]);
 
 	birthdays = computed(() => {
 		const event = this.event();
@@ -235,6 +233,10 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 	private emailsOf(attendees?: SDK.EventAttendeeResponseWithLinks[]) {
 		return [...new Set((attendees ?? []).flatMap((attendee) => getMemberEmails(attendee.member)))];
+	}
+
+	private membersOf(attendees?: SDK.EventAttendeeResponseWithLinks[]) {
+		return (attendees ?? []).map((a) => a.member).filter((m): m is SDK.MemberResponse => !!m);
 	}
 
 	async sendMail() {
