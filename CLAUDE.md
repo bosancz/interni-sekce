@@ -55,6 +55,7 @@
 ## Typografie
 
 - **Česká typografie se dělá jen při zobrazení, data v DB zůstávají, jak je kdo napsal.** `typopo` (`fixTypos(…, "cs")`) přes `fixTypography()` / `typographyExtension` v `helpers/typography.ts` (frontend i backend, stejný soubor; na bosan.cz `core/typography.ts`): pevné mezery za jednopísmennými předložkami a za číslem s tečkou, „“, –, …. Markdown se opravuje **po tokenech** (hook `processAllTokens`), takže kód, odkazy a syntaxe zůstanou; text sousedních tokenů se spojí přes `\u2060`, aby pravidla viděla souvislosti (`v **lese**`, `"*x*"`). Prostý text pipe `typography`, jednořádkový markdown `markdownInline`. Backend ji pouští v PDF přihláškách, `markdownToPlainText` (iCal) i `markdownToRichText` (XLSX). Pozor: typopo bere `„x“ - y` jako přímou řeč a pomlčku smaže.
+- **Vykreslený markdown nese třídu `bo-markdown`** (`styles/general.scss`) — vlastní škála nadpisů (`#` 1,6em, `##` 1,25em, `###` 1,1em), menší než nadpisy stránky a karty, protože text se vkládá pod ně; písmem ŠÁNu jen `#`, ostatní písmem textu. Nový `[innerHTML]="… | markdown"` ji potřebuje taky.
 - **Sraz a konec akce (`meetingPlaceStart`/`End`) jsou markdown** — edituje je `bo-edit-button-markdown`, zobrazuje `markdownInline`, do iCal/ohlášky/přihlášky jdou přes `markdownToPlainText`.
 
 ## User settings

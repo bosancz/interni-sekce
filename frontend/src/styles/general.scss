@@ -29,19 +29,21 @@ h2 {
 .bo-markdown {
 	:is(h1, h2, h3, h4, h5, h6) {
 		margin: 1em 0 0.4em;
+		font-family: var(--font-regular);
 		line-height: 1.2;
 	}
 
 	h1 {
+		font-family: var(--font-san);
 		font-size: 1.6em;
 	}
 
 	h2 {
-		font-size: 1.4em;
+		font-size: 1.25em;
 	}
 
 	h3 {
-		font-size: 1.2em;
+		font-size: 1.1em;
 	}
 
 	:is(h4, h5, h6) {
