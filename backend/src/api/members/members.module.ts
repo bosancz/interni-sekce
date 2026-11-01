@@ -9,6 +9,7 @@ import { SettingsModelModule } from "src/models/settings/settings-model.module";
 import { BoardMembersController } from "./controllers/board-members.controller";
 import { GroupProfilePhotoController } from "./controllers/group-profile-photo.controller";
 import { GroupsController } from "./controllers/groups.controller";
+import { MemberAchievementsController } from "./controllers/member-achievements.controller";
 import { MemberContactsController } from "./controllers/member-contacts.controller";
 import { MemberInsuranceCardController } from "./controllers/member-insurance-card.controller";
 import { MemberPhotosController } from "./controllers/member-photos.controller";
@@ -26,6 +27,7 @@ import { MembersExportController } from "./controllers/members-export.controller
 		GroupProfilePhotoController,
 		MemberInsuranceCardController,
 		MemberContactsController,
+		MemberAchievementsController,
 		MemberMembershipController,
 		MemberPaymentRequestController,
 		MemberPaymentQrController,

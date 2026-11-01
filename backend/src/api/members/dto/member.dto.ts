@@ -4,7 +4,6 @@ import { IsArray, IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min, Valid
 import { PaginationQuery } from "src/api/helpers/dto";
 import { MembershipPaymentStates } from "src/helpers/membership";
 import { EnsureArray, EnsureBoolean } from "src/helpers/validation";
-import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { MembershipPayment } from "src/models/members/entities/membership-payment.entity";
 import {
@@ -15,6 +14,7 @@ import {
 	MemberRoles,
 } from "src/models/members/entities/member.entity";
 import { MembershipPaymentResponse } from "./membership-payment.dto";
+import { MemberAchievementResponse } from "./member-achievement.dto";
 
 export class HealthEntryDto implements HealthEntry {
 	@ApiProperty({ type: "string" }) @IsString() name!: string;
@@ -73,8 +73,8 @@ export class MemberResponse implements Member {
 	@ApiPropertyOptional()
 	contacts?: MemberContact[] | undefined;
 
-	@ApiPropertyOptional()
-	achievements?: MemberAchievement[] | undefined;
+	@ApiPropertyOptional({ type: MemberAchievementResponse, isArray: true })
+	achievements?: MemberAchievementResponse[] | undefined;
 }
 
 export class MemberCreateBody implements Pick<

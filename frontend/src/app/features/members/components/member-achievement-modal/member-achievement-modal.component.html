@@ -1,0 +1,77 @@
+<bo-modal-layout>
+	<h4 slot="title">{{ title }}</h4>
+
+	<div class="bm-body">
+		@if (isNew()) {
+			<div class="ma-field">
+				<span class="ma-label">Nášivka</span>
+				<div class="ma-types" role="radiogroup">
+					@for (choice of choices; track choice.key) {
+						<button
+							type="button"
+							role="radio"
+							class="ma-type"
+							[class.selected]="selected()?.key === choice.key"
+							[attr.aria-checked]="selected()?.key === choice.key"
+							[disabled]="choice.held"
+							(click)="selected.set(choice)"
+						>
+							@if (selected()?.key === choice.key) {
+								<ion-icon name="checkmark-circle" class="ma-check"></ion-icon>
+							}
+							<img [src]="choice.icon" alt="" class="ma-type-icon" />
+							<span class="ma-type-title">{{ choice.title }}</span>
+							@if (choice.note) {
+								<span class="ma-type-held">{{ choice.note }}</span>
+							}
+						</button>
+					}
+				</div>
+			</div>
+
+			<label class="ma-field">
+				<span class="ma-label">Datum získání</span>
+				<input type="date" class="ma-input" [value]="date()" (input)="date.set($any($event.target).value)" />
+			</label>
+		} @else {
+			@for (achievement of edited; track achievement.id) {
+				@let isDeleted = deleted().includes(achievement.id);
+				<div class="ma-row" [class.deleted]="isDeleted">
+					<img [src]="types[achievement.type].icon" alt="" class="ma-row-icon" />
+					<div class="ma-row-text">
+						<span class="ma-row-title">{{ types[achievement.type].title }}</span>
+						<span class="ma-row-description">{{ types[achievement.type].description }}</span>
+						<label class="ma-row-date">
+							<span class="bm-visually-hidden">Datum získání</span>
+							<input
+								type="date"
+								class="ma-input"
+								[value]="dates()[achievement.id]"
+								[disabled]="isDeleted || !achievement._links.updateMemberAchievement.allowed"
+								(input)="setDate(achievement.id, $any($event.target).value)"
+							/>
+						</label>
+					</div>
+					@if (achievement._links.deleteMemberAchievement.allowed) {
+						<button
+							type="button"
+							class="ma-icon-btn"
+							[class.danger]="!isDeleted"
+							[attr.aria-label]="isDeleted ? 'Vrátit' : 'Odebrat nášivku'"
+							(click)="toggleDeleted(achievement.id)"
+						>
+							<ion-icon [name]="isDeleted ? 'arrow-undo-outline' : 'trash-outline'"></ion-icon>
+						</button>
+					}
+				</div>
+			}
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button type="button" class="bm-btn-primary" [disabled]="!canSave()" (click)="save()">
+			{{ isNew() ? "Přidat" : "Uložit" }}
+		</button>
+	</div>
+</bo-modal-layout>

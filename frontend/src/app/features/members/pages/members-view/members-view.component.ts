@@ -23,6 +23,7 @@ import { MemberContactComponent } from "../../components/member-contact/member-c
 import MemberContactsComponent from "../../components/member-contacts/member-contacts.component";
 import { MemberHealthComponent } from "../../components/member-health/member-health.component";
 import { MemberInfoComponent } from "../../components/member-info/member-info.component";
+import { MemberAchievementsComponent } from "../../components/member-achievements/member-achievements.component";
 import { MemberMergeModalComponent } from "../../components/member-merge-modal/member-merge-modal.component";
 import { MemberMembershipComponent } from "../../components/member-membership/member-membership.component";
 import { MemberPaymentComponent } from "../../components/member-payment/member-payment.component";
@@ -42,6 +43,7 @@ import { MemberProfileComponent } from "../../components/member-profile/member-p
 		PageFooterComponent,
 		MemberProfileComponent,
 		MemberInfoComponent,
+		MemberAchievementsComponent,
 		MemberContactComponent,
 		MemberMembershipComponent,
 		MemberPaymentComponent,

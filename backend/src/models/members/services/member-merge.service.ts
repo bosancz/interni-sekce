@@ -116,7 +116,7 @@ export class MemberMergeService {
 			await this.mergeEventAttendees(t, targetId, sourceId);
 			const manualFaces = await this.mergePhotoFaces(t, targetId, sourceId);
 			await this.mergeContacts(t, targetId, sourceId);
-			await t.query(`UPDATE members_achievements SET member_id = $1 WHERE member_id = $2`, [targetId, sourceId]);
+			await this.mergeAchievements(t, targetId, sourceId);
 			await this.mergeMembershipPayments(t, targetId, sourceId);
 			await this.mergeUser(t, targetId, sourceId, fields.has(MemberMergeFields.user));
 			await t.query(`UPDATE groups SET leader_id = $1 WHERE leader_id = $2`, [targetId, sourceId]);
@@ -232,6 +232,21 @@ export class MemberMergeService {
 		);
 
 		await t.query(`UPDATE members_contacts SET member_id = $1 WHERE member_id = $2`, [targetId, sourceId]);
+	}
+
+	private async mergeAchievements(t: EntityManager, targetId: number, sourceId: number) {
+		await t.query(
+			`UPDATE members_achievements target SET date = LEAST(target.date, source.date)
+			FROM members_achievements source
+			WHERE target.member_id = $1 AND source.member_id = $2 AND source.type = target.type`,
+			[targetId, sourceId],
+		);
+		await t.query(
+			`DELETE FROM members_achievements source WHERE source.member_id = $2
+			AND EXISTS (SELECT 1 FROM members_achievements target WHERE target.member_id = $1 AND target.type = source.type)`,
+			[targetId, sourceId],
+		);
+		await t.query(`UPDATE members_achievements SET member_id = $1 WHERE member_id = $2`, [targetId, sourceId]);
 	}
 
 	private async mergeMembershipPayments(t: EntityManager, targetId: number, sourceId: number) {

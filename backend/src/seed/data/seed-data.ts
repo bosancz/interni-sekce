@@ -3,6 +3,7 @@ import { UserSavedRoles } from "src/models/users/schema/user-roles";
 import { EventExpenseTypes } from "src/models/events/entities/event-expense.entity";
 import { EventStates } from "src/models/events/entities/event.entity";
 import { GroupMeetingDays } from "src/models/members/entities/group.entity";
+import { MemberAchievementTypes } from "src/models/members/entities/member-achievements.entity";
 import { HealthEntry, HealthSeverity, MemberRanks, MemberRoles } from "src/models/members/entities/member.entity";
 
 export interface SeedGroup {
@@ -54,6 +55,7 @@ export interface SeedMember {
 	knownProblems?: HealthEntry[];
 	allergies?: HealthEntry[];
 	contacts?: SeedMemberContact[];
+	achievements?: { type: MemberAchievementTypes; date: string }[];
 }
 
 export interface SeedEventExpense {
@@ -193,6 +195,19 @@ export const SeedMembers: SeedMember[] = [
 		addressStreetNo: "1",
 		addressCity: "Hobitín",
 		addressPostalCode: "111 01",
+		achievements: [
+			{ type: MemberAchievementTypes.zdravotnik, date: "2015-05-16" },
+			{ type: MemberAchievementTypes.instruktorVodniTuristiky, date: "2017-09-30" },
+			{ type: MemberAchievementTypes.novackovskaZkouska, date: "1992-06-20" },
+			{ type: MemberAchievementTypes.hvezda1, date: "1993-06-19" },
+			{ type: MemberAchievementTypes.hvezda2, date: "1994-06-18" },
+			{ type: MemberAchievementTypes.hvezda3, date: "1995-06-17" },
+			{ type: MemberAchievementTypes.hvezda4, date: "1996-06-15" },
+			{ type: MemberAchievementTypes.cernySan, date: "2021-12-18" },
+			{ type: MemberAchievementTypes.clunar, date: "2008-07-12" },
+			{ type: MemberAchievementTypes.kormidelnik, date: "2011-07-16" },
+			{ type: MemberAchievementTypes.lodivod, date: "2014-07-19" },
+		],
 	},
 	{
 		nickname: "Beorn (vedoucí)",
@@ -272,6 +287,12 @@ export const SeedMembers: SeedMember[] = [
 	},
 	{
 		nickname: "Fíli",
+		achievements: [
+			{ type: MemberAchievementTypes.novackovskaZkouska, date: "2023-06-17" },
+			{ type: MemberAchievementTypes.hvezda1, date: "2024-06-15" },
+			{ type: MemberAchievementTypes.hvezda2, date: "2025-06-21" },
+			{ type: MemberAchievementTypes.clunar, date: "2025-07-12" },
+		],
 		group: "T",
 		role: MemberRoles.dite,
 		firstName: "Fíli",
@@ -293,6 +314,7 @@ export const SeedMembers: SeedMember[] = [
 	},
 	{
 		nickname: "Kíli",
+		achievements: [{ type: MemberAchievementTypes.novackovskaZkouska, date: "2025-06-21" }],
 		group: "T",
 		role: MemberRoles.dite,
 		firstName: "Kíli",

@@ -5553,23 +5553,178 @@ export namespace SDK {
          * @type {string}
          * @memberof MemberAchievement
          */
-        'dateFrom': string;
-        /**
-         * 
-         * @type {string}
-         * @memberof MemberAchievement
-         */
-        'dateTill': string;
+        'date': string;
     }
     
     export const MemberAchievementTypeEnum = {
-        Star: 'star',
-        Certificate: 'certificate',
-        Other: 'other'
+        Zdravotnik: 'zdravotnik',
+        InstruktorVodniTuristiky: 'instruktorVodniTuristiky',
+        NovackovskaZkouska: 'novackovskaZkouska',
+        Hvezda1: 'hvezda1',
+        Hvezda2: 'hvezda2',
+        Hvezda3: 'hvezda3',
+        Hvezda4: 'hvezda4',
+        CernySan: 'cernySan',
+        Clunar: 'clunar',
+        Kormidelnik: 'kormidelnik',
+        Lodivod: 'lodivod'
     } as const;
     
     export type MemberAchievementTypeEnum = typeof MemberAchievementTypeEnum[keyof typeof MemberAchievementTypeEnum];
     
+    
+        /**
+     * 
+     * @export
+     * @interface MemberAchievementCreateBody
+     */
+    export interface MemberAchievementCreateBody {
+        /**
+         * 
+         * @type {MemberAchievementTypesEnum}
+         * @memberof MemberAchievementCreateBody
+         */
+        'type': MemberAchievementTypesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberAchievementCreateBody
+         */
+        'date': string;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @interface MemberAchievementResponse
+     */
+    export interface MemberAchievementResponse {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberAchievementResponse
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberAchievementResponse
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {MemberAchievementTypesEnum}
+         * @memberof MemberAchievementResponse
+         */
+        'type': MemberAchievementTypesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberAchievementResponse
+         */
+        'date': string;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @interface MemberAchievementResponseLinks
+     */
+    export interface MemberAchievementResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberAchievementResponseLinks
+         */
+        'updateMemberAchievement': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberAchievementResponseLinks
+         */
+        'deleteMemberAchievement': AcLink;
+    }
+    
+        /**
+     * 
+     * @export
+     * @interface MemberAchievementResponseWithLinks
+     */
+    export interface MemberAchievementResponseWithLinks {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberAchievementResponseWithLinks
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberAchievementResponseWithLinks
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {MemberAchievementTypesEnum}
+         * @memberof MemberAchievementResponseWithLinks
+         */
+        'type': MemberAchievementTypesEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberAchievementResponseWithLinks
+         */
+        'date': string;
+        /**
+         * 
+         * @type {MemberAchievementResponseLinks}
+         * @memberof MemberAchievementResponseWithLinks
+         */
+        '_links': MemberAchievementResponseLinks;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
+     * @enum {string}
+     */
+    
+    export const MemberAchievementTypesEnum = {
+        Zdravotnik: 'zdravotnik',
+        InstruktorVodniTuristiky: 'instruktorVodniTuristiky',
+        NovackovskaZkouska: 'novackovskaZkouska',
+        Hvezda1: 'hvezda1',
+        Hvezda2: 'hvezda2',
+        Hvezda3: 'hvezda3',
+        Hvezda4: 'hvezda4',
+        CernySan: 'cernySan',
+        Clunar: 'clunar',
+        Kormidelnik: 'kormidelnik',
+        Lodivod: 'lodivod'
+    } as const;
+    
+    export type MemberAchievementTypesEnum = typeof MemberAchievementTypesEnum[keyof typeof MemberAchievementTypesEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @interface MemberAchievementUpdateBody
+     */
+    export interface MemberAchievementUpdateBody {
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberAchievementUpdateBody
+         */
+        'date'?: string;
+    }
     
         /**
      * 
@@ -6418,10 +6573,10 @@ export namespace SDK {
         'contacts'?: Array<MemberContact>;
         /**
          * 
-         * @type {Array<MemberAchievement>}
+         * @type {Array<MemberAchievementResponse>}
          * @memberof MemberResponse
          */
-        'achievements'?: Array<MemberAchievement>;
+        'achievements'?: Array<MemberAchievementResponse>;
     }
     
     
@@ -6432,6 +6587,18 @@ export namespace SDK {
      * @interface MemberResponseLinks
      */
     export interface MemberResponseLinks {
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'listMemberAchievements': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof MemberResponseLinks
+         */
+        'createMemberAchievement': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -6718,10 +6885,10 @@ export namespace SDK {
         'contacts'?: Array<MemberContact>;
         /**
          * 
-         * @type {Array<MemberAchievement>}
+         * @type {Array<MemberAchievementResponse>}
          * @memberof MemberResponseWithLinks
          */
-        'achievements'?: Array<MemberAchievement>;
+        'achievements'?: Array<MemberAchievementResponse>;
         /**
          * 
          * @type {MemberResponseLinks}
@@ -14283,6 +14450,14 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * @export
      */
@@ -14662,6 +14837,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for listMemberPhotos operation in MembersApi.
      * @export
@@ -14880,6 +15059,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * MembersApi - object-oriented interface
      * @export
@@ -15033,6 +15216,59 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<MemberResponseWithLinks>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async createMemberAchievement(
+            memberId: number,
+            body: MemberAchievementCreateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('createMemberAchievement', 'memberId', memberId)
+            assertParamExists('createMemberAchievement', 'memberAchievementCreateBody', body)
+            
+            // verify required parameter 'memberAchievementCreateBody' is not null or undefined
+            assertParamExists('createMemberAchievement', 'memberId', memberId)
+            assertParamExists('createMemberAchievement', 'memberAchievementCreateBody', body)
+            
+            const localVarPath = `/api/members/{memberId}/achievements`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<MemberAchievementResponse>(axiosRequestConfig);
         }
     
         /**
@@ -15282,6 +15518,58 @@ export namespace SDK {
             
             const localVarPath = `/api/members/{memberId}`
                 .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {number} achievementId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async deleteMemberAchievement(
+            memberId: number,
+            achievementId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('deleteMemberAchievement', 'memberId', memberId)
+            assertParamExists('deleteMemberAchievement', 'achievementId', achievementId)
+            
+            // verify required parameter 'achievementId' is not null or undefined
+            assertParamExists('deleteMemberAchievement', 'memberId', memberId)
+            assertParamExists('deleteMemberAchievement', 'achievementId', achievementId)
+            
+            const localVarPath = `/api/members/{memberId}/achievements/{achievementId}`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)))
+                .replace(`{${"achievementId"}}`, encodeURIComponent(String(achievementId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -16119,6 +16407,50 @@ export namespace SDK {
         /**
          * 
     
+         * @param {number} memberId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async listMemberAchievements(
+            memberId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('listMemberAchievements', 'memberId', memberId)
+            
+            const localVarPath = `/api/members/{memberId}/achievements`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<MemberAchievementResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
@@ -16754,6 +17086,69 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} memberId 
+         * @param {number} achievementId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async updateMemberAchievement(
+            memberId: number,
+            achievementId: number,
+            body: MemberAchievementUpdateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberId' is not null or undefined
+            assertParamExists('updateMemberAchievement', 'memberId', memberId)
+            assertParamExists('updateMemberAchievement', 'achievementId', achievementId)
+            assertParamExists('updateMemberAchievement', 'memberAchievementUpdateBody', body)
+            
+            // verify required parameter 'achievementId' is not null or undefined
+            assertParamExists('updateMemberAchievement', 'memberId', memberId)
+            assertParamExists('updateMemberAchievement', 'achievementId', achievementId)
+            assertParamExists('updateMemberAchievement', 'memberAchievementUpdateBody', body)
+            
+            // verify required parameter 'memberAchievementUpdateBody' is not null or undefined
+            assertParamExists('updateMemberAchievement', 'memberId', memberId)
+            assertParamExists('updateMemberAchievement', 'achievementId', achievementId)
+            assertParamExists('updateMemberAchievement', 'memberAchievementUpdateBody', body)
+            
+            const localVarPath = `/api/members/{memberId}/achievements/{achievementId}`
+                .replace(`{${"memberId"}}`, encodeURIComponent(String(memberId)))
+                .replace(`{${"achievementId"}}`, encodeURIComponent(String(achievementId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'PATCH', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<MemberAchievementResponse>(axiosRequestConfig);
         }
     
         /**

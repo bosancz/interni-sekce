@@ -8,6 +8,7 @@ import { MemberAchievement } from "./entities/member-achievements.entity";
 import { MemberContact } from "./entities/member-contact.entity";
 import { Member } from "./entities/member.entity";
 import { MembershipPayment } from "./entities/membership-payment.entity";
+import { MemberAchievementsRepository } from "./repositories/member-achievements.repository";
 import { BoardMembersRepository } from "./repositories/board-members.repository";
 import { GroupsRepository } from "./repositories/groups.repository";
 import { MembersRepository } from "./repositories/members.repository";
@@ -24,6 +25,7 @@ import { MembersExportService } from "./services/members-export.service";
 	],
 	providers: [
 		MembersRepository,
+		MemberAchievementsRepository,
 		GroupsRepository,
 		BoardMembersRepository,
 		MembersExportService,
@@ -33,6 +35,7 @@ import { MembersExportService } from "./services/members-export.service";
 	],
 	exports: [
 		MembersRepository,
+		MemberAchievementsRepository,
 		GroupsRepository,
 		BoardMembersRepository,
 		MembersExportService,

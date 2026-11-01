@@ -1,0 +1,54 @@
+<bo-card>
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="ribbon-outline" />
+				Nášivky
+			</span>
+		</bo-card-title>
+	</bo-card-header>
+
+	<bo-card-content>
+		@if (achievements() === undefined) {
+			<div class="badges">
+				@for (i of [1, 2, 3]; track i) {
+					<div class="badge skeleton"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+				}
+			</div>
+		} @else {
+			@if (slots().length) {
+				<div class="badges">
+					@for (slot of slots(); track slot.key) {
+						<button
+							type="button"
+							class="badge"
+							[class.editable]="canEdit(slot)"
+							[attr.aria-label]="getSlotLabel(slot)"
+							[boTooltip]="getSlotLabel(slot)"
+							(click)="openEdit(slot)"
+						>
+							<span class="badge-icon-wrap">
+								<img [src]="slot.icon" alt="" class="badge-icon" />
+								@for (star of slot.stars; track star) {
+									<img [src]="starIcon" alt="" class="badge-star" [attr.data-star]="star" />
+								}
+							</span>
+							<span class="badge-date">{{ slot.main.date | date: "y" }}</span>
+						</button>
+					}
+				</div>
+			} @else {
+				<p class="empty">Zatím žádné nášivky.</p>
+			}
+		}
+
+		<ion-buttons class="mt-3 justify-content-center">
+			<bo-add-button
+				[disabled]="!canAdd()"
+				[boTooltip]="member()?._links?.createMemberAchievement?.allowed ? null : noPermissionText"
+				(click)="openAdd()"
+				>Přidat nášivku</bo-add-button
+			>
+		</ion-buttons>
+	</bo-card-content>
+</bo-card>
