@@ -11,8 +11,9 @@ import {
 	trashOutline,
 	warning,
 } from "ionicons/icons";
-import { DefaultHealthSeverity, HealthSeverities, HealthSeverityOrder } from "src/app/core/config/health-severity";
+import { HealthSeverities } from "src/app/core/config/health-severity";
 import { ModalService } from "src/app/core/services/modal.service";
+import { HealthEntryModalComponent } from "../health-entry-modal/health-entry-modal.component";
 import { ToastService } from "src/app/core/services/toast.service";
 import { SDK } from "src/sdk";
 import { AddButtonComponent } from "../../../../shared/components/add-button/add-button.component";
@@ -49,7 +50,6 @@ export class MemberHealthComponent {
 	reload = output<void>();
 
 	readonly severities = HealthSeverities;
-	readonly severityOrder = HealthSeverityOrder;
 
 	constructor(
 		private modalService: ModalService,
@@ -98,44 +98,17 @@ export class MemberHealthComponent {
 		const editing = index !== undefined;
 		const entry = editing ? current?.[index] : undefined;
 
-		const name = await this.askName(
-			editing ? labels.editHeader : labels.addHeader,
-			labels.namePlaceholder,
-			entry?.name,
+		const updated = await this.modalService.componentModal(
+			HealthEntryModalComponent,
+			{ header: editing ? labels.editHeader : labels.addHeader, placeholder: labels.namePlaceholder, entry },
+			{ cssClass: "dialog-brand" },
 		);
-		if (!name) return null;
-
-		const severity = await this.askSeverity(entry?.severity);
-		if (!severity) return null;
+		if (!updated) return null;
 
 		const entries = [...(current ?? [])];
-		const updated: SDK.HealthEntryDto = { name, severity };
 		if (editing) entries[index] = updated;
 		else entries.push(updated);
 
 		return entries;
-	}
-
-	private async askName(header: string, placeholder: string, value?: string): Promise<string | null> {
-		const data = await this.modalService.inputModal<{ name: string }>({
-			header,
-			inputs: { name: { type: "text", placeholder, value, required: true, autocapitalize: "sentences" } },
-			buttonText: "Další",
-		});
-		return data?.name.trim() || null;
-	}
-
-	private askSeverity(currentSeverity?: SDK.HealthSeverityEnum): Promise<SDK.HealthSeverityEnum | null> {
-		const selected = currentSeverity ?? DefaultHealthSeverity;
-
-		return this.modalService.selectModal({
-			header: "Závažnost",
-			values: this.severityOrder.map((severity) => ({
-				label: `${this.severities[severity].emoji} ${this.severities[severity].title}`,
-				value: severity,
-			})),
-			value: selected,
-			buttonText: "Uložit",
-		});
 	}
 }

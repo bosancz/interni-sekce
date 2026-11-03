@@ -1,0 +1,50 @@
+<bo-modal-layout>
+	<h4 slot="title">{{ header }}</h4>
+
+	<div class="bm-body">
+		<label class="ma-field">
+			<span class="ma-label">Název</span>
+			<input
+				#nameInput
+				type="text"
+				class="ma-input"
+				autocapitalize="sentences"
+				[placeholder]="placeholder"
+				[value]="name()"
+				(input)="name.set($any($event.target).value)"
+				(keydown.enter)="save()"
+			/>
+		</label>
+
+		<div class="ma-field">
+			<span class="ma-label">Závažnost</span>
+			<div class="he-severities" role="radiogroup">
+				@for (option of severityOrder; track option) {
+					<button
+						type="button"
+						role="radio"
+						class="he-severity"
+						[attr.data-color]="severities[option].color"
+						[class.selected]="severity() === option"
+						[attr.aria-checked]="severity() === option"
+						(click)="severity.set(option)"
+					>
+						<ion-icon [name]="severities[option].icon" class="he-icon"></ion-icon>
+						<span class="he-text">
+							<span class="he-title">{{ severities[option].title }}</span>
+							<span class="he-description">{{ severities[option].description }}</span>
+						</span>
+						@if (severity() === option) {
+							<ion-icon name="checkmark-circle" class="he-check"></ion-icon>
+						}
+					</button>
+				}
+			</div>
+		</div>
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button type="button" class="bm-btn-primary" [disabled]="!name().trim()" (click)="save()">Uložit</button>
+	</div>
+</bo-modal-layout>
