@@ -1,0 +1,138 @@
+<bo-page-header title="Hromadné školení" backUrl="/admin" />
+
+<bo-page-content>
+	<div class="tb-page">
+		<p class="tb-intro text-muted">
+			Přidá stejné školení více lidem najednou — každý ho pak má na své kartě člena jako samostatný záznam.
+		</p>
+
+		<section class="tb-card bm-body">
+			<h2 class="tb-title">Školení</h2>
+
+			<div class="ma-field">
+				<span class="ma-label">Typ</span>
+				<div class="ma-types" role="radiogroup">
+					@for (option of typeList; track option) {
+						<button
+							type="button"
+							role="radio"
+							class="ma-type"
+							[class.selected]="type() === option"
+							[attr.aria-checked]="type() === option"
+							(click)="setType(option)"
+						>
+							@if (type() === option) {
+								<ion-icon name="checkmark-circle" class="ma-check"></ion-icon>
+							}
+							<img [src]="types[option].icon" alt="" class="ma-type-icon" />
+							<span class="ma-type-title">{{ types[option].title }}</span>
+						</button>
+					}
+				</div>
+			</div>
+
+			@if (type() === "custom") {
+				<label class="ma-field">
+					<span class="ma-label">Název</span>
+					<input
+						type="text"
+						class="ma-input"
+						placeholder="Např. Vůdce malého plavidla"
+						[value]="name()"
+						(input)="name.set($any($event.target).value); error.set(null)"
+					/>
+				</label>
+			}
+
+			<div class="ma-fields">
+				<label class="ma-field">
+					<span class="ma-label">Uděleno</span>
+					<input
+						type="date"
+						class="ma-input"
+						[value]="issuedOn()"
+						(input)="issuedOn.set($any($event.target).value); error.set(null)"
+					/>
+				</label>
+
+				<label class="ma-field">
+					<span class="ma-label">Platnost do</span>
+					<input
+						type="date"
+						class="ma-input"
+						[value]="validUntil()"
+						(input)="validUntil.set($any($event.target).value); error.set(null)"
+					/>
+				</label>
+			</div>
+
+			<label class="ma-field">
+				<span class="ma-label">Vydal</span>
+				<input
+					type="text"
+					class="ma-input"
+					placeholder="Kdo certifikát vydal"
+					[value]="issuer()"
+					(input)="issuer.set($any($event.target).value)"
+				/>
+			</label>
+		</section>
+
+		<section class="tb-card bm-body">
+			<div class="tb-heading">
+				<h2 class="tb-title">Lidé</h2>
+				<button type="button" class="bm-btn-ghost tb-select" (click)="selectMembers()">
+					<ion-icon name="people-outline"></ion-icon>
+					Vybrat lidi
+				</button>
+			</div>
+
+			@if (members().length) {
+				<ul class="tb-members">
+					@for (member of members(); track member.id) {
+						<li class="tb-member">
+							<span class="tb-member-name">
+								<strong>{{ member.nickname || member.firstName || member.lastName }}</strong>
+								@if (member.nickname && (member.firstName || member.lastName)) {
+									<span class="tb-member-full">{{ member.firstName }} {{ member.lastName }}</span>
+								}
+							</span>
+							@if (member.groupId | group: "name"; as groupName) {
+								<span class="tb-group">{{ groupName }}</span>
+							}
+							<button
+								type="button"
+								class="ma-icon-btn"
+								aria-label="Odebrat"
+								(click)="removeMember(member)"
+							>
+								<ion-icon name="close-outline"></ion-icon>
+							</button>
+						</li>
+					}
+				</ul>
+			} @else {
+				<p class="tb-empty">Zatím nikdo nevybrán.</p>
+			}
+		</section>
+
+		@if (error(); as errorText) {
+			<p class="ma-error">{{ errorText }}</p>
+		}
+
+		<div class="tb-actions">
+			<button
+				type="button"
+				class="bm-btn-primary"
+				[disabled]="!canCreate() || saving() || !members().length"
+				(click)="save()"
+			>
+				@if (saving()) {
+					<ion-spinner name="dots"></ion-spinner>
+				} @else {
+					{{ submitLabel() }}
+				}
+			</button>
+		</div>
+	</div>
+</bo-page-content>

@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
+import { Member } from "../entities/member.entity";
 import { MemberTraining } from "../entities/member-training.entity";
 
 export type MemberTrainingData = Partial<Pick<MemberTraining, "type" | "name" | "issuedOn" | "validUntil" | "issuer">>;
@@ -26,6 +27,19 @@ export class MemberTrainingsRepository {
 
 	async createTraining(memberId: number, data: MemberTrainingData) {
 		return this.memberTrainings.save({ ...data, memberId });
+	}
+
+	async createTrainingsForMembers(memberIds: number[], data: MemberTrainingData) {
+		return this.memberTrainings.manager.transaction(async (manager) => {
+			const ids = [...new Set(memberIds)];
+			const existing = await manager.count(Member, { where: { id: In(ids) } });
+			if (existing !== ids.length) return null;
+
+			return manager.save(
+				MemberTraining,
+				ids.map((memberId) => manager.create(MemberTraining, { ...data, memberId })),
+			);
+		});
 	}
 
 	async updateTraining(training: MemberTraining, data: MemberTrainingData) {
