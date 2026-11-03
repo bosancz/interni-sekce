@@ -17,13 +17,6 @@ export const MemberAchievementCreatePermission = new Permission({
 	inherit: MemberUpdatePermission,
 });
 
-export const MemberAchievementUpdatePermission = new Permission({
-	linkTo: MemberAchievementResponse,
-	contains: MemberAchievementResponse,
-	params: { achievementId: "id" },
-	allowed: { vedouci: true },
-});
-
 export const MemberAchievementDeletePermission = new Permission({
 	linkTo: MemberAchievementResponse,
 	params: { achievementId: "id" },

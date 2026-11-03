@@ -1,0 +1,42 @@
+@use "./../../../../../styles/member-badges";
+
+:host {
+	display: block;
+}
+
+.badge-name {
+	max-width: 100%;
+	font-size: 11.5px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-align: center;
+	color: var(--bo-heading);
+	white-space: normal;
+	overflow-wrap: break-word;
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+
+.badge {
+	width: 76px;
+}
+
+.show-all {
+	display: block;
+	margin: 10px auto 0;
+	padding: 4px 10px;
+	border: none;
+	border-radius: 99px;
+	background: transparent;
+	color: var(--bo-muted);
+	font: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+
+	&:hover {
+		background: var(--bo-card-hover, rgba(42, 52, 120, 0.06));
+	}
+}

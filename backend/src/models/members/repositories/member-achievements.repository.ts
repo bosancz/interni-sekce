@@ -18,19 +18,15 @@ export class MemberAchievementsRepository {
 		return this.memberAchievements.findOne({ where: { id: achievementId, memberId } });
 	}
 
-	async createAchievement(memberId: number, data: { type: MemberAchievementTypes; date: string }) {
+	async createAchievement(memberId: number, type: MemberAchievementTypes) {
 		try {
-			return await this.memberAchievements.save({ ...data, memberId });
+			return await this.memberAchievements.save({ type, memberId });
 		} catch (err) {
 			if (err instanceof QueryFailedError && (err as QueryFailedError & { code?: string }).code === "23505") {
-				throw new ConflictException("Člen už tuto nášivku má.");
+				throw new ConflictException("Člen už toto ocenění má.");
 			}
 			throw err;
 		}
-	}
-
-	async updateAchievement(achievement: MemberAchievement, data: { date?: string }) {
-		return this.memberAchievements.save({ ...achievement, ...data });
 	}
 
 	async deleteAchievement(memberId: number, achievementId: number) {

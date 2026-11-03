@@ -1,0 +1,102 @@
+<bo-modal-layout>
+	<h4 slot="title">{{ title }}</h4>
+
+	<div class="bm-body">
+		@if (isNew()) {
+			<div class="ma-field">
+				<span class="ma-label">Školení</span>
+				<div class="ma-types" role="radiogroup">
+					@for (option of typeList; track option) {
+						<button
+							type="button"
+							role="radio"
+							class="ma-type"
+							[class.selected]="type() === option"
+							[attr.aria-checked]="type() === option"
+							(click)="type.set(option); error.set(null)"
+						>
+							@if (type() === option) {
+								<ion-icon name="checkmark-circle" class="ma-check"></ion-icon>
+							}
+							<img [src]="types[option].icon" alt="" class="ma-type-icon" />
+							<span class="ma-type-title">{{ types[option].title }}</span>
+						</button>
+					}
+				</div>
+			</div>
+		} @else {
+			<div class="mt-head">
+				<img [src]="types[type()].icon" alt="" class="ma-row-icon" />
+			</div>
+		}
+
+		@if (type() === "custom") {
+			<label class="ma-field">
+				<span class="ma-label">Název</span>
+				<input
+					type="text"
+					class="ma-input"
+					placeholder="Např. Vůdce malého plavidla"
+					[disabled]="!canEdit()"
+					[value]="name()"
+					(input)="name.set($any($event.target).value); error.set(null)"
+				/>
+			</label>
+		}
+
+		<div class="ma-fields">
+			<label class="ma-field">
+				<span class="ma-label">Uděleno</span>
+				<input
+					type="date"
+					class="ma-input"
+					[disabled]="!canEdit()"
+					[value]="issuedOn()"
+					(input)="issuedOn.set($any($event.target).value); error.set(null)"
+				/>
+			</label>
+
+			<label class="ma-field">
+				<span class="ma-label">Platnost do</span>
+				<input
+					type="date"
+					class="ma-input"
+					[disabled]="!canEdit()"
+					[value]="validUntil()"
+					(input)="validUntil.set($any($event.target).value); error.set(null)"
+				/>
+			</label>
+		</div>
+
+		<label class="ma-field">
+			<span class="ma-label">Vydal</span>
+			<input
+				type="text"
+				class="ma-input"
+				placeholder="Kdo certifikát vydal"
+				[disabled]="!canEdit()"
+				[value]="issuer()"
+				(input)="issuer.set($any($event.target).value)"
+			/>
+		</label>
+
+		@if (error(); as errorText) {
+			<p class="ma-error">{{ errorText }}</p>
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		@if (canDelete()) {
+			<button type="button" class="ma-delete-btn" (click)="remove()">
+				<ion-icon name="trash-outline"></ion-icon>
+				Smazat
+			</button>
+		}
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		@if (canEdit()) {
+			<button type="button" class="bm-btn-primary" (click)="save()">
+				{{ isNew() ? "Přidat" : "Uložit" }}
+			</button>
+		}
+	</div>
+</bo-modal-layout>

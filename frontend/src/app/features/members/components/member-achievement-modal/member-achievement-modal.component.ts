@@ -2,7 +2,6 @@ import { Component, computed, OnInit, signal } from "@angular/core";
 import { IonIcon, ModalController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { arrowUndoOutline, checkmarkCircle, trashOutline } from "ionicons/icons";
-import { DateTime } from "luxon";
 import {
 	getMemberAchievementChoices,
 	MemberAchievementChoice,
@@ -13,8 +12,8 @@ import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/mod
 import { SDK } from "src/sdk";
 
 export type MemberAchievementModalResult =
-	| { kind: "add"; type: SDK.MemberAchievementTypesEnum; date: string }
-	| { kind: "edit"; dates: Record<number, string>; deleted: number[] };
+	| { kind: "add"; type: SDK.MemberAchievementTypesEnum }
+	| { kind: "edit"; deleted: number[] };
 
 @Component({
 	selector: "bo-member-achievement-modal",
@@ -34,14 +33,11 @@ export class MemberAchievementModalComponent
 	choices: MemberAchievementChoice[] = [];
 
 	selected = signal<MemberAchievementChoice | null>(null);
-	date = signal(DateTime.now().toISODate());
-
-	dates = signal<Record<number, string>>({});
 	deleted = signal<number[]>([]);
 
 	isNew = computed(() => !this.edited);
 
-	heldTypes = new Set<SDK.MemberAchievementTypesEnum>();
+	canSave = computed(() => (this.isNew() ? !!this.selected()?.type : this.deleted().length > 0));
 
 	title = "";
 
@@ -51,14 +47,12 @@ export class MemberAchievementModalComponent
 	}
 
 	ngOnInit(): void {
-		this.heldTypes = new Set(this.achievements.map((a) => a.type));
 		if (this.edited) {
-			this.dates.set(Object.fromEntries(this.edited.map((a) => [a.id, a.date])));
 			this.title = this.getEditTitle(this.edited);
 		} else {
-			this.choices = getMemberAchievementChoices(this.heldTypes);
+			this.choices = getMemberAchievementChoices(new Set(this.achievements.map((a) => a.type)));
 			this.selected.set(this.choices.find((choice) => !choice.held) ?? null);
-			this.title = "Přidat nášivku";
+			this.title = "Přidat ocenění";
 		}
 	}
 
@@ -69,35 +63,16 @@ export class MemberAchievementModalComponent
 		return this.types[achievements[0].type].title;
 	}
 
-	setDate(achievementId: number, value: string) {
-		this.dates.update((dates) => ({ ...dates, [achievementId]: value }));
-	}
-
 	toggleDeleted(achievementId: number) {
 		this.deleted.update((ids) =>
 			ids.includes(achievementId) ? ids.filter((id) => id !== achievementId) : [...ids, achievementId],
 		);
 	}
 
-	canSave = computed(() => {
-		if (this.isNew()) return !!this.selected()?.type && !!this.date();
-		return Object.entries(this.dates()).every(([id, date]) => this.deleted().includes(Number(id)) || !!date);
-	});
-
 	save() {
 		if (!this.canSave()) return;
 
-		if (!this.edited) {
-			this.submit.emit({ kind: "add", type: this.selected()!.type!, date: this.date() });
-			return;
-		}
-
-		const deleted = this.deleted();
-		const dates: Record<number, string> = {};
-		for (const achievement of this.edited) {
-			const date = this.dates()[achievement.id];
-			if (!deleted.includes(achievement.id) && date !== achievement.date) dates[achievement.id] = date;
-		}
-		this.submit.emit({ kind: "edit", dates, deleted });
+		if (!this.edited) this.submit.emit({ kind: "add", type: this.selected()!.type! });
+		else this.submit.emit({ kind: "edit", deleted: this.deleted() });
 	}
 }

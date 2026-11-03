@@ -6,9 +6,11 @@ import { BoardMember } from "./entities/board-member.entity";
 import { Group } from "./entities/group.entity";
 import { MemberAchievement } from "./entities/member-achievements.entity";
 import { MemberContact } from "./entities/member-contact.entity";
+import { MemberTraining } from "./entities/member-training.entity";
 import { Member } from "./entities/member.entity";
 import { MembershipPayment } from "./entities/membership-payment.entity";
 import { MemberAchievementsRepository } from "./repositories/member-achievements.repository";
+import { MemberTrainingsRepository } from "./repositories/member-trainings.repository";
 import { BoardMembersRepository } from "./repositories/board-members.repository";
 import { GroupsRepository } from "./repositories/groups.repository";
 import { MembersRepository } from "./repositories/members.repository";
@@ -19,13 +21,22 @@ import { MembersExportService } from "./services/members-export.service";
 
 @Module({
 	imports: [
-		TypeOrmModule.forFeature([Member, MemberContact, MemberAchievement, MembershipPayment, Group, BoardMember]),
+		TypeOrmModule.forFeature([
+			Member,
+			MemberContact,
+			MemberAchievement,
+			MemberTraining,
+			MembershipPayment,
+			Group,
+			BoardMember,
+		]),
 		SettingsModelModule,
 		FilesModule,
 	],
 	providers: [
 		MembersRepository,
 		MemberAchievementsRepository,
+		MemberTrainingsRepository,
 		GroupsRepository,
 		BoardMembersRepository,
 		MembersExportService,
@@ -36,6 +47,7 @@ import { MembersExportService } from "./services/members-export.service";
 	exports: [
 		MembersRepository,
 		MemberAchievementsRepository,
+		MemberTrainingsRepository,
 		GroupsRepository,
 		BoardMembersRepository,
 		MembersExportService,

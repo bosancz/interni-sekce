@@ -3,8 +3,6 @@ import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } 
 import { Member } from "./member.entity";
 
 export enum MemberAchievementTypes {
-	"zdravotnik" = "zdravotnik",
-	"instruktorVodniTuristiky" = "instruktorVodniTuristiky",
 	"novackovskaZkouska" = "novackovskaZkouska",
 	"hvezda1" = "hvezda1",
 	"hvezda2" = "hvezda2",
@@ -31,5 +29,4 @@ export class MemberAchievement {
 	member?: Member;
 
 	@Column({ type: "enum", enum: MemberAchievementTypes, nullable: false }) type!: MemberAchievementTypes;
-	@Column({ type: "date", nullable: false }) date!: string;
 }

@@ -30,6 +30,10 @@
 				</div>
 
 				<div class="card-col">
+					<bo-member-trainings [member]="member()" />
+				</div>
+
+				<div class="card-col">
 					<bo-member-membership
 						[member]="member()"
 						(update)="updateMember($event)"

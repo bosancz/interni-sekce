@@ -1,15 +1,4 @@
-import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	NotFoundException,
-	Param,
-	ParseIntPipe,
-	Patch,
-	Post,
-	Req,
-} from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
@@ -20,13 +9,8 @@ import {
 	MemberAchievementCreatePermission,
 	MemberAchievementDeletePermission,
 	MemberAchievementsListPermission,
-	MemberAchievementUpdatePermission,
 } from "../acl/member-achievements.acl";
-import {
-	MemberAchievementCreateBody,
-	MemberAchievementResponse,
-	MemberAchievementUpdateBody,
-} from "../dto/member-achievement.dto";
+import { MemberAchievementCreateBody, MemberAchievementResponse } from "../dto/member-achievement.dto";
 
 @Controller("members/:memberId/achievements")
 @Authenticated()
@@ -66,24 +50,7 @@ export class MemberAchievementsController {
 
 		MemberAchievementCreatePermission.canOrThrow(req, member);
 
-		return this.memberAchievements.createAchievement(member.id, { type: body.type, date: body.date });
-	}
-
-	@Patch(":achievementId")
-	@AcLinks(MemberAchievementUpdatePermission)
-	@ApiResponse({ type: WithLinks(MemberAchievementResponse) })
-	async updateMemberAchievement(
-		@Req() req: Request,
-		@Param("memberId", ParseIntPipe) memberId: number,
-		@Param("achievementId", ParseIntPipe) achievementId: number,
-		@Body() body: MemberAchievementUpdateBody,
-	): Promise<MemberAchievementResponse> {
-		const achievement = await this.memberAchievements.getAchievement(memberId, achievementId);
-		if (!achievement) throw new NotFoundException();
-
-		MemberAchievementUpdatePermission.canOrThrow(req, achievement);
-
-		return this.memberAchievements.updateAchievement(achievement, { date: body.date });
+		return this.memberAchievements.createAchievement(member.id, body.type);
 	}
 
 	@Delete(":achievementId")

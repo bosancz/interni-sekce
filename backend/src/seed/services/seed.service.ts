@@ -13,6 +13,7 @@ import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { BoardMember } from "src/models/members/entities/board-member.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberAchievement } from "src/models/members/entities/member-achievements.entity";
+import { MemberTraining } from "src/models/members/entities/member-training.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { MembershipPayment } from "src/models/members/entities/membership-payment.entity";
@@ -258,8 +259,21 @@ export class SeedService {
 
 			await t.delete(MemberAchievement, { memberId: member.id });
 
-			for (const seedAchievement of seedMember.achievements ?? []) {
-				await t.insert(MemberAchievement, { memberId: member.id, ...seedAchievement });
+			for (const type of seedMember.achievements ?? []) {
+				await t.insert(MemberAchievement, { memberId: member.id, type });
+			}
+
+			await t.delete(MemberTraining, { memberId: member.id });
+
+			for (const seedTraining of seedMember.trainings ?? []) {
+				await t.insert(MemberTraining, {
+					memberId: member.id,
+					type: seedTraining.type,
+					name: seedTraining.name ?? null,
+					issuedOn: seedTraining.issuedOn ?? null,
+					validUntil: seedTraining.validUntil ?? null,
+					issuer: seedTraining.issuer ?? null,
+				});
 			}
 		}
 

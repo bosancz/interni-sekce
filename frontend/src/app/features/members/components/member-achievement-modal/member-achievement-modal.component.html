@@ -4,7 +4,7 @@
 	<div class="bm-body">
 		@if (isNew()) {
 			<div class="ma-field">
-				<span class="ma-label">Nášivka</span>
+				<span class="ma-label">Ocenění</span>
 				<div class="ma-types" role="radiogroup">
 					@for (choice of choices; track choice.key) {
 						<button
@@ -28,11 +28,6 @@
 					}
 				</div>
 			</div>
-
-			<label class="ma-field">
-				<span class="ma-label">Datum získání</span>
-				<input type="date" class="ma-input" [value]="date()" (input)="date.set($any($event.target).value)" />
-			</label>
 		} @else {
 			@for (achievement of edited; track achievement.id) {
 				@let isDeleted = deleted().includes(achievement.id);
@@ -41,23 +36,13 @@
 					<div class="ma-row-text">
 						<span class="ma-row-title">{{ types[achievement.type].title }}</span>
 						<span class="ma-row-description">{{ types[achievement.type].description }}</span>
-						<label class="ma-row-date">
-							<span class="bm-visually-hidden">Datum získání</span>
-							<input
-								type="date"
-								class="ma-input"
-								[value]="dates()[achievement.id]"
-								[disabled]="isDeleted || !achievement._links.updateMemberAchievement.allowed"
-								(input)="setDate(achievement.id, $any($event.target).value)"
-							/>
-						</label>
 					</div>
 					@if (achievement._links.deleteMemberAchievement.allowed) {
 						<button
 							type="button"
 							class="ma-icon-btn"
 							[class.danger]="!isDeleted"
-							[attr.aria-label]="isDeleted ? 'Vrátit' : 'Odebrat nášivku'"
+							[attr.aria-label]="isDeleted ? 'Vrátit' : 'Odebrat ocenění'"
 							(click)="toggleDeleted(achievement.id)"
 						>
 							<ion-icon [name]="isDeleted ? 'arrow-undo-outline' : 'trash-outline'"></ion-icon>
@@ -71,7 +56,7 @@
 	<div slot="buttons" class="bm-buttons">
 		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
 		<button type="button" class="bm-btn-primary" [disabled]="!canSave()" (click)="save()">
-			{{ isNew() ? "Přidat" : "Uložit" }}
+			{{ isNew() ? "Přidat" : "Odebrat" }}
 		</button>
 	</div>
 </bo-modal-layout>

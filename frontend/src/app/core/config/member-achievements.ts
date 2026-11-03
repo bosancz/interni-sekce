@@ -14,16 +14,6 @@ export interface MemberAchievementMetadata {
 const STAR_ICON = "assets/img/achievements/hvezda.svg";
 
 export const MemberAchievementTypes: { [type in SDK.MemberAchievementTypesEnum]: MemberAchievementMetadata } = {
-	zdravotnik: {
-		title: "Zdravotník",
-		description: "Zdravotník zotavovacích akcí",
-		icon: "assets/img/achievements/zdravotnik.svg",
-	},
-	instruktorVodniTuristiky: {
-		title: "Instruktor vodní turistiky",
-		description: "Certifikát instruktora vodní turistiky",
-		icon: "assets/img/achievements/instruktor-vodni-turistiky.svg",
-	},
 	novackovskaZkouska: {
 		title: "Nováčkovská zkouška",
 		description: "Modrý šán",
@@ -127,16 +117,6 @@ export function getMemberAchievementSlots(
 				.filter((a) => MemberAchievementTypes[a.type].star)
 				.map((a) => MemberAchievementTypes[a.type].star!),
 			achievements: [...san].sort((a, b) => sanOrder(a) - sanOrder(b)),
-		});
-	}
-
-	for (const achievement of sorted.filter((a) => !MemberAchievementTypes[a.type].group)) {
-		slots.push({
-			key: achievement.type,
-			main: achievement,
-			icon: MemberAchievementTypes[achievement.type].icon,
-			stars: [],
-			achievements: [achievement],
 		});
 	}
 

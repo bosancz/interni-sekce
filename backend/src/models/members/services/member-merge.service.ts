@@ -236,17 +236,12 @@ export class MemberMergeService {
 
 	private async mergeAchievements(t: EntityManager, targetId: number, sourceId: number) {
 		await t.query(
-			`UPDATE members_achievements target SET date = LEAST(target.date, source.date)
-			FROM members_achievements source
-			WHERE target.member_id = $1 AND source.member_id = $2 AND source.type = target.type`,
-			[targetId, sourceId],
-		);
-		await t.query(
 			`DELETE FROM members_achievements source WHERE source.member_id = $2
 			AND EXISTS (SELECT 1 FROM members_achievements target WHERE target.member_id = $1 AND target.type = source.type)`,
 			[targetId, sourceId],
 		);
 		await t.query(`UPDATE members_achievements SET member_id = $1 WHERE member_id = $2`, [targetId, sourceId]);
+		await t.query(`UPDATE members_trainings SET member_id = $1 WHERE member_id = $2`, [targetId, sourceId]);
 	}
 
 	private async mergeMembershipPayments(t: EntityManager, targetId: number, sourceId: number) {

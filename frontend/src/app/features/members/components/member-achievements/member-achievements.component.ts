@@ -1,4 +1,3 @@
-import { DatePipe } from "@angular/common";
 import { Component, computed, effect, input, signal } from "@angular/core";
 import { IonButtons, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
@@ -35,7 +34,6 @@ import { MemberAchievementModalComponent } from "../member-achievement-modal/mem
 		IonSkeletonText,
 		AddButtonComponent,
 		TooltipDirective,
-		DatePipe,
 	],
 })
 export class MemberAchievementsComponent {
@@ -55,8 +53,6 @@ export class MemberAchievementsComponent {
 	readonly types = MemberAchievementTypes;
 	readonly starIcon = MemberAchievementTypes.hvezda1.icon;
 	readonly noPermissionText = "K této akci nemáš oprávnění.";
-
-	private datePipe = new DatePipe("cs");
 
 	constructor(
 		private api: ApiService,
@@ -80,15 +76,11 @@ export class MemberAchievementsComponent {
 	}
 
 	getSlotLabel(slot: MemberAchievementSlot) {
-		return slot.achievements
-			.map((a) => `${this.types[a.type].title} (${this.datePipe.transform(a.date, "d. M. y")})`)
-			.join(", ");
+		return slot.achievements.map((a) => this.types[a.type].title).join(", ");
 	}
 
 	canEdit(slot: MemberAchievementSlot) {
-		return slot.achievements.some(
-			(a) => a._links.updateMemberAchievement.allowed || a._links.deleteMemberAchievement.allowed,
-		);
+		return slot.achievements.some((a) => a._links.deleteMemberAchievement.allowed);
 	}
 
 	async openAdd() {
@@ -113,14 +105,13 @@ export class MemberAchievementsComponent {
 		if (!result) return;
 
 		if (result.kind === "add") {
-			await this.api.MembersApi.createMemberAchievement(member.id, { type: result.type, date: result.date });
-			await this.toastService.toast(`Nášivka ${this.types[result.type].title} byla přidána`);
+			await this.api.MembersApi.createMemberAchievement(member.id, { type: result.type });
+			await this.toastService.toast(`Ocenění ${this.types[result.type].title} bylo přidáno`);
 		} else {
 			for (const id of result.deleted) await this.api.MembersApi.deleteMemberAchievement(member.id, id);
-			for (const [id, date] of Object.entries(result.dates)) {
-				await this.api.MembersApi.updateMemberAchievement(member.id, Number(id), { date });
-			}
-			await this.toastService.toast(result.deleted.length ? "Nášivky byly upraveny" : "Datum bylo upraveno");
+			await this.toastService.toast(
+				result.deleted.length > 1 ? "Ocenění byla odebrána" : "Ocenění bylo odebráno",
+			);
 		}
 
 		await this.load(member.id);

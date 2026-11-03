@@ -4,6 +4,7 @@ import { EventExpenseTypes } from "src/models/events/entities/event-expense.enti
 import { EventStates } from "src/models/events/entities/event.entity";
 import { GroupMeetingDays } from "src/models/members/entities/group.entity";
 import { MemberAchievementTypes } from "src/models/members/entities/member-achievements.entity";
+import { MemberTrainingTypes } from "src/models/members/entities/member-training.entity";
 import { HealthEntry, HealthSeverity, MemberRanks, MemberRoles } from "src/models/members/entities/member.entity";
 
 export interface SeedGroup {
@@ -55,7 +56,14 @@ export interface SeedMember {
 	knownProblems?: HealthEntry[];
 	allergies?: HealthEntry[];
 	contacts?: SeedMemberContact[];
-	achievements?: { type: MemberAchievementTypes; date: string }[];
+	achievements?: MemberAchievementTypes[];
+	trainings?: {
+		type: MemberTrainingTypes;
+		name?: string;
+		issuedOn?: string;
+		validUntil?: string;
+		issuer?: string;
+	}[];
 }
 
 export interface SeedEventExpense {
@@ -196,17 +204,37 @@ export const SeedMembers: SeedMember[] = [
 		addressCity: "Hobitín",
 		addressPostalCode: "111 01",
 		achievements: [
-			{ type: MemberAchievementTypes.zdravotnik, date: "2015-05-16" },
-			{ type: MemberAchievementTypes.instruktorVodniTuristiky, date: "2017-09-30" },
-			{ type: MemberAchievementTypes.novackovskaZkouska, date: "1992-06-20" },
-			{ type: MemberAchievementTypes.hvezda1, date: "1993-06-19" },
-			{ type: MemberAchievementTypes.hvezda2, date: "1994-06-18" },
-			{ type: MemberAchievementTypes.hvezda3, date: "1995-06-17" },
-			{ type: MemberAchievementTypes.hvezda4, date: "1996-06-15" },
-			{ type: MemberAchievementTypes.cernySan, date: "2021-12-18" },
-			{ type: MemberAchievementTypes.clunar, date: "2008-07-12" },
-			{ type: MemberAchievementTypes.kormidelnik, date: "2011-07-16" },
-			{ type: MemberAchievementTypes.lodivod, date: "2014-07-19" },
+			MemberAchievementTypes.novackovskaZkouska,
+			MemberAchievementTypes.hvezda1,
+			MemberAchievementTypes.hvezda2,
+			MemberAchievementTypes.hvezda3,
+			MemberAchievementTypes.hvezda4,
+			MemberAchievementTypes.cernySan,
+			MemberAchievementTypes.clunar,
+			MemberAchievementTypes.kormidelnik,
+			MemberAchievementTypes.lodivod,
+		],
+		trainings: [
+			{
+				type: MemberTrainingTypes.zdravotnik,
+				issuedOn: "2015-05-16",
+				validUntil: "2019-05-16",
+				issuer: "Junák – český skaut",
+			},
+			{
+				type: MemberTrainingTypes.zdravotnik,
+				issuedOn: "2023-05-20",
+				validUntil: "2027-05-20",
+				issuer: "Junák – český skaut",
+			},
+			{ type: MemberTrainingTypes.instruktorVodniTuristiky, issuedOn: "2017-09-30", issuer: "MŠMT" },
+			{
+				type: MemberTrainingTypes.lanac,
+				issuedOn: "2022-04-09",
+				validUntil: "2025-04-09",
+				issuer: "Český svaz kanoistů",
+			},
+			{ type: MemberTrainingTypes.custom, name: "Vůdce malého plavidla", issuer: "Státní plavební správa" },
 		],
 	},
 	{
@@ -288,10 +316,10 @@ export const SeedMembers: SeedMember[] = [
 	{
 		nickname: "Fíli",
 		achievements: [
-			{ type: MemberAchievementTypes.novackovskaZkouska, date: "2023-06-17" },
-			{ type: MemberAchievementTypes.hvezda1, date: "2024-06-15" },
-			{ type: MemberAchievementTypes.hvezda2, date: "2025-06-21" },
-			{ type: MemberAchievementTypes.clunar, date: "2025-07-12" },
+			MemberAchievementTypes.novackovskaZkouska,
+			MemberAchievementTypes.hvezda1,
+			MemberAchievementTypes.hvezda2,
+			MemberAchievementTypes.clunar,
 		],
 		group: "T",
 		role: MemberRoles.dite,
@@ -314,7 +342,7 @@ export const SeedMembers: SeedMember[] = [
 	},
 	{
 		nickname: "Kíli",
-		achievements: [{ type: MemberAchievementTypes.novackovskaZkouska, date: "2025-06-21" }],
+		achievements: [MemberAchievementTypes.novackovskaZkouska],
 		group: "T",
 		role: MemberRoles.dite,
 		firstName: "Kíli",
