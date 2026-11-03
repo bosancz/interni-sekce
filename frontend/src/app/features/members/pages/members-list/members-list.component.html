@@ -254,18 +254,35 @@
 			</admin-table-column>
 		}
 
-		@if (needsBadges()) {
-			<admin-table-column
-				header="Nášivky"
-				[hideMobileLabel]="true"
-				headerClass="align-middle members-badges-column"
-				cellClass="members-badges-column"
-			>
+		@if (isDesktop()) {
+			@if (viewSelections().achievements) {
+				<admin-table-column
+					header="Ocenění"
+					headerClass="align-middle members-achievements-column"
+					cellClass="members-achievements-column"
+				>
+					<ng-container *adminCell="let member">
+						<bo-member-badges-inline [member]="member" [achievements]="true" />
+					</ng-container>
+				</admin-table-column>
+			}
+			@if (viewSelections().trainings) {
+				<admin-table-column
+					header="Školení"
+					headerClass="align-middle members-badges-column"
+					cellClass="members-badges-column"
+				>
+					<ng-container *adminCell="let member">
+						<bo-member-badges-inline [member]="member" [trainings]="true" />
+					</ng-container>
+				</admin-table-column>
+			}
+		} @else if (needsBadges()) {
+			<admin-table-column header="Nášivky" [hideMobileLabel]="true">
 				<ng-container *adminCell="let member">
 					<bo-member-badges-inline
 						[member]="member"
-						[san]="!!viewSelections().san"
-						[rank]="!!viewSelections().rank"
+						[achievements]="!!viewSelections().achievements"
 						[trainings]="!!viewSelections().trainings"
 					/>
 				</ng-container>
