@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsEnum, IsHexColor, IsInt, IsOptional, IsString, ValidateIf } from "class-validator";
-import { EnsureBoolean } from "src/helpers/validation";
+import { EnsureBoolean, Trim } from "src/helpers/validation";
 import { Group, GroupMeetingDays } from "src/models/members/entities/group.entity";
 
 export class GroupLeaderResponse {
@@ -36,15 +36,15 @@ export class ListGroupsQuery {
 }
 
 export class CreateGroupBody implements Pick<Group, "shortName" | "name"> {
-	@IsString() shortName!: string;
-	@IsString() @IsOptional() name!: string | null;
+	@Trim() @IsString() shortName!: string;
+	@Trim() @IsString() @IsOptional() name!: string | null;
 }
 
 export class UpdateGroupBody implements Partial<
 	Pick<Group, "shortName" | "name" | "active" | "children" | "color" | "meetingDay" | "leaderId">
 > {
-	@IsString() @IsOptional() shortName?: string;
-	@IsString() @IsOptional() name?: string | null;
+	@Trim() @IsString() @IsOptional() shortName?: string;
+	@Trim() @IsString() @IsOptional() name?: string | null;
 	@IsBoolean() @IsOptional() active?: boolean;
 	@IsBoolean() @IsOptional() children?: boolean;
 	@ApiProperty({ type: "string", nullable: true, required: false })

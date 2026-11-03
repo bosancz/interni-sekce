@@ -3,6 +3,7 @@ import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { EventExpense, EventExpenseTypes } from "src/models/events/entities/event-expense.entity";
 import { Event } from "src/models/events/entities/event.entity";
 import { EventResponse } from "./event.dto";
+import { Trim } from "src/helpers/validation";
 
 export class EventExpenseResponse implements EventExpense {
 	@ApiProperty() id!: number;
@@ -16,10 +17,10 @@ export class EventExpenseResponse implements EventExpense {
 }
 
 export class EventExpenseCreateBody {
-	@IsString() @IsOptional() receiptNumber?: string;
+	@Trim() @IsString() @IsOptional() receiptNumber?: string;
 	@IsEnum(EventExpenseTypes) @IsOptional() type?: EventExpenseTypes;
 	@IsNumber() @IsOptional() amount?: number;
-	@IsString() @IsOptional() description?: string;
+	@Trim() @IsString() @IsOptional() description?: string;
 }
 
 export class EventExpenseUpdateBody extends EventExpenseCreateBody {}

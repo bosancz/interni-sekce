@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { plainToInstance, Type } from "class-transformer";
 import { IsEnum, IsInt, IsOptional, validateSync } from "class-validator";
-import { EnsureArray } from "./validation";
+import { EnsureArray, Trim } from "./validation";
 
 enum Color {
 	red = "red",
@@ -59,5 +59,27 @@ describe("EnsureArray", () => {
 		const { query, errors } = parse({ colors: "red,blue" });
 		expect(query.colors).toEqual(["red", "blue"]);
 		expect(errors).toHaveLength(0);
+	});
+});
+
+class TrimBody {
+	@Trim() name?: string;
+	@Trim() description?: string | null;
+	@Trim() tags?: string[];
+	@Trim() count?: number;
+}
+
+describe("Trim", () => {
+	it("trims strings at the edges only", () => {
+		const body = plainToInstance(TrimBody, { name: "  Bilbo ", description: "\n první\n\n druhý \n" });
+		expect(body.name).toBe("Bilbo");
+		expect(body.description).toBe("první\n\n druhý");
+	});
+
+	it("trims strings in arrays and leaves other values", () => {
+		const body = plainToInstance(TrimBody, { tags: [" a ", "b "], description: null, count: 3 });
+		expect(body.tags).toEqual(["a", "b"]);
+		expect(body.description).toBeNull();
+		expect(body.count).toBe(3);
 	});
 });

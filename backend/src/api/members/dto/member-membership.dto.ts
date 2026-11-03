@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsBoolean, IsInt, IsOptional, IsString, Matches, Max, Min } from "class-validator";
+import { Trim } from "src/helpers/validation";
 
 /**
  * One year of a member's membership fee. The year is set (or cleared) server-side through
@@ -19,6 +20,7 @@ export class MemberMembershipUpdateBody {
 	 */
 	@ApiPropertyOptional({ type: "string", nullable: true })
 	@IsOptional()
+	@Trim()
 	@IsString()
 	note?: string | null;
 

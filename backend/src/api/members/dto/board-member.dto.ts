@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ArrayUnique, IsArray, IsInt, IsOptional, IsString, MinLength } from "class-validator";
 import { BoardMember } from "src/models/members/entities/board-member.entity";
+import { Trim } from "src/helpers/validation";
 
 export class BoardMemberMemberResponse {
 	@ApiProperty() id!: number;
@@ -21,7 +22,7 @@ export class BoardMemberResponse implements Omit<BoardMember, "member"> {
 }
 
 export class BoardMemberUpdateBody implements Partial<Pick<BoardMember, "function">> {
-	@IsString() @MinLength(1) @IsOptional() function?: string;
+	@Trim() @IsString() @MinLength(1) @IsOptional() function?: string;
 }
 
 export class BoardMembersOrderBody {

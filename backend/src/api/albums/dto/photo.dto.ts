@@ -5,7 +5,7 @@ import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { UserResponse } from "src/api/users/dto/user.dto";
 import { Album } from "src/models/albums/entities/album.entity";
 import { FaceEmotion } from "src/models/albums/schema/detected-faces";
-import { EnsureArray } from "src/helpers/validation";
+import { EnsureArray, Trim } from "src/helpers/validation";
 import { User } from "src/models/users/entities/user.entity";
 import { AlbumResponse } from "./album.dto";
 
@@ -45,14 +45,14 @@ export class PhotoCreateBody {
 	@IsInt()
 	albumId!: number;
 
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() caption?: string;
+	@ApiPropertyOptional({ type: "string" }) @IsOptional() @Trim() @IsString() caption?: string;
 
 	@ApiProperty({ type: "string", format: "binary" }) file!: any;
 }
 
 export class PhotoUpdateBody {
-	@ApiPropertyOptional({ type: "string" }) @IsOptional() @IsString() caption?: string | null;
-	@ApiPropertyOptional({ type: "string", isArray: true }) @IsOptional() @IsString({ each: true }) tags?:
+	@ApiPropertyOptional({ type: "string" }) @IsOptional() @Trim() @IsString() caption?: string | null;
+	@ApiPropertyOptional({ type: "string", isArray: true }) @IsOptional() @Trim() @IsString({ each: true }) tags?:
 		| string[]
 		| null;
 }

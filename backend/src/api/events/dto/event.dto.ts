@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, OmitType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsBoolean, IsEnum, IsInt, IsNumber, IsOptional, IsString, Min } from "class-validator";
-import { EnsureArray } from "src/helpers/validation";
+import { EnsureArray, Trim } from "src/helpers/validation";
 import { AlbumResponse } from "src/api/albums/dto/album.dto";
 import { GroupResponse } from "src/api/members/dto/group.dto";
 import { MemberResponse } from "src/api/members/dto/member.dto";
@@ -101,15 +101,15 @@ export class ReportsListQuery {
 }
 
 export class EventCreateBody implements Pick<Event, "name" | "description" | "dateFrom" | "dateTill"> {
-	@IsString() name!: string;
+	@Trim() @IsString() name!: string;
 	@IsString() dateFrom!: string;
 	@IsString() dateTill!: string;
-	@IsOptional() @IsString() description!: string | null;
+	@IsOptional() @Trim() @IsString() description!: string | null;
 	@IsOptional() @IsString() type!: string | null;
 }
 
 export class EventUpdateBody {
-	@IsOptional() @IsString() name?: string;
+	@IsOptional() @Trim() @IsString() name?: string;
 	@IsOptional() @IsEnum(EventStates) status?: EventStates;
 	@IsOptional() @IsString() dateFrom?: string;
 	@IsOptional() @IsString() dateTill?: string;
@@ -122,25 +122,25 @@ export class EventUpdateBody {
 	groupsIds?: number[];
 
 	@IsOptional() @IsString() type?: string | null;
-	@IsOptional() @IsString() description?: string | null;
+	@IsOptional() @Trim() @IsString() description?: string | null;
 	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsNumber() price?: number | null;
-	@IsOptional() @IsString() itemList?: string | null;
-	@IsOptional() @IsString() statusNote?: string | null;
-	@IsOptional() @IsString() place?: string | null;
+	@IsOptional() @Trim() @IsString() itemList?: string | null;
+	@IsOptional() @Trim() @IsString() statusNote?: string | null;
+	@IsOptional() @Trim() @IsString() place?: string | null;
 	@IsOptional() placeCoordinates?: { lat: number; lng: number } | null;
-	@IsOptional() @IsString() timeFrom?: string | null;
-	@IsOptional() @IsString() timeTill?: string | null;
-	@IsOptional() @IsString() meetingPlaceStart?: string | null;
-	@IsOptional() @IsString() meetingPlaceEnd?: string | null;
+	@IsOptional() @Trim() @IsString() timeFrom?: string | null;
+	@IsOptional() @Trim() @IsString() timeTill?: string | null;
+	@IsOptional() @Trim() @IsString() meetingPlaceStart?: string | null;
+	@IsOptional() @Trim() @IsString() meetingPlaceEnd?: string | null;
 }
 
 export class EventReportUpdateBody {
-	@IsOptional() @IsString() report?: string | null;
-	@IsOptional() @IsString() publicReport?: string | null;
+	@IsOptional() @Trim() @IsString() report?: string | null;
+	@IsOptional() @Trim() @IsString() publicReport?: string | null;
 	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsNumber() @Min(0) waterKm?: number | null;
-	@IsOptional() @IsString() river?: string | null;
+	@IsOptional() @Trim() @IsString() river?: string | null;
 }
 
 export class EventStatusChangeBody {
-	@IsString() @IsOptional() statusNote?: string;
+	@Trim() @IsString() @IsOptional() statusNote?: string;
 }

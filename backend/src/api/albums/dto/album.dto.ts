@@ -5,7 +5,7 @@ import { AcEntity, WithLinks } from "src/access-control/access-control-lib";
 import { EventResponse } from "src/api/events/dto/event.dto";
 import { UserResponse } from "src/api/users/dto/user.dto";
 import { PaginationQuery } from "src/api/helpers/dto";
-import { EnsureArray } from "src/helpers/validation";
+import { EnsureArray, Trim } from "src/helpers/validation";
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
 import { Event } from "src/models/events/entities/event.entity";
 import { User } from "src/models/users/entities/user.entity";
@@ -55,8 +55,8 @@ export class AlbumListQuery extends PaginationQuery {
 }
 
 export class AlbumCreateBody {
-	@ApiPropertyOptional() @IsOptional() @IsString() name?: string;
-	@ApiPropertyOptional() @IsOptional() @IsString() description?: string | null;
+	@ApiPropertyOptional() @IsOptional() @Trim() @IsString() name?: string;
+	@ApiPropertyOptional() @IsOptional() @Trim() @IsString() description?: string | null;
 	@ApiPropertyOptional() @IsOptional() @IsString() datePublished?: string | null;
 	@ApiPropertyOptional() @IsOptional() @IsString() dateFrom?: string | null;
 	@ApiPropertyOptional() @IsOptional() @IsString() dateTill?: string | null;
