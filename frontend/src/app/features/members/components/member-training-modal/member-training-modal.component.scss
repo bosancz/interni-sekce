@@ -1,0 +1,40 @@
+@use "./../../../../../styles/badge-modal" as *;
+
+.mt-head {
+	display: flex;
+	justify-content: center;
+}
+
+.bm-buttons {
+	align-items: center;
+}
+
+.ma-delete-btn {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-inline-end: auto;
+	padding: 8px 12px;
+	border: none;
+	border-radius: 99px;
+	background: transparent;
+	color: var(--ion-color-danger);
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 700;
+	cursor: pointer;
+
+	ion-icon {
+		font-size: 18px;
+	}
+
+	&:hover {
+		background: var(--bm-surface-hover);
+	}
+}
+
+.ma-types {
+	@media (max-width: 480px) {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}

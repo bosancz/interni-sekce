@@ -32,6 +32,7 @@ import { AdminTableCellDirective } from "src/app/shared/components/admin-table/a
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
 import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
+import { MemberBadgesInlineComponent } from "src/app/shared/components/member-badges-inline/member-badges-inline.component";
 import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
 import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
 import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
@@ -70,7 +71,11 @@ const MEMBERS_LIST_COLUMNS: { [key: string]: boolean } = {
 	firstTelephone: false,
 	firstEmail: false,
 	status: false,
+	achievements: false,
+	trainings: false,
 };
+
+const BADGE_COLUMNS = ["achievements", "trainings"];
 
 @UntilDestroy()
 @Component({
@@ -80,6 +85,7 @@ const MEMBERS_LIST_COLUMNS: { [key: string]: boolean } = {
 
 	imports: [
 		PageHeaderComponent,
+		MemberBadgesInlineComponent,
 		FilterComponent,
 		IonContent,
 		IonList,
@@ -374,6 +380,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			groups: this.normalizeFilterValueToArray(filter["groups"]).map((group) => parseInt(group, 10)),
 			active: ((filter["active"] as string) || "active") === "all" ? undefined : true,
 			contacts: this.needsContacts() || undefined,
+			badges: this.needsBadges() || undefined,
 			sort: (filter["sort"] as string) || undefined,
 			order: (filter["order"] as SDK.ListMembersOrderEnum) || undefined,
 		};
@@ -398,6 +405,11 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 	private needsContacts(): boolean {
 		const selections = this.viewSelections();
 		return !!selections["firstTelephone"] || !!selections["firstEmail"];
+	}
+
+	needsBadges(): boolean {
+		const selections = this.viewSelections();
+		return BADGE_COLUMNS.some((key) => !!selections[key]);
 	}
 
 	private normalizeFilterValueToArray(value: unknown): string[] {
@@ -474,11 +486,11 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		this.viewSelections.set(selections);
 
 		const contactColumnAdded = ["firstTelephone", "firstEmail"].some((key) => selections[key] && !previous[key]);
-		if (contactColumnAdded) {
-			const members = this.members();
-			const contactsLoaded = !!members?.some((member) => member.contacts !== undefined);
-			if (!contactsLoaded) this.loadMembers(this.filter);
-		}
+		const badgeColumnAdded = BADGE_COLUMNS.some((key) => selections[key] && !previous[key]);
+		const members = this.members();
+		const contactsMissing = contactColumnAdded && !members?.some((member) => member.contacts !== undefined);
+		const badgesMissing = badgeColumnAdded && !members?.some((member) => member.achievements !== undefined);
+		if (contactsMissing || badgesMissing) this.loadMembers(this.filter);
 	}
 
 	columnOptions = computed<FilterPillOption[]>(() =>
@@ -507,6 +519,8 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			firstTelephone: "Telefon na rodiče",
 			firstEmail: "Email na rodiče",
 			status: "Stav",
+			achievements: "Ocenění",
+			trainings: "Školení",
 		};
 
 		return labels[key] || key;

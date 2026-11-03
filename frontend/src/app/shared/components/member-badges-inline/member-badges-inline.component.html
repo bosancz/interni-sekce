@@ -1,0 +1,12 @@
+@if (badges().length) {
+	<span class="badges-row">
+		@for (badge of badges(); track badge.key) {
+			<span class="inline-badge" [boTooltip]="badge.label" [attr.aria-label]="badge.label" role="img">
+				<img [src]="badge.icon" alt="" class="inline-badge-icon" />
+				@for (star of badge.stars; track star) {
+					<img [src]="starIcon" alt="" class="inline-badge-star" [attr.data-star]="star" />
+				}
+			</span>
+		}
+	</span>
+}

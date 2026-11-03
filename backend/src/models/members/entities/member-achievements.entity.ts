@@ -1,14 +1,21 @@
 import { ApiHideProperty } from "@nestjs/swagger";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Member } from "./member.entity";
 
-export enum MemberAchievementType {
-	"star" = "star",
-	"certificate" = "certificate",
-	"other" = "other",
+export enum MemberAchievementTypes {
+	"novackovskaZkouska" = "novackovskaZkouska",
+	"hvezda1" = "hvezda1",
+	"hvezda2" = "hvezda2",
+	"hvezda3" = "hvezda3",
+	"hvezda4" = "hvezda4",
+	"cernySan" = "cernySan",
+	"clunar" = "clunar",
+	"kormidelnik" = "kormidelnik",
+	"lodivod" = "lodivod",
 }
 
 @Entity("members_achievements")
+@Index("UQ_members_achievements_member_type", ["memberId", "type"], { unique: true })
 export class MemberAchievement {
 	@PrimaryGeneratedColumn()
 	id!: number;
@@ -21,7 +28,5 @@ export class MemberAchievement {
 	@ApiHideProperty()
 	member?: Member;
 
-	@Column({ type: "enum", enum: MemberAchievementType, nullable: false }) type!: MemberAchievementType;
-	@Column({ type: "date", nullable: true }) dateFrom!: string;
-	@Column({ type: "date", nullable: true }) dateTill!: string;
+	@Column({ type: "enum", enum: MemberAchievementTypes, nullable: false }) type!: MemberAchievementTypes;
 }

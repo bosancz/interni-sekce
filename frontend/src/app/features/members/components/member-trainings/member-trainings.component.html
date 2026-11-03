@@ -1,0 +1,63 @@
+<bo-card>
+	<bo-card-header>
+		<bo-card-title>
+			<span class="bo-card-section-title">
+				<ion-icon name="school-outline" />
+				Školení
+			</span>
+		</bo-card-title>
+	</bo-card-header>
+
+	<bo-card-content>
+		@if (trainings() === undefined) {
+			<div class="badges">
+				@for (i of [1, 2]; track i) {
+					<div class="badge skeleton"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
+				}
+			</div>
+		} @else {
+			@if (visibleBadges().length) {
+				<div class="badges">
+					@for (badge of visibleBadges(); track badge.training.id) {
+						<button
+							type="button"
+							class="badge"
+							[class.expired]="badge.expired"
+							[class.editable]="canEdit(badge.training)"
+							[attr.aria-label]="getLabel(badge)"
+							[boTooltip]="getLabel(badge)"
+							(click)="openEdit(badge.training)"
+						>
+							<span class="badge-icon-wrap">
+								<img [src]="types[badge.training.type].icon" alt="" class="badge-icon" />
+							</span>
+							@if (badge.training.type === "custom") {
+								<span class="badge-name">{{ badge.training.name }}</span>
+							}
+							@if (badge.training.validUntil) {
+								<span class="badge-date">do {{ badge.training.validUntil | date: "M/y" }}</span>
+							}
+						</button>
+					}
+				</div>
+			} @else {
+				<p class="empty">Zatím žádná školení.</p>
+			}
+
+			@if (hiddenCount()) {
+				<button type="button" class="show-all" (click)="showAll.set(!showAll())">
+					{{ showAll() ? "Skrýt starší propadlá" : "Zobrazit i starší propadlá (" + hiddenCount() + ")" }}
+				</button>
+			}
+		}
+
+		<ion-buttons class="mt-3 justify-content-center">
+			<bo-add-button
+				[disabled]="!member()?._links?.createMemberTraining?.allowed"
+				[boTooltip]="member()?._links?.createMemberTraining?.allowed ? null : noPermissionText"
+				(click)="openAdd()"
+				>Přidat školení</bo-add-button
+			>
+		</ion-buttons>
+	</bo-card-content>
+</bo-card>

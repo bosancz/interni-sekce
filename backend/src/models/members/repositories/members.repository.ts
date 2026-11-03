@@ -9,8 +9,10 @@ import {
 import { PaginationOptions } from "src/helpers/pagination";
 import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
-import { Brackets, FindOneOptions, FindOptionsRelations, Not, Repository } from "typeorm";
+import { Brackets, FindOneOptions, FindOptionsRelations, In, Not, Repository } from "typeorm";
+import { MemberAchievement } from "../entities/member-achievements.entity";
 import { MemberContact } from "../entities/member-contact.entity";
+import { MemberTraining } from "../entities/member-training.entity";
 import { sortMemberContacts } from "../helpers/member-contacts";
 import { Member } from "../entities/member.entity";
 import { MembershipPayment } from "../entities/membership-payment.entity";
@@ -28,6 +30,7 @@ export interface GetMembersOptions extends PaginationOptions {
 	// Keep the members who paid the fee of membershipYear even where `active` would drop them.
 	includeMembershipPaid?: boolean;
 	contacts?: boolean;
+	badges?: boolean;
 	// Join the member's group, for the readers that need its name rather than its id.
 	withGroup?: boolean;
 }
@@ -37,6 +40,8 @@ export class MembersRepository {
 	constructor(
 		@InjectRepository(Member) private membersRepository: Repository<Member>,
 		@InjectRepository(MemberContact) private membersContactsRepository: Repository<MemberContact>,
+		@InjectRepository(MemberAchievement) private memberAchievements: Repository<MemberAchievement>,
+		@InjectRepository(MemberTraining) private memberTrainings: Repository<MemberTraining>,
 		@InjectRepository(MembershipPayment) private membershipPaymentsRepository: Repository<MembershipPayment>,
 	) {}
 
@@ -160,6 +165,8 @@ export class MembersRepository {
 			if (member.contacts) member.contacts = sortMemberContacts(member.contacts);
 		}
 
+		if (options.badges && members.length) await this.loadBadges(members);
+
 		return members;
 	}
 
@@ -259,6 +266,19 @@ export class MembersRepository {
 
 	async deleteMember(id: number) {
 		return this.membersRepository.softDelete({ id });
+	}
+
+	private async loadBadges(members: Member[]) {
+		const memberIds = members.map((member) => member.id);
+		const [achievements, trainings] = await Promise.all([
+			this.memberAchievements.find({ where: { memberId: In(memberIds) } }),
+			this.memberTrainings.find({ where: { memberId: In(memberIds) } }),
+		]);
+
+		for (const member of members) {
+			member.achievements = achievements.filter((achievement) => achievement.memberId === member.id);
+			member.trainings = trainings.filter((training) => training.memberId === member.id);
+		}
 	}
 
 	async getContacts(memberId: number) {

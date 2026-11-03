@@ -2,6 +2,16 @@
 	table-layout: fixed;
 	width: 100%;
 
+	.members-achievements-column {
+		width: 84px;
+		vertical-align: middle;
+	}
+
+	.members-badges-column {
+		width: 128px;
+		vertical-align: middle;
+	}
+
 	.members-photo-column {
 		width: 56px;
 		vertical-align: middle;
@@ -68,4 +78,8 @@ ion-select::part(text) {
 			font-size: 24px;
 		}
 	}
+}
+
+:host ::ng-deep .admin-table-line:has(bo-member-badges-inline:empty) {
+	display: none;
 }

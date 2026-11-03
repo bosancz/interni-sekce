@@ -1,0 +1,66 @@
+<bo-modal-layout>
+	<h4 slot="title">{{ title }}</h4>
+
+	<div class="bm-body">
+		@if (isNew()) {
+			<div class="ma-field">
+				<span class="ma-label">Ocenění</span>
+				<div class="ma-types" role="radiogroup">
+					@for (choice of choices; track choice.key) {
+						<button
+							type="button"
+							role="radio"
+							class="ma-type"
+							[class.selected]="selected()?.key === choice.key"
+							[attr.aria-checked]="selected()?.key === choice.key"
+							[disabled]="choice.held"
+							(click)="selected.set(choice)"
+						>
+							@if (selected()?.key === choice.key) {
+								<ion-icon name="checkmark-circle" class="ma-check"></ion-icon>
+							}
+							<img [src]="choice.icon" alt="" class="ma-type-icon" />
+							<span class="ma-type-title">{{ choice.title }}</span>
+							@if (choice.note) {
+								<span class="ma-type-held">{{ choice.note }}</span>
+							}
+						</button>
+					}
+				</div>
+			</div>
+		} @else {
+			@for (achievement of rows(); track achievement.id) {
+				<div class="ma-row" [class.deleted]="deleting() === achievement.id">
+					<img [src]="types[achievement.type].icon" alt="" class="ma-row-icon" />
+					<div class="ma-row-text">
+						<span class="ma-row-title">{{ types[achievement.type].title }}</span>
+					</div>
+					@if (achievement._links.deleteMemberAchievement.allowed) {
+						<button
+							type="button"
+							class="ma-icon-btn danger"
+							aria-label="Odebrat ocenění"
+							[disabled]="deleting() !== null"
+							(click)="delete(achievement)"
+						>
+							@if (deleting() === achievement.id) {
+								<ion-spinner name="crescent"></ion-spinner>
+							} @else {
+								<ion-icon name="trash-outline"></ion-icon>
+							}
+						</button>
+					}
+				</div>
+			}
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		@if (isNew()) {
+			<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+			<button type="button" class="bm-btn-primary" [disabled]="!selected()?.type" (click)="save()">Přidat</button>
+		} @else {
+			<button type="button" class="bm-btn-primary" (click)="close.emit()">Zavřít</button>
+		}
+	</div>
+</bo-modal-layout>

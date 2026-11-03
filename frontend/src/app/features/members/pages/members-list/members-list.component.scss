@@ -15,6 +15,16 @@ td ion-badge {
 		width: 56px;
 		vertical-align: middle;
 	}
+
+	.members-achievements-column {
+		width: 110px;
+		vertical-align: middle;
+	}
+
+	.members-badges-column {
+		width: 180px;
+		vertical-align: middle;
+	}
 }
 
 .members-photo {
@@ -57,4 +67,8 @@ ion-select::part(text) {
 	ion-list:not(:first-child) {
 		margin-top: 8px;
 	}
+}
+
+:host ::ng-deep .admin-table-line:has(bo-member-badges-inline:empty) {
+	display: none;
 }
