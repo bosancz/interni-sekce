@@ -22,13 +22,13 @@
 					}
 
 					<p class="meta">
-						@if (daily.leaders.length) {
-							<span class="leaders">
-								@for (leader of daily.leaders; track leader.id; let last = $last) {
+						@if (daily.members.length) {
+							<span class="members">
+								@for (member of daily.members; track member.id; let last = $last) {
 									<a
-										[routerLink]="['/databaze/clenove', leader.id]"
+										[routerLink]="['/databaze/clenove', member.id]"
 										[queryParams]="{ tab: 'photos' }"
-										>{{ leader.nickname }}</a
+										>{{ member.nickname }}</a
 									>{{ last ? "" : ", " }}
 								}
 							</span>

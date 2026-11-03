@@ -323,23 +323,21 @@ export class PhotosRepository {
 			.limit(1)
 			.getOne();
 
-		if (!photo) return { photo: null, leaders: [] };
+		if (!photo) return { photo: null, members: [] };
 
 		const faces = await this.facesRepository
 			.createQueryBuilder("faces")
 			.innerJoinAndSelect("faces.member", "member")
 			.where("faces.photo_id = :photoId", { photoId: photo.id })
-			.andWhere("member.role IN (:...roles)", { roles: DAILY_PHOTO_ROLES })
-			.andWhere("member.active = true")
 			.orderBy("faces.x + faces.width / 2", "ASC")
 			.getMany();
 
-		const leaders = new Map<number, { id: number; nickname: string }>();
+		const members = new Map<number, { id: number; nickname: string }>();
 		for (const { member } of faces) {
-			if (member && !leaders.has(member.id)) leaders.set(member.id, { id: member.id, nickname: member.nickname });
+			if (member && !members.has(member.id)) members.set(member.id, { id: member.id, nickname: member.nickname });
 		}
 
-		return { photo, leaders: [...leaders.values()] };
+		return { photo, members: [...members.values()] };
 	}
 
 	async getDeletedPhotos(where: Brackets | string = "1=1") {

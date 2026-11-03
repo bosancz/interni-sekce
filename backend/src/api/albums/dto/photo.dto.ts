@@ -70,7 +70,7 @@ export class AlbumTitlePhotoBody {
 	photoId!: number | null;
 }
 
-export class PhotoDailyLeader {
+export class PhotoDailyMember {
 	@ApiProperty() id!: number;
 	@ApiProperty() nickname!: string;
 }
@@ -80,8 +80,8 @@ export class PhotoDailyResponse {
 	@ApiPropertyOptional({ type: WithLinks(PhotoResponse), nullable: true })
 	photo!: PhotoResponse | null;
 
-	@ApiProperty({ type: PhotoDailyLeader, isArray: true })
-	leaders!: PhotoDailyLeader[];
+	@ApiProperty({ type: PhotoDailyMember, isArray: true })
+	members!: PhotoDailyMember[];
 }
 
 export class PhotoCategoryOfPhotoResponse {
