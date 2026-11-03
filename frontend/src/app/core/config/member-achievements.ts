@@ -4,7 +4,6 @@ export type MemberAchievementGroup = "san" | "rank";
 
 export interface MemberAchievementMetadata {
 	title: string;
-	description: string;
 	icon: string;
 	group?: MemberAchievementGroup;
 	rank?: number;
@@ -16,37 +15,32 @@ const STAR_ICON = "assets/img/achievements/hvezda.svg";
 export const MemberAchievementTypes: { [type in SDK.MemberAchievementTypesEnum]: MemberAchievementMetadata } = {
 	novackovskaZkouska: {
 		title: "Nováčkovská zkouška",
-		description: "Modrý šán",
 		icon: "assets/img/achievements/novackovska-zkouska.svg",
 		group: "san",
 	},
-	hvezda1: { title: "1. hvězda", description: "Levý horní roh šánu", icon: STAR_ICON, group: "san", star: 1 },
-	hvezda2: { title: "2. hvězda", description: "Pravý horní roh šánu", icon: STAR_ICON, group: "san", star: 2 },
-	hvezda3: { title: "3. hvězda", description: "Levý dolní roh šánu", icon: STAR_ICON, group: "san", star: 3 },
-	hvezda4: { title: "4. hvězda", description: "Pravý dolní roh šánu", icon: STAR_ICON, group: "san", star: 4 },
+	hvezda1: { title: "1. hvězda", icon: STAR_ICON, group: "san", star: 1 },
+	hvezda2: { title: "2. hvězda", icon: STAR_ICON, group: "san", star: 2 },
+	hvezda3: { title: "3. hvězda", icon: STAR_ICON, group: "san", star: 3 },
+	hvezda4: { title: "4. hvězda", icon: STAR_ICON, group: "san", star: 4 },
 	cernySan: {
 		title: "Černý šán",
-		description: "Čestná nášivka za mimořádný význam pro skupinu, přišívá se místo nováčkovské zkoušky",
 		icon: "assets/img/achievements/cerny-san.svg",
 		group: "san",
 	},
 	clunar: {
 		title: "Člunař",
-		description: "Hodnost – kotva",
 		icon: "assets/img/achievements/clunar.svg",
 		group: "rank",
 		rank: 1,
 	},
 	kormidelnik: {
 		title: "Kormidelník",
-		description: "Hodnost – kormidlo",
 		icon: "assets/img/achievements/kormidelnik.svg",
 		group: "rank",
 		rank: 2,
 	},
 	lodivod: {
 		title: "Lodivod",
-		description: "Hodnost – kotva a kormidlo",
 		icon: "assets/img/achievements/lodivod.svg",
 		group: "rank",
 		rank: 3,

@@ -35,7 +35,6 @@
 					<img [src]="types[achievement.type].icon" alt="" class="ma-row-icon" />
 					<div class="ma-row-text">
 						<span class="ma-row-title">{{ types[achievement.type].title }}</span>
-						<span class="ma-row-description">{{ types[achievement.type].description }}</span>
 					</div>
 					@if (achievement._links.deleteMemberAchievement.allowed) {
 						<button
