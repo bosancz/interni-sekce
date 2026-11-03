@@ -1,5 +1,5 @@
 @if (badges().length) {
-	<span class="badges-pill">
+	<span class="badges-row">
 		@for (badge of badges(); track badge.key) {
 			<span class="inline-badge" [boTooltip]="badge.label" [attr.aria-label]="badge.label" role="img">
 				<img [src]="badge.icon" alt="" class="inline-badge-icon" />
