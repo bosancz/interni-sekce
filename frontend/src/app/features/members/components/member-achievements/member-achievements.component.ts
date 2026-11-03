@@ -99,19 +99,21 @@ export class MemberAchievementsComponent {
 
 		const result = await this.modalService.componentModal(
 			MemberAchievementModalComponent,
-			{ member, achievements: this.achievements() ?? [], edited },
+			{
+				member,
+				achievements: this.achievements() ?? [],
+				edited,
+				onDelete: async (achievement: SDK.MemberAchievementResponseWithLinks) => {
+					await this.api.MembersApi.deleteMemberAchievement(member.id, achievement.id);
+					this.achievements.update((list) => list?.filter((a) => a.id !== achievement.id));
+				},
+			},
 			{ cssClass: "dialog-brand" },
 		);
-		if (!result) return;
 
-		if (result.kind === "add") {
+		if (result) {
 			await this.api.MembersApi.createMemberAchievement(member.id, { type: result.type });
 			await this.toastService.toast(`Ocenění ${this.types[result.type].title} bylo přidáno`);
-		} else {
-			for (const id of result.deleted) await this.api.MembersApi.deleteMemberAchievement(member.id, id);
-			await this.toastService.toast(
-				result.deleted.length > 1 ? "Ocenění byla odebrána" : "Ocenění bylo odebráno",
-			);
 		}
 
 		await this.load(member.id);
