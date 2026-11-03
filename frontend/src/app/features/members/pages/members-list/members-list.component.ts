@@ -32,7 +32,7 @@ import { AdminTableCellDirective } from "src/app/shared/components/admin-table/a
 import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
 import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
 import { FilterPillComponent, FilterPillOption } from "src/app/shared/components/filter-pill/filter-pill.component";
-import { MemberBadgesInlineComponent } from "../../components/member-badges-inline/member-badges-inline.component";
+import { MemberBadgesInlineComponent } from "src/app/shared/components/member-badges-inline/member-badges-inline.component";
 import { SortOption, SortSelectComponent } from "src/app/shared/components/sort-select/sort-select.component";
 import { FilterComponent, FilterData } from "src/app/shared/components/filter/filter.component";
 import { FilterModel, FilterValues } from "src/app/shared/components/filter/filter-model";
@@ -71,12 +71,11 @@ const MEMBERS_LIST_COLUMNS: { [key: string]: boolean } = {
 	firstTelephone: false,
 	firstEmail: false,
 	status: false,
-	san: false,
-	rank: false,
+	achievements: false,
 	trainings: false,
 };
 
-const BADGE_COLUMNS = ["san", "rank", "trainings"];
+const BADGE_COLUMNS = ["achievements", "trainings"];
 
 @UntilDestroy()
 @Component({
@@ -520,8 +519,7 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			firstTelephone: "Telefon na rodiče",
 			firstEmail: "Email na rodiče",
 			status: "Stav",
-			san: "Šán a hvězdy",
-			rank: "Hodnost",
+			achievements: "Ocenění",
 			trainings: "Školení",
 		};
 

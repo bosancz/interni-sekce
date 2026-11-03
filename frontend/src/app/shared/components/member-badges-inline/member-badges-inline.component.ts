@@ -24,8 +24,7 @@ interface InlineBadge {
 })
 export class MemberBadgesInlineComponent {
 	member = input.required<SDK.MemberResponse>();
-	san = input(false);
-	rank = input(false);
+	achievements = input(false);
 	trainings = input(false);
 
 	readonly starIcon = MemberAchievementTypes.hvezda1.icon;
@@ -38,7 +37,7 @@ export class MemberBadgesInlineComponent {
 		const badges: InlineBadge[] = [];
 
 		for (const slot of slots) {
-			if ((slot.key === "san" && this.san()) || (slot.key === "rank" && this.rank())) {
+			if (this.achievements()) {
 				badges.push({
 					key: slot.key,
 					icon: slot.icon,

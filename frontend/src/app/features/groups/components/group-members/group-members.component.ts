@@ -44,6 +44,7 @@ import { MemberProfilePhotoUrlPipe } from "src/app/shared/pipes/member-profile-p
 import { GroupPipe } from "src/app/shared/pipes/group.pipe";
 import { AvatarComponent } from "src/app/shared/components/avatar/avatar.component";
 import { getMemberEmails } from "src/helpers/member-contacts";
+import { MemberBadgesInlineComponent } from "src/app/shared/components/member-badges-inline/member-badges-inline.component";
 import { SDK } from "src/sdk";
 import { GroupsService } from "../../services/groups.service";
 
@@ -65,6 +66,7 @@ const mailAddresses = (emails: string[]) =>
 	templateUrl: "./group-members.component.html",
 	styleUrls: ["./group-members.component.scss"],
 	imports: [
+		MemberBadgesInlineComponent,
 		MemberProfilePhotoUrlPipe,
 		GroupPipe,
 		AvatarComponent,
@@ -202,7 +204,11 @@ export class GroupMembersComponent implements OnInit {
 		firstTelephone: false,
 		firstEmail: false,
 		status: false,
+		achievements: false,
+		trainings: false,
 	});
+
+	needsBadges = computed(() => ["achievements", "trainings"].some((key) => !!this.viewSelections()[key]));
 
 	isDesktop = signal(true);
 
@@ -301,6 +307,7 @@ export class GroupMembersComponent implements OnInit {
 			limit: 1000,
 			active: applied["showInactive"] ? undefined : true,
 			contacts: true,
+			badges: this.needsBadges() || undefined,
 			sort,
 			order: sort ? ((applied["order"] as SDK.ListMembersOrderEnum) ?? "ASC") : undefined,
 		};
@@ -369,7 +376,9 @@ export class GroupMembersComponent implements OnInit {
 	};
 
 	setViewSelection(key: string, value: boolean) {
+		const badgesLoaded = this.needsBadges();
 		this.viewSelections.update((selections) => ({ ...selections, [key]: value }));
+		if (!badgesLoaded && this.needsBadges()) this.loadMembers();
 	}
 
 	public getViewSelectionLabel(key: string): string {
@@ -387,6 +396,8 @@ export class GroupMembersComponent implements OnInit {
 			firstTelephone: "Telefon na rodiče",
 			firstEmail: "Email na rodiče",
 			status: "Stav",
+			achievements: "Ocenění",
+			trainings: "Školení",
 		};
 
 		return labels[key] || key;
