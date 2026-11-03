@@ -69,7 +69,7 @@ export class PhotosRepository {
 			return `$${params.length}`;
 		};
 
-		const conditions: string[] = ["a.deleted_at IS NULL"];
+		const conditions: string[] = ["p.deleted_at IS NULL", "a.deleted_at IS NULL"];
 		const timezone = options.timezone ?? "Europe/Prague";
 
 		if (options.dateFrom) {
@@ -342,8 +342,39 @@ export class PhotosRepository {
 		return { photo, leaders: [...leaders.values()] };
 	}
 
-	async deletePhoto(id: Photo["id"]) {
-		const photo = await this.repository.findOneBy({ id });
+	async getDeletedPhotos(where: Brackets | string = "1=1") {
+		const q = this.repository
+			.createQueryBuilder("photos")
+			.withDeleted()
+			.leftJoin("photos.album", "album")
+			.addSelect(["album.id", "album.name"])
+			.where(where)
+			.andWhere("photos.deletedAt IS NOT NULL")
+			.orderBy("photos.deletedAt", "DESC")
+			.addOrderBy("photos.id", "DESC");
+
+		leftJoinUserAuthor(q, "photos.uploadedBy", "uploadedBy");
+		leftJoinUserAuthor(q, "photos.deletedBy", "deletedBy");
+
+		return q.getMany();
+	}
+
+	async getDeletedPhoto(id: Photo["id"]) {
+		return this.repository.findOne({ where: { id }, withDeleted: true });
+	}
+
+	async deletePhoto(id: Photo["id"], deletedById: User["id"] | null) {
+		await this.repository.update(id, { deletedById });
+		await this.repository.softDelete({ id });
+	}
+
+	async restorePhoto(id: Photo["id"]) {
+		await this.repository.update(id, { deletedById: null });
+		await this.repository.restore({ id });
+	}
+
+	async hardDeletePhoto(id: Photo["id"]) {
+		const photo = await this.repository.findOne({ where: { id }, withDeleted: true });
 		if (!photo) return;
 
 		const faces = await this.facesRepository.find({ select: { id: true }, where: { photoId: id } });
@@ -354,10 +385,10 @@ export class PhotosRepository {
 	}
 
 	async deletePhotosByAlbum(albumId: Photo["albumId"]) {
-		const photos = await this.repository.findBy({ albumId });
+		const photos = await this.repository.find({ where: { albumId }, withDeleted: true });
 
 		for (let photo of photos) {
-			await this.deletePhoto(photo.id);
+			await this.hardDeletePhoto(photo.id);
 		}
 	}
 }

@@ -20,6 +20,15 @@ export const PhotosBrowsePermission = new Permission<void>({
 	},
 });
 
+export const PhotosDeletedListPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: PhotoResponse,
+
+	allowed: {
+		vedouci: true,
+	},
+});
+
 export const PhotoDailyPermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: PhotoDailyResponse,
@@ -59,6 +68,25 @@ export const PhotoDeletePermission = new Permission({
 	linkTo: PhotoResponse,
 	params: { photoId: "id" },
 	inherit: PhotoEditPermission,
+	applicable: ({ doc }) => !doc.deletedAt,
+});
+
+export const PhotoRestorePermission = new Permission({
+	linkTo: PhotoResponse,
+	params: { photoId: "id" },
+	allowed: {
+		vedouci: true,
+	},
+	applicable: ({ doc }) => !!doc.deletedAt,
+});
+
+export const PhotoDeletePermanentPermission = new Permission({
+	linkTo: PhotoResponse,
+	params: { photoId: "id" },
+	allowed: {
+		admin: true,
+	},
+	applicable: ({ doc }) => !!doc.deletedAt,
 });
 
 export const PhotoReadFilePermission = new Permission({

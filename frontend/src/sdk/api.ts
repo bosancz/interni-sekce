@@ -6163,6 +6163,24 @@ export namespace SDK {
         'uploadedBy'?: UserResponseWithLinks | null;
         /**
          * 
+         * @type {string}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'deletedAt'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'deletedById'?: number | null;
+        /**
+         * 
+         * @type {UserResponseWithLinks}
+         * @memberof MemberPhotoResponseWithLinks
+         */
+        'deletedBy'?: UserResponseWithLinks | null;
+        /**
+         * 
          * @type {PhotoFaceResponse}
          * @memberof MemberPhotoResponseWithLinks
          */
@@ -7824,6 +7842,24 @@ export namespace SDK {
          * @memberof Photo
          */
         'srcId': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof Photo
+         */
+        'deletedAt'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof Photo
+         */
+        'deletedById'?: number | null;
+        /**
+         * 
+         * @type {User}
+         * @memberof Photo
+         */
+        'deletedBy'?: User;
     }
     
         /**
@@ -8875,6 +8911,24 @@ export namespace SDK {
          * @memberof PhotoResponse
          */
         'uploadedBy'?: UserResponseWithLinks | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoResponse
+         */
+        'deletedAt'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponse
+         */
+        'deletedById'?: number | null;
+        /**
+         * 
+         * @type {UserResponseWithLinks}
+         * @memberof PhotoResponse
+         */
+        'deletedBy'?: UserResponseWithLinks | null;
     }
     
         /**
@@ -8919,6 +8973,18 @@ export namespace SDK {
          * @memberof PhotoResponseLinks
          */
         'deletePhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoResponseLinks
+         */
+        'restorePhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof PhotoResponseLinks
+         */
+        'deletePhotoPermanent': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -9023,6 +9089,24 @@ export namespace SDK {
          * @memberof PhotoResponseWithLinks
          */
         'uploadedBy'?: UserResponseWithLinks | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof PhotoResponseWithLinks
+         */
+        'deletedAt'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof PhotoResponseWithLinks
+         */
+        'deletedById'?: number | null;
+        /**
+         * 
+         * @type {UserResponseWithLinks}
+         * @memberof PhotoResponseWithLinks
+         */
+        'deletedBy'?: UserResponseWithLinks | null;
         /**
          * 
          * @type {PhotoResponseLinks}
@@ -9239,6 +9323,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'getDailyPhoto': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'listDeletedPhotos': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -17603,6 +17693,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * @export
      */
@@ -17683,6 +17777,14 @@ export namespace SDK {
          */
         year?: Array<number>
     }
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -18096,6 +18198,50 @@ export namespace SDK {
             const localVarPath = `/api/photos/{photoId}/faces/{faceId}`
                 .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)))
                 .replace(`{${"faceId"}}`, encodeURIComponent(String(faceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} photoId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async deletePhotoPermanent(
+            photoId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('deletePhotoPermanent', 'photoId', photoId)
+            
+            const localVarPath = `/api/photos/{photoId}/permanent`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -18674,6 +18820,44 @@ export namespace SDK {
         /**
          * 
     
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async listDeletedPhotos(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/photos/deleted`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<PhotoResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {number} photoId 
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -19017,6 +19201,50 @@ export namespace SDK {
             
             const localVarPath = `/api/albums/{albumId}/restore`
                 .replace(`{${"albumId"}}`, encodeURIComponent(String(albumId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} photoId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof PhotoGalleryApi
+         */
+        
+        public async restorePhoto(
+            photoId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'photoId' is not null or undefined
+            assertParamExists('restorePhoto', 'photoId', photoId)
+            
+            const localVarPath = `/api/photos/{photoId}/restore`
+                .replace(`{${"photoId"}}`, encodeURIComponent(String(photoId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

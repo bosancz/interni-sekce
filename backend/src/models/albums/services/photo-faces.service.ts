@@ -209,7 +209,8 @@ export class PhotoFacesService {
 				count(*) FILTER (WHERE faces_detected_at IS NULL)::int AS "pending",
 				count(faces_error)::int AS "failed",
 				max(faces_detected_at) AS "lastDetectedAt"
-			FROM photos`,
+			FROM photos
+			WHERE deleted_at IS NULL`,
 		);
 		const [faces] = await this.dataSource.query(
 			`SELECT count(*)::int AS "total",

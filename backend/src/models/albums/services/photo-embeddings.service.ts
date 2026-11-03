@@ -77,7 +77,8 @@ export class PhotoEmbeddingsService {
 			LEFT JOIN (
 				SELECT photo_id, max(error) AS error, max(created_at) AS created_at
 				FROM photo_embeddings GROUP BY photo_id
-			) e ON e.photo_id = p.id`,
+			) e ON e.photo_id = p.id
+			WHERE p.deleted_at IS NULL`,
 		);
 
 		return stats as {
@@ -100,6 +101,7 @@ export class PhotoEmbeddingsService {
 		const rows: PhotoSearchHit[] = await this.dataSource.query(
 			`SELECT e.photo_id AS "photoId", -${PHOTO_DISTANCE(`$1::${VECTOR}`)} AS "score"
 			FROM photo_embeddings e
+			JOIN photos p ON p.id = e.photo_id AND p.deleted_at IS NULL
 			WHERE e.embedding IS NOT NULL
 			GROUP BY e.photo_id
 			HAVING $2::float8 IS NULL OR -${PHOTO_DISTANCE(`$1::${VECTOR}`)} >= $2::float8
@@ -118,6 +120,7 @@ export class PhotoEmbeddingsService {
 			`SELECT q.index::int AS "index", (
 				SELECT count(*) FROM (
 					SELECT 1 FROM photo_embeddings e
+					JOIN photos p ON p.id = e.photo_id AND p.deleted_at IS NULL
 					WHERE e.embedding IS NOT NULL
 					GROUP BY e.photo_id
 					HAVING -${PHOTO_DISTANCE("q.query")} >= q.min_score

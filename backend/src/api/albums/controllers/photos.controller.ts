@@ -36,6 +36,7 @@ import { PhotoContentService } from "src/models/worker/services/photo-content.se
 import {
 	PhotoCreatePermission,
 	PhotoDailyPermission,
+	PhotoDeletePermanentPermission,
 	PhotoDeletePermission,
 	PhotoDownloadPermission,
 	PhotoEditPermission,
@@ -43,7 +44,9 @@ import {
 	PhotoCategoriesOfPhotoPermission,
 	PhotoExifReadPermission,
 	PhotoReadPermission,
+	PhotoRestorePermission,
 	PhotosBrowsePermission,
+	PhotosDeletedListPermission,
 	PhotosListPermission,
 } from "../acl/photo.acl";
 import {
@@ -160,6 +163,17 @@ export class PhotosController {
 		return this.photos.getDailyPhoto();
 	}
 
+	@Get("deleted")
+	@AcLinks(PhotosDeletedListPermission)
+	@ApiResponse({ status: 200, type: WithLinks(PhotoResponse), isArray: true })
+	async listDeletedPhotos(@Req() req: Request): Promise<PhotoResponse[]> {
+		PhotosDeletedListPermission.canOrThrow(req);
+
+		const where = PhotosDeletedListPermission.canWhere(req, "photos");
+
+		return this.photos.getDeletedPhotos(where);
+	}
+
 	@Get(":photoId")
 	@AcLinks(PhotoReadPermission)
 	@ApiResponse({ status: 200, type: WithLinks(PhotoResponse) })
@@ -231,7 +245,31 @@ export class PhotosController {
 
 		PhotoDeletePermission.canOrThrow(req, photo);
 
-		await this.photos.deletePhoto(photo.id);
+		await this.photos.deletePhoto(photo.id, req.user?.userId ?? null);
+	}
+
+	@Post(":photoId/restore")
+	@AcLinks(PhotoRestorePermission)
+	@ApiResponse({ status: 204 })
+	async restorePhoto(@Param("photoId", ParseIntPipe) photoId: number, @Req() req: Request): Promise<void> {
+		const photo = await this.photos.getDeletedPhoto(photoId);
+		if (!photo) throw new NotFoundException();
+
+		PhotoRestorePermission.canOrThrow(req, photo);
+
+		await this.photos.restorePhoto(photo.id);
+	}
+
+	@Delete(":photoId/permanent")
+	@AcLinks(PhotoDeletePermanentPermission)
+	@ApiResponse({ status: 204 })
+	async deletePhotoPermanent(@Param("photoId", ParseIntPipe) photoId: number, @Req() req: Request): Promise<void> {
+		const photo = await this.photos.getDeletedPhoto(photoId);
+		if (!photo) throw new NotFoundException();
+
+		PhotoDeletePermanentPermission.canOrThrow(req, photo);
+
+		await this.photos.hardDeletePhoto(photo.id);
 	}
 
 	@Get(":photoId/image/:size")
@@ -244,10 +282,11 @@ export class PhotosController {
 	): Promise<void> {
 		if (!Object.values(PhotoSizes).includes(size)) throw new BadRequestException("Unknown image size.");
 
-		const photo = await this.photos.getPhoto(photoId);
+		const photo = await this.photos.getDeletedPhoto(photoId);
 		if (!photo) throw new NotFoundException();
 
-		PhotoReadFilePermission.canOrThrow(req, photo);
+		if (photo.deletedAt) PhotosDeletedListPermission.canOrThrow(req);
+		else PhotoReadFilePermission.canOrThrow(req, photo);
 
 		const ext = extname(photo.name);
 		const path = this.photosFiles.getPhotoImagePath(photo, size);

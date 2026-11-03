@@ -1,0 +1,50 @@
+<bo-page-header title="Smazané fotky" backUrl="/galerie/alba"></bo-page-header>
+
+<bo-page-content>
+	<admin-table
+		[rows]="photos()"
+		[loading]="photos() === undefined"
+		[actions]="photoActions"
+		[actionsHeader]="rowActionsHeader"
+	>
+		<admin-table-column header="Fotka" [primary]="true" headerClass="align-middle">
+			<ng-container *adminCell="let photo">
+				<div class="photo">
+					<img
+						[src]="photo | photoImageUrl: 'small'"
+						[style.background-color]="photo.bg"
+						alt=""
+						loading="lazy"
+					/>
+					<span>{{ photo.name }}</span>
+				</div>
+			</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Album" headerClass="align-middle">
+			<ng-container *adminCell="let photo">
+				@if (photo.album) {
+					<a [routerLink]="['/galerie/alba', photo.album.id]">{{ photo.album.name }}</a>
+				}
+			</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Nahrál/a" headerClass="align-middle">
+			<ng-container *adminCell="let photo">{{ userName(photo.uploadedBy) }}</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Smazal/a" headerClass="align-middle">
+			<ng-container *adminCell="let photo">{{ userName(photo.deletedBy) }}</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Smazáno" headerClass="align-middle">
+			<ng-container *adminCell="let photo">
+				{{ photo.deletedAt ? (photo.deletedAt | date: "d. M. y H:mm") : "" }}
+			</ng-container>
+		</admin-table-column>
+	</admin-table>
+
+	@if (photos()?.length === 0) {
+		<p class="ion-padding photos-empty">Žádné smazané fotky.</p>
+	}
+</bo-page-content>
