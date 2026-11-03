@@ -3,12 +3,14 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { FilesModule } from "src/models/files/files.module";
 import { NotificationsModelModule } from "src/models/notifications/notifications-model.module";
+import { Member } from "src/models/members/entities/member.entity";
 import { SettingsModelModule } from "src/models/settings/settings-model.module";
 import { WORKER_TASK_QUEUE, WorkerTasks } from "src/models/worker/worker-queues";
 import { CleanAlbumsMetadataCommand } from "./commands/clean-album-metadata.command";
 import { FacesMatchCommand } from "./commands/faces-match.command";
 import { FacesNotifyCommand } from "./commands/faces-notify.command";
 import { FixPhotoDimensionsCommand } from "./commands/fix-photo-dimensions.command";
+import { MembersProfilePhotosCommand } from "./commands/members-profile-photos.command";
 import { PhotosExifCommand } from "./commands/photos-exif.command";
 import { WriteAlbumsMetadataCommand } from "./commands/write-album-metadata.command";
 import { Album } from "./entities/album.entity";
@@ -19,6 +21,7 @@ import { Photo } from "./entities/photo.entity";
 import { AlbumsRepository } from "./repositories/albums.repository";
 import { PhotosRepository } from "./repositories/photos.repository";
 import { AlbumsMetadataService } from "./services/albums-metadata.service";
+import { MemberProfilePhotoService } from "./services/member-profile-photo.service";
 import { PhotoCategoriesService } from "./services/photo-categories.service";
 import { PhotoEmbeddingsService } from "./services/photo-embeddings.service";
 import { FaceMatchingWorkerService } from "./services/face-matching-worker.service";
@@ -30,7 +33,7 @@ import { PhotosMaintenanceService } from "./services/photos-maintenance.service"
 
 @Module({
 	imports: [
-		TypeOrmModule.forFeature([Album, Photo, PhotoFace, PhotoEmbedding, PhotoCategory]),
+		TypeOrmModule.forFeature([Album, Photo, PhotoFace, PhotoEmbedding, PhotoCategory, Member]),
 		FilesModule,
 		NotificationsModelModule,
 		SettingsModelModule,
@@ -54,6 +57,8 @@ import { PhotosMaintenanceService } from "./services/photos-maintenance.service"
 		PhotosExifCommand,
 		FacesMatchCommand,
 		FacesNotifyCommand,
+		MemberProfilePhotoService,
+		MembersProfilePhotosCommand,
 	],
 	exports: [
 		AlbumsRepository,
@@ -64,6 +69,7 @@ import { PhotosMaintenanceService } from "./services/photos-maintenance.service"
 		PhotoFacesService,
 		PhotoFacesMatchingService,
 		PhotoFacesNotificationsService,
+		MemberProfilePhotoService,
 	],
 })
 export class AlbumsModelModule {}
