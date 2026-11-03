@@ -29,16 +29,16 @@ export function isMemberTrainingExpired(
 	return !!training.validUntil && training.validUntil < today;
 }
 
-export interface MemberTrainingBadge {
-	training: SDK.MemberTrainingResponseWithLinks;
+export interface MemberTrainingBadge<T extends SDK.MemberTrainingResponse = SDK.MemberTrainingResponseWithLinks> {
+	training: T;
 	expired: boolean;
 }
 
-export function getMemberTrainingBadges(
-	trainings: SDK.MemberTrainingResponseWithLinks[],
+export function getMemberTrainingBadges<T extends SDK.MemberTrainingResponse = SDK.MemberTrainingResponseWithLinks>(
+	trainings: T[],
 	today = DateTime.now().toISODate(),
-): { badges: MemberTrainingBadge[]; hidden: MemberTrainingBadge[] } {
-	const groups = new Map<string, SDK.MemberTrainingResponseWithLinks[]>();
+): { badges: MemberTrainingBadge<T>[]; hidden: MemberTrainingBadge<T>[] } {
+	const groups = new Map<string, T[]>();
 	const sorted = [...trainings].sort(
 		(a, b) =>
 			MEMBER_TRAINING_TYPES.indexOf(a.type) - MEMBER_TRAINING_TYPES.indexOf(b.type) ||
@@ -52,8 +52,8 @@ export function getMemberTrainingBadges(
 		groups.set(key, [...(groups.get(key) ?? []), training]);
 	}
 
-	const badges: MemberTrainingBadge[] = [];
-	const hidden: MemberTrainingBadge[] = [];
+	const badges: MemberTrainingBadge<T>[] = [];
+	const hidden: MemberTrainingBadge<T>[] = [];
 
 	for (const group of groups.values()) {
 		const active = group.filter((training) => !isMemberTrainingExpired(training, today));

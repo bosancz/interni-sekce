@@ -5496,6 +5496,12 @@ export namespace SDK {
         'achievements'?: Array<MemberAchievement>;
         /**
          * 
+         * @type {Array<MemberTraining>}
+         * @memberof Member
+         */
+        'trainings'?: Array<MemberTraining>;
+        /**
+         * 
          * @type {Array<EventAttendee>}
          * @memberof Member
          */
@@ -6529,6 +6535,12 @@ export namespace SDK {
          * @memberof MemberResponse
          */
         'achievements'?: Array<MemberAchievementResponse>;
+        /**
+         * 
+         * @type {Array<MemberTrainingResponse>}
+         * @memberof MemberResponse
+         */
+        'trainings'?: Array<MemberTrainingResponse>;
     }
     
     
@@ -6855,6 +6867,12 @@ export namespace SDK {
         'achievements'?: Array<MemberAchievementResponse>;
         /**
          * 
+         * @type {Array<MemberTrainingResponse>}
+         * @memberof MemberResponseWithLinks
+         */
+        'trainings'?: Array<MemberTrainingResponse>;
+        /**
+         * 
          * @type {MemberResponseLinks}
          * @memberof MemberResponseWithLinks
          */
@@ -6876,6 +6894,66 @@ export namespace SDK {
     } as const;
     
     export type MemberRolesEnum = typeof MemberRolesEnum[keyof typeof MemberRolesEnum];
+    
+    
+        /**
+     * 
+     * @export
+     * @interface MemberTraining
+     */
+    export interface MemberTraining {
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberTraining
+         */
+        'id': number;
+        /**
+         * 
+         * @type {number}
+         * @memberof MemberTraining
+         */
+        'memberId': number;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberTraining
+         */
+        'type': MemberTrainingTypeEnum;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberTraining
+         */
+        'name': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberTraining
+         */
+        'issuedOn': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberTraining
+         */
+        'validUntil': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberTraining
+         */
+        'issuer': string | null;
+    }
+    
+    export const MemberTrainingTypeEnum = {
+        Zdravotnik: 'zdravotnik',
+        InstruktorVodniTuristiky: 'instruktorVodniTuristiky',
+        Lanac: 'lanac',
+        Custom: 'custom'
+    } as const;
+    
+    export type MemberTrainingTypeEnum = typeof MemberTrainingTypeEnum[keyof typeof MemberTrainingTypeEnum];
     
     
         /**
@@ -14737,6 +14815,14 @@ export namespace SDK {
          */
         contacts?: boolean
     
+        //badges
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MembersApiExportMembersXlsx
+         */
+        badges?: boolean
+    
         //groups
         /**
          * 
@@ -14868,6 +14954,14 @@ export namespace SDK {
          * @memberof MembersApiExportMembershipXlsx
          */
         contacts?: boolean
+    
+        //badges
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MembersApiExportMembershipXlsx
+         */
+        badges?: boolean
     
         //groups
         /**
@@ -15156,6 +15250,14 @@ export namespace SDK {
          * @memberof MembersApiListMembers
          */
         contacts?: boolean
+    
+        //badges
+        /**
+         * 
+         * @type {boolean}
+         * @memberof MembersApiListMembers
+         */
+        badges?: boolean
     
         //groups
         /**
@@ -16042,6 +16144,10 @@ export namespace SDK {
                 requestQueryParameter['contacts'] = queryParams.contacts;
             }
     
+            if (queryParams.badges !== undefined) {
+                requestQueryParameter['badges'] = queryParams.badges;
+            }
+    
             if (queryParams.groups) {
                 requestQueryParameter['groups'] = queryParams.groups;
             }
@@ -16133,6 +16239,10 @@ export namespace SDK {
     
             if (queryParams.contacts !== undefined) {
                 requestQueryParameter['contacts'] = queryParams.contacts;
+            }
+    
+            if (queryParams.badges !== undefined) {
+                requestQueryParameter['badges'] = queryParams.badges;
             }
     
             if (queryParams.groups) {
@@ -16945,6 +17055,10 @@ export namespace SDK {
     
             if (queryParams.contacts !== undefined) {
                 requestQueryParameter['contacts'] = queryParams.contacts;
+            }
+    
+            if (queryParams.badges !== undefined) {
+                requestQueryParameter['badges'] = queryParams.badges;
             }
     
             if (queryParams.groups) {

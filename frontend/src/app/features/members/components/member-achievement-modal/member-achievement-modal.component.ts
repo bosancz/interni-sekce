@@ -4,6 +4,7 @@ import { addIcons } from "ionicons";
 import { checkmarkCircle, trashOutline } from "ionicons/icons";
 import {
 	getMemberAchievementChoices,
+	isMemberAchievementStar,
 	MemberAchievementChoice,
 	MemberAchievementTypes,
 } from "src/app/core/config/member-achievements";
@@ -26,7 +27,7 @@ export class MemberAchievementModalComponent
 	member?: SDK.MemberResponseWithLinks;
 	achievements: SDK.MemberAchievementResponseWithLinks[] = [];
 	edited: SDK.MemberAchievementResponseWithLinks[] | null = null;
-	onDelete?: (achievement: SDK.MemberAchievementResponseWithLinks) => Promise<void>;
+	onDelete?: (achievement: SDK.MemberAchievementResponseWithLinks) => Promise<boolean>;
 
 	readonly types = MemberAchievementTypes;
 	choices: MemberAchievementChoice[] = [];
@@ -67,8 +68,11 @@ export class MemberAchievementModalComponent
 
 		this.deleting.set(achievement.id);
 		try {
-			await this.onDelete(achievement);
-			this.rows.update((rows) => rows.filter((row) => row.id !== achievement.id));
+			if (!(await this.onDelete(achievement))) return;
+			const removesStars = achievement.type === "novackovskaZkouska";
+			this.rows.update((rows) =>
+				rows.filter((row) => row.id !== achievement.id && !(removesStars && isMemberAchievementStar(row.type))),
+			);
 			if (!this.rows().length) this.close.emit();
 		} finally {
 			this.deleting.set(null);

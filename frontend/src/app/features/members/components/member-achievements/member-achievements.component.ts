@@ -7,6 +7,7 @@ import {
 	MemberAchievementSlot,
 	MemberAchievementTypes,
 	getMemberAchievementSlots,
+	isMemberAchievementStar,
 } from "src/app/core/config/member-achievements";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -104,8 +105,22 @@ export class MemberAchievementsComponent {
 				achievements: this.achievements() ?? [],
 				edited,
 				onDelete: async (achievement: SDK.MemberAchievementResponseWithLinks) => {
+					const removesStars = achievement.type === "novackovskaZkouska";
+					const stars = (this.achievements() ?? []).filter((a) => isMemberAchievementStar(a.type));
+					if (removesStars && stars.length) {
+						const confirmed = await this.modalService.deleteConfirmationModal(
+							"S nováčkovskou zkouškou se odeberou i všechny hvězdy.",
+							{ header: "Odebrat nováčkovskou zkoušku?", buttonText: "Odebrat" },
+						);
+						if (!confirmed) return false;
+					}
 					await this.api.MembersApi.deleteMemberAchievement(member.id, achievement.id);
-					this.achievements.update((list) => list?.filter((a) => a.id !== achievement.id));
+					this.achievements.update((list) =>
+						list?.filter(
+							(a) => a.id !== achievement.id && !(removesStars && isMemberAchievementStar(a.type)),
+						),
+					);
+					return true;
 				},
 			},
 			{ cssClass: "dialog-brand" },

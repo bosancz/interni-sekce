@@ -1,9 +1,16 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import { ConflictException, Injectable, UnprocessableEntityException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { QueryFailedError, Repository } from "typeorm";
+import { In, QueryFailedError, Repository } from "typeorm";
 import { MemberAchievement, MemberAchievementTypes } from "../entities/member-achievements.entity";
 
 const ACHIEVEMENT_ORDER = Object.values(MemberAchievementTypes);
+
+const STAR_TYPES = [
+	MemberAchievementTypes.hvezda1,
+	MemberAchievementTypes.hvezda2,
+	MemberAchievementTypes.hvezda3,
+	MemberAchievementTypes.hvezda4,
+];
 
 @Injectable()
 export class MemberAchievementsRepository {
@@ -19,6 +26,14 @@ export class MemberAchievementsRepository {
 	}
 
 	async createAchievement(memberId: number, type: MemberAchievementTypes) {
+		if (STAR_TYPES.includes(type)) {
+			const hasNovackovskaZkouska = await this.memberAchievements.exists({
+				where: { memberId, type: MemberAchievementTypes.novackovskaZkouska },
+			});
+			if (!hasNovackovskaZkouska)
+				throw new UnprocessableEntityException("Hvězda jde přidat až po nováčkovské zkoušce.");
+		}
+
 		try {
 			return await this.memberAchievements.save({ type, memberId });
 		} catch (err) {
@@ -29,7 +44,11 @@ export class MemberAchievementsRepository {
 		}
 	}
 
-	async deleteAchievement(memberId: number, achievementId: number) {
-		await this.memberAchievements.delete({ id: achievementId, memberId });
+	async deleteAchievement(achievement: MemberAchievement) {
+		await this.memberAchievements.delete({ id: achievement.id, memberId: achievement.memberId });
+
+		if (achievement.type === MemberAchievementTypes.novackovskaZkouska) {
+			await this.memberAchievements.delete({ memberId: achievement.memberId, type: In(STAR_TYPES) });
+		}
 	}
 }
