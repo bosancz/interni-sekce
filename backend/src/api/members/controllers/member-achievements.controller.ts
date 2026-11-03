@@ -65,6 +65,6 @@ export class MemberAchievementsController {
 
 		MemberAchievementDeletePermission.canOrThrow(req, achievement);
 
-		await this.memberAchievements.deleteAchievement(memberId, achievementId);
+		await this.memberAchievements.deleteAchievement(achievement);
 	}
 }
