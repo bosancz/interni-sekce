@@ -361,7 +361,7 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 		if (!selected.length) return;
 
 		const confirmed = await this.modalService.deleteConfirmationModal(
-			`Opravdu chcete smazat vybrané fotky (${selected.length})?`,
+			`Opravdu chcete smazat vybrané fotky (${selected.length})? Půjde je obnovit ze smazaných fotek.`,
 			{ header: "Smazat fotky?" },
 		);
 		if (confirmed) await this.deleteSelectedConfirmed();

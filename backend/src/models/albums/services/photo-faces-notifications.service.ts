@@ -28,7 +28,7 @@ export class PhotoFacesNotificationsService {
 			`SELECT f.id AS "faceId", f.member_id AS "memberId", p.id AS "photoId", a.name AS "albumName",
 				EXISTS (SELECT 1 FROM users u WHERE u.member_id = f.member_id AND u.id = f.assigned_by_id) AS "selfAssigned"
 			FROM photo_faces f
-			JOIN photos p ON p.id = f.photo_id
+			JOIN photos p ON p.id = f.photo_id AND p.deleted_at IS NULL
 			JOIN albums a ON a.id = p.album_id AND a.deleted_at IS NULL
 			WHERE f.member_id IS NOT NULL AND f.member_id IS DISTINCT FROM f.notified_member_id
 			ORDER BY p.album_id, p.order, p.id`,

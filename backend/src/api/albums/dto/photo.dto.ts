@@ -33,6 +33,10 @@ export class PhotoResponse {
 
 	@ApiPropertyOptional({ type: WithLinks(() => AlbumResponse) }) album?: Album | undefined;
 	@ApiPropertyOptional({ type: WithLinks(() => UserResponse) }) uploadedBy?: User | null;
+
+	@ApiPropertyOptional({ type: "string" }) deletedAt?: Date | null;
+	@ApiPropertyOptional({ type: "number" }) deletedById?: number | null;
+	@ApiPropertyOptional({ type: WithLinks(() => UserResponse) }) deletedBy?: User | null;
 }
 
 export class PhotoCreateBody {

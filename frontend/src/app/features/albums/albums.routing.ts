@@ -2,6 +2,7 @@ import { Routes } from "@angular/router";
 import { AlbumsListComponent } from "./pages/albums-list/albums-list.component";
 import { AlbumsViewInfoComponent } from "./pages/albums-view-info/albums-view-info.component";
 import { DeletedAlbumsListComponent } from "./pages/deleted-albums-list/deleted-albums-list.component";
+import { DeletedPhotosListComponent } from "./pages/deleted-photos-list/deleted-photos-list.component";
 import { MemberNewPhotosComponent } from "./pages/member-new-photos/member-new-photos.component";
 import { PhotoCategoriesListComponent } from "./pages/photo-categories-list/photo-categories-list.component";
 import { PhotosBrowseComponent } from "./pages/photos-browse/photos-browse.component";
@@ -19,6 +20,7 @@ export const albumsRoutes: Routes = [
 	{ path: "nove-fotky/:member/:notifiedAt", component: MemberNewPhotosComponent },
 
 	{ path: "fotky", title: "Fotky", component: PhotosBrowseComponent },
+	{ path: "fotky/smazane", title: "Smazané fotky", component: DeletedPhotosListComponent },
 
 	{ path: "kategorie", title: "Kategorie fotek", component: PhotoCategoriesListComponent },
 	{ path: "kategorie/:category", redirectTo: ({ params }) => `/galerie/fotky?kategorie=${params["category"]}` },

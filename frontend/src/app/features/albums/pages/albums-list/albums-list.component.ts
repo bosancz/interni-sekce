@@ -116,6 +116,11 @@ export class AlbumsListComponent implements OnInit, ViewWillEnter, ViewWillLeave
 			icon: "trash-outline",
 			handler: () => this.router.navigate(["smazane"], { relativeTo: this.route }),
 		},
+		{
+			text: "Smazané fotky",
+			icon: "trash-outline",
+			handler: () => this.router.navigate(["/galerie/fotky/smazane"]),
+		},
 	]);
 
 	filter: UrlParams = {};

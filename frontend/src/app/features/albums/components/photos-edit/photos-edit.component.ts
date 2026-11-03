@@ -1061,7 +1061,7 @@ export class PhotosEditComponent implements OnInit, OnDestroy {
 	}
 
 	async delete(photo: SDK.PhotoResponseWithLinks) {
-		const confirmed = await this.modalService.deleteConfirmationModal("Opravdu chcete smazat tuto fotku?", {
+		const confirmed = await this.modalService.deleteConfirmationModal("Fotku půjde obnovit ze smazaných fotek.", {
 			header: "Smazat fotku?",
 		});
 		if (confirmed) await this.deleteConfirmed(photo);

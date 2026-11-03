@@ -113,7 +113,7 @@ export class PublicV2Service {
 			) a ON a.event_id = r.id
 			LEFT JOIN LATERAL (
 				SELECT id, bg, width, height FROM photos
-				WHERE album_id = a.id
+				WHERE album_id = a.id AND deleted_at IS NULL
 				ORDER BY title_photo DESC, "order" ASC NULLS LAST, "timestamp" ASC
 				LIMIT 1
 			) p ON true

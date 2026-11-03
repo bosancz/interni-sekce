@@ -1,0 +1,18 @@
+.photo {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+
+	img {
+		width: 64px;
+		height: 48px;
+		object-fit: cover;
+		border-radius: 4px;
+		flex-shrink: 0;
+	}
+}
+
+.photos-empty {
+	color: var(--bo-muted);
+	text-align: center;
+}

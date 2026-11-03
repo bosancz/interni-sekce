@@ -1,5 +1,14 @@
 import { User } from "src/models/users/entities/user.entity";
-import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+	Column,
+	DeleteDateColumn,
+	Entity,
+	Index,
+	JoinColumn,
+	ManyToOne,
+	OneToMany,
+	PrimaryGeneratedColumn,
+} from "typeorm";
 import { Album } from "./album.entity";
 import { PhotoExif } from "../schema/photo-exif";
 import { PhotoFace } from "./photo-face.entity";
@@ -46,4 +55,13 @@ export class Photo {
 
 	@Column({ type: "varchar", nullable: true }) srcAlbumId!: string | null;
 	@Column({ type: "varchar", nullable: true }) srcId!: string | null;
+
+	@DeleteDateColumn() deletedAt?: Date | null;
+
+	@Column({ nullable: true })
+	deletedById?: number | null;
+
+	@ManyToOne(() => User, { onDelete: "SET NULL", onUpdate: "CASCADE" })
+	@JoinColumn({ name: "deleted_by_id" })
+	deletedBy?: User;
 }
