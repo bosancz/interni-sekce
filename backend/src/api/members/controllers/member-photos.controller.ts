@@ -21,11 +21,9 @@ import { Request, Response } from "express";
 import { createReadStream } from "fs";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { MemberPhotoResponse } from "src/api/albums/dto/photo-face.dto";
-import { PhotoSizes } from "src/api/albums/dto/photo.dto";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
-import { Config } from "src/config";
 import { PhotoFacesService } from "src/models/albums/services/photo-faces.service";
-import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
+import { MemberProfilePhotoService } from "src/models/albums/services/member-profile-photo.service";
 import { FilesService } from "src/models/files/services/files.service";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
 import {
@@ -46,9 +44,8 @@ export class MemberPhotosController {
 	constructor(
 		private members: MembersRepository,
 		private photoFacesService: PhotoFacesService,
-		private photosFilesService: PhotosFilesService,
+		private memberProfilePhotoService: MemberProfilePhotoService,
 		private filesService: FilesService,
-		private config: Config,
 	) {}
 
 	@Get("photos")
@@ -122,12 +119,7 @@ export class MemberPhotosController {
 		}
 
 		try {
-			const image = await this.photosFilesService.cropFace(face.photo, face, {
-				size: this.config.photos.profilePhoto.size,
-				padding: this.config.photos.profilePhoto.padding,
-				sizes: [PhotoSizes.original, PhotoSizes.big],
-			});
-			await this.filesService.saveFile(this.getProfilePhotoPath(member.id), image);
+			await this.memberProfilePhotoService.saveProfilePhoto(member.id, { ...face, photo: face.photo });
 		} catch (err) {
 			this.logger.error(err);
 			throw new InternalServerErrorException("Failed to save profile photo.");
@@ -154,6 +146,6 @@ export class MemberPhotosController {
 	}
 
 	private getProfilePhotoPath(memberId: number) {
-		return `${this.config.fs.membersDir}/${memberId}/profile_photo.jpg`;
+		return this.memberProfilePhotoService.getProfilePhotoPath(memberId);
 	}
 }
