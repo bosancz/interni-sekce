@@ -1,6 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
-import { IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateIf } from "class-validator";
+import {
+	ArrayNotEmpty,
+	ArrayUnique,
+	IsArray,
+	IsDateString,
+	IsEnum,
+	IsInt,
+	IsNotEmpty,
+	IsOptional,
+	IsString,
+	ValidateIf,
+} from "class-validator";
 import { MemberTraining, MemberTrainingTypes } from "src/models/members/entities/member-training.entity";
 
 const TrimToNull = () => Transform(({ value }) => (typeof value === "string" ? value.trim() || null : (value ?? null)));
@@ -52,4 +63,13 @@ export class MemberTrainingCreateBody extends MemberTrainingUpdateBody {
 	@IsString()
 	@IsNotEmpty()
 	declare name?: string | null;
+}
+
+export class MemberTrainingsBulkCreateBody extends MemberTrainingCreateBody {
+	@ApiProperty({ type: "integer", isArray: true })
+	@IsArray()
+	@ArrayNotEmpty()
+	@ArrayUnique()
+	@IsInt({ each: true })
+	memberIds!: number[];
 }

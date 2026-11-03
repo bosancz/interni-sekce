@@ -10,6 +10,7 @@ import { BoardMembersController } from "./controllers/board-members.controller";
 import { GroupProfilePhotoController } from "./controllers/group-profile-photo.controller";
 import { GroupsController } from "./controllers/groups.controller";
 import { MemberAchievementsController } from "./controllers/member-achievements.controller";
+import { MemberTrainingsBulkController } from "./controllers/member-trainings-bulk.controller";
 import { MemberTrainingsController } from "./controllers/member-trainings.controller";
 import { MemberContactsController } from "./controllers/member-contacts.controller";
 import { MemberInsuranceCardController } from "./controllers/member-insurance-card.controller";
@@ -30,6 +31,7 @@ import { MembersExportController } from "./controllers/members-export.controller
 		MemberContactsController,
 		MemberAchievementsController,
 		MemberTrainingsController,
+		MemberTrainingsBulkController,
 		MemberMembershipController,
 		MemberPaymentRequestController,
 		MemberPaymentQrController,

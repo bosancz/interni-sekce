@@ -7177,6 +7177,52 @@ export namespace SDK {
         /**
      * 
      * @export
+     * @interface MemberTrainingsBulkCreateBody
+     */
+    export interface MemberTrainingsBulkCreateBody {
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberTrainingsBulkCreateBody
+         */
+        'name'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberTrainingsBulkCreateBody
+         */
+        'issuedOn'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberTrainingsBulkCreateBody
+         */
+        'validUntil'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof MemberTrainingsBulkCreateBody
+         */
+        'issuer'?: string | null;
+        /**
+         * 
+         * @type {MemberTrainingTypesEnum}
+         * @memberof MemberTrainingsBulkCreateBody
+         */
+        'type': MemberTrainingTypesEnum;
+        /**
+         * 
+         * @type {Array<number>}
+         * @memberof MemberTrainingsBulkCreateBody
+         */
+        'memberIds': Array<number>;
+    }
+    
+    
+    
+        /**
+     * 
+     * @export
      * @interface MemberUpdateBody
      */
     export interface MemberUpdateBody {
@@ -9846,6 +9892,12 @@ export namespace SDK {
          * @memberof RootResponseLinks
          */
         'createGroup': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
+        'createMembersTrainings': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -14726,6 +14778,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * @export
      */
@@ -15618,6 +15674,51 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<MemberTrainingResponse>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof MembersApi
+         */
+        
+        public async createMembersTrainings(
+            body: MemberTrainingsBulkCreateBody,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'memberTrainingsBulkCreateBody' is not null or undefined
+            assertParamExists('createMembersTrainings', 'memberTrainingsBulkCreateBody', body)
+            
+            const localVarPath = `/api/member-trainings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            requestHeaderParameter['Content-Type'] = 'application/json';
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            axiosRequestConfig.data = serializeDataIfNeeded(body, axiosRequestConfig, this.configuration)
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<MemberTrainingResponse>>(axiosRequestConfig);
         }
     
         /**
