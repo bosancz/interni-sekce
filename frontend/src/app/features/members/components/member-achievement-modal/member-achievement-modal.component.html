@@ -29,9 +29,8 @@
 				</div>
 			</div>
 		} @else {
-			@for (achievement of edited; track achievement.id) {
-				@let isDeleted = deleted().includes(achievement.id);
-				<div class="ma-row" [class.deleted]="isDeleted">
+			@for (achievement of rows(); track achievement.id) {
+				<div class="ma-row" [class.deleted]="deleting() === achievement.id">
 					<img [src]="types[achievement.type].icon" alt="" class="ma-row-icon" />
 					<div class="ma-row-text">
 						<span class="ma-row-title">{{ types[achievement.type].title }}</span>
@@ -40,12 +39,16 @@
 					@if (achievement._links.deleteMemberAchievement.allowed) {
 						<button
 							type="button"
-							class="ma-icon-btn"
-							[class.danger]="!isDeleted"
-							[attr.aria-label]="isDeleted ? 'Vrátit' : 'Odebrat ocenění'"
-							(click)="toggleDeleted(achievement.id)"
+							class="ma-icon-btn danger"
+							aria-label="Odebrat ocenění"
+							[disabled]="deleting() !== null"
+							(click)="delete(achievement)"
 						>
-							<ion-icon [name]="isDeleted ? 'arrow-undo-outline' : 'trash-outline'"></ion-icon>
+							@if (deleting() === achievement.id) {
+								<ion-spinner name="crescent"></ion-spinner>
+							} @else {
+								<ion-icon name="trash-outline"></ion-icon>
+							}
 						</button>
 					}
 				</div>
@@ -54,9 +57,11 @@
 	</div>
 
 	<div slot="buttons" class="bm-buttons">
-		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
-		<button type="button" class="bm-btn-primary" [disabled]="!canSave()" (click)="save()">
-			{{ isNew() ? "Přidat" : "Odebrat" }}
-		</button>
+		@if (isNew()) {
+			<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+			<button type="button" class="bm-btn-primary" [disabled]="!selected()?.type" (click)="save()">Přidat</button>
+		} @else {
+			<button type="button" class="bm-btn-primary" (click)="close.emit()">Zavřít</button>
+		}
 	</div>
 </bo-modal-layout>

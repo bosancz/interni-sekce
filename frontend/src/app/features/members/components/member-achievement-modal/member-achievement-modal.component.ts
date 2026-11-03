@@ -1,7 +1,7 @@
 import { Component, computed, OnInit, signal } from "@angular/core";
-import { IonIcon, ModalController } from "@ionic/angular/standalone";
+import { IonIcon, IonSpinner, ModalController } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { arrowUndoOutline, checkmarkCircle, trashOutline } from "ionicons/icons";
+import { checkmarkCircle, trashOutline } from "ionicons/icons";
 import {
 	getMemberAchievementChoices,
 	MemberAchievementChoice,
@@ -11,15 +11,13 @@ import { InputModalComponent } from "src/app/core/services/modal.service";
 import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { SDK } from "src/sdk";
 
-export type MemberAchievementModalResult =
-	| { kind: "add"; type: SDK.MemberAchievementTypesEnum }
-	| { kind: "edit"; deleted: number[] };
+export type MemberAchievementModalResult = { type: SDK.MemberAchievementTypesEnum };
 
 @Component({
 	selector: "bo-member-achievement-modal",
 	templateUrl: "./member-achievement-modal.component.html",
 	styleUrl: "./member-achievement-modal.component.scss",
-	imports: [IonIcon, ModalLayoutComponent],
+	imports: [IonIcon, IonSpinner, ModalLayoutComponent],
 })
 export class MemberAchievementModalComponent
 	extends InputModalComponent<MemberAchievementModalResult>
@@ -28,26 +26,27 @@ export class MemberAchievementModalComponent
 	member?: SDK.MemberResponseWithLinks;
 	achievements: SDK.MemberAchievementResponseWithLinks[] = [];
 	edited: SDK.MemberAchievementResponseWithLinks[] | null = null;
+	onDelete?: (achievement: SDK.MemberAchievementResponseWithLinks) => Promise<void>;
 
 	readonly types = MemberAchievementTypes;
 	choices: MemberAchievementChoice[] = [];
 
 	selected = signal<MemberAchievementChoice | null>(null);
-	deleted = signal<number[]>([]);
+	rows = signal<SDK.MemberAchievementResponseWithLinks[]>([]);
+	deleting = signal<number | null>(null);
 
 	isNew = computed(() => !this.edited);
-
-	canSave = computed(() => (this.isNew() ? !!this.selected()?.type : this.deleted().length > 0));
 
 	title = "";
 
 	constructor(modalController: ModalController) {
 		super(modalController);
-		addIcons({ trashOutline, arrowUndoOutline, checkmarkCircle });
+		addIcons({ trashOutline, checkmarkCircle });
 	}
 
 	ngOnInit(): void {
 		if (this.edited) {
+			this.rows.set(this.edited);
 			this.title = this.getEditTitle(this.edited);
 		} else {
 			this.choices = getMemberAchievementChoices(new Set(this.achievements.map((a) => a.type)));
@@ -63,16 +62,21 @@ export class MemberAchievementModalComponent
 		return this.types[achievements[0].type].title;
 	}
 
-	toggleDeleted(achievementId: number) {
-		this.deleted.update((ids) =>
-			ids.includes(achievementId) ? ids.filter((id) => id !== achievementId) : [...ids, achievementId],
-		);
+	async delete(achievement: SDK.MemberAchievementResponseWithLinks) {
+		if (!this.onDelete || this.deleting() !== null) return;
+
+		this.deleting.set(achievement.id);
+		try {
+			await this.onDelete(achievement);
+			this.rows.update((rows) => rows.filter((row) => row.id !== achievement.id));
+			if (!this.rows().length) this.close.emit();
+		} finally {
+			this.deleting.set(null);
+		}
 	}
 
 	save() {
-		if (!this.canSave()) return;
-
-		if (!this.edited) this.submit.emit({ kind: "add", type: this.selected()!.type! });
-		else this.submit.emit({ kind: "edit", deleted: this.deleted() });
+		const type = this.selected()?.type;
+		if (type) this.submit.emit({ type });
 	}
 }
