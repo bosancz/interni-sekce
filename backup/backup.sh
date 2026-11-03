@@ -12,8 +12,7 @@ KEEP_MONTHS="${BACKUP_DB_KEEP_MONTHS:-}"
 KEEP_DELETED_DAYS="${BACKUP_FILES_KEEP_DELETED_DAYS:-}"
 STATE_DIR="${BACKUP_STATE_DIR:-/var/lib/backup}"
 DATA_DIR="${DATA_DIR:-/data}"
-read -r -a EXCLUDE_DIRS <<<"${BACKUP_EXCLUDE_DIRS-thumbs thumbnails}"
-read -r -a EXCLUDE_FILES <<<"${BACKUP_EXCLUDE_FILES-/members/*/profile_photo.jpg}"
+read -r -a EXCLUDE <<<"${BACKUP_EXCLUDE-/thumbs/** /thumbnails/** /members/*/profile_photo.jpg}"
 read -r -a EXCLUDE_TABLE_DATA <<<"${BACKUP_EXCLUDE_TABLE_DATA-photo_embeddings}"
 
 export RCLONE_CONFIG=""
@@ -85,8 +84,7 @@ record_rclone_progress() {
 backup_files() {
 	log "Syncing $DATA_DIR"
 	local status=0 excludes=() rclone_log stats
-	for dir in "${EXCLUDE_DIRS[@]}"; do excludes+=(--exclude "/$dir/**"); done
-	for file in "${EXCLUDE_FILES[@]}"; do excludes+=(--exclude "$file"); done
+	for pattern in "${EXCLUDE[@]}"; do excludes+=(--exclude "$pattern"); done
 	rclone_log="$(mktemp)"
 	set +e
 	rclone sync "$DATA_DIR" "${REMOTE}soubory" \
