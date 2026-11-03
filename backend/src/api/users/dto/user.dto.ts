@@ -23,6 +23,10 @@ export class UserResponse implements User {
 	@AcEntity(MemberResponse)
 	@ApiPropertyOptional({ type: WithLinks(MemberResponse) })
 	member?: Member | null;
+
+	@ApiPropertyOptional({ type: "string" }) deletedAt?: Date | null;
+	@ApiPropertyOptional({ type: "number" }) deletedById?: number | null;
+	@ApiPropertyOptional({ type: () => UserResponse }) deletedBy?: User;
 }
 
 export class GetUserQueryDto {

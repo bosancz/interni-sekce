@@ -36,6 +36,24 @@ export const UserEditPermission = new Permission<User>({
 export const UserDeletePermission = new Permission<User>({
 	linkTo: UserResponse,
 	params: { userId: "id" },
+	applicable: ({ doc }) => !doc.deletedAt,
+});
+
+export const UsersDeletedListPermission = new Permission<void>({
+	linkTo: RootResponse,
+	contains: UserResponse,
+});
+
+export const UserRestorePermission = new Permission<User>({
+	linkTo: UserResponse,
+	params: { userId: "id" },
+	applicable: ({ doc }) => !!doc.deletedAt,
+});
+
+export const UserDeletePermanentPermission = new Permission<User>({
+	linkTo: UserResponse,
+	params: { userId: "id" },
+	applicable: ({ doc }) => !!doc.deletedAt,
 });
 
 export const UserSetPassword = new Permission<User>({

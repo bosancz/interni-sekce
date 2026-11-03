@@ -5,9 +5,15 @@ export function leftJoinUserAuthor<T extends ObjectLiteral>(
 	relation: string,
 	alias: string,
 ): SelectQueryBuilder<T> {
-	return query
+	const withDeleted = query.expressionMap.withDeleted;
+	query.expressionMap.withDeleted = true;
+
+	query
 		.leftJoin(relation, alias)
 		.addSelect([`${alias}.id`, `${alias}.login`])
 		.leftJoin(`${alias}.member`, `${alias}Member`)
 		.addSelect([`${alias}Member.id`, `${alias}Member.nickname`]);
+
+	query.expressionMap.withDeleted = withDeleted;
+	return query;
 }

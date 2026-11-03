@@ -2,8 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort, SortOrder } from "src/helpers/sort";
-import { Brackets, FindOptionsWhere, Repository } from "typeorm";
+import { Brackets, FindOptionsWhere, IsNull, Not, Repository } from "typeorm";
 import { User, UserSettings } from "../entities/user.entity";
+import { leftJoinUserAuthor } from "../helpers/user-author";
 import { getSavedRoles, getUserRoles } from "../helpers/user-roles";
 import { UserRoles, UserDynamicRoles } from "../schema/user-roles";
 
@@ -114,8 +115,12 @@ export class UsersRepository {
 		return user && this.withDynamicRoles(user);
 	}
 
-	async findUser(where: FindOptionsWhere<User> | FindOptionsWhere<User>[], options: { credentials?: boolean } = {}) {
+	async findUser(
+		where: FindOptionsWhere<User> | FindOptionsWhere<User>[],
+		options: { credentials?: boolean; withDeleted?: boolean } = {},
+	) {
 		const user = await this.repository.findOne({
+			withDeleted: options.withDeleted,
 			select: options.credentials
 				? {
 						id: true,
@@ -148,7 +153,59 @@ export class UsersRepository {
 		return this.repository.update(id, data);
 	}
 
-	async deleteUser(id: number) {
+	async getDeletedUsers(where: (alias: string) => Brackets | string = () => "1=1") {
+		const q = this.repository
+			.createQueryBuilder("user")
+			.withDeleted()
+			.select([
+				"user.id",
+				"user.login",
+				"user.memberId",
+				"user.roles",
+				"user.email",
+				"user.deletedAt",
+				"member.nickname",
+				"member.firstName",
+				"member.lastName",
+				"member.active",
+			])
+			.leftJoin("user.member", "member")
+			.where(where("user"))
+			.andWhere("user.deletedAt IS NOT NULL")
+			.orderBy("user.deletedAt", "DESC")
+			.addOrderBy("user.id", "DESC");
+
+		leftJoinUserAuthor(q, "user.deletedBy", "deletedBy");
+
+		return (await q.getMany()).map((user) => this.withDynamicRoles(user));
+	}
+
+	async getDeletedUser(id: number) {
+		const user = await this.repository.findOne({ where: { id }, relations: { member: true }, withDeleted: true });
+		return user && this.withDynamicRoles(user);
+	}
+
+	async findDeletedUserConflict(data: { login?: string; email?: string | null; memberId?: number | null }) {
+		const where: FindOptionsWhere<User>[] = [];
+		if (data.login) where.push({ login: data.login.toLocaleLowerCase(), deletedAt: Not(IsNull()) });
+		if (data.email) where.push({ email: data.email, deletedAt: Not(IsNull()) });
+		if (data.memberId) where.push({ memberId: data.memberId, deletedAt: Not(IsNull()) });
+		if (!where.length) return null;
+
+		return this.repository.findOne({ where, withDeleted: true });
+	}
+
+	async deleteUser(id: number, deletedById: User["id"] | null) {
+		await this.repository.update(id, { deletedById, loginCode: null, loginCodeExp: null });
+		await this.repository.softDelete({ id });
+	}
+
+	async restoreUser(id: number) {
+		await this.repository.restore({ id });
+		await this.repository.update(id, { deletedById: null });
+	}
+
+	async hardDeleteUser(id: number) {
 		return this.repository.delete(id);
 	}
 

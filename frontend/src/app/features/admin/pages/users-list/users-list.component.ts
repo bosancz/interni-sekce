@@ -10,7 +10,7 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline } from "ionicons/icons";
+import { addOutline, trashOutline } from "ionicons/icons";
 import { ShownUserRoles, UserRoles } from "src/app/core/config/user-roles";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -83,6 +83,11 @@ export class UsersListComponent implements OnInit, ViewWillEnter, ViewWillLeave 
 			pinned: true,
 			handler: () => this.create(),
 		},
+		{
+			text: "Smazaní uživatelé",
+			icon: "trash-outline",
+			handler: () => this.router.navigate(["/admin/uzivatele/smazani"]),
+		},
 	]);
 
 	rowLink = (user: SDK.UserResponseWithLinks) => ["/admin/uzivatele", user.id];
@@ -108,7 +113,7 @@ export class UsersListComponent implements OnInit, ViewWillEnter, ViewWillLeave 
 		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
-		addIcons({ addOutline });
+		addIcons({ addOutline, trashOutline });
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 	}
 

@@ -268,7 +268,7 @@ export class SeedService {
 		for (const seedUser of SeedUsers) {
 			const login = seedUser.login.toLocaleLowerCase();
 
-			const existing = await t.findOne(User, { where: { login } });
+			const existing = await t.findOne(User, { where: { login }, withDeleted: true });
 
 			const user = await t.save(User, {
 				...(existing ? { id: existing.id } : {}),
@@ -279,6 +279,8 @@ export class SeedService {
 				memberId: memberIds.get(seedUser.member) ?? null,
 				loginCode: null,
 				loginCodeExp: null,
+				deletedAt: null,
+				deletedById: null,
 			});
 
 			userIds.set(seedUser.login, user.id);
