@@ -8237,19 +8237,19 @@ export namespace SDK {
         /**
      * 
      * @export
-     * @interface PhotoDailyLeader
+     * @interface PhotoDailyMember
      */
-    export interface PhotoDailyLeader {
+    export interface PhotoDailyMember {
         /**
          * 
          * @type {number}
-         * @memberof PhotoDailyLeader
+         * @memberof PhotoDailyMember
          */
         'id': number;
         /**
          * 
          * @type {string}
-         * @memberof PhotoDailyLeader
+         * @memberof PhotoDailyMember
          */
         'nickname': string;
     }
@@ -8268,10 +8268,10 @@ export namespace SDK {
         'photo'?: PhotoResponseWithLinks | null;
         /**
          * 
-         * @type {Array<PhotoDailyLeader>}
+         * @type {Array<PhotoDailyMember>}
          * @memberof PhotoDailyResponse
          */
-        'leaders': Array<PhotoDailyLeader>;
+        'members': Array<PhotoDailyMember>;
     }
     
         /**
