@@ -94,24 +94,26 @@ export function getMemberAchievementChoices(held: Set<SDK.MemberAchievementTypes
 	);
 }
 
-export interface MemberAchievementSlot {
+export interface MemberAchievementSlot<
+	T extends SDK.MemberAchievementResponse = SDK.MemberAchievementResponseWithLinks,
+> {
 	key: string;
-	main: SDK.MemberAchievementResponseWithLinks;
+	main: T;
 	icon: string;
 	stars: number[];
-	achievements: SDK.MemberAchievementResponseWithLinks[];
+	achievements: T[];
 }
 
 export function isMemberAchievementStar(type: SDK.MemberAchievementTypesEnum) {
 	return !!MemberAchievementTypes[type].star;
 }
 
-export function getMemberAchievementSlots(
-	achievements: SDK.MemberAchievementResponseWithLinks[],
-): MemberAchievementSlot[] {
-	const order = (a: SDK.MemberAchievementResponseWithLinks) => MEMBER_ACHIEVEMENT_TYPES.indexOf(a.type);
+export function getMemberAchievementSlots<
+	T extends SDK.MemberAchievementResponse = SDK.MemberAchievementResponseWithLinks,
+>(achievements: T[]): MemberAchievementSlot<T>[] {
+	const order = (a: T) => MEMBER_ACHIEVEMENT_TYPES.indexOf(a.type);
 	const sorted = [...achievements].sort((a, b) => order(a) - order(b));
-	const slots: MemberAchievementSlot[] = [];
+	const slots: MemberAchievementSlot<T>[] = [];
 
 	const san = sorted.filter((a) => MemberAchievementTypes[a.type].group === "san");
 	if (san.length) {
@@ -143,7 +145,7 @@ export function getMemberAchievementSlots(
 	return slots;
 }
 
-function sanOrder(achievement: SDK.MemberAchievementResponseWithLinks) {
+function sanOrder(achievement: SDK.MemberAchievementResponse) {
 	const type = achievement.type;
 	if (type === "cernySan") return 0;
 	if (type === "novackovskaZkouska") return 1;

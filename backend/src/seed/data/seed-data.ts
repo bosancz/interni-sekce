@@ -287,6 +287,18 @@ export const SeedMembers: SeedMember[] = [
 	},
 	{
 		nickname: "Thorin",
+		achievements: [
+			MemberAchievementTypes.novackovskaZkouska,
+			MemberAchievementTypes.hvezda1,
+			MemberAchievementTypes.hvezda2,
+			MemberAchievementTypes.hvezda3,
+			MemberAchievementTypes.clunar,
+			MemberAchievementTypes.kormidelnik,
+		],
+		trainings: [
+			{ type: MemberTrainingTypes.zdravotnik, issuedOn: "2024-05-18", validUntil: "2028-05-18" },
+			{ type: MemberTrainingTypes.lanac, issuedOn: "2025-04-12", validUntil: "2028-04-12" },
+		],
 		group: "T",
 		role: MemberRoles.vedouci,
 		rank: MemberRanks.vedouci,
@@ -303,6 +315,12 @@ export const SeedMembers: SeedMember[] = [
 	},
 	{
 		nickname: "Balin",
+		achievements: [
+			MemberAchievementTypes.novackovskaZkouska,
+			MemberAchievementTypes.hvezda1,
+			MemberAchievementTypes.clunar,
+		],
+		trainings: [{ type: MemberTrainingTypes.instruktorVodniTuristiky, issuedOn: "2021-09-25" }],
 		group: "T",
 		role: MemberRoles.instruktor,
 		rank: MemberRanks.instruktor,

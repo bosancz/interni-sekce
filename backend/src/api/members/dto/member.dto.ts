@@ -15,6 +15,7 @@ import {
 } from "src/models/members/entities/member.entity";
 import { MembershipPaymentResponse } from "./membership-payment.dto";
 import { MemberAchievementResponse } from "./member-achievement.dto";
+import { MemberTrainingResponse } from "./member-training.dto";
 
 export class HealthEntryDto implements HealthEntry {
 	@ApiProperty({ type: "string" }) @IsString() name!: string;
@@ -75,6 +76,9 @@ export class MemberResponse implements Member {
 
 	@ApiPropertyOptional({ type: MemberAchievementResponse, isArray: true })
 	achievements?: MemberAchievementResponse[] | undefined;
+
+	@ApiPropertyOptional({ type: MemberTrainingResponse, isArray: true })
+	trainings?: MemberTrainingResponse[] | undefined;
 }
 
 export class MemberCreateBody implements Pick<
@@ -92,6 +96,7 @@ export class MemberUpdateBody extends PartialType(
 	OmitType(MemberResponse, [
 		"contacts",
 		"achievements",
+		"trainings",
 		"id",
 		"membership",
 		"profilePhotoFaceId",
@@ -154,6 +159,11 @@ export class MembersListQuery extends PaginationQuery {
 	@EnsureBoolean()
 	@IsOptional()
 	contacts?: boolean;
+
+	@ApiPropertyOptional({ type: "boolean" })
+	@EnsureBoolean()
+	@IsOptional()
+	badges?: boolean;
 }
 
 export class MemberProfilePhotoResponse {

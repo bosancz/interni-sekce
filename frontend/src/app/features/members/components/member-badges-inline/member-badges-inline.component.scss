@@ -1,0 +1,62 @@
+:host {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	padding-top: 4px;
+	vertical-align: middle;
+}
+
+.inline-badge {
+	position: relative;
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	flex: 0 0 auto;
+}
+
+.inline-badge-icon {
+	display: block;
+	width: 100%;
+	height: 100%;
+	filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+}
+
+.inline-badge-star {
+	position: absolute;
+	width: 40%;
+	height: 40%;
+	transform: translate(-50%, -50%);
+
+	&[data-star="1"] {
+		left: 21%;
+		top: 10%;
+	}
+
+	&[data-star="2"] {
+		left: 79%;
+		top: 10%;
+	}
+
+	&[data-star="3"] {
+		left: 21%;
+		top: 68%;
+	}
+
+	&[data-star="4"] {
+		left: 79%;
+		top: 68%;
+	}
+}
+
+@media (min-width: 992px) {
+	:host {
+		flex-wrap: nowrap;
+		gap: 3px;
+	}
+
+	.inline-badge {
+		width: 28px;
+		height: 28px;
+	}
+}
