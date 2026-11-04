@@ -34,4 +34,5 @@ export const MemberTrainingDeletePermission = new Permission({
 export const MemberTrainingsBulkCreatePermission = new Permission<void>({
 	linkTo: RootResponse,
 	contains: MemberTrainingResponse,
+	allowed: { vedouci: true },
 });
