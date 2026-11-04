@@ -1,3 +1,7 @@
+## v4.33.1 — 2026-11-04
+
+- <span class="changelog-type" title="patch">🚸</span> [Hromadné školení v Databázi pro všechny vedoucí](https://github.com/bosancz/interni-sekce/commit/5798a46390062914bb4a8764951bd43552d7a858) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.33.0 — 2026-11-03
 
 - <span class="changelog-type" title="feat">✨</span> [Hromadné přidání školení více lidem](https://github.com/bosancz/interni-sekce/commit/7302ebca90c3e52cf639462bd1634e9c04d1932b) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
