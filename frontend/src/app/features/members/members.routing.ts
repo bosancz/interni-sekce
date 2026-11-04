@@ -6,6 +6,7 @@ import { GroupsListComponent } from "./pages/groups-list/groups-list.component";
 import { DeletedMembersListComponent } from "./pages/deleted-members-list/deleted-members-list.component";
 import { MembersListComponent } from "./pages/members-list/members-list.component";
 import { MembersViewComponent } from "./pages/members-view/members-view.component";
+import { TrainingsBulkComponent } from "./pages/trainings-bulk/trainings-bulk.component";
 
 const redirectToGroup: CanActivateFn = async (route) => {
 	const router = inject(Router);
@@ -24,6 +25,8 @@ export const membersRoutes: Routes = [
 	{ path: "clenove/smazane", component: DeletedMembersListComponent },
 	{ path: "clenove/:member", component: MembersViewComponent },
 	{ path: "clenove", component: MembersListComponent },
+
+	{ path: "skoleni", title: "Hromadné školení", component: TrainingsBulkComponent },
 
 	{ path: "", component: GroupsListComponent },
 ];

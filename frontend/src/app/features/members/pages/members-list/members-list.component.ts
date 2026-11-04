@@ -20,7 +20,7 @@ import {
 } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { addOutline, arrowUndoOutline, downloadOutline, eyeOutline, trashOutline } from "ionicons/icons";
+import { addOutline, arrowUndoOutline, downloadOutline, eyeOutline, schoolOutline, trashOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
@@ -212,6 +212,12 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 			handler: () => this.export(),
 		},
 		{
+			text: "Hromadné školení",
+			icon: "school-outline",
+			pinned: false,
+			handler: () => this.router.navigate(["/databaze/skoleni"]),
+		},
+		{
 			text: "Smazaní členové",
 			icon: "trash-outline",
 			pinned: false,
@@ -237,7 +243,15 @@ export class MembersListComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		private groupPipe: GroupPipe,
 		private platformService: PlatformService,
 	) {
-		addIcons({ addOutline, arrowUndoOutline, downloadOutline, eyeOutline, trashOutline, columns: COLUMNS_ICON });
+		addIcons({
+			addOutline,
+			arrowUndoOutline,
+			downloadOutline,
+			eyeOutline,
+			schoolOutline,
+			trashOutline,
+			columns: COLUMNS_ICON,
+		});
 		this.platformService.isLg.pipe(untilDestroyed(this)).subscribe((isLg) => this.isDesktop.set(isLg));
 
 		effect(() => {

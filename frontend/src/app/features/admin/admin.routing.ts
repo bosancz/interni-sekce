@@ -9,7 +9,6 @@ import { PhotoCategoriesComponent } from "./pages/photo-categories/photo-categor
 import { PhotoCategoryEditComponent } from "./pages/photo-category-edit/photo-category-edit.component";
 import { PhotoContentComponent } from "./pages/photo-content/photo-content.component";
 import { PhotosAdminComponent } from "./pages/photos-admin/photos-admin.component";
-import { TrainingsBulkComponent } from "./pages/trainings-bulk/trainings-bulk.component";
 import { UsersCreateComponent } from "./pages/users-create/users-create.component";
 import { UsersEditComponent } from "./pages/users-edit/users-edit.component";
 import { UsersListComponent } from "./pages/users-list/users-list.component";
@@ -40,7 +39,7 @@ export const adminRoutes: Routes = [
 	{ path: "prirazovani-obliceju", redirectTo: "fotky/prirazovani-obliceju" },
 	{ path: "obsah-fotek", redirectTo: "fotky/obsah" },
 	{ path: "vedeni", title: "Vedení skupiny", component: BoardMembersComponent },
-	{ path: "skoleni", title: "Hromadné školení", component: TrainingsBulkComponent },
+	{ path: "skoleni", redirectTo: "/databaze/skoleni" },
 	{ path: "workery", title: "Workery", component: WorkersComponent },
 	{ path: "zalohy", title: "Zálohy", component: BackupsComponent },
 ];
