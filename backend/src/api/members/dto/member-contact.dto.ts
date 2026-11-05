@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsArray, IsBoolean, IsOptional, IsString } from "class-validator";
-import { EnsureBoolean, EnsureStringArray } from "src/helpers/validation";
+import { EnsureBoolean, EnsureStringArray, Trim } from "src/helpers/validation";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 
 export class MemberContactResponse implements MemberContact {
@@ -16,9 +16,9 @@ export class MemberContactResponse implements MemberContact {
 }
 
 export class CreateContactBody {
-	@ApiProperty() @IsString() relationship!: string;
+	@ApiProperty() @Trim() @IsString() relationship!: string;
 
-	@ApiPropertyOptional() @IsString() @IsOptional() name?: string;
+	@ApiPropertyOptional() @Trim() @IsString() @IsOptional() name?: string;
 
 	@ApiPropertyOptional({ type: "string", isArray: true })
 	@EnsureStringArray()
@@ -34,7 +34,7 @@ export class CreateContactBody {
 	@IsOptional()
 	email?: string[];
 
-	@ApiPropertyOptional() @IsString() @IsOptional() other?: string;
+	@ApiPropertyOptional() @Trim() @IsString() @IsOptional() other?: string;
 
 	@ApiPropertyOptional({ type: "boolean" }) @EnsureBoolean() @IsBoolean() @IsOptional() isDefault?: boolean;
 }

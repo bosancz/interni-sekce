@@ -34,3 +34,13 @@ export function EnsureStringArray(): PropertyDecorator {
 			.filter((value) => value.length > 0);
 	});
 }
+
+function trimValue(value: unknown): unknown {
+	if (typeof value === "string") return value.trim();
+	if (Array.isArray(value)) return value.map((item) => (typeof item === "string" ? item.trim() : item));
+	return value;
+}
+
+export function Trim(): PropertyDecorator {
+	return Transform(({ value }) => trimValue(value), { toClassOnly: true });
+}

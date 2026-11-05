@@ -13,6 +13,7 @@ import {
 	Min,
 	MinLength,
 } from "class-validator";
+import { Trim } from "src/helpers/validation";
 
 const trimPrompts = ({ value }: { value: unknown }) =>
 	Array.isArray(value)
@@ -78,7 +79,7 @@ export class PhotoCategoryResponse {
 }
 
 export class PhotoCategoryCreateBody {
-	@ApiProperty() @IsString() @MinLength(1) @MaxLength(60) name!: string;
+	@ApiProperty() @Trim() @IsString() @MinLength(1) @MaxLength(60) name!: string;
 
 	@ApiProperty({ type: "string", isArray: true })
 	@Transform(trimPrompts)
@@ -94,7 +95,7 @@ export class PhotoCategoryCreateBody {
 }
 
 export class PhotoCategoryUpdateBody {
-	@ApiPropertyOptional() @IsString() @MinLength(1) @MaxLength(60) @IsOptional() name?: string;
+	@ApiPropertyOptional() @Trim() @IsString() @MinLength(1) @MaxLength(60) @IsOptional() name?: string;
 
 	@ApiPropertyOptional({ type: "string", isArray: true })
 	@Transform(trimPrompts)

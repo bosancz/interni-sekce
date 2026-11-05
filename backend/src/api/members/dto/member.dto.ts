@@ -3,7 +3,7 @@ import { Type } from "class-transformer";
 import { IsArray, IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min, ValidateNested } from "class-validator";
 import { PaginationQuery } from "src/api/helpers/dto";
 import { MembershipPaymentStates } from "src/helpers/membership";
-import { EnsureArray, EnsureBoolean } from "src/helpers/validation";
+import { EnsureArray, EnsureBoolean, Trim } from "src/helpers/validation";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { MembershipPayment } from "src/models/members/entities/membership-payment.entity";
 import {
@@ -18,7 +18,7 @@ import { MemberAchievementResponse } from "./member-achievement.dto";
 import { MemberTrainingResponse } from "./member-training.dto";
 
 export class HealthEntryDto implements HealthEntry {
-	@ApiProperty({ type: "string" }) @IsString() name!: string;
+	@ApiProperty({ type: "string" }) @Trim() @IsString() name!: string;
 	@ApiProperty({ type: "string", enum: HealthSeverity, enumName: "HealthSeverityEnum" })
 	@IsEnum(HealthSeverity)
 	severity!: HealthSeverity;
@@ -27,7 +27,7 @@ export class HealthEntryDto implements HealthEntry {
 export class MemberResponse implements Member {
 	@ApiProperty() id!: number;
 	@ApiProperty() groupId!: number;
-	@ApiProperty({ type: "string" }) nickname!: string;
+	@ApiProperty({ type: "string" }) @Trim() nickname!: string;
 	@ApiProperty({ type: "string", enum: MemberRoles, enumName: "MemberRolesEnum" }) role!: MemberRoles;
 	@ApiProperty({ type: "boolean" }) active!: boolean;
 	// The fees the member has paid, one per season (see helpers/membership.ts); ask
@@ -36,17 +36,17 @@ export class MemberResponse implements Member {
 	@ApiPropertyOptional({ type: MembershipPaymentResponse, isArray: true })
 	membership?: MembershipPayment[];
 
-	@ApiPropertyOptional({ type: "string" }) function?: string | null;
-	@ApiPropertyOptional({ type: "string" }) firstName?: string | null;
-	@ApiPropertyOptional({ type: "string" }) lastName?: string | null;
+	@ApiPropertyOptional({ type: "string" }) @Trim() function?: string | null;
+	@ApiPropertyOptional({ type: "string" }) @Trim() firstName?: string | null;
+	@ApiPropertyOptional({ type: "string" }) @Trim() lastName?: string | null;
 	@ApiPropertyOptional({ type: "string" }) birthday?: string | null;
-	@ApiPropertyOptional({ type: "string" }) addressStreet?: string | null;
-	@ApiPropertyOptional({ type: "string" }) addressStreetNo?: string | null;
-	@ApiPropertyOptional({ type: "string" }) addressCity?: string | null;
-	@ApiPropertyOptional({ type: "string" }) addressPostalCode?: string | null;
-	@ApiPropertyOptional({ type: "string" }) addressCountry?: string | null;
-	@ApiPropertyOptional({ type: "string" }) mobile?: string | null;
-	@ApiPropertyOptional({ type: "string" }) email?: string | null;
+	@ApiPropertyOptional({ type: "string" }) @Trim() addressStreet?: string | null;
+	@ApiPropertyOptional({ type: "string" }) @Trim() addressStreetNo?: string | null;
+	@ApiPropertyOptional({ type: "string" }) @Trim() addressCity?: string | null;
+	@ApiPropertyOptional({ type: "string" }) @Trim() addressPostalCode?: string | null;
+	@ApiPropertyOptional({ type: "string" }) @Trim() addressCountry?: string | null;
+	@ApiPropertyOptional({ type: "string" }) @Trim() mobile?: string | null;
+	@ApiPropertyOptional({ type: "string" }) @Trim() email?: string | null;
 	@ApiPropertyOptional({ type: "string", enum: MemberRanks, enumName: "MemberRanksEnum" }) rank?: MemberRanks | null;
 	@ApiPropertyOptional({ type: HealthEntryDto, isArray: true })
 	@IsOptional()
@@ -86,10 +86,10 @@ export class MemberCreateBody implements Pick<
 	"nickname" | "firstName" | "lastName" | "groupId" | "role"
 > {
 	@ApiProperty() @Type(() => Number) @IsNumber() groupId!: number;
-	@ApiProperty() @IsString() nickname!: string;
+	@ApiProperty() @Trim() @IsString() nickname!: string;
 	@ApiProperty() @IsString() role!: MemberRoles;
-	@ApiProperty() @IsString() @IsOptional() firstName!: string | null;
-	@ApiProperty() @IsString() @IsOptional() lastName!: string | null;
+	@ApiProperty() @Trim() @IsString() @IsOptional() firstName!: string | null;
+	@ApiProperty() @Trim() @IsString() @IsOptional() lastName!: string | null;
 }
 
 export class MemberUpdateBody extends PartialType(
