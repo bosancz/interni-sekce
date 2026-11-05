@@ -6,6 +6,7 @@ import { estimateRichTextHeight, markdownToRichText } from "../../../helpers/mar
 import { sanitizeFilename } from "../../../helpers/sanitizefilename";
 import { string2Date } from "../../../helpers/string2date";
 import { EventExpenseTypeTitles, EventExpenseTypes } from "../entities/event-expense.entity";
+import { getEventAccountingFunction } from "../helpers/event-accounting-function";
 
 // Souhrn výdajů po kategoriích v listu "Soupis výdajů": šablona má popisky kategorií napevno
 // ve sloupci H od řádku 12, součty patří vedle nich do sloupce I. Pořadí kategorií proto musí
@@ -66,6 +67,7 @@ export class EventAccountingService {
 			...(event.attendees?.map((ea) => ea.member).filter((m): m is Member => !!m) || []),
 		];
 		const missing = "Chybí v DB";
+		const membershipYear = Number(event.dateFrom?.slice(0, 4)) || new Date().getFullYear();
 
 		const attendeesString =
 			event.attendees?.map((ea) => {
@@ -76,7 +78,7 @@ export class EventAccountingService {
 					(ea?.member?.addressStreet || missing) + " " + (ea?.member?.addressStreetNo || ""),
 					ea?.member?.addressCity || missing,
 					ea?.member?.addressPostalCode || missing,
-					ea?.member?.role?.charAt(0) || missing,
+					getEventAccountingFunction(ea, membershipYear) || missing,
 				];
 			}) || [];
 

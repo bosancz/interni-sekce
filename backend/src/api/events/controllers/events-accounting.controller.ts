@@ -49,7 +49,7 @@ export class EventsAccountingController {
 	): Promise<StreamableFile> {
 		const event = await this.eventsRepository.findOne({
 			where: { id: eventId },
-			relations: { attendees: { member: { contacts: true } }, expenses: true },
+			relations: { attendees: { member: { contacts: true, membership: true } }, expenses: true },
 		});
 
 		if (!event) throw new NotFoundException();
