@@ -26,8 +26,12 @@ export class CreateAdminCommand extends CommandRunner {
 
 		const passwordHash = await this.hashService.generateHash(password);
 
-		const existing = await this.usersRepository.findUser({ login: login.toLocaleLowerCase() });
+		const existing = await this.usersRepository.findUser(
+			{ login: login.toLocaleLowerCase() },
+			{ withDeleted: true },
+		);
 		if (existing) {
+			if (existing.deletedAt) await this.usersRepository.restoreUser(existing.id);
 			await this.usersRepository.updateUser(existing.id, { password: passwordHash });
 			this.logger.log(`Updated password for existing admin user '${login}'.`);
 		} else {

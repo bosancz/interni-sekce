@@ -2,6 +2,7 @@ import { Routes } from "@angular/router";
 
 import { AdminHomeComponent } from "./pages/admin-home/admin-home.component";
 import { BackupsComponent } from "./pages/backups/backups.component";
+import { DeletedUsersListComponent } from "./pages/deleted-users-list/deleted-users-list.component";
 import { BoardMembersComponent } from "./pages/board-members/board-members.component";
 import { FaceDetectionComponent } from "./pages/face-detection/face-detection.component";
 import { FaceMatchingComponent } from "./pages/face-matching/face-matching.component";
@@ -20,6 +21,7 @@ export const adminRoutes: Routes = [
 
 	{ path: "uzivatele", component: UsersListComponent },
 	{ path: "uzivatele/vytvorit", component: UsersCreateComponent },
+	{ path: "uzivatele/smazani", title: "Smazaní uživatelé", component: DeletedUsersListComponent },
 	{ path: "uzivatele/:user", component: UsersViewComponent },
 	{ path: "uzivatele/:user/upravit", component: UsersEditComponent },
 

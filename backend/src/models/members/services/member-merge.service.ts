@@ -164,7 +164,10 @@ export class MemberMergeService {
 			[memberId],
 		);
 
-		const [user] = await this.dataSource.query(`SELECT id, login FROM users WHERE member_id = $1`, [memberId]);
+		const [user] = await this.dataSource.query(
+			`SELECT id, login FROM users WHERE member_id = $1 AND deleted_at IS NULL`,
+			[memberId],
+		);
 
 		return {
 			memberId,

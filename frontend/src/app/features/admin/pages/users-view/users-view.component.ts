@@ -161,7 +161,7 @@ export class UsersViewComponent {
 
 	private async deleteUser(user: SDK.UserResponseWithLinks) {
 		const confirmation = await this.modalService.deleteConfirmationModal(
-			`Opravdu chcete smazat uživatele ${user.login}?`,
+			`Opravdu chcete smazat uživatele ${user.login}? Půjde ho obnovit ze smazaných uživatelů.`,
 		);
 
 		if (!confirmation) return;

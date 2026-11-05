@@ -1,0 +1,42 @@
+<bo-page-header title="Smazaní uživatelé" backUrl="/admin/uzivatele"></bo-page-header>
+
+<bo-page-content>
+	<admin-table
+		[rows]="users()"
+		[loading]="users() === undefined"
+		[actions]="userActions"
+		[actionsHeader]="rowActionsHeader"
+	>
+		<admin-table-column header="Login" [primary]="true" headerClass="align-middle">
+			<ng-container *adminCell="let user">{{ user.login }}</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Člen" headerClass="align-middle">
+			<ng-container *adminCell="let user">
+				@if (user.member) {
+					{{ user.member.nickname || "-" }}
+				} @else {
+					<span class="users-no-member">bez člena</span>
+				}
+			</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="E-mail" headerClass="align-middle">
+			<ng-container *adminCell="let user">{{ user.email }}</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Smazal/a" headerClass="align-middle">
+			<ng-container *adminCell="let user">{{ userName(user.deletedBy) }}</ng-container>
+		</admin-table-column>
+
+		<admin-table-column header="Smazáno" headerClass="align-middle">
+			<ng-container *adminCell="let user">
+				{{ user.deletedAt ? (user.deletedAt | date: "d. M. y H:mm") : "" }}
+			</ng-container>
+		</admin-table-column>
+	</admin-table>
+
+	@if (users()?.length === 0) {
+		<p class="ion-padding users-empty">Žádní smazaní uživatelé.</p>
+	}
+</bo-page-content>

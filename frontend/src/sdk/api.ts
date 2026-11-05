@@ -124,6 +124,18 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof AccountResponseLinks
          */
+        'restoreUser': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AccountResponseLinks
+         */
+        'deleteUserPermanent': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof AccountResponseLinks
+         */
         'setUserPassword': AcLink;
         /**
          * 
@@ -199,6 +211,24 @@ export namespace SDK {
          * @memberof AccountResponseWithLinks
          */
         'loginCodeExp': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof AccountResponseWithLinks
+         */
+        'deletedAt'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof AccountResponseWithLinks
+         */
+        'deletedById'?: number | null;
+        /**
+         * 
+         * @type {User}
+         * @memberof AccountResponseWithLinks
+         */
+        'deletedBy'?: User;
     }
     
         /**
@@ -10047,6 +10077,12 @@ export namespace SDK {
          * @type {AcLink}
          * @memberof RootResponseLinks
          */
+        'listDeletedUsers': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof RootResponseLinks
+         */
         'createUser': AcLink;
         /**
          * 
@@ -10692,6 +10728,24 @@ export namespace SDK {
          * @memberof User
          */
         'loginCodeExp': string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof User
+         */
+        'deletedAt'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof User
+         */
+        'deletedById'?: number | null;
+        /**
+         * 
+         * @type {User}
+         * @memberof User
+         */
+        'deletedBy'?: User;
     }
     
         /**
@@ -10786,6 +10840,24 @@ export namespace SDK {
          * @memberof UserResponse
          */
         'member'?: MemberResponseWithLinks | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof UserResponse
+         */
+        'deletedAt'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof UserResponse
+         */
+        'deletedById'?: number | null;
+        /**
+         * 
+         * @type {UserResponse}
+         * @memberof UserResponse
+         */
+        'deletedBy'?: UserResponse;
     }
     
         /**
@@ -10812,6 +10884,18 @@ export namespace SDK {
          * @memberof UserResponseLinks
          */
         'deleteUser': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof UserResponseLinks
+         */
+        'restoreUser': AcLink;
+        /**
+         * 
+         * @type {AcLink}
+         * @memberof UserResponseLinks
+         */
+        'deleteUserPermanent': AcLink;
         /**
          * 
          * @type {AcLink}
@@ -10886,6 +10970,24 @@ export namespace SDK {
          * @memberof UserResponseWithLinks
          */
         'member'?: MemberResponseWithLinks | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof UserResponseWithLinks
+         */
+        'deletedAt'?: string | null;
+        /**
+         * 
+         * @type {number}
+         * @memberof UserResponseWithLinks
+         */
+        'deletedById'?: number | null;
+        /**
+         * 
+         * @type {UserResponse}
+         * @memberof UserResponseWithLinks
+         */
+        'deletedBy'?: UserResponse;
         /**
          * 
          * @type {UserResponseLinks}
@@ -22893,6 +22995,10 @@ export namespace SDK {
     
     
     
+    
+    
+    
+    
     /**
      * Query parameters for getUser operation in UsersApi.
      * @export
@@ -22907,6 +23013,10 @@ export namespace SDK {
          */
         includeMember?: boolean
     }
+    
+    
+    
+    
     
     
     
@@ -22978,6 +23088,10 @@ export namespace SDK {
          */
         roles?: Array<UserRolesEnum>
     }
+    
+    
+    
+    
     
     
     
@@ -23065,6 +23179,50 @@ export namespace SDK {
             assertParamExists('deleteUser', 'userId', userId)
             
             const localVarPath = `/api/users/{userId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'DELETE', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} userId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof UsersApi
+         */
+        
+        public async deleteUserPermanent(
+            userId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('deleteUserPermanent', 'userId', userId)
+            
+            const localVarPath = `/api/users/{userId}/permanent`
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -23188,6 +23346,44 @@ export namespace SDK {
         /**
          * 
     
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof UsersApi
+         */
+        
+        public async listDeletedUsers(
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            const localVarPath = `/api/users/deleted`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'GET', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<Array<UserResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
          * @param {UsersApiListUsersQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
@@ -23247,6 +23443,50 @@ export namespace SDK {
             axiosRequestConfig["baseURL"] = this.configuration.basePath;
             
             return this.axios.request<Array<UserResponseWithLinks>>(axiosRequestConfig);
+        }
+    
+        /**
+         * 
+    
+         * @param {number} userId 
+         * @param {AxiosRequestConfig} [options] Override http request option.
+         * @throws {RequiredError}
+         * @memberof UsersApi
+         */
+        
+        public async restoreUser(
+            userId: number,
+            options: AxiosRequestConfig = {}
+        ) {
+    
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('restoreUser', 'userId', userId)
+            
+            const localVarPath = `/api/users/{userId}/restore`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const requestUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (this.configuration) {
+                baseOptions = this.configuration.baseOptions;
+            }
+    
+            const axiosRequestConfig: AxiosRequestConfig = { method: 'POST', ...baseOptions, ...options};
+            const requestHeaderParameter = {} as any;
+            const requestQueryParameter = {} as any;
+    
+            // authentication cookieAuth required
+    
+    
+    
+            setSearchParams(requestUrlObj, requestQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            axiosRequestConfig.headers = {...requestHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+    
+            axiosRequestConfig["url"] = toPathString(requestUrlObj);
+            axiosRequestConfig["baseURL"] = this.configuration.basePath;
+            
+            return this.axios.request<void>(axiosRequestConfig);
         }
     
         /**

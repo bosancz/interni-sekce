@@ -26,11 +26,14 @@ import { NotificationsService } from "src/models/notifications/services/notifica
 import { UsersRepository } from "src/models/users/repositories/users.repository";
 import {
 	UserCreatePermission,
+	UserDeletePermanentPermission,
 	UserDeletePermission,
 	UserEditPermission,
 	UserImpersonatePermission,
 	UserReadPermission,
+	UserRestorePermission,
 	UserSetPassword,
+	UsersDeletedListPermission,
 	UsersListPermission,
 } from "../acl/user.acl";
 import { UserCreateBody } from "../dto/user-create-body";
@@ -39,16 +42,15 @@ import { UserUpdateBody } from "../dto/user-update-body";
 import { GetUserQueryDto, UserResponse } from "../dto/user.dto";
 import { ListUsersQuery } from "../dto/users.dto";
 
-function throwOnDuplicateUser(err: unknown): never {
-	if (err instanceof QueryFailedError) {
-		const driverError = err.driverError as { code?: string; detail?: string };
-		if (driverError.code === "23505") {
-			if (driverError.detail?.includes("(email)"))
-				throw new ConflictException("Tenhle e-mail už má jiný uživatel.");
-			throw new ConflictException("Tenhle login už má jiný uživatel.");
-		}
-	}
-	throw err;
+function isDuplicateError(err: unknown): err is QueryFailedError {
+	return err instanceof QueryFailedError && (err.driverError as { code?: string }).code === "23505";
+}
+
+function duplicateUserMessage(err: QueryFailedError) {
+	const detail = (err.driverError as { detail?: string }).detail ?? "";
+	if (detail.includes("(email)")) return "Tenhle e-mail už má jiný uživatel.";
+	if (detail.includes("(member_id)")) return "Tenhle člen už má jiný uživatelský účet.";
+	return "Tenhle login už má jiný uživatel.";
 }
 
 @Controller("users")
@@ -80,13 +82,22 @@ export class UsersController {
 		});
 	}
 
+	@Get("deleted")
+	@AcLinks(UsersDeletedListPermission)
+	@ApiResponse({ status: 200, type: WithLinks(UserResponse), isArray: true })
+	async listDeletedUsers(@Req() req: Request): Promise<UserResponse[]> {
+		UsersDeletedListPermission.canOrThrow(req);
+
+		return this.usersRepository.getDeletedUsers((alias) => UsersDeletedListPermission.canWhere(req, alias));
+	}
+
 	@Post()
 	@AcLinks(UserCreatePermission)
 	@ApiResponse({ type: WithLinks(UserResponse) })
 	async createUser(@Req() req: Request, @Body() body: UserCreateBody): Promise<UserResponse> {
 		UserCreatePermission.canOrThrow(req);
 
-		const user = await this.usersRepository.createUser(body).catch(throwOnDuplicateUser);
+		const user = await this.usersRepository.createUser(body).catch((err) => this.throwOnDuplicateUser(err, body));
 
 		this.notificationsService
 			.onUserCreated(user, req.user?.userId)
@@ -124,7 +135,7 @@ export class UsersController {
 
 		UserEditPermission.canOrThrow(req, user);
 
-		await this.usersRepository.updateUser(userId, body).catch(throwOnDuplicateUser);
+		await this.usersRepository.updateUser(userId, body).catch((err) => this.throwOnDuplicateUser(err, body));
 	}
 
 	@Delete(":userId")
@@ -136,7 +147,46 @@ export class UsersController {
 
 		UserDeletePermission.canOrThrow(req, user);
 
-		await this.usersRepository.deleteUser(userId);
+		await this.usersRepository.deleteUser(userId, req.user?.userId ?? null);
+	}
+
+	@Post(":userId/restore")
+	@AcLinks(UserRestorePermission)
+	@ApiResponse({ status: 204 })
+	async restoreUser(@Req() req: Request, @Param("userId", ParseIntPipe) userId: number): Promise<void> {
+		const user = await this.usersRepository.getDeletedUser(userId);
+		if (!user) throw new NotFoundException();
+
+		UserRestorePermission.canOrThrow(req, user);
+
+		await this.usersRepository.restoreUser(userId).catch((err) => this.throwOnDuplicateUser(err, {}));
+	}
+
+	@Delete(":userId/permanent")
+	@AcLinks(UserDeletePermanentPermission)
+	@ApiResponse({ status: 204 })
+	async deleteUserPermanent(@Req() req: Request, @Param("userId", ParseIntPipe) userId: number): Promise<void> {
+		const user = await this.usersRepository.getDeletedUser(userId);
+		if (!user) throw new NotFoundException();
+
+		UserDeletePermanentPermission.canOrThrow(req, user);
+
+		await this.usersRepository.hardDeleteUser(userId);
+	}
+
+	private async throwOnDuplicateUser(
+		err: unknown,
+		data: { login?: string; email?: string | null; memberId?: number | null },
+	): Promise<never> {
+		if (!isDuplicateError(err)) throw err;
+
+		const deleted = await this.usersRepository.findDeletedUserConflict(data);
+		if (deleted)
+			throw new ConflictException(
+				`Login, e-mail nebo člena drží smazaný uživatel ${deleted.login}. Obnov ho, nebo ho trvale smaž ve Smazaných uživatelích.`,
+			);
+
+		throw new ConflictException(duplicateUserMessage(err));
 	}
 
 	@Put(":userId/password")

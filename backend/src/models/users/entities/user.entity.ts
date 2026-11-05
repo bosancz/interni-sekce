@@ -1,6 +1,15 @@
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Member } from "src/models/members/entities/member.entity";
-import { Column, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+	Column,
+	DeleteDateColumn,
+	Entity,
+	Index,
+	JoinColumn,
+	ManyToOne,
+	OneToOne,
+	PrimaryGeneratedColumn,
+} from "typeorm";
 import { getSavedRoles } from "../helpers/user-roles";
 import { UserSavedRoles, UserRoles } from "../schema/user-roles";
 
@@ -58,4 +67,13 @@ export class User {
 
 	@Column({ type: "varchar", unique: true, nullable: true, select: false }) loginCode!: string | null;
 	@Column({ type: "timestamp with time zone", nullable: true, select: false }) loginCodeExp!: string | null;
+
+	@DeleteDateColumn() deletedAt?: Date | null;
+
+	@Column({ nullable: true })
+	deletedById?: number | null;
+
+	@ManyToOne(() => User, { onDelete: "SET NULL", onUpdate: "CASCADE" })
+	@JoinColumn({ name: "deleted_by_id" })
+	deletedBy?: User;
 }
