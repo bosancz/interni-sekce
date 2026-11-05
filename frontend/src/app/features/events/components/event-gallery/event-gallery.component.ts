@@ -7,6 +7,7 @@ import {
 	addOutline,
 	checkmarkOutline,
 	closeOutline,
+	createOutline,
 	documentAttachOutline,
 	globeOutline,
 	imagesOutline,
@@ -76,6 +77,7 @@ export class EventGalleryComponent {
 			addOutline,
 			checkmarkOutline,
 			closeOutline,
+			createOutline,
 			documentAttachOutline,
 			globeOutline,
 			imagesOutline,
@@ -192,18 +194,18 @@ export class EventGalleryComponent {
 		if (!album || this.busy()) return;
 
 		const confirmed = await this.modalService.deleteConfirmationModal(
-			`Opravdu chceš odpojit fotogalerii „${album.name}“ od této akce? Album zůstane zachováno.`,
-			{ header: "Odpojit galerii?", buttonText: "Odpojit" },
+			`Opravdu chceš odpojit album „${album.name}“ od této akce? Album zůstane zachováno.`,
+			{ header: "Odpojit album?", buttonText: "Odpojit" },
 		);
 		if (!confirmed) return;
 
 		this.busy.set(true);
 		try {
 			await this.api.PhotoGalleryApi.updateAlbum(album.id, { eventId: null });
-			this.toastService.toast("Fotogalerie odpojena od akce.");
+			this.toastService.toast("Album odpojeno od akce.");
 			this.change.emit();
 		} catch (e) {
-			this.toastService.toast("Nepodařilo se odpojit fotogalerii.", { color: "warning" });
+			this.toastService.toast("Nepodařilo se odpojit album.", { color: "warning" });
 		} finally {
 			this.busy.set(false);
 		}

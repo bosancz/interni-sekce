@@ -40,9 +40,6 @@
 							<p class="muted">Chybí — krátce, jak akce proběhla, pro rodiče a děti na webu.</p>
 						}
 					</div>
-					<a class="check-action" [routerLink]="['/galerie/alba', album.id]">
-						{{ album.description ? "Upravit" : "Doplnit" }}
-					</a>
 				</div>
 
 				<div class="check-row">
@@ -63,9 +60,6 @@
 							<p class="muted">Zatím nenahraná.</p>
 						}
 					</div>
-					<a class="check-action" [routerLink]="['/galerie/alba', album.id]">
-						{{ album.chronicleFileName ? "Změnit" : "Nahrát" }}
-					</a>
 				</div>
 
 				<div class="check-row">
@@ -93,38 +87,44 @@
 							<p class="muted">Zatím žádné fotky.</p>
 						}
 					</div>
-					<a class="check-action" [routerLink]="['/galerie/alba', album.id]">
-						{{ photos()?.length ? "Spravovat" : "Nahrát" }}
-					</a>
 				</div>
 			</div>
 
-			@if (album.status === "public") {
-				<div class="publish-bar published">
-					<ion-icon name="globe-outline"></ion-icon>
-					<span>Popisek a fotky jsou v Jak jsme se měli na bosan.cz.</span>
-				</div>
-			} @else if (album._links.publishAlbum.applicable) {
-				<div class="publish-bar">
-					<ion-icon name="globe-outline"></ion-icon>
-					<span>Po publikaci se popisek a fotky objeví v Jak jsme se měli na bosan.cz.</span>
+			<div class="publish-bar" [class.published]="album.status === 'public'">
+				<ion-icon name="globe-outline"></ion-icon>
+				@if (album.status === "public") {
+					<span>Album je zveřejněné na bosan.cz.</span>
+				} @else {
+					<span>Po publikaci se album objeví na bosan.cz.</span>
+				}
+				<div class="publish-actions">
 					<ion-button
-						fill="solid"
-						color="warning"
-						[disabled]="!album._links.publishAlbum.allowed || busy()"
-						[boTooltip]="album._links.publishAlbum.allowed ? null : noPermissionText"
-						(click)="publish()"
+						[fill]="album.status !== 'public' && album._links.publishAlbum.applicable ? 'outline' : 'solid'"
+						[color]="album.status === 'public' ? 'success' : 'warning'"
+						[routerLink]="['/galerie/alba', album.id]"
 					>
-						Publikovat
+						<ion-icon name="create-outline" slot="start"></ion-icon>
+						Upravit
 					</ion-button>
+					@if (album.status !== "public" && album._links.publishAlbum.applicable) {
+						<ion-button
+							fill="solid"
+							color="warning"
+							[disabled]="!album._links.publishAlbum.allowed || busy()"
+							[boTooltip]="album._links.publishAlbum.allowed ? null : noPermissionText"
+							(click)="publish()"
+						>
+							Publikovat
+						</ion-button>
+					}
 				</div>
-			}
+			</div>
 
 			@if (canEditEvent()) {
 				<div class="unlink">
 					<button type="button" [disabled]="busy()" (click)="removeAlbum()">
 						<ion-icon name="close-outline"></ion-icon>
-						Odpojit galerii od akce
+						Odpojit album od akce
 					</button>
 				</div>
 			}
