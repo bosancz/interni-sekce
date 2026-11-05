@@ -1,6 +1,6 @@
 import { Permission } from "src/access-control/schema/route-acl";
 import { PhotoResponse } from "src/api/albums/dto/photo.dto";
-import { MemberRoles } from "src/models/members/entities/member.entity";
+import { MemberRoles } from "src/models/members/schema/member-roles";
 import { MemberResponse } from "../dto/member.dto";
 import { MemberReadPermission } from "./members.acl";
 

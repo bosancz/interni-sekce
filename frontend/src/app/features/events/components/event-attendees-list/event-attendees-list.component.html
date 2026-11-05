@@ -25,9 +25,19 @@
 			<div class="role" slot="end">
 				@if (attendee.type === "leader") {
 					<ion-badge mode="ios" class="event-leader">Vede akci</ion-badge>
+				} @else if (attendee._links.updateEventAttendee.allowed) {
+					<button
+						type="button"
+						class="role-select"
+						[attr.aria-label]="'Role na akci: ' + (attendee.role | role: 'title')"
+						(click)="selectRole(attendee); $event.preventDefault(); $event.stopPropagation()"
+					>
+						<span>{{ attendee.role | role: "title" }}</span>
+						<ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+					</button>
 				} @else {
 					<ion-badge mode="ios">
-						{{ attendee.member?.role | role: "title" }}
+						{{ attendee.role | role: "title" }}
 					</ion-badge>
 				}
 			</div>

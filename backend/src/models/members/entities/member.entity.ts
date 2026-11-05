@@ -18,12 +18,7 @@ import { MemberAchievement } from "./member-achievements.entity";
 import { MemberContact } from "./member-contact.entity";
 import { MemberTraining } from "./member-training.entity";
 import { MembershipPayment } from "./membership-payment.entity";
-
-export enum MemberRoles {
-	"dite" = "dite",
-	"instruktor" = "instruktor",
-	"vedouci" = "vedouci",
-}
+import { MemberRoles } from "../schema/member-roles";
 
 // FIXME:
 export enum MemberRanks {

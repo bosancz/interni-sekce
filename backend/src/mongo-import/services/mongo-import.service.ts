@@ -5,11 +5,13 @@ import { Config } from "src/config";
 import { Album } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
+import { getAttendeeRoleByAge } from "src/models/events/helpers/event-attendee-role";
 import { EventExpense, EventExpenseTypes } from "src/models/events/entities/event-expense.entity";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Group } from "src/models/members/entities/group.entity";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
-import { Member, MemberRanks, MemberRoles } from "src/models/members/entities/member.entity";
+import { Member, MemberRanks } from "src/models/members/entities/member.entity";
+import { MemberRoles } from "src/models/members/schema/member-roles";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import { User } from "src/models/users/entities/user.entity";
 import { UserSavedRoles } from "src/models/users/schema/user-roles";
@@ -279,6 +281,15 @@ export class MongoImportService {
 		const mongoEvents = await this.eventsModel.find({}).lean();
 		this.logger.debug(` - Found ${mongoEvents.length} events in mongo.`);
 
+		const members = new Map(
+			(await t.find(Member, { select: { id: true, role: true, birthday: true } })).map((m) => [m.id, m]),
+		);
+
+		const attendeeRole = (memberId: number, dateFrom: string) => {
+			const member = members.get(memberId)!;
+			return getAttendeeRoleByAge(member.birthday, dateFrom, member.role, this.config.eventAttendees.roleByAge);
+		};
+
 		let c = 0;
 
 		for (let mongoEvent of mongoEvents) {
@@ -365,6 +376,7 @@ export class MongoImportService {
 						eventId: event.id,
 						memberId,
 						type: EventAttendeeType.attendee,
+						role: attendeeRole(memberId, event.dateFrom),
 					};
 
 					await t.save(EventAttendee, attendeeData);
@@ -382,6 +394,7 @@ export class MongoImportService {
 						memberId,
 						type: EventAttendeeType.leader,
 						position,
+						role: attendeeRole(memberId, event.dateFrom),
 					};
 
 					await t.save(EventAttendee, attendeeData);

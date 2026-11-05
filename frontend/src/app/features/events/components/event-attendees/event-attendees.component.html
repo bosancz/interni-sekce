@@ -24,6 +24,7 @@
 			[attendees]="people()"
 			[notes]="notes()"
 			(remove)="removeAttendee($event)"
+			(roleChange)="changeAttendeeRole($event.attendee, $event.role)"
 		></bo-event-attendees-list>
 
 		@if (canAddAttendee()) {
@@ -62,8 +63,8 @@
 				<bo-card-content>
 					<event-age-histogram
 						[event]="event()!"
-						[attendees]="attendeeMembers()"
-						[leaders]="leaderMembers()"
+						[attendees]="attendees() ?? []"
+						[leaders]="leaders() ?? []"
 					></event-age-histogram>
 				</bo-card-content>
 			</bo-card>

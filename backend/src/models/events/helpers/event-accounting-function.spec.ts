@@ -8,7 +8,7 @@ function attendee(type: EventAttendeeType, role: string | null, paidYears: numbe
 		role,
 		membership: paidYears.map((forYear) => ({ forYear }) as MembershipPayment),
 	} as unknown as Member;
-	return { type, member } as EventAttendee;
+	return { type, role, member } as unknown as EventAttendee;
 }
 
 describe("getEventAccountingFunction", () => {

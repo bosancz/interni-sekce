@@ -19,21 +19,22 @@ type AgeBand = { label: string; count: number; rows: AgeRow[] };
 })
 export class EventAgeHistogramComponent {
 	event = input.required<SDK.EventResponseWithLinks>();
-	attendees = input.required<SDK.MemberResponse[]>();
-	leaders = input.required<SDK.MemberResponse[]>();
+	attendees = input.required<SDK.EventAttendeeResponse[]>();
+	leaders = input.required<SDK.EventAttendeeResponse[]>();
 
 	readonly peoplePluralMap = { "=1": "# člověk", "=2": "# lidé", "=3": "# lidé", "=4": "# lidé", other: "# lidí" };
 
 	bands = computed<AgeBand[]>(() => {
 		const dateFrom = this.event().dateFrom;
 		const people = [
-			...this.attendees().map((member) => ({ member, leader: false })),
-			...this.leaders().map((member) => ({ member, leader: true })),
+			...this.attendees().map((attendee) => ({ attendee, leader: false })),
+			...this.leaders().map((attendee) => ({ attendee, leader: true })),
 		]
-			.map(({ member, leader }) => ({
-				age: getAge(member.birthday, dateFrom),
-				nickname: member.nickname,
-				category: this.getCategory(member, leader),
+			.filter(({ attendee }) => !!attendee.member)
+			.map(({ attendee, leader }) => ({
+				age: getAge(attendee.member!.birthday, dateFrom),
+				nickname: attendee.member!.nickname,
+				category: this.getCategory(attendee.role, leader),
 			}))
 			.filter(
 				(person): person is { age: number; nickname: string; category: AgeCategory } => person.age !== null,
@@ -63,9 +64,9 @@ export class EventAgeHistogramComponent {
 		);
 	});
 
-	private getCategory(member: SDK.MemberResponse, leader: boolean): AgeCategory {
-		if (member.role === "instruktor") return "instructor";
-		if (member.role === "vedouci" || leader) return "leader";
+	private getCategory(role: SDK.MemberRolesEnum, leader: boolean): AgeCategory {
+		if (role === "instruktor") return "instructor";
+		if (role === "vedouci" || leader) return "leader";
 		return "child";
 	}
 

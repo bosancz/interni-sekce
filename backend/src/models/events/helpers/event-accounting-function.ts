@@ -8,5 +8,5 @@ export function getEventAccountingFunction(attendee: EventAttendee, membershipYe
 	if (attendee.type === EventAttendeeType.leader) return ACCOUNTING_FUNCTION_LEADER;
 	if (attendee.member && !isMembershipPaid(attendee.member.membership, membershipYear))
 		return ACCOUNTING_FUNCTION_NON_MEMBER;
-	return attendee.member?.role?.charAt(0) || undefined;
+	return attendee.role?.charAt(0) || undefined;
 }

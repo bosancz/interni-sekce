@@ -6,7 +6,8 @@ import { EventAttendee, EventAttendeeType } from "src/models/events/entities/eve
 import { Event } from "src/models/events/entities/event.entity";
 import { MailService } from "src/models/mail/services/mail.service";
 import { getDefaultMemberContact } from "src/models/members/helpers/member-contacts";
-import { Member, MemberRoles } from "src/models/members/entities/member.entity";
+import { Member } from "src/models/members/entities/member.entity";
+import { MemberRoles } from "src/models/members/schema/member-roles";
 import xlsxPopulate from "xlsx-populate";
 import { string2Date } from "../../../helpers/string2date";
 import { getEventLeaders } from "../helpers/event-leaders";
@@ -151,8 +152,8 @@ export class EventAnnouncementService {
 
 		const isAdult =
 			attendee.type === EventAttendeeType.leader ||
-			member?.role === MemberRoles.vedouci ||
-			member?.role === MemberRoles.instruktor;
+			attendee.role === MemberRoles.vedouci ||
+			attendee.role === MemberRoles.instruktor;
 
 		if (isAdult) {
 			const ownPhone = member?.mobile?.trim();

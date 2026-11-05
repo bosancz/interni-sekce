@@ -182,3 +182,47 @@ bo-item.festive .role ion-badge {
 		padding: 0.4em 0.4em;
 	}
 }
+
+.role-select {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.25em;
+	width: 100%;
+	border: 1px solid var(--bo-neutral-pill-text);
+	border-radius: var(--bo-radius-pill);
+	background-color: transparent;
+	color: var(--bo-neutral-pill-text);
+	font-size: 13px;
+	font-weight: 700;
+	line-height: 1;
+	padding: 0.35em 0.5em;
+	cursor: pointer;
+	white-space: nowrap;
+
+	span {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	ion-icon {
+		flex: 0 0 auto;
+		font-size: 0.9em;
+	}
+
+	&:hover,
+	&:focus-visible {
+		background-color: var(--bo-neutral-pill);
+	}
+}
+
+bo-item.festive .role-select {
+	background-color: var(--bo-white);
+}
+
+@container attendees (max-width: 400px) {
+	.role-select {
+		font-size: 11px;
+		padding: 0.3em 0.4em;
+	}
+}

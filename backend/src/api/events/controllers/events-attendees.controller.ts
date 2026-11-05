@@ -3,8 +3,9 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
-import { EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
+import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
+import { rethrowMemberNotFound } from "src/api/members/helpers/member-not-found";
 
 import {
 	EventAttendeeCreatePermission,
@@ -57,7 +58,7 @@ export class EventsAttendeesController {
 
 		EventAttendeeCreatePermission.canOrThrow(req, event);
 
-		await this.events.createEventAttendee(eventId, memberId, body);
+		await this.events.createEventAttendee(eventId, memberId, body).catch(rethrowMemberNotFound);
 	}
 
 	@Put(":eventId/leaders/:memberId")
@@ -83,10 +84,9 @@ export class EventsAttendeesController {
 				position: null,
 			});
 		else
-			await this.events.createEventAttendee(eventId, memberId, {
-				type: EventAttendeeType.leader,
-				position: null,
-			});
+			await this.events
+				.createEventAttendee(eventId, memberId, { type: EventAttendeeType.leader, position: null })
+				.catch(rethrowMemberNotFound);
 	}
 
 	@Put(":eventId/leaders")
@@ -119,11 +119,11 @@ export class EventsAttendeesController {
 
 		EventAttendeeEditPermission.canOrThrow(req, eventAttendee);
 
-		if (eventAttendee.type === body.type) return;
+		const data: Partial<EventAttendee> = {};
+		if (body.type && body.type !== eventAttendee.type) Object.assign(data, { type: body.type, position: null });
+		if (body.role && body.role !== eventAttendee.role) data.role = body.role;
 
-		eventAttendee.type = body.type;
-
-		await this.events.updateEventAttendee(eventId, memberId, { type: body.type, position: null });
+		if (Object.keys(data).length) await this.events.updateEventAttendee(eventId, memberId, data);
 	}
 
 	@Delete(":eventId/attendees/:memberId")

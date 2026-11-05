@@ -1,7 +1,8 @@
 import { StaticConfig } from "src/config";
 import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
-import { Member, MemberRoles } from "src/models/members/entities/member.entity";
+import { Member } from "src/models/members/entities/member.entity";
+import { MemberRoles } from "src/models/members/schema/member-roles";
 import { ObjectLiteral, Repository, SelectQueryBuilder } from "typeorm";
 
 export const EVENT_DAYS = "(e.date_till - e.date_from + 1)";
