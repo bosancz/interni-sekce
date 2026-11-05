@@ -67,7 +67,7 @@ export const AlbumRestorePermission = new Permission({
 	linkTo: AlbumResponse,
 	params: { albumId: "id" },
 	allowed: {
-		vedouci: ({ doc, req }) => doc.createdById !== null && doc.createdById === req.user?.userId,
+		vedouci: true,
 	},
 	applicable: ({ doc }) => !!doc.deletedAt,
 });

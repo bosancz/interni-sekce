@@ -379,6 +379,7 @@ export class EventsRepository {
 
 	async restoreEvent(id: number) {
 		await this.eventsRepository.restore({ id });
+		await this.updateEvent(id, { status: EventStates.draft });
 	}
 
 	async getEventsYears() {

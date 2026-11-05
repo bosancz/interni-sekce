@@ -94,7 +94,7 @@ export const EventRestorePermission = new Permission({
 	linkTo: EventResponse,
 	params: { eventId: "id" },
 	allowed: {
-		program: true,
+		vedouci: true,
 	},
 	applicable: ({ doc }) => !!doc.deletedAt,
 });
