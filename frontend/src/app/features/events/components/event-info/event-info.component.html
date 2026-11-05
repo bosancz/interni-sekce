@@ -85,6 +85,13 @@
 				></bo-group-select>
 			</bo-item>
 
+			<bo-item label="Vedoucí">
+				<bo-event-leaders #leaders [event]="event()" (change)="change.emit()"></bo-event-leaders>
+				@if (event()?._links?.addEventLeader?.allowed) {
+					<bo-edit-button slot="end" (click)="leaders.edit()" />
+				}
+			</bo-item>
+
 			<bo-item label="Popis" [loading]="!event()">
 				<div class="bo-markdown" [innerHTML]="event()?.description | markdown"></div>
 				@if (canEdit()) {

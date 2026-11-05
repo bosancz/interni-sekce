@@ -1,10 +1,20 @@
 import { CommonModule, formatDate } from "@angular/common";
 import { Component, computed, effect, input, OnDestroy, OnInit, output, signal } from "@angular/core";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
-import { RouterLink } from "@angular/router";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
-import { checkmarkOutline, mailOutline, sendOutline } from "ionicons/icons";
+import {
+	alertCircle,
+	checkmarkOutline,
+	documentTextOutline,
+	ellipse,
+	giftOutline,
+	helpCircle,
+	mailOutline,
+	sendOutline,
+	warning,
+} from "ionicons/icons";
+import { HealthSeverities } from "src/app/core/config/health-severity";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -21,14 +31,14 @@ import { getMemberEmails } from "src/helpers/member-contacts";
 import { SDK } from "src/sdk";
 import { EventAgeHistogramComponent } from "../event-age-histogram/event-age-histogram.component";
 import { EventAttendeesListComponent } from "../event-attendees-list/event-attendees-list.component";
-import { EventBirthdayListComponent } from "../event-birthday-list/event-birthday-list.component";
-
-const LEADER_ROLES: SDK.MemberRolesEnum[] = [SDK.MemberRolesEnum.Instruktor, SDK.MemberRolesEnum.Vedouci];
+import { AttendeeNote, AttendeeNoteTone } from "../event-attendees-list/attendee-note";
 
 const compareLeaderPositions = (a: SDK.EventAttendeeResponseWithLinks, b: SDK.EventAttendeeResponseWithLinks) =>
 	(a.position ?? Infinity) - (b.position ?? Infinity) ||
 	(a.member?.nickname ?? "").localeCompare(b.member?.nickname ?? "", "cs") ||
 	a.memberId - b.memberId;
+
+const peopleLabel = (count: number) => `${count} ${count === 1 ? "člověka" : "lidí"}`;
 
 const addressesLabel = (count: number) => `${count} ${count === 1 ? "adresa" : count < 5 ? "adresy" : "adres"}`;
 
@@ -50,12 +60,10 @@ const mailAddresses = (emails: string[]) =>
 		CommonModule,
 		IonButton,
 		IonIcon,
-		RouterLink,
 		TooltipDirective,
 		EventAttendeesListComponent,
 		AddButtonComponent,
 		EventAgeHistogramComponent,
-		EventBirthdayListComponent,
 		CardComponent,
 		CardHeaderComponent,
 		CardTitleComponent,
@@ -70,8 +78,6 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 	attendees = signal<SDK.EventAttendeeResponseWithLinks[] | undefined>(undefined);
 	leaders = signal<SDK.EventAttendeeResponseWithLinks[] | undefined>(undefined);
 
-	canAddLeader = computed(() => this.event()?._links?.addEventLeader?.allowed ?? false);
-	canReorderLeaders = computed(() => this.event()?._links?.updateEventLeadersOrder?.allowed ?? false);
 	canAddAttendee = computed(() => this.event()?._links?.addEventAttendee?.allowed ?? false);
 
 	attendeesCount = computed(() => {
@@ -91,6 +97,70 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 		return getBirthdaysBetween(this.allMembers(), event.dateFrom, event.dateTill);
 	});
+
+	people = computed(() => {
+		const attendees = this.attendees();
+		const leaders = this.leaders();
+		if (attendees === undefined || leaders === undefined) return undefined;
+		return [...leaders, ...attendees];
+	});
+
+	notes = computed(() => {
+		const notes = new Map<number, AttendeeNote[]>();
+		const add = (memberId: number, note: AttendeeNote) =>
+			notes.set(memberId, [...(notes.get(memberId) ?? []), note]);
+
+		for (const birthday of this.birthdays()) {
+			add(birthday.member.id, {
+				tone: "birthday",
+				icon: "gift-outline",
+				text: `${formatDate(birthday.date, "d. M.", "cs")} slaví ${birthday.age}. narozeniny`,
+			});
+		}
+
+		for (const member of this.allMembers()) {
+			const entries = [
+				...(member.allergies ?? []).map((entry) => ({ ...entry, text: `Alergie: ${entry.name}` })),
+				...(member.knownProblems ?? []).map((entry) => ({ ...entry, text: entry.name })),
+			].sort((a, b) => HealthSeverities[b.severity].order - HealthSeverities[a.severity].order);
+
+			for (const entry of entries) {
+				add(member.id, {
+					tone: entry.severity as AttendeeNoteTone,
+					icon: HealthSeverities[entry.severity].icon,
+					text: entry.text,
+				});
+			}
+		}
+
+		for (const item of this.announcementMissing()) {
+			add(item.memberId, {
+				tone: "neutral",
+				icon: "document-text-outline",
+				text: `Chybí k ohlášce: ${item.fields.join(", ")}`,
+			});
+		}
+
+		return notes;
+	});
+
+	summary = computed(() => {
+		const members = this.allMembers();
+		return [
+			{ label: "Narozeniny", tone: "birthday", count: this.birthdays().length },
+			{ label: "Alergie", tone: "high", count: members.reduce((n, m) => n + (m.allergies?.length ?? 0), 0) },
+			{
+				label: "Další potíže",
+				tone: "medium",
+				count: members.reduce((n, m) => n + (m.knownProblems?.length ?? 0), 0),
+			},
+			...(this.showAnnouncement()
+				? [{ label: "Chybí údaje k ohlášce", tone: "neutral", count: this.announcementMissing().length }]
+				: []),
+		];
+	});
+
+	announcementMissingLabel = computed(() => peopleLabel(this.announcementMissing().length));
 
 	private attendeeEmails = computed(() => this.emailsOf(this.attendees()));
 
@@ -177,7 +247,17 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		private toastService: ToastService,
 		private modalService: ModalService,
 	) {
-		addIcons({ mailOutline, sendOutline, checkmarkOutline });
+		addIcons({
+			mailOutline,
+			sendOutline,
+			checkmarkOutline,
+			giftOutline,
+			documentTextOutline,
+			ellipse,
+			alertCircle,
+			warning,
+			helpCircle,
+		});
 
 		effect(() => {
 			const event = this.event();
@@ -261,34 +341,28 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		window.location.href = uri;
 	}
 
-	async addAttendee(type: SDK.EventAttendeeCreateBodyTypeEnum) {
+	async addAttendee() {
 		const event = this.event();
 		if (!event) return;
 
-		const selectedAttendees = computed(() => (type === "leader" ? this.leaders() : this.attendees()) ?? []);
-		const selectedIds = computed(() => selectedAttendees().map((attendee) => attendee.memberId));
+		const selectedIds = computed(() => (this.attendees() ?? []).map((attendee) => attendee.memberId));
 
 		const addSelectedMember = async (member: SDK.MemberResponse) => {
 			const existing = this.findAttendee(member.id);
 
-			if (type !== "leader" && existing?.type === "leader") {
+			if (existing?.type === "leader") {
 				const confirmation = await this.confirmLeaderDemotion(member);
 				if (!confirmation) return;
 			}
 
 			try {
-				if (type === "leader") {
-					await this.api.EventsApi.addEventLeader(event.id, member.id);
-				} else if (existing) {
-					await this.api.EventsApi.updateEventAttendee(event.id, member.id, { type });
+				if (existing) {
+					await this.api.EventsApi.updateEventAttendee(event.id, member.id, { type: "attendee" });
 				} else {
-					await this.api.EventsApi.addEventAttendee(event.id, member.id, { type });
+					await this.api.EventsApi.addEventAttendee(event.id, member.id, { type: "attendee" });
 				}
 			} catch (e) {
-				this.toastService.toast(
-					type === "leader" ? "Nepodařilo se přidat vedoucího." : "Nepodařilo se přidat účastníka.",
-					{ color: "danger" },
-				);
+				this.toastService.toast("Nepodařilo se přidat účastníka.", { color: "danger" });
 				return;
 			}
 
@@ -306,18 +380,10 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 				return;
 			}
 
-			if (attendee.type === "leader") {
-				const confirmation = await this.confirmLeaderRemoval(member);
-				if (!confirmation) return;
-			}
-
 			try {
 				await this.api.EventsApi.deleteEventAttendee(event.id, member.id);
 			} catch (e) {
-				this.toastService.toast(
-					type === "leader" ? "Nepodařilo se odebrat vedoucího." : "Nepodařilo se odebrat účastníka.",
-					{ color: "danger" },
-				);
+				this.toastService.toast("Nepodařilo se odebrat účastníka.", { color: "danger" });
 				return;
 			}
 
@@ -327,15 +393,13 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		};
 
 		const clearAllMembers = async () => {
-			const removable = (selectedAttendees() ?? []).filter(
+			const removable = (this.attendees() ?? []).filter(
 				(attendee) => attendee._links.deleteEventAttendee.allowed,
 			);
 			if (!removable.length) return;
 
 			const confirmation = await this.modalService.deleteConfirmationModal(
-				type === "leader"
-					? "Opravdu chcete odebrat všechny vedoucí akce?"
-					: "Opravdu chcete odebrat všechny účastníky akce?",
+				"Opravdu chcete odebrat všechny účastníky akce?",
 				{ header: "Odebrat vše?", buttonText: "Odebrat" },
 			);
 			if (!confirmation) return;
@@ -358,12 +422,8 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			{
 				keepOpenAfterSelect: true,
 				allowCreate: true,
-				roles: type === "leader" ? LEADER_ROLES : undefined,
-				title: type === "leader" ? "Přidat vedoucí" : "Přidat účastníky",
-				subtitle:
-					type === "leader"
-						? "Vyber vedoucí a instruktory ze svého oddílu."
-						: "Vyber účastníky ze svého oddílu.",
+				title: "Přidat účastníky",
+				subtitle: "Vyber účastníky ze svého oddílu.",
 				selectedIds,
 				onSelect: addSelectedMember,
 				onDeselect: removeSelectedMember,
@@ -403,25 +463,6 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		);
 	}
 
-	async reorderLeaders(leaders: SDK.EventAttendeeResponseWithLinks[]) {
-		const event = this.event();
-		if (!event) return;
-
-		this.leaders.set(leaders.map((leader, position) => ({ ...leader, position })));
-
-		try {
-			await this.api.EventsApi.updateEventLeadersOrder(event.id, {
-				memberIds: leaders.map((leader) => leader.memberId),
-			});
-		} catch (e) {
-			this.toastService.toast("Nepodařilo se změnit pořadí vedoucích.", { color: "danger" });
-			await this.loadAttendees(event);
-			return;
-		}
-
-		this.change.emit();
-	}
-
 	async removeAttendee(attendee: SDK.EventAttendeeResponseWithLinks) {
 		const event = this.event();
 		if (!event) return;
@@ -433,6 +474,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 		try {
 			this.attendees.set(this.attendees()?.filter((item) => item.memberId !== attendee.memberId));
+			this.leaders.set(this.leaders()?.filter((item) => item.memberId !== attendee.memberId));
 
 			await this.api.EventsApi.deleteEventAttendee(event.id, attendee.memberId);
 
@@ -442,7 +484,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			this.change.emit();
 		} catch (e) {
 			this.toastService.toast("Nepodařilo se odebrat účastníka.");
-			this.attendees.set([...(this.attendees() ?? []), attendee]);
+			await this.loadAttendees(event);
 		}
 	}
 
