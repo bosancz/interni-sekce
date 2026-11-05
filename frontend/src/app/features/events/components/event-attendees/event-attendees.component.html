@@ -1,27 +1,7 @@
 <div class="row">
 	<div class="order-2 order-lg-1 col-12 col-xl-8">
-		<h3>Vedoucí</h3>
-
-		<bo-event-attendees-list
-			[event]="event()"
-			[attendees]="leaders()"
-			[sortable]="canReorderLeaders()"
-			(remove)="removeAttendee($event)"
-			(reorder)="reorderLeaders($event)"
-		></bo-event-attendees-list>
-
-		@if (canReorderLeaders() && (leaders()?.length ?? 0) > 1) {
-			<p class="attendees-note text-muted">V tomto pořadí se zobrazí vedoucí na webu</p>
-		}
-
-		@if (canAddLeader()) {
-			<div class="text-center">
-				<bo-add-button (click)="addAttendee('leader')">Přidat vedoucí</bo-add-button>
-			</div>
-		}
-
 		<div class="list-header">
-			<h3>Účastníci</h3>
+			<h3>Lidé na akci</h3>
 
 			@if (allMembers().length) {
 				<ion-button
@@ -41,26 +21,35 @@
 
 		<bo-event-attendees-list
 			[event]="event()"
-			[attendees]="attendees()"
+			[attendees]="people()"
+			[notes]="notes()"
 			(remove)="removeAttendee($event)"
 		></bo-event-attendees-list>
 
 		@if (canAddAttendee()) {
 			<div class="text-center">
-				<bo-add-button (click)="addAttendee('attendee')">Přidat účastníka</bo-add-button>
+				<bo-add-button (click)="addAttendee()">Přidat účastníka</bo-add-button>
 			</div>
 		}
 
-		<p class="attendees-note text-muted">Věk je uvedený ke dni začátku akce.</p>
+		<p class="attendees-note text-muted">
+			Věk je uvedený ke dni začátku akce. Vedoucí akce se vybírají v záložce Info.
+		</p>
 	</div>
 	<div class="order-1 order-lg-2 col-12 col-xl-4">
-		@if (birthdays().length) {
+		@if (people()?.length) {
 			<bo-card class="mb-3">
 				<bo-card-header>
-					<bo-card-title>Narozeniny během akce</bo-card-title>
+					<bo-card-title>Souhrn</bo-card-title>
 				</bo-card-header>
 				<bo-card-content>
-					<event-birthday-list [birthdays]="birthdays()"></event-birthday-list>
+					@for (row of summary(); track row.label) {
+						<div class="summary-row">
+							<span class="summary-dot" [class]="'dot-' + row.tone"></span>
+							<span class="summary-label">{{ row.label }}</span>
+							<strong class="summary-count">{{ row.count }}</strong>
+						</div>
+					}
 				</bo-card-content>
 			</bo-card>
 		}
@@ -84,16 +73,8 @@
 			<div class="announcement">
 				@if (announcementMissing().length) {
 					<div class="announcement-warning">
-						<strong>Ohlášku zatím nejde odeslat.</strong> V databázi chybí:
-						<ul>
-							@for (item of announcementMissing(); track item.memberId) {
-								<li>
-									<a [routerLink]="'/databaze/clenove/' + item.memberId">{{ item.nickname }}</a
-									>:
-									{{ item.fields.join(", ") }}
-								</li>
-							}
-						</ul>
+						<strong>Ohlášku zatím nejde odeslat.</strong> V databázi chybí údaje u
+						{{ announcementMissingLabel() }} – najdeš je v seznamu jako „Chybí k ohlášce“.
 					</div>
 				}
 

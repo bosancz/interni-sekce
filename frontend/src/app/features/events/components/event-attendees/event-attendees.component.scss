@@ -9,7 +9,8 @@
 .list-header {
 	display: flex;
 	align-items: center;
-	gap: 0.25rem;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
 	margin: 16px 0 10px;
 
 	h3 {
@@ -21,17 +22,45 @@
 	}
 }
 
+.summary-row {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 0.3rem 0;
+	color: var(--bo-muted);
+	font-size: 0.9rem;
+}
+
+.summary-dot {
+	width: 0.6em;
+	height: 0.6em;
+	border-radius: 50%;
+	background-color: var(--bo-neutral-badge);
+
+	&.dot-birthday {
+		background-color: var(--bo-yellow);
+	}
+
+	&.dot-high {
+		background-color: var(--bo-red);
+	}
+
+	&.dot-medium {
+		background-color: var(--bo-yellow-deep);
+	}
+}
+
+.summary-count {
+	margin-left: auto;
+	color: var(--bo-ink);
+}
+
 .announcement-warning {
 	margin-bottom: 0.5rem;
 	padding: 8px 12px;
 	border-radius: var(--bo-radius-btn);
 	background: var(--bo-yellow-tint);
 	font-size: $font-small;
-
-	ul {
-		margin: 4px 0 0;
-		padding-inline-start: 1.25rem;
-	}
 }
 
 .announcement-note {

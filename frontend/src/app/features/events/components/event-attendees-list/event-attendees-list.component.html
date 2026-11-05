@@ -1,54 +1,58 @@
 <ion-list>
-	<ion-reorder-group [disabled]="!reorderable()" (ionItemReorder)="onReorder($any($event))">
-		@for (attendee of attendees(); track attendee.eventId + "-" + attendee.memberId) {
-			<bo-item
-				[label]="attendee.member | member: 'nickname'"
-				[routerLink]="'/databaze/clenove/' + attendee.memberId"
-				[button]="true"
-			>
-				<p class="text-muted">
-					@if (attendee.member) {
-						<bo-member-item-detail
-							[member]="attendee.member"
-							[referenceDate]="event()?.dateFrom"
-						></bo-member-item-detail>
-					}
-				</p>
-
-				@if (attendee.member?.birthday && hasBirthday(attendee)) {
-					<span class="birthday text-muted"> 🎉 {{ attendee.member.birthday | date: "d. M." }} </span>
+	@for (attendee of attendees(); track attendee.eventId + "-" + attendee.memberId) {
+		@let attendeeNotes = notes().get(attendee.memberId) ?? [];
+		<bo-item
+			[label]="attendee.member | member: 'nickname'"
+			[routerLink]="'/databaze/clenove/' + attendee.memberId"
+			[button]="true"
+			[class.festive]="hasBirthday(attendeeNotes)"
+		>
+			<p class="text-muted">
+				@if (attendee.member) {
+					<bo-member-item-detail
+						[member]="attendee.member"
+						[referenceDate]="event()?.dateFrom"
+					></bo-member-item-detail>
 				}
+			</p>
 
-				<div class="group" slot="end">
-					@if (attendee.member) {
-						<bo-group-badge [short]="true" [groupId]="attendee.member.groupId"></bo-group-badge>
-					}
-				</div>
+			<div class="group" slot="end">
+				@if (attendee.member) {
+					<bo-group-badge [short]="true" [groupId]="attendee.member.groupId"></bo-group-badge>
+				}
+			</div>
 
-				<div class="role" slot="end">
+			<div class="role" slot="end">
+				@if (attendee.type === "leader") {
+					<ion-badge mode="ios" class="event-leader">Vede akci</ion-badge>
+				} @else {
 					<ion-badge mode="ios">
 						{{ attendee.member?.role | role: "title" }}
 					</ion-badge>
+				}
+			</div>
+
+			@if (canRemoveAny()) {
+				<div class="delete" slot="end">
+					@if (attendee._links.deleteEventAttendee.allowed) {
+						<bo-delete-button
+							(click)="remove.emit(attendee); $event.preventDefault(); $event.stopPropagation()"
+						></bo-delete-button>
+					}
 				</div>
+			}
 
-				@if (canRemoveAny()) {
-					<div class="delete" slot="end">
-						@if (attendee._links.deleteEventAttendee.allowed) {
-							<bo-delete-button
-								(click)="remove.emit(attendee); $event.preventDefault(); $event.stopPropagation()"
-							></bo-delete-button>
-						}
-					</div>
-				}
-
-				@if (reorderable()) {
-					<div class="reorder" slot="end" boTooltip="Přetažením změníš pořadí">
-						<ion-reorder></ion-reorder>
-					</div>
-				}
-			</bo-item>
-		}
-	</ion-reorder-group>
+			@if (attendeeNotes.length) {
+				<div class="notes">
+					@for (note of attendeeNotes; track $index) {
+						<span class="note" [class]="'note-' + note.tone">
+							<ion-icon [name]="note.icon" aria-hidden="true"></ion-icon>{{ note.text }}
+						</span>
+					}
+				</div>
+			}
+		</bo-item>
+	}
 
 	@if (attendees() === undefined) {
 		@for (item of loadingArray; track $index) {
@@ -58,7 +62,9 @@
 		}
 	} @else if (attendees()!.length === 0) {
 		<bo-item>
-			<p class="text-muted"><em>Žádní účastníci</em></p>
+			<p class="text-muted">
+				<em>Žádní účastníci</em>
+			</p>
 		</bo-item>
 	}
 </ion-list>

@@ -1,0 +1,28 @@
+@if (leaders(); as leaders) {
+	@if (leaders.length) {
+		<ion-reorder-group class="leaders" [disabled]="!reorderable()" (ionItemReorder)="onReorder($any($event))">
+			@for (leader of leaders; track leader.memberId) {
+				<div class="leader">
+					<a class="leader-link" [routerLink]="['/databaze/clenove', leader.memberId]">
+						<span class="leader-avatar" [style.background-color]="leader.member?.groupId | group: 'color'">
+							@if (leader.member | memberProfilePhotoUrl; as photoUrl) {
+								<img [src]="photoUrl" alt="" />
+							} @else {
+								{{ (leader.member | member: "nickname")?.charAt(0) }}
+							}
+						</span>
+						<strong>{{ leader.member | member: "nickname" }}</strong>
+					</a>
+					<span class="leader-role text-muted">{{ leader.member?.role | role: "title" }}</span>
+					@if (reorderable()) {
+						<ion-reorder class="leader-reorder" boTooltip="Přetažením změníš pořadí na webu"></ion-reorder>
+					}
+				</div>
+			}
+		</ion-reorder-group>
+	} @else {
+		<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
+	}
+} @else {
+	<ion-skeleton-text [animated]="true"></ion-skeleton-text>
+}

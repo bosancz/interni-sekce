@@ -15,7 +15,6 @@ import {
 	eyeOffOutline,
 	eyeOutline,
 	handLeftOutline,
-	medkitOutline,
 	peopleOutline,
 } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -35,7 +34,6 @@ import { EventPipe } from "../../../../shared/pipes/event.pipe";
 import { EventAccountingComponent } from "../../components/event-accounting/event-accounting.component";
 import { EventAttendeesComponent } from "../../components/event-attendees/event-attendees.component";
 import { EventInfoComponent } from "../../components/event-info/event-info.component";
-import { EventProblemsComponent } from "../../components/event-problems/event-problems.component";
 import { EventProgressComponent } from "../../components/event-progress/event-progress.component";
 import { EventReportComponent } from "../../components/event-report/event-report.component";
 
@@ -52,7 +50,6 @@ export type EventStatusActions = ExtractExisting<
 
 	imports: [
 		EventAttendeesComponent,
-		EventProblemsComponent,
 		EventProgressComponent,
 		EventAccountingComponent,
 		EventReportComponent,
@@ -72,14 +69,12 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 
 	actions: Action[] = [];
 
-	view = signal<"info" | "attendees" | "problems" | "accounting" | "registration" | "report">("info");
+	view = signal<"info" | "attendees" | "accounting" | "registration" | "report">("info");
 
 	attendeesCount = signal<number | undefined>(undefined);
-	problemsCount = signal<number | undefined>(undefined);
 	expensesCount = signal<number | undefined>(undefined);
 
 	attendeesBadge = computed(() => this.attendeesCount() || undefined);
-	problemsBadge = computed(() => this.problemsCount() || undefined);
 	expensesBadge = computed(() => this.expensesCount() || undefined);
 
 	constructor(
@@ -92,7 +87,6 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 		addIcons({
 			calendar,
 			peopleOutline,
-			medkitOutline,
 			cashOutline,
 			documentOutline,
 			handLeftOutline,
