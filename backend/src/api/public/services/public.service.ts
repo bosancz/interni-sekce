@@ -10,6 +10,8 @@ import { EventsRepository } from "src/models/events/repositories/events.reposito
 import { FilesService } from "src/models/files/services/files.service";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
 
+const ALBUM_HAS_PHOTOS = "EXISTS (SELECT 1 FROM photos p WHERE p.album_id = albums.id AND p.deleted_at IS NULL)";
+
 @Injectable()
 export class PublicService {
 	constructor(
@@ -106,18 +108,21 @@ export class PublicService {
 	}
 
 	async getGallery() {
-		const albums = await this.albums.getAlbums({ status: [AlbumStatus.public], limit: 1000 });
+		const albums = await this.albums.getAlbums({ status: [AlbumStatus.public], limit: 1000 }, ALBUM_HAS_PHOTOS);
 		const titlePhotoByAlbum = await this.photos.getTitlePhotosByAlbums(albums.map((album) => album.id));
 		return albums.map((album) => this.serializeAlbum(album, { titlePhoto: titlePhotoByAlbum.get(album.id) }));
 	}
 
 	async getRecentGallery(limit = 5) {
-		const albums = await this.albums.getAlbums({
-			status: [AlbumStatus.public],
-			limit: Math.min(limit, 10),
-			sort: "datePublished",
-			order: "DESC",
-		});
+		const albums = await this.albums.getAlbums(
+			{
+				status: [AlbumStatus.public],
+				limit: Math.min(limit, 10),
+				sort: "datePublished",
+				order: "DESC",
+			},
+			ALBUM_HAS_PHOTOS,
+		);
 
 		return Promise.all(albums.map((album) => this.serializeAlbumPreview(album)));
 	}
