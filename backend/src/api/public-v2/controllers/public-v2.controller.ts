@@ -50,6 +50,11 @@ export class PublicV2Controller {
 		return this.publicService.getJournal(query);
 	}
 
+	@Get("gallery/stats")
+	async getPublicGalleryStats() {
+		return this.publicService.getGalleryStats();
+	}
+
 	@Get("albums/recent")
 	async getPublicRecentAlbums(@Query() query: PublicV2RecentAlbumsQuery) {
 		return this.publicService.getRecentAlbums(query.limit);
