@@ -22,6 +22,8 @@ ion-tab-button {
 	--color: var(--bo-muted);
 	--color-selected: var(--bo-nav-active-fg);
 	--background: transparent;
+	--padding-start: 4px;
+	--padding-end: 4px;
 
 	&::part(native) {
 		margin: 6px;
