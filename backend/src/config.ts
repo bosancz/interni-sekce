@@ -90,6 +90,7 @@ const fs = {
 	eventsDir: path.resolve(process.env["EVENTS_DIR"] ?? path.join(dataDir, "events")),
 	membersDir: path.resolve(process.env["MEMBERS_DIR"] ?? path.join(dataDir, "members")),
 	groupsDir: path.resolve(process.env["GROUPS_DIR"] ?? path.join(dataDir, "groups")),
+	albumsDir: path.resolve(process.env["ALBUMS_DIR"] ?? path.join(dataDir, "albums")),
 };
 
 const photos = {

@@ -122,17 +122,6 @@ h2 {
 	color: var(--ion-color-warning-shade);
 }
 
-.summary {
-	margin-top: 1rem;
-
-	summary {
-		cursor: pointer;
-		color: var(--bo-heading);
-		font-weight: 600;
-		margin-bottom: 0.5rem;
-	}
-}
-
 .links {
 	display: flex;
 	flex-wrap: wrap;

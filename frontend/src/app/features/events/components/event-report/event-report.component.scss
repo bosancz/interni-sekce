@@ -88,18 +88,6 @@ bo-card-content {
 	column-gap: 2rem;
 }
 
-.revizor-section {
-	margin-top: 1.25rem;
-	padding-top: 1rem;
-	border-top: 1px solid var(--bo-neutral-badge);
-}
-
-.revizor-fields {
-	display: grid;
-	gap: 0.75rem;
-	max-width: 50rem;
-}
-
 .publish {
 	display: flex;
 	flex-wrap: wrap;
@@ -119,113 +107,19 @@ bo-card-content {
 	}
 }
 
-.water-section,
-.gallery {
+.water-section {
 	margin-top: 1.25rem;
 	padding-top: 1rem;
 	border-top: 1px solid var(--bo-neutral-badge);
-}
 
-.album-link {
-	--background: var(--bo-white);
-	--padding-start: 0;
-	max-width: 30rem;
-
-	ion-icon[slot="start"] {
-		background-color: var(--bo-blue-tint);
-		color: var(--bo-heading);
-		border-radius: 10px;
-		padding: 8px;
-		font-size: 1.2rem;
+	&:first-child {
+		margin-top: 0;
+		padding-top: 0;
+		border-top: 0;
 	}
 }
 
-.water-section bo-card-title,
-.gallery bo-card-title,
-.revizor-section bo-card-title {
+.water-section bo-card-title {
 	display: block;
 	margin-bottom: 0.5rem;
-}
-
-.report-text + .chronicle-file {
-	margin-top: 0.75rem;
-}
-
-.chronicle-file {
-	display: flex;
-	align-items: center;
-	gap: 0.25rem;
-	max-width: 30rem;
-
-	ion-button {
-		margin: 0;
-	}
-}
-
-.chronicle-icon {
-	flex: none;
-	background-color: var(--bo-blue-tint);
-	color: var(--bo-heading);
-	border-radius: 10px;
-	padding: 8px;
-	font-size: 1.2rem;
-	margin-right: 0.75rem;
-}
-
-.chronicle-name {
-	flex: 1 1 auto;
-	min-width: 0;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	padding: 0;
-	border: 0;
-	background: none;
-	color: inherit;
-	font: inherit;
-	text-align: start;
-	cursor: pointer;
-
-	strong {
-		max-width: 100%;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		color: var(--bo-heading);
-	}
-
-	span {
-		color: var(--bo-muted);
-		font-size: 0.875rem;
-	}
-
-	&:hover strong {
-		text-decoration: underline;
-	}
-}
-
-.empty-actions {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 0.5rem;
-}
-
-.summary-add {
-	margin-top: 0.75rem;
-
-	ion-button {
-		margin: 0;
-	}
-}
-
-.uploading {
-	margin: 0.5rem 0 0;
-}
-
-.album-buttons {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	gap: 8px;
 }

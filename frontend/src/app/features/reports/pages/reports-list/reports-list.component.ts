@@ -175,11 +175,11 @@ export class ReportsListComponent implements OnInit {
 			.sort((a, b) => b.total - a.total);
 	}
 
-	async openChronicle(eventId: number, event: MouseEvent) {
+	async openChronicle(albumId: number, event: MouseEvent) {
 		event.preventDefault();
 
 		try {
-			const response = await this.api.EventsApi.getEventReportChronicle(eventId, { responseType: "blob" });
+			const response = await this.api.PhotoGalleryApi.getAlbumChronicle(albumId, { responseType: "blob" });
 			openPdf(response.data as unknown as Blob);
 		} catch (e) {
 			this.toastService.toast("Nepodařilo se otevřít kroniku.", { color: "warning" });

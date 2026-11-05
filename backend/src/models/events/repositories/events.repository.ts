@@ -125,8 +125,25 @@ export class EventsRepository {
 		return this.withLeaders(await q.getMany());
 	}
 
-	async getPublicReport(id: number) {
-		const event = await this.publicReportsQuery().andWhere("events.id = :id", { id }).getOne();
+	async getPublicEvent(id: number) {
+		const event = await this.eventsRepository
+			.createQueryBuilder("events")
+			.select([
+				"events.id",
+				"events.name",
+				"events.type",
+				"events.dateFrom",
+				"events.dateTill",
+				"events.leadersEvent",
+				"events.river",
+				"events.waterKm",
+			])
+			.leftJoinAndSelect("events.groups", "groups")
+			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
+			.leftJoinAndSelect("attendees.member", "leaders")
+			.where("events.id = :id", { id })
+			.andWhere("events.status = :status", { status: EventStates.public })
+			.getOne();
 
 		return event ? this.withLeaders([event])[0] : null;
 	}
@@ -164,11 +181,7 @@ export class EventsRepository {
 				"events.dateTill",
 				"events.leadersEvent",
 				"events.report",
-				"events.publicReport",
 				"events.reportPublishedAt",
-				"events.chronicleFileName",
-				"events.chronicleSize",
-				"events.chronicleUpdatedAt",
 				"events.river",
 				"events.waterKm",
 			])
@@ -176,7 +189,7 @@ export class EventsRepository {
 			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
 			.leftJoinAndSelect("attendees.member", "leaders")
 			.leftJoin("events.album", "album")
-			.addSelect(["album.id", "album.name", "album.status"])
+			.addSelect(["album.id", "album.name", "album.status", "album.chronicleFileName"])
 			.where("events.reportPublishedAt IS NOT NULL")
 			.orderBy("events.reportPublishedAt", "DESC")
 			.addOrderBy("events.id", "DESC")
@@ -215,34 +228,6 @@ export class EventsRepository {
 			result.get(row.event_id)!.expenses.push({ type: row.type, total: Number(row.total) });
 
 		return result;
-	}
-
-	private publicReportsQuery() {
-		return this.eventsRepository
-			.createQueryBuilder("events")
-			.select([
-				"events.id",
-				"events.name",
-				"events.type",
-				"events.dateFrom",
-				"events.dateTill",
-				"events.leadersEvent",
-				"events.publicReport",
-				"events.reportPublishedAt",
-				"events.river",
-				"events.waterKm",
-				"events.srcId",
-				"events.chronicleFileName",
-				"events.chronicleSize",
-				"events.chronicleUpdatedAt",
-			])
-			.leftJoinAndSelect("events.groups", "groups")
-			.leftJoinAndSelect("events.attendees", "attendees", "attendees.type = :type", { type: "leader" })
-			.leftJoinAndSelect("attendees.member", "leaders")
-			.leftJoin("events.album", "album", "album.status = :albumStatus", { albumStatus: "public" })
-			.addSelect(["album.id", "album.name"])
-			.where("events.status = :status", { status: EventStates.public })
-			.andWhere("events.reportPublishedAt IS NOT NULL");
 	}
 
 	private publicProgramQuery(dateFrom: string) {

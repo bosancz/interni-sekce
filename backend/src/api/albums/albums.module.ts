@@ -1,3 +1,4 @@
+import { FilesModule } from "src/models/files/files.module";
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AlbumsModelModule } from "src/models/albums/albums-model.module";
@@ -9,7 +10,13 @@ import { PhotoFacesController } from "./controllers/photo-faces.controller";
 import { PhotosController } from "./controllers/photos.controller";
 
 @Module({
-	imports: [AlbumsModelModule, MembersModelModule, NotificationsModelModule, TypeOrmModule.forFeature([Album])],
+	imports: [
+		AlbumsModelModule,
+		FilesModule,
+		MembersModelModule,
+		NotificationsModelModule,
+		TypeOrmModule.forFeature([Album]),
+	],
 	controllers: [AlbumsController, PhotosController, PhotoFacesController],
 })
 export class AlbumsModule {}

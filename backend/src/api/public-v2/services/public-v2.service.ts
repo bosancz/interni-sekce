@@ -4,11 +4,11 @@ import { Config } from "src/config";
 import { PhotoSizes } from "src/api/albums/dto/photo.dto";
 import { Album, AlbumStatus } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
+import { getAlbumChroniclePath } from "src/models/albums/helpers/album-chronicle";
 import { AlbumsRepository } from "src/models/albums/repositories/albums.repository";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
-import { getEventChroniclePath } from "src/models/events/helpers/event-chronicle";
 import { EventsRepository } from "src/models/events/repositories/events.repository";
 import { FilesService } from "src/models/files/services/files.service";
 import { BoardMembersRepository } from "src/models/members/repositories/board-members.repository";
@@ -85,14 +85,13 @@ export class PublicV2Service {
 		const sort = options.sort === "publishedAt" ? `"publishedAt"` : `"dateFrom"`;
 
 		return this.dataSource.query(
-			`SELECT r.id AS "reportId",
-				a.id AS "albumId",
-				COALESCE(r.name, a.name) AS "name",
-				COALESCE(r.date_from, a.date_from)::text AS "dateFrom",
-				COALESCE(r.date_till, a.date_till)::text AS "dateTill",
-				COALESCE(r.report_published_at, a.date_published) AS "publishedAt",
-				COALESCE(btrim(r.public_report), '') <> '' AS "summary",
-				r.chronicle_file_name IS NOT NULL AS "chronicle",
+			`SELECT a.id AS "albumId",
+				a.name AS "name",
+				a.date_from::text AS "dateFrom",
+				a.date_till::text AS "dateTill",
+				a.date_published AS "publishedAt",
+				COALESCE(btrim(a.description), '') <> '' AS "summary",
+				a.chronicle_file_name IS NOT NULL AS "chronicle",
 				CASE WHEN p.id IS NULL THEN NULL ELSE json_build_object(
 					'id', p.id,
 					'width', p.width,
@@ -104,59 +103,18 @@ export class PublicV2Service {
 						'original', $3::text || '/photos/' || p.id || '/original'
 					)
 				) END AS "photo"
-			FROM (
-				SELECT * FROM events
-				WHERE status = 'public' AND report_published_at IS NOT NULL AND deleted_at IS NULL
-			) r
-			FULL OUTER JOIN (
-				SELECT * FROM albums WHERE status = 'public' AND deleted_at IS NULL
-			) a ON a.event_id = r.id
+			FROM albums a
 			LEFT JOIN LATERAL (
 				SELECT id, bg, width, height FROM photos
 				WHERE album_id = a.id AND deleted_at IS NULL
 				ORDER BY title_photo DESC, "order" ASC NULLS LAST, "timestamp" ASC
 				LIMIT 1
 			) p ON true
-			ORDER BY ${sort} DESC NULLS LAST, r.id DESC NULLS LAST, a.id DESC
+			WHERE a.status = 'public' AND a.deleted_at IS NULL
+			ORDER BY ${sort} DESC NULLS LAST, a.id DESC
 			LIMIT $1 OFFSET $2`,
 			[options.limit ?? null, options.offset ?? 0, this.baseUrl],
 		);
-	}
-
-	async getReport(eventId: number) {
-		const [event, groups] = await Promise.all([this.events.getPublicReport(eventId), this.groups.getGroups()]);
-		if (!event) throw new NotFoundException();
-
-		return {
-			id: event.id,
-			name: event.name,
-			type: event.type,
-			dateFrom: event.dateFrom,
-			dateTill: event.dateTill,
-			groups: this.groupNames(event, new Map(groups.map((group) => [group.id, group.shortName]))),
-			leadersEvent: event.leadersEvent,
-			leaders: (event.leaders ?? []).map((member) => ({ id: member.id, nickname: member.nickname })),
-			summary: event.publicReport,
-			publishedAt: event.reportPublishedAt,
-			river: event.river,
-			waterKm: event.waterKm,
-			chronicle: event.chronicleFileName
-				? {
-						fileName: event.chronicleFileName,
-						size: event.chronicleSize,
-						updatedAt: event.chronicleUpdatedAt,
-						url: `${this.baseUrl}/reports/${event.id}/chronicle`,
-					}
-				: null,
-			albumId: event.album?.id ?? null,
-		};
-	}
-
-	async getReportChronicleFile(eventId: number): Promise<{ path: string; filename: string }> {
-		const event = await this.events.getPublicReport(eventId);
-		if (!event?.chronicleFileName) throw new NotFoundException();
-
-		return { path: getEventChroniclePath(this.config.fs.eventsDir, event), filename: event.chronicleFileName };
 	}
 
 	async getRecentAlbums(limit?: number) {
@@ -174,13 +132,46 @@ export class PublicV2Service {
 
 	async getAlbum(albumId: number) {
 		const album = await this.getPublicAlbum(albumId);
-		const coverPhotos = await this.photos.getCoverPhotosByAlbums([album.id]);
+		const [coverPhotos, event, groups] = await Promise.all([
+			this.photos.getCoverPhotosByAlbums([album.id]),
+			album.eventId ? this.events.getPublicEvent(album.eventId) : null,
+			this.groups.getGroups(),
+		]);
 
 		return {
 			...this.serializeAlbum(album, coverPhotos.get(album.id)),
 			description: album.description ?? null,
+			chronicle: album.chronicleFileName
+				? {
+						fileName: album.chronicleFileName,
+						size: album.chronicleSize,
+						updatedAt: album.chronicleUpdatedAt,
+						url: `${this.baseUrl}/albums/${album.id}/chronicle`,
+					}
+				: null,
+			event: event
+				? {
+						id: event.id,
+						name: event.name,
+						type: event.type,
+						dateFrom: event.dateFrom,
+						dateTill: event.dateTill,
+						groups: this.groupNames(event, new Map(groups.map((group) => [group.id, group.shortName]))),
+						leadersEvent: event.leadersEvent,
+						leaders: (event.leaders ?? []).map((member) => ({ id: member.id, nickname: member.nickname })),
+						river: event.river,
+						waterKm: event.waterKm,
+					}
+				: null,
 			downloadUrl: `${this.baseUrl}/albums/${album.id}/download`,
 		};
+	}
+
+	async getAlbumChronicleFile(albumId: number): Promise<{ path: string; filename: string }> {
+		const album = await this.getPublicAlbum(albumId);
+		if (!album.chronicleFileName) throw new NotFoundException();
+
+		return { path: getAlbumChroniclePath(this.config.fs.albumsDir, album), filename: album.chronicleFileName };
 	}
 
 	async getAlbumPhotos(albumId: number) {

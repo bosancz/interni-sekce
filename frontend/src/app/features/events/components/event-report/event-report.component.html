@@ -2,13 +2,13 @@
 	<bo-card-header>
 		<bo-card-title>
 			<span class="section-label heading">
-				Shrnutí akce na web
-				<span class="visibility"><ion-icon name="globe-outline"></ion-icon>veřejné</span>
-				@if (canEditReport() && event()?.publicReport) {
+				Report pro revizora
+				<span class="visibility"><ion-icon name="lock-closed-outline"></ion-icon>neveřejné</span>
+				@if (canEditReport() && report()) {
 					<bo-edit-button-markdown
-						label="Shrnutí akce na web"
-						[value]="event()?.publicReport"
-						(update)="saveReportData({ publicReport: $event })"
+						label="Report pro revizora"
+						[value]="report()"
+						(update)="saveReportData({ report: $event })"
 					/>
 				}
 			</span>
@@ -21,7 +21,7 @@
 				[class.bo-pill-yellow]="!event()?.reportPublishedAt"
 			>
 				@if (event()?.reportPublishedAt) {
-					Publikováno {{ event()?.reportPublishedAt | date: "d. M. y" }}
+					Odesláno {{ event()?.reportPublishedAt | date: "d. M. y" }}
 				} @else {
 					Koncept
 				}
@@ -29,98 +29,28 @@
 		}
 	</bo-card-header>
 	<bo-card-content>
-		@if (event(); as event) {
-			@if (event.publicReport; as publicReport) {
-				<div class="report-text bo-markdown" [innerHTML]="publicReport | markdown"></div>
-			}
-			@if (event.chronicleFileName; as fileName) {
-				<div class="chronicle-file">
-					<ion-icon name="document-attach-outline" class="chronicle-icon"></ion-icon>
-					<button type="button" class="chronicle-name" (click)="openChronicle()" [disabled]="chronicleBusy()">
-						<strong>Kronika v PDF</strong>
-						<span
-							>{{ fileName }} · {{ event.chronicleSize ?? 0 | prettyBytes: { locale: "cs" } }} · nahráno
-							{{ event.chronicleUpdatedAt | date: "d. M. y" }}</span
-						>
-					</button>
-					@if (event._links.deleteEventReportChronicle.applicable) {
-						<ion-button
-							fill="clear"
-							color="medium"
-							[disabled]="!event._links.deleteEventReportChronicle.allowed || chronicleBusy()"
-							[boTooltip]="
-								event._links.deleteEventReportChronicle.allowed ? 'Odebrat kroniku' : noPermissionText
-							"
-							(click)="deleteChronicle()"
-						>
-							<ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-						</ion-button>
-					}
-				</div>
-			}
-
-			@if (!event.publicReport && !event.chronicleFileName) {
-				<div class="bo-empty-state">
-					<ion-icon name="document-text-outline"></ion-icon>
-					<strong>Shrnutí je zatím prázdné</strong>
-					<p>Sepiš krátce, jak akce proběhla, nebo nahraj kroniku v PDF — pro rodiče a děti na webu.</p>
-					<div class="empty-actions">
+		@if (event()) {
+			@if (canReadReport()) {
+				@if (report(); as report) {
+					<div class="report-text bo-markdown" [innerHTML]="report | markdown"></div>
+				} @else {
+					<div class="bo-empty-state">
+						<ion-icon name="lock-closed-outline"></ion-icon>
+						<strong>Report pro revizora je zatím prázdný</strong>
+						<p>Komplikace, pochvaly a stížnosti z akce.</p>
 						<ion-button
 							fill="solid"
 							color="warning"
 							[disabled]="!canEditReport()"
 							[boTooltip]="canEditReport() ? null : noPermissionText"
-							(click)="writePublicReport()"
+							(click)="writeReport()"
 						>
-							Napsat shrnutí
-						</ion-button>
-						<ion-button
-							fill="outline"
-							color="medium"
-							[disabled]="!event._links.uploadEventReportChronicle.allowed || chronicleBusy()"
-							[boTooltip]="event._links.uploadEventReportChronicle.allowed ? null : noPermissionText"
-							(click)="chronicleInput.click()"
-						>
-							<ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
-							Nahrát kroniku v PDF
+							Napsat report
 						</ion-button>
 					</div>
-				</div>
-			} @else if (canEditReport() && (!event.publicReport || !event.chronicleFileName)) {
-				<div class="summary-add">
-					@if (!event.publicReport) {
-						<ion-button fill="outline" color="medium" size="small" (click)="writePublicReport()">
-							Napsat i textové shrnutí
-						</ion-button>
-					} @else {
-						<ion-button
-							fill="outline"
-							color="medium"
-							size="small"
-							[disabled]="chronicleBusy()"
-							(click)="chronicleInput.click()"
-						>
-							<ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
-							Přidat kroniku v PDF
-						</ion-button>
-					}
-				</div>
+				}
 			}
-			@if (uploadingChronicle()) {
-				<p class="section-hint uploading">Nahrávám kroniku&hellip;</p>
-			}
-			<input
-				class="d-none"
-				type="file"
-				accept="application/pdf,.pdf"
-				#chronicleInput
-				(change)="uploadChronicle(chronicleInput)"
-			/>
-		} @else {
-			<p><ion-skeleton-text animated></ion-skeleton-text></p>
-		}
 
-		@if (event()) {
 			<div class="water-section">
 				<bo-card-title>
 					<span class="section-label heading">Vodák roku</span>
@@ -149,115 +79,8 @@
 					</span>
 				</div>
 			</div>
-
-			<div class="gallery">
-				<bo-card-title>
-					<span class="section-label heading">
-						Fotogalerie
-						<span class="visibility"><ion-icon name="globe-outline"></ion-icon>veřejné · nepovinná</span>
-					</span>
-				</bo-card-title>
-				@if (event()?.album; as album) {
-					<ion-item
-						button
-						[detail]="false"
-						[routerLink]="['/galerie/alba', album.id]"
-						lines="none"
-						class="album-link"
-					>
-						<ion-icon name="images-outline" slot="start"></ion-icon>
-						<ion-label>
-							<h2>{{ album.name }}</h2>
-							<p>{{ album.dateFrom | date: "d. M. y" }} – {{ album.dateTill | date: "d. M. y" }}</p>
-						</ion-label>
-						<span
-							slot="end"
-							class="bo-pill"
-							[class.bo-pill-green]="album.status === 'public'"
-							[class.bo-pill-yellow]="album.status !== 'public'"
-						>
-							{{ album.status === "public" ? "Publikované" : "Nepublikované" }}
-						</span>
-						@if (canEditAlbum()) {
-							<ion-button
-								slot="end"
-								fill="clear"
-								color="medium"
-								[disabled]="removingAlbum()"
-								boTooltip="Odpojit album"
-								(click)="removeAlbum(album, $event)"
-							>
-								<ion-icon name="close-outline" slot="icon-only"></ion-icon>
-							</ion-button>
-						}
-					</ion-item>
-				} @else {
-					<div class="bo-empty-state">
-						<ion-icon name="images-outline"></ion-icon>
-						<strong>Fotogalerie zatím není</strong>
-						<p>Připoj existující album s fotkami z akce, nebo vytvoř nové.</p>
-						<div class="album-buttons">
-							<ion-button
-								fill="solid"
-								color="warning"
-								[disabled]="!canEditAlbum() || addingAlbum()"
-								[boTooltip]="canEditAlbum() ? null : noPermissionText"
-								(click)="linkAlbum()"
-							>
-								<ion-icon name="link-outline" slot="start"></ion-icon>
-								Připojit album
-							</ion-button>
-							<ion-button
-								fill="outline"
-								color="warning"
-								[disabled]="!canEditAlbum() || addingAlbum()"
-								[boTooltip]="canEditAlbum() ? null : noPermissionText"
-								(click)="createAlbum()"
-							>
-								<ion-icon name="add-outline" slot="start"></ion-icon>
-								Vytvořit album
-							</ion-button>
-						</div>
-					</div>
-				}
-			</div>
-
-			@if (canReadReport()) {
-				<div class="revizor-section">
-					<bo-card-title>
-						<span class="section-label heading">
-							Report pro revizora
-							<span class="visibility"><ion-icon name="lock-closed-outline"></ion-icon>neveřejné</span>
-							@if (canEditReport() && report()) {
-								<bo-edit-button-markdown
-									label="Report pro revizora"
-									[value]="report()"
-									(update)="saveReportData({ report: $event })"
-								/>
-							}
-						</span>
-					</bo-card-title>
-
-					@if (report(); as report) {
-						<div class="report-text bo-markdown" [innerHTML]="report | markdown"></div>
-					} @else {
-						<div class="bo-empty-state">
-							<ion-icon name="lock-closed-outline"></ion-icon>
-							<strong>Report pro revizora je zatím prázdný</strong>
-							<p>Komplikace, pochvaly a stížnosti z akce.</p>
-							<ion-button
-								fill="solid"
-								color="warning"
-								[disabled]="!canEditReport()"
-								[boTooltip]="canEditReport() ? null : noPermissionText"
-								(click)="writeReport()"
-							>
-								Napsat report
-							</ion-button>
-						</div>
-					}
-				</div>
-			}
+		} @else {
+			<p><ion-skeleton-text animated></ion-skeleton-text></p>
 		}
 
 		@if (event()?._links?.publishEventReport?.applicable) {
@@ -275,16 +98,14 @@
 				@if (event()?._links?.publishEventReport?.allowed && publishBlockedText(); as blocked) {
 					<p class="section-hint missing">{{ blocked }}</p>
 				} @else {
-					<p class="section-hint">
-						Shrnutí vyjde v Aktualitách na bosan.cz a revizor dostane upozornění. Upravit půjde i potom.
-					</p>
+					<p class="section-hint">Revizor dostane upozornění. Upravit půjde i potom.</p>
 				}
 			</div>
 		} @else if (event()?.reportPublishedAt) {
 			<div class="publish">
 				<p class="section-hint">
 					<ion-icon name="checkmark-circle-outline"></ion-icon>
-					Publikováno {{ event()?.reportPublishedAt | date: "d. M. y H:mm" }}. Úpravy se na webu projeví hned.
+					Odesláno {{ event()?.reportPublishedAt | date: "d. M. y H:mm" }}.
 				</p>
 				@if (event()?._links?.unpublishEventReport?.allowed) {
 					<ion-button
@@ -294,7 +115,7 @@
 						[disabled]="publishing()"
 						(click)="unpublish()"
 					>
-						Zrušit publikování
+						Zrušit odeslání
 					</ion-button>
 				}
 			</div>

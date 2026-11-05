@@ -30,6 +30,7 @@
 					[badge]="expensesBadge()"
 				></bo-vertical-menu-item>
 				<bo-vertical-menu-item name="report" label="Report" icon="document-outline"></bo-vertical-menu-item>
+				<bo-vertical-menu-item name="gallery" label="Fotogalerie" icon="images-outline"></bo-vertical-menu-item>
 			</bo-vertical-menu>
 		</div>
 
@@ -64,6 +65,13 @@
 				[class.d-none]="view() !== 'report'"
 				(change)="reloadEvent()"
 			></bo-event-report>
+
+			<bo-event-gallery
+				[event]="event()"
+				class="mb-5"
+				[class.d-none]="view() !== 'gallery'"
+				(change)="reloadEvent()"
+			></bo-event-gallery>
 		</div>
 	</div>
 </bo-page-content>
@@ -74,5 +82,6 @@
 		<bo-tab name="attendees" label="Lidé" icon="people-outline" [badge]="attendeesBadge()"></bo-tab>
 		<bo-tab name="accounting" label="Výdaje" icon="cash-outline" [badge]="expensesBadge()"></bo-tab>
 		<bo-tab name="report" label="Report" icon="document-outline"></bo-tab>
+		<bo-tab name="gallery" label="Fotogalerie" icon="images-outline"></bo-tab>
 	</bo-tabs>
 </bo-page-footer>

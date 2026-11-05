@@ -84,13 +84,6 @@
 								<p class="missing">Report pro revizora je prázdný.</p>
 							}
 
-							@if (report.publicReport) {
-								<details class="summary">
-									<summary>Shrnutí akce na web</summary>
-									<div class="report-text bo-markdown" [innerHTML]="report.publicReport | markdown"></div>
-								</details>
-							}
-
 							@if (accountingRows(report); as rows) {
 								@if (rows.length) {
 									<div class="section-label">Vyúčtování</div>
@@ -156,8 +149,8 @@
 								@if (report.album; as album) {
 									<a [routerLink]="['/galerie/alba', album.id]">Fotky z akce</a>
 								}
-								@if (report.chronicleFileName) {
-									<a href="#" (click)="openChronicle(report.id, $event)">Kronika v PDF</a>
+								@if (report.album?.chronicleFileName) {
+									<a href="#" (click)="openChronicle(report.album!.id, $event)">Kronika v PDF</a>
 								}
 							</div>
 						</div>

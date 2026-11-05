@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	Logger,
 	Body,
 	Controller,
@@ -11,11 +12,21 @@ import {
 	Post,
 	Query,
 	Req,
+	Put,
 	Res,
+	UnprocessableEntityException,
+	UploadedFile,
+	UseInterceptors,
 } from "@nestjs/common";
-import { ApiProduces, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiBody, ApiConsumes, ApiProduces, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
+import { readFile, unlink } from "fs/promises";
 import { DateTime } from "luxon";
+import { Config, StaticConfig } from "src/config";
+import { contentDispositionFilename } from "src/helpers/sanitizefilename";
+import { getAlbumChroniclePath } from "src/models/albums/helpers/album-chronicle";
+import { FilesService } from "src/models/files/services/files.service";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { AlbumStatus } from "src/models/albums/entities/album.entity";
@@ -24,6 +35,9 @@ import { PhotosRepository } from "src/models/albums/repositories/photos.reposito
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
 import { NotificationsService } from "src/models/notifications/services/notifications.service";
 import {
+	AlbumChronicleDeletePermission,
+	AlbumChronicleReadPermission,
+	AlbumChronicleUploadPermission,
 	AlbumCreatePermission,
 	AlbumDeletePermanentPermission,
 	AlbumDeletePermission,
@@ -55,7 +69,13 @@ export class AlbumsController {
 		private photos: PhotosRepository,
 		private photosFiles: PhotosFilesService,
 		private notificationsService: NotificationsService,
+		private fileService: FilesService,
+		private config: Config,
 	) {}
+
+	private chroniclePath(album: { id: number }): string {
+		return getAlbumChroniclePath(this.config.fs.albumsDir, album);
+	}
 
 	@Get()
 	@AcLinks(AlbumsListPermission)
@@ -170,6 +190,8 @@ export class AlbumsController {
 		AlbumDeletePermanentPermission.canOrThrow(req, album);
 
 		await this.albums.hardDeleteAlbum(albumId);
+		if (album.chronicleFileName)
+			await this.fileService.deleteFile(this.chroniclePath(album)).catch(() => undefined);
 	}
 
 	@Post(":albumId/publish")
@@ -198,6 +220,91 @@ export class AlbumsController {
 		AlbumUnpublishPermission.canOrThrow(req, album);
 
 		await this.albums.updateAlbum(albumId, { status: AlbumStatus.draft, datePublished: null });
+	}
+
+	@Get(":albumId/chronicle")
+	@AcLinks(AlbumChronicleReadPermission)
+	@ApiProduces("application/pdf")
+	async getAlbumChronicle(
+		@Param("albumId", ParseIntPipe) albumId: number,
+		@Req() req: Request,
+		@Res() res: Response,
+	): Promise<void> {
+		const album = await this.albums.getAlbum(albumId);
+		if (!album) throw new NotFoundException();
+
+		AlbumChronicleReadPermission.canOrThrow(req, album);
+
+		res.setHeader("Content-Type", "application/pdf");
+		res.setHeader("Content-Disposition", `inline; ${contentDispositionFilename(album.chronicleFileName!)}`);
+
+		await new Promise<void>((resolve, reject) => {
+			res.sendFile(this.chroniclePath(album), (err) =>
+				err ? reject(new NotFoundException("Chronicle file not found.")) : resolve(),
+			);
+		});
+	}
+
+	@Put(":albumId/chronicle")
+	@AcLinks(AlbumChronicleUploadPermission)
+	@ApiResponse({ status: 204 })
+	@UseInterceptors(
+		FileInterceptor("file", {
+			dest: "./uploads_temp",
+			limits: { fileSize: StaticConfig.chronicles.maxUploadSize },
+		}),
+	)
+	@ApiConsumes("multipart/form-data")
+	@ApiBody({ schema: { type: "object", properties: { file: { type: "string", format: "binary" } } } })
+	async uploadAlbumChronicle(
+		@Param("albumId", ParseIntPipe) albumId: number,
+		@Req() req: Request,
+		@UploadedFile() file: Express.Multer.File,
+	): Promise<void> {
+		if (!file) throw new BadRequestException("File not provided.");
+
+		let data: Buffer;
+		try {
+			data = await readFile(file.path);
+		} finally {
+			await unlink(file.path).catch(() => undefined);
+		}
+
+		const album = await this.albums.getAlbum(albumId);
+		if (!album) throw new NotFoundException();
+
+		AlbumChronicleUploadPermission.canOrThrow(req, album);
+
+		if (data.subarray(0, 5).toString("latin1") !== "%PDF-") {
+			throw new UnprocessableEntityException("Chronicle must be a PDF file.");
+		}
+
+		const originalName = Buffer.from(file.originalname, "latin1").toString("utf8");
+		const fileName = /\.pdf$/i.test(originalName) ? originalName : `${originalName}.pdf`;
+
+		await this.fileService.saveFile(this.chroniclePath(album), data);
+		await this.albums.updateAlbum(album.id, {
+			chronicleFileName: fileName,
+			chronicleSize: data.length,
+			chronicleUpdatedAt: new Date(),
+		});
+	}
+
+	@Delete(":albumId/chronicle")
+	@AcLinks(AlbumChronicleDeletePermission)
+	@ApiResponse({ status: 204 })
+	async deleteAlbumChronicle(@Param("albumId", ParseIntPipe) albumId: number, @Req() req: Request): Promise<void> {
+		const album = await this.albums.getAlbum(albumId);
+		if (!album) throw new NotFoundException();
+
+		AlbumChronicleDeletePermission.canOrThrow(req, album);
+
+		await this.fileService.deleteFile(this.chroniclePath(album)).catch(() => undefined);
+		await this.albums.updateAlbum(album.id, {
+			chronicleFileName: null,
+			chronicleSize: null,
+			chronicleUpdatedAt: null,
+		});
 	}
 
 	@Get(":albumId/photos")

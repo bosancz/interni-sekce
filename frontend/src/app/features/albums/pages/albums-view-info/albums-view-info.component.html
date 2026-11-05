@@ -3,7 +3,12 @@
 <bo-page-content [padding]="true">
 	<div class="album-top">
 		<div class="album-top-info">
-			<bo-album-info #albumInfo [album]="album()" (update)="updateAlbum($event)" />
+			<bo-album-info
+				#albumInfo
+				[album]="album()"
+				(update)="updateAlbum($event)"
+				(change)="loadAlbum(album()!.id)"
+			/>
 		</div>
 
 		@if (titlePhoto(); as photo) {
