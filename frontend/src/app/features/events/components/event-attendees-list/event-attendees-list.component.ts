@@ -1,14 +1,12 @@
 import { Component, computed, input, output } from "@angular/core";
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { addIcons } from "ionicons";
 import { chevronDown } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { ModalService } from "src/app/core/services/modal.service";
-import { IonBadge, IonIcon, IonList, IonSkeletonText } from "@ionic/angular/standalone";
+import { IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { DeleteButtonComponent } from "src/app/shared/components/delete-button/delete-button.component";
 import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
-import { ItemComponent } from "src/app/shared/components/item/item.component";
-import { MemberItemDetailComponent } from "src/app/shared/components/member-item-detail/member-item-detail.component";
 import { SDK } from "src/sdk";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 import { RolePipe } from "../../../../shared/pipes/role.pipe";
@@ -19,19 +17,7 @@ import { AttendeeNote } from "./attendee-note";
 	templateUrl: "./event-attendees-list.component.html",
 	styleUrl: "./event-attendees-list.component.scss",
 
-	imports: [
-		ItemComponent,
-		RouterLink,
-		IonList,
-		IonBadge,
-		IonIcon,
-		IonSkeletonText,
-		GroupBadgeComponent,
-		DeleteButtonComponent,
-		MemberItemDetailComponent,
-		MemberPipe,
-		RolePipe,
-	],
+	imports: [RouterLink, IonIcon, IonSkeletonText, GroupBadgeComponent, DeleteButtonComponent, MemberPipe, RolePipe],
 })
 export class EventAttendeesListComponent {
 	event = input<SDK.EventResponseWithLinks | null | undefined>();
@@ -45,7 +31,10 @@ export class EventAttendeesListComponent {
 
 	canRemoveAny = computed(() => !!this.attendees()?.some((a) => a._links.deleteEventAttendee.allowed));
 
-	constructor(private readonly modalService: ModalService) {
+	constructor(
+		private readonly modalService: ModalService,
+		private readonly router: Router,
+	) {
 		addIcons({ chevronDown });
 	}
 
@@ -61,6 +50,10 @@ export class EventAttendeesListComponent {
 		});
 
 		if (role) this.roleChange.emit({ attendee, role });
+	}
+
+	open(attendee: SDK.EventAttendeeResponseWithLinks) {
+		this.router.navigate(["/databaze/clenove", attendee.memberId]);
 	}
 
 	hasBirthday(notes: AttendeeNote[]) {
