@@ -1,10 +1,7 @@
 <bo-card class="mb-3">
 	<bo-card-header>
 		<bo-card-title>
-			<span class="section-label heading">
-				Fotogalerie
-				<span class="visibility"><ion-icon name="globe-outline"></ion-icon>veřejné</span>
-			</span>
+			<span class="section-label heading">Fotogalerie na web</span>
 		</bo-card-title>
 		@if (album(); as album) {
 			<span
@@ -25,86 +22,112 @@
 		@if (!event() || (event()?.album && !album())) {
 			<p><ion-skeleton-text animated></ion-skeleton-text></p>
 		} @else if (album(); as album) {
-			<div class="album-name">
-				<ion-icon name="images-outline" class="album-icon"></ion-icon>
-				<div class="album-title">
-					<strong>{{ album.name }}</strong>
-					<span>{{ [album.dateFrom ?? undefined, album.dateTill ?? undefined] | dateRange: "d. M. y" }}</span>
+			<p class="album-meta">
+				Album <a [routerLink]="['/galerie/alba', album.id]">{{ album.name }}</a> ·
+				{{ [album.dateFrom ?? undefined, album.dateTill ?? undefined] | dateRange: "d. M. y" }}
+			</p>
+
+			<div class="checklist">
+				<div class="check-row">
+					<span class="check" [class.done]="!!album.description">
+						<ion-icon name="checkmark-outline"></ion-icon>
+					</span>
+					<div class="check-body">
+						<span class="check-title">Popisek</span>
+						@if (album.description) {
+							<div class="description bo-markdown" [innerHTML]="album.description | markdown"></div>
+						} @else {
+							<p class="muted">Chybí — krátce, jak akce proběhla, pro rodiče a děti na webu.</p>
+						}
+					</div>
+					<a class="check-action" [routerLink]="['/galerie/alba', album.id]">
+						{{ album.description ? "Upravit" : "Doplnit" }}
+					</a>
 				</div>
-				@if (canEditEvent()) {
-					<ion-button
-						fill="clear"
-						color="medium"
-						[disabled]="busy()"
-						boTooltip="Odpojit album"
-						(click)="removeAlbum()"
-					>
-						<ion-icon name="close-outline" slot="icon-only"></ion-icon>
-					</ion-button>
-				}
+
+				<div class="check-row">
+					<span class="check" [class.done]="!!album.chronicleFileName">
+						<ion-icon name="checkmark-outline"></ion-icon>
+					</span>
+					<div class="check-body">
+						<span class="check-title">Kronika v PDF <span class="optional">· nepovinné</span></span>
+						@if (album.chronicleFileName; as fileName) {
+							<button type="button" class="chronicle-file" (click)="openChronicle()">
+								<ion-icon name="document-attach-outline"></ion-icon>
+								<span
+									>{{ fileName }} · {{ album.chronicleSize ?? 0 | prettyBytes: { locale: "cs" } }} ·
+									nahráno {{ album.chronicleUpdatedAt | date: "d. M. y" }}</span
+								>
+							</button>
+						} @else {
+							<p class="muted">Zatím nenahraná.</p>
+						}
+					</div>
+					<a class="check-action" [routerLink]="['/galerie/alba', album.id]">
+						{{ album.chronicleFileName ? "Změnit" : "Nahrát" }}
+					</a>
+				</div>
+
+				<div class="check-row">
+					<span class="check" [class.done]="!!photos()?.length">
+						<ion-icon name="checkmark-outline"></ion-icon>
+					</span>
+					<div class="check-body">
+						<span class="check-title"
+							>Fotky <span class="optional">· {{ photos()?.length ?? 0 }}</span></span
+						>
+						@if (previewPhotos().length) {
+							<a class="photos" [routerLink]="['/galerie/alba', album.id]">
+								@for (photo of previewPhotos(); track photo.id) {
+									<img
+										[src]="photo | photoImageUrl: 'small'"
+										[style.background-color]="photo.bg"
+										alt=""
+									/>
+								}
+								@if (morePhotos()) {
+									<span class="more">+{{ morePhotos() }}</span>
+								}
+							</a>
+						} @else {
+							<p class="muted">Zatím žádné fotky.</p>
+						}
+					</div>
+					<a class="check-action" [routerLink]="['/galerie/alba', album.id]">
+						{{ photos()?.length ? "Spravovat" : "Nahrát" }}
+					</a>
+				</div>
 			</div>
 
-			<section>
-				<h4 class="section-title">Popisek</h4>
-				@if (album.description) {
-					<div class="description bo-markdown" [innerHTML]="album.description | markdown"></div>
-				} @else {
-					<p class="muted">Popisek zatím chybí — krátce, jak akce proběhla, pro rodiče a děti na webu.</p>
-				}
-			</section>
-
-			<section>
-				<h4 class="section-title">Kronika</h4>
-				@if (album.chronicleFileName; as fileName) {
-					<button type="button" class="chronicle-file" (click)="openChronicle()">
-						<ion-icon name="document-attach-outline" class="album-icon"></ion-icon>
-						<span class="chronicle-name">
-							<strong>Kronika v PDF</strong>
-							<span
-								>{{ fileName }} · {{ album.chronicleSize ?? 0 | prettyBytes: { locale: "cs" } }} ·
-								nahráno {{ album.chronicleUpdatedAt | date: "d. M. y" }}</span
-							>
-						</span>
-					</button>
-				} @else {
-					<p class="muted">Kronika v PDF není nahraná.</p>
-				}
-			</section>
-
-			<section>
-				<h4 class="section-title">Fotky ({{ photos()?.length ?? 0 }})</h4>
-				@if (previewPhotos().length) {
-					<a class="photos" [routerLink]="['/galerie/alba', album.id]">
-						@for (photo of previewPhotos(); track photo.id) {
-							<img [src]="photo | photoImageUrl: 'small'" [style.background-color]="photo.bg" alt="" />
-						}
-						@if (morePhotos()) {
-							<span class="more">+{{ morePhotos() }}</span>
-						}
-					</a>
-				} @else {
-					<p class="muted">Zatím žádné fotky.</p>
-				}
-			</section>
-
-			<div class="actions">
-				<ion-button fill="solid" color="warning" [routerLink]="['/galerie/alba', album.id]">
-					<ion-icon name="create-outline" slot="start"></ion-icon>
-					Upravit
-				</ion-button>
-				@if (album._links.publishAlbum.applicable) {
+			@if (album.status === "public") {
+				<div class="publish-bar published">
+					<ion-icon name="globe-outline"></ion-icon>
+					<span>Popisek a fotky jsou v Jak jsme se měli na bosan.cz.</span>
+				</div>
+			} @else if (album._links.publishAlbum.applicable) {
+				<div class="publish-bar">
+					<ion-icon name="globe-outline"></ion-icon>
+					<span>Po publikaci se popisek a fotky objeví v Jak jsme se měli na bosan.cz.</span>
 					<ion-button
-						fill="outline"
+						fill="solid"
 						color="warning"
 						[disabled]="!album._links.publishAlbum.allowed || busy()"
 						[boTooltip]="album._links.publishAlbum.allowed ? null : noPermissionText"
 						(click)="publish()"
 					>
-						<ion-icon name="globe-outline" slot="start"></ion-icon>
 						Publikovat
 					</ion-button>
-				}
-			</div>
+				</div>
+			}
+
+			@if (canEditEvent()) {
+				<div class="unlink">
+					<button type="button" [disabled]="busy()" (click)="removeAlbum()">
+						<ion-icon name="close-outline"></ion-icon>
+						Odpojit galerii od akce
+					</button>
+				</div>
+			}
 		} @else {
 			<div class="bo-empty-state">
 				<ion-icon name="images-outline"></ion-icon>

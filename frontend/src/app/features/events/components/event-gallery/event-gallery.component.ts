@@ -5,8 +5,8 @@ import { IonButton, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
 	addOutline,
+	checkmarkOutline,
 	closeOutline,
-	createOutline,
 	documentAttachOutline,
 	globeOutline,
 	imagesOutline,
@@ -28,7 +28,7 @@ import { openPdf } from "src/helpers/open-pdf";
 import { SDK } from "src/sdk";
 import { AlbumSelectorModalComponent } from "../album-selector-modal/album-selector-modal.component";
 
-const PREVIEW_PHOTOS = 12;
+const PREVIEW_PHOTOS = 8;
 
 @Component({
 	selector: "bo-event-gallery",
@@ -74,8 +74,8 @@ export class EventGalleryComponent {
 	) {
 		addIcons({
 			addOutline,
+			checkmarkOutline,
 			closeOutline,
-			createOutline,
 			documentAttachOutline,
 			globeOutline,
 			imagesOutline,
@@ -192,18 +192,18 @@ export class EventGalleryComponent {
 		if (!album || this.busy()) return;
 
 		const confirmed = await this.modalService.deleteConfirmationModal(
-			`Opravdu chcete odpojit album „${album.name}“ od této akce? Album zůstane zachováno.`,
-			{ header: "Odpojit album?", buttonText: "Odpojit" },
+			`Opravdu chceš odpojit fotogalerii „${album.name}“ od této akce? Album zůstane zachováno.`,
+			{ header: "Odpojit galerii?", buttonText: "Odpojit" },
 		);
 		if (!confirmed) return;
 
 		this.busy.set(true);
 		try {
 			await this.api.PhotoGalleryApi.updateAlbum(album.id, { eventId: null });
-			this.toastService.toast("Album odpojeno od akce.");
+			this.toastService.toast("Fotogalerie odpojena od akce.");
 			this.change.emit();
 		} catch (e) {
-			this.toastService.toast("Nepodařilo se odpojit album.", { color: "warning" });
+			this.toastService.toast("Nepodařilo se odpojit fotogalerii.", { color: "warning" });
 		} finally {
 			this.busy.set(false);
 		}
