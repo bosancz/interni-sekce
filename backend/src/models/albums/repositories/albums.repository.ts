@@ -4,7 +4,7 @@ import { PaginationOptions } from "src/helpers/pagination";
 import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
 import { Brackets, FindOptionsRelations, Repository } from "typeorm";
-import { Album } from "../entities/album.entity";
+import { Album, AlbumStatus } from "../entities/album.entity";
 import { AlbumsMetadataService } from "../services/albums-metadata.service";
 import { PhotosRepository } from "./photos.repository";
 import { leftJoinUserAuthor } from "src/models/users/helpers/user-author";
@@ -142,7 +142,8 @@ export class AlbumsRepository {
 	}
 
 	async restoreAlbum(id: Album["id"]) {
-		return this.repository.restore({ id });
+		await this.repository.restore({ id });
+		await this.updateAlbum(id, { status: AlbumStatus.draft, datePublished: null });
 	}
 
 	async hardDeleteAlbum(id: Album["id"]) {

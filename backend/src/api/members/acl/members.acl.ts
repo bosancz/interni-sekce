@@ -95,7 +95,7 @@ export const MemberRestorePermission = new Permission({
 	linkTo: MemberResponse,
 	params: { memberId: "id" },
 	allowed: {
-		vedouci: ({ doc, req }) => req.user?.memberGroupId !== undefined && doc.groupId === req.user.memberGroupId,
+		vedouci: true,
 	},
 	applicable: ({ doc }) => !!doc.deletedAt,
 });

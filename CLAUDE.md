@@ -281,6 +281,7 @@
 
 ## Backend entities
 
+- **Soft delete**: obnovit smazanou akci, album, fotku i člena smí každý `vedouci` (oddíl jen admin), trvale mazat jen admin. Obnovená akce je vždy `draft` (`restoreEvent()` jde přes `updateEvent()`, takže se vynulují i `publishedAt`/`cancelledAt`), obnovené album `draft` bez `datePublished`.
 - **One table, one entity mapping.** Never map a table twice (an explicit `@Entity("x")` _and_ a `@JoinTable` over `"x"`): TypeORM builds two metadata objects and **every** generated migration then drops and recreates that table's indexes — drift that survives being applied. `events_groups` is mapped **only** by the `@ManyToMany`/`@JoinTable` on `Event.groups` and must never get an entity again; code touching it directly works off the table name (`clearJoinTable()` in `mongo-import.service.ts`).
 - **`Event.groupsIds` is a `@RelationId`, so it is read-only.** Writes go through the relation: `EventsRepository.updateEvent()` turns `groupsIds` into `groups` references and lets the cascading `save()` sync the join rows.
 - **Files imported from the old server keep their Mongo ObjectId** in `Event.srcId` / `Photo.srcId`+`srcAlbumId` and stay in the legacy on-disk layout (folder keyed by the ObjectId, `registration.pdf`); native records use the numeric-id layout (`prihlaska_<name>.pdf`). Resolution coalesces on `srcId` — see `PhotosFilesService.getPhotoImagePath` and `EventsRegistrationsController`.
