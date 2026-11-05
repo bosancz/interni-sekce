@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
+import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { Repository } from "typeorm";
 import {
-	CHILD_PARAMS,
-	childCondition,
+	CHILD_ATTENDEE_PARAMS,
+	childAttendeeCondition,
 	EVENT_DAYS,
 	EVENT_YEAR_CONDITION,
 	FINISHED_EVENT_CONDITION,
@@ -72,8 +72,7 @@ export class ChildrenStatisticsService {
 			.innerJoin(Event, "e", `e.id = ca.eventId AND ${FINISHED_EVENT_CONDITION}`, {
 				cancelledStatus: EventStates.cancelled,
 			})
-			.where("ca.type = :attendeeType", { attendeeType: EventAttendeeType.attendee })
-			.andWhere(childCondition("m", "e"), CHILD_PARAMS)
+			.where(childAttendeeCondition("ca"), CHILD_ATTENDEE_PARAMS)
 			.andWhere(EVENT_YEAR_CONDITION, { year })
 			.groupBy("m.id")
 			.orderBy(days, "DESC")
@@ -103,7 +102,7 @@ export class ChildrenStatisticsService {
 			.innerJoin(Event, "e", `e.id = ca.eventId AND ${FINISHED_EVENT_CONDITION}`, {
 				cancelledStatus: EventStates.cancelled,
 			})
-			.where("ca.type = :attendeeType", { attendeeType: EventAttendeeType.attendee })
+			.where(childAttendeeCondition("ca"), CHILD_ATTENDEE_PARAMS)
 			.andWhere("ca.memberId = :memberId", { memberId })
 			.andWhere(EVENT_YEAR_CONDITION, { year })
 			.orderBy(EVENT_DAYS, "DESC")

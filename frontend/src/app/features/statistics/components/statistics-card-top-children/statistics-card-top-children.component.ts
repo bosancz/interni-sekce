@@ -41,7 +41,7 @@ export class StatisticsCardTopChildrenComponent {
 
 	infoLines = [
 		"Počítá se každý den akce, na které dítě bylo.",
-		"Dítě je člen mladší 15 let v době konání akce. Počítají se jen skončené a nezrušené akce.",
+		"Dítě je ten, kdo je na akci zapsaný v roli dítěte. Počítají se jen skončené a nezrušené akce.",
 	];
 
 	daysPluralMap = { "=1": "den", "=2": "dny", "=3": "dny", "=4": "dny", other: "dní" };

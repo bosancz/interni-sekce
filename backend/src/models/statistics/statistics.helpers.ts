@@ -1,5 +1,5 @@
 import { StaticConfig } from "src/config";
-import { EventAttendee, EventAttendeeType } from "src/models/events/entities/event-attendee.entity";
+import { EventAttendee } from "src/models/events/entities/event-attendee.entity";
 import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { MemberRoles } from "src/models/members/schema/member-roles";
@@ -22,15 +22,19 @@ export function childCondition(memberAlias: string, eventAlias: string): string 
 	);
 }
 
+export const CHILD_ATTENDEE_PARAMS = { childAttendeeRole: MemberRoles.dite };
+
+export function childAttendeeCondition(attendeeAlias: string): string {
+	return `${attendeeAlias}.role = :childAttendeeRole`;
+}
+
 export function childrenPerEvent(qb: SelectQueryBuilder<ObjectLiteral>) {
 	return qb
 		.select("ca.event_id", "event_id")
 		.addSelect("COUNT(*)", "children_count")
 		.from(EventAttendee, "ca")
 		.innerJoin(Member, "cm", "cm.id = ca.memberId AND cm.deletedAt IS NULL")
-		.innerJoin(Event, "ce", "ce.id = ca.eventId")
-		.where("ca.type = :attendeeType", { attendeeType: EventAttendeeType.attendee })
-		.andWhere(childCondition("cm", "ce"), CHILD_PARAMS)
+		.where(childAttendeeCondition("ca"), CHILD_ATTENDEE_PARAMS)
 		.groupBy("ca.event_id");
 }
 
