@@ -1,80 +1,89 @@
-<ion-list>
+<div class="attendees" [class.removable]="canRemoveAny()">
+	<div class="attendees-head" aria-hidden="true">
+		<span>Oddíl</span>
+		<span>Přezdívka</span>
+		<span>Jméno</span>
+		<span class="age-head">Věk</span>
+		<span class="notes-head">Poznámky</span>
+		<span>Role</span>
+		@if (canRemoveAny()) {
+			<span></span>
+		}
+	</div>
+
 	@for (attendee of attendees(); track attendee.eventId + "-" + attendee.memberId) {
 		@let attendeeNotes = notes().get(attendee.memberId) ?? [];
-		<bo-item
-			[label]="attendee.member | member: 'nickname'"
-			[routerLink]="'/databaze/clenove/' + attendee.memberId"
-			[button]="true"
-			[class.festive]="hasBirthday(attendeeNotes)"
-		>
-			<p class="text-muted">
-				@if (attendee.member) {
-					<bo-member-item-detail
-						[member]="attendee.member"
-						[referenceDate]="event()?.dateFrom"
-					></bo-member-item-detail>
-				}
-			</p>
-
-			<div class="group" slot="end">
+		<div class="attendee" [class.festive]="hasBirthday(attendeeNotes)" (click)="open(attendee)">
+			<div class="group">
 				@if (attendee.member) {
 					<bo-group-badge [short]="true" [groupId]="attendee.member.groupId"></bo-group-badge>
 				}
 			</div>
 
-			<div class="role" slot="end">
+			<a
+				class="nickname"
+				[routerLink]="'/databaze/clenove/' + attendee.memberId"
+				(click)="$event.stopPropagation()"
+				>{{ attendee.member | member: "nickname" }}</a
+			>
+
+			<span class="name">
+				@if (attendee.member) {
+					{{ attendee.member.firstName }}&nbsp;{{ attendee.member.lastName }}
+				}
+			</span>
+
+			<span class="age">
+				@if (attendee.member | member: "age" : event()?.dateFrom; as age) {
+					{{ age }}<span class="age-unit"> let</span>
+				}
+			</span>
+
+			<div class="notes">
+				@for (note of attendeeNotes; track $index) {
+					<span class="note" [class]="'note-' + note.tone">
+						<ion-icon [name]="note.icon" aria-hidden="true"></ion-icon>{{ note.text }}
+					</span>
+				}
+			</div>
+
+			<div class="role">
 				@if (attendee.type === "leader") {
-					<ion-badge mode="ios" class="event-leader">Vede akci</ion-badge>
+					<span class="role-pill event-leader">Vede akci</span>
 				} @else if (attendee._links.updateEventAttendee.allowed) {
 					<button
 						type="button"
 						class="role-select"
 						[attr.aria-label]="'Role na akci: ' + (attendee.role | role: 'title')"
-						(click)="selectRole(attendee); $event.preventDefault(); $event.stopPropagation()"
+						(click)="selectRole(attendee); $event.stopPropagation()"
 					>
 						<span>{{ attendee.role | role: "title" }}</span>
 						<ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
 					</button>
 				} @else {
-					<ion-badge mode="ios">
-						{{ attendee.role | role: "title" }}
-					</ion-badge>
+					<span class="role-pill">{{ attendee.role | role: "title" }}</span>
 				}
 			</div>
 
 			@if (canRemoveAny()) {
-				<div class="delete" slot="end">
+				<div class="delete">
 					@if (attendee._links.deleteEventAttendee.allowed) {
-						<bo-delete-button
-							(click)="remove.emit(attendee); $event.preventDefault(); $event.stopPropagation()"
-						></bo-delete-button>
+						<bo-delete-button (click)="remove.emit(attendee); $event.stopPropagation()"></bo-delete-button>
 					}
 				</div>
 			}
-
-			@if (attendeeNotes.length) {
-				<div class="notes">
-					@for (note of attendeeNotes; track $index) {
-						<span class="note" [class]="'note-' + note.tone">
-							<ion-icon [name]="note.icon" aria-hidden="true"></ion-icon>{{ note.text }}
-						</span>
-					}
-				</div>
-			}
-		</bo-item>
+		</div>
 	}
 
 	@if (attendees() === undefined) {
 		@for (item of loadingArray; track $index) {
-			<bo-item>
+			<div class="attendee loading">
 				<ion-skeleton-text [animated]="true"></ion-skeleton-text>
-			</bo-item>
+			</div>
 		}
 	} @else if (attendees()!.length === 0) {
-		<bo-item>
-			<p class="text-muted">
-				<em>Žádní účastníci</em>
-			</p>
-		</bo-item>
+		<div class="attendee empty">
+			<p class="text-muted"><em>Žádní účastníci</em></p>
+		</div>
 	}
-</ion-list>
+</div>

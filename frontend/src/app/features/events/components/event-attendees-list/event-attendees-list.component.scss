@@ -1,93 +1,144 @@
 @use "src/styles/variables" as *;
 
-ion-list {
-	background-color: var(--bo-white);
-	border-radius: var(--bo-radius-card);
-	box-shadow: var(--bo-shadow-card);
-	padding: 0.25rem 0.75rem;
-
+:host {
+	display: block;
 	container: attendees / inline-size;
 }
 
-bo-item {
-	--label-width: 80px;
-	--group-column: 2.5rem;
-	--role-column: 6rem;
-	--delete-column: 2rem;
+.attendees {
+	background-color: var(--bo-white);
+	border-radius: var(--bo-radius-card);
+	box-shadow: var(--bo-shadow-card);
+	padding: 0.25rem 0.75rem 0.5rem;
+
+	--columns: 2.5rem 8rem minmax(0, 1fr) 2.75rem minmax(0, 1.25fr) 6.75rem;
+	--areas: "group nickname name age notes role";
+
+	&.removable {
+		--columns: 2.5rem 8rem minmax(0, 1fr) 2.75rem minmax(0, 1.25fr) 6.75rem 2rem;
+		--areas: "group nickname name age notes role delete";
+	}
+}
+
+.attendees-head,
+.attendee {
+	display: grid;
+	grid-template-columns: var(--columns);
+	column-gap: 0.75rem;
+	align-items: center;
+	padding-inline: 0.5rem;
+}
+
+.attendees-head {
+	padding-block: 0.65rem;
+	border-bottom: 1px solid var(--bo-line);
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--bo-muted);
+}
+
+.attendee {
+	min-height: 3rem;
+	padding-block: 0.35rem;
+	border-bottom: 1px solid var(--bo-line);
+	cursor: pointer;
+
+	&:last-child {
+		border-bottom: 0;
+	}
+
+	&:hover {
+		background-color: var(--bo-neutral-pill);
+		border-radius: var(--bo-radius-btn);
+	}
+
+	&.festive {
+		background-color: var(--bo-yellow-tint);
+		border-radius: var(--bo-radius-btn);
+		border-bottom-color: transparent;
+	}
+
+	&.loading,
+	&.empty {
+		display: block;
+		cursor: default;
+
+		&:hover {
+			background: none;
+		}
+	}
+
+	&.empty p {
+		margin: 0.75rem 0;
+	}
 }
 
 .group {
-	flex: 0 0 var(--group-column);
-	text-align: center;
+	grid-area: group;
 	line-height: 0;
 }
 
-.role {
-	flex: 0 0 var(--role-column);
-	line-height: 0;
+.nickname {
+	grid-area: nickname;
+	font-weight: 800;
+	font-size: 15px;
+	color: var(--bo-blue);
+	text-decoration: none;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 
-	ion-badge {
-		display: block;
-		width: 100%;
-		background-color: var(--bo-neutral-pill);
-		color: var(--bo-neutral-pill-text);
-		border-radius: var(--bo-radius-pill);
-		font-weight: 700;
-		padding: 0.45em 0.5em;
-		text-transform: capitalize;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+	&:hover {
+		text-decoration: underline;
 	}
 }
 
-.delete {
-	flex: 0 0 var(--delete-column);
-	display: flex;
-	justify-content: center;
-	line-height: 0;
-
-	::ng-deep ion-button {
-		margin: 0;
-	}
+.name {
+	grid-area: name;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: var(--bo-muted);
 }
 
-bo-item {
-	flex-wrap: wrap;
+.age {
+	grid-area: age;
+	text-align: right;
+	font-variant-numeric: tabular-nums;
 }
 
-bo-item.festive {
-	margin: 0.25rem -0.5rem;
-	padding-inline: 1rem;
-	border-radius: var(--bo-radius-btn);
-	background-color: var(--bo-yellow-tint);
-	border-bottom-color: transparent;
+.age-head {
+	text-align: right;
 }
 
-.role ion-badge.event-leader {
-	background-color: var(--bo-yellow-tint);
-	color: var(--bo-yellow-deep);
-	text-transform: none;
+.attendee .age {
+	font-weight: 700;
 }
 
-bo-item.festive .role ion-badge {
-	background-color: var(--bo-white);
+.age-unit {
+	display: none;
 }
 
 .notes {
-	order: 999;
-	flex: 0 0 100%;
+	grid-area: notes;
 	display: flex;
 	flex-wrap: wrap;
-	gap: 6px;
-	padding: 6px 0 2px calc(var(--label-width) + 1em);
+	gap: 4px;
+	min-width: 0;
+
+	&:empty {
+		display: none;
+	}
 }
 
 .note {
 	display: inline-flex;
 	align-items: center;
 	gap: 5px;
-	padding: 3px 10px;
+	max-width: 100%;
+	padding: 3px 9px;
 	border-radius: var(--bo-radius-pill);
 	font-size: $font-small;
 	font-weight: 700;
@@ -121,89 +172,54 @@ bo-item.festive .role ion-badge {
 	color: var(--bo-green);
 }
 
-@container attendees (min-width: 641px) {
-	bo-item {
-		::ng-deep > *:not(.label):not(.end):not(.spacer):not(.start):not(.notes) {
-			order: 0;
-			flex: 0 1 auto;
-			min-width: 0;
-		}
-
-		p {
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-		}
-	}
+.attendee.festive .note-medium {
+	background-color: var(--bo-white);
 }
 
-@container attendees (max-width: 640px) {
-	.notes {
-		padding-inline-start: 0;
-	}
-
-	bo-item {
-		flex-wrap: wrap;
-		gap: 0 0.5rem;
-
-		::ng-deep > *:not(.label):not(.end):not(.spacer):not(.start):not(.notes) {
-			order: 999;
-			flex: 0 0 100%;
-		}
-
-		::ng-deep .label {
-			flex: 1 1 0;
-			min-width: 0;
-			margin-right: 0;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-		}
-
-		::ng-deep .spacer {
-			display: none;
-		}
-	}
+.role {
+	grid-area: role;
+	display: flex;
+	line-height: 1;
 }
 
-@container attendees (max-width: 400px) {
-	bo-item {
-		--group-column: 2.25rem;
-		--role-column: 5rem;
-		--delete-column: 1.75rem;
-
-		::ng-deep .end {
-			gap: 0 0.4rem;
-		}
-	}
-
-	.role ion-badge {
-		font-size: 11px;
-		padding: 0.4em 0.4em;
-	}
-}
-
+.role-pill,
 .role-select {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	gap: 0.25em;
 	width: 100%;
-	border: 1px solid var(--bo-neutral-pill-text);
 	border-radius: var(--bo-radius-pill);
-	background-color: transparent;
-	color: var(--bo-neutral-pill-text);
 	font-size: 13px;
 	font-weight: 700;
 	line-height: 1;
-	padding: 0.35em 0.5em;
-	cursor: pointer;
+	padding: 0.4em 0.6em;
 	white-space: nowrap;
 
 	span {
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
+}
+
+.role-pill {
+	background-color: var(--bo-neutral-pill);
+	color: var(--bo-neutral-pill-text);
+	border: 1px solid transparent;
+
+	&.event-leader {
+		background-color: var(--bo-yellow-tint);
+		color: var(--bo-yellow-deep);
+		font-weight: 800;
+	}
+}
+
+.role-select {
+	justify-content: space-between;
+	border: 1px solid var(--bo-line);
+	background-color: transparent;
+	color: var(--bo-neutral-pill-text);
+	cursor: pointer;
 
 	ion-icon {
 		flex: 0 0 auto;
@@ -216,13 +232,104 @@ bo-item.festive .role ion-badge {
 	}
 }
 
-bo-item.festive .role-select {
+.attendee.festive .role-select,
+.attendee.festive .role-pill.event-leader {
 	background-color: var(--bo-white);
 }
 
-@container attendees (max-width: 400px) {
+.delete {
+	grid-area: delete;
+	display: flex;
+	justify-content: center;
+	line-height: 0;
+
+	::ng-deep ion-button {
+		margin: 0;
+	}
+}
+
+.attendees-head,
+.attendee:not(.loading):not(.empty) {
+	grid-template-areas: var(--areas);
+}
+
+@container attendees (max-width: 799px) {
+	.attendees {
+		--columns: 2.5rem 8rem minmax(0, 1fr) 2.75rem 6.75rem;
+		--areas: "group nickname name age role" ". notes notes notes notes";
+	}
+
+	.attendees.removable {
+		--columns: 2.5rem 8rem minmax(0, 1fr) 2.75rem 6.75rem 2rem;
+		--areas: "group nickname name age role delete" ". notes notes notes notes notes";
+	}
+
+	.attendees-head {
+		grid-template-areas: none;
+	}
+
+	.notes-head {
+		display: none;
+	}
+
+	.notes {
+		padding-block: 2px 4px;
+	}
+}
+
+@container attendees (max-width: 479px) {
+	.attendees-head {
+		display: none;
+	}
+
+	.attendees {
+		--columns: 2rem minmax(0, 1fr) auto;
+		--areas: "group nickname role" "group name age" ". notes notes";
+	}
+
+	.attendees.removable {
+		--columns: 2rem minmax(0, 1fr) auto 2rem;
+		--areas: "group nickname role delete" "group name age delete" ". notes notes notes";
+	}
+
+	.attendee:not(.loading):not(.empty) {
+		row-gap: 2px;
+		padding-block: 0.5rem;
+	}
+
+	.group {
+		align-self: center;
+	}
+
+	.nickname {
+		line-height: 1.3;
+	}
+
+	.name {
+		font-size: 13px;
+	}
+
+	.age {
+		font-size: 12px;
+		color: var(--bo-muted);
+	}
+
+	.age-unit {
+		display: inline;
+	}
+
+	.notes {
+		padding-top: 4px;
+	}
+
+	.role {
+		justify-content: flex-end;
+	}
+
+	.role-pill,
 	.role-select {
-		font-size: 11px;
-		padding: 0.3em 0.4em;
+		width: auto;
+		font-size: 12px;
+		padding: 0.3em 0.6em;
 	}
 }
