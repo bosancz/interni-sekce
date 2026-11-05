@@ -328,11 +328,7 @@ export class MongoImportService {
 				leadersEvent: mongoEvent.groups?.includes("V") || false,
 				hasRegistration: !!mongoEvent.registration,
 				report: null,
-				publicReport: null,
 				reportPublishedAt: null,
-				chronicleFileName: null,
-				chronicleSize: null,
-				chronicleUpdatedAt: null,
 				srcId: mongoEvent._id.toString(),
 				groups,
 			};
@@ -428,6 +424,9 @@ export class MongoImportService {
 				status: <any>mongoAlbum.status,
 				eventId: mongoAlbum.event ? eventIds[mongoAlbum.event.toString()] : null,
 				createdById: null,
+				chronicleFileName: null,
+				chronicleSize: null,
+				chronicleUpdatedAt: null,
 			};
 
 			const album = await t.save(Album, albumData);

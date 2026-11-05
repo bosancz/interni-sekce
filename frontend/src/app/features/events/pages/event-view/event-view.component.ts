@@ -15,6 +15,7 @@ import {
 	eyeOffOutline,
 	eyeOutline,
 	handLeftOutline,
+	imagesOutline,
 	peopleOutline,
 } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
@@ -35,6 +36,7 @@ import { EventAccountingComponent } from "../../components/event-accounting/even
 import { EventAttendeesComponent } from "../../components/event-attendees/event-attendees.component";
 import { EventInfoComponent } from "../../components/event-info/event-info.component";
 import { EventProgressComponent } from "../../components/event-progress/event-progress.component";
+import { EventGalleryComponent } from "../../components/event-gallery/event-gallery.component";
 import { EventReportComponent } from "../../components/event-report/event-report.component";
 
 export type EventStatusActions = ExtractExisting<
@@ -53,6 +55,7 @@ export type EventStatusActions = ExtractExisting<
 		EventProgressComponent,
 		EventAccountingComponent,
 		EventReportComponent,
+		EventGalleryComponent,
 		PageFooterComponent,
 		TabsComponent,
 		TabComponent,
@@ -69,7 +72,7 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 
 	actions: Action[] = [];
 
-	view = signal<"info" | "attendees" | "accounting" | "registration" | "report">("info");
+	view = signal<"info" | "attendees" | "accounting" | "registration" | "report" | "gallery">("info");
 
 	attendeesCount = signal<number | undefined>(undefined);
 	expensesCount = signal<number | undefined>(undefined);
@@ -88,6 +91,7 @@ export class EventViewComponent implements ViewWillEnter, ViewWillLeave {
 			calendar,
 			peopleOutline,
 			cashOutline,
+			imagesOutline,
 			documentOutline,
 			handLeftOutline,
 			arrowForwardOutline,

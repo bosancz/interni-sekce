@@ -39,13 +39,9 @@ export class EventResponse implements Omit<Event, "setLeaders" | "srcId" | "repo
 	waterKm!: number | null;
 	river!: string | null;
 	deletedAt?: Date | null;
-	publicReport!: string | null;
 	@ApiPropertyOptional({ type: "string" }) publishedAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) cancelledAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) reportPublishedAt!: Date | string | null;
-	chronicleFileName!: string | null;
-	chronicleSize!: number | null;
-	@ApiPropertyOptional({ type: "string" }) chronicleUpdatedAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) announcementSentAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) accountingSentAt!: Date | string | null;
 
@@ -64,6 +60,7 @@ export class ReportAlbumResponse {
 	id!: number;
 	name!: string;
 	@ApiProperty({ enum: AlbumStatus }) status!: AlbumStatus;
+	@ApiPropertyOptional({ type: "string" }) chronicleFileName!: string | null;
 	@ApiPropertyOptional({ type: () => PhotoResponse }) coverPhoto?: PhotoResponse;
 }
 
@@ -136,7 +133,6 @@ export class EventUpdateBody {
 
 export class EventReportUpdateBody {
 	@IsOptional() @Trim() @IsString() report?: string | null;
-	@IsOptional() @Trim() @IsString() publicReport?: string | null;
 	@ApiPropertyOptional({ type: "number" }) @IsOptional() @IsNumber() @Min(0) waterKm?: number | null;
 	@IsOptional() @Trim() @IsString() river?: string | null;
 }

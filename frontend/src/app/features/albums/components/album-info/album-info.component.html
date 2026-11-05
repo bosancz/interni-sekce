@@ -66,15 +66,65 @@
 		/>
 	</bo-item>
 
-	<bo-item label="Popis" [loading]="!album()">
-		<div class="bo-markdown" [innerHTML]="album()?.description | markdown"></div>
+	<bo-item label="Popisek" [loading]="!album()">
+		@if (album()?.description) {
+			<div class="bo-markdown" [innerHTML]="album()?.description | markdown"></div>
+		} @else if (album()) {
+			<p class="muted">Krátce, jak akce proběhla — vyjde s fotogalerií na bosan.cz.</p>
+		}
 		<bo-edit-button-markdown
 			slot="end"
-			label="Popis"
-			placeholder="Zadejte popis alba..."
+			label="Popisek"
+			placeholder="Jak akce proběhla…"
 			[disabled]="!album()?._links?.updateAlbum?.allowed"
 			[value]="album()?.description"
 			(update)="update.emit({ description: $event })"
 		/>
 	</bo-item>
+
+	<bo-item label="Kronika" [loading]="!album()">
+		@if (album()?.chronicleFileName; as fileName) {
+			<p>
+				<a href="#" (click)="openChronicle($event)">{{ fileName }}</a>
+				<span class="muted">
+					· {{ album()?.chronicleSize ?? 0 | prettyBytes: { locale: "cs" } }} · nahráno
+					{{ album()?.chronicleUpdatedAt | date: "d. M. y" }}</span
+				>
+			</p>
+		} @else if (uploading()) {
+			<p class="muted">Nahrávám kroniku…</p>
+		} @else if (album()) {
+			<p><span class="bo-pill">Bez kroniky</span></p>
+		}
+		<ion-button
+			slot="end"
+			fill="clear"
+			color="medium"
+			[class.d-none]="!album()?._links?.deleteAlbumChronicle?.applicable"
+			[disabled]="!album()?._links?.deleteAlbumChronicle?.allowed || busy()"
+			boTooltip="Odebrat kroniku"
+			(click)="deleteChronicle()"
+		>
+			<ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+		</ion-button>
+		<ion-button
+			slot="end"
+			fill="clear"
+			color="medium"
+			[class.d-none]="!album()?._links?.uploadAlbumChronicle?.applicable"
+			[disabled]="!album()?._links?.uploadAlbumChronicle?.allowed || busy()"
+			boTooltip="Nahrát kroniku v PDF"
+			(click)="chronicleInput.click()"
+		>
+			<ion-icon name="cloud-upload-outline" slot="icon-only"></ion-icon>
+		</ion-button>
+	</bo-item>
 </ion-list>
+
+<input
+	class="d-none"
+	type="file"
+	accept="application/pdf,.pdf"
+	#chronicleInput
+	(change)="uploadChronicle(chronicleInput)"
+/>

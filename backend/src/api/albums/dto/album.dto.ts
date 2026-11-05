@@ -19,6 +19,9 @@ export class AlbumResponse {
 	@ApiPropertyOptional({ type: "string" }) datePublished!: Date | string | null;
 	@ApiPropertyOptional({ type: "string" }) dateFrom!: string | null;
 	@ApiPropertyOptional({ type: "string" }) dateTill!: string | null;
+	@ApiPropertyOptional({ type: "string" }) chronicleFileName!: string | null;
+	@ApiPropertyOptional({ type: "number" }) chronicleSize!: number | null;
+	@ApiPropertyOptional({ type: "string" }) chronicleUpdatedAt!: Date | string | null;
 	@ApiPropertyOptional({ type: "number" }) eventId!: number | null;
 	@ApiPropertyOptional({ type: "number" }) createdById!: number | null;
 	@ApiPropertyOptional({ type: () => UserResponse }) createdBy?: User | null;

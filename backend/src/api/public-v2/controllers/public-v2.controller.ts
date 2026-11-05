@@ -50,28 +50,6 @@ export class PublicV2Controller {
 		return this.publicService.getJournal(query);
 	}
 
-	@Get("reports/:eventId")
-	async getPublicReport(@Param("eventId", ParseIntPipe) eventId: number) {
-		return this.publicService.getReport(eventId);
-	}
-
-	@Get("reports/:eventId/chronicle")
-	@ApiProduces("application/pdf")
-	async getPublicReportChronicle(
-		@Param("eventId", ParseIntPipe) eventId: number,
-		@Query("download") download: string | undefined,
-		@Res() res: Response,
-	): Promise<void> {
-		const { path, filename } = await this.publicService.getReportChronicleFile(eventId);
-
-		res.setHeader("Content-Type", "application/pdf");
-		res.setHeader(
-			"Content-Disposition",
-			`${download !== undefined ? "attachment" : "inline"}; ${contentDispositionFilename(filename)}`,
-		);
-		await this.sendFile(res, path);
-	}
-
 	@Get("albums/recent")
 	async getPublicRecentAlbums(@Query() query: PublicV2RecentAlbumsQuery) {
 		return this.publicService.getRecentAlbums(query.limit);
@@ -80,6 +58,23 @@ export class PublicV2Controller {
 	@Get("albums/:albumId")
 	async getPublicAlbum(@Param("albumId", ParseIntPipe) albumId: number) {
 		return this.publicService.getAlbum(albumId);
+	}
+
+	@Get("albums/:albumId/chronicle")
+	@ApiProduces("application/pdf")
+	async getPublicAlbumChronicle(
+		@Param("albumId", ParseIntPipe) albumId: number,
+		@Query("download") download: string | undefined,
+		@Res() res: Response,
+	): Promise<void> {
+		const { path, filename } = await this.publicService.getAlbumChronicleFile(albumId);
+
+		res.setHeader("Content-Type", "application/pdf");
+		res.setHeader(
+			"Content-Disposition",
+			`${download !== undefined ? "attachment" : "inline"}; ${contentDispositionFilename(filename)}`,
+		);
+		await this.sendFile(res, path);
 	}
 
 	@Get("albums/:albumId/photos")

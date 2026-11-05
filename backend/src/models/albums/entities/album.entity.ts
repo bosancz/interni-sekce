@@ -58,6 +58,9 @@ export class Album {
 	createdBy?: User | null;
 
 	@Column({ type: "text", nullable: true }) description!: string | null;
+	@Column({ type: "varchar", nullable: true }) chronicleFileName!: string | null;
+	@Column({ type: "integer", nullable: true }) chronicleSize!: number | null;
+	@Column({ type: "timestamp with time zone", nullable: true }) chronicleUpdatedAt!: Date | string | null;
 	@Column({ type: "timestamp with time zone", nullable: true }) datePublished!: Date | string | null;
 	@Column({ type: "date" }) dateFrom!: string | null;
 	@Column({ type: "date" }) dateTill!: string | null;

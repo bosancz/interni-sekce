@@ -1,0 +1,155 @@
+bo-card-content {
+	padding: 0 1rem 1rem;
+}
+
+.section-label {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-height: 32px;
+	color: var(--bo-heading);
+	font-weight: inherit;
+}
+
+.visibility {
+	font-family: var(--font-regular);
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	font-size: 0.75rem;
+	font-weight: 500;
+	color: var(--bo-muted);
+}
+
+.album-icon {
+	flex: none;
+	background-color: var(--bo-blue-tint);
+	color: var(--bo-heading);
+	border-radius: 10px;
+	padding: 8px;
+	font-size: 1.2rem;
+	margin-right: 0.75rem;
+}
+
+.album-name {
+	display: flex;
+	align-items: center;
+	max-width: 30rem;
+
+	ion-button {
+		margin: 0 0 0 auto;
+	}
+}
+
+.album-title,
+.chronicle-name {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+
+	strong {
+		color: var(--bo-heading);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	span {
+		color: var(--bo-muted);
+		font-size: 0.875rem;
+	}
+}
+
+section {
+	margin-top: 1.25rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--bo-neutral-badge);
+}
+
+.section-title {
+	margin: 0 0 0.5rem;
+	color: var(--bo-heading);
+	font-family: var(--font-regular);
+	font-size: 1rem;
+	font-weight: 600;
+}
+
+.muted {
+	color: var(--bo-muted);
+	margin: 0;
+}
+
+.description {
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--bo-neutral-badge);
+	border-radius: 10px;
+	background: var(--bo-blue-tint);
+
+	::ng-deep > :last-child {
+		margin-bottom: 0;
+	}
+}
+
+.chronicle-file {
+	display: flex;
+	align-items: center;
+	max-width: 30rem;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-align: start;
+	cursor: pointer;
+
+	&:hover strong {
+		text-decoration: underline;
+	}
+}
+
+.photos {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+	gap: 6px;
+	text-decoration: none;
+
+	img,
+	.more {
+		width: 100%;
+		aspect-ratio: 1;
+		border-radius: 8px;
+	}
+
+	img {
+		object-fit: cover;
+	}
+
+	.more {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--bo-blue-tint);
+		color: var(--bo-heading);
+		font-weight: 600;
+	}
+}
+
+.actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 1.25rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--bo-neutral-badge);
+
+	ion-button {
+		margin: 0;
+	}
+}
+
+.empty-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.5rem;
+}

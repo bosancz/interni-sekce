@@ -123,3 +123,30 @@ export const AlbumPhotosPermission = new Permission({
 		vedouci: true,
 	},
 });
+
+export const AlbumChronicleReadPermission = new Permission({
+	linkTo: AlbumResponse,
+	params: { albumId: "id" },
+
+	allowed: {
+		revizor: true,
+		vedouci: true,
+	},
+	applicable: ({ doc }) => !!doc.chronicleFileName,
+});
+
+export const AlbumChronicleUploadPermission = new Permission({
+	linkTo: AlbumResponse,
+	params: { albumId: "id" },
+
+	inherit: AlbumEditPermission,
+	applicable: ({ doc }) => !doc.deletedAt && !doc.chronicleFileName,
+});
+
+export const AlbumChronicleDeletePermission = new Permission({
+	linkTo: AlbumResponse,
+	params: { albumId: "id" },
+
+	inherit: AlbumEditPermission,
+	applicable: ({ doc }) => !doc.deletedAt && !!doc.chronicleFileName,
+});
