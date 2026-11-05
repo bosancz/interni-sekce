@@ -117,6 +117,16 @@ export class PublicV2Service {
 		);
 	}
 
+	async getGalleryStats(): Promise<{ albums: number; photos: number }> {
+		const [row] = await this.dataSource.query(
+			`SELECT COUNT(DISTINCT a.id)::int AS "albums", COUNT(p.id)::int AS "photos"
+			FROM albums a
+			LEFT JOIN photos p ON p.album_id = a.id AND p.deleted_at IS NULL
+			WHERE a.status = 'public' AND a.deleted_at IS NULL`,
+		);
+		return row;
+	}
+
 	async getRecentAlbums(limit?: number) {
 		const { defaultLimit, maxLimit } = this.config.publicApi.recentAlbums;
 		const albums = await this.albums.getAlbums({
