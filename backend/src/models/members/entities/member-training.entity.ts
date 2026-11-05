@@ -6,6 +6,9 @@ export enum MemberTrainingTypes {
 	"zdravotnik" = "zdravotnik",
 	"instruktorVodniTuristiky" = "instruktorVodniTuristiky",
 	"lanac" = "lanac",
+	"vudceMalehoPlavidla" = "vudceMalehoPlavidla",
+	"ridicskyPrukazB" = "ridicskyPrukazB",
+	"ridicskyPrukazVlek" = "ridicskyPrukazVlek",
 	"custom" = "custom",
 }
 

@@ -7011,6 +7011,9 @@ export namespace SDK {
         Zdravotnik: 'zdravotnik',
         InstruktorVodniTuristiky: 'instruktorVodniTuristiky',
         Lanac: 'lanac',
+        VudceMalehoPlavidla: 'vudceMalehoPlavidla',
+        RidicskyPrukazB: 'ridicskyPrukazB',
+        RidicskyPrukazVlek: 'ridicskyPrukazVlek',
         Custom: 'custom'
     } as const;
     
@@ -7197,6 +7200,9 @@ export namespace SDK {
         Zdravotnik: 'zdravotnik',
         InstruktorVodniTuristiky: 'instruktorVodniTuristiky',
         Lanac: 'lanac',
+        VudceMalehoPlavidla: 'vudceMalehoPlavidla',
+        RidicskyPrukazB: 'ridicskyPrukazB',
+        RidicskyPrukazVlek: 'ridicskyPrukazVlek',
         Custom: 'custom'
     } as const;
     
