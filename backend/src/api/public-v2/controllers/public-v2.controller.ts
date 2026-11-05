@@ -16,7 +16,7 @@ import { extname } from "path";
 import { PhotoSizes } from "src/api/albums/dto/photo.dto";
 import { contentDispositionFilename } from "src/helpers/sanitizefilename";
 import { PhotosFilesService } from "src/models/albums/services/photos-files.service";
-import { PublicV2JournalQuery, PublicV2ProgramQuery, PublicV2RecentAlbumsQuery } from "../dto/public-v2.dto";
+import { PublicV2GalleryQuery, PublicV2ProgramQuery, PublicV2RecentAlbumsQuery } from "../dto/public-v2.dto";
 import { PublicV2Service } from "../services/public-v2.service";
 
 @Controller("public/v2")
@@ -45,9 +45,9 @@ export class PublicV2Controller {
 		await this.sendFile(res, path);
 	}
 
-	@Get("journal")
-	async getPublicJournal(@Query() query: PublicV2JournalQuery) {
-		return this.publicService.getJournal(query);
+	@Get("gallery")
+	async getPublicGallery(@Query() query: PublicV2GalleryQuery) {
+		return this.publicService.getGallery(query);
 	}
 
 	@Get("gallery/stats")

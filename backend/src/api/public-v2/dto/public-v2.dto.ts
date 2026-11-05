@@ -7,7 +7,7 @@ export class PublicV2ProgramQuery {
 	@IsOptional() @IsDateString() dateTill?: string;
 }
 
-export class PublicV2JournalQuery {
+export class PublicV2GalleryQuery {
 	@IsOptional() @IsIn(["dateFrom", "publishedAt"]) sort?: "dateFrom" | "publishedAt";
 	@IsOptional() @Type(() => Number) @IsInt() @Min(1) limit?: number;
 	@IsOptional() @Type(() => Number) @IsInt() @Min(0) offset?: number;

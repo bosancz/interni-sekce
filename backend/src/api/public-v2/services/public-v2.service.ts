@@ -81,7 +81,7 @@ export class PublicV2Service {
 		return { path: join(folder, matches[0]), filename: matches[0] };
 	}
 
-	async getJournal(options: { sort?: "dateFrom" | "publishedAt"; limit?: number; offset?: number }) {
+	async getGallery(options: { sort?: "dateFrom" | "publishedAt"; limit?: number; offset?: number }) {
 		const sort = options.sort === "publishedAt" ? `"publishedAt"` : `"dateFrom"`;
 
 		return this.dataSource.query(
