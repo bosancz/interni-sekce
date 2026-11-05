@@ -15,6 +15,7 @@ import {
 	Req,
 	Res,
 } from "@nestjs/common";
+import { rethrowMemberNotFound } from "src/api/members/helpers/member-not-found";
 import { ApiOkResponse, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
@@ -247,7 +248,9 @@ export class EventsController {
 
 		EventLeadPermission.canOrThrow(req, event);
 
-		await this.events.createEventAttendee(eventId, authUser.memberId, { type: EventAttendeeType.leader });
+		await this.events
+			.createEventAttendee(eventId, authUser.memberId, { type: EventAttendeeType.leader })
+			.catch(rethrowMemberNotFound);
 	}
 
 	@Post(":eventId/submit")

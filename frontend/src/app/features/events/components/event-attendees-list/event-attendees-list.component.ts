@@ -1,5 +1,9 @@
 import { Component, computed, input, output } from "@angular/core";
 import { RouterLink } from "@angular/router";
+import { addIcons } from "ionicons";
+import { chevronDown } from "ionicons/icons";
+import { MemberRoles } from "src/app/core/config/member-roles";
+import { ModalService } from "src/app/core/services/modal.service";
 import { IonBadge, IonIcon, IonList, IonSkeletonText } from "@ionic/angular/standalone";
 import { DeleteButtonComponent } from "src/app/shared/components/delete-button/delete-button.component";
 import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
@@ -35,10 +39,29 @@ export class EventAttendeesListComponent {
 	notes = input<Map<number, AttendeeNote[]>>(new Map());
 
 	remove = output<SDK.EventAttendeeResponseWithLinks>();
+	roleChange = output<{ attendee: SDK.EventAttendeeResponseWithLinks; role: SDK.MemberRolesEnum }>();
 
 	loadingArray = new Array(10).fill(null);
 
 	canRemoveAny = computed(() => !!this.attendees()?.some((a) => a._links.deleteEventAttendee.allowed));
+
+	constructor(private readonly modalService: ModalService) {
+		addIcons({ chevronDown });
+	}
+
+	async selectRole(attendee: SDK.EventAttendeeResponseWithLinks) {
+		const role = await this.modalService.selectModal<SDK.MemberRolesEnum>({
+			header: "Role na akci",
+			message: `Jako kdo jel ${attendee.member?.nickname ?? "účastník"} na tuhle akci.`,
+			values: (Object.keys(MemberRoles) as SDK.MemberRolesEnum[]).map((value) => ({
+				value,
+				label: MemberRoles[value].title,
+			})),
+			value: attendee.role,
+		});
+
+		if (role) this.roleChange.emit({ attendee, role });
+	}
 
 	hasBirthday(notes: AttendeeNote[]) {
 		return notes.some((note) => note.tone === "birthday");

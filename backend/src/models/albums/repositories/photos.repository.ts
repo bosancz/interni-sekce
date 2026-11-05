@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { extname } from "path";
 import { PaginationOptions } from "src/helpers/pagination";
-import { MemberRoles } from "src/models/members/entities/member.entity";
+import { MemberRoles } from "src/models/members/schema/member-roles";
 import { CHILD_PARAMS, childCondition } from "src/models/statistics/statistics.helpers";
 import { User } from "src/models/users/entities/user.entity";
 import { leftJoinUserAuthor } from "src/models/users/helpers/user-author";

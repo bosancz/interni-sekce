@@ -3,7 +3,8 @@ import { EventAttendee, EventAttendeeType } from "src/models/events/entities/eve
 import { Event } from "src/models/events/entities/event.entity";
 import { MailService } from "src/models/mail/services/mail.service";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
-import { Member, MemberRoles } from "src/models/members/entities/member.entity";
+import { Member } from "src/models/members/entities/member.entity";
+import { MemberRoles } from "src/models/members/schema/member-roles";
 import { EventAnnouncementService } from "./event-announcement.service";
 
 const completeMember: Partial<Member> = {
@@ -25,6 +26,7 @@ function attendee(
 		eventId: 1,
 		memberId: id,
 		type: options.type ?? EventAttendeeType.attendee,
+		role: member.role ?? MemberRoles.dite,
 		member: {
 			id,
 			nickname: `člen ${id}`,
@@ -39,7 +41,10 @@ function attendee(
 const parentContact = { id: 1, isDefault: true, mobile: ["777 123 456"], relationship: "máma" };
 
 function createService() {
-	return new EventAnnouncementService({} as MailService, { announcements: { recipient: "ohlasky@bosan.cz" } } as Config);
+	return new EventAnnouncementService(
+		{} as MailService,
+		{ announcements: { recipient: "ohlasky@bosan.cz" } } as Config,
+	);
 }
 
 describe("EventAnnouncementService.getMissingData", () => {

@@ -6,13 +6,8 @@ import { MembershipPaymentStates } from "src/helpers/membership";
 import { EnsureArray, EnsureBoolean, Trim } from "src/helpers/validation";
 import { MemberContact } from "src/models/members/entities/member-contact.entity";
 import { MembershipPayment } from "src/models/members/entities/membership-payment.entity";
-import {
-	HealthEntry,
-	HealthSeverity,
-	Member,
-	MemberRanks,
-	MemberRoles,
-} from "src/models/members/entities/member.entity";
+import { HealthEntry, HealthSeverity, Member, MemberRanks } from "src/models/members/entities/member.entity";
+import { MemberRoles } from "src/models/members/schema/member-roles";
 import { MembershipPaymentResponse } from "./membership-payment.dto";
 import { MemberAchievementResponse } from "./member-achievement.dto";
 import { MemberTrainingResponse } from "./member-training.dto";

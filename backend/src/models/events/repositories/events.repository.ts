@@ -4,6 +4,9 @@ import { PaginationOptions } from "src/helpers/pagination";
 import { toPrefixTsQuery } from "src/helpers/search";
 import { applySort } from "src/helpers/sort";
 import { Group } from "src/models/members/entities/group.entity";
+import { Member } from "src/models/members/entities/member.entity";
+import { MemberRoles } from "src/models/members/schema/member-roles";
+import { MemberNotFoundError } from "src/models/members/errors/member-not-found.error";
 import { sortMemberContacts } from "src/models/members/helpers/member-contacts";
 import { Brackets, FindOptionsSelect, Repository } from "typeorm";
 import { EventAttendee, EventAttendeeType } from "../entities/event-attendee.entity";
@@ -430,8 +433,29 @@ export class EventsRepository {
 		});
 	}
 
-	async createEventAttendee(eventId: number, memberId: number, data: Omit<EventAttendee, "eventId" | "memberId">) {
-		await this.eventAttendeesRepository.save({ ...data, eventId, memberId });
+	async createEventAttendee(
+		eventId: number,
+		memberId: number,
+		data: Pick<EventAttendee, "type"> & Partial<Pick<EventAttendee, "position">>,
+	) {
+		const existing = await this.eventAttendeesRepository.exists({ where: { eventId, memberId } });
+		if (existing) {
+			await this.eventAttendeesRepository.update({ eventId, memberId }, data);
+			return;
+		}
+
+		const role = await this.getMemberRole(memberId);
+
+		await this.eventAttendeesRepository.save({ ...data, role, eventId, memberId });
+	}
+
+	private async getMemberRole(memberId: number): Promise<MemberRoles> {
+		const member = await this.eventAttendeesRepository.manager.findOne(Member, {
+			where: { id: memberId },
+			select: { id: true, role: true },
+		});
+		if (!member) throw new MemberNotFoundError(memberId);
+		return member.role;
 	}
 
 	async updateEventAttendee(eventId: number, memberId: number, data: Partial<EventAttendee>) {

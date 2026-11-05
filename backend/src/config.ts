@@ -217,6 +217,10 @@ const statistics = {
 	childAgeLimit: 15,
 };
 
+const eventAttendees = {
+	roleByAge: { instructorFrom: 15, leaderFrom: 18 },
+};
+
 const insuranceCards = {
 	timeoutMs: 20_000,
 	timezone: "Europe/Prague",
@@ -264,6 +268,7 @@ export class Config {
 	seed = seed;
 	server = server;
 	statistics = statistics;
+	eventAttendees = eventAttendees;
 	workers = workers;
 	fs = fs;
 	mapy = mapy;

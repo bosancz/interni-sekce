@@ -1,4 +1,5 @@
 import { Member } from "src/models/members/entities/member.entity";
+import { MemberRoles } from "src/models/members/schema/member-roles";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { Event } from "./event.entity";
 
@@ -25,4 +26,5 @@ export class EventAttendee {
 
 	@Column({ type: "enum", enum: EventAttendeeType, nullable: false }) type!: EventAttendeeType;
 	@Column({ type: "integer", nullable: true }) position?: number | null;
+	@Column({ type: "enum", enum: MemberRoles, nullable: false }) role!: MemberRoles;
 }

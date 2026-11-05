@@ -5,7 +5,8 @@ import { EventStates } from "src/models/events/entities/event.entity";
 import { GroupMeetingDays } from "src/models/members/entities/group.entity";
 import { MemberAchievementTypes } from "src/models/members/entities/member-achievements.entity";
 import { MemberTrainingTypes } from "src/models/members/entities/member-training.entity";
-import { HealthEntry, HealthSeverity, MemberRanks, MemberRoles } from "src/models/members/entities/member.entity";
+import { HealthEntry, HealthSeverity, MemberRanks } from "src/models/members/entities/member.entity";
+import { MemberRoles } from "src/models/members/schema/member-roles";
 
 export interface SeedGroup {
 	shortName: string;

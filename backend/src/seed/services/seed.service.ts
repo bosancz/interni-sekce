@@ -380,7 +380,9 @@ export class SeedService {
 
 					const position = type === EventAttendeeType.leader ? index : null;
 
-					await t.insert(EventAttendee, { eventId: event.id, memberId, type, position });
+					const role = SeedMembers.find((seedMember) => seedMember.nickname === nickname)!.role;
+
+					await t.insert(EventAttendee, { eventId: event.id, memberId, type, position, role });
 				}
 			}
 

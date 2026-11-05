@@ -13,7 +13,7 @@
 						</span>
 						<strong>{{ leader.member | member: "nickname" }}</strong>
 					</a>
-					<span class="leader-role text-muted">{{ leader.member?.role | role: "title" }}</span>
+					<span class="leader-role text-muted">{{ leader.role | role: "title" }}</span>
 					@if (reorderable()) {
 						<ion-reorder class="leader-reorder" boTooltip="Přetažením změníš pořadí na webu"></ion-reorder>
 					}

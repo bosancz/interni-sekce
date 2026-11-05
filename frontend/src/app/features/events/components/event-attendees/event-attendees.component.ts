@@ -290,7 +290,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 			const aString = [a.member.nickname, a.member.firstName, a.member.lastName].join(" ");
 			const bString = [b.member.nickname, b.member.firstName, b.member.lastName].join(" ");
 
-			return b.member.role.localeCompare(a.member.role) || aString.localeCompare(bString);
+			return b.role.localeCompare(a.role) || aString.localeCompare(bString);
 		});
 
 		this.attendees.set(attendees.filter((a) => a.type === "attendee"));
@@ -461,6 +461,30 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		return [...(this.attendees() ?? []), ...(this.leaders() ?? [])].find(
 			(attendee) => attendee.memberId === memberId,
 		);
+	}
+
+	async changeAttendeeRole(attendee: SDK.EventAttendeeResponseWithLinks, role: SDK.MemberRolesEnum) {
+		const event = this.event();
+		if (!event || attendee.role === role) return;
+
+		const previous = attendee.role;
+		const update = (value: SDK.MemberRolesEnum) =>
+			this.attendees.set(
+				this.attendees()?.map((item) =>
+					item.memberId === attendee.memberId ? { ...item, role: value } : item,
+				),
+			);
+
+		update(role);
+
+		try {
+			await this.api.EventsApi.updateEventAttendee(event.id, attendee.memberId, { role });
+			this.toastService.toast("Role účastníka změněna.");
+			this.change.emit();
+		} catch (e) {
+			update(previous);
+			this.toastService.toast("Nepodařilo se změnit roli účastníka.");
+		}
 	}
 
 	async removeAttendee(attendee: SDK.EventAttendeeResponseWithLinks) {

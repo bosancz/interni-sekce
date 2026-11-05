@@ -1829,6 +1829,12 @@ export namespace SDK {
          * @memberof EventAttendee
          */
         'position'?: number | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof EventAttendee
+         */
+        'role': EventAttendeeRoleEnum;
     }
     
     export const EventAttendeeTypeEnum = {
@@ -1837,6 +1843,13 @@ export namespace SDK {
     } as const;
     
     export type EventAttendeeTypeEnum = typeof EventAttendeeTypeEnum[keyof typeof EventAttendeeTypeEnum];
+    export const EventAttendeeRoleEnum = {
+        Dite: 'dite',
+        Instruktor: 'instruktor',
+        Vedouci: 'vedouci'
+    } as const;
+    
+    export type EventAttendeeRoleEnum = typeof EventAttendeeRoleEnum[keyof typeof EventAttendeeRoleEnum];
     
     
         /**
@@ -1891,6 +1904,12 @@ export namespace SDK {
          * @memberof EventAttendeeResponse
          */
         'position'?: number | null;
+        /**
+         * 
+         * @type {MemberRolesEnum}
+         * @memberof EventAttendeeResponse
+         */
+        'role': MemberRolesEnum;
         /**
          * 
          * @type {MemberResponse}
@@ -1965,6 +1984,12 @@ export namespace SDK {
         'position'?: number | null;
         /**
          * 
+         * @type {MemberRolesEnum}
+         * @memberof EventAttendeeResponseWithLinks
+         */
+        'role': MemberRolesEnum;
+        /**
+         * 
          * @type {MemberResponse}
          * @memberof EventAttendeeResponseWithLinks
          */
@@ -2002,7 +2027,13 @@ export namespace SDK {
          * @type {string}
          * @memberof EventAttendeeUpdateBody
          */
-        'type': EventAttendeeUpdateBodyTypeEnum;
+        'type'?: EventAttendeeUpdateBodyTypeEnum;
+        /**
+         * 
+         * @type {MemberRolesEnum}
+         * @memberof EventAttendeeUpdateBody
+         */
+        'role'?: MemberRolesEnum;
     }
     
     export const EventAttendeeUpdateBodyTypeEnum = {
