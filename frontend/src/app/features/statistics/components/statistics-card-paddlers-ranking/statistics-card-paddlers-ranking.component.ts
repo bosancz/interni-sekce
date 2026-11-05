@@ -47,7 +47,7 @@ export class StatisticsCardPaddlersRankingComponent {
 
 	infoLines = [
 		"Pořadí podle kilometrů ujetých na vodě na akcích daného roku.",
-		"Dítě je člen mladší 15 let v době konání akce, mezi vedoucími jsou všichni ostatní včetně instruktorů.",
+		"Dítě je ten, kdo je na akci zapsaný v roli dítěte, mezi vedoucími jsou všichni ostatní včetně instruktorů.",
 		"Počítají se jen skončené a nezrušené akce s vyplněnými kilometry na vodě.",
 	];
 

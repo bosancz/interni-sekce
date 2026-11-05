@@ -5,8 +5,8 @@ import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { Repository } from "typeorm";
 import {
-	CHILD_PARAMS,
-	childCondition,
+	CHILD_ATTENDEE_PARAMS,
+	childAttendeeCondition,
 	EVENT_YEAR_CONDITION,
 	FINISHED_EVENT_CONDITION,
 	getEventYearRange,
@@ -42,7 +42,7 @@ export class SummaryStatisticsService {
 
 	private async getActiveChildren(year: number): Promise<number> {
 		const row = await this.countAttendees(year, EventAttendeeType.attendee)
-			.andWhere(childCondition("m", "e"), CHILD_PARAMS)
+			.andWhere(childAttendeeCondition("ea"), CHILD_ATTENDEE_PARAMS)
 			.getRawOne<{ count: string }>();
 
 		return Number(row?.count ?? 0);

@@ -5,8 +5,8 @@ import { Event, EventStates } from "src/models/events/entities/event.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { Repository } from "typeorm";
 import {
-	CHILD_PARAMS,
-	childCondition,
+	CHILD_ATTENDEE_PARAMS,
+	childAttendeeCondition,
 	EVENT_YEAR_CONDITION,
 	FINISHED_EVENT_CONDITION,
 	getEventYearRange,
@@ -106,7 +106,10 @@ export class PaddlersStatisticsService {
 			})
 			.where(EVENT_YEAR_CONDITION, { year })
 			.andWhere(WATER_EVENT_CONDITION)
-			.andWhere(children ? childCondition("m", "e") : `NOT ${childCondition("m", "e")}`, CHILD_PARAMS)
+			.andWhere(
+				children ? childAttendeeCondition("ea") : `NOT ${childAttendeeCondition("ea")}`,
+				CHILD_ATTENDEE_PARAMS,
+			)
 			.groupBy("m.id")
 			.orderBy(waterKm, "DESC")
 			.addOrderBy("COUNT(*)", "ASC")
