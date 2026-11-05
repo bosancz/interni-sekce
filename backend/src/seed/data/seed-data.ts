@@ -229,6 +229,9 @@ export const SeedMembers: SeedMember[] = [
 				issuer: "Junák – český skaut",
 			},
 			{ type: MemberTrainingTypes.instruktorVodniTuristiky, issuedOn: "2017-09-30", issuer: "MŠMT" },
+			{ type: MemberTrainingTypes.vudceMalehoPlavidla, issuedOn: "2019-06-12", issuer: "Státní plavební správa" },
+			{ type: MemberTrainingTypes.ridicskyPrukazB, issuedOn: "2012-08-01", validUntil: "2032-08-01" },
+			{ type: MemberTrainingTypes.ridicskyPrukazVlek, issuedOn: "2016-03-15", validUntil: "2032-08-01" },
 			{
 				type: MemberTrainingTypes.lanac,
 				issuedOn: "2022-04-09",

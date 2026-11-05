@@ -13,6 +13,12 @@ export const MemberTrainingTypes: { [type in SDK.MemberTrainingTypesEnum]: Membe
 		icon: "assets/img/trainings/instruktor-vodni-turistiky.svg",
 	},
 	lanac: { title: "Lanáč", icon: "assets/img/trainings/lanac.svg" },
+	vudceMalehoPlavidla: { title: "Vůdce malého plavidla", icon: "assets/img/trainings/vudce-maleho-plavidla.svg" },
+	ridicskyPrukazB: { title: "Řidičský průkaz B", icon: "assets/img/trainings/ridicsky-prukaz-b.svg" },
+	ridicskyPrukazVlek: {
+		title: "Řidičský průkaz na vlek (B96 a vyšší)",
+		icon: "assets/img/trainings/ridicsky-prukaz-vlek.svg",
+	},
 	custom: { title: "Jiné školení", icon: "assets/img/trainings/vlastni.svg" },
 };
 
