@@ -87,20 +87,6 @@ bo-card-content {
 	font-weight: 600;
 }
 
-.check-action {
-	flex: none;
-	line-height: 28px;
-	font-size: 0.875rem;
-	font-weight: 700;
-	color: var(--bo-link);
-	text-decoration: none;
-
-	&:hover {
-		color: var(--bo-link-hover);
-		text-decoration: underline;
-	}
-}
-
 .muted {
 	color: var(--bo-muted);
 	margin: 0;
@@ -170,8 +156,8 @@ bo-card-content {
 	margin-top: 1rem;
 	padding: 0.75rem 1rem;
 	border-radius: 12px;
-	background: var(--bo-blue-tint);
-	color: var(--bo-heading);
+	background: var(--bo-yellow-tint);
+	color: var(--bo-yellow-deep);
 
 	> ion-icon {
 		flex: none;
@@ -180,6 +166,12 @@ bo-card-content {
 
 	> span {
 		flex: 1 1 14rem;
+	}
+
+	.publish-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
 	}
 
 	ion-button {
