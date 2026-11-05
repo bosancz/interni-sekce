@@ -10,6 +10,7 @@ import {
 	ellipse,
 	giftOutline,
 	helpCircle,
+	barChartOutline,
 	mailOutline,
 	sendOutline,
 	warning,
@@ -29,7 +30,7 @@ import { getBirthdaysBetween } from "src/helpers/age";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { getMemberEmails } from "src/helpers/member-contacts";
 import { SDK } from "src/sdk";
-import { EventAgeHistogramComponent } from "../event-age-histogram/event-age-histogram.component";
+import { EventAgeModalComponent } from "../event-age-modal/event-age-modal.component";
 import { EventAttendeesListComponent } from "../event-attendees-list/event-attendees-list.component";
 import { AttendeeNote, AttendeeNoteTone } from "../event-attendees-list/attendee-note";
 
@@ -63,7 +64,6 @@ const mailAddresses = (emails: string[]) =>
 		TooltipDirective,
 		EventAttendeesListComponent,
 		AddButtonComponent,
-		EventAgeHistogramComponent,
 		CardComponent,
 		CardHeaderComponent,
 		CardTitleComponent,
@@ -242,6 +242,16 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 	modal?: HTMLIonModalElement;
 
+	openAgeModal() {
+		const event = this.event();
+		if (!event) return;
+		this.modalService.componentModal(
+			EventAgeModalComponent,
+			{ event, attendees: this.attendees() ?? [], leaders: this.leaders() ?? [] },
+			{ cssClass: "dialog-picker" },
+		);
+	}
+
 	constructor(
 		private api: ApiService,
 		private toastService: ToastService,
@@ -249,6 +259,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 	) {
 		addIcons({
 			mailOutline,
+			barChartOutline,
 			sendOutline,
 			checkmarkOutline,
 			giftOutline,

@@ -17,6 +17,19 @@
 					<span class="mail-label">Napsat všem</span>
 				</ion-button>
 			}
+
+			@if (event() && people()?.length) {
+				<ion-button
+					fill="clear"
+					size="small"
+					color="primary"
+					(click)="openAgeModal()"
+					aria-label="Počty podle věku"
+				>
+					<ion-icon name="bar-chart-outline" slot="start"></ion-icon>
+					<span class="mail-label">Počty podle věku</span>
+				</ion-button>
+			}
 		</div>
 
 		<bo-event-attendees-list
@@ -51,21 +64,6 @@
 							<strong class="summary-count">{{ row.count }}</strong>
 						</div>
 					}
-				</bo-card-content>
-			</bo-card>
-		}
-
-		@if (event()) {
-			<bo-card class="mb-3 d-none d-lg-flex">
-				<bo-card-header>
-					<bo-card-title>Věk účastníků</bo-card-title>
-				</bo-card-header>
-				<bo-card-content>
-					<event-age-histogram
-						[event]="event()!"
-						[attendees]="attendees() ?? []"
-						[leaders]="leaders() ?? []"
-					></event-age-histogram>
 				</bo-card-content>
 			</bo-card>
 		}
