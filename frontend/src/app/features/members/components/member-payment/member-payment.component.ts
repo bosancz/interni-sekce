@@ -6,7 +6,6 @@ import {
 	cardOutline,
 	checkmarkCircle,
 	chevronBackOutline,
-	chevronDown,
 	chevronForwardOutline,
 	shareSocialOutline,
 } from "ionicons/icons";
@@ -20,6 +19,7 @@ import { CardHeaderComponent } from "src/app/shared/components/card-header/card-
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { CopyButtonComponent } from "src/app/shared/components/copy-button/copy-button.component";
+import { EditButtonNumberComponent } from "src/app/shared/components/edit-button-number/edit-button-number.component";
 import { EditButtonDateComponent } from "src/app/shared/components/edit-button-date/edit-button-date.component";
 import { SDK } from "src/sdk";
 import {
@@ -68,6 +68,7 @@ const QR_PNG_QUERY = "?format=png";
 		CopyButtonComponent,
 		EditButtonComponent,
 		EditButtonDateComponent,
+		EditButtonNumberComponent,
 		IonIcon,
 		IonSkeletonText,
 		IonButton,
@@ -129,12 +130,6 @@ export class MemberPaymentComponent {
 	);
 
 	/**
-	 * Whether the details of an already paid fee are unfolded. Only ever read while the fee is
-	 * paid — an unpaid one is always shown in full.
-	 */
-	readonly detailsOpen = signal(false);
-
-	/**
 	 * The recorded fee of the season this card is titled with, or undefined while it is unpaid —
 	 * the same question the "Členství" row of the membership card asks, asked of the same helper
 	 * and about the same year, so the two can never disagree about one member.
@@ -144,16 +139,19 @@ export class MemberPaymentComponent {
 	 * last two digits of the year, and the one shown here is minted by the server, so the card
 	 * went green off a season the rest of the app was not even asking about.
 	 */
-	readonly paidPayment = computed(() => membershipPaymentOf(this.member()?.membership, this.currentMembershipYear()));
+	readonly paidPayment = computed(() => membershipPaymentOf(this.member()?.membership, this.membershipYear()));
 
 	/** True once the fee this card asks for has been recorded as paid. */
 	readonly paid = computed(() => !!this.paidPayment());
 
-	/**
-	 * A paid fee is folded away to its header — there is nothing left to pay — and the account,
-	 * the symbol and the QR are one chevron away for when someone wants to look them up anyway.
-	 */
-	readonly detailsVisible = computed(() => !this.paid() || this.detailsOpen());
+	readonly requestVisible = computed(() => !this.paid() && this.membershipYear() === currentMembershipYear());
+
+	readonly paidAmount = computed(() => {
+		const amount = this.paidPayment()?.amount;
+		if (amount === null || amount === undefined) return "-";
+		const currency = this.payment()?.currency ?? "CZK";
+		return `${amount} ${currency === "CZK" ? "Kč" : currency}`;
+	});
 
 	/**
 	 * Who may write the day the fee was paid: whoever may record the fee itself, the API saying so
@@ -206,7 +204,6 @@ export class MemberPaymentComponent {
 			cardOutline,
 			checkmarkCircle,
 			chevronBackOutline,
-			chevronDown,
 			chevronForwardOutline,
 			shareSocialOutline,
 		});
@@ -224,7 +221,7 @@ export class MemberPaymentComponent {
 	setPaidOn(paidOn: string | null) {
 		if (!this.canEditMembership() || !this.paid()) return;
 
-		this.updateMembership.emit({ year: this.currentMembershipYear(), paid: true, paidOn });
+		this.updateMembership.emit({ year: this.membershipYear(), paid: true, paidOn });
 	}
 
 	stepYear(delta: number) {
@@ -250,9 +247,29 @@ export class MemberPaymentComponent {
 		if (result !== null) this.updateMembership.emit({ year, paid: result });
 	}
 
-	/** Folds the details of a paid fee in and out. */
-	toggleDetails() {
-		this.detailsOpen.update((open) => !open);
+	setAmount(amount: number | null) {
+		if (!this.canEditMembership() || !this.paid()) return;
+
+		const value = amount === null ? null : Math.round(amount);
+		if (value !== null && (!Number.isFinite(value) || value < 0)) {
+			this.toasts.toast("Částka musí být číslo od nuly výš.");
+			return;
+		}
+
+		this.updateMembership.emit({ year: this.membershipYear(), paid: true, amount: value });
+	}
+
+	async editNote(current?: string | null) {
+		if (!this.canEditMembership() || !this.paid()) return;
+
+		const year = this.membershipYear();
+		const result = await this.modalService.inputModal<{ note: string }>({
+			header: `Poznámka k příspěvku ${year}`,
+			inputs: { note: { type: "textarea", value: current ?? "" } },
+		});
+		if (!result) return;
+
+		this.updateMembership.emit({ year, paid: true, note: (result.note ?? "").trim() || null });
 	}
 
 	/** Opens the QR code on its own – handy for showing it to a parent or printing it. */
@@ -329,7 +346,6 @@ export class MemberPaymentComponent {
 		if (memberId === this.loadedMemberId) return;
 
 		this.loadedMemberId = memberId;
-		this.detailsOpen.set(false);
 		this.payment.set(undefined);
 		this.contactEmails.set([]);
 		this.qrCodeFiles = null;
