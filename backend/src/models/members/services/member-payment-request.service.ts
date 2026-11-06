@@ -41,6 +41,7 @@ export interface MemberPaymentRequest extends QrCodeLinkPayment {
 
 const QR_LOGO_PATH = path.resolve("assets/img/san-emblem.svg");
 const QR_PAGE_TEMPLATE_PATH = path.resolve("assets/qr-platba-template/template.html");
+const QR_PAGE_FONT_PATH = path.resolve("assets/fonts/SanGrotesk-Regular.otf");
 const QR_CODE_SIZE = 512;
 const QR_CODE_COLOR = "#2a3478";
 const QR_CODE_BACKGROUND = "#ffffff";
@@ -61,6 +62,7 @@ const QR_SIGNATURE_LENGTH = 16;
 export class MemberPaymentRequestService {
 	private logo?: string;
 	private pageTemplate?: HandlebarsTemplateDelegate;
+	private pageFont?: string;
 
 	constructor(
 		private readonly paymentSettings: PaymentSettingsRepository,
@@ -152,7 +154,7 @@ export class MemberPaymentRequestService {
 			message: this.getMessage(member),
 			pngUrl: "?format=png",
 			pngFileName: `qr-platba-${payment.variableSymbol}.png`,
-			fontsUrl: `${this.config.app.baseUrl}/assets/fonts`,
+			fontUrl: (this.pageFont ??= `data:font/otf;base64,${readFileSync(QR_PAGE_FONT_PATH).toString("base64")}`),
 			links: this.config.publicLinks,
 		});
 	}
