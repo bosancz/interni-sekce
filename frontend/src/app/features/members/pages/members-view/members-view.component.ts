@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, signal } from "@angular/core";
+import { Component, computed, DestroyRef, ElementRef, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ViewWillEnter, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -102,7 +102,10 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 		private router: Router,
 		private titleService: TitleService,
 		private modalService: ModalService,
+		private el: ElementRef<HTMLElement>,
+		destroyRef: DestroyRef,
 	) {
+		destroyRef.onDestroy(() => this.titleService.removePageTitle(this.el.nativeElement));
 		addIcons({ personCircleOutline, medkitOutline, callOutline, imagesOutline, gitMergeOutline });
 	}
 
@@ -118,7 +121,7 @@ export class MembersViewComponent implements OnInit, ViewWillEnter, ViewWillLeav
 
 	async loadMember(id: number) {
 		const member = await this.api.MembersApi.getMember(id).then((res) => res.data);
-		this.titleService.setTitle(this.getTitleName(member) || null);
+		this.titleService.setPageTitle(this.el.nativeElement, this.getTitleName(member) || null);
 
 		this.member.set(member);
 	}
