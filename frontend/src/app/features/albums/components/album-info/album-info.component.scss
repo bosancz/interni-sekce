@@ -8,3 +8,11 @@ ion-list {
 .muted {
 	color: var(--bo-muted);
 }
+
+bo-item {
+	min-height: 49px;
+}
+
+.item-button {
+	font-size: 10px;
+}

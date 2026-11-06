@@ -12,7 +12,9 @@
 .title-photo {
 	position: relative;
 	flex: 0 0 auto;
+	align-self: flex-start;
 	max-width: 40%;
+	aspect-ratio: 7 / 5;
 	border-radius: var(--bo-radius-card);
 	box-shadow: var(--bo-shadow-card);
 	overflow: hidden;
