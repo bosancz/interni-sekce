@@ -1,27 +1,48 @@
-<ion-toolbar>
-	<ion-searchbar
-		enterkeyhint="search"
-		[debounce]="300"
-		(ionInput)="searchEvents($any($event).detail.value)"
-	></ion-searchbar>
-	<ion-buttons slot="end">
-		<ion-button (click)="close.emit()">Zrušit</ion-button>
-	</ion-buttons>
-</ion-toolbar>
+<bo-modal-layout>
+	<div slot="title" class="es-head">
+		<h4>Vybrat akci</h4>
+		<button type="button" class="es-close" aria-label="Zavřít" (click)="close.emit()">
+			<ion-icon name="close-outline"></ion-icon>
+		</button>
+	</div>
 
-<ion-content>
-	<ion-list>
+	<div class="es-tools">
+		<div class="es-search">
+			<ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+			<input
+				#searchInput
+				type="text"
+				enterkeyhint="search"
+				autocomplete="off"
+				placeholder="Hledat podle názvu akce"
+				aria-label="Hledat podle názvu akce"
+				[value]="searchString() ?? ''"
+				(input)="onSearchInput($any($event.target).value)"
+			/>
+			@if (searchString()) {
+				<button type="button" class="es-clear" (click)="onSearchInput('')">Zrušit</button>
+			}
+		</div>
+	</div>
+
+	<div class="es-list">
 		@for (event of events() ?? []; track event.id) {
-			<ion-item [button]="true" (click)="submit.emit(event)">
-				<ion-label>
-					<h3>{{ event.name }}</h3>
-					<p>{{ [event.dateFrom, event.dateTill] | dateRange }}</p>
-				</ion-label>
-			</ion-item>
+			<button type="button" class="es-row" (click)="submit.emit(event)">
+				<span class="es-name">{{ event.name }}</span>
+				<span class="es-date">{{ [event.dateFrom, event.dateTill] | dateRange }}</span>
+			</button>
 		}
-	</ion-list>
 
-	<ion-infinite-scroll (ionInfinite)="onInfiniteScroll($any($event))">
-		<ion-infinite-scroll-content></ion-infinite-scroll-content>
-	</ion-infinite-scroll>
-</ion-content>
+		@if (loading()) {
+			<div class="es-placeholder"><ion-spinner name="crescent"></ion-spinner></div>
+		} @else if (!events()?.length) {
+			<div class="es-placeholder">Žádná akce nenalezena.</div>
+		} @else if (hasMore()) {
+			<button type="button" class="bm-btn-ghost es-more" (click)="loadEvents(true)">Načíst další</button>
+		}
+	</div>
+
+	<div slot="buttons" class="es-foot">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+	</div>
+</bo-modal-layout>

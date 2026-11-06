@@ -1,21 +1,10 @@
-import { Component, OnInit, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import {
-	InfiniteScrollCustomEvent,
-	IonButton,
-	IonButtons,
-	IonContent,
-	IonInfiniteScroll,
-	IonInfiniteScrollContent,
-	IonItem,
-	IonLabel,
-	IonList,
-	IonSearchbar,
-	IonToolbar,
-	ModalController,
-} from "@ionic/angular/standalone";
+import { AfterViewInit, Component, ElementRef, OnInit, signal, viewChild } from "@angular/core";
+import { IonIcon, IonSpinner, ModalController } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { closeOutline, searchOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { InputModalComponent } from "src/app/core/services/modal.service";
+import { ModalLayoutComponent } from "src/app/shared/components/modal-layout/modal-layout.component";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
 import { SDK } from "src/sdk";
 
@@ -23,69 +12,65 @@ import { SDK } from "src/sdk";
 	selector: "bo-event-selector-modal",
 	templateUrl: "./event-selector-modal.component.html",
 	styleUrls: ["./event-selector-modal.component.scss"],
-
-	imports: [
-		IonToolbar,
-		IonSearchbar,
-		IonButtons,
-		IonButton,
-		IonContent,
-		IonList,
-		IonItem,
-		IonLabel,
-		IonInfiniteScroll,
-		IonInfiniteScrollContent,
-		FormsModule,
-		DateRangePipe,
-	],
+	imports: [IonIcon, IonSpinner, ModalLayoutComponent, DateRangePipe],
 })
-export class EventSelectorModalComponent extends InputModalComponent<SDK.EventResponseWithLinks> implements OnInit {
+export class EventSelectorModalComponent
+	extends InputModalComponent<SDK.EventResponseWithLinks>
+	implements OnInit, AfterViewInit
+{
 	events = signal<SDK.EventResponseWithLinks[] | undefined>(undefined);
+	loading = signal(false);
+	hasMore = signal(false);
+	searchString = signal<string | undefined>(undefined);
 
 	pageSize = 20;
-	page = signal(1);
-	searchString = signal<string | undefined>(undefined);
+
+	private searchInput = viewChild<ElementRef<HTMLInputElement>>("searchInput");
+	private searchTimeout?: ReturnType<typeof setTimeout>;
+	private requestId = 0;
 
 	constructor(
 		private api: ApiService,
 		modalController: ModalController,
 	) {
 		super(modalController);
+		addIcons({ closeOutline, searchOutline });
 	}
 
 	ngOnInit(): void {
 		this.loadEvents();
 	}
 
-	async searchEvents(searchString?: string) {
-		this.searchString.set(searchString || undefined);
-		await this.loadEvents();
+	ngAfterViewInit(): void {
+		setTimeout(() => this.searchInput()?.nativeElement.focus(), 300);
 	}
 
-	async onInfiniteScroll(e: InfiniteScrollCustomEvent) {
-		await this.loadEvents(true);
-		e.target.complete();
+	onSearchInput(value: string) {
+		this.searchString.set(value.trim() || undefined);
+		clearTimeout(this.searchTimeout);
+		this.searchTimeout = setTimeout(() => this.loadEvents(), 300);
 	}
 
-	private async loadEvents(loadMore = false) {
-		if (loadMore) {
-			const currentEvents = this.events();
-			if (currentEvents && currentEvents.length < this.page() * this.pageSize) return;
-			this.page.set(this.page() + 1);
-		} else {
-			this.page.set(1);
-			this.events.set(undefined);
-		}
+	async loadEvents(loadMore = false) {
+		const currentEvents = loadMore ? (this.events() ?? []) : [];
+		if (!loadMore) this.events.set(undefined);
+
+		const requestId = ++this.requestId;
+		this.loading.set(true);
 
 		const params: SDK.EventsApiListEventsQueryParams = {
 			search: this.searchString(),
-			offset: (this.page() - 1) * this.pageSize,
+			offset: currentEvents.length,
 			limit: this.pageSize,
 		};
 
-		const newEvents = await this.api.EventsApi.listEvents(params).then((res) => res.data);
-
-		const currentEvents = this.events();
-		this.events.set(currentEvents ? [...currentEvents, ...newEvents] : newEvents);
+		try {
+			const newEvents = await this.api.EventsApi.listEvents(params).then((res) => res.data);
+			if (requestId !== this.requestId) return;
+			this.events.set([...currentEvents, ...newEvents]);
+			this.hasMore.set(newEvents.length === this.pageSize);
+		} finally {
+			if (requestId === this.requestId) this.loading.set(false);
+		}
 	}
 }

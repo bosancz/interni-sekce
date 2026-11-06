@@ -97,11 +97,6 @@ ion-modal.dialog {
 	}
 }
 
-ion-modal.dialog.dialog-list {
-	--width: 480px;
-	--height: 70vh;
-}
-
 /* people picker: fixed width, tall enough for the list to scroll inside */
 ion-modal.dialog.dialog-picker {
 	--width: 560px;
