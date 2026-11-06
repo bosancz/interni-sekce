@@ -142,6 +142,47 @@
 				background: #343f8f;
 			}
 
+			.actions {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 10px;
+				margin-top: 20px;
+			}
+
+			.actions .download {
+				margin-top: 0;
+			}
+
+			.share {
+				display: none;
+				align-items: center;
+				gap: 8px;
+				padding: 9px 22px;
+				border: 2px solid var(--navy);
+				border-radius: 99px;
+				background: transparent;
+				color: var(--navy);
+				font-family: inherit;
+				font-size: 16px;
+				font-weight: 800;
+				cursor: pointer;
+			}
+
+			.share.available {
+				display: inline-flex;
+			}
+
+			.share:disabled {
+				opacity: 0.6;
+				cursor: default;
+			}
+
+			.share svg {
+				width: 18px;
+				height: 18px;
+			}
+
 			.download svg {
 				width: 18px;
 				height: 18px;
@@ -199,7 +240,7 @@
 					box-shadow: none;
 				}
 
-				.download,
+				.actions,
 				.follow {
 					display: none;
 				}
@@ -232,6 +273,22 @@
 				</div>
 			</dl>
 
+			<div class="actions">
+			<button
+				type="button"
+				class="share"
+				id="share"
+				data-title="Členský příspěvek {{year}}"
+				data-text="Členský příspěvek {{year}}&#10;Účet: {{account}}&#10;Variabilní symbol: {{variableSymbol}}&#10;Částka: {{amount}}"
+			>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<circle cx="18" cy="5" r="3" />
+					<circle cx="6" cy="12" r="3" />
+					<circle cx="18" cy="19" r="3" />
+					<path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" />
+				</svg>
+				Zaplatit v bance
+			</button>
 			<a class="download" href="{{pngUrl}}" download="{{pngFileName}}">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 					<path d="M12 3v12" />
@@ -240,6 +297,7 @@
 				</svg>
 				Stáhnout QR kód
 			</a>
+			</div>
 		</main>
 
 		<nav class="follow">
@@ -268,5 +326,46 @@
 				</a>
 			</div>
 		</nav>
+		<script>
+			(function () {
+				var button = document.getElementById("share");
+				var mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+				if (!button || !mobile || typeof navigator.share !== "function") return;
+
+				button.classList.add("available");
+
+				var download = document.querySelector(".download");
+				var pngUrl = download.href;
+				var fileName = download.getAttribute("download");
+				var files = fetch(pngUrl)
+					.then(function (response) {
+						return response.ok ? response.blob() : null;
+					})
+					.then(function (blob) {
+						return blob ? [new File([blob], fileName, { type: blob.type || "image/png" })] : null;
+					})
+					.catch(function () {
+						return null;
+					});
+
+				button.addEventListener("click", function () {
+					button.disabled = true;
+					var title = button.dataset.title;
+					var text = button.dataset.text;
+
+					files
+						.then(function (list) {
+							if (list && navigator.canShare && navigator.canShare({ files: list })) {
+								return navigator.share({ files: list, title: title, text: text });
+							}
+							return navigator.share({ title: title, text: text, url: location.href });
+						})
+						.catch(function () {})
+						.then(function () {
+							button.disabled = false;
+						});
+				});
+			})();
+		</script>
 	</body>
 </html>
