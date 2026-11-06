@@ -44,7 +44,7 @@ export const appConfig: ApplicationConfig = {
 			enabled: !isDevMode(),
 			registrationStrategy: "registerImmediately",
 		}),
-		{ provide: TitleStrategy, useClass: TitleService },
+		{ provide: TitleStrategy, useExisting: TitleService },
 		{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
 		{ provide: ErrorHandler, useClass: MainErrorHandler },
 		{ provide: LOCALE_ID, useValue: "cs" },

@@ -19,7 +19,7 @@ export class PageTitleDirective implements AfterViewInit, OnDestroy {
 	}
 
 	updateTitle() {
-		this.titleService.setTitle(this.pageTitle() || this.el.nativeElement.textContent);
+		this.titleService.setPageTitle(this.el.nativeElement, this.pageTitle() || this.el.nativeElement.textContent);
 	}
 
 	ngAfterViewInit() {
@@ -32,6 +32,6 @@ export class PageTitleDirective implements AfterViewInit, OnDestroy {
 
 	ngOnDestroy() {
 		this.observer?.disconnect();
-		this.titleService.setTitle(null);
+		this.titleService.removePageTitle(this.el.nativeElement);
 	}
 }

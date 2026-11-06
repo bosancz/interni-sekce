@@ -1,4 +1,4 @@
-import { Component, computed, signal } from "@angular/core";
+import { Component, computed, DestroyRef, ElementRef, signal } from "@angular/core";
 import { ActivatedRoute, RouterLink } from "@angular/router";
 import { IonButton, IonIcon, IonSpinner } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -61,7 +61,10 @@ export class MemberNewPhotosComponent {
 		private modalService: ModalService,
 		private titleService: TitleService,
 		private toastService: ToastService,
+		private el: ElementRef<HTMLElement>,
+		destroyRef: DestroyRef,
 	) {
+		destroyRef.onDestroy(() => this.titleService.removePageTitle(this.el.nativeElement));
 		addIcons({ imagesOutline });
 
 		this.route.params.pipe(untilDestroyed(this)).subscribe((params) => {
@@ -76,7 +79,7 @@ export class MemberNewPhotosComponent {
 		try {
 			const member = await this.api.MembersApi.getMember(memberId).then((res) => res.data);
 			this.member.set(member);
-			this.titleService.setTitle(this.title());
+			this.titleService.setPageTitle(this.el.nativeElement, this.title());
 
 			const photos: SDK.PhotoResponseWithLinks[] = [];
 			while (true) {
