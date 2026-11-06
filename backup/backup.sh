@@ -26,6 +26,11 @@ export RCLONE_CONFIG_GDRIVE_TEAM_DRIVE="${BACKUP_DRIVE_SHARED_DRIVE_ID:-}"
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 
+warn() {
+	log "WARNING: $*"
+	[ -n "${RUN_INFO:-}" ] && echo "$*" >>"$RUN_INFO.warnings" || true
+}
+
 run_info() { [ -n "${RUN_INFO:-}" ] && echo "$1=$2" >>"$RUN_INFO" || true; }
 
 format_rclone_log() {
@@ -67,10 +72,12 @@ backup_database() {
 	log "Uploaded $name.zip"
 
 	if [ -n "$KEEP_DAYS" ]; then
-		rclone delete "${REMOTE}databaze/denni" --min-age "${KEEP_DAYS}d" --include "${DB_PREFIX}*" --drive-use-trash=false
+		rclone delete "${REMOTE}databaze/denni" --min-age "${KEEP_DAYS}d" --include "${DB_PREFIX}*" ||
+			warn "Old daily database backups could not be moved to the Drive trash"
 	fi
 	if [ -n "$KEEP_MONTHS" ]; then
-		rclone delete "${REMOTE}databaze/mesicni" --min-age "$((KEEP_MONTHS * 31))d" --include "${DB_PREFIX}*" --drive-use-trash=false
+		rclone delete "${REMOTE}databaze/mesicni" --min-age "$((KEEP_MONTHS * 31))d" --include "${DB_PREFIX}*" ||
+			warn "Old monthly database backups could not be moved to the Drive trash"
 	fi
 
 	touch "$STATE_DIR/database-ok"
@@ -114,8 +121,11 @@ backup_files() {
 		while read -r dir; do
 			dir="${dir%/}"
 			if [[ "$dir" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ && "$dir" < "$cutoff" ]]; then
-				rclone purge "${REMOTE}smazane/$dir" --drive-use-trash=false
-				log "Deleted files removed before $dir"
+				if rclone purge "${REMOTE}smazane/$dir"; then
+					log "Deleted files removed before $dir moved to the Drive trash"
+				else
+					warn "Deleted files removed before $dir could not be moved to the Drive trash"
+				fi
 			fi
 		done <<<"$deleted_dirs"
 	fi
@@ -132,7 +142,7 @@ backup_files() {
 mkdir -p "$STATE_DIR"
 
 run_step() {
-	local type=$1 id status log error
+	local type=$1 id status log error warnings
 	exec 9>"$STATE_DIR/$type.lock"
 	if ! flock -n 9; then
 		log "The $type backup is already running, skipping"
@@ -157,8 +167,10 @@ run_step() {
 			error="$(tail -n 20 "$log")"
 		fi
 	fi
-	record_run_finish "$id" "$([ "$status" -eq 0 ] && echo ok || echo error)" "$RUN_INFO" "$error" || true
-	rm -f "$log" "$RUN_INFO" "$RUN_INFO.errors"
+	warnings=""
+	[ -s "$RUN_INFO.warnings" ] && warnings="$(cat "$RUN_INFO.warnings")"
+	record_run_finish "$id" "$([ "$status" -eq 0 ] && echo ok || echo error)" "$RUN_INFO" "$error" "$warnings" || true
+	rm -f "$log" "$RUN_INFO" "$RUN_INFO.errors" "$RUN_INFO.warnings"
 	return "$status"
 }
 

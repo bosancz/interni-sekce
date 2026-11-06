@@ -30,4 +30,6 @@ export class BackupRun {
 	@Column({ type: "jsonb", nullable: true }) progress!: BackupRunProgress | null;
 
 	@Column({ type: "text", nullable: true }) error!: string | null;
+
+	@Column({ type: "text", nullable: true }) warnings!: string | null;
 }

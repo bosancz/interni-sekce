@@ -943,6 +943,12 @@ export namespace SDK {
          * @memberof BackupRunResponse
          */
         'error'?: string | null;
+        /**
+         * 
+         * @type {string}
+         * @memberof BackupRunResponse
+         */
+        'warnings'?: string | null;
     }
     
     
