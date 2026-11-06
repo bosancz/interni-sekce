@@ -46,9 +46,13 @@ export class MemberAchievementsRepository {
 
 	async deleteAchievement(achievement: MemberAchievement) {
 		await this.memberAchievements.delete({ id: achievement.id, memberId: achievement.memberId });
+		if (achievement.type !== MemberAchievementTypes.novackovskaZkouska) return [achievement.type];
 
-		if (achievement.type === MemberAchievementTypes.novackovskaZkouska) {
-			await this.memberAchievements.delete({ memberId: achievement.memberId, type: In(STAR_TYPES) });
-		}
+		const stars = await this.memberAchievements.find({
+			where: { memberId: achievement.memberId, type: In(STAR_TYPES) },
+		});
+		if (stars.length) await this.memberAchievements.delete({ id: In(stars.map((star) => star.id)) });
+
+		return [achievement.type, ...stars.map((star) => star.type)];
 	}
 }

@@ -7,6 +7,7 @@ import { MailOptions } from "src/models/mail/schema/mail-options";
 import { UserDynamicRoles, UserSavedRoles } from "src/models/users/schema/user-roles";
 import { User } from "src/models/users/entities/user.entity";
 import { UsersRepository } from "src/models/users/repositories/users.repository";
+import { getMemberBadgesMessage, MemberBadgeChange } from "../helpers/member-badge-changes";
 import { NotificationMailTemplate } from "../mail-templates/notification/notification.mail-template";
 import { NotificationSettingsRepository } from "../repositories/notification-settings.repository";
 import { NotificationSubscriptionsRepository } from "../repositories/notification-subscriptions.repository";
@@ -153,6 +154,15 @@ export class NotificationsService {
 		});
 
 		return users.length;
+	}
+
+	async onMemberBadgesChanged(memberId: number, changes: MemberBadgeChange[], actorUserId?: number) {
+		const message = getMemberBadgesMessage(changes, `/databaze/clenove/${memberId}`);
+		if (!message) return;
+
+		const users = await this.usersRepository.getUsers({ memberIds: [memberId] });
+
+		await this.notifyUsers(NotificationTypes.myBadges, users, actorUserId, message);
 	}
 
 	async onBackupProblems(problems: string[]) {
