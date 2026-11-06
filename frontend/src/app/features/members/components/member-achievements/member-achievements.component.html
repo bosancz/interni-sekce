@@ -9,45 +9,35 @@
 	</bo-card-header>
 
 	<bo-card-content>
-		@if (achievements() === undefined) {
-			<div class="badges">
-				@for (i of [1, 2, 3]; track i) {
+		<div class="badges">
+			@if (achievements() === undefined) {
+				@for (i of [1, 2]; track i) {
 					<div class="badge skeleton"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
 				}
-			</div>
-		} @else {
-			@if (slots().length) {
-				<div class="badges">
-					@for (slot of slots(); track slot.key) {
-						<button
-							type="button"
-							class="badge"
-							[class.editable]="canEdit(slot)"
-							[attr.aria-label]="getSlotLabel(slot)"
-							[boTooltip]="getSlotLabel(slot)"
-							(click)="openEdit(slot)"
-						>
-							<span class="badge-icon-wrap">
-								<img [src]="slot.icon" alt="" class="badge-icon" />
-								@for (star of slot.stars; track star) {
-									<img [src]="starIcon" alt="" class="badge-star" [attr.data-star]="star" />
-								}
-							</span>
-						</button>
-					}
-				</div>
 			} @else {
-				<p class="empty">Zatím žádná ocenění.</p>
+				@for (box of boxes(); track box.key) {
+					<button
+						type="button"
+						class="badge"
+						[class.editable]="canEdit()"
+						[class.placeholder]="box.empty"
+						[attr.aria-label]="getTooltip(box) ?? box.label"
+						[boTooltip]="getTooltip(box)"
+						[disabled]="box.empty && !canEdit()"
+						(click)="open(box)"
+					>
+						<span class="badge-icon-wrap">
+							<img [src]="box.icon" alt="" class="badge-icon" />
+							@for (star of box.stars; track star) {
+								<img [src]="starIcon" alt="" class="badge-star" [attr.data-star]="star" />
+							}
+							@if (box.empty && canEdit()) {
+								<span class="badge-add"><ion-icon name="add-outline"></ion-icon></span>
+							}
+						</span>
+					</button>
+				}
 			}
-		}
-
-		<ion-buttons class="mt-3 justify-content-center">
-			<bo-add-button
-				[disabled]="!canAdd()"
-				[boTooltip]="member()?._links?.createMemberAchievement?.allowed ? null : noPermissionText"
-				(click)="openAdd()"
-				>Přidat ocenění</bo-add-button
-			>
-		</ion-buttons>
+		</div>
 	</bo-card-content>
 </bo-card>

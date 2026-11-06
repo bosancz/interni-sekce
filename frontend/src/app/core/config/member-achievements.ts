@@ -51,42 +51,9 @@ export const MEMBER_ACHIEVEMENT_TYPES = Object.keys(MemberAchievementTypes) as S
 
 export const MEMBER_ACHIEVEMENT_STARS = MEMBER_ACHIEVEMENT_TYPES.filter((type) => MemberAchievementTypes[type].star);
 
-export interface MemberAchievementChoice {
-	key: SDK.MemberAchievementTypesEnum | "hvezda";
-	title: string;
-	icon: string;
-	held: boolean;
-	note?: string;
-	type: SDK.MemberAchievementTypesEnum | null;
-}
-
-export function getMemberAchievementChoices(held: Set<SDK.MemberAchievementTypesEnum>): MemberAchievementChoice[] {
-	const nextStar = MEMBER_ACHIEVEMENT_STARS.find((type) => !held.has(type)) ?? null;
-
-	const canHaveStars = held.has("novackovskaZkouska");
-
-	return MEMBER_ACHIEVEMENT_TYPES.filter(
-		(type) => !MemberAchievementTypes[type].star || (type === "hvezda1" && canHaveStars),
-	).map((type) =>
-		MemberAchievementTypes[type].star
-			? {
-					key: "hvezda",
-					title: "Hvězda",
-					icon: STAR_ICON,
-					held: !nextStar,
-					note: nextStar ? `${MemberAchievementTypes[nextStar].star}. ze 4` : "Má všechny 4",
-					type: nextStar,
-				}
-			: {
-					key: type,
-					title: MemberAchievementTypes[type].title,
-					icon: MemberAchievementTypes[type].icon,
-					held: held.has(type),
-					note: held.has(type) ? "Už má" : undefined,
-					type,
-				},
-	);
-}
+export const MEMBER_ACHIEVEMENT_RANKS = MEMBER_ACHIEVEMENT_TYPES.filter(
+	(type) => MemberAchievementTypes[type].group === "rank",
+);
 
 export interface MemberAchievementSlot<
 	T extends SDK.MemberAchievementResponse = SDK.MemberAchievementResponseWithLinks,
@@ -141,7 +108,7 @@ export function getMemberAchievementSlots<
 
 function sanOrder(achievement: SDK.MemberAchievementResponse) {
 	const type = achievement.type;
-	if (type === "cernySan") return 0;
-	if (type === "novackovskaZkouska") return 1;
+	if (type === "novackovskaZkouska") return 0;
+	if (type === "cernySan") return 1;
 	return 1 + (MemberAchievementTypes[type].star ?? 0);
 }

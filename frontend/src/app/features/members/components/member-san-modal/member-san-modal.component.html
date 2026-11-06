@@ -1,0 +1,91 @@
+<bo-modal-layout>
+	<h4 slot="title">Šán a hvězdy</h4>
+
+	<div class="bm-body">
+		<div class="san-preview">
+			<div class="san-figure" [class.empty]="!hasSan()">
+				<img [src]="icon()" alt="" class="san-icon" />
+				@for (star of starPositions; track star) {
+					<img
+						[src]="types.hvezda1.icon"
+						alt=""
+						class="san-star"
+						[attr.data-star]="star"
+						[class.held]="shownStars() >= star"
+					/>
+				}
+			</div>
+
+			<div class="star-rating" role="radiogroup" aria-label="Hvězdy" (mouseleave)="hovered.set(null)">
+				@for (star of starPositions; track star) {
+					<button
+						type="button"
+						role="radio"
+						class="star-rating-star"
+						[class.filled]="shownStars() >= star"
+						[attr.aria-checked]="stars() === star"
+						[attr.aria-label]="star + '. hvězda'"
+						[disabled]="!novackovskaZkouska()"
+						(mouseenter)="hovered.set(star)"
+						(focus)="hovered.set(star)"
+						(blur)="hovered.set(null)"
+						(click)="toggleStar(star)"
+					>
+						<img [src]="types.hvezda1.icon" alt="" />
+					</button>
+				}
+			</div>
+
+			<p class="san-caption">
+				@if (novackovskaZkouska()) {
+					{{ getStarsLabel() }}
+				} @else {
+					Hvězdy se získávají po nováčkovské zkoušce.
+				}
+			</p>
+		</div>
+
+		<label class="bm-check-row" [class.checked]="novackovskaZkouska()">
+			<input
+				type="checkbox"
+				class="bm-visually-hidden"
+				[checked]="novackovskaZkouska()"
+				(change)="toggleNovackovskaZkouska()"
+			/>
+			<span class="bm-checkbox">
+				@if (novackovskaZkouska()) {
+					<ion-icon name="checkmark-outline"></ion-icon>
+				}
+			</span>
+			<img [src]="types.novackovskaZkouska.icon" alt="" class="san-row-icon" />
+			<span class="bm-row-text">
+				<span class="bm-row-label">Nováčkovská zkouška</span>
+				<span class="bm-row-helper">Modrý šán, na který se připínají hvězdy.</span>
+			</span>
+		</label>
+
+		<label class="bm-check-row" [class.checked]="cernySan()">
+			<input
+				type="checkbox"
+				class="bm-visually-hidden"
+				[checked]="cernySan()"
+				(change)="cernySan.set(!cernySan())"
+			/>
+			<span class="bm-checkbox">
+				@if (cernySan()) {
+					<ion-icon name="checkmark-outline"></ion-icon>
+				}
+			</span>
+			<img [src]="types.cernySan.icon" alt="" class="san-row-icon" />
+			<span class="bm-row-text">
+				<span class="bm-row-label">Černý šán</span>
+				<span class="bm-row-helper">Hvězdy se přepnou z modrého šánu na černý.</span>
+			</span>
+		</label>
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button type="button" class="bm-btn-primary" (click)="save()">Uložit</button>
+	</div>
+</bo-modal-layout>
