@@ -9,7 +9,7 @@
 	display: grid;
 	grid-template-columns: 4ch 1fr auto;
 	align-items: center;
-	gap: 2px 16px;
+	gap: 16px;
 	padding: 10px 0;
 	border-top: 1px solid var(--bm-border-soft);
 
@@ -43,11 +43,4 @@
 	text-align: right;
 	font-variant-numeric: tabular-nums;
 	color: var(--bm-text);
-}
-
-.mh-note {
-	grid-column: 2 / -1;
-	color: var(--bm-muted);
-	font-size: 0.85rem;
-	white-space: pre-line;
 }

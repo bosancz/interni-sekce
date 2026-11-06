@@ -10,7 +10,6 @@ interface MembershipHistoryRow {
 	year: number;
 	paid: boolean;
 	amount: string | null;
-	note: string | null;
 }
 
 @Component({
@@ -41,7 +40,6 @@ export class MembershipHistoryModalComponent extends InputModalComponent<void> {
 			rows.push({
 				year,
 				paid: !!payment,
-				note: payment?.note || null,
 				amount:
 					payment && payment.amount !== null && payment.amount !== undefined
 						? `${payment.amount} ${currency}`
