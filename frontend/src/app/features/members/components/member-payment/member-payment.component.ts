@@ -2,7 +2,17 @@ import { DatePipe } from "@angular/common";
 import { Component, computed, effect, inject, input, output, signal } from "@angular/core";
 import { IonButton, IonButtons, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { cardOutline, checkmarkCircle, chevronDown, shareSocialOutline } from "ionicons/icons";
+import {
+	cardOutline,
+	checkmarkCircle,
+	chevronBackOutline,
+	chevronDown,
+	chevronForwardOutline,
+	shareSocialOutline,
+} from "ionicons/icons";
+import { MembershipPaymentStates } from "src/app/core/config/membership";
+import { ModalService } from "src/app/core/services/modal.service";
+import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
 import { ApiService } from "src/app/core/services/api.service";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardFooterComponent } from "src/app/shared/components/card-footer/card-footer.component";
@@ -12,7 +22,12 @@ import { CardComponent } from "src/app/shared/components/card/card.component";
 import { CopyButtonComponent } from "src/app/shared/components/copy-button/copy-button.component";
 import { EditButtonDateComponent } from "src/app/shared/components/edit-button-date/edit-button-date.component";
 import { SDK } from "src/sdk";
-import { currentMembershipYear, membershipPaymentOf } from "src/app/core/helpers/membership";
+import {
+	currentMembershipYear,
+	isMembershipPaid,
+	membershipPaymentOf,
+	membershipState,
+} from "src/app/core/helpers/membership";
 import { getVariableSymbolYear } from "src/app/core/helpers/variable-symbol";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -51,6 +66,7 @@ const QR_PNG_QUERY = "?format=png";
 		CardContentComponent,
 		CardFooterComponent,
 		CopyButtonComponent,
+		EditButtonComponent,
 		EditButtonDateComponent,
 		IonIcon,
 		IonSkeletonText,
@@ -97,6 +113,20 @@ export class MemberPaymentComponent {
 	private qrCodeFiles: Promise<File[] | null> | null = null;
 
 	readonly currentMembershipYear = currentMembershipYear;
+
+	private readonly modalService = inject(ModalService);
+
+	readonly membershipYear = signal(currentMembershipYear());
+
+	readonly minYear = computed(() =>
+		Math.min(currentMembershipYear() - 1, ...(this.member()?.membership ?? []).map((payment) => payment.forYear)),
+	);
+	readonly canStepBack = computed(() => this.membershipYear() > this.minYear());
+	readonly canStepForward = computed(() => this.membershipYear() < currentMembershipYear());
+
+	readonly membershipTitle = computed(
+		() => MembershipPaymentStates[membershipState(this.member()?.membership, this.membershipYear())].title,
+	);
 
 	/**
 	 * Whether the details of an already paid fee are unfolded. Only ever read while the fee is
@@ -172,7 +202,14 @@ export class MemberPaymentComponent {
 		private readonly api: ApiService,
 		private readonly toasts: ToastService,
 	) {
-		addIcons({ cardOutline, checkmarkCircle, chevronDown, shareSocialOutline });
+		addIcons({
+			cardOutline,
+			checkmarkCircle,
+			chevronBackOutline,
+			chevronDown,
+			chevronForwardOutline,
+			shareSocialOutline,
+		});
 
 		effect(() => {
 			this.load(this.member());
@@ -188,6 +225,29 @@ export class MemberPaymentComponent {
 		if (!this.canEditMembership() || !this.paid()) return;
 
 		this.updateMembership.emit({ year: this.currentMembershipYear(), paid: true, paidOn });
+	}
+
+	stepYear(delta: number) {
+		const year = this.membershipYear() + delta;
+		if (year < this.minYear() || year > currentMembershipYear()) return;
+		this.membershipYear.set(year);
+	}
+
+	async editMembership() {
+		const year = this.membershipYear();
+		const paid = isMembershipPaid(this.member()?.membership, year);
+
+		const result = await this.modalService.selectModal<boolean>({
+			header: `Členský příspěvek ${year}`,
+			buttonText: "Uložit",
+			values: [
+				{ label: MembershipPaymentStates.zaplaceno.title, value: true },
+				{ label: MembershipPaymentStates.nezaplaceno.title, value: false },
+			],
+			value: paid,
+		});
+
+		if (result !== null) this.updateMembership.emit({ year, paid: result });
 	}
 
 	/** Folds the details of a paid fee in and out. */

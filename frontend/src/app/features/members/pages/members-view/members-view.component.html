@@ -34,11 +34,7 @@
 				</div>
 
 				<div class="card-col">
-					<bo-member-membership
-						[member]="member()"
-						(update)="updateMember($event)"
-						(updateMembership)="updateMemberMembership($event)"
-					/>
+					<bo-member-membership [member]="member()" (update)="updateMember($event)" />
 				</div>
 
 				<div class="card-col">
