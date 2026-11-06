@@ -9,6 +9,7 @@ import {
 	signal,
 	viewChild,
 } from "@angular/core";
+import { DatePipe } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ActionSheetController, ViewWillLeave } from "@ionic/angular/standalone";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -30,6 +31,8 @@ import { ToastService } from "src/app/core/services/toast.service";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { PageContentComponent } from "src/app/shared/components/page-content/page-content.component";
 import { PageHeaderComponent } from "src/app/shared/components/page-header/page-header.component";
+import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
+import { AlbumPipe } from "src/app/shared/pipes/album.pipe";
 import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { Config } from "src/config";
 import { SDK } from "src/sdk";
@@ -38,7 +41,7 @@ import { AlbumInfoComponent } from "../../components/album-info/album-info.compo
 import { PhotosEditComponent } from "../../components/photos-edit/photos-edit.component";
 import { PhotosUploadComponent } from "../../components/photos-upload/photos-upload.component";
 
-const TITLE_PHOTO_ASPECT_RATIO = 350 / 200;
+const TITLE_PHOTO_ASPECT_RATIO = 7 / 5;
 
 @UntilDestroy()
 @Component({
@@ -46,7 +49,16 @@ const TITLE_PHOTO_ASPECT_RATIO = 350 / 200;
 	templateUrl: "./albums-view-info.component.html",
 	styleUrl: "./albums-view-info.component.scss",
 
-	imports: [PageHeaderComponent, PageContentComponent, AlbumInfoComponent, AlbumGalleryComponent, PhotoImageUrlPipe],
+	imports: [
+		PageHeaderComponent,
+		PageContentComponent,
+		AlbumInfoComponent,
+		AlbumGalleryComponent,
+		PhotoImageUrlPipe,
+		AlbumPipe,
+		DatePipe,
+		TooltipDirective,
+	],
 })
 export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy, ViewWillLeave {
 	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);

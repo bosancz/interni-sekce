@@ -19,7 +19,7 @@ export class EditButtonEventComponent {
 
 	async openEdit() {
 		const event = await this.modalService.componentModal(EventSelectorModalComponent, undefined, {
-			cssClass: "dialog-list",
+			cssClass: "dialog-picker",
 		});
 
 		if (event) this.update.emit(event.id);

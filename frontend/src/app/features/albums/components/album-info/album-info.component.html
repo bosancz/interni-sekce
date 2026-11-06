@@ -22,14 +22,6 @@
 		/>
 	</bo-item>
 
-	<bo-item label="Publikováno" [loading]="!album()" inline>
-		@if (album()?.datePublished) {
-			<p>{{ album()?.datePublished | date: "d. M. y" }}</p>
-		} @else {
-			<p><span class="bo-pill">Nepublikováno</span></p>
-		}
-	</bo-item>
-
 	<bo-item label="Vytvořil/a" [loading]="!album()" inline>
 		@if (album()?.createdBy; as createdBy) {
 			<p>{{ createdBy.member?.nickname || createdBy.login }}</p>
@@ -51,11 +43,13 @@
 			<ion-button
 				slot="end"
 				fill="clear"
-				color="medium"
+				color="dark"
+				size="small"
+				class="item-button"
 				boTooltip="Odpojit akci"
 				(click)="update.emit({ eventId: null })"
 			>
-				<ion-icon name="close-outline" slot="icon-only"></ion-icon>
+				<ion-icon name="close-outline"></ion-icon>
 			</ion-button>
 		}
 		<bo-edit-button-event
@@ -70,7 +64,7 @@
 		@if (album()?.description) {
 			<div class="bo-markdown" [innerHTML]="album()?.description | markdown"></div>
 		} @else if (album()) {
-			<p class="muted">Krátce, jak akce proběhla — vyjde s fotogalerií na bosan.cz.</p>
+			<p><span class="bo-pill">Bez popisku</span></p>
 		}
 		<bo-edit-button-markdown
 			slot="end"
@@ -99,24 +93,28 @@
 		<ion-button
 			slot="end"
 			fill="clear"
-			color="medium"
+			color="dark"
+			size="small"
+			class="item-button"
 			[class.d-none]="!album()?._links?.deleteAlbumChronicle?.applicable"
 			[disabled]="!album()?._links?.deleteAlbumChronicle?.allowed || busy()"
 			boTooltip="Odebrat kroniku"
 			(click)="deleteChronicle()"
 		>
-			<ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+			<ion-icon name="trash-outline"></ion-icon>
 		</ion-button>
 		<ion-button
 			slot="end"
 			fill="clear"
-			color="medium"
+			color="dark"
+			size="small"
+			class="item-button"
 			[class.d-none]="!album()?._links?.uploadAlbumChronicle?.applicable"
 			[disabled]="!album()?._links?.uploadAlbumChronicle?.allowed || busy()"
 			boTooltip="Nahrát kroniku v PDF"
 			(click)="chronicleInput.click()"
 		>
-			<ion-icon name="cloud-upload-outline" slot="icon-only"></ion-icon>
+			<ion-icon name="cloud-upload-outline"></ion-icon>
 		</ion-button>
 	</bo-item>
 </ion-list>

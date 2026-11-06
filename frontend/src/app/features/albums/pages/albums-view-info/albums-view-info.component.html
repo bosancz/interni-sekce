@@ -1,4 +1,15 @@
-<bo-page-header [title]="album()?.name" backUrl="/galerie/alba" [actions]="headerActions()" actionsHeader="Album" />
+<bo-page-header [title]="album()?.name" backUrl="/galerie/alba" [actions]="headerActions()" actionsHeader="Album">
+	@if (album(); as album) {
+		<span
+			slot="title-end"
+			class="bo-pill ms-3"
+			[class.bo-pill-green]="album.status === 'public'"
+			[boTooltip]="album.datePublished ? 'Publikováno ' + (album.datePublished | date: 'd. M. y') : undefined"
+		>
+			{{ album | album: "status" }}
+		</span>
+	}
+</bo-page-header>
 
 <bo-page-content [padding]="true">
 	<div class="album-top">
