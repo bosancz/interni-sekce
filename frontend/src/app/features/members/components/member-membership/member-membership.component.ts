@@ -1,10 +1,10 @@
-import { Component, computed, input, output, signal } from "@angular/core";
+import { Component, input, output } from "@angular/core";
 import { IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { chevronBackOutline, chevronForwardOutline, peopleOutline } from "ionicons/icons";
+import { peopleOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
 import { MembershipPaymentStates } from "src/app/core/config/membership";
-import { currentMembershipYear, isMembershipPaid, membershipState } from "src/app/core/helpers/membership";
+import { currentMembershipYear, isMembershipPaid } from "src/app/core/helpers/membership";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { SDK } from "src/sdk";
@@ -44,32 +44,14 @@ export class MemberMembershipComponent {
 		value: id as SDK.MemberRolesEnum,
 	}));
 
-	readonly currentYear = currentMembershipYear();
-	readonly membershipYear = signal(this.currentYear);
-
-	readonly minYear = computed(() =>
-		Math.min(this.currentYear - 1, ...(this.member()?.membership ?? []).map((payment) => payment.forYear)),
-	);
-	readonly canStepBack = computed(() => this.membershipYear() > this.minYear());
-	readonly canStepForward = computed(() => this.membershipYear() < this.currentYear);
-
-	readonly membershipTitle = computed(() => {
-		const member = this.member();
-		if (!member) return "-";
-		return MembershipPaymentStates[membershipState(member.membership, this.membershipYear())].title;
-	});
+	// The membership year the card shows and edits.
+	membershipYear = currentMembershipYear();
 
 	constructor(
 		private readonly api: ApiService,
 		private readonly modalService: ModalService,
 	) {
-		addIcons({ peopleOutline, chevronBackOutline, chevronForwardOutline });
-	}
-
-	stepYear(delta: number) {
-		const year = this.membershipYear() + delta;
-		if (year < this.minYear() || year > this.currentYear) return;
-		this.membershipYear.set(year);
+		addIcons({ peopleOutline });
 	}
 
 	async editActivity() {
@@ -120,11 +102,10 @@ export class MemberMembershipComponent {
 
 	async editMembership() {
 		const member = this.member();
-		const year = this.membershipYear();
-		const paid = isMembershipPaid(member?.membership, year);
+		const paid = isMembershipPaid(member?.membership, this.membershipYear);
 
 		const result = await this.modalService.selectModal<boolean>({
-			header: `Členský příspěvek ${year}`,
+			header: `Členský příspěvek ${this.membershipYear}`,
 			buttonText: "Uložit",
 			values: [
 				{ label: MembershipPaymentStates.zaplaceno.title, value: true },
@@ -133,6 +114,7 @@ export class MemberMembershipComponent {
 			value: paid,
 		});
 
-		if (result !== null) this.updateMembership.emit({ year, paid: result });
+		// Only the current year is sent; the server keeps the rest of the list as it is stored.
+		if (result !== null) this.updateMembership.emit({ year: this.membershipYear, paid: result });
 	}
 }
