@@ -3,6 +3,8 @@ import { IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import { peopleOutline } from "ionicons/icons";
 import { MemberRoles } from "src/app/core/config/member-roles";
+import { MembershipPaymentStates } from "src/app/core/config/membership";
+import { currentMembershipYear, isMembershipPaid } from "src/app/core/helpers/membership";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { SDK } from "src/sdk";
@@ -34,11 +36,16 @@ import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 export class MemberMembershipComponent {
 	member = input<SDK.MemberResponseWithLinks | null | undefined>();
 	update = output<SDK.MemberUpdateBody>();
+	/** One year of the membership fee — the page saves it through its own treasurer-only route. */
+	updateMembership = output<SDK.MemberMembershipUpdateBody>();
 
 	memberRolesOptions = Object.entries(MemberRoles).map(([id, role]) => ({
 		label: role.title,
 		value: id as SDK.MemberRolesEnum,
 	}));
+
+	// The membership year the card shows and edits.
+	membershipYear = currentMembershipYear();
 
 	constructor(
 		private readonly api: ApiService,
@@ -91,5 +98,23 @@ export class MemberMembershipComponent {
 		});
 
 		if (group !== null) this.update.emit({ groupId: group });
+	}
+
+	async editMembership() {
+		const member = this.member();
+		const paid = isMembershipPaid(member?.membership, this.membershipYear);
+
+		const result = await this.modalService.selectModal<boolean>({
+			header: `Členský příspěvek ${this.membershipYear}`,
+			buttonText: "Uložit",
+			values: [
+				{ label: MembershipPaymentStates.zaplaceno.title, value: true },
+				{ label: MembershipPaymentStates.nezaplaceno.title, value: false },
+			],
+			value: paid,
+		});
+
+		// Only the current year is sent; the server keeps the rest of the list as it is stored.
+		if (result !== null) this.updateMembership.emit({ year: this.membershipYear, paid: result });
 	}
 }

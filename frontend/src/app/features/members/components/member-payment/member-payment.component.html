@@ -1,98 +1,42 @@
 @if (visible()) {
-	<bo-card [color]="cardColor()" [class.is-paid]="paid()">
+	<bo-card [color]="cardColor()" [class.is-paid]="paid()" [class.is-open]="detailsOpen()">
 		<bo-card-header>
 			<bo-card-title>
 				<span class="bo-card-section-title">
 					<ion-icon [name]="paid() ? 'checkmark-circle' : 'card-outline'" />
-					Příspěvek
-					<span class="membership-year">
-						<button
-							type="button"
-							aria-label="Předchozí rok"
-							[disabled]="!canStepBack()"
-							(click)="stepYear(-1)"
-						>
-							<ion-icon name="chevron-back-outline"></ion-icon>
-						</button>
-						<span class="membership-year-value" aria-live="polite">{{ membershipYear() }}</span>
-						<button
-							type="button"
-							aria-label="Následující rok"
-							[disabled]="!canStepForward()"
-							(click)="stepYear(1)"
-						>
-							<ion-icon name="chevron-forward-outline"></ion-icon>
-						</button>
-					</span>
+					Příspěvek {{ currentMembershipYear() }}
 				</span>
 			</bo-card-title>
+
+			<div slot="buttons" class="header-buttons">
+				<button
+					type="button"
+					class="history-button"
+					aria-label="Historie příspěvků"
+					title="Historie příspěvků"
+					(click)="openHistory()"
+				>
+					<ion-icon name="time-outline" aria-hidden="true" />
+				</button>
+
+				<!-- A paid fee collapses to this row; the chevron is the only way back to the details,
+				     and deliberately small – there is nothing left to do with them. -->
+				@if (paid()) {
+					<button
+						type="button"
+						class="paid-toggle"
+						[attr.aria-expanded]="detailsOpen()"
+						[attr.aria-label]="detailsOpen() ? 'Skrýt platební údaje' : 'Zobrazit platební údaje'"
+						(click)="toggleDetails()"
+					>
+						<ion-icon class="paid-chevron" name="chevron-down" aria-hidden="true" />
+					</button>
+				}
+			</div>
 		</bo-card-header>
 
-		<bo-card-content>
-			@if (member()) {
-				<div class="bo-info-list selectable">
-					<div class="bo-info-row">
-						<span class="bo-info-label">Stav</span>
-						<span class="bo-info-action">
-							<span class="bo-info-value">{{ membershipTitle() }}</span>
-							@if (canEditMembership()) {
-								<bo-edit-button (click)="editMembership()" />
-							}
-						</span>
-					</div>
-
-					@if (paidPayment(); as paidValue) {
-						<div class="bo-info-row">
-							<span class="bo-info-label">Datum platby</span>
-							<span class="bo-info-action">
-								<span class="bo-info-value">
-									{{ paidValue.paidOn ? (paidValue.paidOn | date: "d. M. y") : "-" }}
-								</span>
-								@if (canEditMembership()) {
-									<bo-edit-button-date
-										label="Datum platby"
-										[value]="paidValue.paidOn"
-										(update)="setPaidOn($event)"
-									/>
-								}
-							</span>
-						</div>
-
-						<div class="bo-info-row">
-							<span class="bo-info-label">Částka</span>
-							<span class="bo-info-action">
-								<span class="bo-info-value">{{ paidAmount() }}</span>
-								@if (canEditMembership()) {
-									<bo-edit-button-number
-										[label]="'Částka příspěvku ' + membershipYear()"
-										[value]="paidValue.amount"
-										(update)="setAmount($event)"
-									/>
-								}
-							</span>
-						</div>
-
-						<div class="bo-info-row">
-							<span class="bo-info-label">Variabilní symbol</span>
-							<span class="bo-info-action">
-								<span class="bo-info-value">{{ paidValue.variableSymbol || "-" }}</span>
-							</span>
-						</div>
-
-						<div class="bo-info-row">
-							<span class="bo-info-label">Poznámka</span>
-							<span class="bo-info-action">
-								<span class="bo-info-value payment-note">{{ paidValue.note || "-" }}</span>
-								@if (canEditMembership()) {
-									<bo-edit-button aria-label="Upravit poznámku" (click)="editNote(paidValue.note)" />
-								}
-							</span>
-						</div>
-					}
-				</div>
-			}
-
-			@if (requestVisible()) {
+		@if (detailsVisible()) {
+			<bo-card-content>
 				@if (payment() === undefined) {
 					<div class="bo-info-list">
 						<div class="bo-info-row"><ion-skeleton-text [animated]="true"></ion-skeleton-text></div>
@@ -110,6 +54,34 @@
 				@if (payment(); as paymentValue) {
 					<div class="payment">
 						<div class="bo-info-list selectable">
+							@if (paidPayment(); as paidValue) {
+								<div class="bo-info-row">
+									<span class="bo-info-label">Datum platby</span>
+									<span class="bo-info-action">
+										<span class="bo-info-value">
+											{{ paidValue.paidOn ? (paidValue.paidOn | date: "d. M. y") : "-" }}
+										</span>
+										<bo-edit-button-date
+											label="Datum platby"
+											[disabled]="!canEditMembership()"
+											[value]="paidValue.paidOn"
+											(update)="setPaidOn($event)"
+										/>
+									</span>
+								</div>
+
+								<div class="bo-info-row">
+									<span class="bo-info-label">Poznámka</span>
+									<span class="bo-info-action">
+										<span class="bo-info-value payment-note">{{ paidValue.note || "-" }}</span>
+										<bo-edit-button
+											[disabled]="!canEditMembership()"
+											(click)="editNote(paidValue.note)"
+										/>
+									</span>
+								</div>
+							}
+
 							<div class="bo-info-row">
 								<span class="bo-info-label">Částka</span>
 								<span class="bo-info-action">
@@ -157,10 +129,10 @@
 						</div>
 					</div>
 				}
-			}
-		</bo-card-content>
+			</bo-card-content>
+		}
 
-		@if (payment() && requestVisible()) {
+		@if (payment() && detailsVisible()) {
 			<bo-card-footer>
 				<ion-buttons>
 					<ion-button [href]="mailto()" color="primary" aria-label="Poslat výzvu k platbě e-mailem">

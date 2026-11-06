@@ -2,16 +2,9 @@ import { DatePipe } from "@angular/common";
 import { Component, computed, effect, inject, input, output, signal } from "@angular/core";
 import { IonButton, IonButtons, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import {
-	cardOutline,
-	checkmarkCircle,
-	chevronBackOutline,
-	chevronForwardOutline,
-	shareSocialOutline,
-} from "ionicons/icons";
-import { MembershipPaymentStates } from "src/app/core/config/membership";
+import { cardOutline, checkmarkCircle, chevronDown, shareSocialOutline, timeOutline } from "ionicons/icons";
 import { ModalService } from "src/app/core/services/modal.service";
-import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
+import { MembershipHistoryModalComponent } from "../membership-history-modal/membership-history-modal.component";
 import { ApiService } from "src/app/core/services/api.service";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
 import { CardFooterComponent } from "src/app/shared/components/card-footer/card-footer.component";
@@ -19,15 +12,10 @@ import { CardHeaderComponent } from "src/app/shared/components/card-header/card-
 import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
 import { CopyButtonComponent } from "src/app/shared/components/copy-button/copy-button.component";
-import { EditButtonNumberComponent } from "src/app/shared/components/edit-button-number/edit-button-number.component";
+import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
 import { EditButtonDateComponent } from "src/app/shared/components/edit-button-date/edit-button-date.component";
 import { SDK } from "src/sdk";
-import {
-	currentMembershipYear,
-	isMembershipPaid,
-	membershipPaymentOf,
-	membershipState,
-} from "src/app/core/helpers/membership";
+import { currentMembershipYear, membershipPaymentOf } from "src/app/core/helpers/membership";
 import { getVariableSymbolYear } from "src/app/core/helpers/variable-symbol";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -68,7 +56,6 @@ const QR_PNG_QUERY = "?format=png";
 		CopyButtonComponent,
 		EditButtonComponent,
 		EditButtonDateComponent,
-		EditButtonNumberComponent,
 		IonIcon,
 		IonSkeletonText,
 		IonButton,
@@ -92,6 +79,7 @@ export class MemberPaymentComponent {
 	private contactEmails = signal<string[]>([]);
 
 	private readonly platformService = inject(PlatformService);
+	private readonly modalService = inject(ModalService);
 
 	/**
 	 * Whether the QR code can be handed to a banking app on this device. Desktop browsers do
@@ -115,19 +103,11 @@ export class MemberPaymentComponent {
 
 	readonly currentMembershipYear = currentMembershipYear;
 
-	private readonly modalService = inject(ModalService);
-
-	readonly membershipYear = signal(currentMembershipYear());
-
-	readonly minYear = computed(() =>
-		Math.min(currentMembershipYear() - 1, ...(this.member()?.membership ?? []).map((payment) => payment.forYear)),
-	);
-	readonly canStepBack = computed(() => this.membershipYear() > this.minYear());
-	readonly canStepForward = computed(() => this.membershipYear() < currentMembershipYear());
-
-	readonly membershipTitle = computed(
-		() => MembershipPaymentStates[membershipState(this.member()?.membership, this.membershipYear())].title,
-	);
+	/**
+	 * Whether the details of an already paid fee are unfolded. Only ever read while the fee is
+	 * paid — an unpaid one is always shown in full.
+	 */
+	readonly detailsOpen = signal(false);
 
 	/**
 	 * The recorded fee of the season this card is titled with, or undefined while it is unpaid —
@@ -139,19 +119,16 @@ export class MemberPaymentComponent {
 	 * last two digits of the year, and the one shown here is minted by the server, so the card
 	 * went green off a season the rest of the app was not even asking about.
 	 */
-	readonly paidPayment = computed(() => membershipPaymentOf(this.member()?.membership, this.membershipYear()));
+	readonly paidPayment = computed(() => membershipPaymentOf(this.member()?.membership, this.currentMembershipYear()));
 
 	/** True once the fee this card asks for has been recorded as paid. */
 	readonly paid = computed(() => !!this.paidPayment());
 
-	readonly requestVisible = computed(() => !this.paid() && this.membershipYear() === currentMembershipYear());
-
-	readonly paidAmount = computed(() => {
-		const amount = this.paidPayment()?.amount;
-		if (amount === null || amount === undefined) return "-";
-		const currency = this.payment()?.currency ?? "CZK";
-		return `${amount} ${currency === "CZK" ? "Kč" : currency}`;
-	});
+	/**
+	 * A paid fee is folded away to its header — there is nothing left to pay — and the account,
+	 * the symbol and the QR are one chevron away for when someone wants to look them up anyway.
+	 */
+	readonly detailsVisible = computed(() => !this.paid() || this.detailsOpen());
 
 	/**
 	 * Who may write the day the fee was paid: whoever may record the fee itself, the API saying so
@@ -200,13 +177,7 @@ export class MemberPaymentComponent {
 		private readonly api: ApiService,
 		private readonly toasts: ToastService,
 	) {
-		addIcons({
-			cardOutline,
-			checkmarkCircle,
-			chevronBackOutline,
-			chevronForwardOutline,
-			shareSocialOutline,
-		});
+		addIcons({ cardOutline, checkmarkCircle, chevronDown, shareSocialOutline, timeOutline });
 
 		effect(() => {
 			this.load(this.member());
@@ -221,48 +192,13 @@ export class MemberPaymentComponent {
 	setPaidOn(paidOn: string | null) {
 		if (!this.canEditMembership() || !this.paid()) return;
 
-		this.updateMembership.emit({ year: this.membershipYear(), paid: true, paidOn });
-	}
-
-	stepYear(delta: number) {
-		const year = this.membershipYear() + delta;
-		if (year < this.minYear() || year > currentMembershipYear()) return;
-		this.membershipYear.set(year);
-	}
-
-	async editMembership() {
-		const year = this.membershipYear();
-		const paid = isMembershipPaid(this.member()?.membership, year);
-
-		const result = await this.modalService.selectModal<boolean>({
-			header: `Členský příspěvek ${year}`,
-			buttonText: "Uložit",
-			values: [
-				{ label: MembershipPaymentStates.zaplaceno.title, value: true },
-				{ label: MembershipPaymentStates.nezaplaceno.title, value: false },
-			],
-			value: paid,
-		});
-
-		if (result !== null) this.updateMembership.emit({ year, paid: result });
-	}
-
-	setAmount(amount: number | null) {
-		if (!this.canEditMembership() || !this.paid()) return;
-
-		const value = amount === null ? null : Math.round(amount);
-		if (value !== null && (!Number.isFinite(value) || value < 0)) {
-			this.toasts.toast("Částka musí být číslo od nuly výš.");
-			return;
-		}
-
-		this.updateMembership.emit({ year: this.membershipYear(), paid: true, amount: value });
+		this.updateMembership.emit({ year: this.currentMembershipYear(), paid: true, paidOn });
 	}
 
 	async editNote(current?: string | null) {
 		if (!this.canEditMembership() || !this.paid()) return;
 
-		const year = this.membershipYear();
+		const year = this.currentMembershipYear();
 		const result = await this.modalService.inputModal<{ note: string }>({
 			header: `Poznámka k příspěvku ${year}`,
 			inputs: { note: { type: "textarea", value: current ?? "" } },
@@ -270,6 +206,19 @@ export class MemberPaymentComponent {
 		if (!result) return;
 
 		this.updateMembership.emit({ year, paid: true, note: (result.note ?? "").trim() || null });
+	}
+
+	openHistory() {
+		this.modalService.componentModal(
+			MembershipHistoryModalComponent,
+			{ membership: this.member()?.membership ?? [], currency: this.payment()?.currency ?? "CZK" },
+			{ cssClass: "dialog-brand" },
+		);
+	}
+
+	/** Folds the details of a paid fee in and out. */
+	toggleDetails() {
+		this.detailsOpen.update((open) => !open);
 	}
 
 	/** Opens the QR code on its own – handy for showing it to a parent or printing it. */
@@ -346,6 +295,7 @@ export class MemberPaymentComponent {
 		if (memberId === this.loadedMemberId) return;
 
 		this.loadedMemberId = memberId;
+		this.detailsOpen.set(false);
 		this.payment.set(undefined);
 		this.contactEmails.set([]);
 		this.qrCodeFiles = null;
