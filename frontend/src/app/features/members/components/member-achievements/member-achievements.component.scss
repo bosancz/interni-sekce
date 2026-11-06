@@ -3,3 +3,27 @@
 :host {
 	display: block;
 }
+
+.badge.placeholder {
+	.badge-icon {
+		filter: grayscale(1);
+		opacity: 0.22;
+	}
+
+	.badge-icon-wrap {
+		border-radius: 14px;
+		outline: 2px dashed var(--bo-muted, #8a8ea6);
+		outline-offset: 4px;
+		opacity: 0.8;
+	}
+}
+
+.badge-add {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--ion-color-primary);
+	font-size: 26px;
+}

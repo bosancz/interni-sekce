@@ -1,0 +1,30 @@
+<bo-modal-layout>
+	<h4 slot="title">Hodnosti</h4>
+
+	<div class="bm-body">
+		@for (type of ranks; track type) {
+			<label class="bm-check-row" [class.checked]="selected().has(type)">
+				<input
+					type="checkbox"
+					class="bm-visually-hidden"
+					[checked]="selected().has(type)"
+					(change)="toggle(type)"
+				/>
+				<span class="bm-checkbox">
+					@if (selected().has(type)) {
+						<ion-icon name="checkmark-outline"></ion-icon>
+					}
+				</span>
+				<img [src]="types[type].icon" alt="" class="rank-icon" />
+				<span class="bm-row-text">
+					<span class="bm-row-label">{{ types[type].title }}</span>
+				</span>
+			</label>
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+		<button type="button" class="bm-btn-primary" (click)="save()">Uložit</button>
+	</div>
+</bo-modal-layout>

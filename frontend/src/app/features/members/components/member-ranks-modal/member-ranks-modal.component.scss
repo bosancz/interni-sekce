@@ -1,0 +1,16 @@
+@use "./../../../../../styles/brand-modal" as *;
+
+.bm-check-row {
+	align-items: center;
+}
+
+.bm-checkbox {
+	margin-top: 0;
+}
+
+.rank-icon {
+	flex: 0 0 auto;
+	width: 40px;
+	height: 40px;
+	filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.18));
+}
