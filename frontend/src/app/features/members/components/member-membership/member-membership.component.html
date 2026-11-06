@@ -48,9 +48,30 @@
 				</div>
 
 				<div class="bo-info-row">
-					<span class="bo-info-label">Členství </span>
+					<span class="membership-label">
+						<span class="bo-info-label">Členství</span>
+						<span class="membership-year">
+							<button
+								type="button"
+								aria-label="Předchozí rok"
+								[disabled]="!canStepBack()"
+								(click)="stepYear(-1)"
+							>
+								<ion-icon name="chevron-back-outline"></ion-icon>
+							</button>
+							<span class="membership-year-value" aria-live="polite">{{ membershipYear() }}</span>
+							<button
+								type="button"
+								aria-label="Následující rok"
+								[disabled]="!canStepForward()"
+								(click)="stepYear(1)"
+							>
+								<ion-icon name="chevron-forward-outline"></ion-icon>
+							</button>
+						</span>
+					</span>
 					<span class="bo-info-action">
-						<span class="bo-info-value">{{ (memberValue | member: "membership") || "-" }}</span>
+						<span class="bo-info-value">{{ membershipTitle() }}</span>
 						@if (memberValue._links.updateMemberMembership.allowed) {
 							<bo-edit-button (click)="editMembership()" />
 						}

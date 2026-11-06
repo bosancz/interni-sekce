@@ -5,3 +5,51 @@
 ::ng-deep bo-card-content {
 	padding: 0 !important;
 }
+
+.membership-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+}
+
+.membership-year {
+	display: inline-flex;
+	align-items: center;
+	height: 22px;
+	border: 1px solid var(--bo-line);
+	border-radius: var(--bo-radius-pill);
+	color: var(--bo-muted);
+	font-size: 0.75rem;
+
+	button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 20px;
+		height: 100%;
+		padding: 0;
+		border: 0;
+		border-radius: var(--bo-radius-pill);
+		background: none;
+		color: inherit;
+		font-size: 0.75rem;
+		cursor: pointer;
+
+		&:hover:not(:disabled) {
+			color: var(--bo-heading);
+		}
+
+		&:disabled {
+			opacity: 0.35;
+			cursor: default;
+		}
+	}
+}
+
+.membership-year-value {
+	min-width: 4ch;
+	text-align: center;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
