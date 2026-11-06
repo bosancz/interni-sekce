@@ -4,6 +4,7 @@ import { IonButton, IonButtons, IonIcon, IonSkeletonText } from "@ionic/angular/
 import { addIcons } from "ionicons";
 import { cardOutline, checkmarkCircle, chevronDown, shareSocialOutline, timeOutline } from "ionicons/icons";
 import { ModalService } from "src/app/core/services/modal.service";
+import { MemberPaymentCustomModalComponent } from "../member-payment-custom-modal/member-payment-custom-modal.component";
 import { MembershipHistoryModalComponent } from "../membership-history-modal/membership-history-modal.component";
 import { ApiService } from "src/app/core/services/api.service";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
@@ -16,7 +17,7 @@ import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-
 import { EditButtonDateComponent } from "src/app/shared/components/edit-button-date/edit-button-date.component";
 import { SDK } from "src/sdk";
 import { currentMembershipYear, membershipPaymentOf } from "src/app/core/helpers/membership";
-import { getVariableSymbolYear } from "src/app/core/helpers/variable-symbol";
+import { formatPaymentAmount, getPaymentMailto, getPaymentYear } from "../../helpers/payment-request";
 import { PlatformService } from "src/app/core/services/platform.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { getDefaultContact } from "src/helpers/member-contacts";
@@ -155,11 +156,16 @@ export class MemberPaymentComponent {
 
 	amount = computed(() => {
 		const payment = this.payment();
-		return payment ? this.formatAmount(payment) : "";
+		if (!payment) return "";
+		if (!this.paid()) return formatPaymentAmount(payment);
+		const paidAmount = this.paidPayment()?.amount;
+		return paidAmount === null || paidAmount === undefined
+			? "-"
+			: formatPaymentAmount({ amount: paidAmount, currency: payment.currency });
 	});
 
 	/** The default contact's e-mails, without duplicates. */
-	private recipients = computed(() => {
+	readonly recipients = computed(() => {
 		const emails = [...this.contactEmails()];
 
 		return [...new Set(emails.filter((email): email is string => !!email))];
@@ -170,7 +176,7 @@ export class MemberPaymentComponent {
 		const payment = this.payment();
 		if (!payment) return undefined;
 
-		return this.getMailto(payment, this.recipients());
+		return getPaymentMailto(payment, this.recipients(), this.member());
 	});
 
 	constructor(
@@ -206,6 +212,17 @@ export class MemberPaymentComponent {
 		if (!result) return;
 
 		this.updateMembership.emit({ year, paid: true, note: (result.note ?? "").trim() || null });
+	}
+
+	openCustomAmount() {
+		const member = this.member();
+		if (!member) return;
+
+		this.modalService.componentModal(
+			MemberPaymentCustomModalComponent,
+			{ member, recipients: this.recipients(), currency: this.payment()?.currency ?? "CZK" },
+			{ cssClass: "dialog-brand" },
+		);
 	}
 
 	openHistory() {
@@ -246,7 +263,7 @@ export class MemberPaymentComponent {
 
 		try {
 			const files = await (this.qrCodeFiles ?? this.fetchQrCodeFiles(payment));
-			const title = `Členský příspěvek ${this.paymentYear(payment)}`;
+			const title = `Členský příspěvek ${getPaymentYear(payment)}`;
 			const text = this.getShareText(payment);
 
 			if (files && navigator.canShare?.({ files })) await navigator.share({ files, title, text });
@@ -282,10 +299,10 @@ export class MemberPaymentComponent {
 	/** Payment details accompanying the shared QR, for apps that show the text next to it. */
 	private getShareText(payment: SDK.MemberPaymentRequestResponseWithLinks): string {
 		return [
-			`Členský příspěvek ${this.paymentYear(payment)}`,
+			`Členský příspěvek ${getPaymentYear(payment)}`,
 			`Účet: ${payment.accountNumber}/${payment.bankCode}`,
 			`Variabilní symbol: ${payment.variableSymbol}`,
-			`Částka: ${this.formatAmount(payment)}`,
+			`Částka: ${formatPaymentAmount(payment)}`,
 		].join("\n");
 	}
 
@@ -304,7 +321,7 @@ export class MemberPaymentComponent {
 
 		try {
 			const [payment, contacts] = await Promise.all([
-				this.api.MembersApi.getMemberPaymentRequest(memberId).then((res) => res.data),
+				this.api.MembersApi.getMemberPaymentRequest(memberId, {}).then((res) => res.data),
 				this.api.MembersApi.listContacts(memberId).then((res) => res.data),
 			]);
 
@@ -316,64 +333,5 @@ export class MemberPaymentComponent {
 			this.loadedMemberId = null;
 			this.payment.set(null);
 		}
-	}
-
-	/**
-	 * `CZK` is spelled out as the local "Kč" – a currency label; the amount itself and the
-	 * currency code both come from the API.
-	 */
-	private formatAmount(payment: SDK.MemberPaymentRequestResponseWithLinks) {
-		return `${payment.amount} ${payment.currency === "CZK" ? "Kč" : payment.currency}`;
-	}
-
-	/**
-	 * The year the payment is for. It is read back out of the variable symbol rather than taken
-	 * from today's date: the symbol is what the recipient will type into their bank, so the year
-	 * named in the e-mail is by definition the year that symbol was issued for.
-	 */
-	private paymentYear(payment: SDK.MemberPaymentRequestResponseWithLinks): number {
-		return getVariableSymbolYear(payment.variableSymbol) ?? currentMembershipYear();
-	}
-
-	private getMailto(payment: SDK.MemberPaymentRequestResponseWithLinks, recipients: string[]) {
-		const member = this.member();
-		const name = member?.nickname ? ` – ${member.nickname}` : "";
-		const amount = this.formatAmount(payment);
-		const year = this.paymentYear(payment);
-
-		const subject = `Členský příspěvek ${year}${name}`;
-
-		const body = [
-			"Dobrý den,",
-			"",
-			`prosím vás o zaplacení členského příspěvku na kalendářní rok ${year} ve výši ${amount}.`,
-			"",
-			`Číslo účtu: ${payment.accountNumber}/${payment.bankCode}`,
-			`Variabilní symbol: ${payment.variableSymbol}`,
-			`Částka: ${amount}`,
-			"",
-			"Platbu můžete provést i naskenováním QR kódu, který se otevře na tomto odkazu:",
-			payment.qrCodeUrl,
-			"",
-			"Děkujeme.",
-			"",
-			// the club's official footer, as it appears on the rest of its correspondence
-			"KONDOR Skupina ŠÁN z.s.",
-			"Podolské nábřeží 1180/5, Praha 4, 147 00",
-			"E-mail: info@bosan.cz",
-			"IČ: 47610727",
-		].join("\r\n");
-
-		// `mailto:` cannot carry an attachment, hence the QR as a link in the body above.
-		// Addresses keep their `@` (allowed unencoded in a mailto address per RFC 6068) so the
-		// comma-separated recipient list stays readable to every mail client.
-		//
-		// Nothing put in the subject or the body may contain `&` or `=`, percent-encoded or not:
-		// Android's mailto parser decodes the whole URI before splitting it on those, so a mail app
-		// built on it drops everything from the first one onwards. That is why the QR code arrives
-		// as `payment.qrCodeUrl`, a link whose parameters are all path segments.
-		const to = recipients.map((email) => encodeURIComponent(email).replace(/%40/g, "@")).join(",");
-
-		return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 	}
 }

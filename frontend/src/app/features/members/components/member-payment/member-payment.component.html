@@ -83,7 +83,7 @@
 							}
 
 							<div class="bo-info-row">
-								<span class="bo-info-label">Částka</span>
+								<span class="bo-info-label">{{ paid() ? "Částka" : "Výše příspěvku" }}</span>
 								<span class="bo-info-action">
 									<span class="bo-info-value">{{ amount() }}</span>
 								</span>
@@ -126,6 +126,10 @@
 									Zaplatit v bance
 								</ion-button>
 							}
+
+							<button type="button" class="qr-custom" (click)="openCustomAmount()">
+								QR pro jinou částku
+							</button>
 						</div>
 					</div>
 				}

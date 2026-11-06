@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param, ParseIntPipe, Req } from "@nestjs/common";
+import { Controller, Get, NotFoundException, Param, ParseIntPipe, Query, Req } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
@@ -6,7 +6,7 @@ import { Authenticated } from "src/auth/decorators/authenticated.decorator";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
 import { MemberPaymentRequestService } from "src/models/members/services/member-payment-request.service";
 import { MemberPaymentRequestPermission } from "../acl/member-payment-request.acl";
-import { MemberPaymentRequestResponse } from "../dto/member-payment-request.dto";
+import { MemberPaymentRequestQuery, MemberPaymentRequestResponse } from "../dto/member-payment-request.dto";
 
 @Controller("members/:id/payment-request")
 @Authenticated()
@@ -24,12 +24,13 @@ export class MemberPaymentRequestController {
 	async getMemberPaymentRequest(
 		@Req() req: Request,
 		@Param("id", ParseIntPipe) memberId: number,
+		@Query() query: MemberPaymentRequestQuery,
 	): Promise<MemberPaymentRequestResponse> {
 		const member = await this.members.getMember(memberId);
 		if (!member) throw new NotFoundException();
 
 		MemberPaymentRequestPermission.canOrThrow(req, member);
 
-		return this.paymentRequests.getPaymentRequest(member);
+		return this.paymentRequests.getPaymentRequest(member, query.amount);
 	}
 }

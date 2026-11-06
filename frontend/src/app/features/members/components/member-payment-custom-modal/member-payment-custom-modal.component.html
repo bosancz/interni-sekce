@@ -1,0 +1,45 @@
+<bo-modal-layout>
+	<h4 slot="title">QR pro jinou částku</h4>
+
+	<div class="bm-body">
+		<label class="pc-field">
+			<span class="pc-label">Částka ({{ currencyLabel() }})</span>
+			<div class="pc-amount">
+				<input
+					class="pc-input"
+					type="text"
+					inputmode="numeric"
+					placeholder="např. 750"
+					autofocus
+					[value]="amountText()"
+					(input)="setAmount($any($event.target).value)"
+					(keydown.enter)="generate($event)"
+				/>
+				<button
+					type="button"
+					class="bm-btn-ghost pc-generate"
+					[disabled]="amount() === null || loading()"
+					(click)="generate()"
+				>
+					Vytvořit QR
+				</button>
+			</div>
+		</label>
+
+		@if (payment(); as paymentValue) {
+			<div class="pc-qr">
+				<img [src]="paymentValue.qrCodeUrl" alt="QR platba" />
+				<div class="pc-summary">{{ formattedAmount() }} · VS {{ paymentValue.variableSymbol }}</div>
+			</div>
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		@if (payment()) {
+			<button type="button" class="bm-btn-ghost" (click)="openQrCode()">Otevřít QR kód</button>
+			<a class="bm-btn-primary pc-link" [href]="mailto()">Poslat e-mailem</a>
+		} @else {
+			<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zavřít</button>
+		}
+	</div>
+</bo-modal-layout>

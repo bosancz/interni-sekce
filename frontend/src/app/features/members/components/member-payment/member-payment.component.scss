@@ -121,3 +121,18 @@ bo-card.is-paid {
 	align-items: center;
 	gap: 4px;
 }
+
+.qr-custom {
+	margin-top: 4px;
+	padding: 4px 8px;
+	border: 0;
+	background: none;
+	color: var(--bo-muted);
+	font-size: 0.8rem;
+	text-decoration: underline;
+	cursor: pointer;
+
+	&:hover {
+		color: var(--bo-heading);
+	}
+}

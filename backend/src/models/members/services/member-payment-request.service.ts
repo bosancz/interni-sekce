@@ -64,14 +64,14 @@ export class MemberPaymentRequestService {
 		private readonly config: Config,
 	) {}
 
-	async getPaymentRequest(member: Member): Promise<MemberPaymentRequest> {
+	async getPaymentRequest(member: Member, amount?: number): Promise<MemberPaymentRequest> {
 		const settings = await this.paymentSettings.getPaymentSettings();
 
 		const payment: QrCodeLinkPayment = {
 			variableSymbol: getVariableSymbol(member),
 			accountNumber: settings.accountNumber,
 			bankCode: settings.bankCode,
-			amount: settings.amount,
+			amount: amount ?? settings.amount,
 			currency: settings.currency,
 		};
 

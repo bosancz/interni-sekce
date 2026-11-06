@@ -15043,6 +15043,21 @@ export namespace SDK {
     
     
     
+    /**
+     * Query parameters for getMemberPaymentRequest operation in MembersApi.
+     * @export
+     * @interface MembersApiGetMemberPaymentRequestQueryParams
+     */
+    export interface MembersApiGetMemberPaymentRequestQueryParams {
+        //amount
+        /**
+         * 
+         * @type {number}
+         * @memberof MembersApiGetMemberPaymentRequest
+         */
+        amount?: number
+    }
+    
     
     
     
@@ -16557,6 +16572,7 @@ export namespace SDK {
          * 
     
          * @param {number} id 
+         * @param {MembersApiGetMemberPaymentRequestQueryParams} queryParams Query parameters.
          * @param {AxiosRequestConfig} [options] Override http request option.
          * @throws {RequiredError}
          * @memberof MembersApi
@@ -16564,6 +16580,7 @@ export namespace SDK {
         
         public async getMemberPaymentRequest(
             id: number,
+            queryParams: MembersApiGetMemberPaymentRequestQueryParams,
             options: AxiosRequestConfig = {}
         ) {
     
@@ -16584,6 +16601,10 @@ export namespace SDK {
             const requestQueryParameter = {} as any;
     
             // authentication cookieAuth required
+    
+            if (queryParams.amount !== undefined) {
+                requestQueryParameter['amount'] = queryParams.amount;
+            }
     
     
     
