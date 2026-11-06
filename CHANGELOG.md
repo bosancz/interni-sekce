@@ -1,3 +1,7 @@
+## v4.36.3 — 2026-11-06
+
+- <span class="changelog-type" title="patch">🚸</span> [Bez podtitulků u šánů v dialogu Šán a hvězdy](https://github.com/bosancz/interni-sekce/commit/cdf775544031437b9ae54bebaa8c7685a52adcfd) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.36.2 — 2026-11-06
 
 - <span class="changelog-type" title="patch">🚸</span> [Karta Ocenění se dvěma boxy a dialogy na šán a hodnosti](https://github.com/bosancz/interni-sekce/commit/24b6b853a9d967c88d1c18fe50d653e30d1622cb) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
