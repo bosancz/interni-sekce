@@ -7697,6 +7697,7 @@ export namespace SDK {
     export const NotificationGroupsEnum = {
         Events: 'events',
         Photos: 'photos',
+        Profile: 'profile',
         Admin: 'admin'
     } as const;
     
@@ -7974,6 +7975,7 @@ export namespace SDK {
         MyBugReports: 'myBugReports',
         MyPhotos: 'myPhotos',
         NewAlbums: 'newAlbums',
+        MyBadges: 'myBadges',
         Backups: 'backups'
     } as const;
     

@@ -10,6 +10,7 @@ import { NOTIFICATIONS_QUEUE } from "./notifications-queue";
 import { NotificationSettingsRepository } from "./repositories/notification-settings.repository";
 import { NotificationSubscriptionsRepository } from "./repositories/notification-subscriptions.repository";
 import { NotificationsRepository } from "./repositories/notifications.repository";
+import { MemberBadgesNotificationsService } from "./services/member-badges-notifications.service";
 import { NotificationsDeliveryService } from "./services/notifications-delivery.service";
 import { NotificationsQueueService } from "./services/notifications-queue.service";
 import { NotificationsService } from "./services/notifications.service";
@@ -24,6 +25,7 @@ import { PushService } from "./services/push.service";
 	],
 	providers: [
 		NotificationsService,
+		MemberBadgesNotificationsService,
 		NotificationsDeliveryService,
 		NotificationsQueueService,
 		PushService,
@@ -33,6 +35,7 @@ import { PushService } from "./services/push.service";
 	],
 	exports: [
 		NotificationsService,
+		MemberBadgesNotificationsService,
 		NotificationsDeliveryService,
 		PushService,
 		NotificationSettingsRepository,

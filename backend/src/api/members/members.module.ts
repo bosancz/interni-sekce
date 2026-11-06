@@ -5,6 +5,7 @@ import { FilesModule } from "src/models/files/files.module";
 import { Group } from "src/models/members/entities/group.entity";
 import { Member } from "src/models/members/entities/member.entity";
 import { MembersModelModule } from "src/models/members/members-model.module";
+import { NotificationsModelModule } from "src/models/notifications/notifications-model.module";
 import { SettingsModelModule } from "src/models/settings/settings-model.module";
 import { BoardMembersController } from "./controllers/board-members.controller";
 import { GroupProfilePhotoController } from "./controllers/group-profile-photo.controller";
@@ -41,6 +42,7 @@ import { MembersExportController } from "./controllers/members-export.controller
 	imports: [
 		AlbumsModelModule,
 		MembersModelModule,
+		NotificationsModelModule,
 		SettingsModelModule,
 		TypeOrmModule.forFeature([Member, Group]),
 		FilesModule,

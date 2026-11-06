@@ -3,8 +3,12 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
+import { MemberAchievementTypes } from "src/models/members/entities/member-achievements.entity";
+import { MemberAchievementTitles } from "src/models/members/helpers/member-badge-titles";
 import { MemberAchievementsRepository } from "src/models/members/repositories/member-achievements.repository";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
+import { MemberBadgeChangeKind } from "src/models/notifications/helpers/member-badge-changes";
+import { MemberBadgesNotificationsService } from "src/models/notifications/services/member-badges-notifications.service";
 import {
 	MemberAchievementCreatePermission,
 	MemberAchievementDeletePermission,
@@ -20,6 +24,7 @@ export class MemberAchievementsController {
 	constructor(
 		private membersRepository: MembersRepository,
 		private memberAchievements: MemberAchievementsRepository,
+		private memberBadgesNotificationsService: MemberBadgesNotificationsService,
 	) {}
 
 	@Get()
@@ -50,7 +55,11 @@ export class MemberAchievementsController {
 
 		MemberAchievementCreatePermission.canOrThrow(req, member);
 
-		return this.memberAchievements.createAchievement(member.id, body.type);
+		const achievement = await this.memberAchievements.createAchievement(member.id, body.type);
+
+		this.notifyChanges(req, member.id, [achievement.type], "added");
+
+		return achievement;
 	}
 
 	@Delete(":achievementId")
@@ -65,6 +74,26 @@ export class MemberAchievementsController {
 
 		MemberAchievementDeletePermission.canOrThrow(req, achievement);
 
-		await this.memberAchievements.deleteAchievement(achievement);
+		const types = await this.memberAchievements.deleteAchievement(achievement);
+
+		this.notifyChanges(req, memberId, types, "removed");
+	}
+
+	private notifyChanges(
+		req: Request,
+		memberId: number,
+		types: MemberAchievementTypes[],
+		kind: MemberBadgeChangeKind,
+	) {
+		this.memberBadgesNotificationsService.recordChanges(
+			memberId,
+			req.user?.userId,
+			types.map((type) => ({
+				key: `achievement:${type}`,
+				category: "achievement",
+				title: MemberAchievementTitles[type],
+				kind,
+			})),
+		);
 	}
 }

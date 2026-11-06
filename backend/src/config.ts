@@ -126,6 +126,7 @@ const push = {
 
 const notifications = {
 	notifyActor: process.env["NOTIFY_ACTOR"] === "true" || process.env["NOTIFY_ACTOR"] === "1",
+	memberBadgesDelayMs: 15_000,
 };
 
 const feedback = {

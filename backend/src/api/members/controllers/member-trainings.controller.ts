@@ -15,9 +15,12 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AcController, AcLinks, WithLinks } from "src/access-control/access-control-lib";
 import { Authenticated } from "src/auth/decorators/authenticated.decorator";
-import { MemberTrainingTypes } from "src/models/members/entities/member-training.entity";
+import { MemberTraining, MemberTrainingTypes } from "src/models/members/entities/member-training.entity";
+import { getMemberTrainingChange } from "src/models/members/helpers/member-badge-titles";
 import { MemberTrainingsRepository } from "src/models/members/repositories/member-trainings.repository";
 import { MembersRepository } from "src/models/members/repositories/members.repository";
+import { MemberBadgeChangeKind } from "src/models/notifications/helpers/member-badge-changes";
+import { MemberBadgesNotificationsService } from "src/models/notifications/services/member-badges-notifications.service";
 import {
 	MemberTrainingCreatePermission,
 	MemberTrainingDeletePermission,
@@ -34,6 +37,7 @@ export class MemberTrainingsController {
 	constructor(
 		private membersRepository: MembersRepository,
 		private memberTrainings: MemberTrainingsRepository,
+		private memberBadgesNotificationsService: MemberBadgesNotificationsService,
 	) {}
 
 	@Get()
@@ -64,13 +68,17 @@ export class MemberTrainingsController {
 
 		MemberTrainingCreatePermission.canOrThrow(req, member);
 
-		return this.memberTrainings.createTraining(member.id, {
+		const training = await this.memberTrainings.createTraining(member.id, {
 			type: body.type,
 			name: body.name ?? null,
 			issuedOn: body.issuedOn ?? null,
 			validUntil: body.validUntil ?? null,
 			issuer: body.issuer ?? null,
 		});
+
+		this.notifyChange(req, training, "added");
+
+		return training;
 	}
 
 	@Patch(":trainingId")
@@ -91,12 +99,16 @@ export class MemberTrainingsController {
 			throw new BadRequestException("Vlastní školení musí mít název.");
 		}
 
-		return this.memberTrainings.updateTraining(training, {
+		const updated = await this.memberTrainings.updateTraining(training, {
 			name: body.name,
 			issuedOn: body.issuedOn,
 			validUntil: body.validUntil,
 			issuer: body.issuer,
 		});
+
+		this.notifyChange(req, updated, "updated");
+
+		return updated;
 	}
 
 	@Delete(":trainingId")
@@ -112,5 +124,13 @@ export class MemberTrainingsController {
 		MemberTrainingDeletePermission.canOrThrow(req, training);
 
 		await this.memberTrainings.deleteTraining(memberId, trainingId);
+
+		this.notifyChange(req, training, "removed");
+	}
+
+	private notifyChange(req: Request, training: MemberTraining, kind: MemberBadgeChangeKind) {
+		this.memberBadgesNotificationsService.recordChanges(training.memberId, req.user?.userId, [
+			getMemberTrainingChange(training, kind),
+		]);
 	}
 }
