@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param, Query, Res } from "@nestjs/common";
+import { Controller, Get, Headers, NotFoundException, Param, Query, Res } from "@nestjs/common";
 import { ApiExcludeController } from "@nestjs/swagger";
 import { Response } from "express";
 import { getVariableSymbolMemberId } from "src/helpers/variable-symbol";
@@ -37,6 +37,7 @@ export class MemberPaymentQrController {
 		@Param("currency") currency: string,
 		@Param("signature") signature: string,
 		@Query("format") format: string | undefined,
+		@Headers("accept") accept: string | undefined,
 		@Res() res: Response,
 	): Promise<void> {
 		const memberId = getVariableSymbolMemberId(variableSymbol);
@@ -64,11 +65,18 @@ export class MemberPaymentQrController {
 		// The `MSG:` is built from the member's current name, so a corrected name has to reach the
 		// next reader rather than sit in a cache for a day.
 		res.setHeader("Cache-Control", "public, max-age=300");
+		res.setHeader("Vary", "Accept");
 
 		if (format === "png") {
 			res.type("image/png");
 			res.setHeader("Content-Disposition", `inline; filename="qr-platba-${variableSymbol}.png"`);
 			res.send(await this.paymentRequests.getQrCodePng(svg));
+			return;
+		}
+
+		if (!format && accept?.includes("text/html")) {
+			res.type("text/html");
+			res.send(this.paymentRequests.getQrCodePage(member, payment, svg));
 			return;
 		}
 

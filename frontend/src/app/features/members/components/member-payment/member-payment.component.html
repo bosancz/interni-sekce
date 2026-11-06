@@ -8,20 +8,31 @@
 				</span>
 			</bo-card-title>
 
-			<!-- A paid fee collapses to this row; the chevron is the only way back to the details,
-			     and deliberately small – there is nothing left to do with them. -->
-			@if (paid()) {
+			<div slot="buttons" class="header-buttons">
 				<button
-					slot="buttons"
 					type="button"
-					class="paid-toggle"
-					[attr.aria-expanded]="detailsOpen()"
-					[attr.aria-label]="detailsOpen() ? 'Skrýt platební údaje' : 'Zobrazit platební údaje'"
-					(click)="toggleDetails()"
+					class="history-button"
+					aria-label="Historie příspěvků"
+					title="Historie příspěvků"
+					(click)="openHistory()"
 				>
-					<ion-icon class="paid-chevron" name="chevron-down" aria-hidden="true" />
+					<ion-icon name="time-outline" aria-hidden="true" />
 				</button>
-			}
+
+				<!-- A paid fee collapses to this row; the chevron is the only way back to the details,
+				     and deliberately small – there is nothing left to do with them. -->
+				@if (paid()) {
+					<button
+						type="button"
+						class="paid-toggle"
+						[attr.aria-expanded]="detailsOpen()"
+						[attr.aria-label]="detailsOpen() ? 'Skrýt platební údaje' : 'Zobrazit platební údaje'"
+						(click)="toggleDetails()"
+					>
+						<ion-icon class="paid-chevron" name="chevron-down" aria-hidden="true" />
+					</button>
+				}
+			</div>
 		</bo-card-header>
 
 		@if (detailsVisible()) {
@@ -58,10 +69,21 @@
 										/>
 									</span>
 								</div>
+
+								<div class="bo-info-row">
+									<span class="bo-info-label">Poznámka</span>
+									<span class="bo-info-action">
+										<span class="bo-info-value payment-note">{{ paidValue.note || "-" }}</span>
+										<bo-edit-button
+											[disabled]="!canEditMembership()"
+											(click)="editNote(paidValue.note)"
+										/>
+									</span>
+								</div>
 							}
 
 							<div class="bo-info-row">
-								<span class="bo-info-label">Částka</span>
+								<span class="bo-info-label">{{ paid() ? "Částka" : "Výše příspěvku" }}</span>
 								<span class="bo-info-action">
 									<span class="bo-info-value">{{ amount() }}</span>
 								</span>
@@ -104,6 +126,10 @@
 									Zaplatit v bance
 								</ion-button>
 							}
+
+							<button type="button" class="qr-custom" (click)="openCustomAmount()">
+								QR pro jinou částku
+							</button>
 						</div>
 					</div>
 				}

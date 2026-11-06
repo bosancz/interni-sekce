@@ -1,4 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsInt, IsOptional, Max, Min } from "class-validator";
 import { MemberPaymentRequest } from "src/models/members/services/member-payment-request.service";
 
 /**
@@ -21,4 +23,14 @@ export class MemberPaymentRequestResponse implements MemberPaymentRequest {
 
 	/** Public URL of the QR platba image; openable without a session, so it can be mailed. */
 	@ApiProperty() qrCodeUrl!: string;
+}
+
+export class MemberPaymentRequestQuery {
+	@ApiPropertyOptional({ type: "integer" })
+	@Type(() => Number)
+	@IsInt()
+	@Min(1)
+	@Max(9999999)
+	@IsOptional()
+	amount?: number;
 }
