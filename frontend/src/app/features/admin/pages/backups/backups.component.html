@@ -115,6 +115,9 @@
 							@if (last?.status === "error" && last?.error) {
 								<pre class="bk-error">{{ last!.error }}</pre>
 							}
+							@if (last?.warnings) {
+								<pre class="bk-warning">{{ last!.warnings }}</pre>
+							}
 						</bo-card-content>
 					</bo-card>
 				}
@@ -146,6 +149,9 @@
 									}
 									@if (run.error) {
 										<pre class="bk-error">{{ run.error }}</pre>
+									}
+									@if (run.warnings) {
+										<pre class="bk-warning">{{ run.warnings }}</pre>
 									}
 								</div>
 							</div>

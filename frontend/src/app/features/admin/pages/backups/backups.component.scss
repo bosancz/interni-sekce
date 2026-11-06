@@ -104,7 +104,8 @@
 	}
 }
 
-.bk-error {
+.bk-error,
+.bk-warning {
 	margin: 0 16px 16px;
 	padding: 8px 12px;
 	border-radius: 8px;
@@ -117,6 +118,11 @@
 	overflow: auto;
 	user-select: text !important;
 	cursor: text;
+}
+
+.bk-warning {
+	background: var(--bo-yellow-tint);
+	color: var(--bo-yellow-deep);
 }
 
 .bk-runs {
@@ -141,7 +147,8 @@
 		text-align: center;
 	}
 
-	.bk-error {
+	.bk-error,
+	.bk-warning {
 		margin: 6px 0 0;
 	}
 }

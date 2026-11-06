@@ -26,6 +26,7 @@ export class BackupRunResponse {
 	@ApiPropertyOptional({ type: BackupRunProgressResponse, nullable: true })
 	progress!: BackupRunProgressResponse | null;
 	@ApiPropertyOptional({ type: "string", nullable: true }) error!: string | null;
+	@ApiPropertyOptional({ type: "string", nullable: true }) warnings!: string | null;
 }
 
 export class BackupScheduleResponse {
