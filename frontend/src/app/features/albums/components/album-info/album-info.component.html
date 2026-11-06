@@ -70,7 +70,7 @@
 		@if (album()?.description) {
 			<div class="bo-markdown" [innerHTML]="album()?.description | markdown"></div>
 		} @else if (album()) {
-			<p class="muted">Krátce, jak akce proběhla — vyjde s fotogalerií na bosan.cz.</p>
+			<p><span class="bo-pill">Bez popisku</span></p>
 		}
 		<bo-edit-button-markdown
 			slot="end"
