@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="cs">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>Členský příspěvek {{year}} – QR platba</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			@font-face {
+				font-family: "SanGrotesk";
+				src: url("{{fontsUrl}}/SanGrotesk-Regular.otf") format("opentype");
+			}
+
+			:root {
+				--navy: #2a3478;
+				--yellow: #e28f26;
+				--text: #1f2430;
+				--muted: #6b7185;
+				--line: #e4e7ef;
+				--bg: #f4f5fa;
+				--card: #ffffff;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html,
+			body {
+				margin: 0;
+				min-height: 100%;
+			}
+
+			body {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				min-height: 100vh;
+				padding: 24px 16px;
+				background: var(--bg);
+				color: var(--text);
+				font-family: "Nunito Sans", "Helvetica Neue", Arial, sans-serif;
+				line-height: 1.45;
+			}
+
+			.card {
+				width: 100%;
+				max-width: 420px;
+				padding: 28px 24px 24px;
+				border-radius: 24px;
+				background: var(--card);
+				box-shadow: 0 10px 40px rgba(42, 52, 120, 0.12);
+				text-align: center;
+			}
+
+			h1 {
+				margin: 0;
+				color: var(--navy);
+				font-family: "SanGrotesk", "Nunito Sans", sans-serif;
+				font-size: 28px;
+				font-weight: 400;
+				line-height: 1.15;
+			}
+
+			h1::after {
+				content: "";
+				display: block;
+				width: 48px;
+				height: 5px;
+				margin: 10px auto 0;
+				border-radius: 3px;
+				background: var(--yellow);
+			}
+
+			.hint {
+				margin: 14px 0 0;
+				color: var(--muted);
+				font-size: 15px;
+			}
+
+			.qr {
+				width: 100%;
+				max-width: 300px;
+				margin: 20px auto 0;
+			}
+
+			.qr svg {
+				display: block;
+				width: 100%;
+				height: auto;
+			}
+
+			.details {
+				margin: 20px 0 0;
+				padding: 0;
+				border-top: 1px solid var(--line);
+				text-align: left;
+			}
+
+			.details div {
+				display: flex;
+				justify-content: space-between;
+				gap: 16px;
+				padding: 10px 2px;
+				border-bottom: 1px solid var(--line);
+			}
+
+			.details dt {
+				color: var(--muted);
+				font-weight: 600;
+			}
+
+			.details dd {
+				margin: 0;
+				font-weight: 700;
+				text-align: right;
+				font-variant-numeric: tabular-nums;
+				user-select: all;
+			}
+
+			.download {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				margin-top: 20px;
+				padding: 11px 24px;
+				border-radius: 99px;
+				background: var(--navy);
+				color: #f5b445;
+				font-weight: 800;
+				text-decoration: none;
+				box-shadow: 0 4px 14px rgba(42, 52, 120, 0.35);
+			}
+
+			.download:hover {
+				background: #343f8f;
+			}
+
+			.download svg {
+				width: 18px;
+				height: 18px;
+			}
+
+			.follow {
+				width: 100%;
+				max-width: 560px;
+				margin-top: 24px;
+				text-align: center;
+			}
+
+			.follow p {
+				margin: 0 0 12px;
+				color: var(--muted);
+				font-weight: 600;
+			}
+
+			.links {
+				display: flex;
+				justify-content: center;
+				flex-wrap: wrap;
+				gap: 12px;
+			}
+
+			.links a {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				padding: 9px 16px;
+				border: 1px solid var(--line);
+				border-radius: 99px;
+				background: var(--card);
+				color: var(--navy);
+				font-weight: 700;
+				text-decoration: none;
+			}
+
+			.links a:hover {
+				border-color: var(--navy);
+			}
+
+			.links svg {
+				width: 20px;
+				height: 20px;
+				flex: 0 0 auto;
+			}
+
+			@media print {
+				body {
+					background: #fff;
+				}
+
+				.card {
+					box-shadow: none;
+				}
+
+				.download,
+				.follow {
+					display: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<main class="card">
+			<h1>Členský příspěvek {{year}}</h1>
+			<p class="hint">Naskenujte QR kód v bankovní aplikaci, nebo zadejte platbu ručně.</p>
+
+			<div class="qr">{{{qrSvg}}}</div>
+
+			<dl class="details">
+				<div>
+					<dt>Částka</dt>
+					<dd>{{amount}}</dd>
+				</div>
+				<div>
+					<dt>Účet</dt>
+					<dd>{{account}}</dd>
+				</div>
+				<div>
+					<dt>Variabilní symbol</dt>
+					<dd>{{variableSymbol}}</dd>
+				</div>
+				<div>
+					<dt>Zpráva</dt>
+					<dd>{{message}}</dd>
+				</div>
+			</dl>
+
+			<a class="download" href="{{pngUrl}}" download="{{pngFileName}}">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<path d="M12 3v12" />
+					<path d="m7 10 5 5 5-5" />
+					<path d="M5 21h14" />
+				</svg>
+				Stáhnout QR kód
+			</a>
+		</main>
+
+		<nav class="follow">
+			<p>Sledujte nás</p>
+			<div class="links">
+				<a href="{{links.program}}" target="_blank" rel="noopener">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<rect x="3" y="4.5" width="18" height="16.5" rx="2.5" />
+						<path d="M3 9.5h18M8 2.5v4M16 2.5v4" />
+					</svg>
+					Program akcí
+				</a>
+				<a href="{{links.instagram}}" target="_blank" rel="noopener">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<rect x="3" y="3" width="18" height="18" rx="5" />
+						<circle cx="12" cy="12" r="4" />
+						<circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
+					</svg>
+					Instagram
+				</a>
+				<a href="{{links.facebook}}" target="_blank" rel="noopener">
+					<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+						<path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H8v3h2.5V21h3Z" />
+					</svg>
+					Facebook
+				</a>
+			</div>
+		</nav>
+	</body>
+</html>
