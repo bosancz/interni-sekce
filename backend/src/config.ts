@@ -241,6 +241,12 @@ const publicApi = {
 	recentAlbums: { defaultLimit: 5, maxLimit: 10 },
 };
 
+const publicLinks = {
+	program: "https://bosan.cz/program",
+	instagram: "https://www.instagram.com/bosan.cz/",
+	facebook: "https://www.facebook.com/bosan.cz/",
+};
+
 const chronicles = {
 	maxUploadSize: 50 * 1024 * 1024,
 };
@@ -276,6 +282,7 @@ export class Config {
 	photoContent = photoContent;
 	photos = photos;
 	chronicles = chronicles;
+	publicLinks = publicLinks;
 	publicApi = publicApi;
 }
 

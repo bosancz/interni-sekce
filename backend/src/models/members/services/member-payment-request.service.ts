@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { createHmac, timingSafeEqual } from "crypto";
 import { readFileSync } from "fs";
 import * as path from "path";
+import * as Handlebars from "handlebars";
 import sharp = require("sharp");
 import { Config } from "src/config";
 import { getCzechIban } from "src/helpers/iban";
 import { renderQrCodeSvg } from "src/helpers/qr-code-svg";
 import { getSpayd } from "src/helpers/spayd";
-import { getVariableSymbol } from "src/helpers/variable-symbol";
+import { getVariableSymbol, getVariableSymbolYear } from "src/helpers/variable-symbol";
 import { PaymentSettingsRepository } from "src/models/settings/repositories/payment-settings.repository";
 import { Member } from "../entities/member.entity";
 
@@ -39,6 +40,9 @@ export interface MemberPaymentRequest extends QrCodeLinkPayment {
 }
 
 const QR_LOGO_PATH = path.resolve("assets/img/san-emblem.svg");
+const QR_PAGE_TEMPLATE_PATH = path.resolve("assets/qr-platba-template/template.html");
+const QR_PAGE_FONT_PATH = path.resolve("assets/fonts/SanGrotesk-Regular.otf");
+const QR_PAGE_LOGO_PATH = path.resolve("assets/img/sanlogo-07.svg");
 const QR_CODE_SIZE = 512;
 const QR_CODE_COLOR = "#2a3478";
 const QR_CODE_BACKGROUND = "#ffffff";
@@ -58,20 +62,23 @@ const QR_SIGNATURE_LENGTH = 16;
 @Injectable()
 export class MemberPaymentRequestService {
 	private logo?: string;
+	private pageTemplate?: HandlebarsTemplateDelegate;
+	private pageFont?: string;
+	private pageLogo?: string;
 
 	constructor(
 		private readonly paymentSettings: PaymentSettingsRepository,
 		private readonly config: Config,
 	) {}
 
-	async getPaymentRequest(member: Member): Promise<MemberPaymentRequest> {
+	async getPaymentRequest(member: Member, amount?: number): Promise<MemberPaymentRequest> {
 		const settings = await this.paymentSettings.getPaymentSettings();
 
 		const payment: QrCodeLinkPayment = {
 			variableSymbol: getVariableSymbol(member),
 			accountNumber: settings.accountNumber,
 			bankCode: settings.bankCode,
-			amount: settings.amount,
+			amount: amount ?? settings.amount,
 			currency: settings.currency,
 		};
 
@@ -134,6 +141,25 @@ export class MemberPaymentRequestService {
 			color: QR_CODE_COLOR,
 			background: QR_CODE_BACKGROUND,
 			logo: this.getQrCodeLogo(),
+		});
+	}
+
+	getQrCodePage(member: Member, payment: QrCodeLinkPayment, svg: string): string {
+		this.pageTemplate ??= Handlebars.compile(readFileSync(QR_PAGE_TEMPLATE_PATH, "utf8"));
+
+		return this.pageTemplate({
+			year: getVariableSymbolYear(payment.variableSymbol) ?? new Date().getFullYear(),
+			qrSvg: svg.replace(/^<\?xml[^>]*>\s*/, ""),
+			amount: `${payment.amount} ${payment.currency === "CZK" ? "Kč" : payment.currency}`,
+			account: `${payment.accountNumber}/${payment.bankCode}`,
+			variableSymbol: payment.variableSymbol,
+			message: this.getMessage(member),
+			pngUrl: "?format=png",
+			pngFileName: `qr-platba-${payment.variableSymbol}.png`,
+			fontUrl: (this.pageFont ??= `data:font/otf;base64,${readFileSync(QR_PAGE_FONT_PATH).toString("base64")}`),
+			logoUrl:
+				(this.pageLogo ??= `data:image/svg+xml;base64,${readFileSync(QR_PAGE_LOGO_PATH).toString("base64")}`),
+			links: this.config.publicLinks,
 		});
 	}
 

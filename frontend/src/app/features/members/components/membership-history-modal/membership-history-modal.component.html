@@ -1,0 +1,17 @@
+<bo-modal-layout>
+	<h4 slot="title">Historie příspěvků</h4>
+
+	<div class="mh-list">
+		@for (row of rows; track row.year) {
+			<div class="mh-row">
+				<span class="mh-year">{{ row.year }}</span>
+				<span class="mh-status" [class.paid]="row.paid">{{ row.paid ? paidTitle : unpaidTitle }}</span>
+				<span class="mh-amount">{{ row.paid ? (row.amount ?? "-") : "" }}</span>
+			</div>
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-primary" (click)="close.emit()">Zavřít</button>
+	</div>
+</bo-modal-layout>

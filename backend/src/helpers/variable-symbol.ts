@@ -27,3 +27,9 @@ export function getVariableSymbolMemberId(variableSymbol: string): number | null
 
 	return Number(variableSymbol.slice(2)) || null;
 }
+
+export function getVariableSymbolYear(variableSymbol: string): number | null {
+	if (!/^\d{7}$/.test(variableSymbol)) return null;
+
+	return Math.floor(new Date().getFullYear() / 100) * 100 + Number(variableSymbol.slice(0, 2));
+}

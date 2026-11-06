@@ -96,3 +96,43 @@ bo-card.is-paid {
 	color: var(--bo-green);
 	transition: transform 0.15s ease-in-out;
 }
+
+.history-button {
+	display: flex;
+	align-items: center;
+	padding: 4px 6px;
+	border: 0;
+	background: none;
+	color: var(--bo-muted);
+	font-size: 1rem;
+	cursor: pointer;
+
+	&:hover {
+		color: var(--bo-heading);
+	}
+}
+
+.payment-note {
+	white-space: pre-line;
+}
+
+.header-buttons {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.qr-custom {
+	margin-top: 4px;
+	padding: 4px 8px;
+	border: 0;
+	background: none;
+	color: var(--bo-muted);
+	font-size: 0.8rem;
+	text-decoration: underline;
+	cursor: pointer;
+
+	&:hover {
+		color: var(--bo-heading);
+	}
+}

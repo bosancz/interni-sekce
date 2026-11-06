@@ -1,0 +1,76 @@
+@use "./../../../../../styles/brand-modal" as *;
+
+.pc-field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.pc-label {
+	font-size: 13.5px;
+	font-weight: 700;
+	color: var(--bm-muted);
+}
+
+.pc-amount {
+	display: flex;
+	gap: 8px;
+}
+
+.pc-input {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 10px 14px;
+	border: 2px solid var(--bm-border);
+	border-radius: 12px;
+	background: transparent;
+	color: var(--bm-text);
+	font-family: inherit;
+	font-size: 15px;
+
+	&::placeholder {
+		color: var(--bm-muted-2);
+	}
+
+	&:focus {
+		outline: none;
+		border-color: var(--bm-blue);
+	}
+}
+
+.pc-generate {
+	flex: 0 0 auto;
+	border: 2px solid var(--bm-border);
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+}
+
+.pc-qr {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	margin-top: 16px;
+
+	img {
+		width: 220px;
+		max-width: 100%;
+		background: #fff;
+		border-radius: 4px;
+	}
+}
+
+.pc-summary {
+	color: var(--bm-muted);
+	font-size: 0.9rem;
+	font-variant-numeric: tabular-nums;
+}
+
+.pc-link {
+	display: inline-flex;
+	align-items: center;
+	text-decoration: none;
+}

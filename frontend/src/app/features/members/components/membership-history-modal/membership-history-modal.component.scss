@@ -1,0 +1,46 @@
+@use "./../../../../../styles/brand-modal" as *;
+
+.mh-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.mh-row {
+	display: grid;
+	grid-template-columns: 4ch 1fr auto;
+	align-items: center;
+	gap: 16px;
+	padding: 10px 0;
+	border-top: 1px solid var(--bm-border-soft);
+
+	&:first-child {
+		border-top: 0;
+	}
+}
+
+.mh-year {
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	color: var(--bm-text);
+}
+
+.mh-status {
+	justify-self: start;
+	padding: 0.2em 0.7em;
+	border-radius: var(--bo-radius-pill);
+	background: var(--bm-chip-bg);
+	color: var(--bm-chip-fg);
+	font-size: 0.8rem;
+	font-weight: 600;
+
+	&.paid {
+		background: var(--bo-green-tint);
+		color: var(--bm-green);
+	}
+}
+
+.mh-amount {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+	color: var(--bm-text);
+}
