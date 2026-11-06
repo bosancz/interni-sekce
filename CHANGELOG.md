@@ -1,3 +1,7 @@
+## v4.36.0 — 2026-11-06
+
+- <span class="changelog-type" title="feat">✨</span> [Historie příspěvků, QR pro jinou částku a stránka QR platby](https://github.com/bosancz/interni-sekce/commit/91af04083042ceb14c624c0ee8c6f424ae40c69b) (#460, #707) <span class="changelog-credit" title="Lef a Claude"><span class="changelog-author"><span class="changelog-avatar changelog-initials">L</span></span><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
+
 ## v4.35.3 — 2026-11-06
 
 - <span class="changelog-type" title="fix">🐛</span> [Mazat staré zálohy do koše a selhání úklidu hlásit jako varování](https://github.com/bosancz/interni-sekce/commit/e644caf2509940b7dc4ec0361b8d898807f4cfd1) <span class="changelog-credit" title="Kopec a Claude"><a class="changelog-author" href="https://github.com/SmallhillCZ"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/1273865?v=4&amp;s=48" alt="Kopec"></a><span class="changelog-committer"><img class="changelog-avatar" src="https://avatars.githubusercontent.com/u/81847?v=4&amp;s=48" alt="Claude"></span></span>
