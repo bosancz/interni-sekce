@@ -31,7 +31,11 @@ import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { getMemberEmails } from "src/helpers/member-contacts";
 import { SDK } from "src/sdk";
 import { EventAgeModalComponent } from "../event-age-modal/event-age-modal.component";
-import { EventAttendeesListComponent } from "../event-attendees-list/event-attendees-list.component";
+import {
+	AttendeeRoleChoice,
+	EVENT_LEADER_ROLE,
+	EventAttendeesListComponent,
+} from "../event-attendees-list/event-attendees-list.component";
 import { AttendeeNote, AttendeeNoteTone } from "../event-attendees-list/attendee-note";
 
 const compareLeaderPositions = (a: SDK.EventAttendeeResponseWithLinks, b: SDK.EventAttendeeResponseWithLinks) =>
@@ -474,9 +478,21 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		);
 	}
 
-	async changeAttendeeRole(attendee: SDK.EventAttendeeResponseWithLinks, role: SDK.MemberRolesEnum) {
+	async changeAttendeeRole(attendee: SDK.EventAttendeeResponseWithLinks, choice: AttendeeRoleChoice) {
 		const event = this.event();
-		if (!event || attendee.role === role) return;
+		if (!event) return;
+
+		if (choice === EVENT_LEADER_ROLE) {
+			if (attendee.type !== "leader") await this.promoteToLeader(event, attendee);
+			return;
+		}
+
+		if (attendee.type === "leader") {
+			await this.demoteLeader(event, attendee, choice);
+			return;
+		}
+
+		if (attendee.role === choice) return;
 
 		const previous = attendee.role;
 		const update = (value: SDK.MemberRolesEnum) =>
@@ -486,16 +502,55 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 				),
 			);
 
-		update(role);
+		update(choice);
 
 		try {
-			await this.api.EventsApi.updateEventAttendee(event.id, attendee.memberId, { role });
+			await this.api.EventsApi.updateEventAttendee(event.id, attendee.memberId, { role: choice });
 			this.toastService.toast("Role účastníka změněna.");
 			this.change.emit();
 		} catch (e) {
 			update(previous);
 			this.toastService.toast("Nepodařilo se změnit roli účastníka.");
 		}
+	}
+
+	private async promoteToLeader(event: SDK.EventResponseWithLinks, attendee: SDK.EventAttendeeResponseWithLinks) {
+		try {
+			await this.api.EventsApi.updateEventAttendee(event.id, attendee.memberId, { type: "leader" });
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se udělat z účastníka vedoucího akce.", { color: "danger" });
+			return;
+		}
+
+		await this.loadAttendees(event);
+		this.toastService.toast(`${this.memberName(attendee.member) ?? "Účastník"} teď vede akci.`);
+		this.change.emit();
+	}
+
+	private async demoteLeader(
+		event: SDK.EventResponseWithLinks,
+		attendee: SDK.EventAttendeeResponseWithLinks,
+		role: SDK.MemberRolesEnum,
+	) {
+		const name = this.memberName(attendee.member);
+		const confirmation = await this.modalService.deleteConfirmationModal(
+			name
+				? `${name} je vedoucí akce. Změnou role přestane být vedoucí a zůstane na akci jako účastník.`
+				: "Tento člověk je vedoucí akce. Změnou role přestane být vedoucí a zůstane na akci jako účastník.",
+			{ header: "Odebrat z vedoucích?", buttonText: "Změnit roli" },
+		);
+		if (!confirmation) return;
+
+		try {
+			await this.api.EventsApi.updateEventAttendee(event.id, attendee.memberId, { type: "attendee", role });
+		} catch (e) {
+			this.toastService.toast("Nepodařilo se změnit roli vedoucího.", { color: "danger" });
+			return;
+		}
+
+		await this.loadAttendees(event);
+		this.toastService.toast("Role změněna.");
+		this.change.emit();
 	}
 
 	async removeAttendee(attendee: SDK.EventAttendeeResponseWithLinks) {

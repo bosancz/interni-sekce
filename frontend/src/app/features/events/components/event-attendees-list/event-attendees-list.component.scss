@@ -230,6 +230,18 @@
 	&:focus-visible {
 		background-color: var(--bo-neutral-pill);
 	}
+
+	&.event-leader {
+		border-color: transparent;
+		background-color: var(--bo-yellow-tint);
+		color: var(--bo-yellow-deep);
+		font-weight: 800;
+
+		&:hover,
+		&:focus-visible {
+			border-color: var(--bo-yellow-deep);
+		}
+	}
 }
 
 .attendee.festive .role-select,
