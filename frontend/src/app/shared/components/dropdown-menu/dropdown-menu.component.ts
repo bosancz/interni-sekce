@@ -8,6 +8,10 @@ export interface DropdownMenuOption<T = string> {
 	label: string;
 	description?: string;
 	bold?: boolean;
+	prefix?: string;
+	divider?: boolean;
+	icon?: string;
+	danger?: boolean;
 }
 
 @Component({

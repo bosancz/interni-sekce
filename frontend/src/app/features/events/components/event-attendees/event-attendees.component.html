@@ -38,6 +38,8 @@
 			[notes]="notes()"
 			(remove)="removeAttendee($event)"
 			(roleChange)="changeAttendeeRole($event.attendee, $event.role)"
+			(leadChange)="changeEventLeader($event.attendee, $event.lead)"
+			(leadersReorder)="reorderLeaders($event)"
 		></bo-event-attendees-list>
 
 		@if (canAddAttendee()) {
@@ -47,22 +49,55 @@
 		}
 
 		<p class="attendees-note text-muted">
-			Věk je uvedený ke dni začátku akce. Vedoucí akce se vybírají v záložce Info nebo tady rolí „vede akci“.
+			Věk je uvedený ke dni začátku akce. Vedoucí akce se vybírají v záložce Info nebo tady v menu ⋮ u řádku.
 		</p>
 	</div>
 	<div class="order-1 order-lg-2 col-12 col-xl-4">
 		@if (people()?.length) {
-			<bo-card class="mb-3">
+			<bo-card class="mb-3 summary-card" [class.open]="summaryOpen()">
 				<bo-card-header>
-					<bo-card-title>Souhrn</bo-card-title>
+					<bo-card-title>Na co myslet</bo-card-title>
+					<button
+						slot="buttons"
+						type="button"
+						class="summary-toggle"
+						[attr.aria-expanded]="summaryOpen()"
+						[attr.aria-label]="summaryOpen() ? 'Sbalit' : 'Rozbalit'"
+						(click)="summaryOpen.set(!summaryOpen())"
+					>
+						@if (problems().length) {
+							<span class="summary-total">{{ problems().length }}</span>
+						}
+						<ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
+					</button>
 				</bo-card-header>
-				<bo-card-content>
-					@for (row of summary(); track row.label) {
-						<div class="summary-row">
-							<span class="summary-dot" [class]="'dot-' + row.tone"></span>
-							<span class="summary-label">{{ row.label }}</span>
-							<strong class="summary-count">{{ row.count }}</strong>
+				<bo-card-content class="summary-body">
+					@for (problem of problems(); track problem.label) {
+						<div class="problem">
+							<div class="problem-head">
+								<ion-icon
+									class="problem-icon"
+									[class]="'tone-' + problem.tone"
+									[name]="problem.icon"
+									aria-hidden="true"
+								></ion-icon>
+								<span class="problem-label">{{ problem.label }}</span>
+								<strong class="problem-count">{{ problem.people.length }}</strong>
+							</div>
+							<div class="problem-people">
+								@for (person of problem.people; track person.memberId; let last = $last) {
+									<a [routerLink]="['/databaze/clenove', person.memberId]">{{ person.nickname }}</a>
+									@if (person.detail) {
+										<span class="text-muted"> ({{ person.detail }})</span>
+									}
+									@if (!last) {
+										<span>, </span>
+									}
+								}
+							</div>
 						</div>
+					} @empty {
+						<p class="summary-empty text-muted">Žádné potíže ani chybějící údaje.</p>
 					}
 				</bo-card-content>
 			</bo-card>

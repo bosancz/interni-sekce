@@ -1,5 +1,6 @@
 import { CommonModule, formatDate } from "@angular/common";
 import { Component, computed, effect, input, OnDestroy, OnInit, output, signal } from "@angular/core";
+import { RouterLink } from "@angular/router";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
@@ -11,6 +12,7 @@ import {
 	giftOutline,
 	helpCircle,
 	barChartOutline,
+	chevronDown,
 	mailOutline,
 	sendOutline,
 	warning,
@@ -31,17 +33,35 @@ import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { getMemberEmails } from "src/helpers/member-contacts";
 import { SDK } from "src/sdk";
 import { EventAgeModalComponent } from "../event-age-modal/event-age-modal.component";
-import {
-	AttendeeRoleChoice,
-	EVENT_LEADER_ROLE,
-	EventAttendeesListComponent,
-} from "../event-attendees-list/event-attendees-list.component";
+import { EventAttendeesListComponent } from "../event-attendees-list/event-attendees-list.component";
 import { AttendeeNote, AttendeeNoteTone } from "../event-attendees-list/attendee-note";
 
 const compareLeaderPositions = (a: SDK.EventAttendeeResponseWithLinks, b: SDK.EventAttendeeResponseWithLinks) =>
 	(a.position ?? Infinity) - (b.position ?? Infinity) ||
 	(a.member?.nickname ?? "").localeCompare(b.member?.nickname ?? "", "cs") ||
 	a.memberId - b.memberId;
+
+interface SummaryProblemPerson {
+	memberId: number;
+	nickname?: string | null;
+	detail?: string;
+}
+
+interface SummaryProblem {
+	tone: AttendeeNoteTone;
+	icon: string;
+	label: string;
+	people: SummaryProblemPerson[];
+}
+
+const TONE_ORDER: Record<AttendeeNoteTone, number> = {
+	high: 0,
+	medium: 1,
+	birthday: 2,
+	low: 3,
+	unknown: 4,
+	neutral: 5,
+};
 
 const peopleLabel = (count: number) => `${count} ${count === 1 ? "člověka" : "lidí"}`;
 
@@ -63,6 +83,7 @@ const mailAddresses = (emails: string[]) =>
 
 	imports: [
 		CommonModule,
+		RouterLink,
 		IonButton,
 		IonIcon,
 		TooltipDirective,
@@ -148,21 +169,77 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		return notes;
 	});
 
-	summary = computed(() => {
-		const members = this.allMembers();
-		return [
-			{ label: "Narozeniny", tone: "birthday", count: this.birthdays().length },
-			{ label: "Alergie", tone: "high", count: members.reduce((n, m) => n + (m.allergies?.length ?? 0), 0) },
-			{
-				label: "Další potíže",
-				tone: "medium",
-				count: members.reduce((n, m) => n + (m.knownProblems?.length ?? 0), 0),
-			},
-			...(this.showAnnouncement()
-				? [{ label: "Chybí údaje k ohlášce", tone: "neutral", count: this.announcementMissing().length }]
-				: []),
-		];
+	problems = computed(() => {
+		const groups = new Map<string, SummaryProblem>();
+		const add = (key: string, base: Omit<SummaryProblem, "people">, person: SummaryProblemPerson) => {
+			const group = groups.get(key) ?? { ...base, people: [] };
+			if (TONE_ORDER[base.tone] < TONE_ORDER[group.tone]) Object.assign(group, base, { people: group.people });
+			if (!group.people.some((p) => p.memberId === person.memberId)) group.people.push(person);
+			groups.set(key, group);
+		};
+
+		for (const birthday of this.birthdays()) {
+			add(
+				"birthday",
+				{ tone: "birthday", icon: "gift-outline", label: "Narozeniny" },
+				{
+					memberId: birthday.member.id,
+					nickname: birthday.member.nickname,
+					detail: `${formatDate(birthday.date, "d. M.", "cs")}, ${birthday.age}`,
+				},
+			);
+		}
+
+		for (const member of this.allMembers()) {
+			const person = { memberId: member.id, nickname: member.nickname };
+			for (const entry of member.allergies ?? []) {
+				add(
+					`allergy:${entry.name.trim().toLocaleLowerCase("cs")}`,
+					{
+						tone: entry.severity as AttendeeNoteTone,
+						icon: HealthSeverities[entry.severity].icon,
+						label: `Alergie: ${entry.name.trim()}`,
+					},
+					person,
+				);
+			}
+			for (const entry of member.knownProblems ?? []) {
+				add(
+					`problem:${entry.name.trim().toLocaleLowerCase("cs")}`,
+					{
+						tone: entry.severity as AttendeeNoteTone,
+						icon: HealthSeverities[entry.severity].icon,
+						label: entry.name.trim(),
+					},
+					person,
+				);
+			}
+		}
+
+		for (const item of this.announcementMissing()) {
+			for (const field of item.fields) {
+				add(
+					`announcement:${field}`,
+					{ tone: "neutral", icon: "document-text-outline", label: `Chybí k ohlášce: ${field}` },
+					{ memberId: item.memberId, nickname: item.nickname },
+				);
+			}
+		}
+
+		return [...groups.values()]
+			.map((group) => ({
+				...group,
+				people: group.people.sort((a, b) => (a.nickname ?? "").localeCompare(b.nickname ?? "", "cs")),
+			}))
+			.sort(
+				(a, b) =>
+					TONE_ORDER[a.tone] - TONE_ORDER[b.tone] ||
+					b.people.length - a.people.length ||
+					a.label.localeCompare(b.label, "cs"),
+			);
 	});
+
+	summaryOpen = signal(false);
 
 	announcementMissingLabel = computed(() => peopleLabel(this.announcementMissing().length));
 
@@ -263,6 +340,7 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 	) {
 		addIcons({
 			mailOutline,
+			chevronDown,
 			barChartOutline,
 			sendOutline,
 			checkmarkOutline,
@@ -478,34 +556,20 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		);
 	}
 
-	async changeAttendeeRole(attendee: SDK.EventAttendeeResponseWithLinks, choice: AttendeeRoleChoice) {
+	async changeAttendeeRole(attendee: SDK.EventAttendeeResponseWithLinks, role: SDK.MemberRolesEnum) {
 		const event = this.event();
-		if (!event) return;
+		if (!event || attendee.role === role) return;
 
-		if (choice === EVENT_LEADER_ROLE) {
-			if (attendee.type !== "leader") await this.promoteToLeader(event, attendee);
-			return;
-		}
-
-		if (attendee.type === "leader") {
-			await this.demoteLeader(event, attendee, choice);
-			return;
-		}
-
-		if (attendee.role === choice) return;
+		const list = attendee.type === "leader" ? this.leaders : this.attendees;
 
 		const previous = attendee.role;
 		const update = (value: SDK.MemberRolesEnum) =>
-			this.attendees.set(
-				this.attendees()?.map((item) =>
-					item.memberId === attendee.memberId ? { ...item, role: value } : item,
-				),
-			);
+			list.set(list()?.map((item) => (item.memberId === attendee.memberId ? { ...item, role: value } : item)));
 
-		update(choice);
+		update(role);
 
 		try {
-			await this.api.EventsApi.updateEventAttendee(event.id, attendee.memberId, { role: choice });
+			await this.api.EventsApi.updateEventAttendee(event.id, attendee.memberId, { role });
 			this.toastService.toast("Role účastníka změněna.");
 			this.change.emit();
 		} catch (e) {
@@ -514,43 +578,56 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	private async promoteToLeader(event: SDK.EventResponseWithLinks, attendee: SDK.EventAttendeeResponseWithLinks) {
+	async changeEventLeader(attendee: SDK.EventAttendeeResponseWithLinks, lead: boolean) {
+		const event = this.event();
+		if (!event || (attendee.type === "leader") === lead) return;
+
+		const name = this.memberName(attendee.member);
+
+		if (!lead) {
+			const confirmation = await this.modalService.deleteConfirmationModal(
+				`${name ?? "Tento člověk"} přestane vést akci a zůstane na ní jako účastník.`,
+				{ header: "Odebrat z vedení akce?", buttonText: "Odebrat z vedení" },
+			);
+			if (!confirmation) return;
+		}
+
 		try {
-			await this.api.EventsApi.updateEventAttendee(event.id, attendee.memberId, { type: "leader" });
+			await this.api.EventsApi.updateEventAttendee(event.id, attendee.memberId, {
+				type: lead ? "leader" : "attendee",
+			});
 		} catch (e) {
-			this.toastService.toast("Nepodařilo se udělat z účastníka vedoucího akce.", { color: "danger" });
+			this.toastService.toast(
+				lead ? "Nepodařilo se udělat z účastníka vedoucího akce." : "Nepodařilo se odebrat z vedení akce.",
+				{ color: "danger" },
+			);
 			return;
 		}
 
 		await this.loadAttendees(event);
-		this.toastService.toast(`${this.memberName(attendee.member) ?? "Účastník"} teď vede akci.`);
+		this.toastService.toast(lead ? `${name ?? "Účastník"} teď vede akci.` : `${name ?? "Vedoucí"} už akci nevede.`);
 		this.change.emit();
 	}
 
-	private async demoteLeader(
-		event: SDK.EventResponseWithLinks,
-		attendee: SDK.EventAttendeeResponseWithLinks,
-		role: SDK.MemberRolesEnum,
-	) {
-		const name = this.memberName(attendee.member);
-		const confirmation = await this.modalService.deleteConfirmationModal(
-			name
-				? `${name} je vedoucí akce. Změnou role přestane být vedoucí a zůstane na akci jako účastník.`
-				: "Tento člověk je vedoucí akce. Změnou role přestane být vedoucí a zůstane na akci jako účastník.",
-			{ header: "Odebrat z vedoucích?", buttonText: "Změnit roli" },
+	async reorderLeaders(memberIds: number[]) {
+		const event = this.event();
+		const leaders = this.leaders();
+		if (!event || !leaders) return;
+
+		const positions = new Map(memberIds.map((memberId, position) => [memberId, position]));
+		this.leaders.set(
+			leaders
+				.map((leader) => ({ ...leader, position: positions.get(leader.memberId) ?? leader.position }))
+				.sort(compareLeaderPositions),
 		);
-		if (!confirmation) return;
 
 		try {
-			await this.api.EventsApi.updateEventAttendee(event.id, attendee.memberId, { type: "attendee", role });
+			await this.api.EventsApi.updateEventLeadersOrder(event.id, { memberIds });
+			this.change.emit();
 		} catch (e) {
-			this.toastService.toast("Nepodařilo se změnit roli vedoucího.", { color: "danger" });
-			return;
+			this.toastService.toast("Nepodařilo se změnit pořadí vedoucích.", { color: "danger" });
+			await this.loadAttendees(event);
 		}
-
-		await this.loadAttendees(event);
-		this.toastService.toast("Role změněna.");
-		this.change.emit();
 	}
 
 	async removeAttendee(attendee: SDK.EventAttendeeResponseWithLinks) {
