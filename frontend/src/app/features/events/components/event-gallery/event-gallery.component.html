@@ -8,66 +8,73 @@
 	<bo-card>
 		<bo-card-content>
 			<div class="album-card">
-				<div class="linked">
-					<span class="linked-icon"><ion-icon name="link-outline"></ion-icon></span>
-					<span class="linked-text">Album je propojené s akcí</span>
-					@if (album(); as album) {
-						@if (album.status === "public") {
-							<span class="bo-pill bo-pill-green">Zveřejněno na bosan.cz</span>
-						} @else {
-							<span class="bo-pill bo-pill-yellow">Nepublikováno</span>
-						}
-					}
-				</div>
-
-				<div class="album-name">
-					<a [routerLink]="['/galerie/alba', eventAlbum.id]">{{ album()?.name ?? eventAlbum.name }}</a>
-					@if (album()?.dateFrom) {
-						<span class="album-dates">{{ [album()!.dateFrom, album()!.dateTill] | dateRange }}</span>
-					}
-				</div>
-
-				@if (album() && photos()) {
-					<ul class="checks">
-						@for (check of checks(); track check.label) {
-							<li [class.done]="check.done" [class.warn]="!check.done && check.warn">
-								<span class="check-box">
-									@if (check.done) {
-										<ion-icon name="checkmark"></ion-icon>
-									}
-								</span>
-								<span class="check-text">
-									<span class="check-label">{{ check.label }}</span>
-									<span class="check-note">· {{ check.note }}</span>
-								</span>
-							</li>
-						}
-					</ul>
-				} @else {
-					<p><ion-skeleton-text animated style="width: 60%"></ion-skeleton-text></p>
+				@if (previewPhoto(); as photo) {
+					<a class="cover" [routerLink]="['/galerie/alba', eventAlbum.id]">
+						<img [src]="photo | photoImageUrl: 'big'" [style.background-color]="photo.bg" alt="" />
+					</a>
 				}
 
-				<div class="card-actions">
-					<ion-button fill="solid" color="warning" [routerLink]="['/galerie/alba', eventAlbum.id]">
-						Otevřít album
-					</ion-button>
-					@if (canEditEvent()) {
-						<ion-button
-							fill="clear"
-							color="dark"
-							class="menu-button"
-							aria-label="Další akce alba"
-							(click)="albumMenu.open($event)"
-						>
-							<ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
-						</ion-button>
-						<bo-dropdown-menu
-							#albumMenu
-							header="Album"
-							[options]="menuOptions"
-							(select)="removeAlbum()"
-						></bo-dropdown-menu>
+				<div class="album-body">
+					<div class="album-name">
+						<a [routerLink]="['/galerie/alba', eventAlbum.id]">{{ album()?.name ?? eventAlbum.name }}</a>
+						<div class="album-meta">
+							@if (album()?.dateFrom) {
+								<span class="album-dates">{{
+									[album()!.dateFrom, album()!.dateTill] | dateRange
+								}}</span>
+							}
+							@if (album(); as album) {
+								@if (album.status === "public") {
+									<span class="bo-pill bo-pill-green">Zveřejněno na bosan.cz</span>
+								} @else {
+									<span class="bo-pill bo-pill-yellow">Nepublikováno</span>
+								}
+							}
+						</div>
+					</div>
+
+					@if (album() && photos()) {
+						<ul class="checks">
+							@for (check of checks(); track check.label) {
+								<li [class.done]="check.done" [class.warn]="!check.done && check.warn">
+									<span class="check-box">
+										@if (check.done) {
+											<ion-icon name="checkmark"></ion-icon>
+										}
+									</span>
+									<span class="check-text">
+										<span class="check-label">{{ check.label }}</span>
+										<span class="check-note">· {{ check.note }}</span>
+									</span>
+								</li>
+							}
+						</ul>
+					} @else {
+						<p><ion-skeleton-text animated style="width: 60%"></ion-skeleton-text></p>
 					}
+
+					<div class="card-actions">
+						<ion-button fill="solid" color="warning" [routerLink]="['/galerie/alba', eventAlbum.id]">
+							Otevřít album
+						</ion-button>
+						@if (canEditEvent()) {
+							<ion-button
+								fill="clear"
+								color="dark"
+								class="menu-button"
+								aria-label="Další akce alba"
+								(click)="albumMenu.open($event)"
+							>
+								<ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
+							</ion-button>
+							<bo-dropdown-menu
+								#albumMenu
+								header="Album"
+								[options]="menuOptions"
+								(select)="removeAlbum()"
+							></bo-dropdown-menu>
+						}
+					</div>
 				</div>
 			</div>
 		</bo-card-content>

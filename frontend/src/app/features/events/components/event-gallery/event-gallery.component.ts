@@ -14,6 +14,7 @@ import {
 } from "src/app/shared/components/dropdown-menu/dropdown-menu.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
+import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
 import { SDK } from "src/sdk";
 import { AlbumSelectorModalComponent } from "../album-selector-modal/album-selector-modal.component";
 
@@ -36,6 +37,7 @@ interface AlbumCheck {
 		IonButton,
 		IonIcon,
 		IonSkeletonText,
+		PhotoImageUrlPipe,
 		RouterLink,
 		TooltipDirective,
 	],
@@ -51,6 +53,11 @@ export class EventGalleryComponent {
 	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
 
 	photos = signal<SDK.PhotoResponseWithLinks[] | undefined>(undefined);
+
+	previewPhoto = computed(() => {
+		const photos = this.photos();
+		return photos?.find((photo) => photo.titlePhoto) ?? photos?.[0];
+	});
 
 	canEditEvent = computed(() => this.event()?._links?.updateEvent?.allowed ?? false);
 

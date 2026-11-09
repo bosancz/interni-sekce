@@ -30,13 +30,13 @@
 			<bo-album-info #albumInfo [album]="album()" (update)="updateAlbum($event)" />
 		</div>
 
-		@if (titlePhoto(); as photo) {
+		@if (previewPhoto(); as photo) {
 			<div class="title-photo d-none d-lg-block" [style.width.px]="titlePhotoWidth()">
 				<img [src]="photo | photoImageUrl: 'big'" [style.background-color]="photo.bg" alt="Titulní fotka" />
 				@if (album()?._links?.updateAlbum?.allowed) {
 					<button type="button" class="title-photo-change" (click)="selectTitlePhoto()">
 						<ion-icon name="star-outline"></ion-icon>
-						Změnit titulní fotku
+						{{ titlePhotoMissing() ? "Vybrat titulní fotku" : "Změnit titulní fotku" }}
 					</button>
 				}
 			</div>
