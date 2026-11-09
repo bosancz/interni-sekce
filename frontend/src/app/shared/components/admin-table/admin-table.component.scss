@@ -57,7 +57,7 @@ table.table {
 			}
 
 			&:hover {
-				color: var(--bo-blue);
+				color: var(--bo-heading);
 			}
 		}
 
@@ -71,7 +71,7 @@ table.table {
 		}
 
 		.admin-table-sort-active {
-			color: var(--bo-blue);
+			color: var(--bo-heading);
 		}
 
 		tbody td {
