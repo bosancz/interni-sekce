@@ -1,4 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsInt, IsOptional, Max, Min } from "class-validator";
+import { StaticConfig } from "src/config";
 import { BackupRunStatuses, BackupRunTypes } from "src/models/backups/schema/backup-run";
 
 export class BackupRunProgressResponse {
@@ -21,6 +24,7 @@ export class BackupRunResponse {
 	@ApiPropertyOptional({ type: "string", nullable: true }) finishedAt!: Date | null;
 	@ApiPropertyOptional({ type: "string", nullable: true }) fileName!: string | null;
 	@ApiPropertyOptional({ type: "number", nullable: true }) bytes!: number | null;
+	@ApiPropertyOptional({ type: "number", nullable: true }) filesChecked!: number | null;
 	@ApiPropertyOptional({ type: "number", nullable: true }) filesTransferred!: number | null;
 	@ApiPropertyOptional({ type: "number", nullable: true }) filesRemoved!: number | null;
 	@ApiPropertyOptional({ type: BackupRunProgressResponse, nullable: true })
@@ -44,5 +48,9 @@ export class BackupsSummaryResponse {
 	@ApiPropertyOptional({ type: BackupRunResponse, nullable: true }) lastFilesSuccess!: BackupRunResponse | null;
 	@ApiPropertyOptional({ type: "string", nullable: true }) driveFolderUrl!: string | null;
 	@ApiProperty({ type: "string", isArray: true }) problems!: string[];
-	@ApiProperty({ type: BackupRunResponse, isArray: true }) runs!: BackupRunResponse[];
+}
+
+export class BackupRunsListQuery {
+	@IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(StaticConfig.backups.runsMaxLimit) limit?: number;
+	@IsOptional() @Type(() => Number) @IsInt() @Min(0) offset?: number;
 }

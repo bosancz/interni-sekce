@@ -107,6 +107,7 @@ backup_files() {
 	run_info bytes "$(jq -R -r 'fromjson? | select(.level == "info" and (.msg | startswith("Copied")) and .object) | .object' "$rclone_log" |
 		while IFS= read -r object; do stat -c %s "$DATA_DIR/$object" 2>/dev/null || true; done |
 		awk '{ sum += $1 } END { printf "%.0f\n", sum }')"
+	run_info files_checked "$(jq -r '.checks // empty' <<<"$stats")"
 	run_info files_transferred "$(jq -r '.transfers // empty' <<<"$stats")"
 	run_info files_removed "$(jq -r '.renames // empty' <<<"$stats")"
 	if [ -n "${RUN_INFO:-}" ]; then
