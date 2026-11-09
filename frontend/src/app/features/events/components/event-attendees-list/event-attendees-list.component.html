@@ -1,151 +1,83 @@
-<div class="attendees" [class.sortable]="reorderable()">
-	<div class="attendees-head" aria-hidden="true">
-		<span>Oddíl</span>
-		<span>Přezdívka</span>
-		<span>Jméno</span>
-		<span class="age-head">Věk</span>
-		<span class="notes-head">Poznámky</span>
-		<span>Role</span>
-		<span></span>
-	</div>
-
-	<div
-		class="leaders"
-		cdkDropList
-		cdkDropListLockAxis="y"
-		[cdkDropListDisabled]="!reorderable()"
-		(cdkDropListDropped)="dropLeader($event)"
+@if (attendees()?.length === 0) {
+	<p class="attendees-empty text-muted"><em>Žádní účastníci</em></p>
+} @else {
+	<admin-table
+		class="attendees-table"
+		[rows]="sortedAttendees()"
+		[loading]="attendees() === undefined"
+		[skeletonRows]="10"
+		[rowLink]="rowLink"
+		[rowClass]="rowClass"
+		[trackBy]="trackBy"
+		[actions]="attendeeActions"
+		[actionsHeader]="rowActionsHeader"
+		[sort]="sort()"
+		[order]="order()"
+		(sortChange)="setSort($event)"
 	>
-		@for (attendee of leaders(); track attendee.eventId + "-" + attendee.memberId) {
-			@let attendeeNotes = notes().get(attendee.memberId) ?? [];
-			<div
-				class="attendee"
-				cdkDrag
-				cdkDragPreviewContainer="parent"
-				[class.festive]="hasBirthday(attendeeNotes)"
-				(click)="open(attendee)"
-			>
-				@if (reorderable()) {
-					<button
-						type="button"
-						class="drag-handle"
-						cdkDragHandle
-						aria-label="Přetažením změníš pořadí vedoucích"
-						boTooltip="Přetažením změníš pořadí na webu"
-						(click)="$event.stopPropagation()"
-					>
-						<ion-icon name="reorder-two" aria-hidden="true"></ion-icon>
-					</button>
+		<admin-table-column
+			header="Oddíl"
+			sort="group"
+			[start]="true"
+			headerClass="align-middle attendees-group-column"
+			cellClass="align-middle attendees-group-column"
+		>
+			<ng-container *adminCell="let attendee">
+				@if (attendee.member) {
+					<bo-group-badge [short]="true" [groupId]="attendee.member.groupId"></bo-group-badge>
 				}
-				<ng-container
-					*ngTemplateOutlet="cells; context: { $implicit: attendee, notes: attendeeNotes }"
-				></ng-container>
-			</div>
-		}
-	</div>
+			</ng-container>
+		</admin-table-column>
 
-	@for (attendee of others(); track attendee.eventId + "-" + attendee.memberId) {
-		@let attendeeNotes = notes().get(attendee.memberId) ?? [];
-		<div class="attendee" [class.festive]="hasBirthday(attendeeNotes)" (click)="open(attendee)">
-			<ng-container
-				*ngTemplateOutlet="cells; context: { $implicit: attendee, notes: attendeeNotes }"
-			></ng-container>
-		</div>
-	}
-
-	@if (attendees() === undefined) {
-		@for (item of loadingArray; track $index) {
-			<div class="attendee loading">
-				<ion-skeleton-text [animated]="true"></ion-skeleton-text>
-			</div>
-		}
-	} @else if (attendees()!.length === 0) {
-		<div class="attendee empty">
-			<p class="text-muted"><em>Žádní účastníci</em></p>
-		</div>
-	}
-</div>
-
-<ng-template #cells let-attendee let-attendeeNotes="notes">
-	<div class="group">
-		@if (attendee.member) {
-			<bo-group-badge [short]="true" [groupId]="attendee.member.groupId"></bo-group-badge>
-		}
-	</div>
-
-	<div class="nickname-cell">
-		<a
-			class="nickname"
-			[routerLink]="'/databaze/clenove/' + attendee.memberId"
-			(click)="$event.stopPropagation()"
-			>{{ attendee.member | member: "nickname" }}</a
+		<admin-table-column
+			header="Přezdívka"
+			sort="nickname"
+			[primary]="true"
+			headerClass="align-middle"
+			cellClass="align-middle attendees-wrap"
 		>
-		@if (attendee.type === "leader") {
-			<span class="lead-tag" title="Vede akci"
-				><ion-icon name="flag" aria-hidden="true"></ion-icon><span class="lead-tag-text">vede akci</span></span
-			>
-		}
-	</div>
+			<ng-container *adminCell="let attendee">
+				<span class="nickname-cell">
+					<strong>{{ attendee.member | member: "nickname" }}</strong>
+					@if (attendee.type === "leader") {
+						<span class="lead-tag" title="Vede akci"
+							><ion-icon name="flag" aria-hidden="true"></ion-icon>vede akci</span
+						>
+					}
+				</span>
+				@if (attendee.member) {
+					<span class="member-name">{{ attendee.member.firstName }} {{ attendee.member.lastName }}</span>
+				}
+			</ng-container>
+		</admin-table-column>
 
-	<span class="name">
-		@if (attendee.member) {
-			{{ attendee.member.firstName }}&nbsp;{{ attendee.member.lastName }}
-		}
-	</span>
+		<admin-table-column header="Věk" sort="age" headerClass="align-middle" cellClass="align-middle">
+			<ng-container *adminCell="let attendee">
+				@if (attendee.member | member: "age" : event()?.dateFrom; as age) {
+					{{ age }}
+				}
+			</ng-container>
+		</admin-table-column>
 
-	<span class="age">
-		@if (attendee.member | member: "age" : event()?.dateFrom; as age) {
-			{{ age }}<span class="age-unit"> let</span>
-		}
-	</span>
+		<admin-table-column header="Role" sort="role" headerClass="align-middle" cellClass="align-middle">
+			<ng-container *adminCell="let attendee">{{ attendee.role | role: "title" }}</ng-container>
+		</admin-table-column>
 
-	<div class="notes">
-		@for (note of attendeeNotes; track $index) {
-			<span class="note" [class]="'note-' + note.tone">
-				<ion-icon [name]="note.icon" aria-hidden="true"></ion-icon>{{ note.text }}
-			</span>
-		}
-	</div>
-
-	<div class="role">
-		@let roleTitle = attendee.role | role: "title";
-		@if (attendee._links.updateEventAttendee.allowed) {
-			<button
-				type="button"
-				class="role-select"
-				aria-haspopup="menu"
-				[attr.aria-label]="'Role na akci: ' + roleTitle"
-				(click)="roleMenu.open($event)"
-			>
-				<span>{{ roleTitle }}</span>
-				<ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
-			</button>
-			<bo-dropdown-menu
-				#roleMenu
-				header="Role na akci"
-				[options]="roleOptions"
-				[value]="attendee.role"
-				(select)="roleChange.emit({ attendee, role: $event })"
-			></bo-dropdown-menu>
-		} @else {
-			<span class="role-pill">{{ roleTitle }}</span>
-		}
-	</div>
-
-	<div class="actions">
-		<button
-			type="button"
-			class="actions-button"
-			aria-haspopup="menu"
-			[attr.aria-label]="'Další akce: ' + (attendee.member | member: 'nickname')"
-			(click)="actionsMenu.open($event)"
+		<admin-table-column
+			header="Poznámky"
+			[hideMobileLabel]="true"
+			headerClass="align-middle attendees-notes-column"
+			cellClass="align-middle attendees-wrap"
 		>
-			<ion-icon name="ellipsis-vertical" aria-hidden="true"></ion-icon>
-		</button>
-		<bo-dropdown-menu
-			#actionsMenu
-			[options]="actionOptions(attendee)"
-			(select)="action(attendee, $event)"
-		></bo-dropdown-menu>
-	</div>
-</ng-template>
+			<ng-container *adminCell="let attendee">
+				<span class="notes">
+					@for (note of notes().get(attendee.memberId) ?? []; track $index) {
+						<span class="note" [class]="'note-' + note.tone">
+							<ion-icon [name]="note.icon" aria-hidden="true"></ion-icon>{{ note.text }}
+						</span>
+					}
+				</span>
+			</ng-container>
+		</admin-table-column>
+	</admin-table>
+}

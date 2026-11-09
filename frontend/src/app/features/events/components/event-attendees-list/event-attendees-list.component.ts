@@ -1,23 +1,27 @@
-import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray } from "@angular/cdk/drag-drop";
-import { Component, computed, input, output } from "@angular/core";
-import { NgTemplateOutlet } from "@angular/common";
-import { Router, RouterLink } from "@angular/router";
+import { Component, computed, input, output, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import { chevronDown, ellipsisVertical, flag, personOutline, reorderTwo, trashOutline } from "ionicons/icons";
+import { flag, flagOutline, swapHorizontalOutline, trashOutline } from "ionicons/icons";
+import { DateTime } from "luxon";
 import { MemberRoles } from "src/app/core/config/member-roles";
-import { IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
-import {
-	DropdownMenuComponent,
-	DropdownMenuOption,
-} from "src/app/shared/components/dropdown-menu/dropdown-menu.component";
+import { GroupsService } from "src/app/core/services/groups.service";
+import { ModalService } from "src/app/core/services/modal.service";
+import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
+import { AdminTableCellDirective } from "src/app/shared/components/admin-table/admin-table-cell.directive";
+import { AdminTableColumnComponent } from "src/app/shared/components/admin-table/admin-table-column.component";
+import { AdminTableComponent, AdminTableSort } from "src/app/shared/components/admin-table/admin-table.component";
 import { GroupBadgeComponent } from "src/app/shared/components/group-badge/group-badge.component";
-import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
 import { MemberPipe } from "../../../../shared/pipes/member.pipe";
 import { RolePipe } from "../../../../shared/pipes/role.pipe";
 import { AttendeeNote } from "./attendee-note";
 
-export type AttendeeAction = "lead" | "unlead" | "profile" | "remove";
+type Attendee = SDK.EventAttendeeResponseWithLinks;
+
+const ROLE_ORDER = Object.keys(MemberRoles) as SDK.MemberRolesEnum[];
+
+const collator = new Intl.Collator("cs");
 
 @Component({
 	selector: "bo-event-attendees-list",
@@ -25,15 +29,10 @@ export type AttendeeAction = "lead" | "unlead" | "profile" | "remove";
 	styleUrl: "./event-attendees-list.component.scss",
 
 	imports: [
-		RouterLink,
-		NgTemplateOutlet,
-		TooltipDirective,
-		CdkDropList,
-		CdkDrag,
-		CdkDragHandle,
 		IonIcon,
-		IonSkeletonText,
-		DropdownMenuComponent,
+		AdminTableComponent,
+		AdminTableColumnComponent,
+		AdminTableCellDirective,
 		GroupBadgeComponent,
 		MemberPipe,
 		RolePipe,
@@ -41,70 +40,133 @@ export type AttendeeAction = "lead" | "unlead" | "profile" | "remove";
 })
 export class EventAttendeesListComponent {
 	event = input<SDK.EventResponseWithLinks | null | undefined>();
-	attendees = input<SDK.EventAttendeeResponseWithLinks[] | undefined>();
+	attendees = input<Attendee[] | undefined>();
 	notes = input<Map<number, AttendeeNote[]>>(new Map());
 
-	remove = output<SDK.EventAttendeeResponseWithLinks>();
-	roleChange = output<{ attendee: SDK.EventAttendeeResponseWithLinks; role: SDK.MemberRolesEnum }>();
-	leadChange = output<{ attendee: SDK.EventAttendeeResponseWithLinks; lead: boolean }>();
-	leadersReorder = output<number[]>();
+	remove = output<Attendee>();
+	roleChange = output<{ attendee: Attendee; role: SDK.MemberRolesEnum }>();
+	leadChange = output<{ attendee: Attendee; lead: boolean }>();
 
-	readonly roleOptions: DropdownMenuOption<SDK.MemberRolesEnum>[] = (
-		Object.keys(MemberRoles) as SDK.MemberRolesEnum[]
-	)
-		.reverse()
-		.map((value) => ({ value, label: MemberRoles[value].title }));
+	sort = signal<string | null>("nickname");
+	order = signal<"ASC" | "DESC">("ASC");
 
-	leaders = computed(() => this.attendees()?.filter((a) => a.type === "leader") ?? []);
-	others = computed(() => this.attendees()?.filter((a) => a.type !== "leader") ?? []);
+	private readonly groups = toSignal(this.groupsService.groups);
 
-	reorderable = computed(() => !!this.event()?._links?.updateEventLeadersOrder?.allowed && this.leaders().length > 1);
+	sortedAttendees = computed(() => {
+		const attendees = this.attendees();
+		const sort = this.sort();
+		if (!attendees || !sort) return attendees;
 
-	loadingArray = new Array(10).fill(null);
+		const key = this.sortKey(sort);
+		const direction = this.order() === "ASC" ? 1 : -1;
+		return [...attendees].sort((a, b) => {
+			const leaderA = a.type === "leader" ? 0 : 1;
+			const leaderB = b.type === "leader" ? 0 : 1;
+			if (leaderA !== leaderB) return leaderA - leaderB;
+			const valueA = key(a);
+			const valueB = key(b);
+			if (valueA === valueB) return this.compareNicknames(a, b);
+			if (valueA === null) return 1;
+			if (valueB === null) return -1;
+			const result =
+				typeof valueA === "number" && typeof valueB === "number"
+					? valueA - valueB
+					: collator.compare(String(valueA), String(valueB));
+			return result * direction || this.compareNicknames(a, b);
+		});
+	});
 
-	constructor(private readonly router: Router) {
-		addIcons({ chevronDown, ellipsisVertical, flag, personOutline, reorderTwo, trashOutline });
+	rowLink = (attendee: Attendee) => ["/databaze/clenove", attendee.memberId];
+
+	trackBy = (_: number, attendee: Attendee) => attendee.memberId;
+
+	rowClass = (attendee: Attendee) => ({
+		"member-vedouci": attendee.role === "vedouci",
+		"member-instruktor": attendee.role === "instruktor",
+		"attendee-festive": (this.notes().get(attendee.memberId) ?? []).some((note) => note.tone === "birthday"),
+	});
+
+	rowActionsHeader = (attendee: Attendee) => this.nickname(attendee);
+
+	attendeeActions = (attendee: Attendee): Action[] => {
+		const canUpdate = attendee._links.updateEventAttendee.allowed;
+		return [
+			{
+				text: "Povýšit na vedoucího akce",
+				icon: flagOutline,
+				hidden: !canUpdate || attendee.type === "leader" || attendee.role === SDK.MemberRolesEnum.Dite,
+				handler: () => this.leadChange.emit({ attendee, lead: true }),
+			},
+			{
+				text: "Odebrat z vedení akce",
+				icon: flagOutline,
+				hidden: !canUpdate || attendee.type !== "leader",
+				handler: () => this.leadChange.emit({ attendee, lead: false }),
+			},
+			{
+				text: "Změnit roli na akci",
+				icon: swapHorizontalOutline,
+				hidden: !canUpdate,
+				handler: () => this.changeRole(attendee),
+			},
+			{
+				text: "Odebrat z akce",
+				role: "destructive",
+				color: "danger",
+				icon: trashOutline,
+				hidden: !attendee._links.deleteEventAttendee.allowed,
+				handler: () => this.remove.emit(attendee),
+			},
+		];
+	};
+
+	constructor(
+		private readonly groupsService: GroupsService,
+		private readonly modalService: ModalService,
+	) {
+		addIcons({ flag });
 	}
 
-	actionOptions(attendee: SDK.EventAttendeeResponseWithLinks): DropdownMenuOption<AttendeeAction>[] {
-		const options: DropdownMenuOption<AttendeeAction>[] = [];
-		if (attendee._links.updateEventAttendee.allowed) {
-			if (attendee.type === "leader")
-				options.push({ value: "unlead", label: "Odebrat z vedení akce", icon: "flag" });
-			else if (attendee.role !== SDK.MemberRolesEnum.Dite)
-				options.push({ value: "lead", label: "Povýšit na vedoucího akce", icon: "flag", bold: true });
+	setSort(sort: AdminTableSort) {
+		this.sort.set(sort.sort);
+		this.order.set(sort.order);
+	}
+
+	async changeRole(attendee: Attendee) {
+		const role = await this.modalService.selectModal<SDK.MemberRolesEnum>({
+			header: "Role na akci",
+			message: this.nickname(attendee),
+			values: [...ROLE_ORDER].reverse().map((value) => ({ value, label: MemberRoles[value].title })),
+			value: attendee.role,
+			buttonText: "Uložit",
+		});
+		if (role && role !== attendee.role) this.roleChange.emit({ attendee, role });
+	}
+
+	private sortKey(sort: string): (attendee: Attendee) => string | number | null {
+		switch (sort) {
+			case "group":
+				return (a) => {
+					const groupId = a.member?.groupId;
+					return this.groups()?.find((group) => group.id === groupId)?.name ?? null;
+				};
+			case "age":
+				return (a) => {
+					const birthday = a.member?.birthday;
+					return birthday ? -DateTime.fromISO(birthday).toMillis() : null;
+				};
+			case "role":
+				return (a) => (a.role ? ROLE_ORDER.indexOf(a.role) : null);
+			default:
+				return (a) => this.nickname(a) || null;
 		}
-		options.push({ value: "profile", label: "Otevřít profil", icon: "person-outline" });
-		if (attendee._links.deleteEventAttendee.allowed)
-			options.push({
-				value: "remove",
-				label: "Odebrat z akce",
-				icon: "trash-outline",
-				danger: true,
-				divider: true,
-			});
-		return options;
 	}
 
-	action(attendee: SDK.EventAttendeeResponseWithLinks, action: AttendeeAction) {
-		if (action === "lead") this.leadChange.emit({ attendee, lead: true });
-		else if (action === "unlead") this.leadChange.emit({ attendee, lead: false });
-		else if (action === "profile") this.open(attendee);
-		else this.remove.emit(attendee);
+	private compareNicknames(a: Attendee, b: Attendee) {
+		return collator.compare(this.nickname(a), this.nickname(b));
 	}
 
-	dropLeader(event: CdkDragDrop<unknown>) {
-		if (event.previousIndex === event.currentIndex) return;
-		const memberIds = this.leaders().map((leader) => leader.memberId);
-		moveItemInArray(memberIds, event.previousIndex, event.currentIndex);
-		this.leadersReorder.emit(memberIds);
-	}
-
-	open(attendee: SDK.EventAttendeeResponseWithLinks) {
-		this.router.navigate(["/databaze/clenove", attendee.memberId]);
-	}
-
-	hasBirthday(notes: AttendeeNote[]) {
-		return notes.some((note) => note.tone === "birthday");
+	private nickname(attendee: Attendee) {
+		return attendee.member?.nickname || attendee.member?.firstName || "";
 	}
 }

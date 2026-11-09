@@ -1,136 +1,72 @@
-<div class="row">
-	<div class="order-2 order-lg-1 col-12 col-xl-8">
-		<div class="list-header">
-			<h3>Lidé na akci</h3>
+<div class="list-header">
+	<h3>Lidé na akci</h3>
 
-			@if (allMembers().length) {
-				<ion-button
-					fill="clear"
-					size="small"
-					color="primary"
-					[href]="mailto()"
-					[boTooltip]="mailTooltip()"
-					(click)="sendMail()"
-					aria-label="Napsat e-mail všem na akci"
-				>
-					<ion-icon name="mail-outline" slot="start"></ion-icon>
-					<span class="mail-label">Napsat všem</span>
-				</ion-button>
-			}
+	@if (allMembers().length) {
+		<ion-button
+			fill="clear"
+			size="small"
+			color="primary"
+			[href]="mailto()"
+			[boTooltip]="mailTooltip()"
+			(click)="sendMail()"
+			aria-label="Napsat e-mail všem na akci"
+		>
+			<ion-icon name="mail-outline" slot="start"></ion-icon>
+			<span class="mail-label">Napsat všem</span>
+		</ion-button>
+	}
 
-			@if (event() && people()?.length) {
-				<ion-button
-					fill="clear"
-					size="small"
-					color="primary"
-					(click)="openAgeModal()"
-					aria-label="Počty podle věku"
-				>
-					<ion-icon name="bar-chart-outline" slot="start"></ion-icon>
-					<span class="mail-label">Počty podle věku</span>
-				</ion-button>
+	@if (event() && people()?.length) {
+		<ion-button fill="clear" size="small" color="primary" (click)="openAgeModal()" aria-label="Počty podle věku">
+			<ion-icon name="bar-chart-outline" slot="start"></ion-icon>
+			<span class="mail-label">Počty podle věku</span>
+		</ion-button>
+	}
+</div>
+
+@if (event() && showAnnouncement()) {
+	<div class="announcement" [class.announcement-warning]="announcementMissing().length">
+		<div class="announcement-text">
+			@if (announcementMissing().length) {
+				<strong>Ohlášku zatím nejde odeslat.</strong> V databázi chybí údaje u
+				{{ announcementMissingLabel() }} – najdeš je v seznamu jako „Chybí k ohlášce“.
+			} @else if (event()!.announcementSentAt; as sentAt) {
+				Ohláška odeslána {{ sentAt | date: "d. M. y" }}.
+			} @else {
+				Ohláška zatím nebyla odeslána.
 			}
 		</div>
 
-		<bo-event-attendees-list
-			[event]="event()"
-			[attendees]="people()"
-			[notes]="notes()"
-			(remove)="removeAttendee($event)"
-			(roleChange)="changeAttendeeRole($event.attendee, $event.role)"
-			(leadChange)="changeEventLeader($event.attendee, $event.lead)"
-			(leadersReorder)="reorderLeaders($event)"
-		></bo-event-attendees-list>
-
-		@if (canAddAttendee()) {
-			<div class="text-center">
-				<bo-add-button (click)="addAttendee()">Přidat účastníka</bo-add-button>
-			</div>
-		}
-
-		<p class="attendees-note text-muted">
-			Věk je uvedený ke dni začátku akce. Vedoucí akce se vybírají v záložce Info nebo tady v menu ⋮ u řádku.
-		</p>
+		<ion-button
+			size="small"
+			[fill]="announcementSent() ? 'solid' : 'outline'"
+			[color]="announcementSent() ? 'success' : 'primary'"
+			[disabled]="!canSendAnnouncement()"
+			[boTooltip]="sendAnnouncementTooltip()"
+			(click)="sendAnnouncement()"
+		>
+			<ion-icon [name]="announcementSent() ? 'checkmark-outline' : 'send-outline'" slot="start"></ion-icon>
+			{{ announcementSent() ? "Odeslat znovu" : "Odeslat ohlášku" }}
+		</ion-button>
 	</div>
-	<div class="order-1 order-lg-2 col-12 col-xl-4">
-		@if (people()?.length) {
-			<bo-card class="mb-3 summary-card" [class.open]="summaryOpen()">
-				<bo-card-header>
-					<bo-card-title>Na co myslet</bo-card-title>
-					<button
-						slot="buttons"
-						type="button"
-						class="summary-toggle"
-						[attr.aria-expanded]="summaryOpen()"
-						[attr.aria-label]="summaryOpen() ? 'Sbalit' : 'Rozbalit'"
-						(click)="summaryOpen.set(!summaryOpen())"
-					>
-						@if (problems().length) {
-							<span class="summary-total">{{ problems().length }}</span>
-						}
-						<ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
-					</button>
-				</bo-card-header>
-				<bo-card-content class="summary-body">
-					@for (problem of problems(); track problem.label) {
-						<div class="problem">
-							<div class="problem-head">
-								<ion-icon
-									class="problem-icon"
-									[class]="'tone-' + problem.tone"
-									[name]="problem.icon"
-									aria-hidden="true"
-								></ion-icon>
-								<span class="problem-label">{{ problem.label }}</span>
-								<strong class="problem-count">{{ problem.people.length }}</strong>
-							</div>
-							<div class="problem-people">
-								@for (person of problem.people; track person.memberId; let last = $last) {
-									<a [routerLink]="['/databaze/clenove', person.memberId]">{{ person.nickname }}</a>
-									@if (person.detail) {
-										<span class="text-muted"> ({{ person.detail }})</span>
-									}
-									@if (!last) {
-										<span>, </span>
-									}
-								}
-							</div>
-						</div>
-					} @empty {
-						<p class="summary-empty text-muted">Žádné potíže ani chybějící údaje.</p>
-					}
-				</bo-card-content>
-			</bo-card>
-		}
+}
 
-		@if (event() && showAnnouncement()) {
-			<div class="announcement">
-				@if (announcementMissing().length) {
-					<div class="announcement-warning">
-						<strong>Ohlášku zatím nejde odeslat.</strong> V databázi chybí údaje u
-						{{ announcementMissingLabel() }} – najdeš je v seznamu jako „Chybí k ohlášce“.
-					</div>
-				}
+<bo-event-attendees-list
+	[event]="event()"
+	[attendees]="people()"
+	[notes]="notes()"
+	(remove)="removeAttendee($event)"
+	(roleChange)="changeAttendeeRole($event.attendee, $event.role)"
+	(leadChange)="changeEventLeader($event.attendee, $event.lead)"
+></bo-event-attendees-list>
 
-				<ion-button
-					expand="block"
-					[fill]="announcementSent() ? 'solid' : 'outline'"
-					[color]="announcementSent() ? 'success' : 'primary'"
-					[disabled]="!canSendAnnouncement()"
-					[boTooltip]="sendAnnouncementTooltip()"
-					(click)="sendAnnouncement()"
-				>
-					<ion-icon
-						[name]="announcementSent() ? 'checkmark-outline' : 'send-outline'"
-						slot="start"
-					></ion-icon>
-					{{ announcementSent() ? "Odeslat znovu" : "Odeslat ohlášku" }}
-				</ion-button>
-
-				@if (event()!.announcementSentAt; as sentAt) {
-					<p class="announcement-note text-muted">Ohláška odeslána {{ sentAt | date: "d. M. y" }}.</p>
-				}
-			</div>
-		}
+@if (canAddAttendee()) {
+	<div class="text-center">
+		<bo-add-button (click)="addAttendee()">Přidat účastníka</bo-add-button>
 	</div>
-</div>
+}
+
+<p class="attendees-note text-muted">
+	Věk je uvedený ke dni začátku akce. Vedoucí akce se vybírají v záložce Info nebo tady v menu ⋮ u řádku, tam se mění
+	i role na akci.
+</p>

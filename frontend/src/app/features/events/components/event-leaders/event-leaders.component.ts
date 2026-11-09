@@ -1,7 +1,9 @@
+import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray } from "@angular/cdk/drag-drop";
 import { Component, computed, effect, input, OnDestroy, output, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { IonReorder, IonReorderGroup, IonSkeletonText } from "@ionic/angular/standalone";
-import { ItemReorderEventDetail } from "@ionic/core";
+import { IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { reorderTwo } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
@@ -26,8 +28,10 @@ const compareLeaderPositions = (a: SDK.EventAttendeeResponseWithLinks, b: SDK.Ev
 	styleUrl: "./event-leaders.component.scss",
 	imports: [
 		RouterLink,
-		IonReorderGroup,
-		IonReorder,
+		CdkDropList,
+		CdkDrag,
+		CdkDragHandle,
+		IonIcon,
 		IonSkeletonText,
 		TooltipDirective,
 		GroupPipe,
@@ -59,6 +63,7 @@ export class EventLeadersComponent implements OnDestroy {
 		private modalService: ModalService,
 		private toastService: ToastService,
 	) {
+		addIcons({ reorderTwo });
 		effect(() => {
 			this.load(this.event());
 		});
@@ -161,15 +166,13 @@ export class EventLeadersComponent implements OnDestroy {
 		);
 	}
 
-	async onReorder(ev: CustomEvent<ItemReorderEventDetail>) {
+	async drop(drop: CdkDragDrop<unknown>) {
 		const event = this.event();
 		const leaders = this.leaders();
-		if (!event || !leaders) {
-			ev.detail.complete();
-			return;
-		}
+		if (!event || !leaders || drop.previousIndex === drop.currentIndex) return;
 
-		const ordered = ev.detail.complete([...leaders]) as SDK.EventAttendeeResponseWithLinks[];
+		const ordered = [...leaders];
+		moveItemInArray(ordered, drop.previousIndex, drop.currentIndex);
 		const positions = new Map(ordered.map((leader, position) => [leader.memberId, position]));
 
 		this.attendees.set(
