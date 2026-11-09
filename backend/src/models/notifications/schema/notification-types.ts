@@ -9,6 +9,7 @@ export enum NotificationTypes {
 	"myBugReports" = "myBugReports",
 	"myPhotos" = "myPhotos",
 	"newAlbums" = "newAlbums",
+	"myBadges" = "myBadges",
 	"backups" = "backups",
 }
 
@@ -21,12 +22,14 @@ export enum NotificationChannels {
 export enum NotificationGroups {
 	"events" = "events",
 	"photos" = "photos",
+	"profile" = "profile",
 	"admin" = "admin",
 }
 
 export const NotificationGroupsMetadata: Record<NotificationGroups, { title: string }> = {
 	[NotificationGroups.events]: { title: "Akce" },
 	[NotificationGroups.photos]: { title: "Fotky" },
+	[NotificationGroups.profile]: { title: "Můj profil" },
 	[NotificationGroups.admin]: { title: "Administrace" },
 };
 
@@ -96,6 +99,13 @@ export const NotificationTypesMetadata: Record<NotificationTypes, NotificationTy
 		description: "Nově zveřejněná alba ve fotogalerii",
 		defaultChannels: [NotificationChannels.inApp],
 		roles: [UserDynamicRoles.vedouci],
+	},
+	[NotificationTypes.myBadges]: {
+		group: NotificationGroups.profile,
+		title: "Moje ocenění a školení",
+		description: "Někdo mi v databázi přidal, upravil nebo odebral ocenění či školení",
+		defaultChannels: [NotificationChannels.push, NotificationChannels.inApp],
+		roles: null,
 	},
 	[NotificationTypes.backups]: {
 		group: NotificationGroups.admin,
