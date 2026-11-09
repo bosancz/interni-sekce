@@ -1,11 +1,10 @@
 import { CommonModule } from "@angular/common";
 import { Component, effect, input, signal } from "@angular/core";
 import { ChartData, ChartOptions } from "chart.js";
-import { DateTime } from "luxon";
 import { BaseChartDirective } from "ng2-charts";
 import { EventExpenseTypes } from "src/app/core/config/event-expense-types";
-import { ApiService } from "src/app/core/services/api.service";
 import { SDK } from "src/sdk";
+import { getExpenseAmount } from "../../helpers/event-person-days";
 
 const UNTYPED_EXPENSE = { title: "Bez typu", color: "#b8bcc8" };
 
@@ -19,11 +18,8 @@ const currencyFormat = new Intl.NumberFormat("cs", { style: "currency", currency
 	imports: [CommonModule, BaseChartDirective],
 })
 export class EventExpensesChartComponent {
-	event = input<SDK.EventResponseWithLinks | undefined>();
 	expenses = input<SDK.EventExpenseResponseWithLinks[] | undefined>();
-
-	days = signal(1);
-	persons = signal(1);
+	personDays = input(1);
 
 	total = signal(0);
 
@@ -48,20 +44,10 @@ export class EventExpensesChartComponent {
 		},
 	};
 
-	private attendeesRequest = 0;
-
-	constructor(private api: ApiService) {
+	constructor() {
 		effect(() => {
 			const expenses = this.expenses();
 			if (expenses) this.updateChart(expenses);
-		});
-
-		effect(() => {
-			const event = this.event();
-			if (event) {
-				this.updateDays(event);
-				this.updatePersons(event);
-			}
 		});
 	}
 
@@ -92,32 +78,7 @@ export class EventExpensesChartComponent {
 		this.total.set(this.sumAmounts(expenses));
 	}
 
-	private updateDays(event: SDK.EventResponseWithLinks) {
-		const dateFrom = DateTime.fromISO(event.dateFrom).startOf("day");
-		const dateTill = DateTime.fromISO(event.dateTill).startOf("day").plus({ days: 1 });
-
-		const days = Math.ceil(dateTill.diff(dateFrom, "days").days);
-		this.days.set(days > 0 ? days : 1);
-	}
-
-	private async updatePersons(event: SDK.EventResponseWithLinks) {
-		const request = ++this.attendeesRequest;
-
-		const attendees = await this.api.EventsApi.listEventAttendees(event.id)
-			.then((res) => res.data)
-			.catch(() => []);
-
-		if (request !== this.attendeesRequest) return;
-
-		this.persons.set(attendees.length || 1);
-	}
-
 	private sumAmounts(expenses: SDK.EventExpenseResponseWithLinks[]): number {
-		return expenses.reduce((acc, e) => acc + this.parseAmount(e), 0);
-	}
-
-	private parseAmount(expense: SDK.EventExpenseResponseWithLinks): number {
-		const amount = parseFloat(expense.amount as any);
-		return isNaN(amount) ? 0 : amount;
+		return expenses.reduce((acc, e) => acc + getExpenseAmount(e), 0);
 	}
 }
