@@ -22,7 +22,14 @@ ion-badge {
 	border-radius: var(--bo-radius-pill);
 	font-size: 0.7rem;
 	font-weight: 700;
-	padding: 0.3em 0.6em;
+	--padding-top: 0;
+	--padding-bottom: 0;
+	padding: 0 0.6em;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 1.8em;
+	line-height: 1;
 	min-width: 1.8em;
 	text-align: center;
 

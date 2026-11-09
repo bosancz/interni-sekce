@@ -1,0 +1,9 @@
+<bo-modal-layout>
+	<h4 slot="title">Výdaje podle typu</h4>
+
+	<bo-event-expenses-chart [expenses]="expenses" [personDays]="personDays"></bo-event-expenses-chart>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-primary" (click)="close.emit()">Zavřít</button>
+	</div>
+</bo-modal-layout>
