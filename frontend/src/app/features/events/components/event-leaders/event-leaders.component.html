@@ -1,8 +1,25 @@
 @if (leaders(); as leaders) {
 	@if (leaders.length) {
-		<ion-reorder-group class="leaders" [disabled]="!reorderable()" (ionItemReorder)="onReorder($any($event))">
+		<div
+			class="leaders"
+			cdkDropList
+			cdkDropListLockAxis="y"
+			[cdkDropListDisabled]="!reorderable()"
+			(cdkDropListDropped)="drop($event)"
+		>
 			@for (leader of leaders; track leader.memberId) {
-				<div class="leader">
+				<div class="leader" cdkDrag cdkDragPreviewContainer="parent">
+					@if (reorderable()) {
+						<button
+							type="button"
+							class="leader-handle"
+							cdkDragHandle
+							aria-label="Přetažením změníš pořadí vedoucích"
+							boTooltip="Přetažením změníš pořadí na webu"
+						>
+							<ion-icon name="reorder-two" aria-hidden="true"></ion-icon>
+						</button>
+					}
 					<a class="leader-link" [routerLink]="['/databaze/clenove', leader.memberId]">
 						<span class="leader-avatar" [style.background-color]="leader.member?.groupId | group: 'color'">
 							@if (leader.member | memberProfilePhotoUrl; as photoUrl) {
@@ -11,15 +28,23 @@
 								{{ (leader.member | member: "nickname")?.charAt(0) }}
 							}
 						</span>
-						<strong>{{ leader.member | member: "nickname" }}</strong>
+						<span class="leader-text">
+							<strong class="leader-nickname">{{ leader.member | member: "nickname" }}</strong>
+							@if (leader.member) {
+								<span class="leader-name"
+									>{{ leader.member.firstName }} {{ leader.member.lastName }}</span
+								>
+							}
+						</span>
 					</a>
-					<span class="leader-role text-muted">{{ leader.role | role: "title" }}</span>
-					@if (reorderable()) {
-						<ion-reorder class="leader-reorder" boTooltip="Přetažením změníš pořadí na webu"></ion-reorder>
-					}
+					<span class="leader-pills">
+						@if (leader.role && leader.role !== "vedouci") {
+							<span class="bo-pill">{{ leader.role | role: "title" }}</span>
+						}
+					</span>
 				</div>
 			}
-		</ion-reorder-group>
+		</div>
 	} @else {
 		<span class="bo-pill bo-pill-danger-dashed">Bez vedoucího</span>
 	}

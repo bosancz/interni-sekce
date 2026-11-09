@@ -19,128 +19,33 @@
 	}
 }
 
-.problem {
-	padding: 0.45rem 0;
-
-	& + & {
-		border-top: 1px solid var(--bo-line);
-	}
-}
-
-.problem-head {
+.announcement {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
-	font-size: 0.9rem;
-	font-weight: 700;
-	color: var(--bo-ink);
-}
-
-.problem-icon {
-	flex: 0 0 auto;
-	font-size: 1rem;
-	color: var(--bo-neutral-pill-text);
-
-	&.tone-birthday {
-		color: var(--bo-yellow);
-	}
-
-	&.tone-high {
-		color: var(--bo-red);
-	}
-
-	&.tone-medium {
-		color: var(--bo-yellow-deep);
-	}
-
-	&.tone-low {
-		color: var(--bo-green);
-	}
-}
-
-.problem-label {
-	min-width: 0;
-}
-
-.problem-count {
-	margin-left: auto;
-}
-
-.problem-people {
-	padding-inline-start: 1.5rem;
-	font-size: $font-small;
-	line-height: 1.5;
-
-	a {
-		color: var(--bo-blue);
-		font-weight: 700;
-		text-decoration: none;
-
-		&:hover {
-			text-decoration: underline;
-		}
-	}
-}
-
-.summary-empty {
-	margin: 0;
-	font-size: $font-small;
-}
-
-.summary-toggle {
-	display: none;
-	align-items: center;
-	gap: 0.4rem;
-	padding: 0.25rem 0.5rem;
-	border: 0;
-	border-radius: var(--bo-radius-pill);
-	background: transparent;
-	color: var(--bo-muted);
-	cursor: pointer;
-
-	ion-icon {
-		font-size: 1.1rem;
-		transition: transform 150ms ease;
-	}
-}
-
-.summary-total {
-	min-width: 1.5em;
-	padding: 0.1em 0.45em;
-	border-radius: var(--bo-radius-pill);
-	background-color: var(--bo-neutral-pill);
-	color: var(--bo-ink);
-	font-size: 0.8rem;
-	font-weight: 800;
-	text-align: center;
-}
-
-@media (max-width: 1199.98px) {
-	.summary-toggle {
-		display: inline-flex;
-	}
-
-	.summary-card:not(.open) .summary-body {
-		display: none;
-	}
-
-	.summary-card.open .summary-toggle ion-icon {
-		transform: rotate(180deg);
-	}
-}
-
-.announcement-warning {
-	margin-bottom: 0.5rem;
-	padding: 8px 12px;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+	margin-bottom: 12px;
+	padding: 8px 8px 8px 16px;
 	border-radius: var(--bo-radius-btn);
-	background: var(--bo-yellow-tint);
+	background: var(--bo-neutral-pill);
 	font-size: $font-small;
+
+	&.announcement-warning {
+		background: var(--bo-yellow-tint);
+	}
+
+	ion-button {
+		margin: 0 0 0 auto;
+	}
+
+	@media (min-width: 992px) {
+		margin-inline: 16px;
+	}
 }
 
-.announcement-note {
-	margin: 0.25rem 0 0;
-	font-size: $font-small;
-	text-align: center;
+.announcement-text {
+	flex: 1 1 280px;
+	min-width: 0;
 }
 
 @media (max-width: 575.98px) {

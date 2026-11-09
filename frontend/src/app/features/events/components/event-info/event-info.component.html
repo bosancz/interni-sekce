@@ -1,144 +1,160 @@
 <div class="row layout">
-	<div class="col-12 col-xl-8">
-		<ion-list class="selectable">
-			<bo-item [label]="'Název'" [loading]="!event()">
-				<p>{{ event()?.name | typography }}</p>
-				@if (canEdit()) {
-					<bo-edit-button-text
-						slot="end"
-						[label]="'Název akce'"
-						placeholder="Neočekávaný dýchánek"
-						[value]="event()?.name"
-						(update)="update.emit({ name: $event ?? '' })"
-					/>
-				}
-			</bo-item>
+	<div class="col-12 col-xl-8 info-cards">
+		<bo-card class="info-card">
+			<bo-card-header><bo-card-title>Základní údaje</bo-card-title></bo-card-header>
+			<bo-card-content>
+				<ion-list class="selectable">
+					<bo-item [label]="'Název'" [loading]="!event()">
+						<p>{{ event()?.name | typography }}</p>
+						@if (canEdit()) {
+							<bo-edit-button-text
+								slot="end"
+								[label]="'Název akce'"
+								placeholder="Neočekávaný dýchánek"
+								[value]="event()?.name"
+								(update)="update.emit({ name: $event ?? '' })"
+							/>
+						}
+					</bo-item>
+					<bo-item label="Termín" [loading]="!event()">
+						<p>
+							{{ [event()?.dateFrom, event()?.dateTill] | dateRange }}
+						</p>
+						@if (canEdit()) {
+							<bo-edit-button-date-range
+								slot="end"
+								label="Datum od - do"
+								[value]="[event()?.dateFrom, event()?.dateTill]"
+								(update)="update.emit({ dateFrom: $event[0], dateTill: $event[1] })"
+							/>
+						}
+					</bo-item>
+					<bo-item label="Místo">
+						<p>{{ (event()?.place | typography) || "-" }}</p>
 
-			<bo-item label="Termín" [loading]="!event()">
-				<p>
-					{{ [event()?.dateFrom, event()?.dateTill] | dateRange }}
-				</p>
-				@if (canEdit()) {
-					<bo-edit-button-date-range
-						slot="end"
-						label="Datum od - do"
-						[value]="[event()?.dateFrom, event()?.dateTill]"
-						(update)="update.emit({ dateFrom: $event[0], dateTill: $event[1] })"
-					/>
-				}
-			</bo-item>
-
-			<bo-item label="Místo">
-				<p>{{ (event()?.place | typography) || "-" }}</p>
-
-				@if (canEdit()) {
-					<bo-edit-button-location
-						slot="end"
-						label="Místo akce"
-						[place]="event()?.place"
-						[placeCoordinates]="placeCoordinates()"
-						(update)="update.emit({ place: $event.place, placeCoordinates: $event.placeCoordinates })"
-					/>
-				}
-			</bo-item>
-
-			<bo-item label="Sraz" [loading]="!event()">
-				<p [innerHTML]="(event()?.meetingPlaceStart | markdownInline) || '-'"></p>
-				@if (canEdit()) {
-					<bo-edit-button-markdown
-						slot="end"
-						label="Místo srazu"
-						placeholder="Dno pytle, 8:00"
-						[value]="event()?.meetingPlaceStart"
-						(update)="update.emit({ meetingPlaceStart: $event || null })"
-					/>
-				}
-			</bo-item>
-
-			<bo-item label="Konec" [loading]="!event()">
-				<p [innerHTML]="(event()?.meetingPlaceEnd | markdownInline) || '-'"></p>
-				@if (canEdit()) {
-					<bo-edit-button-markdown
-						slot="end"
-						label="Místo konce"
-						placeholder="Dno pytle, 18:30"
-						[value]="event()?.meetingPlaceEnd"
-						(update)="update.emit({ meetingPlaceEnd: $event || null })"
-					/>
-				}
-			</bo-item>
-
-			<bo-item label="Typ" [loading]="!event()" lines="inset">
-				<bo-event-type-selector
-					[disabled]="!canEdit()"
-					[ngModel]="event()?.type"
-					(ngModelChange)="update.emit({ type: $event })"
-				></bo-event-type-selector>
-			</bo-item>
-
-			<bo-item label="Oddíl" [loading]="!event()">
-				<bo-group-select
-					[disabled]="!canEdit()"
-					[ngModel]="event()?.groupsIds ?? []"
-					(ngModelChange)="update.emit({ groupsIds: $event })"
-					[multiple]="true"
-				></bo-group-select>
-			</bo-item>
-
-			<bo-item label="Vedoucí">
-				<bo-event-leaders #leaders [event]="event()" (change)="change.emit()"></bo-event-leaders>
-				@if (event()?._links?.addEventLeader?.allowed) {
-					<bo-edit-button slot="end" (click)="leaders.edit()" />
-				}
-			</bo-item>
-
-			<bo-item label="Popis" [loading]="!event()">
-				<div class="bo-markdown" [innerHTML]="event()?.description | markdown"></div>
-				@if (canEdit()) {
-					<bo-edit-button-markdown
-						slot="end"
-						label="Popis"
-						[value]="event()?.description"
-						(update)="update.emit({ description: $event })"
-					/>
-				}
-			</bo-item>
-
-			<bo-item label="Cena" [loading]="!event()">
-				<p>{{ event()?.price != null ? event()?.price + " Kč" : "-" }}</p>
-				@if (canEdit()) {
-					<bo-edit-button-number
-						slot="end"
-						label="Cena (Kč)"
-						placeholder="2000"
-						[value]="event()?.price"
-						(update)="update.emit({ price: $event })"
-					/>
-				}
-			</bo-item>
-
-			<bo-item label="Co s sebou" [loading]="!event()">
-				<div class="bo-markdown" [innerHTML]="event()?.itemList | markdown"></div>
-				@if (canEdit()) {
-					<bo-edit-button-markdown
-						slot="end"
-						label="Co s sebou"
-						[value]="event()?.itemList"
-						(update)="update.emit({ itemList: $event })"
-					/>
-				}
-			</bo-item>
-
-			<bo-item label="Přihláška" [loading]="!event()">
-				<bo-event-registration [event]="event()" (update)="update.emit({})"></bo-event-registration>
-			</bo-item>
-		</ion-list>
-
-		<!-- TODO: ten label bych dal mimo ten edit button, ale stejně to chci trochu předělat, aby se třeba na mobilu ten markdown editova na celou obrazovku a na PC třeba i inline -->
+						@if (canEdit()) {
+							<bo-edit-button-location
+								slot="end"
+								label="Místo akce"
+								[place]="event()?.place"
+								[placeCoordinates]="placeCoordinates()"
+								(update)="
+									update.emit({ place: $event.place, placeCoordinates: $event.placeCoordinates })
+								"
+							/>
+						}
+					</bo-item>
+					<bo-item label="Typ" [loading]="!event()">
+						<bo-event-type-selector
+							[disabled]="!canEdit()"
+							[ngModel]="event()?.type"
+							(ngModelChange)="update.emit({ type: $event })"
+						></bo-event-type-selector>
+					</bo-item>
+					<bo-item label="Oddíl" [loading]="!event()">
+						<bo-group-select
+							[disabled]="!canEdit()"
+							[ngModel]="event()?.groupsIds ?? []"
+							(ngModelChange)="update.emit({ groupsIds: $event })"
+							[multiple]="true"
+						></bo-group-select>
+					</bo-item>
+				</ion-list>
+			</bo-card-content>
+		</bo-card>
+		<bo-card class="info-card">
+			<bo-card-header><bo-card-title>Sraz a návrat</bo-card-title></bo-card-header>
+			<bo-card-content>
+				<ion-list class="selectable">
+					<bo-item label="Sraz" [loading]="!event()">
+						<p [innerHTML]="(event()?.meetingPlaceStart | markdownInline) || '-'"></p>
+						@if (canEdit()) {
+							<bo-edit-button-markdown
+								slot="end"
+								label="Místo srazu"
+								placeholder="Dno pytle, 8:00"
+								[value]="event()?.meetingPlaceStart"
+								(update)="update.emit({ meetingPlaceStart: $event || null })"
+							/>
+						}
+					</bo-item>
+					<bo-item label="Konec" [loading]="!event()">
+						<p [innerHTML]="(event()?.meetingPlaceEnd | markdownInline) || '-'"></p>
+						@if (canEdit()) {
+							<bo-edit-button-markdown
+								slot="end"
+								label="Místo konce"
+								placeholder="Dno pytle, 18:30"
+								[value]="event()?.meetingPlaceEnd"
+								(update)="update.emit({ meetingPlaceEnd: $event || null })"
+							/>
+						}
+					</bo-item>
+				</ion-list>
+			</bo-card-content>
+		</bo-card>
+		<bo-card class="info-card">
+			<bo-card-header><bo-card-title>Pro rodiče</bo-card-title></bo-card-header>
+			<bo-card-content>
+				<ion-list class="selectable">
+					<bo-item label="Popis" [loading]="!event()">
+						<div class="bo-markdown" [innerHTML]="event()?.description | markdown"></div>
+						@if (canEdit()) {
+							<bo-edit-button-markdown
+								slot="end"
+								label="Popis"
+								[value]="event()?.description"
+								(update)="update.emit({ description: $event })"
+							/>
+						}
+					</bo-item>
+					<bo-item label="Cena" [loading]="!event()">
+						<p>{{ event()?.price != null ? event()?.price + " Kč" : "-" }}</p>
+						@if (canEdit()) {
+							<bo-edit-button-number
+								slot="end"
+								label="Cena (Kč)"
+								placeholder="2000"
+								[value]="event()?.price"
+								(update)="update.emit({ price: $event })"
+							/>
+						}
+					</bo-item>
+					<bo-item label="Co s sebou" [loading]="!event()">
+						<div class="bo-markdown" [innerHTML]="event()?.itemList | markdown"></div>
+						@if (canEdit()) {
+							<bo-edit-button-markdown
+								slot="end"
+								label="Co s sebou"
+								[value]="event()?.itemList"
+								(update)="update.emit({ itemList: $event })"
+							/>
+						}
+					</bo-item>
+					<bo-item label="Přihláška" [loading]="!event()">
+						<bo-event-registration [event]="event()" (update)="update.emit({})"></bo-event-registration>
+					</bo-item>
+				</ion-list>
+			</bo-card-content>
+		</bo-card>
 	</div>
-	<div class="col-12 col-xl-4 order-first order-xl-last">
+	<div class="col-12 col-xl-4 order-first order-xl-last side">
+		<bo-card class="info-card leaders-card">
+			<bo-card-header><bo-card-title>Vedoucí akce</bo-card-title></bo-card-header>
+			<bo-card-content>
+				<bo-event-leaders #leaders [event]="event()" (change)="change.emit()"></bo-event-leaders>
+			</bo-card-content>
+			@if (event()?._links?.addEventLeader?.allowed) {
+				<bo-card-footer class="leaders-footer">
+					<ion-button fill="clear" size="small" (click)="leaders.edit()">
+						<ion-icon name="add" slot="start"></ion-icon>
+						Přidat vedoucího
+					</ion-button>
+				</bo-card-footer>
+			}
+		</bo-card>
 		@if (event(); as event) {
-			<bo-event-card [event]="event" class="mb-3"></bo-event-card>
+			<bo-event-card [event]="event" class="d-none d-xl-block mb-3"></bo-event-card>
 		}
 		@if (placeCoordinates(); as coords) {
 			<bo-location-map [coordinates]="coords" class="event-map mb-5"></bo-location-map>

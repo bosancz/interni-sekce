@@ -1,10 +1,16 @@
 import { CommonModule } from "@angular/common";
 import { Component, computed, input, output } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { IonList } from "@ionic/angular/standalone";
+import { IonButton, IonIcon, IonList } from "@ionic/angular/standalone";
+import { addIcons } from "ionicons";
+import { add } from "ionicons/icons";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { EventTypeSelectorComponent } from "src/app/features/events/components/event-type-selector/event-type-selector.component";
-import { EditButtonComponent } from "src/app/shared/components/edit-button/edit-button.component";
+import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
+import { CardFooterComponent } from "src/app/shared/components/card-footer/card-footer.component";
+import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
+import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
+import { CardComponent } from "src/app/shared/components/card/card.component";
 import { EditButtonDateRangeComponent } from "src/app/shared/components/edit-button-date-range/edit-button-date-range.component";
 import { EditButtonLocationComponent } from "src/app/shared/components/edit-button-location/edit-button-location.component";
 import { EditButtonMarkdownComponent } from "src/app/shared/components/edit-button-markdown/edit-button-markdown.component";
@@ -32,7 +38,13 @@ import { EventRegistrationComponent } from "../event-registration/event-registra
 		FormsModule,
 		IonList,
 		ItemComponent,
-		EditButtonComponent,
+		IonButton,
+		IonIcon,
+		CardComponent,
+		CardHeaderComponent,
+		CardTitleComponent,
+		CardContentComponent,
+		CardFooterComponent,
 		EditButtonTextComponent,
 		EventLeadersComponent,
 		EditButtonNumberComponent,
@@ -54,6 +66,10 @@ export class EventInfoComponent {
 	event = input<SDK.EventResponseWithLinks | undefined>(undefined);
 	update = output<SDK.EventUpdateBody>();
 	change = output<void>();
+
+	constructor() {
+		addIcons({ add });
+	}
 
 	canEdit = computed(() => this.event()?._links?.updateEvent?.allowed ?? false);
 

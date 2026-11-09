@@ -1,6 +1,5 @@
 import { CommonModule, formatDate } from "@angular/common";
 import { Component, computed, effect, input, OnDestroy, OnInit, output, signal } from "@angular/core";
-import { RouterLink } from "@angular/router";
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { addIcons } from "ionicons";
@@ -12,7 +11,6 @@ import {
 	giftOutline,
 	helpCircle,
 	barChartOutline,
-	chevronDown,
 	mailOutline,
 	sendOutline,
 	warning,
@@ -24,10 +22,6 @@ import { ToastService } from "src/app/core/services/toast.service";
 import { MemberSelectorModalComponent } from "src/app/features/events/components/member-selector-modal/member-selector-modal.component";
 import { Action } from "src/app/shared/components/action-buttons/action-buttons.component";
 import { AddButtonComponent } from "src/app/shared/components/add-button/add-button.component";
-import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
-import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
-import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
-import { CardComponent } from "src/app/shared/components/card/card.component";
 import { getBirthdaysBetween } from "src/helpers/age";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { getMemberEmails } from "src/helpers/member-contacts";
@@ -40,28 +34,6 @@ const compareLeaderPositions = (a: SDK.EventAttendeeResponseWithLinks, b: SDK.Ev
 	(a.position ?? Infinity) - (b.position ?? Infinity) ||
 	(a.member?.nickname ?? "").localeCompare(b.member?.nickname ?? "", "cs") ||
 	a.memberId - b.memberId;
-
-interface SummaryProblemPerson {
-	memberId: number;
-	nickname?: string | null;
-	detail?: string;
-}
-
-interface SummaryProblem {
-	tone: AttendeeNoteTone;
-	icon: string;
-	label: string;
-	people: SummaryProblemPerson[];
-}
-
-const TONE_ORDER: Record<AttendeeNoteTone, number> = {
-	high: 0,
-	medium: 1,
-	birthday: 2,
-	low: 3,
-	unknown: 4,
-	neutral: 5,
-};
 
 const peopleLabel = (count: number) => `${count} ${count === 1 ? "člověka" : "lidí"}`;
 
@@ -81,19 +53,7 @@ const mailAddresses = (emails: string[]) =>
 	templateUrl: "./event-attendees.component.html",
 	styleUrls: ["./event-attendees.component.scss"],
 
-	imports: [
-		CommonModule,
-		RouterLink,
-		IonButton,
-		IonIcon,
-		TooltipDirective,
-		EventAttendeesListComponent,
-		AddButtonComponent,
-		CardComponent,
-		CardHeaderComponent,
-		CardTitleComponent,
-		CardContentComponent,
-	],
+	imports: [CommonModule, IonButton, IonIcon, TooltipDirective, EventAttendeesListComponent, AddButtonComponent],
 })
 export class EventAttendeesComponent implements OnInit, OnDestroy {
 	event = input<SDK.EventResponseWithLinks | null | undefined>();
@@ -168,78 +128,6 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 
 		return notes;
 	});
-
-	problems = computed(() => {
-		const groups = new Map<string, SummaryProblem>();
-		const add = (key: string, base: Omit<SummaryProblem, "people">, person: SummaryProblemPerson) => {
-			const group = groups.get(key) ?? { ...base, people: [] };
-			if (TONE_ORDER[base.tone] < TONE_ORDER[group.tone]) Object.assign(group, base, { people: group.people });
-			if (!group.people.some((p) => p.memberId === person.memberId)) group.people.push(person);
-			groups.set(key, group);
-		};
-
-		for (const birthday of this.birthdays()) {
-			add(
-				"birthday",
-				{ tone: "birthday", icon: "gift-outline", label: "Narozeniny" },
-				{
-					memberId: birthday.member.id,
-					nickname: birthday.member.nickname,
-					detail: `${formatDate(birthday.date, "d. M.", "cs")}, ${birthday.age}`,
-				},
-			);
-		}
-
-		for (const member of this.allMembers()) {
-			const person = { memberId: member.id, nickname: member.nickname };
-			for (const entry of member.allergies ?? []) {
-				add(
-					`allergy:${entry.name.trim().toLocaleLowerCase("cs")}`,
-					{
-						tone: entry.severity as AttendeeNoteTone,
-						icon: HealthSeverities[entry.severity].icon,
-						label: `Alergie: ${entry.name.trim()}`,
-					},
-					person,
-				);
-			}
-			for (const entry of member.knownProblems ?? []) {
-				add(
-					`problem:${entry.name.trim().toLocaleLowerCase("cs")}`,
-					{
-						tone: entry.severity as AttendeeNoteTone,
-						icon: HealthSeverities[entry.severity].icon,
-						label: entry.name.trim(),
-					},
-					person,
-				);
-			}
-		}
-
-		for (const item of this.announcementMissing()) {
-			for (const field of item.fields) {
-				add(
-					`announcement:${field}`,
-					{ tone: "neutral", icon: "document-text-outline", label: `Chybí k ohlášce: ${field}` },
-					{ memberId: item.memberId, nickname: item.nickname },
-				);
-			}
-		}
-
-		return [...groups.values()]
-			.map((group) => ({
-				...group,
-				people: group.people.sort((a, b) => (a.nickname ?? "").localeCompare(b.nickname ?? "", "cs")),
-			}))
-			.sort(
-				(a, b) =>
-					TONE_ORDER[a.tone] - TONE_ORDER[b.tone] ||
-					b.people.length - a.people.length ||
-					a.label.localeCompare(b.label, "cs"),
-			);
-	});
-
-	summaryOpen = signal(false);
 
 	announcementMissingLabel = computed(() => peopleLabel(this.announcementMissing().length));
 
@@ -340,7 +228,6 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 	) {
 		addIcons({
 			mailOutline,
-			chevronDown,
 			barChartOutline,
 			sendOutline,
 			checkmarkOutline,
@@ -607,27 +494,6 @@ export class EventAttendeesComponent implements OnInit, OnDestroy {
 		await this.loadAttendees(event);
 		this.toastService.toast(lead ? `${name ?? "Účastník"} teď vede akci.` : `${name ?? "Vedoucí"} už akci nevede.`);
 		this.change.emit();
-	}
-
-	async reorderLeaders(memberIds: number[]) {
-		const event = this.event();
-		const leaders = this.leaders();
-		if (!event || !leaders) return;
-
-		const positions = new Map(memberIds.map((memberId, position) => [memberId, position]));
-		this.leaders.set(
-			leaders
-				.map((leader) => ({ ...leader, position: positions.get(leader.memberId) ?? leader.position }))
-				.sort(compareLeaderPositions),
-		);
-
-		try {
-			await this.api.EventsApi.updateEventLeadersOrder(event.id, { memberIds });
-			this.change.emit();
-		} catch (e) {
-			this.toastService.toast("Nepodařilo se změnit pořadí vedoucích.", { color: "danger" });
-			await this.loadAttendees(event);
-		}
 	}
 
 	async removeAttendee(attendee: SDK.EventAttendeeResponseWithLinks) {
