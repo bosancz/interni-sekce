@@ -1,54 +1,42 @@
-import { DatePipe } from "@angular/common";
-import { Component, computed, effect, input, output, signal } from "@angular/core";
+import { Component, computed, effect, input, output, signal, untracked } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { IonButton, IonIcon, IonSkeletonText } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
-import {
-	addOutline,
-	checkmarkOutline,
-	closeOutline,
-	createOutline,
-	documentAttachOutline,
-	globeOutline,
-	imagesOutline,
-	linkOutline,
-} from "ionicons/icons";
+import { addOutline, checkmark, ellipsisVertical, imagesOutline, linkOutline } from "ionicons/icons";
 import { ApiService } from "src/app/core/services/api.service";
 import { ModalService } from "src/app/core/services/modal.service";
 import { ToastService } from "src/app/core/services/toast.service";
 import { CardContentComponent } from "src/app/shared/components/card-content/card-content.component";
-import { CardHeaderComponent } from "src/app/shared/components/card-header/card-header.component";
-import { CardTitleComponent } from "src/app/shared/components/card-title/card-title.component";
 import { CardComponent } from "src/app/shared/components/card/card.component";
+import {
+	DropdownMenuComponent,
+	DropdownMenuOption,
+} from "src/app/shared/components/dropdown-menu/dropdown-menu.component";
 import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { DateRangePipe } from "src/app/shared/pipes/date-range.pipe";
-import { MarkdownPipe } from "src/app/shared/pipes/markdown.pipe";
-import { PhotoImageUrlPipe } from "src/app/shared/pipes/photo-image-url.pipe";
-import { PrettyBytesPipe } from "src/app/shared/pipes/pretty-bytes.pipe";
-import { openPdf } from "src/helpers/open-pdf";
 import { SDK } from "src/sdk";
 import { AlbumSelectorModalComponent } from "../album-selector-modal/album-selector-modal.component";
 
-const PREVIEW_PHOTOS = 8;
+interface AlbumCheck {
+	label: string;
+	done: boolean;
+	note: string;
+	warn: boolean;
+}
 
 @Component({
 	selector: "bo-event-gallery",
 	templateUrl: "./event-gallery.component.html",
 	styleUrl: "./event-gallery.component.scss",
 	imports: [
-		DatePipe,
-		RouterLink,
 		CardComponent,
 		CardContentComponent,
-		CardHeaderComponent,
-		CardTitleComponent,
+		DropdownMenuComponent,
 		DateRangePipe,
-		MarkdownPipe,
-		PhotoImageUrlPipe,
-		PrettyBytesPipe,
 		IonButton,
 		IonIcon,
 		IonSkeletonText,
+		RouterLink,
 		TooltipDirective,
 	],
 })
@@ -58,13 +46,51 @@ export class EventGalleryComponent {
 
 	readonly noPermissionText = "K této akci nemáš oprávnění.";
 
-	album = signal<SDK.AlbumResponseWithLinks | null>(null);
-	photos = signal<SDK.PhotoResponseWithLinks[] | null>(null);
+	readonly menuOptions: DropdownMenuOption<string>[] = [{ value: "unlink", label: "Odpojit album od akce" }];
 
-	previewPhotos = computed(() => this.photos()?.slice(0, PREVIEW_PHOTOS) ?? []);
-	morePhotos = computed(() => Math.max((this.photos()?.length ?? 0) - PREVIEW_PHOTOS, 0));
+	album = signal<SDK.AlbumResponseWithLinks | undefined>(undefined);
+
+	photos = signal<SDK.PhotoResponseWithLinks[] | undefined>(undefined);
 
 	canEditEvent = computed(() => this.event()?._links?.updateEvent?.allowed ?? false);
+
+	checks = computed<AlbumCheck[]>(() => {
+		const album = this.album();
+		const photos = this.photos() ?? [];
+		if (!album) return [];
+
+		const description = !!album.description?.trim();
+		const chronicle = !!album.chronicleFileName;
+		const titlePhoto = photos.some((photo) => photo.titlePhoto);
+
+		return [
+			{
+				label: "Popisek nebo kronika",
+				done: description || chronicle,
+				note:
+					description && chronicle
+						? "popisek i kronika v PDF"
+						: description
+							? "popisek"
+							: chronicle
+								? "kronika v PDF"
+								: "chybí",
+				warn: true,
+			},
+			{
+				label: "Titulní fotka",
+				done: titlePhoto,
+				note: titlePhoto ? "vybraná" : photos.length ? "nevybraná, na webu bude první fotka" : "nevybraná",
+				warn: true,
+			},
+			{
+				label: "Fotky",
+				done: photos.length > 0,
+				note: photos.length ? String(photos.length) : "zatím žádné",
+				warn: true,
+			},
+		];
+	});
 
 	busy = signal(false);
 
@@ -73,76 +99,28 @@ export class EventGalleryComponent {
 		private readonly modalService: ModalService,
 		private readonly toastService: ToastService,
 	) {
-		addIcons({
-			addOutline,
-			checkmarkOutline,
-			closeOutline,
-			createOutline,
-			documentAttachOutline,
-			globeOutline,
-			imagesOutline,
-			linkOutline,
-		});
+		addIcons({ addOutline, checkmark, ellipsisVertical, imagesOutline, linkOutline });
 
 		effect(() => {
 			const albumId = this.event()?.album?.id;
-			if (albumId) this.loadAlbum(albumId);
-			else {
-				this.album.set(null);
-				this.photos.set(null);
-			}
+			untracked(() => this.loadAlbum(albumId));
 		});
 	}
 
-	private async loadAlbum(albumId: number) {
+	private async loadAlbum(albumId: number | undefined) {
+		if (!albumId) {
+			this.album.set(undefined);
+			this.photos.set(undefined);
+			return;
+		}
+
 		const [album, photos] = await Promise.all([
-			this.api.PhotoGalleryApi.getAlbum(albumId)
-				.then((res) => res.data)
-				.catch(() => null),
-			this.api.PhotoGalleryApi.getAlbumPhotos(albumId)
-				.then((res) => res.data)
-				.catch(() => []),
+			this.api.PhotoGalleryApi.getAlbum(albumId).then((res) => res.data),
+			this.api.PhotoGalleryApi.getAlbumPhotos(albumId).then((res) => res.data),
 		]);
 		if (this.event()?.album?.id !== albumId) return;
 		this.album.set(album);
 		this.photos.set(photos);
-	}
-
-	async openChronicle() {
-		const album = this.album();
-		if (!album) return;
-
-		const response = await this.api.PhotoGalleryApi.getAlbumChronicle(album.id, { responseType: "blob" }).catch(
-			() => null,
-		);
-		if (!response) {
-			this.toastService.toast("Nepodařilo se otevřít kroniku.", { color: "warning" });
-			return;
-		}
-
-		openPdf(response.data as unknown as Blob);
-	}
-
-	async publish() {
-		const album = this.album();
-		if (!album || this.busy()) return;
-
-		const confirmed = await this.modalService.confirmationModal(
-			`Po publikování uvidí fotogalerii „${album.name}“ návštěvníci bosan.cz.`,
-			{ header: "Publikovat fotogalerii?", buttonText: "Publikovat" },
-		);
-		if (!confirmed) return;
-
-		this.busy.set(true);
-		try {
-			await this.api.PhotoGalleryApi.publishAlbum(album.id);
-			this.toastService.toast("Fotogalerie publikována.");
-			this.change.emit();
-		} catch (e) {
-			this.toastService.toast("Nepodařilo se publikovat fotogalerii.", { color: "warning" });
-		} finally {
-			this.busy.set(false);
-		}
 	}
 
 	async linkAlbum() {
@@ -190,7 +168,7 @@ export class EventGalleryComponent {
 	}
 
 	async removeAlbum() {
-		const album = this.album();
+		const album = this.album() ?? this.event()?.album;
 		if (!album || this.busy()) return;
 
 		const confirmed = await this.modalService.deleteConfirmationModal(

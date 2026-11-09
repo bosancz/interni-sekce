@@ -1,0 +1,32 @@
+<bo-modal-layout>
+	<div slot="title" class="tp-head">
+		<div>
+			<h4>Vybrat titulní fotku</h4>
+			<p class="tp-subtitle">Ukáže se u alba na bosan.cz a v náhledu při sdílení odkazu.</p>
+		</div>
+		<button type="button" class="tp-close" aria-label="Zavřít" (click)="close.emit()">
+			<ion-icon name="close-outline"></ion-icon>
+		</button>
+	</div>
+
+	<div class="tp-grid">
+		@for (photo of photos; track photo.id) {
+			<button
+				type="button"
+				class="tp-photo"
+				[class.selected]="photo.id === selectedId"
+				[attr.aria-label]="photo.caption || photo.name"
+				(click)="submit.emit(photo)"
+			>
+				<img [src]="photo | photoImageUrl: 'small'" [style.background-color]="photo.bg" alt="" loading="lazy" />
+				@if (photo.id === selectedId) {
+					<span class="tp-star"><ion-icon name="star"></ion-icon></span>
+				}
+			</button>
+		}
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zrušit</button>
+	</div>
+</bo-modal-layout>

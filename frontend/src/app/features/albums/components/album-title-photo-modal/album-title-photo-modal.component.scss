@@ -1,0 +1,91 @@
+@use "./../../../../../styles/brand-modal" as *;
+
+.tp-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.tp-subtitle {
+	margin: 4px 0 0;
+	font-size: 14px;
+	font-weight: 400;
+	color: var(--bm-muted);
+}
+
+.tp-close {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	margin: -4px -6px 0 0;
+	padding: 0;
+	border: none;
+	border-radius: 9px;
+	background: transparent;
+	color: var(--bm-muted-2);
+	cursor: pointer;
+
+	ion-icon {
+		font-size: 22px;
+	}
+
+	&:hover {
+		background: var(--bm-surface-hover);
+		color: var(--bm-blue);
+	}
+}
+
+.tp-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+	gap: 8px;
+	overflow-y: auto;
+	min-height: 0;
+}
+
+.tp-photo {
+	position: relative;
+	aspect-ratio: 4 / 3;
+	padding: 0;
+	border: 3px solid transparent;
+	border-radius: 10px;
+	background: none;
+	overflow: hidden;
+	cursor: pointer;
+	transition: border-color 150ms;
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	&:hover,
+	&:focus-visible {
+		border-color: var(--bm-yellow);
+		outline: none;
+	}
+
+	&.selected {
+		border-color: var(--bm-blue);
+	}
+}
+
+.tp-star {
+	position: absolute;
+	top: 6px;
+	left: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: #ffffff;
+	color: var(--bm-yellow);
+}

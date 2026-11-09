@@ -12,22 +12,38 @@
 </bo-page-header>
 
 <bo-page-content [padding]="true">
+	@if (titlePhotoMissing()) {
+		<div class="title-photo-warning">
+			<ion-icon name="warning-outline"></ion-icon>
+			<span><strong>Titulní fotka není vybraná.</strong> Na webu se zatím ukazuje první fotka alba.</span>
+			@if (album()?._links?.updateAlbum?.allowed) {
+				<ion-button fill="solid" color="warning" size="small" (click)="selectTitlePhoto()">
+					<ion-icon name="star-outline" slot="start"></ion-icon>
+					Vybrat titulní fotku
+				</ion-button>
+			}
+		</div>
+	}
+
 	<div class="album-top">
 		<div class="album-top-info">
-			<bo-album-info
-				#albumInfo
-				[album]="album()"
-				(update)="updateAlbum($event)"
-				(change)="loadAlbum(album()!.id)"
-			/>
+			<bo-album-info #albumInfo [album]="album()" (update)="updateAlbum($event)" />
 		</div>
 
 		@if (titlePhoto(); as photo) {
 			<div class="title-photo d-none d-lg-block" [style.width.px]="titlePhotoWidth()">
-				<img [src]="photo | photoImageUrl: 'big'" [style.background-color]="photo.bg" />
+				<img [src]="photo | photoImageUrl: 'big'" [style.background-color]="photo.bg" alt="Titulní fotka" />
+				@if (album()?._links?.updateAlbum?.allowed) {
+					<button type="button" class="title-photo-change" (click)="selectTitlePhoto()">
+						<ion-icon name="star-outline"></ion-icon>
+						Změnit titulní fotku
+					</button>
+				}
 			</div>
 		}
 	</div>
+
+	<bo-album-description [album]="album()" (update)="updateAlbum($event)" (change)="loadAlbum(album()!.id)" />
 
 	<bo-album-gallery
 		[photos]="photos()"
