@@ -1,0 +1,105 @@
+@use "./../../../../../styles/brand-modal" as *;
+
+.ec-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.ec-row {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	width: 100%;
+	padding: 14px 4px;
+	border: 0;
+	border-radius: 10px;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: start;
+	cursor: pointer;
+	transition: background-color 150ms;
+
+	& + & {
+		border-top: 1px solid var(--bm-border-soft);
+		border-radius: 0;
+	}
+
+	&:hover {
+		background: var(--bm-surface-hover);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--bm-blue);
+		outline-offset: 2px;
+	}
+}
+
+.ec-check {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	box-sizing: border-box;
+	border: 2px dashed var(--bm-checkbox-border);
+	border-radius: 50%;
+
+	ion-icon {
+		display: none;
+	}
+
+	&.warning {
+		border-color: var(--bm-yellow);
+	}
+
+	&.done {
+		border: 0;
+		background: var(--bo-green-tint);
+		color: var(--bm-green);
+
+		ion-icon {
+			display: block;
+			font-size: 16px;
+			--ionicon-stroke-width: 64px;
+		}
+	}
+}
+
+.ec-text {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.ec-label {
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--bo-heading);
+}
+
+.ec-state {
+	font-size: 13.5px;
+	color: var(--bm-muted);
+
+	&.done {
+		color: var(--bm-green);
+	}
+
+	&.warning {
+		color: var(--bo-yellow-deep);
+	}
+}
+
+.ec-action {
+	flex: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--bo-heading);
+}

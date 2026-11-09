@@ -1,0 +1,67 @@
+<bo-modal-layout>
+	<h4 slot="title">Uzavření akce</h4>
+
+	<div class="bm-body">
+		<div class="ec-list">
+			<button type="button" class="ec-row" (click)="submit.emit('accounting')">
+				<span class="ec-check" [class.done]="!!event.accountingSentAt">
+					<ion-icon name="checkmark-outline"></ion-icon>
+				</span>
+				<span class="ec-text">
+					<span class="ec-label">Účtování</span>
+					@if (event.accountingSentAt; as date) {
+						<span class="ec-state done">Odesláno {{ date | date: "d. M. y" }}</span>
+					} @else {
+						<span class="ec-state">Zatím neodesláno</span>
+					}
+				</span>
+				<span class="ec-action">Upravit <ion-icon name="chevron-forward-outline"></ion-icon></span>
+			</button>
+
+			<button type="button" class="ec-row" (click)="submit.emit('report')">
+				<span class="ec-check" [class.done]="!!event.reportPublishedAt">
+					<ion-icon name="checkmark-outline"></ion-icon>
+				</span>
+				<span class="ec-text">
+					<span class="ec-label">Report</span>
+					@if (event.reportPublishedAt; as date) {
+						<span class="ec-state done">Odeslán revizorovi {{ date | date: "d. M. y" }}</span>
+					} @else {
+						<span class="ec-state">Zatím neodeslaný</span>
+					}
+				</span>
+				<span class="ec-action">Upravit <ion-icon name="chevron-forward-outline"></ion-icon></span>
+			</button>
+
+			<button type="button" class="ec-row" (click)="submit.emit('gallery')">
+				<span class="ec-check" [class.done]="galleryPublished()" [class.warning]="titlePhotoMissing()">
+					<ion-icon name="checkmark-outline"></ion-icon>
+				</span>
+				<span class="ec-text">
+					<span class="ec-label">Fotogalerie</span>
+					<span
+						class="ec-state"
+						[class.done]="galleryPublished() && !titlePhotoMissing()"
+						[class.warning]="titlePhotoMissing()"
+					>
+						@if (!event.album) {
+							Album zatím není
+						} @else if (galleryPublished()) {
+							Publikovaná
+						} @else {
+							Nepublikovaná
+						}
+						@if (titlePhotoMissing()) {
+							· chybí titulní fotka
+						}
+					</span>
+				</span>
+				<span class="ec-action">Upravit <ion-icon name="chevron-forward-outline"></ion-icon></span>
+			</button>
+		</div>
+	</div>
+
+	<div slot="buttons" class="bm-buttons">
+		<button type="button" class="bm-btn-ghost" (click)="close.emit()">Zavřít</button>
+	</div>
+</bo-modal-layout>
