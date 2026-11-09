@@ -4,6 +4,7 @@ import { Config } from "src/config";
 import { PhotoSizes } from "src/api/albums/dto/photo.dto";
 import { Album, AlbumStatus } from "src/models/albums/entities/album.entity";
 import { Photo } from "src/models/albums/entities/photo.entity";
+import { FaceEmotion } from "src/models/albums/schema/detected-faces";
 import { getAlbumChroniclePath } from "src/models/albums/helpers/album-chronicle";
 import { AlbumsRepository } from "src/models/albums/repositories/albums.repository";
 import { PhotosRepository } from "src/models/albums/repositories/photos.repository";
@@ -13,6 +14,7 @@ import { EventsRepository } from "src/models/events/repositories/events.reposito
 import { FilesService } from "src/models/files/services/files.service";
 import { BoardMembersRepository } from "src/models/members/repositories/board-members.repository";
 import { GroupsRepository } from "src/models/members/repositories/groups.repository";
+import { MemberRoles } from "src/models/members/schema/member-roles";
 import { DataSource } from "typeorm";
 
 @Injectable()
@@ -81,8 +83,58 @@ export class PublicV2Service {
 		return { path: join(folder, matches[0]), filename: matches[0] };
 	}
 
-	async getGallery(options: { sort?: "dateFrom" | "publishedAt"; limit?: number; offset?: number }) {
+	async getGallery(options: {
+		sort?: "dateFrom" | "publishedAt";
+		limit?: number;
+		offset?: number;
+		previewPhotos?: number;
+	}) {
 		const sort = options.sort === "publishedAt" ? `"publishedAt"` : `"dateFrom"`;
+		const photoJson = (alias: string) => `json_build_object(
+			'id', ${alias}.id,
+			'width', ${alias}.width,
+			'height', ${alias}.height,
+			'bg', ${alias}.bg,
+			'urls', json_build_object(
+				'small', $3::text || '/photos/' || ${alias}.id || '/small',
+				'big', $3::text || '/photos/' || ${alias}.id || '/big',
+				'original', $3::text || '/photos/' || ${alias}.id || '/original'
+			)
+		)`;
+		const happyFace = (condition: string) => `EXISTS (
+			SELECT 1 FROM photo_faces f
+			LEFT JOIN members m ON m.id = f.member_id AND m.deleted_at IS NULL
+			WHERE f.photo_id = pp.id AND f.emotion = $5 AND ${condition}
+		)`;
+		const childCondition = `(m.birthday IS NOT NULL AND m.birthday + make_interval(years => $6) > a.date_from)
+			OR (m.birthday IS NULL AND m.role = $7)`;
+		const previewPhotos = options.previewPhotos
+			? `,
+				COALESCE((
+					SELECT json_agg(${photoJson("pp")} ORDER BY pp.priority, pp.random)
+					FROM (
+						SELECT pp.id, pp.width, pp.height, pp.bg,
+							CASE WHEN ${happyFace(`(f.member_id IS NULL OR ${childCondition})`)} THEN 0
+								WHEN ${happyFace("m.role = $8")} THEN 1
+								ELSE 2 END AS priority,
+							random() AS random
+						FROM photos pp
+						WHERE pp.album_id = a.id AND pp.deleted_at IS NULL AND pp.id IS DISTINCT FROM p.id
+						ORDER BY priority, random
+						LIMIT $4
+					) pp
+				), '[]'::json) AS "previewPhotos"`
+			: "";
+		const params: unknown[] = [options.limit ?? null, options.offset ?? 0, this.baseUrl];
+		if (options.previewPhotos) {
+			params.push(
+				options.previewPhotos,
+				FaceEmotion.happy,
+				this.config.statistics.childAgeLimit,
+				MemberRoles.dite,
+				MemberRoles.vedouci,
+			);
+		}
 
 		return this.dataSource.query(
 			`SELECT a.id AS "albumId",
@@ -92,17 +144,7 @@ export class PublicV2Service {
 				a.date_published AS "publishedAt",
 				COALESCE(btrim(a.description), '') <> '' AS "summary",
 				a.chronicle_file_name IS NOT NULL AS "chronicle",
-				CASE WHEN p.id IS NULL THEN NULL ELSE json_build_object(
-					'id', p.id,
-					'width', p.width,
-					'height', p.height,
-					'bg', p.bg,
-					'urls', json_build_object(
-						'small', $3::text || '/photos/' || p.id || '/small',
-						'big', $3::text || '/photos/' || p.id || '/big',
-						'original', $3::text || '/photos/' || p.id || '/original'
-					)
-				) END AS "photo"
+				CASE WHEN p.id IS NULL THEN NULL ELSE ${photoJson("p")} END AS "photo"${previewPhotos}
 			FROM albums a
 			LEFT JOIN LATERAL (
 				SELECT id, bg, width, height FROM photos
@@ -113,7 +155,7 @@ export class PublicV2Service {
 			WHERE a.status = 'public' AND a.deleted_at IS NULL
 			ORDER BY ${sort} DESC NULLS LAST, a.id DESC
 			LIMIT $1 OFFSET $2`,
-			[options.limit ?? null, options.offset ?? 0, this.baseUrl],
+			params,
 		);
 	}
 
