@@ -49,7 +49,16 @@
 </ng-template>
 
 <bo-page-content>
+	<ion-infinite-scroll
+		position="top"
+		[disabled]="!aroundToday() || !hasMorePast()"
+		(ionInfinite)="onInfiniteScrollTop($any($event))"
+	>
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
+
 	<div
+		#rowsWrapper
 		class="events-table-wrapper"
 		(pointerover)="preview.hover($event)"
 		(pointermove)="preview.hover($event)"
