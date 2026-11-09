@@ -70,18 +70,19 @@
 					aria-label="Přidat odrážkový seznam"
 					boTooltip="Odrážkový seznam"
 				>
-					• Seznam
+					<ion-icon slot="icon-only" name="list"></ion-icon>
 				</ion-button>
 			</div>
 		</div>
 
 		<div class="textarea-wrap">
-			<ion-textarea
-				autoGrow
-				[placeholder]="placeholder()"
+			<textarea
+				#editor
+				spellcheck="true"
+				[placeholder]="placeholder() ?? ''"
 				[(ngModel)]="content"
 				(keydown)="onEditorKeydown($event)"
-			></ion-textarea>
+			></textarea>
 		</div>
 	</div>
 
@@ -102,16 +103,74 @@
 		</div>
 
 		<div class="help-pane" [hidden]="sideView() !== 'help'">
-			<p>Používej markdown zápis přímo v textu:</p>
-			<ul>
-				<li><strong>Nadpisy:</strong> <code>#</code>, <code>##</code>, <code>###</code> na začátku řádku</li>
-				<li><strong>Tučné:</strong> <code>**text**</code></li>
-				<li><strong>Kurzíva:</strong> <code>_text_</code></li>
-				<li><strong>Seznam:</strong> každý řádek začni <code>- </code></li>
+			<p>Text se formátuje značkami přímo v textu. Tlačítka nad editorem je vloží za tebe.</p>
+
+			<table class="help-table">
+				<thead>
+					<tr>
+						<th>Napíšeš</th>
+						<th>Uvidíš</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><code>**tučné**</code></td>
+						<td><strong>tučné</strong></td>
+					</tr>
+					<tr>
+						<td><code>_kurzíva_</code></td>
+						<td><em>kurzíva</em></td>
+					</tr>
+					<tr>
+						<td><code># Nadpis</code></td>
+						<td class="help-heading help-heading-1">Nadpis</td>
+					</tr>
+					<tr>
+						<td><code>## Menší nadpis</code></td>
+						<td class="help-heading help-heading-2">Menší nadpis</td>
+					</tr>
+					<tr>
+						<td><code>### Podnadpis</code></td>
+						<td class="help-heading help-heading-3">Podnadpis</td>
+					</tr>
+					<tr>
+						<td>
+							<code class="help-block">- první<br />- druhá</code>
+						</td>
+						<td>
+							<ul>
+								<li>první</li>
+								<li>druhá</li>
+							</ul>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<code class="help-block">1. první<br />2. druhá</code>
+						</td>
+						<td>
+							<ol>
+								<li>první</li>
+								<li>druhá</li>
+							</ol>
+						</td>
+					</tr>
+					<tr>
+						<td><code>[bosan.cz](https://bosan.cz)</code></td>
+						<td><a href="https://bosan.cz" target="_blank" rel="noopener">bosan.cz</a></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<p>Nový řádek se zalomí tak, jak ho napíšeš. Nový odstavec začneš prázdným řádkem.</p>
+			<p>Nadpis a seznam musí začínat na začátku řádku, za značkou je mezera.</p>
+
+			<h5>Klávesové zkratky</h5>
+			<ul class="help-shortcuts">
+				<li><kbd>Ctrl</kbd> + <kbd>B</kbd> tučné</li>
+				<li><kbd>Ctrl</kbd> + <kbd>I</kbd> kurzíva</li>
 			</ul>
-			<p>
-				Klávesové zkratky: <strong>Ctrl/Cmd + B</strong> pro tučné a <strong>Ctrl/Cmd + I</strong> pro kurzívu.
-			</p>
+			<p class="help-note">Na Macu místo <kbd>Ctrl</kbd> použij <kbd>⌘</kbd>.</p>
 		</div>
 	</div>
 </div>
