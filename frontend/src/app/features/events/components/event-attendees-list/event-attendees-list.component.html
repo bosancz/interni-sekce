@@ -48,20 +48,29 @@
 			</div>
 
 			<div class="role">
-				@if (attendee.type === "leader") {
-					<span class="role-pill event-leader">Vede akci</span>
-				} @else if (attendee._links.updateEventAttendee.allowed) {
+				@let isLeader = attendee.type === "leader";
+				@let roleLabel = isLeader ? "vede akci" : (attendee.role | role: "title");
+				@if (attendee._links.updateEventAttendee.allowed) {
 					<button
 						type="button"
 						class="role-select"
-						[attr.aria-label]="'Role na akci: ' + (attendee.role | role: 'title')"
-						(click)="selectRole(attendee); $event.stopPropagation()"
+						[class.event-leader]="isLeader"
+						aria-haspopup="menu"
+						[attr.aria-label]="'Role na akci: ' + roleLabel"
+						(click)="roleMenu.open($event)"
 					>
-						<span>{{ attendee.role | role: "title" }}</span>
+						<span>{{ roleLabel }}</span>
 						<ion-icon name="chevron-down" aria-hidden="true"></ion-icon>
 					</button>
+					<bo-dropdown-menu
+						#roleMenu
+						header="Role na akci"
+						[options]="roleOptions"
+						[value]="roleChoice(attendee)"
+						(select)="roleChange.emit({ attendee, role: $event })"
+					></bo-dropdown-menu>
 				} @else {
-					<span class="role-pill">{{ attendee.role | role: "title" }}</span>
+					<span class="role-pill" [class.event-leader]="isLeader">{{ roleLabel }}</span>
 				}
 			</div>
 
