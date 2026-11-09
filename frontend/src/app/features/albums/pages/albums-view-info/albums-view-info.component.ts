@@ -95,6 +95,8 @@ export class AlbumsViewInfoComponent implements OnInit, AfterViewInit, OnDestroy
 
 	titlePhotoMissing = computed(() => !!this.photos()?.length && !this.titlePhoto());
 
+	previewPhoto = computed(() => this.titlePhoto() ?? this.photos()?.[0]);
+
 	titlePhotoWidth = computed(() => {
 		const height = this.albumInfoHeight();
 		if (!height) return null;
