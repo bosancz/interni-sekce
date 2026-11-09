@@ -12,9 +12,10 @@ import { TooltipDirective } from "src/app/shared/directives/tooltip.directive";
 import { SDK } from "src/sdk";
 import { EventAnnouncementModalComponent } from "../event-announcement-modal/event-announcement-modal.component";
 import { EventAccountingModalComponent } from "../event-accounting-modal/event-accounting-modal.component";
+import { EventClosureItem, EventClosureModalComponent } from "../event-closure-modal/event-closure-modal.component";
 
 export interface EventProgressStep {
-	key: "draft" | "public" | "announcement" | "accounting" | "report";
+	key: "draft" | "public" | "announcement" | "closure";
 	label: string;
 	reached: boolean;
 	active: boolean;
@@ -44,6 +45,8 @@ const NEUTRAL_COLOR = "var(--bo-line)";
 const IN_PROGRESS_COLOR = EventStatuses.pending.color;
 
 const DONE_COLOR = EventStatuses.public.color;
+
+const CLOSURE_ITEMS = 3;
 
 @Component({
 	selector: "bo-event-progress",
@@ -80,29 +83,17 @@ export class EventProgressComponent {
 		return DateTime.fromISO(dateTill).endOf("day") < DateTime.now();
 	});
 
-	private closureSteps = computed(() =>
-		[
-			{
-				key: "accounting" as const,
-				label: "Účtování",
-				done: this.accountingSent(),
-			},
-			{
-				key: "report" as const,
-				label: "Report",
-				done: this.reportPublished(),
-			},
-		].map((step) => ({ ...step, reached: this.announcementSent() && (step.done || this.eventEnded()) })),
+	galleryPublished = computed(() => this.event()?.album?.status === "public");
+
+	private closureDone = computed(
+		() => [this.accountingSent(), this.reportPublished(), this.galleryPublished()].filter(Boolean).length,
 	);
+
+	private closureReached = computed(() => this.announcementSent() && (this.eventEnded() || this.closureDone() > 0));
 
 	private activeIndex = computed(() => {
 		if (!this.announcementSent()) return this.statusIndex();
-
-		const closureSteps = this.closureSteps();
-		const pending = closureSteps.findIndex((step) => step.reached && !step.done);
-		if (pending !== -1) return STEPS.length + 1 + pending;
-
-		return STEPS.length + 1 + closureSteps.map((step) => step.reached).lastIndexOf(true);
+		return this.closureReached() ? STEPS.length + 1 : STEPS.length;
 	});
 
 	steps = computed<EventProgressStep[]>(() => {
@@ -132,14 +123,18 @@ export class EventProgressComponent {
 				note: false,
 				accent: this.accentColor(),
 			},
-			...this.closureSteps().map((step) => ({
-				key: step.key,
-				label: step.label,
-				reached: step.reached,
+			{
+				key: "closure" as const,
+				label: `Uzavření ${this.closureDone()}/${CLOSURE_ITEMS}`,
+				reached: this.closureReached(),
 				clickable: !!event,
 				note: false,
-				accent: !step.reached ? NEUTRAL_COLOR : step.done ? DONE_COLOR : IN_PROGRESS_COLOR,
-			})),
+				accent: !this.closureReached()
+					? NEUTRAL_COLOR
+					: this.closureDone() === CLOSURE_ITEMS
+						? DONE_COLOR
+						: IN_PROGRESS_COLOR,
+			},
 		];
 
 		return allSteps.map((step, index) => ({
@@ -185,7 +180,21 @@ export class EventProgressComponent {
 			);
 		}
 
-		if (step.key === "accounting") {
+		if (step.key === "closure") {
+			const item = await this.modalService.componentModal(
+				EventClosureModalComponent,
+				{ event },
+				{ cssClass: "dialog-brand" },
+			);
+			if (item) await this.openClosureItem(item);
+		}
+	}
+
+	private async openClosureItem(item: EventClosureItem) {
+		const event = this.event();
+		if (!event) return;
+
+		if (item === "accounting") {
 			const result = await this.modalService.componentModal(
 				EventAccountingModalComponent,
 				{ event },
@@ -196,11 +205,10 @@ export class EventProgressComponent {
 			await this.callApi((id) =>
 				result.sent ? this.api.EventsApi.markAccountingSent(id) : this.api.EventsApi.unmarkAccountingSent(id),
 			);
+			return;
 		}
 
-		if (step.key === "report") {
-			this.router.navigate([], { queryParams: { tab: "report" }, queryParamsHandling: "merge" });
-		}
+		this.router.navigate([], { queryParams: { tab: item }, queryParamsHandling: "merge" });
 	}
 
 	private async callApi(action: (eventId: number) => Promise<unknown>) {
