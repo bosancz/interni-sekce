@@ -16,7 +16,12 @@
 							</ion-badge>
 						</div>
 
-						<span class="amount-cell"> {{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč </span>
+						<div class="amount-cell">
+							<span>{{ expense.amount | number: "1.2-2" : "cs" }}&nbsp;Kč</span>
+							<small class="per-person-day"
+								>{{ perPersonDay(expense) | number: "1.2-2" : "cs" }}&nbsp;Kč/os./den</small
+							>
+						</div>
 
 						<div class="action-cell">
 							<bo-delete-button
@@ -48,7 +53,10 @@
 						<bo-card-title>Výdaje podle typu</bo-card-title>
 					</bo-card-header>
 					<bo-card-content>
-						<bo-event-expenses-chart [event]="event()" [expenses]="expenses()"></bo-event-expenses-chart>
+						<bo-event-expenses-chart
+							[expenses]="expenses()"
+							[personDays]="personDays()"
+						></bo-event-expenses-chart>
 					</bo-card-content>
 				</bo-card>
 			</div>

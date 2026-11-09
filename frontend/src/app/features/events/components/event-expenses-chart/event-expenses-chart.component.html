@@ -12,7 +12,7 @@
 				<span>Celkem: </span><span>{{ total() | number: "1.2-2" : "cs" }}&nbsp;Kč</span>
 			</div>
 			<div>
-				<span>Osoba/den: </span><span>{{ total() / persons() / days() | number: "1.2-2" : "cs" }}&nbsp;Kč</span>
+				<span>Osoba/den: </span><span>{{ total() / personDays() | number: "1.2-2" : "cs" }}&nbsp;Kč</span>
 			</div>
 		</div>
 	</div>

@@ -40,7 +40,7 @@ bo-item {
 		"desc desc desc desc";
 
 	/* ID takes leftover space, the chip sizes to its (variable-length) category name */
-	grid-template-columns: 1fr auto 95px 30px;
+	grid-template-columns: 1fr auto 110px 30px;
 }
 
 .id-cell {
@@ -67,8 +67,15 @@ bo-item {
 
 .amount-cell {
 	grid-area: amount;
-	text-align: right;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
 	white-space: nowrap;
+}
+
+.per-person-day {
+	color: var(--ion-color-medium);
+	font-size: 0.75em;
 }
 
 .action-cell {
@@ -81,7 +88,7 @@ bo-item {
 	.expense-grid {
 		grid-template-areas: "id desc badge amount action";
 
-		grid-template-columns: 50px 1fr auto 95px 30px;
+		grid-template-columns: 50px 1fr auto 110px 30px;
 		align-items: center;
 	}
 

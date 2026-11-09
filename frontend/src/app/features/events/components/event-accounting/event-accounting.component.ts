@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, effect, input, OnDestroy, OnInit, output, signal } from "@angular/core";
+import { Component, computed, effect, input, OnDestroy, OnInit, output, signal } from "@angular/core";
 import { IonBadge, IonButton, IonList } from "@ionic/angular/standalone";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { ApiService } from "src/app/core/services/api.service";
@@ -16,6 +16,7 @@ import { DeleteButtonComponent } from "src/app/shared/components/delete-button/d
 import { ItemComponent } from "src/app/shared/components/item/item.component";
 import { EventExpensePipe } from "src/app/shared/pipes/event-expense.pipe";
 import { SDK } from "src/sdk";
+import { getEventDays, getExpenseAmount } from "../../helpers/event-person-days";
 import { EventExpenseTypesInfoComponent } from "../event-expense-types-info/event-expense-types-info.component";
 import { EventExpensesChartComponent } from "../event-expenses-chart/event-expenses-chart.component";
 
@@ -47,6 +48,11 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 	count = output<number>();
 
 	expenses = signal<SDK.EventExpenseResponseWithLinks[]>([]);
+	persons = signal(1);
+	personDays = computed(() => {
+		const event = this.event();
+		return event ? this.persons() * getEventDays(event) : 1;
+	});
 
 	actions: Action[] = [];
 
@@ -59,7 +65,10 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 	) {
 		effect(() => {
 			const event = this.event();
-			if (event) this.loadExpenses();
+			if (event) {
+				this.loadExpenses();
+				this.loadPersons();
+			}
 		});
 
 		effect(() => this.count.emit(this.expenses().length));
@@ -81,6 +90,25 @@ export class EventAccountingComponent implements OnInit, OnDestroy {
 				: 0,
 		);
 		this.expenses.set(data);
+	}
+
+	private attendeesRequest = 0;
+
+	private async loadPersons() {
+		const event = this.event();
+		if (!event) return;
+
+		const request = ++this.attendeesRequest;
+		const attendees = await this.api.EventsApi.listEventAttendees(event.id)
+			.then((res) => res.data)
+			.catch(() => []);
+		if (request !== this.attendeesRequest) return;
+
+		this.persons.set(attendees.length || 1);
+	}
+
+	perPersonDay(expense: SDK.EventExpenseResponseWithLinks) {
+		return getExpenseAmount(expense) / this.personDays();
 	}
 
 	async addExpense() {
