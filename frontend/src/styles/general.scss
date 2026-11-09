@@ -214,16 +214,39 @@ ion-select.filter-pill {
 			font-weight: 800;
 		}
 
+		&.danger {
+			color: var(--bo-red);
+		}
+
 		ion-icon {
 			flex: 0 0 auto;
 			font-size: 1.1em;
 		}
+
+		.bo-dropdown-icon {
+			color: var(--bo-muted);
+		}
+
+		&.danger .bo-dropdown-icon {
+			color: inherit;
+		}
+	}
+
+	.bo-dropdown-divider {
+		height: 1px;
+		margin: 4px 6px;
+		background-color: var(--bo-line);
 	}
 
 	.bo-dropdown-label {
 		display: flex;
+		flex: 1 1 auto;
 		flex-direction: column;
 		gap: 2px;
+
+		strong {
+			font-weight: 800;
+		}
 
 		small {
 			color: var(--bo-muted);
