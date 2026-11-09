@@ -1,5 +1,15 @@
 import { CommonModule } from "@angular/common";
-import { Component, computed, inject, OnInit, signal, viewChild } from "@angular/core";
+import {
+	afterNextRender,
+	Component,
+	computed,
+	ElementRef,
+	inject,
+	Injector,
+	OnInit,
+	signal,
+	viewChild,
+} from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Params, Router } from "@angular/router";
 import {
@@ -97,15 +107,12 @@ export class EventsListComponent implements OnInit {
 	selectedLeaderFilters = computed(() => this.normalizeFilterValueToArray(this.model.value("leaders")));
 
 	private readonly defaultSortColumn = "dateFrom";
-
-	private defaultSortOrder(dateFilters: string[]): "ASC" | "DESC" {
-		return dateFilters.includes(this.futureFilterValue) ? "ASC" : "DESC";
-	}
+	private readonly defaultSortOrder = "ASC";
 
 	sortColumn = computed<string | null>(() => (this.model.value("sort") as string) ?? this.defaultSortColumn);
 	sortOrder = computed<"ASC" | "DESC">(() => {
 		const order = this.model.value("order");
-		return order === "ASC" || order === "DESC" ? order : this.defaultSortOrder(this.selectedYears());
+		return order === "ASC" || order === "DESC" ? order : this.defaultSortOrder;
 	});
 
 	readonly sortOptions: SortOption[] = [
@@ -155,8 +162,16 @@ export class EventsListComponent implements OnInit {
 	]);
 
 	page = 1;
+	private pastPage = 0;
 	readonly pageSize = 50;
 	private loadToken = 0;
+	private hasMoreFuture = false;
+	private pastEvents: SDK.EventResponseWithLinks[] = [];
+	private futureEvents: SDK.EventResponseWithLinks[] = [];
+
+	aroundToday = signal(false);
+	hasMorePast = signal(false);
+	pastScrollReady = signal(false);
 	private loadedFilterKey: string | null = null;
 
 	private hasLeft = false;
@@ -167,6 +182,9 @@ export class EventsListComponent implements OnInit {
 	rowId = (event: SDK.EventResponseWithLinks) => "event-" + event.id;
 
 	private hoverPreview = viewChild(EventHoverPreviewComponent);
+	private pageContent = viewChild(PageContentComponent);
+	private rowsWrapper = viewChild<ElementRef<HTMLElement>>("rowsWrapper");
+	private injector = inject(Injector);
 
 	constructor(
 		private api: ApiService,
@@ -276,7 +294,7 @@ export class EventsListComponent implements OnInit {
 	private async leadEvent(event: SDK.EventResponseWithLinks) {
 		await this.api.EventsApi.leadEvent(event.id);
 		this.toasts.toast("Uloženo");
-		this.loadEvents(this.filter);
+		this.loadEvents(this.filter, "refresh");
 	}
 
 	private async eventStatusAction(event: SDK.EventResponseWithLinks, action: EventStatusActions) {
@@ -290,7 +308,7 @@ export class EventsListComponent implements OnInit {
 
 		await this.api.EventsApi[action](event.id, { statusNote });
 		this.toasts.toast("Uloženo");
-		this.loadEvents(this.filter);
+		this.loadEvents(this.filter, "refresh");
 	}
 
 	private async deleteEvent(event: SDK.EventResponseWithLinks) {
@@ -301,13 +319,13 @@ export class EventsListComponent implements OnInit {
 
 		await this.api.EventsApi.deleteEvent(event.id);
 		this.toasts.toast("Akce smazána");
-		this.loadEvents(this.filter);
+		this.loadEvents(this.filter, "refresh");
 	}
 
 	private async restoreEvent(event: SDK.EventResponseWithLinks) {
 		await this.api.EventsApi.restoreEvent(event.id);
 		this.toasts.toast("Akce obnovena");
-		this.loadEvents(this.filter);
+		this.loadEvents(this.filter, "refresh");
 	}
 
 	async create() {
@@ -450,34 +468,155 @@ export class EventsListComponent implements OnInit {
 		e.target.complete();
 	}
 
+	async onInfiniteScrollTop(e: InfiniteScrollCustomEvent) {
+		if (this.pastScrollReady()) await this.loadPastEvents();
+		e.target.complete();
+	}
+
 	private async loadEvents(filter: UrlParams, mode: ListLoadMode = "reset") {
 		if (mode === "more") {
-			if (this.events().length < this.page * this.pageSize) return;
+			if (!this.hasMoreFuture) return;
 			this.page++;
 		} else if (mode === "reset") {
 			this.page = 1;
+			this.pastPage = 0;
+			this.pastEvents = [];
+			this.futureEvents = [];
+			this.hasMorePast.set(false);
+			this.pastScrollReady.set(false);
 			this.events.set([]);
 		}
 
 		const params: SDK.EventsApiListEventsQueryParams = { ...this.listParams(filter), limit: this.pageSize };
+		const aroundToday = this.isAroundToday(params);
+		const today = this.today();
 
-		const token = ++this.loadToken;
+		const token = mode === "more" ? this.loadToken : ++this.loadToken;
 
-		const pages = await Promise.all(
-			getPagesToLoad(mode, this.page).map((page) =>
-				this.api.EventsApi.listEvents({ ...params, offset: (page - 1) * this.pageSize }).then(
-					(res: any) => res.data as SDK.EventResponseWithLinks[],
-				),
-			),
-		).catch((err) => {
+		const futureParams = aroundToday ? { ...params, dateFrom: today } : params;
+		const pastPages = aroundToday && mode !== "more" ? Math.max(this.pastPage, 1) : 0;
+
+		const result = await Promise.all([
+			this.fetchPages(futureParams, getPagesToLoad(mode, this.page)),
+			this.fetchPages(this.pastParams(params), getPagesToLoad("refresh", pastPages)),
+		]).catch((err) => {
 			if (mode === "refresh") return null;
 			throw err;
 		});
 
-		if (token !== this.loadToken || !pages) return;
+		if (token !== this.loadToken || !result) return;
 
-		const events = pages.flat();
-		this.events.set(mode === "more" ? [...this.events(), ...events] : events);
+		const [futurePages, pastPagesData] = result;
+
+		this.hasMoreFuture = this.isFullPage(futurePages);
+		const future = futurePages.flat().filter((event) => !aroundToday || event.dateFrom.slice(0, 10) >= today);
+		this.futureEvents = mode === "more" ? [...this.futureEvents, ...future] : future;
+
+		if (mode !== "more") {
+			this.aroundToday.set(aroundToday);
+			this.pastPage = pastPages;
+			this.hasMorePast.set(this.isFullPage(pastPagesData));
+			this.pastEvents = pastPagesData.flat().reverse();
+		}
+
+		this.events.set([...this.pastEvents, ...this.futureEvents]);
+
+		if (mode === "reset" && aroundToday) {
+			await this.waitForRender();
+			await this.scrollToUpcoming(today);
+		}
+	}
+
+	private async loadPastEvents() {
+		if (!this.aroundToday() || !this.hasMorePast()) return;
+
+		const token = this.loadToken;
+		const page = this.pastPage + 1;
+		const params = this.pastParams({ ...this.listParams(this.filter), limit: this.pageSize });
+
+		const [events] = await this.fetchPages(params, [page]);
+		if (token !== this.loadToken) return;
+
+		this.pastPage = page;
+		this.hasMorePast.set(events.length >= this.pageSize);
+
+		const anchor = this.getScrollAnchor();
+
+		this.pastEvents = [...[...events].reverse(), ...this.pastEvents];
+		this.events.set([...this.pastEvents, ...this.futureEvents]);
+
+		await this.waitForRender();
+		await this.restoreScrollAnchor(anchor);
+	}
+
+	private async waitForRender() {
+		await new Promise<void>((resolve) => afterNextRender(() => resolve(), { injector: this.injector }));
+
+		const elements = this.rowsWrapper()?.nativeElement.querySelectorAll("ion-item, ion-label") ?? [];
+		await Promise.all([...elements].map((element) => (element as HTMLIonItemElement).componentOnReady?.()));
+		await new Promise((resolve) => requestAnimationFrame(resolve));
+	}
+
+	private fetchPages(params: SDK.EventsApiListEventsQueryParams, pages: number[]) {
+		return Promise.all(
+			pages.map((page) =>
+				this.api.EventsApi.listEvents({ ...params, offset: (page - 1) * this.pageSize }).then(
+					(res: any) => res.data as SDK.EventResponseWithLinks[],
+				),
+			),
+		);
+	}
+
+	private isFullPage(pages: SDK.EventResponseWithLinks[][]) {
+		const lastPage = pages[pages.length - 1];
+		return !!lastPage && lastPage.length >= this.pageSize;
+	}
+
+	private isAroundToday(params: SDK.EventsApiListEventsQueryParams) {
+		return !params.year?.length && !params.dateFrom && params.sort === "dateFrom" && params.order === "ASC";
+	}
+
+	private pastParams(params: SDK.EventsApiListEventsQueryParams): SDK.EventsApiListEventsQueryParams {
+		const yesterday = DateTime.now().startOf("day").minus({ days: 1 }).toISODate() ?? undefined;
+		return { ...params, dateTill: yesterday, order: "DESC" };
+	}
+
+	private today() {
+		return DateTime.now().startOf("day").toISODate()!;
+	}
+
+	private getRowElement(event: SDK.EventResponseWithLinks) {
+		return document.getElementById(this.rowId(event));
+	}
+
+	private getScrollAnchor() {
+		const event = this.events()[0];
+		const element = event ? this.getRowElement(event) : null;
+		return element ? { event, top: element.getBoundingClientRect().top } : null;
+	}
+
+	private async restoreScrollAnchor(anchor: { event: SDK.EventResponseWithLinks; top: number } | null) {
+		const element = anchor ? this.getRowElement(anchor.event) : null;
+		const scrollElement = await this.pageContent()?.contentEl?.getScrollElement();
+		if (!anchor || !element || !scrollElement) return;
+
+		scrollElement.scrollTop += element.getBoundingClientRect().top - anchor.top;
+	}
+
+	private async scrollToUpcoming(today: string) {
+		const upcoming = this.events().find((event) => event.dateTill.slice(0, 10) >= today);
+		const element = upcoming ? this.getRowElement(upcoming) : null;
+		const scrollElement = await this.pageContent()?.contentEl?.getScrollElement();
+
+		if (scrollElement) {
+			scrollElement.scrollTop = element
+				? scrollElement.scrollTop +
+					element.getBoundingClientRect().top -
+					scrollElement.getBoundingClientRect().top
+				: scrollElement.scrollHeight;
+		}
+
+		this.pastScrollReady.set(true);
 	}
 
 	private listParams(filter: UrlParams): SDK.EventsApiListEventsQueryParams {
@@ -496,7 +635,7 @@ export class EventsListComponent implements OnInit {
 			noleader: leaders.includes("noleader"),
 			deleted: !!filter.deleted,
 			sort: (filter as any)["sort"] || this.defaultSortColumn,
-			order: (filter as any)["order"] || this.defaultSortOrder(dateFilters),
+			order: (filter as any)["order"] || this.defaultSortOrder,
 		};
 	}
 
